@@ -30,19 +30,19 @@ import {
   FileActionOptions,
   SpaceActionOptions,
   useFileActionsDownloadArchive,
-  useSpaceActionsDelete,
-  useSpaceActionsDisable,
-  useSpaceActionsDuplicate,
-  useSpaceActionsEditDescription,
-  useSpaceActionsEditQuota,
-  useSpaceActionsRename,
-  useSpaceActionsRestore,
   useFileActionsFavorite
 } from '@opencloud-eu/web-pkg'
 import {
+  useSpaceActionsDelete,
+  useSpaceActionsDisable,
+  useSpaceActionsDuplicate,
   useSpaceActionsDeleteImage,
+  useSpaceActionsEditDescription,
   useSpaceActionsEditReadmeContent,
+  useSpaceActionsEditQuota,
   useSpaceActionsNavigateToTrash,
+  useSpaceActionsRename,
+  useSpaceActionsRestore,
   useSpaceActionsSetIcon,
   useSpaceActionsUploadImage
 } from '../../../composables'

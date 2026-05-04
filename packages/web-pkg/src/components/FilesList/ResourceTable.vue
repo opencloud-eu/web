@@ -282,17 +282,18 @@ import {
 } from '@opencloud-eu/web-client'
 
 import {
+  ActionExtension,
   FolderViewModeConstants,
   useAuthStore,
   useCapabilityStore,
   useEmbedMode,
+  useExtensionRegistry,
   useFolderLink,
   useGetMatchingSpace,
   useIsTopBarSticky,
   useResourcesStore,
   useResourceViewHelpers,
   useRouter,
-  useSpaceActionsRename,
   useSideBar
 } from '../../composables'
 import ResourceListItem from './ResourceListItem.vue'
@@ -379,6 +380,7 @@ defineSlots<{
 }>()
 
 const router = useRouter()
+const { requestExtensions } = useExtensionRegistry()
 const capabilityStore = useCapabilityStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { interceptModifierClick } = useInterceptModifierClick()
@@ -437,9 +439,16 @@ const hasTags = computed(
 )
 
 const { actions: renameActions } = useFileActionsRename()
-const { actions: renameActionsSpace } = useSpaceActionsRename()
+const renameActionsSpace = computed(() =>
+  requestExtensions<ActionExtension>({
+    id: 'global.files.context-actions',
+    extensionType: 'action'
+  })
+    .map((e) => e.action)
+    .filter((action) => action.name === 'rename')
+)
 const renameHandler = computed(() => unref(renameActions)[0].handler)
-const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0].handler)
+const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0]?.handler)
 
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
@@ -674,9 +683,12 @@ const hasRenameAction = (item: Resource) => {
 }
 const openRenameDialog = (item: Resource) => {
   if (isProjectSpaceResource(item)) {
-    return unref(renameHandlerSpace)({
-      resources: [item]
-    })
+    if (unref(renameHandlerSpace)) {
+      return unref(renameHandlerSpace)({
+        resources: [item]
+      })
+    }
+    return
   }
   unref(renameHandler)({
     space: getMatchingSpace(item),

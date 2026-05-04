@@ -8,11 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
-import {
-  useMessages,
-  useResourcesStore,
-  useSpacesStore
-} from '../../../../../src/composables/piniaStores'
+import { useMessages, useResourcesStore, useSpacesStore } from '@opencloud-eu/web-pkg'
 
 const spaces = [
   mock<SpaceResource>({

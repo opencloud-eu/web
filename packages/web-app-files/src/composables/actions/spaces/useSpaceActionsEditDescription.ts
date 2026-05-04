@@ -1,11 +1,17 @@
 import { computed, unref } from 'vue'
-import { SpaceAction, SpaceActionOptions } from '../types'
-import { useRoute } from '../../router'
-import { useAbility } from '../../ability'
-import { useClientService } from '../../clientService'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { useMessages, useModals, useSpacesStore, useUserStore } from '../../piniaStores'
+import {
+  SpaceAction,
+  SpaceActionOptions,
+  useAbility,
+  useClientService,
+  useMessages,
+  useModals,
+  useRoute,
+  useSpacesStore,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsEditDescription = () => {
   const { showMessage, showErrorMessage } = useMessages()

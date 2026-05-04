@@ -1,6 +1,10 @@
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { isPublicSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
+import {
+  isProjectSpaceResource,
+  isPublicSpaceResource,
+  isTrashResource
+} from '@opencloud-eu/web-client'
 import {
   FileAction,
   FileActionOptionsWithEvent,
@@ -52,6 +56,10 @@ export const useFileActionsCopyPermanentLink = () => {
         }
 
         if (isTrashResource(resources[0])) {
+          return false
+        }
+
+        if (isProjectSpaceResource(resources[0])) {
           return false
         }
 

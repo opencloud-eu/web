@@ -29,19 +29,19 @@ import {
   SpaceActionOptions,
   useFileActionsDownloadArchive,
   useRouter,
-  useSpaceActionsDelete,
-  useSpaceActionsDisable,
-  useSpaceActionsDuplicate,
-  useSpaceActionsEditDescription,
-  useSpaceActionsEditQuota,
-  useSpaceActionsRename,
-  useSpaceActionsRestore,
   useFileActionsFavorite
 } from '@opencloud-eu/web-pkg'
 import {
+  useSpaceActionsDelete,
+  useSpaceActionsDisable,
+  useSpaceActionsDuplicate,
   useSpaceActionsDeleteImage,
+  useSpaceActionsEditDescription,
   useSpaceActionsEditReadmeContent,
+  useSpaceActionsEditQuota,
   useSpaceActionsNavigateToTrash,
+  useSpaceActionsRename,
+  useSpaceActionsRestore,
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers,
   useSpaceActionsUploadImage
@@ -169,7 +169,7 @@ export default defineComponent({
       }
       if (unref(menuItemsTertiaryActions).length) {
         sections.push({
-          name: 'tertiaryAction s',
+          name: 'tertiaryActions',
           items: unref(menuItemsTertiaryActions)
         })
       }

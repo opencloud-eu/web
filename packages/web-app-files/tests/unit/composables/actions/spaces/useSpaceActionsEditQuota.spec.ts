@@ -1,5 +1,5 @@
 import { useSpaceActionsEditQuota } from '../../../../../src/composables/actions'
-import { useModals } from '../../../../../src/composables/piniaStores'
+import { useModals } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'

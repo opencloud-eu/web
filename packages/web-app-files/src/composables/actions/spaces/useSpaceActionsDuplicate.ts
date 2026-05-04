@@ -1,23 +1,23 @@
-import { SpaceResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
-import { SpaceAction, SpaceActionOptions } from '../types'
 import { useGettext } from 'vue3-gettext'
-import { useAbility } from '../../ability'
-import { useClientService } from '../../clientService'
-import { useLoadingService } from '../../loadingService'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { Drive } from '@opencloud-eu/web-client/graph/generated'
-import { resolveFileNameDuplicate } from '../../../helpers/resource/conflictHandling'
-import PQueue from 'p-queue'
-import { useRouter } from '../../router'
-import { isLocationSpacesActive } from '../../../router'
+import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import {
+  SpaceAction,
+  SpaceActionOptions,
+  isLocationSpacesActive,
+  resolveFileNameDuplicate,
+  useAbility,
+  useClientService,
   useConfigStore,
+  useLoadingService,
   useMessages,
   useResourcesStore,
+  useRouter,
   useSharesStore,
   useSpacesStore
-} from '../../piniaStores'
+} from '@opencloud-eu/web-pkg'
+import PQueue from 'p-queue'
 
 export const useSpaceActionsDuplicate = () => {
   const configStore = useConfigStore()
@@ -30,8 +30,6 @@ export const useSpaceActionsDuplicate = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const { upsertResource } = useResourcesStore()
-
-  const isProjectsLocation = isLocationSpacesActive(router, 'files-spaces-projects')
 
   const duplicateSpace = async (existingSpace: SpaceResource) => {
     const projectSpaces = spacesStore.spaces.filter(isProjectSpaceResource)
@@ -101,6 +99,7 @@ export const useSpaceActionsDuplicate = () => {
       }
 
       spacesStore.upsertSpace(duplicatedSpace)
+      const isProjectsLocation = isLocationSpacesActive(router, 'files-spaces-projects')
       if (isProjectsLocation) {
         upsertResource(duplicatedSpace)
       }

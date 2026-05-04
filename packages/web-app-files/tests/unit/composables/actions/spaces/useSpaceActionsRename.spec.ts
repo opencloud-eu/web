@@ -1,27 +1,29 @@
-import { useSpaceActionsEditDescription } from '../../../../../src/composables/actions'
-import { useMessages, useModals } from '../../../../../src/composables/piniaStores'
+import { useSpaceActionsRename } from '../../../../../src/composables/actions/spaces'
+import { useMessages, useModals } from '@opencloud-eu/web-pkg'
+import { mock } from 'vitest-mock-extended'
 import {
   defaultComponentMocks,
   RouteLocation,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 
-describe('editDescription', () => {
+describe('rename', () => {
   describe('handler', () => {
-    it('should trigger the editDescription modal window with one resource', () => {
+    it('should trigger the rename modal window', () => {
       getWrapper({
         setup: async ({ actions }) => {
           const { dispatchModal } = useModals()
-          await unref(actions)[0].handler({ resources: [{ id: '1' } as SpaceResource] })
+          await unref(actions)[0].handler({
+            resources: [{ id: '1', name: 'renamed space' } as SpaceResource]
+          })
 
           expect(dispatchModal).toHaveBeenCalledTimes(1)
         }
       })
     })
-    it('should not trigger the editDescription modal window with no resource', () => {
+    it('should not trigger the rename modal window without any resource', () => {
       getWrapper({
         setup: async ({ actions }) => {
           const { dispatchModal } = useModals()
@@ -32,15 +34,14 @@ describe('editDescription', () => {
       })
     })
   })
-
-  describe('method "editDescriptionSpace"', () => {
+  describe('method "renameSpace"', () => {
     it('should show message on success', () => {
       getWrapper({
-        setup: async ({ editDescriptionSpace }, { clientService }) => {
+        setup: async ({ renameSpace }, { clientService }) => {
           clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
             mock<SpaceResource>()
           )
-          await editDescriptionSpace(mock<SpaceResource>(), 'doesntmatter')
+          await renameSpace(mock<SpaceResource>({ id: '1' }), 'renamed space')
 
           const { showMessage } = useMessages()
           expect(showMessage).toHaveBeenCalledTimes(1)
@@ -51,9 +52,9 @@ describe('editDescription', () => {
     it('should show message on error', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       getWrapper({
-        setup: async ({ editDescriptionSpace }, { clientService }) => {
+        setup: async ({ renameSpace }, { clientService }) => {
           clientService.graphAuthenticated.drives.updateDrive.mockRejectedValue(new Error())
-          await editDescriptionSpace(mock<SpaceResource>(), 'doesntmatter')
+          await renameSpace(mock<SpaceResource>({ id: '1' }), 'renamed space')
 
           const { showErrorMessage } = useMessages()
           expect(showErrorMessage).toHaveBeenCalledTimes(1)
@@ -67,7 +68,7 @@ function getWrapper({
   setup
 }: {
   setup: (
-    instance: ReturnType<typeof useSpaceActionsEditDescription>,
+    instance: ReturnType<typeof useSpaceActionsRename>,
     {
       clientService
     }: {
@@ -82,7 +83,7 @@ function getWrapper({
     mocks,
     wrapper: getComposableWrapper(
       () => {
-        const instance = useSpaceActionsEditDescription()
+        const instance = useSpaceActionsRename()
         setup(instance, { clientService: mocks.$clientService })
       },
       {

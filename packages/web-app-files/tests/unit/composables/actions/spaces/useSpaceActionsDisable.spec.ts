@@ -1,5 +1,5 @@
-import { useSpaceActionsDelete } from '../../../../../src/composables/actions'
-import { useMessages, useModals } from '../../../../../src/composables/piniaStores'
+import { useSpaceActionsDisable } from '../../../../../src/composables/actions/spaces'
+import { useMessages, useModals } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
@@ -10,7 +10,7 @@ import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
-describe('delete', () => {
+describe('disable', () => {
   describe('isVisible property', () => {
     it('should be false when no resource given', () => {
       getWrapper({
@@ -19,32 +19,32 @@ describe('delete', () => {
         }
       })
     })
-    it('should be false when the space can not be deleted', () => {
-      const spaceMock = mock<SpaceResource>({ driveType: 'project', canBeDeleted: () => false })
-      getWrapper({
-        setup: ({ actions }) => {
-          expect(unref(actions)[0].isVisible({ resources: [spaceMock] })).toBe(false)
-        }
-      })
-    })
-    it('should be true when the space can be deleted', () => {
-      const spaceMock = mock<SpaceResource>({ driveType: 'project', canBeDeleted: () => true })
+    it('should be true when the space can be disabled', () => {
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canDisable: () => true })
       getWrapper({
         setup: ({ actions }) => {
           expect(unref(actions)[0].isVisible({ resources: [spaceMock] })).toBe(true)
         }
       })
     })
+    it('should be false when the space can not be disabled', () => {
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canDisable: () => false })
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(unref(actions)[0].isVisible({ resources: [spaceMock] })).toBe(false)
+        }
+      })
+    })
   })
 
   describe('handler', () => {
-    it('should trigger the delete modal window', () => {
+    it('should trigger the disable modal window', () => {
       getWrapper({
         setup: async ({ actions }) => {
           const { dispatchModal } = useModals()
           await unref(actions)[0].handler({
             resources: [
-              mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
+              mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
             ]
           })
 
@@ -52,13 +52,13 @@ describe('delete', () => {
         }
       })
     })
-    it('should not trigger the delete modal window without any resource to delete', () => {
+    it('should not trigger the disable modal window without any resource', () => {
       getWrapper({
         setup: async ({ actions }) => {
           const { dispatchModal } = useModals()
           await unref(actions)[0].handler({
             resources: [
-              mock<SpaceResource>({ id: '1', canBeDeleted: () => false, driveType: 'project' })
+              mock<SpaceResource>({ id: '1', canDisable: () => false, driveType: 'project' })
             ]
           })
 
@@ -68,14 +68,13 @@ describe('delete', () => {
     })
   })
 
-  describe('method "deleteSpace"', () => {
+  describe('method "disableSpace"', () => {
     it('should show message on success', () => {
       getWrapper({
-        setup: async ({ deleteSpaces }, { clientService }) => {
-          clientService.graphAuthenticated.drives.deleteDrive.mockResolvedValue()
-
-          await deleteSpaces([
-            mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
+        setup: async ({ disableSpaces }, { clientService }) => {
+          clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
+          await disableSpaces([
+            mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
           ])
 
           const { showMessage } = useMessages()
@@ -87,10 +86,10 @@ describe('delete', () => {
     it('should show message on error', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       getWrapper({
-        setup: async ({ deleteSpaces }, { clientService }) => {
-          clientService.graphAuthenticated.drives.deleteDrive.mockRejectedValue(new Error())
-          await deleteSpaces([
-            mock<SpaceResource>({ id: '1', canBeDeleted: () => true, driveType: 'project' })
+        setup: async ({ disableSpaces }, { clientService }) => {
+          clientService.graphAuthenticated.drives.disableDrive.mockRejectedValue(new Error())
+          await disableSpaces([
+            mock<SpaceResource>({ id: '1', canDisable: () => true, driveType: 'project' })
           ])
 
           const { showErrorMessage } = useMessages()
@@ -105,7 +104,7 @@ function getWrapper({
   setup
 }: {
   setup: (
-    instance: ReturnType<typeof useSpaceActionsDelete>,
+    instance: ReturnType<typeof useSpaceActionsDisable>,
     {
       clientService
     }: {
@@ -120,7 +119,7 @@ function getWrapper({
     mocks,
     wrapper: getComposableWrapper(
       () => {
-        const instance = useSpaceActionsDelete()
+        const instance = useSpaceActionsDisable()
         setup(instance, { clientService: mocks.$clientService })
       },
       {

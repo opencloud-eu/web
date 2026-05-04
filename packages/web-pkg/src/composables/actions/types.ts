@@ -6,7 +6,14 @@ import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export type ActionOptions = Record<string, unknown | unknown[]>
 
-type ActionCategory = 'actions' | 'context' | 'share' | 'sidebar'
+type ActionCategory =
+  | 'actions'
+  | 'context'
+  | 'share'
+  | 'sidebar'
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
 
 /**
  * Generic action interface.
@@ -26,6 +33,9 @@ export interface Action<T = ActionOptions> {
    *   It will also be the default when no other action is available for the given file type.
    * - share: action will appear in the "shares" section of the resource context menu.
    * - sidebar: action will appear in the "sidebar" section of the resource context menu.
+   * - primary: action will appear in primary action sections (e.g. admin spaces context menu).
+   * - secondary: action will appear in secondary action sections (e.g. admin spaces context menu).
+   * - tertiary: action will appear in tertiary action sections when a view supports them.
    *
    * @default actions
    */

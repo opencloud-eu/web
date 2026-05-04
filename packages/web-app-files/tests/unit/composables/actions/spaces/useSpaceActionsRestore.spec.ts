@@ -8,7 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useMessages, useModals } from '../../../../../src/composables/piniaStores'
+import { useMessages, useModals } from '@opencloud-eu/web-pkg'
 
 describe('restore', () => {
   describe('isVisible property', () => {

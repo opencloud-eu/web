@@ -17,6 +17,7 @@ import { SDKSearch } from './search'
 import { useSideBarPanels } from './composables/extensions/useFileSideBars'
 import { useFolderViews } from './composables/extensions/useFolderViews'
 import { useFileActions } from './composables/extensions/useFileActions'
+import { useSpaceActions } from './composables/extensions/useSpaceActions'
 import { useTrashActions } from './composables/extensions/useTrashActions'
 import { useUploadActions } from './composables/extensions/useUploadActions'
 import { urlJoin } from '@opencloud-eu/web-client'
@@ -39,6 +40,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const createSpaceAction = computed(() => unref(createSpaceActions)[0])
 
   const fileActionExtensions = useFileActions()
+  const spaceActionExtensions = useSpaceActions()
   const trashActionExtensions = useTrashActions()
   const uploadActionExtensions = useUploadActions()
   const folderViewExtensions = useFolderViews()
@@ -46,6 +48,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
 
   return computed<Extension[]>(() => [
     ...fileActionExtensions,
+    ...spaceActionExtensions,
     ...trashActionExtensions,
     ...uploadActionExtensions,
     ...folderViewExtensions,

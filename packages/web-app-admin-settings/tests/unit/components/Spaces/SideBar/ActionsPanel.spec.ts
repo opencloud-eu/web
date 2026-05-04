@@ -7,27 +7,15 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import ActionsPanel from '../../../../../src/components/Spaces/SideBar/ActionsPanel.vue'
-import {
-  useSpaceActionsDisable,
-  useSpaceActionsEditDescription,
-  useSpaceActionsEditQuota,
-  useSpaceActionsRename
-} from '@opencloud-eu/web-pkg'
-import { computed, h, ref } from 'vue'
-import { Action } from '@opencloud-eu/web-pkg'
+import { Action, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { h } from 'vue'
 
-function createMockActionComposables(module: Record<string, any>) {
-  const mockModule: Record<string, any> = {}
-  for (const m of Object.keys(module)) {
-    mockModule[m] = vi.fn(() => ({ actions: ref([]) }))
-  }
-  return mockModule
-}
+const contextActionsExtensionPointId = 'global.files.context-actions'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
-  const original = await importOriginal()
   return {
-    ...createMockActionComposables(original),
+    ...(await importOriginal<any>()),
+    useExtensionRegistry: vi.fn(),
     ActionMenuItem: () => h('action-menu-item')
   }
 })
@@ -35,34 +23,32 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
 describe('ActionsPanel', () => {
   describe('menu sections', () => {
     it('do not render when no action enabled', () => {
+      vi.mocked(useExtensionRegistry).mockReturnValue({
+        requestExtensions: vi.fn(() => [])
+      } as any)
+
       const { wrapper } = getWrapper()
       expect(wrapper.findAll('action-menu-item-stub').length).toBe(0)
     })
 
     it('render enabled actions', () => {
-      const enabledComposables = [
-        useSpaceActionsRename,
-        useSpaceActionsEditDescription,
-        useSpaceActionsEditQuota,
-        useSpaceActionsDisable
+      const enabledActions = [
+        mock<Action>({ isVisible: () => true, category: 'primary' }),
+        mock<Action>({ isVisible: () => true, category: 'primary' }),
+        mock<Action>({ isVisible: () => true, category: 'secondary' }),
+        mock<Action>({ isVisible: () => true, category: 'secondary' })
       ]
-
-      for (const composable of enabledComposables) {
-        vi.mocked(composable).mockImplementation(() => ({
-          actions: computed(() => [mock<Action>({ isVisible: () => true })]),
-          checkName: null,
-          renameSpace: null,
-          editDescriptionSpace: null,
-          selectedSpace: null,
-          modalOpen: null,
-          closeModal: null,
-          spaceQuotaUpdated: null,
-          disableSpaces: null
-        }))
-      }
+      vi.mocked(useExtensionRegistry).mockReturnValue({
+        requestExtensions: vi.fn((extensionPoint) => {
+          if (extensionPoint.id === contextActionsExtensionPointId) {
+            return enabledActions.map((action) => ({ action }))
+          }
+          return []
+        })
+      } as any)
 
       const { wrapper } = getWrapper()
-      expect(wrapper.findAll('action-menu-item-stub').length).toBe(enabledComposables.length)
+      expect(wrapper.findAll('action-menu-item-stub').length).toBe(enabledActions.length)
     })
   })
 })

@@ -12,17 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { ActionMenuItem } from '@opencloud-eu/web-pkg'
-import {
-  useSpaceActionsDelete,
-  useSpaceActionsDisable,
-  useSpaceActionsEditDescription,
-  useSpaceActionsEditQuota,
-  useSpaceActionsRename,
-  useSpaceActionsRestore
-} from '@opencloud-eu/web-pkg'
+import { ActionExtension, ActionMenuItem, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { computed, inject, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
+
+const contextActionsExtensionPoint = {
+  id: 'global.files.context-actions',
+  extensionType: 'action'
+} as const
 
 const resource = inject<SpaceResource>('resource')
 const resources = computed(() => {
@@ -31,22 +28,15 @@ const resources = computed(() => {
 const actionOptions = computed(() => ({
   resources: unref(resources)
 }))
-
-const { actions: deleteActions } = useSpaceActionsDelete()
-const { actions: disableActions } = useSpaceActionsDisable()
-const { actions: editDescriptionActions } = useSpaceActionsEditDescription()
-const { actions: editQuotaActions } = useSpaceActionsEditQuota()
-const { actions: renameActions } = useSpaceActionsRename()
-const { actions: restoreActions } = useSpaceActionsRestore()
+const { requestExtensions } = useExtensionRegistry()
+const contextActions = computed(() => {
+  const extensions = requestExtensions
+    ? requestExtensions<ActionExtension>(contextActionsExtensionPoint)
+    : []
+  return (extensions || []).map((e) => e.action)
+})
 
 const actions = computed(() => {
-  return [
-    ...unref(renameActions),
-    ...unref(editDescriptionActions),
-    ...unref(editQuotaActions),
-    ...unref(restoreActions),
-    ...unref(deleteActions),
-    ...unref(disableActions)
-  ].filter((item) => item.isVisible(unref(actionOptions)))
+  return [...unref(contextActions)].filter((item) => item.isVisible(unref(actionOptions)))
 })
 </script>

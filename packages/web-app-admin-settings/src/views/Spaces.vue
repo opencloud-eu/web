@@ -64,14 +64,11 @@ import {
   eventBus,
   queryItemAsString,
   useClientService,
+  useExtensionRegistry,
   useRouteQuery,
   useSideBar,
-  useSpaceActionsDelete,
-  useSpaceActionsDisable,
-  useSpaceActionsRestore,
-  useSpaceActionsEditQuota,
   AppLoadingSpinner,
-  useAbility
+  ActionExtension
 } from '@opencloud-eu/web-pkg'
 import { call, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -89,11 +86,16 @@ import { useSpaceSettingsStore } from '../composables'
 import { storeToRefs } from 'pinia'
 import { Quota } from '@opencloud-eu/web-client/graph/generated'
 
+const batchActionsExtensionPoint = {
+  id: 'global.files.batch-actions',
+  extensionType: 'action'
+} as const
+
 const clientService = useClientService()
 const { $gettext } = useGettext()
 const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
-const { can } = useAbility()
+const { requestExtensions } = useExtensionRegistry()
 
 let loadResourcesEventToken: string
 let updateQuotaForSpaceEventToken: string
@@ -139,18 +141,17 @@ const breadcrumbs = computed(() => [
   }
 ])
 
-const { actions: deleteActions } = useSpaceActionsDelete()
-const { actions: disableActions } = useSpaceActionsDisable()
-const { actions: editQuotaActions } = useSpaceActionsEditQuota()
-const { actions: restoreActions } = useSpaceActionsRestore()
+const extensionBatchActions = computed(() => {
+  const extensions = requestExtensions
+    ? requestExtensions<ActionExtension>(batchActionsExtensionPoint)
+    : []
+  return (extensions || []).map((e) => e.action)
+})
 
 const batchActions = computed((): SpaceAction[] => {
-  return [
-    ...unref(editQuotaActions),
-    ...unref(restoreActions),
-    ...unref(deleteActions),
-    ...unref(disableActions)
-  ].filter((item) => item.isVisible({ resources: unref(selectedSpaces) }))
+  return [...unref(extensionBatchActions)]
+    .filter((item) => item.category === 'secondary')
+    .filter((item) => item.isVisible({ resources: unref(selectedSpaces) }))
 })
 
 const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, SpaceResource>>(() => {

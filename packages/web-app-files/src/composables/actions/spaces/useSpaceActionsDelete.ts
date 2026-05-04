@@ -1,20 +1,21 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { SpaceResource } from '@opencloud-eu/web-client'
-import { useClientService } from '../../clientService'
-import { useRoute } from '../../router'
-import { eventBus } from '../../../services'
-import { useAbility } from '../../ability'
-import { SpaceAction, SpaceActionOptions } from '../types'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import {
+  SpaceAction,
+  SpaceActionOptions,
+  eventBus,
+  isPromiseFulfilled,
+  isPromiseRejected,
+  useAbility,
+  useClientService,
   useMessages,
   useModals,
   useResourcesStore,
+  useRoute,
   useSpacesStore,
   useUserStore
-} from '../../piniaStores'
-import { isPromiseFulfilled, isPromiseRejected } from '../../../helpers'
+} from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsDelete = () => {
   const { showMessage, showErrorMessage } = useMessages()
