@@ -10,10 +10,14 @@
 </template>
 
 <script setup lang="ts">
-import { ActionMenuItem, useFileActions } from '@opencloud-eu/web-pkg'
+import { ActionMenuItem, FileActionOptions, useFileActions } from '@opencloud-eu/web-pkg'
 import { computed, inject, Ref, unref } from 'vue'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useFileActionsFavorite } from '../../../composables'
+import { IncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  useFileActionsCreateSpaceFromResource,
+  useFileActionsFavorite,
+  useFileActionsToggleHideShare
+} from '../../../composables'
 
 const resource = inject<Ref<Resource>>('resource')
 const space = inject<Ref<SpaceResource>>('space')
@@ -21,18 +25,24 @@ const resources = computed(() => {
   return [unref(resource)]
 })
 const { getAllOpenWithActions } = useFileActions()
+const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
 const { actions: favoriteActions } = useFileActionsFavorite()
+const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
 const actions = computed(() => {
   const options = {
     space: unref(space),
     resources: unref(resources)
   }
+  const shareActionOptions = options as FileActionOptions<IncomingShareResource>
+
   return [
     ...getAllOpenWithActions(options),
     /** FIXME: getAllOpenWithActions only contains system actions, which is a hardcoded subset of file actions, that live in web-pkg.
      * favoriteActions live in web-pkg, but are not in getAllOpenWithActions, so we have to add them manually.
      * We need to add an extension point for sidebar actions, instead of hardcoding them there **/
-    ...unref(favoriteActions).filter((action) => action.isVisible(options))
+    ...unref(createSpaceFromResourceActions).filter((action) => action.isVisible(options)),
+    ...unref(favoriteActions).filter((action) => action.isVisible(options)),
+    ...unref(toggleHideShareActions).filter((action) => action.isVisible(shareActionOptions))
   ]
 })
 </script>

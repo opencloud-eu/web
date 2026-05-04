@@ -8,7 +8,6 @@ import {
   isLocationSharesActive,
   useClientService,
   useConfigStore,
-  useLoadingService,
   useMessages,
   useResourcesStore,
   useRouter
@@ -20,7 +19,6 @@ export const useFileActionsToggleHideShare = () => {
   const { $gettext } = useGettext()
 
   const clientService = useClientService()
-  const loadingService = useLoadingService()
   const configStore = useConfigStore()
   const { updateResourceField, resetSelection } = useResourcesStore()
 
@@ -78,7 +76,7 @@ export const useFileActionsToggleHideShare = () => {
     {
       name: 'toggle-hide-share',
       icon: 'eye-off', // FIXME: change icon based on hidden status
-      handler: (args) => loadingService.addTask(() => handler(args)),
+      handler,
       label: ({ resources }) => (resources[0].hidden ? $gettext('Unhide') : $gettext('Hide')),
       isVisible: ({ resources }) => {
         if (resources.length === 0) {

@@ -11,7 +11,6 @@ import {
   useExtensionRegistry,
   useFileActions,
   useFileActionsCopy,
-  useFileActionsCreateSpaceFromResource,
   useFileActionsDelete,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
@@ -20,9 +19,7 @@ import {
   useFileActionsMove,
   useFileActionsOpenWithDefault,
   useFileActionsRename,
-  useFileActionsRestore,
-  useFileActionsSetImage,
-  useFileActionsToggleHideShare
+  useFileActionsRestore
 } from '../../composables'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
@@ -42,7 +39,6 @@ export default defineComponent({
 
     const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
     const { actions: enableSyncActions } = useFileActionsEnableSync()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
     const { actions: copyActions } = useFileActionsCopy()
     const { actions: disableSyncActions } = useFileActionsDisableSync()
     const { actions: deleteActions } = useFileActionsDelete()
@@ -51,8 +47,6 @@ export default defineComponent({
     const { actions: moveActions } = useFileActionsMove()
     const { actions: renameActions } = useFileActionsRename()
     const { actions: restoreActions } = useFileActionsRestore()
-    const { actions: setSpaceImageActions } = useFileActionsSetImage()
-    const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
 
     const extensionRegistry = useExtensionRegistry()
     const extensionsContextActions = computed(() => {
@@ -84,7 +78,6 @@ export default defineComponent({
         ...unref(copyActions),
         ...unref(deleteActions),
         ...unref(restoreActions),
-        ...unref(createSpaceFromResourceActions),
         ...unref(extensionsBatchActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
@@ -120,12 +113,9 @@ export default defineComponent({
         ...unref(moveActions),
         ...unref(copyActions),
         ...unref(renameActions),
-        ...unref(createSpaceFromResourceActions),
         ...unref(restoreActions),
         ...unref(enableSyncActions),
         ...unref(disableSyncActions),
-        ...unref(hideShareActions),
-        ...unref(setSpaceImageActions),
         ...unref(extensionsContextActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })

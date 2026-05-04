@@ -1,15 +1,19 @@
-import { isLocationSpacesActive } from '../../../router'
-import { useClientService } from '../../clientService'
-import { useLoadingService } from '../../loadingService'
-import { useRouter } from '../../router'
-import { useGettext } from 'vue3-gettext'
-import { computed } from 'vue'
-import { FileAction, FileActionOptions } from '../types'
-import { useModals, useUserStore } from '../../piniaStores'
-import SpaceImageModal from '../../../components/Spaces/SpaceImageModal.vue'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { computed } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import {
+  FileAction,
+  FileActionOptions,
+  isLocationSpacesActive,
+  SpaceImageModal,
+  useClientService,
+  useLoadingService,
+  useModals,
+  useRouter,
+  useUserStore
+} from '@opencloud-eu/web-pkg'
 
-export const useFileActionsSetImage = () => {
+export const useSpaceActionsSetImage = () => {
   const userStore = useUserStore()
   const router = useRouter()
   const { $gettext } = useGettext()
@@ -30,7 +34,7 @@ export const useFileActionsSetImage = () => {
       confirmText: $gettext('Confirm'),
       customComponent: SpaceImageModal,
       focusTrapInitial: '#image-cropper-selection',
-      customComponentAttrs: () => ({ file, space: space })
+      customComponentAttrs: () => ({ file, space })
     })
   }
 

@@ -6,9 +6,11 @@ import {
 } from '../../extensionPoints'
 import {
   useFileActionsCopyPermanentLink,
+  useFileActionsCreateSpaceFromResource,
   useFileActionsFavorite,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
+  useSpaceActionsSetImage,
   useFileActionsShowDetails,
   useFileActionsShowShares,
   useFileActionsToggleHideShare
@@ -23,8 +25,10 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: openShortcutActions } = useFileActionsOpenShortcut()
   const { actions: showSharesActions } = useFileActionsShowShares()
   const { actions: permanentLinkActions } = useFileActionsCopyPermanentLink()
+  const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
   const { actions: pasteActions } = useFileActionsPaste()
   const { actions: favoriteActions } = useFileActionsFavorite()
+  const { actions: setSpaceImageActions } = useSpaceActionsSetImage()
   const { actions: showDetailsActions } = useFileActionsShowDetails()
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
 
@@ -66,6 +70,15 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
+      id: 'com.github.opencloud-eu.web.files.context-action.create-space-from-resource',
+      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(createSpaceFromResourceActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
       id: 'com.github.opencloud-eu.web.files.context-action.favorite',
       extensionPointIds: [
         previewToolBarActionsExtensionPointId,
@@ -76,6 +89,15 @@ export const useFileActions = (): ActionExtension[] => {
       action: {
         ...unref(favoriteActions)[0],
         category: 'quaternary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.set-space-image',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(setSpaceImageActions)[0],
+        category: 'tertiary'
       }
     },
     {

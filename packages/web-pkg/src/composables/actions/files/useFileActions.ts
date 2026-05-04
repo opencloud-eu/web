@@ -16,7 +16,6 @@ import {
 
 import {
   useFileActionsCopy,
-  useFileActionsCreateSpaceFromResource,
   useFileActionsDelete,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
@@ -25,8 +24,7 @@ import {
   useFileActionsMove,
   useFileActionsNavigate,
   useFileActionsRename,
-  useFileActionsRestore,
-  useFileActionsToggleHideShare
+  useFileActionsRestore
 } from './index'
 import {
   ActionExtension,
@@ -61,7 +59,6 @@ export const useFileActions = () => {
   const { options } = storeToRefs(configStore)
 
   const { actions: enableSyncActions } = useFileActionsEnableSync()
-  const { actions: hideShareActions } = useFileActionsToggleHideShare()
   const { actions: copyActions } = useFileActionsCopy()
   const { actions: deleteActions } = useFileActionsDelete()
   const { actions: disableSyncActions } = useFileActionsDisableSync()
@@ -72,7 +69,6 @@ export const useFileActions = () => {
   const { actions: navigateActions } = useFileActionsNavigate()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: restoreActions } = useFileActionsRestore()
-  const { actions: createSpaceFromResource } = useFileActionsCreateSpaceFromResource()
 
   const systemActions = computed<FileAction<any>[]>(() => [
     ...unref(downloadArchiveActions),
@@ -81,10 +77,8 @@ export const useFileActions = () => {
     ...unref(moveActions),
     ...unref(copyActions),
     ...unref(renameActions),
-    ...unref(createSpaceFromResource),
     ...unref(restoreActions),
     ...unref(enableSyncActions),
-    ...unref(hideShareActions),
     ...unref(disableSyncActions)
   ])
 

@@ -95,7 +95,6 @@ import {
   useAbility,
   useActiveLocation,
   useExtensionRegistry,
-  useFileActionsToggleHideShare,
   useIsTopBarSticky,
   useResourcesStore,
   useRouteMeta,
@@ -163,7 +162,6 @@ export default defineComponent({
     const space = computed(() => props.space)
 
     const { actions: enableSyncActions } = useFileActionsEnableSync()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
     const { actions: copyActions } = useFileActionsCopy()
     const { actions: disableSyncActions } = useFileActionsDisableSync()
     const { actions: deleteActions } = useFileActionsDelete()
@@ -181,7 +179,6 @@ export default defineComponent({
 
     const batchActions = computed(() => {
       let actions: FileAction[] = [
-        ...unref(hideShareActions),
         ...unref(enableSyncActions),
         ...unref(disableSyncActions),
         ...unref(downloadArchiveActions),

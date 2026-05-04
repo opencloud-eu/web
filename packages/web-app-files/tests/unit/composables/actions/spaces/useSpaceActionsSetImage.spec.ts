@@ -1,18 +1,14 @@
-import { useFileActionsSetImage, useModals } from '../../../../../src'
+import { useSpaceActionsSetImage } from '../../../../../src/composables/actions/spaces'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import {
   defaultComponentMocks,
-  RouteLocation,
-  getComposableWrapper
+  getComposableWrapper,
+  RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useSpaceHelpers } from '../../../../../src/composables/spaces/useSpaceHelpers'
-
-vi.mock('../../../../../src/composables/spaces/useSpaceHelpers', () => ({
-  useSpaceHelpers: vi.fn()
-}))
+import { useModals } from '@opencloud-eu/web-pkg'
 
 describe('setImage', () => {
   describe('isVisible property', () => {
@@ -25,6 +21,7 @@ describe('setImage', () => {
         }
       })
     })
+
     it('should be false when canEditImage is false', () => {
       const space = mock<SpaceResource>({ canEditImage: () => false })
       getWrapper({
@@ -38,6 +35,7 @@ describe('setImage', () => {
         }
       })
     })
+
     it.each(['personal', 'share'])('should be false when space is of type %s', (driveType) => {
       const space = mock<SpaceResource>({ canEditImage: () => true, driveType })
 
@@ -66,6 +64,7 @@ describe('setImage', () => {
               }
             ] as Resource[]
           })
+
           expect(dispatchModal).toHaveBeenCalled()
         }
       })
@@ -77,16 +76,12 @@ function getWrapper({
   setup
 }: {
   setup: (
-    instance: ReturnType<typeof useFileActionsSetImage>,
+    instance: ReturnType<typeof useSpaceActionsSetImage>,
     options: {
       clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
     }
   ) => void
 }) {
-  vi.mocked(useSpaceHelpers).mockReturnValue({
-    getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
-  })
-
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
@@ -97,7 +92,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useFileActionsSetImage()
+        const instance = useSpaceActionsSetImage()
         setup(instance, { clientService: mocks.$clientService })
       },
       {

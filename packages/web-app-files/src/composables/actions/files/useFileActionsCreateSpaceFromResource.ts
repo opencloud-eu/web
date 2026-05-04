@@ -1,21 +1,22 @@
+import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions, useIsResourceNameValid } from '../../actions'
-
-import { useAbility } from '../../ability'
-import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
-import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { isLocationSpacesActive } from '../../../router'
-import { useCreateSpace } from '../../spaces'
 import PQueue from 'p-queue'
 import {
+  FileAction,
+  FileActionOptions,
+  isLocationSpacesActive,
+  useAbility,
+  useClientService,
   useConfigStore,
+  useCreateSpace,
+  useIsResourceNameValid,
   useMessages,
   useModals,
   useResourcesStore,
+  useRouter,
   useSpacesStore
-} from '../../piniaStores'
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsCreateSpaceFromResource = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -51,7 +52,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
       spacesStore.upsertSpace(createdSpace)
 
       if (resources.length === 1 && resources[0].isFolder) {
-        //If a single folder is selected we copy it's content to the Space's root folder
+        // If a single folder is selected we copy its content to the space root folder.
         resources = (await webdav.listFiles(space, { path: resources[0].path })).children
       }
 
@@ -73,6 +74,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
       showErrorMessage({ title, errors: [error] })
     }
   }
+
   const handler = ({ resources, space }: FileActionOptions) => {
     dispatchModal({
       title: $ngettext(
@@ -108,37 +110,35 @@ export const useFileActionsCreateSpaceFromResource = () => {
     })
   }
 
-  const actions = computed((): FileAction[] => {
-    return [
-      {
-        name: 'create-space-from-resource',
-        icon: 'function',
-        handler,
-        label: () => {
-          return $gettext('Create Space from selection')
-        },
-        isVisible: ({ resources, space }) => {
-          if (!resources.length) {
-            return false
-          }
+  const actions = computed((): FileAction[] => [
+    {
+      name: 'create-space-from-resource',
+      icon: 'function',
+      handler,
+      label: () => {
+        return $gettext('Create Space from selection')
+      },
+      isVisible: ({ resources, space }) => {
+        if (!resources.length) {
+          return false
+        }
 
-          if (!unref(hasCreatePermission)) {
-            return false
-          }
+        if (!unref(hasCreatePermission)) {
+          return false
+        }
 
-          if (
-            !isLocationSpacesActive(router, 'files-spaces-generic') ||
-            !isPersonalSpaceResource(space)
-          ) {
-            return false
-          }
+        if (
+          !isLocationSpacesActive(router, 'files-spaces-generic') ||
+          !isPersonalSpaceResource(space)
+        ) {
+          return false
+        }
 
-          return true
-        },
-        class: 'oc-files-actions-create-space-from-resource-trigger'
-      }
-    ]
-  })
+        return true
+      },
+      class: 'oc-files-actions-create-space-from-resource-trigger'
+    }
+  ])
 
   return {
     actions
