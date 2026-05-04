@@ -57,7 +57,7 @@ describe('setIcon', () => {
         setup: ({ actions }) => {
           expect(
             unref(actions)[0].isVisible({
-              resources: [mock<SpaceResource>({ canEditImage: () => true })]
+              resources: [mock<SpaceResource>({ driveType: 'project', canEditImage: () => true })]
             })
           ).toBe(true)
         }

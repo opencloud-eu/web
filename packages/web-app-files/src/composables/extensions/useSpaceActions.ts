@@ -16,6 +16,10 @@ import {
   useSpaceActionsShowMembers
 } from '../actions'
 
+const adminSettingsSpacesContextActionsExtensionPointId =
+  'app.admin-settings.spaces.context-actions'
+const adminSettingsSpacesBatchActionsExtensionPointId = 'app.admin-settings.spaces.batch-actions'
+
 export const useSpaceActions = (): ActionExtension[] => {
   const { actions: deleteActions } = useSpaceActionsDelete()
   const { actions: disableActions } = useSpaceActionsDisable()
@@ -33,7 +37,10 @@ export const useSpaceActions = (): ActionExtension[] => {
   return [
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
-      extensionPointIds: [contextActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(renameActions)[0],
@@ -42,7 +49,10 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
-      extensionPointIds: [contextActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(editDescriptionActions)[0],
@@ -96,7 +106,11 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.duplicate',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(duplicateActions)[0],
@@ -105,7 +119,12 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.edit-quota',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesBatchActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(editQuotaActions)[0],
@@ -114,7 +133,12 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesBatchActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(restoreActions)[0],
@@ -123,7 +147,12 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.delete',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesBatchActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(deleteActions)[0],
@@ -132,7 +161,12 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.disable',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesBatchActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(disableActions)[0],

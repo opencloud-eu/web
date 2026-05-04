@@ -90,31 +90,31 @@ export default defineComponent({
         ...unref(extensionsBatchActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
-    const menuItemsBatchSideBar = computed(() =>
+    const menuItemsBatchQuaternary = computed(() =>
       [...unref(extensionsBatchActions).filter((a) => a.category === 'quaternary')].filter((item) =>
         item.isVisible(unref(actionOptions))
       )
     )
 
-    const menuItemsContext = computed(() => {
+    const menuItemsPrimary = computed(() => {
       return unref(openWithDefaultActions)
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
 
-    const menuItemsContextDrop = computed(() => {
+    const menuItemsPrimaryDrop = computed(() => {
       return getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true })
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
 
-    const menuItemsShare = computed(() => {
+    const menuItemsSecondary = computed(() => {
       return [...unref(extensionsContextActions).filter((a) => a.category === 'secondary')].filter(
         (item) => item.isVisible(unref(actionOptions))
       )
     })
 
-    const menuItemsActions = computed(() => {
+    const menuItemsTertiary = computed(() => {
       return [
         ...unref(downloadArchiveActions),
         ...unref(downloadFileActions),
@@ -132,7 +132,7 @@ export default defineComponent({
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
 
-    const menuItemsSidebar = computed(() => {
+    const menuItemsQuaternary = computed(() => {
       return [
         ...unref(favoriteActions),
         ...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')
@@ -151,42 +151,42 @@ export default defineComponent({
 
         sections.push({
           name: 'batch-details',
-          items: [...unref(menuItemsBatchSideBar)]
+          items: [...unref(menuItemsBatchQuaternary)]
         })
         return sections
       }
 
-      if ([...unref(menuItemsContext), ...unref(menuItemsContextDrop)].length) {
+      if ([...unref(menuItemsPrimary), ...unref(menuItemsPrimaryDrop)].length) {
         sections.push({
-          name: 'context',
-          items: [...unref(menuItemsContext)],
+          name: 'primary',
+          items: [...unref(menuItemsPrimary)],
           dropItems: [
             {
               label: $gettext('Open with...'),
               name: 'open-with',
               icon: 'apps',
-              items: [...unref(menuItemsContextDrop)]
+              items: [...unref(menuItemsPrimaryDrop)]
             }
           ]
         })
       }
 
-      if (unref(menuItemsShare).length) {
+      if (unref(menuItemsSecondary).length) {
         sections.push({
-          name: 'share',
-          items: unref(menuItemsShare)
+          name: 'secondary',
+          items: unref(menuItemsSecondary)
         })
       }
-      if (unref(menuItemsActions).length) {
+      if (unref(menuItemsTertiary).length) {
         sections.push({
-          name: 'actions',
-          items: unref(menuItemsActions)
+          name: 'tertiary',
+          items: unref(menuItemsTertiary)
         })
       }
-      if (unref(menuItemsSidebar).length) {
+      if (unref(menuItemsQuaternary).length) {
         sections.push({
-          name: 'sidebar',
-          items: unref(menuItemsSidebar)
+          name: 'quaternary',
+          items: unref(menuItemsQuaternary)
         })
       }
       return sections

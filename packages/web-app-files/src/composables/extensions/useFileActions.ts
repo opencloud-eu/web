@@ -14,6 +14,9 @@ import {
 } from '../actions'
 import { unref } from 'vue'
 
+const adminSettingsSpacesSidebarActionsExtensionPointId =
+  'app.admin-settings.spaces.sidebar-actions'
+
 export const useFileActions = (): ActionExtension[] => {
   const { actions: openShortcutActions } = useFileActionsOpenShortcut()
   const { actions: showSharesActions } = useFileActionsShowShares()
@@ -29,7 +32,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(openShortcutActions)[0],
-        category: 'tertiary'
+        category: 'primary'
       }
     },
     {
@@ -61,7 +64,10 @@ export const useFileActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.sidebar-action.details',
-      extensionPointIds: [contextActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        adminSettingsSpacesSidebarActionsExtensionPointId
+      ],
       type: 'action',
       action: {
         ...unref(showDetailsActions)[0],

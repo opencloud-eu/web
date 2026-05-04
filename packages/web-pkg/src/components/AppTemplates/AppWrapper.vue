@@ -585,7 +585,7 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
   closeApp()
 }
 
-const menuItemsContext = computed(() => {
+const menuItemsPrimary = computed(() => {
   return [
     ...unref(openWithAppActions),
     ...unref(fileActionsSave),
@@ -597,7 +597,7 @@ const menuItemsContext = computed(() => {
     })
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
-const menuItemsShare = computed(() => {
+const menuItemsSecondary = computed(() => {
   return (
     requestExtensions<ActionExtension>({
       id: 'global.files.context-actions',
@@ -608,7 +608,7 @@ const menuItemsShare = computed(() => {
     .filter((action) => action.category === 'secondary')
     .filter((item) => item.isVisible(unref(actionOptions)))
 })
-const menuItemsActions = computed(() => {
+const menuItemsTertiary = computed(() => {
   return [
     ...unref(downloadFileActions).map((originalAction) => ({
       ...originalAction,
@@ -618,7 +618,7 @@ const menuItemsActions = computed(() => {
     ...unref(deleteFileActions)
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
-const menuItemsSidebar = computed(() => {
+const menuItemsQuaternary = computed(() => {
   return (
     requestExtensions<ActionExtension>({
       id: 'global.files.context-actions',
@@ -632,28 +632,28 @@ const menuItemsSidebar = computed(() => {
 const dropDownMenuSections = computed(() => {
   const sections = []
 
-  if (unref(menuItemsContext).length) {
+  if (unref(menuItemsPrimary).length) {
     sections.push({
-      name: 'context',
-      items: unref(menuItemsContext)
+      name: 'primary',
+      items: unref(menuItemsPrimary)
     })
   }
-  if (unref(menuItemsShare).length) {
+  if (unref(menuItemsSecondary).length) {
     sections.push({
-      name: 'share',
-      items: unref(menuItemsShare)
+      name: 'secondary',
+      items: unref(menuItemsSecondary)
     })
   }
-  if (unref(menuItemsActions).length) {
+  if (unref(menuItemsTertiary).length) {
     sections.push({
-      name: 'actions',
-      items: unref(menuItemsActions)
+      name: 'tertiary',
+      items: unref(menuItemsTertiary)
     })
   }
-  if (unref(menuItemsSidebar).length) {
+  if (unref(menuItemsQuaternary).length) {
     sections.push({
-      name: 'sidebar',
-      items: unref(menuItemsSidebar)
+      name: 'quaternary',
+      items: unref(menuItemsQuaternary)
     })
   }
   return sections

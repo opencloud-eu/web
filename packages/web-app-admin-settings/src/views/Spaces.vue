@@ -85,11 +85,7 @@ import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
 import { storeToRefs } from 'pinia'
 import { Quota } from '@opencloud-eu/web-client/graph/generated'
-
-const batchActionsExtensionPoint = {
-  id: 'global.files.batch-actions',
-  extensionType: 'action'
-} as const
+import { spacesBatchActionsExtensionPoint } from '../extensionPoints'
 
 const clientService = useClientService()
 const { $gettext } = useGettext()
@@ -143,7 +139,7 @@ const breadcrumbs = computed(() => [
 
 const extensionBatchActions = computed(() => {
   const extensions = requestExtensions
-    ? requestExtensions<ActionExtension>(batchActionsExtensionPoint)
+    ? requestExtensions<ActionExtension>(spacesBatchActionsExtensionPoint)
     : []
   return (extensions || []).map((e) => e.action)
 })

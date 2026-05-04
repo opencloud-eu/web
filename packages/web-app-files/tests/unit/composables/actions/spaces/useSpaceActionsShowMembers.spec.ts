@@ -15,9 +15,11 @@ describe('showMembers', () => {
     it('should be true when a resource is given', () => {
       getWrapper({
         setup: ({ actions }) => {
-          expect(unref(actions)[0].isVisible({ resources: [{ id: '1' } as SpaceResource] })).toBe(
-            true
-          )
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [{ id: '1', driveType: 'project' } as SpaceResource]
+            })
+          ).toBe(true)
         }
       })
     })
@@ -26,7 +28,7 @@ describe('showMembers', () => {
         setup: ({ actions }) => {
           expect(
             unref(actions)[0].isVisible({
-              resources: [{ id: '1', disabled: true } as SpaceResource]
+              resources: [{ id: '1', disabled: true, driveType: 'project' } as SpaceResource]
             })
           ).toBe(false)
         }

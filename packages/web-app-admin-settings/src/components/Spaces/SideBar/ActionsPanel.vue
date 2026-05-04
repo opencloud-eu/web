@@ -15,20 +15,7 @@
 import { ActionExtension, ActionMenuItem, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { computed, inject, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-
-const contextActionsExtensionPoint = {
-  id: 'global.files.context-actions',
-  extensionType: 'action'
-} as const
-const allowedSpaceActionExtensionIds = [
-  'com.github.opencloud-eu.web.files.spaces.context-action.rename',
-  'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
-  'com.github.opencloud-eu.web.files.spaces.batch-action.duplicate',
-  'com.github.opencloud-eu.web.files.spaces.batch-action.edit-quota',
-  'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
-  'com.github.opencloud-eu.web.files.spaces.batch-action.delete',
-  'com.github.opencloud-eu.web.files.spaces.batch-action.disable'
-]
+import { spacesContextActionsExtensionPoint } from '../../../extensionPoints'
 
 const resource = inject<SpaceResource>('resource')
 const resources = computed(() => {
@@ -40,18 +27,12 @@ const actionOptions = computed(() => ({
 const { requestExtensions } = useExtensionRegistry()
 const contextActions = computed(() => {
   const extensions = requestExtensions
-    ? requestExtensions<ActionExtension>(contextActionsExtensionPoint)
+    ? requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint)
     : []
-  return (extensions || [])
-    .filter((extension) => allowedSpaceActionExtensionIds.includes(extension.id))
-    .map((e) => e.action)
+  return (extensions || []).map((e) => e.action)
 })
 
 const actions = computed(() => {
-  return [
-    ...unref(contextActions).filter(
-      (action) => action.category === 'secondary' || action.category === 'tertiary'
-    )
-  ].filter((item) => item.isVisible(unref(actionOptions)))
+  return [...unref(contextActions)].filter((item) => item.isVisible(unref(actionOptions)))
 })
 </script>

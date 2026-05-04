@@ -99,7 +99,7 @@ export const useFileActions = () => {
       }) || []
     )
       .map((e) => e.action)
-      .filter((action) => action.category === 'context')
+      .filter((action) => action.category === 'primary')
   })
 
   const editorActions = computed(() => {

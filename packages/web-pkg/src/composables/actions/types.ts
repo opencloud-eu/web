@@ -6,7 +6,7 @@ import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 
 export type ActionOptions = Record<string, unknown | unknown[]>
 
-type ActionCategory = 'context' | 'primary' | 'secondary' | 'tertiary' | 'quaternary'
+type ActionCategory = 'primary' | 'secondary' | 'tertiary' | 'quaternary'
 
 /**
  * Generic action interface.
@@ -22,7 +22,6 @@ export interface Action<T = ActionOptions> {
    * Determines where an action will be displayed in the resource context menu.
    *
    * Categories:
-   * - context: action will appear in context/open-with sections where supported.
    * - primary: action will appear in primary action sections.
    * - secondary: action will appear in secondary action sections.
    * - tertiary: action will appear in tertiary action sections.

@@ -17,7 +17,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 describe('uploadImage', () => {
   describe('isVisible property', () => {
     it('should be true if canEditImage is true', () => {
-      const spaceMock = mock<SpaceResource>({ canEditImage: () => true })
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canEditImage: () => true })
 
       getWrapper({
         setup: ({ actions }) => {

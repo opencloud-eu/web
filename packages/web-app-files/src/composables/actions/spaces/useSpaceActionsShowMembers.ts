@@ -6,6 +6,7 @@ import {
   useResourcesStore,
   useSideBar
 } from '@opencloud-eu/web-pkg'
+import { isProjectSpaceResource } from '@opencloud-eu/web-client'
 
 export const useSpaceActionsShowMembers = () => {
   const { $gettext } = useGettext()
@@ -23,7 +24,8 @@ export const useSpaceActionsShowMembers = () => {
       icon: 'group',
       label: () => $gettext('Members'),
       handler,
-      isVisible: ({ resources }) => resources.length === 1 && !resources[0].disabled,
+      isVisible: ({ resources }) =>
+        resources.length === 1 && isProjectSpaceResource(resources[0]) && !resources[0].disabled,
       class: 'oc-files-actions-show-details-trigger'
     }
   ])

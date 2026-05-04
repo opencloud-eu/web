@@ -33,7 +33,7 @@ export const useActionExtensionCreateFromTemplate = (
 
   const action: FileAction = {
     name: 'create-from-template',
-    category: 'context',
+    category: 'primary',
     label: () => $gettext('Create from template via %{ name }', { name: appInfo.name }),
     icon: 'swap-box',
     hasPriority: true,

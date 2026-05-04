@@ -8,7 +8,7 @@
   >
     <oc-list>
       <action-menu-item
-        v-for="(action, actionIndex) in menuItemsActions"
+        v-for="(action, actionIndex) in menuItemsTertiary"
         :key="`section-${action.name}-action-${actionIndex}`"
         :action="action"
         :action-options="actionOptions"
@@ -54,7 +54,7 @@ const { actions: createNewFolderAction } = useFileActionsCreateNewFolder({
 const { actions: showDetailsAction } = useFileActionsShowDetails()
 const { actions: pasteAction } = useFileActionsPaste()
 
-const menuItemsActions = computed(() => {
+const menuItemsTertiary = computed(() => {
   return [
     ...unref(createNewFolderAction),
     ...unref(pasteAction),

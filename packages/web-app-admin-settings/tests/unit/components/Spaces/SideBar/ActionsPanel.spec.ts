@@ -10,7 +10,7 @@ import ActionsPanel from '../../../../../src/components/Spaces/SideBar/ActionsPa
 import { Action, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { h } from 'vue'
 
-const contextActionsExtensionPointId = 'global.files.context-actions'
+const contextActionsExtensionPointId = 'app.admin-settings.spaces.context-actions'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   return {
@@ -33,10 +33,12 @@ describe('ActionsPanel', () => {
 
     it('render enabled actions', () => {
       const enabledActions = [
+        mock<Action>({ isVisible: () => true, category: 'primary' }),
         mock<Action>({ isVisible: () => true, category: 'secondary' }),
         mock<Action>({ isVisible: () => true, category: 'secondary' }),
         mock<Action>({ isVisible: () => true, category: 'tertiary' }),
-        mock<Action>({ isVisible: () => true, category: 'tertiary' })
+        mock<Action>({ isVisible: () => true, category: 'tertiary' }),
+        mock<Action>({ isVisible: () => true, category: 'quaternary' })
       ]
       vi.mocked(useExtensionRegistry).mockReturnValue({
         requestExtensions: vi.fn((extensionPoint) => {
@@ -57,6 +59,14 @@ describe('ActionsPanel', () => {
               {
                 id: 'com.github.opencloud-eu.web.files.spaces.batch-action.disable',
                 action: enabledActions[3]
+              },
+              {
+                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
+                action: enabledActions[4]
+              },
+              {
+                id: 'com.github.opencloud-eu.web.files.spaces.sidebar-action.details',
+                action: enabledActions[5]
               }
             ]
           }

@@ -29,7 +29,10 @@ export const useSpaceActionsRestore = () => {
 
   const filterResourcesToRestore = (resources: SpaceResource[]): SpaceResource[] => {
     return resources.filter(
-      (r) => isProjectSpaceResource(r) && r.canRestore({ user: userStore.user, ability })
+      (r) =>
+        isProjectSpaceResource(r) &&
+        typeof r.canRestore === 'function' &&
+        r.canRestore({ user: userStore.user, ability })
     )
   }
 
@@ -47,10 +50,17 @@ export const useSpaceActionsRestore = () => {
           return true
         })
     )
-    const results = await loadingService.addTask(() => {
-      return Promise.allSettled(promises)
-    })
-    await spacesStore.loadGraphPermissions({ ids: spaces.map((s) => s.id), graphClient: client })
+    const results = await Promise.allSettled(promises)
+
+    try {
+      await spacesStore.loadGraphPermissions({ ids: spaces.map((s) => s.id), graphClient: client })
+    } catch (error) {
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Failed to update permissions for enabled spaces'),
+        errors: [error]
+      })
+    }
 
     const succeeded = results.filter(isPromiseFulfilled)
     if (succeeded.length) {
