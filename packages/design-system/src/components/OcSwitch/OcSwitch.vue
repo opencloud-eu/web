@@ -1,9 +1,9 @@
 <template>
-  <span :key="`oc-switch-${checked.toString()}`" class="oc-switch">
+  <span :key="`oc-switch-${checked.toString()}`" class="oc-switch items-center gap-2">
     <span :id="labelId" v-text="label" />
     <button
       data-testid="oc-switch-btn"
-      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 gap-2 cursor-pointer"
+      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 cursor-pointer"
       role="switch"
       :aria-checked="checked"
       :aria-labelledby="labelId"

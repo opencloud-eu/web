@@ -30,7 +30,7 @@
               :no-hover="viewModeQuery === viewMode.name"
               :class="[viewMode.name]"
               justify-content="left"
-              class="p-2"
+              class="p-1.5"
               @click="setViewMode(viewMode)"
             >
               <div class="flex justify-between w-full">
@@ -70,7 +70,7 @@
       drop-id="files-view-options-drop"
       toggle="#files-view-options-btn"
       mode="click"
-      class="w-auto [&.oc-drop]:overflow-visible"
+      class="w-auto [&.oc-drop]:overflow-visible [&_li]:first:mt-0!"
       padding-size="medium"
       :is-menu="false"
     >

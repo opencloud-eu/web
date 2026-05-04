@@ -100,13 +100,13 @@
         </template>
         <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
         <template v-if="hasTags">
-          <dt>
+          <dt class="inline-flex items-center">
             {{ $gettext('Tags') }}
             <oc-contextual-helper
               v-if="contextualHelper?.isEnabled"
               v-bind="contextualHelper?.data"
               class="pl-1"
-            ></oc-contextual-helper>
+            />
           </dt>
           <dd data-testid="tags">
             <tags-select :resource="resource" class="w-full" />

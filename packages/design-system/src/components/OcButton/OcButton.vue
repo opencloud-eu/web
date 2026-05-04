@@ -297,6 +297,7 @@ const onClick = (event: MouseEvent) => {
     }
 
     &-outline:hover:not(.no-hover, [disabled]) {
+      color: var(--oc-role-on-surface);
       background-color: var(--oc-role-surface-container);
       filter: none !important;
     }

@@ -1,7 +1,7 @@
 <template>
   <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
-    <div class="flex items-center mb-4">
-      <h1 class="m-0 text-lg" v-text="$gettext('App Tokens')" />
+    <div class="flex items-center mb-2">
+      <h1 class="my-2 text-lg" v-text="$gettext('App Tokens')" />
       <oc-button
         v-if="!authAppServiceDisabled"
         size="small"
@@ -35,7 +35,11 @@
       </template>
     </no-content-message>
     <div v-else>
-      <oc-table class="app-token-table" :data="visibleAppTokens" :fields="tableFields">
+      <oc-table
+        class="app-token-table [&_td]:px-0 [&_th]:px-0"
+        :data="visibleAppTokens"
+        :fields="tableFields"
+      >
         <template #label="{ item }">
           <div class="w-full truncate">
             <span v-text="item.label || '-'" />
