@@ -21,7 +21,8 @@ const downloadButtonBatchAction = '.oc-files-actions-download-archive-trigger'
 const appBarContextMenu = '#oc-openfile-contextmenu-trigger'
 const appBarDownloadFileButton = '#oc-openfile-contextmenu .oc-files-actions-download-file-trigger'
 const deleteButtonBatchAction = '.oc-files-actions-delete-trigger'
-const createSpaceFromResourceAction = '.oc-files-actions-create-space-from-resource-trigger'
+const createSpaceFromResourceAction =
+  '[role="menuitem"].oc-files-actions-create-space-from-resource-trigger'
 const checkBox = `//*[@data-test-selection-resource-name="%s"]//input[@type="checkbox"]`
 const checkBoxForTrashbin = `//*[@data-test-selection-resource-path="%s"]//input[@type="checkbox"]`
 const filesSelector = '//*[@data-test-resource-name="%s"]'

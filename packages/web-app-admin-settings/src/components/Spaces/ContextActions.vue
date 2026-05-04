@@ -22,13 +22,11 @@ export default defineComponent({
   setup(props) {
     const filterParams = computed(() => ({ resources: props.items }))
     const { requestExtensions } = useExtensionRegistry()
-    const getActionExtensions = (extensionPoint: typeof spacesContextActionsExtensionPoint) => {
-      const extensions = requestExtensions ? requestExtensions<ActionExtension>(extensionPoint) : []
-      return extensions || []
-    }
 
     const contextActions = computed(() =>
-      getActionExtensions(spacesContextActionsExtensionPoint).map((e) => e.action)
+      (requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint) || []).map(
+        (e) => e.action
+      )
     )
 
     const menuItemsPrimaryActions = computed(() =>

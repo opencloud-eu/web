@@ -597,14 +597,18 @@ const menuItemsPrimary = computed(() => {
     })
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
-const menuItemsSecondary = computed(() => {
+
+const extensionContextActions = computed(() => {
   return (
     requestExtensions<ActionExtension>({
       id: 'global.files.context-actions',
       extensionType: 'action'
     }) || []
-  )
-    .map((e) => e.action)
+  ).map((e) => e.action)
+})
+
+const menuItemsSecondary = computed(() => {
+  return unref(extensionContextActions)
     .filter((action) => action.category === 'secondary')
     .filter((item) => item.isVisible(unref(actionOptions)))
 })
@@ -619,13 +623,7 @@ const menuItemsTertiary = computed(() => {
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
 const menuItemsQuaternary = computed(() => {
-  return (
-    requestExtensions<ActionExtension>({
-      id: 'global.files.context-actions',
-      extensionType: 'action'
-    }) || []
-  )
-    .map((e) => e.action)
+  return unref(extensionContextActions)
     .filter((action) => action.category === 'quaternary')
     .filter((item) => item.isVisible(unref(actionOptions)))
 })

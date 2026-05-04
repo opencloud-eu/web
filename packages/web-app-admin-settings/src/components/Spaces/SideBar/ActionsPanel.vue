@@ -27,11 +27,9 @@ const actionOptions = computed(() => ({
   resources: unref(resources)
 }))
 const { requestExtensions } = useExtensionRegistry()
+
 const contextActions = computed(() => {
-  const extensions = requestExtensions
-    ? requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint)
-    : []
-  return (extensions || [])
+  return (requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint) || [])
     .filter((extension) => !hiddenContextActionIds.includes(extension.id))
     .map((extension) => extension.action)
 })

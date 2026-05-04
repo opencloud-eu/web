@@ -138,10 +138,9 @@ const breadcrumbs = computed(() => [
 ])
 
 const extensionBatchActions = computed(() => {
-  const extensions = requestExtensions
-    ? requestExtensions<ActionExtension>(spacesBatchActionsExtensionPoint)
-    : []
-  return (extensions || []).map((e) => e.action)
+  return (requestExtensions<ActionExtension>(spacesBatchActionsExtensionPoint) || []).map(
+    (e) => e.action
+  )
 })
 
 const batchActions = computed((): SpaceAction[] => {

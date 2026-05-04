@@ -38,8 +38,7 @@ const actions = computed(() => {
   return [
     ...getAllOpenWithActions(options),
     /** FIXME: getAllOpenWithActions only contains system actions, which is a hardcoded subset of file actions, that live in web-pkg.
-     * favoriteActions live in web-pkg, but are not in getAllOpenWithActions, so we have to add them manually.
-     * We need to add an extension point for sidebar actions, instead of hardcoding them there **/
+     * We need to add an extension point for sidebar actions, instead of hardcoding them **/
     ...unref(createSpaceFromResourceActions).filter((action) => action.isVisible(options)),
     ...unref(favoriteActions).filter((action) => action.isVisible(options)),
     ...unref(toggleHideShareActions).filter((action) => action.isVisible(shareActionOptions))

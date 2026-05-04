@@ -190,11 +190,11 @@ const actionOptions = computed(() => ({
   space: unref(space),
   resources: [files[activeIndex].resource]
 }))
+
 const previewToolbarActions = computed(() => {
-  const extensions = requestExtensions
-    ? requestExtensions<ActionExtension>(previewToolbarActionsExtensionPoint)
-    : []
-  return (extensions || []).map((e) => e.action)
+  return (requestExtensions<ActionExtension>(previewToolbarActionsExtensionPoint) || []).map(
+    (e) => e.action
+  )
 })
 const favoriteAction = computed(() => {
   return unref(previewToolbarActions).find((action) => action.name === 'favorite')
