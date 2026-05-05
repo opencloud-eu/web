@@ -15,14 +15,14 @@ function createStrategy() {
 
 describe('useStrategyMarkdown', () => {
   describe('extensions', () => {
-    it('includes markdown-relevant extensions but not underline or image', () => {
+    it('includes markdown-relevant extensions but not underline', () => {
       const strategy = createStrategy()
       const names = strategy.extensions().map((e) => e.name)
       expect(names).toContain('link')
       expect(names).toContain('table')
       expect(names).toContain('taskList')
+      expect(names).toContain('image')
       expect(names).not.toContain('underline')
-      expect(names).not.toContain('image')
     })
   })
 
