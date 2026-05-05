@@ -1,5 +1,5 @@
-import { isSameResource, renameResource as _renameResource } from '../../../helpers/resource'
-import { isLocationSharesActive, isLocationTrashActive } from '../../../router'
+import { computed } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import {
   extractNameWithoutExtension,
   isProjectSpaceResource,
@@ -9,21 +9,24 @@ import {
 } from '@opencloud-eu/web-client'
 import { dirname, join } from 'path'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { createFileRouteOptions } from '../../../helpers/router'
-import { computed } from 'vue'
-import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
-import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../types'
 import {
+  FileAction,
+  FileActionOptions,
+  createFileRouteOptions,
+  isLocationSharesActive,
+  isLocationTrashActive,
+  isSameResource,
+  renameResource as renameResourceHelper,
+  useAbility,
   useCapabilityStore,
+  useClientService,
+  useIsResourceNameValid,
   useMessages,
   useModals,
   useResourcesStore,
+  useRouter,
   useUserStore
-} from '../../piniaStores'
-import { useAbility } from '../../ability'
-import { useIsResourceNameValid } from '../helpers'
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsRename = () => {
   const { showErrorMessage } = useMessages()
@@ -73,7 +76,7 @@ export const useFileActionsRename = () => {
 
       if (isCurrentFolder) {
         currentFolder = { ...currentFolder } as Resource
-        _renameResource(space, currentFolder, newPath)
+        renameResourceHelper(space, currentFolder, newPath)
         setCurrentFolder(currentFolder)
         return router.push(
           createFileRouteOptions(space, {
@@ -83,7 +86,7 @@ export const useFileActionsRename = () => {
         )
       }
       const fileResource = { ...resource } as Resource
-      _renameResource(space, fileResource, newPath)
+      renameResourceHelper(space, fileResource, newPath)
       upsertResource(fileResource)
     } catch (error) {
       console.error(error)

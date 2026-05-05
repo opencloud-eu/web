@@ -1,6 +1,10 @@
 import { unref } from 'vue'
 import { ActionExtension } from '@opencloud-eu/web-pkg'
-import { batchActionsExtensionPoint, contextActionsExtensionPoint } from '../../extensionPoints'
+import {
+  batchActionsExtensionPoint,
+  contextActionsExtensionPoint,
+  resourceTableActionsExtensionPoint
+} from '../../extensionPoints'
 import {
   useSpaceActionsDelete,
   useSpaceActionsDeleteImage,
@@ -52,6 +56,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
+        resourceTableActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
         adminSettingsSpacesSideBarActionsExtensionPointId
       ],

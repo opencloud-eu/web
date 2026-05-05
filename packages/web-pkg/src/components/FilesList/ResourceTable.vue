@@ -75,7 +75,11 @@
     <template #name="{ item }">
       <div
         class="resource-table-resource-wrapper flex items-center"
-        :class="[{ 'resource-table-resource-wrapper-limit-max-width': hasRenameAction(item) }]"
+        :class="[
+          {
+            'resource-table-resource-wrapper-limit-max-width': getResourceTableActions(item).length
+          }
+        ]"
       >
         <slot name="image" :resource="item" />
         <resource-list-item
@@ -96,21 +100,30 @@
           @click.stop="fileNameClicked({ resource: item, event: $event })"
         />
         <oc-button
-          v-if="hasRenameAction(item)"
+          v-for="action in getResourceTableActions(item)"
+          :key="`resource-table-action-${item.id}-${action.name}`"
+          v-oc-tooltip="getResourceTableLabel(action, item)"
           class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
           appearance="raw"
-          :aria-label="$gettext('Rename file »%{name}«', { name: item.name })"
-          :title="$gettext('Rename')"
+          :aria-label="getResourceTableLabel(action, item)"
           @click.stop="
             (e: MouseEvent) => {
               if (interceptModifierClick(e, item)) {
                 return
               }
-              openRenameDialog(item)
+              action.handler({
+                space: getMatchingSpace(item),
+                resources: [item]
+              })
             }
           "
         >
-          <oc-icon name="edit-2" fill-type="line" size="small" color="var(--oc-role-on-surface)" />
+          <oc-icon
+            :name="getResourceTableActionIcon(action, item)"
+            fill-type="line"
+            size="small"
+            color="var(--oc-role-on-surface)"
+          />
         </oc-button>
       </div>
       <slot name="additionalResourceContent" :resource="item" />
@@ -273,7 +286,6 @@ import { useWindowSize } from '@vueuse/core'
 import {
   extractDomSelector,
   IncomingShareResource,
-  isProjectSpaceResource,
   isShareResource,
   Resource,
   ShareTypes,
@@ -282,6 +294,7 @@ import {
 } from '@opencloud-eu/web-client'
 
 import {
+  Action,
   ActionExtension,
   FolderViewModeConstants,
   useAuthStore,
@@ -303,7 +316,7 @@ import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helper
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
-import { FileActionOptions, useFileActionsRename } from '../../composables/actions'
+import { FileActionOptions } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
 import { storeToRefs } from 'pinia'
@@ -438,17 +451,14 @@ const hasTags = computed(
   () => capabilityStore.filesTags && width.value >= TAGS_MINIMUM_SCREEN_WIDTH
 )
 
-const { actions: renameActions } = useFileActionsRename()
-const renameActionsSpace = computed(() =>
-  requestExtensions<ActionExtension>({
-    id: 'global.files.context-actions',
-    extensionType: 'action'
-  })
-    .map((e) => e.action)
-    .filter((action) => action.name === 'rename')
+const resourceTableActions = computed(() =>
+  (
+    requestExtensions<ActionExtension>({
+      id: 'global.files.resource-table-actions',
+      extensionType: 'action'
+    }) || []
+  ).map((e) => e.action as Action<FileActionOptions>)
 )
-const renameHandler = computed(() => unref(renameActions)[0].handler)
-const renameHandlerSpace = computed(() => unref(renameActionsSpace)[0]?.handler)
 
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
@@ -668,29 +678,33 @@ const getTagComponentAttrs = (tag: string) => {
 const isLatestSelectedItem = (item: Resource) => {
   return item.id === unref(latestSelectedId)
 }
-const hasRenameAction = (item: Resource) => {
+const getResourceTableActions = (item: Resource): Action<FileActionOptions>[] => {
   if (!showRenameQuickAction) {
-    return false
+    return []
   }
 
-  if (isProjectSpaceResource(item)) {
-    return unref(renameActionsSpace).filter((menuItem) => menuItem.isVisible({ resources: [item] }))
-      .length
-  }
-
-  return unref(renameActions).filter((menuItem) => menuItem.isVisible({ space, resources: [item] }))
-    .length
+  return unref(resourceTableActions).filter((action) =>
+    action.isVisible({
+      space: getMatchingSpace(item),
+      resources: [item]
+    })
+  )
 }
-const openRenameDialog = (item: Resource) => {
-  if (isProjectSpaceResource(item)) {
-    if (unref(renameHandlerSpace)) {
-      return unref(renameHandlerSpace)({
+
+const getResourceTableActionIcon = (action: Action<FileActionOptions>, item: Resource) => {
+  return typeof action.icon === 'function'
+    ? action.icon({
+        space: getMatchingSpace(item),
         resources: [item]
       })
-    }
-    return
+    : action.icon || 'edit-2'
+}
+
+const getResourceTableLabel = (action: Action<FileActionOptions>, item: Resource) => {
+  if (!action?.label) {
+    return ''
   }
-  unref(renameHandler)({
+  return action.label({
     space: getMatchingSpace(item),
     resources: [item]
   })

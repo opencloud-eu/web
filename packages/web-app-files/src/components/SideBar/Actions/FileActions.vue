@@ -16,6 +16,7 @@ import { IncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/we
 import {
   useFileActionsCreateSpaceFromResource,
   useFileActionsFavorite,
+  useFileActionsRename,
   useFileActionsToggleHideShare
 } from '../../../composables'
 
@@ -27,6 +28,7 @@ const resources = computed(() => {
 const { getAllOpenWithActions } = useFileActions()
 const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
 const { actions: favoriteActions } = useFileActionsFavorite()
+const { actions: renameActions } = useFileActionsRename()
 const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
 const actions = computed(() => {
   const options = {
@@ -39,6 +41,7 @@ const actions = computed(() => {
     ...getAllOpenWithActions(options),
     /** FIXME: getAllOpenWithActions only contains system actions, which is a hardcoded subset of file actions, that live in web-pkg.
      * We need to add an extension point for sidebar actions, instead of hardcoding them **/
+    ...unref(renameActions).filter((action) => action.isVisible(options)),
     ...unref(createSpaceFromResourceActions).filter((action) => action.isVisible(options)),
     ...unref(favoriteActions).filter((action) => action.isVisible(options)),
     ...unref(toggleHideShareActions).filter((action) => action.isVisible(shareActionOptions))

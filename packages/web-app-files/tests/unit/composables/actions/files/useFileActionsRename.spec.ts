@@ -1,9 +1,5 @@
-import { useFileActionsRename } from '../../../../../src/composables/actions'
-import {
-  useMessages,
-  useModals,
-  useResourcesStore
-} from '../../../../../src/composables/piniaStores'
+import { useFileActionsRename } from '../../../../../src/composables/actions/files'
+import { useMessages, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'

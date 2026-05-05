@@ -23,7 +23,6 @@ import {
   useFileActionsEnableSync,
   useFileActionsMove,
   useFileActionsNavigate,
-  useFileActionsRename,
   useFileActionsRestore
 } from './index'
 import {
@@ -67,7 +66,6 @@ export const useFileActions = () => {
   const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
   const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
-  const { actions: renameActions } = useFileActionsRename()
   const { actions: restoreActions } = useFileActionsRestore()
 
   const systemActions = computed<FileAction<any>[]>(() => [
@@ -76,7 +74,6 @@ export const useFileActions = () => {
     ...unref(deleteActions),
     ...unref(moveActions),
     ...unref(copyActions),
-    ...unref(renameActions),
     ...unref(restoreActions),
     ...unref(enableSyncActions),
     ...unref(disableSyncActions)

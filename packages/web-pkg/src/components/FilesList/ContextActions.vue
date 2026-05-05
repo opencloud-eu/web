@@ -18,7 +18,6 @@ import {
   useFileActionsEnableSync,
   useFileActionsMove,
   useFileActionsOpenWithDefault,
-  useFileActionsRename,
   useFileActionsRestore
 } from '../../composables'
 import { useGettext } from 'vue3-gettext'
@@ -45,7 +44,6 @@ export default defineComponent({
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: moveActions } = useFileActionsMove()
-    const { actions: renameActions } = useFileActionsRename()
     const { actions: restoreActions } = useFileActionsRestore()
 
     const extensionRegistry = useExtensionRegistry()
@@ -112,7 +110,6 @@ export default defineComponent({
         ...unref(deleteActions),
         ...unref(moveActions),
         ...unref(copyActions),
-        ...unref(renameActions),
         ...unref(restoreActions),
         ...unref(enableSyncActions),
         ...unref(disableSyncActions),

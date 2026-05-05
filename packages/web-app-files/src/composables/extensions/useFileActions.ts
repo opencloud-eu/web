@@ -2,7 +2,8 @@ import { ActionExtension } from '@opencloud-eu/web-pkg'
 import {
   batchActionsExtensionPoint,
   contextActionsExtensionPoint,
-  quickActionsExtensionPoint
+  quickActionsExtensionPoint,
+  resourceTableActionsExtensionPoint
 } from '../../extensionPoints'
 import {
   useFileActionsCopyPermanentLink,
@@ -11,6 +12,7 @@ import {
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
+  useFileActionsRename,
   useFileActionsShowDetails,
   useFileActionsShowShares,
   useFileActionsToggleHideShare
@@ -27,6 +29,7 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: permanentLinkActions } = useFileActionsCopyPermanentLink()
   const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
   const { actions: pasteActions } = useFileActionsPaste()
+  const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: setSpaceImageActions } = useSpaceActionsSetImage()
   const { actions: showDetailsActions } = useFileActionsShowDetails()
@@ -70,8 +73,17 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
+      id: 'com.github.opencloud-eu.web.files.context-action.rename',
+      extensionPointIds: [contextActionsExtensionPoint.id, resourceTableActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(renameActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
       id: 'com.github.opencloud-eu.web.files.context-action.create-space-from-resource',
-      extensionPointIds: [contextActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(createSpaceFromResourceActions)[0],
