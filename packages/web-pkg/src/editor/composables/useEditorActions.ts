@@ -430,7 +430,7 @@ export function useEditorActions(
     id: 'image-url',
     title: $gettext('Image from URL'),
     description: $gettext('Insert an image from a web URL'),
-    icon: 'links-line',
+    icon: 'link-line',
     keywords: ['image', 'picture', 'url'],
     showInToolbar: false,
     slashCommandAction: ({ editor, range }) => {
