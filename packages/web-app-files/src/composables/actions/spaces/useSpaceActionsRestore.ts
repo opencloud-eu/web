@@ -133,6 +133,10 @@ export const useSpaceActionsRestore = () => {
       label: () => $gettext('Enable'),
       handler,
       isVisible: ({ resources }) => {
+        if (resources.some((r) => !isProjectSpaceResource(r))) {
+          return false
+        }
+
         return !!filterResourcesToRestore(resources).length
       },
       class: 'oc-files-actions-restore-trigger'

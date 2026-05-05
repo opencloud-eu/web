@@ -1,4 +1,9 @@
-import { isPersonalSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  isPersonalSpaceResource,
+  isShareResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import PQueue from 'p-queue'
@@ -123,6 +128,10 @@ export const useFileActionsCreateSpaceFromResource = () => {
         }
 
         if (!unref(hasCreatePermission)) {
+          return false
+        }
+
+        if (resources.some((r) => isShareResource(r))) {
           return false
         }
 

@@ -123,6 +123,10 @@ export const useSpaceActionsDisable = () => {
       label: () => $gettext('Disable'),
       handler,
       isVisible: ({ resources }) => {
+        if (resources.some((r) => !isProjectSpaceResource(r))) {
+          return false
+        }
+
         return !!filterResourcesToDisable(resources).length
       },
       class: 'oc-files-actions-disable-trigger'

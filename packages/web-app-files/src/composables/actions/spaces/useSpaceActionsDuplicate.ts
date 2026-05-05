@@ -142,7 +142,7 @@ export const useSpaceActionsDuplicate = () => {
           return false
         }
 
-        if (resources.every((resource) => !isProjectSpaceResource(resource))) {
+        if (resources.some((resource) => !isProjectSpaceResource(resource))) {
           return false
         }
 
