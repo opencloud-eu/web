@@ -1,16 +1,5 @@
 <template>
   <div>
-    <input
-      id="space-image-upload-input"
-      ref="spaceImageInput"
-      type="file"
-      name="file"
-      tabindex="-1"
-      accept="image/jpeg, image/png"
-      class="absolute left-[-99999px]"
-      hidden
-      @change="showModalImageSpace"
-    />
     <oc-list id="oc-spaces-actions-sidebar" class="sidebar-actions-panel">
       <action-menu-item
         v-for="(action, index) in actions"
@@ -23,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, Ref, ref, unref, VNodeRef } from 'vue'
+import { computed, inject, Ref, unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   ActionMenuItem,
@@ -53,8 +42,6 @@ const actionOptions = computed((): SpaceActionOptions & FileActionOptions<Resour
   resources: [unref(resource)]
 }))
 
-const spaceImageInput: VNodeRef = ref(null)
-
 const { actions: deleteActions } = useSpaceActionsDelete()
 const { actions: disableActions } = useSpaceActionsDisable()
 const { actions: duplicateActions } = useSpaceActionsDuplicate()
@@ -63,9 +50,7 @@ const { actions: editQuotaActions } = useSpaceActionsEditQuota()
 const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
 const { actions: renameActions } = useSpaceActionsRename()
 const { actions: restoreActions } = useSpaceActionsRestore()
-const { actions: uploadImageActions, showModalImageSpace } = useSpaceActionsUploadImage({
-  spaceImageInput
-})
+const { actions: uploadImageActions } = useSpaceActionsUploadImage()
 const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
 const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
 const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()

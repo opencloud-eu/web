@@ -4,20 +4,6 @@
   </div>
   <div v-else>
     <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
-    <div class="relative overflow-hidden">
-      <input
-        id="space-image-upload-input"
-        ref="spaceImageInput"
-        class="absolute left-[-99999px]"
-        type="file"
-        name="file"
-        multiple
-        tabindex="-1"
-        accept="image/jpeg, image/png"
-        hidden
-        @change="showModalImageSpace"
-      />
-    </div>
   </div>
 </template>
 
@@ -47,7 +33,7 @@ import {
   useSpaceActionsUploadImage,
   useFileActionsShowDetails
 } from '../../composables'
-import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
+import { computed, defineComponent, PropType, Ref, toRef, unref } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
@@ -86,10 +72,7 @@ export default defineComponent({
     const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
     const { actions: favoriteActions } = useFileActionsFavorite()
 
-    const spaceImageInput: VNodeRef = ref(null)
-    const { actions: uploadImageActions, showModalImageSpace } = useSpaceActionsUploadImage({
-      spaceImageInput
-    })
+    const { actions: uploadImageActions } = useSpaceActionsUploadImage()
 
     const menuItemsMembers = computed(() => {
       const fileHandlers = [...unref(showMembersActions), ...unref(downloadArchiveActions)]
@@ -179,9 +162,7 @@ export default defineComponent({
 
     return {
       menuSections,
-      spaceImageInput,
-      uploadImageActions,
-      showModalImageSpace
+      uploadImageActions
     }
   }
 })

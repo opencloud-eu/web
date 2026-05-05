@@ -194,14 +194,7 @@ export default defineComponent({
         extensionType: 'action'
       })
       if (actionExtensions.length) {
-        const filteredExtensions = actionExtensions.filter((extension) => {
-          if (!isSearchLocation.value) {
-            return true
-          }
-
-          return !extension.id.includes('.spaces.')
-        })
-        actions = [...actions, ...filteredExtensions.map((e) => e.action)]
+        actions = [...actions, ...actionExtensions.map((e) => e.action)]
       }
 
       return actions.filter((item) =>

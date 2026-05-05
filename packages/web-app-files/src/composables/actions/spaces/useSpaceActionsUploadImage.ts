@@ -1,4 +1,4 @@
-import { computed, unref, VNodeRef } from 'vue'
+import { computed, onBeforeUnmount, unref } from 'vue'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   SpaceAction,
@@ -9,24 +9,31 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
-export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInput: VNodeRef }) => {
+export const useSpaceActionsUploadImage = () => {
   const userStore = useUserStore()
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
 
   let selectedSpace: SpaceResource = null
-  const handler = ({ resources }: SpaceActionOptions) => {
-    if (resources.length !== 1) {
+  let fileInput: HTMLInputElement = null
+
+  const removeFileInput = () => {
+    if (!fileInput) {
       return
     }
 
-    selectedSpace = resources[0] as SpaceResource
-    unref(spaceImageInput)?.click()
+    fileInput.remove()
+    fileInput = null
   }
 
-  const showModalImageSpace = (event: Event) => {
-    const file = (event.currentTarget as HTMLInputElement).files[0]
-    ;(event.currentTarget as HTMLInputElement).value = ''
+  const onFileSelected = (event: Event) => {
+    const input = event.currentTarget as HTMLInputElement
+    const file = input.files?.[0]
+    removeFileInput()
+
+    if (!file || !selectedSpace) {
+      return
+    }
 
     dispatchModal({
       title: $gettext('Crop image for »%{space}«', { space: selectedSpace.name }),
@@ -35,6 +42,35 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
       focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({ file, space: unref(selectedSpace) })
     })
+  }
+
+  const openFilePicker = () => {
+    removeFileInput()
+
+    fileInput = document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.name = 'file'
+    fileInput.accept = 'image/jpeg, image/png'
+    fileInput.tabIndex = -1
+    fileInput.hidden = true
+    fileInput.style.position = 'absolute'
+    fileInput.style.left = '-99999px'
+    fileInput.addEventListener('change', onFileSelected, { once: true })
+    document.body.append(fileInput)
+    fileInput.click()
+  }
+
+  onBeforeUnmount(() => {
+    removeFileInput()
+  })
+
+  const handler = ({ resources }: SpaceActionOptions) => {
+    if (resources.length !== 1) {
+      return
+    }
+
+    selectedSpace = resources[0] as SpaceResource
+    openFilePicker()
   }
 
   const actions = computed((): SpaceAction[] => [
@@ -61,7 +97,6 @@ export const useSpaceActionsUploadImage = ({ spaceImageInput }: { spaceImageInpu
   ])
 
   return {
-    actions,
-    showModalImageSpace
+    actions
   }
 }

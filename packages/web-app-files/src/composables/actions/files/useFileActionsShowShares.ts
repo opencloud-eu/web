@@ -1,4 +1,4 @@
-import { ShareResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, ShareResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -41,6 +41,11 @@ export const useFileActionsShowShares = () => {
         if (resources.length !== 1) {
           return false
         }
+
+        if (isProjectSpaceResource(resources[0])) {
+          return false
+        }
+
         return canShare({ space, resource: resources[0] })
       },
       class: 'oc-files-actions-show-shares-trigger'

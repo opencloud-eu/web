@@ -2,6 +2,7 @@ import { isSameResource, renameResource as _renameResource } from '../../../help
 import { isLocationSharesActive, isLocationTrashActive } from '../../../router'
 import {
   extractNameWithoutExtension,
+  isProjectSpaceResource,
   isShareSpaceResource,
   Resource,
   SpaceResource
@@ -172,6 +173,10 @@ export const useFileActionsRename = () => {
           return false
         }
         if (resources.length !== 1) {
+          return false
+        }
+
+        if (isProjectSpaceResource(resources[0])) {
           return false
         }
 

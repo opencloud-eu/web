@@ -58,6 +58,7 @@ export const useSpaceActionsSetImage = () => {
         if (!isLocationSpacesActive(router, 'files-spaces-generic')) {
           return false
         }
+
         if (!space) {
           return false
         }

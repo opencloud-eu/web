@@ -13,7 +13,8 @@ import {
   useSpaceActionsRename,
   useSpaceActionsRestore,
   useSpaceActionsSetIcon,
-  useSpaceActionsShowMembers
+  useSpaceActionsShowMembers,
+  useSpaceActionsUploadImage
 } from '../actions'
 
 const adminSettingsSpacesContextActionsExtensionPointId =
@@ -33,10 +34,20 @@ export const useSpaceActions = (): ActionExtension[] => {
   const { actions: renameActions } = useSpaceActionsRename()
   const { actions: restoreActions } = useSpaceActionsRestore()
   const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
+  const { actions: uploadSpaceImage } = useSpaceActionsUploadImage()
   const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
   const { actions: showMembersActions } = useSpaceActionsShowMembers()
 
   return [
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.show-members',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(showMembersActions)[0],
+        category: 'secondary'
+      }
+    },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
       extensionPointIds: [
@@ -47,6 +58,15 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(renameActions)[0],
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-readme-content',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(editReadmeContentActions)[0],
         category: 'secondary'
       }
     },
@@ -64,24 +84,6 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-readme-content',
-      extensionPointIds: [contextActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(editReadmeContentActions)[0],
-        category: 'secondary'
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.show-members',
-      extensionPointIds: [contextActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(showMembersActions)[0],
-        category: 'tertiary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
@@ -91,12 +93,21 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.upload-space-image',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(uploadSpaceImage)[0],
+        category: 'secondary'
+      }
+    },
+    {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.set-space-icon',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(setSpaceIconActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -105,7 +116,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(deleteSpaceImageActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
