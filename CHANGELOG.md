@@ -33,6 +33,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.22.5 [[#2448](https://github.com/opencloud-eu/web/pull/2448)]
 - chore(deps): update devdependencies (non-major) [[#2449](https://github.com/opencloud-eu/web/pull/2449)]
 - chore(deps): update dependency vue-router to v5.0.6 [[#2451](https://github.com/opencloud-eu/web/pull/2451)]
 - chore(deps): update typescript-eslint monorepo to v8.59.1 [[#2446](https://github.com/opencloud-eu/web/pull/2446)]
