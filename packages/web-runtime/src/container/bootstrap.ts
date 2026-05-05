@@ -51,6 +51,7 @@ import {
   RawGroupwareConfigSchema,
   useSideBar,
   getExtensionNavItems,
+  registerLoadingService,
   getBackendVersion,
   getWebVersion
 } from '@opencloud-eu/web-pkg'
@@ -517,6 +518,7 @@ export const announceArchiverService = ({
  */
 export const announceLoadingService = ({ app }: { app: App }): void => {
   const loadingService = new LoadingService()
+  registerLoadingService(loadingService)
   app.config.globalProperties.$loadingService = loadingService
   app.provide('$loadingService', loadingService)
 }
