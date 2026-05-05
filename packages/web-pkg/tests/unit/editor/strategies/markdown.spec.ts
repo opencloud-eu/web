@@ -37,7 +37,7 @@ describe('useStrategyMarkdown', () => {
       const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
       expect(allIds).toContain('bold')
       expect(allIds).not.toContain('underline')
-      expect(allIds).not.toContain('image')
+      expect(allIds).toContain('image')
       expect(allIds).toContain('image-url')
       expect(allIds).toContain('image-upload')
     })

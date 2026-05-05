@@ -63,6 +63,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     blockquote,
     codeBlock,
     horizontalRule,
+    image,
     imageUrl,
     imageUpload,
     table,
@@ -108,7 +109,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       {
         id: 'image',
         title: $gettext('Image'),
-        actions: [imageUrl(), imageUpload()]
+        actions: [image(), imageUrl(), imageUpload()]
       },
       {
         id: 'table-editing',

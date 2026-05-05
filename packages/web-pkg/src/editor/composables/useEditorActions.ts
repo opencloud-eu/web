@@ -432,9 +432,7 @@ export function useEditorActions(
     description: $gettext('Insert an image from a web URL'),
     icon: 'links-line',
     keywords: ['image', 'picture', 'url'],
-    toolbarAction: (editor) => {
-      dispatchImageModal(editor)
-    },
+    showInToolbar: false,
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       dispatchImageModal(editor)
@@ -448,12 +446,32 @@ export function useEditorActions(
     description: $gettext('Upload an image from your device'),
     icon: 'image-line',
     keywords: ['image', 'picture', 'upload', 'file'],
-    toolbarAction: (editor) => {
-      insertImageFromFile(editor)
-    },
+    showInToolbar: false,
+    showInSlashCommands: true,
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       insertImageFromFile(editor)
+    },
+    isActive: () => false
+  })
+
+  const image = (): EditorAction => ({
+    id: 'image',
+    title: $gettext('Insert image'),
+    icon: 'image-line',
+    keywords: ['image', 'picture', 'upload', 'url'],
+    isDropdown: true,
+    showInSlashCommands: false,
+    dropdownOptions: [
+      { value: 'file', label: $gettext('Upload image') },
+      { value: 'url', label: $gettext('Insert via URL') }
+    ],
+    toolbarAction: (editor, value) => {
+      if (value === 'url') {
+        dispatchImageModal(editor)
+      } else if (value === 'file') {
+        insertImageFromFile(editor)
+      }
     },
     isActive: () => false
   })
@@ -636,6 +654,7 @@ export function useEditorActions(
     taskList,
     // Insert
     link,
+    image,
     imageUrl,
     imageUpload,
     table,

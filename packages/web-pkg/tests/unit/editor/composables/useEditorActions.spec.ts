@@ -382,7 +382,7 @@ describe('useEditorActions', () => {
   describe('imageUrl', () => {
     it('toolbarAction dispatches a modal with input', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const { dispatchModal } = useModals()
       expect(dispatchModal).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -395,7 +395,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm inserts image when a valid https URL is entered', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('https://example.com/photo.png')
@@ -404,7 +404,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm inserts image when a valid http URL is entered', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('http://example.com/photo.png')
@@ -413,7 +413,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm trims whitespace from URL', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('  https://example.com/photo.png  ')
@@ -422,7 +422,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm does nothing when URL is empty', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('   ')
@@ -431,7 +431,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm rejects URLs without http(s) protocol', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('javascript:alert(1)')
@@ -440,7 +440,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onInput sets error for invalid protocol', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       const setError = vi.fn()
@@ -450,7 +450,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onInput clears error for valid URL', () => {
       const editor = createMockEditor()
-      actions.imageUrl().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       const setError = vi.fn()
@@ -515,7 +515,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction creates a file input with image accept type', () => {
       const editor = createMockEditor()
-      actions.imageUpload().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'file')
       expect(mockInput.type).toBe('file')
       expect(mockInput.accept).toBe('image/*')
       expect(mockInput.click).toHaveBeenCalled()
@@ -540,7 +540,7 @@ describe('useEditorActions', () => {
         Object.assign(this as object, mockReaderInstance)
       } as unknown as () => FileReader)
 
-      actions.imageUpload().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
@@ -566,7 +566,7 @@ describe('useEditorActions', () => {
         Object.assign(this as object, mockReaderInstance)
       } as unknown as () => FileReader)
 
-      actions.imageUpload().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
@@ -588,7 +588,7 @@ describe('useEditorActions', () => {
         Object.assign(this as object, mockReaderInstance)
       } as unknown as () => FileReader)
 
-      actions.imageUpload().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
@@ -606,7 +606,7 @@ describe('useEditorActions', () => {
     it('toolbarAction does nothing when no file is selected', () => {
       const editor = createMockEditor()
 
-      actions.imageUpload().toolbarAction!(editor)
+      actions.image().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
