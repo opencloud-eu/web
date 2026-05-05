@@ -37,6 +37,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   }
 
   watch(options.modelValue, (content) => {
+    if (!unref(editor) || unref(editor).options.editable) {
+      return
+    }
     setContent(content)
   })
 

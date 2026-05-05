@@ -54,9 +54,11 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     bold,
     italic,
     strikethrough,
+    heading,
     heading1,
     heading2,
     heading3,
+    heading4,
     bulletList,
     orderedList,
     taskList,
@@ -66,7 +68,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     image,
     imageUrl,
     imageUpload,
-    table,
+    tableMenu,
+    createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
@@ -87,14 +90,18 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         actions: [toggleSourceMode()]
       },
       {
-        id: 'text',
-        title: $gettext('Text'),
-        actions: [bold(), italic(), strikethrough()]
-      },
-      {
-        id: 'basic-blocks',
-        title: $gettext('Basic blocks'),
-        actions: [heading1(), heading2(), heading3()]
+        id: 'formatting',
+        title: $gettext('Formatting'),
+        actions: [
+          heading(),
+          heading1(),
+          heading2(),
+          heading3(),
+          heading4(),
+          bold(),
+          italic(),
+          strikethrough()
+        ]
       },
       {
         id: 'lists',
@@ -102,25 +109,26 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         actions: [bulletList(), orderedList(), taskList()]
       },
       {
-        id: 'advanced',
-        title: $gettext('Advanced'),
-        actions: [blockquote(), codeBlock(), horizontalRule(), table()]
+        id: 'blocks',
+        title: $gettext('Blocks'),
+        actions: [blockquote(), codeBlock()]
       },
       {
-        id: 'image',
-        title: $gettext('Image'),
-        actions: [image(), imageUrl(), imageUpload()]
-      },
-      {
-        id: 'table-editing',
-        title: $gettext('Table editing'),
+        id: 'insert',
+        title: $gettext('Insert'),
         actions: [
-          addRowBefore(),
-          addRowAfter(),
-          deleteRow(),
-          addColumnBefore(),
+          image(),
+          imageUrl(),
+          imageUpload(),
+          tableMenu(),
+          createTable(),
           addColumnAfter(),
-          deleteColumn()
+          addColumnBefore(),
+          addRowAfter(),
+          addRowBefore(),
+          deleteColumn(),
+          deleteRow(),
+          horizontalRule()
         ]
       }
     ]

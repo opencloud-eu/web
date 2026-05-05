@@ -37,7 +37,7 @@ describe('useStrategyHtml', () => {
       const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
       expect(allIds).toContain('underline')
       expect(allIds).toContain('bold')
-      expect(allIds).toContain('table')
+      expect(allIds).toContain('table-menu')
       expect(allIds).toContain('font-size')
     })
   })

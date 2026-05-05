@@ -64,7 +64,6 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
   const {
     undo,
     redo,
-    fontFamily,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -73,10 +72,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     italic,
     underline,
     strikethrough,
-    paragraph,
+    heading,
     heading1,
     heading2,
     heading3,
+    heading4,
     bulletList,
     orderedList,
     taskList,
@@ -86,7 +86,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     image,
     imageUrl,
     imageUpload,
-    table,
+    tableMenu,
+    createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
@@ -102,12 +103,15 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         actions: [undo(), redo()]
       },
       {
-        id: 'text',
-        title: $gettext('Text'),
+        id: 'formatting',
+        title: $gettext('Formatting'),
         actions: [
-          fontFamily(),
+          heading(),
+          heading1(),
+          heading2(),
+          heading3(),
+          heading4(),
           fontSize(),
-          lineHeight(),
           backgroundColor(),
           textColor(),
           bold(),
@@ -117,35 +121,31 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         ]
       },
       {
-        id: 'basic-blocks',
-        title: $gettext('Basic blocks'),
-        actions: [paragraph(), heading1(), heading2(), heading3()]
-      },
-      {
         id: 'lists',
         title: $gettext('Lists'),
         actions: [bulletList(), orderedList(), taskList()]
       },
       {
-        id: 'advanced',
-        title: $gettext('Advanced'),
-        actions: [blockquote(), codeBlock(), horizontalRule(), table()]
+        id: 'blocks',
+        title: $gettext('Blocks'),
+        actions: [lineHeight(), blockquote(), codeBlock()]
       },
       {
-        id: 'image',
-        title: $gettext('Image'),
-        actions: [image(), imageUrl(), imageUpload()]
-      },
-      {
-        id: 'table-editing',
-        title: $gettext('Table editing'),
+        id: 'insert',
+        title: $gettext('Insert'),
         actions: [
-          addRowBefore(),
-          addRowAfter(),
-          deleteRow(),
-          addColumnBefore(),
+          image(),
+          imageUrl(),
+          imageUpload(),
+          tableMenu(),
+          createTable(),
           addColumnAfter(),
-          deleteColumn()
+          addColumnBefore(),
+          addRowAfter(),
+          addRowBefore(),
+          deleteColumn(),
+          deleteRow(),
+          horizontalRule()
         ]
       }
     ]
