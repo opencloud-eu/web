@@ -77,7 +77,7 @@
           </slot>
         </div>
 
-        <div v-if="panel.isRoot?.(panelContext) && subPanels.length > 0" class="mt-4">
+        <div v-if="panel.isRoot?.(panelContext) && subPanels.length > 0" class="mt-2">
           <oc-button
             v-for="panelSelect in subPanels"
             :id="`sidebar-panel-${panelSelect.name}-select`"

@@ -1,7 +1,6 @@
 <template>
   <oc-button
     appearance="raw"
-    class="p-2"
     :class="option.class"
     justify-content="left"
     :type="option.to ? 'router-link' : 'button'"

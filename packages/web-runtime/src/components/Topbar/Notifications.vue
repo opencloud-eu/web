@@ -11,7 +11,7 @@
       padding-size="small"
       :is-menu="false"
     >
-      <div class="flex justify-end items-center mb-2">
+      <div class="flex justify-end items-center" :class="{ 'mb-2': notifications.length }">
         <oc-button
           v-if="notifications.length"
           class="oc-notifications-mark-all"

@@ -2,7 +2,7 @@
   <div id="account-calendar">
     <app-loading-spinner v-if="isCalDavLoading" />
     <template v-else>
-      <h1 class="text-lg mt-1" v-text="$gettext('Calendar')" />
+      <h1 class="text-lg mt-2" v-text="$gettext('Calendar')" />
       <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
         <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
 

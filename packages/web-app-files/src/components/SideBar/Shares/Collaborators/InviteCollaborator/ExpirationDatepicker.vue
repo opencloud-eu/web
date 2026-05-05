@@ -2,7 +2,6 @@
   <div class="flex items-center flex-nowrap">
     <oc-button
       data-testid="recipient-datepicker-btn"
-      class="p-2"
       appearance="raw"
       justify-content="left"
       :aria-label="dateCurrent ? $gettext('Edit expiration date') : $gettext('Set expiration date')"
