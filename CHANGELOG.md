@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-04
+## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-05
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,7 +8,7 @@
 
 ### 💥 Breaking changes
 
-- feat: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
+- feat!: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
 - feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
 - feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
 
