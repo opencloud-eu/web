@@ -5,7 +5,6 @@ import PQueue from 'p-queue'
 import {
   FileAction,
   FileActionOptions,
-  isLocationSpacesActive,
   useAbility,
   useClientService,
   useConfigStore,
@@ -127,14 +126,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
           return false
         }
 
-        if (
-          !isLocationSpacesActive(router, 'files-spaces-generic') ||
-          !isPersonalSpaceResource(space)
-        ) {
-          return false
-        }
-
-        return true
+        return isPersonalSpaceResource(space)
       },
       class: 'oc-files-actions-create-space-from-resource-trigger'
     }
