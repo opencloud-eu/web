@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import type { Mailbox } from '../types'
-import { AppLoadingSpinner, useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, useGroupwareAccountsStore, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useMailboxesStore } from '../composables/piniaStores/mailboxes'
 import { storeToRefs } from 'pinia'
@@ -63,10 +63,12 @@ const { currentAccount } = storeToRefs(accountsStore)
 const { setCurrentMail } = useMailsStore()
 const { loadMails } = useLoadMails()
 const { isLoading } = useLoadMailboxes()
+const currentMailboxIdQuery = useRouteQuery('mailboxId')
 
 const onSelectMailbox = async (mailbox: Mailbox) => {
   setCurrentMailbox(mailbox)
   setCurrentMail(null)
+  currentMailboxIdQuery.value = mailbox.id
   await loadMails(unref(currentAccount).accountId, mailbox.id)
 }
 </script>

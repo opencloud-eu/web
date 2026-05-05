@@ -20,7 +20,7 @@ export const useLoadMails = () => {
         const { data } = yield clientService.httpAuthenticated.get(
           urlJoin(configStore.groupwareUrl, `accounts/${accountId}/mailboxes/${mailboxId}/emails`)
         )
-        const mails = z.array(MailSchema).parse(data.emails || [])
+        const mails = z.array(MailSchema).parse(data.results || [])
         setMails(mails)
         console.info('Loaded mails:', mails)
         return mails
