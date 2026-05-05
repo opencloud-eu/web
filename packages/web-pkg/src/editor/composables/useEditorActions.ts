@@ -2,6 +2,7 @@ import { unref } from 'vue'
 import type { MaybeRef } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
 import { useGettext } from 'vue3-gettext'
+import { useModals } from '../../composables/piniaStores'
 import { TextEditorState } from '../types'
 
 export interface EditorAction {
@@ -56,6 +57,7 @@ export function useEditorActions(
   options: MaybeRef<UseEditorActionsOptions> = {}
 ) {
   const { $gettext } = useGettext()
+  const { dispatchModal } = useModals()
 
   // History actions
   const undo = (): EditorAction => ({
@@ -399,19 +401,89 @@ export function useEditorActions(
     showInSlashCommands: false
   })
 
-  const image = (): EditorAction => ({
-    id: 'image',
-    title: $gettext('Image'),
-    icon: 'image-line',
-    toolbarAction: (editor) => {
-      const opts = unref(options)
-      if (opts.onRequestImageUrl) {
-        opts.onRequestImageUrl(editor)
+  const dispatchImageModal = (editor: Editor) => {
+    dispatchModal({
+      title: $gettext('Insert image from URL'),
+      hasInput: true,
+      inputLabel: $gettext('Image URL'),
+      confirmText: $gettext('Insert'),
+      inputRequiredMark: true,
+      onInput: (value: string, setError: (error: string) => void) => {
+        const trimmed = value.trim()
+        if (trimmed && !/^https?:\/\//i.test(trimmed)) {
+          setError($gettext('URL must start with http:// or https://'))
+          return
+        }
+        setError(null)
+      },
+      onConfirm: (value: string) => {
+        const trimmed = value.trim()
+        if (!trimmed || !/^https?:\/\//i.test(trimmed)) {
+          return
+        }
+        editor.chain().focus().setImage({ src: trimmed }).run()
       }
+    })
+  }
+
+  const imageUrl = (): EditorAction => ({
+    id: 'image-url',
+    title: $gettext('Image from URL'),
+    description: $gettext('Insert an image from a web URL'),
+    icon: 'links-line',
+    keywords: ['image', 'picture', 'url'],
+    toolbarAction: (editor) => {
+      dispatchImageModal(editor)
     },
-    isActive: () => false,
-    showInSlashCommands: false
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run()
+      dispatchImageModal(editor)
+    },
+    isActive: () => false
   })
+
+  const imageUpload = (): EditorAction => ({
+    id: 'image-upload',
+    title: $gettext('Image from file'),
+    description: $gettext('Upload an image from your device'),
+    icon: 'image-line',
+    keywords: ['image', 'picture', 'upload', 'file'],
+    toolbarAction: (editor) => {
+      insertImageFromFile(editor)
+    },
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run()
+      insertImageFromFile(editor)
+    },
+    isActive: () => false
+  })
+
+  const maxImageSizeBytes = 5 * 1024 * 1024 // 5 MB
+
+  const insertImageFromFile = (editor: Editor) => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'image/*'
+    input.addEventListener('change', () => {
+      const file = input.files?.[0]
+      if (!file) {
+        return
+      }
+      if (!file.type.startsWith('image/')) {
+        return
+      }
+      if (file.size > maxImageSizeBytes) {
+        return
+      }
+      const reader = new FileReader()
+      reader.addEventListener('load', () => {
+        const dataUrl = reader.result as string
+        editor.chain().focus().setImage({ src: dataUrl }).run()
+      })
+      reader.readAsDataURL(file)
+    })
+    input.click()
+  }
 
   const table = (): EditorAction => ({
     id: 'table',
@@ -564,7 +636,8 @@ export function useEditorActions(
     taskList,
     // Insert
     link,
-    image,
+    imageUrl,
+    imageUpload,
     table,
     // Table manipulation
     addRowBefore,

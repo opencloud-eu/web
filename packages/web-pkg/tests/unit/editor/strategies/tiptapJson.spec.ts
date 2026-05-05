@@ -7,6 +7,7 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 import { useStrategyTiptapJson } from '../../../../src/editor/composables/strategies/tiptapJson'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
   const state: TextEditorState = { sourceMode: ref(false) }
@@ -14,6 +15,10 @@ function createStrategy() {
 }
 
 describe('useStrategyTiptapJson', () => {
+  beforeEach(() => {
+    createTestingPinia()
+  })
+
   describe('extensions', () => {
     it('includes same rich text extensions as HTML strategy', () => {
       const strategy = createStrategy()

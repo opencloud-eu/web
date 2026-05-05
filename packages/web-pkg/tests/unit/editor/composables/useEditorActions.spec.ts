@@ -1,4 +1,4 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest'
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { ref } from 'vue'
 import type { Range } from '@tiptap/core'
 import { createMockEditor } from './helpers'
@@ -9,6 +9,8 @@ vi.mock('vue3-gettext', () => ({
 
 import { useEditorActions } from '../../../../src/editor/composables/useEditorActions'
 import type { TextEditorState } from '../../../../src/editor/types'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+import { useModals } from '../../../../src/composables/piniaStores'
 
 function createState(): TextEditorState {
   return { sourceMode: ref(false) }
@@ -21,6 +23,7 @@ describe('useEditorActions', () => {
   let actions: ReturnType<typeof useEditorActions>
 
   beforeEach(() => {
+    createTestingPinia({ stubActions: false })
     state = createState()
     actions = useEditorActions(state)
   })
@@ -267,30 +270,6 @@ describe('useEditorActions', () => {
     })
   })
 
-  describe('image', () => {
-    it('toolbarAction calls onRequestImageUrl with editor', () => {
-      const onRequestImageUrl = vi.fn()
-      const actionsWithOpts = useEditorActions(state, { onRequestImageUrl })
-      const editor = createMockEditor()
-      actionsWithOpts.image().toolbarAction!(editor)
-      expect(onRequestImageUrl).toHaveBeenCalledWith(editor)
-    })
-
-    it('toolbarAction is a no-op when onRequestImageUrl is undefined', () => {
-      const editor = createMockEditor()
-      expect(() => actions.image().toolbarAction!(editor)).not.toThrow()
-    })
-
-    it('isActive always returns false', () => {
-      const editor = createMockEditor()
-      expect(actions.image().isActive!(editor)).toBe(false)
-    })
-
-    it('is hidden from slash commands', () => {
-      expect(actions.image().showInSlashCommands).toBe(false)
-    })
-  })
-
   describe('table', () => {
     it('toolbarAction inserts 3x3 table with header row', () => {
       const editor = createMockEditor()
@@ -397,6 +376,259 @@ describe('useEditorActions', () => {
         expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
+    })
+  })
+
+  describe('imageUrl', () => {
+    it('toolbarAction dispatches a modal with input', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({
+          hasInput: true,
+          inputLabel: 'Image URL',
+          confirmText: 'Insert'
+        })
+      )
+    })
+
+    it('toolbarAction onConfirm inserts image when a valid https URL is entered', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('https://example.com/photo.png')
+      expect(editor._chain.setImage).toHaveBeenCalledWith({ src: 'https://example.com/photo.png' })
+    })
+
+    it('toolbarAction onConfirm inserts image when a valid http URL is entered', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('http://example.com/photo.png')
+      expect(editor._chain.setImage).toHaveBeenCalledWith({ src: 'http://example.com/photo.png' })
+    })
+
+    it('toolbarAction onConfirm trims whitespace from URL', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('  https://example.com/photo.png  ')
+      expect(editor._chain.setImage).toHaveBeenCalledWith({ src: 'https://example.com/photo.png' })
+    })
+
+    it('toolbarAction onConfirm does nothing when URL is empty', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('   ')
+      expect(editor._chain.setImage).not.toHaveBeenCalled()
+    })
+
+    it('toolbarAction onConfirm rejects URLs without http(s) protocol', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('javascript:alert(1)')
+      expect(editor._chain.setImage).not.toHaveBeenCalled()
+    })
+
+    it('toolbarAction onInput sets error for invalid protocol', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      const setError = vi.fn()
+      modal.onInput('example.com/photo.png', setError)
+      expect(setError).toHaveBeenCalledWith('URL must start with http:// or https://')
+    })
+
+    it('toolbarAction onInput clears error for valid URL', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().toolbarAction!(editor)
+      const store = useModals()
+      const modal = store.modals[0]
+      const setError = vi.fn()
+      modal.onInput('https://example.com/photo.png', setError)
+      expect(setError).toHaveBeenCalledWith(null)
+    })
+
+    it('slashCommandAction onConfirm deletes range and inserts image for valid URL', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().slashCommandAction!({ editor, range: mockRange })
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('https://example.com/photo.png')
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+      expect(editor._chain.setImage).toHaveBeenCalledWith({ src: 'https://example.com/photo.png' })
+    })
+
+    it('slashCommandAction onConfirm does nothing for invalid URL', () => {
+      const editor = createMockEditor()
+      actions.imageUrl().slashCommandAction!({ editor, range: mockRange })
+      const store = useModals()
+      const modal = store.modals[0]
+      modal.onConfirm('ftp://example.com/photo.png')
+      expect(editor._chain.setImage).not.toHaveBeenCalled()
+    })
+
+    it('isActive always returns false', () => {
+      const editor = createMockEditor()
+      expect(actions.imageUrl().isActive!(editor)).toBe(false)
+    })
+  })
+
+  describe('imageUpload', () => {
+    let createElementSpy: ReturnType<typeof vi.spyOn>
+    let mockInput: {
+      type: string
+      accept: string
+      click: ReturnType<typeof vi.fn>
+      addEventListener: ReturnType<typeof vi.fn>
+      files: File[] | null
+    }
+
+    beforeEach(() => {
+      mockInput = {
+        type: '',
+        accept: '',
+        click: vi.fn(),
+        addEventListener: vi.fn(),
+        files: null
+      }
+      createElementSpy = vi.spyOn(document, 'createElement').mockImplementation((tag: string) => {
+        if (tag === 'input') {
+          return mockInput as unknown as HTMLElement
+        }
+        return document.createElement(tag)
+      })
+    })
+
+    afterEach(() => {
+      createElementSpy.mockRestore()
+    })
+
+    it('toolbarAction creates a file input with image accept type', () => {
+      const editor = createMockEditor()
+      actions.imageUpload().toolbarAction!(editor)
+      expect(mockInput.type).toBe('file')
+      expect(mockInput.accept).toBe('image/*')
+      expect(mockInput.click).toHaveBeenCalled()
+    })
+
+    it('toolbarAction inserts base64 data URL for valid image file', () => {
+      const editor = createMockEditor()
+      const fakeDataUrl = 'data:image/png;base64,iVBORw0KGgo='
+
+      let loadHandler: (() => void) | undefined
+      const mockReaderInstance = {
+        result: fakeDataUrl,
+        readAsDataURL: vi.fn(),
+        addEventListener: vi.fn((event: string, handler: () => void) => {
+          if (event === 'load') {
+            loadHandler = handler
+          }
+        })
+      }
+
+      vi.spyOn(globalThis, 'FileReader').mockImplementation(function (this: unknown) {
+        Object.assign(this as object, mockReaderInstance)
+      } as unknown as () => FileReader)
+
+      actions.imageUpload().toolbarAction!(editor)
+
+      const changeHandler = mockInput.addEventListener.mock.calls.find(
+        (call: unknown[]) => call[0] === 'change'
+      )![1] as () => void
+
+      const file = new File(['fake'], 'photo.png', { type: 'image/png' })
+      Object.defineProperty(file, 'size', { value: 1024 })
+      mockInput.files = [file]
+
+      changeHandler()
+
+      expect(mockReaderInstance.readAsDataURL).toHaveBeenCalledWith(file)
+      loadHandler!()
+
+      expect(editor._chain.setImage).toHaveBeenCalledWith({ src: fakeDataUrl })
+    })
+
+    it('toolbarAction rejects files that are not images', () => {
+      const editor = createMockEditor()
+
+      const mockReaderInstance = { readAsDataURL: vi.fn(), addEventListener: vi.fn() }
+      vi.spyOn(globalThis, 'FileReader').mockImplementation(function (this: unknown) {
+        Object.assign(this as object, mockReaderInstance)
+      } as unknown as () => FileReader)
+
+      actions.imageUpload().toolbarAction!(editor)
+
+      const changeHandler = mockInput.addEventListener.mock.calls.find(
+        (call: unknown[]) => call[0] === 'change'
+      )![1] as () => void
+
+      const file = new File(['fake'], 'script.js', { type: 'application/javascript' })
+      mockInput.files = [file]
+
+      changeHandler()
+
+      expect(mockReaderInstance.readAsDataURL).not.toHaveBeenCalled()
+    })
+
+    it('toolbarAction rejects files exceeding 5 MB', () => {
+      const editor = createMockEditor()
+
+      const mockReaderInstance = { readAsDataURL: vi.fn(), addEventListener: vi.fn() }
+      vi.spyOn(globalThis, 'FileReader').mockImplementation(function (this: unknown) {
+        Object.assign(this as object, mockReaderInstance)
+      } as unknown as () => FileReader)
+
+      actions.imageUpload().toolbarAction!(editor)
+
+      const changeHandler = mockInput.addEventListener.mock.calls.find(
+        (call: unknown[]) => call[0] === 'change'
+      )![1] as () => void
+
+      const file = new File(['fake'], 'huge.png', { type: 'image/png' })
+      Object.defineProperty(file, 'size', { value: 6 * 1024 * 1024 })
+      mockInput.files = [file]
+
+      changeHandler()
+
+      expect(mockReaderInstance.readAsDataURL).not.toHaveBeenCalled()
+    })
+
+    it('toolbarAction does nothing when no file is selected', () => {
+      const editor = createMockEditor()
+
+      actions.imageUpload().toolbarAction!(editor)
+
+      const changeHandler = mockInput.addEventListener.mock.calls.find(
+        (call: unknown[]) => call[0] === 'change'
+      )![1] as () => void
+
+      mockInput.files = []
+
+      changeHandler()
+
+      expect(editor._chain.setImage).not.toHaveBeenCalled()
+    })
+
+    it('slashCommandAction deletes range then opens file picker', () => {
+      const editor = createMockEditor()
+      actions.imageUpload().slashCommandAction!({ editor, range: mockRange })
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+      expect(mockInput.click).toHaveBeenCalled()
+    })
+
+    it('isActive always returns false', () => {
+      const editor = createMockEditor()
+      expect(actions.imageUpload().isActive!(editor)).toBe(false)
     })
   })
 

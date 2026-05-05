@@ -81,7 +81,12 @@
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm ml-2"
               :appearance="buttonConfirmAppearance"
-              :disabled="isLoading || buttonConfirmDisabled || !!inputError"
+              :disabled="
+                isLoading ||
+                buttonConfirmDisabled ||
+                !!inputError ||
+                (hasInput && inputRequiredMark && !userInputValue)
+              "
               :show-spinner="showSpinner"
               @click="confirm"
               >{{ $gettext(confirmLabel) }}

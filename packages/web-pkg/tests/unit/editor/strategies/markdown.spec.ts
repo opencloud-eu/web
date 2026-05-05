@@ -7,6 +7,7 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
   const state: TextEditorState = { sourceMode: ref(false) }
@@ -14,6 +15,10 @@ function createStrategy() {
 }
 
 describe('useStrategyMarkdown', () => {
+  beforeEach(() => {
+    createTestingPinia()
+  })
+
   describe('extensions', () => {
     it('includes markdown-relevant extensions but not underline', () => {
       const strategy = createStrategy()
@@ -27,12 +32,14 @@ describe('useStrategyMarkdown', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('does not include underline or image actions', () => {
+    it('does not include underline action but includes image actions', () => {
       const strategy = createStrategy()
       const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
       expect(allIds).toContain('bold')
       expect(allIds).not.toContain('underline')
       expect(allIds).not.toContain('image')
+      expect(allIds).toContain('image-url')
+      expect(allIds).toContain('image-upload')
     })
 
     it('includes source mode toggle', () => {

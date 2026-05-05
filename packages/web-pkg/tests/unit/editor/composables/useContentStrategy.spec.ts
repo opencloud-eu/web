@@ -7,12 +7,17 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 import { useContentStrategy } from '../../../../src/editor/composables/useContentStrategy'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createState(): TextEditorState {
   return { sourceMode: ref(false) }
 }
 
 describe('useContentStrategy', () => {
+  beforeEach(() => {
+    createTestingPinia()
+  })
+
   describe('resolveStrategy', () => {
     const { resolveStrategy } = useContentStrategy()
 

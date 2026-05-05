@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import { withSetup } from './helpers'
 import { toRef } from 'vue'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createEditor(options = {}) {
   const defaults = { contentType: 'html' as const, modelValue: toRef('<p>hello</p>') }
@@ -9,6 +10,10 @@ function createEditor(options = {}) {
 }
 
 describe('useTextEditor', () => {
+  beforeEach(() => {
+    createTestingPinia()
+  })
+
   it('creates an editor instance', () => {
     const { result } = createEditor()
     expect(result.editor.value).not.toBeNull()
