@@ -110,12 +110,12 @@
               <oc-button
                 v-if="!resource.disabled"
                 v-oc-tooltip="showSpaceMemberLabel"
-                class="raw-hover-surface p-1 ml-1"
                 :aria-label="showSpaceMemberLabel"
                 appearance="raw"
+                no-hover
                 @click="openSidebarSharePanel(resource as SpaceResource)"
               >
-                <oc-icon name="group" fill-type="line" />
+                <oc-icon name="group" fill-type="line" size="small" />
               </oc-button>
             </template>
             <template #contextMenu="{ resource }">

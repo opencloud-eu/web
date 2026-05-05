@@ -13,7 +13,7 @@
     />
     <p v-else key="no-share-permissions-message" v-text="noSharePermsMessage" />
     <template v-if="hasSharees">
-      <div id="files-collaborators-headline" class="flex items-center justify-between mt-2">
+      <div id="files-collaborators-headline" class="flex items-center justify-between">
         <h4 class="font-semibold my-0" v-text="sharedWithLabel" />
       </div>
       <custom-component-target

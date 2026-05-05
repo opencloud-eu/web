@@ -3,7 +3,7 @@
 exports[`FileShares > collaborators list > renders sharedWithLabel and sharee list 1`] = `
 "<div data-v-5d17c3fa="" id="oc-files-sharing-sidebar" class="relative">
   <invite-collaborator-form-stub data-v-5d17c3fa="" resource="undefined" savebuttonlabel="Share" label="Share with people" invitelabel="" contextualhelper="[object Object]" class="mt-2"></invite-collaborator-form-stub>
-  <div data-v-5d17c3fa="" id="files-collaborators-headline" class="flex items-center justify-between mt-2">
+  <div data-v-5d17c3fa="" id="files-collaborators-headline" class="flex items-center justify-between">
     <h4 data-v-5d17c3fa="" class="font-semibold my-0">Shared with</h4>
   </div>
   <custom-component-target-stub data-v-5d17c3fa="" extensionpoint="[object Object]"></custom-component-target-stub>
@@ -33,7 +33,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
 exports[`FileShares > current space > loads space members if a space is given and the current user is member 1`] = `
 "<div data-v-5d17c3fa="" id="oc-files-sharing-sidebar" class="relative">
   <invite-collaborator-form-stub data-v-5d17c3fa="" resource="undefined" savebuttonlabel="Share" label="Share with people" invitelabel="" contextualhelper="[object Object]" class="mt-2"></invite-collaborator-form-stub>
-  <div data-v-5d17c3fa="" id="files-collaborators-headline" class="flex items-center justify-between mt-2">
+  <div data-v-5d17c3fa="" id="files-collaborators-headline" class="flex items-center justify-between">
     <h4 data-v-5d17c3fa="" class="font-semibold my-0">Shared with</h4>
   </div>
   <custom-component-target-stub data-v-5d17c3fa="" extensionpoint="[object Object]"></custom-component-target-stub>

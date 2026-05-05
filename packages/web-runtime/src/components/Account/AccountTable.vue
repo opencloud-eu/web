@@ -52,7 +52,7 @@ export default defineComponent({
 
 @layer utilities {
   .account-table td {
-    @apply block md:table-cell py-2 md:py-0;
+    @apply block md:table-cell py-2 md:py-0 px-0;
   }
 
   .account-table td > .checkbox-cell-wrapper {

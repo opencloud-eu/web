@@ -1,5 +1,10 @@
 <template>
-  <main :id="applicationId" class="app-wrapper h-full border-0" @keydown.esc="closeApp">
+  <main
+    :id="applicationId"
+    class="app-wrapper h-full rounded-xl"
+    :class="{ 'border-0': applicationId.startsWith('external-') }"
+    @keydown.esc="closeApp"
+  >
     <h1 class="sr-only" v-text="pageTitle" />
     <loading-screen v-if="loading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />

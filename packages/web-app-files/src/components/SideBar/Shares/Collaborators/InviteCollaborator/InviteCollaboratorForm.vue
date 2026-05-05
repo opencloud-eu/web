@@ -2,12 +2,12 @@
   <div
     id="new-collaborators-form"
     data-testid="new-collaborators-form"
-    class="[&_.vs\_\_actions]:!flex-nowrap mb-8"
+    class="[&_.vs\_\_actions]:!flex-nowrap mb-4"
   >
     <div>
       <div class="flex justify-between mb-1">
         <div class="flex items-center">
-          <label :aria-hidden="true" for="files-share-account-type-input" class="inline-block">
+          <label :aria-hidden="true" for="files-share-invite-input" class="inline-block">
             {{ label }}
           </label>
           <oc-contextual-helper

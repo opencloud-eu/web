@@ -14,10 +14,7 @@
       class="mt-2"
     />
     <template v-if="hasCollaborators">
-      <div
-        id="files-collaborators-headline"
-        class="flex items-center justify-between relative mt-2"
-      >
+      <div id="files-collaborators-headline" class="flex items-center justify-between relative">
         <div class="flex">
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
           <oc-button
