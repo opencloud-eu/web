@@ -25,10 +25,6 @@ export interface LoadingTaskCallbackArguments {
 
 let activeLoadingService: LoadingService = null
 
-export const registerLoadingService = (service: LoadingService): void => {
-  activeLoadingService = service
-}
-
 export const getLoadingService = (): LoadingService => {
   if (!activeLoadingService) {
     activeLoadingService = new LoadingService()

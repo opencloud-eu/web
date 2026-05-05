@@ -35,7 +35,6 @@ import {
   WebWorkersStore,
   useWebWorkersStore,
   ClientService,
-  LoadingService,
   PasswordPolicyService,
   PreviewService,
   UppyService,
@@ -50,8 +49,8 @@ import {
   GroupwareConfigStore,
   RawGroupwareConfigSchema,
   useSideBar,
+  getLoadingService,
   getExtensionNavItems,
-  registerLoadingService,
   getBackendVersion,
   getWebVersion
 } from '@opencloud-eu/web-pkg'
@@ -517,8 +516,7 @@ export const announceArchiverService = ({
  * @param vue
  */
 export const announceLoadingService = ({ app }: { app: App }): void => {
-  const loadingService = new LoadingService()
-  registerLoadingService(loadingService)
+  const loadingService = getLoadingService()
   app.config.globalProperties.$loadingService = loadingService
   app.provide('$loadingService', loadingService)
 }
