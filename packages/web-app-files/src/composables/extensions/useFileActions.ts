@@ -71,7 +71,7 @@ export const useFileActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.create-space-from-resource',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(createSpaceFromResourceActions)[0],

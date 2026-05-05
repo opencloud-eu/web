@@ -10,7 +10,7 @@ import ActionsPanel from '../../../../../src/components/Spaces/SideBar/ActionsPa
 import { Action, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { h } from 'vue'
 
-const contextActionsExtensionPointId = 'app.admin-settings.spaces.context-actions'
+const sidebarActionsExtensionPointId = 'app.admin-settings.spaces.sidebar-actions'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   return {
@@ -41,7 +41,7 @@ describe('ActionsPanel', () => {
       ]
       vi.mocked(useExtensionRegistry).mockReturnValue({
         requestExtensions: vi.fn((extensionPoint) => {
-          if (extensionPoint.id === contextActionsExtensionPointId) {
+          if (extensionPoint.id === sidebarActionsExtensionPointId) {
             return [
               {
                 id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',

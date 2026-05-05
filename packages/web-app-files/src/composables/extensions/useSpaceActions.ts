@@ -18,6 +18,8 @@ import {
 
 const adminSettingsSpacesContextActionsExtensionPointId =
   'app.admin-settings.spaces.context-actions'
+const adminSettingsSpacesSideBarActionsExtensionPointId =
+  'app.admin-settings.spaces.sidebar-actions'
 const adminSettingsSpacesBatchActionsExtensionPointId = 'app.admin-settings.spaces.batch-actions'
 
 export const useSpaceActions = (): ActionExtension[] => {
@@ -39,7 +41,8 @@ export const useSpaceActions = (): ActionExtension[] => {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId
       ],
       type: 'action',
       action: {
@@ -51,7 +54,8 @@ export const useSpaceActions = (): ActionExtension[] => {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId
       ],
       type: 'action',
       action: {
@@ -109,7 +113,8 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId
       ],
       type: 'action',
       action: {
@@ -123,6 +128,7 @@ export const useSpaceActions = (): ActionExtension[] => {
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
@@ -137,6 +143,7 @@ export const useSpaceActions = (): ActionExtension[] => {
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
@@ -151,6 +158,7 @@ export const useSpaceActions = (): ActionExtension[] => {
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
@@ -165,6 +173,7 @@ export const useSpaceActions = (): ActionExtension[] => {
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',

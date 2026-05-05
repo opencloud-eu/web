@@ -15,9 +15,7 @@
 import { ActionExtension, ActionMenuItem, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { computed, inject, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { spacesContextActionsExtensionPoint } from '../../../extensionPoints'
-
-const hiddenContextActionIds = ['com.github.opencloud-eu.web.files.sidebar-action.details']
+import { spacesSidebarActionsExtensionPoint } from '../../../extensionPoints'
 
 const resource = inject<SpaceResource>('resource')
 const resources = computed(() => {
@@ -28,13 +26,9 @@ const actionOptions = computed(() => ({
 }))
 const { requestExtensions } = useExtensionRegistry()
 
-const contextActions = computed(() => {
-  return (requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint) || [])
-    .filter((extension) => !hiddenContextActionIds.includes(extension.id))
-    .map((extension) => extension.action)
-})
-
 const actions = computed(() => {
-  return [...unref(contextActions)].filter((item) => item.isVisible(unref(actionOptions)))
+  return (requestExtensions<ActionExtension>(spacesSidebarActionsExtensionPoint) || [])
+    .map((extension) => extension.action)
+    .filter((item) => item.isVisible(unref(actionOptions)))
 })
 </script>
