@@ -23,15 +23,6 @@ export interface LoadingTaskCallbackArguments {
   setProgress: (args: LoadingTaskState) => void
 }
 
-let activeLoadingService: LoadingService = null
-
-export const getLoadingService = (): LoadingService => {
-  if (!activeLoadingService) {
-    activeLoadingService = new LoadingService()
-  }
-  return activeLoadingService
-}
-
 // time until a loading task is being set active
 const DEFAULT_DEBOUNCE_TIME = 200
 
