@@ -32,6 +32,9 @@ export const useCreateContact = () => {
       }
 
       return WrappedContactResponseSchema.parse(data).contact
+    } catch (error) {
+      console.error('Failed to create contact:', error)
+      throw error
     } finally {
       isSaving.value = false
     }

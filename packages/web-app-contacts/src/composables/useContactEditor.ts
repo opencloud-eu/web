@@ -37,7 +37,7 @@ export const useContactEditor = () => {
     isCreateDirty.value = true
   }
 
-  const confirmDiscardChanges = async () => {
+  const confirmDiscardChanges = () => {
     if (!unref(isCreateOpen) || !unref(hasCreateChanges) || !unref(isCreateDirty)) {
       return true
     }

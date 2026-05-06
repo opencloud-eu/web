@@ -14,6 +14,10 @@
       :model-value="modelValue.email"
       type="email"
       :label="$gettext('E-Mail')"
+      :error-message="
+        isContactEmailInvalid(modelValue.email) ? $gettext('Please enter a valid email') : ''
+      "
+      :fix-message-line="true"
       @update:model-value="(value: string) => updateField('email', value)"
     />
     <oc-text-input
@@ -27,7 +31,7 @@
 
 <script setup lang="ts">
 import { useGettext } from 'vue3-gettext'
-import type { ContactFormState } from '../helpers/contactForm'
+import { type ContactFormState, isContactEmailInvalid } from '../helpers/contactForm'
 
 const { $gettext } = useGettext()
 

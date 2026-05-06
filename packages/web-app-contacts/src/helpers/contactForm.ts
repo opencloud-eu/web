@@ -1,4 +1,5 @@
 import type { Contact } from '../types'
+import * as EmailValidator from 'email-validator'
 
 export type ContactFormState = {
   firstName: string
@@ -20,6 +21,16 @@ export const hasContactFormValue = (state: ContactFormState) => {
   return [state.firstName, state.lastName, state.email, state.phone].some(
     (value) => value.trim().length > 0
   )
+}
+
+export const isContactEmailInvalid = (email: string) => {
+  const trimmedEmail = email.trim()
+
+  if (!trimmedEmail) {
+    return false
+  }
+
+  return !EmailValidator.validate(trimmedEmail)
 }
 
 export const createContactPayload = (

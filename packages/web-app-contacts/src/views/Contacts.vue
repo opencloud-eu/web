@@ -45,7 +45,7 @@ import type { AddressBook, Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
 import ContactsList from './ContactsList.vue'
 import ContactDetails from './ContactDetails.vue'
-import ContactCreateEditor from '../components/ContactCreateEditor.vue'
+import ContactCreateEditor from '../components/ContactFormPanel.vue'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useContactEditor } from '../composables/useContactEditor'
 
