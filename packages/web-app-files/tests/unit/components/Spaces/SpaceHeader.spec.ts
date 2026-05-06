@@ -167,7 +167,7 @@ function getWrapper({
       plugins,
       provide: { ...mocks },
       stubs: {
-        'space-context-actions': true,
+        'context-actions': true,
         TextEditorProvider: true,
         TextEditorContent: true
       }

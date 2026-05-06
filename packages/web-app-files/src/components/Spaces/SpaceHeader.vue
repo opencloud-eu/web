@@ -47,7 +47,7 @@
             @show-drop="isDropOpen = true"
             @hide-drop="isDropOpen = false"
           >
-            <space-context-actions v-if="isDropOpen" :action-options="{ resources: [space] }" />
+            <context-actions v-if="isDropOpen" :action-options="{ space, resources: [space] }" />
           </oc-drop>
         </div>
         <oc-button
@@ -109,6 +109,7 @@ import {
 } from 'vue'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
+  ContextActions,
   ImageDimension,
   ProcessorType,
   useClientService,
@@ -120,7 +121,6 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
-import SpaceContextActions from './SpaceContextActions.vue'
 import { useGettext } from 'vue3-gettext'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { storeToRefs } from 'pinia'

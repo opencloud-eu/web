@@ -28,8 +28,6 @@ const spacesDescriptionSaveTextFileInEditorButton = '#app-save-action:visible'
 const spaceHeaderSelector = '.space-header'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
-const editImageInContextMenuButton =
-  '//button[contains(@id, "oc-files-context-actions-space-image")]'
 
 export const openActionsPanel = async (page: Page): Promise<void> => {
   await sidebar.open({ page })
@@ -223,7 +221,6 @@ export const changeSpaceImage = async (args: {
   const { id, page, resource, contextMenu = false } = args
   if (contextMenu) {
     await page.locator(spaceContextMenuButton).click()
-    await page.locator(editImageInContextMenuButton).hover()
   } else {
     await openActionsPanel(page)
   }
@@ -261,7 +258,6 @@ export const changeSpaceIcon = async (args: {
   const { id, page, icon, contextMenu = false } = args
   if (contextMenu) {
     await page.locator(spaceContextMenuButton).click()
-    await page.locator(editImageInContextMenuButton).hover()
   } else {
     await openActionsPanel(page)
   }
@@ -296,7 +292,6 @@ export const deleteSpaceImage = async (args: {
   const { id, page, contextMenu = false } = args
   if (contextMenu) {
     await page.locator(spaceContextMenuButton).click()
-    await page.locator(editImageInContextMenuButton).hover()
   } else {
     await openActionsPanel(page)
   }
