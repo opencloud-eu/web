@@ -8,12 +8,14 @@
 
 ### 💥 Breaking changes
 
+- refactor!: move certain file and space actions to files app [[#2456](https://github.com/opencloud-eu/web/pull/2456)]
 - feat!: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
 - feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
 - feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
 
 ### 🐛 Bug Fixes
 
+- fix: context actions is using wrong extension point [[#2463](https://github.com/opencloud-eu/web/pull/2463)]
 - fix: spaces view doesn't have a dedicated multipe select context menu [[#2464](https://github.com/opencloud-eu/web/pull/2464)]
 - fix(extension-sdk): use posix path to support windows build [[#2404](https://github.com/opencloud-eu/web/pull/2404)]
 - fix: sorting of spaces is faulty when space names contain numbers [[#2429](https://github.com/opencloud-eu/web/pull/2429)]
@@ -21,7 +23,6 @@
 ### 📈 Enhancement
 
 - feat(search): clear on esc keypress + misc fixes [[#2423](https://github.com/opencloud-eu/web/pull/2423)]
-- change: remove or reduce dummy  methods [[#2443](https://github.com/opencloud-eu/web/pull/2443)]
 - perf: improve initial loading times [[#2414](https://github.com/opencloud-eu/web/pull/2414)]
 - feat: show mobile sidebar and FAB on tablets in portrait mode [[#2433](https://github.com/opencloud-eu/web/pull/2433)]
 - feat: redesign file input [[#2416](https://github.com/opencloud-eu/web/pull/2416)]
