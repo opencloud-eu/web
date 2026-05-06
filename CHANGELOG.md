@@ -14,6 +14,7 @@
 
 ### 📈 Enhancement
 
+- feat(search): clear on esc keypress + misc fixes [[#2423](https://github.com/opencloud-eu/web/pull/2423)]
 - change: remove or reduce dummy  methods [[#2443](https://github.com/opencloud-eu/web/pull/2443)]
 - perf: improve initial loading times [[#2414](https://github.com/opencloud-eu/web/pull/2414)]
 - feat: show mobile sidebar and FAB on tablets in portrait mode [[#2433](https://github.com/opencloud-eu/web/pull/2433)]
