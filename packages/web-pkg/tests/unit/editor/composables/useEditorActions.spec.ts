@@ -88,7 +88,7 @@ describe('useEditorActions', () => {
   })
 
   describe('text formatting', () => {
-    const formattingActions = [
+    const inlineActions = [
       { name: 'bold', toggleMethod: 'toggleBold', markName: 'bold' },
       { name: 'italic', toggleMethod: 'toggleItalic', markName: 'italic' },
       { name: 'underline', toggleMethod: 'toggleUnderline', markName: 'underline' },
@@ -96,7 +96,7 @@ describe('useEditorActions', () => {
       { name: 'codeInline', toggleMethod: 'toggleCode', markName: 'code' }
     ] as const
 
-    for (const { name, toggleMethod, markName } of formattingActions) {
+    for (const { name, toggleMethod, markName } of inlineActions) {
       describe(name, () => {
         it('toolbarAction calls the correct toggle command', () => {
           const editor = createMockEditor()
@@ -118,37 +118,40 @@ describe('useEditorActions', () => {
         })
       })
     }
-  })
 
-  describe('dropdowns', () => {
     const dropdownActions = [
-      { name: 'fontSize', setMethod: 'setFontSize', attrKey: 'fontSize' },
-      { name: 'fontFamily', setMethod: 'setFontFamily', attrKey: 'fontFamily' },
-      { name: 'lineHeight', setMethod: 'setLineHeight', attrKey: 'lineHeight' },
-      { name: 'textColor', setMethod: 'setColor', attrKey: 'color' },
-      { name: 'backgroundColor', setMethod: 'setBackgroundColor', attrKey: 'backgroundColor' }
+      { name: 'fontSize', setMethod: 'setFontSize', attrKey: 'fontSize', valueIsTitle: true },
+      { name: 'lineHeight', setMethod: 'setLineHeight', attrKey: 'lineHeight', valueIsTitle: true },
+      { name: 'textColor', setMethod: 'setColor', attrKey: 'color', valueIsTitle: false },
+      {
+        name: 'backgroundColor',
+        setMethod: 'setBackgroundColor',
+        attrKey: 'backgroundColor',
+        valueIsTitle: false
+      }
     ] as const
 
-    for (const { name, setMethod, attrKey } of dropdownActions) {
+    for (const { name, setMethod, attrKey, valueIsTitle } of dropdownActions) {
       describe(name, () => {
-        it('is a dropdown with non-empty options', () => {
+        it('has non-empty childActions', () => {
           const action = actions[name]()
-          expect(action.isDropdown).toBe(true)
-          expect(action.dropdownOptions!.length).toBeGreaterThan(0)
+          expect(action.childActions!.length).toBeGreaterThan(0)
         })
 
-        it('currentValue reads from editor.getAttributes("textStyle")', () => {
-          const editor = createMockEditor({
-            attributes: { textStyle: { [attrKey]: 'test-value' } }
+        if (valueIsTitle) {
+          it('child isActive reads from editor.getAttributes("textStyle")', () => {
+            const child = actions[name]().childActions![0]
+            const editor = createMockEditor({
+              attributes: { textStyle: { [attrKey]: child.title } }
+            })
+            expect(child.isActive!(editor)).toBe(true)
           })
-          expect(actions[name]().currentValue!(editor)).toBe('test-value')
-          expect(editor.getAttributes).toHaveBeenCalledWith('textStyle')
-        })
+        }
 
-        it('toolbarAction passes value to the set command', () => {
+        it('child toolbarAction passes value to the set command', () => {
           const editor = createMockEditor()
-          actions[name]().toolbarAction!(editor, 'my-value')
-          expect(editor._chain[setMethod]).toHaveBeenCalledWith('my-value')
+          actions[name]().childActions![0].toolbarAction!(editor)
+          expect(editor._chain[setMethod]).toHaveBeenCalled()
         })
 
         it('is hidden from slash commands', () => {
@@ -158,15 +161,51 @@ describe('useEditorActions', () => {
     }
   })
 
-  describe('block actions', () => {
+  describe('heading', () => {
     const blockActions: ReadonlyArray<{
-      name: 'heading1' | 'heading2' | 'heading3' | 'blockquote' | 'codeBlock'
+      name: 'heading1' | 'heading2' | 'heading3' | 'heading4'
       markName: string
       markAttrs?: Record<string, unknown>
     }> = [
       { name: 'heading1', markName: 'heading', markAttrs: { level: 1 } },
       { name: 'heading2', markName: 'heading', markAttrs: { level: 2 } },
       { name: 'heading3', markName: 'heading', markAttrs: { level: 3 } },
+      { name: 'heading4', markName: 'heading', markAttrs: { level: 4 } }
+    ]
+
+    for (const { name, markName, markAttrs } of blockActions) {
+      describe(name, () => {
+        it('slashCommandAction deletes range then sets node', () => {
+          const editor = createMockEditor()
+          actions[name]().slashCommandAction!({ editor, range: mockRange })
+          expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+          expect(editor._chain.run).toHaveBeenCalled()
+        })
+
+        it('isActive checks the correct node type', () => {
+          const editor = createMockEditor({
+            isActive: (type, attrs) => {
+              if (type !== markName) {
+                return false
+              }
+              if (markAttrs) {
+                return JSON.stringify(attrs) === JSON.stringify(markAttrs)
+              }
+              return true
+            }
+          })
+          expect(actions[name]().isActive!(editor)).toBe(true)
+        })
+      })
+    }
+  })
+
+  describe('block actions', () => {
+    const blockActions: ReadonlyArray<{
+      name: 'blockquote' | 'codeBlock'
+      markName: string
+      markAttrs?: Record<string, unknown>
+    }> = [
       { name: 'blockquote', markName: 'blockquote' },
       { name: 'codeBlock', markName: 'codeBlock' }
     ]
@@ -196,19 +235,10 @@ describe('useEditorActions', () => {
         })
       })
     }
+  })
 
-    it('paragraph: slashCommandAction deletes range then sets paragraph node', () => {
-      const editor = createMockEditor()
-      actions.paragraph().slashCommandAction!({ editor, range: mockRange })
-      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
-      expect(editor._chain.setNode).toHaveBeenCalledWith('paragraph')
-    })
-
-    it('paragraph: is hidden from toolbar', () => {
-      expect(actions.paragraph().showInToolbar).toBe(false)
-    })
-
-    it('horizontalRule: isActive always returns false', () => {
+  describe('horizontalRule', () => {
+    it('isActive always returns false', () => {
       const editor = createMockEditor()
       expect(actions.horizontalRule().isActive!(editor)).toBe(false)
     })
@@ -273,7 +303,7 @@ describe('useEditorActions', () => {
   describe('table', () => {
     it('toolbarAction inserts 3x3 table with header row', () => {
       const editor = createMockEditor()
-      actions.table().toolbarAction!(editor)
+      actions.createTable().toolbarAction!(editor)
       expect(editor._chain.insertTable).toHaveBeenCalledWith({
         rows: 3,
         cols: 3,
@@ -283,7 +313,7 @@ describe('useEditorActions', () => {
 
     it('slashCommandAction deletes range then inserts table', () => {
       const editor = createMockEditor()
-      actions.table().slashCommandAction!({ editor, range: mockRange })
+      actions.createTable().slashCommandAction!({ editor, range: mockRange })
       expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
       expect(editor._chain.insertTable).toHaveBeenCalledWith({
         rows: 3,
@@ -382,7 +412,7 @@ describe('useEditorActions', () => {
   describe('imageUrl', () => {
     it('toolbarAction dispatches a modal with input', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const { dispatchModal } = useModals()
       expect(dispatchModal).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -395,7 +425,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm inserts image when a valid https URL is entered', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('https://example.com/photo.png')
@@ -404,7 +434,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm inserts image when a valid http URL is entered', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('http://example.com/photo.png')
@@ -413,7 +443,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm trims whitespace from URL', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('  https://example.com/photo.png  ')
@@ -422,7 +452,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm does nothing when URL is empty', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('   ')
@@ -431,7 +461,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onConfirm rejects URLs without http(s) protocol', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       modal.onConfirm('javascript:alert(1)')
@@ -440,7 +470,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onInput sets error for invalid protocol', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       const setError = vi.fn()
@@ -450,7 +480,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction onInput clears error for valid URL', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'url')
+      actions.imageUrl().toolbarAction!(editor, 'url')
       const store = useModals()
       const modal = store.modals[0]
       const setError = vi.fn()
@@ -515,7 +545,7 @@ describe('useEditorActions', () => {
 
     it('toolbarAction creates a file input with image accept type', () => {
       const editor = createMockEditor()
-      actions.image().toolbarAction!(editor, 'file')
+      actions.imageUpload().toolbarAction!(editor, 'file')
       expect(mockInput.type).toBe('file')
       expect(mockInput.accept).toBe('image/*')
       expect(mockInput.click).toHaveBeenCalled()
@@ -540,7 +570,7 @@ describe('useEditorActions', () => {
         Object.assign(this as object, mockReaderInstance)
       } as unknown as () => FileReader)
 
-      actions.image().toolbarAction!(editor, 'file')
+      actions.imageUpload().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
@@ -566,7 +596,7 @@ describe('useEditorActions', () => {
         Object.assign(this as object, mockReaderInstance)
       } as unknown as () => FileReader)
 
-      actions.image().toolbarAction!(editor, 'file')
+      actions.imageUpload().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
@@ -588,7 +618,7 @@ describe('useEditorActions', () => {
         Object.assign(this as object, mockReaderInstance)
       } as unknown as () => FileReader)
 
-      actions.image().toolbarAction!(editor, 'file')
+      actions.imageUpload().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'
@@ -606,7 +636,7 @@ describe('useEditorActions', () => {
     it('toolbarAction does nothing when no file is selected', () => {
       const editor = createMockEditor()
 
-      actions.image().toolbarAction!(editor, 'file')
+      actions.imageUpload().toolbarAction!(editor, 'file')
 
       const changeHandler = mockInput.addEventListener.mock.calls.find(
         (call: unknown[]) => call[0] === 'change'

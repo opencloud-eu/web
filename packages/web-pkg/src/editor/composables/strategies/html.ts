@@ -64,7 +64,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
   const {
     undo,
     redo,
-    fontFamily,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -73,17 +72,19 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     italic,
     underline,
     strikethrough,
-    paragraph,
+    heading,
     heading1,
     heading2,
     heading3,
+    heading4,
     bulletList,
     orderedList,
     taskList,
     blockquote,
     codeBlock,
     horizontalRule,
-    table,
+    tableMenu,
+    createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
@@ -99,10 +100,14 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         actions: [undo(), redo()]
       },
       {
-        id: 'text',
-        title: $gettext('Text'),
+        id: 'formatting',
+        title: $gettext('Formatting'),
         actions: [
-          fontFamily(),
+          heading(),
+          heading1(),
+          heading2(),
+          heading3(),
+          heading4(),
           fontSize(),
           lineHeight(),
           backgroundColor(),
@@ -114,30 +119,28 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         ]
       },
       {
-        id: 'basic-blocks',
-        title: $gettext('Basic blocks'),
-        actions: [paragraph(), heading1(), heading2(), heading3()]
-      },
-      {
         id: 'lists',
         title: $gettext('Lists'),
         actions: [bulletList(), orderedList(), taskList()]
       },
       {
-        id: 'advanced',
-        title: $gettext('Advanced'),
-        actions: [blockquote(), codeBlock(), horizontalRule(), table()]
+        id: 'blocks',
+        title: $gettext('Blocks'),
+        actions: [blockquote(), codeBlock()]
       },
       {
-        id: 'table-editing',
-        title: $gettext('Table editing'),
+        id: 'insert',
+        title: $gettext('Insert'),
         actions: [
-          addRowBefore(),
-          addRowAfter(),
-          deleteRow(),
-          addColumnBefore(),
+          tableMenu(),
+          createTable(),
           addColumnAfter(),
-          deleteColumn()
+          addColumnBefore(),
+          addRowAfter(),
+          addRowBefore(),
+          deleteColumn(),
+          deleteRow(),
+          horizontalRule()
         ]
       }
     ]
