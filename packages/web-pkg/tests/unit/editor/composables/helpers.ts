@@ -70,7 +70,8 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'addRowBefore',
       'addRowAfter',
       'addColumnBefore',
-      'addColumnAfter'
+      'addColumnAfter',
+      'setImage'
     ]
     for (const method of methods) {
       chain[method] = vi.fn().mockReturnValue(chain)

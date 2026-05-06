@@ -3,6 +3,7 @@ import { ContentTypeStrategy } from './types'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
+import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
@@ -41,7 +42,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TableCell,
       TableHeader,
       TaskList,
-      TaskItem.configure({ nested: true })
+      TaskItem.configure({ nested: true }),
+      Image.configure({ inline: false })
     ]
   }
 
@@ -61,6 +63,9 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     blockquote,
     codeBlock,
     horizontalRule,
+    image,
+    imageUrl,
+    imageUpload,
     table,
     addRowBefore,
     addRowAfter,
@@ -100,6 +105,11 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'advanced',
         title: $gettext('Advanced'),
         actions: [blockquote(), codeBlock(), horizontalRule(), table()]
+      },
+      {
+        id: 'image',
+        title: $gettext('Image'),
+        actions: [image(), imageUrl(), imageUpload()]
       },
       {
         id: 'table-editing',

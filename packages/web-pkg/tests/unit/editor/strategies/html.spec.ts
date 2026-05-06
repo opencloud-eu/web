@@ -7,6 +7,7 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 import { useStrategyHtml } from '../../../../src/editor/composables/strategies/html'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
   const state: TextEditorState = { sourceMode: ref(false) }
@@ -14,6 +15,10 @@ function createStrategy() {
 }
 
 describe('useStrategyHtml', () => {
+  beforeEach(() => {
+    createTestingPinia()
+  })
+
   describe('extensions', () => {
     it('includes rich text extensions', () => {
       const strategy = createStrategy()

@@ -2,7 +2,7 @@
   <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
     <div
       ref="scrollContainer"
-      class="flex items-center justify-center gap-1 overflow-x-auto"
+      class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
       @scroll="updateScrollState"
     >
       <div
@@ -11,10 +11,14 @@
         class="text-editor-toolbar-group inline-flex items-stretch"
         :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
       >
-        <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
+        <template
+          v-for="item in group.actions.filter((a) => a.showInToolbar !== false)"
+          :key="`toolbar-item-${item.id}`"
+        >
           <template v-if="item.isDropdown && item.dropdownOptions">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
+              v-oc-tooltip="item.title"
               type="button"
               appearance="raw"
               class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center"
@@ -33,6 +37,7 @@
               mode="click"
               class="text-editor-toolbar-dropdown"
               padding-size="small"
+              close-on-click
             >
               <ul class="oc-list">
                 <li
