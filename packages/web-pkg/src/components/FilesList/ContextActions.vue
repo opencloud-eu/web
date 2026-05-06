@@ -113,7 +113,7 @@ export default defineComponent({
         ...unref(restoreActions),
         ...unref(enableSyncActions),
         ...unref(disableSyncActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'tertiary')
+        ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
 

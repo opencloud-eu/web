@@ -119,10 +119,12 @@
               </oc-button>
             </template>
             <template #contextMenu="{ resource }">
-              <space-context-actions
+              <context-actions
                 v-if="isResourceInSelection(resource)"
-                :loading="resource.graphPermissions === undefined"
-                :action-options="{ resources: [resource] as SpaceResource[] }"
+                :action-options="{
+                  space: resource as SpaceResource,
+                  resources: selectedResources as SpaceResource[]
+                }"
               />
             </template>
             <template #footer>
@@ -159,6 +161,7 @@ import {
   useLoadPreview,
   AppBar,
   useClientService,
+  ContextActions,
   FolderViewModeConstants,
   useSort,
   usePagination,
@@ -169,7 +172,6 @@ import {
   NoContentMessage,
   useSideBar
 } from '@opencloud-eu/web-pkg'
-import SpaceContextActions from '../../components/Spaces/SpaceContextActions.vue'
 import {
   isProjectSpaceResource,
   ProjectSpaceResource,

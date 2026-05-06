@@ -197,7 +197,7 @@ function getMountedWrapper({
         provide: defaultMocks,
         stubs: {
           ...defaultStubs,
-          'space-context-actions': true,
+          'context-actions': true,
           'app-bar': stubAppBar,
           'resource-table': false,
           CreateSpace: true
