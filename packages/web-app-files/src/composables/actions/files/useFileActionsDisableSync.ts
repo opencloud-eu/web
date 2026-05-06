@@ -24,7 +24,8 @@ export const useFileActionsDisableSync = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const configStore = useConfigStore()
-  const { updateResourceField } = useResourcesStore()
+  const resourcesStore = useResourcesStore()
+  const { updateResourceField } = resourcesStore
 
   const handler = async ({ resources }: FileActionOptions<IncomingShareResource>) => {
     const errors: Error[] = []
@@ -54,6 +55,8 @@ export const useFileActionsDisableSync = () => {
     await Promise.all(triggerPromises)
 
     if (errors.length === 0) {
+      resourcesStore.resetSelection()
+
       if (isLocationSpacesActive(router, 'files-spaces-generic')) {
         showMessage({
           title: $ngettext(
