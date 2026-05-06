@@ -1,6 +1,7 @@
 import {
   isPersonalSpaceResource,
   isShareResource,
+  isTrashResource,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
@@ -132,6 +133,10 @@ export const useFileActionsCreateSpaceFromResource = () => {
         }
 
         if (resources.some((r) => isShareResource(r))) {
+          return false
+        }
+
+        if (resources.some((r) => isTrashResource(r))) {
           return false
         }
 
