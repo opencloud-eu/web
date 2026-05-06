@@ -45,6 +45,7 @@
     <oc-button
       v-if="showCancelButton"
       :appearance="cancelButtonAppearance"
+      :color-role="cancelButtonColorRole"
       class="ml-4"
       no-hover
       @click="onCancel"
@@ -57,7 +58,7 @@
 <script lang="ts" setup>
 import { computed, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import OcButton from '../OcButton/OcButton.vue'
+import OcButton, { Props as OcButtonProps } from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
 import { AppearanceType } from '../../helpers'
@@ -125,6 +126,11 @@ export interface Props {
    */
   cancelButtonAppearance?: AppearanceType
   /**
+   * @docs The color role of the cancel button.
+   * @default secondary
+   */
+  cancelButtonColorRole?: OcButtonProps['colorRole']
+  /**
    * @docs The handler for the cancel button.
    */
   cancelHandler?: () => void
@@ -168,6 +174,7 @@ const {
   loadingAccessibleLabel = '',
   showCancelButton = false,
   cancelButtonAppearance = 'raw',
+  cancelButtonColorRole = 'secondary',
   cancelHandler = () => {}
 } = defineProps<Props>()
 

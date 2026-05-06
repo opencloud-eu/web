@@ -17,6 +17,7 @@
       :show-cancel-button="showCancelButton"
       :show-advanced-search-button="listProviderAvailable"
       cancel-button-appearance="raw-inverse"
+      cancel-button-color-role="chrome"
       :cancel-handler="cancelSearch"
       small
       class="mx-auto sm:mx-0 bg-role-chrome sm:bg-transparent w-[95vw] sm:w-2xs md:w-lg h-12 absolute inset-0 sm:relative invisible sm:visible z-90 sm:z-auto"
@@ -24,7 +25,7 @@
       @update:model-value="updateTerm"
       @clear="onClear"
       @click="showPreview"
-      @keyup.esc="hideOptionsDrop"
+      @keyup.esc="onClear"
       @keyup.up="onKeyUpUp"
       @keyup.down="onKeyUpDown"
       @keyup.enter="onKeyUpEnter"
@@ -368,7 +369,7 @@ export default defineComponent({
     })
 
     const clearTermEvent = eventBus.subscribe('app.search.term.clear', () => {
-      term.value = ''
+      updateTerm('')
     })
 
     const { bindKeyAction } = useKeyboardActions()
@@ -490,8 +491,7 @@ export default defineComponent({
 
   methods: {
     onClear() {
-      this.term = ''
-      this.optionsDrop.hide()
+      this.updateTerm('')
     },
     findNextPreviewIndex(previous = false) {
       const elements = this.getFocusableElements()
@@ -529,13 +529,11 @@ export default defineComponent({
           return
         }
         const routeTerm = route?.query?.term
-        const input = this.$el.getElementsByTagName('input')[0]
-        if (!input || !routeTerm) {
+        if (!routeTerm) {
           return
         }
         this.restoreSearchFromRoute = initialLoad
         this.term = queryItemAsString(routeTerm)
-        input.value = queryItemAsString(routeTerm)
       })
     },
     getMoreResultsDetailsTextForProvider(provider: SearchProvider) {

@@ -11,7 +11,7 @@ import {
   ocDropStub
 } from '@opencloud-eu/web-test-helpers'
 import { useAvailableProviders } from '../../../src/composables'
-import { SearchBarFilter, SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
+import { eventBus, SearchBarFilter, SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 
 const component = defineComponent({
   emits: ['click', 'keyup'],
@@ -250,6 +250,22 @@ describe('Search Bar portal component', () => {
     const keyEvent = new KeyboardEvent('keydown', { key: 's', cancelable: true })
     wrapper.vm.onSearchShortcut(keyEvent)
     textInput.remove()
+  })
+  test('clears search term on key press esc while input has focus', async () => {
+    const { wrapper } = getMountedWrapper()
+    wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    wrapper.find(selectors.searchInput).trigger('keyup.esc')
+    expect(wrapper.vm.term).toBe('')
+  })
+  test('clears search term and hides options on app.search.term.clear event', async () => {
+    const { wrapper } = getMountedWrapper()
+    wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    eventBus.publish('app.search.term.clear')
+    await nextTick()
+    expect(wrapper.vm.term).toBe('')
+    expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
 })
 
