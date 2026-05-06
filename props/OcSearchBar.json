@@ -91,6 +91,13 @@
     "type": "AppearanceType"
   },
   {
+    "name": "cancelButtonColorRole",
+    "required": false,
+    "description": "The color role of the cancel button.",
+    "default": "secondary",
+    "type": "OcButtonProps['colorRole']"
+  },
+  {
     "name": "cancelHandler",
     "required": false,
     "description": "The handler for the cancel button.",
