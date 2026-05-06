@@ -1,18 +1,20 @@
 import CreateOrUploadMenu from '../../../src/components/CreateOrUploadMenu.vue'
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
+import { FileAction, useExtensionRegistry, Extension } from '@opencloud-eu/web-pkg'
 import {
-  FileAction,
   useFileActionsCreateNewFile,
   useFileActionsCreateNewFolder,
-  useFileActionsCreateNewShortcut,
-  useExtensionRegistry,
-  Extension
-} from '@opencloud-eu/web-pkg'
+  useFileActionsCreateNewShortcut
+} from '../../../src/composables/actions/files'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { computed } from 'vue'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>())
+}))
+
+vi.mock('../../../src/composables/actions/files', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useFileActionsCreateNewFile: vi.fn(),
   useFileActionsCreateNewFolder: vi.fn(),

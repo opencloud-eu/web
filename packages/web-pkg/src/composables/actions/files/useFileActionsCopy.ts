@@ -67,7 +67,7 @@ export const useFileActionsCopy = () => {
 
           if (
             isLocationCommonActive(router, 'files-common-search') &&
-            resources.every((r) => isProjectSpaceResource(r))
+            resources.some((r) => isProjectSpaceResource(r))
           ) {
             return false
           }

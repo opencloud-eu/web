@@ -66,7 +66,6 @@ import {
   FileAction,
   routeToContextQuery,
   useEmbedMode,
-  useFileActionsCreateLink,
   useResourcesStore,
   useRouter,
   useSpacesStore
@@ -74,6 +73,7 @@ import {
 import { extractNameWithoutExtension, Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import { useFileActionsCreateLink } from '../../composables'
 
 const { $gettext } = useGettext()
 const { isLocationPicker, isFilePicker, postMessage, chooseFileName, chooseFileNameSuggestion } =

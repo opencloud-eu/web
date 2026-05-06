@@ -31,7 +31,7 @@ export default defineComponent({
       )
     )
 
-    const menuItemsSidebar = computed(() =>
+    const menuItemsQuaternaryActions = computed(() =>
       [...unref(showDetailsActions)].filter((item) => item.isVisible(props.actionOptions))
     )
 
@@ -44,10 +44,10 @@ export default defineComponent({
           items: unref(menuItemsPrimaryActions)
         })
       }
-      if (unref(menuItemsSidebar).length) {
+      if (unref(menuItemsQuaternaryActions).length) {
         sections.push({
-          name: 'sidebar',
-          items: unref(menuItemsSidebar)
+          name: 'quaternaryActions',
+          items: unref(menuItemsQuaternaryActions)
         })
       }
       return sections

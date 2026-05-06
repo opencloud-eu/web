@@ -116,7 +116,7 @@
         class="preview-controls-favorite raw-hover-surface p-1"
         appearance="raw"
         :aria-label="resourceFavoriteIconDescription"
-        @click="favoriteFileActions[0].handler({ space, resources: [files[activeIndex].resource] })"
+        @click="favoriteAction?.handler(actionOptions)"
       >
         <oc-icon fill-type="line" :name="resourceFavoriteIcon" />
       </oc-button>
@@ -137,13 +137,15 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  ActionExtension,
   ActionOptions,
   isMacOs,
   useFileActionsDelete,
-  useFileActionsFavorite,
+  useExtensionRegistry,
   useGetMatchingSpace
 } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
+import { previewToolbarActionsExtensionPoint } from '../extensionPoints'
 
 const {
   files,
@@ -180,10 +182,23 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { actions: favoriteFileActions } = useFileActionsFavorite()
+const { requestExtensions } = useExtensionRegistry()
 const { actions: deleteFileActions } = useFileActionsDelete()
 
 const space = computed(() => getMatchingSpace(files[activeIndex].resource))
+const actionOptions = computed(() => ({
+  space: unref(space),
+  resources: [files[activeIndex].resource]
+}))
+
+const previewToolbarActions = computed(() => {
+  return (requestExtensions<ActionExtension>(previewToolbarActionsExtensionPoint) || []).map(
+    (e) => e.action
+  )
+})
+const favoriteAction = computed(() => {
+  return unref(previewToolbarActions).find((action) => action.name === 'favorite')
+})
 
 const ariaHiddenFileCount = computed(() => {
   return $gettext('%{ displayIndex } of %{ availableMediaFiles }', {
@@ -213,10 +228,10 @@ const showDeleteButton = computed(() => {
 })
 
 const showFavoriteButton = computed(() => {
-  return unref(favoriteFileActions)[0]?.isVisible({
-    space: unref(space),
-    resources: [files[activeIndex].resource]
-  })
+  if (!unref(favoriteAction)) {
+    return false
+  }
+  return unref(favoriteAction).isVisible(unref(actionOptions))
 })
 
 const resourceDeleteIcon = computed(() => {
@@ -230,17 +245,11 @@ const resourceDeleteDescription = computed(() => {
 })
 
 const resourceFavoriteIcon = computed(() => {
-  return (unref(favoriteFileActions)[0].icon as (options: ActionOptions) => string)({
-    space: unref(space),
-    resources: [files[activeIndex].resource]
-  })
+  return (unref(favoriteAction)?.icon as (options: ActionOptions) => string)?.(unref(actionOptions))
 })
 
 const resourceFavoriteIconDescription = computed(() => {
-  return unref(favoriteFileActions)[0].label({
-    space: unref(space),
-    resources: [files[activeIndex].resource]
-  })
+  return unref(favoriteAction)?.label(unref(actionOptions))
 })
 
 const enterFullScreenDescription = computed(() => $gettext('Enter full screen mode'))

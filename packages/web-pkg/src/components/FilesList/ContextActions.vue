@@ -11,25 +11,15 @@ import {
   useExtensionRegistry,
   useFileActions,
   useFileActionsCopy,
-  useFileActionsCopyPermanentLink,
-  useFileActionsCreateSpaceFromResource,
   useFileActionsDelete,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
   useFileActionsEnableSync,
-  useFileActionsFavorite,
   useFileActionsMove,
   useFileActionsOpenWithDefault,
-  useFileActionsPaste,
-  useFileActionsRename,
-  useFileActionsRestore,
-  useFileActionsSetImage,
-  useFileActionsShowDetails,
-  useFileActionsShowShares,
-  useFileActionsToggleHideShare
+  useFileActionsRestore
 } from '../../composables'
-import { isNil } from 'lodash-es'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
 
@@ -48,22 +38,13 @@ export default defineComponent({
 
     const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
     const { actions: enableSyncActions } = useFileActionsEnableSync()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
     const { actions: copyActions } = useFileActionsCopy()
-    const { actions: copyPermanentLinkActions } = useFileActionsCopyPermanentLink()
     const { actions: disableSyncActions } = useFileActionsDisableSync()
     const { actions: deleteActions } = useFileActionsDelete()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: favoriteActions } = useFileActionsFavorite()
     const { actions: moveActions } = useFileActionsMove()
-    const { actions: pasteActions } = useFileActionsPaste()
-    const { actions: renameActions } = useFileActionsRename()
     const { actions: restoreActions } = useFileActionsRestore()
-    const { actions: setSpaceImageActions } = useFileActionsSetImage()
-    const { actions: showDetailsActions } = useFileActionsShowDetails()
-    const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
-    const { actions: showSharesActions } = useFileActionsShowShares()
 
     const extensionRegistry = useExtensionRegistry()
     const extensionsContextActions = computed(() => {
@@ -95,66 +76,51 @@ export default defineComponent({
         ...unref(copyActions),
         ...unref(deleteActions),
         ...unref(restoreActions),
-        ...unref(createSpaceFromResourceActions),
-        ...unref(extensionsBatchActions).filter(
-          (a) => a.category === 'actions' || isNil(a.category)
-        )
+        ...unref(extensionsBatchActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
-    const menuItemsBatchSideBar = computed(() =>
-      [
-        ...unref(showDetailsActions),
-        ...unref(extensionsBatchActions).filter((a) => a.category === 'sidebar')
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+    const menuItemsBatchQuaternary = computed(() =>
+      [...unref(extensionsBatchActions).filter((a) => a.category === 'quaternary')].filter((item) =>
+        item.isVisible(unref(actionOptions))
+      )
     )
 
-    const menuItemsContext = computed(() => {
+    const menuItemsPrimary = computed(() => {
       return unref(openWithDefaultActions)
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
 
-    const menuItemsContextDrop = computed(() => {
+    const menuItemsPrimaryDrop = computed(() => {
       return getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true })
         .filter((item) => item.isVisible(unref(actionOptions)))
         .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
     })
 
-    const menuItemsShare = computed(() => {
-      return [
-        ...unref(showSharesActions),
-        ...unref(copyPermanentLinkActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'share')
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+    const menuItemsSecondary = computed(() => {
+      return [...unref(extensionsContextActions).filter((a) => a.category === 'secondary')].filter(
+        (item) => item.isVisible(unref(actionOptions))
+      )
     })
 
-    const menuItemsActions = computed(() => {
+    const menuItemsTertiary = computed(() => {
       return [
         ...unref(downloadArchiveActions),
         ...unref(downloadFileActions),
         ...unref(deleteActions),
         ...unref(moveActions),
         ...unref(copyActions),
-        ...unref(pasteActions),
-        ...unref(renameActions),
-        ...unref(createSpaceFromResourceActions),
         ...unref(restoreActions),
         ...unref(enableSyncActions),
         ...unref(disableSyncActions),
-        ...unref(hideShareActions),
-        ...unref(setSpaceImageActions),
-        ...unref(extensionsContextActions).filter(
-          (a) => a.category === 'actions' || isNil(a.category)
-        )
+        ...unref(extensionsContextActions).filter((a) => a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })
 
-    const menuItemsSidebar = computed(() => {
-      return [
-        ...unref(favoriteActions),
-        ...unref(showDetailsActions),
-        ...unref(extensionsContextActions).filter((a) => a.category === 'sidebar')
-      ].filter((item) => item.isVisible(unref(actionOptions)))
+    const menuItemsQuaternary = computed(() => {
+      return [...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')].filter(
+        (item) => item.isVisible(unref(actionOptions))
+      )
     })
 
     const menuSections = computed(() => {
@@ -169,42 +135,42 @@ export default defineComponent({
 
         sections.push({
           name: 'batch-details',
-          items: [...unref(menuItemsBatchSideBar)]
+          items: [...unref(menuItemsBatchQuaternary)]
         })
         return sections
       }
 
-      if ([...unref(menuItemsContext), ...unref(menuItemsContextDrop)].length) {
+      if ([...unref(menuItemsPrimary), ...unref(menuItemsPrimaryDrop)].length) {
         sections.push({
-          name: 'context',
-          items: [...unref(menuItemsContext)],
+          name: 'primary',
+          items: [...unref(menuItemsPrimary)],
           dropItems: [
             {
               label: $gettext('Open with...'),
               name: 'open-with',
               icon: 'apps',
-              items: [...unref(menuItemsContextDrop)]
+              items: [...unref(menuItemsPrimaryDrop)]
             }
           ]
         })
       }
 
-      if (unref(menuItemsShare).length) {
+      if (unref(menuItemsSecondary).length) {
         sections.push({
-          name: 'share',
-          items: unref(menuItemsShare)
+          name: 'secondary',
+          items: unref(menuItemsSecondary)
         })
       }
-      if (unref(menuItemsActions).length) {
+      if (unref(menuItemsTertiary).length) {
         sections.push({
-          name: 'actions',
-          items: unref(menuItemsActions)
+          name: 'tertiary',
+          items: unref(menuItemsTertiary)
         })
       }
-      if (unref(menuItemsSidebar).length) {
+      if (unref(menuItemsQuaternary).length) {
         sections.push({
-          name: 'sidebar',
-          items: unref(menuItemsSidebar)
+          name: 'quaternary',
+          items: unref(menuItemsQuaternary)
         })
       }
       return sections

@@ -21,7 +21,8 @@ const downloadButtonBatchAction = '.oc-files-actions-download-archive-trigger'
 const appBarContextMenu = '#oc-openfile-contextmenu-trigger'
 const appBarDownloadFileButton = '#oc-openfile-contextmenu .oc-files-actions-download-file-trigger'
 const deleteButtonBatchAction = '.oc-files-actions-delete-trigger'
-const createSpaceFromResourceAction = '.oc-files-actions-create-space-from-resource-trigger'
+const createSpaceFromResourceAction =
+  '[role="menuitem"].oc-files-actions-create-space-from-resource-trigger'
 const checkBox = `//*[@data-test-selection-resource-name="%s"]//input[@type="checkbox"]`
 const checkBoxForTrashbin = `//*[@data-test-selection-resource-path="%s"]//input[@type="checkbox"]`
 const filesSelector = '//*[@data-test-resource-name="%s"]'
@@ -152,7 +153,7 @@ const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const subContextMenuAction = '//*[@id="app-runtime-drop"]//span[text()="%s"]'
 const openWithAction = '.oc-files-actions-%s-trigger'
-const openWithButton = '//*[@id="oc-files-context-actions-context"]//span[text()="Open with..."]'
+const openWithButton = '//*[@id="oc-files-context-actions-primary"]//span[text()="Open with..."]'
 const tilesSlider = '#tiles-size-slider'
 const undoBtn = 'action-handler'
 const previewFavoriteButton = '.preview-controls-favorite'

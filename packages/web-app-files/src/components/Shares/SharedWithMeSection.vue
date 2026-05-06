@@ -83,7 +83,6 @@ import {
   useCapabilityStore,
   useConfigStore,
   useFileActions,
-  useFileActionsToggleHideShare,
   useLoadPreview,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
@@ -95,6 +94,7 @@ import { ContextActions } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useSelectedResources } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { useFileActionsToggleHideShare } from '../../composables/actions/files'
 
 export default defineComponent({
   components: {

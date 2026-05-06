@@ -83,6 +83,9 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     blockquote,
     codeBlock,
     horizontalRule,
+    image,
+    imageUrl,
+    imageUpload,
     table,
     addRowBefore,
     addRowAfter,
@@ -127,6 +130,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         id: 'advanced',
         title: $gettext('Advanced'),
         actions: [blockquote(), codeBlock(), horizontalRule(), table()]
+      },
+      {
+        id: 'image',
+        title: $gettext('Image'),
+        actions: [image(), imageUrl(), imageUpload()]
       },
       {
         id: 'table-editing',

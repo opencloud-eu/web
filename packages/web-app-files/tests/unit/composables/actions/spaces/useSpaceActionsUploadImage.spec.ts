@@ -5,7 +5,7 @@ import {
   RouteLocation,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { unref, VNodeRef } from 'vue'
+import { unref } from 'vue'
 import { useSpaceHelpers } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
@@ -17,7 +17,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 describe('uploadImage', () => {
   describe('isVisible property', () => {
     it('should be true if canEditImage is true', () => {
-      const spaceMock = mock<SpaceResource>({ canEditImage: () => true })
+      const spaceMock = mock<SpaceResource>({ driveType: 'project', canEditImage: () => true })
 
       getWrapper({
         setup: ({ actions }) => {
@@ -57,12 +57,7 @@ function getWrapper({
 }: {
   setup: (
     instance: ReturnType<typeof useSpaceActionsUploadImage>,
-    {
-      spaceImageInput
-    }: {
-      spaceImageInput: VNodeRef
-      clientService: ReturnType<typeof defaultComponentMocks>['$clientService']
-    }
+    { clientService }: { clientService: ReturnType<typeof defaultComponentMocks>['$clientService'] }
   ) => void
 }) {
   vi.mocked(useSpaceHelpers).mockReturnValue({
@@ -78,8 +73,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const spaceImageInput = mock<VNodeRef>()
-        const instance = useSpaceActionsUploadImage({ spaceImageInput })
+        const instance = useSpaceActionsUploadImage()
         unref(instance.actions)[0].handler({
           resources: [
             mock<SpaceResource>({
@@ -87,7 +81,7 @@ function getWrapper({
             })
           ]
         })
-        setup(instance, { spaceImageInput, clientService: mocks.$clientService })
+        setup(instance, { clientService: mocks.$clientService })
       },
       {
         mocks,

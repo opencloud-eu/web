@@ -25,12 +25,16 @@ vi.mock('../../../../src/composables/keyboardActions')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useBreadcrumbsFromPath: vi.fn(),
-  useFileActionsCreateNewFolder: () => ({
-    actions: [{ handler: mockCreateFolder }]
-  }),
   useEmbedMode: vi.fn().mockImplementation(() => mockUseEmbedMode()),
   useFileActions: vi.fn(() => ({})),
   useOpenWithDefaultApp: vi.fn(() => ({}))
+}))
+
+vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useFileActionsCreateNewFolder: () => ({
+    actions: [{ handler: mockCreateFolder }]
+  })
 }))
 
 const selectors = Object.freeze({

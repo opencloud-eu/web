@@ -8,12 +8,7 @@ import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import ContextActions from '../../../../src/components/FilesList/ContextActions.vue'
 
-import {
-  useFileActionsEnableSync,
-  useFileActionsCopyPermanentLink,
-  useFileActionsRename,
-  useFileActionsCopy
-} from '../../../../src/composables'
+import { useFileActionsEnableSync, useFileActionsCopy } from '../../../../src/composables'
 import { computed } from 'vue'
 import { Action } from '../../../../src/composables/actions'
 
@@ -30,12 +25,7 @@ describe.skip('ContextActions', () => {
     })
 
     it('render enabled actions', () => {
-      const enabledComposables = [
-        useFileActionsEnableSync,
-        useFileActionsCopyPermanentLink,
-        useFileActionsRename,
-        useFileActionsCopy
-      ]
+      const enabledComposables = [useFileActionsEnableSync, useFileActionsCopy]
       for (const composable of enabledComposables) {
         vi.mocked(composable).mockImplementation(() => ({
           actions: computed(() => [mock<Action>({ isVisible: () => true })])

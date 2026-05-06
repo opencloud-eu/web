@@ -5,15 +5,20 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import EmbedActions from '../../../../src/components/EmbedActions/EmbedActions.vue'
-import { FileAction, useEmbedMode, useFileActionsCreateLink } from '@opencloud-eu/web-pkg'
+import { FileAction, useEmbedMode } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateLink } from '../../../../src/composables/actions/files'
 import { mock } from 'vitest-mock-extended'
 import { ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useFileActionsCreateLink: vi.fn(),
   useEmbedMode: vi.fn()
+}))
+
+vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useFileActionsCreateLink: vi.fn()
 }))
 
 const selectors = Object.freeze({

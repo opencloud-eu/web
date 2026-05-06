@@ -1,0 +1,138 @@
+import { mock } from 'vitest-mock-extended'
+import { nextTick, ref, unref } from 'vue'
+import {
+  FolderResource,
+  Resource,
+  ShareSpaceResource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
+import {
+  defaultComponentMocks,
+  getComposableWrapper,
+  RouteLocation
+} from '@opencloud-eu/web-test-helpers'
+import { useScrollToMock } from '../../../../mocks/useScrollToMock'
+import { useMessages, useModals, useResourcesStore, useScrollTo } from '@opencloud-eu/web-pkg'
+import { useFileActionsCreateNewFolder } from '../../../../../src/composables/actions/files'
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useScrollTo: vi.fn()
+}))
+
+describe('useFileActionsCreateNewFolder', () => {
+  describe('addNewFolder', () => {
+    it('create new folder', () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      getWrapper({
+        space,
+        setup: async ({ addNewFolder }) => {
+          await addNewFolder('myfolder')
+          await nextTick()
+
+          const { upsertResource } = useResourcesStore()
+          expect(upsertResource).toHaveBeenCalled()
+
+          const { showMessage } = useMessages()
+          expect(showMessage).toHaveBeenCalledWith({ title: '»myfolder« was created successfully' })
+        }
+      })
+    })
+
+    it('show error message if createFolder fails', () => {
+      const consoleErrorMock = vi.spyOn(console, 'error').mockReturnThis()
+      const space = mock<SpaceResource>({ id: '1' })
+      getWrapper({
+        resolveCreateFolder: false,
+        space,
+        setup: async ({ addNewFolder }) => {
+          await addNewFolder('myfolder')
+          await nextTick()
+          const { showErrorMessage } = useMessages()
+          expect(showErrorMessage).toHaveBeenCalledWith(
+            expect.objectContaining({
+              title: 'Failed to create folder'
+            })
+          )
+          consoleErrorMock.mockRestore()
+        }
+      })
+    })
+
+    it('adds the remoteItemId if the current space is a share space', () => {
+      const space = mock<ShareSpaceResource>({ id: '1', driveType: 'share' })
+      getWrapper({
+        space,
+        setup: async ({ addNewFolder }) => {
+          await addNewFolder('myfolder')
+
+          const { upsertResource } = useResourcesStore()
+          expect(upsertResource).toHaveBeenCalledWith(
+            expect.objectContaining({ remoteItemId: '1' })
+          )
+        }
+      })
+    })
+  })
+
+  describe('createNewFolderModal', () => {
+    it('should show modal', () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      getWrapper({
+        space,
+        setup: ({ actions }) => {
+          const { dispatchModal } = useModals()
+          unref(actions)[0].handler()
+
+          expect(dispatchModal).toHaveBeenCalled()
+        }
+      })
+    })
+  })
+})
+
+function getWrapper({
+  resolveCreateFolder = true,
+  space = undefined,
+  setup
+}: {
+  resolveCreateFolder?: boolean
+  space?: SpaceResource
+  setup: (instance: ReturnType<typeof useFileActionsCreateNewFolder>) => void
+}) {
+  vi.mocked(useScrollTo).mockImplementation(() => useScrollToMock())
+
+  const mocks = {
+    ...defaultComponentMocks({
+      currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
+    }),
+    space
+  }
+  mocks.$clientService.webdav.createFolder.mockImplementation(() => {
+    if (resolveCreateFolder) {
+      return Promise.resolve({
+        id: '1',
+        type: 'folder',
+        isReceivedShare: vi.fn(),
+        path: '/'
+      } as FolderResource)
+    }
+    return Promise.reject('error')
+  })
+
+  const currentFolder = mock<Resource>({ id: '1', path: '/' })
+
+  return {
+    wrapper: getComposableWrapper(
+      () => {
+        const instance = useFileActionsCreateNewFolder({ space: ref(space) })
+        setup(instance)
+      },
+      {
+        mocks,
+        provide: mocks,
+        pluginOptions: { piniaOptions: { resourcesStore: { currentFolder } } }
+      }
+    )
+  }
+}

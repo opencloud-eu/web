@@ -35,7 +35,6 @@ import {
   WebWorkersStore,
   useWebWorkersStore,
   ClientService,
-  LoadingService,
   PasswordPolicyService,
   PreviewService,
   UppyService,
@@ -50,6 +49,7 @@ import {
   GroupwareConfigStore,
   RawGroupwareConfigSchema,
   useSideBar,
+  LoadingService,
   getExtensionNavItems,
   getBackendVersion,
   getWebVersion
@@ -516,9 +516,8 @@ export const announceArchiverService = ({
  * @param vue
  */
 export const announceLoadingService = ({ app }: { app: App }): void => {
-  const loadingService = new LoadingService()
-  app.config.globalProperties.$loadingService = loadingService
-  app.provide('$loadingService', loadingService)
+  app.config.globalProperties.$loadingService = new LoadingService()
+  app.provide('$loadingService', app.config.globalProperties.$loadingService)
 }
 
 /**

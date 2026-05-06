@@ -16,18 +16,14 @@ import {
 
 import {
   useFileActionsCopy,
-  useFileActionsCreateSpaceFromResource,
   useFileActionsDelete,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
   useFileActionsEnableSync,
-  useFileActionsFavorite,
   useFileActionsMove,
   useFileActionsNavigate,
-  useFileActionsRename,
-  useFileActionsRestore,
-  useFileActionsToggleHideShare
+  useFileActionsRestore
 } from './index'
 import {
   ActionExtension,
@@ -62,19 +58,15 @@ export const useFileActions = () => {
   const { options } = storeToRefs(configStore)
 
   const { actions: enableSyncActions } = useFileActionsEnableSync()
-  const { actions: hideShareActions } = useFileActionsToggleHideShare()
   const { actions: copyActions } = useFileActionsCopy()
   const { actions: deleteActions } = useFileActionsDelete()
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
   const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
-  const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
-  const { actions: renameActions } = useFileActionsRename()
   const { actions: restoreActions } = useFileActionsRestore()
-  const { actions: createSpaceFromResource } = useFileActionsCreateSpaceFromResource()
 
   const systemActions = computed<FileAction<any>[]>(() => [
     ...unref(downloadArchiveActions),
@@ -82,13 +74,9 @@ export const useFileActions = () => {
     ...unref(deleteActions),
     ...unref(moveActions),
     ...unref(copyActions),
-    ...unref(renameActions),
-    ...unref(createSpaceFromResource),
     ...unref(restoreActions),
     ...unref(enableSyncActions),
-    ...unref(hideShareActions),
-    ...unref(disableSyncActions),
-    ...unref(favoriteActions)
+    ...unref(disableSyncActions)
   ])
 
   const extensionsContextActions = computed(() => {
@@ -99,7 +87,7 @@ export const useFileActions = () => {
       }) || []
     )
       .map((e) => e.action)
-      .filter((action) => action.category === 'context')
+      .filter((action) => action.category === 'primary')
   })
 
   const editorActions = computed(() => {
