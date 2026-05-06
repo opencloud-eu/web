@@ -7,15 +7,20 @@
     <div
       class="absolute inset-x-0 bottom-0 flex flex-col rounded-t-2xl bg-role-surface-container-high shadow-xl"
     >
-      <div class="flex items-center justify-between border-role-outline-variant px-4 py-3">
-        <h2 class="text-lg font-bold" v-text="$gettext('New contact')" />
+      <div class="flex items-center justify-between px-4 pt-4">
+        <span class="font-semibold" v-text="$gettext('New contact')" />
         <div class="flex items-center gap-3">
-          <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="requestClose">
+          <oc-button
+            appearance="raw"
+            class="raw-hover-surface"
+            :aria-label="$gettext('Close')"
+            @click="requestClose"
+          >
             <oc-icon name="close" fill-type="line" />
           </oc-button>
         </div>
       </div>
-      <div class="px-4 pb-4">
+      <div class="px-4 pb-4 pt-4">
         <div class="rounded-xl bg-role-surface">
           <div class="overflow-auto px-4 py-4 pb-6">
             <ContactCreateForm
