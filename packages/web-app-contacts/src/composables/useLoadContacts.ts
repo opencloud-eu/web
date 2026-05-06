@@ -2,9 +2,8 @@ import { computed } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { useContactsStore } from './piniaStores/contacts'
-import { ContactSchema } from '../types'
+import { parseContactsResponse } from '../types'
 import { urlJoin } from '@opencloud-eu/web-client'
-import { z } from 'zod'
 
 let loadContactsTask: ReturnType<typeof useTask> | null = null
 const isLoading = computed(() => loadContactsTask?.isRunning ?? false)
@@ -23,7 +22,7 @@ export const useLoadContacts = () => {
             `accounts/${accountId}/addressbooks/${addressBookId}/contacts`
           )
         )
-        const contacts = z.array(ContactSchema).parse(data)
+        const contacts = parseContactsResponse(data)
         setContacts(contacts)
         console.info('Loaded contacts:', contacts)
         return contacts

@@ -423,6 +423,9 @@ importers:
       '@opencloud-eu/web-pkg':
         specifier: workspace:*
         version: link:../web-pkg
+      email-validator:
+        specifier: 2.0.4
+        version: 2.0.4
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1

@@ -47,21 +47,26 @@ import { useGroupwareAccountsStore } from '@opencloud-eu/web-pkg'
 import { useLoadContacts } from '../composables/useLoadContacts'
 import { unref } from 'vue'
 import { useContactsStore } from '../composables/piniaStores/contacts'
+import { useContactEditor } from '../composables/useContactEditor'
 
 const addressBooksStore = useAddressBooksStore()
 const accountsStore = useGroupwareAccountsStore()
-const { setCurrentContact } = useContactsStore()
+const contactsStore = useContactsStore()
+const { runWithDiscardConfirmation } = useContactEditor()
 const { currentAccount } = storeToRefs(accountsStore)
 const { setCurrentAddressBook } = addressBooksStore
 const { addressBooks, currentAddressBook } = storeToRefs(addressBooksStore)
+const { setCurrentContact } = contactsStore
 
 const { isLoading } = useLoadAddressBooks()
 const { loadContacts } = useLoadContacts()
 
 const onSelectAddressBook = async (addressBook: AddressBook) => {
-  setCurrentAddressBook(addressBook)
-  setCurrentContact(null)
-  await loadContacts(unref(currentAccount).accountId, addressBook.id)
+  await runWithDiscardConfirmation(async () => {
+    setCurrentAddressBook(addressBook)
+    setCurrentContact(null)
+    await loadContacts(unref(currentAccount).accountId, addressBook.id)
+  })
 }
 </script>
 
