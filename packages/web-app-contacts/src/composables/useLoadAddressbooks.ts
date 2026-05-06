@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { useAddressBooksStore } from './piniaStores/addressbooks'
-import { AddressBooksResponseSchema } from '../types'
+import { parseAddressBooksResponse } from '../types'
 import { urlJoin } from '@opencloud-eu/web-client'
 
 let loadAddressBooksTask: ReturnType<typeof useTask> | null = null
@@ -19,9 +19,9 @@ export const useLoadAddressBooks = () => {
         const { data } = yield clientService.httpAuthenticated.get(
           urlJoin(configStore.groupwareUrl, `accounts/${accountId}/addressbooks`)
         )
-        const { addressbooks } = AddressBooksResponseSchema.parse(data)
+        const addressbooks = parseAddressBooksResponse(data)
         setAddressBooks(addressbooks)
-        console.info('Loaded addressBooks:', addressbooks)
+        console.info('Loaded addressbooks:', addressbooks)
         return addressbooks
       } catch (e) {
         console.error('Failed to load addressBooks:', e)

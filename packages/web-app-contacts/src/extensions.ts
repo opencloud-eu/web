@@ -13,12 +13,14 @@ import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import AddressBooksList from './components/AddressBooksList.vue'
 import { useGettext } from 'vue3-gettext'
+import { useContactEditor } from './composables/useContactEditor'
 
 export const extensions = (appInfo: ApplicationInformation) => {
   const capabilityStore = useCapabilityStore()
   const userStore = useUserStore()
   const { user } = storeToRefs(userStore)
   const { $gettext } = useGettext()
+  const { openCreateContact } = useContactEditor()
 
   const menuItemExtension: AppMenuItemExtension = {
     id: `app.${appInfo.id}.menuItem`,
@@ -38,7 +40,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
     label: () => $gettext('New'),
     mode: () => 'handler',
     handler: () => {
-      console.log('Create new contact')
+      openCreateContact()
     }
   }
 
