@@ -10,30 +10,27 @@
 </template>
 
 <script setup lang="ts">
-import { ActionMenuItem, FileActionOptions, useFileActions } from '@opencloud-eu/web-pkg'
+import {
+  ActionExtension,
+  ActionMenuItem,
+  FileActionOptions,
+  useExtensionRegistry,
+  useFileActions
+} from '@opencloud-eu/web-pkg'
 import { computed, inject, Ref, unref } from 'vue'
 import { IncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import {
-  useFileActionsDisableSync,
-  useFileActionsEnableSync,
-  useFileActionsCreateSpaceFromResource,
-  useFileActionsFavorite,
-  useFileActionsRename,
-  useFileActionsToggleHideShare
-} from '../../../composables'
+import { fileSideBarActionsExtensionPoint } from '../../../extensionPoints'
 
 const resource = inject<Ref<Resource>>('resource')
 const space = inject<Ref<SpaceResource>>('space')
 const resources = computed(() => {
   return [unref(resource)]
 })
+const { requestExtensions } = useExtensionRegistry()
 const { getAllOpenWithActions } = useFileActions()
-const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
-const { actions: disableSyncActions } = useFileActionsDisableSync()
-const { actions: enableSyncActions } = useFileActionsEnableSync()
-const { actions: favoriteActions } = useFileActionsFavorite()
-const { actions: renameActions } = useFileActionsRename()
-const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
+const extensionActions = computed(() =>
+  requestExtensions<ActionExtension>(fileSideBarActionsExtensionPoint).map((e) => e.action)
+)
 const actions = computed(() => {
   const options = {
     space: unref(space),
@@ -42,15 +39,9 @@ const actions = computed(() => {
   const shareActionOptions = options as FileActionOptions<IncomingShareResource>
 
   return [
+    //FIXME: as soon as all actions are migrated to web-app-files and registered as extension point, omit  ...getAllOpenWithActions(options),
     ...getAllOpenWithActions(options),
-    /** FIXME: getAllOpenWithActions only contains system actions, which is a hardcoded subset of file actions, that live in web-pkg.
-     * We need to add an extension point for sidebar actions, instead of hardcoding them **/
-    ...unref(renameActions).filter((action) => action.isVisible(options)),
-    ...unref(createSpaceFromResourceActions).filter((action) => action.isVisible(options)),
-    ...unref(favoriteActions).filter((action) => action.isVisible(options)),
-    ...unref(enableSyncActions).filter((action) => action.isVisible(shareActionOptions)),
-    ...unref(disableSyncActions).filter((action) => action.isVisible(shareActionOptions)),
-    ...unref(toggleHideShareActions).filter((action) => action.isVisible(shareActionOptions))
+    ...unref(extensionActions).filter((action) => action.isVisible(shareActionOptions))
   ]
 })
 </script>
