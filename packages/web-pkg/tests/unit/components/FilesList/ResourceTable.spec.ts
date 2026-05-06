@@ -10,6 +10,7 @@ import {
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
+import { useExtensionRegistry } from '../../../../src/composables'
 import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
@@ -18,7 +19,6 @@ import { mock } from 'vitest-mock-extended'
 import { computed } from 'vue'
 import { Identity } from '@opencloud-eu/web-client/graph/generated'
 import { describe } from 'vitest'
-import { useFileActionsRename } from '../../../../src/composables/actions/files'
 import { FileAction } from '../../../../src/composables/actions/types'
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({
@@ -37,9 +37,13 @@ vi.mock('../../../../src/composables/resources', async (importOriginal) => ({
   useCanBeOpenedWithSecureView: vi.fn()
 }))
 
+vi.mock('../../../../src/composables', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useExtensionRegistry: vi.fn()
+}))
+
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useFileActionsRename: vi.fn(),
   useFileActions: vi.fn().mockReturnValue({
     getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() })
   })
@@ -691,11 +695,27 @@ function getMountedWrapper({
     canBeOpenedWithSecureView: () => canBeOpenedWithSecureView
   })
 
-  const useFileActionsRenameMock = mock<ReturnType<typeof useFileActionsRename>>()
-  useFileActionsRenameMock.actions = computed(() => [
-    mock<FileAction>({ isVisible: () => hasRenameAction })
-  ])
-  vi.mocked(useFileActionsRename).mockReturnValue(useFileActionsRenameMock)
+  vi.mocked(useExtensionRegistry).mockReturnValue({
+    requestExtensions: vi.fn((extensionPoint) => {
+      if (!hasRenameAction || extensionPoint.id !== 'global.files.resource-table-actions') {
+        return []
+      }
+      return [
+        {
+          id: 'com.github.opencloud-eu.web.files.context-action.rename',
+          type: 'action',
+          action: mock<FileAction>({
+            name: 'rename',
+            isVisible: () => true,
+            handler: vi.fn(),
+            label: () => 'Rename',
+            icon: 'edit-2',
+            class: 'oc-files-actions-rename-trigger'
+          })
+        }
+      ]
+    })
+  } as any)
 
   return {
     wrapper: mount(ResourceTable, {

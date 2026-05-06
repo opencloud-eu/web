@@ -8,14 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ContextActionMenu,
-  MenuSection,
-  SpaceActionOptions,
-  useFileActionsEmptyTrashBin,
-  useSpaceActionsNavigateToTrash
-} from '@opencloud-eu/web-pkg'
+import { ContextActionMenu, MenuSection, SpaceActionOptions } from '@opencloud-eu/web-pkg'
 import { computed, toRef, unref } from 'vue'
+import { useSpaceActionsNavigateToTrash, useFileActionsEmptyTrashBin } from '../../composables'
 
 const props = defineProps<{
   actionOptions: SpaceActionOptions

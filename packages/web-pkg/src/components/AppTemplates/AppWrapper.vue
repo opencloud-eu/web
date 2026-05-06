@@ -47,10 +47,7 @@ import {
   useConfigStore,
   useResourcesStore,
   FileContentOptions,
-  useFileActionsCopyPermanentLink,
   useFileActionsDownloadFile,
-  useFileActionsShowDetails,
-  useFileActionsShowShares,
   FileActionOptions,
   FileAction,
   useLoadingService,
@@ -65,6 +62,7 @@ import {
   useGetResourceContext,
   useKeyboardActions,
   useExtensionRegistry,
+  ActionExtension,
   CustomComponentExtension
 } from '../../composables'
 import {
@@ -79,7 +77,7 @@ import {
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { HttpError } from '@opencloud-eu/web-client'
 import { dirname } from 'path'
-import { useFileActionsOpenWithApp } from '../../composables/actions/files/useFileActionsOpenWithApp'
+import { useFileActionsOpenWithApp } from '../../composables'
 import { UnsavedChangesModal } from '../Modals'
 import { formatFileSize, getSharedDriveItem } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
@@ -124,10 +122,7 @@ const { isSideBarOpen } = storeToRefs(sidebarStore)
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({
   appId: applicationId
 })
-const { actions: copyPermanentLinkActions } = useFileActionsCopyPermanentLink()
 const { actions: downloadFileActions } = useFileActionsDownloadFile()
-const { actions: showDetailsActions } = useFileActionsShowDetails()
-const { actions: showSharesActions } = useFileActionsShowShares()
 const { actions: deleteFileActions } = useFileActionsDelete()
 
 const noResourceLoading = computed(() => {
@@ -147,7 +142,7 @@ const currentContent = ref<unknown>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
 
-const { registerExtensions, unregisterExtensions } = useExtensionRegistry()
+const { registerExtensions, unregisterExtensions, requestExtensions } = useExtensionRegistry()
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
 const appBarExtension = computed<CustomComponentExtension[]>(() => {
   if (unref(loading) || unref(loadingError) || !unref(resource)) {
@@ -595,7 +590,7 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
   closeApp()
 }
 
-const menuItemsContext = computed(() => {
+const menuItemsPrimary = computed(() => {
   return [
     ...unref(openWithAppActions),
     ...unref(fileActionsSave),
@@ -607,12 +602,22 @@ const menuItemsContext = computed(() => {
     })
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
-const menuItemsShare = computed(() => {
-  return [...unref(showSharesActions), ...unref(copyPermanentLinkActions)].filter((item) =>
-    item.isVisible(unref(actionOptions))
-  )
+
+const extensionContextActions = computed(() => {
+  return (
+    requestExtensions<ActionExtension>({
+      id: 'global.files.context-actions',
+      extensionType: 'action'
+    }) || []
+  ).map((e) => e.action)
 })
-const menuItemsActions = computed(() => {
+
+const menuItemsSecondary = computed(() => {
+  return unref(extensionContextActions)
+    .filter((action) => action.category === 'secondary')
+    .filter((item) => item.isVisible(unref(actionOptions)))
+})
+const menuItemsTertiary = computed(() => {
   return [
     ...unref(downloadFileActions).map((originalAction) => ({
       ...originalAction,
@@ -622,34 +627,36 @@ const menuItemsActions = computed(() => {
     ...unref(deleteFileActions)
   ].filter((item) => item.isVisible(unref(actionOptions)))
 })
-const menuItemsSidebar = computed(() => {
-  return [...unref(showDetailsActions)].filter((item) => item.isVisible(unref(actionOptions)))
+const menuItemsQuaternary = computed(() => {
+  return unref(extensionContextActions)
+    .filter((action) => action.category === 'quaternary')
+    .filter((item) => item.isVisible(unref(actionOptions)))
 })
 const dropDownMenuSections = computed(() => {
   const sections = []
 
-  if (unref(menuItemsContext).length) {
+  if (unref(menuItemsPrimary).length) {
     sections.push({
-      name: 'context',
-      items: unref(menuItemsContext)
+      name: 'primary',
+      items: unref(menuItemsPrimary)
     })
   }
-  if (unref(menuItemsShare).length) {
+  if (unref(menuItemsSecondary).length) {
     sections.push({
-      name: 'share',
-      items: unref(menuItemsShare)
+      name: 'secondary',
+      items: unref(menuItemsSecondary)
     })
   }
-  if (unref(menuItemsActions).length) {
+  if (unref(menuItemsTertiary).length) {
     sections.push({
-      name: 'actions',
-      items: unref(menuItemsActions)
+      name: 'tertiary',
+      items: unref(menuItemsTertiary)
     })
   }
-  if (unref(menuItemsSidebar).length) {
+  if (unref(menuItemsQuaternary).length) {
     sections.push({
-      name: 'sidebar',
-      items: unref(menuItemsSidebar)
+      name: 'quaternary',
+      items: unref(menuItemsQuaternary)
     })
   }
   return sections

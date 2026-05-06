@@ -85,10 +85,8 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
   useFileActionsEnableSync,
-  useFileActionsFavorite,
   useFileActionsMove,
-  useFileActionsRestore,
-  useSpaceActionsDuplicate
+  useFileActionsRestore
 } from '../../composables/actions'
 import {
   ActionExtension,
@@ -97,16 +95,11 @@ import {
   useAbility,
   useActiveLocation,
   useExtensionRegistry,
-  useFileActionsToggleHideShare,
   useIsTopBarSticky,
   useResourcesStore,
   useRouteMeta,
   useRouter,
   useSideBar,
-  useSpaceActionsDelete,
-  useSpaceActionsDisable,
-  useSpaceActionsEditQuota,
-  useSpaceActionsRestore,
   useSpacesStore
 } from '../../composables'
 import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/helpers'
@@ -169,20 +162,13 @@ export default defineComponent({
     const space = computed(() => props.space)
 
     const { actions: enableSyncActions } = useFileActionsEnableSync()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
     const { actions: copyActions } = useFileActionsCopy()
-    const { actions: duplicateActions } = useSpaceActionsDuplicate()
     const { actions: disableSyncActions } = useFileActionsDisableSync()
     const { actions: deleteActions } = useFileActionsDelete()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
     const { actions: moveActions } = useFileActionsMove()
     const { actions: restoreActions } = useFileActionsRestore()
-    const { actions: favoriteActions } = useFileActionsFavorite()
-    const { actions: deleteSpaceActions } = useSpaceActionsDelete()
-    const { actions: disableSpaceActions } = useSpaceActionsDisable()
-    const { actions: editSpaceQuotaActions } = useSpaceActionsEditQuota()
-    const { actions: restoreSpaceActions } = useSpaceActionsRestore()
 
     const breadcrumbMaxWidth = ref<number>(0)
     const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
@@ -193,7 +179,6 @@ export default defineComponent({
 
     const batchActions = computed(() => {
       let actions: FileAction[] = [
-        ...unref(hideShareActions),
         ...unref(enableSyncActions),
         ...unref(disableSyncActions),
         ...unref(downloadArchiveActions),
@@ -201,24 +186,8 @@ export default defineComponent({
         ...unref(moveActions),
         ...unref(copyActions),
         ...unref(deleteActions),
-        ...unref(restoreActions),
-        ...unref(favoriteActions)
+        ...unref(restoreActions)
       ]
-
-      /**
-       * We show mixed results in search result page, including resources like files and folders but also spaces.
-       * Space actions shouldn't be possible in that context.
-       **/
-      if (!isSearchLocation.value) {
-        actions = [
-          ...actions,
-          ...unref(duplicateActions),
-          ...unref(editSpaceQuotaActions),
-          ...unref(restoreSpaceActions),
-          ...unref(deleteSpaceActions),
-          ...unref(disableSpaceActions)
-        ] as FileAction[]
-      }
 
       const actionExtensions = requestExtensions<ActionExtension>({
         id: 'global.files.batch-actions',

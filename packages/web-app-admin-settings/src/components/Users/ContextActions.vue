@@ -41,7 +41,7 @@ export default defineComponent({
       [...unref(editQuotaActions)].filter((item) => item.isVisible(unref(filterParams)))
     )
 
-    const menuItemsSidebar = computed(() =>
+    const menuItemsQuaternaryActions = computed(() =>
       [...unref(showDetailsActions)].filter((item) => item.isVisible(unref(filterParams)))
     )
 
@@ -60,10 +60,10 @@ export default defineComponent({
           items: unref(menuItemsSecondaryActions)
         })
       }
-      if (unref(menuItemsSidebar).length) {
+      if (unref(menuItemsQuaternaryActions).length) {
         sections.push({
-          name: 'sidebar',
-          items: unref(menuItemsSidebar)
+          name: 'quaternaryActions',
+          items: unref(menuItemsQuaternaryActions)
         })
       }
       return sections

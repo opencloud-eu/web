@@ -2,29 +2,31 @@ import CreateAndUpload from '../../../../src/components/AppBar/CreateAndUpload.v
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
-  FileAction,
-  useFileActionsCreateNewFile,
   useRequest,
   useSpacesStore,
   CapabilityStore,
   useClipboardStore,
-  useFileActionsPaste,
   useExtensionRegistry,
   OcUppyFile,
   ClipboardActions,
-  useResourcesStore
+  useResourcesStore,
+  FileAction
 } from '@opencloud-eu/web-pkg'
+import { useFileActionsPaste } from '../../../../src/composables/actions/files'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from 'vue-router'
-import { computed, ref, unref } from 'vue'
+import { ref, unref } from 'vue'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import { ListFilesResult } from '@opencloud-eu/web-client/webdav'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useRequest: vi.fn(),
-  useFileActionsCreateNewFile: vi.fn(),
-  useFileActions: vi.fn(),
+  useFileActions: vi.fn()
+}))
+
+vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
   useFileActionsPaste: vi.fn()
 }))
 
@@ -210,11 +212,6 @@ function getWrapper({
   spaces = [],
   itemId = undefined,
   areFileExtensionsShown = false,
-  createActions = [
-    mock<FileAction>({ label: () => 'Plain text file', ext: 'txt' }),
-    mock<FileAction>({ label: () => 'Mark-down file', ext: 'md' }),
-    mock<FileAction>({ label: () => 'Draw.io document', ext: 'drawio' })
-  ],
   clipboardAction = ClipboardActions.Cut,
   uploadedFiles = []
 }: {
@@ -226,7 +223,6 @@ function getWrapper({
   spaces?: SpaceResource[]
   itemId?: string
   areFileExtensionsShown?: boolean
-  createActions?: FileAction[]
   clipboardAction?: ClipboardActions
   uploadedFiles?: Resource[]
 } = {}) {
@@ -249,10 +245,6 @@ function getWrapper({
   }))
   const { requestExtensions } = useExtensionRegistry()
   vi.mocked(requestExtensions).mockReturnValue([])
-
-  const useFileActionsCreateNewFileMock = mock<ReturnType<typeof useFileActionsCreateNewFile>>()
-  useFileActionsCreateNewFileMock.actions = computed(() => createActions)
-  vi.mocked(useFileActionsCreateNewFile).mockReturnValue(useFileActionsCreateNewFileMock)
 
   const pasteActionHandler = vi.fn()
   vi.mocked(useFileActionsPaste).mockReturnValue(

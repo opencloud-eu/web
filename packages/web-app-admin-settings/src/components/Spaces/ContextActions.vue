@@ -7,17 +7,8 @@
 <script lang="ts">
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { ContextActionMenu } from '@opencloud-eu/web-pkg'
-
-import {
-  useSpaceActionsDelete,
-  useSpaceActionsDisable,
-  useSpaceActionsEditDescription,
-  useSpaceActionsEditQuota,
-  useSpaceActionsRename,
-  useSpaceActionsRestore,
-  useActionsShowDetails
-} from '@opencloud-eu/web-pkg'
+import { ActionExtension, ContextActionMenu, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { spacesContextActionsExtensionPoint } from '../../extensionPoints'
 
 export default defineComponent({
   name: 'ContextActions',
@@ -30,30 +21,33 @@ export default defineComponent({
   },
   setup(props) {
     const filterParams = computed(() => ({ resources: props.items }))
+    const { requestExtensions } = useExtensionRegistry()
 
-    const { actions: deleteActions } = useSpaceActionsDelete()
-    const { actions: disableActions } = useSpaceActionsDisable()
-    const { actions: editQuotaActions } = useSpaceActionsEditQuota()
-    const { actions: editDescriptionActions } = useSpaceActionsEditDescription()
-    const { actions: renameActions } = useSpaceActionsRename()
-    const { actions: restoreActions } = useSpaceActionsRestore()
-    const { actions: showDetailsActions } = useActionsShowDetails()
+    const contextActions = computed(() =>
+      (requestExtensions<ActionExtension>(spacesContextActionsExtensionPoint) || []).map(
+        (e) => e.action
+      )
+    )
 
     const menuItemsPrimaryActions = computed(() =>
-      [...unref(renameActions), ...unref(editDescriptionActions)].filter((item) =>
+      [...unref(contextActions).filter((action) => action.category === 'primary')].filter((item) =>
         item.isVisible(unref(filterParams))
       )
     )
     const menuItemsSecondaryActions = computed(() =>
-      [
-        ...unref(editQuotaActions),
-        ...unref(disableActions),
-        ...unref(restoreActions),
-        ...unref(deleteActions)
-      ].filter((item) => item.isVisible(unref(filterParams)))
+      [...unref(contextActions).filter((action) => action.category === 'secondary')].filter(
+        (item) => item.isVisible(unref(filterParams))
+      )
     )
-    const menuItemsSidebar = computed(() =>
-      [...unref(showDetailsActions)].filter((item) => item.isVisible(unref(filterParams)))
+    const menuItemsTertiaryActions = computed(() =>
+      [...unref(contextActions).filter((action) => action.category === 'tertiary')].filter((item) =>
+        item.isVisible(unref(filterParams))
+      )
+    )
+    const menuItemsQuaternaryActions = computed(() =>
+      [...unref(contextActions).filter((action) => action.category === 'quaternary')].filter(
+        (item) => item.isVisible(unref(filterParams))
+      )
     )
 
     const menuSections = computed(() => {
@@ -71,10 +65,16 @@ export default defineComponent({
           items: unref(menuItemsSecondaryActions)
         })
       }
-      if (unref(menuItemsSidebar).length) {
+      if (unref(menuItemsTertiaryActions).length) {
         sections.push({
-          name: 'sidebar',
-          items: unref(menuItemsSidebar)
+          name: 'tertiaryActions',
+          items: unref(menuItemsTertiaryActions)
+        })
+      }
+      if (unref(menuItemsQuaternaryActions).length) {
+        sections.push({
+          name: 'quaternaryActions',
+          items: unref(menuItemsQuaternaryActions)
         })
       }
       return sections

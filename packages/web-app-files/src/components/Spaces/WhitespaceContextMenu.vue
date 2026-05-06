@@ -8,7 +8,7 @@
   >
     <oc-list>
       <action-menu-item
-        v-for="(action, actionIndex) in menuItemsActions"
+        v-for="(action, actionIndex) in menuItemsTertiary"
         :key="`section-${action.name}-action-${actionIndex}`"
         :action="action"
         :action-options="actionOptions"
@@ -27,17 +27,16 @@ import {
   unref,
   useTemplateRef
 } from 'vue'
-import {
-  createVirtualCursorElement,
-  useFileActionsPaste,
-  useFileActionsShowDetails,
-  useResourcesStore
-} from '@opencloud-eu/web-pkg'
-import { useFileActionsCreateNewFolder } from '@opencloud-eu/web-pkg'
+import { createVirtualCursorElement, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { ActionMenuItem } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import {
+  useFileActionsCreateNewFolder,
+  useFileActionsPaste,
+  useFileActionsShowDetails
+} from '../../composables'
 
 const { space } = defineProps<{ space: SpaceResource }>()
 
@@ -55,7 +54,7 @@ const { actions: createNewFolderAction } = useFileActionsCreateNewFolder({
 const { actions: showDetailsAction } = useFileActionsShowDetails()
 const { actions: pasteAction } = useFileActionsPaste()
 
-const menuItemsActions = computed(() => {
+const menuItemsTertiary = computed(() => {
   return [
     ...unref(createNewFolderAction),
     ...unref(pasteAction),

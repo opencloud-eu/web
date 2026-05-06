@@ -81,22 +81,25 @@ describe('FileActions', () => {
 })
 
 function getWrapper() {
+  const mocks = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({
+      name: 'files-spaces-generic',
+      path: '/files/spaces/personal/admin'
+    })
+  })
+
   return {
     wrapper: mount(FileActions, {
       global: {
         plugins: [...defaultPlugins()],
-        mocks: defaultComponentMocks({
-          currentRoute: mock<RouteLocation>({
-            name: 'files-spaces-generic',
-            path: '/files/spaces/personal/admin'
-          })
-        }),
+        mocks,
         stubs: { ...defaultStubs, OcButton: false },
         provide: {
           space: mock<SpaceResource>(),
           resource: mock<Resource>({
             extension: 'md'
-          })
+          }),
+          ...mocks
         }
       }
     })

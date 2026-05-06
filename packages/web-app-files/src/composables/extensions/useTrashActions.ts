@@ -1,5 +1,6 @@
-import { ActionExtension, useFileActionsEmptyTrashBin } from '@opencloud-eu/web-pkg'
+import { ActionExtension } from '@opencloud-eu/web-pkg'
 import { trashQuickActionsExtensionPoint } from '../../extensionPoints'
+import { useFileActionsEmptyTrashBin } from '../actions'
 import { unref } from 'vue'
 
 export const useTrashActions = (): ActionExtension[] => {

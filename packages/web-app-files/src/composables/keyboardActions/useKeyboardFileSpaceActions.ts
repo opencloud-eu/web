@@ -7,7 +7,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Ref, unref } from 'vue'
-import { useFileActionsPaste } from '@opencloud-eu/web-pkg'
+import { useFileActionsPaste } from '../actions'
 
 export const useKeyboardFileSpaceActions = (
   keyActions: KeyboardActions,

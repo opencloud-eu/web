@@ -4,20 +4,6 @@
   </div>
   <div v-else>
     <context-action-menu :menu-sections="menuSections" :action-options="actionOptions" />
-    <div class="relative overflow-hidden">
-      <input
-        id="space-image-upload-input"
-        ref="spaceImageInput"
-        class="absolute left-[-99999px]"
-        type="file"
-        name="file"
-        multiple
-        tabindex="-1"
-        accept="image/jpeg, image/png"
-        hidden
-        @change="showModalImageSpace"
-      />
-    </div>
   </div>
 </template>
 
@@ -28,24 +14,26 @@ import {
   isLocationSpacesActive,
   SpaceActionOptions,
   useFileActionsDownloadArchive,
-  useFileActionsShowDetails,
-  useRouter,
+  useRouter
+} from '@opencloud-eu/web-pkg'
+import {
+  useFileActionsFavorite,
   useSpaceActionsDelete,
-  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
+  useSpaceActionsDeleteImage,
   useSpaceActionsEditDescription,
-  useSpaceActionsEditQuota,
   useSpaceActionsEditReadmeContent,
+  useSpaceActionsEditQuota,
   useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers,
-  useFileActionsFavorite
-} from '@opencloud-eu/web-pkg'
-import { useSpaceActionsUploadImage } from '../../composables'
-import { computed, defineComponent, PropType, Ref, ref, toRef, unref, VNodeRef } from 'vue'
+  useSpaceActionsUploadImage,
+  useFileActionsShowDetails
+} from '../../composables'
+import { computed, defineComponent, PropType, Ref, toRef, unref } from 'vue'
 import { MenuSection } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
@@ -84,10 +72,7 @@ export default defineComponent({
     const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
     const { actions: favoriteActions } = useFileActionsFavorite()
 
-    const spaceImageInput: VNodeRef = ref(null)
-    const { actions: uploadImageActions, showModalImageSpace } = useSpaceActionsUploadImage({
-      spaceImageInput
-    })
+    const { actions: uploadImageActions } = useSpaceActionsUploadImage()
 
     const menuItemsMembers = computed(() => {
       const fileHandlers = [...unref(showMembersActions), ...unref(downloadArchiveActions)]
@@ -167,7 +152,7 @@ export default defineComponent({
       }
       if (unref(menuItemsTertiaryActions).length) {
         sections.push({
-          name: 'tertiaryAction s',
+          name: 'tertiaryActions',
           items: unref(menuItemsTertiaryActions)
         })
       }
@@ -177,9 +162,7 @@ export default defineComponent({
 
     return {
       menuSections,
-      spaceImageInput,
-      uploadImageActions,
-      showModalImageSpace
+      uploadImageActions
     }
   }
 })
