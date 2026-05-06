@@ -55,33 +55,38 @@ export default defineComponent({
         })
         .map((e) => e.action)
     })
-    const extensionsBatchActions = computed(() => {
-      return extensionRegistry
-        .requestExtensions<ActionExtension>({
-          id: 'global.files.batch-actions',
-          extensionType: 'action'
-        })
-        .map((e) => e.action)
-    })
 
     // type cast to make vue-tsc aware of the type
     const actionOptions = toRef(props, 'actionOptions') as Ref<FileActionOptions>
 
-    const menuItemsBatchActions = computed(() =>
+    const menuItemsBatchPrimary = computed(() =>
+      [...unref(extensionsContextActions).filter((a) => a.category === 'primary')].filter((item) =>
+        item.isVisible(unref(actionOptions))
+      )
+    )
+
+    const menuItemsBatchSecondary = computed(() =>
+      [...unref(extensionsContextActions).filter((a) => a.category === 'secondary')].filter(
+        (item) => item.isVisible(unref(actionOptions))
+      )
+    )
+
+    const menuItemsBatchTertiary = computed(() =>
       [
-        ...unref(enableSyncActions),
-        ...unref(disableSyncActions),
         ...unref(downloadArchiveActions),
         ...unref(moveActions),
         ...unref(copyActions),
         ...unref(deleteActions),
         ...unref(restoreActions),
-        ...unref(extensionsBatchActions).filter((a) => a.category === 'tertiary')
+        ...unref(enableSyncActions),
+        ...unref(disableSyncActions),
+        ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     )
+
     const menuItemsBatchQuaternary = computed(() =>
-      [...unref(extensionsBatchActions).filter((a) => a.category === 'quaternary')].filter((item) =>
-        item.isVisible(unref(actionOptions))
+      [...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')].filter(
+        (item) => item.isVisible(unref(actionOptions))
       )
     )
 
@@ -126,17 +131,33 @@ export default defineComponent({
     const menuSections = computed(() => {
       const sections: MenuSection[] = []
       if (unref(actionOptions).resources.length > 1) {
-        if (unref(menuItemsBatchActions).length) {
+        if (unref(menuItemsBatchPrimary).length) {
           sections.push({
-            name: 'batch-actions',
-            items: [...unref(menuItemsBatchActions)]
+            name: 'primary',
+            items: [...unref(menuItemsBatchPrimary)]
           })
         }
 
-        sections.push({
-          name: 'batch-details',
-          items: [...unref(menuItemsBatchQuaternary)]
-        })
+        if (unref(menuItemsBatchSecondary).length) {
+          sections.push({
+            name: 'secondary',
+            items: [...unref(menuItemsBatchSecondary)]
+          })
+        }
+
+        if (unref(menuItemsBatchTertiary).length) {
+          sections.push({
+            name: 'tertiary',
+            items: [...unref(menuItemsBatchTertiary)]
+          })
+        }
+
+        if (unref(menuItemsBatchQuaternary).length) {
+          sections.push({
+            name: 'quaternary',
+            items: [...unref(menuItemsBatchQuaternary)]
+          })
+        }
         return sections
       }
 
