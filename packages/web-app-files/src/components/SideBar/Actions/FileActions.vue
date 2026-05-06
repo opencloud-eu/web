@@ -14,6 +14,8 @@ import { ActionMenuItem, FileActionOptions, useFileActions } from '@opencloud-eu
 import { computed, inject, Ref, unref } from 'vue'
 import { IncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
+  useFileActionsDisableSync,
+  useFileActionsEnableSync,
   useFileActionsCreateSpaceFromResource,
   useFileActionsFavorite,
   useFileActionsRename,
@@ -27,6 +29,8 @@ const resources = computed(() => {
 })
 const { getAllOpenWithActions } = useFileActions()
 const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
+const { actions: disableSyncActions } = useFileActionsDisableSync()
+const { actions: enableSyncActions } = useFileActionsEnableSync()
 const { actions: favoriteActions } = useFileActionsFavorite()
 const { actions: renameActions } = useFileActionsRename()
 const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
@@ -44,6 +48,8 @@ const actions = computed(() => {
     ...unref(renameActions).filter((action) => action.isVisible(options)),
     ...unref(createSpaceFromResourceActions).filter((action) => action.isVisible(options)),
     ...unref(favoriteActions).filter((action) => action.isVisible(options)),
+    ...unref(enableSyncActions).filter((action) => action.isVisible(shareActionOptions)),
+    ...unref(disableSyncActions).filter((action) => action.isVisible(shareActionOptions)),
     ...unref(toggleHideShareActions).filter((action) => action.isVisible(shareActionOptions))
   ]
 })

@@ -8,7 +8,9 @@ import {
 import {
   useFileActionsCopyPermanentLink,
   useFileActionsCreateSpaceFromResource,
+  useFileActionsDisableSync,
   useFileActionsFavorite,
+  useFileActionsEnableSync,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
@@ -28,6 +30,8 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: showSharesActions } = useFileActionsShowShares()
   const { actions: permanentLinkActions } = useFileActionsCopyPermanentLink()
   const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
+  const { actions: disableSyncActions } = useFileActionsDisableSync()
+  const { actions: enableSyncActions } = useFileActionsEnableSync()
   const { actions: pasteActions } = useFileActionsPaste()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
@@ -87,6 +91,24 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(createSpaceFromResourceActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.enable-sync',
+      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(enableSyncActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.disable-sync',
+      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(disableSyncActions)[0],
         category: 'tertiary'
       }
     },

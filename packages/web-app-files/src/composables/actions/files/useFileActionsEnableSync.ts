@@ -1,19 +1,21 @@
-import {
-  isLocationSharesActive,
-  isLocationSpacesActive,
-  createLocationShares
-} from '../../../router'
 import PQueue from 'p-queue'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { useClientService } from '../../clientService'
-import { useLoadingService } from '../../loadingService'
-import { useRouter } from '../../router'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../types'
-import { useMessages, useConfigStore, useResourcesStore } from '../../piniaStores'
+import {
+  FileAction,
+  FileActionOptions,
+  isLocationSharesActive,
+  isLocationSpacesActive,
+  useClientService,
+  useConfigStore,
+  useLoadingService,
+  useMessages,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
-export const useFileActionsDisableSync = () => {
+export const useFileActionsEnableSync = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const router = useRouter()
   const { $gettext, $ngettext } = useGettext()
@@ -21,7 +23,9 @@ export const useFileActionsDisableSync = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const configStore = useConfigStore()
-  const { updateResourceField } = useResourcesStore()
+
+  const resourcesStore = useResourcesStore()
+  const { updateResourceField } = resourcesStore
 
   const handler = async ({ resources }: FileActionOptions<IncomingShareResource>) => {
     const errors: Error[] = []
@@ -34,12 +38,15 @@ export const useFileActionsDisableSync = () => {
         triggerQueue.add(async () => {
           try {
             const { graphAuthenticated } = clientService
-            await graphAuthenticated.driveItems.deleteDriveItem(resource.driveId, resource.id)
+            await graphAuthenticated.driveItems.createDriveItem(resource.driveId, {
+              name: resource.name,
+              remoteItem: { id: resource.fileId }
+            })
 
             updateResourceField<IncomingShareResource>({
               id: resource.id,
               field: 'syncEnabled',
-              value: false
+              value: true
             })
           } catch (error) {
             console.error(error)
@@ -51,15 +58,16 @@ export const useFileActionsDisableSync = () => {
     await Promise.all(triggerPromises)
 
     if (errors.length === 0) {
+      resourcesStore.resetSelection()
+
       if (isLocationSpacesActive(router, 'files-spaces-generic')) {
         showMessage({
           title: $ngettext(
-            'Sync for the selected share was disabled successfully',
-            'Sync for the selected shares was disabled successfully',
+            'Sync for the selected share was enabled successfully',
+            'Sync for the selected shares was enabled successfully',
             resources.length
           )
         })
-        router.push(createLocationShares('files-shares-with-me'))
       }
 
       return
@@ -67,8 +75,8 @@ export const useFileActionsDisableSync = () => {
 
     showErrorMessage({
       title: $ngettext(
-        'Failed to disable sync for the the selected share',
-        'Failed to disable sync for the selected shares',
+        'Failed to enable sync for the the selected share',
+        'Failed to enable sync for the selected shares',
         resources.length
       ),
       errors
@@ -77,10 +85,10 @@ export const useFileActionsDisableSync = () => {
 
   const actions = computed((): FileAction<IncomingShareResource>[] => [
     {
-      name: 'disable-sync',
-      icon: 'spam-3',
+      name: 'enable-sync',
+      icon: 'check',
       handler: (args) => loadingService.addTask(() => handler(args)),
-      label: () => $gettext('Disable sync'),
+      label: () => $gettext('Enable sync'),
       isVisible: ({ space, resources }) => {
         if (
           !isLocationSharesActive(router, 'files-shares-with-me') &&
@@ -94,14 +102,14 @@ export const useFileActionsDisableSync = () => {
 
         if (
           isLocationSpacesActive(router, 'files-spaces-generic') &&
-          (space?.driveType !== 'share' || resources.length > 1 || resources[0].path !== '/')
+          (unref(space)?.driveType !== 'share' || resources.length > 1 || resources[0].path !== '/')
         ) {
           return false
         }
 
-        return resources.some((resource) => resource.syncEnabled)
+        return resources.some((resource) => !resource.syncEnabled)
       },
-      class: 'oc-files-actions-disable-sync-trigger'
+      class: 'oc-files-actions-enable-sync-trigger'
     }
   ])
 

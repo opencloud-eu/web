@@ -12,10 +12,8 @@ import {
   useFileActions,
   useFileActionsCopy,
   useFileActionsDelete,
-  useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsEnableSync,
   useFileActionsMove,
   useFileActionsOpenWithDefault,
   useFileActionsRestore
@@ -37,9 +35,7 @@ export default defineComponent({
     const { $gettext } = useGettext()
 
     const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
-    const { actions: enableSyncActions } = useFileActionsEnableSync()
     const { actions: copyActions } = useFileActionsCopy()
-    const { actions: disableSyncActions } = useFileActionsDisableSync()
     const { actions: deleteActions } = useFileActionsDelete()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
@@ -116,8 +112,6 @@ export default defineComponent({
         ...unref(moveActions),
         ...unref(copyActions),
         ...unref(restoreActions),
-        ...unref(enableSyncActions),
-        ...unref(disableSyncActions),
         ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
     })

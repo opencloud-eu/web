@@ -17,10 +17,8 @@ import {
 import {
   useFileActionsCopy,
   useFileActionsDelete,
-  useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsEnableSync,
   useFileActionsMove,
   useFileActionsNavigate,
   useFileActionsRestore
@@ -57,10 +55,8 @@ export const useFileActions = () => {
   const configStore = useConfigStore()
   const { options } = storeToRefs(configStore)
 
-  const { actions: enableSyncActions } = useFileActionsEnableSync()
   const { actions: copyActions } = useFileActionsCopy()
   const { actions: deleteActions } = useFileActionsDelete()
-  const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
   const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
@@ -74,9 +70,7 @@ export const useFileActions = () => {
     ...unref(deleteActions),
     ...unref(moveActions),
     ...unref(copyActions),
-    ...unref(restoreActions),
-    ...unref(enableSyncActions),
-    ...unref(disableSyncActions)
+    ...unref(restoreActions)
   ])
 
   const extensionsContextActions = computed(() => {
