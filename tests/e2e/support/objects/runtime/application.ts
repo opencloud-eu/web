@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from '@playwright/test'
 import util from 'util'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 
 const appSwitcherButton = '#_appSwitcherButton'
 const appSelector = `//ul[contains(@class, "applications-list")]//*[@data-test-id="%s"]`
@@ -98,7 +98,7 @@ export class Application {
           resp.request().postDataJSON().refresh_token &&
           resp.request().postDataJSON().hasOwnProperty('scope') &&
           resp.request().postDataJSON().scope.includes('offline_access'),
-        { timeout: config.tokenTimeout * 1000 }
+        { timeout: appConfig.tokenTimeout * 1000 }
       )
     ])
   }
@@ -135,7 +135,7 @@ export class Application {
           resp.url().includes('/oidc-silent-redirect.html') &&
           resp.status() === 200 &&
           resp.request().method() === 'GET',
-        { timeout: config.tokenTimeout * 1000 }
+        { timeout: appConfig.tokenTimeout * 1000 }
       ),
       this.#page.waitForResponse(
         (resp) =>
@@ -145,7 +145,7 @@ export class Application {
           resp.request().postDataJSON().grant_type === 'authorization_code' &&
           resp.request().postDataJSON().hasOwnProperty('code') &&
           resp.request().postDataJSON().code,
-        { timeout: config.tokenTimeout * 1000 }
+        { timeout: appConfig.tokenTimeout * 1000 }
       ),
       waitForIframe
     ])

@@ -1,6 +1,6 @@
 import { Locator } from '@playwright/test'
 import { getSSEEvents } from '../environment/sse'
-import { config } from '../../config'
+import { appConfig } from '../../playwright.config'
 
 export const waitForEvent = (locator: Locator, type: keyof SVGElementEventMap): Promise<void> =>
   locator.evaluate(
@@ -23,7 +23,7 @@ export const waitForEvent = (locator: Locator, type: keyof SVGElementEventMap): 
 
         element.addEventListener(arg.type, finalizer)
       }),
-    { type, timeout: config.timeout * 1000 }
+    { type, timeout: appConfig.timeout * 1000 }
   )
 
 export const buildXpathLiteral = (value: string) => {
@@ -45,7 +45,7 @@ export const waitForSSEEvent = (user: string, event: string) => {
     const startTime = Date.now()
     const interval = setInterval(function () {
       const events = getSSEEvents(user)
-      if (Date.now() - startTime > config.minTimeout * 1000) {
+      if (Date.now() - startTime > appConfig.minTimeout * 1000) {
         reject(new Error(`SSE event ${event} was not obtained in the events list:[${events}]`))
         clearInterval(interval)
       }

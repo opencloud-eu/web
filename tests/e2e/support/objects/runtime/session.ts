@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test'
 import { User } from '../../types'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 import { checkA11yOrLocalization } from '../../utils/accessibility'
 
 export class Session {
@@ -11,7 +11,7 @@ export class Session {
   }
 
   signIn(username: string, password: string, a11y = false): Promise<void> {
-    if (config.keycloak) {
+    if (appConfig.keycloak) {
       return this.keycloakSignIn(username, password)
     }
     return this.idpSignIn(username, password, a11y)

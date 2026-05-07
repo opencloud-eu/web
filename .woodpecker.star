@@ -56,8 +56,8 @@ config = {
             "earlyFail": True,
             "skip": False,
             "suites": [
-                "journeys",
-                "smoke",
+                "journeys/",
+                "smoke/",
             ],
             "browsers": [
                 "chromium",
@@ -69,8 +69,8 @@ config = {
             "earlyFail": True,
             "skip": False,
             "suites": [
-                "admin-settings",
-                "spaces",
+                "admin-settings/",
+                "spaces/",
                 "rclone-crypt",
             ],
         },
@@ -93,10 +93,10 @@ config = {
             "earlyFail": True,
             "skip": False,
             "suites": [
-                "navigation",
-                "user-settings",
-                "file-action",
-                "app-store",
+                "navigation/",
+                "user-settings/",
+                "file-action/",
+                "app-store/",
             ],
         },
         "a11y": {
@@ -114,7 +114,7 @@ config = {
         "app-provider": {
             "skip": False,
             "suites": [
-                "app-provider",
+                "app-provider/",
             ],
             "extraServerEnvironment": {
                 "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
@@ -138,7 +138,7 @@ config = {
         "app-provider-euro-office": {
             "skip": False,
             "suites": [
-                "app-provider-euro-office",
+                "app-provider-euro-office/",
             ],
             "extraServerEnvironment": {
                 "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
@@ -162,8 +162,8 @@ config = {
         },
         "oidc-refresh-token": {
             "skip": False,
-            "features": [
-                "cucumber/features/oidc/refreshToken.feature",
+            "suites": [
+                "oidc/refreshToken",
             ],
             "extraServerEnvironment": {
                 "IDP_ACCESS_TOKEN_EXPIRATION": 30,
@@ -172,8 +172,8 @@ config = {
         },
         "oidc-iframe": {
             "skip": False,
-            "features": [
-                "cucumber/features/oidc/iframeTokenRenewal.feature",
+            "suites": [
+                "oidc/iframeTokenRenewal",
             ],
             "extraServerEnvironment": {
                 "IDP_ACCESS_TOKEN_EXPIRATION": 30,
@@ -199,13 +199,13 @@ config = {
         "mobile-view": {
             "skip": False,
             "suites": [
-                "mobile-view",
+                "mobile-view/",
             ],
         },
         "localization-de": {
             "skip": False,
-            "features": [
-                "cucumber/features/a11y/smoke.feature",
+            "suites": [
+                "a11y/smoke",
             ],
             "extraServerEnvironment": {
                 "OC_DEFAULT_LANGUAGE": "de",
@@ -604,21 +604,16 @@ def e2eTests(ctx):
         if params["skip"]:
             continue
 
-        if "with-tracing" in ctx.build.title.lower():
-            params["reportTracing"] = True
-
         browsers_for_suite = params["browsers"]
 
         for browser_name in browsers_for_suite:
             environment = {
-                "HEADLESS": True,
                 "RETRY": "1",
                 "REPORT_TRACING": params["reportTracing"],
                 "OC_BASE_URL": "opencloud:9200",
                 "OC_SHOW_USER_EMAIL_IN_RESULTS": True,
                 "FAIL_ON_UNCAUGHT_CONSOLE_ERR": True,
-                "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-                "BROWSER": browser_name,
+                "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
                 "TERM": "xterm-256color",
                 "FORCE_COLOR": "1",
             }
@@ -652,10 +647,10 @@ def e2eTests(ctx):
             if browser_name == "firefox" or browser_name == "webkit":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
 
-            command = "cd tests/e2e && bash run-e2e.sh "
+            command = "cd tests/e2e && pnpm bddgen && pnpm playwright install '%s' --with-deps && pnpm playwright test --project='%s' " % (browser_name, browser_name)
 
             if "suites" in matrix:
-                command += "--suites %s" % ",".join(params["suites"])
+                command += "%s" % " ".join(params["suites"])
             elif "features" in matrix:
                 command += "%s" % " ".join(params["features"])
             else:
@@ -663,13 +658,13 @@ def e2eTests(ctx):
                 return []
 
             if "mobile-view" in suite:
-                command = "pnpm test:e2e:mobile-parallel"
+                command = "cd tests/e2e && pnpm bddgen && pnpm playwright install chromium webkit && pnpm playwright test '%s' --project=mobile-chromium --project=mobile-webkit --project=ipad-chromium --project=ipad-landscape-webkit" % suite
                 pipeline_name = "e2e-tests-%s" % suite
             else:
                 pipeline_name = "e2e-tests-%s-%s" % (suite, browser_name)
 
             if "localization-de" in suite:
-                command = "RUN_LOCALIZATION_TEST_FOR_LANG=de pnpm test:e2e:cucumber tests/e2e/cucumber/features/a11y/smoke.feature"
+                command = "pnpm playwright install chromium --with-deps && cd tests/e2e && pnpm bddgen && RUN_LOCALIZATION_TEST_FOR_LANG=de playwright test a11y --project=chromium"
 
             steps += [{
                          "name": "e2e-tests",
@@ -679,7 +674,7 @@ def e2eTests(ctx):
                              command,
                          ],
                      }] + \
-                     uploadTracingResult(ctx)
+                     uploadTestArtifacts(pipeline_name)
 
             pipelines.append({
                 "name": pipeline_name,
@@ -763,7 +758,7 @@ def installBrowsers():
         "name": "install-browsers",
         "image": OC_CI_NODEJS,
         "environment": {
-            "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
+            "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
         },
         "commands": [
             ". ./.woodpecker.env",
@@ -1430,24 +1425,20 @@ def pipelineSanityChecks(pipelines):
     for image in images.keys():
         print(" %sx\t%s" % (images[image], image))
 
-def uploadTracingResult(ctx):
-    status = ["failure"]
-    if "with-tracing" in ctx.build.title.lower():
-        status = ["failure", "success"]
-
+def uploadTestArtifacts(pipeline_name):
     return [{
-        "name": "upload-tracing-result",
+        "name": "upload-tests-artifacts",
         "image": MINIO_MC,
         "environment": minio_mc_environment,
         "commands": [
+            "microdnf install -y zip",
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-            "mc cp -a %s/reports/e2e/playwright/tracing/* s3/$PUBLIC_BUCKET/web/tracing/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/" % dir["web"],
-            "cd %s/reports/e2e/playwright/tracing/" % dir["web"],
-            'echo "To see the trace, please open the following link in the console"',
-            'for f in *.zip; do echo "npx playwright show-trace $MC_HOST/$PUBLIC_BUCKET/web/tracing/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/$f \n"; done',
+            "cd %s/tests/e2e/playwright-report && zip -r /tmp/playwright-report.zip ." % dir["web"],
+            "mc cp /tmp/playwright-report.zip s3/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/%s/playwright-report.zip" % pipeline_name,
+            'printf "=== HTML Report ===\ncurl -O $MC_HOST/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/%s/playwright-report.zip && npx playwright show-report playwright-report.zip\n"' % pipeline_name,
         ],
         "when": {
-            "status": status,
+            "status": ["failure", "success"],
         },
     }]
 
@@ -1644,23 +1635,19 @@ def e2eTestsOnKeycloak(ctx):
                      "image": OC_CI_NODEJS,
                      "environment": {
                          "OC_BASE_URL": "opencloud:9200",
-                         "HEADLESS": True,
                          "RETRY": "1",
-                         "REPORT_TRACING": "with-tracing" in ctx.build.title.lower(),
                          "KEYCLOAK": True,
                          "KEYCLOAK_HOST": "keycloak:8443",
-                         "PLAYWRIGHT_BROWSERS_PATH": ".playwright",
-                         "BROWSER": "chromium",
+                         "PLAYWRIGHT_BROWSERS_PATH": "tests/e2e/.playwright",
                          "TERM": "xterm-256color",
                          "FORCE_COLOR": "1",
                      },
                      "commands": [
-                         "cd tests/e2e",
-                         "bash run-e2e.sh cucumber/features/keycloak",
+                         "cd tests/e2e && pnpm playwright install chromium && pnpm bddgen && pnpm playwright test keycloak --project=chromium",
                      ],
                  },
              ] + \
-             uploadTracingResult(ctx)
+             uploadTestArtifacts("e2e-test-on-keycloak")
 
     return [{
         "name": "e2e-test-on-keycloak",

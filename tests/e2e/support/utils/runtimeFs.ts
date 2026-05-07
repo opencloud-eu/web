@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { config } from '../../config'
+import { appConfig } from '../../playwright.config'
 
 // max file creation size is 10GB
 export const MAX_FILE_SIZE = Math.pow(1024, 3) * 10
@@ -40,10 +40,10 @@ export const getBytes = (fileSize: string): number => {
 }
 
 export const getTempUploadPath = (): string => {
-  if (!fs.existsSync(config.tempAssetsPath)) {
-    fs.mkdirSync(config.tempAssetsPath)
+  if (!fs.existsSync(appConfig.tempAssetsPath)) {
+    fs.mkdirSync(appConfig.tempAssetsPath)
   }
-  return config.tempAssetsPath
+  return appConfig.tempAssetsPath
 }
 
 export const createFileWithSize = (
@@ -87,7 +87,7 @@ export const createFile = (
 }
 
 export const removeTempUploadDirectory = () => {
-  if (fs.existsSync(config.tempAssetsPath)) {
-    fs.rmSync(config.tempAssetsPath, { recursive: true })
+  if (fs.existsSync(appConfig.tempAssetsPath)) {
+    fs.rmSync(appConfig.tempAssetsPath, { recursive: true })
   }
 }
