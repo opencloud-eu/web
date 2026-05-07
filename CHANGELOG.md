@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @Cassolette, @JammingBen, @ScharfViktor, @kulmann, @tammi-23
+@AlexAndBear, @Cassolette, @JammingBen, @ScharfViktor, @kulmann, @pedropintosilva, @tammi-23
 
 ### 💥 Breaking changes
 
@@ -15,6 +15,7 @@
 
 ### 📈 Enhancement
 
+- feat: handle UI_PickLink postMessage from Collabora Online [[#2435](https://github.com/opencloud-eu/web/pull/2435)]
 - feat: retrieve extensions by their id [[#2468](https://github.com/opencloud-eu/web/pull/2468)]
 - feat: create new contacts [[#2458](https://github.com/opencloud-eu/web/pull/2458)]
 - feat(search): clear on esc keypress + misc fixes [[#2423](https://github.com/opencloud-eu/web/pull/2423)]
