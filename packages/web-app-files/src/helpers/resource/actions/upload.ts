@@ -190,21 +190,21 @@ export class UploadResourceConflict extends ConflictDialog {
           `/${newFolderName}/`
         )
         file.meta.tusEndpoint = file.meta.tusEndpoint.replace(
-          new RegExp(`/${encodeURIComponent(folder)}$`),
-          `/${encodeURIComponent(newFolderName)}`
+          new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
+          `/${encodeURIComponent(newFolderName)}$1`
         )
         if (file.xhrUpload?.endpoint) {
           file.xhrUpload.endpoint = file.xhrUpload.endpoint
             .toString()
             .replace(
-              new RegExp(`/${encodeURIComponent(folder)}$`),
-              `/${encodeURIComponent(newFolderName)}`
+              new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
+              `/${encodeURIComponent(newFolderName)}$1`
             )
         }
         if (file.tus?.endpoint) {
           file.tus.endpoint = file.tus.endpoint.replace(
-            new RegExp(`/${encodeURIComponent(folder)}$`),
-            `/${encodeURIComponent(newFolderName)}`
+            new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
+            `/${encodeURIComponent(newFolderName)}$1`
           )
         }
       }
