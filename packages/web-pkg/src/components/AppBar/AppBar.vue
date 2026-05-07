@@ -81,10 +81,8 @@ import { FolderView } from '../../ui/types'
 import {
   useFileActionsCopy,
   useFileActionsDelete,
-  useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsEnableSync,
   useFileActionsMove,
   useFileActionsRestore
 } from '../../composables/actions'
@@ -161,9 +159,7 @@ export default defineComponent({
 
     const space = computed(() => props.space)
 
-    const { actions: enableSyncActions } = useFileActionsEnableSync()
     const { actions: copyActions } = useFileActionsCopy()
-    const { actions: disableSyncActions } = useFileActionsDisableSync()
     const { actions: deleteActions } = useFileActionsDelete()
     const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
@@ -179,8 +175,6 @@ export default defineComponent({
 
     const batchActions = computed(() => {
       let actions: FileAction[] = [
-        ...unref(enableSyncActions),
-        ...unref(disableSyncActions),
         ...unref(downloadArchiveActions),
         ...unref(downloadFileActions),
         ...unref(moveActions),

@@ -2,13 +2,16 @@ import { ActionExtension } from '@opencloud-eu/web-pkg'
 import {
   batchActionsExtensionPoint,
   contextActionsExtensionPoint,
+  fileSideBarActionsExtensionPoint,
   quickActionsExtensionPoint,
   resourceTableActionsExtensionPoint
 } from '../../extensionPoints'
 import {
   useFileActionsCopyPermanentLink,
   useFileActionsCreateSpaceFromResource,
+  useFileActionsDisableSync,
   useFileActionsFavorite,
+  useFileActionsEnableSync,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
@@ -28,6 +31,8 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: showSharesActions } = useFileActionsShowShares()
   const { actions: permanentLinkActions } = useFileActionsCopyPermanentLink()
   const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
+  const { actions: disableSyncActions } = useFileActionsDisableSync()
+  const { actions: enableSyncActions } = useFileActionsEnableSync()
   const { actions: pasteActions } = useFileActionsPaste()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
@@ -74,7 +79,11 @@ export const useFileActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.rename',
-      extensionPointIds: [contextActionsExtensionPoint.id, resourceTableActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        resourceTableActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
       type: 'action',
       action: {
         ...unref(renameActions)[0],
@@ -83,10 +92,36 @@ export const useFileActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.create-space-from-resource',
-      extensionPointIds: [contextActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(createSpaceFromResourceActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.enable-sync',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(enableSyncActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.disable-sync',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(disableSyncActions)[0],
         category: 'tertiary'
       }
     },
@@ -95,7 +130,8 @@ export const useFileActions = (): ActionExtension[] => {
       extensionPointIds: [
         previewToolBarActionsExtensionPointId,
         batchActionsExtensionPoint.id,
-        contextActionsExtensionPoint.id
+        contextActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
       ],
       type: 'action',
       action: {
@@ -126,7 +162,11 @@ export const useFileActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.toggle-hide-share',
-      extensionPointIds: [contextActionsExtensionPoint.id, batchActionsExtensionPoint.id],
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
       type: 'action',
       action: {
         ...unref(toggleHideShareActions)[0],

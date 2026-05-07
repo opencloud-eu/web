@@ -1,13 +1,19 @@
 import PQueue from 'p-queue'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { isLocationSharesActive, isLocationSpacesActive } from '../../../router'
-import { useClientService } from '../../clientService'
-import { useLoadingService } from '../../loadingService'
-import { useRouter } from '../../router'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../../actions'
-import { useMessages, useConfigStore, useResourcesStore } from '../../piniaStores'
+import {
+  FileAction,
+  FileActionOptions,
+  isLocationSharesActive,
+  isLocationSpacesActive,
+  useClientService,
+  useConfigStore,
+  useLoadingService,
+  useMessages,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsEnableSync = () => {
   const { showMessage, showErrorMessage } = useMessages()

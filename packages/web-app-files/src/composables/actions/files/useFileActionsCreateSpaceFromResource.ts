@@ -132,7 +132,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
           return false
         }
 
-        if (resources.some((r) => isShareResource(r))) {
+        if (resources.some((r) => isShareResource(r) || isTrashResource(r))) {
           return false
         }
 

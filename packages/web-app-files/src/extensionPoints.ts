@@ -43,6 +43,11 @@ export const fileSideBarExtensionPoint: ExtensionPoint<SidebarPanelExtension<any
   extensionType: 'sidebarPanel',
   multiple: true
 }
+export const fileSideBarActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
+  id: 'app.files.sidebar.actions',
+  extensionType: 'action',
+  multiple: true
+}
 
 export const floatingActionButtonExtension: ExtensionPoint<FloatingActionButtonExtension> = {
   id: 'app.files.floating-action-button',
@@ -119,6 +124,7 @@ export const extensionPoints = () => {
       contextActionsExtensionPoint,
       resourceTableActionsExtensionPoint,
       fileSideBarExtensionPoint,
+      fileSideBarActionsExtensionPoint,
       folderViewsFolderExtensionPoint,
       folderViewsFavoritesExtensionPoint,
       folderViewsProjectSpacesExtensionPoint,
