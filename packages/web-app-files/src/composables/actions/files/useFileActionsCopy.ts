@@ -1,17 +1,18 @@
+import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { computed, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 import {
+  FileAction,
+  FileActionOptions,
   isLocationCommonActive,
   isLocationPublicActive,
-  isLocationSpacesActive
-} from '../../../router'
-import { computed, unref } from 'vue'
-
-import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../types'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { useRouter } from '../../router'
-import { useClipboardStore, useResourcesStore } from '../../piniaStores'
-import { storeToRefs } from 'pinia'
-import { isMacOs } from '../../../helpers'
+  isLocationSpacesActive,
+  isMacOs,
+  useClipboardStore,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsCopy = () => {
   const router = useRouter()

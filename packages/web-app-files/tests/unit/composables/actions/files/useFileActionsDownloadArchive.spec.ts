@@ -1,16 +1,18 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
-import { useFileActionsDownloadArchive } from '../../../../../src/composables/actions'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
   RouteLocation,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { useArchiverService } from '../../../../../src/composables'
-import { ArchiverService } from '../../../../../src'
+import { ArchiverService, useArchiverService } from '@opencloud-eu/web-pkg'
+import { useFileActionsDownloadArchive } from '../../../../../src/composables/actions/files'
 
-vi.mock('../../../../../src/composables/archiverService/useArchiverService')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useArchiverService: vi.fn()
+}))
 
 describe('downloadArchive', () => {
   describe('search context', () => {

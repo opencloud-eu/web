@@ -92,6 +92,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   const federation = new ModuleFederation({ name: 'opencloud-web', remotes: [] })
   registerSharedModules(federation)
   announceLoadingService({ app })
+  announceArchiverService({ app, configStore, userStore, capabilityStore })
 
   const [coreTranslations, customTranslations] = await Promise.all([
     loadTranslations(),
@@ -122,7 +123,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     })
   }
 
-  announceArchiverService({ app, configStore, userStore, capabilityStore })
   announcePreviewService({
     app,
     configStore,
