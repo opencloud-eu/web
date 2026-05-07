@@ -1,8 +1,7 @@
 import { BrowserContext, Page, expect } from '@playwright/test'
-import path from 'path'
 import EventEmitter from 'events'
 import { Actor } from '../../types'
-import { ActorOptions, buildBrowserContextOptions } from './shared'
+import { ActorOptions } from './shared'
 
 export class ActorEnvironment extends EventEmitter implements Actor {
   private readonly options: ActorOptions
@@ -16,15 +15,11 @@ export class ActorEnvironment extends EventEmitter implements Actor {
   }
 
   async setup(): Promise<void> {
-    this.context = await this.options.browser.newContext(buildBrowserContextOptions(this.options))
+    this.context = await this.options.browser.newContext()
 
     await this.context.addInitScript(() => {
       ;(window as any).__E2E__ = true
     })
-
-    if (this.options.context.reportTracing) {
-      await this.context.tracing.start({ screenshots: true, snapshots: true, sources: true })
-    }
 
     this.page = await this.context.newPage()
     this.tabs.push(this.page)
@@ -74,12 +69,6 @@ export class ActorEnvironment extends EventEmitter implements Actor {
   }
 
   async close(): Promise<void> {
-    if (this.options.context.reportTracing) {
-      await this.context?.tracing.stop({
-        path: path.join(this.options.context.tracingReportDir, `${this.options.namespace}.zip`)
-      })
-    }
-
     await this.page?.close()
     await this.context?.close()
 

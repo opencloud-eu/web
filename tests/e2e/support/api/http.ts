@@ -1,7 +1,7 @@
 import { urlJoin } from '../utils/urlJoin'
 import { APIResponse, request as apiRequest } from '@playwright/test'
 import { User } from '../types'
-import { config } from '../../config'
+import { appConfig } from '../../playwright.config'
 import { TokenEnvironmentFactory } from '../environment'
 
 export const getAuthHeader = (user: User, isKeycloakRequest: boolean = false) => {
@@ -10,7 +10,7 @@ export const getAuthHeader = (user: User, isKeycloakRequest: boolean = false) =>
     Authorization: 'Basic ' + Buffer.from(user.id + ':' + user.password).toString('base64')
   }
 
-  if (!config.basicAuth) {
+  if (!appConfig.basicAuth) {
     authHeader.Authorization = 'Bearer ' + tokenEnvironment.getToken({ user }).accessToken
   }
   return authHeader
@@ -40,7 +40,7 @@ export const request = async ({
     ...header
   }
 
-  const baseUrl = isKeycloakRequest ? config.keycloakUrl : config.baseUrl
+  const baseUrl = isKeycloakRequest ? appConfig.keycloakUrl : appConfig.baseUrl
 
   return await context.fetch(urlJoin(baseUrl, path), {
     method,

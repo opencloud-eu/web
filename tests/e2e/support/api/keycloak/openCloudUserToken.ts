@@ -1,5 +1,5 @@
 import { TokenEnvironmentFactory } from '../../environment'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 import { User } from '../../types'
 import { request, APIRequestContext } from '@playwright/test'
 import { getKeycloakAdminUser } from './utils'
@@ -9,10 +9,11 @@ interface openCloudTokenForKeycloak {
   refresh_token: string
 }
 
-const authorizationEndpoint = config.keycloakUrl + '/realms/openCloud/protocol/openid-connect/auth'
-const tokenEndpoint = config.keycloakUrl + '/realms/openCloud/protocol/openid-connect/token'
-const redirectUrl = config.baseUrl + '/oidc-callback.html'
-const tokenMasterEndpoint = config.keycloakUrl + '/realms/master/protocol/openid-connect/token'
+const authorizationEndpoint =
+  appConfig.keycloakUrl + '/realms/openCloud/protocol/openid-connect/auth'
+const tokenEndpoint = appConfig.keycloakUrl + '/realms/openCloud/protocol/openid-connect/token'
+const redirectUrl = appConfig.baseUrl + '/oidc-callback.html'
+const tokenMasterEndpoint = appConfig.keycloakUrl + '/realms/master/protocol/openid-connect/token'
 
 async function getAuthorizationEndPoint(context: APIRequestContext): Promise<string> {
   const loginParams = {

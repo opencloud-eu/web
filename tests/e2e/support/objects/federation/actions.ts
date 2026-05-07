@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test'
 import util from 'util'
 import { federatedInvitationCode } from '../../store'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 
 const generateInvitationButton =
   '//button[contains(@aria-label,"Generate invitation link that can be shared with one or more invitees")]'
@@ -32,7 +32,7 @@ export const generateInvitation = async (args: { page: Page; user: string }): Pr
   ])
   await expect(page.locator(util.format(invitationToken, inviteCode))).toBeVisible()
 
-  const serverHostname = new URL(config.baseUrl).host
+  const serverHostname = new URL(appConfig.baseUrl).host
   // Invitation token format: "token@server-host"
   const inviteToken = `${inviteCode}@${serverHostname}`
   federatedInvitationCode.set(user, { code: inviteToken })

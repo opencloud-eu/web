@@ -1,6 +1,6 @@
 import { Page } from '@playwright/test'
 import { dav, graph, external } from '../../api'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 import { User } from '../../types'
 
 export interface navigateToDetailsPanelOfResourceArgs {
@@ -25,7 +25,7 @@ export const navigateToDetailsPanelOfResource = async (
 ): Promise<void> => {
   const { page, resource, detailsPanel, user, space } = args
   const fileId = await getTheFileIdOfSpaceFile(user, space, resource)
-  const fullUrl = `${config.baseUrl}/f/${fileId}?details=${detailsPanel}`
+  const fullUrl = `${appConfig.baseUrl}/f/${fileId}?details=${detailsPanel}`
   await page.goto(fullUrl)
 }
 
@@ -36,13 +36,13 @@ export const openResourceViaUrl = async (args: openResourceViaUrlArgs) => {
 
   switch (client) {
     case 'desktop':
-      fullUrl = `${config.baseUrl}/external/open-with-web/?appName=${editorName}&fileId=${fileId}`
+      fullUrl = `${appConfig.baseUrl}/external/open-with-web/?appName=${editorName}&fileId=${fileId}`
       break
     case 'mobile':
       fullUrl = await external.getOpenWithWebUrl({ user, fileId, editorName })
       break
     default:
-      fullUrl = `${config.baseUrl}/f/${fileId}`
+      fullUrl = `${appConfig.baseUrl}/f/${fileId}`
   }
   await page.goto(fullUrl)
 }
@@ -59,7 +59,7 @@ export const openSpaceViaUrl = async (args: openResourceViaUrlArgs) => {
     spaceType = 'project'
   }
   const fileId = await graph.getSpaceIdBySpaceName({ user, spaceType, spaceName })
-  const fullUrl = `${config.baseUrl}/f/${fileId}`
+  const fullUrl = `${appConfig.baseUrl}/f/${fileId}`
   await page.goto(fullUrl)
 }
 
@@ -86,7 +86,7 @@ const getTheFileIdOfSpaceFile = async (
 }
 
 export const navigateToNonExistingPage = async ({ page }: { page: Page }) => {
-  await page.goto(`${config.baseUrl}/'a-non-existing-page'`)
+  await page.goto(`${appConfig.baseUrl}/'a-non-existing-page'`)
 }
 export const waitForNotFoundPageToBeVisible = async ({ page }: { page: Page }) => {
   await page.locator('.page-not-found').waitFor()

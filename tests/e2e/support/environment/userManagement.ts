@@ -6,7 +6,7 @@ import {
   createdGroupStore,
   federatedUserStore
 } from '../store'
-import { config } from '../../config'
+import { appConfig } from '../../playwright.config'
 
 export class UsersEnvironment {
   getUser({ key }: { key: string }): User {
@@ -32,7 +32,7 @@ export class UsersEnvironment {
   }
 
   storeCreatedUser({ user }: { user: User }): User {
-    const store = config.federatedServer ? federatedUserStore : createdUserStore
+    const store = appConfig.federatedServer ? federatedUserStore : createdUserStore
     if (store.has(user.id)) {
       throw new Error(`user '${user.id}' already exists`)
     }
@@ -42,7 +42,7 @@ export class UsersEnvironment {
 
   getCreatedUser({ key, shareType }: { key: string; shareType?: string }): User {
     const store =
-      shareType === 'external' || config.federatedServer ? federatedUserStore : createdUserStore
+      shareType === 'external' || appConfig.federatedServer ? federatedUserStore : createdUserStore
     if (!store.has(key)) {
       throw new Error(`user with key '${key}' not found`)
     }
@@ -61,7 +61,7 @@ export class UsersEnvironment {
   }
 
   removeCreatedUser({ key }: { key: string }): boolean {
-    const store = config.federatedServer ? federatedUserStore : createdUserStore
+    const store = appConfig.federatedServer ? federatedUserStore : createdUserStore
 
     if (!store.has(key)) {
       throw new Error(`user '${key}' not found`)

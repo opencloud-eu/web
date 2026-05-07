@@ -20,7 +20,7 @@ OpenCloud Web is a TypeScript/Vue 3 single-page application that serves as the b
 │   ├── extension-sdk/ # Utilities for custom extensions
 │   └── web-app-*/     # Standalone apps/extensions (files, search, preview, …)
 ├── tests/
-│   └── e2e/           # End-to-end tests (Playwright + Cucumber)
+│   └── e2e/           # End-to-end tests (Playwright + Playwright BDD)
 ├── dev/               # Docker/infrastructure config for local development
 ├── docker-compose.yml
 ├── vite.config.ts     # Root Vite config
@@ -100,7 +100,7 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 
 ### End-to-End Tests
 
-- **Framework:** [Playwright](https://playwright.dev/) + [Cucumber](https://cucumber.io/)
+- **Framework:** [Playwright](https://playwright.dev/) + [Playwright BDD](https://vitalets.github.io/playwright-bdd/)
 - **Location:** `tests/e2e/` (outside of `packages/`)
 - **Prerequisites:** Run `pnpm build` before executing e2e tests. A running OpenCloud backend is also required — use `docker-compose up -d` to start one locally.
 - **Run:** `pnpm test:e2e:cucumber`
