@@ -14,6 +14,9 @@ export interface EditorAction {
   description?: string
   icon: string
   iconFillType?: 'fill' | 'line' | 'none'
+  activeIcon?: (
+    editor: Editor
+  ) => { icon: string; iconFillType?: 'fill' | 'line' | 'none' } | undefined
 
   // Search & discovery (for slash commands)
   keywords?: string[]
@@ -23,7 +26,6 @@ export interface EditorAction {
   slashCommandAction?: (ctx: { editor: Editor; range: Range }) => void
 
   // State management
-  currentValue?: (editor: Editor) => string | undefined
   isActive?: (editor: Editor) => boolean
   isEnabled?: (editor: Editor) => boolean
 
@@ -31,9 +33,10 @@ export interface EditorAction {
   showInToolbar?: boolean
   showInSlashCommands?: boolean
 
-  // Dropdown configuration
-  isDropdown?: boolean
-  dropdownOptions?: Array<{ value: string; label: string }>
+  // Child actions (rendered as a dropdown menu in the toolbar)
+  // For child actions to appear as slash commands, they must be registered
+  // as separate action in the respective strategy as well
+  childActions?: EditorAction[]
 }
 
 export interface EditorActionGroup {
@@ -96,65 +99,22 @@ export function useEditorActions(
     id: 'font-size',
     title: $gettext('Font size'),
     icon: 'font-size-2',
-    isDropdown: true,
-    dropdownOptions: [
-      { value: '12px', label: '12px' },
-      { value: '14px', label: '14px' },
-      { value: '16px', label: '16px' },
-      { value: '18px', label: '18px' },
-      { value: '20px', label: '20px' },
-      { value: '24px', label: '24px' },
-      { value: '28px', label: '28px' },
-      { value: '32px', label: '32px' }
-    ],
-    currentValue: (editor) => editor.getAttributes('textStyle').fontSize as string | undefined,
-    toolbarAction: (editor, value) => editor.chain().focus().setFontSize(value).run(),
-    showInSlashCommands: false
-  })
-
-  const fontFamily = (): EditorAction => ({
-    id: 'font-family',
-    title: $gettext('Font family'),
-    icon: 'font-family',
-    isDropdown: true,
-    dropdownOptions: [
-      { value: 'Arial', label: $gettext('Arial') },
-      { value: 'Courier New', label: $gettext('Courier New') },
-      { value: 'Georgia', label: $gettext('Georgia') },
-      { value: 'Times New Roman', label: $gettext('Times New Roman') },
-      { value: 'Trebuchet MS', label: $gettext('Trebuchet MS') },
-      { value: 'Verdana', label: $gettext('Verdana') }
-    ],
-    currentValue: (editor) => editor.getAttributes('textStyle').fontFamily as string | undefined,
-    toolbarAction: (editor, value) => editor.chain().focus().setFontFamily(value).run(),
-    showInSlashCommands: false
-  })
-
-  const lineHeight = (): EditorAction => ({
-    id: 'line-height',
-    title: $gettext('Line height'),
-    icon: 'line-height',
-    isDropdown: true,
-    dropdownOptions: [
-      { value: '1', label: '1' },
-      { value: '1.15', label: '1.15' },
-      { value: '1.5', label: '1.5' },
-      { value: '1.75', label: '1.75' },
-      { value: '2', label: '2' },
-      { value: '2.5', label: '2.5' },
-      { value: '3', label: '3' }
-    ],
-    currentValue: (editor) => editor.getAttributes('textStyle').lineHeight as string | undefined,
-    toolbarAction: (editor, value) => editor.chain().focus().setLineHeight(value).run(),
-    showInSlashCommands: false
+    showInSlashCommands: false,
+    childActions: ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'].map((size) => ({
+      id: `font-size-${size}`,
+      title: size,
+      icon: 'font-size-2',
+      toolbarAction: (editor) => editor.chain().focus().setFontSize(size).run(),
+      isActive: (editor) => editor.getAttributes('textStyle').fontSize === size
+    }))
   })
 
   const textColor = (): EditorAction => ({
     id: 'text-color',
     title: $gettext('Text color'),
     icon: 'font-color',
-    isDropdown: true,
-    dropdownOptions: [
+    showInSlashCommands: false,
+    childActions: [
       { value: '#000000', label: $gettext('Black') },
       { value: '#e60000', label: $gettext('Red') },
       { value: '#ff9900', label: $gettext('Orange') },
@@ -169,10 +129,13 @@ export function useEditorActions(
       { value: '#cce8cc', label: $gettext('Light green') },
       { value: '#cce0f5', label: $gettext('Light blue') },
       { value: '#ebd6ff', label: $gettext('Light purple') }
-    ],
-    currentValue: (editor) => editor.getAttributes('textStyle').color as string | undefined,
-    toolbarAction: (editor, value) => editor.chain().focus().setColor(value).run(),
-    showInSlashCommands: false
+    ].map(({ value, label }) => ({
+      id: `text-color-${value.replace('#', '')}`,
+      title: label,
+      icon: 'font-color',
+      toolbarAction: (editor) => editor.chain().focus().setColor(value).run(),
+      isActive: (editor) => editor.getAttributes('textStyle').color === value
+    }))
   })
 
   const backgroundColor = (): EditorAction => ({
@@ -180,8 +143,8 @@ export function useEditorActions(
     title: $gettext('Background color'),
     icon: 'mark-pen',
     iconFillType: 'line',
-    isDropdown: true,
-    dropdownOptions: [
+    showInSlashCommands: false,
+    childActions: [
       { value: 'transparent', label: $gettext('None') },
       { value: '#facccc', label: $gettext('Light red') },
       { value: '#ffebcc', label: $gettext('Light orange') },
@@ -196,11 +159,14 @@ export function useEditorActions(
       { value: '#0066cc', label: $gettext('Blue') },
       { value: '#9933ff', label: $gettext('Purple') },
       { value: '#000000', label: $gettext('Black') }
-    ],
-    currentValue: (editor) =>
-      editor.getAttributes('textStyle').backgroundColor as string | undefined,
-    toolbarAction: (editor, value) => editor.chain().focus().setBackgroundColor(value).run(),
-    showInSlashCommands: false
+    ].map(({ value, label }) => ({
+      id: `background-color-${value.replace('#', '')}`,
+      title: label,
+      icon: 'mark-pen',
+      iconFillType: 'line' as const,
+      toolbarAction: (editor) => editor.chain().focus().setBackgroundColor(value).run(),
+      isActive: (editor) => editor.getAttributes('textStyle').backgroundColor === value
+    }))
   })
 
   const bold = (): EditorAction => ({
@@ -253,18 +219,22 @@ export function useEditorActions(
     isActive: (editor) => editor.isActive('code')
   })
 
-  // Block actions
-  const paragraph = (): EditorAction => ({
-    id: 'paragraph',
-    title: $gettext('Paragraph'),
-    description: $gettext('Plain text block'),
-    icon: 'paragraph',
-    keywords: ['text', 'body'],
-    toolbarAction: (editor) => editor.chain().focus().setParagraph().run(),
-    slashCommandAction: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setNode('paragraph').run()
+  // Heading actions
+  const heading = (): EditorAction => ({
+    id: 'heading',
+    title: $gettext('Heading'),
+    icon: 'heading',
+    activeIcon: (editor) => {
+      for (const level of [1, 2, 3, 4] as const) {
+        if (editor.isActive('heading', { level })) {
+          return { icon: `h-${level}` }
+        }
+      }
+      return undefined
     },
-    showInToolbar: false
+    isActive: (editor) => editor.isActive('heading'),
+    showInSlashCommands: false,
+    childActions: [heading1(), heading2(), heading3(), heading4()]
   })
 
   const heading1 = (): EditorAction => ({
@@ -277,7 +247,8 @@ export function useEditorActions(
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 1 }).run()
     },
-    isActive: (editor) => editor.isActive('heading', { level: 1 })
+    isActive: (editor) => editor.isActive('heading', { level: 1 }),
+    showInToolbar: false
   })
 
   const heading2 = (): EditorAction => ({
@@ -290,7 +261,8 @@ export function useEditorActions(
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 2 }).run()
     },
-    isActive: (editor) => editor.isActive('heading', { level: 2 })
+    isActive: (editor) => editor.isActive('heading', { level: 2 }),
+    showInToolbar: false
   })
 
   const heading3 = (): EditorAction => ({
@@ -303,7 +275,37 @@ export function useEditorActions(
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode('heading', { level: 3 }).run()
     },
-    isActive: (editor) => editor.isActive('heading', { level: 3 })
+    isActive: (editor) => editor.isActive('heading', { level: 3 }),
+    showInToolbar: false
+  })
+
+  const heading4 = (): EditorAction => ({
+    id: 'heading-4',
+    title: $gettext('Heading 4'),
+    description: $gettext('Extra small section heading'),
+    icon: 'h-4',
+    keywords: ['h4'],
+    toolbarAction: (editor) => editor.chain().focus().toggleHeading({ level: 4 }).run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode('heading', { level: 4 }).run()
+    },
+    isActive: (editor) => editor.isActive('heading', { level: 4 }),
+    showInToolbar: false
+  })
+
+  // Block actions
+  const lineHeight = (): EditorAction => ({
+    id: 'line-height',
+    title: $gettext('Line height'),
+    icon: 'line-height',
+    showInSlashCommands: false,
+    childActions: ['1', '1.15', '1.5', '1.75', '2', '2.5', '3'].map((value) => ({
+      id: `line-height-${value}`,
+      title: value,
+      icon: 'line-height',
+      toolbarAction: (editor) => editor.chain().focus().setLineHeight(value).run(),
+      isActive: (editor) => editor.getAttributes('textStyle').lineHeight === value
+    }))
   })
 
   const blockquote = (): EditorAction => ({
@@ -330,19 +332,6 @@ export function useEditorActions(
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
     },
     isActive: (editor) => editor.isActive('codeBlock')
-  })
-
-  const horizontalRule = (): EditorAction => ({
-    id: 'horizontal-rule',
-    title: $gettext('Horizontal rule'),
-    description: $gettext('Divider line'),
-    icon: 'separator',
-    keywords: ['hr', 'divider'],
-    toolbarAction: (editor) => editor.chain().focus().setHorizontalRule().run(),
-    slashCommandAction: ({ editor, range }) => {
-      editor.chain().focus().deleteRange(range).setHorizontalRule().run()
-    },
-    isActive: () => false
   })
 
   // List actions
@@ -433,6 +422,7 @@ export function useEditorActions(
     icon: 'link-line',
     keywords: ['image', 'picture', 'url'],
     showInToolbar: false,
+    toolbarAction: (editor) => dispatchImageModal(editor),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       dispatchImageModal(editor)
@@ -448,6 +438,7 @@ export function useEditorActions(
     keywords: ['image', 'picture', 'upload', 'file'],
     showInToolbar: false,
     showInSlashCommands: true,
+    toolbarAction: (editor) => insertImageFromFile(editor),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
       insertImageFromFile(editor)
@@ -460,19 +451,8 @@ export function useEditorActions(
     title: $gettext('Insert image'),
     icon: 'image-line',
     keywords: ['image', 'picture', 'upload', 'url'],
-    isDropdown: true,
     showInSlashCommands: false,
-    dropdownOptions: [
-      { value: 'file', label: $gettext('Upload image') },
-      { value: 'url', label: $gettext('Insert via URL') }
-    ],
-    toolbarAction: (editor, value) => {
-      if (value === 'url') {
-        dispatchImageModal(editor)
-      } else if (value === 'file') {
-        insertImageFromFile(editor)
-      }
-    },
+    childActions: [imageUpload(), imageUrl()],
     isActive: () => false
   })
 
@@ -503,12 +483,27 @@ export function useEditorActions(
     input.click()
   }
 
-  const table = (): EditorAction => ({
+  const horizontalRule = (): EditorAction => ({
+    id: 'horizontal-rule',
+    title: $gettext('Horizontal rule'),
+    description: $gettext('Divider line'),
+    icon: 'separator',
+    keywords: ['hr', 'divider'],
+    toolbarAction: (editor) => editor.chain().focus().setHorizontalRule().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setHorizontalRule().run()
+    },
+    isActive: () => false
+  })
+
+  // Table actions
+  const createTable = (): EditorAction => ({
     id: 'table',
-    title: $gettext('Table'),
+    title: $gettext('Create a table'),
     description: $gettext('3×3 table with header row'),
     icon: 'table-line',
     keywords: ['grid'],
+    showInToolbar: false,
     toolbarAction: (editor) =>
       editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
     slashCommandAction: ({ editor, range }) => {
@@ -522,13 +517,13 @@ export function useEditorActions(
     isActive: () => false
   })
 
-  // Table manipulation actions
   const addRowBefore = (): EditorAction => ({
     id: 'add-row-before',
     title: $gettext('Add row above'),
     description: $gettext('Insert row before current'),
     icon: 'insert-row-top',
     keywords: ['table', 'row', 'above', 'before'],
+    showInToolbar: false,
     toolbarAction: (editor) => editor.chain().focus().addRowBefore().run(),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addRowBefore().run()
@@ -543,6 +538,7 @@ export function useEditorActions(
     description: $gettext('Insert row after current'),
     icon: 'insert-row-bottom',
     keywords: ['table', 'row', 'below', 'after'],
+    showInToolbar: false,
     toolbarAction: (editor) => editor.chain().focus().addRowAfter().run(),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addRowAfter().run()
@@ -557,6 +553,7 @@ export function useEditorActions(
     description: $gettext('Remove current row'),
     icon: 'delete-row',
     keywords: ['table', 'row', 'remove'],
+    showInToolbar: false,
     toolbarAction: (editor) => {
       const deleted = editor.chain().focus().deleteRow().run()
       if (!deleted && editor.isActive('table')) {
@@ -579,6 +576,7 @@ export function useEditorActions(
     description: $gettext('Insert column before current'),
     icon: 'insert-column-left',
     keywords: ['table', 'column', 'left', 'before'],
+    showInToolbar: false,
     toolbarAction: (editor) => editor.chain().focus().addColumnBefore().run(),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addColumnBefore().run()
@@ -593,6 +591,7 @@ export function useEditorActions(
     description: $gettext('Insert column after current'),
     icon: 'insert-column-right',
     keywords: ['table', 'column', 'right', 'after'],
+    showInToolbar: false,
     toolbarAction: (editor) => editor.chain().focus().addColumnAfter().run(),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).addColumnAfter().run()
@@ -607,6 +606,7 @@ export function useEditorActions(
     description: $gettext('Remove current column'),
     icon: 'delete-column',
     keywords: ['table', 'column', 'remove'],
+    showInToolbar: false,
     toolbarAction: (editor) => {
       const deleted = editor.chain().focus().deleteColumn().run()
       if (!deleted && editor.isActive('table')) {
@@ -623,6 +623,22 @@ export function useEditorActions(
     isEnabled: (editor) => editor.isActive('table')
   })
 
+  const tableMenu = (): EditorAction => ({
+    id: 'table-menu',
+    title: $gettext('Table'),
+    icon: 'table-line',
+    showInSlashCommands: false,
+    childActions: [
+      createTable(),
+      addRowBefore(),
+      addRowAfter(),
+      deleteRow(),
+      addColumnBefore(),
+      addColumnAfter(),
+      deleteColumn()
+    ]
+  })
+
   return {
     // History
     undo,
@@ -630,9 +646,12 @@ export function useEditorActions(
     // View options
     toggleSourceMode,
     // Text formatting
+    heading,
+    heading1,
+    heading2,
+    heading3,
+    heading4,
     fontSize,
-    fontFamily,
-    lineHeight,
     textColor,
     backgroundColor,
     bold,
@@ -641,13 +660,9 @@ export function useEditorActions(
     strikethrough,
     codeInline,
     // Blocks
-    paragraph,
-    heading1,
-    heading2,
-    heading3,
+    lineHeight,
     blockquote,
     codeBlock,
-    horizontalRule,
     // Lists
     bulletList,
     orderedList,
@@ -657,8 +672,10 @@ export function useEditorActions(
     image,
     imageUrl,
     imageUpload,
-    table,
-    // Table manipulation
+    horizontalRule,
+    // Table
+    tableMenu,
+    createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,

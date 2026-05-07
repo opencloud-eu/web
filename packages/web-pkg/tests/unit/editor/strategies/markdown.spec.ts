@@ -51,9 +51,10 @@ describe('useStrategyMarkdown', () => {
     it('returns expected group structure', () => {
       const strategy = createStrategy()
       const groupIds = strategy.editorActionGroups().map((g) => g.id)
-      expect(groupIds).toContain('basic-blocks')
+      expect(groupIds).toContain('formatting')
       expect(groupIds).toContain('lists')
-      expect(groupIds).toContain('advanced')
+      expect(groupIds).toContain('blocks')
+      expect(groupIds).toContain('insert')
     })
   })
 

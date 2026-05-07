@@ -15,49 +15,62 @@
           v-for="item in group.actions.filter((a) => a.showInToolbar !== false)"
           :key="`toolbar-item-${item.id}`"
         >
-          <template v-if="item.isDropdown && item.dropdownOptions">
+          <template v-if="item.childActions">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
               v-oc-tooltip="item.title"
               type="button"
               appearance="raw"
-              class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center"
+              class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center p-2"
               :class="{
                 'text-editor-toolbar-btn--active': isItemActive(item)
               }"
               :aria-label="item.title"
-              :disabled="!isItemEnabled(item)"
             >
-              <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
+              <oc-icon
+                :name="getActiveIcon(item).icon"
+                :fill-type="getActiveIcon(item).iconFillType || 'none'"
+                size="small"
+              />
               <oc-icon name="arrow-down-s" fill-type="line" size="small" />
             </oc-button>
             <oc-drop
               :drop-id="`toolbar-dropdown-${item.id}`"
               :toggle="`#toolbar-dropdown-trigger-${item.id}`"
               mode="click"
-              class="text-editor-toolbar-dropdown"
+              class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
               close-on-click
             >
               <ul class="oc-list">
                 <li
-                  v-for="option in item.dropdownOptions"
-                  :key="`${item.id}-${option.value}`"
+                  v-for="child in item.childActions"
+                  :key="`${item.id}-${child.id}`"
                   class="oc-rounded oc-menu-item-hover"
                 >
                   <oc-button
-                    appearance="raw"
+                    :appearance="isItemActive(child) ? 'filled' : 'raw-inverse'"
+                    :color-role="isItemActive(child) ? 'secondaryContainer' : 'surface'"
+                    :no-hover="isItemActive(child)"
                     justify-content="space-between"
-                    class="oc-width-1-1 oc-p-xs"
-                    @click="item.toolbarAction?.(textEditor.editor.value!, option.value)"
+                    class="p-1"
+                    :disabled="!isItemEnabled(child)"
+                    @click="child.toolbarAction?.(textEditor.editor.value!)"
                   >
+                    <span class="inline-flex items-center gap-2">
+                      <oc-icon
+                        :name="child.icon"
+                        :fill-type="child.iconFillType || 'none'"
+                        size="small"
+                      />
+                      <span>{{ child.title }}</span>
+                    </span>
                     <oc-icon
-                      v-if="option.value === getCurrentValue(item)"
+                      v-if="isItemActive(child)"
                       name="check"
                       fill-type="line"
                       size="small"
                     />
-                    <span>{{ option.label }}</span>
                   </oc-button>
                 </li>
               </ul>
@@ -68,7 +81,7 @@
             v-oc-tooltip="item.title"
             type="button"
             appearance="raw"
-            class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center"
+            class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center p-2"
             :class="{ 'text-editor-toolbar-btn--active': isItemActive(item) }"
             :aria-label="item.title"
             :disabled="!isItemEnabled(item)"
@@ -93,6 +106,7 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import type { TextEditorInstance } from '../types'
+import { EditorAction } from '../composables'
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
 
@@ -148,7 +162,7 @@ const updateEditorState = () => {
   editorStateKey.value++
 }
 
-const isItemEnabled = (item: any) => {
+const isItemEnabled = (item: EditorAction) => {
   // Access editorStateKey to make this reactive to editor state changes
   editorStateKey.value
 
@@ -163,7 +177,7 @@ const isItemEnabled = (item: any) => {
   return true
 }
 
-const isItemActive = (item: any) => {
+const isItemActive = (item: EditorAction) => {
   // Access editorStateKey to make this reactive to editor state changes
   editorStateKey.value
 
@@ -178,16 +192,18 @@ const isItemActive = (item: any) => {
   return false
 }
 
-const getCurrentValue = (item: any) => {
+const getActiveIcon = (item: EditorAction) => {
   // Access editorStateKey to make this reactive to editor state changes
   editorStateKey.value
 
   const editor = unref(textEditor.editor)
-  if (!editor || !item.currentValue) {
-    return undefined
+  if (editor && item.activeIcon) {
+    const active = item.activeIcon(editor)
+    if (active) {
+      return active
+    }
   }
-
-  return item.currentValue(editor)
+  return { icon: item.icon, iconFillType: item.iconFillType }
 }
 </script>
 
@@ -204,7 +220,6 @@ const getCurrentValue = (item: any) => {
 }
 
 .text-editor-toolbar-btn {
-  @apply h-[42px];
   gap: 0 !important;
 }
 .text-editor-toolbar-btn--active {
