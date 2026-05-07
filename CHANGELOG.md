@@ -15,6 +15,7 @@
 
 ### 📈 Enhancement
 
+- feat: retrieve extensions by their id [[#2468](https://github.com/opencloud-eu/web/pull/2468)]
 - feat: create new contacts [[#2458](https://github.com/opencloud-eu/web/pull/2458)]
 - feat(search): clear on esc keypress + misc fixes [[#2423](https://github.com/opencloud-eu/web/pull/2423)]
 - perf: improve initial loading times [[#2414](https://github.com/opencloud-eu/web/pull/2414)]
