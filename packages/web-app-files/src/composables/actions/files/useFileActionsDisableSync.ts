@@ -1,17 +1,20 @@
 import {
+  createLocationShares,
+  FileAction,
+  FileActionOptions,
   isLocationSharesActive,
   isLocationSpacesActive,
-  createLocationShares
-} from '../../../router'
+  useClientService,
+  useConfigStore,
+  useLoadingService,
+  useMessages,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 import PQueue from 'p-queue'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { useClientService } from '../../clientService'
-import { useLoadingService } from '../../loadingService'
-import { useRouter } from '../../router'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { FileAction, FileActionOptions } from '../types'
-import { useMessages, useConfigStore, useResourcesStore } from '../../piniaStores'
 
 export const useFileActionsDisableSync = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -21,7 +24,8 @@ export const useFileActionsDisableSync = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const configStore = useConfigStore()
-  const { updateResourceField } = useResourcesStore()
+  const resourcesStore = useResourcesStore()
+  const { updateResourceField } = resourcesStore
 
   const handler = async ({ resources }: FileActionOptions<IncomingShareResource>) => {
     const errors: Error[] = []
@@ -51,6 +55,8 @@ export const useFileActionsDisableSync = () => {
     await Promise.all(triggerPromises)
 
     if (errors.length === 0) {
+      resourcesStore.resetSelection()
+
       if (isLocationSpacesActive(router, 'files-spaces-generic')) {
         showMessage({
           title: $ngettext(

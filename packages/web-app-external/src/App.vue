@@ -394,6 +394,27 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
         }),
         focusTrapInitial: false
       })
+      return
+    }
+
+    if (message.MessageId === 'UI_PickLink') {
+      dispatchModal({
+        elementClass: 'file-picker-modal',
+        title: $gettext('Pick a file to link'),
+        customComponent: FilePickerModal,
+        hideActions: true,
+        customComponentAttrs: () => ({
+          parentFolderLink: getParentFolderLink(resource),
+          allowedFileTypes: [],
+          callbackFn: ({ resource }: { resource: Resource }) => {
+            postMessageToCollabora('Action_InsertLink', {
+              url: resource.privateLink,
+              text: resource.name
+            })
+          }
+        }),
+        focusTrapInitial: false
+      })
     }
   } catch (e) {
     console.debug('Error parsing Collabora PostMessage', e)

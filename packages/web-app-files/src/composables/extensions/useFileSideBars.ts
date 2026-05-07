@@ -6,7 +6,6 @@ import FileVersions from '../../components/SideBar/Versions/FileVersions.vue'
 import SharesPanel from '../../components/SideBar/Shares/SharesPanel.vue'
 import NoSelection from '../../components/SideBar/NoSelection.vue'
 import TrashNoSelection from '../../components/SideBar/TrashNoSelection.vue'
-import SpaceActions from '../../components/SideBar/Actions/SpaceActions.vue'
 import ActivitiesPanel from '../../components/SideBar/ActivitiesPanel.vue'
 import {
   SpaceDetails,
@@ -311,18 +310,12 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
         icon: 'play-circle',
         iconFillType: 'line',
         title: () => $gettext('Actions'),
-        component: SpaceActions,
+        component: FileActions,
         isVisible: ({ items }) => {
           if (items?.length !== 1) {
             return false
           }
           if (!isProjectSpaceResource(items[0])) {
-            return false
-          }
-          if (
-            !isLocationSpacesActive(router, 'files-spaces-projects') &&
-            !isLocationSpacesActive(router, 'files-spaces-generic')
-          ) {
             return false
           }
           return true

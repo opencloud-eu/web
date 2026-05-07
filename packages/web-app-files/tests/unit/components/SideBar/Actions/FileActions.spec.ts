@@ -8,12 +8,13 @@ import {
   defaultComponentMocks,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { useFileActions } from '@opencloud-eu/web-pkg'
+import { useExtensionRegistry, useFileActions } from '@opencloud-eu/web-pkg'
 import { Action } from '@opencloud-eu/web-pkg'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useFileActions: vi.fn()
+  useFileActions: vi.fn(),
+  useExtensionRegistry: vi.fn()
 }))
 
 type ActionWithSelector = Action & { selector: string }
@@ -53,6 +54,11 @@ describe('FileActions', () => {
             getAllOpenWithActions: () => Object.values(fileActions)
           })
         )
+        vi.mocked(useExtensionRegistry).mockImplementation(() =>
+          mock<ReturnType<typeof useExtensionRegistry>>({
+            requestExtensions: () => []
+          })
+        )
 
         const actions = ['copy', 'move', 'download', 'text-editor']
         const { wrapper } = getWrapper()
@@ -71,6 +77,17 @@ describe('FileActions', () => {
 
     describe('menu items', () => {
       it('renders a list of actions', () => {
+        vi.mocked(useFileActions).mockImplementation(() =>
+          mock<ReturnType<typeof useFileActions>>({
+            getAllOpenWithActions: () => [fileActions.copy, fileActions['text-editor']]
+          })
+        )
+        vi.mocked(useExtensionRegistry).mockImplementation(() =>
+          mock<ReturnType<typeof useExtensionRegistry>>({
+            requestExtensions: () => []
+          })
+        )
+
         const { wrapper } = getWrapper()
         for (const action of ['copy', 'text-editor']) {
           expect(wrapper.find(fileActions[action].selector).exists()).toBeTruthy()

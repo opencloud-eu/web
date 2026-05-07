@@ -1,6 +1,6 @@
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
-import { useFileActionsEnableSync } from '../../../../../src/composables/actions/files/useFileActionsEnableSync'
+import { useFileActionsDisableSync } from '../../../../../src/composables/actions/files'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
@@ -11,18 +11,18 @@ import {
 const sharesWithMeLocation = 'files-shares-with-me'
 const sharesWithOthersLocation = 'files-shares-with-others'
 
-describe('acceptShare', () => {
+describe('disableSync', () => {
   describe('computed property "actions"', () => {
     describe('isVisible property of returned element', () => {
       it.each([
-        { resources: [{ syncEnabled: false }] as IncomingShareResource[], expectedStatus: true },
-        { resources: [{ syncEnabled: true }] as IncomingShareResource[], expectedStatus: false }
+        { resources: [{ syncEnabled: true }] as IncomingShareResource[], expectedStatus: true },
+        { resources: [{ syncEnabled: false }] as IncomingShareResource[], expectedStatus: false }
       ])(
         `should be set according to the resource syncEnabled state if the route name is "${sharesWithMeLocation}"`,
         (inputData) => {
           getWrapper({
             setup: () => {
-              const { actions } = useFileActionsEnableSync()
+              const { actions } = useFileActionsDisableSync()
 
               const resources = inputData.resources
               expect(unref(actions)[0].isVisible({ space: null, resources })).toBe(
@@ -41,7 +41,7 @@ describe('acceptShare', () => {
           getWrapper({
             routeName: sharesWithOthersLocation,
             setup: () => {
-              const { actions } = useFileActionsEnableSync()
+              const { actions } = useFileActionsDisableSync()
 
               expect(
                 unref(actions)[0].isVisible({ space: null, resources: [resource] })
@@ -58,7 +58,7 @@ function getWrapper({
   setup,
   routeName = sharesWithMeLocation
 }: {
-  setup: (instance: ReturnType<typeof useFileActionsEnableSync>) => void
+  setup: (instance: ReturnType<typeof useFileActionsDisableSync>) => void
   routeName?: string
 }) {
   const mocks = defaultComponentMocks({ currentRoute: mock<RouteLocation>({ name: routeName }) })
