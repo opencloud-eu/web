@@ -9,6 +9,15 @@
         />
       </div>
     </div>
+    <div v-if="sortedContacts.length" class="px-4 pb-3 pt-2">
+      <oc-search-bar
+        v-model="searchTerm"
+        :label="$gettext('Search contacts')"
+        :placeholder="$gettext('Search contacts')"
+        :button-hidden="true"
+        is-filter
+      />
+    </div>
     <no-content-message
       v-if="!sortedContacts.length"
       id="contacts-empty"
@@ -18,9 +27,18 @@
         <span v-text="$gettext('No contacts available yet.')" />
       </template>
     </no-content-message>
+    <no-content-message
+      v-else-if="!filteredContacts.length"
+      id="contacts-empty"
+      img-src="/images/empty-states/empty-contacts.svg"
+    >
+      <template #message>
+        <span v-text="$gettext('No contacts found.')" />
+      </template>
+    </no-content-message>
     <oc-list v-else>
       <li
-        v-for="contact in sortedContacts"
+        v-for="contact in filteredContacts"
         :id="`contact-list-item-${contact.id}`"
         :key="contact.id"
         class="border-b-2 last:border-b-0"
@@ -35,11 +53,36 @@
             no-hover
             @click="onSelectContact(contact)"
           >
-            <ContactsListItem :contact="contact" />
+            <div class="min-w-0 flex-1">
+              <ContactsListItem :contact="contact" />
+              <div
+                v-if="normalizedSearchTerm"
+                class="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-sm text-role-on-surface-variant"
+              >
+                <span
+                  v-for="(value, valueIndex) in getMatchingContactValues(contact)"
+                  :key="`${contact.id}-search-match-${valueIndex}`"
+                  class="min-w-0 break-all"
+                >
+                  <template
+                    v-for="(part, partIndex) in getHighlightedTextParts(value)"
+                    :key="`${contact.id}-search-match-${valueIndex}-${partIndex}`"
+                  >
+                    <span
+                      v-if="part.highlight"
+                      class="rounded bg-role-secondary-container text-sm bg-yellow-200"
+                    >
+                      {{ part.text }}
+                    </span>
+                    <span v-else>{{ part.text }}</span>
+                  </template>
+                </span>
+              </div>
+            </div>
           </oc-button>
           <div class="flex items-center pr-2">
             <oc-button
-              :id="getContactActionsToggleId(contact.id)"
+              :id="`contact-actions-toggle-${contact.id}`"
               class="h-10 w-10 shrink-0"
               appearance="raw"
               no-hover
@@ -49,8 +92,8 @@
               <oc-icon name="more-2" fill-type="line" />
             </oc-button>
             <oc-drop
-              :drop-id="getContactActionsDropId(contact.id)"
-              :toggle="`#${getContactActionsToggleId(contact.id)}`"
+              :drop-id="`contact-actions-drop-${contact.id}`"
+              :toggle="`#contact-actions-toggle-${contact.id}`"
               :title="$gettext('Contact actions')"
               position="bottom-end"
               padding-size="small"
@@ -59,7 +102,7 @@
             >
               <ContextActionMenu
                 :menu-sections="getContactMenuSections(contact)"
-                :action-options="actionOptions"
+                :action-options="{}"
               />
             </oc-drop>
           </div>
@@ -70,14 +113,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick, unref } from 'vue'
+import { computed, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
   AppLoadingSpinner,
   ContextActionMenu,
   NoContentMessage,
-  ActionOptions,
   MenuSection
 } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
@@ -85,6 +127,7 @@ import { useLoadContacts } from '../composables/useLoadContacts'
 import { useContactsStore } from '../composables/piniaStores/contacts'
 import { useAddressBooksStore } from '../composables/piniaStores/addressbooks'
 import { useContactEditor } from '../composables/useContactEditor'
+import { useContactSearch } from '../composables/useContactSearch'
 import { getContactDisplayName } from '../helpers'
 import ContactsListItem from '../components/ContactsListItem.vue'
 
@@ -97,10 +140,8 @@ const { contacts, currentContact } = storeToRefs(contactsStore)
 const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
 
-const actionOptions = {} as ActionOptions
-
 const sortedContacts = computed(() => {
-  return [...unref(contacts)].sort((a, b) => {
+  return [...contacts.value].sort((a, b) => {
     const aSortName = getContactDisplayName(a)
     const bSortName = getContactDisplayName(b)
 
@@ -108,18 +149,18 @@ const sortedContacts = computed(() => {
   })
 })
 
+const {
+  searchTerm,
+  normalizedSearchTerm,
+  filteredContacts,
+  getMatchingContactValues,
+  getHighlightedTextParts
+} = useContactSearch(sortedContacts)
+
 const onSelectContact = async (contact: Contact) => {
   await runWithDiscardConfirmation(async () => {
     setCurrentContact(contact)
   })
-}
-
-const getContactActionsToggleId = (contactId: string) => {
-  return `contact-actions-toggle-${contactId}`
-}
-
-const getContactActionsDropId = (contactId: string) => {
-  return `contact-actions-drop-${contactId}`
 }
 
 const getContactMenuSections = (contact: Contact): MenuSection[] => {
@@ -142,15 +183,15 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
 }
 
 watch(
-  [() => unref(currentContact)?.id, isLoading],
+  [() => currentContact.value?.id, isLoading],
   async () => {
-    if (unref(isLoading) || !unref(currentContact)) {
+    if (isLoading.value || !currentContact.value) {
       return
     }
 
     await nextTick()
     document
-      .getElementById(`contact-list-item-${unref(currentContact).id}`)
+      .getElementById(`contact-list-item-${currentContact.value.id}`)
       ?.scrollIntoView({ block: 'nearest' })
   },
   { immediate: true }
