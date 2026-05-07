@@ -221,14 +221,14 @@ export function buildSpace(
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
     canRename: function ({ ability }: { user?: User; ability?: Ability } = {}) {
-      if (ability?.can('update-all', 'Drive') || ability?.can('create-all', 'Drive')) {
+      if (ability?.can('update-all', 'Drive')) {
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
     canEditDescription: function ({ ability }: { user?: User; ability?: Ability } = {}) {
-      if (ability?.can('update-all', 'Drive') || ability?.can('create-all', 'Drive')) {
+      if (ability?.can('update-all', 'Drive')) {
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
