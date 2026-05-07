@@ -20,12 +20,15 @@ export interface Action<T = ActionOptions> {
   name: string
   /**
    * Determines where an action will be displayed in the resource context menu.
+   * Doesn't have an effect on actions that are not shown in the context menu.
    *
    * Categories:
    * - primary: action will appear in primary action sections.
    * - secondary: action will appear in secondary action sections.
    * - tertiary: action will appear in tertiary action sections.
    * - quaternary:  action will appear in quaternary action sections.
+   *
+   * @default tertiary
    */
   category?: ActionCategory
   /**
