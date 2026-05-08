@@ -10,11 +10,8 @@ import {
   FileActionOptions,
   useExtensionRegistry,
   useFileActions,
-  useFileActionsCopy,
   useFileActionsDelete,
-  useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsMove,
   useFileActionsOpenWithDefault,
   useFileActionsRestore
 } from '../../composables'
@@ -35,11 +32,8 @@ export default defineComponent({
     const { $gettext } = useGettext()
 
     const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
-    const { actions: copyActions } = useFileActionsCopy()
     const { actions: deleteActions } = useFileActionsDelete()
-    const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: moveActions } = useFileActionsMove()
     const { actions: restoreActions } = useFileActionsRestore()
 
     const extensionRegistry = useExtensionRegistry()
@@ -69,9 +63,6 @@ export default defineComponent({
 
     const menuItemsBatchTertiary = computed(() =>
       [
-        ...unref(downloadArchiveActions),
-        ...unref(moveActions),
-        ...unref(copyActions),
         ...unref(deleteActions),
         ...unref(restoreActions),
         ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
@@ -104,11 +95,8 @@ export default defineComponent({
 
     const menuItemsTertiary = computed(() => {
       return [
-        ...unref(downloadArchiveActions),
         ...unref(downloadFileActions),
         ...unref(deleteActions),
-        ...unref(moveActions),
-        ...unref(copyActions),
         ...unref(restoreActions),
         ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
       ].filter((item) => item.isVisible(unref(actionOptions)))
