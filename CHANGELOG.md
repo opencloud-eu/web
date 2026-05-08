@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-07
+## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-08
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- refactor!: add extension point for right sidebar actions, move enable and disable sync actions to web-app-files [[#2466](https://github.com/opencloud-eu/web/pull/2466)]
 - refactor!: move certain file and space actions to files app [[#2456](https://github.com/opencloud-eu/web/pull/2456)]
 - feat!: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
 - feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
