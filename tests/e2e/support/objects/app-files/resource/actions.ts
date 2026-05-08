@@ -539,6 +539,11 @@ export const openAndGetContentOfDocument = async ({
   page: Page
   editorToOpen: string
 }): Promise<string> => {
+  if (editorToOpen === 'TextEditor') {
+    const editor = page.locator('.tiptap.ProseMirror')
+    await expect(editor).toBeVisible()
+    return await editor.innerText()
+  }
   await page.waitForLoadState()
   await page.waitForURL(/.*\/external-.*/)
   const editorMainFrame = page.frameLocator(externalEditorIframe)
