@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- change!: move downloadArchive move copy actions to web-app-files [[#2471](https://github.com/opencloud-eu/web/pull/2471)]
 - refactor!: add extension point for right sidebar actions, move enable and disable sync actions to web-app-files [[#2466](https://github.com/opencloud-eu/web/pull/2466)]
 - refactor!: move certain file and space actions to files app [[#2456](https://github.com/opencloud-eu/web/pull/2456)]
 - feat!: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
