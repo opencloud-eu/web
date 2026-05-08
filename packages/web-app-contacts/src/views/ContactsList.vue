@@ -29,98 +29,78 @@
     </no-content-message>
     <no-content-message
       v-else-if="!filteredContacts.length"
-      id="contacts-empty"
+      id="contacts-search-empty"
       img-src="/images/empty-states/empty-contacts.svg"
     >
       <template #message>
         <span v-text="$gettext('No contacts found.')" />
       </template>
     </no-content-message>
-    <oc-list v-else>
-      <li
-        v-for="contact in filteredContacts"
-        :id="`contact-list-item-${contact.id}`"
-        :key="contact.id"
-        class="border-b-2 last:border-b-0"
-        :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
-      >
-        <div class="flex min-w-0 items-stretch">
-          <oc-button
-            class="min-w-0 flex-1 px-4 py-4 text-left"
-            justify-content="left"
-            appearance="raw"
-            gap-size="none"
-            no-hover
-            @click="onSelectContact(contact)"
-          >
-            <div class="min-w-0 flex-1">
-              <ContactsListItem :contact="contact" />
-              <div
-                v-if="normalizedSearchTerm"
-                class="mt-1 flex flex-wrap gap-x-2 gap-y-1 text-sm text-role-on-surface-variant"
-              >
-                <span
-                  v-for="(value, valueIndex) in getMatchingContactValues(contact)"
-                  :key="`${contact.id}-search-match-${valueIndex}`"
-                  class="min-w-0 break-all"
-                >
-                  <template
-                    v-for="(part, partIndex) in getHighlightedTextParts(value)"
-                    :key="`${contact.id}-search-match-${valueIndex}-${partIndex}`"
-                  >
-                    <span
-                      v-if="part.highlight"
-                      class="rounded bg-role-secondary-container text-sm bg-yellow-200"
-                    >
-                      {{ part.text }}
-                    </span>
-                    <span v-else>{{ part.text }}</span>
-                  </template>
-                </span>
-              </div>
-            </div>
-          </oc-button>
-          <div class="flex items-center pr-2">
+    <div v-else ref="contactsListRef">
+      <oc-list>
+        <li
+          v-for="contact in filteredContacts"
+          :id="`contact-list-item-${contact.id}`"
+          :key="contact.id"
+          class="border-b-2 last:border-b-0"
+          :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
+        >
+          <div class="flex min-w-0 items-stretch">
             <oc-button
-              :id="`contact-actions-toggle-${contact.id}`"
-              class="h-10 w-10 shrink-0"
+              class="min-w-0 flex-1 px-4 py-4 text-left"
+              justify-content="left"
               appearance="raw"
+              gap-size="none"
               no-hover
-              :aria-label="$gettext('Open contact actions')"
-              @click.stop
+              @click="onSelectContact(contact)"
             >
-              <oc-icon name="more-2" fill-type="line" />
+              <ContactsListItem :contact="contact" />
             </oc-button>
-            <oc-drop
-              :drop-id="`contact-actions-drop-${contact.id}`"
-              :toggle="`#contact-actions-toggle-${contact.id}`"
-              :title="$gettext('Contact actions')"
-              position="bottom-end"
-              padding-size="small"
-              teleport="#app-runtime-drop"
-              close-on-click
-            >
-              <ContextActionMenu
-                :menu-sections="getContactMenuSections(contact)"
-                :action-options="{}"
-              />
-            </oc-drop>
+
+            <div class="flex items-center pr-2">
+              <oc-button
+                :id="`contact-actions-toggle-${contact.id}`"
+                class="h-10 w-10 shrink-0"
+                appearance="raw"
+                no-hover
+                :aria-label="$gettext('Open contact actions')"
+                @click.stop
+              >
+                <oc-icon name="more-2" fill-type="line" />
+              </oc-button>
+              <oc-drop
+                :drop-id="`contact-actions-drop-${contact.id}`"
+                :toggle="`#contact-actions-toggle-${contact.id}`"
+                :title="$gettext('Contact actions')"
+                position="bottom-end"
+                padding-size="small"
+                teleport="#app-runtime-drop"
+                close-on-click
+              >
+                <ContextActionMenu
+                  :menu-sections="getContactMenuSections(contact)"
+                  :action-options="actionOptions"
+                />
+              </oc-drop>
+            </div>
           </div>
-        </div>
-      </li>
-    </oc-list>
+        </li>
+      </oc-list>
+    </div>
   </template>
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick } from 'vue'
+import { computed, watch, nextTick, unref, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
+import Mark from 'mark.js'
 import {
   AppLoadingSpinner,
   ContextActionMenu,
   NoContentMessage,
-  MenuSection
+  MenuSection,
+  ActionOptions
 } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
 import { useLoadContacts } from '../composables/useLoadContacts'
@@ -140,6 +120,9 @@ const { contacts, currentContact } = storeToRefs(contactsStore)
 const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
 
+const actionOptions = {} as ActionOptions
+const contactsListRef = useTemplateRef('contactsListRef')
+
 const sortedContacts = computed(() => {
   return [...contacts.value].sort((a, b) => {
     const aSortName = getContactDisplayName(a)
@@ -149,13 +132,7 @@ const sortedContacts = computed(() => {
   })
 })
 
-const {
-  searchTerm,
-  normalizedSearchTerm,
-  filteredContacts,
-  getMatchingContactValues,
-  getHighlightedTextParts
-} = useContactSearch(sortedContacts)
+const { searchTerm, filteredContacts } = useContactSearch(sortedContacts)
 
 const onSelectContact = async (contact: Contact) => {
   await runWithDiscardConfirmation(async () => {
@@ -182,6 +159,18 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
   ]
 }
 
+let markInstance: Mark | undefined
+watch(searchTerm, () => {
+  if (unref(contactsListRef)) {
+    markInstance = new Mark(unref(contactsListRef))
+    markInstance.unmark()
+    markInstance.mark(unref(searchTerm), {
+      element: 'span',
+      className: 'mark-highlight'
+    })
+  }
+})
+
 watch(
   [() => currentContact.value?.id, isLoading],
   async () => {
@@ -197,3 +186,9 @@ watch(
   { immediate: true }
 )
 </script>
+
+<style scoped>
+:deep(.mark-highlight) {
+  background-color: #fef3c7;
+}
+</style>

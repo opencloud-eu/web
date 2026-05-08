@@ -1,85 +1,42 @@
-import { computed, ref, unref, type Ref, type ComputedRef } from 'vue'
+import { computed, ref, unref, type ComputedRef, type Ref } from 'vue'
+import Fuse from 'fuse.js'
+import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
 import { Contact } from '../types'
+import { getContactDisplayName } from '../helpers'
 
-export type HighlightedTextPart = {
-  text: string
-  highlight: boolean
-}
+const filterContacts = (contacts: Contact[], searchTerm: string) => {
+  const term = searchTerm.trim()
+  if (!term) return contacts
 
-const toSearchStrings = (value: unknown): string[] => {
-  if (value === null || value === undefined) {
-    return []
-  }
+  const searchableContacts = contacts.map((contact) => ({
+    displayName: getContactDisplayName(contact),
+    emails: Object.values(contact.emails || {}).map((e) => e.address),
+    phones: Object.values(contact.phones || {}).map((p) => p.number)
+  }))
 
-  if (Array.isArray(value)) {
-    return value.flatMap(toSearchStrings)
-  }
+  const searchEngine = new Fuse(searchableContacts, {
+    ...defaultFuseOptions,
+    keys: ['displayName', 'emails', 'phones']
+  })
 
-  if (typeof value === 'object') {
-    return Object.values(value as Record<string, unknown>).flatMap(toSearchStrings)
-  }
-
-  return [String(value)]
-}
-
-const getContactSearchValues = (contact: Contact): string[] => {
-  return toSearchStrings(contact)
-    .filter(Boolean)
-    .map((value) => value.trim())
-}
-
-const escapeRegExp = (value: string) => {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const resultIndices = new Set(searchEngine.search(term).map((r) => r.refIndex))
+  return contacts.filter((_, index) => resultIndices.has(index))
 }
 
 export function useContactSearch(contacts: Ref<Contact[]> | ComputedRef<Contact[]>) {
   const searchTerm = ref('')
 
   const normalizedSearchTerm = computed(() => {
-    return searchTerm.value.trim().toLowerCase()
+    return searchTerm.value.trim()
   })
 
   const filteredContacts = computed(() => {
-    if (!normalizedSearchTerm.value) {
-      return unref(contacts)
-    }
-
-    return unref(contacts).filter((contact) =>
-      getContactSearchValues(contact).some((value) =>
-        value.toLowerCase().includes(normalizedSearchTerm.value)
-      )
-    )
+    return filterContacts(unref(contacts), unref(normalizedSearchTerm))
   })
-
-  const getMatchingContactValues = (contact: Contact): string[] => {
-    return getContactSearchValues(contact).filter((value) =>
-      value.toLowerCase().includes(normalizedSearchTerm.value)
-    )
-  }
-
-  const getHighlightedTextParts = (value: string): HighlightedTextPart[] => {
-    const term = normalizedSearchTerm.value
-
-    if (!term) {
-      return [{ text: value, highlight: false }]
-    }
-
-    const searchTermRegex = new RegExp(`(${escapeRegExp(term)})`, 'gi')
-
-    return value
-      .split(searchTermRegex)
-      .filter(Boolean)
-      .map((text) => ({
-        text,
-        highlight: text.toLowerCase() === term
-      }))
-  }
 
   return {
     searchTerm,
     normalizedSearchTerm,
-    filteredContacts,
-    getMatchingContactValues,
-    getHighlightedTextParts
+    filteredContacts
   }
 }
