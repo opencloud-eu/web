@@ -42,7 +42,7 @@
           v-for="contact in filteredContacts"
           :id="`contact-list-item-${contact.id}`"
           :key="contact.id"
-          class="border-b-2 last:border-b-0"
+          class="border-b-2 last:border-b-0 [&_mark]:bg-yellow-200"
           :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
         >
           <div class="flex min-w-0 items-stretch">
@@ -186,9 +186,3 @@ watch(
   { immediate: true }
 )
 </script>
-
-<style scoped>
-:deep(.mark-highlight) {
-  background-color: #fef3c7;
-}
-</style>
