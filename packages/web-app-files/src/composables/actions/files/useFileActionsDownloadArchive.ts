@@ -1,19 +1,20 @@
+import { isProjectSpaceResource, isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { computed, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import {
+  FileAction,
+  FileActionOptions,
+  formatFileSize,
   isLocationCommonActive,
   isLocationPublicActive,
   isLocationSharesActive,
-  isLocationSpacesActive
-} from '../../../router'
-import { useIsFilesAppActive } from '../helpers'
-import { isProjectSpaceResource, isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
-import { computed, unref } from 'vue'
-import { useRouter } from '../../router'
-
-import { FileAction, FileActionOptions } from '../types'
-import { useGettext } from 'vue3-gettext'
-import { useArchiverService } from '../../archiverService'
-import { formatFileSize } from '../../../helpers/filesize'
-import { useAuthStore, useMessages } from '../../piniaStores'
+  isLocationSpacesActive,
+  useArchiverService,
+  useAuthStore,
+  useIsFilesAppActive,
+  useMessages,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsDownloadArchive = () => {
   const { showErrorMessage } = useMessages()

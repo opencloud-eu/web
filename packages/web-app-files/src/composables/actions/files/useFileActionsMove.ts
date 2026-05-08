@@ -1,17 +1,19 @@
-import { canBeMoved } from '../../../helpers/permissions'
+import { Resource } from '@opencloud-eu/web-client'
+import { computed, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 import {
+  ActionOptions,
+  canBeMoved,
+  FileAction,
   isLocationCommonActive,
   isLocationPublicActive,
-  isLocationSpacesActive
-} from '../../../router'
-import { useGettext } from 'vue3-gettext'
-import { ActionOptions, FileAction } from '../types'
-import { computed, unref } from 'vue'
-import { useRouter } from '../../router'
-import { useClipboardStore, useResourcesStore } from '../../piniaStores'
-import { Resource } from '@opencloud-eu/web-client'
-import { storeToRefs } from 'pinia'
-import { isMacOs } from '../../../helpers'
+  isLocationSpacesActive,
+  isMacOs,
+  useClipboardStore,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsMove = () => {
   const router = useRouter()

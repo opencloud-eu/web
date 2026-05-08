@@ -7,11 +7,14 @@ import {
   resourceTableActionsExtensionPoint
 } from '../../extensionPoints'
 import {
+  useFileActionsCopy,
   useFileActionsCopyPermanentLink,
   useFileActionsCreateSpaceFromResource,
   useFileActionsDisableSync,
+  useFileActionsDownloadArchive,
   useFileActionsFavorite,
   useFileActionsEnableSync,
+  useFileActionsMove,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
@@ -27,12 +30,15 @@ const adminSettingsSpacesContextActionsExtensionPointId =
   'app.admin-settings.spaces.context-actions'
 
 export const useFileActions = (): ActionExtension[] => {
+  const { actions: copyActions } = useFileActionsCopy()
+  const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: openShortcutActions } = useFileActionsOpenShortcut()
   const { actions: showSharesActions } = useFileActionsShowShares()
   const { actions: permanentLinkActions } = useFileActionsCopyPermanentLink()
   const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: enableSyncActions } = useFileActionsEnableSync()
+  const { actions: moveActions } = useFileActionsMove()
   const { actions: pasteActions } = useFileActionsPaste()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
@@ -41,6 +47,45 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
 
   return [
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.download-archive',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(downloadArchiveActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.move',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(moveActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.copy',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(copyActions)[0],
+        category: 'tertiary'
+      }
+    },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.open-shortcut',
       extensionPointIds: [contextActionsExtensionPoint.id],

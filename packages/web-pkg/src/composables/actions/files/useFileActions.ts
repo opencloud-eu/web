@@ -15,11 +15,8 @@ import {
 } from '../../actions'
 
 import {
-  useFileActionsCopy,
   useFileActionsDelete,
-  useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsMove,
   useFileActionsNavigate,
   useFileActionsRestore
 } from './index'
@@ -55,21 +52,15 @@ export const useFileActions = () => {
   const configStore = useConfigStore()
   const { options } = storeToRefs(configStore)
 
-  const { actions: copyActions } = useFileActionsCopy()
   const { actions: deleteActions } = useFileActionsDelete()
-  const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
   const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
-  const { actions: moveActions } = useFileActionsMove()
   const { actions: navigateActions } = useFileActionsNavigate()
   const { actions: restoreActions } = useFileActionsRestore()
 
   const systemActions = computed<FileAction<any>[]>(() => [
-    ...unref(downloadArchiveActions),
     ...unref(downloadFileActions),
     ...unref(deleteActions),
-    ...unref(moveActions),
-    ...unref(copyActions),
     ...unref(restoreActions)
   ])
 

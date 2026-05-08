@@ -7,7 +7,7 @@ import {
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
 import { useFileActionsCopy } from '../../../../../src/composables/actions/files'
-import { useClipboardStore } from '../../../../../src/composables/piniaStores'
+import { useClipboardStore } from '@opencloud-eu/web-pkg'
 import { describe } from 'vitest'
 
 describe('copy', () => {

@@ -79,11 +79,8 @@ import ViewOptions from '../ViewOptions.vue'
 import { isLocationCommonActive, isLocationTrashActive } from '../../router'
 import { FolderView } from '../../ui/types'
 import {
-  useFileActionsCopy,
   useFileActionsDelete,
-  useFileActionsDownloadArchive,
   useFileActionsDownloadFile,
-  useFileActionsMove,
   useFileActionsRestore
 } from '../../composables/actions'
 import {
@@ -159,11 +156,8 @@ export default defineComponent({
 
     const space = computed(() => props.space)
 
-    const { actions: copyActions } = useFileActionsCopy()
     const { actions: deleteActions } = useFileActionsDelete()
-    const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
     const { actions: downloadFileActions } = useFileActionsDownloadFile()
-    const { actions: moveActions } = useFileActionsMove()
     const { actions: restoreActions } = useFileActionsRestore()
 
     const breadcrumbMaxWidth = ref<number>(0)
@@ -174,14 +168,7 @@ export default defineComponent({
     )
 
     const batchActions = computed(() => {
-      let actions: FileAction[] = [
-        ...unref(downloadArchiveActions),
-        ...unref(downloadFileActions),
-        ...unref(moveActions),
-        ...unref(copyActions),
-        ...unref(deleteActions),
-        ...unref(restoreActions)
-      ]
+      let actions: FileAction[] = [...unref(downloadFileActions)]
 
       const actionExtensions = requestExtensions<ActionExtension>({
         id: 'global.files.batch-actions',
@@ -190,6 +177,8 @@ export default defineComponent({
       if (actionExtensions.length) {
         actions = [...actions, ...actionExtensions.map((e) => e.action)]
       }
+
+      actions = [...actions, ...unref(deleteActions), ...unref(restoreActions)]
 
       return actions.filter((item) =>
         item.isVisible({ space: unref(space), resources: resourcesStore.selectedResources })
