@@ -98,6 +98,56 @@ describe('upload helper', () => {
 
       expect(resolveFileConflictMethod).toHaveBeenCalledTimes(1)
     })
+    it('should update endpoints of files nested inside a renamed folder when keeping both', async () => {
+      const folderName = 'test'
+      const currentFiles = [mockDeep<Resource>({ name: folderName })]
+
+      const imageFile = {
+        id: 'image',
+        name: 'image.jpg',
+        type: 'image/jpeg',
+        meta: {
+          relativeFolder: '/test',
+          relativePath: '/test/image.jpg',
+          tusEndpoint: 'https://example.com/dav/test'
+        }
+      } as unknown as OcUppyFile
+
+      const nestedImageFile = {
+        id: 'nested-image',
+        name: 'image2.jpg',
+        type: 'image/jpeg',
+        meta: {
+          relativeFolder: '/test/folderInside',
+          relativePath: '/test/folderInside/image2.jpg',
+          tusEndpoint: 'https://example.com/dav/test/folderInside'
+        }
+      } as unknown as OcUppyFile
+
+      const conflict = { name: folderName, type: 'folder' }
+
+      const instance = getResourceConflictInstance({ currentFiles })
+      instance.resolveFileExists = vi.fn(() =>
+        Promise.resolve({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+      )
+
+      const result = await instance.displayOverwriteDialog([imageFile, nestedImageFile], [conflict])
+
+      expect(result.length).toBe(2)
+
+      const newFolderName = `test (1)`
+      const encodedNewFolderName = encodeURIComponent(newFolderName)
+
+      const resultImage = result.find((f) => f.name === 'image.jpg')
+      expect(resultImage.meta.relativeFolder).toBe(`/${newFolderName}`)
+      expect(resultImage.meta.tusEndpoint).toBe(`https://example.com/dav/${encodedNewFolderName}`)
+
+      const resultNested = result.find((f) => f.name === 'image2.jpg')
+      expect(resultNested.meta.relativeFolder).toBe(`/${newFolderName}/folderInside`)
+      expect(resultNested.meta.tusEndpoint).toBe(
+        `https://example.com/dav/${encodedNewFolderName}/folderInside`
+      )
+    })
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
       const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'folder' })
