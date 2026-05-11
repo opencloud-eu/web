@@ -106,7 +106,7 @@ export const useFileActionsFavorite = () => {
           return false
         }
 
-        return capabilityStore.filesFavorites && ability.can('create', 'Favorite')
+        return ability.can('create', 'Favorite')
       },
       class: 'oc-files-actions-favorite-trigger'
     }
