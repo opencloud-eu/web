@@ -383,9 +383,9 @@ Then(
           timeout: config.timeout * 1000
         })
         await waitProcessingToFinish(page, info.resource)
-        return
+      } else {
+        await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
       }
-      await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
     }
   }
 )
@@ -403,9 +403,9 @@ Then(
     for (const info of stepTable.hashes()) {
       if (actionType === 'should') {
         await expect(resourceObject.getResourceSearchItemLocator(info.resource)).toBeVisible()
-        return
+      } else {
+        await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
       }
-      await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
     }
   }
 )

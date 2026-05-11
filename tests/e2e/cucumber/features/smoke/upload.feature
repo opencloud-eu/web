@@ -88,6 +88,7 @@ Feature: Upload
     Then following resources should not be displayed in the files list for user "Alice"
       | resource      |
       | lorem-big.txt |
+    And "Alice" logs out
 
 
   Scenario: upload resource from clipboard
@@ -98,5 +99,61 @@ Feature: Upload
     And "Alice" opens the following file in mediaviewer
       | resource  |
       | image.png |
+    And "Alice" closes the file viewer
+    And "Alice" logs out
+
+
+  Scenario: upload folder using different options
+     Given "Alice" creates the following folder in personal space using API
+      | name   |
+      | CHILD  |
+    Given "Alice" creates the following folder in personal space using API
+      | name   |
+      | PARENT |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile      | content      |
+      | PARENT/test.txt | some content |
+    
+    # keep both option
+    And "Alice" uploads the following resources
+      | resource  | type   | option    |
+      | PARENT    | folder | keep both |
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | PARENT     |
+      | PARENT (1) |
+    And "Alice" opens folder "PARENT"
+    And following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | test.txt  |
+    And "Alice" opens the "files" app
+    And "Alice" opens folder "PARENT (1)"
+    And following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | parent.txt |
+    And "Alice" opens folder "CHILD"
+    And following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | child.txt |
+    
+    # replace option
+    Given "Alice" creates the following files into personal space using API
+      | pathToFile        | content      |
+      | PARENT/parent.txt | some content |
+    When "Alice" opens the "files" app
+    And "Alice" uploads the following resources
+      | resource  | type   | option |
+      | PARENT    | folder | merge  |
+    And "Alice" opens folder "PARENT"
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource   |
+      | parent.txt |
+      | test.txt   |
+      | CHILD      |
+    # check that parent.txt content is replaced
+    And "Alice" opens the following file in texteditor
+      | resource   |
+      | parent.txt |
+    And "Alice" should see the content "OpenCloud test text file parent" in editor "TextEditor"
     And "Alice" closes the file viewer
     And "Alice" logs out
