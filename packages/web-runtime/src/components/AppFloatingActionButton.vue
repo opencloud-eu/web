@@ -3,6 +3,7 @@
     <oc-floating-action-button
       :button-id="getButtonId(floatingActionButton.id)"
       class="oc-app-floating-action-button"
+      :class="{ 'bottom-[70px]': isEmbedModeEnabled }"
       mode="action"
       :handler="floatingActionButton.handler"
     />
@@ -20,6 +21,7 @@ import { computed, unref } from 'vue'
 import {
   FloatingActionButtonExtension,
   useActiveApp,
+  useEmbedMode,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -27,6 +29,7 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 const { requestExtensions } = useExtensionRegistry()
 const { isTablet } = useIsMobile()
 const activeApp = useActiveApp()
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({
