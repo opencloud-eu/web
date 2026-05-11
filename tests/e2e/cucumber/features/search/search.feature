@@ -61,9 +61,9 @@ Feature: Search
     # subfolder search
     And "Alice" searches "child" using the global search and the "all files" filter
     Then following resources should be displayed in the search list for user "Alice"
-      | resource            |
-      | FolDer/child-one    |
-      | child-one/child-two |
+      | resource              |
+      | FolDer/child-one      |
+      | …/child-one/child-two |
     But following resources should not be displayed in the search list for user "Alice"
       | resource             |
       | folder               |
@@ -138,13 +138,13 @@ Feature: Search
       | resource                                  |
       | exampleInsideThePersonalSpace.txt         |
       | mainFolder/exampleInsideTheMainFolder.txt |
-      | subFolder/exampleInsideTheSubFolder.txt   |
+      | …/subFolder/exampleInsideTheSubFolder.txt |
 
     When "Alice" searches "example" using the global search and the "current folder" filter
     Then following resources should be displayed in the search list for user "Alice"
-      | resource                                           |
-      | mainFolder/exampleInsideTheMainFolder.txt          |
-      | mainFolder/subFolder/exampleInsideTheSubFolder.txt |
+      | resource                                  |
+      | mainFolder/exampleInsideTheMainFolder.txt |
+      | …/subFolder/exampleInsideTheSubFolder.txt |
     But following resources should not be displayed in the search list for user "Alice"
       | resource                          |
       | exampleInsideThePersonalSpace.txt |
