@@ -8,7 +8,7 @@
 
 ### 💥 Breaking changes
 
-- change!: move downloadArchive move copy actions to web-app-files [[#2471](https://github.com/opencloud-eu/web/pull/2471)]
+- refactor!: move downloadArchive move copy actions to web-app-files [[#2471](https://github.com/opencloud-eu/web/pull/2471)]
 - refactor!: add extension point for right sidebar actions, move enable and disable sync actions to web-app-files [[#2466](https://github.com/opencloud-eu/web/pull/2466)]
 - refactor!: move certain file and space actions to files app [[#2456](https://github.com/opencloud-eu/web/pull/2456)]
 - feat!: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
@@ -43,6 +43,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.7.3 [[#2480](https://github.com/opencloud-eu/web/pull/2480)]
 - chore(deps): update dependency eslint-plugin-vue to v10.9.1 [[#2479](https://github.com/opencloud-eu/web/pull/2479)]
 - chore(deps): update tiptap monorepo to v3.22.5 [[#2448](https://github.com/opencloud-eu/web/pull/2448)]
 - chore(deps): update devdependencies (non-major) [[#2449](https://github.com/opencloud-eu/web/pull/2449)]
