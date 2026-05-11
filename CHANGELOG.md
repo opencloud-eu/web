@@ -1,5 +1,72 @@
 # Changelog
 
+## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-11
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @Cassolette, @JammingBen, @ScharfViktor, @kulmann, @pedropintosilva, @tammi-23
+
+### 💥 Breaking changes
+
+- refactor!: move downloadArchive move copy actions to web-app-files [[#2471](https://github.com/opencloud-eu/web/pull/2471)]
+- refactor!: add extension point for right sidebar actions, move enable and disable sync actions to web-app-files [[#2466](https://github.com/opencloud-eu/web/pull/2466)]
+- refactor!: move certain file and space actions to files app [[#2456](https://github.com/opencloud-eu/web/pull/2456)]
+- feat!: tiptap integration [[#2195](https://github.com/opencloud-eu/web/pull/2195)]
+- feat!: remove amd app loading [[#2405](https://github.com/opencloud-eu/web/pull/2405)]
+- feat!: remove unmaintained project specific features [[#2399](https://github.com/opencloud-eu/web/pull/2399)]
+
+### 📈 Enhancement
+
+- feat: adds client-side search to the contact list [[#2472](https://github.com/opencloud-eu/web/pull/2472)]
+- feat: handle UI_PickLink postMessage from Collabora Online [[#2435](https://github.com/opencloud-eu/web/pull/2435)]
+- feat: retrieve extensions by their id [[#2468](https://github.com/opencloud-eu/web/pull/2468)]
+- feat: create new contacts [[#2458](https://github.com/opencloud-eu/web/pull/2458)]
+- feat(search): clear on esc keypress + misc fixes [[#2423](https://github.com/opencloud-eu/web/pull/2423)]
+- perf: improve initial loading times [[#2414](https://github.com/opencloud-eu/web/pull/2414)]
+- feat: show mobile sidebar and FAB on tablets in portrait mode [[#2433](https://github.com/opencloud-eu/web/pull/2433)]
+- feat: redesign file input [[#2416](https://github.com/opencloud-eu/web/pull/2416)]
+- feat: redesign color picker [[#2407](https://github.com/opencloud-eu/web/pull/2407)]
+- feat: reduce mobile sidebar width to make it easier to dismiss [[#2410](https://github.com/opencloud-eu/web/pull/2410)]
+- feat: add the ability to show critical badge to version check if CVE … [[#2397](https://github.com/opencloud-eu/web/pull/2397)]
+
+### 🐛 Bug Fixes
+
+- fix: prevent 'keep both' conflict handling from losing files [[#2474](https://github.com/opencloud-eu/web/pull/2474)]
+- fix: context actions is using wrong extension point [[#2463](https://github.com/opencloud-eu/web/pull/2463)]
+- fix: spaces view doesn't have a dedicated multipe select context menu [[#2464](https://github.com/opencloud-eu/web/pull/2464)]
+- fix(extension-sdk): use posix path to support windows build [[#2404](https://github.com/opencloud-eu/web/pull/2404)]
+- fix: sorting of spaces is faulty when space names contain numbers [[#2429](https://github.com/opencloud-eu/web/pull/2429)]
+
+### ✅ Tests
+
+- fix-flaky: safari upload test [[#2417](https://github.com/opencloud-eu/web/pull/2417)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency fast-xml-parser to v5.7.3 [[#2480](https://github.com/opencloud-eu/web/pull/2480)]
+- chore(deps): update dependency eslint-plugin-vue to v10.9.1 [[#2479](https://github.com/opencloud-eu/web/pull/2479)]
+- chore(deps): update tiptap monorepo to v3.22.5 [[#2448](https://github.com/opencloud-eu/web/pull/2448)]
+- chore(deps): update devdependencies (non-major) [[#2449](https://github.com/opencloud-eu/web/pull/2449)]
+- chore(deps): update dependency vue-router to v5.0.6 [[#2451](https://github.com/opencloud-eu/web/pull/2451)]
+- chore(deps): update typescript-eslint monorepo to v8.59.1 [[#2446](https://github.com/opencloud-eu/web/pull/2446)]
+- chore(deps): update dependency filesize to v11.0.17 [[#2445](https://github.com/opencloud-eu/web/pull/2445)]
+- chore(deps): update dependency @vue/test-utils to v2.4.9 [[#2444](https://github.com/opencloud-eu/web/pull/2444)]
+- fix(deps): update dependency @sentry/vue to v10.50.0 [[#2436](https://github.com/opencloud-eu/web/pull/2436)]
+- chore(deps): update dependency dompurify to v3.4.1 [[#2418](https://github.com/opencloud-eu/web/pull/2418)]
+- fix(deps): update dependency axios to v1.15.2 [[#2419](https://github.com/opencloud-eu/web/pull/2419)]
+- chore(deps): update dependency eslint-plugin-vue to v10.9.0 [[#2421](https://github.com/opencloud-eu/web/pull/2421)]
+- chore(deps): update dependency fast-xml-parser to v5.7.2 [[#2440](https://github.com/opencloud-eu/web/pull/2440)]
+- fix(deps): update dependency p-queue to v9.2.0 [[#2442](https://github.com/opencloud-eu/web/pull/2442)]
+- chore(deps): update traefik docker tag to v3.6.14 [[#2431](https://github.com/opencloud-eu/web/pull/2431)]
+- fix(deps): update dependency vue-router to v5.0.6 [[#2432](https://github.com/opencloud-eu/web/pull/2432)]
+- chore(deps): update pnpm to v10.33.2 [[#2427](https://github.com/opencloud-eu/web/pull/2427)]
+- chore(deps): update devdependencies (non-major) [[#2425](https://github.com/opencloud-eu/web/pull/2425)]
+- chore(deps): update devdependencies (non-major) [[#2415](https://github.com/opencloud-eu/web/pull/2415)]
+- chore(deps): update tiptap monorepo to v3.22.4 [[#2389](https://github.com/opencloud-eu/web/pull/2389)]
+- chore(deps): update dependency @codemirror/view to v6.41.1 [[#2390](https://github.com/opencloud-eu/web/pull/2390)]
+- chore(deps): update typescript-eslint monorepo to v8.59.0 [[#2406](https://github.com/opencloud-eu/web/pull/2406)]
+- chore(deps): update devdependencies (non-major) to v4.2.3 [[#2409](https://github.com/opencloud-eu/web/pull/2409)]
+
 ## [6.2.0](https://github.com/opencloud-eu/web/releases/tag/v6.2.0) - 2026-04-20
 
 ### ❤️ Thanks to all contributors! ❤️
