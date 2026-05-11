@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @ScharfViktor
+@AlexAndBear, @ScharfViktor, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- Fix mail validation layout issue [[#2492](https://github.com/opencloud-eu/web/pull/2492)]
 - fix: missing space actions in favorites and search [[#2488](https://github.com/opencloud-eu/web/pull/2488)]
 - fix: FAB overlaps actions in embed mode [[#2489](https://github.com/opencloud-eu/web/pull/2489)]
 - fix: checkboxes are not vertically centered in file tables [[#2491](https://github.com/opencloud-eu/web/pull/2491)]
