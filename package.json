@@ -46,7 +46,7 @@
     "@cucumber/messages": "32.3.1",
     "@cucumber/pretty-formatter": "3.3.0",
     "@module-federation/runtime": "2.4.0",
-    "@module-federation/vite": "1.15.2",
+    "@module-federation/vite": "1.15.4",
     "@noble/hashes": "2.2.0",
     "@opencloud-eu/eslint-config": "workspace:*",
     "@opencloud-eu/prettier-config": "workspace:*",
