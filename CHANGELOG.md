@@ -1,5 +1,13 @@
 # Changelog
 
+## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-11
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+
+
 ## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-11
 
 ### ❤️ Thanks to all contributors! ❤️
