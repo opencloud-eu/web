@@ -54,10 +54,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, onMounted } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
+import { computed, defineComponent, onBeforeUnmount, onMounted, unref, watch } from 'vue'
+import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
 import {
+  useClientService,
   useConfigStore,
+  useSpacesStore,
   useResourcesStore,
   useLoadPreview,
   createLocationCommon
@@ -98,6 +100,8 @@ export default defineComponent({
   setup() {
     const { getMatchingSpace } = useGetMatchingSpace()
     const configStore = useConfigStore()
+    const { loadGraphPermissions } = useSpacesStore()
+    const clientService = useClientService()
     const { $gettext } = useGettext()
     const { options: configOptions } = storeToRefs(configStore)
 
@@ -106,7 +110,10 @@ export default defineComponent({
     const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
       folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
     })
-    const { loadPreview } = useLoadPreview(resourcesViewDefaults.viewMode)
+
+    const { selectedResources, selectedResourcesIds, viewMode } = resourcesViewDefaults
+
+    const { loadPreview } = useLoadPreview(viewMode)
 
     const breadcrumbs = computed(() => {
       return [
@@ -131,6 +138,24 @@ export default defineComponent({
 
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.files.list.removeFromFavorites', loadResourcesEventToken)
+    })
+
+    watch(selectedResourcesIds, async (ids) => {
+      if (!ids.length) {
+        return
+      }
+
+      const projectSpaceIds = unref(selectedResources)
+        .filter(isProjectSpaceResource)
+        .map((space) => space.id)
+      if (!projectSpaceIds.length) {
+        return
+      }
+
+      await loadGraphPermissions({
+        ids: projectSpaceIds,
+        graphClient: clientService.graphAuthenticated
+      })
     })
 
     return {
