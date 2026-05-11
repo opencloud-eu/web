@@ -101,7 +101,6 @@ export interface Capabilities {
     files: {
       app_providers?: AppProviderCapability[]
       archivers?: ArchiverCapability[]
-      favorites?: boolean
       full_text_search?: boolean
       permanent_deletion?: boolean
       privateLinks?: boolean
