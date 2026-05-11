@@ -645,6 +645,12 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to })
   }
 
+  const respPromise = page.waitForResponse(
+    (resp) =>
+      [201, 204].includes(resp.status()) &&
+      ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
+  )
+
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
   let uploadAction: Promise<void> = page
     .locator(inputSelector)
@@ -677,15 +683,8 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     expect(await page.locator(notificationMessageDialog).textContent()).toBe(error)
     return
   }
-
-  await Promise.all([
-    page.waitForResponse(
-      (resp) =>
-        [201, 204].includes(resp.status()) &&
-        ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
-    ),
-    uploadAction
-  ])
+  await uploadAction
+  await respPromise
 }
 
 export const uploadLargeNumberOfResources = async (args: uploadResourceArgs): Promise<void> => {
