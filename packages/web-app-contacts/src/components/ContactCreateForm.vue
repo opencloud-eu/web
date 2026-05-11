@@ -17,7 +17,7 @@
       :error-message="
         isContactEmailInvalid(modelValue.email) ? $gettext('Please enter a valid email') : ''
       "
-      :fix-message-line="true"
+      :fix-message-line="false"
       @update:model-value="(value: string) => updateField('email', value)"
     />
     <oc-text-input
