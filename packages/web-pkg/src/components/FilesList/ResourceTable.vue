@@ -86,6 +86,7 @@
         <slot name="image" :resource="item" />
         <resource-list-item
           :key="`${item.path}-${resourceDomSelector(item)}-${item.thumbnail}`"
+          class="min-w-0"
           :resource="item"
           :path-prefix="getPathPrefix(item)"
           :is-path-displayed="arePathsDisplayed"
