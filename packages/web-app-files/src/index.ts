@@ -71,7 +71,7 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
         path: `/${appInfo.id}/favorites`
       },
       isVisible() {
-        return capabilityStore.filesFavorites && $ability.can('read', 'Favorite')
+        return $ability.can('read', 'Favorite')
       },
       priority: 20
     },

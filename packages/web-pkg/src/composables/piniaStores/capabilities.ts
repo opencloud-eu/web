@@ -11,7 +11,6 @@ const defaultValues = {
   dav: {},
   files: {
     app_providers: [] as AppProviderCapability[],
-    favorites: false,
     permanent_deletion: true,
     tags: false,
     privateLinks: false,
@@ -97,7 +96,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   )
 
   const filesAppProviders = computed(() => unref(capabilities).files.app_providers)
-  const filesFavorites = computed(() => unref(capabilities).files.favorites)
   const filesArchivers = computed(() => unref(capabilities).files.archivers)
   const filesPrivateLinks = computed(() => unref(capabilities).files.privateLinks)
   const filesPermanentDeletion = computed(() => unref(capabilities).files.permanent_deletion)
@@ -160,7 +158,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     graphUsersEditLoginAllowedDisabled,
     graphUsersReadOnlyAttributes,
     filesAppProviders,
-    filesFavorites,
     filesArchivers,
     filesPrivateLinks,
     filesPermanentDeletion,
