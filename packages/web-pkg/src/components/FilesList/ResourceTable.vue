@@ -51,26 +51,28 @@
       </div>
     </template>
     <template v-if="!isLocationPicker && !isFilePicker" #select="{ item }">
-      <oc-spinner
-        v-if="isResourceInDeleteQueue(item.id)"
-        class="inline-flex ml-1"
-        size="medium"
-        :aria-label="$gettext('File is being processed')"
-      />
+      <div class="flex justify-center items-center">
+        <oc-spinner
+          v-if="isResourceInDeleteQueue(item.id)"
+          class="inline-flex ml-1"
+          size="medium"
+          :aria-label="$gettext('File is being processed')"
+        />
 
-      <oc-checkbox
-        v-else
-        :id="`resource-table-select-${resourceDomSelector(item)}`"
-        :label="getResourceCheckboxLabel(item)"
-        :label-hidden="true"
-        size="large"
-        :disabled="isResourceDisabled(item)"
-        :model-value="isResourceSelected(item)"
-        :outline="isLatestSelectedItem(item)"
-        :data-test-selection-resource-name="item.name"
-        :data-test-selection-resource-path="item.path"
-        @click.stop="fileCheckboxClicked({ resource: item, event: $event })"
-      />
+        <oc-checkbox
+          v-else
+          :id="`resource-table-select-${resourceDomSelector(item)}`"
+          :label="getResourceCheckboxLabel(item)"
+          :label-hidden="true"
+          size="large"
+          :disabled="isResourceDisabled(item)"
+          :model-value="isResourceSelected(item)"
+          :outline="isLatestSelectedItem(item)"
+          :data-test-selection-resource-name="item.name"
+          :data-test-selection-resource-path="item.path"
+          @click.stop="fileCheckboxClicked({ resource: item, event: $event })"
+        />
+      </div>
     </template>
     <template #name="{ item }">
       <div
