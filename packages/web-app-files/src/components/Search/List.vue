@@ -144,6 +144,7 @@ import {
   AppLoadingSpinner,
   SearchResult,
   useCapabilityStore,
+  useSpacesStore,
   useResourcesStore,
   useSearch
 } from '@opencloud-eu/web-pkg'
@@ -166,7 +167,7 @@ import ListInfo from '../FilesList/ListInfo.vue'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { useFileActions } from '@opencloud-eu/web-pkg'
 import { searchLimit } from '../../search/sdk/list'
-import { Resource, SearchResource, call } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, Resource, SearchResource, call } from '@opencloud-eu/web-client'
 import FilesViewWrapper from '../FilesViewWrapper.vue'
 import {
   queryItemAsString,
@@ -212,6 +213,7 @@ const emit = defineEmits<{
 }>()
 
 const capabilityStore = useCapabilityStore()
+const { loadGraphPermissions } = useSpacesStore()
 const router = useRouter()
 const route = useRoute()
 const { $gettext } = useGettext()
@@ -484,4 +486,22 @@ watch(
     scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
   }
 )
+
+watch(selectedResourcesIds, async (ids) => {
+  if (!ids.length) {
+    return
+  }
+
+  const projectSpaceIds = unref(selectedResources)
+    .filter(isProjectSpaceResource)
+    .map((space) => space.id)
+  if (!projectSpaceIds.length) {
+    return
+  }
+
+  await loadGraphPermissions({
+    ids: projectSpaceIds,
+    graphClient: clientService.graphAuthenticated
+  })
+})
 </script>
