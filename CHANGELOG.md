@@ -6,16 +6,17 @@
 
 @AlexAndBear, @ScharfViktor, @tammi-23
 
+### ✅ Tests
+
+- [e2e-tests] waiting upload response [[#2494](https://github.com/opencloud-eu/web/pull/2494)]
+- [e2e-tests] upload folder with different options [[#2483](https://github.com/opencloud-eu/web/pull/2483)]
+
 ### 🐛 Bug Fixes
 
 - Fix mail validation layout issue [[#2492](https://github.com/opencloud-eu/web/pull/2492)]
 - fix: missing space actions in favorites and search [[#2488](https://github.com/opencloud-eu/web/pull/2488)]
 - fix: FAB overlaps actions in embed mode [[#2489](https://github.com/opencloud-eu/web/pull/2489)]
 - fix: checkboxes are not vertically centered in file tables [[#2491](https://github.com/opencloud-eu/web/pull/2491)]
-
-### ✅ Tests
-
-- [e2e-tests] upload folder with different options [[#2483](https://github.com/opencloud-eu/web/pull/2483)]
 
 ## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-11
 
