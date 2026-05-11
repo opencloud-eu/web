@@ -15,7 +15,7 @@
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title flex items-center flex-row flex-wrap justify-between py-3 px-4 rounded-t-xl"
+          class="oc-modal-title flex items-center flex-row justify-between py-3 px-4 rounded-t-xl"
         >
           <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
           <div class="flex items-center gap-1">
