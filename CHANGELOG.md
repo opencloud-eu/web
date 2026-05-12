@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-11
+## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-12
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: rename icon overlaps quota column when space name is truncated [[#2493](https://github.com/opencloud-eu/web/pull/2493)]
+- fix: changing username of the current user shows error after successf… [[#2499](https://github.com/opencloud-eu/web/pull/2499)]
 - fix: prevent modal title actions from wrapping [[#2495](https://github.com/opencloud-eu/web/pull/2495)]
 - Fix mail validation layout issue [[#2492](https://github.com/opencloud-eu/web/pull/2492)]
 - fix: missing space actions in favorites and search [[#2488](https://github.com/opencloud-eu/web/pull/2488)]
