@@ -233,7 +233,7 @@ const passwordPolicyFulfilled = computed(() => {
 })
 
 const confirmButtonDisabled = computed(() => {
-  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate)
+  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate) || modal.isLoading
 })
 
 const createLinkHandler = async () => {
