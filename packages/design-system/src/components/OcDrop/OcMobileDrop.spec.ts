@@ -36,6 +36,17 @@ describe('OcMobileDrop', () => {
     expect(wrapper.find(selectors.drawer).exists()).toBe(false)
   })
 
+  it('emits show and hide when opened and closed', async () => {
+    const { wrapper } = getWrapper()
+
+    await wrapper.find(selectors.toggle).trigger('click')
+    expect(wrapper.findComponent(BottomDrawer).emitted('show')).toBeTruthy()
+
+    await wrapper.find(selectors.closeButton).trigger('click')
+    expect(wrapper.findComponent(BottomDrawer).emitted('hide')).toBeTruthy()
+    wrapper.unmount()
+  })
+
   it('closes when close button is clicked', async () => {
     const { wrapper } = getWrapper()
     await wrapper.find(selectors.toggle).trigger('click')
@@ -44,6 +55,7 @@ describe('OcMobileDrop', () => {
     wrapper.find(selectors.closeButton).trigger('click')
     const bottomDrawerStore = useBottomDrawer()
     expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
+    expect(wrapper.findComponent(BottomDrawer).emitted('hide')).toBeTruthy()
     wrapper.unmount()
   })
 
@@ -56,6 +68,7 @@ describe('OcMobileDrop', () => {
     await wrapper.find(selectors.background).trigger('click')
     const bottomDrawerStore = useBottomDrawer()
     expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
+    expect(wrapper.findComponent(BottomDrawer).emitted('hide')).toBeTruthy()
     wrapper.unmount()
   })
 
@@ -70,6 +83,7 @@ describe('OcMobileDrop', () => {
     document.dispatchEvent(esc)
     const bottomDrawerStore = useBottomDrawer()
     expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
+    expect(wrapper.findComponent(BottomDrawer).emitted('hide')).toBeTruthy()
     wrapper.unmount()
   })
 
