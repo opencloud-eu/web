@@ -1,4 +1,4 @@
-import { ref, computed, onBeforeUnmount, watch, unref, onMounted } from 'vue'
+import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
@@ -37,7 +37,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   }
 
   watch(options.modelValue, (content) => {
-    if (!unref(editor) || unref(editor).options.editable) {
+    if (!unref(editor) || unref(editor)?.isFocused) {
       return
     }
     setContent(content)
@@ -108,13 +108,19 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor.value = null
   }
 
+  const triggerEditorUpdate = () => triggerRef(editor)
+
   onMounted(() => {
+    editor.value?.on('selectionUpdate', triggerEditorUpdate)
+    editor.value?.on('transaction', triggerEditorUpdate)
     if (!unref(readonly)) {
       focus()
     }
   })
 
   onBeforeUnmount(() => {
+    editor.value?.off('selectionUpdate', triggerEditorUpdate)
+    editor.value?.off('transaction', triggerEditorUpdate)
     destroy()
   })
 
