@@ -157,7 +157,6 @@ const { currentTheme } = storeToRefs(themeStore)
 
 const isAdvancedMode = ref(false)
 const isInvalidExpiryDate = ref(false)
-const inProgress = ref(false)
 
 const isFolder = computed(() => resources.every(({ isFolder }) => isFolder))
 
@@ -234,11 +233,10 @@ const passwordPolicyFulfilled = computed(() => {
 })
 
 const confirmButtonDisabled = computed(() => {
-  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate) || unref(inProgress)
+  return !unref(passwordPolicyFulfilled) || unref(isInvalidExpiryDate) || modal.isLoading
 })
 
 const createLinkHandler = async () => {
-  inProgress.value = true
   const result = await createLinks()
 
   const userFacingErrors: Error[] = []
@@ -262,7 +260,6 @@ const createLinkHandler = async () => {
     return Promise.reject()
   }
 
-  inProgress.value = false
   return result
 }
 
