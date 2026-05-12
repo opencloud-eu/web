@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: left sidebar doesn't scroll [[#2502](https://github.com/opencloud-eu/web/pull/2502)]
 - fix(editor): missing content [[#2501](https://github.com/opencloud-eu/web/pull/2501)]
 - fix: search term overlaps filter in global search [[#2497](https://github.com/opencloud-eu/web/pull/2497)]
 - fix: modal actions when creating links are missing disable during cre… [[#2498](https://github.com/opencloud-eu/web/pull/2498)]
