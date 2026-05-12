@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: modal actions when creating links are missing disable during cre… [[#2498](https://github.com/opencloud-eu/web/pull/2498)]
 - fix: rename icon overlaps quota column when space name is truncated [[#2493](https://github.com/opencloud-eu/web/pull/2493)]
 - fix: changing username of the current user shows error after successf… [[#2499](https://github.com/opencloud-eu/web/pull/2499)]
 - fix: prevent modal title actions from wrapping [[#2495](https://github.com/opencloud-eu/web/pull/2495)]
