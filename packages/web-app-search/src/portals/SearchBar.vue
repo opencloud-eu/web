@@ -151,7 +151,8 @@ import {
   unref,
   useTemplateRef,
   watch,
-  nextTick
+  nextTick,
+  onMounted
 } from 'vue'
 import { SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 import { SearchBarFilter } from '@opencloud-eu/web-pkg'
@@ -350,7 +351,7 @@ export default defineComponent({
       })
     }
 
-    const onLocationFilterChange = (event: { value: { id: string } }) => {
+    const onLocationFilterChange = async (event: { value: { id: string } }) => {
       locationFilterId.value = event.value.id
       if (isLocationCommonActive(router, 'files-common-search')) {
         onKeyUpEnter()
@@ -360,6 +361,9 @@ export default defineComponent({
       if (!unref(term)) {
         return
       }
+
+      await nextTick()
+      updateLocationFilterInputPadding()
       search()
     }
 
@@ -411,15 +415,9 @@ export default defineComponent({
     bindKeyAction({ primary: Key.Slash }, onSearchShortcut)
     bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut)
 
-    watch(
-      locationFilterId,
-      async () => {
-        await nextTick()
-        updateLocationFilterInputPadding()
-      },
-      { immediate: true }
-    )
-
+    onMounted(() => {
+      updateLocationFilterInputPadding()
+    })
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
     })
