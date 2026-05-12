@@ -125,7 +125,8 @@ import {
   useCapabilityStore,
   useEventBus,
   useMessages,
-  useSpacesStore
+  useSpacesStore,
+  useAuthService
 } from '@opencloud-eu/web-pkg'
 import GroupSelect from '../GroupSelect.vue'
 import { cloneDeep, isEmpty, isEqual, omit } from 'lodash-es'
@@ -173,6 +174,7 @@ export default defineComponent({
     const eventBus = useEventBus()
     const { showErrorMessage } = useMessages()
     const { $gettext } = useGettext()
+    const authService = useAuthService()
     const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
     const editUser: MaybeRef<User> = ref()
     const formData = ref({
@@ -271,6 +273,14 @@ export default defineComponent({
           !isEqual(user.appRoleAssignments[0]?.appRoleId, editUser.appRoleAssignments[0]?.appRoleId)
         ) {
           await onUpdateUserAppRoleAssignments(user, editUser)
+        }
+
+        // When the username of the current user changes, we need to obtain a new token
+        if (
+          editUser.id === user.id &&
+          editUser.onPremisesSamAccountName !== user.onPremisesSamAccountName
+        ) {
+          await authService.signinSilent()
         }
 
         const updatedUser = await client.users.getUser(user.id)
