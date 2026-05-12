@@ -150,7 +150,9 @@ import {
   onBeforeUnmount,
   unref,
   useTemplateRef,
-  watch
+  watch,
+  nextTick,
+  onMounted
 } from 'vue'
 import { SearchLocationFilterConstants } from '@opencloud-eu/web-pkg'
 import { SearchBarFilter } from '@opencloud-eu/web-pkg'
@@ -203,6 +205,33 @@ export default defineComponent({
     const dropElement = computed<HTMLElement>(
       () => unref(optionsDropRef)?.$refs.drop as HTMLElement
     )
+
+    const updateLocationFilterInputPadding = () => {
+      const inputElement = unref(searchBarRef)?.querySelector('.oc-search-input') as HTMLElement
+      if (!inputElement) {
+        return
+      }
+
+      if (!unref(locationFilterAvailable)) {
+        inputElement.style.paddingRight = ''
+        return
+      }
+
+      const locationFilterElement = unref(searchBarRef)?.querySelector(
+        '#files-global-search-filter'
+      ) as HTMLElement
+      if (!locationFilterElement) {
+        inputElement.style.paddingRight = ''
+        return
+      }
+
+      if (locationFilterElement.offsetWidth <= 0) {
+        inputElement.style.paddingRight = ''
+        return
+      }
+
+      inputElement.style.paddingRight = `${Math.ceil(locationFilterElement.offsetWidth) + 32}px`
+    }
 
     watch(isMobile, () => {
       const searchBarEl = document.getElementById('files-global-search-bar')
@@ -322,7 +351,7 @@ export default defineComponent({
       })
     }
 
-    const onLocationFilterChange = (event: { value: { id: string } }) => {
+    const onLocationFilterChange = async (event: { value: { id: string } }) => {
       locationFilterId.value = event.value.id
       if (isLocationCommonActive(router, 'files-common-search')) {
         onKeyUpEnter()
@@ -332,6 +361,9 @@ export default defineComponent({
       if (!unref(term)) {
         return
       }
+
+      await nextTick()
+      updateLocationFilterInputPadding()
       search()
     }
 
@@ -383,6 +415,9 @@ export default defineComponent({
     bindKeyAction({ primary: Key.Slash }, onSearchShortcut)
     bindKeyAction({ primary: Key.Slash, modifier: Modifier.Shift }, onSearchShortcut)
 
+    onMounted(() => {
+      updateLocationFilterInputPadding()
+    })
     onBeforeUnmount(() => {
       eventBus.unsubscribe('app.search.term.clear', clearTermEvent)
     })
