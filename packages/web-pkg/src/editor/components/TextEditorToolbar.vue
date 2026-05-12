@@ -104,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import type { TextEditorInstance } from '../types'
 import { EditorAction } from '../composables'
 
@@ -140,32 +140,7 @@ const visible = computed(() => {
   return !!unref(textEditor.editor)
 })
 
-// Track editor state changes to trigger reactivity
-const editorStateKey = ref(0)
-
-watch(
-  () => unref(textEditor.editor),
-  (editor, oldEditor) => {
-    if (oldEditor) {
-      oldEditor.off('selectionUpdate', updateEditorState)
-      oldEditor.off('transaction', updateEditorState)
-    }
-    if (editor) {
-      editor.on('selectionUpdate', updateEditorState)
-      editor.on('transaction', updateEditorState)
-    }
-  },
-  { immediate: true }
-)
-
-const updateEditorState = () => {
-  editorStateKey.value++
-}
-
 const isItemEnabled = (item: EditorAction) => {
-  // Access editorStateKey to make this reactive to editor state changes
-  editorStateKey.value
-
   const editor = unref(textEditor.editor)
   if (!editor) {
     return false
@@ -178,9 +153,6 @@ const isItemEnabled = (item: EditorAction) => {
 }
 
 const isItemActive = (item: EditorAction) => {
-  // Access editorStateKey to make this reactive to editor state changes
-  editorStateKey.value
-
   const editor = unref(textEditor.editor)
   if (!editor) {
     return false
@@ -193,9 +165,6 @@ const isItemActive = (item: EditorAction) => {
 }
 
 const getActiveIcon = (item: EditorAction) => {
-  // Access editorStateKey to make this reactive to editor state changes
-  editorStateKey.value
-
   const editor = unref(textEditor.editor)
   if (editor && item.activeIcon) {
     const active = item.activeIcon(editor)
