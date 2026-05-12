@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @ScharfViktor, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- fix(editor): missing content [[#2501](https://github.com/opencloud-eu/web/pull/2501)]
 - fix: search term overlaps filter in global search [[#2497](https://github.com/opencloud-eu/web/pull/2497)]
 - fix: modal actions when creating links are missing disable during cre… [[#2498](https://github.com/opencloud-eu/web/pull/2498)]
 - fix: rename icon overlaps quota column when space name is truncated [[#2493](https://github.com/opencloud-eu/web/pull/2493)]
