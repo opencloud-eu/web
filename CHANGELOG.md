@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: pixelated space images [[#2509](https://github.com/opencloud-eu/web/pull/2509)]
 - fix: mobile bottom drawer is not setting aria attributes [[#2508](https://github.com/opencloud-eu/web/pull/2508)]
 - fix: service announcement order [[#2506](https://github.com/opencloud-eu/web/pull/2506)]
 - fix: left sidebar doesn't scroll [[#2502](https://github.com/opencloud-eu/web/pull/2502)]
