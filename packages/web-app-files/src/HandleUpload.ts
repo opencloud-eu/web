@@ -417,7 +417,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
     if (!this.directoryTreeCreateEnabled) {
       // if directory tree creation is disabled, we need to remove all folder files
-      // from the upload queue
+      // from the upload queue (both locally and from Uppy's state to prevent upload attempts)
+      const directoryFiles = filesToUpload.filter((file) => file.type === 'directory')
+      this.removeFilesFromUpload(directoryFiles)
       filesToUpload = filesToUpload.filter((file) => file.type !== 'directory')
       if (!filesToUpload.length) {
         // if there are no files left to upload, we can clear the inputs and do nothing
