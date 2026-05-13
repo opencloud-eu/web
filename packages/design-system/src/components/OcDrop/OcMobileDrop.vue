@@ -26,7 +26,7 @@
             appearance="raw"
             class="raw-hover-surface oc-bottom-drawer-close-button"
             :aria-label="$gettext('Close the context menu')"
-            @click="closeAllDrawers()"
+            @click="onClose"
           >
             <oc-icon name="close" fill-type="line" />
           </oc-button>
@@ -155,13 +155,18 @@ const onChildClicked = (event: MouseEvent) => {
 
 const onBackgroundClicked = (event: MouseEvent) => {
   if (event.target === event.currentTarget) {
-    closeAllDrawers()
+    onClose()
   }
+}
+
+const onClose = () => {
+  closeAllDrawers()
+  emit('hide')
 }
 
 onKeyStroke('Escape', (e) => {
   e.preventDefault()
-  closeAllDrawers()
+  onClose()
 })
 
 onMounted(() => {
