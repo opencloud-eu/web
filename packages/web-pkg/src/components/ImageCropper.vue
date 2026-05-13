@@ -148,10 +148,28 @@ const onCropperSelectionChange = (event: CustomEvent) => {
 }
 
 const getCroppedCanvas = async (width?: number, height?: number) => {
-  if (!unref(cropperSelectionRef)) {
+  const selectionRef = unref(cropperSelectionRef)
+  if (!selectionRef) {
     return null
   }
-  return await unref(cropperSelectionRef).$toCanvas(width && height ? { width, height } : undefined)
+
+  if (width && height) {
+    return await selectionRef.$toCanvas({ width, height })
+  }
+
+  // when no explicit output size is given, derive dimensions from the original
+  const imageRef = unref(cropperImageRef)
+  if (imageRef) {
+    const [a, b] = imageRef.$getTransform()
+    const scale = Math.sqrt(a * a + b * b)
+    if (scale > 0) {
+      const naturalWidth = Math.round(selectionRef.width / scale)
+      const naturalHeight = Math.round(selectionRef.height / scale)
+      return await selectionRef.$toCanvas({ width: naturalWidth, height: naturalHeight })
+    }
+  }
+
+  return await selectionRef.$toCanvas(undefined)
 }
 
 watch(cropperSelectionRef, (cropper) => {
