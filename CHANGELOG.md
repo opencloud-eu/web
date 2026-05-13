@@ -27,6 +27,10 @@
 - [e2e-tests] waiting upload response [[#2494](https://github.com/opencloud-eu/web/pull/2494)]
 - [e2e-tests] upload folder with different options [[#2483](https://github.com/opencloud-eu/web/pull/2483)]
 
+### 📦️ Dependencies
+
+- chore(deps): update pnpm to v10.33.4 [[#2482](https://github.com/opencloud-eu/web/pull/2482)]
+
 ## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-11
 
 ### ❤️ Thanks to all contributors! ❤️
