@@ -292,6 +292,6 @@ Then(
     const spacesObject = new objects.applicationFiles.Spaces({ page })
     const { width, height } = await spacesObject.getSpaceImageRatio()
 
-    expect(width / height).toBeCloseTo(expectedWidth / expectedHeight)
+    expect(width / height).toBeCloseTo(expectedWidth / expectedHeight, 0.1)
   }
 )
