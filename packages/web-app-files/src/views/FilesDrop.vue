@@ -3,20 +3,21 @@
   <div
     v-else
     id="files-drop-container"
-    class="h-full flex flex-col justify-between m-12 bg-transparent border-dashed border-role-outline relative"
+    class="h-full flex flex-col justify-between m-2 sm:m-6 lg:m-12 bg-transparent border-dashed border-role-outline relative"
   >
     <div
       v-if="dragareaEnabled"
       class="absolute inset-0 z-90 bg-sky-600/20 rounded-xl pointer-events-none"
     />
     <h1 class="sr-only">{{ pageTitle }}</h1>
-    <div class="p-4 h-full text-center">
+    <div class="p-3 sm:p-4 h-full text-center">
       <div key="loaded-drop" class="flex flex-col">
-        <h2 v-text="title" />
+        <h2 class="break-words" v-text="title" />
         <resource-upload
           id="files-drop-zone"
           ref="fileUpload"
-          class="flex items-center justify-center oc-placeholder"
+          class="w-full flex items-center justify-center oc-placeholder"
+          btn-class="p-2"
           :btn-label="$gettext('Drop files here to upload or click to select file')"
         />
         <div id="previews" hidden />
@@ -30,7 +31,7 @@
       <div v-else class="flex justify-center w-full">
         <p
           id="files-drop-info-message "
-          class="m-0 pt-12 text-sm w-md lg:w-full"
+          class="m-0 pt-12 text-sm w-full max-w-md lg:max-w-full"
           v-text="
             $gettext(
               'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
