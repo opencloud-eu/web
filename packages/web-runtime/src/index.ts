@@ -93,6 +93,14 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   registerSharedModules(federation)
   announceLoadingService({ app })
   announceArchiverService({ app, configStore, userStore, capabilityStore })
+  announcePreviewService({
+    app,
+    configStore,
+    userStore,
+    authStore
+  })
+  announcePasswordPolicyService({ app })
+  announceUppyService({ app })
 
   const [coreTranslations, customTranslations] = await Promise.all([
     loadTranslations(),
@@ -123,14 +131,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     })
   }
 
-  announcePreviewService({
-    app,
-    configStore,
-    userStore,
-    authStore
-  })
-  announcePasswordPolicyService({ app })
-  announceUppyService({ app })
   announceTranslations({ appsStore, gettext, coreTranslations, customTranslations })
   startSentry(configStore, app)
   announceCustomStyles({ configStore })
