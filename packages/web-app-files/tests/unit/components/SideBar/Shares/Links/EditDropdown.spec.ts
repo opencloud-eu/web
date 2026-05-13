@@ -10,10 +10,12 @@ import { mock } from 'vitest-mock-extended'
 import {
   AncestorMetaDataValue,
   useGetMatchingSpace,
+  useModals,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import { Resource } from '@opencloud-eu/web-client'
+import { DateTime } from 'luxon'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -57,6 +59,53 @@ describe('EditDropdown component', () => {
       it('does contain "add-expiration" option', () => {
         const { wrapper } = getWrapper()
         expect(wrapper.vm.editOptions.some((option) => option.id === 'add-expiration')).toBeTruthy()
+      })
+      it('emits an ISO string when the date picker confirms a DateTime', () => {
+        const linkShareWithExpiration = {
+          ...exampleLink,
+          expirationDateTime: '2026-12-01T00:00:00.000Z'
+        } as LinkShare
+
+        const { wrapper } = getWrapper({ linkShare: linkShareWithExpiration })
+        const modalsStore = useModals()
+        const dispatchModalSpy = vi.spyOn(modalsStore, 'dispatchModal')
+
+        const editExpirationOption = wrapper.vm.editOptions.find(
+          (option) => option.id === 'edit-expiration'
+        )
+        editExpirationOption.method()
+
+        const onConfirm = dispatchModalSpy.mock.calls[0][0].onConfirm
+        const expirationDateTime = DateTime.fromISO('2026-12-31T00:00:00.000Z')
+        onConfirm(expirationDateTime)
+
+        expect(wrapper.emitted('updateLink')).toBeTruthy()
+        expect(wrapper.emitted('updateLink')[0][0]).toMatchObject({
+          options: { expirationDateTime: expirationDateTime.toISO() }
+        })
+      })
+      it('emits null when the date picker confirms with null', () => {
+        const linkShareWithExpiration = {
+          ...exampleLink,
+          expirationDateTime: '2026-12-01T00:00:00.000Z'
+        } as LinkShare
+
+        const { wrapper } = getWrapper({ linkShare: linkShareWithExpiration })
+        const modalsStore = useModals()
+        const dispatchModalSpy = vi.spyOn(modalsStore, 'dispatchModal')
+
+        const editExpirationOption = wrapper.vm.editOptions.find(
+          (option) => option.id === 'edit-expiration'
+        )
+        editExpirationOption.method()
+
+        const onConfirm = dispatchModalSpy.mock.calls[0][0].onConfirm
+        onConfirm(null)
+
+        expect(wrapper.emitted('updateLink')).toBeTruthy()
+        expect(wrapper.emitted('updateLink')[0][0]).toMatchObject({
+          options: { expirationDateTime: null }
+        })
       })
     })
     describe('rename', () => {

@@ -3,6 +3,7 @@ import InviteCollaboratorForm from '../../../../../../../src/components/SideBar/
 import {
   defaultComponentMocks,
   defaultPlugins,
+  ocDropStub,
   RouteLocation,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
@@ -17,6 +18,7 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
+import { DateTime } from 'luxon'
 
 vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn() }))
 
@@ -145,6 +147,41 @@ describe('InviteCollaboratorForm', () => {
 
       expect(addShare).toHaveBeenCalled()
     })
+    it('passes the expiration date set via collaboratorExpiryChanged to addShare', async () => {
+      const { wrapper } = getWrapper({}, { OcDrop: ocDropStub })
+
+      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
+
+      const expirationDateTime = DateTime.fromISO('2026-12-31T00:00:00.000Z')
+      wrapper.vm.collaboratorExpiryChanged({ expirationDate: expirationDateTime })
+
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(undefined)
+
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            expirationDateTime: expirationDateTime.toISO()
+          })
+        })
+      )
+    })
+    it('converts DateTime to ISO string in collaboratorExpiryChanged', () => {
+      const { wrapper } = getWrapper({}, { OcDrop: ocDropStub })
+
+      const expirationDateTime = DateTime.fromISO('2026-12-31T00:00:00.000Z')
+      wrapper.vm.collaboratorExpiryChanged({ expirationDate: expirationDateTime })
+
+      expect(wrapper.vm.expirationDate).toBe(expirationDateTime.toISO())
+    })
+    it('sets expirationDate to null when DateTime is null', () => {
+      const { wrapper } = getWrapper({}, { OcDrop: ocDropStub })
+      wrapper.vm.collaboratorExpiryChanged({ expirationDate: null })
+      expect(wrapper.vm.expirationDate).toBeNull()
+    })
     it.todo('resets focus upon selecting an invitee')
   })
   describe('share role type filter', () => {
@@ -177,23 +214,26 @@ describe('InviteCollaboratorForm', () => {
   })
 })
 
-function getWrapper({
-  storageId = 'fake-storage-id',
-  resource = mock<Resource>(folderMock),
-  users = [],
-  groups = [],
-  existingCollaborators = [],
-  externalShareRoles = [],
-  user = mock<User>({ id: '1' })
-}: {
-  storageId?: string
-  resource?: Resource
-  users?: User[]
-  groups?: Group[]
-  existingCollaborators?: CollaboratorShare[]
-  externalShareRoles?: ShareRole[]
-  user?: User
-} = {}) {
+function getWrapper(
+  {
+    storageId = 'fake-storage-id',
+    resource = mock<Resource>(folderMock),
+    users = [],
+    groups = [],
+    existingCollaborators = [],
+    externalShareRoles = [],
+    user = mock<User>({ id: '1' })
+  }: {
+    storageId?: string
+    resource?: Resource
+    users?: User[]
+    groups?: Group[]
+    existingCollaborators?: CollaboratorShare[]
+    externalShareRoles?: ShareRole[]
+    user?: User
+  } = {},
+  additionalStubs: Record<string, unknown> = {}
+) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
   })
@@ -226,7 +266,7 @@ function getWrapper({
           availableInternalShareRoles: [mock<ShareRole>()]
         },
         mocks,
-        stubs: { OcSelect: false, VueSelect: false }
+        stubs: { OcSelect: false, VueSelect: false, ...additionalStubs }
       }
     })
   }

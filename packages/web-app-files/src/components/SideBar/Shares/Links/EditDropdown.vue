@@ -114,7 +114,7 @@ export default defineComponent({
         onConfirm: (expirationDateTime: DateTime) => {
           emit('updateLink', {
             linkShare: { ...props.linkShare },
-            options: { expirationDateTime }
+            options: { expirationDateTime: expirationDateTime?.toISO() ?? null }
           })
         }
       })

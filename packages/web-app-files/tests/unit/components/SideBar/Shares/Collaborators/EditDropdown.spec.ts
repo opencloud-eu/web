@@ -3,6 +3,7 @@ import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import { OcButton } from '@opencloud-eu/design-system/components'
+import { DateTime } from 'luxon'
 
 const selectors = {
   editBtn: '.collaborator-edit-dropdown-options-btn',
@@ -45,6 +46,35 @@ describe('EditDropdown', () => {
     it('is not being rendered when canEdit is false', () => {
       const { wrapper } = getWrapper({ canEdit: false })
       expect(wrapper.find(selectors.expireDateMenuAction).exists()).toBeFalsy()
+    })
+    it('emits an ISO string when the date picker confirms a DateTime', () => {
+      const { wrapper } = getWrapper({ canEdit: true })
+
+      const dispatchModalSpy = vi.spyOn(wrapper.vm, 'dispatchModal')
+      wrapper.vm.showDatePickerModal()
+
+      const onConfirm = dispatchModalSpy.mock.calls[0][0].onConfirm
+      const expirationDateTime = DateTime.fromISO('2026-12-31T00:00:00.000Z')
+      onConfirm(expirationDateTime)
+
+      expect(wrapper.emitted('expirationDateChanged')).toBeTruthy()
+      expect(wrapper.emitted('expirationDateChanged')[0][0]).toEqual({
+        expirationDateTime: expirationDateTime.toISO()
+      })
+    })
+    it('emits null when the date picker confirms with null', () => {
+      const { wrapper } = getWrapper({ canEdit: true })
+
+      const dispatchModalSpy = vi.spyOn(wrapper.vm, 'dispatchModal')
+      wrapper.vm.showDatePickerModal()
+
+      const onConfirm = dispatchModalSpy.mock.calls[0][0].onConfirm
+      onConfirm(null)
+
+      expect(wrapper.emitted('expirationDateChanged')).toBeTruthy()
+      expect(wrapper.emitted('expirationDateChanged')[0][0]).toEqual({
+        expirationDateTime: null
+      })
     })
   })
   describe('navigate to parent action', () => {
