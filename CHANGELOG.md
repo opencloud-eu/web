@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-12
+## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-13
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: service announcement order [[#2506](https://github.com/opencloud-eu/web/pull/2506)]
 - fix: left sidebar doesn't scroll [[#2502](https://github.com/opencloud-eu/web/pull/2502)]
 - fix(editor): missing content [[#2501](https://github.com/opencloud-eu/web/pull/2501)]
 - fix: search term overlaps filter in global search [[#2497](https://github.com/opencloud-eu/web/pull/2497)]
