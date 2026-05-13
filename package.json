@@ -38,7 +38,8 @@
     "not ExplorerMobile > 0",
     "not BlackBerry > 0",
     "not OperaMini all",
-    "not OperaMobile > 0"
+    "not OperaMobile > 0",
+    "not ios < 12"
   ],
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
