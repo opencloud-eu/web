@@ -1,5 +1,37 @@
 # Changelog
 
+## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-13
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: pixelated space images [[#2509](https://github.com/opencloud-eu/web/pull/2509)]
+- fix: mobile bottom drawer is not setting aria attributes [[#2508](https://github.com/opencloud-eu/web/pull/2508)]
+- fix: service announcement order [[#2506](https://github.com/opencloud-eu/web/pull/2506)]
+- fix: left sidebar doesn't scroll [[#2502](https://github.com/opencloud-eu/web/pull/2502)]
+- fix(editor): missing content [[#2501](https://github.com/opencloud-eu/web/pull/2501)]
+- fix: search term overlaps filter in global search [[#2497](https://github.com/opencloud-eu/web/pull/2497)]
+- fix: modal actions when creating links are missing disable during cre… [[#2498](https://github.com/opencloud-eu/web/pull/2498)]
+- fix: rename icon overlaps quota column when space name is truncated [[#2493](https://github.com/opencloud-eu/web/pull/2493)]
+- fix: changing username of the current user shows error after successf… [[#2499](https://github.com/opencloud-eu/web/pull/2499)]
+- fix: prevent modal title actions from wrapping [[#2495](https://github.com/opencloud-eu/web/pull/2495)]
+- Fix mail validation layout issue [[#2492](https://github.com/opencloud-eu/web/pull/2492)]
+- fix: missing space actions in favorites and search [[#2488](https://github.com/opencloud-eu/web/pull/2488)]
+- fix: FAB overlaps actions in embed mode [[#2489](https://github.com/opencloud-eu/web/pull/2489)]
+- fix: checkboxes are not vertically centered in file tables [[#2491](https://github.com/opencloud-eu/web/pull/2491)]
+
+### ✅ Tests
+
+- [e2e-tests] waiting upload response [[#2494](https://github.com/opencloud-eu/web/pull/2494)]
+- [e2e-tests] upload folder with different options [[#2483](https://github.com/opencloud-eu/web/pull/2483)]
+
+### 📦️ Dependencies
+
+- chore(deps): update pnpm to v10.33.4 [[#2482](https://github.com/opencloud-eu/web/pull/2482)]
+
 ## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-11
 
 ### ❤️ Thanks to all contributors! ❤️
