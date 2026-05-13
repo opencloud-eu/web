@@ -7,8 +7,8 @@
     :close-on-click="closeOnClick"
     :title="title"
     :register-click-handler="mode !== 'manual'"
-    @show="emit('showDrop')"
-    @hide="emit('hideDrop')"
+    @show="onDropShow"
+    @hide="onDropHide"
   >
     <slot />
   </oc-mobile-drop>
@@ -481,8 +481,18 @@ const handleAnchorMouseLeave = () => {
 }
 
 const setupAriaAttributes = () => {
-  unref(anchor)?.setAttribute('aria-haspopup', 'true')
+  unref(anchor)?.setAttribute('aria-haspopup', unref(useBottomDrawer) ? 'dialog' : 'true')
   unref(anchor)?.setAttribute('aria-expanded', 'false')
+}
+
+const onDropShow = () => {
+  unref(anchor)?.setAttribute('aria-expanded', 'true')
+  emit('showDrop')
+}
+
+const onDropHide = () => {
+  unref(anchor)?.setAttribute('aria-expanded', 'false')
+  emit('hideDrop')
 }
 
 const setupAnchorEvents = () => {
