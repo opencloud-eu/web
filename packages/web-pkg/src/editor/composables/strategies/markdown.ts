@@ -1,5 +1,5 @@
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
-import { ContentTypeStrategy } from './types'
+import { ContentTypeStrategy, StrategyExtensionsOptions } from './types'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
@@ -27,9 +27,9 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     return content
   }
 
-  const extensions = (): Extension[] => {
+  const extensions = (opts?: StrategyExtensionsOptions): Extension[] => {
     return [
-      StarterKit.configure({ link: false }),
+      StarterKit.configure({ link: false, undoRedo: opts?.collaboration ? false : undefined }),
       Markdown,
       Link.configure({
         openOnClick: true,

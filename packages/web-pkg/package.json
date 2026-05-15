@@ -49,11 +49,14 @@
   "dependencies": {
     "@casl/ability": "^6.8.0",
     "@casl/vue": "^2.2.6",
+    "@hocuspocus/provider": "^2.15.2",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
     "@sentry/vue": "^10.46.0",
     "@tiptap/core": "^3.20.4",
+    "@tiptap/extension-collaboration": "^3.20.4",
+    "@tiptap/extension-collaboration-caret": "^3.20.4",
     "@tiptap/extension-document": "^3.20.4",
     "@tiptap/extension-hard-break": "^3.20.4",
     "@tiptap/extension-image": "^3.20.4",
@@ -95,6 +98,7 @@
     "vue-concurrency": "^5.0.3",
     "vue-router": "^5.0.4",
     "vue3-gettext": "4.0.0-beta.1",
+    "yjs": "^13.6.20",
     "zod": "^4.3.6"
   },
   "devDependencies": {

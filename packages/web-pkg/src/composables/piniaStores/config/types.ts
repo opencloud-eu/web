@@ -72,7 +72,12 @@ const OptionsConfigSchema = z.object({
     .object({
       autosaveEnabled: z.boolean().optional(),
       autosaveInterval: z.number().optional(),
-      openAsPreview: z.union([z.boolean(), z.array(z.string())]).optional()
+      openAsPreview: z.union([z.boolean(), z.array(z.string())]).optional(),
+      collaboration: z
+        .object({
+          wsUrl: z.string()
+        })
+        .optional()
     })
     .optional(),
   embed: z

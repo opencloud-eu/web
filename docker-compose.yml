@@ -1,5 +1,5 @@
 x-opencloud-server: &opencloud-service
-  image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
+  image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:6.1.0}
   entrypoint: /bin/sh
   command: ['-c', 'opencloud init || true && opencloud server']
   environment: &opencloud-environment
@@ -190,6 +190,33 @@ services:
       driver: ${LOG_DRIVER:-local}
     restart: unless-stopped
 
+  hocuspocus:
+    build:
+      context: ./dev/docker/hocuspocus
+    container_name: web_hocuspocus
+    depends_on:
+      opencloud:
+        condition: service_started
+    environment:
+      PORT: '9400'
+      OC_URL: ${OC_URL:-https://host.docker.internal:9200}
+      IDP_ISSUER: ${HOCUSPOCUS_IDP_ISSUER:-${OC_URL:-https://host.docker.internal:9200}}
+      SAVE_DEBOUNCE_MS: '${HOCUSPOCUS_SAVE_DEBOUNCE_MS:-2000}'
+      # Dev only — accept the self-signed OpenCloud cert.
+      NODE_TLS_REJECT_UNAUTHORIZED: '0'
+    extra_hosts:
+      - host.docker.internal:${DOCKER_HOST:-host-gateway}
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.hocuspocus.tls: true
+      traefik.http.routers.hocuspocus.rule: PathPrefix(`/`)
+      traefik.http.routers.hocuspocus.entrypoints: hocuspocus
+      traefik.http.services.hocuspocus.loadbalancer.server.port: 9400
+    networks:
+      - traefik
+    restart: unless-stopped
+
   collabora:
     image: collabora/code:25.04.9.4.1
     entrypoint: ['/bin/bash', '-c']
@@ -248,6 +275,7 @@ services:
       - '--entrypoints.wopi.address=:8880'
       - '--entrypoints.collaboration.address=:9300'
       - '--entrypoints.collaboration-oo.address=:9302'
+      - '--entrypoints.hocuspocus.address=:9400'
       - '--entrypoints.stalwart-tls.address=:443'
       - '--entrypoints.stalwart-tls.http.middlewares=https_config@docker'
       - '--entrypoints.stalwart-tls.http.tls.options=default'
@@ -273,6 +301,7 @@ services:
       - '9200:9200'
       - '9300:9300'
       - '9302:9302'
+      - '9400:9400'
       - '10200:10200'
       - '9980:9980'
       - '8880:8880'

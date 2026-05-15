@@ -3,6 +3,9 @@ import { useEditor } from '@tiptap/vue-3'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
+import { HocuspocusProvider } from '@hocuspocus/provider'
+import Collaboration from '@tiptap/extension-collaboration'
+import CollaborationCaret from '@tiptap/extension-collaboration-caret'
 import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
@@ -16,10 +19,37 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
   const strategy = resolveStrategy(options.contentType, state)
+  const collaboration = options.collaboration
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-  const extensions = strategy.extensions()
+  // Set when Hocuspocus rejects the token. Once true the editor stops
+  // suppressing AppWrapper's autosave path so the user's edits still get
+  // persisted via the single-user WebDAV PUT route as a safety net.
+  const collabFailed = ref(false)
+
+  const provider = collaboration
+    ? new HocuspocusProvider({
+        url: collaboration.wsUrl,
+        name: collaboration.room,
+        token: collaboration.token,
+        onAuthenticationFailed: ({ reason }) => {
+          console.error(
+            '[useTextEditor] hocuspocus authentication failed; falling back to single-user autosave',
+            reason
+          )
+          collabFailed.value = true
+          // Immediately push the current editor state to AppWrapper so the
+          // dirty state engages now — don't wait for the next keystroke.
+          if (options.onUpdate && editor.value) {
+            options.onUpdate(strategy.serialize(editor.value))
+          }
+        },
+        onStateless: ({ payload }) => collaboration.onStateless?.(payload)
+      })
+    : null
+
+  const extensions = strategy.extensions({ collaboration: !!collaboration })
   if (options.slashCommands !== false) {
     const resolvedGroups = strategy.editorActionGroups()
     if (resolvedGroups.length > 0) {
@@ -27,6 +57,18 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
         SlashCommands.configure({ getGroups: () => resolvedGroups }) as (typeof extensions)[number]
       )
     }
+  }
+  if (provider && collaboration) {
+    extensions.push(
+      Collaboration.configure({
+        document: provider.document,
+        field: 'default'
+      }) as (typeof extensions)[number],
+      CollaborationCaret.configure({
+        provider,
+        user: collaboration.user
+      }) as (typeof extensions)[number]
+    )
   }
 
   if (options.placeholder) {
@@ -39,16 +81,24 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
     extensions,
-    content: unref(options.modelValue) ? strategy.deserialize(unref(options.modelValue)) : '',
+    // In collaboration mode the Y.Doc is the source of truth; seeding here would
+    // duplicate the document body for every joining client.
+    content: collaboration
+      ? null
+      : unref(options.modelValue)
+        ? strategy.deserialize(unref(options.modelValue))
+        : '',
     editable: !readonly.value
   }
 
-  watch(options.modelValue, (content) => {
-    if (!unref(editor) || unref(editor)?.isFocused) {
-      return
-    }
-    setContent(content)
-  })
+  if (!collaboration) {
+    watch(options.modelValue, (content) => {
+      if (!unref(editor) || unref(editor)?.isFocused) {
+        return
+      }
+      setContent(content)
+    })
+  }
 
   if (strategy.editorContentType) {
     editorOptions.contentType = strategy.editorContentType()
@@ -66,7 +116,11 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const editor = useEditor({
     ...editorOptions,
     onUpdate({ editor: e }) {
-      if (!options.onUpdate) {
+      // In collaboration mode the hocuspocus server is the writer of record,
+      // so we suppress the AppWrapper autosave path — UNLESS authentication
+      // failed, in which case we re-engage it as a safety net against
+      // dataloss.
+      if (!options.onUpdate || (collaboration && !collabFailed.value)) {
         return
       }
       if (debounceTimer) {
@@ -115,13 +169,14 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const destroy = (): void => {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
-      if (options.onUpdate && editor.value) {
+      if (options.onUpdate && editor.value && (!collaboration || collabFailed.value)) {
         options.onUpdate(strategy.serialize(editor.value))
       }
       debounceTimer = null
     }
     editor.value?.destroy()
     editor.value = null
+    provider?.destroy()
   }
 
   const triggerEditorUpdate = () => triggerRef(editor)

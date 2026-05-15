@@ -1,3 +1,4 @@
 {
-  "extends": "@opencloud-eu/tsconfig"
+  "extends": "@opencloud-eu/tsconfig",
+  "exclude": ["node_modules", "dev/docker/hocuspocus"]
 }

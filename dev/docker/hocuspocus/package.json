@@ -1,0 +1,38 @@
+{
+  "name": "@opencloud-eu/dev-hocuspocus",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Dev-only Hocuspocus server for the OpenCloud Web tiptap editor. Bridges Y.Doc state to OpenCloud via WebDAV.",
+  "scripts": {
+    "start": "tsx server.ts",
+    "dev": "tsx watch server.ts"
+  },
+  "dependencies": {
+    "@hocuspocus/extension-logger": "^2.15.2",
+    "@hocuspocus/server": "^2.15.2",
+    "@tiptap/core": "^3.20.4",
+    "@tiptap/extension-document": "^3.20.4",
+    "@tiptap/extension-hard-break": "^3.20.4",
+    "@tiptap/extension-image": "^3.20.4",
+    "@tiptap/extension-link": "^3.20.4",
+    "@tiptap/extension-paragraph": "^3.20.4",
+    "@tiptap/extension-table": "^3.20.4",
+    "@tiptap/extension-task-item": "^3.20.4",
+    "@tiptap/extension-task-list": "^3.20.4",
+    "@tiptap/extension-text": "^3.20.4",
+    "@tiptap/markdown": "^3.20.4",
+    "@tiptap/pm": "^3.20.4",
+    "@tiptap/starter-kit": "^3.20.4",
+    "jose": "^5.9.6",
+    "jsdom": "^25.0.1",
+    "undici": "^6.20.1",
+    "y-prosemirror": "^1.2.13",
+    "yjs": "^13.6.20"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

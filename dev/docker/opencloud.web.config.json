@@ -2,7 +2,12 @@
   "server": "https://host.docker.internal:9200",
   "theme": "https://host.docker.internal:9200/themes/opencloud/theme.json",
   "options": {
-    "contextHelpersReadMore": true
+    "contextHelpersReadMore": true,
+    "editor": {
+      "collaboration": {
+        "wsUrl": "wss://host.docker.internal:9400"
+      }
+    }
   },
   "apps": [
     "files",
