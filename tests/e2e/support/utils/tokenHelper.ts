@@ -1,13 +1,13 @@
 import { Browser } from '@playwright/test'
 import { Session } from '../objects/runtime'
 import { TokenProviderType } from '../environment'
-import { config } from '../../config'
+import { appConfig } from '../../playwright.config'
 import { User } from '../types'
 
 export const initializeUser = async ({
   browser,
   user,
-  url = config.baseUrl,
+  url = appConfig.baseUrl,
   waitForSelector = null
 }: {
   browser: Browser

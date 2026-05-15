@@ -50,8 +50,6 @@ packages/design-system/docs/public/*
 !/packages/web-runtime/themes/opencloud/
 
 # Report for tests
-tests/report/cucumber_report.json
-tests/report/cucumber_report.html
 .vscode/settings.json
 
 # third party licenses

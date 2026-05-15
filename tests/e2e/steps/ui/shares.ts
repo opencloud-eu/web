@@ -1,0 +1,343 @@
+import { When, Then } from '../../environment/fixtures'
+import { DataTable } from 'playwright-bdd'
+import { expect } from '@playwright/test'
+import { World } from '../../environment/world'
+import { environment, objects } from '../../support'
+import { CollaboratorType, ICollaborator } from '../../support/objects/app-files/share/collaborator'
+import { ActionViaType } from '../../support/objects/app-files/share/actions'
+
+const parseShareTable = function (
+  stepTable: DataTable,
+  usersEnvironment: environment.UsersEnvironment
+) {
+  return stepTable.hashes().reduce<Record<string, ICollaborator[]>>((acc, stepRow) => {
+    const { resource, recipient, type, role, resourceType, expirationDate, shareType, hasAvatar } =
+      stepRow
+
+    if (!acc[resource]) {
+      acc[resource] = []
+    }
+
+    acc[resource].push({
+      collaborator:
+        type === 'group'
+          ? usersEnvironment.getCreatedGroup({ key: recipient })
+          : usersEnvironment.getCreatedUser({ key: recipient, shareType: shareType }),
+      role,
+      type: type as CollaboratorType,
+      resourceType,
+      expirationDate,
+      shareType,
+      hasAvatar: hasAvatar === 'true' ? true : false
+    })
+
+    return acc
+  }, {})
+}
+
+When(
+  /^"([^"]*)" shares the following resource(?:s)? using the (sidebar panel|quick action|direct url navigation)$/,
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    actionType: string,
+    stepTable: DataTable
+  ) {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
+
+    let via: ActionViaType
+    switch (actionType) {
+      case 'quick action':
+        via = 'QUICK_ACTION'
+        break
+      case 'sidebar panel':
+        via = 'SIDEBAR_PANEL'
+        break
+      case 'direct url navigation':
+        via = 'URL_NAVIGATION'
+        break
+      default:
+        throw new Error(`Unknown action type: ${actionType}`)
+    }
+
+    for (const resource of Object.keys(shareInfo)) {
+      await shareObject.create({
+        resource,
+        recipients: shareInfo[resource],
+        via
+      })
+    }
+  }
+)
+
+When(
+  '{string} enables the sync for the following share(s)',
+  async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+
+    for (const info of stepTable.hashes()) {
+      await shareObject.enableSync({ resource: info.name })
+    }
+  }
+)
+
+When(
+  '{string} updates following sharee role(s)',
+  async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
+
+    for (const resource of Object.keys(shareInfo)) {
+      await shareObject.changeShareeRole({
+        resource,
+        recipients: shareInfo[resource]
+      })
+    }
+  }
+)
+
+When(
+  '{string} removes following sharee(s)',
+  async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
+
+    for (const resource of Object.keys(shareInfo)) {
+      await shareObject.removeSharee({ resource, recipients: shareInfo[resource] })
+    }
+  }
+)
+
+Then(
+  '{string} should see the following recipient(s)',
+  async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
+
+    for (const resource of Object.keys(shareInfo)) {
+      await shareObject.checkSharee({ resource, recipients: shareInfo[resource] })
+    }
+  }
+)
+
+When(
+  '{string} navigates to the shared with me page',
+  async function ({ world }: { world: World }, stepUser: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const pageObject = new objects.applicationFiles.page.shares.WithMe({ page })
+    await pageObject.navigate()
+  }
+)
+
+When(
+  '{string} navigates to the shared with others page',
+  async function ({ world }: { world: World }, stepUser: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const pageObject = new objects.applicationFiles.page.shares.WithOthers({ page })
+    await pageObject.navigate()
+  }
+)
+
+When(
+  '{string} navigates to the shared via link page',
+  async function ({ world }: { world: World }, stepUser: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const pageObject = new objects.applicationFiles.page.shares.ViaLink({ page })
+    await pageObject.navigate()
+  }
+)
+
+When(
+  '{string} disables the sync for the following share(s)',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+
+    for (const resource of stepTable.hashes()) {
+      await shareObject.disableSync({ resource: resource.name })
+    }
+  }
+)
+
+When(
+  '{string} enables the sync for the following share(s) using the context menu',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+
+    for (const resource of stepTable.hashes()) {
+      await shareObject.enableSync({ resource: resource.name, via: 'CONTEXT_MENU' })
+    }
+  }
+)
+
+When(
+  '{string} enables the sync for all shares using the batch actions',
+  async function ({ world }: { world: World }, stepUser: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    await shareObject.syncAll()
+  }
+)
+
+When(
+  '{string} disables the sync for the following share(s) using the context menu',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+
+    for (const resource of stepTable.hashes()) {
+      await shareObject.disableSync({ resource: resource.name, via: 'CONTEXT_MENU' })
+    }
+  }
+)
+
+When(
+  /"([^"]*)" (should|should not) see a sync status for the (?:folder|file) "([^"]*)"?$/,
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    condition: string,
+    resource: string
+  ): Promise<void> {
+    const shouldSee = condition === 'should'
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    expect(await shareObject.resourceIsSynced(resource)).toBe(shouldSee)
+  }
+)
+
+Then(
+  /"([^"]*)" (should|should not) be able to see the following shares$/,
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    condition: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const shouldExist = condition === 'should'
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    for (const { resource, owner } of stepTable.hashes()) {
+      const isAcceptedSharePresent = await shareObject.isAcceptedSharePresent(resource, owner)
+      expect(isAcceptedSharePresent, '${resource} does not exist in accepted share').toBe(
+        shouldExist
+      )
+    }
+  }
+)
+
+When(
+  /^"([^"]*)" sets the expiration date of share "([^"]*)" of (group|user) "([^"]*)" to "([^"]*)"?$/,
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    resource: string,
+    collaboratorType: 'user' | 'group',
+    collaboratorName: string,
+    expirationDate: string
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    await shareObject.addExpirationDate({
+      resource,
+      collaborator: {
+        collaborator:
+          collaboratorType === 'group'
+            ? world.usersEnvironment.getCreatedGroup({ key: collaboratorName })
+            : world.usersEnvironment.getCreatedUser({ key: collaboratorName }),
+        type: collaboratorType
+      } as ICollaborator,
+      expirationDate
+    })
+  }
+)
+
+When(
+  /^"([^"]*)" checks the following access details of share "([^"]*)" for (user|group) "([^"]*)"$/,
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    resource: string,
+    collaboratorType: string,
+    collaboratorName: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const expectedDetails = stepTable.rowsHash()
+    const actualDetails = await shareObject.getAccessDetails({
+      resource,
+      collaborator: {
+        collaborator:
+          collaboratorType === 'group'
+            ? world.usersEnvironment.getCreatedGroup({ key: collaboratorName })
+            : world.usersEnvironment.getCreatedUser({ key: collaboratorName }),
+        type: collaboratorType
+      } as ICollaborator
+    })
+
+    if (collaboratorType === 'group') {
+      actualDetails.Name = actualDetails.Name.replace(/-\w{3,}/g, '') // Remove suffix from group like "-6d1"
+    }
+    expect(actualDetails).toMatchObject(expectedDetails)
+  }
+)
+
+Then(
+  '{string} should see the message {string} on the webUI',
+  async function ({ world }: { world: World }, stepUser: string, message: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const actualMessage = await shareObject.getMessage()
+    expect(actualMessage).toBe(message)
+  }
+)
+
+Then(
+  /^"([^"]*)" (should|should not) be able to manage share of a file "([^"]*)" for user "([^"]*)"$/,
+  async function (
+    { world }: { world: World },
+    stepUser: any,
+    actionType: string,
+    resource: string,
+    recipient: string
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const shareObject = new objects.applicationFiles.Share({ page })
+    const changeRole = shareObject.changeRoleLocator(
+      world.usersEnvironment.getCreatedUser({ key: recipient })
+    )
+    const changeShare = shareObject.changeShareLocator(
+      world.usersEnvironment.getCreatedUser({ key: recipient })
+    )
+
+    await shareObject.openSharingPanel(resource)
+
+    if (actionType === 'should') {
+      await expect(changeRole).not.toBeDisabled()
+      await expect(changeShare).not.toBeDisabled()
+    } else {
+      await expect(changeRole).toBeDisabled()
+      await expect(changeShare).toBeDisabled()
+    }
+  }
+)

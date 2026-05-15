@@ -3,8 +3,8 @@ import util from 'util'
 import { sidebar } from '../utils'
 import { getActualExpiryDate } from '../../../utils/datePicker'
 import { clickResource } from '../resource/actions'
-import { config } from '../../../../config'
 import { checkA11yOrLocalization } from '../../../utils/accessibility'
+import { state } from '../../../../environment/shared'
 
 export interface createLinkArgs {
   page: Page
@@ -166,7 +166,7 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
   await clearCurrentPopup(page)
 
   // workaround for webkit (safari browser). See bug #1169
-  if (config.browser === 'webkit') {
+  if (state.projectName === 'mobile-webkit') {
     return (await resp[0].json()).link.webUrl
   } else {
     const name =

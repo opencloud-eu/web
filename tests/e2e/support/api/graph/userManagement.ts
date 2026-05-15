@@ -1,7 +1,7 @@
 import { checkResponseStatus, request } from '../http'
 import { Group, Me, User } from '../../types'
 import { urlJoin } from '../../utils/urlJoin'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 import { getApplicationEntity } from './utils'
 import { userRoleStore } from '../../store'
 import { UsersEnvironment } from '../../environment'
@@ -124,7 +124,7 @@ export const addUserToGroup = async ({
   admin: User
 }): Promise<void> => {
   const body = {
-    '@odata.id': urlJoin(config.baseUrl, 'graph', 'v1.0', 'users', userId)
+    '@odata.id': urlJoin(appConfig.baseUrl, 'graph', 'v1.0', 'users', userId)
   }
 
   const response = await request({

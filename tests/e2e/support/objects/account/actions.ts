@@ -1,6 +1,6 @@
 import { Locator, Page, expect } from '@playwright/test'
 import util from 'util'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 
 const accountMenuButton = '.oc-topbar-avatar'
 const quotaValue = '.quota-information-text'
@@ -86,7 +86,7 @@ export const requestGdprExport = async (args: { page: Page }): Promise<void> => 
         resp.text().then((text) => text.includes('HTTP/1.1 200 OK')),
       // generating GDPR report can take a while
       // so we need to increase the timeout to 60 seconds
-      { timeout: config.timeout * 1000 }
+      { timeout: appConfig.timeout * 1000 }
     ),
     page.locator(requestExportButton).click()
   ])
