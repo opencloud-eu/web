@@ -634,7 +634,7 @@ def e2eTests(ctx):
             if browser_name == "firefox" or browser_name == "webkit":
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = "False"
 
-            command = "cd tests/e2e && pnpm bddgen && pnpm playwright install '%s' --with-deps && pnpm playwright test --reporter=list --project='%s' && ls -la " % (browser_name, browser_name)
+            command = "cd tests/e2e && pnpm bddgen && pnpm playwright install '%s' --with-deps && pnpm playwright test --reporter=list --project='%s' " % (browser_name, browser_name)
 
             if "suites" in matrix:
                 command += "%s" % " ".join(params["suites"])
@@ -1378,16 +1378,12 @@ def uploadTestArtifacts():
         "environment": minio_mc_environment,
         "commands": [
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-            # upload report
-            "ls -la %s" % dir["web"],
-            "ls -la %s/tests/e2e/" % dir["web"],
-            "ls -la %s/tests/e2e/playwright-report/" % dir["web"],
-            "mc cp -a --recursive %s/tests/e2e/playwright-report/ s3/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/report/" % dir["web"],
-            # upload tracing
+            # upload report and tracing
+            "ls -la %s/tests/e2e/test-results/" % dir["web"],
             "mc cp -a --recursive %s/tests/e2e/test-results/ s3/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/test-results/" % dir["web"],
             # print links
             'echo "HTML Report:"',
-            'echo "$MC_HOST/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/report/index.html"',
+            'echo "$MC_HOST/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/test-results/index.html"',
             'echo "Traces:"',
             'mc find s3/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/test-results/ --name "trace.zip" | sed "s|s3/$PUBLIC_BUCKET/||" | while read f; do echo "npx playwright show-trace $MC_HOST/$PUBLIC_BUCKET/$f"; done',
         ],
