@@ -266,6 +266,19 @@ describe('HandleUpload', () => {
         await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
         expect(getConflictsMock).not.toHaveBeenCalled()
       })
+      it('does not check for conflicts if uploads target a non-current folder', async () => {
+        // setUploadFolder was used to redirect uploads to a folder other than the
+        // user's current one. getConflicts can only check the current folder, so
+        // running it here would only produce false positives.
+        const { instance } = getWrapper({
+          uploadFolderForId: {
+            'upload-1': mock<Resource>({ path: '/elsewhere', storageId: 'space-1' })
+          }
+        })
+        const file = mock<OcUppyFile>({ name: 'name', meta: { uploadId: 'upload-1' } })
+        await instance.handleUpload([file])
+        expect(getConflictsMock).not.toHaveBeenCalled()
+      })
       it('does not start upload if all files were skipped in conflict handling', async () => {
         const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult: [] })
         const removeFilesFromUploadSpy = vi.spyOn(instance, 'removeFilesFromUpload')
@@ -308,7 +321,8 @@ const getWrapper = ({
   quotaCheckEnabled = true,
   conflicts = [],
   conflictHandlerResult = [],
-  spaces = []
+  spaces = [],
+  uploadFolderForId = {} as Record<string, Resource>
 } = {}) => {
   getConflictsMock = vi.fn(() => conflicts)
   displayOverwriteDialogMock = vi.fn().mockResolvedValue(conflictHandlerResult)
@@ -327,6 +341,8 @@ const getWrapper = ({
     }
   })
 
+  const uppyService = mock<UppyService>({ uploadFolderMap: uploadFolderForId })
+
   const opts = {
     clientService: mockDeep<ClientService>(),
     language: mock<Language>({ current: 'en' }),
@@ -336,7 +352,7 @@ const getWrapper = ({
     spacesStore: useSpacesStore(),
     resourcesStore: useResourcesStore(),
     space: ref(mock<SpaceResource>()),
-    uppyService: mock<UppyService>(),
+    uppyService,
     conflictHandlingEnabled,
     directoryTreeCreateEnabled,
     quotaCheckEnabled
