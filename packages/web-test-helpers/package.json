@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "@vitejs/plugin-vue": "6.0.6",
+    "@vitejs/plugin-vue": "6.0.7",
     "clean-publish": "^6.0.4",
     "vite": "^8.0.3"
   },
