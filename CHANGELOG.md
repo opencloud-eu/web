@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @tammi-23
 
+### ✅ Tests
+
+- test(e2e): add expiration date indicator checks for public link and s… [[#2539](https://github.com/opencloud-eu/web/pull/2539)]
+- [e2e-tests] waiting upload response [[#2494](https://github.com/opencloud-eu/web/pull/2494)]
+- [e2e-tests] upload folder with different options [[#2483](https://github.com/opencloud-eu/web/pull/2483)]
+
 ### 🐛 Bug Fixes
 
 - fix: skip upload conflict check when uploads target a non-current folder [[#2513](https://github.com/opencloud-eu/web/pull/2513)]
@@ -25,11 +31,6 @@
 - fix: missing space actions in favorites and search [[#2488](https://github.com/opencloud-eu/web/pull/2488)]
 - fix: FAB overlaps actions in embed mode [[#2489](https://github.com/opencloud-eu/web/pull/2489)]
 - fix: checkboxes are not vertically centered in file tables [[#2491](https://github.com/opencloud-eu/web/pull/2491)]
-
-### ✅ Tests
-
-- [e2e-tests] waiting upload response [[#2494](https://github.com/opencloud-eu/web/pull/2494)]
-- [e2e-tests] upload folder with different options [[#2483](https://github.com/opencloud-eu/web/pull/2483)]
 
 ### 📦️ Dependencies
 
