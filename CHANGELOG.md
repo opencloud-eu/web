@@ -30,6 +30,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.5 [[#2478](https://github.com/opencloud-eu/web/pull/2478)]
+- chore(deps): update dependency eslint-plugin-vue to v10.9.1 [[#2516](https://github.com/opencloud-eu/web/pull/2516)]
 - chore(deps): update devdependencies (non-major) [[#2481](https://github.com/opencloud-eu/web/pull/2481)]
 - chore(deps): update pnpm to v10.33.4 [[#2482](https://github.com/opencloud-eu/web/pull/2482)]
 
