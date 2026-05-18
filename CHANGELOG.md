@@ -33,6 +33,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.1 [[#2534](https://github.com/opencloud-eu/web/pull/2534)]
+- chore(deps): update dependency @types/node to v25.9.0 [[#2533](https://github.com/opencloud-eu/web/pull/2533)]
 - fix(deps): update dependency vue-router to v5.0.7 [[#2523](https://github.com/opencloud-eu/web/pull/2523)]
 - chore(deps): update dependency axios to v1.16.1 [[#2525](https://github.com/opencloud-eu/web/pull/2525)]
 - chore(deps): update dependency vue-tsc to v3.3.0 [[#2530](https://github.com/opencloud-eu/web/pull/2530)]
