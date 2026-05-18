@@ -1,0 +1,24 @@
+diff --git a/dist/vue-inline-svg.esm.js b/dist/vue-inline-svg.esm.js
+index 23bd9ee3bb2f08c0560ac1f139e3c93f778f48d5..4c7d03d3cef19e5234be19c3c04c2d99b227c43c 100644
+--- a/dist/vue-inline-svg.esm.js
++++ b/dist/vue-inline-svg.esm.js
+@@ -29,13 +29,12 @@ function O(n) {
+   return Object.keys(n).reduce((o, r) => (n[r] !== !1 && n[r] !== null && n[r] !== void 0 && (o[r] = n[r]), o), {});
+ }
+ function V(n, o) {
+-  const { class: r, style: t, ...f } = N(n), { class: v, style: i, ...m } = O(o);
+-  return {
+-    class: [r, v],
+-    style: [t, i],
+-    ...f,
+-    ...m
+-  };
++  var svgAttrs = N(n);
++  var filteredAttrs = O(o);
++  var result = Object.assign({}, svgAttrs, filteredAttrs);
++  result["class"] = [svgAttrs["class"], filteredAttrs["class"]];
++  result["style"] = [svgAttrs["style"], filteredAttrs["style"]];
++  return result;
+ }
+ const R = /* @__PURE__ */ C({
+   inheritAttrs: !1,
