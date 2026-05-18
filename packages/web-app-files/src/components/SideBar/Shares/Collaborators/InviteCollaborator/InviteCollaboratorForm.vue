@@ -129,7 +129,8 @@
               <expiration-datepicker
                 v-if="!saving"
                 :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
-                @option-change="collaboratorExpiryChanged"
+                :current-expiration-date="expirationDate"
+                :on-option-change="collaboratorExpiryChanged"
               />
             </li>
           </oc-list>
@@ -265,7 +266,7 @@ export default defineComponent({
 
     const saving = ref(false)
     const savingDelayed = ref(false)
-    const expirationDate = ref<string>()
+    const expirationDate = ref<string | null>(null)
     const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>([])
     const announcement = ref<string>('')
     const selectedRole = ref<ShareRole>()
@@ -590,7 +591,7 @@ export default defineComponent({
       this.selectedRole = role
     },
 
-    collaboratorExpiryChanged({ expirationDate }: { expirationDate: string }) {
+    collaboratorExpiryChanged(expirationDate: string | null) {
       this.expirationDate = expirationDate
       ;(this.$refs.showMoreShareOptionsDropRef as InstanceType<typeof OcDrop>).hide()
     },
