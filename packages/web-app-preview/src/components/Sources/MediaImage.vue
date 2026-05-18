@@ -69,12 +69,14 @@ const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) 
   )
 }
 
+const destroyPanzoom = () => {
+  unref(img)?.removeEventListener('wheel', onWheelEvent)
+  unref(panzoom)?.destroy()
+  panzoom.value = undefined
+}
+
 const initPanzoom = async () => {
-  if (unref(panzoom)) {
-    await nextTick()
-    ;(unref(img) as unknown as HTMLElement).removeEventListener('wheel', onWheelEvent)
-    unref(panzoom)?.destroy()
-  }
+  destroyPanzoom()
 
   // wait for next tick until image is rendered
   await nextTick()
@@ -87,7 +89,7 @@ const initPanzoom = async () => {
     maxScale: 10,
     setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
   } as PanzoomOptions)
-  unref(img).addEventListener('wheel', onWheelEvent)
+  unref(img).addEventListener('wheel', onWheelEvent, { passive: false })
 }
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
@@ -122,6 +124,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  destroyPanzoom()
+
   eventBus.unsubscribe('app.preview.media.image.reset', resetEventToken)
   eventBus.unsubscribe('app.preview.media.image.zoom', zoomToken)
   eventBus.unsubscribe('app.preview.media.image.shrink', shrinkToken)

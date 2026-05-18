@@ -80,6 +80,7 @@ type OmitFirstArg<T> = T extends [any, ...infer U] ? U : never
 export class UppyService {
   uppy: Uppy<OcUppyMeta, OcUppyBody>
   uploadInputs: HTMLInputElement[] = []
+  private uploadInputListeners = new WeakMap<HTMLInputElement, EventListener>()
   uploadFolderMap: Record<string, Resource> = {}
 
   constructor({ language }: UppyServiceOptions) {
@@ -277,19 +278,28 @@ export class UppyService {
   }
 
   registerUploadInput(el: HTMLInputElement) {
-    const listenerRegistered = el.getAttribute('listener')
-    if (listenerRegistered !== 'true') {
-      el.setAttribute('listener', 'true')
-      el.addEventListener('change', (event) => {
-        const target = event.target as HTMLInputElement
-        const files = Array.from(target.files)
-        this.addFiles(files)
-      })
-      this.uploadInputs.push(el)
+    if (this.uploadInputListeners.has(el)) {
+      return
     }
+
+    const listener: EventListener = (event) => {
+      const target = event.target as HTMLInputElement
+      const files = Array.from(target.files || [])
+      this.addFiles(files)
+    }
+
+    this.uploadInputListeners.set(el, listener)
+    el.addEventListener('change', listener)
+    this.uploadInputs.push(el)
   }
 
   removeUploadInput(el: HTMLInputElement) {
+    const listener = this.uploadInputListeners.get(el)
+    if (listener) {
+      el.removeEventListener('change', listener)
+      this.uploadInputListeners.delete(el)
+    }
+
     this.uploadInputs = this.uploadInputs.filter((input) => input !== el)
   }
 
