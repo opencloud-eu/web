@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-13
+## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-18
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -30,6 +30,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2481](https://github.com/opencloud-eu/web/pull/2481)]
 - chore(deps): update pnpm to v10.33.4 [[#2482](https://github.com/opencloud-eu/web/pull/2482)]
 
 ## [7.0.0](https://github.com/opencloud-eu/web/releases/tag/v7.0.0) - 2026-05-11
