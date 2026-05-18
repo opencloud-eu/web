@@ -338,8 +338,8 @@ importers:
         specifier: workspace:^
         version: link:../web-pkg
       axios:
-        specifier: 1.15.2
-        version: 1.15.2
+        specifier: ^1.16.1
+        version: 1.16.1
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -384,8 +384,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.15.2
-        version: 1.15.2
+        specifier: ^1.16.1
+        version: 1.16.1
       fuse.js:
         specifier: 7.3.0
         version: 7.3.0
@@ -532,8 +532,8 @@ importers:
         specifier: ^14.0.0
         version: 14.2.1(vue@3.5.34(typescript@6.0.3))
       axios:
-        specifier: 1.15.2
-        version: 1.15.2
+        specifier: ^1.16.1
+        version: 1.16.1
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -590,8 +590,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.15.2
-        version: 1.15.2
+        specifier: ^1.16.1
+        version: 1.16.1
       dompurify:
         specifier: ^3.2.3
         version: 3.4.5
@@ -642,8 +642,8 @@ importers:
         specifier: workspace:*
         version: link:../web-pkg
       axios:
-        specifier: 1.15.2
-        version: 1.15.2
+        specifier: ^1.16.1
+        version: 1.16.1
       email-validator:
         specifier: ^2.0.4
         version: 2.0.4
@@ -792,7 +792,7 @@ importers:
         version: 2.0.1
       axios:
         specifier: ^1.13.6
-        version: 1.15.2
+        version: 1.16.1
       fast-xml-parser:
         specifier: ^5.5.9
         version: 5.7.2
@@ -920,7 +920,7 @@ importers:
         version: 14.2.1(vue@3.5.34(typescript@6.0.3))
       axios:
         specifier: ^1.13.6
-        version: 1.15.2
+        version: 1.16.1
       cropperjs:
         specifier: ^2.0.0
         version: 2.1.1
@@ -1035,8 +1035,8 @@ importers:
         specifier: ^14.2.1
         version: 14.2.1(vue@3.5.34(typescript@6.0.3))
       axios:
-        specifier: 1.15.2
-        version: 1.15.2
+        specifier: ^1.16.1
+        version: 1.16.1
       deepmerge:
         specifier: 4.3.1
         version: 4.3.1
@@ -1115,7 +1115,7 @@ importers:
         version: 2.4.10(@vue/compiler-dom@3.5.34)(@vue/server-renderer@3.5.34(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))
       axios:
         specifier: ^1.13.6
-        version: 1.15.2
+        version: 1.16.1
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3))
@@ -3114,9 +3114,6 @@ packages:
   axe-core@4.11.4:
     resolution: {integrity: sha512-KunSNx+TVpkAw/6ULfhnx+HWRecjqZGTOyquAoWHYLRSdK1tB5Ihce1ZW+UY3fj33bYAFWPu7W/GRSmmrCGuxA==}
     engines: {node: '>=4'}
-
-  axios@1.15.2:
-    resolution: {integrity: sha512-wLrXxPtcrPTsNlJmKjkPnNPK2Ihe0hn0wGSaTEiHRPxwjvJwT3hKmXF4dpqxmPO9SoNb2FsYXj/xEo0gHN+D5A==}
 
   axios@1.16.1:
     resolution: {integrity: sha512-caYkukvroVPO8KrzuJEb50Hm07KwfBZPEC3VeFHTsqWHvKTsy54hjJz9BS/cdaypROE2rH6xvm9mHX4fgWkr3A==}
@@ -7608,7 +7605,6 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   ajv@6.14.0:
     dependencies:
@@ -7715,14 +7711,6 @@ snapshots:
 
   axe-core@4.11.4: {}
 
-  axios@1.15.2:
-    dependencies:
-      follow-redirects: 1.16.0
-      form-data: 4.0.5
-      proxy-from-env: 2.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.16.1:
     dependencies:
       follow-redirects: 1.16.0
@@ -7732,7 +7720,6 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - supports-color
-    optional: true
 
   balanced-match@1.0.2: {}
 
@@ -8721,7 +8708,6 @@ snapshots:
       debug: 4.4.3(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   ical.js@2.2.1: {}
 
