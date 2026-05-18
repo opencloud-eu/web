@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- fix: skip upload conflict check when uploads target a non-current folder [[#2513](https://github.com/opencloud-eu/web/pull/2513)]
 - fix: expiration date does not get applied when creating a new share [[#2514](https://github.com/opencloud-eu/web/pull/2514)]
 - fix: secret file drop share view is cut off on mobile [[#2511](https://github.com/opencloud-eu/web/pull/2511)]
 - fix: pixelated space images [[#2509](https://github.com/opencloud-eu/web/pull/2509)]
