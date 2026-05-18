@@ -105,6 +105,16 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     return this.resourcesStore.currentFolder
   }
 
+  isCurrentFolder(uploadFolder?: Resource): boolean {
+    const currentFolder = this.resourcesStore.currentFolder
+    if (!uploadFolder || !currentFolder) {
+      return false
+    }
+    return (
+      uploadFolder.storageId === currentFolder.storageId && uploadFolder.path === currentFolder.path
+    )
+  }
+
   /**
    * Converts the input files type UppyResources and updates the uppy upload queue
    */
@@ -435,8 +445,11 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       }
     }
 
-    // name conflict handling
-    if (this.conflictHandlingEnabled) {
+    // name conflict handling. skipped when uploads target a folder other than the
+    // user's current one (caller used setUploadFolder, e.g. unzip extracting into a
+    // fresh folder). getConflicts only checks the current folder and would fire
+    // false positives in that case.
+    if (this.conflictHandlingEnabled && this.isCurrentFolder(uploadFolder)) {
       const conflictHandler = new UploadResourceConflict(this.resourcesStore, this.language)
       const conflicts = conflictHandler.getConflicts(filesToUpload)
       if (conflicts.length) {
