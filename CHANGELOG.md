@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency axios to v1.16.1 [[#2525](https://github.com/opencloud-eu/web/pull/2525)]
 - chore(deps): update dependency vue-tsc to v3.3.0 [[#2530](https://github.com/opencloud-eu/web/pull/2530)]
 - fix(deps): update dependency @sentry/vue to v10.53.1 [[#2531](https://github.com/opencloud-eu/web/pull/2531)]
 - chore(deps): update dependency @vueuse/core to v14.3.0 [[#2524](https://github.com/opencloud-eu/web/pull/2524)]
