@@ -18,10 +18,10 @@
   </div>
   <oc-button
     v-if="dateCurrent"
-    class="p-2 align-middle"
     appearance="raw"
+    justify-content="left"
     :aria-label="$gettext('Remove expiration date')"
-    @click="dateCurrent = null"
+    @click="removeExpirationDate"
   >
     <oc-icon name="calendar-close" fill-type="line" size="medium" />
     <span key="no-expiration-date-label" v-text="$gettext('Remove expiration date')" />
@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { DateTime } from 'luxon'
-import { watch, defineComponent, customRef, PropType, unref } from 'vue'
+import { defineComponent, customRef, PropType, unref, watch } from 'vue'
 import { useModals, DatePickerModal } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
@@ -41,10 +41,19 @@ export default defineComponent({
       type: Array as PropType<number[]>,
       required: false,
       default: (): number[] => []
+    },
+    currentExpirationDate: {
+      type: String as PropType<string | null>,
+      required: false,
+      default: null
+    },
+    onOptionChange: {
+      type: Function as PropType<(expirationDate: string | null) => void>,
+      required: false,
+      default: null
     }
   },
-  emits: ['optionChange'],
-  setup(props, { emit }) {
+  setup(props) {
     const language = useGettext()
     const { dispatchModal } = useModals()
 
@@ -62,6 +71,20 @@ export default defineComponent({
       }
     })
 
+    watch(
+      () => props.currentExpirationDate,
+      () => {
+        if (!props.currentExpirationDate) {
+          dateCurrent.value = null
+          return
+        }
+
+        const parsedDate = DateTime.fromISO(props.currentExpirationDate)
+        dateCurrent.value = parsedDate.isValid ? parsedDate : null
+      },
+      { immediate: true }
+    )
+
     const showDatePickerModal = () => {
       dispatchModal({
         title: language.$gettext('Set expiration date'),
@@ -73,20 +96,25 @@ export default defineComponent({
         }),
         onConfirm: (expirationDateTime: DateTime) => {
           dateCurrent.value = expirationDateTime
+          setExpirationDateChange(expirationDateTime)
         }
       })
     }
 
-    watch(dateCurrent, () => {
-      emit('optionChange', {
-        expirationDate: unref(dateCurrent)?.isValid ? dateCurrent.value : null
-      })
-    })
+    const setExpirationDateChange = (expirationDate: DateTime | null) => {
+      props.onOptionChange?.(expirationDate?.isValid ? expirationDate.toISO() : null)
+    }
+
+    const removeExpirationDate = () => {
+      dateCurrent.value = null
+      setExpirationDateChange(null)
+    }
 
     return {
       language,
       dateCurrent,
-      showDatePickerModal
+      showDatePickerModal,
+      removeExpirationDate
     }
   }
 })
