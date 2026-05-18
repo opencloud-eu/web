@@ -1,5 +1,6 @@
 import { Page, Locator } from '@playwright/test'
 import util from 'util'
+import { sidebar } from '../utils'
 
 const resourceNameSelector =
   '//div[@id="files-space-table" or @id="tiles-view"]//*[@data-test-resource-name="%s"]'
@@ -25,4 +26,17 @@ export const showShareIndicator = (args: {
 }): Locator => {
   const { page, buttonLabel, resource } = args
   return page.locator(util.format(showLinkShareButton, resource, buttonLabel))
+}
+
+export const showExpirationDateIndicator = async (
+  page: Page,
+  resource: string,
+  context: 'publiclink' | 'share'
+): Promise<Locator> => {
+  await sidebar.open({ page, resource })
+  await sidebar.openPanel({ page, name: 'sharing' })
+  const testId =
+    context === 'publiclink' ? 'public-link-info-expiration-date' : 'recipient-info-expiration-date'
+
+  return page.getByTestId(testId)
 }

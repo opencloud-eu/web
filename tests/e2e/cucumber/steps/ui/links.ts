@@ -16,7 +16,8 @@ When(
         role: info.role,
         password: info.password === '%public%' ? securePassword : info.password,
         name: 'Unnamed link',
-        a11yEnabled: this.a11yEnabled
+        a11yEnabled: this.a11yEnabled,
+        expirationDate: info.expirationDate
       })
     }
   }

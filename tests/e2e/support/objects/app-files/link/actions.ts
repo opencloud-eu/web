@@ -14,6 +14,7 @@ export interface createLinkArgs {
   space?: boolean
   password?: string
   a11yEnabled?: boolean
+  expirationDate?: string
 }
 
 export interface copyLinkArgs {
@@ -125,7 +126,7 @@ const roleIdMap: Record<string, string> = {
 }
 
 export const createLink = async (args: createLinkArgs): Promise<string> => {
-  const { space, page, resource, password, role, a11yEnabled } = args
+  const { space, page, resource, password, role, a11yEnabled, expirationDate } = args
   if (!space) {
     const resourcePaths = resource.split('/')
     const resourceName = resourcePaths.pop()
@@ -152,22 +153,34 @@ export const createLink = async (args: createLinkArgs): Promise<string> => {
     await page.locator(roleSelector).click()
   }
 
+  if (expirationDate) {
+    const newExpiryDate = getActualExpiryDate(
+      expirationDate.toLowerCase().match(/[dayrmonthwek]+/)[0] as any,
+      expirationDate
+    )
+    await page.locator(linkExpiryDatepicker).fill(newExpiryDate.toISOString().split('T')[0])
+  }
+
   await page.locator(editPublicLinkPasswordInput).fill(password)
 
-  const resp = await Promise.all([
-    page.waitForResponse(
-      (res) =>
-        res.url().includes('createLink') &&
-        res.request().method() === 'POST' &&
-        res.status() === 200
-    ),
-    page.locator(editPublicLinkRenameConfirm).click()
-  ])
+  const respPromise = page.waitForResponse(
+    (resp) =>
+      resp.url().includes('createLink') &&
+      resp.status() === 200 &&
+      resp.request().method() === 'POST'
+  )
+  await page.locator(editPublicLinkRenameConfirm).click()
+  const response = await respPromise
+  const responseBody = await response.json()
+
+  if (expirationDate) {
+    expect(responseBody).toHaveProperty('expirationDateTime')
+  }
   await clearCurrentPopup(page)
 
   // workaround for webkit (safari browser). See bug #1169
   if (config.browser === 'webkit') {
-    return (await resp[0].json()).link.webUrl
+    return responseBody.link.webUrl
   } else {
     const name =
       process.env.RUN_LOCALIZATION_TEST_FOR_LANG === 'de' ? 'Unbenannter Link' : 'Unnamed link'
