@@ -209,6 +209,8 @@ Feature: share
       | new.txt    | Brian     | user  | Can edit | file         | +5 days        |
       | myfolder   | sales     | group | Can view | folder       | +10 days       |
       | mainFolder | Brian     | user  | Can edit | folder       |                |
+    And "Alice" opens the "files" app
+    Then "Alice" should see expiration date indicator on "share" for folder "myfolder"
 
     # set expirationDate to existing share
     And "Alice" sets the expiration date of share "mainFolder" of user "Brian" to "+5 days"

@@ -1,7 +1,7 @@
 import { Download, Locator, Page } from '@playwright/test'
 import * as po from './actions'
 import { Space } from '../../../types'
-import { showShareIndicator } from './utils'
+import { showShareIndicator, showExpirationDateIndicator } from './utils'
 import type { PanelType } from './actions'
 
 export class Resource {
@@ -459,5 +459,12 @@ export class Resource {
       method: args.method,
       resources: args.resources
     })
+  }
+
+  async showExpirationDateIndicator(
+    resource: string,
+    context: 'publiclink' | 'share'
+  ): Promise<Locator> {
+    return await showExpirationDateIndicator(this.#page, resource, context)
   }
 }
