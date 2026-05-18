@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: expiration date does not get applied when creating a new share [[#2514](https://github.com/opencloud-eu/web/pull/2514)]
 - fix: secret file drop share view is cut off on mobile [[#2511](https://github.com/opencloud-eu/web/pull/2511)]
 - fix: pixelated space images [[#2509](https://github.com/opencloud-eu/web/pull/2509)]
 - fix: mobile bottom drawer is not setting aria attributes [[#2508](https://github.com/opencloud-eu/web/pull/2508)]
@@ -31,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @vueuse/core to v14.3.0 [[#2524](https://github.com/opencloud-eu/web/pull/2524)]
 - chore(deps): update tiptap monorepo to v3.23.4 [[#2528](https://github.com/opencloud-eu/web/pull/2528)]
 - chore(deps): update dependency vue-router to v5.0.7 [[#2518](https://github.com/opencloud-eu/web/pull/2518)]
 - chore(deps): update dependency fast-xml-parser to v5.8.0 [[#2526](https://github.com/opencloud-eu/web/pull/2526)]
