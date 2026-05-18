@@ -32,6 +32,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vue-tsc to v3.3.0 [[#2530](https://github.com/opencloud-eu/web/pull/2530)]
+- fix(deps): update dependency @sentry/vue to v10.53.1 [[#2531](https://github.com/opencloud-eu/web/pull/2531)]
 - chore(deps): update dependency @vueuse/core to v14.3.0 [[#2524](https://github.com/opencloud-eu/web/pull/2524)]
 - chore(deps): update tiptap monorepo to v3.23.4 [[#2528](https://github.com/opencloud-eu/web/pull/2528)]
 - chore(deps): update dependency vue-router to v5.0.7 [[#2518](https://github.com/opencloud-eu/web/pull/2518)]
