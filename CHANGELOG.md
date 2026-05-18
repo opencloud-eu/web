@@ -31,6 +31,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.8.0 [[#2526](https://github.com/opencloud-eu/web/pull/2526)]
+- chore(deps): update typescript-eslint monorepo to v8.59.3 [[#2519](https://github.com/opencloud-eu/web/pull/2519)]
 - fix(deps): update dependency qs to v6.15.2 [[#2522](https://github.com/opencloud-eu/web/pull/2522)]
 - chore(deps): update dependency dompurify to v3.4.5 [[#2478](https://github.com/opencloud-eu/web/pull/2478)]
 - chore(deps): update dependency eslint-plugin-vue to v10.9.1 [[#2516](https://github.com/opencloud-eu/web/pull/2516)]
