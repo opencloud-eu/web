@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center">
+  <div class="flex justify-center" data-testid="public-link-info-expiration-date">
     <oc-icon
       v-oc-tooltip="expirationDateTooltip"
       :aria-label="expirationDateTooltip"

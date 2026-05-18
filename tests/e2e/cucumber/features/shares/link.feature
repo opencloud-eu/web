@@ -319,9 +319,10 @@ Feature: link
       | folderPublic/lorem.txt | lorem ipsum |
     And "Alice" opens the "files" app
     And "Alice" creates a public link of following resource using the sidebar panel
-      | resource     | role     | password |
-      | folderPublic | Can edit | %public% |
+      | resource     | role     | password |  expirationDate |
+      | folderPublic | Can edit | %public% | +5 days         |
     When "Alice" opens the "files" app
+    Then "Alice" should see expiration date indicator on "publiclink" for folder "folderPublic"
     And "Alice" closes the sidebar
     Then "Alice" should see link-direct indicator on the folder "folderPublic"
     When "Alice" opens folder "folderPublic"

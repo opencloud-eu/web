@@ -1188,3 +1188,18 @@ When(
     await resourceObject.markAsFavorite({ method, resources })
   }
 )
+
+Then(
+  '{string} should see expiration date indicator on {string} for folder/file {string}',
+  async function (
+    this: World,
+    stepUser: string,
+    context: 'publiclink' | 'share',
+    resource: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const locator = await resourceObject.showExpirationDateIndicator(resource, context)
+    await expect(locator).toBeVisible()
+  }
+)
