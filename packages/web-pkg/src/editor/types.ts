@@ -9,6 +9,7 @@ export interface TextEditorOptions {
   modelValue?: Ref<string>
   readonly?: boolean
   slashCommands?: boolean
+  placeholder?: string
   onUpdate?: (content: string) => void
   onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
   onRequestImageUrl?: () => Promise<string | null>

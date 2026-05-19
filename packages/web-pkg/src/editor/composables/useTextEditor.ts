@@ -1,5 +1,6 @@
 import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
+import { Placeholder } from '@tiptap/extension-placeholder'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
@@ -28,6 +29,12 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     }
   }
 
+  if (options.placeholder) {
+    extensions.push(
+      Placeholder.configure({ placeholder: options.placeholder }) as (typeof extensions)[number]
+    )
+  }
+
   // useEditor returns ShallowRef<Editor | undefined>; we cast to ShallowRef<Editor | null>
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
@@ -45,6 +52,15 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
 
   if (strategy.editorContentType) {
     editorOptions.contentType = strategy.editorContentType()
+  }
+
+  if (options.placeholder) {
+    editorOptions.editorProps = {
+      attributes: {
+        'aria-placeholder': options.placeholder,
+        'aria-multiline': 'true'
+      }
+    }
   }
 
   const editor = useEditor({

@@ -30,6 +30,15 @@
   box-shadow: none;
 }
 
+.text-editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--oc-color-role-outline-variant, rgba(0, 0, 0, 0.4));
+  pointer-events: none;
+  user-select: none;
+  height: 0;
+}
+
 .text-editor-content .ProseMirror p {
   margin: 0 0 8px;
 }

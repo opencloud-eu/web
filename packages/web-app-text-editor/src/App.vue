@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { computed, toRef, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import {
   ContentType,
   useTextEditor,
@@ -34,6 +35,8 @@ const emit = defineEmits<{
   (e: 'update:currentContent', value: string): void
 }>()
 
+const { $gettext } = useGettext()
+
 const parsedContentType = computed<ContentType>(() => {
   if (contentType !== undefined) {
     return contentType
@@ -52,10 +55,18 @@ const parsedContentType = computed<ContentType>(() => {
   return 'plain-text'
 })
 
+const placeholder = computed(() => {
+  if (isReadOnly || unref(parsedContentType) !== 'markdown') {
+    return undefined
+  }
+  return $gettext('Write or type / for formatting options...')
+})
+
 const textEditor = useTextEditor({
   contentType: unref(parsedContentType),
   modelValue: toRef(() => currentContent),
   readonly: isReadOnly,
+  placeholder: unref(placeholder),
   onUpdate: (content) => emit('update:currentContent', content)
 })
 </script>
