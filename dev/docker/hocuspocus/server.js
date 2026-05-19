@@ -38,12 +38,20 @@ const WRITE_ACTION = /\/(update|create|delete|allTasks)$/
 // Splits OC's canonical composite id `<storageid>$<spaceid>!<opaqueid>` into
 // the (driveId, itemId) pair the Graph endpoint expects: driveID =
 // `<storageid>$<spaceid>`, itemID = the FULL composite.
+//
+// The wrapper now namespaces room names by app id to avoid schema
+// collisions between different editors opening the same file
+// (e.g. `text-editor::<composite>` vs `codemirror::<composite>`). Strip
+// any `<scope>::` prefix before parsing so the Graph probe targets the
+// raw file id.
 function parseDocumentId(documentName) {
-  const sep = documentName.indexOf('!')
-  if (sep <= 0 || sep === documentName.length - 1) {
+  const scopeSep = documentName.indexOf('::')
+  const fileId = scopeSep >= 0 ? documentName.slice(scopeSep + 2) : documentName
+  const sep = fileId.indexOf('!')
+  if (sep <= 0 || sep === fileId.length - 1) {
     throw new Error(`malformed documentName="${documentName}"`)
   }
-  return { driveId: documentName.slice(0, sep), itemId: documentName }
+  return { driveId: fileId.slice(0, sep), itemId: fileId }
 }
 
 // Probes OC's Graph API for the user's effective access AND the file's

@@ -30,6 +30,7 @@ defineEmits<{
     :adapter="tiptapMarkdownAdapter"
     :editor="TiptapEditor"
     :app-version="pkg.version"
+    document-prefix="tiptap"
     :realtime-url="(applicationConfig?.realtimeUrl as string | null | undefined) ?? undefined"
     @update:current-content="$emit('update:currentContent', $event)"
   />

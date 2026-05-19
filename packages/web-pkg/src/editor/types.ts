@@ -1,6 +1,7 @@
 import type { ShallowRef, Ref, ComputedRef } from 'vue'
 import { Editor } from '@tiptap/vue-3'
 import type * as Y from 'yjs'
+import type { Awareness } from 'y-protocols/awareness'
 import { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
@@ -28,6 +29,12 @@ export interface TextEditorOptions {
    * `CollaborativeWrapper` adapter convention. Defaults to `'default'`.
    */
   ydocFragment?: string
+  /**
+   * Awareness instance from the same room as `ydoc`. When set (collab
+   * mode), the editor renders remote peer cursors via `yCursorPlugin`
+   * from `@tiptap/y-tiptap`. Ignored when `ydoc` is not also set.
+   */
+  awareness?: Awareness
 }
 
 export interface TextEditorState {
