@@ -205,7 +205,13 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   onMounted(() => {
     editor.value?.on('selectionUpdate', triggerEditorUpdate)
     editor.value?.on('transaction', triggerEditorUpdate)
-    if (!unref(readonly)) {
+    // Skip auto-focus in collab mode. With an Awareness bound, focusing the
+    // editor at (0, 0) immediately publishes that cursor position to every
+    // peer in the room — they see a phantom caret of ours sitting at the
+    // top of the doc before we've actually clicked into it. Wait until the
+    // user puts the cursor somewhere themselves; awareness only fires once
+    // the editor view records a real selection.
+    if (!unref(readonly) && !options.ydoc) {
       focus()
     }
   })
