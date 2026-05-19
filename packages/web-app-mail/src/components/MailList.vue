@@ -14,7 +14,7 @@
 
       <no-content-message
         v-if="!mails || !mails.length"
-        class="mail-list-empty"
+        class="mail-list-empty min-w-[306px]"
         img-src="/images/empty-states/empty-mails.svg"
       >
         <template #message>
@@ -22,7 +22,7 @@
         </template>
       </no-content-message>
 
-      <oc-list v-else class="mail-list">
+      <oc-list v-else class="mail-list min-w-[306px]">
         <li
           v-for="mail in mails"
           :id="`mail-list-item-${mail.id}`"

@@ -3,7 +3,7 @@
   <template v-else>
     <div class="flex h-full">
       <div
-        class="md:border-r-2 overflow-y-auto min-w-0 w-full md:w-1/4 px-4 md:px-0"
+        class="md:border-r-2 overflow-y-auto min-w-0 md:min-w-[306px] w-full md:w-1/4 px-4 md:px-0"
         :class="{
           'hidden md:block': currentMail || !currentMailbox
         }"
@@ -11,7 +11,7 @@
         <MailList />
       </div>
       <div
-        class="overflow-y-auto min-w-0 w-full md:w-3/4 px-4 pt-4 md:pt-0"
+        class="overflow-y-auto min-w-0 md:min-w-[306px] w-full md:w-3/4 px-4 pt-4 md:pt-0"
         :class="{
           'hidden md:block': !currentMail
         }"
