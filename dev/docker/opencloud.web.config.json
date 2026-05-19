@@ -20,6 +20,8 @@
     "mail",
     "contacts",
     "rclone-crypt",
-    "office-settings"
+    "office-settings",
+    "codemirror",
+    "tiptap"
   ]
 }
