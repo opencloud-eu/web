@@ -20,7 +20,18 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, defineComponent, onBeforeUnmount, ref, unref, watch, computed, onMounted } from 'vue'
+import {
+  Ref,
+  defineComponent,
+  onBeforeUnmount,
+  ref,
+  unref,
+  watch,
+  computed,
+  onMounted,
+  provide
+} from 'vue'
+import { appWrapperEtagSyncKey } from './types'
 import { DateTime } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
@@ -133,6 +144,18 @@ const noResourceLoading = computed(() => {
 const resource: Ref<Resource> = ref()
 const space: Ref<SpaceResource> = ref()
 const currentETag = ref('')
+
+// Lets a wrapped editor sync `currentETag` from outside — typically a
+// CollaborativeWrapper that learned of a peer-saved etag through the
+// Y.Doc CRDT and needs to align AppWrapper's private etag so the next
+// local save's `previousEntityTag` matches the server's. The setter is
+// idempotent: writing the same etag is a no-op.
+provide(appWrapperEtagSyncKey, {
+  setCurrentETag(etag: string) {
+    if (!etag || currentETag.value === etag) return
+    currentETag.value = etag
+  }
+})
 const url = ref('')
 const loading = ref(!unref(noResourceLoading))
 const loadingError: Ref<Error> = ref()
