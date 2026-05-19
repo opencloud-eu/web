@@ -312,7 +312,15 @@ watch(
     // 412. Fires for our own writes too (the resource.etag watch above
     // mirrors AppWrapper-saved etags into _oc_meta) — the setter
     // short-circuits on equal values so the round-trip is a no-op.
-    if (event.keysChanged.has('etag')) {
+    //
+    // Skip the forward while `_oc_meta.isStale` is set. At that point
+    // `meta.etag` is the OLD persisted value the sidecar's onLoadDocument
+    // just flagged; forwarding it would overwrite AppWrapper's freshly-
+    // loaded native etag with the stale one and the user's first save
+    // would 412 against their OWN current file. `recoverFromStaleState`
+    // clears `isStale` and writes the native etag a moment later, at
+    // which point this branch fires again and forwards the correct value.
+    if (event.keysChanged.has('etag') && meta.get('isStale') !== true) {
       const newEtag = meta.get('etag') as string | undefined
       if (newEtag) etagSync?.setCurrentETag(newEtag)
     }
