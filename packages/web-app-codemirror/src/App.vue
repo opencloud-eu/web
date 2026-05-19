@@ -30,6 +30,7 @@ defineEmits<{
     :adapter="codemirrorMarkdownAdapter"
     :editor="CodeMirrorEditor"
     :app-version="pkg.version"
+    document-prefix="codemirror"
     :realtime-url="(applicationConfig?.realtimeUrl as string | null | undefined) ?? undefined"
     @update:current-content="$emit('update:currentContent', $event)"
   />

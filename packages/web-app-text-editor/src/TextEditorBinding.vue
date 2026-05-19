@@ -39,6 +39,7 @@ const textEditor = useTextEditor({
   contentType: contentType.value,
   readonly: props.isReadOnly,
   ydoc: props.ydoc,
+  awareness: props.awareness,
   placeholder: placeholder?.value
 })
 
