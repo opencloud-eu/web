@@ -403,11 +403,44 @@ services:
     depends_on:
       - stalwart
 
+  hocuspocus:
+    build: ./dev/docker/hocuspocus
+    extra_hosts:
+      - host.docker.internal:${DOCKER_HOST:-host-gateway}
+    environment:
+      PORT: '1234'
+      DB_PATH: /var/lib/hocuspocus/state.db
+      OPENCLOUD_URL: https://host.docker.internal:9200
+      # Dev only: self-signed cert from OC's Traefik
+      NODE_TLS_REJECT_UNAUTHORIZED: '0'
+      # Dev only: allows the integration tests to bypass real OIDC tokens.
+      # Remove for prod.
+      DEV_FAKE_TOKEN: dev-integration-token
+    volumes:
+      - hocuspocus-data:/var/lib/hocuspocus
+      # Dev override: edit server.js without rebuild; remove for prod
+      - ./dev/docker/hocuspocus/server.js:/app/server.js:ro
+    labels:
+      traefik.enable: true
+      traefik.docker.network: traefik
+      traefik.http.routers.hocuspocus.tls: true
+      traefik.http.routers.hocuspocus.rule: Host(`host.docker.internal`) && PathPrefix(`/realtime`)
+      traefik.http.routers.hocuspocus.entrypoints: opencloud
+      traefik.http.services.hocuspocus.loadbalancer.server.port: 1234
+      traefik.http.middlewares.hocuspocus-strip.stripprefix.prefixes: /realtime
+      traefik.http.routers.hocuspocus.middlewares: hocuspocus-strip,cors
+    networks:
+      - traefik
+    restart: unless-stopped
+    depends_on:
+      - traefik
+
 volumes:
   uploads:
   opencloud-config:
   opencloud-federated-config:
   stalwart-data:
+  hocuspocus-data:
 
 networks:
   traefik:

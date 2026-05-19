@@ -1,0 +1,234 @@
+diff -urN package/dist/hocuspocus-server.esm.js server-new/package/dist/hocuspocus-server.esm.js
+--- package/dist/hocuspocus-server.esm.js	1985-10-26 09:15:00.000000000 +0100
++++ server-new/package/dist/hocuspocus-server.esm.js	2026-05-18 13:57:00.808448548 +0200
+@@ -193,9 +193,19 @@
+ 					else if (connection) connection.send(message.toUint8Array());
+ 				}
+ 				break;
+-			case MessageType.Awareness:
+-				applyAwarenessUpdate(document.awareness, message.readVarUint8Array(), connection ?? null);
++			case MessageType.Awareness: {
++				let update = message.readVarUint8Array();
++				const origin = connection ? {
++					source: "connection",
++					connection
++				} : this.defaultTransactionOrigin ?? { source: "local" };
++				const scratch = new Awareness(new Y.Doc());
++				applyAwarenessUpdate(scratch, update, null);
++				await document.callbacks.beforeHandleAwareness(document, scratch.getStates(), origin);
++				update = encodeAwarenessUpdate(scratch, [...scratch.getStates().keys()]);
++				applyAwarenessUpdate(document.awareness, update, origin);
+ 				break;
++			}
+ 			case MessageType.QueryAwareness:
+ 				this.applyQueryAwarenessMessage(document, connection, reply);
+ 				break;
+@@ -455,7 +465,8 @@
+ 		super(yDocOptions);
+ 		this.callbacks = {
+ 			onUpdate: (document, origin, update) => {},
+-			beforeBroadcastStateless: (document, stateless) => {}
++			beforeBroadcastStateless: (document, stateless) => {},
++			beforeHandleAwareness: (document, states, transactionOrigin) => Promise.resolve()
+ 		};
+ 		this.connections = /* @__PURE__ */ new Map();
+ 		this.directConnectionsCount = 0;
+@@ -499,6 +510,19 @@
+ 		return this;
+ 	}
+ 	/**
++	* Set a callback that will be triggered before an inbound awareness update
++	* is applied to this document's awareness state. The callback receives the
++	* document, the decoded per-client states as a mutable `Map`, and the
++	* `TransactionOrigin` that will be forwarded to `applyAwarenessUpdate`.
++	* Use `isTransactionOrigin(origin)` to discriminate sources. Mutate the
++	* map in place (set/delete/field changes) to rewrite the update, or throw
++	* to reject it entirely.
++	*/
++	beforeHandleAwareness(callback) {
++		this.callbacks.beforeHandleAwareness = callback;
++		return this;
++	}
++	/**
+ 	* Register a connection and a set of clients on this document keyed by the
+ 	* underlying websocket connection
+ 	*/
+@@ -558,15 +582,19 @@
+ 	* Apply the given awareness update
+ 	*/
+ 	applyAwarenessUpdate(connection, update) {
+-		applyAwarenessUpdate(this.awareness, update, connection);
++		applyAwarenessUpdate(this.awareness, update, {
++			source: "connection",
++			connection
++		});
+ 		return this;
+ 	}
+ 	/**
+ 	* Handle an awareness update and sync changes to clients
+ 	* @private
+ 	*/
+-	handleAwarenessUpdate({ added, updated, removed }, originConnection) {
++	handleAwarenessUpdate({ added, updated, removed }, origin) {
+ 		const changedClients = added.concat(updated, removed);
++		const originConnection = isTransactionOrigin(origin) && origin.source === "connection" ? origin.connection : null;
+ 		if (originConnection !== null) {
+ 			const entry = this.connections.get(originConnection);
+ 			if (entry) {
+@@ -1003,6 +1031,7 @@
+ 			onConnect: () => new Promise((r) => r(null)),
+ 			connected: () => new Promise((r) => r(null)),
+ 			beforeHandleMessage: () => new Promise((r) => r(null)),
++			beforeHandleAwareness: () => new Promise((r) => r()),
+ 			beforeSync: () => new Promise((r) => r(null)),
+ 			beforeBroadcastStateless: () => new Promise((r) => r(null)),
+ 			onStateless: () => new Promise((r) => r(null)),
+@@ -1048,6 +1077,7 @@
+ 			onLoadDocument: this.configuration.onLoadDocument,
+ 			afterLoadDocument: this.configuration.afterLoadDocument,
+ 			beforeHandleMessage: this.configuration.beforeHandleMessage,
++			beforeHandleAwareness: this.configuration.beforeHandleAwareness,
+ 			beforeBroadcastStateless: this.configuration.beforeBroadcastStateless,
+ 			beforeSync: this.configuration.beforeSync,
+ 			onStateless: this.configuration.onStateless,
+@@ -1236,6 +1266,24 @@
+ 			};
+ 			this.hooks("beforeBroadcastStateless", hookPayload);
+ 		});
++		document.beforeHandleAwareness((document, states, transactionOrigin) => {
++			const connection = isTransactionOrigin(transactionOrigin) && transactionOrigin.source === "connection" ? transactionOrigin.connection : void 0;
++			const request = connection?.request;
++			return this.hooks("beforeHandleAwareness", {
++				awareness: document.awareness,
++				clientsCount: document.getConnectionsCount(),
++				context: connection?.context,
++				document,
++				documentName: document.name,
++				instance: this,
++				requestHeaders: request?.headers ?? new Headers(),
++				requestParameters: request ? getParameters(request) : new URLSearchParams(),
++				socketId: connection?.socketId ?? "",
++				transactionOrigin,
++				connection,
++				states
++			});
++		});
+ 		document.awareness.on("update", (update, origin) => {
+ 			this.hooks("onAwarenessUpdate", {
+ 				document,
+diff -urN package/dist/index.d.ts server-new/package/dist/index.d.ts
+--- package/dist/index.d.ts	1985-10-26 09:15:00.000000000 +0100
++++ server-new/package/dist/index.d.ts	2026-05-18 13:57:00.810243726 +0200
+@@ -13,6 +13,7 @@
+   callbacks: {
+     onUpdate: (document: Document, origin: unknown, update: Uint8Array) => void;
+     beforeBroadcastStateless: (document: Document, stateless: string) => void;
++    beforeHandleAwareness: (document: Document, states: Map<number, Record<string, any>>, transactionOrigin: unknown) => Promise<void>;
+   };
+   connections: Map<Connection, {
+     clients: Set<any>;
+@@ -44,6 +45,16 @@
+    */
+   beforeBroadcastStateless(callback: (document: Document, stateless: string) => void): Document;
+   /**
++   * Set a callback that will be triggered before an inbound awareness update
++   * is applied to this document's awareness state. The callback receives the
++   * document, the decoded per-client states as a mutable `Map`, and the
++   * `TransactionOrigin` that will be forwarded to `applyAwarenessUpdate`.
++   * Use `isTransactionOrigin(origin)` to discriminate sources. Mutate the
++   * map in place (set/delete/field changes) to rewrite the update, or throw
++   * to reject it entirely.
++   */
++  beforeHandleAwareness(callback: (document: Document, states: Map<number, Record<string, any>>, transactionOrigin: unknown) => Promise<any>): Document;
++  /**
+    * Register a connection and a set of clients on this document keyed by the
+    * underlying websocket connection
+    */
+@@ -352,6 +363,18 @@
+   onLoadDocument?(data: onLoadDocumentPayload<Context>): Promise<any>;
+   afterLoadDocument?(data: afterLoadDocumentPayload<Context>): Promise<any>;
+   beforeHandleMessage?(data: beforeHandleMessagePayload<Context>): Promise<any>;
++  /**
++   * Fired before an inbound awareness update is applied to the document's
++   * awareness state. The hook receives the decoded per-client `states` as a
++   * mutable `Map` keyed by Yjs clientId. Mutate the map and the contained
++   * state objects in place to rewrite fields, drop peers (`states.delete`),
++   * or add synthetic ones (`states.set`); mutations are reflected in the
++   * broadcast. Throw to reject the update without applying anything.
++   *
++   * Multiple extensions chain naturally: each extension sees the map as
++   * mutated by previous extensions and can mutate it further.
++   */
++  beforeHandleAwareness?(data: beforeHandleAwarenessPayload<Context>): Promise<any>;
+   beforeSync?(data: beforeSyncPayload<Context>): Promise<any>;
+   beforeBroadcastStateless?(data: beforeBroadcastStatelessPayload): Promise<any>;
+   onStateless?(payload: onStatelessPayload): Promise<any>;
+@@ -365,7 +388,7 @@
+   afterUnloadDocument?(data: afterUnloadDocumentPayload): Promise<any>;
+   onDestroy?(data: onDestroyPayload): Promise<any>;
+ }
+-type HookName = "onConfigure" | "onListen" | "onUpgrade" | "onConnect" | "connected" | "onAuthenticate" | "onTokenSync" | "onCreateDocument" | "onLoadDocument" | "afterLoadDocument" | "beforeHandleMessage" | "beforeBroadcastStateless" | "beforeSync" | "onStateless" | "onChange" | "onStoreDocument" | "afterStoreDocument" | "onAwarenessUpdate" | "onRequest" | "onDisconnect" | "beforeUnloadDocument" | "afterUnloadDocument" | "onDestroy";
++type HookName = "onConfigure" | "onListen" | "onUpgrade" | "onConnect" | "connected" | "onAuthenticate" | "onTokenSync" | "onCreateDocument" | "onLoadDocument" | "afterLoadDocument" | "beforeHandleMessage" | "beforeHandleAwareness" | "beforeBroadcastStateless" | "beforeSync" | "onStateless" | "onChange" | "onStoreDocument" | "afterStoreDocument" | "onAwarenessUpdate" | "onRequest" | "onDisconnect" | "beforeUnloadDocument" | "afterUnloadDocument" | "onDestroy";
+ type HookPayloadByName<Context = any> = {
+   onConfigure: onConfigurePayload;
+   onListen: onListenPayload;
+@@ -378,6 +401,7 @@
+   onLoadDocument: onLoadDocumentPayload<Context>;
+   afterLoadDocument: afterLoadDocumentPayload<Context>;
+   beforeHandleMessage: beforeHandleMessagePayload<Context>;
++  beforeHandleAwareness: beforeHandleAwarenessPayload<Context>;
+   beforeBroadcastStateless: beforeBroadcastStatelessPayload;
+   beforeSync: beforeSyncPayload<Context>;
+   onStateless: onStatelessPayload;
+@@ -540,6 +564,43 @@
+   socketId: string;
+   connection: Connection<Context>;
+ }
++interface beforeHandleAwarenessPayload<Context = any> {
++  awareness: Awareness;
++  clientsCount: number;
++  /**
++   * Connection context populated by `onAuthenticate`. `undefined` when the
++   * update did not originate from a client connection (e.g. server-internal
++   * writes via `DirectConnection`).
++   */
++  context: Context | undefined;
++  document: Document;
++  documentName: string;
++  instance: Hocuspocus;
++  requestHeaders: Headers;
++  requestParameters: URLSearchParams;
++  /**
++   * Per-client awareness states decoded from the inbound update, keyed by
++   * Yjs clientId. Mutate this map in place to rewrite the update: change
++   * fields on a state object, `states.delete(clientId)` to drop a peer, or
++   * `states.set(clientId, ...)` to add or replace one. The encoded update
++   * sent to peers reflects whatever the map looks like after every hook in
++   * the chain has run.
++   */
++  states: Map<number, Record<string, any>>;
++  socketId: string;
++  /**
++   * The `TransactionOrigin` that will be passed to `applyAwarenessUpdate`.
++   * Use `isTransactionOrigin(origin)` to discriminate sources. Matches the
++   * `transactionOrigin` shape of `onAwarenessUpdatePayload`.
++   */
++  transactionOrigin: unknown;
++  /**
++   * Convenience shortcut: `origin.connection` when `transactionOrigin` is a
++   * `ConnectionTransactionOrigin`, otherwise `undefined`. Matches the
++   * `connection?` shape of `onAwarenessUpdatePayload`.
++   */
++  connection?: Connection<Context>;
++}
+ interface beforeSyncPayload<Context = any> {
+   clientsCount: number;
+   context: Context;
+@@ -801,4 +862,4 @@
+   executeNow: (id: string) => any;
+ };
+ //#endregion
+-export { AwarenessUpdate, Configuration, Connection, ConnectionConfiguration, ConnectionTransactionOrigin, DirectConnection, Document, Extension, Hocuspocus, HookName, HookPayloadByName, IncomingMessage, LocalTransactionOrigin, MessageReceiver, MessageType, OutgoingMessage, RedisTransactionOrigin, Server, ServerConfiguration, StatesArray, TransactionOrigin, WebSocketLike, afterLoadDocumentPayload, afterStoreDocumentPayload, afterUnloadDocumentPayload, beforeBroadcastStatelessPayload, beforeHandleMessagePayload, beforeSyncPayload, beforeUnloadDocumentPayload, connectedPayload, defaultConfiguration, defaultServerConfiguration, fetchPayload, isTransactionOrigin, onAuthenticatePayload, onAwarenessUpdatePayload, onChangePayload, onConfigurePayload, onConnectPayload, onCreateDocumentPayload, onDestroyPayload, onDisconnectPayload, onListenPayload, onLoadDocumentPayload, onRequestPayload, onStatelessPayload, onStoreDocumentPayload, onTokenSyncPayload, onUpgradePayload, shouldSkipStoreHooks, storePayload, useDebounce };
+\ No newline at end of file
++export { AwarenessUpdate, Configuration, Connection, ConnectionConfiguration, ConnectionTransactionOrigin, DirectConnection, Document, Extension, Hocuspocus, HookName, HookPayloadByName, IncomingMessage, LocalTransactionOrigin, MessageReceiver, MessageType, OutgoingMessage, RedisTransactionOrigin, Server, ServerConfiguration, StatesArray, TransactionOrigin, WebSocketLike, afterLoadDocumentPayload, afterStoreDocumentPayload, afterUnloadDocumentPayload, beforeBroadcastStatelessPayload, beforeHandleAwarenessPayload, beforeHandleMessagePayload, beforeSyncPayload, beforeUnloadDocumentPayload, connectedPayload, defaultConfiguration, defaultServerConfiguration, fetchPayload, isTransactionOrigin, onAuthenticatePayload, onAwarenessUpdatePayload, onChangePayload, onConfigurePayload, onConnectPayload, onCreateDocumentPayload, onDestroyPayload, onDisconnectPayload, onListenPayload, onLoadDocumentPayload, onRequestPayload, onStatelessPayload, onStoreDocumentPayload, onTokenSyncPayload, onUpgradePayload, shouldSkipStoreHooks, storePayload, useDebounce };
+\ No newline at end of file
