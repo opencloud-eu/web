@@ -19,6 +19,8 @@ defineProps({
 // auto-save loop arms (or stays off if `disableAutoSave` is passed).
 defineEmits<{
   (e: 'update:currentContent', value: string): void
+  (e: 'update:serverContent', value: string): void
+  (e: 'update:etag', value: string): void
 }>()
 </script>
 
@@ -33,5 +35,7 @@ defineEmits<{
     document-prefix="codemirror"
     :realtime-url="(applicationConfig?.realtimeUrl as string | null | undefined) ?? undefined"
     @update:current-content="$emit('update:currentContent', $event)"
+    @update:server-content="$emit('update:serverContent', $event)"
+    @update:etag="$emit('update:etag', $event)"
   />
 </template>
