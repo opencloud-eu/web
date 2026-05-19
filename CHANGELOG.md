@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen
+@AlexAndBear, @JammingBen, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- fix: prevents unsightly line breaks [[#2546](https://github.com/opencloud-eu/web/pull/2546)]
 - fix: readme.md header content won't get rendered on public link access [[#2542](https://github.com/opencloud-eu/web/pull/2542)]
 - fix: upload overlay when merging folders [[#2544](https://github.com/opencloud-eu/web/pull/2544)]
 
