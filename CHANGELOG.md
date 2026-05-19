@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency p-queue to v9.3.0 [[#2541](https://github.com/opencloud-eu/web/pull/2541)]
 - fix(deps): update dependency zod to v4.4.3 [[#2536](https://github.com/opencloud-eu/web/pull/2536)]
 - chore(deps): update traefik docker tag to v3.7.1 [[#2534](https://github.com/opencloud-eu/web/pull/2534)]
 - chore(deps): update dependency @types/node to v25.9.0 [[#2533](https://github.com/opencloud-eu/web/pull/2533)]
