@@ -20,8 +20,21 @@ export interface CollaborativeAdapter {
 
   /**
    * Render the current Y.Doc state to the native file format for WebDAV PUT.
+   *
+   * `context` is an opaque object the bound editor component publishes via
+   * `defineExpose({ getAdapterContext() })`. The wrapper passes it through
+   * untyped because adapters may need wildly different shapes — a Tiptap
+   * adapter wants the live `Editor` instance to call `getMarkdown()` on
+   * directly (avoiding a per-keystroke headless-editor spawn), a CodeMirror
+   * adapter just reads `Y.Text.toString()` and needs nothing. Adapters cast
+   * `context` to their expected shape and treat absence as "fall back to
+   * Y.Doc-only serialization".
+   *
+   * `context` is `undefined` when no editor is bound (e.g. during
+   * stale-recovery on a peer that holds the doc but never mounted a UI)
+   * or when the bound editor doesn't expose `getAdapterContext`.
    */
-  serialize(ydoc: Y.Doc): string | Promise<string>
+  serialize(ydoc: Y.Doc, context?: unknown): string | Promise<string>
 
   /**
    * Returns true if the adapter has populated the doc with app data.

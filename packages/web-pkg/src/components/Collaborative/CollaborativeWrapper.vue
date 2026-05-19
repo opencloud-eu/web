@@ -83,6 +83,10 @@ const effectiveRealtimeUrl = computed<string | null>(() => {
 const ydoc = shallowRef<Y.Doc | null>(null)
 const provider = shallowRef<HocuspocusProvider | null>(null)
 const awareness = shallowRef<Awareness | null>(null)
+// Template ref to the bound editor component. We never poke at it directly;
+// adapters reach the live editor through `getAdapterContext()` (see the
+// `serialize` call below).
+const editorRef = shallowRef<{ getAdapterContext?: () => unknown } | null>(null)
 const status = shallowRef<'connecting' | 'connected' | 'disconnected' | 'local'>('connecting')
 // Set when the sidecar told us the persisted state is stale and we either
 // recovered locally or need the user to reload, or when realtime auth failed.
@@ -165,12 +169,17 @@ watch(
       if (doc.isDestroyed) return
       if (!props.adapter.hasContent(doc)) return
       try {
-        const serialized = props.adapter.serialize(doc)
+        // The bound editor component may expose a `getAdapterContext()` via
+        // `defineExpose`. Tiptap-style adapters use it to reach the live
+        // editor and skip a per-keystroke headless-editor spawn; CodeMirror-
+        // style adapters return undefined and serialise from Y.Doc alone.
+        const editorCtx =
+          (editorRef.value as { getAdapterContext?: () => unknown } | null)?.getAdapterContext?.()
+        const serialized = props.adapter.serialize(doc, editorCtx)
         if (typeof serialized === 'string') {
           emit('update:currentContent', serialized)
           return
         }
-        // Adapter returned a Promise (e.g. tiptap headless editor).
         void Promise.resolve(serialized).then((value) => {
           if (doc.isDestroyed) return
           emit('update:currentContent', value)
@@ -470,6 +479,7 @@ async function recoverFromStaleState(
     <component
       :is="editor"
       v-if="ydoc && awareness"
+      ref="editorRef"
       :ydoc="ydoc"
       :awareness="awareness"
       :provider="provider"
