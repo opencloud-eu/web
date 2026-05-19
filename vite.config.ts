@@ -191,23 +191,7 @@ export default defineConfig(({ mode, command }) => {
         'process.env.PACKAGE_VERSION': JSON.stringify(version)
       },
       resolve: {
-        // Yjs and y-prosemirror do `instanceof Y.Doc` / pluginKey identity
-        // checks. With multiple editor apps (codemirror, tiptap, text-editor)
-        // each bundling their own copy, those checks fail at runtime —
-        // duplicated CRDT instances throw "Cannot read properties of
-        // undefined (reading 'doc')" inside y-prosemirror's createDecorations
-        // and the browser thrashes through repeated module init. Dedupe
-        // forces a single instance per shared module across the bundle.
-        // @tiptap/core + pm get the same treatment because their pluginKeys
-        // are also identity-checked across extension boundaries.
-        dedupe: [
-          'vue3-gettext',
-          'yjs',
-          'y-protocols',
-          'y-prosemirror',
-          '@tiptap/core',
-          '@tiptap/pm'
-        ],
+        dedupe: ['vue3-gettext'],
         alias: {
           crypto: join(projectRootDir, 'polyfills/crypto.js')
         }
