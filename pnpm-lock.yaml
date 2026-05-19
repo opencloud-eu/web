@@ -772,6 +772,9 @@ importers:
 
   packages/web-app-text-editor:
     dependencies:
+      '@hocuspocus/provider':
+        specifier: ^4.0.0
+        version: 4.0.0(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30)
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
@@ -781,12 +784,27 @@ importers:
       '@opencloud-eu/web-pkg':
         specifier: workspace:*
         version: link:../web-pkg
+      '@tiptap/core':
+        specifier: ^3.20.4
+        version: 3.23.4(@tiptap/pm@3.23.4)
+      '@tiptap/extension-collaboration':
+        specifier: ^3.20.4
+        version: 3.23.5(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.6)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
+      '@tiptap/vue-3':
+        specifier: ^3.20.4
+        version: 3.23.4(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(vue@3.5.34(typescript@6.0.3))
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.34(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
+      y-protocols:
+        specifier: ^1.0.7
+        version: 1.0.7(yjs@13.6.30)
+      yjs:
+        specifier: ^13.6.0
+        version: 13.6.30
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -926,6 +944,9 @@ importers:
       '@tiptap/core':
         specifier: ^3.20.4
         version: 3.23.4(@tiptap/pm@3.23.4)
+      '@tiptap/extension-collaboration':
+        specifier: ^3.20.4
+        version: 3.23.5(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(@tiptap/y-tiptap@3.0.3(prosemirror-model@1.25.6)(prosemirror-state@1.4.4)(prosemirror-view@1.41.8)(y-protocols@1.0.7(yjs@13.6.30))(yjs@13.6.30))(yjs@13.6.30)
       '@tiptap/extension-document':
         specifier: ^3.20.4
         version: 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
