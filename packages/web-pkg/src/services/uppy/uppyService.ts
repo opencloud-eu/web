@@ -286,6 +286,9 @@ export class UppyService {
       const target = event.target as HTMLInputElement
       const files = Array.from(target.files || [])
       this.addFiles(files)
+
+      el.removeEventListener('change', listener)
+      this.uploadInputListeners.delete(el)
     }
 
     this.uploadInputListeners.set(el, listener)
@@ -300,10 +303,6 @@ export class UppyService {
       this.uploadInputListeners.delete(el)
     }
 
-    this.unregisterUploadInputElement(el)
-  }
-
-  unregisterUploadInputElement(el: HTMLInputElement) {
     this.uploadInputs = this.uploadInputs.filter((input) => input !== el)
   }
 
