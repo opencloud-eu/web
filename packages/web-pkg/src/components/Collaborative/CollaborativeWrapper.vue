@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   computed,
+  inject,
   ref,
   shallowRef,
   unref,
@@ -13,6 +14,7 @@ import { Awareness } from 'y-protocols/awareness'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { Resource } from '@opencloud-eu/web-client'
 import { useAuthStore, useConfigStore } from '../../composables'
+import { appWrapperEtagSyncKey } from '../AppTemplates/types'
 import semverCompare from 'semver/functions/compare'
 import semverValid from 'semver/functions/valid'
 import type { CollaborativeAdapter } from './types'
@@ -80,6 +82,14 @@ function compareVersion(a: string, b: string): number {
 
 const authStore = useAuthStore()
 const configStore = useConfigStore()
+
+// AppWrapper provides this when we're rendered inside one. We push every
+// authoritative `_oc_meta.etag` change (own save or peer save propagated
+// via CRDT) back to AppWrapper so its private `currentETag` stays in
+// sync. Without this, peer-saved etags cause the next local Ctrl+S /
+// autosave to 412 with a stale `previousEntityTag`. Null when used
+// standalone (no AppWrapper above us).
+const etagSync = inject(appWrapperEtagSyncKey, null)
 
 // See the `realtimeUrl` prop docs for the three-state contract. We resolve
 // `undefined` here so the watch / template see a stable string-or-null.
@@ -294,6 +304,17 @@ watch(
     // it at once).
     if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
       void recoverFromStaleState(doc, prov, aw)
+    }
+
+    // Etag drift through CRDT (a peer in the same room saved, propagated
+    // their new etag via _oc_meta). Forward to the host AppWrapper so the
+    // private currentETag stays aligned and the next local save doesn't
+    // 412. Fires for our own writes too (the resource.etag watch above
+    // mirrors AppWrapper-saved etags into _oc_meta) — the setter
+    // short-circuits on equal values so the round-trip is a no-op.
+    if (event.keysChanged.has('etag')) {
+      const newEtag = meta.get('etag') as string | undefined
+      if (newEtag) etagSync?.setCurrentETag(newEtag)
     }
   }
   meta.observe(metaObserver)
