@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-18
+## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-19
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -34,6 +34,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v4.4.3 [[#2536](https://github.com/opencloud-eu/web/pull/2536)]
 - chore(deps): update traefik docker tag to v3.7.1 [[#2534](https://github.com/opencloud-eu/web/pull/2534)]
 - chore(deps): update dependency @types/node to v25.9.0 [[#2533](https://github.com/opencloud-eu/web/pull/2533)]
 - fix(deps): update dependency vue-router to v5.0.7 [[#2523](https://github.com/opencloud-eu/web/pull/2523)]
