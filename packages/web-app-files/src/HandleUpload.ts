@@ -296,7 +296,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
    */
   async createDirectoryTree(
     filesToUpload: OcUppyFile[],
-    uploadFolder: Resource
+    uploadFolder: Resource,
+    mergedFolders: string[] = []
   ): Promise<{ filesToUpload: OcUppyFile[]; folderFiles: OcUppyFile[] }> {
     const { webdav } = this.clientService
     const space = unref(this.space)
@@ -378,6 +379,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
             console.error(error)
             failedFolders.push(path)
             this.uppyService.publish('uploadError', { file: uppyFile, error })
+          } else if (isRoot && mergedFolders.includes(basename(path))) {
+            // top-level folder already exists because the user chose to merge - count it as uploaded
+            this.uppyService.publish('uploadSuccess', { ...uppyFile })
           }
         }
       }
@@ -449,6 +453,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     // user's current one (caller used setUploadFolder, e.g. unzip extracting into a
     // fresh folder). getConflicts only checks the current folder and would fire
     // false positives in that case.
+    let mergedFolders: string[] = []
     if (this.conflictHandlingEnabled && this.isCurrentFolder(uploadFolder)) {
       const conflictHandler = new UploadResourceConflict(this.resourcesStore, this.language)
       const conflicts = conflictHandler.getConflicts(filesToUpload)
@@ -459,13 +464,14 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         }
 
         const result = await conflictHandler.displayOverwriteDialog(filesToUpload, conflicts)
-        if (result.length === 0) {
+        if (result.files.length === 0) {
           this.removeFilesFromUpload(filesToUpload)
           return this.uppyService.clearInputs()
         }
 
-        filesToUpload = result
-        const conflictMap = result.reduce<Record<string, OcUppyFile>>((acc, file) => {
+        filesToUpload = result.files
+        mergedFolders = result.mergedFolders
+        const conflictMap = result.files.reduce<Record<string, OcUppyFile>>((acc, file) => {
           acc[file.id] = file
           return acc
         }, {})
@@ -476,7 +482,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.uppyService.publish('uploadStarted')
     let folderFiles: OcUppyFile[] = []
     if (this.directoryTreeCreateEnabled) {
-      const result = await this.createDirectoryTree(filesToUpload, uploadFolder)
+      const result = await this.createDirectoryTree(filesToUpload, uploadFolder, mergedFolders)
       filesToUpload = result.filesToUpload
       folderFiles = result.folderFiles
     }

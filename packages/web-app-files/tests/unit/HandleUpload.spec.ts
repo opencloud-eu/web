@@ -143,6 +143,50 @@ describe('HandleUpload', () => {
       expect(mocks.uppy.removeFile).toHaveBeenCalled()
       expect(filesToUpload.length).toBe(0)
     })
+    it('emits uploadSuccess for a folder that already exists (merge scenario)', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const folderName = 'relativeFolder'
+      const relativeFolder = `/${folderName}`
+      const fileToUpload = mock<OcUppyFile>({ name: 'name', meta: { relativeFolder } })
+      mocks.opts.clientService.webdav.createFolder.mockRejectedValue({ statusCode: 405 })
+
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      const { filesToUpload } = await instance.createDirectoryTree([fileToUpload], uploadFolder, [
+        folderName
+      ])
+
+      expect(mocks.opts.uppyService.publish).toHaveBeenCalledWith(
+        'uploadSuccess',
+        expect.objectContaining({
+          name: folderName,
+          type: 'folder',
+          meta: expect.objectContaining({ isFolder: true })
+        })
+      )
+      expect(mocks.opts.uppyService.publish).not.toHaveBeenCalledWith(
+        'uploadError',
+        expect.anything()
+      )
+      expect(filesToUpload.length).toBe(1)
+    })
+    it('does not emit uploadSuccess for a folder that exists but was not merged by the user', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      const relativeFolder = '/relativeFolder'
+      const fileToUpload = mock<OcUppyFile>({ name: 'name', meta: { relativeFolder } })
+      mocks.opts.clientService.webdav.createFolder.mockRejectedValue({ statusCode: 405 })
+
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      // mergedFolders is empty - user did not choose merge
+      const { filesToUpload } = await instance.createDirectoryTree([fileToUpload], uploadFolder, [])
+
+      expect(mocks.opts.uppyService.publish).not.toHaveBeenCalledWith(
+        'uploadSuccess',
+        expect.anything()
+      )
+      expect(filesToUpload.length).toBe(1)
+    })
     it('returns folder files and removes them from the uppy upload files', async () => {
       const { instance, mocks } = getWrapper()
       mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
@@ -326,11 +370,14 @@ const getWrapper = ({
   quotaCheckEnabled = true,
   conflicts = [],
   conflictHandlerResult = [],
+  mergedFolders = [] as string[],
   spaces = [],
   uploadFolderForId = {} as Record<string, Resource>
 } = {}) => {
   getConflictsMock = vi.fn(() => conflicts)
-  displayOverwriteDialogMock = vi.fn().mockResolvedValue(conflictHandlerResult)
+  displayOverwriteDialogMock = vi
+    .fn()
+    .mockResolvedValue({ files: conflictHandlerResult, mergedFolders })
 
   const route = mock<RouteLocationNormalizedLoaded>()
   route.params.driveAliasAndItem = '1'

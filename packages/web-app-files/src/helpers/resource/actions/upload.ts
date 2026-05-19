@@ -88,7 +88,7 @@ export class UploadResourceConflict extends ConflictDialog {
   async displayOverwriteDialog(
     files: OcUppyFile[],
     conflicts: ConflictedResource[]
-  ): Promise<OcUppyFile[]> {
+  ): Promise<{ files: OcUppyFile[]; mergedFolders: string[] }> {
     let fileCount = 0
     let folderCount = 0
     const resolvedFileConflicts: { name: string; strategy: ResolveStrategy }[] = []
@@ -143,6 +143,10 @@ export class UploadResourceConflict extends ConflictDialog {
         strategy: resolvedConflict.strategy
       })
     }
+    const mergedFolders = resolvedFolderConflicts
+      .filter((e) => e.strategy === ResolveStrategy.MERGE)
+      .map((e) => e.name)
+
     const filesToSkip = resolvedFileConflicts
       .filter((e) => e.strategy === ResolveStrategy.SKIP)
       .map((e) => e.name)
@@ -209,6 +213,6 @@ export class UploadResourceConflict extends ConflictDialog {
         }
       }
     }
-    return files
+    return { files, mergedFolders }
   }
 }
