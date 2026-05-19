@@ -408,8 +408,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -451,8 +451,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -507,8 +507,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -623,8 +623,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -663,8 +663,8 @@ importers:
         specifier: 5.0.7
         version: 5.0.7(@vue/compiler-sfc@3.5.34)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.34(typescript@6.0.3)))(vue@3.5.34(typescript@6.0.3))
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 4.4.3
+        version: 4.4.3
 
   packages/web-app-pdf-viewer:
     dependencies:
@@ -810,7 +810,7 @@ importers:
         version: 5.9.0
       zod:
         specifier: ^4.3.6
-        version: 4.3.6
+        version: 4.4.3
     devDependencies:
       '@types/luxon':
         specifier: 3.7.1
@@ -974,7 +974,7 @@ importers:
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
       zod:
         specifier: ^4.3.6
-        version: 4.3.6
+        version: 4.4.3
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:^
@@ -1083,8 +1083,8 @@ importers:
         specifier: 4.0.0-beta.1
         version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
       zod:
-        specifier: 4.3.6
-        version: 4.3.6
+        specifier: 4.4.3
+        version: 4.4.3
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -5822,8 +5822,8 @@ packages:
   yup@1.7.1:
     resolution: {integrity: sha512-GKHFX2nXul2/4Dtfxhozv701jLQHdf6J34YDh2cEkpqoo8le5Mg6/LrdseVLrFarmFygZTlfIhHx/QKfb/QWXw==}
 
-  zod@4.3.6:
-    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -10603,6 +10603,6 @@ snapshots:
       toposort: 2.0.2
       type-fest: 2.19.0
 
-  zod@4.3.6: {}
+  zod@4.4.3: {}
 
   zwitch@2.0.4: {}
