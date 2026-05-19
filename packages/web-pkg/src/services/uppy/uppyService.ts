@@ -300,6 +300,10 @@ export class UppyService {
       this.uploadInputListeners.delete(el)
     }
 
+    this.unregisterUploadInputElement(el)
+  }
+
+  unregisterUploadInputElement(el: HTMLInputElement) {
     this.uploadInputs = this.uploadInputs.filter((input) => input !== el)
   }
 

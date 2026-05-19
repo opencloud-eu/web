@@ -95,7 +95,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   uppyService.unsubscribe('uploadStarted', uploadStartedSub)
   uppyService.unsubscribe('uploadCompleted', uploadCompletedSub)
-  uppyService.removeUploadInput(unref(input))
+  uppyService.unregisterUploadInputElement(unref(input))
 })
 
 const inputId = computed(() => {
