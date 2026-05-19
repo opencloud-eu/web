@@ -27,9 +27,7 @@
     "docs:preview": "vitepress preview docs",
     "vite": "vite",
     "build": "vite build && vue-tsc --project tsconfig.build.json",
-    "check:types": "vue-tsc --declaration --noEmit --project tsconfig.build.json",
-    "prepublishOnly": "rm -rf ./package && clean-publish && find package && cat package/package.json",
-    "postpublish": "rm -rf ./package"
+    "check:types": "vue-tsc --declaration --noEmit --project tsconfig.build.json"
   },
   "browserslist": [
     "> 1%",
@@ -44,7 +42,6 @@
     "dist/"
   ],
   "publishConfig": {
-    "directory": "package",
     "linkDirectory": false,
     "exports": {
       ".": {
@@ -119,7 +116,6 @@
     "@opencloud-eu/web-test-helpers": "workspace:*",
     "@tailwindcss/vite": "^4.2.2",
     "@vitejs/plugin-vue": "6.0.7",
-    "clean-publish": "^6.0.4",
     "markdown-it-container": "^4.0.0",
     "postcss": "^8.5.8",
     "process": "^0.11.10",
