@@ -94,7 +94,11 @@ const unobserveMarkdownContainerResize = () => {
 
 const loadReadmeContentTask = useTask(function* (signal) {
   try {
-    const { body } = yield getFileContents(space, { fileId: unref(readmeFile).id }, { signal })
+    const { body } = yield getFileContents(
+      space,
+      { fileId: unref(readmeFile).id, path: unref(readmeFile).path },
+      { signal }
+    )
     markdownContent.value = body || ''
   } catch (e) {
     console.error('failed to load README.md content', e)
