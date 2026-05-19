@@ -17,6 +17,7 @@
       <Teleport :disabled="!teleport" :to="teleport ? teleport : undefined">
         <div
           v-if="isOpen"
+          v-bind="attrs"
           :id="dropId"
           ref="drop"
           class="oc-drop shadow-sm/10 rounded-xl bg-role-surface border border-role-surface-container-highest"
@@ -155,6 +156,12 @@ const {
 
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
+
+// Suppress Vue's auto-inheritance — OcDrop's root is a fragment
+// (oc-mobile-drop OR Transition+Teleport). Without this, every parent
+// pass-through (class, role, ...) flushes a console.warn per render.
+// `attrs.class` is forwarded manually to the inner div below.
+defineOptions({ inheritAttrs: false })
 
 const attrs = useAttrs()
 const { registerEventListener, unregisterEventListeners } = useEventListeners()
