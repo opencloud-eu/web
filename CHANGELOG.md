@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@AlexAndBear, @JammingBen
 
 ### 🐛 Bug Fixes
 
+- fix: readme.md header content won't get rendered on public link access [[#2542](https://github.com/opencloud-eu/web/pull/2542)]
 - fix: upload overlay when merging folders [[#2544](https://github.com/opencloud-eu/web/pull/2544)]
 
 ### 📦️ Dependencies
