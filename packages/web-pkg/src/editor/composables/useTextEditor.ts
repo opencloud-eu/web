@@ -1,6 +1,7 @@
 import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import { Placeholder } from '@tiptap/extension-placeholder'
+import { Collaboration } from '@tiptap/extension-collaboration'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
@@ -16,11 +17,25 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
   const strategy = resolveStrategy(options.contentType, state)
+  const collabFragment = options.ydocFragment ?? 'default'
 
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const extensions = strategy.extensions()
+  if (options.ydoc) {
+    // Bind ProseMirror state to the shared Y.Doc. With Collaboration active,
+    // the editor's initial content is read from the Y.Doc (not from the
+    // `content` option), so we skip the `content` assignment below. The
+    // strategies already disable `StarterKit.undoRedo` so yUndoPlugin can
+    // take over without conflict.
+    extensions.push(
+      Collaboration.configure({
+        document: options.ydoc,
+        field: collabFragment
+      }) as (typeof extensions)[number]
+    )
+  }
   if (options.slashCommands !== false) {
     const resolvedGroups = strategy.editorActionGroups()
     const hasSlashCommandItems = resolvedGroups.some((group) =>
@@ -44,7 +59,14 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
     extensions,
-    content: unref(options.modelValue) ? strategy.deserialize(unref(options.modelValue)) : '',
+    // In collab mode the wrapper hydrates the Y.Doc — passing `content` here
+    // would race against the CRDT and produce duplicated state. Leave the
+    // editor blank; Collaboration will paint Y.Doc state into it.
+    content: options.ydoc
+      ? ''
+      : unref(options.modelValue)
+        ? strategy.deserialize(unref(options.modelValue))
+        : '',
     editable: !readonly.value
   }
 
@@ -52,6 +74,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (!unref(editor) || unref(editor)?.isFocused) {
       return
     }
+    // In collab mode the Y.Doc is the source of truth — never round-trip
+    // `modelValue` back into the editor (would clobber peer edits).
+    if (options.ydoc) return
     setContent(content)
   })
 
