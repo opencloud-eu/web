@@ -61,8 +61,8 @@ describe('upload helper', () => {
         instance.resolveFileExists = resolveFileConflictMethod
 
         const result = await instance.displayOverwriteDialog([OcUppyFile], [conflict])
-        expect(result.length).toBe(1)
-        expect(result).toEqual([OcUppyFile])
+        expect(result.files.length).toBe(1)
+        expect(result.files).toEqual([OcUppyFile])
       }
     )
     it('should return no files if user chooses skip for all', async () => {
@@ -77,7 +77,7 @@ describe('upload helper', () => {
       instance.resolveFileExists = resolveFileConflictMethod
 
       const result = await instance.displayOverwriteDialog([OcUppyFile], [conflict])
-      expect(result.length).toBe(0)
+      expect(result.files.length).toBe(0)
     })
     it('should show dialog once if do for all conflicts is ticked', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
@@ -133,20 +133,37 @@ describe('upload helper', () => {
 
       const result = await instance.displayOverwriteDialog([imageFile, nestedImageFile], [conflict])
 
-      expect(result.length).toBe(2)
+      expect(result.files.length).toBe(2)
 
       const newFolderName = `test (1)`
       const encodedNewFolderName = encodeURIComponent(newFolderName)
 
-      const resultImage = result.find((f) => f.name === 'image.jpg')
+      const resultImage = result.files.find((f) => f.name === 'image.jpg')
       expect(resultImage.meta.relativeFolder).toBe(`/${newFolderName}`)
       expect(resultImage.meta.tusEndpoint).toBe(`https://example.com/dav/${encodedNewFolderName}`)
 
-      const resultNested = result.find((f) => f.name === 'image2.jpg')
+      const resultNested = result.files.find((f) => f.name === 'image2.jpg')
       expect(resultNested.meta.relativeFolder).toBe(`/${newFolderName}/folderInside`)
       expect(resultNested.meta.tusEndpoint).toBe(
         `https://example.com/dav/${encodedNewFolderName}/folderInside`
       )
+    })
+    it('should return merged folder names when user chooses merge', async () => {
+      const folderName = 'someFolder'
+      const fileInFolder = mockDeep<OcUppyFile>({
+        name: 'file.txt',
+        meta: { relativeFolder: `/${folderName}` }
+      })
+      const conflict = { name: folderName, type: 'folder' }
+
+      const instance = getResourceConflictInstance()
+      instance.resolveFileExists = vi.fn(() =>
+        Promise.resolve({ strategy: ResolveStrategy.MERGE, doForAllConflicts: false })
+      )
+
+      const result = await instance.displayOverwriteDialog([fileInFolder], [conflict])
+      expect(result.mergedFolders).toEqual([folderName])
+      expect(result.files.length).toBe(1)
     })
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
