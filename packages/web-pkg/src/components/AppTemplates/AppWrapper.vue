@@ -434,6 +434,11 @@ const saveFileTask = useTask(function* () {
     serverContent.value = newContent
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)
+    // Keep our local `resource` ref in sync with the fresh etag so any
+    // downstream watcher on `props.resource.etag` (CollaborativeWrapper's
+    // meta-mirror, for one) actually fires. `upsertResource` only touches
+    // the store; the local ref is the one passed down via slotAttrs.
+    resource.value = { ...unref(resource), etag: putFileContentsResponse.etag }
   } catch (e) {
     // 409 / 412 — `previousEntityTag` didn't match what the server has.
     // Usually means another peer in a collaborative session saved this
@@ -456,6 +461,7 @@ const saveFileTask = useTask(function* () {
           currentETag.value = freshEtag
           if (unref(resource)) {
             resourcesStore.upsertResource({ ...unref(resource), etag: freshEtag })
+            resource.value = { ...unref(resource), etag: freshEtag }
           }
           return
         }
@@ -474,6 +480,7 @@ const saveFileTask = useTask(function* () {
         serverContent.value = newContent
         currentETag.value = retry.etag
         resourcesStore.upsertResource(retry)
+        resource.value = { ...unref(resource), etag: retry.etag }
         return
       } catch (retryErr) {
         // Refetch or retry blew up — drop through to the user-facing
@@ -762,6 +769,20 @@ const slotAttrs = computed(() => ({
   },
   'onUpdate:currentContent': (value: unknown) => {
     currentContent.value = value
+  },
+  // Optional companion to update:currentContent — collab-aware wrappers
+  // emit this when a peer save just landed, so we can sync `serverContent`
+  // to the freshly-on-disk state without a refetch. Non-collab editors
+  // never emit it and the binding is a no-op.
+  'onUpdate:serverContent': (value: unknown) => {
+    serverContent.value = value
+  },
+  // Companion to update:serverContent — collab wrappers also publish the
+  // peer-saved etag so our next PUT's `If-Match` is current and we skip the
+  // 412 → refetch → retry recovery path entirely.
+  'onUpdate:etag': (value: unknown) => {
+    if (typeof value !== 'string' || currentETag.value === value) return
+    currentETag.value = value
   },
 
   'onRegister:onDeleteResourceCallback': (value: () => void) => {

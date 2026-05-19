@@ -9,6 +9,8 @@
     document-prefix="text-editor"
     :realtime-url="(applicationConfig?.realtimeUrl as string | null | undefined) ?? undefined"
     @update:current-content="$emit('update:currentContent', $event)"
+    @update:server-content="$emit('update:serverContent', $event)"
+    @update:etag="$emit('update:etag', $event)"
   />
 </template>
 
@@ -32,6 +34,8 @@ const props = defineProps<{
 
 defineEmits<{
   (e: 'update:currentContent', value: string): void
+  (e: 'update:serverContent', value: string): void
+  (e: 'update:etag', value: string): void
 }>()
 
 const { $gettext } = useGettext()
