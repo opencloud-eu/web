@@ -1,5 +1,6 @@
 export * from './AppBar'
 export * from './AppTemplates'
+export * from './Collaborative'
 export * from './ContextActions'
 export * from './FilesList'
 export * from './Filters'

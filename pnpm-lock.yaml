@@ -756,6 +756,9 @@ importers:
 
   packages/web-app-text-editor:
     dependencies:
+      '@hocuspocus/provider':
+        specifier: ^4.0.0
+        version: 4.3.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
@@ -765,12 +768,27 @@ importers:
       '@opencloud-eu/web-pkg':
         specifier: workspace:*
         version: link:../web-pkg
+      '@tiptap/core':
+        specifier: ^3.20.4
+        version: 3.29.2(@tiptap/pm@3.29.2)
+      '@tiptap/extension-collaboration':
+        specifier: ^3.20.4
+        version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(@tiptap/y-tiptap@3.0.8(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.2)(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32))(yjs@13.6.32)
+      '@tiptap/vue-3':
+        specifier: ^3.20.4
+        version: 3.29.2(@floating-ui/dom@1.8.0)(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(vue@3.5.41(typescript@6.0.3))
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.41(typescript@6.0.3))
+      y-protocols:
+        specifier: ^1.0.7
+        version: 1.0.7(yjs@13.6.32)
+      yjs:
+        specifier: ^13.6.0
+        version: 13.6.32
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -846,6 +864,9 @@ importers:
       '@casl/vue':
         specifier: ^3.0.0
         version: 3.0.1(@casl/ability@7.0.1)(vue@3.5.41(typescript@6.0.3))
+      '@hocuspocus/provider':
+        specifier: ^4.0.0
+        version: 4.3.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)
       '@microsoft/fetch-event-source':
         specifier: ^2.0.1
         version: 2.0.1
@@ -864,6 +885,9 @@ importers:
       '@tiptap/extension-bubble-menu':
         specifier: ^3.29.2
         version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)
+      '@tiptap/extension-collaboration':
+        specifier: ^3.28.0
+        version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(@tiptap/y-tiptap@3.0.8(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.2)(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32))(yjs@13.6.32)
       '@tiptap/extension-document':
         specifier: ^3.28.0
         version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))
@@ -933,6 +957,9 @@ importers:
       '@tiptap/vue-3':
         specifier: ^3.28.0
         version: 3.29.2(@floating-ui/dom@1.8.0)(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(vue@3.5.41(typescript@6.0.3))
+      '@tiptap/y-tiptap':
+        specifier: ^3.0.0
+        version: 3.0.8(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.2)(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)
       '@uppy/core':
         specifier: ^5.2.0
         version: 5.2.0
@@ -996,6 +1023,9 @@ importers:
       qs:
         specifier: ^6.15.0
         version: 6.15.3
+      semver:
+        specifier: ^7.8.0
+        version: 7.8.5
       uuid:
         specifier: ^14.0.0
         version: 14.0.1
@@ -1011,6 +1041,12 @@ importers:
       vue3-gettext:
         specifier: 4.0.1
         version: 4.0.1(vue@3.5.41(typescript@6.0.3))
+      y-protocols:
+        specifier: ^1.0.7
+        version: 1.0.7(yjs@13.6.32)
+      yjs:
+        specifier: ^13.6.0
+        version: 13.6.32
       zod:
         specifier: ^4.3.6
         version: 4.4.3
@@ -1024,6 +1060,9 @@ importers:
       '@types/node':
         specifier: ^25.5.0
         version: 25.9.5
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.1
       '@vitest/web-worker':
         specifier: ^4.1.2
         version: 4.1.10(vitest@4.1.10)
@@ -1397,6 +1436,15 @@ packages:
   '@fyears/rclone-crypt@0.0.7':
     resolution: {integrity: sha512-WHdoBtiKUdgNoyjJz//2cpldBpp9FjkHv4weUDIGdUZW6oMQq/hDiDjz3ICKuK5i5kXuVdYmaoruVpnRcHtwMw==}
 
+  '@hocuspocus/common@4.3.0':
+    resolution: {integrity: sha512-8USsMvso01aMKOSSyvb8oTAlfES/nBM+Y74XjW5Fy5ovmOaVpoRRBrktIrEVwydrp8Cr6C66ivc0orcW/3P+Kg==}
+
+  '@hocuspocus/provider@4.3.0':
+    resolution: {integrity: sha512-eS5dECLnJDgELI2AfZNvr5jS0B6IWFoo7eAUgwwOzy1bf7KdPagXAYCtSWqSXmLMwjABlubZJQg8FVrTefU0cA==}
+    peerDependencies:
+      y-protocols: ^1.0.6
+      yjs: ^13.6.8
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -1445,6 +1493,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@lifeomic/attempt@3.1.0':
+    resolution: {integrity: sha512-QZqem4QuAnAyzfz+Gj5/+SLxqwCAw2qmt7732ZXodr6VDWGeYLG6w1i/vYLa55JQM9wRuBKLmXmiZ2P0LtE5rw==}
 
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
@@ -2144,6 +2195,9 @@ packages:
 
   '@types/retry@0.12.2':
     resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==}
+
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -5386,6 +5440,18 @@ snapshots:
       pkcs7-padding: 0.1.1
       rfc4648: 1.5.4
 
+  '@hocuspocus/common@4.3.0':
+    dependencies:
+      lib0: 0.2.117
+
+  '@hocuspocus/provider@4.3.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)':
+    dependencies:
+      '@hocuspocus/common': 4.3.0
+      '@lifeomic/attempt': 3.1.0
+      lib0: 0.2.117
+      y-protocols: 1.0.7(yjs@13.6.32)
+      yjs: 13.6.32
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -5440,6 +5506,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lifeomic/attempt@3.1.0': {}
 
   '@microsoft/fetch-event-source@2.0.1': {}
 
@@ -6093,6 +6161,8 @@ snapshots:
   '@types/qs@6.15.1': {}
 
   '@types/retry@0.12.2': {}
+
+  '@types/semver@7.7.1': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
