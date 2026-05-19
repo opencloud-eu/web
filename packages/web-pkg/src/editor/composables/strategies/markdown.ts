@@ -64,7 +64,12 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     })
 
     return [
-      StarterKit.configure({ link: false }),
+      // `undoRedo: false` — when the host wires a Y.Doc through this
+      // editor instance (collab mode), the `Collaboration` extension brings
+      // yUndoPlugin from @tiptap/y-tiptap which is the collab-aware undo
+      // manager. Tiptap warns + double-stacks history if both run together.
+      // Read-only callers don't exercise undo so the flag is harmless there.
+      StarterKit.configure({ link: false, undoRedo: false }),
       Markdown,
       createLinkExtension(),
       Table.configure({ resizable: false }),
