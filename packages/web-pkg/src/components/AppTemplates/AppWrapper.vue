@@ -435,21 +435,64 @@ const saveFileTask = useTask(function* () {
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)
   } catch (e) {
+    // 409 / 412 — `previousEntityTag` didn't match what the server has.
+    // Usually means another peer in a collaborative session saved this
+    // file just before us. Our editor's content (Y.Doc-synced) already
+    // includes the peer's edits, so simply refetching the file to grab
+    // the fresh etag and retrying the save lets us keep going without
+    // bothering the user. We only fall through to the conflict popup
+    // when the refetch / retry path itself fails.
+    if (e.statusCode === 412 || e.statusCode === 409) {
+      try {
+        const fresh = yield* call(
+          getFileContents(currentFileContext, { ...fileContentOptions })
+        )
+        const freshEtag = fresh.headers['OC-ETag']
+
+        if (fresh.body === newContent) {
+          // No real content divergence — only our etag tracking was
+          // stale. Reconcile silently.
+          serverContent.value = newContent
+          currentETag.value = freshEtag
+          if (unref(resource)) {
+            resourcesStore.upsertResource({ ...unref(resource), etag: freshEtag })
+          }
+          return
+        }
+
+        // Server has a different content (typical collab case: peer
+        // saved, our Y.Doc has peer's edits + our own additions). Retry
+        // the PUT with the fresh etag — that publishes our combined
+        // state. Cross-app or external writers will be overwritten
+        // here; collaborating editors of the same file in different
+        // apps remains a known footgun documented in
+        // REALTIME_COLLAB_MIGRATION.md.
+        const retry = yield putFileContents(currentFileContext, {
+          content: newContent as string,
+          previousEntityTag: freshEtag
+        })
+        serverContent.value = newContent
+        currentETag.value = retry.etag
+        resourcesStore.upsertResource(retry)
+        return
+      } catch (retryErr) {
+        // Refetch or retry blew up — drop through to the user-facing
+        // conflict popup so they can still recover by copying out.
+      }
+      errorPopup(
+        new HttpError(
+          $gettext(
+            'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
+          ),
+          e.response
+        )
+      )
+      return
+    }
     switch (e.statusCode) {
       case 401:
       case 403:
         errorPopup(new HttpError($gettext("You're not authorized to save this file"), e.response))
-        break
-      case 409:
-      case 412:
-        errorPopup(
-          new HttpError(
-            $gettext(
-              'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
-            ),
-            e.response
-          )
-        )
         break
       case 507:
         const space = spacesStore.spaces.find(
