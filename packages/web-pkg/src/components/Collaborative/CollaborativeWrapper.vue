@@ -61,6 +61,16 @@ const props = defineProps({
 // AppWrapper's save path then PUTs that string with its own etag tracking.
 const emit = defineEmits<{
   (e: 'update:currentContent', value: string): void
+  // Emitted after a peer save: the Y.Doc state at that moment is exactly
+  // what's now on disk, so AppWrapper can flip its `serverContent` to the
+  // same string we'd push as `currentContent` and `isDirty` falls to false
+  // without anyone having to round-trip through WebDAV.
+  (e: 'update:serverContent', value: string): void
+  // Emitted alongside `update:serverContent` when a peer save propagates a
+  // fresh etag through `_oc_meta`. AppWrapper writes it into its
+  // `currentETag`, so the next save's `If-Match` is correct and we skip the
+  // 412 → refetch → retry recovery loop entirely.
+  (e: 'update:etag', value: string): void
 }>()
 
 const META_KEY = '_oc_meta'
@@ -267,7 +277,45 @@ watch(
   // types (e.g. Y.Text 'content' for CodeMirror). In local mode no one ever
   // sets isStale / bumps appVersion, so the observer is dormant but harmless.
   const meta = doc.getMap(META_KEY)
-  const metaObserver = (event: Y.YMapEvent<unknown>) => {
+  const metaObserver = (event: Y.YMapEvent<unknown>, transaction: Y.Transaction) => {
+    // Peer-save fan-out. Another client just saved (its etag-mirror watch
+    // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
+    // change to us with `transaction.origin === undefined` — remote ops have
+    // no string origin). Our Y.Doc already reflects every edit that save
+    // covered, so serialize it now and tell AppWrapper "this is what's on
+    // disk" — its isDirty (currentContent vs serverContent) flips false and
+    // the unsaved-changes modal stops firing on navigate.
+    if (
+      event.keysChanged.has('etag') &&
+      transaction.origin !== LOCAL_SAVE_ORIGIN
+    ) {
+      const newEtag = meta.get('etag') as string | undefined
+      if (newEtag) emit('update:etag', newEtag)
+    }
+
+    if (
+      event.keysChanged.has('lastSavedAt') &&
+      transaction.origin !== LOCAL_SAVE_ORIGIN &&
+      props.adapter.hasContent(doc)
+    ) {
+      try {
+        const editorCtx =
+          (editorRef.value as { getAdapterContext?: () => unknown } | null)?.getAdapterContext?.()
+        const serialized = props.adapter.serialize(doc, editorCtx)
+        if (typeof serialized === 'string') {
+          emit('update:serverContent', serialized)
+        } else {
+          void Promise.resolve(serialized).then((value) => {
+            if (doc.isDestroyed) return
+            emit('update:serverContent', value)
+          })
+        }
+      } catch (e) {
+        console.error('[collab] serialize for peer-save sync failed:', e)
+      }
+    }
+
+
     // App version mismatch surfaced after-the-fact (e.g. a newer peer joined
     // and bumped `appVersion`). Any non-zero diff at this point means the
     // room moved past or ahead of us mid-session — lock and prompt reload.
@@ -324,6 +372,13 @@ watch(
 // any future peer-aware logic see the current authoritative tag. In local
 // mode no sidecar reads `_oc_meta`, but the mirror is cheap and keeps the
 // two modes symmetrical.
+// Tag we put on our own meta-write so the meta observer can tell a local
+// save (this watch firing) apart from a peer save (CRDT update from another
+// client). Peer saves get the `update:serverContent` fan-out below; local
+// saves don't need it because AppWrapper already sets `serverContent` itself
+// in its save success path.
+const LOCAL_SAVE_ORIGIN = 'local-save'
+
 watch(
   () => props.resource.etag,
   (newEtag) => {
@@ -334,7 +389,7 @@ watch(
     doc.transact(() => {
       meta.set('etag', newEtag)
       meta.set('lastSavedAt', Date.now())
-    })
+    }, LOCAL_SAVE_ORIGIN)
   }
 )
 
