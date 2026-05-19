@@ -86,6 +86,14 @@ const editor = useEditor({
 onBeforeUnmount(() => {
   editor.value?.destroy()
 })
+
+// CollaborativeWrapper grabs this via template ref + `getAdapterContext()`
+// and forwards it as the second arg of `adapter.serialize(ydoc, ctx)`. The
+// tiptap markdown adapter reaches into `ctx.editor` to call `getMarkdown()`
+// on the live instance, skipping a per-keystroke headless-editor spawn.
+defineExpose({
+  getAdapterContext: () => ({ editor: editor.value })
+})
 </script>
 
 <template>

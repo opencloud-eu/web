@@ -43,7 +43,15 @@ export const tiptapMarkdownAdapter: CollaborativeAdapter = {
     }
   },
 
-  serialize(ydoc: Y.Doc): string {
+  serialize(ydoc: Y.Doc, context?: unknown): string {
+    // When the wrapper has a live editor bound to this Y.Doc (the common
+    // case during interactive editing) we reuse it directly — no DOM, no
+    // per-keystroke headless spawn. Fall back to a headless editor only
+    // when nothing is bound (e.g. stale-recovery on a peer that holds the
+    // doc but never mounted a UI).
+    const live = (context as { editor?: Editor } | undefined)?.editor
+    if (live) return live.getMarkdown()
+
     const editor = makeHeadlessEditor(ydoc)
     try {
       return editor.getMarkdown()
