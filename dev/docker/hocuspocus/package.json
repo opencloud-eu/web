@@ -1,0 +1,13 @@
+{
+  "name": "opencloud-hocuspocus-dev",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@hocuspocus/server": "^4.0.0",
+    "@hocuspocus/extension-sqlite": "^4.0.0"
+  }
+}
