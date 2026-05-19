@@ -1,12 +1,50 @@
 import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
+import { Extension } from '@tiptap/core'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { Collaboration } from '@tiptap/extension-collaboration'
+import { yCursorPlugin } from '@tiptap/y-tiptap'
+import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
+
+// Custom Tiptap extension that wires y-tiptap's yCursorPlugin to a given
+// Awareness. We bypass `@tiptap/extension-collaboration-cursor` because
+// its 3.0.0 release still imports `yCursorPlugin` from the upstream
+// `y-prosemirror` package — a different module with a different
+// `ySyncPluginKey` than the `@tiptap/y-tiptap` fork that
+// `@tiptap/extension-collaboration` uses. Mixing them throws
+// "Cannot read properties of undefined (reading 'doc')" on first paint.
+// y-tiptap's yCursorPlugin shares ySyncPluginKey with Collaboration so
+// the cursor plugin can find the sync state.
+function makeCollabCursorExtension(awareness: Awareness): Extension {
+  return Extension.create({
+    name: 'yCollaborationCursor',
+    addProseMirrorPlugins() {
+      return [
+        yCursorPlugin(awareness, {
+          // Emit the same `.collaboration-cursor__caret/__label` DOM the
+          // (broken) upstream extension would have, so consumer CSS keeps
+          // working unchanged.
+          cursorBuilder: (user: { name?: string; color?: string }) => {
+            const cursor = document.createElement('span')
+            cursor.classList.add('collaboration-cursor__caret')
+            cursor.setAttribute('style', `border-color: ${user.color ?? '#ffa500'}`)
+            const label = document.createElement('div')
+            label.classList.add('collaboration-cursor__label')
+            label.setAttribute('style', `background-color: ${user.color ?? '#ffa500'}`)
+            label.insertBefore(document.createTextNode(user.name ?? ''), null)
+            cursor.insertBefore(label, null)
+            return cursor
+          }
+        })
+      ]
+    }
+  })
+}
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
@@ -34,6 +72,13 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
         field: collabFragment
       }) as (typeof extensions)[number]
     )
+    if (options.awareness) {
+      // Render remote peers' carets + labels via y-tiptap's yCursorPlugin.
+      // Skipped when only ydoc is provided (local mode, no remote peers).
+      extensions.push(
+        makeCollabCursorExtension(options.awareness) as (typeof extensions)[number]
+      )
+    }
   }
   if (options.slashCommands !== false) {
     const resolvedGroups = strategy.editorActionGroups()

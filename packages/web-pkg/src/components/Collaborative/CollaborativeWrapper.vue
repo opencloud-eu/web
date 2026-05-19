@@ -42,7 +42,17 @@ const props = defineProps({
     type: String as PropType<string | null | undefined>,
     required: false,
     default: undefined
-  }
+  },
+  // Namespace for the collab room (and the underlying SQLite key in the
+  // sidecar). Different editor apps that can open the same file —
+  // codemirror, tiptap, text-editor, a future excalidraw — have
+  // incompatible Y.Doc schemas (Y.Text vs Y.XmlFragment with different
+  // extensions), so they MUST land in separate rooms. Pass each app's
+  // applicationId here so opening the same .md in two different editors
+  // doesn't collide on schema or app-version. Optional only so a fresh
+  // consumer can experiment without thinking about it; production
+  // editors should always set it.
+  documentPrefix: { type: String, required: false, default: '' }
 })
 
 // The hosting AppWrapper drives isEditor / isDirty / autoSave / Ctrl+S /
@@ -115,7 +125,11 @@ const documentName = computed(() => {
   // from `r.remoteItemId` (which points at the owner's drive+item). Both
   // peers end up with the same value, so it doubles as the Y.Doc match key
   // and the ACL probe target the sidecar passes to Graph.
-  return r.remoteItemId ?? r.id
+  const fileId = r.remoteItemId ?? r.id
+  if (!fileId) return null
+  // Prefix with the consuming app's id so two different editors opening
+  // the same file land in separate rooms (different Y.Doc schemas).
+  return props.documentPrefix ? `${props.documentPrefix}::${fileId}` : fileId
 })
 
 const effectiveReadOnly = computed(() => props.isReadOnly || isLockedForReload.value)
