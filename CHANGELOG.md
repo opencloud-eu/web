@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-19
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### 🐛 Bug Fixes
+
+- fix: upload overlay when merging folders [[#2544](https://github.com/opencloud-eu/web/pull/2544)]
+
 ## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-19
 
 ### ❤️ Thanks to all contributors! ❤️
