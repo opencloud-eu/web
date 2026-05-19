@@ -13,6 +13,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.59.4 [[#2540](https://github.com/opencloud-eu/web/pull/2540)]
 - chore(deps): update dependency postcss to v8.5.15 [[#2547](https://github.com/opencloud-eu/web/pull/2547)]
 - chore(deps): remove dependency clean-publish [[#2537](https://github.com/opencloud-eu/web/pull/2537)]
 
