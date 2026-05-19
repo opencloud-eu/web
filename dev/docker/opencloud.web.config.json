@@ -18,6 +18,8 @@
     "activities",
     "preview",
     "mail",
-    "contacts"
+    "contacts",
+    "codemirror",
+    "tiptap"
   ]
 }
