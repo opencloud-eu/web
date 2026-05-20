@@ -103,14 +103,44 @@ describe('UploadInfo component', () => {
     })
   })
   describe('info', () => {
-    it('should show the number of successful items', async () => {
+    it('should show the number of successful files', async () => {
       const { wrapper } = getShallowWrapper()
       wrapper.vm.showInfo = true
+      wrapper.vm.uploads = {
+        '1': { meta: { isFolder: false } } as OcUppyFile,
+        '2': { meta: { isFolder: false } } as OcUppyFile
+      }
       wrapper.vm.successful = ['1', '2']
       await nextTick()
 
       const info = wrapper.find(selectors.success).text()
-      expect(info).toBe('2 items uploaded')
+      expect(info).toBe('2 files uploaded')
+    })
+    it('should show the number of successful folders', async () => {
+      const { wrapper } = getShallowWrapper()
+      wrapper.vm.showInfo = true
+      wrapper.vm.uploads = {
+        '1': { meta: { isFolder: true } } as OcUppyFile,
+        '2': { meta: { isFolder: true } } as OcUppyFile
+      }
+      wrapper.vm.successful = ['1', '2']
+      await nextTick()
+
+      const info = wrapper.find(selectors.success).text()
+      expect(info).toBe('2 folders uploaded')
+    })
+    it('should show both files and folders when mixed', async () => {
+      const { wrapper } = getShallowWrapper()
+      wrapper.vm.showInfo = true
+      wrapper.vm.uploads = {
+        '1': { meta: { isFolder: false } } as OcUppyFile,
+        '2': { meta: { isFolder: true } } as OcUppyFile
+      }
+      wrapper.vm.successful = ['1', '2']
+      await nextTick()
+
+      const info = wrapper.find(selectors.success).text()
+      expect(info).toBe('1 file, 1 folder uploaded')
     })
     it('should show the number of failed items', async () => {
       const { wrapper } = getShallowWrapper()
