@@ -442,10 +442,33 @@ async function onProviderSynced(
     }
   }
 
-  // Seed the etag immediately so future stale-state probes have a baseline.
-  if (!meta.get('etag') && props.resource.etag) {
+  // Etag drift check — the client-side equivalent of hocuspocus's
+  // `onLoadDocument` stale probe. Relay-only backends (opencloud-yjs) do
+  // not persist Y.Docs, so the server cannot compare a persisted etag
+  // against the native file. Instead, after sync we look at what the
+  // synced room thinks the etag is (`_oc_meta.etag`, seeded by whichever
+  // peer entered first) and compare against the etag the AppWrapper
+  // just refetched as `props.resource.etag`:
+  //   - no doc etag yet      → we are the first peer, seed our baseline
+  //   - doc == native        → no-op
+  //   - doc != native        → the room's view is older than the file on
+  //                            disk; flag isStale so the meta observer
+  //                            fires `recoverFromStaleState` (election
+  //                            inside that fn picks one peer to rehydrate)
+  // Stamping native etag into a sidecar field lets the recovery path
+  // settle the final value into `_oc_meta.etag` without an extra fetch.
+  const docEtag = meta.get('etag') as string | undefined
+  const nativeEtag = props.resource.etag
+  if (docEtag && nativeEtag && docEtag !== nativeEtag) {
     doc.transact(() => {
-      if (!meta.get('etag')) meta.set('etag', props.resource.etag)
+      meta.set('nativeEtag', nativeEtag)
+      meta.set('isStale', true)
+    })
+    return
+  }
+  if (!docEtag && nativeEtag) {
+    doc.transact(() => {
+      if (!meta.get('etag')) meta.set('etag', nativeEtag)
     })
   }
 
