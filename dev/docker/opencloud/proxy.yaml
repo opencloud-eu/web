@@ -4,6 +4,18 @@
 additional_policies:
   - name: default
     routes:
+      # Realtime collab sidecar. The hocuspocus container terminates plain
+      # HTTP on :1234; OC's reverse proxy upgrades the incoming WebSocket
+      # request and forwards it on. Pattern is borrowed from the
+      # opencloud-music sidecar setup. `unprotected: true` because
+      # hocuspocus does its own bearer-token validation against OC's
+      # Graph API (see dev/docker/hocuspocus/server.js
+      # `validateTokenAgainstOpenCloud`) and must see the Authorization
+      # header the client sent verbatim, not whatever OC's proxy would
+      # substitute.
+      - endpoint: /realtime
+        backend: http://hocuspocus:1234
+        unprotected: true
       - endpoint: /caldav/
         backend: http://host.docker.internal:5232
         remote_user_header: X-Remote-User
