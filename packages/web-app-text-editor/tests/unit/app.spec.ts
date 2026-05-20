@@ -13,7 +13,15 @@ vi.mock('@opencloud-eu/web-pkg', async () => {
   return {
     CollaborativeWrapper: defineComponent({
       name: 'CollaborativeWrapperStub',
-      props: ['resource', 'currentContent', 'isReadOnly', 'adapter', 'editor', 'appVersion', 'realtimeUrl'],
+      props: [
+        'resource',
+        'currentContent',
+        'isReadOnly',
+        'adapter',
+        'editor',
+        'appVersion',
+        'realtimeUrl'
+      ],
       setup() {
         return () => h('div', { class: 'oc-text-editor' })
       }
@@ -26,8 +34,8 @@ vi.mock('@opencloud-eu/web-pkg/editor', () => {
     useContentStrategy: () => ({
       resolveStrategy: () => ({
         editorContentType: () => 'markdown',
-        extensions: () => [],
-        editorActionGroups: () => [],
+        extensions: (): unknown[] => [],
+        editorActionGroups: (): unknown[] => [],
         serialize: () => '',
         deserialize: (s: string) => s
       })

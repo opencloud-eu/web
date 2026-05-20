@@ -127,7 +127,11 @@ defineExpose({
 .tiptap-content :deep(.ProseMirror) {
   outline: none;
   min-height: 100%;
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
   font-size: 1rem;
   line-height: 1.6;
   color: var(--oc-role-on-surface, #1d1f23);

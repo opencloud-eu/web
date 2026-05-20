@@ -449,9 +449,7 @@ const saveFileTask = useTask(function* () {
     // when the refetch / retry path itself fails.
     if (e.statusCode === 412 || e.statusCode === 409) {
       try {
-        const fresh = yield* call(
-          getFileContents(currentFileContext, { ...fileContentOptions })
-        )
+        const fresh = yield* call(getFileContents(currentFileContext, { ...fileContentOptions }))
         const freshEtag = fresh.headers['OC-ETag']
 
         if (fresh.body === newContent) {

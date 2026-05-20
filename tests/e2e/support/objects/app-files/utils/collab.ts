@@ -36,8 +36,7 @@ export const collabContent = (page: Page, editor: CollabEditor) =>
 export const codemirrorLine = (page: Page, lineIndex: number) =>
   page.locator('.cm-line').nth(lineIndex)
 
-export const remoteCaretCount = (page: Page) =>
-  page.locator('.cm-ySelectionCaret').count()
+export const remoteCaretCount = (page: Page) => page.locator('.cm-ySelectionCaret').count()
 
 export const remoteCaretLabelText = (page: Page) =>
   page.locator('.cm-ySelectionInfo').first().textContent()

@@ -3,7 +3,10 @@ import { SQLite } from '@hocuspocus/extension-sqlite'
 
 const port = parseInt(process.env.PORT ?? '1234', 10)
 const dbPath = process.env.DB_PATH ?? '/var/lib/hocuspocus/state.db'
-const opencloudUrl = (process.env.OPENCLOUD_URL ?? 'https://host.docker.internal:9200').replace(/\/$/, '')
+const opencloudUrl = (process.env.OPENCLOUD_URL ?? 'https://host.docker.internal:9200').replace(
+  /\/$/,
+  ''
+)
 const devFakeToken = process.env.DEV_FAKE_TOKEN ?? ''
 
 // Per-document first-seen app version. Acts as the authoritative gate for
@@ -140,9 +143,7 @@ const server = new Server({
     if (devFakeToken && token === devFakeToken) {
       const id = 'dev-fake-user'
       const nativeEtag = requestParameters.get('devEtag') ?? ''
-      console.log(
-        `[onAuthenticate] dev-fake document="${documentName}" nativeEtag="${nativeEtag}"`
-      )
+      console.log(`[onAuthenticate] dev-fake document="${documentName}" nativeEtag="${nativeEtag}"`)
       return {
         nativeEtag,
         user: {

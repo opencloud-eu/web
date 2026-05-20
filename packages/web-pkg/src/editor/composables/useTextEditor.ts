@@ -75,9 +75,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (options.awareness) {
       // Render remote peers' carets + labels via y-tiptap's yCursorPlugin.
       // Skipped when only ydoc is provided (local mode, no remote peers).
-      extensions.push(
-        makeCollabCursorExtension(options.awareness) as (typeof extensions)[number]
-      )
+      extensions.push(makeCollabCursorExtension(options.awareness) as (typeof extensions)[number])
     }
   }
   if (options.slashCommands !== false) {
