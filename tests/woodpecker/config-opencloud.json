@@ -4,6 +4,8 @@
   "apps": [
     "files",
     "text-editor",
+    "codemirror",
+    "tiptap",
     "preview",
     "pdf-viewer",
     "search",
