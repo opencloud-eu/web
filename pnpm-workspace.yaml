@@ -3,9 +3,36 @@ packages:
   - 'packages/*'
   - 'tests/*'
 
+autoInstallPeers: true
+sharedWorkspaceLockfile: true
+
+# c.f. https://github.com/vuejs/test-utils/pull/2197
+hoistPattern:
+  - '@vue/server-renderer'
+
+# eslint and prettier (public so they are picked up by IDEs)
+publicHoistPattern:
+  - '*eslint*'
+  - '*prettier*'
+
+minimumReleaseAge: 720
+
 # ensure platform-specific bindings (e.g. rolldown) resolve for all Linux libc variants in CI
 supportedArchitectures:
   libc:
     - current
     - glibc
     - musl
+
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  es5-ext: true
+  esbuild: true
+
+patchedDependencies:
+  caf@15.0.1: patches/caf@15.0.1.patch
+  vue-inline-svg@4.0.1: patches/vue-inline-svg@4.0.1.patch
+
+overrides:
+  epubjs>@xmldom/xmldom: ^0.9.10
