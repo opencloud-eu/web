@@ -95,6 +95,23 @@ const deleteFile = async ({
   checkResponseStatus(response, `Failed deleting file '${pathToFile}'`)
 }
 
+export const getFileContentInPersonalSpace = async ({
+  user,
+  pathToFile
+}: {
+  user: User
+  pathToFile: string
+}): Promise<string> => {
+  const spaceId = await getSpaceIdBySpaceName({ user, spaceType: 'personal' })
+  const response = await request({
+    method: 'GET',
+    path: urlJoin('remote.php', 'dav', 'spaces', spaceId, pathToFile),
+    user
+  })
+  checkResponseStatus(response, `Failed while reading file ${pathToFile}`)
+  return await response.text()
+}
+
 export const uploadFileInPersonalSpace = async ({
   user,
   pathToFile,
