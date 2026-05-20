@@ -1,13 +1,14 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-19
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-20
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @tammi-23
+@AlexAndBear, @JammingBen, @dschmidt, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): silence OcDrop attr-inheritance warning storm [[#2560](https://github.com/opencloud-eu/web/pull/2560)]
 - fix: empty markdown documents [[#2553](https://github.com/opencloud-eu/web/pull/2553)]
 - fix: prevents unsightly line breaks [[#2546](https://github.com/opencloud-eu/web/pull/2546)]
 - fix: readme.md header content won't get rendered on public link access [[#2542](https://github.com/opencloud-eu/web/pull/2542)]
