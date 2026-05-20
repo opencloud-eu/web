@@ -1,6 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "minimumReleaseAge": "12 hours",
   "prConcurrentLimit": 15,
   "postUpdateOptions": ["pnpmDedupe"],
   "labels": ["Type:Dependencies"],
