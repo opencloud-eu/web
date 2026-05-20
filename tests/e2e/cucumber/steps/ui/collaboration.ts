@@ -92,12 +92,7 @@ When(
 
 Then(
   /^"([^"]+)" should see a remote caret on line (\d+) labelled "([^"]+)"$/,
-  async function (
-    this: World,
-    stepUser: string,
-    lineNumber: string,
-    label: string
-  ): Promise<void> {
+  async function (this: World, stepUser: string, lineNumber: string, label: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const lineIdx = parseInt(lineNumber, 10) - 1
     await expect(codemirrorLine(page, lineIdx).locator('.cm-ySelectionCaret')).toHaveCount(1, {

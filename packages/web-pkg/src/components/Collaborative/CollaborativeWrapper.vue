@@ -1,13 +1,5 @@
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  shallowRef,
-  unref,
-  watch,
-  type Component,
-  type PropType
-} from 'vue'
+import { computed, ref, shallowRef, unref, watch, type Component, type PropType } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import { HocuspocusProvider } from '@hocuspocus/provider'
@@ -180,187 +172,185 @@ watch(
     // (the body below was the original `watchEffect` callback; indentation
     // intentionally kept at the prior level to minimise diff churn.)
 
-  // Debounced serialize → emit. We hand AppWrapper the same string an
-  // out-of-band PUT would write; AppWrapper diffs it against its
-  // serverContent to derive isDirty. Internal-origin transactions
-  // (hydrate / reset / stale-recovery) are skipped to avoid round-tripping
-  // the parent's freshly-loaded content back to it as a fake user edit.
-  let serializeTimer: number | undefined
-  const scheduleEmit = () => {
-    if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
-    serializeTimer = window.setTimeout(() => {
-      serializeTimer = undefined
-      if (doc.isDestroyed) return
-      if (!props.adapter.hasContent(doc)) return
-      try {
-        // The bound editor component may expose a `getAdapterContext()` via
-        // `defineExpose`. Tiptap-style adapters use it to reach the live
-        // editor and skip a per-keystroke headless-editor spawn; CodeMirror-
-        // style adapters return undefined and serialise from Y.Doc alone.
-        const editorCtx =
-          (editorRef.value as { getAdapterContext?: () => unknown } | null)?.getAdapterContext?.()
-        const serialized = props.adapter.serialize(doc, editorCtx)
-        if (typeof serialized === 'string') {
-          emit('update:currentContent', serialized)
-          return
-        }
-        void Promise.resolve(serialized).then((value) => {
-          if (doc.isDestroyed) return
-          emit('update:currentContent', value)
-        })
-      } catch (e) {
-        console.error('[collab] serialize for emit failed:', e)
-      }
-    }, SERIALIZE_DEBOUNCE_MS)
-  }
-
-  const onDocUpdate = (_update: Uint8Array, origin: unknown) => {
-    if (typeof origin === 'string' && INTERNAL_ORIGINS.has(origin)) return
-    scheduleEmit()
-  }
-  doc.on('update', onDocUpdate)
-
-  let prov: HocuspocusProvider | null = null
-  let aw: Awareness
-
-  const realtimeUrl = effectiveRealtimeUrl.value
-  if (realtimeUrl) {
-    // ---------- Collab mode ----------
-    // HocuspocusProvider has no `parameters` option; we get query params to
-    // the sidecar's requestParameters by appending them to the URL ourselves.
-    const wsUrlWithParams = `${realtimeUrl}?appVersion=${encodeURIComponent(APP_VERSION)}`
-    prov = new HocuspocusProvider({
-      url: wsUrlWithParams,
-      name,
-      document: doc,
-      token: () => authStore.accessToken,
-      onStatus({ status: s }) {
-        status.value = s as typeof status.value
-      },
-      onAuthenticationFailed({ reason }) {
-        console.error('[collab] realtime auth failed:', reason)
-        // Surface as lifecycle error so the user sees the reason rather than a
-        // silent disconnect. Server uses this for app-version rejection too.
-        lifecycleError.value = new Error(reason || 'authentication failed')
-        isLockedForReload.value = true
-      },
-      onSynced() {
-        void onProviderSynced(doc, prov, prov!.awareness!)
-      }
-    })
-
-    // Empty-user bootstrap: creates an awareness entry under our Y.Doc.clientID
-    // as soon as the provider connects, so peers see us before the editor
-    // binding emits its first cursor update. The server's beforeHandleAwareness
-    // hook overwrites this with the authenticated identity. Lurkers that never
-    // touch `user` stay invisible (matches the hook's "only stamp when present"
-    // rule).
-    prov.setAwarenessField('user', {})
-    aw = prov.awareness!
-  } else {
-    // ---------- Local mode ----------
-    // Standalone Awareness so the editor bindings still see a non-null
-    // awareness instance (CodeMirror's yCollab, Tiptap's cursor plugin
-    // when registered). Nobody else will ever join, which is the point.
-    aw = new Awareness(doc)
-    status.value = 'local'
-    // No `onSynced` to wait for — hand off to the same hydration entrypoint
-    // immediately. Without a sidecar the app-version handshake and
-    // stale-state probe are no-ops (the doc is freshly minted and there's
-    // no persisted state to compare against), but we still run through the
-    // function so future shared-handler additions keep both modes aligned.
-    void onProviderSynced(doc, null, aw)
-  }
-
-  // _oc_meta is the parallel channel for stale/version coordination. The
-  // editor binding never sees it because adapters bind to their own shared
-  // types (e.g. Y.Text 'content' for CodeMirror). In local mode no one ever
-  // sets isStale / bumps appVersion, so the observer is dormant but harmless.
-  const meta = doc.getMap(META_KEY)
-  const metaObserver = (event: Y.YMapEvent<unknown>, transaction: Y.Transaction) => {
-    // Peer-save fan-out. Another client just saved (its etag-mirror watch
-    // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
-    // change to us with `transaction.origin === undefined` — remote ops have
-    // no string origin). Our Y.Doc already reflects every edit that save
-    // covered, so serialize it now and tell AppWrapper "this is what's on
-    // disk" — its isDirty (currentContent vs serverContent) flips false and
-    // the unsaved-changes modal stops firing on navigate.
-    if (
-      event.keysChanged.has('etag') &&
-      transaction.origin !== LOCAL_SAVE_ORIGIN
-    ) {
-      const newEtag = meta.get('etag') as string | undefined
-      if (newEtag) emit('update:etag', newEtag)
-    }
-
-    if (
-      event.keysChanged.has('lastSavedAt') &&
-      transaction.origin !== LOCAL_SAVE_ORIGIN &&
-      props.adapter.hasContent(doc)
-    ) {
-      try {
-        const editorCtx =
-          (editorRef.value as { getAdapterContext?: () => unknown } | null)?.getAdapterContext?.()
-        const serialized = props.adapter.serialize(doc, editorCtx)
-        if (typeof serialized === 'string') {
-          emit('update:serverContent', serialized)
-        } else {
+    // Debounced serialize → emit. We hand AppWrapper the same string an
+    // out-of-band PUT would write; AppWrapper diffs it against its
+    // serverContent to derive isDirty. Internal-origin transactions
+    // (hydrate / reset / stale-recovery) are skipped to avoid round-tripping
+    // the parent's freshly-loaded content back to it as a fake user edit.
+    let serializeTimer: number | undefined
+    const scheduleEmit = () => {
+      if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
+      serializeTimer = window.setTimeout(() => {
+        serializeTimer = undefined
+        if (doc.isDestroyed) return
+        if (!props.adapter.hasContent(doc)) return
+        try {
+          // The bound editor component may expose a `getAdapterContext()` via
+          // `defineExpose`. Tiptap-style adapters use it to reach the live
+          // editor and skip a per-keystroke headless-editor spawn; CodeMirror-
+          // style adapters return undefined and serialise from Y.Doc alone.
+          const editorCtx = (
+            editorRef.value as { getAdapterContext?: () => unknown } | null
+          )?.getAdapterContext?.()
+          const serialized = props.adapter.serialize(doc, editorCtx)
+          if (typeof serialized === 'string') {
+            emit('update:currentContent', serialized)
+            return
+          }
           void Promise.resolve(serialized).then((value) => {
             if (doc.isDestroyed) return
-            emit('update:serverContent', value)
+            emit('update:currentContent', value)
           })
+        } catch (e) {
+          console.error('[collab] serialize for emit failed:', e)
         }
-      } catch (e) {
-        console.error('[collab] serialize for peer-save sync failed:', e)
+      }, SERIALIZE_DEBOUNCE_MS)
+    }
+
+    const onDocUpdate = (_update: Uint8Array, origin: unknown) => {
+      if (typeof origin === 'string' && INTERNAL_ORIGINS.has(origin)) return
+      scheduleEmit()
+    }
+    doc.on('update', onDocUpdate)
+
+    let prov: HocuspocusProvider | null = null
+    let aw: Awareness
+
+    const realtimeUrl = effectiveRealtimeUrl.value
+    if (realtimeUrl) {
+      // ---------- Collab mode ----------
+      // HocuspocusProvider has no `parameters` option; we get query params to
+      // the sidecar's requestParameters by appending them to the URL ourselves.
+      const wsUrlWithParams = `${realtimeUrl}?appVersion=${encodeURIComponent(APP_VERSION)}`
+      prov = new HocuspocusProvider({
+        url: wsUrlWithParams,
+        name,
+        document: doc,
+        token: () => authStore.accessToken,
+        onStatus({ status: s }) {
+          status.value = s as typeof status.value
+        },
+        onAuthenticationFailed({ reason }) {
+          console.error('[collab] realtime auth failed:', reason)
+          // Surface as lifecycle error so the user sees the reason rather than a
+          // silent disconnect. Server uses this for app-version rejection too.
+          lifecycleError.value = new Error(reason || 'authentication failed')
+          isLockedForReload.value = true
+        },
+        onSynced() {
+          void onProviderSynced(doc, prov, prov!.awareness!)
+        }
+      })
+
+      // Empty-user bootstrap: creates an awareness entry under our Y.Doc.clientID
+      // as soon as the provider connects, so peers see us before the editor
+      // binding emits its first cursor update. The server's beforeHandleAwareness
+      // hook overwrites this with the authenticated identity. Lurkers that never
+      // touch `user` stay invisible (matches the hook's "only stamp when present"
+      // rule).
+      prov.setAwarenessField('user', {})
+      aw = prov.awareness!
+    } else {
+      // ---------- Local mode ----------
+      // Standalone Awareness so the editor bindings still see a non-null
+      // awareness instance (CodeMirror's yCollab, Tiptap's cursor plugin
+      // when registered). Nobody else will ever join, which is the point.
+      aw = new Awareness(doc)
+      status.value = 'local'
+      // No `onSynced` to wait for — hand off to the same hydration entrypoint
+      // immediately. Without a sidecar the app-version handshake and
+      // stale-state probe are no-ops (the doc is freshly minted and there's
+      // no persisted state to compare against), but we still run through the
+      // function so future shared-handler additions keep both modes aligned.
+      void onProviderSynced(doc, null, aw)
+    }
+
+    // _oc_meta is the parallel channel for stale/version coordination. The
+    // editor binding never sees it because adapters bind to their own shared
+    // types (e.g. Y.Text 'content' for CodeMirror). In local mode no one ever
+    // sets isStale / bumps appVersion, so the observer is dormant but harmless.
+    const meta = doc.getMap(META_KEY)
+    const metaObserver = (event: Y.YMapEvent<unknown>, transaction: Y.Transaction) => {
+      // Peer-save fan-out. Another client just saved (its etag-mirror watch
+      // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
+      // change to us with `transaction.origin === undefined` — remote ops have
+      // no string origin). Our Y.Doc already reflects every edit that save
+      // covered, so serialize it now and tell AppWrapper "this is what's on
+      // disk" — its isDirty (currentContent vs serverContent) flips false and
+      // the unsaved-changes modal stops firing on navigate.
+      if (event.keysChanged.has('etag') && transaction.origin !== LOCAL_SAVE_ORIGIN) {
+        const newEtag = meta.get('etag') as string | undefined
+        if (newEtag) emit('update:etag', newEtag)
+      }
+
+      if (
+        event.keysChanged.has('lastSavedAt') &&
+        transaction.origin !== LOCAL_SAVE_ORIGIN &&
+        props.adapter.hasContent(doc)
+      ) {
+        try {
+          const editorCtx = (
+            editorRef.value as { getAdapterContext?: () => unknown } | null
+          )?.getAdapterContext?.()
+          const serialized = props.adapter.serialize(doc, editorCtx)
+          if (typeof serialized === 'string') {
+            emit('update:serverContent', serialized)
+          } else {
+            void Promise.resolve(serialized).then((value) => {
+              if (doc.isDestroyed) return
+              emit('update:serverContent', value)
+            })
+          }
+        } catch (e) {
+          console.error('[collab] serialize for peer-save sync failed:', e)
+        }
+      }
+
+      // App version mismatch surfaced after-the-fact (e.g. a newer peer joined
+      // and bumped `appVersion`). Any non-zero diff at this point means the
+      // room moved past or ahead of us mid-session — lock and prompt reload.
+      // Stale-recovery is intentionally NOT triggered here; that path only
+      // applies when the doc state itself was already older than the current
+      // client at first load.
+      if (event.keysChanged.has('appVersion')) {
+        const docVersion = meta.get('appVersion') as string | undefined
+        if (docVersion) {
+          const cmp = compareVersion(APP_VERSION, docVersion)
+          if (Number.isNaN(cmp) || cmp !== 0) {
+            lockForReload(
+              prov,
+              `This file is now being edited with app version ${docVersion} ` +
+                `(yours is ${APP_VERSION}). Please reload.`
+            )
+          }
+        }
+      }
+
+      // Stale-state signal from the sidecar's onLoadDocument: the persisted
+      // Y.Doc was tied to an etag that no longer matches the native file. We
+      // run a client-side rehydrate (election prevents all peers from doing
+      // it at once).
+      if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
+        void recoverFromStaleState(doc, prov, aw)
       }
     }
+    meta.observe(metaObserver)
 
+    ydoc.value = doc
+    provider.value = prov
+    awareness.value = aw
 
-    // App version mismatch surfaced after-the-fact (e.g. a newer peer joined
-    // and bumped `appVersion`). Any non-zero diff at this point means the
-    // room moved past or ahead of us mid-session — lock and prompt reload.
-    // Stale-recovery is intentionally NOT triggered here; that path only
-    // applies when the doc state itself was already older than the current
-    // client at first load.
-    if (event.keysChanged.has('appVersion')) {
-      const docVersion = meta.get('appVersion') as string | undefined
-      if (docVersion) {
-        const cmp = compareVersion(APP_VERSION, docVersion)
-        if (Number.isNaN(cmp) || cmp !== 0) {
-          lockForReload(
-            prov,
-            `This file is now being edited with app version ${docVersion} ` +
-              `(yours is ${APP_VERSION}). Please reload.`
-          )
-        }
-      }
-    }
-
-    // Stale-state signal from the sidecar's onLoadDocument: the persisted
-    // Y.Doc was tied to an etag that no longer matches the native file. We
-    // run a client-side rehydrate (election prevents all peers from doing
-    // it at once).
-    if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
-      void recoverFromStaleState(doc, prov, aw)
-    }
-  }
-  meta.observe(metaObserver)
-
-  ydoc.value = doc
-  provider.value = prov
-  awareness.value = aw
-
-  onCleanup(() => {
-    if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
-    meta.unobserve(metaObserver)
-    doc.off('update', onDocUpdate)
-    prov?.destroy()
-    aw.destroy()
-    doc.destroy()
-    if (provider.value === prov) provider.value = null
-    if (awareness.value === aw) awareness.value = null
-    if (ydoc.value === doc) ydoc.value = null
-  })
+    onCleanup(() => {
+      if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
+      meta.unobserve(metaObserver)
+      doc.off('update', onDocUpdate)
+      prov?.destroy()
+      aw.destroy()
+      doc.destroy()
+      if (provider.value === prov) provider.value = null
+      if (awareness.value === aw) awareness.value = null
+      if (ydoc.value === doc) ydoc.value = null
+    })
   },
   { immediate: true }
 )
@@ -542,7 +532,9 @@ async function recoverFromStaleState(
          Save / dirty / etag UX is owned by the hosting AppWrapper. -->
     <div class="oc-p-s oc-text-meta oc-flex oc-flex-middle">
       <span>— {{ status }}</span>
-      <span v-if="lifecycleError" class="oc-ml-m oc-text-danger">— {{ lifecycleError.message }}</span>
+      <span v-if="lifecycleError" class="oc-ml-m oc-text-danger"
+        >— {{ lifecycleError.message }}</span
+      >
       <span v-if="effectiveReadOnly" class="oc-ml-m">(read-only)</span>
     </div>
     <component
