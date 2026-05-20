@@ -11,11 +11,13 @@ The realtime collaboration PoC in `opencloud-eu/web-extensions` (PR #447, branch
 - All 17/17 tests green (5 codemirror e2e + 4 tiptap e2e + 8 integration)
 
 User now wants:
+
 - Move both apps and the wrapper into the canonical `opencloud-eu/web` repo
 - Refactor the existing `web-app-text-editor` so it uses the realtime API (the wrapper) exclusively — every editor instance goes through Y.Doc, whether or not a sidecar is reachable (local-mode handles the no-server case)
 - Bring the Hocuspocus sidecar into web's docker-compose so the whole dev loop lives in one repo
 
 User-clarified scope:
+
 - **One canonical wrapper in web-pkg**, used by all three apps (codemirror, tiptap, refactored text-editor). The wrapper does NOT get forked. If integration churn is needed during the text-editor refactor, fork the `web-app-text-editor` package itself (not the wrapper) so we can iterate without fixing all call sites at once. Wrapper API stays single source of truth.
 - **Y.Doc is always-on, no optional.** `useTextEditor` and friends always receive a Y.Doc; the wrapper's local-mode is the universal "no realtime backend" branch. Experimental but the wrapper just gained this capability and we want to see it carry the full text-editor surface.
 - **App naming stays:** `web-app-codemirror` + `web-app-tiptap` as separate apps alongside the refactored `web-app-text-editor`.
@@ -29,6 +31,7 @@ User-clarified scope:
 While debugging the unit test for the etag-mirror behaviour I discovered a real bug in `CollaborativeWrapper.vue`: the `watchEffect((onCleanup) => { ... })` lifecycle re-runs whenever any tracked prop changes — including the `resource` prop update that AppWrapper fires after every save (via `resourcesStore.upsertResource`). Each AppWrapper save would tear down and rebuild the Y.Doc, losing peer state. The shared-file e2e doesn't catch it because the two peers' saves happen far apart in test time and the wrapper successfully re-hydrates from `currentContent`.
 
 **Fix (mid-edit in the current working tree, broken intermediate state):**
+
 - Replace `watchEffect((onCleanup) => { ... })` with `watch(sessionKey, (key, _, onCleanup) => { ... }, { immediate: true })`
 - `sessionKey = computed(() => name && `${name}::${realtimeUrl ?? 'local'}`)` — only rebuilds when the actual session identity changes
 - Vue's computed equality check ensures `setProps({ resource: newResource })` with same `id` doesn't re-fire the watch
@@ -36,11 +39,13 @@ While debugging the unit test for the etag-mirror behaviour I discovered a real 
 - Close the `watch` callback + outer block properly (current state has dangling brace + leftover body)
 
 **Files:**
+
 - `packages/web-app-codemirror/src/CollaborativeWrapper.vue` — finish refactor; remove debug logs
 - `packages/web-app-codemirror/tests/unit/CollaborativeWrapper.spec.ts` — clean up the debug `console.log` I added in the etag-mirror test
 - `packages/web-app-codemirror/tests/unit/CollaborativeWrapper.spec.ts` — **add a dedicated regression test** (separate from etag-mirror) that asserts: given a wrapper mounted with a resource, calling `setProps({ resource })` with a NEW resource object whose `id` is unchanged keeps the same `wrapper.vm.ydoc` instance reference (no rebuild). Tag the test name explicitly as "regression: does not rebuild Y.Doc when resource prop changes without identity change" so future readers see why it's there.
 
 **Verification:**
+
 - `pnpm vitest run tests/unit/CollaborativeWrapper.spec.ts` — all unit tests green (12 existing + 1 regression)
 - `pnpm playwright test --project=codemirror-chromium` — 5/5 green (regression check on real e2e)
 - `pnpm playwright test --project=tiptap-chromium` — 4/4 green
@@ -57,6 +62,7 @@ Only AFTER Phase 0 is committed and pushed do we start Phase 1.
 **Target:** make `CollaborativeWrapper` importable as `import { CollaborativeWrapper } from '@opencloud-eu/web-pkg'`.
 
 **Files to create in `/home/domme/dev/sources/opencloud-eu/web/packages/web-pkg/`:**
+
 - `src/components/Collaborative/CollaborativeWrapper.vue` — straight copy of the final web-extensions wrapper (post Phase 0). Reads `useAuthStore` from `../../composables/piniaStores/...` — verify the relative import path during the move.
 - `src/components/Collaborative/types.ts` — the `CollaborativeAdapter` interface (currently at `packages/web-app-codemirror/src/types.ts`).
 - `src/components/Collaborative/index.ts` — barrel export `{ default as CollaborativeWrapper } from ...` + `type CollaborativeAdapter`.
@@ -65,6 +71,7 @@ Only AFTER Phase 0 is committed and pushed do we start Phase 1.
 **Dependency audit (the user explicitly asked for thoroughness here — many deps belong in the consuming apps, not in web-pkg):**
 
 Belongs in `web-pkg` (the wrapper uses them directly):
+
 - `@hocuspocus/provider ^4.0.0` — runtime, the wrapper instantiates `HocuspocusProvider`
 - `yjs ^13.6.0` — the wrapper imports `* as Y` for `new Y.Doc()`
 - `y-protocols ^1.0.7` — the wrapper imports `Awareness` for the local-mode standalone
@@ -72,6 +79,7 @@ Belongs in `web-pkg` (the wrapper uses them directly):
 - `@types/semver ^7.7.0` (devDep)
 
 Does NOT belong in web-pkg (consumer-specific):
+
 - `y-codemirror.next` — only the codemirror app's adapter uses this
 - `@tiptap/y-tiptap` — only the tiptap-using apps' adapters / editor components use this. Already pulled transitively via `@tiptap/extension-collaboration` (which web-pkg DOES have via its `useTextEditor`). When the tiptap app or text-editor needs to import from `@tiptap/y-tiptap` directly (custom cursor extension), it lists its own direct dep — same pattern as the codemirror app.
 - `@tiptap/markdown` — already in web-pkg via the markdown strategy; stays as-is
@@ -82,6 +90,7 @@ This minimises web-pkg's surface — the wrapper is editor-agnostic, so adapter-
 **No web-pkg test added in this phase** — unit test moves with the wrapper in Phase 5.
 
 **Verification:**
+
 - `pnpm install` in web root resolves cleanly with no peer warnings
 - `pnpm --filter=@opencloud-eu/web-pkg build` succeeds (web-pkg's own build / type-check validates imports)
 
@@ -100,11 +109,13 @@ This minimises web-pkg's surface — the wrapper is editor-agnostic, so adapter-
    - Keep `y-codemirror.next` in codemirror app, keep `@tiptap/*` + `@tiptap/y-tiptap` + `@tiptap/markdown` in tiptap app — those are app-bound
 5. Don't move tests yet — they go in Phase 5
 
-**Files to update in web (not web-app-*):**
+**Files to update in web (not web-app-\*):**
+
 - `dev/docker/opencloud.apps.yaml` (or web's equivalent) — add `codemirror` / `tiptap` entries with `config.realtimeUrl: wss://host.docker.internal:9200/realtime`
 - `docker-compose.yml` — add `./packages/web-app-codemirror/dist:/web/apps/codemirror` and `./packages/web-app-tiptap/dist:/web/apps/tiptap` volume mounts
 
 **Verification:**
+
 - `pnpm --filter=codemirror build` + `pnpm --filter=tiptap build` succeed
 - OC sees both apps via `/config.json` `external_apps`
 - Manual smoke test: open .md file, both apps appear in "Open with...", both load + edit + save
@@ -120,6 +131,7 @@ This minimises web-pkg's surface — the wrapper is editor-agnostic, so adapter-
 5. **Switch the etag probe in `server.js` from WebDAV HEAD to Graph API.** The current code uses WebDAV HEAD `/remote.php/dav/spaces/{itemId}` with the comment "Graph's /items endpoint is share-jail-only and 400s on personal drives" — verify whether that's still true against current OC Graph API. Likely the right endpoint is Graph `/v1.0/drives/{driveId}/items/{itemId}` which returns a DriveItem with `eTag`. If 400 still happens on personal drives, dig into why (might be v1beta1 vs v1.0, or missing query param). Goal: one consistent Graph call for permissions + etag, drop the WebDAV path from the sidecar.
 
 **Verification:**
+
 - `docker compose up -d hocuspocus` reachable at `wss://host.docker.internal:9200/realtime`
 - Apps from Phase 2 connect successfully
 - Integration spec (when ported in Phase 5) runs green against it
@@ -133,6 +145,7 @@ This is the biggest piece. `web-app-text-editor` currently uses `useTextEditor` 
 The user's directive: every text-editor instance goes through the realtime API (the wrapper). Y.Doc is always-on. Local-mode handles the no-sidecar case transparently. UX (toolbar, slash commands, strategies, multi-content-type support) is preserved.
 
 **Architectural shape:**
+
 - `CollaborativeWrapper` is the outer shell. text-editor's `App.vue` sits inside it.
 - `useTextEditor` is reworked to accept a **mandatory** Y.Doc parameter (NOT optional — the user explicitly wants this to always go through Y.Doc). When invoked, it includes the `Collaboration.configure({ document: ydoc, field: 'default' })` extension and disables StarterKit's built-in `undoRedo` (yUndoPlugin from y-tiptap takes over).
 - The toolbar / slash commands keep operating on the Tiptap editor instance the composable returns — they don't know about Y.Doc, they just call `editor.commands.bold()` / `undo()` / `setLink()` / etc.
@@ -141,6 +154,7 @@ The user's directive: every text-editor instance goes through the realtime API (
 
 **`CollaborativeAdapter` contract extension (important for performance):**
 The PoC adapters spawn a headless Tiptap editor inside `serialize(ydoc)` (see `web-app-tiptap/src/adapters/tiptapMarkdown.ts`). That's cheap when StarterKit + Markdown are the only extensions, but for text-editor's 4 strategies × 10+ extensions (link, image, table, task-list, etc.) we'd be re-instantiating Tiptap on every debounced serialize. The contract should be extended to optionally accept the LIVE editor for `serialize`, falling back to headless when no editor is bound (e.g., during stale-recovery on a peer that has the doc but no UI):
+
 ```ts
 export interface CollaborativeAdapter {
   hydrate(ydoc: Y.Doc, content: string): void | Promise<void>
@@ -148,22 +162,27 @@ export interface CollaborativeAdapter {
   // ... rest unchanged
 }
 ```
+
 Wrapper's `scheduleEmit` passes the live editor when one is bound (the editor component exposes it via `defineExpose` or a slot). This change is BACKWARDS compatible (existing adapters ignore the new arg) and lands as part of Phase 4 — no need to touch the wrapper in Phase 1.
 
 **What does NOT break going all-in collab:**
+
 - Strategies, toolbar, slash commands, undo/redo, multi-extension setup — all preserved
 - Single-user UX (no sidecar) — covered by the wrapper's local mode
 - The existing 250ms debounce in `useTextEditor` becomes the wrapper's 300ms debounce — close enough, can be tuned via prop
 
 **What could break if uncareful:**
+
 - Custom extensions that mutate editor state outside of commands (rare; none in current StarterKit / web-pkg extension set)
 - Schema drift between peers running different bundles — already handled by `enableContentCheck` + `onContentError` (the wrapper's app-version lock plus Tiptap's content-check is belt-and-braces)
 
 **Forking discipline (per user clarification):**
+
 - **DO NOT fork the wrapper.** It stays canonical in web-pkg.
 - **CAN fork `web-app-text-editor`** if the refactor would otherwise need to touch every call-site of `useTextEditor` in web. The text-editor app may diverge during the migration, the rest of web stays on the old `useTextEditor` for now. Reconverge in a follow-up.
 
 **Files to touch:**
+
 - `packages/web-app-text-editor/src/App.vue` — wrap content rendering inside `CollaborativeWrapper`; emit `update:currentContent`; drop the manual content-loading scaffolding
 - `packages/web-pkg/src/editor/composables/useTextEditor.ts` — require `ydoc: Y.Doc` parameter; add `Collaboration` to the extension list; flip `undoRedo: false` (was `history: false` in v2, now lint-warns) on `StarterKit.configure(...)`
 - `packages/web-pkg/src/editor/composables/strategies/markdown.ts` — expose a `CollaborativeAdapter` companion that uses the existing `editor.getMarkdown()` / `setContent(content, { contentType: 'markdown' })` logic
@@ -173,6 +192,7 @@ Wrapper's `scheduleEmit` passes the live editor when one is bound (the editor co
 **Local-mode safety net:** `CollaborativeWrapper` handles `realtimeUrl: null` → standalone Awareness, immediate hydrate, no provider. text-editor inherits this for free. Single-user mode works without a sidecar.
 
 **Verification:**
+
 - Existing text-editor unit tests still pass (the editor's public behaviour is unchanged: it receives content, emits content)
 - Manual: open .md → toolbar works, formatting buttons apply, slash commands work, content saves, isDirty flips, Ctrl+S works, undo/redo works (via yUndoPlugin now), route-leave modal — all unchanged from user POV
 - Open same .md in second tab → realtime sync works (new capability)
@@ -183,16 +203,19 @@ Wrapper's `scheduleEmit` passes the live editor when one is bound (the editor co
 ## Phase 5 — Tests in web
 
 **Unit:**
+
 - Move `tests/unit/CollaborativeWrapper.spec.ts` to `web/packages/web-pkg/tests/unit/components/CollaborativeWrapper.spec.ts`
 - Adapt to web-test-helpers' `shallowMount` + `defaultPlugins()` pattern (see `web/packages/design-system/src/components/OcButton/OcButton.spec.ts` as template)
 - web-pkg's vitest config (`web/tests/unit/config/vitest.config.ts`) already has happy-dom + Vue SFC support — no config additions needed
 
 **Integration:**
+
 - Move `realtime-sync.spec.ts` to `web/packages/web-pkg/tests/integration/realtime-sync.spec.ts` (new directory)
 - Add an integration vitest config or extend the existing one to include this path
 - Document `DEV_FAKE_TOKEN` setup in the integration test file for future maintainers
 
 **E2E (Cucumber, per user clarification):**
+
 - Convert the 9 Playwright specs from `web-extensions/packages/web-app-{codemirror,tiptap}/tests/e2e/*.spec.ts` into Cucumber features under `web/tests/e2e/cucumber/features/` + step definitions under `web/tests/e2e/cucumber/steps/`
 - Reuse existing helpers from `web/tests/e2e/support/` (login, file upload, navigation) as much as possible — the existing `editor.ts` page object is probably the right starting template
 - New feature files to create (one per scenario from our existing specs):
@@ -248,15 +271,15 @@ Wrapper's `scheduleEmit` passes the live editor when one is bound (the editor co
 
 5. **Cross-app collab room design (revisit).** Phase 4 ships per-app room keys: `documentName = `${appId}::${fileId}``. Different editors opening the same file → different Y.Doc rooms → clean schema/awareness isolation. The alternative we discussed but parked: one Y.Doc per file, per-app Y.XmlFragment field, shared awareness. Storage-cheaper (one SQLite row per file) but awareness leaks across apps (you'd see cursors of users editing the file in a different app, pointing at offsets that don't match your schema). User's read at the time: editing the same file from multiple apps simultaneously is itself a bad idea (race on WebDAV saves regardless of room shape), so per-app room wins. Worth revisiting if a real cross-app collab use case shows up.
 
-4. **Sidecar SQLite persistence — necessary?** The Hocuspocus server currently persists every Y.Doc to SQLite via `@hocuspocus/extension-sqlite`. Worth questioning whether we need it at all: when a room loads after eviction and the persisted etag doesn't match the live file's etag, we rehydrate from `props.currentContent` anyway (the stale-state recovery path), so the persisted CRDT history is throwaway most of the time. Trade-off: persistence buys us late-join performance (a new client joining a "warm" room with a long history gets the diff instead of a full re-hydrate) and a partial offline buffer (writes accepted while the room is in memory but the native file is unavailable). For the rooms-without-files use case in (4) below, persistence would matter more. For file-backed rooms with our hydrate-from-currentContent fallback, persistence is mostly ceremony. Consider running stateless and only enabling SQLite for non-file rooms.
+6. **Sidecar SQLite persistence — necessary?** The Hocuspocus server currently persists every Y.Doc to SQLite via `@hocuspocus/extension-sqlite`. Worth questioning whether we need it at all: when a room loads after eviction and the persisted etag doesn't match the live file's etag, we rehydrate from `props.currentContent` anyway (the stale-state recovery path), so the persisted CRDT history is throwaway most of the time. Trade-off: persistence buys us late-join performance (a new client joining a "warm" room with a long history gets the diff instead of a full re-hydrate) and a partial offline buffer (writes accepted while the room is in memory but the native file is unavailable). For the rooms-without-files use case in (4) below, persistence would matter more. For file-backed rooms with our hydrate-from-currentContent fallback, persistence is mostly ceremony. Consider running stateless and only enabling SQLite for non-file rooms.
 
-4. **Rename "realtime".** The current names (`realtimeUrl` prop, `/realtime` Traefik path, `realtimeBaseUrl` derivation) are vague — "realtime" describes a transport property, not the user-facing capability. Better candidates: `/collab` (short, semantic), `/coediting` (descriptive), `/sync` (generic, possibly too generic). Rename touches: wrapper prop name + docs, sidecar Traefik label, env var, apps' applicationConfig key, downstream documentation. Defer to one focused rename PR after the migration settles so we don't bikeshed mid-flight.
+7. **Rename "realtime".** The current names (`realtimeUrl` prop, `/realtime` Traefik path, `realtimeBaseUrl` derivation) are vague — "realtime" describes a transport property, not the user-facing capability. Better candidates: `/collab` (short, semantic), `/coediting` (descriptive), `/sync` (generic, possibly too generic). Rename touches: wrapper prop name + docs, sidecar Traefik label, env var, apps' applicationConfig key, downstream documentation. Defer to one focused rename PR after the migration settles so we don't bikeshed mid-flight.
 
-2. **Non-file collaborative rooms.** Right now the wrapper + sidecar assume every `documentName` is an OC file id (`<storageid>$<spaceid>!<opaqueid>`) and runs WebDAV/Graph permission checks against it. There are use cases for a room that has no file backing — ephemeral whiteboard-style collaboration, comment threads, etc. Idea: the sidecar treats `documentName` prefixes as a routing hint. `file_<composite-id>` → run the current ACL/etag probe path. `room_<arbitrary-id>` → no permission checks, no etag, no save loop. Wrapper would need to know about this distinction too (skip save when in room mode).
+8. **Non-file collaborative rooms.** Right now the wrapper + sidecar assume every `documentName` is an OC file id (`<storageid>$<spaceid>!<opaqueid>`) and runs WebDAV/Graph permission checks against it. There are use cases for a room that has no file backing — ephemeral whiteboard-style collaboration, comment threads, etc. Idea: the sidecar treats `documentName` prefixes as a routing hint. `file_<composite-id>` → run the current ACL/etag probe path. `room_<arbitrary-id>` → no permission checks, no etag, no save loop. Wrapper would need to know about this distinction too (skip save when in room mode).
 
-2. **File vs folder check in `onAuthenticate`.** Currently the sidecar's `probeFileAccess` runs WebDAV HEAD on `/remote.php/dav/spaces/{itemId}` and accepts any 200 response, including folders. A user could theoretically open a folder id in a collab editor and get an empty room (the editor would try to save back to a folder URL on every save — almost certainly errors, but ugly). Fix: check the Graph `/items/{itemId}` response's `folder` vs `file` discriminator, or `Resource-Type` PROPFIND, or `Content-Type` from a GET. Reject folders in `onAuthenticate`.
+9. **File vs folder check in `onAuthenticate`.** Currently the sidecar's `probeFileAccess` runs WebDAV HEAD on `/remote.php/dav/spaces/{itemId}` and accepts any 200 response, including folders. A user could theoretically open a folder id in a collab editor and get an empty room (the editor would try to save back to a folder URL on every save — almost certainly errors, but ugly). Fix: check the Graph `/items/{itemId}` response's `folder` vs `file` discriminator, or `Resource-Type` PROPFIND, or `Content-Type` from a GET. Reject folders in `onAuthenticate`.
 
-3. **Cross-peer `AppWrapper.currentETag` fix.** Already scoped into Phase 4.5 of the main plan — extending AppWrapper with an inject contract for peer-saved etags. Listed here as the cleanup that ties the local-mode + collab-mode etag stories together.
+10. **Cross-peer `AppWrapper.currentETag` fix.** Already scoped into Phase 4.5 of the main plan — extending AppWrapper with an inject contract for peer-saved etags. Listed here as the cleanup that ties the local-mode + collab-mode etag stories together.
 
 ---
 
