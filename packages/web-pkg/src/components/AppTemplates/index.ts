@@ -1,3 +1,6 @@
 export { default as AppWrapper } from './AppWrapper.vue'
 export * from './AppWrapperRoute'
+export { default as ResourceEditorHost } from './ResourceEditorHost.vue'
+export { default as ResourceEditorRouteHost } from './ResourceEditorRouteHost.vue'
+export * from './resourceEditorRoute'
 export * from './types'
