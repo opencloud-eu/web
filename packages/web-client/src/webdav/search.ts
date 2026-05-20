@@ -27,11 +27,16 @@ export const SearchFactory = (dav: DAV, options: WebDavOptions) => {
         ...opts
       })
 
+      const mappedResources = results.map((r) => ({
+        ...buildResource(r, dav.extraProps),
+        highlights: r.props[DavProperty.Highlights] || ''
+      }))
+
       return {
-        resources: results.map((r) => ({
-          ...buildResource(r, dav.extraProps),
-          highlights: r.props[DavProperty.Highlights] || ''
-        })),
+        resources: mappedResources.filter(
+          // dedupe results based on id to avoid duplicates in file list
+          (r, index, self) => self.findIndex((t) => t.id === r.id) === index
+        ),
         totalResults: range ? parseInt(range?.split('/')[1]) : null
       }
     }

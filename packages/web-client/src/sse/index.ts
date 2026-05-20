@@ -79,7 +79,7 @@ export class SSEAdapter implements EventSource {
         throw new RetriableError()
       },
       onerror: (err) => {
-        console.error(err)
+        console.warn('SSE connection error, reconnecting...', err)
         const event = new CustomEvent('error', { detail: err })
         this.onerror?.bind(this)(event)
 
