@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix(client): dedupe search results [[#2555](https://github.com/opencloud-eu/web/pull/2555)]
+- fix: prevent csp error logs in browser console [[#2562](https://github.com/opencloud-eu/web/pull/2562)]
 - fix(design-system): silence OcDrop attr-inheritance warning storm [[#2560](https://github.com/opencloud-eu/web/pull/2560)]
 - fix: empty markdown documents [[#2553](https://github.com/opencloud-eu/web/pull/2553)]
 - fix: prevents unsightly line breaks [[#2546](https://github.com/opencloud-eu/web/pull/2546)]
