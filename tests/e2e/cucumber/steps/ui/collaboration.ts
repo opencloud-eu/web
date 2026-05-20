@@ -7,6 +7,8 @@ import {
   codemirrorLine,
   remoteCaretCount,
   remoteCaretLabelText,
+  excalidrawSceneElementCount,
+  awaitExcalidrawMounted,
   type CollabEditor
 } from '../../../support/objects/app-files/utils/collab'
 import { api } from '../../../support'
@@ -110,6 +112,99 @@ Then(
   async function (this: World, stepUser: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     await expect.poll(async () => await remoteCaretCount(page)).toBe(0)
+  }
+)
+
+Then(
+  /^"([^"]+)" should see the excalidraw canvas mounted$/,
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await awaitExcalidrawMounted(page)
+  }
+)
+
+Then(
+  /^"([^"]+)" should see (\d+) elements? in the excalidraw scene$/,
+  async function (this: World, stepUser: string, count: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const expected = parseInt(count, 10)
+    // Excalidraw hydrates from Y.Doc shortly after the canvas mounts —
+    // poll for the count rather than read once. -1 means the test hook
+    // hasn't been registered yet (component not mounted), which we treat
+    // as "not yet".
+    await expect
+      .poll(async () => await excalidrawSceneElementCount(page), {
+        timeout: 10_000
+      })
+      .toBe(expected)
+  }
+)
+
+Then(
+  /^"([^"]+)" should see at least (\d+) elements? in the excalidraw scene$/,
+  async function (this: World, stepUser: string, count: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const minimum = parseInt(count, 10)
+    await expect
+      .poll(async () => await excalidrawSceneElementCount(page), {
+        timeout: 10_000
+      })
+      .toBeGreaterThanOrEqual(minimum)
+  }
+)
+
+When(
+  /^"([^"]+)" adds a rectangle to the excalidraw scene via the API$/,
+  async function (this: World, stepUser: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    // Drawing on the canvas via Playwright pointer events is fragile —
+    // Excalidraw's renderer uses requestAnimationFrame + pointer-capture
+    // semantics that don't always match Playwright's synthetic events.
+    // The test-only `window.__excalidrawAPI` hook lets us inject elements
+    // directly through Excalidraw's own imperative API, which is exactly
+    // what user drawing would land at. The y-excalidraw binding's
+    // onChange picks the new element up the same way and propagates it
+    // to the peer.
+    await page.evaluate(() => {
+      const w = window as unknown as {
+        __excalidrawAPI?: {
+          getSceneElements: () => readonly Record<string, unknown>[]
+          updateScene: (args: { elements: Record<string, unknown>[] }) => void
+        }
+      }
+      const api = w.__excalidrawAPI
+      if (!api) throw new Error('__excalidrawAPI not available on window')
+      const existing = api.getSceneElements()
+      const id = `r-test-${Date.now()}`
+      const rectangle: Record<string, unknown> = {
+        id,
+        type: 'rectangle',
+        x: 400,
+        y: 400,
+        width: 120,
+        height: 80,
+        angle: 0,
+        strokeColor: '#1971c2',
+        backgroundColor: 'transparent',
+        fillStyle: 'hachure',
+        strokeWidth: 1,
+        strokeStyle: 'solid',
+        roughness: 1,
+        opacity: 100,
+        groupIds: [],
+        frameId: null,
+        roundness: null,
+        seed: Math.floor(Math.random() * 1_000_000),
+        version: 1,
+        versionNonce: Math.floor(Math.random() * 1_000_000),
+        isDeleted: false,
+        boundElements: null,
+        updated: Date.now(),
+        link: null,
+        locked: false
+      }
+      api.updateScene({ elements: [...existing, rectangle] })
+    })
   }
 )
 

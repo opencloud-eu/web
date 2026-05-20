@@ -40,3 +40,24 @@ export const remoteCaretCount = (page: Page) => page.locator('.cm-ySelectionCare
 
 export const remoteCaretLabelText = (page: Page) =>
   page.locator('.cm-ySelectionInfo').first().textContent()
+
+// Excalidraw paints its scene to a single <canvas> — no per-element DOM,
+// no useful selectors for individual shapes. ExcalidrawCanvas.tsx exposes
+// the imperative API on `window.__excalidrawAPI` for exactly this case
+// (test-only hook); we read scene element count through it. Cleared on
+// unmount, so a stale read after navigation returns -1 (sentinel).
+export const excalidrawSceneElementCount = (page: Page) =>
+  page.evaluate<number>(() => {
+    const w = window as unknown as {
+      __excalidrawAPI?: { getSceneElements: () => unknown[] }
+    }
+    return w.__excalidrawAPI?.getSceneElements().length ?? -1
+  })
+
+// Wait for Excalidraw's root to mount inside our wrapper div. Confirms the
+// React island rendered, not just that the Vue shell is up.
+export const awaitExcalidrawMounted = async (page: Page): Promise<void> => {
+  await expect(page.locator('.excalidraw-host .excalidraw').first()).toBeVisible({
+    timeout: 15_000
+  })
+}
