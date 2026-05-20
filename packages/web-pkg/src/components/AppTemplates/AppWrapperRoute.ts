@@ -4,12 +4,7 @@ import { AppWrapperSlotArgs } from './types'
 import { FileContentOptions, UrlForResourceOptions } from '../../composables'
 import { Resource } from '@opencloud-eu/web-client'
 
-/**
- * @deprecated Prefer {@link resourceEditorRoute} together with a typed
- * `resourceEditor` extension. AppWrapperRoute still works (it delegates to the
- * legacy {@link AppWrapper} shim which synthesises a ResourceEditorExtension),
- * but new apps and migrations should use the new API directly.
- */
+/** @deprecated Use {@link resourceEditorRoute} with a typed `resourceEditor` extension. */
 export function AppWrapperRoute(
   fileEditor: ReturnType<typeof defineComponent>,
   options: {

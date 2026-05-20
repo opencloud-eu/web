@@ -12,13 +12,14 @@ export default defineWebApplication({
     const { $gettext } = useGettext()
     const appId = 'epub-reader'
 
-    // Lazy component so the epubjs bundle isn't loaded on every page hit.
+    // Defer the epubjs bundle until the editor actually renders.
     const EpubReader = defineAsyncComponent(() => import('./App.vue'))
 
     const extension: ResourceEditorExtension = {
       id: 'app.epub-reader',
       type: 'resourceEditor',
       appId,
+      extensions: ['epub'],
       component: EpubReader,
       fileContentOptions: { responseType: 'blob' }
     }

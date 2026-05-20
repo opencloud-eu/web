@@ -47,7 +47,7 @@ describe('resourceEditorRoute', () => {
 
   it('produces a component that re-renders on every mount (factory-shaped)', () => {
     const route = resourceEditorRoute({ extension: buildExtension() })
-    // The host component is built inline — assert it carries a render fn so
+    // The host component is built inline, assert it carries a render fn so
     // the route record is mountable.
     expect(route.component).toBeDefined()
     expect((route.component as { render?: unknown }).render).toBeTypeOf('function')

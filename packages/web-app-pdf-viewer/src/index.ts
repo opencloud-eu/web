@@ -17,6 +17,8 @@ export default defineWebApplication({
       id: 'app.pdf-viewer',
       type: 'resourceEditor',
       appId,
+      extensions: ['pdf'],
+      mimeTypes: ['application/pdf'],
       component: PdfViewer,
       urlForResourceOptions: { disposition: 'inline' }
     }

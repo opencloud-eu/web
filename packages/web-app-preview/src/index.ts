@@ -22,13 +22,13 @@ export default defineWebApplication({
       id: 'app.preview',
       type: 'resourceEditor',
       appId,
+      mimeTypes,
       component: App,
       urlForResourceOptions: { disposition: 'inline' }
     }
 
-    // The route is registered as `media` and gets namespaced by the runtime to
-    // `preview-media` (applicationId + '-' + route.name), which matches the
-    // routeName in appInfo.extensions below.
+    // Route name `media` gets namespaced by the runtime to `preview-media`
+    // (applicationId-name), matching the routeName in appInfo.extensions.
     const route = resourceEditorRoute({
       extension,
       name: 'media',

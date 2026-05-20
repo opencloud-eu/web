@@ -6,8 +6,8 @@
     @keydown.esc="closeApp"
   >
     <h1 class="sr-only" v-text="pageTitle" />
-    <loading-screen v-if="loading" />
-    <error-screen v-else-if="loadingError" :message="loadingError.message" />
+    <loading-screen v-if="combinedLoading" />
+    <error-screen v-else-if="combinedError" :message="combinedError.message" />
     <div v-else class="flex size-full">
       <component
         :is="extension.component"
@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { onBeforeRouteLeave } from 'vue-router'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 
 import AppTopBar from '../AppTopBar.vue'
@@ -50,6 +50,7 @@ import {
   useMessages,
   useModals,
   useResourceEditor,
+  useRouteFileLoader,
   useSideBar,
   type ResourceEditorExtension
 } from '../../composables'
@@ -60,6 +61,7 @@ const { extension } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
+const router = useRouter()
 const { isMobile } = useIsMobile()
 const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
@@ -70,26 +72,47 @@ const { showMessage } = useMessages()
 const {
   resource,
   space,
+  loading: resourceLoading,
+  loadingError: resourceLoadingError,
+  setResource,
+  closeApp: routeCloseApp,
+  activeFiles,
+  isFolderLoading,
+  loadFolderForFileContext
+} = useRouteFileLoader({
+  applicationId: extension.appId,
+  importResourceWithExtension: extension.importResourceWithExtension
+})
+
+const {
   url,
   currentContent,
   isDirty,
   isEditor,
   isReadOnly,
-  loading,
-  loadingError,
+  loading: fileLoading,
+  loadingError: fileLoadingError,
   applicationConfig,
   currentFileContext,
-  activeFiles,
-  isFolderLoading,
   save,
   closeApp,
-  loadFolderForFileContext,
   getUrlForResource,
   revokeUrl,
   setCurrentContent,
-  setResource,
   registerOnDeleteResourceCallback
-} = useResourceEditor({ extension: () => extension })
+} = useResourceEditor({
+  extension: () => extension,
+  resource: () => unref(resource),
+  space: () => unref(space),
+  onClose: routeCloseApp,
+  onResourceUpdate: setResource,
+  activeFiles: () => unref(activeFiles),
+  isFolderLoading: () => unref(isFolderLoading),
+  loadFolderForFileContext
+})
+
+const combinedLoading = computed(() => unref(resourceLoading) || unref(fileLoading))
+const combinedError = computed(() => unref(resourceLoadingError) ?? unref(fileLoadingError))
 
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({ appId: extension.appId })
 const { actions: downloadFileActions } = useFileActionsDownloadFile()
@@ -107,8 +130,8 @@ const pageTitle = computed(() => {
 })
 
 const actionOptions = computed<FileActionOptions>(() => ({
-  space: unref(space),
-  resources: [unref(resource)]
+  space: unref(space) as any,
+  resources: [unref(resource) as any]
 }))
 
 const autosavePopup = () => {
@@ -205,7 +228,7 @@ const dropDownMenuSections = computed(() => {
 })
 
 const appBarExtension = computed<CustomComponentExtension[]>(() => {
-  if (unref(loading) || unref(loadingError) || !unref(resource)) {
+  if (unref(combinedLoading) || unref(combinedError) || !unref(resource)) {
     return []
   }
   return [
@@ -230,10 +253,9 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
 
 registerExtensions(appBarExtension)
 
-// Safety net for unmounts that don't go through vue-router (HMR, parent
-// KeepAlive flush, programmatic route swap that replaces the component
-// without firing onBeforeRouteLeave on this leaf). onBeforeRouteLeave still
-// runs ahead of unmount in normal navigation; this is purely belt-and-braces.
+// Belt-and-braces, onBeforeRouteLeave already runs ahead of unmount in
+// normal navigation, but HMR / KeepAlive flush / programmatic route swaps
+// would otherwise leak the registered top-bar extension.
 onBeforeUnmount(() => {
   unregisterExtensions([topBarExtensionId])
 })
@@ -272,8 +294,7 @@ onBeforeRouteLeave((_to, _from, next) => {
   }
 })
 
-// Props handed to the embedded editor/viewer component. We forward the
-// superset; Vue only binds the keys the component declared in `props`/`emits`.
+// Superset; Vue only binds the keys the component actually declares.
 const editorBindings = computed(() => ({
   url: unref(url),
   space: unref(space),
@@ -290,11 +311,14 @@ const editorBindings = computed(() => ({
   'onUpdate:currentContent': setCurrentContent,
   'onRegister:onDeleteResourceCallback': registerOnDeleteResourceCallback,
   'onDelete:resource': () => {
+    const r = unref(resource)
+    const s = unref(space)
+    if (!r || !s) return
     const [deleteAction] = unref(deleteFileActions)
-    if (!deleteAction.isVisible({ space: unref(space), resources: [unref(resource)] })) {
+    if (!deleteAction.isVisible({ space: s, resources: [r] })) {
       return
     }
-    deleteAction.handler({ space: unref(space), resources: [unref(resource)] })
+    deleteAction.handler({ space: s, resources: [r] })
   },
 
   onSave: save,
@@ -303,4 +327,6 @@ const editorBindings = computed(() => ({
   revokeUrl,
   getUrlForResource
 }))
+
+void router
 </script>

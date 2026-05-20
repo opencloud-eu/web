@@ -6,20 +6,17 @@ import type { ResourceEditorExtension } from '../../composables/piniaStores'
 
 export interface ResourceEditorRouteOptions {
   extension: ResourceEditorExtension
-  /** Defaults to `extension.appId`. */
   name?: string
-  /** Defaults to `/:driveAliasAndItem(.*)?` — the path AppWrapperRoute has used historically. */
   path?: string
-  /** Defaults to `'hybrid'`. */
   authContext?: AuthContext
-  /** Merged on top of the defaults `{authContext, patchCleanPath: true}`. */
   meta?: WebRouteMeta
 }
 
 /**
- * Build a vue-router RouteRecord that mounts a ResourceEditorExtension via
- * the standalone route host. Sets the conventional defaults so apps don't
- * have to repeat them.
+ * Builds a vue-router RouteRecord that mounts a ResourceEditorExtension via
+ * `ResourceEditorRouteHost`. Defaults: `name = extension.appId`,
+ * `path = '/:driveAliasAndItem(.*)?'`, `authContext = 'hybrid'`,
+ * `meta.patchCleanPath = true`.
  */
 export function resourceEditorRoute(opts: ResourceEditorRouteOptions): RouteRecordRaw {
   const { extension, name, path, authContext, meta } = opts

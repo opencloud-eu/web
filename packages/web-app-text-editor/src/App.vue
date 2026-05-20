@@ -65,7 +65,7 @@ const placeholder = computed(() => {
 const textEditor = useTextEditor({
   contentType: unref(parsedContentType),
   modelValue: toRef(() => currentContent),
-  readonly: isReadOnly,
+  readonly: () => isReadOnly,
   placeholder: unref(placeholder),
   onUpdate: (content) => emit('update:currentContent', content)
 })

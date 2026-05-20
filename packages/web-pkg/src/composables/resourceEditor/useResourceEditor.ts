@@ -1,5 +1,4 @@
 import {
-  Ref,
   MaybeRefOrGetter,
   computed,
   onBeforeUnmount,
@@ -9,149 +8,123 @@ import {
   unref,
   watch
 } from 'vue'
-import { DateTime } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import { useRouter } from 'vue-router'
-import { dirname } from 'path'
 import toNumber from 'lodash-es/toNumber'
 
 import {
+  HttpError,
   Resource,
   SpaceResource,
-  buildIncomingShareResource,
   call,
-  HttpError,
-  isPersonalSpaceResource,
   isProjectSpaceResource,
-  isShareSpaceResource
+  urlJoin
 } from '@opencloud-eu/web-client'
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 
-import { useRoute, useRouteParam, useRouteQuery } from '../router'
-import { useAppDefaults } from '../appDefaults'
+import { useAppConfig } from '../appDefaults/useAppConfig'
+import { useAppFileHandling } from '../appDefaults/useAppFileHandling'
 import { useAppMeta } from '../appDefaults/useAppMeta'
-import { queryItemAsString } from '../appDefaults/useAppNavigation'
+import type { FileContext } from '../appDefaults/types'
 import { useClientService } from '../clientService'
 import { useEventBus } from '../eventBus'
 import { useLoadingService } from '../loadingService'
-import { useGetResourceContext } from '../resources'
-import { useSelectedResources } from '../selection'
 import {
   useAppsStore,
   useConfigStore,
   useMessages,
   useModals,
   useResourcesStore,
-  useSharesStore,
   useSpacesStore,
   type ResourceEditorExtension
 } from '../piniaStores'
-import { formatFileSize, getSharedDriveItem } from '../../helpers'
+import { formatFileSize } from '../../helpers'
 
 export interface UseResourceEditorOptions {
-  /**
-   * Reactive accepted form (ref / getter / plain) to stay consistent with the
-   * other extension-registry-driven composables. **Two fields are snapshot
-   * once at construction**, however: `extension.appId` (passed to
-   * `useAppDefaults`) and `extension.component` (the rendered Vue component).
-   * Swapping those at runtime would tear down half the host's wiring — if
-   * you need a different appId or component, mount a fresh host instead.
-   * Everything else (`fileSizeLimit`, `urlForResourceOptions`,
-   * `fileContentOptions`, `disableAutoSave`, `importResourceWithExtension`)
-   * is read reactively from `extension`.
-   */
   extension: MaybeRefOrGetter<ResourceEditorExtension>
+  resource: MaybeRefOrGetter<Resource | undefined>
+  space: MaybeRefOrGetter<SpaceResource | undefined>
+  onClose?: () => void
+  onResourceUpdate?: (resource: Resource) => void
+  activeFiles?: MaybeRefOrGetter<Resource[]>
+  isFolderLoading?: MaybeRefOrGetter<boolean>
+  loadFolderForFileContext?: (ctx: FileContext) => Promise<void>
 }
 
 /**
- * Centralizes the resource-loading, content-loading, and save logic that used
- * to live inside `AppWrapper.vue`. Consumed by `ResourceEditorRouteHost.vue`
- * (the standalone route mount) — embed-mode support (explicit resource without
- * a matching route) is planned as a follow-up step; today this composable
- * assumes it is called from a route-bound component.
- *
- * Capability detection (load url? load content? autosave? …) is driven off the
- * registered `extension.component`'s declared props/emits, mirroring the
- * pre-refactor heuristic but now typed against `ResourceEditorBindings`.
+ * Resource-agnostic core: given an extension + resource + space, resolves
+ * capability-driven bindings (`url`, `currentContent`) by inspecting the
+ * component's declared props/emits, and runs save/dirty/autosave for editors.
+ * Route reading and resource resolution are the caller's responsibility.
  */
 export function useResourceEditor(options: UseResourceEditorOptions) {
   const extensionRef = toRef(options.extension)
-  // Snapshot the identity fields once — see UseResourceEditorOptions JSDoc.
+  const resource = toRef(options.resource)
+  const space = toRef(options.space)
+  const activeFiles = toRef(options.activeFiles ?? [])
+  const isFolderLoading = toRef(options.isFolderLoading ?? false)
+
+  // appId and component are snapshot at construction; swapping them would
+  // tear down half the host's wiring, mount a fresh host instead.
   const appId = unref(extensionRef).appId
   const component = unref(extensionRef).component
 
   const { $gettext, current: currentLanguage } = useGettext()
-  const router = useRouter()
-  const currentRoute = useRoute()
   const clientService = useClientService()
   const loadingService = useLoadingService()
-  const { getResourceContext } = useGetResourceContext()
-  const { selectedResources } = useSelectedResources()
   const { dispatchModal } = useModals()
   const { showMessage, showErrorMessage } = useMessages()
   const appsStore = useAppsStore()
   const spacesStore = useSpacesStore()
   const configStore = useConfigStore()
   const resourcesStore = useResourcesStore()
-  const sharesStore = useSharesStore()
   const eventBus = useEventBus()
 
-  // The component's props/emits are static for the lifetime of the host —
-  // they're snapshot once. Editor vs viewer is decided at runtime by whether
-  // the component declared `update:currentContent`; components that own their
-  // own resource loading (preview, etc.) declare `update:resource` instead.
   const componentSpec = component as {
     props?: Record<string, unknown> | string[]
     emits?: string[] | Record<string, unknown>
   }
-
   const hasProp = (name: string): boolean => {
     const props = componentSpec.props ?? {}
     if (Array.isArray(props)) return props.includes(name)
     return Object.prototype.hasOwnProperty.call(props, name)
   }
-
   const hasEmit = (name: string): boolean => {
     const emits = componentSpec.emits ?? []
     if (Array.isArray(emits)) return emits.includes(name)
     return Object.prototype.hasOwnProperty.call(emits, name)
   }
-
   const isEditor = computed(() => hasEmit('update:currentContent'))
-  const noResourceLoading = computed(() => hasEmit('update:resource'))
 
-  const {
-    applicationConfig,
-    closeApp,
-    currentFileContext,
-    getFileContents,
-    getFileInfo,
-    getUrlForResource,
-    putFileContents,
-    replaceInvalidFileRoute,
-    revokeUrl,
-    activeFiles,
-    loadFolderForFileContext,
-    isFolderLoading
-  } = useAppDefaults({
-    applicationId: appId
-  })
-
-  const { applicationMeta } = useAppMeta({
-    applicationId: appId,
-    appsStore
-  })
+  const { getFileContents, getFileInfo, putFileContents, getUrlForResource, revokeUrl } =
+    useAppFileHandling({ clientService })
+  const { applicationConfig } = useAppConfig({ appsStore, applicationId: appId })
+  const { applicationMeta } = useAppMeta({ applicationId: appId, appsStore })
 
   const fileSizeLimit = computed(
     () => unref(extensionRef).fileSizeLimit ?? unref(applicationMeta).meta?.fileSizeLimit
   )
 
-  const resource = ref<Resource>() as Ref<Resource>
-  const space = ref<SpaceResource>() as Ref<SpaceResource>
+  // clientService.webdav calls only read space/item/itemId/path from
+  // FileContext, routing fields stay empty in the embed case.
+  const currentFileContext = computed<FileContext>(() => {
+    const r = unref(resource)
+    const s = unref(space)
+    return {
+      path: r && s ? urlJoin(s.webDavPath, r.path) : '',
+      space: s as SpaceResource,
+      item: r?.path ?? '',
+      itemId: r?.id ?? '',
+      fileName: r?.name ?? '',
+      driveAliasAndItem: '',
+      routeName: '',
+      routeParams: {},
+      routeQuery: {}
+    }
+  })
+
   const currentETag = ref('')
   const url = ref('')
-  const loading = ref(!unref(noResourceLoading))
   const loadingError = ref<Error | null>(null)
   const isReadOnly = ref(false)
   const serverContent = ref<unknown>()
@@ -159,12 +132,12 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
   const deleteResourceCallback = ref<(() => void) | null>(null)
   let deleteResourceEventToken = ''
 
+  const loading = ref(false)
   const isDirty = computed(() => unref(currentContent) !== unref(serverContent))
 
   const preventUnload = (e: Event) => {
     e.preventDefault()
   }
-
   watch(isDirty, (dirty) => {
     if (dirty) {
       window.addEventListener('beforeunload', preventUnload)
@@ -173,125 +146,23 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
     }
   })
 
-  const driveAliasAndItem = useRouteParam('driveAliasAndItem')
-  const fileIdQueryItem = useRouteQuery('fileId')
-  const fileId = computed(() => queryItemAsString(unref(fileIdQueryItem)))
-
-  // When the user opens a file via fileId (e.g. from search results) without a
-  // resolved driveAliasAndItem, we need to look up the drive context first and
-  // push a clean route. Once that lands the watcher re-runs with both bits set.
-  const addMissingDriveAliasAndItem = async () => {
-    const id = unref(fileId)
-    const { space: ctxSpace, path } = await getResourceContext(id)
-    const dai = ctxSpace.getDriveAliasAndItem({ path } as Resource)
-
-    if (isPersonalSpaceResource(ctxSpace)) {
-      return router.push({
-        params: {
-          ...unref(currentRoute).params,
-          driveAliasAndItem: dai
-        },
-        query: {
-          ...unref(currentRoute).query,
-          fileId: id,
-          contextRouteName: 'files-spaces-generic',
-          contextRouteParams: { driveAliasAndItem: dirname(dai) } as any
-        }
-      })
-    }
-
-    return router.push({
-      params: {
-        ...unref(currentRoute).params,
-        driveAliasAndItem: dai
-      },
-      query: {
-        ...unref(currentRoute).query,
-        fileId: id,
-        contextRouteName: path === '/' ? 'files-shares-with-me' : 'files-spaces-generic',
-        ...(isShareSpaceResource(ctxSpace) && { shareId: ctxSpace.id }),
-        contextRouteParams: {
-          driveAliasAndItem: dirname(dai)
-        } as any,
-        contextRouteQuery: {
-          ...(isShareSpaceResource(ctxSpace) && { shareId: ctxSpace.id })
-        } as any
-      }
-    })
-  }
-
-  const loadResourceTask = useTask(function* (signal) {
-    try {
-      if (!unref(driveAliasAndItem)) {
-        yield addMissingDriveAliasAndItem()
-      }
-      space.value = unref(unref(currentFileContext).space)
-      const fileInfo = yield getFileInfo(unref(currentFileContext), { signal })
-      resource.value = fileInfo
-
-      if (isShareSpaceResource(unref(space))) {
-        // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
-        unref(resource).remoteItemId = unref(space).id
-
-        if (unref(resource).id === unref(resource).remoteItemId) {
-          const sharedDriveItem = yield* call(
-            getSharedDriveItem({
-              graphClient: clientService.graphAuthenticated,
-              spacesStore,
-              space: unref(space)
-            })
-          )
-
-          if (sharedDriveItem) {
-            resource.value = {
-              ...fileInfo,
-              ...buildIncomingShareResource({
-                graphRoles: sharesStore.graphRoles,
-                driveItem: sharedDriveItem,
-                serverUrl: configStore.serverUrl
-              }),
-              tags: fileInfo.tags // tags are always [] in Graph API, hence take them from webdav
-            }
-          }
-        }
-      }
-      resourcesStore.initResourceList({ currentFolder: null, resources: [unref(resource)] })
-      selectedResources.value = [unref(resource)]
-    } catch (e) {
-      console.error(e)
-      loadingError.value = e as Error
-      loading.value = false
-    }
-  }).restartable()
-
   const loadFileTask = useTask(function* (signal) {
+    const r = unref(resource)
+    const s = unref(space)
+    if (!r || !s) {
+      return
+    }
     try {
-      const importExt = unref(extensionRef).importResourceWithExtension
-      const newExtension = importExt ? importExt(unref(resource)) : null
-      if (newExtension) {
-        const timestamp = DateTime.local().toFormat('yyyyMMddHHmmss')
-        const targetPath = `${unref(resource).name}_${timestamp}.${newExtension}`
-        if (
-          !(yield clientService.webdav.copyFiles(
-            unref(space),
-            unref(resource),
-            unref(space),
-            { path: targetPath },
-            { signal }
-          ))
-        ) {
-          throw new Error($gettext('Importing failed'))
-        }
-
-        resource.value = { path: targetPath } as Resource
-      }
-
-      if (replaceInvalidFileRoute(currentFileContext, unref(resource))) {
-        return
+      loading.value = true
+      loadingError.value = null
+      // Revoke the previous blob URL so resource swaps don't leak ObjectURLs.
+      if (hasProp('url') && url.value) {
+        revokeUrl(url.value)
+        url.value = ''
       }
 
       isReadOnly.value = ![DavPermission.Updateable, DavPermission.FileUpdateable].some(
-        (p) => (unref(resource).permissions || '').indexOf(p) > -1
+        (p) => (r.permissions || '').indexOf(p) > -1
       )
 
       if (hasProp('currentContent')) {
@@ -306,7 +177,7 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
       }
 
       if (hasProp('url')) {
-        url.value = yield getUrlForResource(unref(space), unref(resource), {
+        url.value = yield getUrlForResource(s, r, {
           ...unref(extensionRef).urlForResourceOptions,
           signal
         })
@@ -320,36 +191,34 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
   }).restartable()
 
   watch(
-    currentFileContext,
-    async () => {
-      if (!unref(noResourceLoading)) {
-        await loadResourceTask.perform()
-
-        if (unref(fileSizeLimit) && toNumber(unref(resource).size) > unref(fileSizeLimit)) {
-          dispatchModal({
-            title: $gettext('File exceeds %{threshold}', {
-              threshold: formatFileSize(unref(fileSizeLimit), currentLanguage)
-            }),
-            message: $gettext(
-              '%{resource} exceeds the recommended size of %{threshold} for editing, and may cause performance issues.',
-              {
-                resource: unref(resource).name,
-                threshold: formatFileSize(unref(fileSizeLimit), currentLanguage)
-              }
-            ),
-            confirmText: $gettext('Continue'),
-            onCancel: () => {
-              closeApp()
-            },
-            onConfirm: () => {
-              loadFileTask.perform()
+    [() => unref(resource), () => unref(space)],
+    ([r]) => {
+      if (!r) {
+        return
+      }
+      const limit = unref(fileSizeLimit)
+      if (limit && toNumber(r.size) > limit) {
+        dispatchModal({
+          title: $gettext('File exceeds %{threshold}', {
+            threshold: formatFileSize(limit, currentLanguage)
+          }),
+          message: $gettext(
+            '%{resource} exceeds the recommended size of %{threshold} for editing, and may cause performance issues.',
+            {
+              resource: r.name,
+              threshold: formatFileSize(limit, currentLanguage)
             }
-          })
-        } else {
-          loadFileTask.perform()
-        }
+          ),
+          confirmText: $gettext('Continue'),
+          onCancel: () => {
+            options.onClose?.()
+          },
+          onConfirm: () => {
+            loadFileTask.perform()
+          }
+        })
       } else {
-        space.value = unref(unref(currentFileContext).space)
+        loadFileTask.perform()
       }
     },
     { immediate: true }
@@ -363,13 +232,13 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
       errors: [error]
     })
   }
-
   const autosavePopup = () => {
     showMessage({ title: $gettext('File autosaved') })
   }
 
   const saveFileTask = useTask(function* () {
     const newContent = unref(currentContent)
+    const r = unref(resource)
     try {
       const putFileContentsResponse = yield putFileContents(currentFileContext, {
         content: newContent as string,
@@ -397,7 +266,7 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
           break
         case 507:
           const projectSpace = spacesStore.spaces.find(
-            (s) => s.id === unref(resource).storageId && isProjectSpaceResource(s)
+            (s) => s.id === r?.storageId && isProjectSpaceResource(s)
           )
           if (projectSpace) {
             errorPopup(
@@ -422,19 +291,20 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
     await saveFileTask.perform()
   }
 
+  const closeApp = () => {
+    options.onClose?.()
+  }
+
   const onDeleteResourceCallback = (deletedResources: Resource[]) => {
     const currentResourceDeleted = deletedResources.find(
       (deletedResource) => deletedResource.id === unref(resource)?.id
     )
-
     if (!currentResourceDeleted) {
       return
     }
-
     if (unref(deleteResourceCallback)) {
-      return unref(deleteResourceCallback)()
+      return unref(deleteResourceCallback)!()
     }
-
     closeApp()
   }
 
@@ -446,21 +316,13 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
       onDeleteResourceCallback
     )
 
-    if (resourcesStore.ancestorMetaData?.['/'] && unref(space)) {
-      const clearAncestorData = resourcesStore.ancestorMetaData['/'].spaceId !== unref(space).id
-      if (clearAncestorData) {
-        // clear ancestor data in case the user switched spaces (e.g. by opening a file via search results)
-        resourcesStore.setAncestorMetaData({})
-      }
-    }
-
     if (!unref(isEditor)) {
       return
     }
 
     const editorOptions = configStore.options.editor
     const disableAutoSave = unref(extensionRef).disableAutoSave
-    if (editorOptions.autosaveEnabled && !disableAutoSave) {
+    if (editorOptions?.autosaveEnabled && !disableAutoSave) {
       autosaveIntervalId = setInterval(
         async () => {
           if (isDirty.value) {
@@ -484,33 +346,18 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
       revokeUrl(unref(url))
     }
 
-    if (!unref(isEditor)) {
-      return
-    }
-
     if (autosaveIntervalId) {
       clearInterval(autosaveIntervalId)
       autosaveIntervalId = null
     }
   })
 
-  // Setters bridging emits from the embedded component back into our state
   const setCurrentContent = (value: unknown) => {
     currentContent.value = value
   }
-
   const setResource = (value: Resource) => {
-    space.value = unref(unref(currentFileContext).space)
-    // FIXME: As soon the backend exposes oc-remote-id via webdav, remove the assignment below
-    resource.value = {
-      ...value,
-      ...(isShareSpaceResource(unref(space)) && {
-        remoteItemId: unref(space).id
-      })
-    }
-    selectedResources.value = [unref(resource)]
+    options.onResourceUpdate?.(value)
   }
-
   const registerOnDeleteResourceCallback = (callback: () => void) => {
     deleteResourceCallback.value = callback
   }
@@ -533,9 +380,9 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
     isFolderLoading,
     save,
     closeApp,
-    loadFolderForFileContext,
     getUrlForResource,
     revokeUrl,
+    loadFolderForFileContext: options.loadFolderForFileContext ?? (async () => undefined),
     setCurrentContent,
     setResource,
     registerOnDeleteResourceCallback,

@@ -96,6 +96,7 @@ export default defineWebApplication({
       id: 'app.text-editor',
       type: 'resourceEditor',
       appId,
+      extensions: appFileExtensions.map((e) => e.extension),
       component: TextEditor
     }
 

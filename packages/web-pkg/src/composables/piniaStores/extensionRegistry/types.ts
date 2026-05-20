@@ -103,21 +103,14 @@ export interface AppMenuItemExtension extends Extension {
 }
 
 /**
- * The full set of bindings a resourceEditor component can receive from
- * useResourceEditor. A component opts in to capabilities by declaring the
- * matching prop/emit — e.g. declaring a `url` prop tells useResourceEditor
- * to resolve getUrlForResource; declaring an `update:currentContent` emit
- * marks the component as an editor (vs. viewer) and engages the save /
- * dirty-tracking / autosave path.
+ * Bindings a resourceEditor component receives from `useResourceEditor`.
+ * A component opts in to capabilities by declaring the matching prop/emit:
+ * a `url` prop triggers `getUrlForResource`, an `update:currentContent`
+ * emit makes it an editor and engages the save / dirty / autosave path.
  *
- * Every binding is typed optional here because it reflects the host's actual
- * runtime contract: `resource`, `space`, `applicationConfig`,
- * `currentFileContext` are guaranteed once `loading` resolves, but components
- * that own their own resource loading (declaring `update:resource`) see them
- * undefined initially. Components that *know* the host always provides a
- * value when they render (a viewer behind the route's LoadingScreen) are
- * free to declare their props strict (`url: string`) instead of `Pick<…>` —
- * Vue's prop typing is covariant so it still assigns to
+ * All bindings are optional, components are free to declare only what
+ * they consume. Vue's prop typing is covariant, so a component with
+ * strict prop types (e.g. `url: string`) still satisfies
  * {@link ResourceEditorComponent}.
  */
 export interface ResourceEditorBindings {
@@ -133,16 +126,13 @@ export interface ResourceEditorBindings {
   isDirty?: boolean
   isFolderLoading?: boolean
 
-  // Method-shaped bindings (forwarded so apps don't need their own clientService wiring)
   loadFolderForFileContext?: AppFolderHandlingResult['loadFolderForFileContext']
   getUrlForResource?: AppFileHandlingResult['getUrlForResource']
   revokeUrl?: AppFileHandlingResult['revokeUrl']
 
-  // Method-shorthand syntax (vs property arrow) is used here so TypeScript
-  // applies bivariant parameter checking to these callback bindings — apps
-  // declare emits whose handler signature varies slightly (e.g. preview's
-  // `register:onDeleteResourceCallback` takes a `() => Promise<void>` rather
-  // than the looser `() => Promise<void> | void` we'd otherwise enforce).
+  // Method-shorthand syntax (not arrow) so TypeScript applies bivariant
+  // parameter checking, apps declare emit signatures that vary slightly
+  // (e.g. `register:onDeleteResourceCallback` returning `Promise<void>`).
   'onUpdate:currentContent'?(value: unknown): void
   'onUpdate:resource'?(resource: Resource): void
   'onRegister:onDeleteResourceCallback'?(callback: () => Promise<void> | void): void
@@ -164,6 +154,15 @@ export interface ResourceEditorExtension extends Extension {
   appId: string
 
   component: ResourceEditorComponent
+
+  /** File extensions (lowercase, no dot) the editor can open. */
+  extensions?: string[]
+  /** MIME types the editor can open. Exact match or `family/*` glob. */
+  mimeTypes?: string[]
+  /** Custom matcher for cases that extensions/mimeTypes can't express. */
+  matches?: (resource: Resource) => boolean
+  /** Tie-breaker when multiple extensions match the same resource. */
+  hasPriority?: boolean
 
   urlForResourceOptions?: UrlForResourceOptions
   fileContentOptions?: FileContentOptions

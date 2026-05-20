@@ -2,21 +2,21 @@ import { defineComponent, ref } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import ResourceEditorRouteHost from '../../../../src/components/AppTemplates/ResourceEditorRouteHost.vue'
-import { useResourceEditor } from '../../../../src/composables/resourceEditor'
+import { useResourceEditor, useRouteFileLoader } from '../../../../src/composables/resourceEditor'
 import { useExtensionRegistry } from '../../../../src/composables/piniaStores'
 import type { ResourceEditorExtension } from '../../../../src/composables/piniaStores'
-import type { Resource } from '@opencloud-eu/web-client'
+import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 vi.mock('../../../../src/composables/resourceEditor/useResourceEditor')
+vi.mock('../../../../src/composables/resourceEditor/useRouteFileLoader')
 
 type UseResourceEditorReturn = ReturnType<typeof useResourceEditor>
+type UseRouteFileLoaderReturn = ReturnType<typeof useRouteFileLoader>
 
 const buildEditorState = (
   overrides: Partial<UseResourceEditorReturn> = {}
 ): UseResourceEditorReturn =>
   ({
-    resource: ref(mock<Resource>({ id: 'r1', name: 'doc.pdf' })),
-    space: ref(undefined),
     url: ref(''),
     currentContent: ref(''),
     serverContent: ref(''),
@@ -28,11 +28,8 @@ const buildEditorState = (
     isEditor: ref(false),
     applicationConfig: ref({}),
     currentFileContext: ref({ fileName: 'doc.pdf' }),
-    activeFiles: ref([]),
-    isFolderLoading: ref(false),
     save: vi.fn(),
     closeApp: vi.fn(),
-    loadFolderForFileContext: vi.fn(),
     getUrlForResource: vi.fn(),
     revokeUrl: vi.fn(),
     setCurrentContent: vi.fn(),
@@ -42,6 +39,22 @@ const buildEditorState = (
     ...overrides
   }) as unknown as UseResourceEditorReturn
 
+const buildLoaderState = (
+  overrides: Partial<UseRouteFileLoaderReturn> = {}
+): UseRouteFileLoaderReturn =>
+  ({
+    resource: ref(mock<Resource>({ id: 'r1', name: 'doc.pdf' })),
+    space: ref(mock<SpaceResource>()),
+    loading: ref(false),
+    loadingError: ref(null),
+    setResource: vi.fn(),
+    closeApp: vi.fn(),
+    activeFiles: ref([]),
+    isFolderLoading: ref(false),
+    loadFolderForFileContext: vi.fn(),
+    ...overrides
+  }) as unknown as UseRouteFileLoaderReturn
+
 const buildExtension = (): ResourceEditorExtension => ({
   id: 'app.test',
   type: 'resourceEditor',
@@ -49,8 +62,14 @@ const buildExtension = (): ResourceEditorExtension => ({
   component: defineComponent({ template: '<section class="editor-stub" />' })
 })
 
-const mountHost = (overrides: Partial<UseResourceEditorReturn> = {}) => {
-  vi.mocked(useResourceEditor).mockReturnValue(buildEditorState(overrides))
+const mountHost = (
+  options: {
+    editor?: Partial<UseResourceEditorReturn>
+    loader?: Partial<UseRouteFileLoaderReturn>
+  } = {}
+) => {
+  vi.mocked(useResourceEditor).mockReturnValue(buildEditorState(options.editor))
+  vi.mocked(useRouteFileLoader).mockReturnValue(buildLoaderState(options.loader))
   const mocks = defaultComponentMocks()
   return mount(ResourceEditorRouteHost, {
     props: { extension: buildExtension() },
@@ -72,14 +91,20 @@ const mountHost = (overrides: Partial<UseResourceEditorReturn> = {}) => {
 }
 
 describe('ResourceEditorRouteHost', () => {
-  it('renders the loading partial while loading', () => {
-    const wrapper = mountHost({ loading: ref(true) })
+  it('renders the loading partial while the route loader is still loading', () => {
+    const wrapper = mountHost({ loader: { loading: ref(true) as any } })
     expect(wrapper.find('.editor-stub').exists()).toBe(false)
     expect(wrapper.findComponent({ name: 'LoadingScreen' }).exists()).toBe(true)
   })
 
-  it('renders the error partial when loadingError is set', () => {
-    const wrapper = mountHost({ loadingError: ref(new Error('nope')) })
+  it('renders the loading partial while the file loader is still loading', () => {
+    const wrapper = mountHost({ editor: { loading: ref(true) as any } })
+    expect(wrapper.find('.editor-stub').exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'LoadingScreen' }).exists()).toBe(true)
+  })
+
+  it('renders the error partial when the route loader reports an error', () => {
+    const wrapper = mountHost({ loader: { loadingError: ref(new Error('nope')) as any } })
     expect(wrapper.find('.editor-stub').exists()).toBe(false)
     const err = wrapper.findComponent({ name: 'ErrorScreen' })
     expect(err.exists()).toBe(true)
@@ -97,9 +122,9 @@ describe('ResourceEditorRouteHost', () => {
     expect(wrapper.find('main').attributes('id')).toBe('test-app')
   })
 
-  it('invokes closeApp when ESC is pressed', async () => {
+  it('invokes the composable closeApp when ESC is pressed', async () => {
     const closeApp = vi.fn()
-    const wrapper = mountHost({ closeApp })
+    const wrapper = mountHost({ editor: { closeApp } })
     await wrapper.find('main').trigger('keydown.esc')
     expect(closeApp).toHaveBeenCalled()
   })

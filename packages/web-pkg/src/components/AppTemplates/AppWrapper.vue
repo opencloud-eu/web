@@ -14,11 +14,8 @@ import {
 } from '../../composables'
 
 /**
- * @deprecated Use {@link resourceEditorRoute} together with a typed
- * `resourceEditor` extension registered via the extension registry. This
- * component is now a backwards-compatibility shim that synthesises a
- * ResourceEditorExtension from the legacy `applicationId` + `wrappedComponent`
- * props so apps still using {@link AppWrapperRoute} keep working.
+ * @deprecated Backwards-compat shim. New code should use
+ * {@link resourceEditorRoute} with a typed `resourceEditor` extension.
  */
 const {
   applicationId,
@@ -41,9 +38,6 @@ if (import.meta.env.DEV) {
 }
 
 if (!wrappedComponent) {
-  // The legacy contract (AppWrapperRoute) always supplied a component. A bare
-  // <AppWrapper applicationId="…" /> mount without one would crash deep inside
-  // useResourceEditor when it probes component.props/emits — fail loud here.
   throw new Error(
     `[opencloud-eu/web-pkg] <AppWrapper applicationId="${applicationId}"> requires \`wrappedComponent\`. ` +
       `New apps should use \`resourceEditorRoute({ extension })\` directly.`
