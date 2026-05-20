@@ -1,6 +1,6 @@
-Feature: Read an rclone-crypt encrypted vault
-  As a user with an existing rclone-crypt-encrypted folder on the server
-  I want to browse it in OpenCloud Web with cleartext names
+Feature: Work with an rclone-crypt encrypted vault
+  As a user with rclone-crypt-encrypted folders on the server
+  I want to browse, edit and upload through OpenCloud Web under cleartext names
   So that I can work with my encrypted files without decrypting them manually
 
   @rclone-crypt
