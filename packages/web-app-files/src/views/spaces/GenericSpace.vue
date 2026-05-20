@@ -405,7 +405,7 @@ export default defineComponent({
       fileId?: string | number
     ) => {
       if (resourcesViewDefaults.loadResourcesTask.isRunning) {
-        return
+        resourcesViewDefaults.loadResourcesTask.cancelAll()
       }
 
       const options: FolderLoaderOptions = { loadShares: !isPublicSpaceResource(unref(space)) }
