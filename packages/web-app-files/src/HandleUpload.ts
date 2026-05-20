@@ -540,7 +540,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.uppyService.removeUploadFolder(uploadId)
   }
 
-
   /**
    * Replace each file's content + name with their encrypted forms and rewrite
    * the upload endpoint so Uppy/Tus pushes ciphertext to the encrypted

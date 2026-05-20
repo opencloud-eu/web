@@ -35,16 +35,19 @@ describe('deleteResources', () => {
       })
     })
 
-    it('should call the delete action on the current folder', () => {
+    it('should call the delete action on the current folder', async () => {
       const resourcesToDelete = [currentFolder]
+      let pending: ReturnType<ReturnType<typeof useFileActionsDeleteResources>['filesList_delete']>
+      let routerRef: ReturnType<typeof defaultComponentMocks>['$router']
       getWrapper({
         currentFolder,
         setup: ({ filesList_delete }, { router }) => {
-          filesList_delete(resourcesToDelete)
-
-          expect(router.push).toHaveBeenCalledTimes(1)
+          pending = filesList_delete(resourcesToDelete)
+          routerRef = router
         }
       })
+      await Promise.all(pending)
+      expect(routerRef.push).toHaveBeenCalledTimes(1)
     })
 
     it('should push resources into delete queue', () => {
@@ -61,17 +64,20 @@ describe('deleteResources', () => {
       expect(addResourcesIntoDeleteQueue).toHaveBeenCalledWith(['2'])
     })
 
-    it('should publish event "runtime.resource.deleted"', () => {
+    it('should publish event "runtime.resource.deleted"', async () => {
       const filesToDelete = [{ id: '2', path: '/folder/fileToDelete.txt' }]
       const spyBus = vi.spyOn(eventBus, 'publish')
 
+      let pending: ReturnType<ReturnType<typeof useFileActionsDeleteResources>['filesList_delete']>
       getWrapper({
         currentFolder,
         result: filesToDelete,
         setup: ({ filesList_delete }) => {
-          filesList_delete(filesToDelete)
+          pending = filesList_delete(filesToDelete)
         }
       })
+
+      await Promise.all(pending)
 
       const { addResourcesIntoDeleteQueue } = useResourcesStore()
       expect(addResourcesIntoDeleteQueue).toHaveBeenCalledWith(['2'])

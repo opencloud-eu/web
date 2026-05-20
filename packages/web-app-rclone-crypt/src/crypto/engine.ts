@@ -117,7 +117,7 @@ export function createEngine(
             const reader = plaintext.getReader()
             const chunks: Uint8Array[] = []
             let total = 0
-            // eslint-disable-next-line no-constant-condition
+
             while (true) {
               const { done, value } = await reader.read()
               if (done) break
@@ -156,7 +156,7 @@ export function createEngine(
             const chunks: Uint8Array[] = []
             let total = 0
             // collect entire ciphertext
-            // eslint-disable-next-line no-constant-condition
+
             while (true) {
               const { done, value } = await reader.read()
               if (done) break

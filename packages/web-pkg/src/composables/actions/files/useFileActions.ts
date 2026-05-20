@@ -125,11 +125,13 @@ export const useFileActions = () => {
               return false
             }
 
-            // An app may register a file/folder extension purely to contribute
-            // icon mapping or the new-file menu, without owning a route. In
-            // that case we skip the editor action so the default action (e.g.
-            // folder navigation) can take over.
-            if (!router.hasRoute(fileExtension.routeName || fileExtension.app)) {
+            // An app may register a file/folder extension purely to
+            // contribute icon mapping or a new-file menu entry without
+            // owning a route (rclone-crypt's vault folder is one such case).
+            // Skip the editor action when no route is registered so the
+            // default action (folder navigation) can take over.
+            const editorRouteName = fileExtension.routeName || fileExtension.app
+            if (!editorRouteName || !router.hasRoute(editorRouteName)) {
               return false
             }
 
@@ -213,6 +215,13 @@ export const useFileActions = () => {
   ) => {
     const remoteItemId = isShareSpaceResource(space) ? space.id : undefined
     const routeName = appFileExtension.routeName || appFileExtension.app
+    // Apps may register a file/folder extension purely to contribute icon
+    // mapping or a new-file menu entry, without owning an editor route
+    // (rclone-crypt's vault folder is one such case). Bail silently rather
+    // than pushing to a route that doesn't exist.
+    if (!routeName || !router.hasRoute(routeName)) {
+      return
+    }
     const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
 
     if (unref(options).openFilesInNewTab) {

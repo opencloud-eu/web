@@ -56,8 +56,8 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     // ends up inside it. Anything that *does* have a route (apps like notes)
     // keeps using openEditor.
     const targetSpace = unref(space)
-    const routeName = appFileExtension.routeName || appFileExtension.app
-    if (appFileExtension.type === 'folder' && !router.hasRoute(routeName)) {
+    const routeName = appFileExtension?.routeName || appFileExtension?.app
+    if (appFileExtension?.type === 'folder' && !router.hasRoute(routeName)) {
       const driveAliasAndItem = targetSpace?.getDriveAliasAndItem(resource)
       if (driveAliasAndItem) {
         router.push({

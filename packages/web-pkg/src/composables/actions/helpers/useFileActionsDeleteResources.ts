@@ -248,14 +248,16 @@ export const useFileActionsDeleteResources = () => {
 
     const originalCurrentFolderId = unref(currentFolder)?.id
 
-    return Object.values(resourceSpaceMapping).map(
-      async ({ space: spaceForDeletion, resources: resourcesForDeletion }) => {
-        const workerResources = await translatePathsForDelete(
-          spaceForDeletion,
-          resourcesForDeletion
-        )
-        startWorker(
-          { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
+    const startGroup = async (
+      spaceForDeletion: SpaceResource,
+      resourcesForDeletion: Resource[]
+    ) => {
+      const workerResources = await translatePathsForDelete(
+        spaceForDeletion,
+        resourcesForDeletion
+      )
+      startWorker(
+        { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
           async ({ successful, failed }) => {
             if (successful.length) {
               showSuccessMessage({
@@ -320,7 +322,11 @@ export const useFileActionsDeleteResources = () => {
             }
           }
         )
-      }
+    }
+
+    return Object.values(resourceSpaceMapping).map(
+      ({ space: spaceForDeletion, resources: resourcesForDeletion }) =>
+        startGroup(spaceForDeletion, resourcesForDeletion)
     )
   }
 

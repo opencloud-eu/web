@@ -1,13 +1,10 @@
 import { useGettext } from 'vue3-gettext'
-import { onBeforeUnmount, ref } from 'vue'
+import { ref } from 'vue'
 import {
   ApplicationInformation,
   defineWebApplication,
-  Extension,
-  useEventBus,
-  useFolderVaultStore
+  Extension
 } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
 import translations from '../l10n/translations.json'
 import { folderVaultExtension } from './extensions/folderVault'
 import { resourceIndicatorExtension } from './extensions/resourceIndicator'

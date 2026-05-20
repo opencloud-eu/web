@@ -266,9 +266,13 @@ export const useResourceIndicators = () => {
       }
     }
 
-    for (const extension of extensionRegistry.requestExtensions(
-      resourceIndicatorExtensionPoint
-    )) {
+    // Defensive: most callers mock useExtensionRegistry without filling in
+    // every method, and getIndicators is used widely across the resource
+    // list components. Treat a missing requestExtensions as "no
+    // extensions" rather than throwing.
+    const indicatorExtensions =
+      extensionRegistry.requestExtensions?.(resourceIndicatorExtensionPoint) ?? []
+    for (const extension of indicatorExtensions) {
       const extensionIndicators = extension.getResourceIndicators(resource)
       if (extensionIndicators) {
         indicators.push(...extensionIndicators)
