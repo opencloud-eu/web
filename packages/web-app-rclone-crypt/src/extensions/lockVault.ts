@@ -72,3 +72,51 @@ export function lockVaultActionExtension(action: Ref<FileAction>): ActionExtensi
     }
   } as ActionExtension
 }
+
+export const useUnlockVaultAction = (): Ref<FileAction> => {
+  const { $gettext } = useGettext()
+  const vaultStore = useFolderVaultStore()
+  const router = useRouter()
+
+  return computed(() => ({
+    name: 'unlock-vault',
+    icon: 'lock-unlock',
+    iconFillType: 'line',
+    label: () => $gettext('Unlock vault'),
+    category: 'tertiary',
+    handler: ({ resources }: FileActionOptions) => {
+      const resource = resources?.[0]
+      if (!resource || !isVaultRoot(resource)) return
+      // Send the user through the unlock screen but bring them back to the
+      // current (parent) location, not into the vault. That keeps the
+      // surrounding listing in view — the vault entry just flips from locked
+      // to unlocked. Mirror image of the lock action.
+      const back = unref(router.currentRoute).fullPath
+      router.push({
+        name: 'rclone-crypt-unlock',
+        query: {
+          spaceId: resource.storageId as string,
+          vaultRoot: resource.path,
+          redirectUrl: back
+        }
+      })
+    },
+    isVisible: ({ resources }: FileActionOptions) => {
+      const resource = resources?.[0]
+      if (!resource || !isVaultRoot(resource)) return false
+      return !vaultStore.isUnlocked(resource.storageId as string, resource.path)
+    },
+    class: 'oc-files-actions-unlock-vault'
+  }))
+}
+
+export function unlockVaultActionExtension(action: Ref<FileAction>): ActionExtension {
+  return {
+    id: 'app.rclone-crypt.unlock-vault',
+    type: 'action',
+    extensionPointIds: ['global.files.context-actions'],
+    get action() {
+      return unref(action)
+    }
+  } as ActionExtension
+}

@@ -11,7 +11,12 @@ import { Resource } from '@opencloud-eu/web-client'
 import translations from '../l10n/translations.json'
 import { folderVaultExtension } from './extensions/folderVault'
 import { resourceIndicatorExtension } from './extensions/resourceIndicator'
-import { lockVaultActionExtension, useLockVaultAction } from './extensions/lockVault'
+import {
+  lockVaultActionExtension,
+  unlockVaultActionExtension,
+  useLockVaultAction,
+  useUnlockVaultAction
+} from './extensions/lockVault'
 import UnlockVault from './views/UnlockVault.vue'
 
 export default defineWebApplication({
@@ -40,10 +45,12 @@ export default defineWebApplication({
     }
 
     const lockVaultAction = useLockVaultAction()
+    const unlockVaultAction = useUnlockVaultAction()
     const extensions = ref<Extension[]>([
       folderVaultExtension,
       resourceIndicatorExtension,
-      lockVaultActionExtension(lockVaultAction)
+      lockVaultActionExtension(lockVaultAction),
+      unlockVaultActionExtension(unlockVaultAction)
     ])
 
     const routes = [
