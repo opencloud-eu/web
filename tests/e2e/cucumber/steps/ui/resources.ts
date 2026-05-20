@@ -1103,7 +1103,7 @@ Then(
 When(
   '{string} opens file {string} via {string} using the context menu',
   async function (this: World, stepUser: string, file: string, fileViewer: string): Promise<void> {
-    const allowedViewers = ['collabora', 'text-editor', 'preview'] as const
+    const allowedViewers = ['collabora', 'text-editor', 'preview', 'code-mirror', 'tiptap'] as const
 
     if (!allowedViewers.includes(fileViewer as any)) {
       throw new Error(`Unsupported file viewer: ${fileViewer}`)
