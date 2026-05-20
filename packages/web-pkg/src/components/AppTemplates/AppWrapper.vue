@@ -94,7 +94,9 @@ import {
   decryptResourceInPlace,
   formatFileSize,
   getSharedDriveItem,
-  resolveFolderVault
+  resolveFolderVault,
+  streamToArrayBuffer,
+  streamToBlob
 } from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -294,26 +296,6 @@ const addMissingDriveAliasAndItem = async () => {
   })
 }
 
-async function collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
-  const reader = stream.getReader()
-  const chunks: Uint8Array[] = []
-  let total = 0
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    chunks.push(value)
-    total += value.byteLength
-  }
-  const out = new Uint8Array(total)
-  let offset = 0
-  for (const c of chunks) {
-    out.set(c, offset)
-    offset += c.byteLength
-  }
-  return out
-}
-
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
@@ -432,15 +414,16 @@ const loadFileTask = useTask(function* (signal) {
       let body = fileContentsResponse.body
 
       if (vaultEngine) {
-        const encryptedBytes = new Uint8Array(body as ArrayBuffer)
-        const encryptedStream = new ReadableStream<Uint8Array>({
-          start(controller) {
-            controller.enqueue(encryptedBytes)
-            controller.close()
-          }
-        })
-        const plaintextStream = vaultEngine.decryptContent(encryptedStream)
-        const plaintext: Uint8Array = yield* call(collectStream(plaintextStream))
+        // FIXME(poc-vault): engine API is streaming, but both ends still hold
+        // bytes in memory — getFileContents resolves to a full ArrayBuffer,
+        // and editors want string/Blob/ArrayBuffer. End-to-end streaming
+        // hinges on exposing the fetch response.body upstream; landing that
+        // later won't require changes here.
+        const plaintextStream = vaultEngine.decryptContent(
+          new Blob([body as ArrayBuffer]).stream()
+        )
+        const plaintextBuffer: ArrayBuffer = yield* call(streamToArrayBuffer(plaintextStream))
+        const plaintext = new Uint8Array(plaintextBuffer)
 
         if (!originalResponseType || originalResponseType === 'text') {
           body = new TextDecoder().decode(plaintext)
@@ -479,18 +462,16 @@ const loadFileTask = useTask(function* (signal) {
             signal
           })
         )
-        const encryptedBytes = new Uint8Array(cipherResponse.body as ArrayBuffer)
-        const encryptedStream = new ReadableStream<Uint8Array>({
-          start(controller) {
-            controller.enqueue(encryptedBytes)
-            controller.close()
-          }
-        })
-        const plaintextStream = urlVaultEngine.decryptContent(encryptedStream)
-        const plaintext: Uint8Array = yield* call(collectStream(plaintextStream))
-        const blob = new Blob([plaintext as BlobPart], {
-          type: unref(resource)?.mimeType || 'application/octet-stream'
-        })
+        // Collect the engine output straight into the Blob we hand to
+        // URL.createObjectURL — no intermediate Uint8Array in this path.
+        const blob: Blob = yield* call(
+          streamToBlob(
+            urlVaultEngine.decryptContent(
+              new Blob([cipherResponse.body as ArrayBuffer]).stream()
+            ),
+            unref(resource)?.mimeType || 'application/octet-stream'
+          )
+        )
         url.value = URL.createObjectURL(blob)
       } else {
         url.value = yield getUrlForResource(unref(space), unref(resource), {
@@ -574,24 +555,17 @@ const saveFileTask = useTask(function* () {
 
     if (vaultEngine) {
       const baseCtx = unref(currentFileContext)
-      const plainBytes =
-        newContent instanceof Uint8Array
-          ? (newContent as Uint8Array)
-          : newContent instanceof ArrayBuffer
-            ? new Uint8Array(newContent as ArrayBuffer)
-            : new TextEncoder().encode(newContent as string)
-      const plainStream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.enqueue(plainBytes)
-          controller.close()
-        }
-      })
-      const encryptedStream = vaultEngine.encryptContent(plainStream)
-      const encryptedBytes: Uint8Array = yield* call(collectStream(encryptedStream))
-      putContent = encryptedBytes.buffer.slice(
-        encryptedBytes.byteOffset,
-        encryptedBytes.byteOffset + encryptedBytes.byteLength
-      ) as ArrayBuffer
+      // Blob is the easiest "give me a stream over these bytes" primitive
+      // regardless of whether the editor handed us a string, ArrayBuffer or
+      // Uint8Array. The engine output goes back through Response#arrayBuffer
+      // to land in the shape webdav.putFileContents wants.
+      const plainBlob =
+        newContent instanceof Blob
+          ? newContent
+          : new Blob([newContent as BlobPart])
+      putContent = yield* call(
+        streamToArrayBuffer(vaultEngine.encryptContent(plainBlob.stream()))
+      )
       putCtx = { ...baseCtx, item: yield* call(vaultEngine.encryptPath(unref(baseCtx.item))) }
     }
 

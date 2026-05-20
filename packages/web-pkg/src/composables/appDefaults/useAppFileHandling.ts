@@ -10,6 +10,7 @@ import { ListFilesOptions } from '@opencloud-eu/web-client/webdav'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useExtensionRegistry, useUserStore } from '../piniaStores'
 import { resolveFolderVault } from '../../helpers/folderVault'
+import { streamToBlob } from '../../helpers/streams'
 
 interface AppFileHandlingOptions {
   clientService: ClientService
@@ -60,33 +61,13 @@ export function useAppFileHandling({
         { path: encryptedPath },
         { responseType: 'arraybuffer', signal: options?.signal }
       )
-      const encryptedBytes = new Uint8Array(response.body as ArrayBuffer)
-      const encryptedStream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.enqueue(encryptedBytes)
-          controller.close()
-        }
-      })
-      const plaintextStream = vaultEngine.decryptContent(encryptedStream)
-      const reader = plaintextStream.getReader()
-      const chunks: Uint8Array[] = []
-      let total = 0
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-        chunks.push(value)
-        total += value.byteLength
-      }
-      const plaintext = new Uint8Array(total)
-      let offset = 0
-      for (const c of chunks) {
-        plaintext.set(c, offset)
-        offset += c.byteLength
-      }
-      const blob = new Blob([plaintext as BlobPart], {
-        type: resource.mimeType || 'application/octet-stream'
-      })
+      // Run the ciphertext through the engine as a real stream (Blob.stream)
+      // and collect the plaintext stream directly into the Blob the URL
+      // points at — no intermediate buffer.
+      const blob = await streamToBlob(
+        vaultEngine.decryptContent(new Blob([response.body as ArrayBuffer]).stream()),
+        resource.mimeType || 'application/octet-stream'
+      )
       return URL.createObjectURL(blob)
     }
     return clientService.webdav.getFileUrl(space, resource, {

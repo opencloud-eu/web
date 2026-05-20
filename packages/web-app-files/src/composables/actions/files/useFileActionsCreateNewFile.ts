@@ -11,6 +11,7 @@ import {
   FileActionOptions,
   resolveFileNameDuplicate,
   resolveFolderVault,
+  streamToArrayBuffer,
   useAppsStore,
   useClientService,
   useEmbedMode,
@@ -23,26 +24,6 @@ import {
   useRouter,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-
-async function collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
-  const reader = stream.getReader()
-  const chunks: Uint8Array[] = []
-  let total = 0
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    const { done, value } = await reader.read()
-    if (done) break
-    chunks.push(value)
-    total += value.byteLength
-  }
-  const out = new Uint8Array(total)
-  let offset = 0
-  for (const c of chunks) {
-    out.set(c, offset)
-    offset += c.byteLength
-  }
-  return out
-}
 
 export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -154,19 +135,11 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
             // header and refuse to decrypt later. Pipe an empty plaintext
             // stream through encryptContent to get the file-header bytes.
             const content = vaultEngine
-              ? await collectStream(
-                  vaultEngine.encryptContent(
-                    new ReadableStream<Uint8Array>({
-                      start(controller) {
-                        controller.close()
-                      }
-                    })
-                  )
-                )
+              ? await streamToArrayBuffer(vaultEngine.encryptContent(new Blob([]).stream()))
               : undefined
             resource = await (clientService.webdav as WebDAV).putFileContents(unref(space), {
               path,
-              ...(content ? { content: content.buffer as ArrayBuffer } : {})
+              ...(content ? { content } : {})
             })
           }
           if (vaultEngine && resource) {

@@ -19,7 +19,8 @@ import {
   OcUppyFile,
   OcUppyMeta,
   OcUppyBody,
-  resolveFolderVault
+  resolveFolderVault,
+  streamToBlob
 } from '@opencloud-eu/web-pkg'
 import { locationSpacesGeneric, UppyService } from '@opencloud-eu/web-pkg'
 import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
@@ -539,25 +540,6 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.uppyService.removeUploadFolder(uploadId)
   }
 
-  private async collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
-    const reader = stream.getReader()
-    const chunks: Uint8Array[] = []
-    let total = 0
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-      chunks.push(value)
-      total += value.byteLength
-    }
-    const out = new Uint8Array(total)
-    let offset = 0
-    for (const chunk of chunks) {
-      out.set(chunk, offset)
-      offset += chunk.byteLength
-    }
-    return out
-  }
 
   /**
    * Replace each file's content + name with their encrypted forms and rewrite
@@ -597,17 +579,26 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
 
       const encryptedName = await vaultEngine.encryptName(file.name, uploadFolder.path)
 
-      const plaintextBytes = new Uint8Array(await (file.data as Blob).arrayBuffer())
-      const plainStream = new ReadableStream<Uint8Array>({
-        start(controller) {
-          controller.enqueue(plaintextBytes)
-          controller.close()
-        }
-      })
-      const cipherBytes = await this.collectStream(vaultEngine.encryptContent(plainStream))
-      const cipherBlob = new Blob([cipherBytes as BlobPart], {
-        type: 'application/octet-stream'
-      })
+      // Feed the engine the Blob's native stream instead of materialising the
+      // whole plaintext first. The engine internals still collect today
+      // (lib only exposes `encryptData(Uint8Array)`), but keeping the
+      // input side genuinely streamed means a future engine that emits
+      // rclone-crypt blocks straight onto nacl can be swapped in without
+      // touching this call site.
+      //
+      // FIXME(poc-vault): the output is still collected into a Blob because
+      // Uppy + tus-js-client require `file.data` to be `Blob`-shaped with a
+      // working `.slice()` for chunked uploads. End-to-end streaming would
+      // need either a stream-aware uppy plugin or replacing the transport;
+      // both are out of PoC scope. The engine API stays streaming so that
+      // change lands as a pure replacement here.
+      // Drive the engine end-to-end with streams. Collection only happens
+      // because Uppy + tus need a sliceable Blob for file.data, not because
+      // the engine API forces it.
+      const cipherBlob = await streamToBlob(
+        vaultEngine.encryptContent((file.data as Blob).stream()),
+        'application/octet-stream'
+      )
 
       const endpointFolder = urlJoin(encryptedFolderPath, encryptedRelativeFolder)
       const endpointFolderUrl = space.getWebDavUrl({
