@@ -121,8 +121,18 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const destroy = (): void => {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
-      if (options.onUpdate && editor.value) {
-        options.onUpdate(strategy.serialize(editor.value))
+      // The editor's view may already be torn down by tiptap's own
+      // onBeforeUnmount hook by the time we run, depending on hook
+      // ordering. In that case `serialize` blows up reading a null schema.
+      // Flush the pending update if it's still safe, otherwise drop it —
+      // throwing here would break the rest of Vue's teardown.
+      const inst = editor.value as unknown as { view?: { state?: unknown } } | null
+      if (options.onUpdate && editor.value && inst?.view?.state) {
+        try {
+          options.onUpdate(strategy.serialize(editor.value))
+        } catch (e) {
+          console.warn('[useTextEditor] dropped pending update during destroy', e)
+        }
       }
       debounceTimer = null
     }

@@ -1,7 +1,9 @@
 import {
   createFileRouteOptions,
+  decryptResourceInPlace,
   ImageDimension,
-  isItemInCurrentFolder
+  isItemInCurrentFolder,
+  resolveFolderVault
 } from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
 
@@ -76,6 +78,7 @@ export const onSSEProcessingFinishedEvent = async ({
   resourcesStore,
   spacesStore,
   clientService,
+  extensionRegistry,
   resourceQueue,
   previewService
 }: SSEEventOptions) => {
@@ -101,14 +104,19 @@ export const onSSEProcessingFinishedEvent = async ({
     }
 
     return resourceQueue.add(async () => {
-      const { resource } = await clientService.webdav.listFiles(space, {
+      const { resource: fetched } = await clientService.webdav.listFiles(space, {
         path: '',
         fileId: sseData.itemid
       })
 
       // check again for the current folder in case the user has navigated away in the meantime
       if (isItemInCurrentFolder({ resourcesStore, parentFolderId: sseData.parentitemid })) {
-        resourcesStore.upsertResource(resource)
+        const currentFolderPath = resourcesStore.currentFolder?.path
+        const vaultEngine = resolveFolderVault(extensionRegistry, space, currentFolderPath)
+        if (vaultEngine) {
+          await decryptResourceInPlace(vaultEngine, fetched)
+        }
+        resourcesStore.upsertResource(fetched)
       }
     })
   }
@@ -128,6 +136,13 @@ export const onSSEProcessingFinishedEvent = async ({
     path: '',
     fileId: sseData.itemid
   })
+  // The webdav response describes the encrypted server blob; if the existing
+  // resource is inside a vault, decrypt the incoming update before merging it
+  // back into the store so the editor / file list stay on cleartext data.
+  const vaultEngine = resolveFolderVault(extensionRegistry, space, resource.path)
+  if (vaultEngine) {
+    await decryptResourceInPlace(vaultEngine, updatedResource)
+  }
   resourcesStore.upsertResource(updatedResource)
 
   const preview = await previewService.loadPreview({

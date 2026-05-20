@@ -8,7 +8,8 @@ import { FileResource, SpaceResource } from '@opencloud-eu/web-client'
 import { useClientService } from '../clientService'
 import { ListFilesOptions } from '@opencloud-eu/web-client/webdav'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { useUserStore } from '../piniaStores'
+import { useExtensionRegistry, useUserStore } from '../piniaStores'
+import { resolveFolderVault } from '../../helpers/folderVault'
 
 interface AppFileHandlingOptions {
   clientService: ClientService
@@ -31,7 +32,7 @@ export interface AppFileHandlingResult {
   getFileContents(fileContext: MaybeRef<FileContext>, options?: FileContentOptions): Promise<any>
   putFileContents(
     fileContext: MaybeRef<FileContext>,
-    putFileOptions: { content?: string } & Record<string, any>
+    putFileOptions: { content?: string | ArrayBuffer } & Record<string, any>
   ): Promise<FileResource>
 }
 
@@ -40,12 +41,54 @@ export function useAppFileHandling({
 }: AppFileHandlingOptions): AppFileHandlingResult {
   clientService = clientService || useClientService()
   const userStore = useUserStore()
+  const extensionRegistry = useExtensionRegistry()
 
-  const getUrlForResource = (
+  const getUrlForResource = async (
     space: SpaceResource,
     resource: Resource,
     options?: UrlForResourceOptions
-  ) => {
+  ): Promise<string> => {
+    // For vault resources, the server-side blob is ciphertext — neither a
+    // direct download URL nor a thumbnail can render the actual image. Fetch
+    // the encrypted blob, run it through the engine, and expose the cleartext
+    // bytes as an in-memory blob URL the embedded app can consume directly.
+    const vaultEngine = resolveFolderVault(extensionRegistry, space, resource?.path)
+    if (vaultEngine) {
+      const encryptedPath = await vaultEngine.encryptPath(resource.path)
+      const response = await clientService.webdav.getFileContents(
+        space,
+        { path: encryptedPath },
+        { responseType: 'arraybuffer', signal: options?.signal }
+      )
+      const encryptedBytes = new Uint8Array(response.body as ArrayBuffer)
+      const encryptedStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(encryptedBytes)
+          controller.close()
+        }
+      })
+      const plaintextStream = vaultEngine.decryptContent(encryptedStream)
+      const reader = plaintextStream.getReader()
+      const chunks: Uint8Array[] = []
+      let total = 0
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        chunks.push(value)
+        total += value.byteLength
+      }
+      const plaintext = new Uint8Array(total)
+      let offset = 0
+      for (const c of chunks) {
+        plaintext.set(c, offset)
+        offset += c.byteLength
+      }
+      const blob = new Blob([plaintext as BlobPart], {
+        type: resource.mimeType || 'application/octet-stream'
+      })
+      return URL.createObjectURL(blob)
+    }
     return clientService.webdav.getFileUrl(space, resource, {
       username: userStore.user?.onPremisesSamAccountName,
       ...options
@@ -91,7 +134,7 @@ export function useAppFileHandling({
 
   const putFileContents = (
     fileContext: MaybeRef<FileContext>,
-    options: { content?: string; signal?: AbortSignal } & Record<string, any>
+    options: { content?: string | ArrayBuffer; signal?: AbortSignal } & Record<string, any>
   ) => {
     return clientService.webdav.putFileContents(unref(unref(fileContext).space), {
       path: unref(unref(fileContext).item),

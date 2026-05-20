@@ -57,6 +57,7 @@ import {
   useConfigStore,
   useResourcesStore,
   FileContentOptions,
+  FileContext,
   useFileActionsDownloadFile,
   FileActionOptions,
   FileAction,
@@ -89,7 +90,12 @@ import { HttpError } from '@opencloud-eu/web-client'
 import { dirname } from 'path'
 import { useFileActionsOpenWithApp } from '../../composables'
 import { UnsavedChangesModal } from '../Modals'
-import { formatFileSize, getSharedDriveItem } from '../../helpers'
+import {
+  decryptResourceInPlace,
+  formatFileSize,
+  getSharedDriveItem,
+  resolveFolderVault
+} from '../../helpers'
 import toNumber from 'lodash-es/toNumber'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { storeToRefs } from 'pinia'
@@ -152,7 +158,8 @@ const currentContent = ref<unknown>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
 
-const { registerExtensions, unregisterExtensions, requestExtensions } = useExtensionRegistry()
+const extensionRegistry = useExtensionRegistry()
+const { registerExtensions, unregisterExtensions, requestExtensions } = extensionRegistry
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
 const appBarExtension = computed<CustomComponentExtension[]>(() => {
   if (unref(loading) || unref(loadingError) || !unref(resource)) {
@@ -287,6 +294,26 @@ const addMissingDriveAliasAndItem = async () => {
   })
 }
 
+async function collectStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
+  const reader = stream.getReader()
+  const chunks: Uint8Array[] = []
+  let total = 0
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { done, value } = await reader.read()
+    if (done) break
+    chunks.push(value)
+    total += value.byteLength
+  }
+  const out = new Uint8Array(total)
+  let offset = 0
+  for (const c of chunks) {
+    out.set(c, offset)
+    offset += c.byteLength
+  }
+  return out
+}
+
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
@@ -294,6 +321,17 @@ const loadResourceTask = useTask(function* (signal) {
     }
     space.value = unref(unref(currentFileContext).space)
     const fileInfo = yield getFileInfo(unref(currentFileContext), { signal })
+    // Decrypt name/path/extension when the resource lives inside a vault, so
+    // every consumer of `resource.value` (top bar, side bar, document title,
+    // resource list…) sees cleartext.
+    const vaultEngine = resolveFolderVault(
+      extensionRegistry,
+      unref(space),
+      unref(unref(currentFileContext).item)
+    )
+    if (vaultEngine) {
+      yield* call(decryptResourceInPlace(vaultEngine, fileInfo))
+    }
     resource.value = fileInfo
 
     if (isShareSpaceResource(unref(space))) {
@@ -364,18 +402,102 @@ const loadFileTask = useTask(function* (signal) {
     )
 
     if (unref(hasProp('currentContent'))) {
-      const fileContentsResponse = yield* call(
-        getFileContents(currentFileContext, { ...fileContentOptions, signal })
+      // Vault-aware content handling. We do all of this above the webdav
+      // client: ask the server for the raw ciphertext blob using its real
+      // (encrypted) path, run it through the engine's decrypt stream, and
+      // hand the embedded app whatever response type it expected. The webdav
+      // primitives stay completely unaware of vaults.
+      const vaultEngine = resolveFolderVault(
+        extensionRegistry,
+        unref(space),
+        unref(resource)?.path
       )
-      serverContent.value = currentContent.value = fileContentsResponse.body
+      const originalResponseType = fileContentOptions?.responseType
+      const fetchOptions = vaultEngine
+        ? { ...fileContentOptions, responseType: 'arraybuffer' as const }
+        : fileContentOptions
+
+      // The webdav call needs the encrypted server-side path. resource.path is
+      // already cleartext at this point (we decrypted it in loadResourceTask),
+      // so we re-encrypt for this single request and leave the context the
+      // rest of the UI sees untouched.
+      const baseCtx = unref(currentFileContext)
+      const fetchCtx = vaultEngine
+        ? { ...baseCtx, item: yield* call(vaultEngine.encryptPath(unref(baseCtx.item))) }
+        : baseCtx
+
+      const fileContentsResponse = yield* call(
+        getFileContents(fetchCtx, { ...fetchOptions, signal })
+      )
+      let body = fileContentsResponse.body
+
+      if (vaultEngine) {
+        const encryptedBytes = new Uint8Array(body as ArrayBuffer)
+        const encryptedStream = new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(encryptedBytes)
+            controller.close()
+          }
+        })
+        const plaintextStream = vaultEngine.decryptContent(encryptedStream)
+        const plaintext: Uint8Array = yield* call(collectStream(plaintextStream))
+
+        if (!originalResponseType || originalResponseType === 'text') {
+          body = new TextDecoder().decode(plaintext)
+        } else if (originalResponseType === 'blob') {
+          body = new Blob([plaintext as BlobPart])
+        } else {
+          body = plaintext.buffer
+        }
+      }
+
+      serverContent.value = currentContent.value = body
       currentETag.value = fileContentsResponse.headers['OC-ETag']
     }
 
     if (unref(hasProp('url'))) {
-      url.value = yield getUrlForResource(unref(space), unref(resource), {
-        ...urlForResourceOptions,
-        signal
-      })
+      // Vault-aware preview/download URL: getUrlForResource would otherwise
+      // hand the app a URL that downloads the *encrypted* blob from the
+      // server — broken for preview, mediaviewer, pdf-viewer etc. For vault
+      // resources we fetch ciphertext ourselves, run it through the engine
+      // and expose the cleartext as an in-memory blob URL.
+      const urlVaultEngine = resolveFolderVault(
+        extensionRegistry,
+        unref(space),
+        unref(resource)?.path
+      )
+      if (urlVaultEngine) {
+        const baseCtx = unref(currentFileContext)
+        const fetchCtx = {
+          ...baseCtx,
+          item: yield* call(urlVaultEngine.encryptPath(unref(baseCtx.item)))
+        }
+        const cipherResponse = yield* call(
+          getFileContents(fetchCtx, {
+            ...fileContentOptions,
+            responseType: 'arraybuffer',
+            signal
+          })
+        )
+        const encryptedBytes = new Uint8Array(cipherResponse.body as ArrayBuffer)
+        const encryptedStream = new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(encryptedBytes)
+            controller.close()
+          }
+        })
+        const plaintextStream = urlVaultEngine.decryptContent(encryptedStream)
+        const plaintext: Uint8Array = yield* call(collectStream(plaintextStream))
+        const blob = new Blob([plaintext as BlobPart], {
+          type: unref(resource)?.mimeType || 'application/octet-stream'
+        })
+        url.value = URL.createObjectURL(blob)
+      } else {
+        url.value = yield getUrlForResource(unref(space), unref(resource), {
+          ...urlForResourceOptions,
+          signal
+        })
+      }
     }
   } catch (e) {
     console.error(e)
@@ -437,10 +559,49 @@ const autosavePopup = () => {
 const saveFileTask = useTask(function* () {
   const newContent = unref(currentContent)
   try {
-    const putFileContentsResponse = yield putFileContents(currentFileContext, {
-      content: newContent as string,
+    // Vault-aware save: when the resource is inside a vault, the cleartext
+    // we have in memory has to be encrypted, the put has to target the
+    // encrypted server path, and the response describing the freshly stored
+    // blob has to be decrypted back to cleartext before it enters the store.
+    const vaultEngine = resolveFolderVault(
+      extensionRegistry,
+      unref(space),
+      unref(resource)?.path
+    )
+
+    let putCtx: FileContext | typeof currentFileContext = currentFileContext
+    let putContent: string | ArrayBuffer = newContent as string
+
+    if (vaultEngine) {
+      const baseCtx = unref(currentFileContext)
+      const plainBytes =
+        newContent instanceof Uint8Array
+          ? (newContent as Uint8Array)
+          : newContent instanceof ArrayBuffer
+            ? new Uint8Array(newContent as ArrayBuffer)
+            : new TextEncoder().encode(newContent as string)
+      const plainStream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(plainBytes)
+          controller.close()
+        }
+      })
+      const encryptedStream = vaultEngine.encryptContent(plainStream)
+      const encryptedBytes: Uint8Array = yield* call(collectStream(encryptedStream))
+      putContent = encryptedBytes.buffer.slice(
+        encryptedBytes.byteOffset,
+        encryptedBytes.byteOffset + encryptedBytes.byteLength
+      ) as ArrayBuffer
+      putCtx = { ...baseCtx, item: yield* call(vaultEngine.encryptPath(unref(baseCtx.item))) }
+    }
+
+    const putFileContentsResponse = yield putFileContents(putCtx, {
+      content: putContent,
       previousEntityTag: unref(currentETag)
     })
+    if (vaultEngine) {
+      yield* call(decryptResourceInPlace(vaultEngine, putFileContentsResponse))
+    }
     serverContent.value = newContent
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)

@@ -1,0 +1,16 @@
+{
+  "name": "rclone-crypt",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OpenCloud Web e2ee plugin: read rclone-crypt encrypted folders (PoC)",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "@fyears/rclone-crypt": "^0.0.7"
+  },
+  "peerDependencies": {
+    "@opencloud-eu/web-client": "workspace:*",
+    "@opencloud-eu/web-pkg": "workspace:*",
+    "vue": "^3.5.0",
+    "vue3-gettext": "^4.0.0-beta.1"
+  }
+}

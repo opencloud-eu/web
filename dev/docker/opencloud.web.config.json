@@ -18,6 +18,7 @@
     "activities",
     "preview",
     "mail",
-    "contacts"
+    "contacts",
+    "rclone-crypt"
   ]
 }

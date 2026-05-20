@@ -125,6 +125,14 @@ export const useFileActions = () => {
               return false
             }
 
+            // An app may register a file/folder extension purely to contribute
+            // icon mapping or the new-file menu, without owning a route. In
+            // that case we skip the editor action so the default action (e.g.
+            // folder navigation) can take over.
+            if (!router.hasRoute(fileExtension.routeName || fileExtension.app)) {
+              return false
+            }
+
             if (resources[0].extension && fileExtension.extension) {
               return resources[0].extension.toLowerCase() === fileExtension.extension.toLowerCase()
             }

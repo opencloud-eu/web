@@ -57,6 +57,7 @@ import {
   useSpacesStore,
   useThemeStore,
   useUserStore,
+  useExtensionRegistry,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import ResourceUpload from '../components/AppBar/Upload/ResourceUpload.vue'
@@ -107,6 +108,7 @@ export default defineComponent({
     useUpload({ uppyService })
 
     const resourcesStore = useResourcesStore()
+    const extensionRegistry = useExtensionRegistry()
 
     const { currentTheme } = storeToRefs(themeStore)
     const themeSlogan = computed(() => unref(currentTheme).slogan)
@@ -125,6 +127,7 @@ export default defineComponent({
         spacesStore,
         messageStore,
         resourcesStore,
+        extensionRegistry,
         uppyService,
         quotaCheckEnabled: false,
         directoryTreeCreateEnabled: false,

@@ -16,6 +16,7 @@ import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
+import { decryptResourceInPlace, resolveFolderVault } from '../../../helpers/folderVault'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 
 export class FolderLoaderSpace implements FolderLoader {
@@ -42,7 +43,8 @@ export class FolderLoaderSpace implements FolderLoader {
       authService,
       spacesStore,
       sharesStore,
-      configStore
+      configStore,
+      extensionRegistry
     } = context
     const { webdav, graphAuthenticated: graphClient } = clientService
     const { replaceInvalidFileRoute } = useFileRouteReplace({ router })
@@ -63,10 +65,31 @@ export class FolderLoaderSpace implements FolderLoader {
           // needed for public links for make previews work
           davProperties.push(DavProperty.DownloadURL)
         }
+
+        // FIXME(poc-vault): vault-aware path encryption belongs on a higher
+        // layer (folderService / a FolderLoader decorator). Keeping it inline
+        // here for the rclone-crypt PoC.
+        const vaultEngine = resolveFolderVault(extensionRegistry, space, path)
+        const effectivePath = vaultEngine ? yield* call(vaultEngine.encryptPath(path)) : path
+
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
-          webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
+          webdav.listFiles(
+            space,
+            { path: effectivePath, fileId },
+            { signal: signal1, davProperties }
+          )
         )
+
+        // FIXME(poc-vault): decrypt server-side names before anything else
+        // touches the resources, so the rest of the loader sees clear text.
+        if (vaultEngine) {
+          yield* call(decryptResourceInPlace(vaultEngine, currentFolder))
+          for (const child of resources) {
+            yield* call(decryptResourceInPlace(vaultEngine, child))
+          }
+        }
+
         // if current folder has no id (= singe file public link) we must not correct the route
         if (currentFolder.id) {
           replaceInvalidFileRoute({ space, resource: currentFolder, path, fileId })

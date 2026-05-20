@@ -163,7 +163,7 @@ function getWrapper({
   setup = () => undefined
 }: {
   deletePermanent?: boolean
-  filesListDeleteMock?: (resources: Resource[]) => void[]
+  filesListDeleteMock?: (resources: Resource[]) => Promise<void>[]
   displayDialogMock?: (...args: unknown[]) => unknown
   setup?: () => unknown
 } = {}) {

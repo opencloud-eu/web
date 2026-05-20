@@ -9,8 +9,14 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { useInterceptModifierClick } from '../keyboardActions'
-import { useResourcesStore, useSideBar, useUserStore } from '../piniaStores'
+import {
+  useExtensionRegistry,
+  useResourcesStore,
+  useSideBar,
+  useUserStore
+} from '../piniaStores'
 import { IconFillType } from '../../helpers'
+import { resourceIndicatorExtensionPoint } from '../../extensionPoints'
 
 export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space'
 
@@ -44,6 +50,7 @@ export const useResourceIndicators = () => {
   const { openSideBarPanel } = useSideBar()
   const resourcesStore = useResourcesStore()
   const userStore = useUserStore()
+  const extensionRegistry = useExtensionRegistry()
 
   const isUserShare = (shareTypes: number[]) => {
     return ShareTypes.containsAnyValue(ShareTypes.authenticated, shareTypes ?? [])
@@ -256,6 +263,15 @@ export const useResourceIndicators = () => {
       const isDirectLinkShare = isLinkShare(resource.shareTypes)
       if (isDirectLinkShare || isLinkShare(parentShareTypes)) {
         indicators.push(getLinkIndicator({ resource, isDirect: isDirectLinkShare }))
+      }
+    }
+
+    for (const extension of extensionRegistry.requestExtensions(
+      resourceIndicatorExtensionPoint
+    )) {
+      const extensionIndicators = extension.getResourceIndicators(resource)
+      if (extensionIndicators) {
+        indicators.push(...extensionIndicators)
       }
     }
 

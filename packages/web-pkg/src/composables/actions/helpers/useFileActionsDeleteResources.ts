@@ -17,8 +17,10 @@ import {
   useModals,
   useSpacesStore,
   useConfigStore,
+  useExtensionRegistry,
   useResourcesStore
 } from '../../piniaStores'
+import { resolveFolderVault } from '../../../helpers/folderVault'
 import { storeToRefs } from 'pinia'
 import { useDeleteWorker } from '../../webWorkers'
 import { useEventBus } from '../../eventBus'
@@ -45,6 +47,27 @@ export const useFileActionsDeleteResources = () => {
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
+  const extensionRegistry = useExtensionRegistry()
+
+  // Resources surface in the UI with their cleartext paths after vault-aware
+  // decryption, but the delete worker is a vanilla webdav client that knows
+  // nothing about vaults. Translate any path that sits inside a vault back
+  // to its encrypted form before handing the resource off — the original
+  // (cleartext) instance stays in the store untouched for UI state.
+  const translatePathsForDelete = async (
+    space: SpaceResource,
+    resources: Resource[]
+  ): Promise<Resource[]> => {
+    return Promise.all(
+      resources.map(async (r) => {
+        const engine = resolveFolderVault(extensionRegistry, space, r.path)
+        if (!engine) return r
+        const encryptedPath = await engine.encryptPath(r.path)
+        if (encryptedPath === r.path) return r
+        return { ...r, path: encryptedPath } as Resource
+      })
+    )
+  }
 
   const resourcesToDelete = ref<Resource[]>([])
 
@@ -226,9 +249,13 @@ export const useFileActionsDeleteResources = () => {
     const originalCurrentFolderId = unref(currentFolder)?.id
 
     return Object.values(resourceSpaceMapping).map(
-      ({ space: spaceForDeletion, resources: resourcesForDeletion }) => {
+      async ({ space: spaceForDeletion, resources: resourcesForDeletion }) => {
+        const workerResources = await translatePathsForDelete(
+          spaceForDeletion,
+          resourcesForDeletion
+        )
         startWorker(
-          { topic: 'fileListDelete', space: spaceForDeletion, resources: resourcesForDeletion },
+          { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
           async ({ successful, failed }) => {
             if (successful.length) {
               showSuccessMessage({

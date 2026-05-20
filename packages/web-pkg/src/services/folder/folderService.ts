@@ -16,7 +16,9 @@ import {
   SharesStore,
   useSharesStore,
   useAuthService,
-  AuthServiceInterface
+  AuthServiceInterface,
+  useExtensionRegistry,
+  ExtensionRegistry
 } from '../../composables'
 import { unref } from 'vue'
 import { ClientService } from '../../services'
@@ -42,6 +44,7 @@ export type TaskContext = {
   resourcesStore: ResourcesStore
   sharesStore: SharesStore
   authService: AuthServiceInterface
+  extensionRegistry: ExtensionRegistry
 }
 
 export interface FolderLoader {
@@ -74,6 +77,7 @@ export class FolderService {
     const resourcesStore = useResourcesStore()
     const sharesStore = useSharesStore()
     const authService = useAuthService()
+    const extensionRegistry = useExtensionRegistry()
 
     const loader = this.loaders.find((l) => l.isEnabled() && l.isActive(unref(router)))
     if (!loader) {
@@ -91,7 +95,8 @@ export class FolderService {
         resourcesStore,
         sharesStore,
         router,
-        authService
+        authService,
+        extensionRegistry
       }
       try {
         yield loader.getTask(context).perform(...args)
