@@ -30,7 +30,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
-      <transition-stub name="oc-drop" appear="false" persisted="false" css="true" class="w-3xs oc-files-context-action-drop">
+      <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
         <!--teleport start-->
         <!--teleport end-->
       </transition-stub>
@@ -63,7 +63,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
-      <transition-stub name="oc-drop" appear="false" persisted="false" css="true" class="w-3xs oc-files-context-action-drop">
+      <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
         <!--teleport start-->
         <!--teleport end-->
       </transition-stub>
@@ -88,7 +88,7 @@ exports[`ContextActionMenu component > renders the menu with drop menu items 1`]
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
       </button>
-      <transition-stub name="oc-drop" appear="false" persisted="false" css="true" class="w-3xs oc-files-context-action-drop">
+      <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
         <!--teleport start-->
         <!--teleport end-->
       </transition-stub>

@@ -18,7 +18,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
         </button>
-        <transition-stub name="oc-drop" appear="false" persisted="false" css="true" options="[object Object]">
+        <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
           <!--teleport start-->
           <!--v-if-->
           <!--teleport end-->
@@ -61,7 +61,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
         </button>
-        <transition-stub name="oc-drop" appear="false" persisted="false" css="true" options="[object Object]">
+        <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
           <!--teleport start-->
           <!--v-if-->
           <!--teleport end-->
@@ -106,7 +106,7 @@ exports[`SpaceHeader > space image > should show the set image 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
         </button>
-        <transition-stub name="oc-drop" appear="false" persisted="false" css="true" options="[object Object]">
+        <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
           <!--teleport start-->
           <!--v-if-->
           <!--teleport end-->
