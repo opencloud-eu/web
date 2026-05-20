@@ -295,12 +295,38 @@ export default defineComponent({
           { uploads: count.toString(), errors: Object.keys(this.errors).length.toString() }
         )
       }
-      return this.$ngettext(
-        '%{ successfulUploads } item uploaded',
-        '%{ successfulUploads } items uploaded',
-        this.successful.length,
-        { successfulUploads: this.successful.length.toString() }
-      )
+
+      const folderCount = this.successful.filter(
+        (id: string) => this.uploads[id]?.meta?.isFolder
+      ).length
+      const fileCount = this.successful.length - folderCount
+
+      const parts: string[] = []
+      if (fileCount > 0) {
+        parts.push(
+          this.$ngettext('%{ fileCount } file', '%{ fileCount } files', fileCount, {
+            fileCount: fileCount.toString()
+          })
+        )
+      }
+      if (folderCount > 0) {
+        parts.push(
+          this.$ngettext('%{ folderCount } folder', '%{ folderCount } folders', folderCount, {
+            folderCount: folderCount.toString()
+          })
+        )
+      }
+
+      if (!parts.length) {
+        return this.$ngettext(
+          '%{ successfulUploads } item uploaded',
+          '%{ successfulUploads } items uploaded',
+          this.successful.length,
+          { successfulUploads: this.successful.length.toString() }
+        )
+      }
+
+      return this.$gettext('%{ items } uploaded', { items: parts.join(', ') })
     },
     uploadsPausable() {
       return this.uppyService.tusActive()
