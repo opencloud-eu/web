@@ -124,7 +124,7 @@ const onKeyDown = (event: KeyboardEvent): boolean => {
 
 watch(selectedIndex, async () => {
   await nextTick()
-  const el = dropRef.value?.$el?.querySelector('.text-editor-slash-menu__item--selected')
+  const el = document.querySelector('.text-editor-slash-menu__item--selected')
   el?.scrollIntoView({ block: 'nearest' })
 })
 
