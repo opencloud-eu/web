@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-20
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-21
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: cancel generic space folder loading  [[#2567](https://github.com/opencloud-eu/web/pull/2567)]
 - fix: upload overlay wording [[#2564](https://github.com/opencloud-eu/web/pull/2564)]
 - fix(client): dedupe search results [[#2555](https://github.com/opencloud-eu/web/pull/2555)]
 - fix: prevent csp error logs in browser console [[#2562](https://github.com/opencloud-eu/web/pull/2562)]
