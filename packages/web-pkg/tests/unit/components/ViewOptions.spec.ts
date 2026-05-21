@@ -108,10 +108,12 @@ describe('ViewOptions component', () => {
           viewModes: [
             mock<FolderView>({
               name: FolderViewModeConstants.name.tiles,
+              label: 'Tiles view',
               icon: { name: 'app-1', fillType: 'none' }
             }),
             mock<FolderView>({
               name: FolderViewModeConstants.name.table,
+              label: 'Table view',
               icon: { name: 'app-2', fillType: 'none' }
             })
           ]
@@ -131,10 +133,12 @@ describe('ViewOptions component', () => {
           viewModes: [
             mock<FolderView>({
               name: FolderViewModeConstants.name.tiles,
+              label: 'Tiles view',
               icon: { name: 'app-1', fillType: 'none' }
             }),
             mock<FolderView>({
               name: FolderViewModeConstants.name.table,
+              label: 'Table view',
               icon: { name: 'app-2', fillType: 'none' }
             })
           ]
@@ -150,10 +154,12 @@ describe('ViewOptions component', () => {
           viewModes: [
             mock<FolderView>({
               name: FolderViewModeConstants.name.tiles,
+              label: 'Tiles view',
               icon: { name: 'app-1', fillType: 'none' }
             }),
             mock<FolderView>({
               name: FolderViewModeConstants.name.table,
+              label: 'Table view',
               icon: { name: 'app-2', fillType: 'none' }
             })
           ]
