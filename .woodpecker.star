@@ -1435,8 +1435,8 @@ def hocuspocusService():
     # checked-out web tree. Plain HTTP on :1234; OC's reverse proxy
     # WebSocket-upgrades and forwards via the `additional_policies` entry in
     # tests/woodpecker/proxy.yaml. Mirrors the dev/docker/hocuspocus image
-    # setup but skips Docker — we install + patch the same way the Dockerfile
-    # does, then run server.js with node.
+    # setup but skips Docker — we install the same way the Dockerfile does,
+    # then run server.js with node.
     sidecar_dir = "%s/dev/docker/hocuspocus" % dir["web"]
     return [{
         "name": "hocuspocus",
@@ -1444,16 +1444,12 @@ def hocuspocusService():
         "detach": True,
         "environment": {
             "PORT": "1234",
-            "DB_PATH": "/tmp/hocuspocus-state.db",
             "OPENCLOUD_URL": "https://opencloud:9200",
             "NODE_TLS_REJECT_UNAUTHORIZED": "0",
         },
         "commands": [
             "cd %s" % sidecar_dir,
             "npm install --omit=dev --no-audit --no-fund --loglevel=error",
-            # The Dockerfile applies a pre-built patch on top of
-            # @hocuspocus/server@4.0.0. `patch` is in nodejs-ci:24.
-            "cd node_modules/@hocuspocus/server && patch -p1 < %s/patches/hocuspocus-server-4.0.0.patch && cd -" % sidecar_dir,
             "node server.js",
         ],
     }] + waitForService("hocuspocus", "1234")
