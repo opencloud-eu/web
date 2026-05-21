@@ -350,11 +350,36 @@ services:
     logging:
       driver: ${LOG_DRIVER:-local}
 
+  hocuspocus:
+    build: ./dev/docker/hocuspocus
+    extra_hosts:
+      - host.docker.internal:${DOCKER_HOST:-host-gateway}
+    environment:
+      PORT: '1234'
+      OPENCLOUD_URL: https://host.docker.internal:9200
+      # Dev only: self-signed cert from OC's Traefik
+      NODE_TLS_REJECT_UNAUTHORIZED: '0'
+      # Dev only: allows the integration tests to bypass real OIDC tokens.
+      # Remove for prod.
+      DEV_FAKE_TOKEN: dev-integration-token
+    volumes:
+      # Dev override: edit server.js without rebuild; remove for prod
+      - ./dev/docker/hocuspocus/server.js:/app/server.js:ro
+    networks:
+      # On the traefik network so OC (which is also on it) can reach
+      # hocuspocus by service name. Browser-facing routing is no longer
+      # done at the Traefik layer — OC's reverse proxy forwards /realtime
+      # via `additional_policies` in opencloud/proxy.yaml. This keeps the
+      # routing model identical to what CI uses (CI has no Traefik).
+      - traefik
+    restart: unless-stopped
+
 volumes:
   uploads:
   opencloud-config:
   opencloud-federated-config:
   stalwart-data:
+  hocuspocus-data:
 
 networks:
   traefik:

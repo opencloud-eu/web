@@ -8,7 +8,8 @@ if (!fs.existsSync(config.reportDir)) {
 
 const e2e = `
   --loader ts-node/esm
-  --import ./tests/e2e/**/*.ts
+  --import ./tests/e2e/cucumber/**/*.ts
+  --import ./tests/e2e/support/**/*.ts
   --retry ${config.retry}
   --format @cucumber/pretty-formatter
   --format pretty

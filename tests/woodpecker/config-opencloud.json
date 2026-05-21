@@ -4,6 +4,9 @@
   "apps": [
     "files",
     "text-editor",
+    "codemirror",
+    "tiptap",
+    "excalidraw",
     "preview",
     "pdf-viewer",
     "search",

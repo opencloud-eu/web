@@ -1,11 +1,50 @@
 import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
+import { Extension } from '@tiptap/core'
 import { Placeholder } from '@tiptap/extension-placeholder'
+import { Collaboration } from '@tiptap/extension-collaboration'
+import { yCursorPlugin } from '@tiptap/y-tiptap'
+import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
+
+// Custom Tiptap extension that wires y-tiptap's yCursorPlugin to a given
+// Awareness. We bypass `@tiptap/extension-collaboration-cursor` because
+// its 3.0.0 release still imports `yCursorPlugin` from the upstream
+// `y-prosemirror` package — a different module with a different
+// `ySyncPluginKey` than the `@tiptap/y-tiptap` fork that
+// `@tiptap/extension-collaboration` uses. Mixing them throws
+// "Cannot read properties of undefined (reading 'doc')" on first paint.
+// y-tiptap's yCursorPlugin shares ySyncPluginKey with Collaboration so
+// the cursor plugin can find the sync state.
+function makeCollabCursorExtension(awareness: Awareness): Extension {
+  return Extension.create({
+    name: 'yCollaborationCursor',
+    addProseMirrorPlugins() {
+      return [
+        yCursorPlugin(awareness, {
+          // Emit the same `.collaboration-cursor__caret/__label` DOM the
+          // (broken) upstream extension would have, so consumer CSS keeps
+          // working unchanged.
+          cursorBuilder: (user: { name?: string; color?: string }) => {
+            const cursor = document.createElement('span')
+            cursor.classList.add('collaboration-cursor__caret')
+            cursor.setAttribute('style', `border-color: ${user.color ?? '#ffa500'}`)
+            const label = document.createElement('div')
+            label.classList.add('collaboration-cursor__label')
+            label.setAttribute('style', `background-color: ${user.color ?? '#ffa500'}`)
+            label.insertBefore(document.createTextNode(user.name ?? ''), null)
+            cursor.insertBefore(label, null)
+            return cursor
+          }
+        })
+      ]
+    }
+  })
+}
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
@@ -16,10 +55,29 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
   const strategy = resolveStrategy(options.contentType, state)
+  const collabFragment = options.ydocFragment ?? 'default'
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const extensions = strategy.extensions()
+  if (options.ydoc) {
+    // Bind ProseMirror state to the shared Y.Doc. With Collaboration active,
+    // the editor's initial content is read from the Y.Doc (not from the
+    // `content` option), so we skip the `content` assignment below. The
+    // strategies already disable `StarterKit.undoRedo` so yUndoPlugin can
+    // take over without conflict.
+    extensions.push(
+      Collaboration.configure({
+        document: options.ydoc,
+        field: collabFragment
+      }) as (typeof extensions)[number]
+    )
+    if (options.awareness) {
+      // Render remote peers' carets + labels via y-tiptap's yCursorPlugin.
+      // Skipped when only ydoc is provided (local mode, no remote peers).
+      extensions.push(makeCollabCursorExtension(options.awareness) as (typeof extensions)[number])
+    }
+  }
   if (options.slashCommands !== false) {
     const resolvedGroups = strategy.editorActionGroups()
     if (resolvedGroups.length > 0) {
@@ -39,7 +97,14 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
     extensions,
-    content: unref(options.modelValue) ? strategy.deserialize(unref(options.modelValue)) : '',
+    // In collab mode the wrapper hydrates the Y.Doc — passing `content` here
+    // would race against the CRDT and produce duplicated state. Leave the
+    // editor blank; Collaboration will paint Y.Doc state into it.
+    content: options.ydoc
+      ? ''
+      : unref(options.modelValue)
+        ? strategy.deserialize(unref(options.modelValue))
+        : '',
     editable: !readonly.value
   }
 
@@ -47,6 +112,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (!unref(editor) || unref(editor)?.isFocused) {
       return
     }
+    // In collab mode the Y.Doc is the source of truth — never round-trip
+    // `modelValue` back into the editor (would clobber peer edits).
+    if (options.ydoc) return
     setContent(content)
   })
 
@@ -129,9 +197,12 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   onMounted(() => {
     editor.value?.on('selectionUpdate', triggerEditorUpdate)
     editor.value?.on('transaction', triggerEditorUpdate)
-    if (!unref(readonly)) {
-      focus()
-    }
+    // Auto-focus on mount used to live here — moved to the consumer.
+    // The composable's job is to build an Editor; deciding when (or
+    // whether) to put the cursor in it is UX policy and belongs with the
+    // caller. All current consumers either rely on the user clicking in
+    // (text-editor) or render read-only previews (app-store description,
+    // files list/space headers) and never wanted auto-focus anyway.
   })
 
   onBeforeUnmount(() => {

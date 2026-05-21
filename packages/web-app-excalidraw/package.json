@@ -1,0 +1,29 @@
+{
+  "name": "excalidraw",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OpenCloud Web collaborative Excalidraw whiteboard editor",
+  "license": "AGPL-3.0",
+  "type": "module",
+  "dependencies": {
+    "@excalidraw/excalidraw": "^0.18.0",
+    "fractional-indexing": "^3.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "veaury": "^2.6.0",
+    "y-excalidraw": "^2.0.12",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.0"
+  },
+  "devDependencies": {
+    "@opencloud-eu/web-test-helpers": "workspace:*",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  },
+  "peerDependencies": {
+    "@opencloud-eu/design-system": "workspace:^",
+    "@opencloud-eu/web-client": "workspace:*",
+    "@opencloud-eu/web-pkg": "workspace:*",
+    "vue3-gettext": "^4.0.0-beta.1"
+  }
+}
