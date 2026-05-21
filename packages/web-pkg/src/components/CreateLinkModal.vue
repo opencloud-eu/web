@@ -49,7 +49,7 @@
       v-if="isAdvancedMode"
       class="mt-2"
       :min-date="DateTime.now()"
-      :label="$gettext('Expiry date')"
+      :label="$gettext('Expiration date')"
       :is-dark="currentTheme.isDark"
       @date-changed="onExpiryDateChanged"
     />
