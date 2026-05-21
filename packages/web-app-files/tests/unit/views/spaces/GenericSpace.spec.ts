@@ -16,6 +16,7 @@ import {
 import { AppBar, useBreadcrumbsFromPath } from '@opencloud-eu/web-pkg'
 import { useBreadcrumbsFromPathMock } from '../../../mocks/useBreadcrumbsFromPathMock'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
+import { flushPromises } from '@vue/test-utils'
 
 const mockCreateFolder = vi.fn()
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
@@ -136,18 +137,18 @@ describe('GenericSpace view', () => {
   describe('loader task', () => {
     it('re-loads the resources on item change', async () => {
       const { wrapper, mocks } = getMountedWrapper()
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       expect(mocks.refreshFileListHeaderPosition).toHaveBeenCalledTimes(1)
       await wrapper.setProps({ item: 'newItem' })
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       expect(mocks.refreshFileListHeaderPosition).toHaveBeenCalledTimes(2)
     })
     it('re-loads the resources on space change', async () => {
       const { wrapper, mocks } = getMountedWrapper()
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       expect(mocks.refreshFileListHeaderPosition).toHaveBeenCalledTimes(1)
       await wrapper.setProps({ space: mockDeep<SpaceResource>() })
-      await wrapper.vm.loadResourcesTask.last
+      await flushPromises()
       expect(mocks.refreshFileListHeaderPosition).toHaveBeenCalledTimes(2)
     })
   })
