@@ -32,7 +32,7 @@
                   />
                 </div>
               </div>
-              <div class="flex items-center mt-1 min-h-12">
+              <div class="flex items-center min-h-12">
                 <slot
                   name="topbarActions"
                   :limited-screen-space="limitedScreenSpace"

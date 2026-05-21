@@ -31,7 +31,7 @@
           :class="{ 'h-[40vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header v-if="isSpaceFrontpage" :space="space" class="px-4 mt-2" />
+          <space-header v-if="isSpaceFrontpage" :space="space" class="px-4" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
