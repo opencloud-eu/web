@@ -4,7 +4,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
 "<nav data-v-5914b352="" id="oc-breadcrumbs-4" class="oc-breadcrumb oc-breadcrumb-default overflow-visible" aria-label="Breadcrumbs">
   <ol data-v-5914b352="" class="oc-breadcrumb-list hidden items-baseline m-0 p-0 flex-nowrap sm:flex">
     <li data-v-5914b352="" data-key="0" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -17,12 +17,12 @@ exports[`OcBreadcrumb > displays all items 1`] = `
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="2" class="oc-breadcrumb-list-item flex items-center">
-      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="flex first:text-base text-xl"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
+      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="inline-flex items-center first:text-base text-xl h-5"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="3" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -43,7 +43,7 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
 "<nav data-v-5914b352="" id="oc-breadcrumbs-1" class="oc-breadcrumb oc-breadcrumb-lead overflow-visible" aria-label="Breadcrumbs">
   <ol data-v-5914b352="" class="oc-breadcrumb-list hidden items-baseline m-0 p-0 flex-nowrap sm:flex">
     <li data-v-5914b352="" data-key="0" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -56,12 +56,12 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="2" class="oc-breadcrumb-list-item flex items-center">
-      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="flex first:text-base text-xl"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
+      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="inline-flex items-center first:text-base text-xl h-5"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="3" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" size="medium" type="span" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>

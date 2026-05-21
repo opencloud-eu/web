@@ -22,7 +22,7 @@
       <ul
         id="files-collaborators-list"
         class="oc-list"
-        :class="{ 'mb-4': showSpaceMembers, 'm-0': !showSpaceMembers }"
+        :class="{ 'mb-4': showSpaceMembers, 'mb-2': !showSpaceMembers }"
         :aria-label="$gettext('Share receivers')"
       >
         <li v-for="collaborator in displayCollaborators" :key="collaborator.id">

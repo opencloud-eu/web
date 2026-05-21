@@ -12,7 +12,7 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
       </div>
     </div>
     <!--v-if-->
-    <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+    <div class="files-app-bar-actions flex items-center justify-end min-h-10 gap-2">
       <div class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
@@ -33,7 +33,7 @@ exports[`AppBar component > renders > if given, with content in the actions slot
       </div>
     </div>
     <!--v-if-->
-    <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+    <div class="files-app-bar-actions flex items-center justify-end min-h-10 gap-2">
       <div class="flex-1 flex justify-start items-center"><button class="action-slot">Click</button>
         <!--v-if-->
       </div>
@@ -54,7 +54,7 @@ exports[`AppBar component > renders > if given, with content in the content slot
       </div>
     </div>
     <!--v-if-->
-    <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+    <div class="files-app-bar-actions flex items-center justify-end min-h-10 gap-2">
       <div class="flex-1 flex justify-start items-center">
         <!--v-if-->
       </div>
