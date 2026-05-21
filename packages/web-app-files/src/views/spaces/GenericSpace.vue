@@ -12,15 +12,8 @@
         :view-modes="viewModes"
         @item-dropped="fileDropped"
       >
-        <template #actions="{ limitedScreenSpace }">
-          <create-and-upload
-            key="create-and-upload-actions"
-            data-testid="actions-create-and-upload"
-            :space="space"
-            :item="item"
-            :item-id="itemId"
-            :limited-screen-space="limitedScreenSpace"
-          />
+        <template #batchActions="{ limitedScreenSpace }">
+          <paste-actions :space="space" :limited-screen-space="limitedScreenSpace" />
         </template>
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
@@ -148,7 +141,7 @@ import {
   useRouteQuery,
   FolderLoaderOptions
 } from '@opencloud-eu/web-pkg'
-import CreateAndUpload from '../../components/AppBar/CreateAndUpload.vue'
+import PasteActions from '../../components/AppBar/PasteActions.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
@@ -157,7 +150,7 @@ import ResourceDetails from '../../components/FilesList/ResourceDetails.vue'
 import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { useResourcesViewDefaults } from '../../composables'
+import { useFileUpload, useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
@@ -188,6 +181,8 @@ const { openWithDefaultApp } = useOpenWithDefaultApp()
 const { triggerDefaultAction } = useFileActions()
 
 const space = computed(() => props.space)
+
+useFileUpload(space)
 
 const resourcesStore = useResourcesStore()
 const { removeResources, resetSelection } = resourcesStore

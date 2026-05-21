@@ -11,7 +11,6 @@
           : action.label(actionOptions)
       "
       data-testid="action-handler"
-      :size="size"
       justify-content="left"
       v-on="componentListeners"
     >
