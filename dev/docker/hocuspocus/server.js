@@ -1,8 +1,6 @@
 import { Server } from '@hocuspocus/server'
-import { SQLite } from '@hocuspocus/extension-sqlite'
 
 const port = parseInt(process.env.PORT ?? '1234', 10)
-const dbPath = process.env.DB_PATH ?? '/var/lib/hocuspocus/state.db'
 const opencloudUrl = (process.env.OPENCLOUD_URL ?? 'https://host.docker.internal:9200').replace(
   /\/$/,
   ''
@@ -112,7 +110,12 @@ const META_KEY = '_oc_meta'
 const server = new Server({
   port,
   address: '0.0.0.0',
-  extensions: [new SQLite({ database: dbPath })],
+  // No server-side persistence: every doc is file-backed via WebDAV.
+  // Cold-start for a fresh peer = hydrate from `currentContent` in the
+  // wrapper. The persisted SQLite snapshot would get discarded on stale-
+  // state recovery anyway (etag drift triggers rehydrate); keeping it
+  // here is "mostly ceremony" per the migration plan. Stale detection
+  // moved to the client (see CollaborativeWrapper.onProviderSynced).
 
   async onAuthenticate({ token, documentName, requestParameters }) {
     if (!token) {
@@ -182,43 +185,47 @@ const server = new Server({
     }
   },
 
-  // Stale-state detection: SQLite extension has loaded the persisted Y.Doc
-  // by the time this runs (extension hooks run before the configuration
-  // hook). onLoadDocument only fires when a doc is loaded into memory for
-  // the first time after eviction — i.e. nobody else is in the room — so
-  // we can safely flag-and-rehydrate without racing live peers.
+  // Stale-state detection — DISABLED.
   //
-  // Two staleness dimensions, both produce the same `_oc_meta.isStale = true`
-  // signal for the wrapper to act on:
-  //  1. etag drift: external file write happened between sessions
-  //     (persisted etag != caller's native etag)
-  //  2. app-version drift: persisted Y.Doc was written by an older client
-  //     version whose adapter layout the new client can no longer read
-  async onLoadDocument({ document, context }) {
-    const meta = document.getMap(META_KEY)
-    const persistedEtag = meta.get('etag')
-    const nativeEtag = context?.nativeEtag
-    const persistedAppVersion = meta.get('appVersion')
-    const clientAppVersion = context?.clientAppVersion
-
-    const etagDrift = !!persistedEtag && !!nativeEtag && persistedEtag !== nativeEtag
-    const versionDrift =
-      !!persistedAppVersion && !!clientAppVersion && persistedAppVersion !== clientAppVersion
-
-    if (!etagDrift && !versionDrift) return
-
-    const reasons = []
-    if (etagDrift) reasons.push(`etag(${persistedEtag}→${nativeEtag})`)
-    if (versionDrift) reasons.push(`appVersion(${persistedAppVersion}→${clientAppVersion})`)
-    console.log(
-      `[onLoadDocument] stale state document="${document.name}" ` +
-        `${reasons.join(' ')} → marked for rehydrate`
-    )
-    document.transact(() => {
-      meta.set('isStale', true)
-      if (nativeEtag) meta.set('nativeEtag', nativeEtag)
-    })
-  },
+  // This hook fires once when a doc is loaded into memory. It used to do
+  // useful work when we shipped the SQLite extension: at cold load it
+  // compared the persisted `_oc_meta.etag` against the live native etag
+  // and flagged drift so the wrapper would rehydrate. Without persistence
+  // the doc is always freshly created at load time, `_oc_meta` is empty,
+  // and the wrapper's etag mirror runs strictly AFTER this hook — so the
+  // comparison can never fire. The equivalent check now lives in
+  // CollaborativeWrapper.onProviderSynced (runs on the client, sees the
+  // CRDT-synced `_oc_meta.etag` from whichever peer joined first).
+  //
+  // Kept commented out as a reference: if persistence is reintroduced
+  // (extension-sqlite, redis, etc.), uncomment to get the server-side
+  // cold-load probe back.
+  //
+  // async onLoadDocument({ document, context }) {
+  //   const meta = document.getMap(META_KEY)
+  //   const persistedEtag = meta.get('etag')
+  //   const nativeEtag = context?.nativeEtag
+  //   const persistedAppVersion = meta.get('appVersion')
+  //   const clientAppVersion = context?.clientAppVersion
+  //
+  //   const etagDrift = !!persistedEtag && !!nativeEtag && persistedEtag !== nativeEtag
+  //   const versionDrift =
+  //     !!persistedAppVersion && !!clientAppVersion && persistedAppVersion !== clientAppVersion
+  //
+  //   if (!etagDrift && !versionDrift) return
+  //
+  //   const reasons = []
+  //   if (etagDrift) reasons.push(`etag(${persistedEtag}→${nativeEtag})`)
+  //   if (versionDrift) reasons.push(`appVersion(${persistedAppVersion}→${clientAppVersion})`)
+  //   console.log(
+  //     `[onLoadDocument] stale state document="${document.name}" ` +
+  //       `${reasons.join(' ')} → marked for rehydrate`
+  //   )
+  //   document.transact(() => {
+  //     meta.set('isStale', true)
+  //     if (nativeEtag) meta.set('nativeEtag', nativeEtag)
+  //   })
+  // },
 
   async onConnect({ documentName, requestHeaders }) {
     console.log(`[onConnect] document="${documentName}" origin=${requestHeaders.origin ?? '-'}`)
@@ -235,10 +242,15 @@ const server = new Server({
 
   // Anti-spoof identity stamp: before each inbound awareness update is
   // applied, overwrite the `user` field on every state in the update with
-  // the authenticated identity from the connection's context. Provided by
-  // the patched @hocuspocus/server (see patches/).
-  async beforeHandleAwareness({ states, connection }) {
-    const user = connection?.context?.user
+  // the authenticated identity from the connection's context.
+  //
+  // Hocuspocus v4 invokes extension hooks with a single payload object — the
+  // positional `(document, states, origin)` signature applies only to the
+  // document-level callback the lib wires up internally (see
+  // hocuspocus-server.cjs ~line 1299). Using positional args here would
+  // silently no-op (states=undefined -> no user found -> return).
+  async beforeHandleAwareness({ states, context, connection }) {
+    const user = context?.user ?? connection?.context?.user
     if (!user) return
     const canonical = {
       id: user.id,
@@ -252,5 +264,5 @@ const server = new Server({
 })
 
 server.listen().then(() => {
-  console.log(`hocuspocus v4 listening on :${port}, db=${dbPath}, oc=${opencloudUrl}`)
+  console.log(`hocuspocus v4 listening on :${port}, oc=${opencloudUrl}`)
 })

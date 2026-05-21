@@ -409,7 +409,6 @@ services:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     environment:
       PORT: '1234'
-      DB_PATH: /var/lib/hocuspocus/state.db
       OPENCLOUD_URL: https://host.docker.internal:9200
       # Dev only: self-signed cert from OC's Traefik
       NODE_TLS_REJECT_UNAUTHORIZED: '0'
@@ -417,7 +416,6 @@ services:
       # Remove for prod.
       DEV_FAKE_TOKEN: dev-integration-token
     volumes:
-      - hocuspocus-data:/var/lib/hocuspocus
       # Dev override: edit server.js without rebuild; remove for prod
       - ./dev/docker/hocuspocus/server.js:/app/server.js:ro
     networks:
