@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @Svanvith, @dschmidt, @tammi-23
 
 ### 🐛 Bug Fixes
 
+- fix(public-links): rename expiry date label to expiration date [[#2575](https://github.com/opencloud-eu/web/pull/2575)]
 - fix: disabled space has navigate actions [[#2569](https://github.com/opencloud-eu/web/pull/2569)]
 - fix: cancel generic space folder loading  [[#2567](https://github.com/opencloud-eu/web/pull/2567)]
 - fix: upload overlay wording [[#2564](https://github.com/opencloud-eu/web/pull/2564)]
