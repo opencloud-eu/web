@@ -23,6 +23,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.16.0 [[#2576](https://github.com/opencloud-eu/web/pull/2576)]
 - chore(deps): update devdependencies (non-major) to v4.1.7 [[#2570](https://github.com/opencloud-eu/web/pull/2570)]
 - chore(deps): update tiptap monorepo to v3.23.5 [[#2554](https://github.com/opencloud-eu/web/pull/2554)]
 - chore(deps): update devdependencies (non-major) [[#2559](https://github.com/opencloud-eu/web/pull/2559)]
