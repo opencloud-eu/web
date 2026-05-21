@@ -69,7 +69,7 @@
             v-if="item.to"
             :aria-current="getAriaCurrent(index)"
             :to="item.to as RouteLocationRaw"
-            class="first:text-base text-xl text-role-on-surface"
+            class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"
           >
             <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
               item.text
@@ -80,7 +80,7 @@
             :aria-current="getAriaCurrent(index)"
             appearance="raw-inverse"
             color-role="surface"
-            class="flex first:text-base text-xl"
+            class="inline-flex items-center first:text-base text-xl h-5"
             no-hover
             @click="item.onClick"
           >

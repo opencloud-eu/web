@@ -44,7 +44,7 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions flex items-center justify-end mt-1 min-h-10 gap-2">
+      <div class="files-app-bar-actions flex items-center justify-end min-h-10 gap-2">
         <div class="flex-1 flex justify-start items-center">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
           <batch-actions
