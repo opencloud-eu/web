@@ -70,6 +70,9 @@
             :aria-current="getAriaCurrent(index)"
             :to="item.to as RouteLocationRaw"
             class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"
+            :class="{
+              'font-bold': index === displayItems.length - 1
+            }"
           >
             <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
               item.text
@@ -93,7 +96,7 @@
                 'leading-[1.2]',
                 'max-w-3xs',
                 {
-                  'oc-breadcrumb-item-text-last': index === displayItems.length - 1
+                  'oc-breadcrumb-item-text-last font-bold': index === displayItems.length - 1
                 }
               ]"
               v-text="item.text"
@@ -164,7 +167,7 @@
       'justify-center': displayItems.length > 1
     }"
   >
-    <span class="truncate" aria-current="page" v-text="currentFolder.text" />
+    <span class="truncate font-bold" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 

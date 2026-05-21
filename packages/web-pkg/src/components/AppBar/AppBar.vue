@@ -44,17 +44,36 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions flex items-center justify-end min-h-10 gap-2">
-        <div class="flex-1 flex justify-start items-center">
-          <slot name="actions" :limited-screen-space="limitedScreenSpace" />
-          <batch-actions
-            v-if="showBatchActions && !batchActionsLoading"
-            :actions="batchActions"
-            :action-options="{ space, resources: selectedResources }"
-            :limited-screen-space="limitedScreenSpace"
-          />
-          <div v-else-if="showBatchActions && batchActionsLoading">
-            <oc-spinner :aria-label="$gettext('Loading actions')" />
+      <div class="files-app-bar-actions flex items-center justify-end min-h-9 gap-2">
+        <slot v-if="!showBatchActions" name="actions" :limited-screen-space="limitedScreenSpace" />
+        <div
+          class="flex-1 flex justify-between items-center px-2 min-h-9 rounded-xl has-[>div:first-child>*]:bg-role-surface-container-high"
+        >
+          <div class="flex items-center">
+            <batch-actions
+              v-if="showBatchActions && !batchActionsLoading"
+              :actions="batchActions"
+              :action-options="{ space, resources: selectedResources }"
+              :limited-screen-space="limitedScreenSpace"
+            />
+            <div v-else-if="showBatchActions && batchActionsLoading">
+              <oc-spinner :aria-label="$gettext('Loading actions')" />
+            </div>
+            <slot name="batchActions" :limited-screen-space="limitedScreenSpace" />
+          </div>
+          <div v-if="selectedResources.length" class="flex items-center gap-1">
+            <oc-button
+              v-oc-tooltip="$gettext('Clear selection')"
+              :aria-label="$gettext('Clear selection')"
+              appearance="raw"
+              @click="resetSelection"
+            >
+              <oc-icon fill-type="line" name="close" />
+            </oc-button>
+            <span
+              class="text-sm"
+              v-text="$gettext('%{count} selected', { count: selectedResources.length })"
+            />
           </div>
         </div>
       </div>
@@ -76,7 +95,7 @@ import {
 import BatchActions from '../BatchActions.vue'
 import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
-import { isLocationCommonActive, isLocationTrashActive } from '../../router'
+import { isLocationTrashActive } from '../../router'
 import { FolderView } from '../../ui/types'
 import {
   useFileActionsDelete,
@@ -89,6 +108,7 @@ import {
   FolderViewModeConstants,
   useAbility,
   useActiveLocation,
+  useClipboardStore,
   useExtensionRegistry,
   useIsTopBarSticky,
   useResourcesStore,
@@ -147,12 +167,16 @@ export default defineComponent({
     const router = useRouter()
     const { requestExtensions } = useExtensionRegistry()
     const { isSticky } = useIsTopBarSticky()
+    const clipboardStore = useClipboardStore()
+    const { resources: clipboardResources } = storeToRefs(clipboardStore)
+    const { clearClipboard } = clipboardStore
 
     const sidebarStore = useSideBar()
     const { isSideBarOpen } = storeToRefs(sidebarStore)
 
     const resourcesStore = useResourcesStore()
     const { selectedResources } = storeToRefs(resourcesStore)
+    const { resetSelection } = resourcesStore
 
     const space = computed(() => props.space)
 
@@ -161,7 +185,6 @@ export default defineComponent({
     const { actions: restoreActions } = useFileActionsRestore()
 
     const breadcrumbMaxWidth = ref<number>(0)
-    const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
 
     const hasSharesNavigation = computed(
       () => Object.hasOwn(useSlots(), 'navigation') && can('create-all', 'Share')
@@ -233,7 +256,10 @@ export default defineComponent({
       pageTitle,
       selectedResources,
       isSticky,
-      isSideBarOpen
+      isSideBarOpen,
+      clipboardResources,
+      resetSelection,
+      clearClipboard
     }
   },
   data: function () {
@@ -247,11 +273,7 @@ export default defineComponent({
       return last<BreadcrumbItem>(this.breadcrumbs).allowContextActions
     },
     showBatchActions() {
-      return (
-        this.hasBulkActions &&
-        (this.selectedResources.length >= 1 ||
-          isLocationTrashActive(this.router, 'files-trash-generic'))
-      )
+      return this.hasBulkActions && this.selectedResources.length >= 1
     },
     selectedResourcesAnnouncement() {
       if (this.selectedResources.length === 0) {
