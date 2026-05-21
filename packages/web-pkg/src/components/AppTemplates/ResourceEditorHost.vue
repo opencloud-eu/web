@@ -4,43 +4,30 @@
       {{ $gettext('No preview available for this file.') }}
     </p>
   </slot>
-  <slot v-else-if="loading" name="loading">
-    <loading-screen />
-  </slot>
-  <slot v-else-if="loadingError" name="error" :error="loadingError">
-    <error-screen :message="loadingError.message" />
-  </slot>
-  <slot
+  <resource-editor-mount
     v-else
-    :extension="resolvedExtension"
-    :bindings="editorBindings"
+    ref="mount"
     :resource="resource"
     :space="space"
-    :url="url"
-    :current-content="currentContent"
-    :is-dirty="isDirty"
-    :is-editor="isEditor"
-    :is-read-only="effectiveIsReadOnly"
-    :save="save"
-    :close="closeApp"
+    :extension="resolvedExtension"
+    :read-only="readOnly"
+    :on-close="onClose"
+    :on-resource-update="onResourceUpdate"
   >
-    <component :is="resolvedExtension.component" v-bind="editorBindings" />
-  </slot>
+    <template v-for="(_, name) in $slots" #[name]="scope">
+      <slot :name="name" v-bind="scope || {}" />
+    </template>
+  </resource-editor-mount>
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed, ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
-import ErrorScreen from './PartialViews/ErrorScreen.vue'
-import LoadingScreen from './PartialViews/LoadingScreen.vue'
+import ResourceEditorMount from './ResourceEditorMount.vue'
 import { resolveResourceEditor } from './resolveResourceEditor'
-import {
-  useExtensionRegistry,
-  useResourceEditor,
-  type ResourceEditorExtension
-} from '../../composables'
+import { useExtensionRegistry, type ResourceEditorExtension } from '../../composables'
 
 /**
  * Embed-host for resourceEditor extensions. Mounts the registered editor
@@ -66,8 +53,6 @@ const { resource, space, extension, extensionId, readOnly, onClose, onResourceUp
 const { $gettext } = useGettext()
 const { requestExtensions } = useExtensionRegistry()
 
-// resourceEditor extensions don't declare `extensionPointIds`, so the
-// registry matches them against any lookup id; this one is just bookkeeping.
 const RESOURCE_EDITOR_LOOKUP_ID = 'app.resource-editor.host'
 
 const resolvedExtension = computed<ResourceEditorExtension | undefined>(() => {
@@ -81,69 +66,17 @@ const resolvedExtension = computed<ResourceEditorExtension | undefined>(() => {
   return resolveResourceEditor(resource, candidates)
 })
 
-const {
-  url,
-  currentContent,
-  isDirty,
-  isEditor,
-  isReadOnly,
-  loading,
-  loadingError,
-  applicationConfig,
-  currentFileContext,
-  activeFiles,
-  isFolderLoading,
-  save,
-  closeApp,
-  getUrlForResource,
-  revokeUrl,
-  loadFolderForFileContext,
-  setCurrentContent,
-  setResource,
-  registerOnDeleteResourceCallback
-} = useResourceEditor({
-  extension: () => resolvedExtension.value!,
-  resource: () => resource,
-  space: () => space,
-  onClose,
-  onResourceUpdate
-})
-
-const effectiveIsReadOnly = computed(() => readOnly || unref(isReadOnly))
-
-// Component-ref API for parents that don't use the default slot. Mirrors
-// the slot's bindings.
+// Forward the mount's exposed state so parents using `ref="host"` see
+// the same surface regardless of whether an extension resolved.
+const mount = ref<InstanceType<typeof ResourceEditorMount> | null>(null)
 defineExpose({
-  isDirty,
-  isEditor,
-  isReadOnly: effectiveIsReadOnly,
   resolvedExtension,
-  loading,
-  loadingError,
-  save,
-  close: closeApp
+  isDirty: computed(() => mount.value?.isDirty),
+  isEditor: computed(() => mount.value?.isEditor),
+  isReadOnly: computed(() => mount.value?.isReadOnly),
+  loading: computed(() => mount.value?.loading),
+  loadingError: computed(() => mount.value?.loadingError),
+  save: () => mount.value?.save(),
+  close: () => mount.value?.close()
 })
-
-const editorBindings = computed(() => ({
-  url: unref(url),
-  space,
-  resource,
-  activeFiles: unref(activeFiles),
-  isDirty: unref(isDirty),
-  isReadOnly: unref(effectiveIsReadOnly),
-  applicationConfig: unref(applicationConfig),
-  currentFileContext: unref(currentFileContext),
-  currentContent: unref(currentContent),
-  isFolderLoading: unref(isFolderLoading),
-
-  'onUpdate:resource': setResource,
-  'onUpdate:currentContent': setCurrentContent,
-  'onRegister:onDeleteResourceCallback': registerOnDeleteResourceCallback,
-
-  onSave: save,
-  onClose: closeApp,
-  loadFolderForFileContext,
-  revokeUrl,
-  getUrlForResource
-}))
 </script>

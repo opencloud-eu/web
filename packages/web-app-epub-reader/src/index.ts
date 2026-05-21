@@ -1,4 +1,4 @@
-import { computed, defineAsyncComponent } from 'vue'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import translations from '../l10n/translations.json'
 import {
@@ -6,14 +6,12 @@ import {
   resourceEditorRoute,
   type ResourceEditorExtension
 } from '@opencloud-eu/web-pkg'
+import EpubReader from './App.vue'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
     const appId = 'epub-reader'
-
-    // Defer the epubjs bundle until the editor actually renders.
-    const EpubReader = defineAsyncComponent(() => import('./App.vue'))
 
     const extension: ResourceEditorExtension = {
       id: 'app.epub-reader',

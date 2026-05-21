@@ -1,6 +1,7 @@
 import {
   PartialComponentProps,
   defaultPlugins,
+  flushPromises,
   getOcSelectOptions,
   mount,
   nextTicks
@@ -56,12 +57,14 @@ describe('Epub reader app', () => {
   it('renders correctly', async () => {
     const { wrapper } = getWrapper()
     await nextTicks(2)
+    await flushPromises()
     expect(wrapper.html()).toMatchSnapshot()
   })
   describe('theme', () => {
     it('sets the theme based on current theme setting', async () => {
       const { wrapper } = getWrapper({ localStorageGeneral: { fontSizePercentage: 50 } })
       await nextTicks(2)
+      await flushPromises()
       expect(wrapper.vm.rendition.themes.select).toHaveBeenCalledWith('light')
     })
   })
@@ -69,17 +72,20 @@ describe('Epub reader app', () => {
     it('initializes with default font size percentage', async () => {
       const { wrapper } = getWrapper()
       await nextTicks(2)
+      await flushPromises()
       expect(wrapper.vm.rendition.themes.fontSize).toHaveBeenCalledWith('100%')
     })
     it('initializes with local storage font size when set', async () => {
       const { wrapper } = getWrapper({ localStorageGeneral: { fontSizePercentage: 50 } })
       await nextTicks(2)
+      await flushPromises()
       expect(wrapper.vm.rendition.themes.fontSize).toHaveBeenCalledWith('50%')
     })
     describe('increase font size button', () => {
       it('increases font size when clicked', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         await wrapper.find(selectors.increaseFontSize).trigger('click')
         expect(wrapper.vm.rendition.themes.fontSize).toHaveBeenCalledWith('110%')
       })
@@ -94,6 +100,7 @@ describe('Epub reader app', () => {
       it('decreases font size when clicked', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         await wrapper.find(selectors.decreaseFontSize).trigger('click')
         expect(wrapper.vm.rendition.themes.fontSize).toHaveBeenCalledWith('90%')
       })
@@ -108,12 +115,14 @@ describe('Epub reader app', () => {
       it('resets font size when clicked', async () => {
         const { wrapper } = getWrapper({ localStorageGeneral: { fontSizePercentage: 50 } })
         await nextTicks(2)
+        await flushPromises()
         await wrapper.find(selectors.resetFontSize).trigger('click')
         expect(wrapper.vm.rendition.themes.fontSize).toHaveBeenCalledWith('100%')
       })
       it('shows the current font size', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         await wrapper.find(selectors.decreaseFontSize).trigger('click')
         expect(wrapper.find(selectors.resetFontSize).text()).toBe('90%')
       })
@@ -127,6 +136,7 @@ describe('Epub reader app', () => {
         }
       })
       await nextTicks(2)
+      await flushPromises()
       expect(wrapper.vm.rendition.display).toHaveBeenCalledWith(
         'epubcfi(/6/4!/4/4/14/2/150/2/1:23)'
       )
@@ -137,6 +147,7 @@ describe('Epub reader app', () => {
       it('renders correctly', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         const chapterElements = wrapper.findAll(selectors.chaptersListItem)
         expect(chapterElements.length).toEqual(2)
         expect(chapterElements[0].text()).toEqual('Chapter 1')
@@ -145,6 +156,7 @@ describe('Epub reader app', () => {
       it('calls method "display" when item is clicked', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         const chapterElements = wrapper.findAll(selectors.chaptersListItem)
         await chapterElements[1].find('.oc-button').trigger('click')
         expect(wrapper.vm.rendition.display).toHaveBeenCalledWith('c2')
@@ -154,6 +166,7 @@ describe('Epub reader app', () => {
       it('renders correctly', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         const chapterElements = await getOcSelectOptions(wrapper, selectors.chaptersSelect)
         expect(chapterElements.length).toEqual(2)
         expect(chapterElements[0].text()).toEqual('Chapter 1')
@@ -162,6 +175,7 @@ describe('Epub reader app', () => {
       it('calls method "display" when item is clicked', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         const chapterElements = await getOcSelectOptions(wrapper, selectors.chaptersSelect, {
           close: false
         })
@@ -175,6 +189,7 @@ describe('Epub reader app', () => {
       it('calls method "prev" when left arrow key is pressed', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowLeft' })
         document.dispatchEvent(keyboardEvent)
         expect(wrapper.vm.rendition.prev).toHaveBeenCalled()
@@ -182,6 +197,7 @@ describe('Epub reader app', () => {
       it('calls method "next" when right arrow key is pressed', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         const keyboardEvent = new KeyboardEvent('keydown', { key: 'ArrowRight' })
         document.dispatchEvent(keyboardEvent)
         expect(wrapper.vm.rendition.next).toHaveBeenCalled()
@@ -191,6 +207,7 @@ describe('Epub reader app', () => {
       it('calls method "prev" when clicked', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         await wrapper.find(selectors.navigateLeft).trigger('click')
         expect(wrapper.vm.rendition.prev).toHaveBeenCalled()
       })
@@ -199,6 +216,7 @@ describe('Epub reader app', () => {
       it('calls method "next" when clicked', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
+        await flushPromises()
         await wrapper.find(selectors.navigateRight).trigger('click')
         expect(wrapper.vm.rendition.next).toHaveBeenCalled()
       })

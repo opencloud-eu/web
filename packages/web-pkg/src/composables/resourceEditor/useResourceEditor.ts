@@ -190,6 +190,10 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
     }
   }).restartable()
 
+  // The size modal should be shown once per resource. Preview's photo-roll
+  // re-fires this watcher on every active-file swap; tracking the last
+  // resource id we prompted for keeps the modal from re-popping.
+  let sizePromptedFor: string | undefined
   watch(
     [() => unref(resource), () => unref(space)],
     ([r]) => {
@@ -197,7 +201,9 @@ export function useResourceEditor(options: UseResourceEditorOptions) {
         return
       }
       const limit = unref(fileSizeLimit)
-      if (limit && toNumber(r.size) > limit) {
+      const exceedsLimit = limit && toNumber(r.size) > limit
+      if (exceedsLimit && sizePromptedFor !== r.id) {
+        sizePromptedFor = r.id
         dispatchModal({
           title: $gettext('File exceeds %{threshold}', {
             threshold: formatFileSize(limit, currentLanguage)

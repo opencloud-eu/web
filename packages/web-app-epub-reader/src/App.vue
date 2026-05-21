@@ -101,7 +101,7 @@ import {
   useLocalStorage,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
-import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
+import type { Book, NavItem, Rendition, Location } from 'epubjs'
 
 const DARK_THEME_CONFIG = {
   html: {
@@ -200,6 +200,7 @@ export default defineComponent({
           {}
         )
 
+        const { default: ePub } = await import('epubjs')
         book.value = ePub(props.currentContent)
 
         unref(book).loaded.navigation.then(({ toc }) => {
