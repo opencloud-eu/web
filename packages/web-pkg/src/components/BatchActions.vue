@@ -2,7 +2,7 @@
   <div>
     <oc-list
       id="oc-appbar-batch-actions"
-      class="flex items-center gap-1"
+      class="flex items-center gap-0.5"
       :class="{
         'oc-appbar-batch-actions-squashed [&_.oc-files-context-action-label]:hidden':
           limitedScreenSpace

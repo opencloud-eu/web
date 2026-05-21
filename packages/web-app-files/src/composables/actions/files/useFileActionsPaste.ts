@@ -2,16 +2,21 @@ import { storeToRefs } from 'pinia'
 import { dirname } from 'path'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { Resource, SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
+import {
+  Resource,
+  SpaceResource,
+  isPersonalSpaceResource,
+  isProjectSpaceResource,
+  isShareSpaceResource
+} from '@opencloud-eu/web-client'
 import {
   ClipboardActions,
   FileAction,
   FileActionOptions,
   ResourceTransfer,
   TransferType,
-  isLocationCommonActive,
   isLocationPublicActive,
-  isLocationSpacesActive,
+  isLocationTrashActive,
   isMacOs,
   useClientService,
   useClipboardStore,
@@ -19,7 +24,8 @@ import {
   useMessages,
   usePasteWorker,
   useResourcesStore,
-  useRouter
+  useRouter,
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsPaste = () => {
@@ -30,6 +36,7 @@ export const useFileActionsPaste = () => {
   const { showMessage } = useMessages()
   const clipboardStore = useClipboardStore()
   const { startWorker } = usePasteWorker()
+  const userStore = useUserStore()
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
@@ -165,6 +172,20 @@ export const useFileActionsPaste = () => {
     clipboardStore.clearClipboard()
   }
 
+  const isMovingIntoSameFolder = computed(() => {
+    if (clipboardStore.action === ClipboardActions.Copy) {
+      return false
+    }
+
+    if (!clipboardStore.resources || clipboardStore.resources.length < 1) {
+      return false
+    }
+
+    return !clipboardStore.resources.some(
+      (resource) => resource.parentFolderId !== unref(currentFolder)?.id
+    )
+  })
+
   const actions = computed((): FileAction[] => [
     {
       name: 'paste',
@@ -172,18 +193,8 @@ export const useFileActionsPaste = () => {
       handler,
       label: () => $gettext('Paste'),
       shortcut: unref(pasteShortcutString),
-      isVisible: ({ resources }) => {
+      isVisible: ({ space }) => {
         if (clipboardStore.resources.length === 0) {
-          return false
-        }
-        if (
-          !isLocationSpacesActive(router, 'files-spaces-generic') &&
-          !isLocationPublicActive(router, 'files-public-link') &&
-          !isLocationCommonActive(router, 'files-common-favorites')
-        ) {
-          return false
-        }
-        if (resources.length === 0) {
           return false
         }
 
@@ -204,9 +215,30 @@ export const useFileActionsPaste = () => {
 
         // copy can't be restricted in authenticated context, because
         // a user always has their home dir with write access
-        return true
+        return (
+          isProjectSpaceResource(space) ||
+          isPersonalSpaceResource(space) ||
+          isShareSpaceResource(space)
+        )
       },
-      class: 'oc-files-actions-copy-trigger'
+      isDisabled: ({ space }) => {
+        if (!space) {
+          return true
+        }
+        return !space.canUpload({ user: userStore.user }) || unref(isMovingIntoSameFolder)
+      },
+      disabledTooltip: ({ space }) => {
+        if (!space || !space.canUpload({ user: userStore.user })) {
+          return $gettext('You have no permission to paste files here.')
+        }
+
+        if (unref(isMovingIntoSameFolder)) {
+          return $gettext('You cannot cut and paste resources into the same folder.')
+        }
+
+        return ''
+      },
+      class: 'oc-files-actions-copy-trigger font-bold'
     }
   ])
 
