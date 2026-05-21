@@ -23,28 +23,17 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import ActionMenuItem from './ContextActions/ActionMenuItem.vue'
-import { defineComponent, PropType } from 'vue'
 import { Action, ActionOptions } from '../composables'
 
-export default defineComponent({
-  name: 'BatchActions',
-  components: { ActionMenuItem },
-  props: {
-    actions: {
-      type: Array as PropType<Action[]>,
-      required: true
-    },
-    actionOptions: {
-      type: Object as PropType<ActionOptions>,
-      required: true
-    },
-    limitedScreenSpace: {
-      type: Boolean,
-      default: false,
-      required: false
-    }
-  }
-})
+const {
+  actions,
+  actionOptions,
+  limitedScreenSpace = false
+} = defineProps<{
+  actions: Action[]
+  actionOptions: ActionOptions
+  limitedScreenSpace?: boolean
+}>()
 </script>
