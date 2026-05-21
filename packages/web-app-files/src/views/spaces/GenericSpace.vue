@@ -138,7 +138,6 @@ import {
   useRouteQuery,
   FolderLoaderOptions
 } from '@opencloud-eu/web-pkg'
-import PasteActions from '../../components/AppBar/PasteActions.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
