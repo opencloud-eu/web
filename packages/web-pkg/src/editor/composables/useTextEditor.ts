@@ -17,6 +17,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const readonly = ref(options.readonly ?? false)
   const strategy = resolveStrategy(options.contentType, state)
 
+  // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const extensions = strategy.extensions()
@@ -73,6 +74,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
         clearTimeout(debounceTimer)
       }
       debounceTimer = setTimeout(() => {
+        debounceTimer = null
         options.onUpdate!(strategy.serialize(e as unknown as Editor))
       }, 250)
     }

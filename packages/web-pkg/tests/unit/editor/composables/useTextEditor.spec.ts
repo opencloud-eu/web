@@ -131,5 +131,17 @@ describe('useTextEditor', () => {
       result.destroy()
       expect(onUpdate).not.toHaveBeenCalled()
     })
+
+    it('does not call onUpdate on destroy after the debounce already fired', () => {
+      const onUpdate = vi.fn()
+      const { result } = createEditor({ onUpdate })
+
+      result.editor.value!.commands.insertContent('x')
+      vi.advanceTimersByTime(250)
+      expect(onUpdate).toHaveBeenCalledTimes(1)
+
+      result.destroy()
+      expect(onUpdate).toHaveBeenCalledTimes(1)
+    })
   })
 })
