@@ -11,11 +11,7 @@
         :space="space"
         :view-modes="viewModes"
         @item-dropped="fileDropped"
-      >
-        <template #batchActions="{ limitedScreenSpace }">
-          <paste-actions :space="space" :limited-screen-space="limitedScreenSpace" />
-        </template>
-      </app-bar>
+      />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <not-found-message

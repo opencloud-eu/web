@@ -105,7 +105,6 @@ import {
   FolderViewModeConstants,
   useAbility,
   useActiveLocation,
-  useClipboardStore,
   useExtensionRegistry,
   useIsTopBarSticky,
   useResourcesStore,
@@ -164,9 +163,6 @@ export default defineComponent({
     const router = useRouter()
     const { requestExtensions } = useExtensionRegistry()
     const { isSticky } = useIsTopBarSticky()
-    const clipboardStore = useClipboardStore()
-    const { resources: clipboardResources } = storeToRefs(clipboardStore)
-    const { clearClipboard } = clipboardStore
 
     const sidebarStore = useSideBar()
     const { isSideBarOpen } = storeToRefs(sidebarStore)
@@ -254,6 +250,8 @@ export default defineComponent({
       return unref(space)?.name || ''
     })
 
+    const showBatchActions = computed(() => props.hasBulkActions && unref(batchActions).length)
+
     return {
       router,
       hasSharesNavigation,
@@ -267,9 +265,8 @@ export default defineComponent({
       selectedResources,
       isSticky,
       isSideBarOpen,
-      clipboardResources,
-      resetSelection,
-      clearClipboard
+      showBatchActions,
+      resetSelection
     }
   },
   data: function () {
@@ -281,12 +278,6 @@ export default defineComponent({
   computed: {
     showContextActions() {
       return last<BreadcrumbItem>(this.breadcrumbs).allowContextActions
-    },
-    showBatchActions() {
-      return (
-        this.hasBulkActions &&
-        (this.selectedResources.length >= 1 || this.clipboardResources.length >= 1)
-      )
     },
     selectedResourcesAnnouncement() {
       if (this.selectedResources.length === 0) {
