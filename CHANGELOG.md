@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(editor): slash menu scroll [[#2572](https://github.com/opencloud-eu/web/pull/2572)]
 - fix(public-links): rename expiry date label to expiration date [[#2575](https://github.com/opencloud-eu/web/pull/2575)]
 - fix: disabled space has navigate actions [[#2569](https://github.com/opencloud-eu/web/pull/2569)]
 - fix: cancel generic space folder loading  [[#2567](https://github.com/opencloud-eu/web/pull/2567)]
