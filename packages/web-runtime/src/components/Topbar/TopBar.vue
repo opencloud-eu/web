@@ -6,7 +6,7 @@
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">
       <sidebar-nav-mobile class="pt-1" />
-      <router-link v-if="!hideLogo" :to="homeLink" class="w-full oc-logo-href">
+      <router-link v-if="!hideLogo" :to="homeLink">
         <picture>
           <source
             :srcset="currentTheme.logoMobile || currentTheme.logo"
@@ -15,7 +15,7 @@
           <oc-image
             :src="currentTheme.logo"
             :alt="sidebarLogoAlt"
-            class="oc-logo-image align-middle ml-1 max-h-[26px] select-none"
+            class="oc-logo-image align-middle ml-1 max-h-[28px] select-none"
           />
         </picture>
       </router-link>
