@@ -13,7 +13,7 @@ import { useGettext } from 'vue3-gettext'
 import { FileAction } from '../types'
 import { useResourcesStore } from '../../piniaStores'
 import { storeToRefs } from 'pinia'
-import { isTrashResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
 
 export const useFileActionsNavigate = () => {
   const router = useRouter()
@@ -49,6 +49,11 @@ export const useFileActionsNavigate = () => {
         if (isTrashResource(resources[0])) {
           return false
         }
+
+        if (isProjectSpaceResource(resources[0]) && resources[0].disabled) {
+          return false
+        }
+
         return resources[0].isFolder || resources[0].type === 'space'
       },
       route: ({ space, resources }) => {
