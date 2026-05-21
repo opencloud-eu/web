@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: disabled space has navigate actions [[#2569](https://github.com/opencloud-eu/web/pull/2569)]
 - fix: cancel generic space folder loading  [[#2567](https://github.com/opencloud-eu/web/pull/2567)]
 - fix: upload overlay wording [[#2564](https://github.com/opencloud-eu/web/pull/2564)]
 - fix(client): dedupe search results [[#2555](https://github.com/opencloud-eu/web/pull/2555)]
