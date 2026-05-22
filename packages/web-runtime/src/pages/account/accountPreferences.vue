@@ -167,7 +167,7 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import ThemeSwitcher from '../../components/Account/ThemeSwitcher.vue'
 import AccountTable from '../../components/Account/AccountTable.vue'
 import EditPasswordModal from '../../components/EditPasswordModal.vue'
-import { computed, onMounted, ref, unref } from 'vue'
+import { computed, markRaw, onMounted, ref, unref } from 'vue'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../helpers/settings'
 import { loadAppTranslations, setCurrentLanguage } from '../../helpers/language'
 import { User } from '@opencloud-eu/web-client/graph/generated'
@@ -244,7 +244,7 @@ const emailNotificationsOptionsFields = computed(() => [
 const showEditPasswordModal = () => {
   dispatchModal({
     title: $gettext('Change password'),
-    customComponent: EditPasswordModal
+    customComponent: markRaw(EditPasswordModal)
   })
 }
 

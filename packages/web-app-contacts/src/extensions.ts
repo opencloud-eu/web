@@ -9,7 +9,7 @@ import {
   useUserStore,
   Extension
 } from '@opencloud-eu/web-pkg'
-import { computed, unref } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import AddressBooksList from './components/AddressBooksList.vue'
 import { useGettext } from 'vue3-gettext'
@@ -48,14 +48,14 @@ export const extensions = (appInfo: ApplicationInformation) => {
     id: `app.${appInfo.id}.sidebar-nav.main-content`,
     extensionPointIds: [`app.${appInfo.id}.sidebar-nav.main`],
     type: 'customComponent',
-    content: AddressBooksList
+    content: markRaw(AddressBooksList)
   }
 
   const bottomNavExtension: CustomComponentExtension = {
     id: `app.${appInfo.id}.sidebar-nav.bottom-content`,
     extensionPointIds: [`app.${appInfo.id}.sidebar-nav.bottom`],
     type: 'customComponent',
-    content: AccountsSwitch
+    content: markRaw(AccountsSwitch)
   }
 
   return computed<Extension[]>(() => {

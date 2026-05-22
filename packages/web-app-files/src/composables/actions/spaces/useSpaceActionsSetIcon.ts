@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { HttpError, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -38,7 +38,7 @@ export const useSpaceActionsSetIcon = () => {
       elementClass: 'w-auto',
       title: $gettext('Set icon for »%{space}«', { space: resources[0].name }),
       hideConfirmButton: true,
-      customComponent: EmojiPickerModal,
+      customComponent: markRaw(EmojiPickerModal),
       focusTrapInitial: false,
       onConfirm: (emoji: string) => setIconSpace(resources[0], emoji)
     })

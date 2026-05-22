@@ -1,4 +1,4 @@
-import { computed, unref } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { LinkShare, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -42,7 +42,7 @@ export const useFileActionsCreateLink = ({
           resources.length,
           { resourceName: resources[0].name }
         ),
-        customComponent: CreateLinkModal,
+        customComponent: markRaw(CreateLinkModal),
         customComponentAttrs: () => ({ space, resources }),
         hideActions: true
       })

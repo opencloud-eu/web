@@ -1,5 +1,5 @@
 import { useModals, UserAction } from '@opencloud-eu/web-pkg'
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import CreateGroupModal from '../../../components/Groups/CreateGroupModal.vue'
 
@@ -17,7 +17,7 @@ export const useGroupActionsCreateGroup = () => {
       handler: () => {
         dispatchModal({
           title: $gettext('Create group'),
-          customComponent: CreateGroupModal
+          customComponent: markRaw(CreateGroupModal)
         })
       }
     }

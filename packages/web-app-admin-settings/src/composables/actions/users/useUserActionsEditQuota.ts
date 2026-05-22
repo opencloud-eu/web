@@ -1,4 +1,4 @@
-import { computed, toRaw } from 'vue'
+import { computed, markRaw, toRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   QuotaModal,
@@ -53,7 +53,7 @@ export const useUserActionsEditQuota = () => {
 
     dispatchModal({
       title: getModalTitle({ resources }),
-      customComponent: QuotaModal,
+      customComponent: markRaw(QuotaModal),
       customComponentAttrs: () => ({
         spaces: getUserDrives({ resources }),
         resourceType: 'user',

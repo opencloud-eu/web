@@ -1,5 +1,5 @@
 import { FileAction, FileActionOptions } from '../types'
-import { computed, unref, Ref } from 'vue'
+import { computed, markRaw, unref, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useModals } from '../../piniaStores'
 import SaveAsModal from '../../../components/Modals/SaveAsModal.vue'
@@ -18,7 +18,7 @@ export const useFileActionsSaveAs = ({ content }: { content: Ref<unknown> }) => 
     dispatchModal({
       elementClass: 'save-as-modal',
       title: $gettext('Save as'),
-      customComponent: SaveAsModal,
+      customComponent: markRaw(SaveAsModal),
       hideActions: true,
       customComponentAttrs: () => ({
         content: unref(content),

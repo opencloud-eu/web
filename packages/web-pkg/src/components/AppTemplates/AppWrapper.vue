@@ -20,7 +20,17 @@
 </template>
 
 <script setup lang="ts">
-import { Ref, defineComponent, onBeforeUnmount, ref, unref, watch, computed, onMounted } from 'vue'
+import {
+  Ref,
+  defineComponent,
+  onBeforeUnmount,
+  ref,
+  unref,
+  watch,
+  computed,
+  onMounted,
+  markRaw
+} from 'vue'
 import { DateTime } from 'luxon'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
@@ -153,7 +163,7 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
       id: topBarExtensionId,
       type: 'customComponent',
       extensionPointIds: ['app.runtime.header.left'],
-      content: AppTopBar,
+      content: markRaw(AppTopBar),
       componentProps: () => ({
         resource: unref(resource),
         isReadOnly: unref(isReadOnly),
@@ -668,7 +678,7 @@ onBeforeRouteLeave((_to, _from, next) => {
   if (unref(isDirty)) {
     dispatchModal({
       title: $gettext('Unsaved changes'),
-      customComponent: UnsavedChangesModal,
+      customComponent: markRaw(UnsavedChangesModal),
       focusTrapInitial: '.oc-modal-body-actions-confirm',
       hideActions: true,
       hideCancelButton: true,

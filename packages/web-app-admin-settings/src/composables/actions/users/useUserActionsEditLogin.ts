@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { UserAction, useModals, useCapabilityStore, UserActionOptions } from '@opencloud-eu/web-pkg'
 import LoginModal from '../../../components/Users/LoginModal.vue'
@@ -19,7 +19,7 @@ export const useUserActionsEditLogin = () => {
           userCount: resources.length.toString()
         }
       ),
-      customComponent: LoginModal,
+      customComponent: markRaw(LoginModal),
       customComponentAttrs: () => ({
         users: resources
       })

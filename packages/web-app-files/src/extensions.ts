@@ -12,7 +12,7 @@ import {
   useSpaceActionsCreate,
   useUserStore
 } from '@opencloud-eu/web-pkg'
-import { computed, unref } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import { SDKSearch } from './search'
 import { useSideBarPanels } from './composables/extensions/useFileSideBars'
 import { useFolderViews } from './composables/extensions/useFolderViews'
@@ -94,7 +94,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
 
         return true
       },
-      dropComponent: CreateOrUploadMenu
+      dropComponent: markRaw(CreateOrUploadMenu)
     } as FloatingActionButtonExtension,
     ...((userStore.user && [
       {
