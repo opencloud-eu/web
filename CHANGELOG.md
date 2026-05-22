@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(editor): json rendering, plaintext serialization [[#2573](https://github.com/opencloud-eu/web/pull/2573)]
 - fix: tags contextual helper text is out of viewport [[#2582](https://github.com/opencloud-eu/web/pull/2582)]
 - fix: view mode not translated [[#2581](https://github.com/opencloud-eu/web/pull/2581)]
 - fix: remove all folders from file drop upload queue [[#2510](https://github.com/opencloud-eu/web/pull/2510)]
