@@ -30,11 +30,11 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('serialize', () => {
-    it('calls getText on editor', () => {
+    it('calls getText with \\n block separator', () => {
       const strategy = createStrategy()
       const mockEditor = { getText: vi.fn().mockReturnValue('hello') } as any
       expect(strategy.serialize(mockEditor)).toBe('hello')
-      expect(mockEditor.getText).toHaveBeenCalled()
+      expect(mockEditor.getText).toHaveBeenCalledWith({ blockSeparator: '\n' })
     })
   })
 
