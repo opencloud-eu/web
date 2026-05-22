@@ -101,7 +101,7 @@
         <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
       </dl>
       <div v-if="hasTags" class="mt-2">
-        <div class="inline-flex items-center">
+        <div class="inline-flex items-center text-sm mb-0.5">
           {{ $gettext('Tags') }}
           <oc-contextual-helper
             v-if="contextualHelper?.isEnabled"
