@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: view mode not translated [[#2581](https://github.com/opencloud-eu/web/pull/2581)]
 - fix: remove all folders from file drop upload queue [[#2510](https://github.com/opencloud-eu/web/pull/2510)]
 - fix(editor): slash menu scroll [[#2572](https://github.com/opencloud-eu/web/pull/2572)]
 - fix(public-links): rename expiry date label to expiration date [[#2575](https://github.com/opencloud-eu/web/pull/2575)]
