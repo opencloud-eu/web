@@ -823,8 +823,8 @@ importers:
         specifier: ^6.8.0
         version: 6.8.1
       '@casl/vue':
-        specifier: ^2.2.6
-        version: 2.2.6(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))
+        specifier: ^3.0.0
+        version: 3.0.0(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))
       '@microsoft/fetch-event-source':
         specifier: ^2.0.1
         version: 2.0.1
@@ -989,8 +989,8 @@ importers:
         specifier: 6.8.1
         version: 6.8.1
       '@casl/vue':
-        specifier: ^2.2.6
-        version: 2.2.6(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))
+        specifier: ^3.0.0
+        version: 3.0.0(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))
       '@microsoft/fetch-event-source':
         specifier: 2.0.1
         version: 2.0.1
@@ -1083,8 +1083,8 @@ importers:
         specifier: ^6.8.0
         version: 6.8.1
       '@casl/vue':
-        specifier: ^2.2.6
-        version: 2.2.6(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))
+        specifier: ^3.0.0
+        version: 3.0.0(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
@@ -1285,10 +1285,10 @@ packages:
   '@casl/ability@6.8.1':
     resolution: {integrity: sha512-VX5DD1JbSP/DdewZnNwXXaCzve+0pLe14mcUj2l93CdOFAQUT/ylAptNqxf3Wc/jlsuSanAgXza4Z1Iq23dzpQ==}
 
-  '@casl/vue@2.2.6':
-    resolution: {integrity: sha512-2OofMpdFWHPx99oqAYo4/Ym3P5vSUwUJA/XGvlqichiCLvo7GMu0R7yszxMYm80v9VkQ4ETMG1r4GdDDS+rFYg==}
+  '@casl/vue@3.0.0':
+    resolution: {integrity: sha512-ZLJeVchZvmtz0VLTvHwsH4epE+CREBSbFQi0bIUmi0vZh4tF8B4Ylp6YiRWCP4Am7O5caJJqxARQGya2XUX4fw==}
     peerDependencies:
-      '@casl/ability': ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.1.0 || ^6.0.0
+      '@casl/ability': ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.1.0 || ^6.0.0 || ^7.0.0
       vue: ^3.0.0
 
   '@colors/colors@1.5.0':
@@ -5826,7 +5826,7 @@ snapshots:
     dependencies:
       '@ucast/mongo2js': 1.4.1
 
-  '@casl/vue@2.2.6(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))':
+  '@casl/vue@3.0.0(@casl/ability@6.8.1)(vue@3.5.34(typescript@6.0.3))':
     dependencies:
       '@casl/ability': 6.8.1
       vue: 3.5.34(typescript@6.0.3)
