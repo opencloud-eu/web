@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-21
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-22
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.2.2 [[#2578](https://github.com/opencloud-eu/web/pull/2578)]
 - chore(deps): update node.js to v24.16.0 [[#2576](https://github.com/opencloud-eu/web/pull/2576)]
 - chore(deps): update devdependencies (non-major) to v4.1.7 [[#2570](https://github.com/opencloud-eu/web/pull/2570)]
 - chore(deps): update tiptap monorepo to v3.23.5 [[#2554](https://github.com/opencloud-eu/web/pull/2554)]
