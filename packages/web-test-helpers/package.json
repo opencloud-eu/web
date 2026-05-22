@@ -47,7 +47,7 @@
   },
   "dependencies": {
     "@casl/ability": "^7.0.0",
-    "@casl/vue": "^2.2.6",
+    "@casl/vue": "^3.0.0",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
     "@pinia/testing": "^1.0.3",
