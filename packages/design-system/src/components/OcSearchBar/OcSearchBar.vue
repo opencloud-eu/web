@@ -6,6 +6,7 @@
   >
     <div class="flex-1 relative">
       <input
+        :id="inputId"
         v-model="model"
         :class="inputClass"
         :aria-label="label"
@@ -56,7 +57,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, unref, watch } from 'vue'
+import { computed, unref, useId, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import OcButton, { Props as OcButtonProps } from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
@@ -190,6 +191,7 @@ defineSlots<Slots>()
 
 const { $gettext } = useGettext()
 
+const inputId = `search-input-${useId()}`
 const inputClass = computed(() => {
   const classes = [
     'oc-search-input',
