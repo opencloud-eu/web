@@ -24,6 +24,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @casl/ability to v7 [[#2584](https://github.com/opencloud-eu/web/pull/2584)]
 - chore(deps): update pnpm to v11.2.2 [[#2578](https://github.com/opencloud-eu/web/pull/2578)]
 - chore(deps): update node.js to v24.16.0 [[#2576](https://github.com/opencloud-eu/web/pull/2576)]
 - chore(deps): update devdependencies (non-major) to v4.1.7 [[#2570](https://github.com/opencloud-eu/web/pull/2570)]
