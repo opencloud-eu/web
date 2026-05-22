@@ -14,7 +14,7 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
   }
 
   const serialize = (editor: Editor): string => {
-    return editor.getText()
+    return editor.getText({ blockSeparator: '\n' })
   }
 
   const deserialize = (content: string): Record<string, unknown> => {

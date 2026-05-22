@@ -49,9 +49,6 @@ const parsedContentType = computed<ContentType>(() => {
   if (ext === 'html' || ext === 'htm' || mimeType === 'text/html') {
     return 'html'
   }
-  if (ext === 'json' || mimeType === 'application/json') {
-    return 'tiptap-json'
-  }
   return 'plain-text'
 })
 
