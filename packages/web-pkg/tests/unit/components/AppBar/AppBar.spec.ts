@@ -11,7 +11,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { ArchiverService } from '../../../../src/services'
 import { FolderView } from '../../../../src/ui/types'
-import { useExtensionRegistry, ViewOptions } from '../../../../src'
+import { ActionExtension, FileAction, useExtensionRegistry, ViewOptions } from '../../../../src'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -76,19 +76,18 @@ describe('AppBar component', () => {
       })
     })
     describe('bulkActions', () => {
-      it('if enabled', () => {
-        const { wrapper } = getShallowWrapper(selectedFiles, {}, { hasBulkActions: true })
-        expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
-      })
-      it('if 1 file selected on trash routes', () => {
+      it('if enabled and batch actions available', () => {
+        const currentRoute = mock<RouteLocation>({
+          name: 'files-spaces-generic',
+          path: '/files/spaces/personal/admin'
+        })
         const { wrapper } = getShallowWrapper(
-          [selectedFiles[0]],
+          selectedFiles,
           {},
           { hasBulkActions: true },
-          mock<RouteLocation>({
-            name: 'files-trash-generic',
-            path: '/files/trash/personal/admin'
-          })
+          currentRoute,
+          false,
+          true
         )
         expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
       })
@@ -134,7 +133,8 @@ function getShallowWrapper(
     name: 'files-spaces-generic',
     path: '/files/spaces/personal/admin'
   }),
-  isMobile = false
+  isMobile = false,
+  hasBatchActions = false
 ) {
   vi.mocked(useIsMobile).mockReturnValue({
     isMobile: computed(() => isMobile),
@@ -147,8 +147,14 @@ function getShallowWrapper(
     }
   })
 
+  const batchActions: ActionExtension[] = []
+  if (hasBatchActions) {
+    batchActions.push(
+      mock<ActionExtension>({ action: mock<FileAction>({ isVisible: () => true }) })
+    )
+  }
   const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue([])
+  vi.mocked(requestExtensions).mockReturnValue(batchActions)
 
   const mocks = {
     ...defaultComponentMocks({
