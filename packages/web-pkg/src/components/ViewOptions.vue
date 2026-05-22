@@ -40,7 +40,7 @@
                     :fill-type="viewMode.icon.fillType"
                     size="medium"
                   />
-                  <span v-text="viewMode.label" />
+                  <span v-text="$gettext(viewMode.label)" />
                 </span>
                 <oc-icon
                   v-if="viewModeQuery === viewMode.name"
