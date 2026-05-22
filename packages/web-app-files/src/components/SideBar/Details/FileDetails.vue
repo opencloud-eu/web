@@ -99,20 +99,20 @@
           </dd>
         </template>
         <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
-        <template v-if="hasTags">
-          <dt class="inline-flex items-center">
-            {{ $gettext('Tags') }}
-            <oc-contextual-helper
-              v-if="contextualHelper?.isEnabled"
-              v-bind="contextualHelper?.data"
-              class="pl-1"
-            />
-          </dt>
-          <dd data-testid="tags">
-            <tags-select :resource="resource" class="w-full" />
-          </dd>
-        </template>
       </dl>
+      <div v-if="hasTags" class="mt-2">
+        <div class="inline-flex items-center text-sm mb-0.5">
+          {{ $gettext('Tags') }}
+          <oc-contextual-helper
+            v-if="contextualHelper?.isEnabled"
+            v-bind="contextualHelper?.data"
+            class="pl-1"
+          />
+        </div>
+        <div data-testid="tags">
+          <tags-select data-testid="tags" :resource="resource" class="w-full" />
+        </div>
+      </div>
     </div>
     <p v-else data-testid="noContentText" v-text="$gettext('No information to display')" />
   </div>
