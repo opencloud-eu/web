@@ -8,6 +8,10 @@ describe('OcSearchBar', () => {
     searchButtonWrapper: '.oc-search-button-wrapper',
     searchClearButton: '.oc-search-clear'
   }
+  it('should have an id', () => {
+    const wrapper = getWrapper()
+    expect(wrapper.find('input').attributes('id')).toBeDefined()
+  })
   describe('search grid role', () => {
     it('should be undefined if filter is enabled', () => {
       const wrapper = getWrapper({ isFilter: true })
