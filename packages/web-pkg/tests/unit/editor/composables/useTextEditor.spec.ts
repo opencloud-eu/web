@@ -59,7 +59,7 @@ describe('useTextEditor', () => {
       expect(pluginNames).toContain('slashCommands')
     })
 
-    it('does not register the extension for plain-text (no action groups)', () => {
+    it('does not register the extension for plain-text when all actions are hidden in slash commands', () => {
       const { result } = createEditor({
         contentType: 'plain-text',
         modelValue: toRef('hi'),
