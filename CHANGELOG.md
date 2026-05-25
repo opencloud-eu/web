@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-22
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-25
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -29,6 +29,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.3.0 [[#2591](https://github.com/opencloud-eu/web/pull/2591)]
 - fix(deps): update dependency @casl/ability to v7 [[#2584](https://github.com/opencloud-eu/web/pull/2584)]
 - chore(deps): update pnpm to v11.2.2 [[#2578](https://github.com/opencloud-eu/web/pull/2578)]
 - chore(deps): update node.js to v24.16.0 [[#2576](https://github.com/opencloud-eu/web/pull/2576)]
