@@ -23,7 +23,11 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const extensions = strategy.extensions()
   if (options.slashCommands !== false) {
     const resolvedGroups = strategy.editorActionGroups()
-    if (resolvedGroups.length > 0) {
+    const hasSlashCommandItems = resolvedGroups.some((group) =>
+      group.actions.some((action) => action.showInSlashCommands !== false)
+    )
+
+    if (hasSlashCommandItems) {
       extensions.push(
         SlashCommands.configure({ getGroups: () => resolvedGroups }) as (typeof extensions)[number]
       )

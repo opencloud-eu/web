@@ -1,14 +1,14 @@
 import { Editor } from '@tiptap/vue-3'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
-import HardBreak from '@tiptap/extension-hard-break'
 import { Extension } from '@tiptap/core'
-import { EditorActionGroup } from '../useEditorActions'
+import StarterKit from '@tiptap/starter-kit'
+import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { ContentTypeStrategy } from './types'
 import { TextEditorState } from '../../types'
+import { useGettext } from 'vue3-gettext'
 
 export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeStrategy => {
+  const { $gettext } = useGettext()
+
   const editorContentType = () => {
     return 'plainText'
   }
@@ -35,11 +35,35 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
   }
 
   const extensions = (): Extension[] => {
-    return [Document, Paragraph, Text, HardBreak]
+    return [
+      StarterKit.configure({
+        blockquote: false,
+        bold: false,
+        bulletList: false,
+        code: false,
+        codeBlock: false,
+        dropcursor: false,
+        gapcursor: false,
+        heading: false,
+        horizontalRule: false,
+        italic: false,
+        listItem: false,
+        listKeymap: false,
+        orderedList: false,
+        strike: false
+      })
+    ]
   }
 
+  const { undo, redo } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
-    return []
+    return [
+      {
+        id: 'history',
+        title: $gettext('History'),
+        actions: [undo(), redo()]
+      }
+    ]
   }
 
   return {

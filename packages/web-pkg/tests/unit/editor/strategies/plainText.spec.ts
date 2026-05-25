@@ -1,7 +1,12 @@
-import { vi, describe, it, expect } from 'vitest'
+import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import type { TextEditorState } from '../../../../src/editor/types'
 import { useStrategyPlainText } from '../../../../src/editor/composables/strategies/plainText'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+
+vi.mock('vue3-gettext', () => ({
+  useGettext: () => ({ $gettext: (text: string) => text })
+}))
 
 function createStrategy() {
   const state: TextEditorState = { sourceMode: ref(false) }
@@ -9,23 +14,30 @@ function createStrategy() {
 }
 
 describe('useStrategyPlainText', () => {
+  beforeEach(() => {
+    createTestingPinia()
+  })
+
   describe('extensions', () => {
-    it('returns base extensions only', () => {
+    it('returns a starter kit extension', () => {
       const strategy = createStrategy()
       const names = strategy.extensions().map((e) => e.name)
-      expect(names).toContain('doc')
-      expect(names).toContain('paragraph')
-      expect(names).toContain('text')
-      expect(names).toContain('hardBreak')
-      expect(names).not.toContain('bold')
-      expect(names).not.toContain('italic')
+      expect(names).toEqual(['starterKit'])
     })
   })
 
   describe('editorActionGroups', () => {
-    it('returns empty array', () => {
+    it('returns history group with undo and redo', () => {
       const strategy = createStrategy()
-      expect(strategy.editorActionGroups()).toEqual([])
+      expect(strategy.editorActionGroups()).toHaveLength(1)
+      expect(strategy.editorActionGroups()[0]).toMatchObject({
+        id: 'history',
+        title: 'History'
+      })
+      expect(strategy.editorActionGroups()[0].actions.map((action) => action.id)).toEqual([
+        'undo',
+        'redo'
+      ])
     })
   })
 

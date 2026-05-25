@@ -134,9 +134,6 @@ const visible = computed(() => {
   if (unref(textEditor.readonly)) {
     return false
   }
-  if (unref(textEditor.contentType) === 'plain-text') {
-    return false
-  }
   return !!unref(textEditor.editor)
 })
 
