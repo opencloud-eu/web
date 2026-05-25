@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: missing undo and redo actions in plain text editor [[#2592](https://github.com/opencloud-eu/web/pull/2592)]
 - fix(design-system): add id to OcSearchBar [[#2587](https://github.com/opencloud-eu/web/pull/2587)]
 - fix: cleanup event listener [[#2532](https://github.com/opencloud-eu/web/pull/2532)]
 - fix(editor): json rendering, plaintext serialization [[#2573](https://github.com/opencloud-eu/web/pull/2573)]
