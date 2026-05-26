@@ -257,8 +257,8 @@ importers:
   packages/extension-sdk:
     dependencies:
       '@module-federation/vite':
-        specifier: 1.15.4
-        version: 1.15.4(node-fetch@3.3.2)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(sass@1.99.0)(yaml@2.9.0))(vue-tsc@3.3.1(typescript@6.0.3))
+        specifier: 1.15.5
+        version: 1.15.5(node-fetch@3.3.2)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(sass@1.99.0)(yaml@2.9.0))(vue-tsc@3.3.1(typescript@6.0.3))
       '@tailwindcss/vite':
         specifier: ^4.2.2
         version: 4.3.0(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(sass@1.99.0)(yaml@2.9.0))
@@ -1690,11 +1690,6 @@ packages:
 
   '@module-federation/third-party-dts-extractor@2.4.0':
     resolution: {integrity: sha512-4v24t6L3dET/6abMOM2fiM3roT0c8mi21/i+uDc6WG7U0i+Xp2SojBppTs6gnT0lkwMTe+u6xIpNQakdUftHsg==}
-
-  '@module-federation/vite@1.15.4':
-    resolution: {integrity: sha512-44l8xYOermWM0hhuTLuGE0AKaX6W2yqQ/hTyVqiEHa23gPHFUNjJs1Cr6+A5fG38XMl+0Vzn11luT3zwp1xJjQ==}
-    peerDependencies:
-      vite: ^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0
 
   '@module-federation/vite@1.15.5':
     resolution: {integrity: sha512-TfnZPnakXRLp1237MvDl+8UWhdv3BVvryZuw6bdcXM5rPM2Wn0d1pm5dv8xaiUj0f6BkjGHG7w/5EQQ4nVp13g==}
@@ -6276,22 +6271,6 @@ snapshots:
     dependencies:
       find-pkg: 2.0.0
       resolve: 1.22.8
-
-  '@module-federation/vite@1.15.4(node-fetch@3.3.2)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(sass@1.99.0)(yaml@2.9.0))(vue-tsc@3.3.1(typescript@6.0.3))':
-    dependencies:
-      '@module-federation/dts-plugin': 2.4.0(node-fetch@3.3.2)(typescript@6.0.3)(vue-tsc@3.3.1(typescript@6.0.3))
-      '@module-federation/runtime': 2.4.0(node-fetch@3.3.2)
-      '@module-federation/sdk': 2.4.0(node-fetch@3.3.2)
-      es-module-lexer: 2.1.0
-      estree-walker: 3.0.3
-      pathe: 2.0.3
-      vite: 8.0.14(@types/node@25.9.1)(jiti@2.7.0)(sass@1.99.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - bufferutil
-      - node-fetch
-      - typescript
-      - utf-8-validate
-      - vue-tsc
 
   '@module-federation/vite@1.15.5(node-fetch@3.3.2)(typescript@6.0.3)(vite@8.0.14(@types/node@25.9.1)(jiti@2.7.0)(sass@1.99.0)(yaml@2.9.0))(vue-tsc@3.3.1(typescript@6.0.3))':
     dependencies:
