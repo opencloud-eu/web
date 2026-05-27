@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-26
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-27
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -30,6 +30,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.60.0 [[#2593](https://github.com/opencloud-eu/web/pull/2593)]
 - chore(deps): update tiptap monorepo to v3.23.6 [[#2586](https://github.com/opencloud-eu/web/pull/2586)]
 - chore(deps): update pnpm to v11.3.0 [[#2591](https://github.com/opencloud-eu/web/pull/2591)]
 - fix(deps): update dependency @casl/ability to v7 [[#2584](https://github.com/opencloud-eu/web/pull/2584)]
