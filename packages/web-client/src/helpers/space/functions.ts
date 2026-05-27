@@ -163,11 +163,11 @@ export function buildSpace(
   const webDavPath = urlJoin(data.webDavPath || buildWebDavSpacesPath(data.id), {
     leadingSlash: true
   })
-  const webDavUrl = urlJoin(data.serverUrl, 'remote.php/dav', webDavPath)
+  const webDavUrl = urlJoin(data.serverUrl, 'dav', webDavPath)
   const webDavTrashPath = urlJoin(data.webDavTrashPath || buildWebDavSpacesTrashPath(data.id), {
     leadingSlash: true
   })
-  const webDavTrashUrl = urlJoin(data.serverUrl, 'remote.php/dav', webDavTrashPath)
+  const webDavTrashUrl = urlJoin(data.serverUrl, 'dav', webDavTrashPath)
 
   const s = {
     id: data.id,

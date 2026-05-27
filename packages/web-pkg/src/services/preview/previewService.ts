@@ -121,7 +121,7 @@ export class PreviewService {
 
     const url = [
       this.configStore.serverUrl,
-      'remote.php/dav',
+      'dav',
       encodePath(resource.webDavPath),
       '?',
       this.buildQueryString({ etag: resource.etag, dimensions, processor })

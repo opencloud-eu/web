@@ -37,7 +37,7 @@ export class DAV {
   public extraProps: string[]
 
   constructor({ baseUrl, headers }: DAVOptions) {
-    this.davPath = urlJoin(baseUrl, 'remote.php/dav')
+    this.davPath = urlJoin(baseUrl, 'dav')
     this.client = createClient(this.davPath, {})
     this.headers = headers
     this.extraProps = []
