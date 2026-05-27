@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: legacy WebDav url [[#2577](https://github.com/opencloud-eu/web/pull/2577)]
 - fix: account settings, extension names not translated [[#2595](https://github.com/opencloud-eu/web/pull/2595)]
 - fix: missing undo and redo actions in plain text editor [[#2592](https://github.com/opencloud-eu/web/pull/2592)]
 - fix(design-system): add id to OcSearchBar [[#2587](https://github.com/opencloud-eu/web/pull/2587)]
