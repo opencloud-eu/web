@@ -15,7 +15,7 @@ import {
   useRouter
 } from '@opencloud-eu/web-pkg'
 
-export const useFileActionsMove = () => {
+export const useFileActionsCut = () => {
   const router = useRouter()
   const { cutResources } = useClipboardStore()
   const language = useGettext()

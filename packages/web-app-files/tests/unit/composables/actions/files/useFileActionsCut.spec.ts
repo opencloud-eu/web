@@ -6,7 +6,7 @@ import {
   defaultComponentMocks,
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
-import { useFileActionsMove } from '../../../../../src/composables/actions/files'
+import { useFileActionsCut } from '../../../../../src/composables/actions/files'
 
 describe('move', () => {
   describe('computed property "actions"', () => {
@@ -25,7 +25,7 @@ describe('move', () => {
       ])('should be set correctly', (inputData) => {
         getWrapper({
           setup: () => {
-            const { actions } = useFileActionsMove()
+            const { actions } = useFileActionsCut()
 
             const resources = inputData.resources
             expect(unref(actions)[0].isVisible({ space: null, resources })).toBe(
@@ -40,7 +40,7 @@ describe('move', () => {
 function getWrapper({
   setup
 }: {
-  setup: (instance: ReturnType<typeof useFileActionsMove>) => void
+  setup: (instance: ReturnType<typeof useFileActionsCut>) => void
 }) {
   const routeName = 'files-spaces-generic'
   const mocks = {
@@ -54,7 +54,7 @@ function getWrapper({
     mocks,
     wrapper: getComposableWrapper(
       () => {
-        const instance = useFileActionsMove()
+        const instance = useFileActionsCut()
         setup(instance)
       },
       {
