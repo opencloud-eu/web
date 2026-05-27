@@ -911,7 +911,7 @@ export interface moveOrCopyResourceArgs {
   page: Page
   resource: string
   newLocation: string
-  action: 'copy' | 'move'
+  action: 'copy' | 'cut'
   method: string
   option?: string
 }
