@@ -82,7 +82,8 @@ export const useFileActionsMove = () => {
       const shouldRemoveResourcesFromView =
         effectiveTransferType === TransferType.MOVE &&
         unref(currentFolder) &&
-        unref(currentFolder).id !== targetFolder.id
+        !isLocationCommonActive(router, 'files-common-favorites') &&
+        !isLocationCommonActive(router, 'files-common-search')
 
       if (shouldRemoveResourcesFromView) {
         resourcesStore.removeResources(successful)
@@ -109,7 +110,18 @@ export const useFileActionsMove = () => {
         })
       }
 
-      fetchedResources.forEach((resource) => resourcesStore.upsertResource(resource))
+      const isDestinationActiveFolder = unref(currentFolder)?.id === targetFolder.id
+      fetchedResources.forEach((resource) => {
+        const isResourceInCurrentList = resourcesStore.resources.some(
+          (existingResource) => existingResource.id === resource.id
+        )
+
+        if (!isResourceInCurrentList && !isDestinationActiveFolder) {
+          return
+        }
+
+        resourcesStore.upsertResource(resource)
+      })
     })
   }
 

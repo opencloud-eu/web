@@ -94,7 +94,7 @@ export class Resource {
 
   async moveMultipleResources(args: Omit<po.moveOrCopyMultipleResourceArgs, 'page' | 'action'>) {
     const startUrl = this.#page.url()
-    await po.moveOrCopyMultipleResources({ ...args, page: this.#page, action: 'move' })
+    await po.moveOrCopyMultipleResources({ ...args, page: this.#page, action: 'cut' })
     await this.#page.goto(startUrl)
   }
 

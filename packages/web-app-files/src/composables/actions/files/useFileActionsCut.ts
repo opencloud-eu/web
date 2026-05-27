@@ -66,7 +66,7 @@ export const useFileActionsCut = () => {
         })
         return !moveDisabled
       },
-      class: 'oc-files-actions-move-trigger'
+      class: 'oc-files-actions-cut-trigger'
     }
   ])
 
