@@ -1,34 +1,26 @@
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import translations from '../l10n/translations.json'
-import { AppWrapperRoute, defineWebApplication } from '@opencloud-eu/web-pkg'
+import {
+  defineWebApplication,
+  resourceEditorRoute,
+  type ResourceEditorExtension
+} from '@opencloud-eu/web-pkg'
+import EpubReader from './App.vue'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
-
     const appId = 'epub-reader'
 
-    const routes = [
-      {
-        path: '/:driveAliasAndItem(.*)?',
-        component: async () => {
-          // lazy loading to avoid loading the epubjs package on page load
-          const EpubReader = (await import('./App.vue')).default
-          return AppWrapperRoute(EpubReader, {
-            applicationId: appId,
-            fileContentOptions: {
-              responseType: 'blob'
-            }
-          })
-        },
-        name: 'epub-reader',
-        meta: {
-          authContext: 'hybrid',
-          title: $gettext('Epub Reader'),
-          patchCleanPath: true
-        }
-      }
-    ]
+    const extension: ResourceEditorExtension = {
+      id: 'app.epub-reader',
+      type: 'resourceEditor',
+      appId,
+      extensions: ['epub'],
+      component: EpubReader,
+      fileContentOptions: { responseType: 'blob' }
+    }
 
     return {
       appInfo: {
@@ -38,11 +30,12 @@ export default defineWebApplication({
         extensions: [
           {
             extension: 'epub',
-            routeName: 'epub-reader'
+            routeName: appId
           }
         ]
       },
-      routes,
+      routes: [resourceEditorRoute({ extension, meta: { title: $gettext('Epub Reader') } })],
+      extensions: computed(() => [extension]),
       translations
     }
   }

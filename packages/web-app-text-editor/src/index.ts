@@ -5,13 +5,14 @@ import {
   ApplicationFileExtension,
   ApplicationInformation,
   AppMenuItemExtension,
-  AppWrapperRoute,
   defineWebApplication,
+  resourceEditorRoute,
   useOpenEmptyEditor,
   useSpacesStore,
-  useUserStore
+  useUserStore,
+  type ResourceEditorExtension
 } from '@opencloud-eu/web-pkg'
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 
 export default defineWebApplication({
@@ -89,20 +90,15 @@ export default defineWebApplication({
       }, [])
     }
 
-    const routes = [
-      {
-        path: '/:driveAliasAndItem(.*)?',
-        component: AppWrapperRoute(TextEditor, {
-          applicationId: appId
-        }),
-        name: 'text-editor',
-        meta: {
-          authContext: 'hybrid',
-          title: $gettext('Text Editor'),
-          patchCleanPath: true
-        }
-      }
-    ]
+    const appFileExtensions = fileExtensions()
+
+    const extension: ResourceEditorExtension = {
+      id: 'app.text-editor',
+      type: 'resourceEditor',
+      appId,
+      extensions: appFileExtensions.map((e) => e.extension),
+      component: TextEditor
+    }
 
     const appInfo: ApplicationInformation = {
       name: $gettext('Text Editor'),
@@ -113,14 +109,12 @@ export default defineWebApplication({
       meta: {
         fileSizeLimit: 2000000
       },
-      extensions: fileExtensions().map((extensionItem) => {
-        return {
-          extension: extensionItem.extension,
-          ...(Object.prototype.hasOwnProperty.call(extensionItem, 'newFileMenu') && {
-            newFileMenu: extensionItem.newFileMenu
-          })
-        }
-      })
+      extensions: appFileExtensions.map((extensionItem) => ({
+        extension: extensionItem.extension,
+        ...(Object.prototype.hasOwnProperty.call(extensionItem, 'newFileMenu') && {
+          newFileMenu: extensionItem.newFileMenu
+        })
+      }))
     }
 
     const menuItems = computed<AppMenuItemExtension[]>(() => {
@@ -141,11 +135,13 @@ export default defineWebApplication({
       return items
     })
 
+    const extensions = computed(() => [...unref(menuItems), extension])
+
     return {
       appInfo,
-      routes,
+      routes: [resourceEditorRoute({ extension, meta: { title: $gettext('Text Editor') } })],
       translations,
-      extensions: menuItems
+      extensions
     }
   }
 })

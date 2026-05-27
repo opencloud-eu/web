@@ -4,6 +4,7 @@ import { AppWrapperSlotArgs } from './types'
 import { FileContentOptions, UrlForResourceOptions } from '../../composables'
 import { Resource } from '@opencloud-eu/web-client'
 
+/** @deprecated Use {@link resourceEditorRoute} with a typed `resourceEditor` extension. */
 export function AppWrapperRoute(
   fileEditor: ReturnType<typeof defineComponent>,
   options: {

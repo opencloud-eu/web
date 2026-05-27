@@ -1,7 +1,9 @@
+import { computed } from 'vue'
 import {
   ApplicationInformation,
-  AppWrapperRoute,
-  defineWebApplication
+  defineWebApplication,
+  resourceEditorRoute,
+  type ResourceEditorExtension
 } from '@opencloud-eu/web-pkg'
 import translations from '../l10n/translations.json'
 import * as app from './App.vue'
@@ -16,23 +18,22 @@ export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
 
-    const routes = [
-      {
-        path: '/:driveAliasAndItem(.*)?',
-        component: AppWrapperRoute(App, {
-          applicationId: appId,
-          urlForResourceOptions: {
-            disposition: 'inline'
-          }
-        }),
-        name: 'media',
-        meta: {
-          authContext: 'hybrid',
-          title: $gettext('Preview'),
-          patchCleanPath: true
-        }
-      }
-    ]
+    const extension: ResourceEditorExtension = {
+      id: 'app.preview',
+      type: 'resourceEditor',
+      appId,
+      mimeTypes,
+      component: App,
+      urlForResourceOptions: { disposition: 'inline' }
+    }
+
+    // Route name `media` gets namespaced by the runtime to `preview-media`
+    // (applicationId-name), matching the routeName in appInfo.extensions.
+    const route = resourceEditorRoute({
+      extension,
+      name: 'media',
+      meta: { title: $gettext('Preview') }
+    })
 
     const routeName = 'preview-media'
 
@@ -49,7 +50,8 @@ export default defineWebApplication({
 
     return {
       appInfo,
-      routes,
+      routes: [route],
+      extensions: computed(() => [extension]),
       translations,
       extensionPoints: extensionPoints()
     }

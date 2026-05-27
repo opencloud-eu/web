@@ -1,31 +1,27 @@
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import translations from '../l10n/translations.json'
-import { AppWrapperRoute, defineWebApplication } from '@opencloud-eu/web-pkg'
+import {
+  defineWebApplication,
+  resourceEditorRoute,
+  type ResourceEditorExtension
+} from '@opencloud-eu/web-pkg'
 import PdfViewer from './App.vue'
 
 export default defineWebApplication({
   setup() {
     const { $gettext } = useGettext()
-
     const appId = 'pdf-viewer'
 
-    const routes = [
-      {
-        path: '/:driveAliasAndItem(.*)?',
-        component: AppWrapperRoute(PdfViewer, {
-          applicationId: appId,
-          urlForResourceOptions: {
-            disposition: 'inline'
-          }
-        }),
-        name: 'pdf-viewer',
-        meta: {
-          authContext: 'hybrid',
-          title: $gettext('PDF Viewer'),
-          patchCleanPath: true
-        }
-      }
-    ]
+    const extension: ResourceEditorExtension = {
+      id: 'app.pdf-viewer',
+      type: 'resourceEditor',
+      appId,
+      extensions: ['pdf'],
+      mimeTypes: ['application/pdf'],
+      component: PdfViewer,
+      urlForResourceOptions: { disposition: 'inline' }
+    }
 
     return {
       appInfo: {
@@ -37,11 +33,12 @@ export default defineWebApplication({
         extensions: [
           {
             extension: 'pdf',
-            routeName: 'pdf-viewer'
+            routeName: appId
           }
         ]
       },
-      routes,
+      routes: [resourceEditorRoute({ extension, meta: { title: $gettext('PDF Viewer') } })],
+      extensions: computed(() => [extension]),
       translations
     }
   }

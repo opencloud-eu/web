@@ -1,4 +1,4 @@
-import type { ShallowRef, Ref, ComputedRef } from 'vue'
+import type { ShallowRef, Ref, ComputedRef, MaybeRefOrGetter } from 'vue'
 import { Editor } from '@tiptap/vue-3'
 import { EditorActionGroup } from './composables'
 
@@ -7,7 +7,7 @@ export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 export interface TextEditorOptions {
   contentType: ContentType
   modelValue?: Ref<string>
-  readonly?: boolean
+  readonly?: MaybeRefOrGetter<boolean>
   slashCommands?: boolean
   placeholder?: string
   onUpdate?: (content: string) => void
@@ -23,7 +23,7 @@ export interface TextEditorInstance {
   state: TextEditorState
   editor: ShallowRef<Editor | null>
   contentType: Ref<ContentType>
-  readonly: Ref<boolean>
+  readonly: ComputedRef<boolean>
   actionGroups(): EditorActionGroup[]
   getContent(): string
   isEmpty: ComputedRef<boolean>
