@@ -24,7 +24,7 @@
         :key="`extension-point-preference-${extensionPoint.id}`"
         class="mb-4"
       >
-        <oc-table-td>{{ extensionPoint.userPreference.label }}</oc-table-td>
+        <oc-table-td>{{ $gettext(extensionPoint.userPreference.label) }}</oc-table-td>
         <oc-table-td v-if="extensionPoint.userPreference.description">
           <span v-text="$gettext(extensionPoint.userPreference.description || '')" />
         </oc-table-td>
