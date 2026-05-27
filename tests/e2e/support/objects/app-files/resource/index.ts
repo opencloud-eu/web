@@ -82,7 +82,7 @@ export class Resource {
 
   async move(args: Omit<po.moveOrCopyResourceArgs, 'page' | 'action'>): Promise<void> {
     const startUrl = this.#page.url()
-    await po.moveOrCopyResource({ ...args, page: this.#page, action: 'move' })
+    await po.moveOrCopyResource({ ...args, page: this.#page, action: 'cut' })
     await this.#page.goto(startUrl)
   }
 
