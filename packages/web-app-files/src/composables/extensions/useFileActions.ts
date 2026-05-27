@@ -9,12 +9,12 @@ import {
 import {
   useFileActionsCopy,
   useFileActionsCopyPermanentLink,
+  useFileActionsCut,
   useFileActionsCreateSpaceFromResource,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsFavorite,
   useFileActionsEnableSync,
-  useFileActionsMove,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
@@ -38,7 +38,7 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: enableSyncActions } = useFileActionsEnableSync()
-  const { actions: moveActions } = useFileActionsMove()
+  const { actions: cutActions } = useFileActionsCut()
   const { actions: pasteActions } = useFileActionsPaste()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
@@ -69,7 +69,7 @@ export const useFileActions = (): ActionExtension[] => {
       ],
       type: 'action',
       action: {
-        ...unref(moveActions)[0],
+        ...unref(cutActions)[0],
         category: 'tertiary'
       }
     },
