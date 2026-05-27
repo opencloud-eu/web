@@ -1,0 +1,223 @@
+import { Resource, SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
+import { storeToRefs } from 'pinia'
+import { dirname } from 'path'
+import { computed, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import {
+  canBeMoved,
+  FileAction,
+  FileActionOptions,
+  LocationPickerModal,
+  ResourceTransfer,
+  TransferType,
+  isLocationCommonActive,
+  isLocationPublicActive,
+  isLocationSpacesActive,
+  useClientService,
+  useFolderLink,
+  useGetMatchingSpace,
+  useMessages,
+  useModals,
+  usePasteWorker,
+  useResourcesStore,
+  useRouter
+} from '@opencloud-eu/web-pkg'
+
+export const useFileActionsMove = () => {
+  const router = useRouter()
+  const clientService = useClientService()
+  const { getMatchingSpace } = useGetMatchingSpace()
+  const { $gettext, $ngettext } = useGettext()
+  const { dispatchModal } = useModals()
+  const { showMessage } = useMessages()
+  const { startWorker } = usePasteWorker()
+  const resourcesStore = useResourcesStore()
+  const { currentFolder } = storeToRefs(resourcesStore)
+  const { getParentFolderLink } = useFolderLink()
+
+  const moveSelectedFiles = async ({
+    targetSpace,
+    targetFolder,
+    sourceSpace,
+    resources
+  }: {
+    targetSpace: SpaceResource
+    targetFolder: Resource
+    sourceSpace: SpaceResource
+    resources: Resource[]
+  }) => {
+    const targetFolderRef = computed(() => targetFolder)
+    const resourceTransfer = new ResourceTransfer(
+      sourceSpace,
+      resources,
+      targetSpace,
+      targetFolder,
+      targetFolderRef,
+      clientService,
+      $gettext,
+      $ngettext
+    )
+
+    const transferData = await resourceTransfer.getTransferData(TransferType.MOVE)
+    if (!transferData.length) {
+      return
+    }
+    const effectiveTransferType = transferData[0].transferType
+
+    const originalCurrentFolderId = unref(currentFolder)?.id
+
+    startWorker(transferData, async ({ successful, failed }) => {
+      resourceTransfer.showResultMessage(failed, successful, effectiveTransferType)
+
+      if (!successful.length) {
+        return
+      }
+
+      if (unref(currentFolder) && originalCurrentFolderId !== unref(currentFolder).id) {
+        return
+      }
+
+      resourcesStore.resetSelection()
+
+      const shouldRemoveResourcesFromView =
+        effectiveTransferType === TransferType.MOVE &&
+        unref(currentFolder) &&
+        unref(currentFolder).id !== targetFolder.id
+
+      if (shouldRemoveResourcesFromView) {
+        resourcesStore.removeResources(successful)
+        return
+      }
+
+      const loadingResources: Promise<void>[] = []
+      const fetchedResources: Resource[] = []
+
+      for (const resource of successful) {
+        loadingResources.push(
+          (async () => {
+            const movedResource = await clientService.webdav.getFileInfo(targetSpace, resource)
+            fetchedResources.push(movedResource)
+          })()
+        )
+      }
+
+      await Promise.allSettled(loadingResources)
+
+      if (isShareSpaceResource(targetSpace)) {
+        fetchedResources.forEach((resource) => {
+          resource.remoteItemId = targetSpace.id
+        })
+      }
+
+      fetchedResources.forEach((resource) => resourcesStore.upsertResource(resource))
+    })
+  }
+
+  const onLocationPicked = async ({
+    sourceResources,
+    targetResources
+  }: {
+    sourceResources: Resource[]
+    targetResources: Resource[]
+  }) => {
+    const targetFolder = targetResources[0]
+
+    if (!targetFolder) {
+      return
+    }
+
+    const targetSpace = getMatchingSpace(targetFolder)
+    const movableResources = sourceResources.filter((resource) => {
+      const sourceSpace = getMatchingSpace(resource)
+      return sourceSpace.id !== targetSpace.id || dirname(resource.path) !== targetFolder.path
+    })
+
+    if (!movableResources.length) {
+      showMessage({
+        title: $gettext('You cannot move resources into the same folder.')
+      })
+      return
+    }
+
+    const resourceSpaceMapping = movableResources.reduce<
+      Record<string, { space: SpaceResource; resources: Resource[] }>
+    >((acc, resource) => {
+      if (resource.storageId in acc) {
+        acc[resource.storageId].resources.push(resource)
+        return acc
+      }
+
+      const sourceSpace = getMatchingSpace(resource)
+
+      if (!(sourceSpace.id in acc)) {
+        acc[sourceSpace.id] = { space: sourceSpace, resources: [] }
+      }
+
+      acc[sourceSpace.id].resources.push(resource)
+      return acc
+    }, {})
+
+    const promises = Object.values(resourceSpaceMapping).map(({ space: sourceSpace, resources }) =>
+      moveSelectedFiles({ targetSpace, targetFolder, sourceSpace, resources })
+    )
+    await Promise.all(promises)
+  }
+
+  const handler = ({ resources }: FileActionOptions) => {
+    if (!resources.length) {
+      return
+    }
+
+    resourcesStore.setSelection(resources.map(({ id }) => id))
+    const parentFolderLink = getParentFolderLink(resources[0])
+
+    dispatchModal({
+      elementClass: 'location-picker-modal',
+      title: $gettext('Choose a target location'),
+      customComponent: LocationPickerModal,
+      hideActions: true,
+      customComponentAttrs: () => ({
+        parentFolderLink,
+        callbackFn: (targetResources: Resource[]) =>
+          onLocationPicked({ sourceResources: resources, targetResources })
+      }),
+      focusTrapInitial: false
+    })
+  }
+
+  const actions = computed((): FileAction[] => [
+    {
+      name: 'move',
+      icon: 'folder-transfer',
+      handler,
+      label: () => $gettext('Move'),
+      isVisible: ({ resources }) => {
+        if (
+          !isLocationSpacesActive(router, 'files-spaces-generic') &&
+          !isLocationPublicActive(router, 'files-public-link') &&
+          !isLocationCommonActive(router, 'files-common-favorites') &&
+          !isLocationCommonActive(router, 'files-common-search')
+        ) {
+          return false
+        }
+        if (resources.length === 0) {
+          return false
+        }
+
+        if (resources.length === 1 && resources[0].locked) {
+          return false
+        }
+
+        const moveDisabled = resources.some((resource) => {
+          return canBeMoved(resource, unref(currentFolder)?.path) === false
+        })
+        return !moveDisabled
+      },
+      class: 'oc-files-actions-move-trigger'
+    }
+  ])
+
+  return {
+    actions
+  }
+}

@@ -1,5 +1,6 @@
 export * from './useFileActionsCopyPermanentLink'
 export * from './useFileActionsCopy'
+export * from './useFileActionsMove'
 export * from './useFileActionsCreateLink'
 export * from './useFileActionsCreateNewFile'
 export * from './useFileActionsCreateNewFolder'

@@ -8,6 +8,7 @@ import {
 } from '../../extensionPoints'
 import {
   useFileActionsCopy,
+  useFileActionsMove,
   useFileActionsCopyPermanentLink,
   useFileActionsCut,
   useFileActionsCreateSpaceFromResource,
@@ -31,6 +32,7 @@ const adminSettingsSpacesContextActionsExtensionPointId =
 
 export const useFileActions = (): ActionExtension[] => {
   const { actions: copyActions } = useFileActionsCopy()
+  const { actions: moveActions } = useFileActionsMove()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: openShortcutActions } = useFileActionsOpenShortcut()
   const { actions: showSharesActions } = useFileActionsShowShares()
@@ -83,6 +85,19 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(copyActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.move',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(moveActions)[0],
         category: 'tertiary'
       }
     },
