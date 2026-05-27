@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: account settings, extension names not translated [[#2595](https://github.com/opencloud-eu/web/pull/2595)]
 - fix: missing undo and redo actions in plain text editor [[#2592](https://github.com/opencloud-eu/web/pull/2592)]
 - fix(design-system): add id to OcSearchBar [[#2587](https://github.com/opencloud-eu/web/pull/2587)]
 - fix: cleanup event listener [[#2532](https://github.com/opencloud-eu/web/pull/2532)]
@@ -30,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.6 [[#2596](https://github.com/opencloud-eu/web/pull/2596)]
 - chore(deps): update typescript-eslint monorepo to v8.60.0 [[#2593](https://github.com/opencloud-eu/web/pull/2593)]
 - chore(deps): update tiptap monorepo to v3.23.6 [[#2586](https://github.com/opencloud-eu/web/pull/2586)]
 - chore(deps): update pnpm to v11.3.0 [[#2591](https://github.com/opencloud-eu/web/pull/2591)]
