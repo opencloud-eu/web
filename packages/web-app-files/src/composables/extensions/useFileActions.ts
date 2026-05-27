@@ -14,6 +14,7 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsFavorite,
   useFileActionsEnableSync,
+  useFileActionsCut,
   useFileActionsMove,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
@@ -31,6 +32,7 @@ const adminSettingsSpacesContextActionsExtensionPointId =
 
 export const useFileActions = (): ActionExtension[] => {
   const { actions: copyActions } = useFileActionsCopy()
+  const { actions: cutActions } = useFileActionsCut()
   const { actions: downloadArchiveActions } = useFileActionsDownloadArchive()
   const { actions: openShortcutActions } = useFileActionsOpenShortcut()
   const { actions: showSharesActions } = useFileActionsShowShares()
@@ -61,7 +63,7 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.context-action.move',
+      id: 'com.github.opencloud-eu.web.files.context-action.cut',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
@@ -69,7 +71,7 @@ export const useFileActions = (): ActionExtension[] => {
       ],
       type: 'action',
       action: {
-        ...unref(moveActions)[0],
+        ...unref(cutActions)[0],
         category: 'tertiary'
       }
     },
@@ -83,6 +85,19 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(copyActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.move',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(moveActions)[0],
         category: 'tertiary'
       }
     },

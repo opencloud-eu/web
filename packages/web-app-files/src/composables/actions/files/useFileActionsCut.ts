@@ -1,54 +1,46 @@
+import { Resource } from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import {
+  ActionOptions,
   canBeMoved,
   FileAction,
-  FileActionOptions,
   isLocationCommonActive,
   isLocationPublicActive,
   isLocationSpacesActive,
-  useFolderLink,
-  useModals,
+  isMacOs,
+  useClipboardStore,
   useResourcesStore,
-  useRouter,
-  useSpacesStore
+  useRouter
 } from '@opencloud-eu/web-pkg'
-import MoveModal from '../../../components/Modals/MoveModal.vue'
 
-export const useFileActionsMove = () => {
+export const useFileActionsCut = () => {
   const router = useRouter()
-  const { $gettext } = useGettext()
-  const { dispatchModal } = useModals()
-  const { getParentFolderLink } = useFolderLink()
+  const { cutResources } = useClipboardStore()
+  const language = useGettext()
+  const { $gettext } = language
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
-  const spacesStore = useSpacesStore()
-  const { currentSpace } = storeToRefs(spacesStore)
 
-  const handler = ({ resources, space }: FileActionOptions) => {
-    const parentFolderLink = getParentFolderLink(resources[0])
+  const cutShortcutString = computed(() => {
+    if (isMacOs()) {
+      return $gettext('⌘ + X')
+    }
+    return $gettext('Ctrl + X')
+  })
 
-    dispatchModal({
-      elementClass: 'move-modal',
-      title: $gettext('Move'),
-      hideActions: true,
-      customComponent: MoveModal,
-      customComponentAttrs: () => ({
-        parentFolderLink,
-        resourcesToMove: resources,
-        sourceSpace: space ?? unref(currentSpace)
-      })
-    })
+  const handler = ({ resources }: ActionOptions) => {
+    cutResources(resources as Resource[])
   }
-
   const actions = computed((): FileAction[] => [
     {
-      name: 'move',
-      icon: 'folder-transfer',
+      name: 'cut',
+      icon: 'scissors',
       handler,
-      label: () => $gettext('Move'),
+      shortcut: unref(cutShortcutString),
+      label: () => $gettext('Cut'),
       isVisible: ({ resources }) => {
         if (
           !isLocationSpacesActive(router, 'files-spaces-generic') &&
@@ -74,7 +66,7 @@ export const useFileActionsMove = () => {
         })
         return !moveDisabled
       },
-      class: 'oc-files-actions-move-to-location-trigger'
+      class: 'oc-files-actions-move-trigger'
     }
   ])
 
