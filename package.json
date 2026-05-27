@@ -46,8 +46,8 @@
     "@cucumber/cucumber": "12.9.0",
     "@cucumber/messages": "32.3.1",
     "@cucumber/pretty-formatter": "3.3.1",
-    "@module-federation/runtime": "2.4.0",
-    "@module-federation/vite": "1.15.5",
+    "@module-federation/runtime": "2.3.1",
+    "@module-federation/vite": "1.14.2",
     "@noble/hashes": "2.2.0",
     "@opencloud-eu/eslint-config": "workspace:*",
     "@opencloud-eu/prettier-config": "workspace:*",
@@ -84,7 +84,7 @@
     "vitest": "^4.1.2",
     "vitest-mock-extended": "4.0.0",
     "vue": "^3.5.31",
-    "vue-tsc": "3.3.1",
+    "vue-tsc": "3.3.2",
     "vue3-gettext": "4.0.0-beta.1"
   },
   "engines": {
