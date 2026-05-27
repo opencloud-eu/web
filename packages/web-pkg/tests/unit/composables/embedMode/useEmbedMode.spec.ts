@@ -88,6 +88,19 @@ describe('useEmbedMode', () => {
     })
   })
 
+  describe('submitButtonTitle', () => {
+    it('when submitButtonTitle is set should return it', () => {
+      getComposableWrapper(
+        () => {
+          const { submitButtonTitle } = useEmbedMode()
+
+          expect(unref(submitButtonTitle)).toStrictEqual('Move here')
+        },
+        getWrapperOptions({ submitButtonTitle: 'Move here' })
+      )
+    })
+  })
+
   describe('isDelegatingAuthentication', () => {
     it('when delegation is enabled but embed mode is not enabled should return false', () => {
       getComposableWrapper(

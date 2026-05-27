@@ -16,24 +16,26 @@
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, onMounted, PropType, ref, unref } from 'vue'
 import {
+  embedModeLocationPickMessageData,
   Modal,
   useModals,
   useRouter,
-  useThemeStore,
-  embedModeFilePickMessageData
+  useThemeStore
 } from '../../composables'
 import { RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 
 export default defineComponent({
-  name: 'FilePickerModal',
+  name: 'LocationPickerModal',
   components: { AppLoadingSpinner },
   props: {
     modal: { type: Object as PropType<Modal>, required: true },
-    allowedFileTypes: { type: Array as PropType<string[]>, required: true },
     parentFolderLink: { type: Object as PropType<RouteLocationRaw>, required: true },
+    submitButtonTitle: { type: String, required: false, default: undefined },
     callbackFn: {
-      type: Function as PropType<(resource: any, locationQuery?: Record<string, string>) => void>,
+      type: Function as PropType<
+        (resources: embedModeLocationPickMessageData['resources']) => void
+      >,
       required: true
     }
   },
@@ -49,22 +51,32 @@ export default defineComponent({
     const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
     iframeUrl.searchParams.append('hide-logo', 'true')
     iframeUrl.searchParams.append('embed', 'true')
-    iframeUrl.searchParams.append('embed-target', 'file')
+    iframeUrl.searchParams.append('embed-target', 'location')
     iframeUrl.searchParams.append('embed-delegate-authentication', 'false')
-    iframeUrl.searchParams.append('embed-file-types', props.allowedFileTypes.join(','))
+    if (props.submitButtonTitle) {
+      iframeUrl.searchParams.append('embed-submit-button-title', props.submitButtonTitle)
+    }
 
     const onLoad = () => {
       isLoading.value = false
       unref(iframeRef).contentWindow.focus()
     }
 
-    const onFilePick = ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:file-pick') {
+    const onLocationPick = ({ data }: MessageEvent) => {
+      if (data.name !== 'opencloud-embed:select') {
         return
       }
 
-      const { resource, locationQuery }: embedModeFilePickMessageData = data.data
-      props.callbackFn({ resource, locationQuery })
+      let resources = (data.data as embedModeLocationPickMessageData)?.resources
+      if (Array.isArray(data.data)) {
+        resources = data.data
+      }
+
+      if (!resources?.length) {
+        return
+      }
+
+      props.callbackFn(resources)
 
       removeModal(props.modal.id)
     }
@@ -78,12 +90,12 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      window.addEventListener('message', onFilePick)
+      window.addEventListener('message', onLocationPick)
       window.addEventListener('message', onCancel)
     })
 
     onBeforeUnmount(() => {
-      window.removeEventListener('message', onFilePick)
+      window.removeEventListener('message', onLocationPick)
       window.removeEventListener('message', onCancel)
     })
 
@@ -93,7 +105,7 @@ export default defineComponent({
       iframeTitle,
       iframeSrc: iframeUrl.href,
       iframeRef,
-      onFilePick
+      onLocationPick
     }
   }
 })
@@ -102,17 +114,15 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .file-picker-modal {
+  .location-picker-modal {
     @apply overflow-hidden;
     max-width: 90vw;
   }
-  .file-picker-modal .oc-modal-title {
-    @apply hidden;
-  }
-  .file-picker-modal .oc-modal-body {
+
+  .location-picker-modal .oc-modal-body {
     @apply p-0;
   }
-  .file-picker-modal .oc-modal-body-message {
+  .location-picker-modal .oc-modal-body-message {
     @apply m-0 h-[85vh];
   }
 }

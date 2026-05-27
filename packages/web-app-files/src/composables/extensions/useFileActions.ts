@@ -9,12 +9,12 @@ import {
 import {
   useFileActionsCopy,
   useFileActionsCopyPermanentLink,
-  useFileActionsCut,
   useFileActionsCreateSpaceFromResource,
   useFileActionsDisableSync,
   useFileActionsDownloadArchive,
   useFileActionsFavorite,
   useFileActionsEnableSync,
+  useFileActionsMove,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
@@ -38,7 +38,7 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: createSpaceFromResourceActions } = useFileActionsCreateSpaceFromResource()
   const { actions: disableSyncActions } = useFileActionsDisableSync()
   const { actions: enableSyncActions } = useFileActionsEnableSync()
-  const { actions: cutActions } = useFileActionsCut()
+  const { actions: moveActions } = useFileActionsMove()
   const { actions: pasteActions } = useFileActionsPaste()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
@@ -61,19 +61,6 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.context-action.move',
-      extensionPointIds: [
-        contextActionsExtensionPoint.id,
-        batchActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id
-      ],
-      type: 'action',
-      action: {
-        ...unref(cutActions)[0],
-        category: 'tertiary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.context-action.copy',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
@@ -83,6 +70,19 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(copyActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.move',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(moveActions)[0],
         category: 'tertiary'
       }
     },

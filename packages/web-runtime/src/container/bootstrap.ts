@@ -130,6 +130,11 @@ const getEmbedConfigFromQuery = (
     config.chooseFileNameSuggestion = embedChooseFileNameSuggestion
   }
 
+  const embedSubmitButtonTitle = getQueryParam('embed-submit-button-title')
+  if (embedSubmitButtonTitle) {
+    config.submitButtonTitle = embedSubmitButtonTitle
+  }
+
   const embedFileTypes = getQueryParam('embed-file-types')
 
   if (embedFileTypes) {
