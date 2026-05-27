@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2583](https://github.com/opencloud-eu/web/pull/2583)]
 - chore(deps): update dependency dompurify to v3.4.6 [[#2596](https://github.com/opencloud-eu/web/pull/2596)]
 - chore(deps): update typescript-eslint monorepo to v8.60.0 [[#2593](https://github.com/opencloud-eu/web/pull/2593)]
 - chore(deps): update tiptap monorepo to v3.23.6 [[#2586](https://github.com/opencloud-eu/web/pull/2586)]
