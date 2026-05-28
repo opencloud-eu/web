@@ -26,7 +26,9 @@ describe('LocationPickerModal', () => {
   describe('method "onLocationPick"', () => {
     it('does nothing if the event message does not equal "opencloud-embed:select"', () => {
       const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).onLocationPick(mock<MessageEvent>({ data: { name: 'some-other-event' } }))
+      ;(wrapper.vm as any).onLocationPick(
+        mock<MessageEvent>({ data: { name: 'some-other-event' } })
+      )
       expect((wrapper.vm as any).callbackFn).not.toHaveBeenCalled()
     })
     it('calls callback function when message does equal "opencloud-embed:select"', () => {

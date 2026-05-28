@@ -15,7 +15,13 @@
 
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, unref } from 'vue'
-import { embedModeLocationPickMessageData, Modal, useModals, useRouter, useThemeStore } from '../../composables'
+import {
+  embedModeLocationPickMessageData,
+  Modal,
+  useModals,
+  useRouter,
+  useThemeStore
+} from '../../composables'
 import { RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 
