@@ -36,6 +36,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.54.0 [[#2597](https://github.com/opencloud-eu/web/pull/2597)]
+- chore(deps): update dependency dompurify to v3.4.7 [[#2608](https://github.com/opencloud-eu/web/pull/2608)]
+- chore(deps): update pnpm to v11.4.0 [[#2609](https://github.com/opencloud-eu/web/pull/2609)]
 - chore(deps): update vue monorepo to v3.5.35 [[#2606](https://github.com/opencloud-eu/web/pull/2606)]
 - chore(deps): update devdependencies (non-major) [[#2583](https://github.com/opencloud-eu/web/pull/2583)]
 - chore(deps): update dependency dompurify to v3.4.6 [[#2596](https://github.com/opencloud-eu/web/pull/2596)]
