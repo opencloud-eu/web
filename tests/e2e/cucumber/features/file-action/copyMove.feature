@@ -190,3 +190,51 @@ Feature: Copy
       | folder1      | Personal/sub | keep both |
       | sub1/folder1 | Personal/sub | replace   |
     And "Alice" logs out
+
+  
+  Scenario: copy/move resources between spaces
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+      | Brian |
+    And "Admin" assigns following roles to the users using API
+      | id    | role        |
+      | Alice | Space Admin |
+    And "Alice" creates the following project spaces using API
+      | name    | id      |
+      | mySpace | mySpace |
+    And "Brian" creates the following folders in personal space using API
+      | name  |
+      | share |
+    And "Alice" creates the following folders in personal space using API
+      | name        |
+      | f1/f2/f3/f4 |
+    And "Brian" creates the following files into personal space using API
+      | pathToFile     | content     |
+      | share/file.txt | lorem ipsum |
+    And "Brian" shares the following resource using API
+      | resource | recipient | type  | role     |
+      | share    | Alice     | user  | Can edit |
+
+    And "Alice" logs in
+    And "Alice" navigates to the shared with me page
+    And "Alice" opens folder "share"
+    And "Alice" copies the following resource using sidebar-panel
+      | resource | to              |
+      | file.txt | Project/mySpace |
+    And "Alice" navigates to the project space "mySpace"
+    And "Alice" copies the following resource using sidebar-panel
+      | resource | to                   |
+      | file.txt | Personal/f1/f2/f3/f4 |
+    And "Alice" navigates to the personal space page
+    And "Alice" opens folder "f1/f2"
+    And "Alice" copies the following resource using sidebar-panel
+      | resource | to           |
+      | f3       | Shares/share |
+
+    # try to move. moving doesn't work between space -> expect copy instead
+    And "Alice" moves the following resource using sidebar-panel
+      | resource | to              | option       |
+      | f3       | Project/mySpace | copy instead |
+    And "Alice" logs out
+    

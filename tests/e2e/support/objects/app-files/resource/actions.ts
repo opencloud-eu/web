@@ -50,7 +50,6 @@ const folderUploadInput = '#files-folder-upload-input'
 const uploadInfoCloseButton = '#close-upload-info-btn'
 const uploadErrorCloseButton = '.oc-notification-message-danger button[aria-label="Close"]'
 const filesBatchAction = '.files-app-bar-actions .oc-files-actions-%s-trigger'
-const pasteButton = '.paste-files-btn'
 const breadcrumbRoot = '//nav[@id="files-breadcrumb"]//li[1]'
 const fileRenameInput = '.oc-text-input'
 const deleteButtonSidebar = '#oc-files-actions-sidebar .oc-files-actions-delete-trigger'
@@ -955,25 +954,59 @@ export const pasteResource = async (args: moveOrCopyResourceArgs): Promise<void>
   const frame = page.frameLocator('iframe[title="OpenCloud"]')
 
   for (const path of newLocationPath) {
-    if (path == 'Personal') {
-      await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
-    } else {
-      await clickResourceInFrame({ page, path: path })
+    switch (path) {
+      case 'Personal': {
+        await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
+        break
+      }
+
+      case 'Project': {
+        await frame.locator('a[data-nav-name="files-spaces-projects"]').click()
+        break
+      }
+
+      case 'Shares': {
+        await frame.locator('a[data-nav-name="files-shares"]').click()
+        break
+      }
+
+      default: {
+        await clickResourceInFrame({ page, path })
+      }
     }
   }
+  const expectedMethod = option === 'copy instead' ? 'COPY' : action.toUpperCase()
+
   const respPromise = page.waitForResponse(
     (resp) =>
       resp.url().includes(resource) &&
       [201, 204].includes(resp.status()) &&
-      resp.request().method() === action.toUpperCase()
+      resp.request().method() === expectedMethod
   )
 
   await frame.getByTestId('button-select').click()
 
   if (option) {
-    await (option === 'replace'
-      ? page.locator(actionSecondaryConfirmationButton).click()
-      : page.locator(keepBothButton).click())
+    switch (option) {
+      case 'replace': {
+        await page.locator(actionSecondaryConfirmationButton).click()
+        break
+      }
+
+      case 'keep both': {
+        await page.locator(keepBothButton).click()
+        break
+      }
+
+      case 'copy instead': {
+        const modalMessage = page.locator('.oc-modal-body-message')
+        await expect(modalMessage).toContainText(
+          'Moving files from one space to another is not possible'
+        )
+        await page.locator(util.format(actionConfirmationButton, 'Copy here')).click()
+        break
+      }
+    }
   }
   await respPromise
 }
