@@ -13,13 +13,8 @@ export const onSSESpaceCreatedEvent = async ({
     return
   }
 
-  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
+  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
   spacesStore.upsertSpace(space)
-  await spacesStore.loadGraphPermissions({
-    ids: [space.id],
-    graphClient: clientService.graphAuthenticated,
-    useCache: false
-  })
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
     return
@@ -40,7 +35,7 @@ export const onSSESpaceDisabledEvent = async ({
     return
   }
 
-  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
+  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
   spacesStore.upsertSpace(space)
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
@@ -62,7 +57,7 @@ export const onSSESpaceDeletedEvent = async ({
     return
   }
 
-  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.itemid)
+  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
   spacesStore.removeSpace(space)
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {

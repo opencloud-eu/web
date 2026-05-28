@@ -4,7 +4,7 @@ import {
   isProjectSpaceResource,
   isShareSpaceResource
 } from '@opencloud-eu/web-client'
-import { computed, unref } from 'vue'
+import { computed, markRaw, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import {
@@ -49,7 +49,7 @@ export const useFileActionsCopy = () => {
     sourceSpace: SpaceResource
     resources: Resource[]
   }) => {
-    const targetFolderRef = computed(() => targetFolder)
+    const targetFolderRef = ref(targetFolder)
     const resourceTransfer = new ResourceTransfer(
       sourceSpace,
       resources,
@@ -161,7 +161,7 @@ export const useFileActionsCopy = () => {
     dispatchModal({
       elementClass: 'location-picker-modal',
       title: $gettext('Copy to'),
-      customComponent: LocationPickerModal,
+      customComponent: markRaw(LocationPickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
         submitButtonTitle: $gettext('Copy here'),

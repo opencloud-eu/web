@@ -13,102 +13,78 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, PropType, ref, unref } from 'vue'
-import {
-  embedModeLocationPickMessageData,
-  Modal,
-  useModals,
-  useRouter,
-  useThemeStore
-} from '../../composables'
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { embedModeLocationPickMessageData, Modal, useModals, useRouter, useThemeStore } from '../../composables'
 import { RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 
-export default defineComponent({
-  name: 'LocationPickerModal',
-  components: { AppLoadingSpinner },
-  props: {
-    modal: { type: Object as PropType<Modal>, required: true },
-    parentFolderLink: { type: Object as PropType<RouteLocationRaw>, required: true },
-    submitButtonTitle: { type: String, required: false, default: undefined },
-    callbackFn: {
-      type: Function as PropType<
-        (resources: embedModeLocationPickMessageData['resources']) => void
-      >,
-      required: true
-    }
-  },
-  setup(props) {
-    const iframeRef = ref<HTMLIFrameElement>()
-    const isLoading = ref(true)
-    const router = useRouter()
-    const { removeModal } = useModals()
-    const themeStore = useThemeStore()
-    const parentFolderRoute = router.resolve(props.parentFolderLink)
+const { modal, parentFolderLink, submitButtonTitle, callbackFn } = defineProps<{
+  modal: Modal
+  parentFolderLink: RouteLocationRaw
+  submitButtonTitle?: string
+  callbackFn: (resources: embedModeLocationPickMessageData['resources']) => void
+}>()
 
-    const iframeTitle = themeStore.currentTheme.name
-    const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
-    iframeUrl.searchParams.append('hide-logo', 'true')
-    iframeUrl.searchParams.append('embed', 'true')
-    iframeUrl.searchParams.append('embed-target', 'location')
-    iframeUrl.searchParams.append('embed-delegate-authentication', 'false')
-    if (props.submitButtonTitle) {
-      iframeUrl.searchParams.append('embed-submit-button-title', props.submitButtonTitle)
-    }
+const iframeRef = ref<HTMLIFrameElement>()
+const isLoading = ref(true)
+const router = useRouter()
+const { removeModal } = useModals()
+const themeStore = useThemeStore()
+const parentFolderRoute = router.resolve(parentFolderLink)
 
-    const onLoad = () => {
-      isLoading.value = false
-      unref(iframeRef).contentWindow.focus()
-    }
+const iframeTitle = themeStore.currentTheme.name
+const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
+iframeUrl.searchParams.append('hide-logo', 'true')
+iframeUrl.searchParams.append('embed', 'true')
+iframeUrl.searchParams.append('embed-target', 'location')
+iframeUrl.searchParams.append('embed-delegate-authentication', 'false')
+if (submitButtonTitle) {
+  iframeUrl.searchParams.append('embed-submit-button-title', submitButtonTitle)
+}
 
-    const onLocationPick = ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:select') {
-        return
-      }
+const onLoad = () => {
+  isLoading.value = false
+  unref(iframeRef).contentWindow.focus()
+}
 
-      let resources = (data.data as embedModeLocationPickMessageData)?.resources
-      if (Array.isArray(data.data)) {
-        resources = data.data
-      }
-
-      if (!resources?.length) {
-        return
-      }
-
-      props.callbackFn(resources)
-
-      removeModal(props.modal.id)
-    }
-
-    const onCancel = ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:cancel') {
-        return
-      }
-
-      removeModal(props.modal.id)
-    }
-
-    onMounted(() => {
-      window.addEventListener('message', onLocationPick)
-      window.addEventListener('message', onCancel)
-    })
-
-    onBeforeUnmount(() => {
-      window.removeEventListener('message', onLocationPick)
-      window.removeEventListener('message', onCancel)
-    })
-
-    return {
-      isLoading,
-      onLoad,
-      iframeTitle,
-      iframeSrc: iframeUrl.href,
-      iframeRef,
-      onLocationPick
-    }
+const onLocationPick = ({ data }: MessageEvent) => {
+  if (data.name !== 'opencloud-embed:select') {
+    return
   }
+
+  let resources = (data.data as embedModeLocationPickMessageData)?.resources
+  if (Array.isArray(data.data)) {
+    resources = data.data
+  }
+
+  if (!resources?.length) {
+    return
+  }
+
+  callbackFn(resources)
+  removeModal(modal.id)
+}
+
+const onCancel = ({ data }: MessageEvent) => {
+  if (data.name !== 'opencloud-embed:cancel') {
+    return
+  }
+
+  removeModal(modal.id)
+}
+
+onMounted(() => {
+  window.addEventListener('message', onLocationPick)
+  window.addEventListener('message', onCancel)
 })
+
+onBeforeUnmount(() => {
+  window.removeEventListener('message', onLocationPick)
+  window.removeEventListener('message', onCancel)
+})
+
+const iframeSrc = iframeUrl.href
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';

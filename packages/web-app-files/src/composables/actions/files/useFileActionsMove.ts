@@ -6,7 +6,7 @@ import {
 } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { dirname } from 'path'
-import { computed, unref } from 'vue'
+import { computed, markRaw, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   canBeMoved,
@@ -51,7 +51,7 @@ export const useFileActionsMove = () => {
     sourceSpace: SpaceResource
     resources: Resource[]
   }) => {
-    const targetFolderRef = computed(() => targetFolder)
+    const targetFolderRef = ref(targetFolder)
     const resourceTransfer = new ResourceTransfer(
       sourceSpace,
       resources,
@@ -193,7 +193,7 @@ export const useFileActionsMove = () => {
     dispatchModal({
       elementClass: 'location-picker-modal',
       title: $gettext('Move to'),
-      customComponent: LocationPickerModal,
+      customComponent: markRaw(LocationPickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
         submitButtonTitle: $gettext('Move here'),
