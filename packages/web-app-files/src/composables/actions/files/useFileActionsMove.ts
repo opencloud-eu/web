@@ -1,4 +1,9 @@
-import { Resource, SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
+import {
+  Resource,
+  SpaceResource,
+  isShareSpaceResource,
+  isProjectSpaceResource
+} from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { dirname } from 'path'
 import { computed, unref } from 'vue'
@@ -137,7 +142,10 @@ export const useFileActionsMove = () => {
       return
     }
 
-    const targetSpace = getMatchingSpace(targetFolder)
+    const targetSpace = isProjectSpaceResource(targetFolder)
+      ? targetFolder
+      : getMatchingSpace(targetFolder)
+
     const movableResources = sourceResources.filter((resource) => {
       const sourceSpace = getMatchingSpace(resource)
       return sourceSpace.id !== targetSpace.id || dirname(resource.path) !== targetFolder.path

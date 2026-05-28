@@ -114,7 +114,10 @@ export const useFileActionsCopy = () => {
       return
     }
 
-    const targetSpace = getMatchingSpace(targetFolder)
+    const targetSpace = isProjectSpaceResource(targetFolder)
+      ? targetFolder
+      : getMatchingSpace(targetFolder)
+
     const resourcesToCopy = unref(resourcesStore.selectedResources)
 
     const resourceSpaceMapping = resourcesToCopy.reduce<
