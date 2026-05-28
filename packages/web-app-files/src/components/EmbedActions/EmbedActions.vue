@@ -42,7 +42,7 @@
           :disabled="isChooseButtonDisabled"
           @click="emitSelect"
         >
-          {{ chooseFileName ? $gettext('Save') : $gettext('Choose') }}
+          {{ locationPickerSubmitButtonLabel }}
         </oc-button>
         <oc-button
           v-else
@@ -76,8 +76,14 @@ import { storeToRefs } from 'pinia'
 import { useFileActionsCreateLink } from '../../composables'
 
 const { $gettext } = useGettext()
-const { isLocationPicker, isFilePicker, postMessage, chooseFileName, chooseFileNameSuggestion } =
-  useEmbedMode()
+const {
+  isLocationPicker,
+  isFilePicker,
+  postMessage,
+  chooseFileName,
+  chooseFileNameSuggestion,
+  submitButtonTitle
+} = useEmbedMode()
 const spacesStore = useSpacesStore()
 const router = useRouter()
 const { currentSpace: space } = storeToRefs(spacesStore)
@@ -123,6 +129,10 @@ const fileNameInputSelectionRange = computed<[number, number] | null>(() => {
   } as Resource)
 
   return [0, nameWithoutExtension.length]
+})
+
+const locationPickerSubmitButtonLabel = computed(() => {
+  return unref(submitButtonTitle) || (unref(chooseFileName) ? $gettext('Save') : $gettext('Choose'))
 })
 
 const emitSelect = (): void => {

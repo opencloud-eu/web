@@ -104,7 +104,7 @@ export default defineComponent({
 @layer utilities {
   .file-picker-modal {
     @apply overflow-hidden;
-    max-width: 80vw;
+    max-width: 90vw;
   }
   .file-picker-modal .oc-modal-title {
     @apply hidden;
@@ -113,7 +113,7 @@ export default defineComponent({
     @apply p-0;
   }
   .file-picker-modal .oc-modal-body-message {
-    @apply m-0 h-[60vh];
+    @apply m-0 h-[85vh];
   }
 }
 </style>

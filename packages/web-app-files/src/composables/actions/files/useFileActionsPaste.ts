@@ -1,4 +1,5 @@
 import { storeToRefs } from 'pinia'
+import { dirname } from 'path'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource, SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
@@ -15,6 +16,7 @@ import {
   useClientService,
   useClipboardStore,
   useGetMatchingSpace,
+  useMessages,
   usePasteWorker,
   useResourcesStore,
   useRouter
@@ -25,6 +27,7 @@ export const useFileActionsPaste = () => {
   const clientService = useClientService()
   const { getMatchingSpace } = useGetMatchingSpace()
   const { $gettext, $ngettext } = useGettext()
+  const { showMessage } = useMessages()
   const clipboardStore = useClipboardStore()
   const { startWorker } = usePasteWorker()
 
@@ -112,7 +115,7 @@ export const useFileActionsPaste = () => {
   }
 
   const handler = async ({ space: targetSpace }: FileActionOptions) => {
-    const resourceSpaceMapping = clipboardStore.resources.reduce<
+    let resourceSpaceMapping = clipboardStore.resources.reduce<
       Record<string, { space: SpaceResource; resources: Resource[] }>
     >((acc, resource) => {
       if (resource.storageId in acc) {
@@ -129,6 +132,29 @@ export const useFileActionsPaste = () => {
       acc[matchingSpace.id].resources.push(resource)
       return acc
     }, {})
+
+    if (unref(transferType) === TransferType.MOVE && unref(currentFolder)) {
+      const targetFolderPath = unref(currentFolder).path
+      resourceSpaceMapping = Object.fromEntries(
+        Object.entries(resourceSpaceMapping)
+          .map(([spaceId, entry]) => {
+            const resources = entry.resources.filter((resource) => {
+              return (
+                entry.space.id !== targetSpace.id || dirname(resource.path) !== targetFolderPath
+              )
+            })
+            return [spaceId, { ...entry, resources }] as const
+          })
+          .filter(([, entry]) => entry.resources.length > 0)
+      )
+
+      if (Object.keys(resourceSpaceMapping).length === 0) {
+        showMessage({
+          title: $gettext('You cannot cut and paste resources into the same folder.')
+        })
+        return
+      }
+    }
 
     const promises = Object.values(resourceSpaceMapping).map(
       ({ space: sourceSpace, resources: resourcesToCopy }) => {

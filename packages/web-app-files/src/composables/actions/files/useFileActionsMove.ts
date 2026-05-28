@@ -1,13 +1,15 @@
 import {
   Resource,
   SpaceResource,
-  isProjectSpaceResource,
-  isShareSpaceResource
+  isShareSpaceResource,
+  isProjectSpaceResource
 } from '@opencloud-eu/web-client'
+import { storeToRefs } from 'pinia'
+import { dirname } from 'path'
 import { computed, markRaw, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { storeToRefs } from 'pinia'
 import {
+  canBeMoved,
   FileAction,
   FileActionOptions,
   LocationPickerModal,
@@ -19,26 +21,26 @@ import {
   useClientService,
   useFolderLink,
   useGetMatchingSpace,
+  useMessages,
   useModals,
   usePasteWorker,
   useResourcesStore,
   useRouter
 } from '@opencloud-eu/web-pkg'
 
-export const useFileActionsCopy = () => {
+export const useFileActionsMove = () => {
   const router = useRouter()
   const clientService = useClientService()
   const { getMatchingSpace } = useGetMatchingSpace()
-  const { getParentFolderLink } = useFolderLink()
-  const { dispatchModal } = useModals()
-  const { startWorker } = usePasteWorker()
   const { $gettext, $ngettext } = useGettext()
-  const { resetSelection } = useResourcesStore()
-
+  const { dispatchModal } = useModals()
+  const { showMessage } = useMessages()
+  const { startWorker } = usePasteWorker()
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
+  const { getParentFolderLink } = useFolderLink()
 
-  const copySelectedFiles = async ({
+  const moveSelectedFiles = async ({
     targetSpace,
     targetFolder,
     sourceSpace,
@@ -61,15 +63,16 @@ export const useFileActionsCopy = () => {
       $ngettext
     )
 
-    const transferData = await resourceTransfer.getTransferData(TransferType.COPY)
+    const transferData = await resourceTransfer.getTransferData(TransferType.MOVE)
     if (!transferData.length) {
       return
     }
-
+    // effectiveTransferType will be copy, when we want to move cross-space
+    const effectiveTransferType = transferData[0].transferType
     const originalCurrentFolderId = unref(currentFolder)?.id
 
     startWorker(transferData, async ({ successful, failed }) => {
-      resourceTransfer.showResultMessage(failed, successful, TransferType.COPY)
+      resourceTransfer.showResultMessage(failed, successful, effectiveTransferType)
 
       if (!successful.length) {
         return
@@ -79,7 +82,15 @@ export const useFileActionsCopy = () => {
         return
       }
 
-      if (unref(currentFolder)?.id !== targetFolder.id) {
+      resourcesStore.resetSelection()
+
+      const shouldRemoveResourcesFromView =
+        effectiveTransferType === TransferType.MOVE &&
+        !isLocationCommonActive(router, 'files-common-favorites') &&
+        !isLocationCommonActive(router, 'files-common-search')
+
+      if (shouldRemoveResourcesFromView) {
+        resourcesStore.removeResources(successful)
         return
       }
 
@@ -89,8 +100,8 @@ export const useFileActionsCopy = () => {
       for (const resource of successful) {
         loadingResources.push(
           (async () => {
-            const copiedResource = await clientService.webdav.getFileInfo(targetSpace, resource)
-            fetchedResources.push(copiedResource)
+            const movedResource = await clientService.webdav.getFileInfo(targetSpace, resource)
+            fetchedResources.push(movedResource)
           })()
         )
       }
@@ -103,11 +114,28 @@ export const useFileActionsCopy = () => {
         })
       }
 
-      resourcesStore.upsertResources(fetchedResources)
+      const isDestinationActiveFolder = unref(currentFolder)?.id === targetFolder.id
+      fetchedResources.forEach((resource) => {
+        const isResourceInCurrentList = resourcesStore.resources.some(
+          (existingResource) => existingResource.id === resource.id
+        )
+
+        if (!isResourceInCurrentList && !isDestinationActiveFolder) {
+          return
+        }
+
+        resourcesStore.upsertResource(resource)
+      })
     })
   }
 
-  const onLocationPicked = async (targetResources: Resource[]) => {
+  const onLocationPicked = async ({
+    sourceResources,
+    targetResources
+  }: {
+    sourceResources: Resource[]
+    targetResources: Resource[]
+  }) => {
     const targetFolder = targetResources[0]
 
     if (!targetFolder) {
@@ -118,9 +146,19 @@ export const useFileActionsCopy = () => {
       ? targetFolder
       : getMatchingSpace(targetFolder)
 
-    const resourcesToCopy = unref(resourcesStore.selectedResources)
+    const movableResources = sourceResources.filter((resource) => {
+      const sourceSpace = getMatchingSpace(resource)
+      return sourceSpace.id !== targetSpace.id || dirname(resource.path) !== targetFolder.path
+    })
 
-    const resourceSpaceMapping = resourcesToCopy.reduce<
+    if (!movableResources.length) {
+      showMessage({
+        title: $gettext('You cannot move resources into the same folder.')
+      })
+      return
+    }
+
+    const resourceSpaceMapping = movableResources.reduce<
       Record<string, { space: SpaceResource; resources: Resource[] }>
     >((acc, resource) => {
       if (resource.storageId in acc) {
@@ -138,19 +176,13 @@ export const useFileActionsCopy = () => {
       return acc
     }, {})
 
-    resetSelection()
-
     const promises = Object.values(resourceSpaceMapping).map(({ space: sourceSpace, resources }) =>
-      copySelectedFiles({ targetSpace, targetFolder, sourceSpace, resources })
+      moveSelectedFiles({ targetSpace, targetFolder, sourceSpace, resources })
     )
     await Promise.all(promises)
   }
 
   const handler = ({ resources }: FileActionOptions) => {
-    if (isLocationCommonActive(router, 'files-common-search')) {
-      resources = resources.filter((r) => !isProjectSpaceResource(r))
-    }
-
     if (!resources.length) {
       return
     }
@@ -160,63 +192,50 @@ export const useFileActionsCopy = () => {
 
     dispatchModal({
       elementClass: 'location-picker-modal',
-      title: $gettext('Copy to'),
+      title: $gettext('Move to'),
       customComponent: markRaw(LocationPickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
-        submitButtonTitle: $gettext('Copy here'),
+        submitButtonTitle: $gettext('Move here'),
         parentFolderLink,
-        callbackFn: onLocationPicked
+        callbackFn: (targetResources: Resource[]) =>
+          onLocationPicked({ sourceResources: resources, targetResources })
       }),
       focusTrapInitial: false
     })
   }
 
-  const actions = computed((): FileAction[] => {
-    return [
-      {
-        name: 'copy',
-        icon: 'file-copy-2',
-        handler,
-        label: () => $gettext('Copy to'),
-        isVisible: ({ resources }) => {
-          if (
-            !isLocationSpacesActive(router, 'files-spaces-generic') &&
-            !isLocationPublicActive(router, 'files-public-link') &&
-            !isLocationCommonActive(router, 'files-common-favorites') &&
-            !isLocationCommonActive(router, 'files-common-search')
-          ) {
-            return false
-          }
-          if (isLocationSpacesActive(router, 'files-spaces-projects')) {
-            return false
-          }
-          if (resources.length === 0) {
-            return false
-          }
+  const actions = computed((): FileAction[] => [
+    {
+      name: 'move',
+      icon: 'folder-transfer',
+      handler,
+      label: () => $gettext('Move to'),
+      isVisible: ({ resources }) => {
+        if (
+          !isLocationSpacesActive(router, 'files-spaces-generic') &&
+          !isLocationPublicActive(router, 'files-public-link') &&
+          !isLocationCommonActive(router, 'files-common-favorites') &&
+          !isLocationCommonActive(router, 'files-common-search')
+        ) {
+          return false
+        }
+        if (resources.length === 0) {
+          return false
+        }
 
-          if (isLocationPublicActive(router, 'files-public-link')) {
-            return unref(currentFolder)?.canCreate()
-          }
+        if (resources.length === 1 && resources[0].locked) {
+          return false
+        }
 
-          if (
-            isLocationCommonActive(router, 'files-common-search') &&
-            resources.some((r) => isProjectSpaceResource(r))
-          ) {
-            return false
-          }
-
-          if (!unref(resources)[0].canDownload()) {
-            return false
-          }
-          // copy can't be restricted in authenticated context, because
-          // a user always has their home dir with write access
-          return true
-        },
-        class: 'oc-files-actions-copy-trigger'
-      }
-    ]
-  })
+        const moveDisabled = resources.some((resource) => {
+          return canBeMoved(resource, unref(currentFolder)?.path) === false
+        })
+        return !moveDisabled
+      },
+      class: 'oc-files-actions-move-trigger'
+    }
+  ])
 
   return {
     actions

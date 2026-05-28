@@ -81,7 +81,10 @@ import {
   sseEventWrapper,
   onSSELinkUpdatedEvent,
   onSSEBackchannelLogoutEvent,
-  SseEventWrapperOptions
+  SseEventWrapperOptions,
+  onSSESpaceCreatedEvent,
+  onSSESpaceDisabledEvent,
+  onSSESpaceDeletedEvent
 } from './sse'
 import { loadAppTranslations } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
@@ -128,6 +131,11 @@ const getEmbedConfigFromQuery = (
 
   if (embedChooseFileNameSuggestion) {
     config.chooseFileNameSuggestion = embedChooseFileNameSuggestion
+  }
+
+  const embedSubmitButtonTitle = getQueryParam('embed-submit-button-title')
+  if (embedSubmitButtonTitle) {
+    config.submitButtonTitle = embedSubmitButtonTitle
   }
 
   const embedFileTypes = getQueryParam('embed-file-types')
@@ -967,6 +975,33 @@ export const registerSSEEventListeners = ({
       msg,
       ...sseEventWrapperOptions,
       method: onSSEFileTouchedEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.SPACE_CREATED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.SPACE_CREATED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSESpaceCreatedEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.SPACE_DISABLED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.SPACE_DISABLED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSESpaceDisabledEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.SPACE_DELETED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.SPACE_DELETED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSESpaceDeletedEvent
     })
   )
 

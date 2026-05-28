@@ -84,7 +84,8 @@ const OptionsConfigSchema = z.object({
       delegateAuthenticationOrigin: z.string().optional(),
       fileTypes: z.array(z.string()).optional(),
       chooseFileName: z.boolean().optional(),
-      chooseFileNameSuggestion: z.string().optional()
+      chooseFileNameSuggestion: z.string().optional(),
+      submitButtonTitle: z.string().optional()
     })
     .optional(),
   feedbackLink: z
