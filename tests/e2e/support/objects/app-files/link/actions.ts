@@ -391,9 +391,6 @@ export const copyLinkToClipboard = async (args: copyLinkArgs): Promise<string> =
   await sidebar.open({ page: page, resource: resource })
   await sidebar.openPanel({ page: page, name: 'sharing' })
 
-  // clear the clipboard
-  await page.evaluate(`navigator.clipboard.writeText('')`)
-
   await page.getByLabel('Copy link to clipboard').click()
   return await page.evaluate('navigator.clipboard.readText()')
 }
