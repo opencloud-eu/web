@@ -31,6 +31,10 @@ export const useEmbedMode = () => {
     return configStore.options.embed?.chooseFileNameSuggestion
   })
 
+  const submitButtonTitle = computed(() => {
+    return configStore.options.embed?.submitButtonTitle
+  })
+
   const isFilePicker = computed(() => {
     return configStore.options.embed?.target === 'file'
   })
@@ -72,6 +76,7 @@ export const useEmbedMode = () => {
     isLocationPicker,
     chooseFileName,
     chooseFileNameSuggestion,
+    submitButtonTitle,
     isFilePicker,
     messagesTargetOrigin,
     isDelegatingAuthentication,

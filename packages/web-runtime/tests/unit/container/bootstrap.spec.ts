@@ -219,6 +219,24 @@ describe('announceConfiguration', () => {
     await announceConfiguration({ path: '/config.json', configStore })
     expect(configStore.options.embed.enabled).toStrictEqual(false)
   })
+
+  it('should set embed submit button title from URL query', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {
+        search: '?embed-submit-button-title=Move%20here'
+      },
+      writable: true
+    })
+    vi.spyOn(global, 'fetch').mockResolvedValue(
+      mock<Response>({
+        status: 200,
+        json: () => Promise.resolve({ theme: '', server: '', options: {} })
+      })
+    )
+    const configStore = useConfigStore()
+    await announceConfiguration({ path: '/config.json', configStore })
+    expect(configStore.options.embed.submitButtonTitle).toStrictEqual('Move here')
+  })
 })
 
 describe('announceUpdates', () => {

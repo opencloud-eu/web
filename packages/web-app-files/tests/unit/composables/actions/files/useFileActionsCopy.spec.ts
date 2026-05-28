@@ -7,7 +7,7 @@ import {
   getComposableWrapper
 } from '@opencloud-eu/web-test-helpers'
 import { useFileActionsCopy } from '../../../../../src/composables/actions/files'
-import { useClipboardStore } from '@opencloud-eu/web-pkg'
+import { useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { describe } from 'vitest'
 
 describe('copy', () => {
@@ -16,30 +16,51 @@ describe('copy', () => {
       describe('handler', () => {
         it.each([
           {
-            resources: [{ id: '1' }, { id: '2' }] as Resource[],
-            copyAbleResources: ['1', '2']
+            resources: [
+              { id: '1', path: '/1' },
+              { id: '2', path: '/2' }
+            ] as Resource[],
+            copyAbleResources: ['1', '2'],
+            shouldShowModal: true
           },
           {
             resources: [
-              { id: '1' },
-              { id: '2' },
-              { id: '3' },
-              { id: '4', fileId: '5', canDownload: () => true, driveType: 'project' }
-            ] as Resource[],
-            copyAbleResources: ['1', '2', '3']
+              { id: '1', path: '/1' },
+              { id: '2', path: '/2' },
+              { id: '3', path: '/3' },
+              { id: '4', path: '/4', fileId: '5', canDownload: () => true, driveType: 'project' }
+            ] as unknown as Resource[],
+            copyAbleResources: ['1', '2', '3'],
+            shouldShowModal: true
+          },
+          {
+            resources: [
+              { id: '4', path: '/4', fileId: '5', canDownload: () => true, driveType: 'project' }
+            ] as unknown as Resource[],
+            copyAbleResources: [],
+            shouldShowModal: false
           }
-        ])('should filter non copyable resources', ({ resources, copyAbleResources }) => {
-          getWrapper({
-            searchLocation: true,
-            setup: ({ actions }) => {
-              unref(actions)[0].handler({ space: null, resources })
-              const clipboardStore = useClipboardStore()
-              expect(clipboardStore.copyResources).toHaveBeenCalledWith(
-                resources.filter((r) => copyAbleResources.includes(r.id as string))
-              )
-            }
-          })
-        })
+        ])(
+          'should filter non copyable resources',
+          ({ resources, copyAbleResources, shouldShowModal }) => {
+            getWrapper({
+              searchLocation: true,
+              setup: ({ actions }) => {
+                unref(actions)[0].handler({ space: null, resources })
+
+                const resourcesStore = useResourcesStore()
+                const { dispatchModal } = useModals()
+                if (shouldShowModal) {
+                  expect(resourcesStore.setSelection).toHaveBeenCalledWith(copyAbleResources)
+                  expect(dispatchModal).toHaveBeenCalled()
+                } else {
+                  expect(resourcesStore.setSelection).not.toHaveBeenCalled()
+                  expect(dispatchModal).not.toHaveBeenCalled()
+                }
+              }
+            })
+          }
+        )
       })
     })
   })

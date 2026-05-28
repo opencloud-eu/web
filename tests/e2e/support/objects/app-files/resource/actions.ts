@@ -50,7 +50,6 @@ const folderUploadInput = '#files-folder-upload-input'
 const uploadInfoCloseButton = '#close-upload-info-btn'
 const uploadErrorCloseButton = '.oc-notification-message-danger button[aria-label="Close"]'
 const filesBatchAction = '.files-app-bar-actions .oc-files-actions-%s-trigger'
-const pasteButton = '.paste-files-btn'
 const breadcrumbRoot = '//nav[@id="files-breadcrumb"]//li[1]'
 const fileRenameInput = '.oc-text-input'
 const deleteButtonSidebar = '#oc-files-actions-sidebar .oc-files-actions-delete-trigger'
@@ -177,6 +176,35 @@ export const getResourceSearchItemLocator = ({
   resource: string
 }): Locator => {
   return page.locator(util.format(searchListItem, resource))
+}
+
+export const clickResourceInFrame = async ({
+  page,
+  path
+}: {
+  page: Page
+  path: string
+}): Promise<void> => {
+  const paths = path.split('/')
+  const frame = page.frameLocator('iframe[title="OpenCloud"]')
+  await expect(frame.locator('body')).toBeVisible()
+
+  for (const name of paths) {
+    const folder = name.replace(/'/g, "\\'").replace(/"/g, '\\"')
+
+    const resource = frame.locator(util.format(resourceNameSelector, folder))
+
+    await expect(resource).toBeVisible()
+
+    const propfindPromise = page.waitForResponse(
+      (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+    )
+
+    await resource.click()
+    await propfindPromise
+
+    await expect(frame.locator('#app-loading-spinner')).toBeHidden()
+  }
 }
 
 export const clickResource = async ({
@@ -922,40 +950,65 @@ export interface moveOrCopyMultipleResourceArgs extends Omit<moveOrCopyResourceA
 
 export const pasteResource = async (args: moveOrCopyResourceArgs): Promise<void> => {
   const { page, resource, newLocation, action, method, option } = args
-
-  await page.locator(breadcrumbRoot).click()
   const newLocationPath = newLocation.split('/')
+  const frame = page.frameLocator('iframe[title="OpenCloud"]')
 
   for (const path of newLocationPath) {
-    if (path !== 'Personal') {
-      await clickResource({ page, path: path })
+    switch (path) {
+      case 'Personal': {
+        await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
+        break
+      }
+
+      case 'Project': {
+        await frame.locator('a[data-nav-name="files-spaces-projects"]').click()
+        break
+      }
+
+      case 'Shares': {
+        await frame.locator('a[data-nav-name="files-shares"]').click()
+        break
+      }
+
+      default: {
+        await clickResourceInFrame({ page, path })
+      }
     }
   }
+  const expectedMethod = option === 'copy instead' ? 'COPY' : action.toUpperCase()
 
-  if (method === 'dropdown-menu') {
-    await page.locator(filesView).click({ button: 'right' })
-    await page.locator(util.format(filesContextMenuAction, 'copy')).click()
-  } else {
-    await page.locator(pasteButton).click()
-  }
+  const respPromise = page.waitForResponse(
+    (resp) =>
+      resp.url().includes(resource) &&
+      [201, 204].includes(resp.status()) &&
+      resp.request().method() === expectedMethod
+  )
+
+  await frame.getByTestId('button-select').click()
+
   if (option) {
-    await Promise.all([
-      page.waitForResponse(
-        (resp) =>
-          resp.url().endsWith(resource) &&
-          resp.ok &&
-          resp.request().method() === action.toUpperCase()
-      ),
-      option === 'replace'
-        ? page.locator(actionSecondaryConfirmationButton).click()
-        : page.locator(keepBothButton).click()
-    ])
-  } else {
-    await waitForResources({
-      page,
-      names: [resource]
-    })
+    switch (option) {
+      case 'replace': {
+        await page.locator(actionSecondaryConfirmationButton).click()
+        break
+      }
+
+      case 'keep both': {
+        await page.locator(keepBothButton).click()
+        break
+      }
+
+      case 'copy instead': {
+        const modalMessage = page.locator('.oc-modal-body-message')
+        await expect(modalMessage).toContainText(
+          'Moving files from one space to another is not possible'
+        )
+        await page.locator(util.format(actionConfirmationButton, 'Copy here')).click()
+        break
+      }
+    }
   }
+  await respPromise
 }
 
 const selectBatchAction = async (page: Page, action: string): Promise<void> => {
@@ -991,29 +1044,51 @@ export const moveOrCopyMultipleResources = async (
       // after selecting multiple resources, resources can be copied or moved by clicking on any of the selected resources
       await page.locator(highlightedTileCardSelector).first().click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
+      const frame = page.frameLocator('iframe[title="OpenCloud"]')
 
-      await page.locator(breadcrumbRoot).click()
       const newLocationPath = newLocation.split('/')
       for (const path of newLocationPath) {
-        if (path !== 'Personal') {
-          await clickResource({ page, path: path })
+        if (path == 'Personal') {
+          await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
+        } else {
+          await clickResourceInFrame({ page, path: path })
         }
       }
-      await page.locator(filesView).click({ button: 'right' })
-      await page.locator(util.format(filesContextMenuAction, 'copy')).click()
+      const responses = resources.map((resource) =>
+        page.waitForResponse(
+          (resp) =>
+            resp.url().includes(resource) &&
+            [201, 204].includes(resp.status()) &&
+            resp.request().method() === action.toUpperCase()
+        )
+      )
+      await frame.getByTestId('button-select').click()
+      await Promise.all(responses)
       break
     }
     case 'batch-action': {
       await selectBatchAction(page, action)
 
-      await page.locator(breadcrumbRoot).click()
+      const frame = page.frameLocator('iframe[title="OpenCloud"]')
+
       const newLocationPath = newLocation.split('/')
       for (const path of newLocationPath) {
-        if (path !== 'Personal') {
-          await clickResource({ page, path: path })
+        if (path == 'Personal') {
+          await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
+        } else {
+          await clickResourceInFrame({ page, path: path })
         }
       }
-      await page.locator(pasteButton).click()
+      const responses = resources.map((resource) =>
+        page.waitForResponse(
+          (resp) =>
+            resp.url().includes(resource) &&
+            [201, 204].includes(resp.status()) &&
+            resp.request().method() === action.toUpperCase()
+        )
+      )
+      await frame.getByTestId('button-select').click()
+      await Promise.all(responses)
       break
     }
     case 'keyboard': {
@@ -1053,10 +1128,6 @@ export const moveOrCopyMultipleResources = async (
       break
     }
   }
-  await waitForResources({
-    page,
-    names: resources
-  })
 }
 
 export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<void> => {
@@ -1084,7 +1155,7 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
       await sidebar.open({ page: page, resource: resourceBase })
       await sidebar.openPanel({ page: page, name: 'actions' })
 
-      const actionButtonType = action === 'copy' ? 'Copy' : 'Cut'
+      const actionButtonType = action === 'copy' ? 'Copy to' : 'Move to'
       await page.locator(util.format(sideBarActionButton, actionButtonType)).click()
       await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
       break
@@ -1170,10 +1241,6 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
       break
     }
   }
-  await waitForResources({
-    page,
-    names: [resourceBase]
-  })
 }
 
 /**/
