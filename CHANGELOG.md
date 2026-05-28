@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-27
+## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-28
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update vue monorepo to v3.5.35 [[#2606](https://github.com/opencloud-eu/web/pull/2606)]
 - chore(deps): update devdependencies (non-major) [[#2583](https://github.com/opencloud-eu/web/pull/2583)]
 - chore(deps): update dependency dompurify to v3.4.6 [[#2596](https://github.com/opencloud-eu/web/pull/2596)]
 - chore(deps): update typescript-eslint monorepo to v8.60.0 [[#2593](https://github.com/opencloud-eu/web/pull/2593)]
