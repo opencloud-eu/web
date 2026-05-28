@@ -2,7 +2,7 @@ import { Ref, ref, unref, MaybeRef } from 'vue'
 import { dirname } from 'path'
 import { ClientService, folderService } from '../../services'
 import { useAppFileHandling } from './useAppFileHandling'
-import { isSearchResource, Resource } from '@opencloud-eu/web-client'
+import { isSearchResource, isShareSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { FileContext } from './types'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { useFileRouteReplace } from '../router/useFileRouteReplace'
@@ -104,6 +104,10 @@ export function useAppFolderHandling({
       const { resource, children } = await webdav.listFiles(space, {
         path
       })
+
+      if (isShareSpaceResource(space)) {
+        children.forEach((r) => (r.remoteItemId = space.id))
+      }
 
       if (resource.type === 'file') {
         resourcesStore.initResourceList({
