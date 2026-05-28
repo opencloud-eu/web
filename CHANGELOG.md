@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @Svanvith, @dschmidt, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @Svanvith, @dschmidt, @saw-jan, @tammi-23
+
+### ✅ Tests
+
+- test(e2e): do not empty clipboard beforehand [[#2612](https://github.com/opencloud-eu/web/pull/2612)]
 
 ### 🐛 Bug Fixes
 
