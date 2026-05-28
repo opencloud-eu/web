@@ -8,17 +8,17 @@ describe('LocationPickerModal', () => {
   describe('iframe', () => {
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.vm.iframeSrc).toEqual(
+      expect((wrapper.vm as any).iframeSrc).toEqual(
         'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-delegate-authentication=false'
       )
     })
     it('sets the iframe title correctly', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.vm.iframeTitle).toEqual('OpenCloud')
+      expect((wrapper.vm as any).iframeTitle).toEqual('OpenCloud')
     })
     it('sets a custom submit button title in iframe src when provided', () => {
       const { wrapper } = getWrapper({ submitButtonTitle: 'Move here' })
-      expect(wrapper.vm.iframeSrc).toEqual(
+      expect((wrapper.vm as any).iframeSrc).toEqual(
         'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-delegate-authentication=false&embed-submit-button-title=Move+here'
       )
     })
@@ -26,13 +26,13 @@ describe('LocationPickerModal', () => {
   describe('method "onLocationPick"', () => {
     it('does nothing if the event message does not equal "opencloud-embed:select"', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.onLocationPick(mock<MessageEvent>({ data: { name: 'some-other-event' } }))
-      expect(wrapper.vm.callbackFn).not.toHaveBeenCalled()
+      ;(wrapper.vm as any).onLocationPick(mock<MessageEvent>({ data: { name: 'some-other-event' } }))
+      expect((wrapper.vm as any).callbackFn).not.toHaveBeenCalled()
     })
     it('calls callback function when message does equal "opencloud-embed:select"', () => {
       const { wrapper } = getWrapper()
       const modalStore = useModals()
-      wrapper.vm.onLocationPick(
+      ;(wrapper.vm as any).onLocationPick(
         mock<MessageEvent>({
           data: {
             name: 'opencloud-embed:select',
@@ -42,13 +42,13 @@ describe('LocationPickerModal', () => {
           }
         })
       )
-      expect(wrapper.vm.callbackFn).toHaveBeenCalled()
+      expect((wrapper.vm as any).callbackFn).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalled()
     })
     it('calls callback function for legacy array payload when message does equal "opencloud-embed:select"', () => {
       const { wrapper } = getWrapper()
       const modalStore = useModals()
-      wrapper.vm.onLocationPick(
+      ;(wrapper.vm as any).onLocationPick(
         mock<MessageEvent>({
           data: {
             name: 'opencloud-embed:select',
@@ -56,7 +56,7 @@ describe('LocationPickerModal', () => {
           }
         })
       )
-      expect(wrapper.vm.callbackFn).toHaveBeenCalled()
+      expect((wrapper.vm as any).callbackFn).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalled()
     })
   })
