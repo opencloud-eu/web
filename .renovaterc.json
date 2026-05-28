@@ -11,6 +11,10 @@
       "matchUpdateTypes": ["patch", "minor"],
       "groupName": "devDependencies (non-major)",
       "groupSlug": "dev-dependencies"
+    },
+    {
+      "matchPackageNames": ["@module-federation/vite", "@module-federation/runtime"],
+      "enabled": false
     }
   ]
 }
