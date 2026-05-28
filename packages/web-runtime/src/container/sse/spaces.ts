@@ -45,7 +45,7 @@ export const onSSESpaceDisabledEvent = async ({
   resourcesStore.upsertResource(space)
 }
 
-export const onSSESpaceDeletedEvent = async ({
+export const onSSESpaceDeletedEvent = ({
   sseData,
   resourcesStore,
   spacesStore,
@@ -57,7 +57,12 @@ export const onSSESpaceDeletedEvent = async ({
     return
   }
 
-  const space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
+  const space = spacesStore.getSpace(sseData.spaceid)
+
+  if (!space) {
+    return
+  }
+
   spacesStore.removeSpace(space)
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
