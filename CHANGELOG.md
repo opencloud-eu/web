@@ -6,16 +6,9 @@
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @Svanvith, @dschmidt, @saw-jan, @tammi-23
 
-### 📈 Enhancement
-
-- feat: use embed mode for copy and move actions [[#2599](https://github.com/opencloud-eu/web/pull/2599)]
-
-### ✅ Tests
-
-- test(e2e): do not empty clipboard beforehand [[#2612](https://github.com/opencloud-eu/web/pull/2612)]
-
 ### 🐛 Bug Fixes
 
+- fix: video loading inside share spaces [[#2613](https://github.com/opencloud-eu/web/pull/2613)]
 - fix: legacy WebDav url [[#2577](https://github.com/opencloud-eu/web/pull/2577)]
 - fix: account settings, extension names not translated [[#2595](https://github.com/opencloud-eu/web/pull/2595)]
 - fix: missing undo and redo actions in plain text editor [[#2592](https://github.com/opencloud-eu/web/pull/2592)]
@@ -37,6 +30,14 @@
 - fix: prevents unsightly line breaks [[#2546](https://github.com/opencloud-eu/web/pull/2546)]
 - fix: readme.md header content won't get rendered on public link access [[#2542](https://github.com/opencloud-eu/web/pull/2542)]
 - fix: upload overlay when merging folders [[#2544](https://github.com/opencloud-eu/web/pull/2544)]
+
+### 📈 Enhancement
+
+- feat: use embed mode for copy and move actions [[#2599](https://github.com/opencloud-eu/web/pull/2599)]
+
+### ✅ Tests
+
+- test(e2e): do not empty clipboard beforehand [[#2612](https://github.com/opencloud-eu/web/pull/2612)]
 
 ### 📦️ Dependencies
 
