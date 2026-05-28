@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.0.2](https://github.com/opencloud-eu/web/releases/tag/v7.0.2) - 2026-05-28
+## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-05-28
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @ScharfViktor, @Svanvith, @dschmidt, @saw-jan, @tammi-23
+
+### 📈 Enhancement
+
+- feat: use embed mode for copy and move actions [[#2599](https://github.com/opencloud-eu/web/pull/2599)]
 
 ### ✅ Tests
 
