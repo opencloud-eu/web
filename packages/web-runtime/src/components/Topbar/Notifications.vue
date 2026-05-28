@@ -179,6 +179,12 @@ export default {
           }
         }
       }
+      if (object_type === 'mention' || messageRichParameters.resource?.id) {
+        return {
+          name: 'resolvePrivateLink',
+          params: { fileId: messageRichParameters.resource?.id }
+        }
+      }
       return null
     }
 

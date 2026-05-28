@@ -1,4 +1,4 @@
-import { onMounted, onBeforeUnmount, ref, unref, type Ref } from 'vue'
+import { onMounted, onBeforeUnmount, ref, unref, type Ref, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   CollaboratorShare,
@@ -93,7 +93,7 @@ export function useCollaboraPostMessages({
           name: currentResource.name,
           format: message.Values.format as string
         }),
-        customComponent: FileNameModal,
+        customComponent: markRaw(FileNameModal),
         customComponentAttrs: () => ({
           space: currentSpace,
           resource: currentResource,
@@ -108,7 +108,7 @@ export function useCollaboraPostMessages({
 
     dispatchModal({
       title: $gettext('Save »%{name}« with new name', { name: currentResource.name }),
-      customComponent: FileNameModal,
+      customComponent: markRaw(FileNameModal),
       customComponentAttrs: () => ({
         space: currentSpace,
         resource: currentResource,
@@ -159,7 +159,7 @@ export function useCollaboraPostMessages({
     dispatchModal({
       elementClass: 'file-picker-modal',
       title: $gettext('Insert graphic'),
-      customComponent: FilePickerModal,
+      customComponent: markRaw(FilePickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
         parentFolderLink: getParentFolderLink(currentResource),
@@ -191,7 +191,7 @@ export function useCollaboraPostMessages({
         callback === 'Action_CompareDocuments'
           ? $gettext('Select document to compare')
           : $gettext('Insert file'),
-      customComponent: FilePickerModal,
+      customComponent: markRaw(FilePickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
         parentFolderLink: getParentFolderLink(currentResource),
@@ -217,7 +217,7 @@ export function useCollaboraPostMessages({
     dispatchModal({
       elementClass: 'file-picker-modal',
       title: $gettext('Pick a file to link'),
-      customComponent: FilePickerModal,
+      customComponent: markRaw(FilePickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
         parentFolderLink: getParentFolderLink(currentResource),
@@ -274,7 +274,7 @@ export function useCollaboraPostMessages({
         (m) =>
           individualShareTypeValues.includes(m.shareType) &&
           m.sharedWith.id &&
-          m.sharedWith.displayName?.toLowerCase().startsWith(searchText)
+          m.sharedWith.displayName?.toLowerCase().includes(searchText)
       )
       .map((m) => ({
         username: m.sharedWith.id,
@@ -289,7 +289,7 @@ export function useCollaboraPostMessages({
 
   function handleMentionSelected(userId: string): void {
     if (!unref(userIdsToMention).includes(userId)) {
-      unref(userIdsToMention).push(userId)
+      userIdsToMention.value.push(userId)
     }
   }
 
@@ -298,16 +298,17 @@ export function useCollaboraPostMessages({
       return
     }
 
+    const fileID = unref(resource).fileId
+    const userIDs = unref(userIdsToMention)
+    userIdsToMention.value = []
     try {
       await httpAuthenticated.post(urlJoin(configStore.serverUrl, 'collaboration/notify'), {
-        fileID: unref(resource).fileId,
-        userIDs: unref(userIdsToMention),
+        fileID,
+        userIDs,
         type: 'mention'
       })
     } catch (e) {
       console.error('Error notifying mentioned users', e)
-    } finally {
-      userIdsToMention.value = []
     }
   }
 
