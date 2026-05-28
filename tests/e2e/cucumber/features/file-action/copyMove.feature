@@ -37,31 +37,31 @@ Feature: Copy
 
     When "Alice" copies the following resource using sidebar-panel
       | resource    | to          |
-      | sidebar.txt | PARENTCopy2 |
+      | sidebar.txt | Personal/PARENTCopy2 |
     And "Alice" copies the following resource using dropdown-menu
       | resource                 | to          |
-      | PARENTCopy3/example1.txt | PARENTCopy1 |
+      | PARENTCopy3/example1.txt | Personal/PARENTCopy1 |
     And "Alice" copies the following resource using batch-action
       | resource                 | to          |
-      | PARENTCopy3/example2.txt | PARENTCopy1 |
+      | PARENTCopy3/example2.txt | Personal/PARENTCopy1 |
     And "Alice" copies the following resource using keyboard
       | resource            | to          |
-      | KeyboardExample.txt | PARENTCopy3 |
+      | KeyboardExample.txt | Personal/PARENTCopy3 |
     And "Alice" moves the following resource using drag-drop
       | resource     | to          |
       | dragDrop.txt | PARENTCopy2 |
     And "Alice" moves the following resource using dropdown-menu
       | resource                 | to         |
-      | PARENTCopy1/example1.txt | PARENTMove |
+      | PARENTCopy1/example1.txt | Personal/PARENTMove |
     And "Alice" moves the following resource using batch-action
       | resource                 | to         |
-      | PARENTCopy1/example2.txt | PARENTMove |
+      | PARENTCopy1/example2.txt | Personal/PARENTMove |
     And "Alice" moves the following resource using keyboard
       | resource    | to         |
-      | PARENTCopy2 | PARENTMove |
+      | PARENTCopy2 | Personal/PARENTMove |
     And "Alice" moves the following resource using sidebar-panel
       | resource    | to         |
-      | PARENTCopy3 | PARENTMove |
+      | PARENTCopy3 | Personal/PARENTMove |
     And "Alice" opens folder "PARENTCopy4"
     And "Alice" opens folder "Sub1"
     And "Alice" moves the following resource using drag-drop-breadcrumb
@@ -70,7 +70,7 @@ Feature: Copy
 
     And "Alice" opens the "files" app
     And "Alice" opens folder "PARENT"
-    And "Alice" copies the following resources to "PARENT/Sub1" at once using dropdown-menu
+    And "Alice" copies the following resources to "Personal/PARENT/Sub1" at once using dropdown-menu
       | resource        |
       | fileToCopy1.txt |
       | fileToCopy2.txt |
@@ -79,7 +79,7 @@ Feature: Copy
       | fileToCopy5.txt |
       | Sub4            |
       | Sub5            |
-    And "Alice" copies the following resources to "PARENT/Sub2" at once using batch-action
+    And "Alice" copies the following resources to "Personal/PARENT/Sub2" at once using batch-action
       | resource        |
       | fileToCopy1.txt |
       | fileToCopy2.txt |
@@ -98,7 +98,7 @@ Feature: Copy
       | Sub4            |
       | Sub5            |
     And "Alice" opens folder "Sub1"
-    And "Alice" moves the following resources to "PARENT/Sub1/Sub" at once using dropdown-menu
+    And "Alice" moves the following resources to "Personal/PARENT/Sub1/Sub" at once using dropdown-menu
       | resource        |
       | fileToCopy1.txt |
       | fileToCopy2.txt |
@@ -108,7 +108,7 @@ Feature: Copy
       | Sub4            |
       | Sub5            |
     And "Alice" opens folder "Sub"
-    And "Alice" moves the following resources to "PARENT/Sub1" at once using batch-action
+    And "Alice" moves the following resources to "Personal/PARENT/Sub1" at once using batch-action
       | resource        |
       | fileToCopy1.txt |
       | fileToCopy2.txt |
@@ -172,21 +172,21 @@ Feature: Copy
 
     # copy and move file
     When "Alice" copies the following resource using sidebar-panel
-      | resource     | to      | option    |
-      | example1.txt | folder1 | keep both |
-      | example1.txt | folder1 | replace   |
+      | resource     | to                  | option    |
+      | example1.txt | Personal/folder1   | keep both |
+      | example1.txt | Personal/folder1   | replace   |
     And "Alice" moves the following resource using sidebar-panel
-      | resource             | to          | option    |
-      | example1.txt         | sub/folder1 | keep both |
-      | folder1/example1.txt | sub/folder1 | replace   |
+      | resource             | to                   | option    |
+      | example1.txt         | Personal/sub/folder1 | keep both |
+      | folder1/example1.txt | Personal/sub/folder1 | replace   |
 
     # copy and move folder
     And "Alice" copies the following resource using sidebar-panel
-      | resource | to  | option    |
-      | folder1  | sub | keep both |
-      | folder1  | sub | replace   |
+      | resource | to           | option    |
+      | folder1  | Personal/sub | keep both |
+      | folder1  | Personal/sub | replace   |
     And "Alice" moves the following resource using sidebar-panel
-      | resource     | to  | option    |
-      | folder1      | sub | keep both |
-      | sub1/folder1 | sub | replace   |
+      | resource     | to           | option    |
+      | folder1      | Personal/sub | keep both |
+      | sub1/folder1 | Personal/sub | replace   |
     And "Alice" logs out
