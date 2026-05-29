@@ -88,7 +88,7 @@ import {
   useMessages,
   useModals
 } from '@opencloud-eu/web-pkg'
-import { computed, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
+import { computed, markRaw, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
@@ -139,7 +139,7 @@ const openCreateAppTokenModal = () => {
   dispatchModal({
     title: $gettext('Create a new app token'),
     confirmText: $gettext('Create'),
-    customComponent: AppTokenModal,
+    customComponent: markRaw(AppTokenModal),
     hideActions: true,
     onConfirm: () => {
       // reload tokens after creating a new one

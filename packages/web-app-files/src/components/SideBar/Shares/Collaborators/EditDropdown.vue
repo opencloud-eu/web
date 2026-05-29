@@ -51,7 +51,16 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, inject, PropType, Ref, unref, useTemplateRef } from 'vue'
+import {
+  computed,
+  defineComponent,
+  inject,
+  markRaw,
+  PropType,
+  Ref,
+  unref,
+  useTemplateRef
+} from 'vue'
 import { DateTime } from 'luxon'
 import { ContextualHelperDataListItem, uniqueId } from '@opencloud-eu/design-system/helpers'
 import { OcDrop, OcInfoDrop } from '@opencloud-eu/design-system/components'
@@ -237,7 +246,7 @@ export default defineComponent({
       this.dispatchModal({
         title: this.$gettext('Set expiration date'),
         hideActions: true,
-        customComponent: DatePickerModal,
+        customComponent: markRaw(DatePickerModal),
         customComponentAttrs: () => ({
           currentDate: currentDate.isValid ? currentDate : null,
           minDate: DateTime.now()

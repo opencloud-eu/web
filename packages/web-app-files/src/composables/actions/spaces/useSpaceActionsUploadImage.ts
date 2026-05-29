@@ -1,4 +1,4 @@
-import { computed, onBeforeUnmount, unref } from 'vue'
+import { computed, markRaw, onBeforeUnmount, unref } from 'vue'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   SpaceAction,
@@ -38,7 +38,7 @@ export const useSpaceActionsUploadImage = () => {
     dispatchModal({
       title: $gettext('Crop image for »%{space}«', { space: selectedSpace.name }),
       confirmText: $gettext('Confirm'),
-      customComponent: SpaceImageModal,
+      customComponent: markRaw(SpaceImageModal),
       focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({ file, space: unref(selectedSpace) })
     })

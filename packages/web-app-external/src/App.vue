@@ -39,6 +39,7 @@
 import { stringify } from 'qs'
 import {
   computed,
+  markRaw,
   unref,
   nextTick,
   ref,
@@ -280,7 +281,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
             name: resource.name,
             format: message.Values.format
           }),
-          customComponent: FileNameModal,
+          customComponent: markRaw(FileNameModal),
           customComponentAttrs: () => ({
             space,
             resource,
@@ -298,7 +299,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
 
       dispatchModal({
         title: $gettext('Save »%{name}« with new name', { name: resource.name }),
-        customComponent: FileNameModal,
+        customComponent: markRaw(FileNameModal),
         customComponentAttrs: () => ({
           space,
           resource,
@@ -346,7 +347,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
       dispatchModal({
         elementClass: 'file-picker-modal',
         title: $gettext('Insert graphic'),
-        customComponent: FilePickerModal,
+        customComponent: markRaw(FilePickerModal),
         hideActions: true,
         customComponentAttrs: () => ({
           parentFolderLink: getParentFolderLink(resource),
@@ -374,7 +375,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
           callback === 'Action_CompareDocuments'
             ? $gettext('Select document to compare')
             : $gettext('Insert file'),
-        customComponent: FilePickerModal,
+        customComponent: markRaw(FilePickerModal),
         hideActions: true,
         customComponentAttrs: () => ({
           parentFolderLink: getParentFolderLink(resource),
@@ -401,7 +402,7 @@ const handlePostMessagesCollabora = async (event: MessageEvent) => {
       dispatchModal({
         elementClass: 'file-picker-modal',
         title: $gettext('Pick a file to link'),
-        customComponent: FilePickerModal,
+        customComponent: markRaw(FilePickerModal),
         hideActions: true,
         customComponentAttrs: () => ({
           parentFolderLink: getParentFolderLink(resource),

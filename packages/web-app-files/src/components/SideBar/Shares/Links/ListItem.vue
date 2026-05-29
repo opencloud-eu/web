@@ -55,7 +55,7 @@
 import { DateTime } from 'luxon'
 import { LinkRoleDropdown, useAbility, useLinkTypes, useModals } from '@opencloud-eu/web-pkg'
 import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, inject, Ref, ref, unref } from 'vue'
+import { computed, inject, markRaw, Ref, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import SetLinkPasswordModal from '../../../Modals/SetLinkPasswordModal.vue'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
@@ -111,7 +111,7 @@ const updateSelectedType = (type: SharingLinkType) => {
 const showPasswordModal = (callbackFn: () => void = undefined) => {
   dispatchModal({
     title: linkShare.hasPassword ? $gettext('Edit password') : $gettext('Add password'),
-    customComponent: SetLinkPasswordModal,
+    customComponent: markRaw(SetLinkPasswordModal),
     customComponentAttrs: () => ({
       space: unref(space),
       resource: unref(resource),

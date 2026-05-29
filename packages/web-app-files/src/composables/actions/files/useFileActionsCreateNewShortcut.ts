@@ -1,5 +1,5 @@
 import { storeToRefs } from 'pinia'
-import { computed, unref } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   CreateShortcutModal,
@@ -26,7 +26,7 @@ export const useFileActionsCreateNewShortcut = () => {
         dispatchModal({
           title: $gettext('Create a Shortcut'),
           confirmText: $gettext('Create'),
-          customComponent: CreateShortcutModal,
+          customComponent: markRaw(CreateShortcutModal),
           customComponentAttrs: () => ({ space: unref(currentSpace) })
         })
       },

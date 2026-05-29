@@ -11,6 +11,7 @@ import {
   folderViewsTrashExtensionPoint,
   folderViewsTrashOverviewExtensionPoint
 } from '../../extensionPoints'
+import { markRaw } from 'vue'
 
 export const useFolderViews = (): FolderViewExtension[] => {
   const { $gettext } = useGettext()
@@ -37,7 +38,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
           name: 'menu-line-condensed',
           fillType: 'none'
         },
-        component: ResourceTable
+        component: markRaw(ResourceTable)
       }
     },
     {
@@ -61,7 +62,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
           name: 'list-unordered',
           fillType: 'none'
         },
-        component: ResourceTable
+        component: markRaw(ResourceTable)
       }
     },
     {
@@ -85,7 +86,7 @@ export const useFolderViews = (): FolderViewExtension[] => {
           name: 'gallery-view-2',
           fillType: 'none'
         },
-        component: ResourceTiles
+        component: markRaw(ResourceTiles)
       }
     }
   ]

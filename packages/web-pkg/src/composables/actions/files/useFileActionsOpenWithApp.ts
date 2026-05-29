@@ -1,5 +1,5 @@
 import { FileAction, FileActionOptions } from '../types'
-import { computed, unref } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useAppsStore, useModals } from '../../piniaStores'
 import { storeToRefs } from 'pinia'
@@ -31,7 +31,7 @@ export const useFileActionsOpenWithApp = ({ appId }: { appId: string }) => {
     dispatchModal({
       elementClass: 'file-picker-modal',
       title: $gettext('Open file in %{app}', { app: app.name }),
-      customComponent: FilePickerModal,
+      customComponent: markRaw(FilePickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
         allowedFileTypes,

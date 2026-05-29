@@ -53,7 +53,16 @@ import {
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { LinkShare } from '@opencloud-eu/web-client'
-import { computed, defineComponent, inject, PropType, Ref, unref, useTemplateRef } from 'vue'
+import {
+  computed,
+  defineComponent,
+  inject,
+  markRaw,
+  PropType,
+  Ref,
+  unref,
+  useTemplateRef
+} from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { createFileRouteOptions, DatePickerModal } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -106,7 +115,7 @@ export default defineComponent({
       dispatchModal({
         title: $gettext('Set expiration date'),
         hideActions: true,
-        customComponent: DatePickerModal,
+        customComponent: markRaw(DatePickerModal),
         customComponentAttrs: () => ({
           currentDate: currentDate.isValid ? currentDate : null,
           minDate: DateTime.now()

@@ -1,5 +1,5 @@
 import { useModals, useCapabilityStore } from '@opencloud-eu/web-pkg'
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { UserAction } from '@opencloud-eu/web-pkg'
 import CreateUserModal from '../../../components/Users/CreateUserModal.vue'
@@ -19,7 +19,7 @@ export const useUserActionsCreateUser = () => {
       handler: () => {
         dispatchModal({
           title: $gettext('Create user'),
-          customComponent: CreateUserModal
+          customComponent: markRaw(CreateUserModal)
         })
       }
     }
