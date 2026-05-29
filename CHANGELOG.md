@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-05-28
+## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-05-29
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: prevent components from being proxied in Vue's reactivity system [[#2588](https://github.com/opencloud-eu/web/pull/2588)]
 - fix: video loading inside share spaces [[#2613](https://github.com/opencloud-eu/web/pull/2613)]
 - fix: legacy WebDav url [[#2577](https://github.com/opencloud-eu/web/pull/2577)]
 - fix: account settings, extension names not translated [[#2595](https://github.com/opencloud-eu/web/pull/2595)]
