@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import { join } from 'path'
 import { Resource } from '@opencloud-eu/web-client'
 import { ResolveConflict, ResolveStrategy } from './types'
@@ -75,7 +76,7 @@ export class ConflictDialog {
           : this.$gettext('File already exists'),
         hideActions: true,
         hideCancelButton: true,
-        customComponent: ResourceConflictModal,
+        customComponent: markRaw(ResourceConflictModal),
         customComponentAttrs: () => ({
           resource,
           conflictCount,
@@ -95,7 +96,7 @@ export class ConflictDialog {
     return new Promise<boolean>((resolve) => {
       dispatchModal({
         title: this.$gettext('Copy here?'),
-        customComponent: SpaceMoveInfoModal,
+        customComponent: markRaw(SpaceMoveInfoModal),
         confirmText: this.$gettext('Copy here'),
         onCancel: () => {
           resolve(false)

@@ -1,4 +1,4 @@
-import { computed, Ref, unref } from 'vue'
+import { computed, markRaw, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { UserAction, useModals, useCapabilityStore, UserActionOptions } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
@@ -20,7 +20,7 @@ export const useUserActionsRemoveFromGroups = ({ groups }: { groups: Ref<Group[]
           userCount: resources.length.toString()
         }
       ),
-      customComponent: RemoveFromGroupsModal,
+      customComponent: markRaw(RemoveFromGroupsModal),
       customComponentAttrs: () => ({
         users: resources,
         groups: unref(groups)

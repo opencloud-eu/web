@@ -9,7 +9,7 @@ import {
   useUserStore,
   Extension
 } from '@opencloud-eu/web-pkg'
-import { computed, unref } from 'vue'
+import { computed, markRaw, unref } from 'vue'
 import MailboxTree from './components/MailboxTree.vue'
 import { storeToRefs } from 'pinia'
 import { useMailCompose } from './composables/useMailCompose'
@@ -48,14 +48,14 @@ export const extensions = (appInfo: ApplicationInformation) => {
     id: `app.${appInfo.id}.sidebar-nav.main-content`,
     extensionPointIds: [`app.${appInfo.id}.sidebar-nav.main`],
     type: 'customComponent',
-    content: MailboxTree
+    content: markRaw(MailboxTree)
   }
 
   const bottomNavExtension: CustomComponentExtension = {
     id: `app.${appInfo.id}.sidebar-nav.bottom-content`,
     extensionPointIds: [`app.${appInfo.id}.sidebar-nav.bottom`],
     type: 'customComponent',
-    content: AccountsSwitch
+    content: markRaw(AccountsSwitch)
   }
 
   return computed<Extension[]>(() => {

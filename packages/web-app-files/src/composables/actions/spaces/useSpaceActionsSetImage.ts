@@ -1,5 +1,5 @@
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
@@ -32,7 +32,7 @@ export const useSpaceActionsSetImage = () => {
     dispatchModal({
       title: $gettext('Crop your Space image'),
       confirmText: $gettext('Confirm'),
-      customComponent: SpaceImageModal,
+      customComponent: markRaw(SpaceImageModal),
       focusTrapInitial: '#image-cropper-selection',
       customComponentAttrs: () => ({ file, space })
     })

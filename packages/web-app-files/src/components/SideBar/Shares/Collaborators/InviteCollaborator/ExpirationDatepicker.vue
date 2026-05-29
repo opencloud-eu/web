@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { DateTime } from 'luxon'
-import { defineComponent, customRef, PropType, unref, watch } from 'vue'
+import { defineComponent, customRef, markRaw, PropType, unref, watch } from 'vue'
 import { useModals, DatePickerModal } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
@@ -89,7 +89,7 @@ export default defineComponent({
       dispatchModal({
         title: language.$gettext('Set expiration date'),
         hideActions: true,
-        customComponent: DatePickerModal,
+        customComponent: markRaw(DatePickerModal),
         customComponentAttrs: () => ({
           currentDate: unref(dateCurrent),
           minDate: DateTime.now()

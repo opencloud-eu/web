@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import { Language } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import { extractExtensionFromFile } from '@opencloud-eu/web-client'
@@ -41,7 +42,7 @@ export class UploadResourceConflict extends ConflictDialog {
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
         hideActions: true,
-        customComponent: ResourceConflictModal,
+        customComponent: markRaw(ResourceConflictModal),
         customComponentAttrs: () => ({
           confirmSecondaryTextOverwrite: resource.isFolder
             ? this.$gettext('Merge')

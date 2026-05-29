@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource, isProjectSpaceResource, isSpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -28,7 +28,7 @@ export const useSpaceActionsEditQuota = () => {
   const handler = ({ resources }: SpaceActionOptions) => {
     dispatchModal({
       title: getModalTitle({ resources }),
-      customComponent: QuotaModal,
+      customComponent: markRaw(QuotaModal),
       customComponentAttrs: () => ({
         spaces: resources,
         resourceType: 'space'
