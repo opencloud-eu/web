@@ -14,10 +14,10 @@
         <oc-table-tr class="account-page-info-language">
           <oc-table-td>{{ $gettext('Language') }}</oc-table-td>
           <oc-table-td>
-            <div class="flex">
+            <div>
               <span v-text="$gettext('Select your language.')" />
               <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                <div class="flex ml-1 items-center">
+                <div class="flex items-center">
                   <span v-text="$gettext('Help to translate')" />
                   <oc-icon class="ml-1" size="small" fill-type="line" name="service" />
                 </div>
