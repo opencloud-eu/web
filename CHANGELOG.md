@@ -1,5 +1,69 @@
 # Changelog
 
+## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-06-01
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @ScharfViktor, @Svanvith, @dschmidt, @kulmann, @saw-jan, @tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: help to translate text breaks settings page layout [[#2625](https://github.com/opencloud-eu/web/pull/2625)]
+- fix: sse event on space delete has no effect [[#2614](https://github.com/opencloud-eu/web/pull/2614)]
+- fix: prevent components from being proxied in Vue's reactivity system [[#2588](https://github.com/opencloud-eu/web/pull/2588)]
+- fix: video loading inside share spaces [[#2613](https://github.com/opencloud-eu/web/pull/2613)]
+- fix: legacy WebDav url [[#2577](https://github.com/opencloud-eu/web/pull/2577)]
+- fix: account settings, extension names not translated [[#2595](https://github.com/opencloud-eu/web/pull/2595)]
+- fix: missing undo and redo actions in plain text editor [[#2592](https://github.com/opencloud-eu/web/pull/2592)]
+- fix(design-system): add id to OcSearchBar [[#2587](https://github.com/opencloud-eu/web/pull/2587)]
+- fix: cleanup event listener [[#2532](https://github.com/opencloud-eu/web/pull/2532)]
+- fix(editor): json rendering, plaintext serialization [[#2573](https://github.com/opencloud-eu/web/pull/2573)]
+- fix: tags contextual helper text is out of viewport [[#2582](https://github.com/opencloud-eu/web/pull/2582)]
+- fix: view mode not translated [[#2581](https://github.com/opencloud-eu/web/pull/2581)]
+- fix: remove all folders from file drop upload queue [[#2510](https://github.com/opencloud-eu/web/pull/2510)]
+- fix(editor): slash menu scroll [[#2572](https://github.com/opencloud-eu/web/pull/2572)]
+- fix(public-links): rename expiry date label to expiration date [[#2575](https://github.com/opencloud-eu/web/pull/2575)]
+- fix: disabled space has navigate actions [[#2569](https://github.com/opencloud-eu/web/pull/2569)]
+- fix: cancel generic space folder loading  [[#2567](https://github.com/opencloud-eu/web/pull/2567)]
+- fix: upload overlay wording [[#2564](https://github.com/opencloud-eu/web/pull/2564)]
+- fix(client): dedupe search results [[#2555](https://github.com/opencloud-eu/web/pull/2555)]
+- fix: prevent csp error logs in browser console [[#2562](https://github.com/opencloud-eu/web/pull/2562)]
+- fix(design-system): silence OcDrop attr-inheritance warning storm [[#2560](https://github.com/opencloud-eu/web/pull/2560)]
+- fix: empty markdown documents [[#2553](https://github.com/opencloud-eu/web/pull/2553)]
+- fix: prevents unsightly line breaks [[#2546](https://github.com/opencloud-eu/web/pull/2546)]
+- fix: readme.md header content won't get rendered on public link access [[#2542](https://github.com/opencloud-eu/web/pull/2542)]
+- fix: upload overlay when merging folders [[#2544](https://github.com/opencloud-eu/web/pull/2544)]
+
+### 📈 Enhancement
+
+- feat: use embed mode for copy and move actions [[#2599](https://github.com/opencloud-eu/web/pull/2599)]
+
+### ✅ Tests
+
+- test(e2e): do not empty clipboard beforehand [[#2612](https://github.com/opencloud-eu/web/pull/2612)]
+
+### 📦️ Dependencies
+
+- fix(deps): update dependency @sentry/vue to v10.54.0 [[#2597](https://github.com/opencloud-eu/web/pull/2597)]
+- chore(deps): update dependency dompurify to v3.4.7 [[#2608](https://github.com/opencloud-eu/web/pull/2608)]
+- chore(deps): update pnpm to v11.4.0 [[#2609](https://github.com/opencloud-eu/web/pull/2609)]
+- chore(deps): update vue monorepo to v3.5.35 [[#2606](https://github.com/opencloud-eu/web/pull/2606)]
+- chore(deps): update devdependencies (non-major) [[#2583](https://github.com/opencloud-eu/web/pull/2583)]
+- chore(deps): update dependency dompurify to v3.4.6 [[#2596](https://github.com/opencloud-eu/web/pull/2596)]
+- chore(deps): update typescript-eslint monorepo to v8.60.0 [[#2593](https://github.com/opencloud-eu/web/pull/2593)]
+- chore(deps): update tiptap monorepo to v3.23.6 [[#2586](https://github.com/opencloud-eu/web/pull/2586)]
+- chore(deps): update pnpm to v11.3.0 [[#2591](https://github.com/opencloud-eu/web/pull/2591)]
+- fix(deps): update dependency @casl/ability to v7 [[#2584](https://github.com/opencloud-eu/web/pull/2584)]
+- chore(deps): update pnpm to v11.2.2 [[#2578](https://github.com/opencloud-eu/web/pull/2578)]
+- chore(deps): update node.js to v24.16.0 [[#2576](https://github.com/opencloud-eu/web/pull/2576)]
+- chore(deps): update devdependencies (non-major) to v4.1.7 [[#2570](https://github.com/opencloud-eu/web/pull/2570)]
+- chore(deps): update tiptap monorepo to v3.23.5 [[#2554](https://github.com/opencloud-eu/web/pull/2554)]
+- chore(deps): update devdependencies (non-major) [[#2559](https://github.com/opencloud-eu/web/pull/2559)]
+- chore(deps): update pnpm to v11 [[#2538](https://github.com/opencloud-eu/web/pull/2538)]
+- chore(deps): update typescript-eslint monorepo to v8.59.4 [[#2540](https://github.com/opencloud-eu/web/pull/2540)]
+- chore(deps): update dependency postcss to v8.5.15 [[#2547](https://github.com/opencloud-eu/web/pull/2547)]
+- chore(deps): remove dependency clean-publish [[#2537](https://github.com/opencloud-eu/web/pull/2537)]
+
 ## [7.0.1](https://github.com/opencloud-eu/web/releases/tag/v7.0.1) - 2026-05-19
 
 ### ❤️ Thanks to all contributors! ❤️
