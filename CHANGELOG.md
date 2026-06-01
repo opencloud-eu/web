@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-05-29
+## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-06-01
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: help to translate text breaks settings page layout [[#2625](https://github.com/opencloud-eu/web/pull/2625)]
 - fix: sse event on space delete has no effect [[#2614](https://github.com/opencloud-eu/web/pull/2614)]
 - fix: prevent components from being proxied in Vue's reactivity system [[#2588](https://github.com/opencloud-eu/web/pull/2588)]
 - fix: video loading inside share spaces [[#2613](https://github.com/opencloud-eu/web/pull/2613)]
