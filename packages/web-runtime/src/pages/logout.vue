@@ -1,7 +1,7 @@
 <template>
   <div class="h-screen flex flex-col justify-center items-center p-4">
+    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
     <oc-card
-      :logo-url="logoImg"
       :title="cardTitle"
       body-class="text-center"
       header-class="text-center"
