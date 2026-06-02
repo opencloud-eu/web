@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-02
+
+### ❤️ Thanks to all contributors! ❤️
+
+@micbar
+
+### 📦️ Dependencies
+
+- [full-ci] Update OPENCLOUD_COMMITID for testing [[#2628](https://github.com/opencloud-eu/web/pull/2628)]
+
 ## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-06-01
 
 ### ❤️ Thanks to all contributors! ❤️
