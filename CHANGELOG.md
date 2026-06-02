@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-02
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-02
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@micbar
+@JammingBen, @micbar
+
+### 📈 Enhancement
+
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 📦️ Dependencies
 
