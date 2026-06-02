@@ -3,8 +3,8 @@
     class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden flex flex-col justify-center items-center p-4"
   >
     <h1 class="sr-only" v-text="$gettext('Error')" />
+    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
     <oc-card
-      :logo-url="logoImg"
       :title="$gettext('Missing or invalid config')"
       body-class="text-center"
       header-class="text-center"
