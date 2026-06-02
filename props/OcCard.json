@@ -21,13 +21,6 @@
     "type": "string"
   },
   {
-    "name": "logoUrl",
-    "required": false,
-    "description": "The url of the logo to be rendered in the header of this card.",
-    "default": "''",
-    "type": "string"
-  },
-  {
     "name": "headerClass",
     "required": false,
     "description": "The classes to be applied on the card header",
