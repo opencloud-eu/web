@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @micbar
+@AlexAndBear, @JammingBen, @micbar
+
+### 🐛 Bug Fixes
+
+- fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
 
 ### 📈 Enhancement
 
