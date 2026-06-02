@@ -39,10 +39,10 @@
 import { stringify } from 'qs'
 import {
   computed,
-  markRaw,
   unref,
   nextTick,
   ref,
+  toRef,
   watch,
   onMounted,
   useTemplateRef,
@@ -74,15 +74,10 @@ import {
   useSpacesStore,
   useClientService,
   useSharesStore,
-  useModals,
-  useRouter,
-  useThemeStore,
-  useFolderLink,
-  FilePickerModal
+  useThemeStore
 } from '@opencloud-eu/web-pkg'
-import FileNameModal from './components/FileNameModal.vue'
-import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import { storeToRefs } from 'pinia'
+import { useCollaboraPostMessages } from './composables'
 
 const { space, resource, isReadOnly } = defineProps<{
   space: SpaceResource
@@ -98,16 +93,13 @@ const { showErrorMessage } = useMessages()
 const capabilityStore = useCapabilityStore()
 const configStore = useConfigStore()
 const route = useRoute()
-const router = useRouter()
 const appProviderService = useAppProviderService()
 const { makeRequest } = useRequest()
 const spacesStore = useSpacesStore()
 const sharesStore = useSharesStore()
-const { graphAuthenticated: graphClient, webdav } = useClientService()
-const { dispatchModal } = useModals()
+const { graphAuthenticated: graphClient } = useClientService()
 const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
-const { getParentFolderLink } = useFolderLink()
 
 const viewModeQuery = useRouteQuery('view_mode')
 const viewModeQueryValue = computed(() => {
@@ -261,166 +253,13 @@ const catchClickMicrosoftEdit = (event: MessageEvent) => {
   } catch {}
 }
 
-const handlePostMessagesCollabora = async (event: MessageEvent) => {
-  try {
-    const message = JSON.parse(event.data || '{}')
+const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
 
-    if (message.MessageId === 'App_LoadingStatus') {
-      postMessageToCollabora('Hide_Button', { id: 'toggledarktheme' })
-
-      if (message.Values?.Status === 'Frame_Ready') {
-        postMessageToCollabora('Host_PostmessageReady')
-      }
-      return
-    }
-
-    if (message.MessageId === 'UI_SaveAs') {
-      if (Object.hasOwn(message.Values, 'format')) {
-        dispatchModal({
-          title: $gettext('Export »%{name}« as %{format}', {
-            name: resource.name,
-            format: message.Values.format
-          }),
-          customComponent: markRaw(FileNameModal),
-          customComponentAttrs: () => ({
-            space,
-            resource,
-            fileExtension: message.Values.format,
-            callbackFn: (newFileName: string) => {
-              postMessageToCollabora('Action_SaveAs', {
-                Filename: newFileName,
-                Notify: true
-              })
-            }
-          })
-        })
-        return
-      }
-
-      dispatchModal({
-        title: $gettext('Save »%{name}« with new name', { name: resource.name }),
-        customComponent: markRaw(FileNameModal),
-        customComponentAttrs: () => ({
-          space,
-          resource,
-          callbackFn: (newFileName: string) => {
-            postMessageToCollabora('Action_SaveAs', {
-              Filename: newFileName,
-              Notify: true
-            })
-          }
-        })
-      })
-      return
-    }
-
-    if (message.MessageId === 'Action_Save_Resp') {
-      if (!message.Values?.fileName) {
-        return
-      }
-
-      // FIXME: when we move to id based propfinds we magically need a fileId for the new file. Collabora doesn't provide that.
-      const newFile = await webdav.getFileInfo(space, {
-        path:
-          resource.path.substring(0, resource.path.length - resource.name.length) +
-          message.Values.fileName,
-        fileId: undefined
-      })
-      await router.push({
-        name: unref(route).name,
-        params: {
-          ...unref(route).params,
-          driveAliasAndItem: queryItemAsString(unref(route).params.driveAliasAndItem).replace(
-            resource.name,
-            newFile.name
-          )
-        },
-        query: {
-          ...unref(route).query,
-          fileId: newFile.fileId
-        }
-      })
-      return
-    }
-
-    if (message.MessageId === 'UI_InsertGraphic') {
-      dispatchModal({
-        elementClass: 'file-picker-modal',
-        title: $gettext('Insert graphic'),
-        customComponent: markRaw(FilePickerModal),
-        hideActions: true,
-        customComponentAttrs: () => ({
-          parentFolderLink: getParentFolderLink(resource),
-          allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
-          callbackFn: async ({ resource }: { resource: Resource }) => {
-            const { downloadURL: url } = await webdav.getFileInfo(space, resource, {
-              davProperties: [DavProperty.DownloadURL]
-            })
-
-            postMessageToCollabora('Action_InsertGraphic', { url })
-          }
-        }),
-        focusTrapInitial: false
-      })
-      return
-    }
-
-    if (message.MessageId === 'UI_InsertFile') {
-      const callback = message.Values?.callback
-      const mimeTypeFilter = message.Values?.mimeTypeFilter
-
-      dispatchModal({
-        elementClass: 'file-picker-modal',
-        title:
-          callback === 'Action_CompareDocuments'
-            ? $gettext('Select document to compare')
-            : $gettext('Insert file'),
-        customComponent: markRaw(FilePickerModal),
-        hideActions: true,
-        customComponentAttrs: () => ({
-          parentFolderLink: getParentFolderLink(resource),
-          allowedFileTypes: mimeTypeFilter || [],
-          callbackFn: async ({ resource }: { resource: Resource }) => {
-            const { downloadURL: url } = await webdav.getFileInfo(space, resource, {
-              davProperties: [DavProperty.DownloadURL]
-            })
-
-            const values: Record<string, unknown> = { url }
-            if (callback === 'Action_CompareDocuments') {
-              values.filename = resource.name
-            }
-
-            postMessageToCollabora(callback, values)
-          }
-        }),
-        focusTrapInitial: false
-      })
-      return
-    }
-
-    if (message.MessageId === 'UI_PickLink') {
-      dispatchModal({
-        elementClass: 'file-picker-modal',
-        title: $gettext('Pick a file to link'),
-        customComponent: markRaw(FilePickerModal),
-        hideActions: true,
-        customComponentAttrs: () => ({
-          parentFolderLink: getParentFolderLink(resource),
-          allowedFileTypes: [],
-          callbackFn: ({ resource }: { resource: Resource }) => {
-            postMessageToCollabora('Action_InsertLink', {
-              url: resource.privateLink,
-              text: resource.name
-            })
-          }
-        }),
-        focusTrapInitial: false
-      })
-    }
-  } catch (e) {
-    console.debug('Error parsing Collabora PostMessage', e)
-  }
-}
+const { handlePostMessagesCollabora, resetMentionState } = useCollaboraPostMessages({
+  space: toRef(() => space),
+  resource: toRef(() => resource),
+  appIframeRef
+})
 
 onMounted(() => {
   if (determineOpenAsPreview(unref(appName))) {
@@ -440,23 +279,6 @@ onBeforeUnmount(() => {
   }
 })
 
-const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
-const postMessageToCollabora = (messageId: string, values?: { [key: string]: unknown }): void => {
-  if (!unref(appIframeRef)) {
-    console.error('Collabora iframe not found')
-    return
-  }
-
-  return unref(appIframeRef).contentWindow.postMessage(
-    JSON.stringify({
-      MessageId: messageId,
-      SendTime: Date.now(),
-      ...(values && { Values: values })
-    }),
-    '*'
-  )
-}
-
 watch(
   () => resource,
   async (newResource, oldResource) => {
@@ -464,6 +286,7 @@ watch(
       return
     }
 
+    resetMentionState()
     let viewMode = 'read'
 
     if (isShareSpaceResource(space)) {
