@@ -53,6 +53,9 @@ export function resolveFolderVault(
  * use this to decide whether to render an "unlock first" redirect for a
  * vault whose `resolve()` returned null (i.e. the extension owns the path
  * but currently can't produce an engine).
+ *
+ * Also the canonical "is this path inside any vault?" check — used by
+ * `markVaultStatus` to populate `Resource.isInVault`.
  */
 export function getVaultClaim(
   extensionRegistry: ExtensionRegistry,
@@ -161,5 +164,35 @@ export async function decryptResourceInPlace(
   if (r.permissions) {
     r.permissions = r.permissions.replace(DavPermission.Shareable, '')
   }
+  // The engine resolved → resource is by definition inside (or *is*) a
+  // vault. Setting the flag here covers in-vault listings; vault-root
+  // resources surfaced in a *parent* listing (where the engine isn't
+  // resolved against the parent path) get the same flag via
+  // `markVaultStatus` below.
+  r.isInVault = true
   return r
+}
+
+/**
+ * Mark resources whose path sits inside (or *is*) a registered vault by
+ * setting `Resource.isInVault = true`. Cheap path-based lookup via
+ * `getVaultClaim` — no unlock state required.
+ *
+ * Call this on any listing the UI will render so action guards (move,
+ * copy, paste, favorite, share-from-vault, …) can short-circuit on the
+ * flag instead of re-parsing each resource's path themselves. Safe to
+ * call after `decryptResourceInPlace` (idempotent).
+ */
+export function markVaultStatus(
+  extensionRegistry: ExtensionRegistry,
+  space: SpaceResource,
+  resources: Array<Resource | undefined | null>
+): void {
+  if (!space || !resources?.length) return
+  for (const r of resources) {
+    if (!r?.path) continue
+    if (getVaultClaim(extensionRegistry, space, r.path)) {
+      r.isInVault = true
+    }
+  }
 }

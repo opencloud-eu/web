@@ -94,6 +94,7 @@ import {
   decryptResourceInPlace,
   formatFileSize,
   getSharedDriveItem,
+  markVaultStatus,
   resolveFolderVault,
   streamToArrayBuffer,
   streamToBlob
@@ -314,6 +315,7 @@ const loadResourceTask = useTask(function* (signal) {
     if (vaultEngine) {
       yield* call(decryptResourceInPlace(vaultEngine, fileInfo))
     }
+    markVaultStatus(extensionRegistry, unref(space), [fileInfo])
     resource.value = fileInfo
 
     if (isShareSpaceResource(unref(space))) {
@@ -559,6 +561,7 @@ const saveFileTask = useTask(function* () {
     if (vaultEngine) {
       yield* call(decryptResourceInPlace(vaultEngine, putFileContentsResponse))
     }
+    markVaultStatus(extensionRegistry, unref(space), [putFileContentsResponse])
     serverContent.value = newContent
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)

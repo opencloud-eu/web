@@ -43,6 +43,7 @@ import { computed, onMounted, onBeforeUnmount, unref, watch } from 'vue'
 import { SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'
 import {
   decryptResourceInPlace,
+  markVaultStatus,
   resolveFolderVault,
   useService,
   useUpload,
@@ -171,6 +172,7 @@ const onUploadComplete = async (result: UploadResult) => {
 
   const existingIds = new Set(resourcesStore.resources.map((r) => r.id))
   const newResources = children.filter((child) => !existingIds.has(child.id))
+  markVaultStatus(extensionRegistry, unref(computedSpace), newResources)
   resourcesStore.upsertResources(newResources)
 }
 

@@ -11,6 +11,15 @@ import { ref, unref } from 'vue'
  *
  * The "secret" payload is opaque to web-pkg — each extension decides what to
  * stash there (a passphrase, a derived key, an OAuth token, …).
+ *
+ * Keys are `(spaceId, vaultRootPath)` rather than `(spaceId, vaultId)` by
+ * design: in the rclone-crypt PoC the vault root path is the immutable
+ * identity (the encryption salt is derived from the path, vault roots
+ * can't be moved or renamed, and the route guard naturally has only the
+ * path on cold reload). Path-based keying keeps every resolver callsite
+ * free of an additional path→id lookup. If vault-root rename ever lands,
+ * the rename handler will re-key the store on the rename event — the
+ * stored payload outlives the key it's filed under.
  */
 export const useFolderVaultStore = defineStore('folder-vault', () => {
   const secrets = ref<Map<string, unknown>>(new Map())

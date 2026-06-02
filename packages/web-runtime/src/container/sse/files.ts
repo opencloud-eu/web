@@ -3,6 +3,7 @@ import {
   decryptResourceInPlace,
   ImageDimension,
   isItemInCurrentFolder,
+  markVaultStatus,
   resolveFolderVault
 } from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
@@ -116,6 +117,7 @@ export const onSSEProcessingFinishedEvent = async ({
         if (vaultEngine) {
           await decryptResourceInPlace(vaultEngine, fetched)
         }
+        markVaultStatus(extensionRegistry, space, [fetched])
         resourcesStore.upsertResource(fetched)
       }
     })
@@ -143,6 +145,7 @@ export const onSSEProcessingFinishedEvent = async ({
   if (vaultEngine) {
     await decryptResourceInPlace(vaultEngine, updatedResource)
   }
+  markVaultStatus(extensionRegistry, space, [updatedResource])
   resourcesStore.upsertResource(updatedResource)
 
   const preview = await previewService.loadPreview({

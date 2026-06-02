@@ -13,7 +13,11 @@ import { useExtensionRegistry, useResourcesStore, useSpacesStore } from '../pini
 import { storeToRefs } from 'pinia'
 import { useRouteQuery } from '../router'
 import { useSearch } from '../search'
-import { decryptResourceInPlace, resolveFolderVault } from '../../helpers/folderVault'
+import {
+  decryptResourceInPlace,
+  markVaultStatus,
+  resolveFolderVault
+} from '../../helpers/folderVault'
 
 interface AppFolderHandlingOptions {
   currentRoute: Ref<RouteLocationNormalizedLoaded>
@@ -111,6 +115,7 @@ export function useAppFolderHandling({
         if (vaultEngine) {
           await decryptResourceInPlace(vaultEngine, resource)
         }
+        markVaultStatus(extensionRegistry, space, [resource])
         resourcesStore.initResourceList({ currentFolder: resource, resources: [resource] })
         isFolderLoading.value = false
         return
@@ -129,6 +134,7 @@ export function useAppFolderHandling({
           await decryptResourceInPlace(vaultEngine, child)
         }
       }
+      markVaultStatus(extensionRegistry, space, [resource, ...children])
 
       if (isShareSpaceResource(space)) {
         children.forEach((r) => (r.remoteItemId = space.id))

@@ -6,6 +6,7 @@ import { useGettext } from 'vue3-gettext'
 import {
   decryptResourceInPlace,
   FileAction,
+  markVaultStatus,
   resolveFileNameDuplicate,
   resolveFolderVault,
   useClientService,
@@ -45,6 +46,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       if (vaultEngine) {
         await decryptResourceInPlace(vaultEngine, resource)
       }
+      markVaultStatus(extensionRegistry, unref(space), [resource])
 
       // FIXME: move to buildResource as soon as it has space context
       if (isShareSpaceResource(unref(space))) {

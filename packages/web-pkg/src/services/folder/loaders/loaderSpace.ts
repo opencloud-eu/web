@@ -16,7 +16,11 @@ import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
-import { decryptResourceInPlace, resolveFolderVault } from '../../../helpers/folderVault'
+import {
+  decryptResourceInPlace,
+  markVaultStatus,
+  resolveFolderVault
+} from '../../../helpers/folderVault'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 
 export class FolderLoaderSpace implements FolderLoader {
@@ -89,6 +93,11 @@ export class FolderLoaderSpace implements FolderLoader {
             yield* call(decryptResourceInPlace(vaultEngine, child))
           }
         }
+        // Mark vault-root resources surfaced in a parent listing too (no
+        // engine resolves against the parent path, so decryptResourceInPlace
+        // wouldn't fire on them). isInVault stays the canonical guard for
+        // action visibility downstream.
+        markVaultStatus(extensionRegistry, space, [currentFolder, ...resources])
 
         // if current folder has no id (= singe file public link) we must not correct the route
         if (currentFolder.id) {

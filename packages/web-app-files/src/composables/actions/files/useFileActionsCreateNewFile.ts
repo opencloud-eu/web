@@ -9,6 +9,7 @@ import {
   decryptResourceInPlace,
   FileAction,
   FileActionOptions,
+  markVaultStatus,
   resolveFileNameDuplicate,
   resolveFolderVault,
   streamToArrayBuffer,
@@ -145,6 +146,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
           if (vaultEngine && resource) {
             await decryptResourceInPlace(vaultEngine, resource)
           }
+          markVaultStatus(extensionRegistry, unref(space), [resource])
 
           resourcesStore.upsertResource(resource)
 
