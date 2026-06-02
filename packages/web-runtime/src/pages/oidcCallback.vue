@@ -1,11 +1,7 @@
 <template>
   <div class="h-screen flex flex-col justify-center items-center">
     <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
-    <oc-card
-      :title="cardTitle"
-      body-class="w-sm text-center"
-      class="rounded-lg"
-    >
+    <oc-card :title="cardTitle" body-class="w-sm text-center" class="rounded-lg">
       <p v-text="cardHint" />
       <template #footer>
         <p v-text="footerSlogan" />
