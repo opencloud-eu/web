@@ -9,12 +9,7 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { useInterceptModifierClick } from '../keyboardActions'
-import {
-  useExtensionRegistry,
-  useResourcesStore,
-  useSideBar,
-  useUserStore
-} from '../piniaStores'
+import { useExtensionRegistry, useResourcesStore, useSideBar, useUserStore } from '../piniaStores'
 import { IconFillType } from '../../helpers'
 import { resourceIndicatorExtensionPoint } from '../../extensionPoints'
 

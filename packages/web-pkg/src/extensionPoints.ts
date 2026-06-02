@@ -1,8 +1,4 @@
-import {
-  CustomComponentExtension,
-  ExtensionPoint,
-  ResourceIndicatorExtension
-} from './composables'
+import { CustomComponentExtension, ExtensionPoint, ResourceIndicatorExtension } from './composables'
 import { computed } from 'vue'
 
 export const fileSideBarSpaceDetailsTableExtensionPoint: ExtensionPoint<CustomComponentExtension> =

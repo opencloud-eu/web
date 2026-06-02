@@ -5,18 +5,7 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { createEngine } from './crypto/engine'
-
-// Identify the vault root from a clear-text path: the first segment ending
-// in `.vault` marks the root. Anything outside such a segment is not a
-// vault from this plugin's point of view.
-function findVaultRoot(path: string): string | null {
-  const segments = path.split('/').filter(Boolean)
-  const idx = segments.findIndex((s) => s.endsWith('.vault'))
-  if (idx === -1) {
-    return null
-  }
-  return '/' + segments.slice(0, idx + 1).join('/')
-}
+import { findVaultRoot } from './vaultPath'
 
 function isSupportedSpace(space: SpaceResource): boolean {
   // PoC: only personal and project spaces. Public links, shares, trash etc.
@@ -43,7 +32,7 @@ export function claimsVaultPath(space: SpaceResource, path: string): FolderVault
     unlockRoute: {
       name: 'rclone-crypt-unlock',
       query: {
-        spaceId: space.id as string,
+        spaceId: space.id,
         vaultRoot
       }
     }
@@ -65,9 +54,9 @@ export function resolveVault(space: SpaceResource, path: string): FolderVaultEng
     return null
   }
   const vaultStore = useFolderVaultStore()
-  const password = vaultStore.getSecret<string>(space.id as string, vaultRoot)
+  const password = vaultStore.getSecret<string>(space.id, vaultRoot)
   if (!password) {
     return null
   }
-  return createEngine(space.id as string, vaultRoot, password)
+  return createEngine(space.id, vaultRoot, password)
 }

@@ -47,8 +47,8 @@ export const setupVaultUnlockGuard = (router: Router) => {
       })
     }
 
-    const space = spacesStore.spaces.find((s) =>
-      driveAliasAndItem === s.driveAlias || driveAliasAndItem.startsWith(`${s.driveAlias}/`)
+    const space = spacesStore.spaces.find(
+      (s) => driveAliasAndItem === s.driveAlias || driveAliasAndItem.startsWith(`${s.driveAlias}/`)
     )
     if (!space) return true
     const path = '/' + driveAliasAndItem.slice(space.driveAlias.length).replace(/^\/+/, '')

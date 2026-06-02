@@ -1,13 +1,9 @@
 import { useGettext } from 'vue3-gettext'
 import { ref } from 'vue'
-import {
-  ApplicationInformation,
-  defineWebApplication,
-  Extension
-} from '@opencloud-eu/web-pkg'
+import { ApplicationInformation, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
 import translations from '../l10n/translations.json'
 import { folderVaultExtension } from './extensions/folderVault'
-import { resourceIndicatorExtension } from './extensions/resourceIndicator'
+import { useResourceIndicatorExtension } from './extensions/resourceIndicator'
 import {
   lockVaultActionExtension,
   unlockVaultActionExtension,
@@ -45,7 +41,7 @@ export default defineWebApplication({
     const unlockVaultAction = useUnlockVaultAction()
     const extensions = ref<Extension[]>([
       folderVaultExtension,
-      resourceIndicatorExtension,
+      useResourceIndicatorExtension(),
       lockVaultActionExtension(lockVaultAction),
       unlockVaultActionExtension(unlockVaultAction)
     ])

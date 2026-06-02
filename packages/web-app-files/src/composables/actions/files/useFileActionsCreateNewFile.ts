@@ -63,7 +63,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
         router.push({
           name: 'files-spaces-generic',
           params: { driveAliasAndItem },
-          query: resource.fileId ? { fileId: resource.fileId as string } : undefined
+          query: resource.fileId ? { fileId: resource.fileId } : undefined
         })
         return
       }

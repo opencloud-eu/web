@@ -389,11 +389,7 @@ const loadFileTask = useTask(function* (signal) {
       // (encrypted) path, run it through the engine's decrypt stream, and
       // hand the embedded app whatever response type it expected. The webdav
       // primitives stay completely unaware of vaults.
-      const vaultEngine = resolveFolderVault(
-        extensionRegistry,
-        unref(space),
-        unref(resource)?.path
-      )
+      const vaultEngine = resolveFolderVault(extensionRegistry, unref(space), unref(resource)?.path)
       const originalResponseType = fileContentOptions?.responseType
       const fetchOptions = vaultEngine
         ? { ...fileContentOptions, responseType: 'arraybuffer' as const }
@@ -419,9 +415,7 @@ const loadFileTask = useTask(function* (signal) {
         // and editors want string/Blob/ArrayBuffer. End-to-end streaming
         // hinges on exposing the fetch response.body upstream; landing that
         // later won't require changes here.
-        const plaintextStream = vaultEngine.decryptContent(
-          new Blob([body as ArrayBuffer]).stream()
-        )
+        const plaintextStream = vaultEngine.decryptContent(new Blob([body as ArrayBuffer]).stream())
         const plaintextBuffer: ArrayBuffer = yield* call(streamToArrayBuffer(plaintextStream))
         const plaintext = new Uint8Array(plaintextBuffer)
 
@@ -466,9 +460,7 @@ const loadFileTask = useTask(function* (signal) {
         // URL.createObjectURL — no intermediate Uint8Array in this path.
         const blob: Blob = yield* call(
           streamToBlob(
-            urlVaultEngine.decryptContent(
-              new Blob([cipherResponse.body as ArrayBuffer]).stream()
-            ),
+            urlVaultEngine.decryptContent(new Blob([cipherResponse.body as ArrayBuffer]).stream()),
             unref(resource)?.mimeType || 'application/octet-stream'
           )
         )
@@ -544,11 +536,7 @@ const saveFileTask = useTask(function* () {
     // we have in memory has to be encrypted, the put has to target the
     // encrypted server path, and the response describing the freshly stored
     // blob has to be decrypted back to cleartext before it enters the store.
-    const vaultEngine = resolveFolderVault(
-      extensionRegistry,
-      unref(space),
-      unref(resource)?.path
-    )
+    const vaultEngine = resolveFolderVault(extensionRegistry, unref(space), unref(resource)?.path)
 
     let putCtx: FileContext | typeof currentFileContext = currentFileContext
     let putContent: string | ArrayBuffer = newContent as string
@@ -559,13 +547,8 @@ const saveFileTask = useTask(function* () {
       // regardless of whether the editor handed us a string, ArrayBuffer or
       // Uint8Array. The engine output goes back through Response#arrayBuffer
       // to land in the shape webdav.putFileContents wants.
-      const plainBlob =
-        newContent instanceof Blob
-          ? newContent
-          : new Blob([newContent as BlobPart])
-      putContent = yield* call(
-        streamToArrayBuffer(vaultEngine.encryptContent(plainBlob.stream()))
-      )
+      const plainBlob = newContent instanceof Blob ? newContent : new Blob([newContent as BlobPart])
+      putContent = yield* call(streamToArrayBuffer(vaultEngine.encryptContent(plainBlob.stream())))
       putCtx = { ...baseCtx, item: yield* call(vaultEngine.encryptPath(unref(baseCtx.item))) }
     }
 

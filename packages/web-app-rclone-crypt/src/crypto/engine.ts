@@ -11,11 +11,7 @@ function cacheKey(spaceId: string, vaultRoot: string, password: string): string 
   return `${spaceId}::${vaultRoot}::${password}`
 }
 
-async function getCipher(
-  spaceId: string,
-  vaultRoot: string,
-  password: string
-): Promise<Cipher> {
+async function getCipher(spaceId: string, vaultRoot: string, password: string): Promise<Cipher> {
   const key = cacheKey(spaceId, vaultRoot, password)
   let cipherPromise = cipherCache.get(key)
   if (!cipherPromise) {

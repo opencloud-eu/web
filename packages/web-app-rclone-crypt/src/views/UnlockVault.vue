@@ -36,12 +36,7 @@
           class="mb-3 [&_.oc-text-input-message]:justify-center"
         />
         <div class="flex justify-center gap-2">
-          <oc-button
-            id="vault-unlock-cancel"
-            appearance="outline"
-            type="button"
-            @click="onCancel"
-          >
+          <oc-button id="vault-unlock-cancel" appearance="outline" type="button" @click="onCancel">
             <span v-text="$gettext('Cancel')" />
           </oc-button>
           <oc-button
@@ -111,9 +106,7 @@ const cardTitle = computed(() =>
 )
 
 const passphraseLabel = computed(() =>
-  unref(isEmpty) === true
-    ? $gettext('Choose a passphrase')
-    : $gettext('Vault passphrase')
+  unref(isEmpty) === true ? $gettext('Choose a passphrase') : $gettext('Vault passphrase')
 )
 
 const submitLabel = computed(() =>
@@ -142,11 +135,7 @@ const onSubmit = async () => {
     // Build a probe engine with the supplied passphrase and ask it to
     // decrypt our sample. Empty vault → trust the passphrase (nothing to
     // disagree with). Otherwise success here means "this is the right key".
-    const probeEngine = createEngine(
-      unref(spaceId),
-      unref(vaultRoot),
-      unref(password)
-    )
+    const probeEngine = createEngine(unref(spaceId), unref(vaultRoot), unref(password))
     const keyOk = sample ? await probeEngine.verifyKey(sample) : true
     if (!keyOk) {
       errorMessage.value = $gettext('Incorrect passphrase.')
@@ -167,7 +156,7 @@ const onSubmit = async () => {
 }
 
 onMounted(async () => {
-  ;(unref(passwordInput) as any)?.focus?.()
+  unref(passwordInput)?.focus?.()
   // Probe the vault root listing once to decide if we should switch to
   // "empty vault, any passphrase wins" wording. We don't gate the submit
   // button on this — onSubmit re-checks against the live listing.

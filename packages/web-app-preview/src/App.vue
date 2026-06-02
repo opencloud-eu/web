@@ -282,8 +282,7 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
     // returns a blob URL with cleartext bytes. We only opt out on an
     // explicit false; when hasPreview is missing we keep the legacy "try
     // preview service" behaviour.
-    const useFullImage =
-      mediaFile.isImage && mediaFile.resource.hasPreview?.() === false
+    const useFullImage = mediaFile.isImage && mediaFile.resource.hasPreview?.() === false
 
     if (mediaFile.isImage && !useFullImage) {
       mediaFile.url = await previewService.loadPreview(

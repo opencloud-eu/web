@@ -715,10 +715,10 @@ importers:
         version: link:../web-pkg
       vue:
         specifier: ^3.5.0
-        version: 3.5.34(typescript@6.0.3)
+        version: 3.5.35(typescript@6.0.3)
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.34)(vue@3.5.34(typescript@6.0.3))
+        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.35)(vue@3.5.35(typescript@6.0.3))
 
   packages/web-app-search:
     dependencies:

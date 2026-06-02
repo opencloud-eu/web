@@ -30,8 +30,8 @@ export const useLockVaultAction = (): Ref<FileAction> => {
     category: 'tertiary',
     handler: ({ resources }: FileActionOptions) => {
       const resource = resources?.[0]
-      if (!resource || !isVaultRoot(resource)) return
-      const spaceId = resource.storageId as string
+      if (!resource || !isVaultRoot(resource) || !resource.storageId) return
+      const spaceId = resource.storageId
       const vaultRoot = resource.path
       vaultStore.clearSecret(spaceId, vaultRoot)
       showMessage({
@@ -41,20 +41,17 @@ export const useLockVaultAction = (): Ref<FileAction> => {
       // bounce them to the parent so they aren't staring at encrypted
       // ciphertext names. From outside (clicked on the vault entry in the
       // parent listing) the current route is fine — no redirect needed.
-      const currentPath = (unref(router.currentRoute).params?.driveAliasAndItem as
-        | string
-        | undefined) || ''
+      const currentPath =
+        (unref(router.currentRoute).params?.driveAliasAndItem as string | undefined) || ''
       if (currentPath.includes(vaultRoot.replace(/^\//, ''))) {
         const parent = vaultRoot.replace(/\/[^/]+$/, '') || '/'
-        router.push(
-          `/files/spaces/${currentPath.split('/')[0]}${parent === '/' ? '' : parent}`
-        )
+        router.push(`/files/spaces/${currentPath.split('/')[0]}${parent === '/' ? '' : parent}`)
       }
     },
     isVisible: ({ resources }: FileActionOptions) => {
       const resource = resources?.[0]
-      if (!resource || !isVaultRoot(resource)) return false
-      return vaultStore.isUnlocked(resource.storageId as string, resource.path)
+      if (!resource || !isVaultRoot(resource) || !resource.storageId) return false
+      return vaultStore.isUnlocked(resource.storageId, resource.path)
     },
     class: 'oc-files-actions-lock-vault'
   }))
@@ -86,7 +83,7 @@ export const useUnlockVaultAction = (): Ref<FileAction> => {
     category: 'tertiary',
     handler: ({ resources }: FileActionOptions) => {
       const resource = resources?.[0]
-      if (!resource || !isVaultRoot(resource)) return
+      if (!resource || !isVaultRoot(resource) || !resource.storageId) return
       // Send the user through the unlock screen but bring them back to the
       // current (parent) location, not into the vault. That keeps the
       // surrounding listing in view — the vault entry just flips from locked
@@ -95,7 +92,7 @@ export const useUnlockVaultAction = (): Ref<FileAction> => {
       router.push({
         name: 'rclone-crypt-unlock',
         query: {
-          spaceId: resource.storageId as string,
+          spaceId: resource.storageId,
           vaultRoot: resource.path,
           redirectUrl: back
         }
@@ -103,8 +100,8 @@ export const useUnlockVaultAction = (): Ref<FileAction> => {
     },
     isVisible: ({ resources }: FileActionOptions) => {
       const resource = resources?.[0]
-      if (!resource || !isVaultRoot(resource)) return false
-      return !vaultStore.isUnlocked(resource.storageId as string, resource.path)
+      if (!resource || !isVaultRoot(resource) || !resource.storageId) return false
+      return !vaultStore.isUnlocked(resource.storageId, resource.path)
     },
     class: 'oc-files-actions-unlock-vault'
   }))

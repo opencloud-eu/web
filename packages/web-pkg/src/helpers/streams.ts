@@ -15,10 +15,7 @@ export function streamToArrayBuffer(stream: ReadableStream<Uint8Array>): Promise
   return new Response(stream).arrayBuffer()
 }
 
-export function streamToBlob(
-  stream: ReadableStream<Uint8Array>,
-  type?: string
-): Promise<Blob> {
+export function streamToBlob(stream: ReadableStream<Uint8Array>, type?: string): Promise<Blob> {
   if (!type) {
     return new Response(stream).blob()
   }

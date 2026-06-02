@@ -228,10 +228,7 @@ When(
       // Wait for the deepest cleartext leaf to surface in the listing so we
       // know the directoryTree creation + content uploads ran to completion.
       const leaf = expectedFiles[0].split('/').filter(Boolean)[0]
-      await page
-        .locator(`[data-test-resource-name="${leaf}"]`)
-        .first()
-        .waitFor({ timeout: 15_000 })
+      await page.locator(`[data-test-resource-name="${leaf}"]`).first().waitFor({ timeout: 15_000 })
     } finally {
       rmSync(workdir, { recursive: true, force: true })
     }
@@ -240,12 +237,7 @@ When(
 
 When(
   '{string} uploads a file named {string} with content {string} via the upload button',
-  async function (
-    this: World,
-    stepUser: string,
-    fileName: string,
-    content: string
-  ): Promise<void> {
+  async function (this: World, stepUser: string, fileName: string, content: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const workdir = mkdtempSync(join(tmpdir(), 'vault-upload-'))
     const localFile = join(workdir, fileName)
@@ -261,9 +253,7 @@ When(
       await page.locator('.oc-app-floating-action-button').click()
       await page.locator('#files-file-upload-input').setInputFiles(localFile)
       await respPromise
-      await page
-        .locator(`[data-test-resource-name="${fileName}"]`)
-        .waitFor({ timeout: 10_000 })
+      await page.locator(`[data-test-resource-name="${fileName}"]`).waitFor({ timeout: 10_000 })
     } finally {
       rmSync(workdir, { recursive: true, force: true })
     }
@@ -293,4 +283,3 @@ When(
     }
   }
 )
-

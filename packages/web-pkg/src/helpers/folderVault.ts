@@ -8,10 +8,25 @@ import {
   FolderVaultExtension
 } from '../composables/piniaStores/extensionRegistry'
 
-// FIXME(poc-vault): this lookup currently lives next to the loaders and the
-// AppWrapper. Once we lift vault-aware translation onto a higher layer (e.g.
-// a webdav/client decorator or a folderService decorator), callers stop
-// needing to resolve the engine themselves.
+/**
+ * Walks the registered folder-vault extensions and returns the first engine
+ * that can decrypt the given (space, path) — i.e. a vault that is currently
+ * **unlocked** in this session. Returns `null` in two distinct situations
+ * that callers should usually treat the same:
+ *
+ *   - no extension owns the path (it isn't inside a vault at all), or
+ *   - an extension owns the path but the vault is still locked (no secret
+ *     in the store yet).
+ *
+ * Use `getVaultClaim` to disambiguate when the difference matters — e.g.
+ * the route guard needs the unlock route, while everyone else can safely
+ * treat both cases as "operate in cleartext".
+ *
+ * FIXME(poc-vault): this lookup currently lives next to the loaders and the
+ * AppWrapper. Once we lift vault-aware translation onto a higher layer (e.g.
+ * a webdav/client decorator or a folderService decorator), callers stop
+ * needing to resolve the engine themselves.
+ */
 export function resolveFolderVault(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,

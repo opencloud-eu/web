@@ -38,11 +38,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       // cleartext folder name has to be encrypted before hitting webdav, and
       // the returned resource decrypted before it ends up in the store.
       const cleartextParentPath = unref(currentFolder).path
-      const vaultEngine = resolveFolderVault(
-        extensionRegistry,
-        unref(space),
-        cleartextParentPath
-      )
+      const vaultEngine = resolveFolderVault(extensionRegistry, unref(space), cleartextParentPath)
       const cleartextPath = join(cleartextParentPath, folderName)
       const path = vaultEngine ? await vaultEngine.encryptPath(cleartextPath) : cleartextPath
       const resource = await clientService.webdav.createFolder(unref(space), { path })
