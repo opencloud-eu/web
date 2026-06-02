@@ -2,13 +2,6 @@
   <component :is="tag" class="oc-card">
     <div v-if="hasSlotHeader" class="oc-card-header" :class="headerClass">
       <slot name="header">
-        <img
-          v-if="logoUrl"
-          :src="logoUrl"
-          alt=""
-          :aria-hidden="true"
-          class="max-w-48 max-h-48 absolute -translate-y-16"
-        />
         <component :is="titleTag" v-if="title" class="mt-0">
           {{ title }}
         </component>
@@ -41,11 +34,6 @@ export interface Props {
    * @default 'h2'
    */
   titleTag?: string
-  /**
-   * @docs The url of the logo to be rendered in the header of this card.
-   * @default ''
-   */
-  logoUrl?: string
   /**
    * @docs The classes to be applied on the card header
    * @default ''
@@ -82,7 +70,6 @@ const {
   tag = 'div',
   title,
   titleTag = 'h2',
-  logoUrl = '',
   headerClass = '',
   bodyClass = '',
   footerClass = ''
@@ -91,7 +78,7 @@ const {
 const slots = defineSlots<Slots>()
 
 const hasSlotHeader = computed(() => {
-  return Object.hasOwn(slots, 'header') || !!unref(title) || !!unref(logoUrl)
+  return Object.hasOwn(slots, 'header') || !!unref(title)
 })
 const hasSlotFooter = computed(() => {
   return Object.hasOwn(slots, 'footer')
