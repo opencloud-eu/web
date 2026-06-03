@@ -118,7 +118,7 @@ services:
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
       - ./dev/docker/opencloud-ca:/var/lib/opencloud/proxy
       - ./dev/docker/opencloud.storage.ocmproviders.json:/etc/opencloud/ocmproviders.json
-      - ./dev/docker/opencloud/idm:/etc/opencloud/idm:ro
+      - ./dev/docker/opencloud/idm:/etc/opencloud/idm
       - ./dev/docker/apps:/web/apps
       - ./dist:/web/dist
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
