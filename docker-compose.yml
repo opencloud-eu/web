@@ -37,6 +37,8 @@ x-opencloud-server: &opencloud-service
     # IDP
     IDP_LDAP_BIND_PASSWORD: '${IDP_LDAP_BIND_PASSWORD:-some-ldap-idp-password}'
     IDM_LDAPS_ADDR: 0.0.0.0:9235
+    IDM_LDAPS_CERT: /etc/opencloud/idm/ldap.crt
+    IDM_LDAPS_KEY: /etc/opencloud/idm/ldap.key
 
     # STORAGE
     STORAGE_USERS_DRIVER: '${STORAGE_USERS_DRIVER:-posix}'
@@ -116,6 +118,7 @@ services:
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
       - ./dev/docker/opencloud-ca:/var/lib/opencloud/proxy
       - ./dev/docker/opencloud.storage.ocmproviders.json:/etc/opencloud/ocmproviders.json
+      - ./dev/docker/opencloud/idm:/etc/opencloud/idm:ro
       - ./dev/docker/apps:/web/apps
       - ./dist:/web/dist
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
