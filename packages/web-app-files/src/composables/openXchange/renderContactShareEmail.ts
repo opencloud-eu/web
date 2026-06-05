@@ -1,6 +1,6 @@
 type GettextFn = (msgid: string, parameters?: Record<string, string>) => string
 
-export interface GuestShareEmailParams {
+export interface ContactShareEmailParams {
   contactName: string
   resourceName: string
   linkUrl: string
@@ -15,19 +15,19 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
-export const getGuestShareEmailSubject = (resourceName: string, $gettext: GettextFn): string =>
+export const getContactShareEmailSubject = (resourceName: string, $gettext: GettextFn): string =>
   $gettext('«%{name}» was shared with you', { name: resourceName })
 
 /**
- * Builds the subject and HTML body for the email sent to an Open-Xchange guest
+ * Builds the subject and HTML body for the email sent to an address book
  * contact. The layout and footer mirror the OpenCloud backend notification
  * email templates (services/notifications/pkg/email/templates).
  */
-export const renderGuestShareEmail = (
-  { contactName, resourceName, linkUrl, password }: GuestShareEmailParams,
+export const renderContactShareEmail = (
+  { contactName, resourceName, linkUrl, password }: ContactShareEmailParams,
   $gettext: GettextFn
 ): { subject: string; html: string } => {
-  const subject = getGuestShareEmailSubject(resourceName, $gettext)
+  const subject = getContactShareEmailSubject(resourceName, $gettext)
 
   const greeting = $gettext('Dear %{name},', { name: contactName })
   const body = $gettext(

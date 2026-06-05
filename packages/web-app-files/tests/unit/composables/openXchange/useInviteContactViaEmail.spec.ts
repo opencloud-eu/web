@@ -7,32 +7,32 @@ import {
 } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useSharesStore } from '@opencloud-eu/web-pkg'
-import { useInviteGuestViaEmail } from '../../../../src/composables/openXchange/useInviteGuestViaEmail'
+import { useInviteContactViaEmail } from '../../../../src/composables/openXchange/useInviteContactViaEmail'
 
-const guest = () =>
+const contact = () =>
   mock<CollaboratorAutoCompleteItem>({
-    id: 'guest@example.com',
-    mail: 'guest@example.com',
-    displayName: 'Guest'
+    id: 'contact@example.com',
+    mail: 'contact@example.com',
+    displayName: 'Contact'
   })
 
-describe('useInviteGuestViaEmail', () => {
-  it('creates a public link named after the guest email and emails it (no password when not enforced)', async () => {
+describe('useInviteContactViaEmail', () => {
+  it('creates a public link named after the contact email and emails it (no password when not enforced)', async () => {
     const { instance, mocks, addLink } = getWrapper()
 
-    await instance.inviteGuest({
+    await instance.inviteContact({
       space: mock<SpaceResource>(),
       resource: mock<Resource>({ name: 'Report.pdf' }),
-      guest: guest()
+      contact: contact()
     })
 
     const options = vi.mocked(addLink).mock.calls[0][0].options
-    expect(options.displayName).toBe('guest@example.com')
+    expect(options.displayName).toBe('contact@example.com')
     expect(options.password).toBeUndefined()
 
     expect(mocks.$clientService.ox.sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
-        to: { name: 'Guest', email: 'guest@example.com' },
+        to: { name: 'Contact', email: 'contact@example.com' },
         subject: '«Report.pdf» was shared with you'
       })
     )
@@ -43,10 +43,10 @@ describe('useInviteGuestViaEmail', () => {
     const { instance, mocks, addLink } = getWrapper({ enforcePassword: true })
     mocks.$passwordPolicyService.generatePassword.mockReturnValue('gen-pw')
 
-    await instance.inviteGuest({
+    await instance.inviteContact({
       space: mock<SpaceResource>(),
       resource: mock<Resource>({ name: 'Report.pdf' }),
-      guest: guest()
+      contact: contact()
     })
 
     const options = vi.mocked(addLink).mock.calls[0][0].options
@@ -58,7 +58,7 @@ describe('useInviteGuestViaEmail', () => {
 
 function getWrapper({ enforcePassword = false }: { enforcePassword?: boolean } = {}) {
   const mocks = defaultComponentMocks()
-  let instance: ReturnType<typeof useInviteGuestViaEmail>
+  let instance: ReturnType<typeof useInviteContactViaEmail>
   let addLink: ReturnType<typeof useSharesStore>['addLink']
 
   const wrapper = getComposableWrapper(
@@ -68,7 +68,7 @@ function getWrapper({ enforcePassword = false }: { enforcePassword?: boolean } =
       vi.mocked(addLink).mockResolvedValue(
         mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
       )
-      instance = useInviteGuestViaEmail()
+      instance = useInviteContactViaEmail()
     },
     {
       mocks,

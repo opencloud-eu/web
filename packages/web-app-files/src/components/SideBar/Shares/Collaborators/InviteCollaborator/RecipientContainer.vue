@@ -92,6 +92,12 @@ export default defineComponent({
             label: this.$gettext('Guest user')
           }
 
+        case ShareTypes.contact.value:
+          return {
+            name: ShareTypes.contact.icon,
+            label: this.$gettext('Contact')
+          }
+
         case ShareTypes.remote.value:
           return {
             name: ShareTypes.remote.icon,

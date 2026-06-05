@@ -12,7 +12,7 @@ describe('useOpenXchangeContacts', () => {
     expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
   })
 
-  it('maps contacts to guest share recipients when enabled', async () => {
+  it('maps contacts to contact share recipients when enabled', async () => {
     const contacts: Contact[] = [
       { id: '1', displayName: 'Jane Doe', email: 'jane@example.com' },
       { id: '2', displayName: '', email: 'john@example.com' }
@@ -26,13 +26,13 @@ describe('useOpenXchangeContacts', () => {
         id: 'jane@example.com',
         displayName: 'Jane Doe',
         mail: 'jane@example.com',
-        shareType: ShareTypes.guest.value
+        shareType: ShareTypes.contact.value
       },
       {
         id: 'john@example.com',
         displayName: 'john@example.com',
         mail: 'john@example.com',
-        shareType: ShareTypes.guest.value
+        shareType: ShareTypes.contact.value
       }
     ])
   })

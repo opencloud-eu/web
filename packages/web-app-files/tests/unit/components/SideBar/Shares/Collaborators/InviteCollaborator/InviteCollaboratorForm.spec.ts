@@ -122,7 +122,7 @@ describe('InviteCollaboratorForm', () => {
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
-    it('merges Open-Xchange contacts as guest recipients when the capability is enabled', async () => {
+    it('merges Open-Xchange contacts as contact recipients when the capability is enabled', async () => {
       const { wrapper } = getWrapper({
         users: [{ id: '2' } as User],
         openXchange: true,
@@ -131,14 +131,14 @@ describe('InviteCollaboratorForm', () => {
       await wrapper.vm.fetchRecipientsTask.last
 
       expect(wrapper.vm.autocompleteResults.length).toBe(2)
-      const guest = wrapper.vm.autocompleteResults.find(
-        (r) => r.shareType === ShareTypes.guest.value
+      const contact = wrapper.vm.autocompleteResults.find(
+        (r) => r.shareType === ShareTypes.contact.value
       )
-      expect(guest?.mail).toBe('jane@example.com')
+      expect(contact?.mail).toBe('jane@example.com')
     })
   })
   describe('share action', () => {
-    it('creates a public link and emails the guest for guest recipients', async () => {
+    it('creates a public link and emails the contact for address book contact recipients', async () => {
       const { wrapper, mocks } = getWrapper()
       const { addLink, addShare } = useSharesStore()
       vi.mocked(addLink).mockResolvedValue(
@@ -148,10 +148,10 @@ describe('InviteCollaboratorForm', () => {
 
       wrapper.vm.selectedCollaborators = [
         mock<CollaboratorAutoCompleteItem>({
-          id: 'guest@example.com',
-          mail: 'guest@example.com',
-          displayName: 'Guest',
-          shareType: ShareTypes.guest.value
+          id: 'contact@example.com',
+          mail: 'contact@example.com',
+          displayName: 'Contact',
+          shareType: ShareTypes.contact.value
         })
       ]
       await wrapper.vm.$nextTick()
@@ -159,11 +159,11 @@ describe('InviteCollaboratorForm', () => {
 
       expect(addLink).toHaveBeenCalledWith(
         expect.objectContaining({
-          options: expect.objectContaining({ displayName: 'guest@example.com' })
+          options: expect.objectContaining({ displayName: 'contact@example.com' })
         })
       )
       expect(mocks.$clientService.ox.sendMail).toHaveBeenCalledWith(
-        expect.objectContaining({ to: { name: 'Guest', email: 'guest@example.com' } })
+        expect.objectContaining({ to: { name: 'Contact', email: 'contact@example.com' } })
       )
       expect(addShare).not.toHaveBeenCalled()
     })

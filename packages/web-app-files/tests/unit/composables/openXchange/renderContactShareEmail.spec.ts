@@ -1,10 +1,10 @@
-import { renderGuestShareEmail } from '../../../../src/composables/openXchange/renderGuestShareEmail'
+import { renderContactShareEmail } from '../../../../src/composables/openXchange/renderContactShareEmail'
 
 // minimal $gettext stub that interpolates %{placeholders}
 const $gettext = (msgid: string, params: Record<string, string> = {}) =>
   msgid.replace(/%\{(\w+)\}/g, (_, key) => params[key] ?? '')
 
-describe('renderGuestShareEmail', () => {
+describe('renderContactShareEmail', () => {
   const base = {
     contactName: 'Jane Doe',
     resourceName: 'Report.pdf',
@@ -12,12 +12,12 @@ describe('renderGuestShareEmail', () => {
   }
 
   it('builds the subject from the resource name', () => {
-    const { subject } = renderGuestShareEmail(base, $gettext)
+    const { subject } = renderContactShareEmail(base, $gettext)
     expect(subject).toBe('«Report.pdf» was shared with you')
   })
 
   it('includes greeting, body, call-to-action link and the OpenCloud footer', () => {
-    const { html } = renderGuestShareEmail(base, $gettext)
+    const { html } = renderContactShareEmail(base, $gettext)
     expect(html).toContain('Dear Jane Doe,')
     expect(html).toContain('«Report.pdf» has been shared with you')
     expect(html).toContain('<a href="https://cloud.example.com/s/abc123">Open «Report.pdf»</a>')
@@ -26,17 +26,17 @@ describe('renderGuestShareEmail', () => {
   })
 
   it('omits the password line when no password is given', () => {
-    const { html } = renderGuestShareEmail(base, $gettext)
+    const { html } = renderContactShareEmail(base, $gettext)
     expect(html).not.toContain('protected by the following password')
   })
 
   it('includes the password line when a password is given', () => {
-    const { html } = renderGuestShareEmail({ ...base, password: 'S3cr3t!' }, $gettext)
+    const { html } = renderContactShareEmail({ ...base, password: 'S3cr3t!' }, $gettext)
     expect(html).toContain('The link is protected by the following password: S3cr3t!')
   })
 
   it('escapes html in interpolated values', () => {
-    const { html } = renderGuestShareEmail(
+    const { html } = renderContactShareEmail(
       { ...base, contactName: '<b>x</b>', resourceName: 'a&b<c>' },
       $gettext
     )
