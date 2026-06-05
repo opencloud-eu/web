@@ -11,8 +11,10 @@ import { useSharesStore } from '@opencloud-eu/web-pkg'
 import {
   CollaboratorAutoCompleteItem,
   CollaboratorShare,
-  ShareRole
+  ShareRole,
+  ShareTypes
 } from '@opencloud-eu/web-client'
+import { Contact } from '@opencloud-eu/web-client/ox'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
@@ -113,6 +115,26 @@ describe('InviteCollaboratorForm', () => {
 
       expect(wrapper.vm.autocompleteResults.length).toBe(1)
     })
+    it('does not query Open-Xchange when the capability is disabled', async () => {
+      const { wrapper, mocks } = getWrapper({ users: [{ id: '2' } as User] })
+      await wrapper.vm.fetchRecipientsTask.last
+
+      expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
+    })
+    it('merges Open-Xchange contacts as guest recipients when the capability is enabled', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        openXchange: true,
+        openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }]
+      })
+      await wrapper.vm.fetchRecipientsTask.last
+
+      expect(wrapper.vm.autocompleteResults.length).toBe(2)
+      const guest = wrapper.vm.autocompleteResults.find(
+        (r) => r.shareType === ShareTypes.guest.value
+      )
+      expect(guest?.mail).toBe('jane@example.com')
+    })
   })
   describe('share action', () => {
     it('clicking the invite-sharees button calls the "share"-action', async () => {
@@ -184,7 +206,9 @@ function getWrapper({
   groups = [],
   existingCollaborators = [],
   externalShareRoles = [],
-  user = mock<User>({ id: '1' })
+  user = mock<User>({ id: '1' }),
+  openXchange = false,
+  openXchangeContacts = []
 }: {
   storageId?: string
   resource?: Resource
@@ -193,6 +217,8 @@ function getWrapper({
   existingCollaborators?: CollaboratorShare[]
   externalShareRoles?: ShareRole[]
   user?: User
+  openXchange?: boolean
+  openXchangeContacts?: Contact[]
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -200,8 +226,12 @@ function getWrapper({
 
   mocks.$clientService.graphAuthenticated.users.listUsers.mockResolvedValue(users)
   mocks.$clientService.graphAuthenticated.groups.listGroups.mockResolvedValue(groups)
+  mocks.$clientService.ox.autocompleteContacts.mockResolvedValue(openXchangeContacts)
 
-  const capabilities = { files_sharing: { federation: { incoming: true, outgoing: true } } }
+  const capabilities = {
+    files_sharing: { federation: { incoming: true, outgoing: true } },
+    open_xchange: { enable: openXchange, api_url: openXchange ? 'https://ox.example.com/api' : '' }
+  }
 
   return {
     mocks,

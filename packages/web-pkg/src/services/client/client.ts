@@ -1,7 +1,8 @@
 import { HttpClient } from '../../http'
-import { graph, ocs, webdav } from '@opencloud-eu/web-client'
+import { graph, ocs, ox, webdav } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { OCS } from '@opencloud-eu/web-client/ocs'
+import { OX } from '@opencloud-eu/web-client/ox'
 import { AuthParameters } from './auth'
 import axios from 'axios'
 import { v4 as uuidV4 } from 'uuid'
@@ -9,7 +10,7 @@ import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { Language } from 'vue3-gettext'
 import { FetchEventSourceInit } from '@microsoft/fetch-event-source'
 import { sse } from '@opencloud-eu/web-client/sse'
-import { AuthStore, ConfigStore } from '../../composables'
+import { AuthStore, CapabilityStore, ConfigStore } from '../../composables'
 
 const createFetchOptions = (authParams: AuthParameters, language: string): FetchEventSourceInit => {
   return {
@@ -26,18 +27,21 @@ export interface ClientServiceOptions {
   configStore: ConfigStore
   language: Language
   authStore: AuthStore
+  capabilityStore: CapabilityStore
 }
 
 export class ClientService {
   private configStore: ConfigStore
   private language: Language
   private authStore: AuthStore
+  private capabilityStore: CapabilityStore
 
   private httpAuthenticatedClient: HttpClient
   private httpUnAuthenticatedClient: HttpClient
 
   private graphClient: Graph
   private ocsClient: OCS
+  private oxClient: OX
   private webDavClient: WebDAV
 
   public initiatorId = uuidV4()
@@ -51,9 +55,11 @@ export class ClientService {
     this.configStore = options.configStore
     this.language = options.language
     this.authStore = options.authStore
+    this.capabilityStore = options.capabilityStore
 
     this.initGraphClient()
     this.initOcsClient()
+    this.initOxClient()
     this.initWebDavClient()
 
     this.httpAuthenticatedClient = new HttpClient(
@@ -95,6 +101,10 @@ export class ClientService {
     return this.ocsClient
   }
 
+  public get ox() {
+    return this.oxClient
+  }
+
   public get webdav() {
     return this.webDavClient
   }
@@ -126,6 +136,15 @@ export class ClientService {
       return config
     })
     this.ocsClient = ocs(this.configStore.serverUrl, axiosClient)
+  }
+
+  private initOxClient() {
+    const axiosClient = axios.create({ headers: this.staticHeaders })
+    axiosClient.interceptors.request.use((config) => {
+      Object.assign(config.headers, this.getDynamicHeaders())
+      return config
+    })
+    this.oxClient = ox(axiosClient, () => this.capabilityStore.openXchangeApiUrl)
   }
 
   private initWebDavClient() {

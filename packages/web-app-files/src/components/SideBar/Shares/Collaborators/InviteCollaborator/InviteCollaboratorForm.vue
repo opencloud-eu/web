@@ -203,6 +203,7 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
+import { useOpenXchangeContacts } from '../../../../../composables/openXchange/useOpenXchangeContacts'
 
 type DropDownShouldOpenOptions = { open: boolean; search: string[] }
 
@@ -259,6 +260,8 @@ export default defineComponent({
     const sharesStore = useSharesStore()
     const { addShare } = sharesStore
     const { collaboratorShares } = storeToRefs(sharesStore)
+
+    const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
 
     const searchQuery = ref('')
     const searchInProgress = ref(false)
@@ -363,7 +366,11 @@ export default defineComponent({
         shareType: ShareTypes.group.value
       })) as CollaboratorAutoCompleteItem[]
 
-      autocompleteResults.value = [...users, ...groups].filter(
+      const guests = (yield* call(
+        searchOpenXchangeContacts(query, signal)
+      )) as CollaboratorAutoCompleteItem[]
+
+      autocompleteResults.value = [...users, ...groups, ...guests].filter(
         (collaborator: CollaboratorAutoCompleteItem) => {
           if (collaborator.id === userStore.user.id) {
             // filter current user
