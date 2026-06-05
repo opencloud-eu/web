@@ -11,6 +11,7 @@ import { useSharesStore } from '@opencloud-eu/web-pkg'
 import {
   CollaboratorAutoCompleteItem,
   CollaboratorShare,
+  LinkShare,
   ShareRole,
   ShareTypes
 } from '@opencloud-eu/web-client'
@@ -137,6 +138,35 @@ describe('InviteCollaboratorForm', () => {
     })
   })
   describe('share action', () => {
+    it('creates a public link and emails the guest for guest recipients', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { addLink, addShare } = useSharesStore()
+      vi.mocked(addLink).mockResolvedValue(
+        mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
+      )
+      mocks.$clientService.ox.sendMail.mockResolvedValue(undefined)
+
+      wrapper.vm.selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          mail: 'guest@example.com',
+          displayName: 'Guest',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      expect(addLink).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({ displayName: 'guest@example.com' })
+        })
+      )
+      expect(mocks.$clientService.ox.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({ to: { name: 'Guest', email: 'guest@example.com' } })
+      )
+      expect(addShare).not.toHaveBeenCalled()
+    })
     it('clicking the invite-sharees button calls the "share"-action', async () => {
       const { wrapper } = getWrapper()
       const shareSpy = vi.spyOn(wrapper.vm, 'share')
@@ -230,7 +260,7 @@ function getWrapper({
 
   const capabilities = {
     files_sharing: { federation: { incoming: true, outgoing: true } },
-    open_xchange: { enable: openXchange, api_url: openXchange ? 'https://ox.example.com/api' : '' }
+    open_xchange: { enabled: openXchange, api_url: openXchange ? 'https://ox.example.com/api' : '' }
   }
 
   return {

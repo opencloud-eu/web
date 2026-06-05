@@ -204,6 +204,7 @@ import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
 import { useOpenXchangeContacts } from '../../../../../composables/openXchange/useOpenXchangeContacts'
+import { useInviteGuestViaEmail } from '../../../../../composables/openXchange/useInviteGuestViaEmail'
 
 type DropDownShouldOpenOptions = { open: boolean; search: string[] }
 
@@ -262,6 +263,7 @@ export default defineComponent({
     const { collaboratorShares } = storeToRefs(sharesStore)
 
     const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
+    const { inviteGuest } = useInviteGuestViaEmail()
 
     const searchQuery = ref('')
     const searchInProgress = ref(false)
@@ -405,7 +407,29 @@ export default defineComponent({
       const errors: { displayName: string; error: Error }[] = []
       const addedShares: CollaboratorShare[] = []
 
-      unref(selectedCollaborators).forEach(({ id, shareType, displayName }) => {
+      unref(selectedCollaborators).forEach((collaborator) => {
+        const { id, shareType, displayName } = collaborator
+
+        if (shareType === ShareTypes.guest.value) {
+          // guests are not OpenCloud users: create a public link and email it to them
+          savePromises.push(
+            saveQueue.add(async () => {
+              try {
+                await inviteGuest({
+                  space: unref(space),
+                  resource: unref(resource),
+                  guest: collaborator
+                })
+              } catch (error) {
+                console.error(error)
+                errors.push({ displayName, error })
+                throw error
+              }
+            })
+          )
+          return
+        }
+
         const type = shareType === ShareTypes.group.value ? 'group' : 'user'
 
         savePromises.push(

@@ -19,3 +19,12 @@ export type Contact = z.infer<typeof ContactSchema>
 export const OxAutocompleteResponseSchema = z.object({
   data: z.array(z.array(z.union([z.string(), z.number(), z.null()])))
 })
+
+/**
+ * Response of opening an Open-Xchange mail composition space. `data.id`
+ * identifies the space used for the subsequent send call.
+ * @see https://documentation.open-xchange.com/8.21/middleware/mail/mail_compose.html
+ */
+export const OxComposeSpaceResponseSchema = z.object({
+  data: z.object({ id: z.string() })
+})
