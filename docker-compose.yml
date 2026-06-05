@@ -37,6 +37,8 @@ x-opencloud-server: &opencloud-service
     # IDP
     IDP_LDAP_BIND_PASSWORD: '${IDP_LDAP_BIND_PASSWORD:-some-ldap-idp-password}'
     IDM_LDAPS_ADDR: 0.0.0.0:9235
+    IDM_LDAPS_CERT: /certificates/server.crt
+    IDM_LDAPS_KEY: /certificates/server.key
 
     # STORAGE
     STORAGE_USERS_DRIVER: '${STORAGE_USERS_DRIVER:-posix}'
@@ -110,6 +112,7 @@ services:
     networks:
       - traefik
     volumes:
+      - ./dev/docker/traefik/certificates:/certificates:ro
       - ./dev/docker/opencloud/csp.yaml:/etc/opencloud/csp.yaml
       - ./dev/docker/opencloud/proxy.yaml:/etc/opencloud/proxy.yaml
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
@@ -141,6 +144,7 @@ services:
     networks:
       - traefik
     volumes:
+      - ./dev/docker/traefik/certificates:/certificates:ro
       - ./dev/docker/opencloud/password-policy-banned-passwords.txt:/etc/opencloud/password-policy-banned-passwords.txt
       - ./dev/docker/opencloud.idp.config.yaml:/etc/opencloud/idp.yaml
       - ./dev/docker/opencloud-ca:/var/lib/opencloud/proxy
