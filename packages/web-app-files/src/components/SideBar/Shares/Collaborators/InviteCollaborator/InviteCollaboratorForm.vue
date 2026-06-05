@@ -203,8 +203,10 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
-import { useOpenXchangeContacts } from '../../../../../composables/openXchange/useOpenXchangeContacts'
-import { useInviteContactViaEmail } from '../../../../../composables/openXchange/useInviteContactViaEmail'
+import {
+  useInviteContactViaEmail,
+  useOpenXchangeContacts
+} from '../../../../../composables/openXchange'
 
 type DropDownShouldOpenOptions = { open: boolean; search: string[] }
 
