@@ -248,7 +248,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { $gettext } = useGettext()
+    const { $gettext, $ngettext } = useGettext()
     const clientService = useClientService()
     const { showMessage, showErrorMessage } = useMessages()
     const spacesStore = useSpacesStore()
@@ -406,6 +406,7 @@ export default defineComponent({
       const savePromises: Promise<void>[] = []
       const errors: { displayName: string; error: Error }[] = []
       const addedShares: CollaboratorShare[] = []
+      let invitedContactCount = 0
 
       unref(selectedCollaborators).forEach((collaborator) => {
         const { id, shareType, displayName } = collaborator
@@ -421,6 +422,7 @@ export default defineComponent({
                   resource: unref(resource),
                   contact: collaborator
                 })
+                invitedContactCount++
               } catch (error) {
                 console.error(error)
                 errors.push({ displayName, error })
@@ -462,7 +464,7 @@ export default defineComponent({
         )
       })
 
-      const results = await Promise.allSettled(savePromises)
+      await Promise.allSettled(savePromises)
 
       if (isProjectSpaceResource(unref(resource))) {
         const updatedSpace = await clientService.graphAuthenticated.drives.getDrive(
@@ -472,8 +474,19 @@ export default defineComponent({
         upsertSpace({ ...updatedSpace, graphPermissions: unref(space).graphPermissions })
       }
 
-      if (results.length !== errors.length) {
+      if (addedShares.length > 0) {
         showMessage({ title: $gettext('Share was added successfully') })
+      }
+
+      if (invitedContactCount > 0) {
+        showMessage({
+          title: $ngettext(
+            'Sent a read-only link to %{count} contact',
+            'Sent read-only links to %{count} contacts',
+            invitedContactCount,
+            { count: invitedContactCount.toString() }
+          )
+        })
       }
 
       errors.forEach((e) => {

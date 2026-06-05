@@ -7,7 +7,7 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useSharesStore } from '@opencloud-eu/web-pkg'
+import { useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
 import {
   CollaboratorAutoCompleteItem,
   CollaboratorShare,
@@ -166,6 +166,48 @@ describe('InviteCollaboratorForm', () => {
         expect.objectContaining({ to: { name: 'Contact', email: 'contact@example.com' } })
       )
       expect(addShare).not.toHaveBeenCalled()
+    })
+    it('shows a single pluralized read-only toast for contact invites (and not the generic share toast)', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { addLink } = useSharesStore()
+      vi.mocked(addLink).mockResolvedValue(
+        mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
+      )
+      mocks.$clientService.ox.sendMail.mockResolvedValue(undefined)
+
+      wrapper.vm.selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'a@example.com',
+          mail: 'a@example.com',
+          displayName: 'A',
+          shareType: ShareTypes.contact.value
+        }),
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'b@example.com',
+          mail: 'b@example.com',
+          displayName: 'B',
+          shareType: ShareTypes.contact.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showMessage).toHaveBeenCalledWith({ title: 'Sent read-only links to 2 contacts' })
+    })
+    it('shows the generic share toast for collaborator shares', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+
+      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showMessage).toHaveBeenCalledWith({ title: 'Share was added successfully' })
     })
     it('clicking the invite-sharees button calls the "share"-action', async () => {
       const { wrapper } = getWrapper()
