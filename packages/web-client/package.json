@@ -34,6 +34,10 @@
         "default": "./dist/web-client/ocs.js",
         "types": "./dist/src/ocs/index.d.ts"
       },
+      "./ox": {
+        "default": "./dist/web-client/ox.js",
+        "types": "./dist/src/ox/index.d.ts"
+      },
       "./sse": {
         "default": "./dist/web-client/sse.js",
         "types": "./dist/src/sse/index.d.ts"
@@ -56,6 +60,9 @@
     },
     "./ocs": {
       "default": "./src/ocs/index.ts"
+    },
+    "./ox": {
+      "default": "./src/ox/index.ts"
     },
     "./sse": {
       "default": "./src/sse/index.ts"

@@ -11,6 +11,7 @@ export const externalModules = [
   '@opencloud-eu/web-client/graph',
   '@opencloud-eu/web-client/graph/generated',
   '@opencloud-eu/web-client/ocs',
+  '@opencloud-eu/web-client/ox',
   '@opencloud-eu/web-client/sse',
   '@opencloud-eu/web-client/webdav'
 ]

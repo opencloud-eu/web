@@ -7,12 +7,15 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useSharesStore } from '@opencloud-eu/web-pkg'
+import { useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
 import {
   CollaboratorAutoCompleteItem,
   CollaboratorShare,
-  ShareRole
+  LinkShare,
+  ShareRole,
+  ShareTypes
 } from '@opencloud-eu/web-client'
+import { Contact } from '@opencloud-eu/web-client/ox'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
@@ -113,8 +116,99 @@ describe('InviteCollaboratorForm', () => {
 
       expect(wrapper.vm.autocompleteResults.length).toBe(1)
     })
+    it('does not query Open-Xchange when the capability is disabled', async () => {
+      const { wrapper, mocks } = getWrapper({ users: [{ id: '2' } as User] })
+      await wrapper.vm.fetchRecipientsTask.last
+
+      expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
+    })
+    it('merges Open-Xchange contacts as contact recipients when the capability is enabled', async () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '2' } as User],
+        openXchange: true,
+        openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }]
+      })
+      await wrapper.vm.fetchRecipientsTask.last
+
+      expect(wrapper.vm.autocompleteResults.length).toBe(2)
+      const contact = wrapper.vm.autocompleteResults.find(
+        (r) => r.shareType === ShareTypes.contact.value
+      )
+      expect(contact?.mail).toBe('jane@example.com')
+    })
   })
   describe('share action', () => {
+    it('creates a public link and emails the contact for address book contact recipients', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { addLink, addShare } = useSharesStore()
+      vi.mocked(addLink).mockResolvedValue(
+        mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
+      )
+      mocks.$clientService.ox.sendMail.mockResolvedValue(undefined)
+
+      wrapper.vm.selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'contact@example.com',
+          mail: 'contact@example.com',
+          displayName: 'Contact',
+          shareType: ShareTypes.contact.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      expect(addLink).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({ displayName: 'contact@example.com' })
+        })
+      )
+      expect(mocks.$clientService.ox.sendMail).toHaveBeenCalledWith(
+        expect.objectContaining({ to: { name: 'Contact', email: 'contact@example.com' } })
+      )
+      expect(addShare).not.toHaveBeenCalled()
+    })
+    it('shows a single pluralized read-only toast for contact invites (and not the generic share toast)', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { addLink } = useSharesStore()
+      vi.mocked(addLink).mockResolvedValue(
+        mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
+      )
+      mocks.$clientService.ox.sendMail.mockResolvedValue(undefined)
+
+      wrapper.vm.selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'a@example.com',
+          mail: 'a@example.com',
+          displayName: 'A',
+          shareType: ShareTypes.contact.value
+        }),
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'b@example.com',
+          mail: 'b@example.com',
+          displayName: 'B',
+          shareType: ShareTypes.contact.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showMessage).toHaveBeenCalledWith({ title: 'Sent read-only links to 2 contacts' })
+    })
+    it('shows the generic share toast for collaborator shares', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+
+      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.share()
+
+      const { showMessage } = useMessages()
+      expect(showMessage).toHaveBeenCalledTimes(1)
+      expect(showMessage).toHaveBeenCalledWith({ title: 'Share was added successfully' })
+    })
     it('clicking the invite-sharees button calls the "share"-action', async () => {
       const { wrapper } = getWrapper()
       const shareSpy = vi.spyOn(wrapper.vm, 'share')
@@ -184,7 +278,9 @@ function getWrapper({
   groups = [],
   existingCollaborators = [],
   externalShareRoles = [],
-  user = mock<User>({ id: '1' })
+  user = mock<User>({ id: '1' }),
+  openXchange = false,
+  openXchangeContacts = []
 }: {
   storageId?: string
   resource?: Resource
@@ -193,6 +289,8 @@ function getWrapper({
   existingCollaborators?: CollaboratorShare[]
   externalShareRoles?: ShareRole[]
   user?: User
+  openXchange?: boolean
+  openXchangeContacts?: Contact[]
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -200,8 +298,12 @@ function getWrapper({
 
   mocks.$clientService.graphAuthenticated.users.listUsers.mockResolvedValue(users)
   mocks.$clientService.graphAuthenticated.groups.listGroups.mockResolvedValue(groups)
+  mocks.$clientService.ox.autocompleteContacts.mockResolvedValue(openXchangeContacts)
 
-  const capabilities = { files_sharing: { federation: { incoming: true, outgoing: true } } }
+  const capabilities = {
+    files_sharing: { federation: { incoming: true, outgoing: true } },
+    open_xchange: { enabled: openXchange, api_url: openXchange ? 'https://ox.example.com/api' : '' }
+  }
 
   return {
     mocks,

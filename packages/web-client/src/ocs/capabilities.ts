@@ -178,6 +178,10 @@ export interface Capabilities {
     groupware?: {
       enabled?: boolean
     }
+    open_xchange?: {
+      enabled?: boolean
+      api_url?: string
+    }
   }
   version: {
     edition?: string
