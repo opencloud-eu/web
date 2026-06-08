@@ -125,6 +125,14 @@ export const useFileActions = () => {
               return false
             }
 
+            // External editor apps (Collabora, OnlyOffice, …) load the
+            // file server-side via the WOPI bridge — they'd see the
+            // encrypted blob, not the cleartext the user expects.
+            // Restrict vault resources to in-browser editors only.
+            if (resources[0].isInVault && fileExtension.app?.startsWith('external-')) {
+              return false
+            }
+
             // An app may register a file/folder extension purely to
             // contribute icon mapping or a new-file menu entry without
             // owning a route (rclone-crypt's vault folder is one such case).

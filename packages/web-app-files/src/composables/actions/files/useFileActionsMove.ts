@@ -228,6 +228,14 @@ export const useFileActionsMove = () => {
           return false
         }
 
+        // Moving a vault entry would either expose ciphertext outside the
+        // vault (cross-vault move) or rename the encrypted blob in a way
+        // the client can't replay against rclone-crypt's path-derived
+        // encryption. Hide the action for any vault resource.
+        if (resources.some((r) => r.isInVault)) {
+          return false
+        }
+
         const moveDisabled = resources.some((resource) => {
           return canBeMoved(resource, unref(currentFolder)?.path) === false
         })

@@ -161,6 +161,12 @@ export async function decryptResourceInPlace(
   // Sharing a vault entry would expose ciphertext blobs to other users with
   // no way to read them. Strip the Shareable permission so canShare()
   // returns false everywhere in the UI (action buttons, sidebar, etc.).
+  //
+  // This is the **only** share-gating mechanism for vault resources — every
+  // share entry point (FileLinks, FileShares, useFileActionsShowShares,
+  // useFileActionsCreateLink) already routes through canShare(), which
+  // reads these permissions. Do not add a redundant `isInVault` guard on
+  // top of that; the two would drift over time.
   if (r.permissions) {
     r.permissions = r.permissions.replace(DavPermission.Shareable, '')
   }

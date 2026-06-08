@@ -106,6 +106,14 @@ export const useFileActionsFavorite = () => {
           return false
         }
 
+        // Favorites surface the resource name in the favorites view; for
+        // a vault entry that name only makes sense while the vault is
+        // unlocked. Hide the action to keep favorites consistent with the
+        // rest of the UI's vault gating.
+        if (resources.some((r) => r.isInVault)) {
+          return false
+        }
+
         return ability.can('create', 'Favorite')
       },
       class: 'oc-files-actions-favorite-trigger'
