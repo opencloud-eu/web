@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @kulmann, @micbar
 
+### 🔒 Security
+
+- chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
+
 ### 📈 Enhancement
 
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
