@@ -21,6 +21,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.1.0 [[#2617](https://github.com/opencloud-eu/web/pull/2617)]
+- chore(deps): update tiptap monorepo to v3.26.0 [[#2620](https://github.com/opencloud-eu/web/pull/2620)]
 - chore(deps): update typescript-eslint monorepo to v8.60.1 [[#2630](https://github.com/opencloud-eu/web/pull/2630)]
 - chore(deps): update dependency dompurify to v3.4.8 [[#2641](https://github.com/opencloud-eu/web/pull/2641)]
 - chore(deps): update traefik docker tag to v3.7.4 [[#2642](https://github.com/opencloud-eu/web/pull/2642)]
