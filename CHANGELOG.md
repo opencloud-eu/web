@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update sentry-javascript monorepo to v10.56.0 [[#2615](https://github.com/opencloud-eu/web/pull/2615)]
 - fix(deps): update dependency vue-router to v5.1.0 [[#2617](https://github.com/opencloud-eu/web/pull/2617)]
 - chore(deps): update tiptap monorepo to v3.26.0 [[#2620](https://github.com/opencloud-eu/web/pull/2620)]
 - chore(deps): update typescript-eslint monorepo to v8.60.1 [[#2630](https://github.com/opencloud-eu/web/pull/2630)]
