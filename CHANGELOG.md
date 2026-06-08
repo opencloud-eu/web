@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update apache/tika docker tag to v3.3.1.0 [[#2607](https://github.com/opencloud-eu/web/pull/2607)]
 - chore(deps): update pnpm to v11.5.2 [[#2619](https://github.com/opencloud-eu/web/pull/2619)]
 - fix(deps): update dependency fuse.js to v7.4.2 [[#2623](https://github.com/opencloud-eu/web/pull/2623)]
 - chore(deps): update dependency eslint-plugin-vue to v10.9.2 [[#2635](https://github.com/opencloud-eu/web/pull/2635)]
