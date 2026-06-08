@@ -14,6 +14,7 @@ import * as webClient from '@opencloud-eu/web-client'
 import * as webClientGraph from '@opencloud-eu/web-client/graph'
 import * as webClientGraphGenerated from '@opencloud-eu/web-client/graph/generated'
 import * as webClientOcs from '@opencloud-eu/web-client/ocs'
+import * as webClientOx from '@opencloud-eu/web-client/ox'
 import * as webClientSse from '@opencloud-eu/web-client/sse'
 import * as webClientWebdav from '@opencloud-eu/web-client/webdav'
 
@@ -35,6 +36,7 @@ export const sharedModules: Record<string, unknown> = {
   '@opencloud-eu/web-client/graph': webClientGraph,
   '@opencloud-eu/web-client/graph/generated': webClientGraphGenerated,
   '@opencloud-eu/web-client/ocs': webClientOcs,
+  '@opencloud-eu/web-client/ox': webClientOx,
   '@opencloud-eu/web-client/sse': webClientSse,
   '@opencloud-eu/web-client/webdav': webClientWebdav
 }

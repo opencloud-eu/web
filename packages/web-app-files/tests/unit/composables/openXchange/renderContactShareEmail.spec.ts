@@ -1,8 +1,9 @@
+import { Language } from 'vue3-gettext'
 import { renderContactShareEmail } from '../../../../src/composables/openXchange/renderContactShareEmail'
 
 // minimal $gettext stub that interpolates %{placeholders}
-const $gettext = (msgid: string, params: Record<string, string> = {}) =>
-  msgid.replace(/%\{(\w+)\}/g, (_, key) => params[key] ?? '')
+const $gettext = ((msgid: string, params: Record<string, string | number> = {}) =>
+  msgid.replace(/%\{(\w+)\}/g, (_, key) => String(params[key] ?? ''))) as Language['$gettext']
 
 describe('renderContactShareEmail', () => {
   const base = {

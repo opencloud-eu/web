@@ -1,4 +1,4 @@
-type GettextFn = (msgid: string, parameters?: Record<string, string>) => string
+import { Language } from 'vue3-gettext'
 
 export interface ContactShareEmailParams {
   contactName: string
@@ -15,8 +15,10 @@ const escapeHtml = (value: string): string =>
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;')
 
-export const getContactShareEmailSubject = (resourceName: string, $gettext: GettextFn): string =>
-  $gettext('«%{name}» was shared with you', { name: resourceName })
+export const getContactShareEmailSubject = (
+  resourceName: string,
+  $gettext: Language['$gettext']
+): string => $gettext('«%{name}» was shared with you', { name: resourceName })
 
 /**
  * Builds the subject and HTML body for the email sent to an address book
@@ -25,7 +27,7 @@ export const getContactShareEmailSubject = (resourceName: string, $gettext: Gett
  */
 export const renderContactShareEmail = (
   { contactName, resourceName, linkUrl, password }: ContactShareEmailParams,
-  $gettext: GettextFn
+  $gettext: Language['$gettext']
 ): { subject: string; html: string } => {
   const subject = getContactShareEmailSubject(resourceName, $gettext)
 
