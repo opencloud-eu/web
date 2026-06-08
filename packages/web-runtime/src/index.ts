@@ -72,7 +72,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
 
   const gettext = announceGettext({ app, availableLanguages: supportedLanguages })
 
-  const clientService = announceClientService({ app, configStore, authStore })
+  const clientService = announceClientService({ app, configStore, authStore, capabilityStore })
   announceAuthService({
     app,
     configStore,

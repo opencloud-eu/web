@@ -473,16 +473,19 @@ export const announceTranslations = ({
 export const announceClientService = ({
   app,
   configStore,
-  authStore
+  authStore,
+  capabilityStore
 }: {
   app: App
   configStore: ConfigStore
   authStore: AuthStore
+  capabilityStore: CapabilityStore
 }): ClientService => {
   const clientService = new ClientService({
     configStore,
     language: app.config.globalProperties.$language,
-    authStore
+    authStore,
+    capabilityStore
   })
   app.config.globalProperties.$clientService = clientService
   app.provide('$clientService', clientService)

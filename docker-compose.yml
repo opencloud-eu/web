@@ -26,6 +26,8 @@ x-opencloud-server: &opencloud-service
     FRONTEND_FULL_TEXT_SEARCH_ENABLED: 'true'
     FRONTEND_GROUPWARE_ENABLED: 'true'
     GRAPH_INCLUDE_OCM_SHAREES: 'true'
+    FRONTEND_OPENXCHANGE_ENABLED: 'true'
+    FRONTEND_OPENXCHANGE_API_URL: 'bogus'
 
     # IDM
     IDM_CREATE_DEMO_USERS: '${DEMO_USERS:-true}'
