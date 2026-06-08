@@ -73,7 +73,7 @@ describe('copy', () => {
             expect(
               unref(actions)[0].isVisible({
                 space: null,
-                resources: [mock<Resource>({ id: '1', canDownload: () => true })]
+                resources: [mock<Resource>({ id: '1', canDownload: () => true, isInVault: false })]
               })
             ).toBeTruthy()
           }
@@ -86,7 +86,7 @@ describe('copy', () => {
             expect(
               unref(actions)[0].isVisible({
                 space: null,
-                resources: [mock<Resource>({ id: '1', canDownload: () => false })]
+                resources: [mock<Resource>({ id: '1', canDownload: () => false, isInVault: false })]
               })
             ).toBeFalsy()
           }

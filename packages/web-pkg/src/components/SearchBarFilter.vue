@@ -100,7 +100,11 @@ export default defineComponent({
       () => {
         if (unref(useScopeQueryValue)) {
           const useScope = unref(useScopeQueryValue).toString() === 'true'
-          if (useScope && unref(currentFolderUsable)) {
+          // The scope query may force "Current folder" via deeplink even
+          // when `currentFolderAvailable` is false (existing behavior).
+          // The only override is being inside a vault — searching ciphertext
+          // makes no sense.
+          if (useScope && !props.currentFolderIsInVault) {
             currentSelection.value = unref(locationOptions).find(
               ({ id }) => id === SearchLocationFilterConstants.currentFolder
             )
