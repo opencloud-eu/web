@@ -31,6 +31,9 @@ export default defineWebApplication({
           newFileMenu: {
             menuTitle() {
               return $gettext('Vault')
+            },
+            defaultName() {
+              return $gettext('New vault')
             }
           }
         }

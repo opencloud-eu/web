@@ -78,7 +78,11 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     extension: string,
     appFileExtension: ApplicationFileExtension
   ) => {
-    let defaultName = $gettext('New file') + `.${extension}`
+    // Apps may override the default name shown in the create modal — e.g.
+    // rclone-crypt wants "New vault.vault" instead of "New file.vault".
+    // Fall back to the generic "New file" prefix when no override is set.
+    const baseName = appFileExtension.newFileMenu?.defaultName?.() ?? $gettext('New file')
+    let defaultName = `${baseName}.${extension}`
 
     if (unref(resources).some((f) => f.name === defaultName)) {
       defaultName = resolveFileNameDuplicate(defaultName, extension, unref(resources))

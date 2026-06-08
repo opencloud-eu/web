@@ -65,7 +65,13 @@ export interface ApplicationFileExtension {
   name?: string
   icon?: string
   mimeType?: string
-  newFileMenu?: { menuTitle: () => string }
+  newFileMenu?: {
+    menuTitle: () => string
+    // Optional override for the create-file modal's default name. Without
+    // this, the modal falls back to "New file.<extension>". Folder-typed
+    // entries (e.g. vault) override this to read "New vault.vault" etc.
+    defaultName?: () => string
+  }
   routeName?: string
   secureView?: boolean
 }

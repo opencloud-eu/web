@@ -60,12 +60,24 @@ export default defineComponent({
     currentFolderAvailable: {
       type: Boolean,
       default: false
+    },
+    // Search inside a vault is currently not supported on the server side
+    // (it'd search ciphertext blobs), so the "Current folder" option makes
+    // no sense when the user is sitting inside a vault — force-route to
+    // "All files" and disable the toggle.
+    currentFolderIsInVault: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update:modelValue'],
   setup(props, { emit }) {
     const { $gettext } = useGettext()
     const useScopeQueryValue = useRouteQuery('useScope')
+
+    const currentFolderUsable = computed(
+      () => props.currentFolderAvailable && !props.currentFolderIsInVault
+    )
 
     const currentSelection = ref<LocationOption>()
     const userSelection = ref<LocationOption>()
@@ -74,7 +86,7 @@ export default defineComponent({
       {
         id: SearchLocationFilterConstants.currentFolder,
         title: $gettext('Current folder'),
-        enabled: props.currentFolderAvailable
+        enabled: unref(currentFolderUsable)
       },
       {
         id: SearchLocationFilterConstants.allFiles,
@@ -84,11 +96,11 @@ export default defineComponent({
     ])
 
     watch(
-      () => props.currentFolderAvailable,
+      currentFolderUsable,
       () => {
         if (unref(useScopeQueryValue)) {
           const useScope = unref(useScopeQueryValue).toString() === 'true'
-          if (useScope) {
+          if (useScope && unref(currentFolderUsable)) {
             currentSelection.value = unref(locationOptions).find(
               ({ id }) => id === SearchLocationFilterConstants.currentFolder
             )
@@ -100,7 +112,7 @@ export default defineComponent({
           return
         }
 
-        if (!props.currentFolderAvailable) {
+        if (!unref(currentFolderUsable)) {
           currentSelection.value = unref(locationOptions).find(
             ({ id }) => id === SearchLocationFilterConstants.allFiles
           )
