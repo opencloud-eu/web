@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-vue to v10.9.2 [[#2635](https://github.com/opencloud-eu/web/pull/2635)]
 - [full-ci] Update OPENCLOUD_COMMITID for testing [[#2628](https://github.com/opencloud-eu/web/pull/2628)]
 
 ## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-06-01
