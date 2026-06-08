@@ -171,7 +171,7 @@ importers:
         version: 4.1.0(focus-trap@7.8.0)(vue@3.5.35(typescript@6.0.3))
       fuse.js:
         specifier: ^7.1.0
-        version: 7.3.0
+        version: 7.4.2
       lodash-es:
         specifier: ^4.17.23
         version: 4.18.1
@@ -229,7 +229,7 @@ importers:
         version: 0.28.0(rollup@4.60.0)(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))
       vitepress:
         specifier: ^1.6.4
-        version: 1.6.4(@algolia/client-search@5.50.0)(@types/node@25.9.1)(axios@1.16.1)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.15)(sass@1.100.0)(search-insights@2.17.3)(typescript@6.0.3)
+        version: 1.6.4(@algolia/client-search@5.50.0)(@types/node@25.9.1)(axios@1.16.1)(fuse.js@7.4.2)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.15)(sass@1.100.0)(search-insights@2.17.3)(typescript@6.0.3)
 
   packages/eslint-config:
     dependencies:
@@ -340,8 +340,8 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -380,8 +380,8 @@ importers:
         specifier: ^1.16.1
         version: 1.16.1
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -423,8 +423,8 @@ importers:
         specifier: 2.0.4
         version: 2.0.4
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -531,8 +531,8 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -589,8 +589,8 @@ importers:
         specifier: ^3.2.3
         version: 3.4.7
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       ical.js:
         specifier: ^2.2.1
         version: 2.2.1
@@ -641,8 +641,8 @@ importers:
         specifier: ^2.0.4
         version: 2.0.4
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -927,7 +927,7 @@ importers:
         version: 11.0.17
       fuse.js:
         specifier: ^7.1.0
-        version: 7.3.0
+        version: 7.4.2
       lodash-es:
         specifier: ^4.17.23
         version: 4.18.1
@@ -1032,8 +1032,8 @@ importers:
         specifier: 2.0.4
         version: 2.0.4
       fuse.js:
-        specifier: 7.3.0
-        version: 7.3.0
+        specifier: 7.4.2
+        version: 7.4.2
       lodash-es:
         specifier: 4.18.1
         version: 4.18.1
@@ -3695,8 +3695,8 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
-  fuse.js@7.3.0:
-    resolution: {integrity: sha512-plz8RVjfcDedTGfVngWH1jmJvBvAwi1v2jecfDerbEnMcmOYUEEwKFTHbNoCiYyzaK2Ws8lABkTCcRSqCY1q4w==}
+  fuse.js@7.4.2:
+    resolution: {integrity: sha512-LVbzjD4WA6UP5B1UnP8wuaXJiLnqMdM/E4fiJXTJ5haJ5b/MBNsK29h2fm6swEoQaVQjvYFWKLE2RanyZIoRVQ==}
     engines: {node: '>=10'}
 
   generator-function@2.0.1:
@@ -7359,7 +7359,7 @@ snapshots:
       '@vueuse/shared': 14.3.0(vue@3.5.35(typescript@6.0.3))
       vue: 3.5.35(typescript@6.0.3)
 
-  '@vueuse/integrations@12.8.2(axios@1.16.1)(focus-trap@7.8.0)(fuse.js@7.3.0)(jwt-decode@4.0.0)(typescript@6.0.3)':
+  '@vueuse/integrations@12.8.2(axios@1.16.1)(focus-trap@7.8.0)(fuse.js@7.4.2)(jwt-decode@4.0.0)(typescript@6.0.3)':
     dependencies:
       '@vueuse/core': 12.8.2(typescript@6.0.3)
       '@vueuse/shared': 12.8.2(typescript@6.0.3)
@@ -7367,7 +7367,7 @@ snapshots:
     optionalDependencies:
       axios: 1.16.1
       focus-trap: 7.8.0
-      fuse.js: 7.3.0
+      fuse.js: 7.4.2
       jwt-decode: 4.0.0
     transitivePeerDependencies:
       - typescript
@@ -8303,7 +8303,7 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  fuse.js@7.3.0: {}
+  fuse.js@7.4.2: {}
 
   generator-function@2.0.1: {}
 
@@ -10068,7 +10068,7 @@ snapshots:
       sass: 1.100.0
       yaml: 2.9.0
 
-  vitepress@1.6.4(@algolia/client-search@5.50.0)(@types/node@25.9.1)(axios@1.16.1)(fuse.js@7.3.0)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.15)(sass@1.100.0)(search-insights@2.17.3)(typescript@6.0.3):
+  vitepress@1.6.4(@algolia/client-search@5.50.0)(@types/node@25.9.1)(axios@1.16.1)(fuse.js@7.4.2)(jwt-decode@4.0.0)(lightningcss@1.32.0)(postcss@8.5.15)(sass@1.100.0)(search-insights@2.17.3)(typescript@6.0.3):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.50.0)(search-insights@2.17.3)
@@ -10081,7 +10081,7 @@ snapshots:
       '@vue/devtools-api': 7.7.9
       '@vue/shared': 3.5.35
       '@vueuse/core': 12.8.2(typescript@6.0.3)
-      '@vueuse/integrations': 12.8.2(axios@1.16.1)(focus-trap@7.8.0)(fuse.js@7.3.0)(jwt-decode@4.0.0)(typescript@6.0.3)
+      '@vueuse/integrations': 12.8.2(axios@1.16.1)(focus-trap@7.8.0)(fuse.js@7.4.2)(jwt-decode@4.0.0)(typescript@6.0.3)
       focus-trap: 7.8.0
       mark.js: 8.11.1
       minisearch: 7.2.0
