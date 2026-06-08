@@ -1,18 +1,19 @@
 # Changelog
 
-## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-05
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-08
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @kulmann, @micbar
 
+### 📈 Enhancement
+
+- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
+
 ### 🐛 Bug Fixes
 
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
-
-### 📈 Enhancement
-
-- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 📦️ Dependencies
 
