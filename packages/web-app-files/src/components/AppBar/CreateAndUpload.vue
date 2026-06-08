@@ -164,14 +164,15 @@ const onUploadComplete = async (result: UploadResult) => {
     path: listPath
   })
 
-  if (vaultEngine) {
-    for (const child of children) {
-      await decryptResourceInPlace(vaultEngine, child)
-    }
-  }
-
   const existingIds = new Set(resourcesStore.resources.map((r) => r.id))
   const newResources = children.filter((child) => !existingIds.has(child.id))
+
+  // Decrypt only the resources we're actually about to upsert — children
+  // already in the store are already cleartext. Parallel because
+  // decryptResourceInPlace mutates only the resource it's given.
+  if (vaultEngine && newResources.length) {
+    await Promise.all(newResources.map((r) => decryptResourceInPlace(vaultEngine, r)))
+  }
   markVaultStatus(extensionRegistry, unref(computedSpace), newResources)
   resourcesStore.upsertResources(newResources)
 }

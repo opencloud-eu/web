@@ -129,10 +129,13 @@ export function useAppFolderHandling({
         path: listPath
       })
       if (vaultEngine) {
-        await decryptResourceInPlace(vaultEngine, resource)
-        for (const child of children) {
-          await decryptResourceInPlace(vaultEngine, child)
-        }
+        // Parent + children decrypt in parallel — calls only touch their own
+        // resource, so listings of N items finish in ~one round-trip
+        // instead of N.
+        await Promise.all([
+          decryptResourceInPlace(vaultEngine, resource),
+          ...children.map((c) => decryptResourceInPlace(vaultEngine, c))
+        ])
       }
       markVaultStatus(extensionRegistry, space, [resource, ...children])
 

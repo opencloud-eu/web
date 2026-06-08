@@ -87,11 +87,16 @@ export class FolderLoaderSpace implements FolderLoader {
 
         // FIXME(poc-vault): decrypt server-side names before anything else
         // touches the resources, so the rest of the loader sees clear text.
+        // Run parent + children in parallel — decryptResourceInPlace mutates
+        // only the resource it's given and has no shared state, so listings
+        // of N items finish in ~one decrypt round-trip instead of N.
         if (vaultEngine) {
-          yield* call(decryptResourceInPlace(vaultEngine, currentFolder))
-          for (const child of resources) {
-            yield* call(decryptResourceInPlace(vaultEngine, child))
-          }
+          yield* call(
+            Promise.all([
+              decryptResourceInPlace(vaultEngine, currentFolder),
+              ...resources.map((r) => decryptResourceInPlace(vaultEngine, r))
+            ])
+          )
         }
         // Mark vault-root resources surfaced in a parent listing too (no
         // engine resolves against the parent path, so decryptResourceInPlace
