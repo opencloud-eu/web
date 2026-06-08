@@ -35,4 +35,5 @@ patchedDependencies:
   vue-inline-svg@4.0.1: patches/vue-inline-svg@4.0.1.patch
 
 overrides:
-  epubjs>@xmldom/xmldom: ^0.9.10
+  'epubjs>@xmldom/xmldom': ^0.9.10
+  '@module-federation/dts-plugin>axios': ^1.6.0
