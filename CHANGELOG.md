@@ -21,6 +21,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.60.1 [[#2630](https://github.com/opencloud-eu/web/pull/2630)]
+- chore(deps): update dependency dompurify to v3.4.8 [[#2641](https://github.com/opencloud-eu/web/pull/2641)]
+- chore(deps): update traefik docker tag to v3.7.4 [[#2642](https://github.com/opencloud-eu/web/pull/2642)]
 - chore(deps): update apache/tika docker tag to v3.3.1.0 [[#2607](https://github.com/opencloud-eu/web/pull/2607)]
 - chore(deps): update pnpm to v11.5.2 [[#2619](https://github.com/opencloud-eu/web/pull/2619)]
 - fix(deps): update dependency fuse.js to v7.4.2 [[#2623](https://github.com/opencloud-eu/web/pull/2623)]
