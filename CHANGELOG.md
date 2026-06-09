@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-08
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-09
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency axios to v1.17.0 [[#2644](https://github.com/opencloud-eu/web/pull/2644)]
 - fix(deps): update sentry-javascript monorepo to v10.56.0 [[#2615](https://github.com/opencloud-eu/web/pull/2615)]
 - fix(deps): update dependency vue-router to v5.1.0 [[#2617](https://github.com/opencloud-eu/web/pull/2617)]
 - chore(deps): update tiptap monorepo to v3.26.0 [[#2620](https://github.com/opencloud-eu/web/pull/2620)]
