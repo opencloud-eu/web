@@ -44,10 +44,10 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions flex items-center justify-end min-h-9 gap-2">
+      <div class="files-app-bar-actions flex items-center justify-end min-h-9">
         <slot v-if="!showBatchActions" name="actions" :limited-screen-space="limitedScreenSpace" />
         <div
-          class="flex-1 flex justify-between items-center px-2 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
+          class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
         >
           <batch-actions
             v-if="showBatchActions && !batchActionsLoading"
