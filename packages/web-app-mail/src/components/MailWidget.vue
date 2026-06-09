@@ -112,6 +112,7 @@
 
 <script setup lang="ts">
 import { ref, computed, unref, watch, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
@@ -132,6 +133,7 @@ type ComposeAttachment = ComposeFormState['attachments'][number]
 
 const { $gettext } = useGettext()
 const { dispatchModal } = useModals()
+const router = useRouter()
 const appliedDraftId = ref<string | null>(null)
 
 const SAVED_HINT_DURATION_MS = 2000
@@ -293,6 +295,18 @@ const { draftId, isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardD
     }
   })
 
+const hasUnsavedChanges = computed(() => {
+  return unref(hasMeaningfulChanges) && unref(isDirty)
+})
+
+const isMailRoute = (route: { path: string }) => {
+  return route.path.startsWith('/mail')
+}
+
+const preventUnload = (event: BeforeUnloadEvent) => {
+  event.preventDefault()
+}
+
 const onSend = async () => {
   if (
     !unref(currentAccountId) ||
@@ -346,6 +360,23 @@ const doClose = () => {
   emit('close')
 }
 
+const requestUnsavedComposeSave = ({
+  onCancel,
+  onSave
+}: {
+  onCancel: () => void
+  onSave: () => void | Promise<void>
+}) => {
+  dispatchModal({
+    title: $gettext('Unsaved changes'),
+    message: $gettext('Your email isn’t finished yet. Save it as draft before leaving.'),
+    confirmText: $gettext('Save as draft'),
+    hasInput: false,
+    onConfirm: onSave,
+    onCancel
+  })
+}
+
 const requestClose = () => {
   if (!unref(hasMeaningfulChanges)) {
     doClose()
@@ -357,15 +388,11 @@ const requestClose = () => {
     return
   }
 
-  dispatchModal({
-    title: $gettext('Leave this screen?'),
-    message: $gettext(
-      'Your email isn’t finished yet. You can save it as a draft or exit without saving.'
-    ),
-    confirmText: $gettext('Save as draft'),
-    hasInput: false,
-    onConfirm: () => onSaveDraftAndClose(),
-    onCancel: () => onDiscardAndClose()
+  requestUnsavedComposeSave({
+    onCancel: () => {
+      // Stay in compose.
+    },
+    onSave: onSaveDraftAndClose
   })
 }
 
@@ -374,11 +401,6 @@ const onSaveDraftAndClose = async () => {
     return
   }
   await saveAsDraft()
-  doClose()
-}
-
-const onDiscardAndClose = async () => {
-  await discardDraft()
   doClose()
 }
 
@@ -398,7 +420,53 @@ useAutoSaveDraft({
   }
 })
 
+watch(hasUnsavedChanges, (dirty) => {
+  if (dirty) {
+    window.addEventListener('beforeunload', preventUnload)
+  } else {
+    window.removeEventListener('beforeunload', preventUnload)
+  }
+})
+
+let isNavigationConfirmationOpen = false
+
+const removeNavigationGuard = router.beforeEach((to, _from, next) => {
+  if (isMailRoute(to) || !unref(hasUnsavedChanges)) {
+    next()
+    return
+  }
+
+  if (isNavigationConfirmationOpen) {
+    next(false)
+    return
+  }
+
+  if (!unref(canSaveDraft)) {
+    next(false)
+    return
+  }
+
+  isNavigationConfirmationOpen = true
+
+  requestUnsavedComposeSave({
+    onCancel: () => {
+      isNavigationConfirmationOpen = false
+      next(false)
+    },
+    onSave: async () => {
+      try {
+        await onSaveDraftAndClose()
+        next()
+      } finally {
+        isNavigationConfirmationOpen = false
+      }
+    }
+  })
+})
+
 onUnmounted(() => {
+  removeNavigationGuard()
+  window.removeEventListener('beforeunload', preventUnload)
   resetCompose()
 })
 
