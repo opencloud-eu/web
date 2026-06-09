@@ -8,7 +8,6 @@ import {
   isPromiseRejected,
   useAbility,
   useClientService,
-  useLoadingService,
   useMessages,
   useModals,
   useRoute,
@@ -22,7 +21,6 @@ export const useSpaceActionsRestore = () => {
   const { $gettext, $ngettext } = useGettext()
   const ability = useAbility()
   const clientService = useClientService()
-  const loadingService = useLoadingService()
   const route = useRoute()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
@@ -73,6 +71,11 @@ export const useSpaceActionsRestore = () => {
               succeeded.length,
               { spaceCount: succeeded.length.toString() }
             )
+      await spacesStore.loadGraphPermissions({
+        ids: spaces.map((s) => s.id),
+        graphClient: client,
+        useCache: false
+      })
       showMessage({ title })
     }
 
