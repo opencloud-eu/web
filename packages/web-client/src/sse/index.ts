@@ -13,6 +13,7 @@ export enum MESSAGE_TYPE {
   FOLDER_CREATED = 'folder-created',
   SPACE_CREATED = 'space-created',
   SPACE_DISABLED = 'space-disabled',
+  SPACE_ENABLED = 'space-enabled',
   SPACE_DELETED = 'space-deleted',
   SPACE_MEMBER_ADDED = 'space-member-added',
   SPACE_MEMBER_REMOVED = 'space-member-removed',
