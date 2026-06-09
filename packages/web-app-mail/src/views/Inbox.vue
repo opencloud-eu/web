@@ -19,8 +19,8 @@
         <MailDetails :key="currentMail?.id" />
       </div>
     </div>
-    <MailWidget v-if="showCompose" :draft-mail="draftMail" @close="closeCompose" />
   </template>
+  <MailWidget v-if="showCompose" :draft-mail="draftMail" @close="closeCompose" />
 </template>
 
 <script setup lang="ts">
