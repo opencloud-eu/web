@@ -21,16 +21,27 @@
         data-testid="empty-vault-hint"
         v-text="
           $gettext(
-            'This vault is still empty, so there is no right or wrong passphrase yet. The passphrase you enter here will be locked in when the first file gets uploaded.'
+            'This vault is still empty, so there is no right or wrong passphrase yet. The passphrase you enter here will be locked in when the first file gets uploaded and cannot be changed from within OpenCloud afterwards.'
           )
         "
       />
       <form @submit.prevent="onSubmit">
         <oc-text-input
+          id="vault-passphrase"
           ref="passwordInput"
           v-model="password"
           :error-message="errorMessage"
           :label="passphraseLabel"
+          type="password"
+          autocomplete="off"
+          class="mb-3 [&_.oc-text-input-message]:justify-center"
+        />
+        <oc-text-input
+          v-if="isEmpty === true"
+          id="vault-passphrase-confirm"
+          v-model="confirmPassword"
+          :error-message="confirmErrorMessage"
+          :label="$gettext('Repeat passphrase')"
           type="password"
           autocomplete="off"
           class="mb-3 [&_.oc-text-input-message]:justify-center"
@@ -43,7 +54,7 @@
             id="vault-unlock-submit"
             appearance="filled"
             submit="submit"
-            :disabled="!password || verifying"
+            :disabled="submitDisabled"
           >
             <oc-spinner v-if="verifying" :aria-hidden="true" size="small" />
             <span v-else v-text="submitLabel" />
@@ -76,6 +87,10 @@ const vaultStore = useFolderVaultStore()
 
 const passwordInput = useTemplateRef<HTMLInputElement>('passwordInput')
 const password = ref('')
+// Only used while setting up a still-empty vault: the passphrase is committed by
+// the first upload and can't be changed from within OpenCloud, so we make the
+// user type it twice to catch typos before it's locked in for good.
+const confirmPassword = ref('')
 const verifying = ref(false)
 const errorMessage = ref<string | null>(null)
 // `null` = we haven't probed the server yet, `true` = the vault has no
@@ -91,8 +106,9 @@ const redirectUrl = computed(() => queryItemAsString(unref(route).query.redirect
 const vaultName = computed(() => {
   const root = unref(vaultRoot) || ''
   // Strip the leading path so only the cleartext folder name (e.g.
-  // "myvault.vault") shows up — that's what users recognise.
-  return root.split('/').filter(Boolean).pop() || root
+  // "myvault.vault") shows up - that's what users recognise. For a root vault
+  // "/" (a directly-shared vault) the name lives on the share space instead.
+  return root.split('/').filter(Boolean).pop() || unref(space)?.name || root
 })
 
 const vaultDescription = computed(() =>
@@ -113,14 +129,35 @@ const submitLabel = computed(() =>
   unref(isEmpty) === true ? $gettext('Set passphrase') : $gettext('Unlock')
 )
 
+// Surface the mismatch only once the user has started typing the confirmation,
+// so the field doesn't show an error before they've had a chance to fill it.
+const confirmErrorMessage = computed(() =>
+  unref(isEmpty) === true && unref(confirmPassword) && unref(password) !== unref(confirmPassword)
+    ? $gettext('Passphrases do not match.')
+    : null
+)
+
+const submitDisabled = computed(() => {
+  if (!unref(password) || unref(verifying)) {
+    return true
+  }
+  // Setting up a vault requires both fields to match before we lock it in.
+  return unref(isEmpty) === true && unref(password) !== unref(confirmPassword)
+})
+
 const space = computed(() => spacesStore.spaces.find((s) => s.id === unref(spaceId)))
 
 const onSubmit = async () => {
   errorMessage.value = null
+  // Guard against a programmatic submit slipping past the disabled button.
+  if (unref(isEmpty) === true && unref(password) !== unref(confirmPassword)) {
+    errorMessage.value = $gettext('Passphrases do not match.')
+    return
+  }
   verifying.value = true
   try {
     // 1. Fetch the vault root listing to grab a sample encrypted name we can
-    //    verify the key against. Doesn't decrypt anything — names stay raw.
+    //    verify the key against. Doesn't decrypt anything - names stay raw.
     //    rclone-crypt's filename encryption is deterministic; one valid
     //    decrypt is a strong signal that the key fits.
     if (!unref(space)) {
@@ -132,17 +169,18 @@ const onSubmit = async () => {
     })
     const sample = (children ?? []).find((c) => c?.name)?.name
 
-    // Build a probe engine with the supplied passphrase and ask it to
-    // decrypt our sample. Empty vault → trust the passphrase (nothing to
-    // disagree with). Otherwise success here means "this is the right key".
-    const probeEngine = createEngine(unref(spaceId), unref(vaultRoot), unref(password))
-    const keyOk = sample ? await probeEngine.verifyKey(sample) : true
+    // Build the engine with the supplied passphrase and ask it to decrypt our
+    // sample. Empty vault → trust the passphrase (nothing to disagree with).
+    // Otherwise success here means "this is the right key". The very same engine
+    // is what we stash, so it doubles as the session's unlocked engine.
+    const engine = createEngine(unref(vaultRoot), unref(password))
+    const keyOk = sample ? await engine.verifyKey(sample) : true
     if (!keyOk) {
       errorMessage.value = $gettext('Incorrect passphrase.')
       return
     }
 
-    vaultStore.setSecret(unref(spaceId), unref(vaultRoot), unref(password))
+    vaultStore.setEngine(unref(spaceId), unref(vaultRoot), engine)
 
     const target = unref(redirectUrl)
     // router.push accepts a full URL string and parses path + query for us.
@@ -159,7 +197,7 @@ onMounted(async () => {
   unref(passwordInput)?.focus?.()
   // Probe the vault root listing once to decide if we should switch to
   // "empty vault, any passphrase wins" wording. We don't gate the submit
-  // button on this — onSubmit re-checks against the live listing.
+  // button on this - onSubmit re-checks against the live listing.
   try {
     const targetSpace = unref(space)
     const root = unref(vaultRoot)
@@ -177,7 +215,7 @@ onMounted(async () => {
 
 const onCancel = async () => {
   // Walk one level above the vault root so the user lands back in the folder
-  // they came from instead of inside the locked vault — clicking the vault
+  // they came from instead of inside the locked vault - clicking the vault
   // would otherwise just kick them back to this unlock page.
   const root = unref(vaultRoot) || '/'
   const parent = root.replace(/\/[^/]+$/, '') || '/'

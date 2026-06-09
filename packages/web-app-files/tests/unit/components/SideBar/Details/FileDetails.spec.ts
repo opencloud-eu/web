@@ -26,6 +26,7 @@ const getResourceMock = ({
     id: '1',
     type,
     isFolder: type === 'folder',
+    isInVault: false,
     mimeType,
     owner: {
       id: 'marie',

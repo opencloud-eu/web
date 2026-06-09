@@ -2,7 +2,7 @@
   "name": "rclone-crypt",
   "version": "0.0.0",
   "private": true,
-  "description": "OpenCloud Web e2ee plugin: read rclone-crypt encrypted folders (PoC)",
+  "description": "OpenCloud Web plugin: browse, edit and upload rclone-crypt encrypted folder vaults",
   "license": "AGPL-3.0",
   "dependencies": {
     "@fyears/rclone-crypt": "^0.0.7"

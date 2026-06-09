@@ -1,7 +1,8 @@
 import { readFileSync, lstatSync, readdirSync } from 'fs'
 import { Page } from '@playwright/test'
 
-interface File {
+// Node-side upload descriptor; named distinctly so it doesn't shadow the DOM `File` used in page.evaluate.
+interface ResourceInput {
   name: string
   path: string
 }
@@ -12,7 +13,11 @@ interface FileBuffer {
   relativePath: string
 }
 
-const getFiles = (resources: File[], files: FileBuffer[] = [], parent = ''): FileBuffer[] => {
+const getFiles = (
+  resources: ResourceInput[],
+  files: FileBuffer[] = [],
+  parent = ''
+): FileBuffer[] => {
   for (const resource of resources) {
     const filePath = parent ? `${parent}/${resource.name}` : resource.name
     const stat = lstatSync(resource.path)
@@ -24,7 +29,7 @@ const getFiles = (resources: File[], files: FileBuffer[] = [], parent = ''): Fil
       })
     } else if (stat.isDirectory()) {
       const entries = readdirSync(resource.path)
-      const subResources: File[] = entries.map((entry) => ({
+      const subResources: ResourceInput[] = entries.map((entry) => ({
         path: `${resource.path}/${entry}`,
         name: entry
       }))
@@ -34,37 +39,103 @@ const getFiles = (resources: File[], files: FileBuffer[] = [], parent = ''): Fil
   return files
 }
 
-export const dragDropFiles = async (page: Page, resources: File[], targetSelector: string) => {
+export const dragDropFiles = async (
+  page: Page,
+  resources: ResourceInput[],
+  targetSelector: string
+) => {
   const files = getFiles(resources)
 
   await page.evaluate(
     ([files, selector]) => {
       const target = document.querySelector(selector as string)
       if (!target) throw new Error(`Target ${selector} not found`)
-      const input = document.createElement('input')
-      input.type = 'file'
-      input.multiple = true
-      input.style.display = 'none'
-      input.webkitdirectory = (files as FileBuffer[]).some((f) => f.relativePath.includes('/'))
-      document.body.appendChild(input)
+
+      const fileList = files as FileBuffer[]
+
+      const blobOf = (f: FileBuffer) => new Blob([new Uint8Array(JSON.parse(f.bufferString))])
+
+      // A real browser folder drop yields plain File objects through the
+      // entries API and only attaches the path via FileSystemEntry.fullPath
+      // (which getDroppedFiles copies to `relativePath`). So the files the
+      // entries hand out must NOT also carry a webkitRelativePath, otherwise
+      // the resource carries two slightly different path hints and the
+      // vault-upload path encryption picks the wrong one. The flat `.files`
+      // fallback list below keeps webkitRelativePath, since that fallback has
+      // no other way to convey the tree.
+      const cleanFile = (f: FileBuffer): File => new File([blobOf(f)], f.name)
 
       const dt = new DataTransfer()
-      ;(files as FileBuffer[]).forEach((file) => {
-        const buffer = new Uint8Array(JSON.parse(file.bufferString))
-        const fileObj = new File([new Blob([buffer])], file.name)
-        if (file.relativePath.includes('/')) {
-          Object.defineProperty(fileObj, 'webkitRelativePath', { value: file.relativePath })
+      fileList.forEach((f) => {
+        const fileObj = new File([blobOf(f)], f.name)
+        if (f.relativePath.includes('/')) {
+          Object.defineProperty(fileObj, 'webkitRelativePath', { value: f.relativePath })
         }
         dt.items.add(fileObj)
       })
-      input.files = dt.files
+
+      // A real folder drop does NOT expose its contents through `.files` - the
+      // browser hands them over lazily through the entries API
+      // (dataTransfer.items[].webkitGetAsEntry() -> a FileSystemEntry tree the
+      // app walks to recurse into directories). To faithfully simulate a
+      // folder drop we therefore build a synthetic entry tree and expose it on
+      // `.items`. Doing this with plain objects on a plain `new Event('drop')`
+      // keeps it working headless in every browser - a *real* DataTransfer
+      // dispatched synthetically is read-only/empty in Firefox and WebKit.
+      type Entry = Record<string, any>
+      const fileEntry = (f: FileBuffer, fullPath: string): Entry => ({
+        isFile: true,
+        isDirectory: false,
+        name: f.relativePath.split('/').filter(Boolean).pop(),
+        fullPath,
+        file: (resolve: (file: File) => void) => resolve(cleanFile(f))
+      })
+      const dirEntry = (name: string, fullPath: string, children: Entry[]): Entry => ({
+        isFile: false,
+        isDirectory: true,
+        name,
+        fullPath,
+        createReader: () => {
+          let drained = false
+          return {
+            // readEntries returns the batch once, then [] to signal the end.
+            readEntries: (resolve: (entries: Entry[]) => void) => {
+              resolve(drained ? [] : children)
+              drained = true
+            }
+          }
+        }
+      })
+
+      // Fold the flat list into a nested {name -> subtree | {__file}} tree.
+      const tree: Record<string, any> = {}
+      for (const f of fileList) {
+        const segments = f.relativePath.split('/').filter(Boolean)
+        let node = tree
+        for (let i = 0; i < segments.length - 1; i++) {
+          node[segments[i]] = node[segments[i]] || {}
+          node = node[segments[i]]
+        }
+        node[segments[segments.length - 1]] = { __file: f }
+      }
+      const buildEntries = (node: Record<string, any>, parentPath: string): Entry[] =>
+        Object.entries(node).map(([name, child]) =>
+          child.__file
+            ? fileEntry(child.__file, `${parentPath}/${name}`)
+            : dirEntry(name, `${parentPath}/${name}`, buildEntries(child, `${parentPath}/${name}`))
+        )
+      const items = buildEntries(tree, '').map((entry) => ({
+        kind: 'file',
+        type: '',
+        webkitGetAsEntry: () => entry,
+        getAsFile: (): File | null => null
+      }))
 
       const dropEvent = new Event('drop', { bubbles: true })
       Object.defineProperty(dropEvent, 'dataTransfer', {
-        value: { files: dt.files, types: ['Files'] }
+        value: { files: dt.files, items, types: ['Files'] }
       })
       target.dispatchEvent(dropEvent)
-      document.body.removeChild(input)
     },
     [files, targetSelector]
   )

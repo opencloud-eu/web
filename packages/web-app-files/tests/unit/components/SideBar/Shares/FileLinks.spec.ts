@@ -113,6 +113,13 @@ describe('FileLinks', () => {
       expect(wrapper.find(selectors.noSharePermissions).exists()).toBeTruthy()
     })
   })
+  describe('for a vault resource', () => {
+    it('hides the add-link button (public links cannot be claimed)', () => {
+      const resource = mock<Resource>({ isFolder: true, canShare: () => true, isInVault: true })
+      const { wrapper } = getWrapper({ resource })
+      expect(wrapper.find(selectors.linkAddButton).exists()).toBeFalsy()
+    })
+  })
   describe('user does not have the permission to create public links', () => {
     const resource = mock<Resource>({
       path: '/lorem.txt',
@@ -138,7 +145,7 @@ describe('FileLinks', () => {
 })
 
 function getWrapper({
-  resource = mock<Resource>({ isFolder: false, canShare: () => true }),
+  resource = mock<Resource>({ isFolder: false, canShare: () => true, isInVault: false }),
   links = defaultLinksList,
   abilities = [{ action: 'create-all', subject: 'PublicLink' }],
   canShare = true

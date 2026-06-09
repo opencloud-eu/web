@@ -21,7 +21,7 @@ describe('useLoadPreview', () => {
       getWrapper({
         setup: async ({ loadPreview }) => {
           const space = mock<SpaceResource>()
-          const resource = mock<Resource>()
+          const resource = mock<Resource>({ isInVault: false })
           const preview = await loadPreview({ space, resource })
           expect(preview).toEqual(loadedPreview)
         },
@@ -32,7 +32,11 @@ describe('useLoadPreview', () => {
       it('does not return a preview for a project space without spaceImageData', () => {
         getWrapper({
           setup: async ({ loadPreview }) => {
-            const space = mock<SpaceResource>({ driveType: 'project', spaceImageData: undefined })
+            const space = mock<SpaceResource>({
+              driveType: 'project',
+              isInVault: false,
+              spaceImageData: undefined
+            })
             const resource = space
             const preview = await loadPreview({ space, resource })
             expect(preview).toBe(null)
@@ -42,7 +46,11 @@ describe('useLoadPreview', () => {
       it('does not return a preview for a disabled project space', () => {
         getWrapper({
           setup: async ({ loadPreview }) => {
-            const space = mock<SpaceResource>({ driveType: 'project', disabled: true })
+            const space = mock<SpaceResource>({
+              driveType: 'project',
+              isInVault: false,
+              disabled: true
+            })
             const resource = space
             const preview = await loadPreview({ space, resource })
             expect(preview).toBe(null)
@@ -53,7 +61,11 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }) => {
             const buildSpaceImageResourceMock = vi.mocked(buildSpaceImageResource)
-            const space = mock<SpaceResource>({ driveType: 'project', disabled: false })
+            const space = mock<SpaceResource>({
+              driveType: 'project',
+              isInVault: false,
+              disabled: false
+            })
             const resource = space
             const preview = await loadPreview({ space, resource })
             expect(preview).toBeDefined()
@@ -66,6 +78,7 @@ describe('useLoadPreview', () => {
           setup: async ({ loadPreview }) => {
             const space = mock<SpaceResource>({
               driveType: 'project',
+              isInVault: false,
               disabled: false,
               spaceImageData: { id: '1' }
             })
@@ -83,7 +96,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>()
+            const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: ImageDimension.Thumbnail }),
@@ -98,7 +111,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>()
+            const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: ImageDimension.Tile }),
@@ -114,7 +127,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>()
+            const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource, dimensions: ImageDimension.Preview })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: ImageDimension.Preview }),
@@ -131,7 +144,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>()
+            const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ processor: ProcessorType.enum.thumbnail }),
@@ -146,7 +159,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>()
+            const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ processor: ProcessorType.enum.fit }),
@@ -162,7 +175,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>()
+            const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource, processor: ProcessorType.enum.resize })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ processor: ProcessorType.enum.resize }),

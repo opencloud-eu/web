@@ -105,6 +105,12 @@ export const useFileActionsDownloadArchive = () => {
           if (resources.length === 0) {
             return false
           }
+          // The archive is zipped server-side from the raw (ciphertext) blobs
+          // under their encrypted names - we can't decrypt that client-side,
+          // so hide archive download whenever a vault resource is involved.
+          if (resources.some((r) => r.isInVault)) {
+            return false
+          }
           if (resources.length === 1 && !resources[0].isFolder) {
             return false
           }

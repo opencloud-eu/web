@@ -13,6 +13,8 @@ import {
   useSpacesStore,
   useExtensionRegistry,
   useResourcesStore,
+  resolveFolderVault,
+  FolderVaultEngine,
   OcUppyFile,
   OcUppyMeta,
   OcUppyBody
@@ -32,6 +34,11 @@ vi.mock('../../src/helpers/resource/actions', () => {
   )
   return { UploadResourceConflict }
 })
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  resolveFolderVault: vi.fn()
+}))
 
 type UppyPlugin = UnknownPlugin<OcUppyMeta, OcUppyBody, Record<string, unknown>>
 
@@ -310,6 +317,25 @@ describe('HandleUpload', () => {
         const { instance } = getWrapper({ conflictHandlingEnabled: false })
         await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
         expect(getConflictsMock).not.toHaveBeenCalled()
+      })
+      it('checks for conflicts before encrypting vault uploads', async () => {
+        // getConflicts compares file names against the cleartext resource
+        // store, so it has to run before applyVaultEncryption rewrites them to
+        // ciphertext. Otherwise every real collision is missed and the
+        // existing file is silently overwritten.
+        const { instance } = getWrapper()
+        vi.mocked(resolveFolderVault).mockResolvedValueOnce(mock<FolderVaultEngine>())
+        const encryptSpy = vi
+          .spyOn(instance as any, 'applyVaultEncryption')
+          .mockImplementation((...args: unknown[]) => Promise.resolve(args[0]))
+
+        await instance.handleUpload([mock<OcUppyFile>({ name: 'name' })])
+
+        expect(getConflictsMock).toHaveBeenCalled()
+        expect(encryptSpy).toHaveBeenCalled()
+        expect(getConflictsMock.mock.invocationCallOrder[0]).toBeLessThan(
+          encryptSpy.mock.invocationCallOrder[0]
+        )
       })
       it('does not check for conflicts if uploads target a non-current folder', async () => {
         // setUploadFolder was used to redirect uploads to a folder other than the

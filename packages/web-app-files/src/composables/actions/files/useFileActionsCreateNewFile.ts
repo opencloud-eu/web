@@ -6,13 +6,10 @@ import { computed, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   ApplicationFileExtension,
-  decryptResourceInPlace,
   FileAction,
   FileActionOptions,
   markVaultStatus,
   resolveFileNameDuplicate,
-  resolveFolderVault,
-  streamToArrayBuffer,
   useAppsStore,
   useClientService,
   useEmbedMode,
@@ -52,7 +49,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     resourcesStore.upsertResource(resource)
 
     // Folder-typed new-menu entries (e.g. vault from rclone-crypt, notebooks
-    // from notes) may not register an editor route — when there's nothing to
+    // from notes) may not register an editor route - when there's nothing to
     // open we navigate into the freshly-created folder instead so the user
     // ends up inside it. Anything that *does* have a route (apps like notes)
     // keeps using openEditor.
@@ -78,7 +75,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     extension: string,
     appFileExtension: ApplicationFileExtension
   ) => {
-    // Apps may override the default name shown in the create modal — e.g.
+    // Apps may override the default name shown in the create modal - e.g.
     // rclone-crypt wants "New vault.vault" instead of "New file.vault".
     // Fall back to the generic "New file" prefix when no override is set.
     const baseName = appFileExtension.newFileMenu?.defaultName?.() ?? $gettext('New file')
@@ -111,17 +108,6 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
 
         try {
           let resource: Resource
-          // Vault-aware: the picker/modal works in cleartext (what the user
-          // sees in the listing), but webdav needs the encrypted segment
-          // names. Look up the engine for the parent and translate before
-          // calling out — then decrypt the response so the upserted resource
-          // matches the rest of the (cleartext) listing.
-          const cleartextParentPath = unref(currentFolder).path
-          const vaultEngine = resolveFolderVault(
-            extensionRegistry,
-            unref(space),
-            cleartextParentPath
-          )
           if (appFileExtension.createFileHandler) {
             resource = await appFileExtension.createFileHandler({
               fileName,
@@ -129,27 +115,15 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
               currentFolder: unref(currentFolder)
             })
           } else if (appFileExtension.type === 'folder') {
-            const cleartextPath = join(cleartextParentPath, fileName)
-            const path = vaultEngine ? await vaultEngine.encryptPath(cleartextPath) : cleartextPath
+            const path = join(unref(currentFolder).path, fileName)
             resource = await (clientService.webdav as WebDAV).createFolder(unref(space), { path })
           } else {
-            const cleartextPath = join(cleartextParentPath, fileName)
-            const path = vaultEngine ? await vaultEngine.encryptPath(cleartextPath) : cleartextPath
-            // In a vault, "create empty file" must still produce a valid
-            // rclone-crypt blob on the server — a 0-byte PUT would have no
-            // header and refuse to decrypt later. Pipe an empty plaintext
-            // stream through encryptContent to get the file-header bytes.
-            const content = vaultEngine
-              ? await streamToArrayBuffer(vaultEngine.encryptContent(new Blob([]).stream()))
-              : undefined
+            const path = join(unref(currentFolder).path, fileName)
             resource = await (clientService.webdav as WebDAV).putFileContents(unref(space), {
-              path,
-              ...(content ? { content } : {})
+              path
             })
           }
-          if (vaultEngine && resource) {
-            await decryptResourceInPlace(vaultEngine, resource)
-          }
+
           markVaultStatus(extensionRegistry, unref(space), [resource])
 
           resourcesStore.upsertResource(resource)
@@ -209,7 +183,16 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
         handler: (args) => handler(args, appFileExtension.extension, appFileExtension),
         label: () => $gettext(appFileExtension.newFileMenu.menuTitle()),
         isVisible: () => {
-          return unref(currentFolder)?.canUpload({ user: userStore.user })
+          if (!unref(currentFolder)?.canUpload({ user: userStore.user })) {
+            return false
+          }
+          // No vault inside a vault: creating a ".vault" folder inside an
+          // (already encrypted) vault just yields a confusingly named folder, not
+          // a real nested vault, so hide that entry there.
+          if (appFileExtension.extension === 'vault' && unref(currentFolder)?.isInVault) {
+            return false
+          }
+          return true
         },
         class: 'oc-files-actions-create-new-file',
         ext: appFileExtension.extension,

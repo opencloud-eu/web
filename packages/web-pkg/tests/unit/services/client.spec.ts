@@ -123,7 +123,10 @@ describe('ClientService', () => {
       const webDavSpy = vi.mocked(webdav).mockReturnValue(webDavMock)
       const clientService = getClientServiceMock()
       expect(webDavSpy).toHaveBeenCalledWith(serverUrl, expect.anything())
-      expect(clientService.webdav).toEqual(webDavMock)
+      // the raw client is wrapped by the vault-aware decorator before it's
+      // exposed, so it's no longer identical to the bare factory result
+      expect(clientService.webdav).toBeDefined()
+      expect(clientService.webdav.listFiles).toBeInstanceOf(Function)
     })
   })
 })

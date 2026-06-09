@@ -16,11 +16,6 @@ import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
-import {
-  decryptResourceInPlace,
-  markVaultStatus,
-  resolveFolderVault
-} from '../../../helpers/folderVault'
 import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 
 export class FolderLoaderSpace implements FolderLoader {
@@ -47,8 +42,7 @@ export class FolderLoaderSpace implements FolderLoader {
       authService,
       spacesStore,
       sharesStore,
-      configStore,
-      extensionRegistry
+      configStore
     } = context
     const { webdav, graphAuthenticated: graphClient } = clientService
     const { replaceInvalidFileRoute } = useFileRouteReplace({ router })
@@ -70,39 +64,10 @@ export class FolderLoaderSpace implements FolderLoader {
           davProperties.push(DavProperty.DownloadURL)
         }
 
-        // FIXME(poc-vault): vault-aware path encryption belongs on a higher
-        // layer (folderService / a FolderLoader decorator). Keeping it inline
-        // here for the rclone-crypt PoC.
-        const vaultEngine = resolveFolderVault(extensionRegistry, space, path)
-        const effectivePath = vaultEngine ? yield* call(vaultEngine.encryptPath(path)) : path
-
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
-          webdav.listFiles(
-            space,
-            { path: effectivePath, fileId },
-            { signal: signal1, davProperties }
-          )
+          webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
         )
-
-        // FIXME(poc-vault): decrypt server-side names before anything else
-        // touches the resources, so the rest of the loader sees clear text.
-        // Run parent + children in parallel — decryptResourceInPlace mutates
-        // only the resource it's given and has no shared state, so listings
-        // of N items finish in ~one decrypt round-trip instead of N.
-        if (vaultEngine) {
-          yield* call(
-            Promise.all([
-              decryptResourceInPlace(vaultEngine, currentFolder),
-              ...resources.map((r) => decryptResourceInPlace(vaultEngine, r))
-            ])
-          )
-        }
-        // Mark vault-root resources surfaced in a parent listing too (no
-        // engine resolves against the parent path, so decryptResourceInPlace
-        // wouldn't fire on them). isInVault stays the canonical guard for
-        // action visibility downstream.
-        markVaultStatus(extensionRegistry, space, [currentFolder, ...resources])
 
         // if current folder has no id (= singe file public link) we must not correct the route
         if (currentFolder.id) {

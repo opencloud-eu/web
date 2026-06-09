@@ -95,6 +95,13 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       cancelTasks()
     }
 
+    // Vault files are ciphertext blobs server-side, so there is no thumbnail
+    // to fetch - skip the request (it would only 404) and fall back to the
+    // file-type icon.
+    if (resource?.isInVault) {
+      return
+    }
+
     if (isProjectSpaceResource(resource) && (!resource.spaceImageData || resource.disabled)) {
       if (unref(defaultSpaceImageBlobURL)) {
         spacesStore.updateSpaceField({

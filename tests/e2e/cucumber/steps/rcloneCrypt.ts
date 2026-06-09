@@ -1,18 +1,19 @@
 import { Given, DataTable, Then, When } from '@cucumber/cucumber'
 import { spawnSync } from 'node:child_process'
-import { mkdirSync, mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, writeFileSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { expect } from '@playwright/test'
 import { World } from '../environment'
 import { config } from '../../config'
 import { dragDropFiles } from '../../support/utils/dragDrop'
+import { api } from '../../support'
 
 // Builds an rclone-crypt encrypted vault directly on the OpenCloud backend
 // using the rclone CLI. The web-app-rclone-crypt plugin should then render
 // the cleartext names back in the UI.
 //
-// Password / encoding settings match the PoC defaults hardcoded in
+// Password / encoding settings match the rclone-crypt defaults hardcoded in
 // `packages/web-app-rclone-crypt/src/resolveVault.ts`: password "foobar",
 // no salt, base32 filename encoding.
 const VAULT_PASSWORD = 'foobar'
@@ -38,7 +39,7 @@ Given(
   ): Promise<void> {
     if (!vaultName.endsWith('.vault')) {
       throw new Error(
-        `vault name "${vaultName}" must end with .vault — the plugin uses that suffix to detect vaults`
+        `vault name "${vaultName}" must end with .vault - the plugin uses that suffix to detect vaults`
       )
     }
 
@@ -74,7 +75,7 @@ Given(
       const purge = spawnSync('rclone', [...baseFlags, 'purge', `oc:${vaultName}`], {
         encoding: 'utf8'
       })
-      // Ignore exit status — first run won't have anything to purge.
+      // Ignore exit status - first run won't have anything to purge.
       void purge
 
       runRclone([...baseFlags, 'mkdir', `oc-crypt:`])
@@ -87,6 +88,35 @@ Given(
     } finally {
       rmSync(workdir, { recursive: true, force: true })
     }
+  }
+)
+
+// The vault owner is a predefined user (Admin, whose rclone webdav creds the
+// vault-create step uses), so we can't reuse the generic share step, which
+// resolves the sharer via getCreatedUser. Share with the "Can view" role: it
+// maps to the same `viewer` role for files and folders, sidestepping the share
+// helper's `path.includes('.')` file/folder heuristic that a "*.vault" folder
+// name would otherwise trip.
+Given(
+  '{string} shares the rclone-crypt vault {string} with {string} via API',
+  async function (
+    this: World,
+    stepUser: string,
+    vaultName: string,
+    recipient: string
+  ): Promise<void> {
+    // createShare derives the owner's personal space from `user.displayName`.
+    // The predefined admin's store displayName is lowercase ("admin") but its
+    // server personal space is named after the actor ("Admin"), so pass the
+    // step user name as the display name to make the space lookup match.
+    const owner = this.usersEnvironment.getUser({ key: stepUser })
+    await api.share.createShare({
+      user: { ...owner, displayName: stepUser },
+      path: vaultName,
+      shareType: 'user',
+      shareWith: recipient,
+      role: 'Can view'
+    })
   }
 )
 
@@ -145,7 +175,7 @@ When(
   ): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     // Clicking the vault folder kicks the DriveResolver into a redirect to
-    // /rclone-crypt/unlock — we wait for the unlock URL instead of for a
+    // /rclone-crypt/unlock - we wait for the unlock URL instead of for a
     // PROPFIND like the generic "opens folder" step does.
     await Promise.all([
       page.waitForURL((url) => url.pathname.includes('/rclone-crypt/unlock'), {
@@ -153,7 +183,20 @@ When(
       }),
       page.locator(`[data-test-resource-name="${vaultName}"]`).first().click()
     ])
-    await page.locator('input[type="password"]').fill(passphrase)
+    await page.locator('#vault-passphrase').waitFor()
+    await page.locator('#vault-passphrase').fill(passphrase)
+    // Setting up a still-empty vault reveals a second "repeat passphrase" field,
+    // but only once the view has probed the server to learn the vault is empty.
+    // Give that field a brief window to appear and fill it too; an existing
+    // vault never shows it, so we just fall through after the timeout.
+    const confirm = page.locator('#vault-passphrase-confirm')
+    const needsConfirm = await confirm
+      .waitFor({ state: 'visible', timeout: 2000 })
+      .then(() => true)
+      .catch(() => false)
+    if (needsConfirm) {
+      await confirm.fill(passphrase)
+    }
     await Promise.all([
       page.waitForURL((url) => !url.pathname.includes('/rclone-crypt/unlock'), {
         timeout: 10_000
@@ -181,7 +224,7 @@ When(
     await editor.waitFor()
     // ProseMirror only flips the doc dirty on real input events. type()
     // raises keydown but no beforeinput/input, which is what tiptap listens
-    // for — insertText() simulates IME input which ProseMirror picks up.
+    // for - insertText() simulates IME input which ProseMirror picks up.
     await editor.click()
     await page.keyboard.press('ControlOrMeta+A')
     await page.keyboard.press('Delete')
@@ -266,7 +309,7 @@ When(
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     // Ctrl+S in the editor area is consumed by tiptap before it can bubble
     // to the document-level keydown listener that drives saveFileTask. Open
-    // the top-bar action menu and click "Save" instead — same handler, just
+    // the top-bar action menu and click "Save" instead - same handler, just
     // routed through the UI.
     await page.locator('#oc-openfile-contextmenu-trigger').click()
     // The dropdown rendering duplicates the action button (light + chrome
@@ -280,6 +323,146 @@ When(
         `PUT for save failed: ${putResponse.status()} ${putResponse.url()}\n` +
           (await putResponse.text())
       )
+    }
+  }
+)
+
+When(
+  '{string} fails to enter the vault {string} with the wrong passphrase {string}',
+  async function (
+    this: World,
+    stepUser: string,
+    vaultName: string,
+    passphrase: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await Promise.all([
+      page.waitForURL((url) => url.pathname.includes('/rclone-crypt/unlock'), {
+        timeout: 10_000
+      }),
+      page.locator(`[data-test-resource-name="${vaultName}"]`).first().click()
+    ])
+    await page.locator('input[type="password"]').fill(passphrase)
+    await page.locator('#vault-unlock-submit').click()
+    // A wrong passphrase keeps the user on the unlock page and surfaces the
+    // error instead of decrypting into the vault.
+    await expect(page.getByText('Incorrect passphrase.')).toBeVisible()
+    expect(page.url()).toContain('/rclone-crypt/unlock')
+  }
+)
+
+Then(
+  '{string} should not be able to share {string}',
+  async function (this: World, stepUser: string, resource: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await page.locator(`[data-test-resource-name="${resource}"]`).first().click({ button: 'right' })
+    const menu = page.locator('div[id^="context-menu-drop"]').first()
+    await menu.waitFor({ timeout: 5_000 })
+    // Vault content has a ciphertext name and can't be claimed once a share
+    // rebases the path, so canShare() is false: neither the "shares" nor the
+    // "create link" action renders in the context menu.
+    await expect(menu.locator('.oc-files-actions-show-shares-trigger')).toHaveCount(0)
+    await expect(menu.locator('.oc-files-actions-create-links')).toHaveCount(0)
+  }
+)
+
+Then(
+  '{string} should be able to share {string} but not create a public link',
+  async function (this: World, stepUser: string, resource: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await page.locator(`[data-test-resource-name="${resource}"]`).first().click({ button: 'right' })
+    const menu = page.locator('div[id^="context-menu-drop"]').first()
+    await menu.waitFor({ timeout: 5_000 })
+    // A vault root keeps its Shareable permission: collaborator sharing stays
+    // available (the recipient unlocks it out of band and the cleartext
+    // `.vault` name still anchors detection in their session).
+    await expect(menu.locator('.oc-files-actions-show-shares-trigger')).toHaveCount(1)
+    // Public links rebase the path past the `.vault` anchor, so they're blocked.
+    await expect(menu.locator('.oc-files-actions-create-links')).toHaveCount(0)
+  }
+)
+
+When(
+  '{string} downloads the vault file {string} which decrypts to {string}',
+  async function (
+    this: World,
+    stepUser: string,
+    resource: string,
+    expectedContent: string
+  ): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await page.locator(`[data-test-resource-name="${resource}"]`).first().click({ button: 'right' })
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page
+        .locator('div[id^="context-menu-drop"] button.oc-files-actions-download-file-trigger')
+        .click()
+    ])
+    // The bytes that land on disk must be the cleartext, not the ciphertext
+    // blob the server stores - i.e. the download went through the engine.
+    const content = readFileSync(await download.path(), 'utf8')
+    expect(content).toBe(expectedContent)
+  }
+)
+
+When(
+  '{string} renames the vault resource {string} to {string}',
+  async function (this: World, stepUser: string, resource: string, newName: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    await page.locator(`[data-test-resource-name="${resource}"]`).first().click({ button: 'right' })
+    await page
+      .locator('div[id^="context-menu-drop"] button.oc-files-actions-rename-trigger')
+      .click()
+    const input = page.locator('.oc-text-input')
+    await input.clear()
+    await input.fill(newName)
+    await Promise.all([
+      // The MOVE source path is the *encrypted* name, so (unlike the generic
+      // rename helper, which matches the cleartext name in the URL) we just
+      // wait for any successful MOVE.
+      page.waitForResponse((resp) => resp.request().method() === 'MOVE' && resp.status() === 201),
+      page
+        .locator('//button[contains(@class,"oc-modal-body-actions-confirm") and text()="Rename"]')
+        .click()
+    ])
+    await page
+      .locator(`[data-test-resource-name="${newName}"]`)
+      .first()
+      .waitFor({ timeout: 10_000 })
+  }
+)
+
+Given(
+  '{string} removes any folder {string} on the server',
+  async function (this: World, stepUser: string, name: string): Promise<void> {
+    const user = this.usersEnvironment.getUser({ key: stepUser })
+    const workdir = mkdtempSync(join(tmpdir(), 'rclone-purge-'))
+    const configFile = join(workdir, 'rclone.conf')
+    try {
+      const obscuredUserPassword = runRclone(['obscure', user.password]).trim()
+      writeFileSync(
+        configFile,
+        [
+          '[oc]',
+          'type = webdav',
+          `url = ${config.baseUrl}/dav/files/${user.username}`,
+          'vendor = other',
+          `user = ${user.username}`,
+          `pass = ${obscuredUserPassword}`,
+          ''
+        ].join('\n')
+      )
+      // Best effort: makes UI-create scenarios deterministic on reruns. The
+      // first run has nothing to purge, so a non-zero exit is fine.
+      spawnSync(
+        'rclone',
+        ['--config', configFile, '--no-check-certificate', 'purge', `oc:${name}`],
+        {
+          encoding: 'utf8'
+        }
+      )
+    } finally {
+      rmSync(workdir, { recursive: true, force: true })
     }
   }
 )

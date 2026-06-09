@@ -27,6 +27,7 @@ reports
 tests/opencloud
 tests/testing-app
 playwright-report
+test-results
 
 /webpack.json
 /webpack-build-log.json

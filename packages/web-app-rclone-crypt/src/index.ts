@@ -3,13 +3,6 @@ import { ref } from 'vue'
 import { ApplicationInformation, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
 import translations from '../l10n/translations.json'
 import { folderVaultExtension } from './extensions/folderVault'
-import { useResourceIndicatorExtension } from './extensions/resourceIndicator'
-import {
-  lockVaultActionExtension,
-  unlockVaultActionExtension,
-  useLockVaultAction,
-  useUnlockVaultAction
-} from './extensions/lockVault'
 import UnlockVault from './views/UnlockVault.vue'
 
 export default defineWebApplication({
@@ -40,14 +33,7 @@ export default defineWebApplication({
       ]
     }
 
-    const lockVaultAction = useLockVaultAction()
-    const unlockVaultAction = useUnlockVaultAction()
-    const extensions = ref<Extension[]>([
-      folderVaultExtension,
-      useResourceIndicatorExtension(),
-      lockVaultActionExtension(lockVaultAction),
-      unlockVaultActionExtension(unlockVaultAction)
-    ])
+    const extensions = ref<Extension[]>([folderVaultExtension])
 
     const routes = [
       {
@@ -57,7 +43,7 @@ export default defineWebApplication({
         path: '/unlock',
         component: UnlockVault,
         meta: {
-          // hybrid so the same route works inside public links — the runtime's
+          // hybrid so the same route works inside public links - the runtime's
           // public-link auth guard runs first and prompts for the link
           // password before we get to the vault passphrase.
           authContext: 'hybrid',

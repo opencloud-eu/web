@@ -1,6 +1,8 @@
 import { unref } from 'vue'
 import { extractExtensionFromFile, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
+import { mimeTypeForExtension } from './vaultMimeType'
+import { decryptVaultPath, encryptVaultPath } from './vaultEngine'
 import {
   ExtensionRegistry,
   FolderVaultClaim,
@@ -10,28 +12,32 @@ import {
 
 /**
  * Walks the registered folder-vault extensions and returns the first engine
- * that can decrypt the given (space, path) — i.e. a vault that is currently
- * **unlocked** in this session. Returns `null` in two distinct situations
- * that callers should usually treat the same:
+ * that can decrypt the given (space, path), or `null` if there is none. There
+ * is no separate locked/unlocked vault state: an engine exists for a path
+ * exactly when one was resolved and stashed in the store this session, and its
+ * absence is all "locked" means. `null` therefore covers two cases that
+ * callers usually treat the same:
  *
- *   - no extension owns the path (it isn't inside a vault at all), or
- *   - an extension owns the path but the vault is still locked (no secret
- *     in the store yet).
+ *   - no extension claims the path (it isn't inside a vault at all), or
+ *   - an extension claims it but no engine has been resolved for it yet.
  *
- * Use `getVaultClaim` to disambiguate when the difference matters — e.g.
- * the route guard needs the unlock route, while everyone else can safely
- * treat both cases as "operate in cleartext".
+ * Use `getVaultClaim` to disambiguate when the difference matters - e.g.
+ * the route guard needs the claim's unlock route, while everyone else can
+ * safely treat both cases as "operate in cleartext".
  *
- * FIXME(poc-vault): this lookup currently lives next to the loaders and the
- * AppWrapper. Once we lift vault-aware translation onto a higher layer (e.g.
- * a webdav/client decorator or a folderService decorator), callers stop
- * needing to resolve the engine themselves.
+ * Since the vault-aware webdav decorator (`createVaultWebDav`), most callers
+ * no longer resolve the engine themselves - the decorator does it for every
+ * path-carrying webdav method. The remaining direct callers are exactly the
+ * paths that can't route through that webdav client: the uppy/tus upload
+ * pipeline, the delete worker, the version-download `getFileUrl` branch and
+ * the activity feed. The route guard also calls in, but for unlock state to
+ * drive a redirect, not for translation.
  */
-export function resolveFolderVault(
+export async function resolveFolderVault(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   path: string | undefined
-): FolderVaultEngine | null {
+): Promise<FolderVaultEngine | null> {
   if (!space || !path) {
     return null
   }
@@ -39,7 +45,7 @@ export function resolveFolderVault(
     .flatMap((ref) => unref(ref))
     .filter((e): e is FolderVaultExtension => e.type === 'folderVault')
   for (const ext of extensions) {
-    const engine = ext.resolve(space, path)
+    const engine = await ext.resolve(space, path)
     if (engine) {
       return engine
     }
@@ -48,13 +54,54 @@ export function resolveFolderVault(
 }
 
 /**
+ * Translate each resource's (possibly decrypted) path back to its on-server
+ * encrypted form. For callers that bypass the vault-aware webdav client - the
+ * web workers, which run their own vanilla webdav instance and would otherwise
+ * write a cleartext name to the server for an unlocked vault. Resources outside
+ * a vault (or in a locked one, where the path is already ciphertext) are
+ * returned unchanged; the original instances stay untouched for UI state.
+ */
+export async function encryptResourcePathsForServer(
+  extensionRegistry: ExtensionRegistry,
+  space: SpaceResource,
+  resources: Resource[]
+): Promise<Resource[]> {
+  return Promise.all(
+    resources.map(async (r) => {
+      const engine = await resolveFolderVault(extensionRegistry, space, r.path)
+      if (!engine) return r
+      const encryptedPath = await encryptVaultPath(engine, r.path)
+      if (encryptedPath === r.path) return r
+      return { ...r, path: encryptedPath } as Resource
+    })
+  )
+}
+
+/**
+ * Same as `encryptResourcePathsForServer` but for bare folder paths (e.g. the
+ * parent folders a restore has to recreate before moving the item back).
+ */
+export async function encryptFolderPathsForServer(
+  extensionRegistry: ExtensionRegistry,
+  space: SpaceResource,
+  paths: string[]
+): Promise<string[]> {
+  return Promise.all(
+    paths.map(async (p) => {
+      const engine = await resolveFolderVault(extensionRegistry, space, p)
+      return engine ? encryptVaultPath(engine, p) : p
+    })
+  )
+}
+
+/**
  * Walks the registered folder-vault extensions and returns the first one
- * that claims the given (space, path) — independent of unlock state. Callers
+ * that claims the given (space, path) - independent of unlock state. Callers
  * use this to decide whether to render an "unlock first" redirect for a
  * vault whose `resolve()` returned null (i.e. the extension owns the path
  * but currently can't produce an engine).
  *
- * Also the canonical "is this path inside any vault?" check — used by
+ * Also the canonical "is this path inside any vault?" check - used by
  * `markVaultStatus` to populate `Resource.isInVault`.
  */
 export function getVaultClaim(
@@ -77,45 +124,6 @@ export function getVaultClaim(
   return null
 }
 
-// Tiny extension → mime-type lookup so vault resources show up with the
-// right mime once we've recovered their cleartext extension. Mirrors the
-// shapes the preview / mediaviewer / file-icon code checks against.
-const MIME_BY_EXTENSION: Record<string, string> = {
-  txt: 'text/plain',
-  md: 'text/markdown',
-  markdown: 'text/markdown',
-  html: 'text/html',
-  htm: 'text/html',
-  css: 'text/css',
-  csv: 'text/csv',
-  json: 'application/json',
-  xml: 'application/xml',
-  yml: 'text/yaml',
-  yaml: 'text/yaml',
-  pdf: 'application/pdf',
-  png: 'image/png',
-  jpg: 'image/jpeg',
-  jpeg: 'image/jpeg',
-  gif: 'image/gif',
-  webp: 'image/webp',
-  svg: 'image/svg+xml',
-  bmp: 'image/bmp',
-  mp3: 'audio/mpeg',
-  ogg: 'audio/ogg',
-  wav: 'audio/wav',
-  flac: 'audio/flac',
-  mp4: 'video/mp4',
-  webm: 'video/webm',
-  mov: 'video/quicktime',
-  zip: 'application/zip',
-  epub: 'application/epub+zip'
-}
-
-function guessMimeType(extension: string | undefined): string | undefined {
-  if (!extension) return undefined
-  return MIME_BY_EXTENSION[extension.toLowerCase()]
-}
-
 /**
  * Rewrite a Resource so its name / path / webDavPath / extension reflect the
  * cleartext form. The server only knows the encrypted blob name, so anything
@@ -129,7 +137,19 @@ export async function decryptResourceInPlace(
   if (!r?.path) {
     return r
   }
-  const decryptedPath = await engine.decryptPath(r.path)
+  let decryptedPath: string
+  try {
+    decryptedPath = await decryptVaultPath(engine, r.path)
+  } catch (e) {
+    // A single foreign or corrupt blob (a file put there by another tool, a
+    // truncated name, …) must not blow up the whole listing via the caller's
+    // Promise.all. Keep its encrypted name but still flag it as in-vault so the
+    // folder still loads. Share-gating (stripping Shareable) is applied by the
+    // `markVaultStatus` pass that always follows this decrypt.
+    console.error('[folder-vault] failed to decrypt resource path', r.path, e)
+    r.isInVault = true
+    return r
+  }
   if (decryptedPath === r.path) {
     return r
   }
@@ -153,28 +173,15 @@ export async function decryptResourceInPlace(
     // gate on mimeType in addition to extension, so override it with a
     // guess derived from the cleartext extension. Keeps preview, audio
     // and image apps happy.
-    const guessed = guessMimeType(r.extension)
+    const guessed = mimeTypeForExtension(r.extension)
     if (guessed) {
       r.mimeType = guessed
     }
   }
-  // Sharing a vault entry would expose ciphertext blobs to other users with
-  // no way to read them. Strip the Shareable permission so canShare()
-  // returns false everywhere in the UI (action buttons, sidebar, etc.).
-  //
-  // This is the **only** share-gating mechanism for vault resources — every
-  // share entry point (FileLinks, FileShares, useFileActionsShowShares,
-  // useFileActionsCreateLink) already routes through canShare(), which
-  // reads these permissions. Do not add a redundant `isInVault` guard on
-  // top of that; the two would drift over time.
-  if (r.permissions) {
-    r.permissions = r.permissions.replace(DavPermission.Shareable, '')
-  }
-  // The engine resolved → resource is by definition inside (or *is*) a
-  // vault. Setting the flag here covers in-vault listings; vault-root
-  // resources surfaced in a *parent* listing (where the engine isn't
-  // resolved against the parent path) get the same flag via
-  // `markVaultStatus` below.
+  // The engine resolved → resource is by definition inside (or *is*) a vault.
+  // Flagging covers in-vault listings; share-gating (Shareable strip) and
+  // vault-root resources surfaced in a *parent* listing are handled by the
+  // `markVaultStatus` pass that always follows this decrypt.
   r.isInVault = true
   return r
 }
@@ -182,7 +189,7 @@ export async function decryptResourceInPlace(
 /**
  * Mark resources whose path sits inside (or *is*) a registered vault by
  * setting `Resource.isInVault = true`. Cheap path-based lookup via
- * `getVaultClaim` — no unlock state required.
+ * `getVaultClaim` - no unlock state required.
  *
  * Call this on any listing the UI will render so action guards (move,
  * copy, paste, favorite, share-from-vault, …) can short-circuit on the
@@ -197,8 +204,24 @@ export function markVaultStatus(
   if (!space || !resources?.length) return
   for (const r of resources) {
     if (!r?.path) continue
-    if (getVaultClaim(extensionRegistry, space, r.path)) {
-      r.isInVault = true
+    const claim = getVaultClaim(extensionRegistry, space, r.path)
+    if (!claim) continue
+    // Guard the `.vault`-suffix detection band-aid: a *file* literally named
+    // `something.vault` would otherwise be mistaken for a vault root. A real
+    // vault root is always a folder, so a non-folder sitting exactly at the
+    // claimed root is a false positive - leave it as a normal resource.
+    if (claim.vaultRoot === r.path && r.type !== 'folder' && !r.isFolder) continue
+    r.isInVault = true
+
+    // All vault share-gating lives here. Vault *content* (anything below the
+    // root) is never shareable: its ciphertext name can't be claimed once a
+    // share or public link rebases the path, so strip Shareable and canShare()
+    // returns false at every share entry point. The vault *root* keeps Shareable
+    // on purpose - it stays collaborator-shareable (the recipient unlocks it out
+    // of band, where the cleartext `.vault` name still anchors detection); only
+    // public links are blocked, gated on `isInVault` in the link UI.
+    if (claim.vaultRoot !== r.path && r.permissions) {
+      r.permissions = r.permissions.replace(DavPermission.Shareable, '')
     }
   }
 }

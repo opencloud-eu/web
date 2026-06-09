@@ -126,6 +126,13 @@ const canCreateLinks = computed(() => {
   if (!ability.can('create-all', 'PublicLink')) {
     return false
   }
+  // Public links rebase the path at the link target, dropping the vault's
+  // cleartext `.vault` anchor so the share can no longer be claimed and
+  // unlocked. Block link creation inside or at a vault root; collaborator
+  // shares stay available (see markVaultStatus).
+  if (unref(resource)?.isInVault) {
+    return false
+  }
   return canShare({ space: unref(space), resource: unref(resource) })
 })
 
