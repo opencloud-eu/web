@@ -84,7 +84,8 @@ import {
   SseEventWrapperOptions,
   onSSESpaceCreatedEvent,
   onSSESpaceDisabledEvent,
-  onSSESpaceDeletedEvent
+  onSSESpaceDeletedEvent,
+  onSSESpaceEnabledEvent
 } from './sse'
 import { loadAppTranslations } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
@@ -987,6 +988,15 @@ export const registerSSEEventListeners = ({
       msg,
       ...sseEventWrapperOptions,
       method: onSSESpaceCreatedEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.SPACE_ENABLED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.SPACE_ENABLED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSESpaceEnabledEvent
     })
   )
 
