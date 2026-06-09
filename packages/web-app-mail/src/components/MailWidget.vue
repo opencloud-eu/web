@@ -369,7 +369,7 @@ const requestUnsavedComposeSave = ({
 }) => {
   dispatchModal({
     title: $gettext('Unsaved changes'),
-    message: $gettext('Your email isn’t finished yet. Save it as a draft before leaving.'),
+    message: $gettext('Your email isn’t finished yet. Save it as draft before leaving.'),
     confirmText: $gettext('Save as draft'),
     hasInput: false,
     onConfirm: onSave,
