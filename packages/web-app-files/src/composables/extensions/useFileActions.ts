@@ -21,7 +21,8 @@ import {
   useFileActionsRename,
   useFileActionsShowDetails,
   useFileActionsShowShares,
-  useFileActionsToggleHideShare
+  useFileActionsToggleHideShare,
+  useFileActionsClearClipboard
 } from '../actions'
 import { unref } from 'vue'
 
@@ -40,6 +41,7 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: enableSyncActions } = useFileActionsEnableSync()
   const { actions: moveActions } = useFileActionsMove()
   const { actions: pasteActions } = useFileActionsPaste()
+  const { actions: clearClipboardActions } = useFileActionsClearClipboard()
   const { actions: renameActions } = useFileActionsRename()
   const { actions: favoriteActions } = useFileActionsFavorite()
   const { actions: setSpaceImageActions } = useSpaceActionsSetImage()
@@ -115,11 +117,20 @@ export const useFileActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.paste',
-      extensionPointIds: [contextActionsExtensionPoint.id],
+      extensionPointIds: [batchActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(pasteActions)[0],
-        category: 'tertiary'
+        category: 'quaternary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.clear-clipboard',
+      extensionPointIds: [batchActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(clearClipboardActions)[0],
+        category: 'quaternary'
       }
     },
     {
@@ -174,7 +185,6 @@ export const useFileActions = (): ActionExtension[] => {
       id: 'com.github.opencloud-eu.web.files.context-action.favorite',
       extensionPointIds: [
         previewToolBarActionsExtensionPointId,
-        batchActionsExtensionPoint.id,
         contextActionsExtensionPoint.id,
         fileSideBarActionsExtensionPoint.id
       ],
