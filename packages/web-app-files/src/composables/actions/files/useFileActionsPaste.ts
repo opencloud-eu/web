@@ -187,6 +187,17 @@ export const useFileActionsPaste = () => {
           return false
         }
 
+        // Block both directions: pasting *into* a vault (target folder is
+        // in vault) or pasting a vault-sourced clipboard *out* would
+        // produce ciphertext where the user expects cleartext (or
+        // vice-versa).
+        if (unref(currentFolder)?.isInVault) {
+          return false
+        }
+        if (clipboardStore.resources.some((r) => r.isInVault)) {
+          return false
+        }
+
         if (isLocationPublicActive(router, 'files-public-link') && unref(currentFolder)) {
           return unref(currentFolder)?.canCreate()
         }

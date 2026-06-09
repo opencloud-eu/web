@@ -8,7 +8,9 @@ import { FileResource, SpaceResource } from '@opencloud-eu/web-client'
 import { useClientService } from '../clientService'
 import { ListFilesOptions } from '@opencloud-eu/web-client/webdav'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { useUserStore } from '../piniaStores'
+import { useExtensionRegistry, useUserStore } from '../piniaStores'
+import { resolveFolderVault } from '../../helpers/folderVault'
+import { streamToBlob } from '../../helpers/streams'
 
 interface AppFileHandlingOptions {
   clientService: ClientService
@@ -31,7 +33,7 @@ export interface AppFileHandlingResult {
   getFileContents(fileContext: MaybeRef<FileContext>, options?: FileContentOptions): Promise<any>
   putFileContents(
     fileContext: MaybeRef<FileContext>,
-    putFileOptions: { content?: string } & Record<string, any>
+    putFileOptions: { content?: string | ArrayBuffer } & Record<string, any>
   ): Promise<FileResource>
 }
 
@@ -40,12 +42,34 @@ export function useAppFileHandling({
 }: AppFileHandlingOptions): AppFileHandlingResult {
   clientService = clientService || useClientService()
   const userStore = useUserStore()
+  const extensionRegistry = useExtensionRegistry()
 
-  const getUrlForResource = (
+  const getUrlForResource = async (
     space: SpaceResource,
     resource: Resource,
     options?: UrlForResourceOptions
-  ) => {
+  ): Promise<string> => {
+    // For vault resources, the server-side blob is ciphertext — neither a
+    // direct download URL nor a thumbnail can render the actual image. Fetch
+    // the encrypted blob, run it through the engine, and expose the cleartext
+    // bytes as an in-memory blob URL the embedded app can consume directly.
+    const vaultEngine = resolveFolderVault(extensionRegistry, space, resource?.path)
+    if (vaultEngine) {
+      const encryptedPath = await vaultEngine.encryptPath(resource.path)
+      const response = await clientService.webdav.getFileContents(
+        space,
+        { path: encryptedPath },
+        { responseType: 'arraybuffer', signal: options?.signal }
+      )
+      // Run the ciphertext through the engine as a real stream (Blob.stream)
+      // and collect the plaintext stream directly into the Blob the URL
+      // points at — no intermediate buffer.
+      const blob = await streamToBlob(
+        vaultEngine.decryptContent(new Blob([response.body as ArrayBuffer]).stream()),
+        resource.mimeType || 'application/octet-stream'
+      )
+      return URL.createObjectURL(blob)
+    }
     return clientService.webdav.getFileUrl(space, resource, {
       username: userStore.user?.onPremisesSamAccountName,
       ...options
@@ -91,7 +115,7 @@ export function useAppFileHandling({
 
   const putFileContents = (
     fileContext: MaybeRef<FileContext>,
-    options: { content?: string; signal?: AbortSignal } & Record<string, any>
+    options: { content?: string | ArrayBuffer; signal?: AbortSignal } & Record<string, any>
   ) => {
     return clientService.webdav.putFileContents(unref(unref(fileContext).space), {
       path: unref(unref(fileContext).item),

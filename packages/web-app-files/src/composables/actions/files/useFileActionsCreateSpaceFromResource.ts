@@ -140,6 +140,14 @@ export const useFileActionsCreateSpaceFromResource = () => {
           return false
         }
 
+        // The new space would receive ciphertext blobs (no key follows the
+        // resource), so the contents would be unreadable. Hide for any
+        // vault resource — and for the vault root itself, which would
+        // also lose the path-derived encryption.
+        if (resources.some((r) => r.isInVault)) {
+          return false
+        }
+
         return isPersonalSpaceResource(space)
       },
       class: 'oc-files-actions-create-space-from-resource-trigger'

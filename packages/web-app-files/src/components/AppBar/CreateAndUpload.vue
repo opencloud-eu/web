@@ -29,6 +29,7 @@ import {
   ClipboardActions,
   isLocationPublicActive,
   useClipboardStore,
+  useExtensionRegistry,
   useMessages,
   useResourcesStore,
   useRoute,
@@ -40,7 +41,15 @@ import {
 
 import { computed, onMounted, onBeforeUnmount, unref, watch } from 'vue'
 import { SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'
-import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
+import {
+  decryptResourceInPlace,
+  markVaultStatus,
+  resolveFolderVault,
+  useService,
+  useUpload,
+  UppyService,
+  UploadResult
+} from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../../HandleUpload'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -68,6 +77,7 @@ const { resources: clipboardResources, action: clipboardAction } = storeToRefs(c
 
 const resourcesStore = useResourcesStore()
 const { currentFolder } = storeToRefs(resourcesStore)
+const extensionRegistry = useExtensionRegistry()
 
 const isPublicLocation = useActiveLocation(isLocationPublicActive, 'files-public-link')
 
@@ -85,6 +95,7 @@ if (!uppyService.getPlugin('HandleUpload')) {
     spacesStore,
     messageStore,
     resourcesStore,
+    extensionRegistry,
     uppyService
   })
 }
@@ -141,12 +152,28 @@ const onUploadComplete = async (result: UploadResult) => {
     return
   }
 
+  // Vault-aware refresh: the cleartext currentFolder path means nothing to
+  // the server, so encrypt before listing and decrypt the children back to
+  // cleartext before they enter the store. Without this the upload would
+  // pop up with the encrypted blob name.
+  const clearPath = unref(currentFolder).path
+  const vaultEngine = resolveFolderVault(extensionRegistry, unref(computedSpace), clearPath)
+  const listPath = vaultEngine ? await vaultEngine.encryptPath(clearPath) : clearPath
+
   const { children } = await clientService.webdav.listFiles(unref(computedSpace), {
-    path: unref(currentFolder).path
+    path: listPath
   })
 
   const existingIds = new Set(resourcesStore.resources.map((r) => r.id))
   const newResources = children.filter((child) => !existingIds.has(child.id))
+
+  // Decrypt only the resources we're actually about to upsert — children
+  // already in the store are already cleartext. Parallel because
+  // decryptResourceInPlace mutates only the resource it's given.
+  if (vaultEngine && newResources.length) {
+    await Promise.all(newResources.map((r) => decryptResourceInPlace(vaultEngine, r)))
+  }
+  markVaultStatus(extensionRegistry, unref(computedSpace), newResources)
   resourcesStore.upsertResources(newResources)
 }
 

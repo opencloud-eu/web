@@ -7,6 +7,7 @@ import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
 import { setupRouterHooks } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
+import { setupVaultUnlockGuard } from './setupVaultUnlockGuard'
 import { patchRouter } from './patchCleanPath'
 import { routeNames } from './names'
 import {
@@ -172,3 +173,4 @@ export const router = patchRouter(
 
 setupRouterHooks(router)
 setupAuthGuard(router)
+setupVaultUnlockGuard(router)
