@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
 -  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
 - feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
