@@ -17,8 +17,10 @@ import {
   useModals,
   useSpacesStore,
   useConfigStore,
+  useExtensionRegistry,
   useResourcesStore
 } from '../../piniaStores'
+import { resolveFolderVault } from '../../../helpers/folderVault'
 import { storeToRefs } from 'pinia'
 import { useDeleteWorker } from '../../webWorkers'
 import { useEventBus } from '../../eventBus'
@@ -45,6 +47,27 @@ export const useFileActionsDeleteResources = () => {
 
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
+  const extensionRegistry = useExtensionRegistry()
+
+  // Resources surface in the UI with their cleartext paths after vault-aware
+  // decryption, but the delete worker is a vanilla webdav client that knows
+  // nothing about vaults. Translate any path that sits inside a vault back
+  // to its encrypted form before handing the resource off — the original
+  // (cleartext) instance stays in the store untouched for UI state.
+  const translatePathsForDelete = async (
+    space: SpaceResource,
+    resources: Resource[]
+  ): Promise<Resource[]> => {
+    return Promise.all(
+      resources.map(async (r) => {
+        const engine = resolveFolderVault(extensionRegistry, space, r.path)
+        if (!engine) return r
+        const encryptedPath = await engine.encryptPath(r.path)
+        if (encryptedPath === r.path) return r
+        return { ...r, path: encryptedPath } as Resource
+      })
+    )
+  }
 
   const resourcesToDelete = ref<Resource[]>([])
 
@@ -225,75 +248,82 @@ export const useFileActionsDeleteResources = () => {
 
     const originalCurrentFolderId = unref(currentFolder)?.id
 
-    return Object.values(resourceSpaceMapping).map(
-      ({ space: spaceForDeletion, resources: resourcesForDeletion }) => {
-        startWorker(
-          { topic: 'fileListDelete', space: spaceForDeletion, resources: resourcesForDeletion },
-          async ({ successful, failed }) => {
-            if (successful.length) {
-              showSuccessMessage({
-                space: spaceForDeletion,
-                filesToDelete: resourcesForDeletion,
-                deletedFiles: successful
-              })
-              eventBus.publish('runtime.resource.deleted', successful)
-            }
-
-            resourcesStore.removeResourcesFromDeleteQueue(failed.map(({ resource }) => resource.id))
-            resourcesStore.removeResourcesFromDeleteQueue(successful.map(({ id }) => id))
-
-            failed.forEach(({ error, resource }) => {
-              let title = $gettext('Failed to delete "%{resource}"', { resource: resource.name })
-              if (error.statusCode === 423) {
-                title = $gettext('Failed to delete "%{resource}" - the file is locked', {
-                  resource: resource.name
-                })
-              }
-
-              showErrorMessage({ title, errors: [error] })
+    const startGroup = async (
+      spaceForDeletion: SpaceResource,
+      resourcesForDeletion: Resource[]
+    ) => {
+      const workerResources = await translatePathsForDelete(spaceForDeletion, resourcesForDeletion)
+      startWorker(
+        { topic: 'fileListDelete', space: spaceForDeletion, resources: workerResources },
+        async ({ successful, failed }) => {
+          if (successful.length) {
+            showSuccessMessage({
+              space: spaceForDeletion,
+              filesToDelete: resourcesForDeletion,
+              deletedFiles: successful
             })
+            eventBus.publish('runtime.resource.deleted', successful)
+          }
 
-            // user hasn't navigated to another location meanwhile
-            if (originalCurrentFolderId === unref(currentFolder)?.id) {
-              resourcesStore.removeResources(successful)
+          resourcesStore.removeResourcesFromDeleteQueue(failed.map(({ resource }) => resource.id))
+          resourcesStore.removeResourcesFromDeleteQueue(successful.map(({ id }) => id))
 
-              const activeFilesCount = resourcesStore.activeResources.length
-              const pageCount = Math.ceil(unref(activeFilesCount) / unref(itemsPerPage))
-              if (unref(currentPage) > 1 && unref(currentPage) > pageCount) {
-                // reset pagination to avoid empty lists (happens when deleting all items on the last page)
-                currentPageQuery.value = pageCount.toString()
-              }
-            }
-
-            // Load quota
-            if (
-              isLocationSpacesActive(router, 'files-spaces-generic') &&
-              !['public', 'share'].includes(spaceForDeletion?.driveType)
-            ) {
-              const graphClient = clientService.graphAuthenticated
-              const updatedSpace = await graphClient.drives.getDrive(unref(resources)[0].storageId)
-              spacesStore.updateSpaceField({
-                id: updatedSpace.id,
-                field: 'spaceQuota',
-                value: updatedSpace.spaceQuota
+          failed.forEach(({ error, resource }) => {
+            let title = $gettext('Failed to delete "%{resource}"', { resource: resource.name })
+            if (error.statusCode === 423) {
+              title = $gettext('Failed to delete "%{resource}" - the file is locked', {
+                resource: resource.name
               })
             }
 
-            if (
-              unref(resourcesToDelete).length &&
-              isSameResource(unref(resourcesToDelete)[0], unref(currentFolder))
-            ) {
-              // current folder is being deleted
-              return router.push(
-                createFileRouteOptions(spaceForDeletion, {
-                  path: dirname(unref(resourcesToDelete)[0].path),
-                  fileId: unref(resourcesToDelete)[0].parentFolderId
-                })
-              )
+            showErrorMessage({ title, errors: [error] })
+          })
+
+          // user hasn't navigated to another location meanwhile
+          if (originalCurrentFolderId === unref(currentFolder)?.id) {
+            resourcesStore.removeResources(successful)
+
+            const activeFilesCount = resourcesStore.activeResources.length
+            const pageCount = Math.ceil(unref(activeFilesCount) / unref(itemsPerPage))
+            if (unref(currentPage) > 1 && unref(currentPage) > pageCount) {
+              // reset pagination to avoid empty lists (happens when deleting all items on the last page)
+              currentPageQuery.value = pageCount.toString()
             }
           }
-        )
-      }
+
+          // Load quota
+          if (
+            isLocationSpacesActive(router, 'files-spaces-generic') &&
+            !['public', 'share'].includes(spaceForDeletion?.driveType)
+          ) {
+            const graphClient = clientService.graphAuthenticated
+            const updatedSpace = await graphClient.drives.getDrive(unref(resources)[0].storageId)
+            spacesStore.updateSpaceField({
+              id: updatedSpace.id,
+              field: 'spaceQuota',
+              value: updatedSpace.spaceQuota
+            })
+          }
+
+          if (
+            unref(resourcesToDelete).length &&
+            isSameResource(unref(resourcesToDelete)[0], unref(currentFolder))
+          ) {
+            // current folder is being deleted
+            return router.push(
+              createFileRouteOptions(spaceForDeletion, {
+                path: dirname(unref(resourcesToDelete)[0].path),
+                fileId: unref(resourcesToDelete)[0].parentFolderId
+              })
+            )
+          }
+        }
+      )
+    }
+
+    return Object.values(resourceSpaceMapping).map(
+      ({ space: spaceForDeletion, resources: resourcesForDeletion }) =>
+        startGroup(spaceForDeletion, resourcesForDeletion)
     )
   }
 

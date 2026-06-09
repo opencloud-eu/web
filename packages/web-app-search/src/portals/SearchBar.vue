@@ -36,6 +36,7 @@
           v-if="locationFilterAvailable"
           id="files-global-search-filter"
           :current-folder-available="currentFolderAvailable"
+          :current-folder-is-in-vault="currentFolderIsInVault"
           @update:model-value="onLocationFilterChange"
         />
       </template>
@@ -201,6 +202,8 @@ export default defineComponent({
       // FIXME: use capability as soon as we have one
       unref(availableProviders).some((p) => !!p.listSearch)
     )
+
+    const currentFolderIsInVault = computed(() => !!unref(currentFolder)?.isInVault)
 
     const dropElement = computed<HTMLElement>(
       () => unref(optionsDropRef)?.$refs.drop as HTMLElement
@@ -435,6 +438,7 @@ export default defineComponent({
       dropElement,
       onLocationFilterChange,
       currentFolderAvailable,
+      currentFolderIsInVault,
       listProviderAvailable,
       locationFilterAvailable,
       scopeQueryValue,

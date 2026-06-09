@@ -6,17 +6,23 @@ import { computed, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   ApplicationFileExtension,
+  decryptResourceInPlace,
   FileAction,
   FileActionOptions,
+  markVaultStatus,
   resolveFileNameDuplicate,
+  resolveFolderVault,
+  streamToArrayBuffer,
   useAppsStore,
   useClientService,
   useEmbedMode,
+  useExtensionRegistry,
   useFileActions,
   useIsResourceNameValid,
   useMessages,
   useModals,
   useResourcesStore,
+  useRouter,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
@@ -30,9 +36,11 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
 
   const { openEditor } = useFileActions()
   const clientService = useClientService()
+  const router = useRouter()
 
   const resourcesStore = useResourcesStore()
   const { resources, currentFolder, areFileExtensionsShown } = storeToRefs(resourcesStore)
+  const extensionRegistry = useExtensionRegistry()
 
   const { isFileNameValid } = useIsResourceNameValid()
 
@@ -43,7 +51,26 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
   const openFile = (resource: Resource, appFileExtension: ApplicationFileExtension) => {
     resourcesStore.upsertResource(resource)
 
-    return openEditor(appFileExtension, unref(space), resource)
+    // Folder-typed new-menu entries (e.g. vault from rclone-crypt, notebooks
+    // from notes) may not register an editor route — when there's nothing to
+    // open we navigate into the freshly-created folder instead so the user
+    // ends up inside it. Anything that *does* have a route (apps like notes)
+    // keeps using openEditor.
+    const targetSpace = unref(space)
+    const routeName = appFileExtension?.routeName || appFileExtension?.app
+    if (appFileExtension?.type === 'folder' && !router.hasRoute(routeName)) {
+      const driveAliasAndItem = targetSpace?.getDriveAliasAndItem(resource)
+      if (driveAliasAndItem) {
+        router.push({
+          name: 'files-spaces-generic',
+          params: { driveAliasAndItem },
+          query: resource.fileId ? { fileId: resource.fileId } : undefined
+        })
+        return
+      }
+    }
+
+    return openEditor(appFileExtension, targetSpace, resource)
   }
 
   const handler = (
@@ -51,7 +78,11 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     extension: string,
     appFileExtension: ApplicationFileExtension
   ) => {
-    let defaultName = $gettext('New file') + `.${extension}`
+    // Apps may override the default name shown in the create modal — e.g.
+    // rclone-crypt wants "New vault.vault" instead of "New file.vault".
+    // Fall back to the generic "New file" prefix when no override is set.
+    const baseName = appFileExtension.newFileMenu?.defaultName?.() ?? $gettext('New file')
+    let defaultName = `${baseName}.${extension}`
 
     if (unref(resources).some((f) => f.name === defaultName)) {
       defaultName = resolveFileNameDuplicate(defaultName, extension, unref(resources))
@@ -80,6 +111,17 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
 
         try {
           let resource: Resource
+          // Vault-aware: the picker/modal works in cleartext (what the user
+          // sees in the listing), but webdav needs the encrypted segment
+          // names. Look up the engine for the parent and translate before
+          // calling out — then decrypt the response so the upserted resource
+          // matches the rest of the (cleartext) listing.
+          const cleartextParentPath = unref(currentFolder).path
+          const vaultEngine = resolveFolderVault(
+            extensionRegistry,
+            unref(space),
+            cleartextParentPath
+          )
           if (appFileExtension.createFileHandler) {
             resource = await appFileExtension.createFileHandler({
               fileName,
@@ -87,14 +129,28 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
               currentFolder: unref(currentFolder)
             })
           } else if (appFileExtension.type === 'folder') {
-            const path = join(unref(currentFolder).path, fileName)
+            const cleartextPath = join(cleartextParentPath, fileName)
+            const path = vaultEngine ? await vaultEngine.encryptPath(cleartextPath) : cleartextPath
             resource = await (clientService.webdav as WebDAV).createFolder(unref(space), { path })
           } else {
-            const path = join(unref(currentFolder).path, fileName)
+            const cleartextPath = join(cleartextParentPath, fileName)
+            const path = vaultEngine ? await vaultEngine.encryptPath(cleartextPath) : cleartextPath
+            // In a vault, "create empty file" must still produce a valid
+            // rclone-crypt blob on the server — a 0-byte PUT would have no
+            // header and refuse to decrypt later. Pipe an empty plaintext
+            // stream through encryptContent to get the file-header bytes.
+            const content = vaultEngine
+              ? await streamToArrayBuffer(vaultEngine.encryptContent(new Blob([]).stream()))
+              : undefined
             resource = await (clientService.webdav as WebDAV).putFileContents(unref(space), {
-              path
+              path,
+              ...(content ? { content } : {})
             })
           }
+          if (vaultEngine && resource) {
+            await decryptResourceInPlace(vaultEngine, resource)
+          }
+          markVaultStatus(extensionRegistry, unref(space), [resource])
 
           resourcesStore.upsertResource(resource)
 

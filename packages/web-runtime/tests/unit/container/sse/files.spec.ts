@@ -3,6 +3,7 @@ import {
   PreviewService,
   useAuthStore,
   useConfigStore,
+  useExtensionRegistry,
   useMessages,
   useResourcesStore,
   useSharesStore,
@@ -444,6 +445,7 @@ const getMocks = ({
   const sharesStore = useSharesStore()
   const configStore = useConfigStore()
   const authStore = useAuthStore()
+  const extensionRegistry = useExtensionRegistry()
   const clientService = mockDeep<ClientService>({ initiatorId: 'local1' })
   const previewService = mockDeep<PreviewService>()
   const router = mockDeep<Router>()
@@ -463,6 +465,7 @@ const getMocks = ({
     authStore,
     clientService,
     previewService,
+    extensionRegistry,
     resourceQueue,
     language
   }

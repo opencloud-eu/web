@@ -8,6 +8,8 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { UploadResourceConflict } from './helpers/resource'
 import {
+  ExtensionRegistry,
+  FolderVaultEngine,
   MessageStore,
   ResourcesStore,
   SpacesStore,
@@ -16,7 +18,9 @@ import {
   formatFileSize,
   OcUppyFile,
   OcUppyMeta,
-  OcUppyBody
+  OcUppyBody,
+  resolveFolderVault,
+  streamToBlob
 } from '@opencloud-eu/web-pkg'
 import { locationSpacesGeneric, UppyService } from '@opencloud-eu/web-pkg'
 import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
@@ -31,6 +35,7 @@ export interface HandleUploadOptions {
   messageStore: MessageStore
   spacesStore: SpacesStore
   resourcesStore: ResourcesStore
+  extensionRegistry: ExtensionRegistry
   uppyService: UppyService
   id?: string
   space?: Ref<SpaceResource>
@@ -57,6 +62,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   messageStore: MessageStore
   spacesStore: SpacesStore
   resourcesStore: ResourcesStore
+  extensionRegistry: ExtensionRegistry
   uppyService: UppyService
   quotaCheckEnabled: boolean
   directoryTreeCreateEnabled: boolean
@@ -76,6 +82,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.messageStore = opts.messageStore
     this.spacesStore = opts.spacesStore
     this.resourcesStore = opts.resourcesStore
+    this.extensionRegistry = opts.extensionRegistry
     this.uppyService = opts.uppyService
 
     this.quotaCheckEnabled = opts.quotaCheckEnabled ?? true
@@ -297,7 +304,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   async createDirectoryTree(
     filesToUpload: OcUppyFile[],
     uploadFolder: Resource,
-    mergedFolders: string[] = []
+    mergedFolders: string[] = [],
+    vaultEngine: FolderVaultEngine | null = null
   ): Promise<{ filesToUpload: OcUppyFile[]; folderFiles: OcUppyFile[] }> {
     const { webdav } = this.clientService
     const space = unref(this.space)
@@ -366,8 +374,16 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         this.uppyService.publish('addedForUpload', [uppyFile])
 
         try {
+          // Inside a vault every path segment we create on the server must
+          // be ciphertext. The directoryTree itself stays in cleartext for
+          // tracking purposes; we only translate the path right before the
+          // MKCOL call.
+          const cleartextPath = urlJoin(currentFolderPath, path)
+          const mkcolPath = vaultEngine
+            ? await vaultEngine.encryptPath(cleartextPath)
+            : cleartextPath
           const folder = await webdav.createFolder(space, {
-            path: urlJoin(currentFolderPath, path),
+            path: mkcolPath,
             fetchFolder: isRoot // FIXME: remove once we get the fileId from the server here
           })
           this.uppyService.publish('uploadSuccess', {
@@ -429,6 +445,20 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const uploadFolder = this.getUploadFolder(uploadId)
     let filesToUpload = this.prepareFiles(files, uploadFolder)
 
+    // Vault-aware upload: when the target folder lives inside a vault, swap
+    // every file's content for its ciphertext and rewrite the upload endpoint
+    // to the encrypted server path before Uppy starts pushing bytes. Folder
+    // creation (MKCOL) inside createDirectoryTree is vault-aware too — it
+    // pulls the engine out of the same registry.
+    const vaultEngine = resolveFolderVault(
+      this.extensionRegistry,
+      unref(this.space),
+      uploadFolder?.path
+    )
+    if (vaultEngine) {
+      filesToUpload = await this.applyVaultEncryption(filesToUpload, uploadFolder, vaultEngine)
+    }
+
     if (!this.directoryTreeCreateEnabled) {
       // if directory tree creation is disabled, we need to remove all folder files
       // from the upload queue (both locally and from Uppy's state to prevent upload attempts)
@@ -484,7 +514,12 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.uppyService.publish('uploadStarted')
     let folderFiles: OcUppyFile[] = []
     if (this.directoryTreeCreateEnabled) {
-      const result = await this.createDirectoryTree(filesToUpload, uploadFolder, mergedFolders)
+      const result = await this.createDirectoryTree(
+        filesToUpload,
+        uploadFolder,
+        mergedFolders,
+        vaultEngine
+      )
       filesToUpload = result.filesToUpload
       folderFiles = result.folderFiles
     }
@@ -503,6 +538,93 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     this.uppyService.publish('addedForUpload', filesToUpload)
     this.uppyService.uploadFiles()
     this.uppyService.removeUploadFolder(uploadId)
+  }
+
+  /**
+   * Replace each file's content + name with their encrypted forms and rewrite
+   * the upload endpoint so Uppy/Tus pushes ciphertext to the encrypted
+   * server path. Sub-paths inside a drag-drop are walked segment-by-segment
+   * — every segment of `relativeFolder` ends up as ciphertext on the wire,
+   * even though we keep the original cleartext tree on `file.meta` for
+   * progress UI / directory creation tracking.
+   */
+  private async applyVaultEncryption(
+    filesToUpload: OcUppyFile[],
+    uploadFolder: Resource,
+    vaultEngine: FolderVaultEngine
+  ): Promise<OcUppyFile[]> {
+    const space = unref(this.space)
+    const encryptedFolderPath = await vaultEngine.encryptPath(uploadFolder.path)
+
+    const updated: Record<string, OcUppyFile> = {}
+    for (const file of filesToUpload) {
+      if (file.type === 'directory') {
+        // Folder entries don't get an HTTP payload of their own — the MKCOLs
+        // happen in createDirectoryTree (which is also vault-aware). Skip
+        // here so we don't try to encrypt a non-existent content stream.
+        continue
+      }
+
+      // Walk the cleartext relativeFolder segment-by-segment so each part
+      // is encrypted independently (rclone-crypt's filename EME operates
+      // per segment) and join the ciphertext segments back into a path the
+      // server understands.
+      const clearRelative = file.meta.relativeFolder || ''
+      const encryptedRelativeSegments: string[] = []
+      for (const segment of clearRelative.split('/').filter(Boolean)) {
+        encryptedRelativeSegments.push(await vaultEngine.encryptName(segment, uploadFolder.path))
+      }
+      const encryptedRelativeFolder = encryptedRelativeSegments.join('/')
+
+      const encryptedName = await vaultEngine.encryptName(file.name, uploadFolder.path)
+
+      // Feed the engine the Blob's native stream instead of materialising the
+      // whole plaintext first. The engine internals still collect today
+      // (lib only exposes `encryptData(Uint8Array)`), but keeping the
+      // input side genuinely streamed means a future engine that emits
+      // rclone-crypt blocks straight onto nacl can be swapped in without
+      // touching this call site.
+      //
+      // FIXME(poc-vault): the output is still collected into a Blob because
+      // Uppy + tus-js-client require `file.data` to be `Blob`-shaped with a
+      // working `.slice()` for chunked uploads. End-to-end streaming would
+      // need either a stream-aware uppy plugin or replacing the transport;
+      // both are out of PoC scope. The engine API stays streaming so that
+      // change lands as a pure replacement here.
+      // Drive the engine end-to-end with streams. Collection only happens
+      // because Uppy + tus need a sliceable Blob for file.data, not because
+      // the engine API forces it.
+      const cipherBlob = await streamToBlob(
+        vaultEngine.encryptContent((file.data as Blob).stream()),
+        'application/octet-stream'
+      )
+
+      const endpointFolder = urlJoin(encryptedFolderPath, encryptedRelativeFolder)
+      const endpointFolderUrl = space.getWebDavUrl({
+        path: endpointFolder.split('/').map(encodeURIComponent).join('/')
+      })
+      let endpoint = endpointFolderUrl
+      if (!this.uppy.getPlugin('Tus')) {
+        endpoint = urlJoin(endpoint, encodeURIComponent(encryptedName))
+      }
+
+      // Mutate in-place so existing meta (uploadId, spaceId, …) is preserved.
+      // We keep meta.relativeFolder in cleartext on purpose — directoryTree
+      // creation reads it to decide which folders to MKCOL and translates
+      // the path itself at the very last step.
+      file.data = cipherBlob
+      file.size = cipherBlob.size
+      file.name = encryptedName
+      file[this.getUploadPluginName()] = { endpoint }
+      file.meta = {
+        ...file.meta,
+        name: encryptedName,
+        tusEndpoint: endpoint
+      }
+      updated[file.id] = file
+    }
+    this.uppy.setState({ files: { ...this.uppy.getState().files, ...updated } })
+    return filesToUpload
   }
 
   install() {

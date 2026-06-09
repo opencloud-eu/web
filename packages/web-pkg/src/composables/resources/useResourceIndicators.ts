@@ -9,8 +9,9 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { useInterceptModifierClick } from '../keyboardActions'
-import { useResourcesStore, useSideBar, useUserStore } from '../piniaStores'
+import { useExtensionRegistry, useResourcesStore, useSideBar, useUserStore } from '../piniaStores'
 import { IconFillType } from '../../helpers'
+import { resourceIndicatorExtensionPoint } from '../../extensionPoints'
 
 export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space'
 
@@ -44,6 +45,7 @@ export const useResourceIndicators = () => {
   const { openSideBarPanel } = useSideBar()
   const resourcesStore = useResourcesStore()
   const userStore = useUserStore()
+  const extensionRegistry = useExtensionRegistry()
 
   const isUserShare = (shareTypes: number[]) => {
     return ShareTypes.containsAnyValue(ShareTypes.authenticated, shareTypes ?? [])
@@ -256,6 +258,19 @@ export const useResourceIndicators = () => {
       const isDirectLinkShare = isLinkShare(resource.shareTypes)
       if (isDirectLinkShare || isLinkShare(parentShareTypes)) {
         indicators.push(getLinkIndicator({ resource, isDirect: isDirectLinkShare }))
+      }
+    }
+
+    // Defensive: most callers mock useExtensionRegistry without filling in
+    // every method, and getIndicators is used widely across the resource
+    // list components. Treat a missing requestExtensions as "no
+    // extensions" rather than throwing.
+    const indicatorExtensions =
+      extensionRegistry.requestExtensions?.(resourceIndicatorExtensionPoint) ?? []
+    for (const extension of indicatorExtensions) {
+      const extensionIndicators = extension.getResourceIndicators(resource)
+      if (extensionIndicators) {
+        indicators.push(...extensionIndicators)
       }
     }
 

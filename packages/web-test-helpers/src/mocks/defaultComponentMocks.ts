@@ -28,6 +28,10 @@ export const defaultComponentMocks = ({ currentRoute = undefined }: ComponentMoc
   $router.resolve.mockImplementation(
     (to: RouteLocationRaw) => ({ href: (to as any).name, location: { path: '' } }) as any
   )
+  // Default to "every route exists" so suites that don't care about routing
+  // (most of them) don't have to wire this up. The few tests that *do* care
+  // override this with mockReturnValue(false) — see useFileActions.spec.
+  $router.hasRoute.mockReturnValue(true)
   const $route = $router.currentRoute.value
   $route.path = $route.path || '/'
   $route.meta = $route.meta || {}

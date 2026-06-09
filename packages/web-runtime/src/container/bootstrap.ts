@@ -861,6 +861,7 @@ export const registerSSEEventListeners = ({
   configStore,
   userStore,
   authStore,
+  extensionRegistry,
   router
 }: {
   language: Language
@@ -873,6 +874,7 @@ export const registerSSEEventListeners = ({
   configStore: ConfigStore
   userStore: UserStore
   authStore: AuthStore
+  extensionRegistry: ExtensionRegistry
   router: Router
 }): void => {
   const resourceQueue = new PQueue({
@@ -895,6 +897,7 @@ export const registerSSEEventListeners = ({
     configStore,
     clientService,
     previewService,
+    extensionRegistry,
     language,
     router,
     resourceQueue,

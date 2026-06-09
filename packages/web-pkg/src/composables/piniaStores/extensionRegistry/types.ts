@@ -1,10 +1,12 @@
 import { Action } from '../../actions'
 import { SearchProvider, SideBarPanel } from '../../../components'
 import { AppNavigationItem } from '../../../apps'
-import { Item } from '@opencloud-eu/web-client'
+import { Item, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { FolderView } from '../../../ui'
 import { Component, Slot } from 'vue'
+import { RouteLocationNamedRaw } from 'vue-router'
 import { StringUnionOrAnyString } from '../../../utils'
+import type { ResourceIndicator } from '../../resources/useResourceIndicators'
 
 export type ExtensionType = StringUnionOrAnyString<
   | 'action'
@@ -16,6 +18,8 @@ export type ExtensionType = StringUnionOrAnyString<
   | 'sidebarPanel'
   | 'accountExtension'
   | 'floatingActionButton'
+  | 'folderVault'
+  | 'resourceIndicator'
 >
 
 export type Extension = {
@@ -92,6 +96,84 @@ export interface AppMenuItemExtension extends Extension {
   path?: string
   priority?: number
   url?: string
+}
+
+/**
+ * Folder vault engine. Implementations decrypt resource names that come back
+ * from the server and encrypt clear-text paths that are sent to the server.
+ */
+export interface FolderVaultEngine {
+  /** Translate a clear-text path into its server-side encrypted form. */
+  encryptPath: (clearPath: string) => Promise<string>
+  /** Translate a server-side encrypted path back into its clear-text form. */
+  decryptPath: (encryptedPath: string) => Promise<string>
+  /** Decrypt a single path segment (e.g. a Resource.name). */
+  decryptName: (encryptedSegment: string, parentClearPath: string) => Promise<string>
+  /** Encrypt a single cleartext segment to its on-server form. */
+  encryptName: (clearSegment: string, parentClearPath: string) => Promise<string>
+  /**
+   * Pipe a stream of encrypted bytes through the engine and get back a
+   * stream of cleartext bytes. The engine is free to process the input
+   * chunk-by-chunk or to buffer everything internally — callers must not
+   * rely on either behaviour.
+   */
+  decryptContent: (encrypted: ReadableStream<Uint8Array>) => ReadableStream<Uint8Array>
+  /**
+   * Symmetric counterpart to decryptContent: pipe cleartext through the
+   * engine and get back the encrypted byte stream that should land on the
+   * server.
+   */
+  encryptContent: (plaintext: ReadableStream<Uint8Array>) => ReadableStream<Uint8Array>
+  /** Clear-text path of the vault root, e.g. `/myvault.vault`. */
+  vaultRoot: string
+  /** Whether the vault is currently locked. PoC: always false. */
+  isLocked: () => boolean
+  /**
+   * Try to decrypt a sample encrypted segment to verify the key actually
+   * matches the data on the server. Returns true if the decryption looks
+   * like cleartext, false if it errored out or produced garbage.
+   * Empty vaults can't be verified — callers should treat that case as
+   * "trust the key" since there's nothing to disagree with yet.
+   */
+  verifyKey: (sampleEncryptedSegment: string) => Promise<boolean>
+}
+
+export interface FolderVaultClaim {
+  /** Clear-text root of the claimed vault (e.g. `/myvault.vault`). */
+  vaultRoot: string
+  /**
+   * Optional route the UI should navigate to in order to unlock the vault
+   * (passphrase prompt, hardware-token flow, …). The route handler is
+   * expected to populate the folder-vault store and redirect back to
+   * `query.redirectUrl` once it's done. If omitted, the vault is treated as
+   * permanently locked from this layer's point of view.
+   */
+  unlockRoute?: RouteLocationNamedRaw
+}
+
+export interface FolderVaultExtension extends Extension {
+  type: 'folderVault'
+  /**
+   * Resolve a vault engine for (space, path). Return null if this extension is
+   * not responsible for the given location, or if it is but no usable
+   * unlock state is available (the UI will surface this via claimsPath).
+   */
+  resolve: (space: SpaceResource, path: string) => FolderVaultEngine | null
+  /**
+   * Indicate whether this extension manages the given (space, path) at all,
+   * regardless of unlock state. Lets the UI redirect a locked vault to the
+   * extension-defined unlock UI even when `resolve` returns null.
+   */
+  claimsPath: (space: SpaceResource, path: string) => FolderVaultClaim | null
+}
+
+export interface ResourceIndicatorExtension extends Extension {
+  type: 'resourceIndicator'
+  /**
+   * Return zero or more status indicators for the resource. Return void/empty
+   * if this extension does not want to render anything for it.
+   */
+  getResourceIndicators: (resource: Resource) => ResourceIndicator[] | void
 }
 
 export type ExtensionPoint<T extends Extension> = {

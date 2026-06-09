@@ -276,7 +276,15 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
   loadPreviewImageController = new AbortController()
 
   try {
-    if (mediaFile.isImage) {
+    // Vault resources (and anything else where the server explicitly says
+    // "no preview") can't be thumbnailed, so skip the preview service and
+    // fetch the full image instead — `getUrlForResource` is vault-aware and
+    // returns a blob URL with cleartext bytes. We only opt out on an
+    // explicit false; when hasPreview is missing we keep the legacy "try
+    // preview service" behaviour.
+    const useFullImage = mediaFile.isImage && mediaFile.resource.hasPreview?.() === false
+
+    if (mediaFile.isImage && !useFullImage) {
       mediaFile.url = await previewService.loadPreview(
         {
           space: unref(space),

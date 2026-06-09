@@ -125,6 +125,24 @@ export const useFileActions = () => {
               return false
             }
 
+            // External editor apps (Collabora, OnlyOffice, …) load the
+            // file server-side via the WOPI bridge — they'd see the
+            // encrypted blob, not the cleartext the user expects.
+            // Restrict vault resources to in-browser editors only.
+            if (resources[0].isInVault && fileExtension.app?.startsWith('external-')) {
+              return false
+            }
+
+            // An app may register a file/folder extension purely to
+            // contribute icon mapping or a new-file menu entry without
+            // owning a route (rclone-crypt's vault folder is one such case).
+            // Skip the editor action when no route is registered so the
+            // default action (folder navigation) can take over.
+            const editorRouteName = fileExtension.routeName || fileExtension.app
+            if (!editorRouteName || !router.hasRoute(editorRouteName)) {
+              return false
+            }
+
             if (resources[0].extension && fileExtension.extension) {
               return resources[0].extension.toLowerCase() === fileExtension.extension.toLowerCase()
             }
@@ -205,6 +223,13 @@ export const useFileActions = () => {
   ) => {
     const remoteItemId = isShareSpaceResource(space) ? space.id : undefined
     const routeName = appFileExtension.routeName || appFileExtension.app
+    // Apps may register a file/folder extension purely to contribute icon
+    // mapping or a new-file menu entry, without owning an editor route
+    // (rclone-crypt's vault folder is one such case). Bail silently rather
+    // than pushing to a route that doesn't exist.
+    if (!routeName || !router.hasRoute(routeName)) {
+      return
+    }
     const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
 
     if (unref(options).openFilesInNewTab) {
