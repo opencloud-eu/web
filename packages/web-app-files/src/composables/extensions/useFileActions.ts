@@ -21,7 +21,9 @@ import {
   useFileActionsRename,
   useFileActionsShowDetails,
   useFileActionsShowShares,
-  useFileActionsToggleHideShare
+  useFileActionsToggleHideShare,
+  useFileActionsLockVault,
+  useFileActionsUnlockVault
 } from '../actions'
 import { unref } from 'vue'
 
@@ -45,6 +47,8 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: setSpaceImageActions } = useSpaceActionsSetImage()
   const { actions: showDetailsActions } = useFileActionsShowDetails()
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
+  const { actions: lockVaultActions } = useFileActionsLockVault()
+  const { actions: unlockVaultActions } = useFileActionsUnlockVault()
 
   return [
     {
@@ -215,6 +219,24 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(toggleHideShareActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.lock-vault',
+      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(lockVaultActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.unlock-vault',
+      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(unlockVaultActions)[0],
         category: 'tertiary'
       }
     }

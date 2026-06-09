@@ -20,8 +20,18 @@ import { useRouter } from '../../router'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { FileAction, FileActionOptions } from '../types'
-import { useMessages, useSpacesStore, useUserStore, useResourcesStore } from '../../piniaStores'
+import {
+  useMessages,
+  useSpacesStore,
+  useUserStore,
+  useResourcesStore,
+  useExtensionRegistry
+} from '../../piniaStores'
 import { useRestoreWorker } from '../../webWorkers/restoreWorker'
+import {
+  encryptFolderPathsForServer,
+  encryptResourcePathsForServer
+} from '../../../helpers/folderVault'
 
 export const useFileActionsRestore = ({
   showSuccessMessage = true,
@@ -37,6 +47,7 @@ export const useFileActionsRestore = ({
   const clientService = useClientService()
   const spacesStore = useSpacesStore()
   const resourcesStore = useResourcesStore()
+  const extensionRegistry = useExtensionRegistry()
   const { startWorker } = useRestoreWorker()
 
   // FIXME: use ConflictDialog class for this
@@ -212,7 +223,23 @@ export const useFileActionsRestore = ({
       resolvedResources.push(resource)
     }
 
-    return restoreResources(space, resolvedResources, missingFolderPaths)
+    // The restore worker runs a vanilla webdav client, so for an unlocked vault
+    // the decrypted (cleartext) paths above would restore the blob under a
+    // cleartext name and break the vault. Translate paths back to their on-server
+    // encrypted form before handing them off (no-op outside vaults / for locked
+    // vaults, where the path is already ciphertext).
+    const resourcesForServer = await encryptResourcePathsForServer(
+      extensionRegistry,
+      space,
+      resolvedResources
+    )
+    const foldersForServer = await encryptFolderPathsForServer(
+      extensionRegistry,
+      space,
+      missingFolderPaths
+    )
+
+    return restoreResources(space, resourcesForServer, foldersForServer)
   }
 
   const actions = computed((): FileAction[] => [

@@ -9,7 +9,6 @@ import {
   SpacesStore,
   useAuthStore,
   useConfigStore,
-  useExtensionRegistry,
   useMessages,
   useResourcesStore,
   useSharesStore,
@@ -195,7 +194,6 @@ function getMocks({
   const configStore = useConfigStore()
   const authStore = useAuthStore()
   const sharesStore = useSharesStore()
-  const extensionRegistry = useExtensionRegistry()
   const clientService = mockDeep<ClientService>({ initiatorId: 'local1' })
   const previewService = mockDeep<PreviewService>()
   const language = mockDeep<Language>({ $gettext: vi.fn((m) => m) })
@@ -217,7 +215,6 @@ function getMocks({
     authStore: authStore as AuthStore,
     clientService,
     previewService,
-    extensionRegistry,
     resourceQueue,
     language
   }

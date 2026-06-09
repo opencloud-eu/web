@@ -125,8 +125,8 @@ export const useFileActions = () => {
               return false
             }
 
-            // External editor apps (Collabora, OnlyOffice, …) load the
-            // file server-side via the WOPI bridge — they'd see the
+            // External editor apps (Collabora, …) load the
+            // file server-side via the WOPI bridge - they'd see the
             // encrypted blob, not the cleartext the user expects.
             // Restrict vault resources to in-browser editors only.
             if (resources[0].isInVault && fileExtension.app?.startsWith('external-')) {

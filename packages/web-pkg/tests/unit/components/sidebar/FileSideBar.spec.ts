@@ -239,7 +239,11 @@ describe('FileSideBar', () => {
       })
 
       it('is called when resource is selected and sidebar is opened', () => {
-        const resource = mock<Resource>({ id: 'some-image', path: '/someImage.jpg' })
+        const resource = mock<Resource>({
+          id: 'some-image',
+          path: '/someImage.jpg',
+          isInVault: false
+        })
         const { mocks } = createWrapper({
           item: resource
         })
@@ -250,7 +254,11 @@ describe('FileSideBar', () => {
       })
 
       it('is not called if resource is selected and sidebar is not opened', () => {
-        const resource = mock<Resource>({ id: 'some-image', path: '/someImage.jpg' })
+        const resource = mock<Resource>({
+          id: 'some-image',
+          path: '/someImage.jpg',
+          isInVault: false
+        })
         const { mocks } = createWrapper({
           item: resource,
           isOpen: false

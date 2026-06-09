@@ -2,6 +2,7 @@ import App from '../../src/App.vue'
 import { nextTick, ref } from 'vue'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
+import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 
 vi.mock('@panzoom/panzoom')
@@ -115,6 +116,40 @@ describe('Preview app', () => {
         expect.anything()
       )
     })
+
+    it('uses the preview service for a non-vault image even when the server reports no thumbnail', async () => {
+      const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
+      await nextTick()
+      // ignore the implicit load for the active file on mount
+      mocks.$previewService.loadPreview.mockClear()
+      getUrlForResource.mockClear()
+
+      const mediaFile = {
+        isImage: true,
+        resource: mock<Resource>({ isInVault: false, hasPreview: () => false })
+      }
+      await (wrapper.vm as any).loadPreviewImage(mediaFile)
+
+      // must NOT download the full original just because there's no thumbnail
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalled()
+      expect(getUrlForResource).not.toHaveBeenCalled()
+    })
+
+    it('fetches the full (decrypted) image via getUrlForResource for a vault image', async () => {
+      const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
+      await nextTick()
+      mocks.$previewService.loadPreview.mockClear()
+      getUrlForResource.mockClear()
+
+      const mediaFile = {
+        isImage: true,
+        resource: mock<Resource>({ isInVault: true, hasPreview: () => false })
+      }
+      await (wrapper.vm as any).loadPreviewImage(mediaFile)
+
+      expect(getUrlForResource).toHaveBeenCalled()
+      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+    })
   })
 
   describe('Generated "mediaFiles"', () => {
@@ -142,6 +177,8 @@ function createShallowMountWrapper({
   mocks.$previewService.loadPreview.mockResolvedValue('')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
 
+  const getUrlForResource = vi.fn()
+
   return {
     wrapper: shallowMount(App, {
       props: {
@@ -152,7 +189,7 @@ function createShallowMountWrapper({
         activeFiles,
         isFolderLoading: true,
         revokeUrl: vi.fn(),
-        getUrlForResource: vi.fn(),
+        getUrlForResource,
         loadFolderForFileContext: vi.fn()
       },
       global: {
@@ -161,6 +198,7 @@ function createShallowMountWrapper({
         provide: mocks
       }
     }),
-    mocks
+    mocks,
+    getUrlForResource
   }
 }

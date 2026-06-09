@@ -17,8 +17,8 @@ import {
   useSharesStore,
   useAuthService,
   AuthServiceInterface,
-  useExtensionRegistry,
-  ExtensionRegistry
+  ExtensionRegistry,
+  useExtensionRegistry
 } from '../../composables'
 import { unref } from 'vue'
 import { ClientService } from '../../services'

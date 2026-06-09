@@ -9,6 +9,7 @@
     "search",
     "admin-settings",
     "ocm",
-    "app-store"
+    "app-store",
+    "rclone-crypt"
   ]
 }

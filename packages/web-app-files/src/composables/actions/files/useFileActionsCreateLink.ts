@@ -76,6 +76,14 @@ export const useFileActionsCreateLink = ({
         return false
       }
 
+      // Public links rebase the path at the link target, dropping the vault's
+      // cleartext `.vault` anchor so the share can no longer be claimed and
+      // unlocked. Block link creation for vault roots and contents alike;
+      // collaborator sharing stays available (see markVaultStatus).
+      if (resource.isInVault) {
+        return false
+      }
+
       if (isProjectSpaceResource(resource) && resource.disabled) {
         return false
       }

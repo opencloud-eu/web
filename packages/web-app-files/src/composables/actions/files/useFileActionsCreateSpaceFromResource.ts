@@ -142,7 +142,7 @@ export const useFileActionsCreateSpaceFromResource = () => {
 
         // The new space would receive ciphertext blobs (no key follows the
         // resource), so the contents would be unreadable. Hide for any
-        // vault resource — and for the vault root itself, which would
+        // vault resource - and for the vault root itself, which would
         // also lose the path-derived encryption.
         if (resources.some((r) => r.isInVault)) {
           return false

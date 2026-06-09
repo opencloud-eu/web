@@ -1,9 +1,17 @@
 import ActivitiesPanel from '../../../../src/components/SideBar/ActivitiesPanel.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
+import { getVaultClaim, resolveFolderVault } from '@opencloud-eu/web-pkg'
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  resolveFolderVault: vi.fn(),
+  getVaultClaim: vi.fn(),
+  useGetMatchingSpace: () => ({ getMatchingSpace: () => mock<SpaceResource>() })
+}))
 
 const defaultActivities = [
   {
@@ -97,6 +105,62 @@ describe('ActivitiesPanel', () => {
     const { wrapper } = getMountedWrapper()
     await flushPromises()
     expect(wrapper.html()).toMatchSnapshot()
+  })
+  it('decrypts vault resource names in the feed and leaves user names untouched', async () => {
+    const engine = {
+      vaultRoot: '/my.vault',
+      decryptPath: vi.fn((segment: string) => Promise.resolve(`DEC(${segment})`))
+    }
+    vi.mocked(getVaultClaim).mockReturnValue({ vaultRoot: '/v', encryptsNames: true } as any)
+    vi.mocked(resolveFolderVault).mockResolvedValueOnce(engine as any)
+
+    const activities = [
+      {
+        id: '1',
+        times: { recordedTime: '2024-07-29T18:34:40Z' },
+        template: {
+          message: '{user} created {resource}.',
+          variables: {
+            user: { id: 'u1', displayName: 'Marie Curie' },
+            resource: { id: 'r1', name: 'encryptedblob' }
+          }
+        }
+      }
+    ] as unknown as Activity[]
+
+    const { wrapper } = getMountedWrapper({ activities })
+    await flushPromises()
+
+    // resource name is decrypted, the user (people) name is rendered untouched
+    expect(engine.decryptPath).toHaveBeenCalledWith('encryptedblob')
+    expect(wrapper.html()).toContain('DEC(encryptedblob)')
+    expect(wrapper.html()).toContain('Marie Curie')
+  })
+
+  it('does not resolve the engine or decrypt for a content-only scheme', async () => {
+    // encryptsNames=false -> names are clear text on the server, nothing to do.
+    vi.mocked(resolveFolderVault).mockClear()
+    vi.mocked(getVaultClaim).mockReturnValue({ vaultRoot: '/v', encryptsNames: false } as any)
+
+    const activities = [
+      {
+        id: '1',
+        times: { recordedTime: '2024-07-29T18:34:40Z' },
+        template: {
+          message: '{user} created {resource}.',
+          variables: {
+            user: { id: 'u1', displayName: 'Marie Curie' },
+            resource: { id: 'r1', name: 'cleartext-name.txt' }
+          }
+        }
+      }
+    ] as unknown as Activity[]
+
+    const { wrapper } = getMountedWrapper({ activities })
+    await flushPromises()
+
+    expect(resolveFolderVault).not.toHaveBeenCalled()
+    expect(wrapper.html()).toContain('cleartext-name.txt')
   })
 })
 

@@ -1,30 +1,44 @@
 import { useGettext } from 'vue3-gettext'
 import {
+  getVaultClaim,
   ResourceIndicator,
   ResourceIndicatorExtension,
-  useFolderVaultStore
+  useExtensionRegistry,
+  useFolderVaultStore,
+  useGetMatchingSpace
 } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
-import { findVaultRoot } from '../vaultPath'
 
-export function useResourceIndicatorExtension(): ResourceIndicatorExtension {
+// Scheme-agnostic vault status indicator: the padlock and its locked/unlocked
+// state come entirely from the folder-vault store + the claim a folder-vault
+// extension reports, so this works for any scheme, not just rclone-crypt.
+export const useFolderVaultIndicator = (): ResourceIndicatorExtension => {
   const { $gettext } = useGettext()
   const vaultStore = useFolderVaultStore()
+  const extensionRegistry = useExtensionRegistry()
+  const { getMatchingSpace } = useGetMatchingSpace()
 
   return {
-    id: 'app.rclone-crypt.indicator',
+    id: 'com.github.opencloud-eu.web.files.folder-vault-indicator',
     type: 'resourceIndicator',
     extensionPointIds: ['global.files.resource-indicator'],
     getResourceIndicators(resource: Resource): ResourceIndicator[] | void {
-      const vaultRoot = findVaultRoot(resource.path)
-      if (!vaultRoot || !resource.storageId) {
+      // Cheap early-out on the hot path: markVaultStatus flags every vault
+      // resource, so non-vault resources skip the claim/space lookup entirely.
+      if (!resource.isInVault || !resource.storageId) {
+        return
+      }
+      const space = getMatchingSpace(resource)
+      const claim = space ? getVaultClaim(extensionRegistry, space, resource.path) : null
+      if (!claim) {
         return
       }
 
+      const vaultRoot = claim.vaultRoot
       const unlocked = vaultStore.isUnlocked(resource.storageId, vaultRoot)
 
       // The vault-root resource itself is what users see when browsing the
-      // parent folder — show open vs. closed lock so the unlock state is
+      // parent folder - show open vs. closed lock so the unlock state is
       // obvious without entering the vault first.
       const isVaultRoot = resource.path === vaultRoot
 
@@ -49,7 +63,7 @@ export function useResourceIndicatorExtension(): ResourceIndicatorExtension {
       }
 
       // Resources inside a vault: only annotate when the vault is actually
-      // unlocked (otherwise the user wouldn't be here in the first place — the
+      // unlocked (otherwise the user wouldn't be here in the first place - the
       // unlock guard intercepts before any listing renders).
       if (!unlocked) {
         return

@@ -3,7 +3,6 @@ import {
   AuthStore,
   ClientService,
   ConfigStore,
-  ExtensionRegistry,
   MessageStore,
   PreviewService,
   ResourcesStore,
@@ -37,7 +36,6 @@ export interface SSEEventOptions {
   authStore: AuthStore
   clientService: ClientService
   previewService: PreviewService
-  extensionRegistry: ExtensionRegistry
   router: Router
   language: Language
   resourceQueue: PQueue

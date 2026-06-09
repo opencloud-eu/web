@@ -11,6 +11,7 @@ import { Language } from 'vue3-gettext'
 import { FetchEventSourceInit } from '@microsoft/fetch-event-source'
 import { sse } from '@opencloud-eu/web-client/sse'
 import { AuthStore, CapabilityStore, ConfigStore } from '../../composables'
+import { createVaultWebDav } from './vaultWebDav'
 
 const createFetchOptions = (authParams: AuthParameters, language: string): FetchEventSourceInit => {
   return {
@@ -148,7 +149,7 @@ export class ClientService {
   }
 
   private initWebDavClient() {
-    this.webDavClient = webdav(this.configStore.serverUrl, () => {
+    const client = webdav(this.configStore.serverUrl, () => {
       const headers = { ...this.staticHeaders, ...this.getDynamicHeaders() }
 
       if (this.authStore.publicLinkToken) {
@@ -163,6 +164,10 @@ export class ClientService {
 
       return headers
     })
+    // Wrap the raw client so folder-vault path/name translation happens
+    // transparently for every caller (clear-text in, clear-text out). It's a
+    // strict pass-through for any path that isn't inside a vault.
+    this.webDavClient = createVaultWebDav(client)
   }
 
   /**

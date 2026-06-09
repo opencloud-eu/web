@@ -4,13 +4,9 @@ import { join } from 'path'
 import { computed, nextTick, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
-  decryptResourceInPlace,
   FileAction,
-  markVaultStatus,
   resolveFileNameDuplicate,
-  resolveFolderVault,
   useClientService,
-  useExtensionRegistry,
   useIsResourceNameValid,
   useMessages,
   useModals,
@@ -28,25 +24,14 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
   const { resources, currentFolder } = storeToRefs(resourcesStore)
 
   const clientService = useClientService()
-  const extensionRegistry = useExtensionRegistry()
   const { isFileNameValid } = useIsResourceNameValid()
 
   const addNewFolder = async (folderName: string) => {
     folderName = folderName.trimEnd()
 
     try {
-      // Vault-aware: when the current folder sits inside a vault, the
-      // cleartext folder name has to be encrypted before hitting webdav, and
-      // the returned resource decrypted before it ends up in the store.
-      const cleartextParentPath = unref(currentFolder).path
-      const vaultEngine = resolveFolderVault(extensionRegistry, unref(space), cleartextParentPath)
-      const cleartextPath = join(cleartextParentPath, folderName)
-      const path = vaultEngine ? await vaultEngine.encryptPath(cleartextPath) : cleartextPath
+      const path = join(unref(currentFolder).path, folderName)
       const resource = await clientService.webdav.createFolder(unref(space), { path })
-      if (vaultEngine) {
-        await decryptResourceInPlace(vaultEngine, resource)
-      }
-      markVaultStatus(extensionRegistry, unref(space), [resource])
 
       // FIXME: move to buildResource as soon as it has space context
       if (isShareSpaceResource(unref(space))) {

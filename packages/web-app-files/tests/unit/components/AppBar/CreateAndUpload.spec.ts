@@ -91,6 +91,20 @@ describe('CreateAndUpload component', () => {
         clipboardResources: [mock<Resource>({ parentFolderId: 'current-folder' })],
         currentFolder: mock<Resource>({
           id: 'current-folder',
+          isInVault: false,
+          canUpload: vi.fn().mockReturnValue(true)
+        })
+      })
+      const pasteBtn = wrapper.findComponent<typeof OcButton>(elSelector.pasteFilesBtn)
+      expect(pasteBtn.props('disabled')).toStrictEqual(true)
+    })
+    it('should disable the "paste files"-action when the current folder is in a vault', () => {
+      const { wrapper } = getWrapper({
+        clipboardResources: [mock<Resource>({ parentFolderId: 'another-folder' })],
+        clipboardAction: ClipboardActions.Copy,
+        currentFolder: mock<Resource>({
+          id: 'current-folder',
+          isInVault: true,
           canUpload: vi.fn().mockReturnValue(true)
         })
       })
@@ -103,6 +117,7 @@ describe('CreateAndUpload component', () => {
         clipboardAction: ClipboardActions.Copy,
         currentFolder: mock<Resource>({
           id: 'current-folder',
+          isInVault: false,
           canUpload: vi.fn().mockReturnValue(true)
         })
       })
@@ -118,6 +133,7 @@ describe('CreateAndUpload component', () => {
         ],
         currentFolder: mock<Resource>({
           id: 'current-folder',
+          isInVault: false,
           canUpload: vi.fn().mockReturnValue(true)
         })
       })
@@ -206,7 +222,7 @@ describe('CreateAndUpload component', () => {
 function getWrapper({
   clipboardResources = [],
   files = [],
-  currentFolder = mock<Resource>({ canUpload: () => true }),
+  currentFolder = mock<Resource>({ canUpload: () => true, isInVault: false }),
   currentRouteName = 'files-spaces-generic',
   space = mock<SpaceResource>(),
   spaces = [],
