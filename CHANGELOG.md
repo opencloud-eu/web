@@ -10,15 +10,16 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
+### 📈 Enhancement
+
+- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
+- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
+
 ### 🐛 Bug Fixes
 
 - fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
-
-### 📈 Enhancement
-
-- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
-- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 📦️ Dependencies
 
