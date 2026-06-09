@@ -15,7 +15,7 @@ import {
  *
  * Runs after `setupAuthGuard`, so by the time we get here the auth context
  * is ready and the spaces store is populated (or we're navigating to a
- * route that doesn't need user-context anyway — public links etc. resolve
+ * route that doesn't need user-context anyway - public links etc. resolve
  * their own context first, and the vault guard kicks in afterwards if the
  * target lives inside a vault).
  */
@@ -53,10 +53,17 @@ export const setupVaultUnlockGuard = (router: Router) => {
     if (!space) return true
     const path = '/' + driveAliasAndItem.slice(space.driveAlias.length).replace(/^\/+/, '')
 
-    const engine = resolveFolderVault(extensionRegistry, space, path)
-    if (engine) return true
+    // Cheap, sync gate first: is this path even inside a claimed vault that
+    // has an unlock route? Every non-vault navigation (the vast majority)
+    // returns here, without the async engine resolution or a second registry
+    // walk.
     const claim = getVaultClaim(extensionRegistry, space, path)
     if (!claim?.unlockRoute) return true
+
+    // It's a claimed vault with an unlock route - let it through only if it's
+    // already unlocked (an engine resolves), otherwise redirect to unlock.
+    const engine = await resolveFolderVault(extensionRegistry, space, path)
+    if (engine) return true
 
     return {
       ...claim.unlockRoute,

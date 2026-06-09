@@ -1,18 +1,12 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { Action, FileActionOptions } from '../types'
-import { useExtensionRegistry, useMessages, useResourcesStore } from '../../piniaStores'
+import { useMessages, useResourcesStore } from '../../piniaStores'
 import { useFileActionsRestore } from './useFileActionsRestore'
 import { storeToRefs } from 'pinia'
 import { useCapabilityStore, useClientService } from '../../'
 import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
-import {
-  decryptResourceInPlace,
-  isItemInCurrentFolder,
-  isMacOs,
-  markVaultStatus,
-  resolveFolderVault
-} from '../../../helpers'
+import { isItemInCurrentFolder, isMacOs } from '../../../helpers'
 import { isLocationCommonActive } from '../../../router'
 import { useRouter } from 'vue-router'
 
@@ -25,7 +19,6 @@ export const useFileActionsUndoDelete = () => {
   const capabilityStore = useCapabilityStore()
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
-  const extensionRegistry = useExtensionRegistry()
   const router = useRouter()
 
   const { actions: restoreActions } = useFileActionsRestore({
@@ -45,22 +38,11 @@ export const useFileActionsUndoDelete = () => {
       }
 
       if (isItemInCurrentFolder({ resourcesStore, parentFolderId: resources[0].parentFolderId })) {
-        // update local folder — vault-aware: when the current folder lives
-        // in a vault, the post-restore listing comes back with encrypted
-        // names and has to be decrypted before it can match the restored
-        // resource ids and enter the store.
-        const clearPath = unref(currentFolder).path
-        const vaultEngine = resolveFolderVault(extensionRegistry, space, clearPath)
-        const listPath = vaultEngine ? await vaultEngine.encryptPath(clearPath) : clearPath
-        const { children } = await webdav.listFiles(space, { path: listPath })
-        if (vaultEngine) {
-          await Promise.all(children.map((c) => decryptResourceInPlace(vaultEngine, c)))
-        }
-        const restored = children.filter(({ id }) =>
-          resources.some((s) => s.id === transformToTrashId(id))
+        // update local folder
+        const { children } = await webdav.listFiles(space, { path: unref(currentFolder).path })
+        resourcesStore.upsertResources(
+          children.filter(({ id }) => resources.some((s) => s.id === transformToTrashId(id)))
         )
-        markVaultStatus(extensionRegistry, space, restored)
-        resourcesStore.upsertResources(restored)
       }
     }
   })

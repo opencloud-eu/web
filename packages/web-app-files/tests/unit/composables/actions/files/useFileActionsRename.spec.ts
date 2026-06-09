@@ -72,6 +72,27 @@ describe('rename', () => {
       })
     })
 
+    it('hands clear-text source and target path to moveFiles inside a vault', () => {
+      getWrapper({
+        setup: async ({ renameResource }, { space, clientService }) => {
+          const resource = {
+            id: '2',
+            path: '/my.vault/report.txt',
+            webDavPath: '/files/admin/my.vault/report.txt',
+            storageId: 'space-1'
+          }
+          await renameResource(space, resource, 'renamed.txt')
+
+          expect(clientService.webdav.moveFiles).toHaveBeenCalledWith(
+            space,
+            expect.objectContaining({ path: '/my.vault/report.txt' }),
+            space,
+            { path: '/my.vault/renamed.txt' }
+          )
+        }
+      })
+    })
+
     it('should handle errors properly', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
 

@@ -40,7 +40,16 @@
 <script setup lang="ts">
 import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
+import {
+  FolderVaultEngine,
+  formatDateFromDateTime,
+  getVaultClaim,
+  resolveFolderVault,
+  useClientService,
+  useExtensionRegistry,
+  useGetMatchingSpace,
+  UserAvatar
+} from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
 import { call, Resource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
@@ -49,9 +58,41 @@ import escape from 'lodash-es/escape'
 
 const { $ngettext, current: currentLanguage } = useGettext()
 const clientService = useClientService()
+const extensionRegistry = useExtensionRegistry()
+const { getMatchingSpace } = useGetMatchingSpace()
 const resource = inject<Ref<Resource>>('resource')
 const activities = ref<Activity[]>([])
 const activitiesLimit = 200
+
+// Inside an unlocked vault the activity feed carries the encrypted blob names
+// the server stores. Decrypt every resource-name variable in place so the
+// feed reads like the user's cleartext file names. user/sharee are people and
+// never encrypted; cleartext segments (the vault root, a parent folder) make
+// decryptPath throw on the base32 decode, so we keep them as-is.
+const decryptActivityNames = async (items: Activity[], engine: FolderVaultEngine) => {
+  for (const activity of items) {
+    const variables = activity.template?.variables as Record<string, any> | undefined
+    if (!variables) {
+      continue
+    }
+    for (const [key, value] of Object.entries(variables)) {
+      if (key === 'user' || key === 'sharee' || !value) {
+        continue
+      }
+      for (const field of ['name', 'displayName'] as const) {
+        if (typeof value[field] !== 'string') {
+          continue
+        }
+        try {
+          // a resource name is a one-segment relative path
+          value[field] = await engine.decryptPath(value[field])
+        } catch {
+          // not a vault-encrypted segment - leave it untouched
+        }
+      }
+    }
+  }
+}
 
 const activitiesFooterText = computed(() => {
   return $ngettext(
@@ -65,12 +106,28 @@ const activitiesFooterText = computed(() => {
 })
 
 const loadActivitiesTask = useTask(function* (signal) {
-  activities.value = yield* call(
+  const loaded = yield* call(
     clientService.graphAuthenticated.activities.listActivities(
       `itemid:${unref(resource).fileId} AND limit:${activitiesLimit} AND sort:desc`,
       { signal }
     )
   )
+
+  // Only resolve the (possibly index-loading) engine and decrypt names when
+  // the vault scheme actually encrypts names. A content-only scheme leaves
+  // activity names in clear text, so there is nothing to decrypt and no need
+  // to touch the engine at all. claimsPath is a cheap, sync, engine-free check.
+  const res = unref(resource)
+  const space = res ? getMatchingSpace(res) : null
+  const claim = space ? getVaultClaim(extensionRegistry, space, res.path) : null
+  if (claim?.encryptsNames) {
+    const vaultEngine = yield* call(resolveFolderVault(extensionRegistry, space, res.path))
+    if (vaultEngine) {
+      yield* call(decryptActivityNames(loaded, vaultEngine))
+    }
+  }
+
+  activities.value = loaded
 }).restartable()
 
 const isLoading = computed(() => {

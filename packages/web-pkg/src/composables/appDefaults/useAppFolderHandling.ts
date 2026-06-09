@@ -9,15 +9,10 @@ import { useFileRouteReplace } from '../router/useFileRouteReplace'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import { useAuthService } from '../authContext/useAuthService'
 import { isMountPointSpaceResource } from '@opencloud-eu/web-client'
-import { useExtensionRegistry, useResourcesStore, useSpacesStore } from '../piniaStores'
+import { useResourcesStore, useSpacesStore } from '../piniaStores'
 import { storeToRefs } from 'pinia'
 import { useRouteQuery } from '../router'
 import { useSearch } from '../search'
-import {
-  decryptResourceInPlace,
-  markVaultStatus,
-  resolveFolderVault
-} from '../../helpers/folderVault'
 
 interface AppFolderHandlingOptions {
   currentRoute: Ref<RouteLocationNormalizedLoaded>
@@ -45,7 +40,6 @@ export function useAppFolderHandling({
   const currentRouteQuery = useRouteQuery('contextRouteQuery')
 
   const resourcesStore = useResourcesStore()
-  const extensionRegistry = useExtensionRegistry()
   const { activeResources } = storeToRefs(resourcesStore)
 
   const loadFolderForFileContext = async (context: MaybeRef<FileContext>) => {
@@ -85,20 +79,9 @@ export function useAppFolderHandling({
 
       resourcesStore.clearResourceList()
       const space = unref(context.space)
-      // FIXME(poc-vault): this app-open path duplicates a chunk of the
-      // loaderSpace flow. The vault-decrypt steps below should move into a
-      // shared layer once we lift vault-awareness out of every caller.
-      const vaultEngine = resolveFolderVault(extensionRegistry, space, unref(context.item))
-      const baseCtx = unref(context)
-      const fetchCtx = vaultEngine
-        ? { ...baseCtx, item: await vaultEngine.encryptPath(unref(baseCtx.item)) }
-        : context
-      const pathResource = await getFileInfo(fetchCtx, {
+      const pathResource = await getFileInfo(context, {
         davProperties: [DavProperty.FileId]
       })
-      if (vaultEngine) {
-        await decryptResourceInPlace(vaultEngine, pathResource)
-      }
       replaceInvalidFileRoute({
         space,
         resource: pathResource,
@@ -112,32 +95,14 @@ export function useAppFolderHandling({
 
       if (isSpaceRoot) {
         const resource = await getFileInfo(context)
-        if (vaultEngine) {
-          await decryptResourceInPlace(vaultEngine, resource)
-        }
-        markVaultStatus(extensionRegistry, space, [resource])
         resourcesStore.initResourceList({ currentFolder: resource, resources: [resource] })
         isFolderLoading.value = false
         return
       }
 
-      const cleartextParentPath = dirname(pathResource.path)
-      const listPath = vaultEngine
-        ? await vaultEngine.encryptPath(cleartextParentPath)
-        : cleartextParentPath
       const { resource, children } = await webdav.listFiles(space, {
-        path: listPath
+        path: dirname(pathResource.path)
       })
-      if (vaultEngine) {
-        // Parent + children decrypt in parallel — calls only touch their own
-        // resource, so listings of N items finish in ~one round-trip
-        // instead of N.
-        await Promise.all([
-          decryptResourceInPlace(vaultEngine, resource),
-          ...children.map((c) => decryptResourceInPlace(vaultEngine, c))
-        ])
-      }
-      markVaultStatus(extensionRegistry, space, [resource, ...children])
 
       if (isShareSpaceResource(space)) {
         children.forEach((r) => (r.remoteItemId = space.id))

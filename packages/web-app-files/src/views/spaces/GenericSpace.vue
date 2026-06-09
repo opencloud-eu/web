@@ -121,8 +121,11 @@ import {
 import {
   ResourceTransfer,
   TransferType,
+  getVaultClaim,
+  useExtensionRegistry,
   useFileActions,
   useLoadPreview,
+  useMessages,
   usePasteWorker,
   useResourcesStore,
   useRouter,
@@ -175,6 +178,8 @@ const props = defineProps<{
 const router = useRouter()
 const userStore = useUserStore()
 const { $gettext, $ngettext } = useGettext()
+const { showMessage } = useMessages()
+const extensionRegistry = useExtensionRegistry()
 const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
 const clientService = useClientService()
 const { startWorker } = usePasteWorker()
@@ -445,6 +450,21 @@ const fileDropped = async (fileTarget: string | { name: string; path: string }) 
   }
 
   if (!targetFolder || targetFolder.type !== 'folder') {
+    return
+  }
+
+  // ResourceTransfer is vault-unaware (cleartext listing + path join), so a
+  // drag-move into or out of a vault would read/write at the wrong, cleartext
+  // paths. Block it whenever a vault is involved on either side. getVaultClaim
+  // is a cheap, path-based check that also covers a target fetched via
+  // getFileInfo (which doesn't carry the isInVault flag).
+  if (
+    selected.some((r) => r.isInVault) ||
+    getVaultClaim(extensionRegistry, unref(space), targetFolder.path)
+  ) {
+    showMessage({
+      title: $gettext('Moving items into or out of a vault by drag and drop is not supported')
+    })
     return
   }
 

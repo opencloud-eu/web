@@ -20,14 +20,23 @@ export const useKeyboardFileSpaceActions = (
   const { actions: pasteFileActions } = useFileActionsPaste()
   const pasteFileAction = unref(pasteFileActions)[0].handler
 
+  // Copy/cut/paste in or out of a vault isn't supported (the worker can't
+  // re-encrypt content) and is blocked on the context-menu actions. The
+  // keyboard shortcuts bypass those isVisible guards, so gate them here too.
+  const selectionInVault = () => resourcesStore.selectedResources.some((r) => r.isInVault)
+  const currentFolderInVault = () => !!resourcesStore.currentFolder?.isInVault
+
   keyActions.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.C }, () => {
+    if (selectionInVault()) {
+      return
+    }
     copyResources(resourcesStore.selectedResources)
   })
 
   keyActions.bindKeyAction(
     { modifier: Modifier.Ctrl, primary: Key.V },
     () => {
-      if (clipboardStore.resources.length) {
+      if (clipboardStore.resources.length && !currentFolderInVault()) {
         pasteFileAction({ space: unref(space) })
       }
     },
@@ -38,6 +47,9 @@ export const useKeyboardFileSpaceActions = (
   )
 
   keyActions.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.X }, () => {
+    if (selectionInVault()) {
+      return
+    }
     cutResources(resourcesStore.selectedResources)
   })
 }

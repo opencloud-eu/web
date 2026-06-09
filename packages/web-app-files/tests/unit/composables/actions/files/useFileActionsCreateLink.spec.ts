@@ -45,10 +45,19 @@ describe('useFileActionsCreateLink', () => {
       getWrapper({
         setup: ({ actions }) => {
           const resources = [
-            mock<Resource>({ canShare: () => true }),
-            mock<Resource>({ canShare: () => true })
+            mock<Resource>({ canShare: () => true, isInVault: false }),
+            mock<Resource>({ canShare: () => true, isInVault: false })
           ]
           expect(unref(actions)[0].isVisible({ space: null, resources })).toBeTruthy()
+        }
+      })
+    })
+
+    it('should return false for a vault resource (public links cannot be claimed)', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          const resources = [mock<Resource>({ canShare: () => true, isInVault: true })]
+          expect(unref(actions)[0].isVisible({ space: null, resources })).toBeFalsy()
         }
       })
     })

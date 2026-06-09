@@ -63,7 +63,7 @@ export default defineComponent({
     },
     // Search inside a vault is currently not supported on the server side
     // (it'd search ciphertext blobs), so the "Current folder" option makes
-    // no sense when the user is sitting inside a vault — force-route to
+    // no sense when the user is sitting inside a vault - force-route to
     // "All files" and disable the toggle.
     currentFolderIsInVault: {
       type: Boolean,
@@ -102,7 +102,7 @@ export default defineComponent({
           const useScope = unref(useScopeQueryValue).toString() === 'true'
           // The scope query may force "Current folder" via deeplink even
           // when `currentFolderAvailable` is false (existing behavior).
-          // The only override is being inside a vault — searching ciphertext
+          // The only override is being inside a vault - searching ciphertext
           // makes no sense.
           if (useScope && !props.currentFolderIsInVault) {
             currentSelection.value = unref(locationOptions).find(

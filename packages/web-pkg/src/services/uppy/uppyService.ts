@@ -68,6 +68,30 @@ export type OcUppyMeta = {
   isFolder: boolean
 }
 export type OcUppyBody = Body
+
+// Meta fields safe to put in the tus `Upload-Metadata` header. Deliberately
+// EXCLUDES the path-revealing fields (currentFolder, relativeFolder,
+// relativePath, routeDriveAliasAndItem) so a folder-vault upload never leaks the
+// cleartext directory structure to the server. Keep this in sync with OcUppyMeta:
+// a new field stays out of the header (fail-closed) until added here on purpose.
+export const TUS_ALLOWED_META_FIELDS: (keyof OcUppyMeta)[] = [
+  'name',
+  'mtime',
+  'spaceId',
+  'spaceName',
+  'driveAlias',
+  'driveType',
+  'currentFolderId',
+  'fileId',
+  'uppyId',
+  'tusEndpoint',
+  'uploadId',
+  'topLevelFolderId',
+  'routeName',
+  'routeShareId',
+  'isFolder'
+]
+
 export type OcUppyFile = UppyFile<OcUppyMeta, OcUppyBody>
 type OcUppyPlugin = typeof BasePlugin<any, OcUppyMeta, OcUppyBody>
 export type OcMinimalUppyFile = MinimalRequiredUppyFile<OcUppyMeta, OcUppyBody>
@@ -165,6 +189,16 @@ export class UppyService {
       uploadDataDuringCreation,
       limit: 5,
       headers,
+      // Allowlist which meta fields go into the `Upload-Metadata` header.
+      // Without this, @uppy/tus defaults to sending *all* of file.meta, which
+      // for a folder-vault upload would leak the cleartext directory structure
+      // (currentFolder / relativeFolder / relativePath / routeDriveAliasAndItem)
+      // to the server even though the endpoint path itself is ciphertext. The
+      // server gets everything it needs from the endpoint (path) and headers
+      // (mtime / auth), so metadata is client bookkeeping; we send only the
+      // non-path-revealing fields. Allowlisting (not denylisting) keeps this
+      // fail-closed: a new meta field is not leaked until it is explicitly added.
+      allowedMetaFields: TUS_ALLOWED_META_FIELDS,
       onBeforeRequest,
       onShouldRetry: (err, retryAttempt, options, next) => {
         // status code 5xx means the upload is gone on the server side

@@ -13,6 +13,7 @@ import {
   FileAction,
   FileActionOptions,
   createFileRouteOptions,
+  getVaultClaim,
   isLocationSharesActive,
   isLocationTrashActive,
   isSameResource,
@@ -20,6 +21,8 @@ import {
   useAbility,
   useCapabilityStore,
   useClientService,
+  useExtensionRegistry,
+  useFolderVaultStore,
   useIsResourceNameValid,
   useMessages,
   useModals,
@@ -41,15 +44,26 @@ export const useFileActionsRename = () => {
   const resourcesStore = useResourcesStore()
   const { setCurrentFolder, upsertResource } = resourcesStore
   const { isFileNameValid } = useIsResourceNameValid()
+  const extensionRegistry = useExtensionRegistry()
+  const folderVaultStore = useFolderVaultStore()
 
   const renameResource = async (space: SpaceResource, resource: Resource, newName: string) => {
     let currentFolder = resourcesStore.currentFolder
 
     try {
       const newPath = join(dirname(resource.path), newName)
+
       await (clientService.webdav as WebDAV).moveFiles(space, resource, space, {
         path: newPath
       })
+
+      // When the renamed resource *is* a vault root, its unlocked engine is
+      // filed under the old path key. Re-file it so the vault stays unlocked
+      // under the new name (no-op when the vault was never unlocked).
+      const claim = getVaultClaim(extensionRegistry, space, resource.path)
+      if (claim?.vaultRoot === resource.path) {
+        folderVaultStore.moveEngine(space.id, resource.path, newPath)
+      }
 
       const isCurrentFolder = isSameResource(resource, currentFolder)
 
