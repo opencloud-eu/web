@@ -63,6 +63,11 @@ export const useSpaceActionsDisable = () => {
               succeeded.length,
               { spaceCount: succeeded.length.toString() }
             )
+      await spacesStore.loadGraphPermissions({
+        ids: spaces.map((s) => s.id),
+        graphClient: client,
+        useCache: false
+      })
       showMessage({ title })
     }
 
