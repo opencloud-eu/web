@@ -21,6 +21,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v26 [[#2645](https://github.com/opencloud-eu/web/pull/2645)]
 - chore(deps): update typescript-eslint monorepo to v8.61.0 [[#2647](https://github.com/opencloud-eu/web/pull/2647)]
 - chore(deps): update dependency axios to v1.17.0 [[#2644](https://github.com/opencloud-eu/web/pull/2644)]
 - fix(deps): update sentry-javascript monorepo to v10.56.0 [[#2615](https://github.com/opencloud-eu/web/pull/2615)]
