@@ -42,32 +42,6 @@ describe('useCapabilityStore', () => {
       })
     })
   })
-
-  describe('open-xchange getters', () => {
-    it('default to disabled with an empty api url', () => {
-      getWrapper({
-        setup: (instance) => {
-          expect(instance.openXchangeEnabled).toBe(false)
-          expect(instance.openXchangeApiUrl).toBe('')
-        }
-      })
-    })
-    it('reflect the values set via "setCapabilities"', () => {
-      getWrapper({
-        setup: (instance) => {
-          const data = {
-            capabilities: {
-              open_xchange: { enabled: true, api_url: 'https://ox.example.com/api' }
-            }
-          } as Capabilities
-          instance.setCapabilities(data)
-
-          expect(instance.openXchangeEnabled).toBe(true)
-          expect(instance.openXchangeApiUrl).toBe('https://ox.example.com/api')
-        }
-      })
-    })
-  })
 })
 
 function getWrapper({

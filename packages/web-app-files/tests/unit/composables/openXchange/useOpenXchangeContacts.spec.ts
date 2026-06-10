@@ -1,11 +1,10 @@
 import { Contact } from '@opencloud-eu/web-client/ox'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useOpenXchangeContacts } from '../../../../src/composables/openXchange/useOpenXchangeContacts'
 
 describe('useOpenXchangeContacts', () => {
-  it('returns an empty list and does not call the api when the capability is disabled', async () => {
+  it('returns an empty list and does not call the api when the config option is disabled', async () => {
     const { instance, mocks } = getWrapper({ enabled: false })
     const result = await instance.searchContacts('jane')
     expect(result).toEqual([])
@@ -63,11 +62,15 @@ function getWrapper({
   let instance: ReturnType<typeof useOpenXchangeContacts>
   const wrapper = getComposableWrapper(
     () => {
-      const capabilityStore = useCapabilityStore()
-      vi.mocked(capabilityStore).openXchangeEnabled = enabled
       instance = useOpenXchangeContacts()
     },
-    { mocks, provide: mocks }
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: { configState: { options: { oxAppSuite: { enabled } } } }
+      }
+    }
   )
 
   return { wrapper, instance, mocks }

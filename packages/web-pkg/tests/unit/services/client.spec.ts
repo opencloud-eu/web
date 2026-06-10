@@ -1,5 +1,5 @@
 import { HttpClient } from '../../../src/http'
-import { ClientService, useAuthStore, useCapabilityStore, useConfigStore } from '../../../src/'
+import { ClientService, useAuthStore, useConfigStore } from '../../../src/'
 import { Language } from 'vue3-gettext'
 import { graph, ocs, ox, webdav } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
@@ -16,14 +16,12 @@ const serverUrl = 'someUrl'
 const getClientServiceMock = () => {
   const authStore = useAuthStore()
   const configStore = useConfigStore()
-  const capabilityStore = useCapabilityStore()
   writable(configStore).serverUrl = serverUrl
 
   return new ClientService({
     configStore,
     language: language as Language,
-    authStore,
-    capabilityStore
+    authStore
   })
 }
 const v4uuid = '00000000-0000-0000-0000-000000000000'

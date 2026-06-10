@@ -60,10 +60,6 @@ const defaultValues = {
     enabled: false,
     max_quota: 0,
     projects: false
-  },
-  open_xchange: {
-    enabled: false,
-    api_url: ''
   }
 } satisfies Partial<Capabilities['capabilities']>
 
@@ -142,9 +138,6 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   const searchMediaType = computed(() => unref(capabilities).search.property?.mediatype)
   const searchContent = computed(() => unref(capabilities).search.property?.content)
 
-  const openXchangeEnabled = computed(() => unref(capabilities).open_xchange.enabled)
-  const openXchangeApiUrl = computed(() => unref(capabilities).open_xchange.api_url)
-
   return {
     isInitialized,
     capabilities,
@@ -188,9 +181,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     passwordPolicy,
     searchLastMofifiedDate,
     searchMediaType,
-    searchContent,
-    openXchangeEnabled,
-    openXchangeApiUrl
+    searchContent
   }
 })
 
