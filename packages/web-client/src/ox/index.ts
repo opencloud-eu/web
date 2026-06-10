@@ -33,7 +33,7 @@ export interface OX {
  * Client for the Open-Xchange middleware HTTP API.
  *
  * The base url is resolved lazily through `getApiUrl` because it originates from
- * a server capability that is only available after the app has bootstrapped.
+ * a config option that is only available after the app has bootstrapped.
  */
 export const ox = (axiosClient: AxiosInstance, getApiUrl: () => string | undefined): OX => {
   return {

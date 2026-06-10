@@ -293,19 +293,16 @@ describe('announceUpdates', () => {
 })
 
 describe('announceClientService', () => {
-  it('creates a client service wired with the capability store and provides it on the app', () => {
+  it('creates a client service and provides it on the app', () => {
     const app = createApp(defineComponent({}))
     app.config.globalProperties.$language = mock<Language>()
 
     const configStore = mockDeep<ConfigStore>()
     const authStore = mockDeep<AuthStore>()
-    const capabilityStore = mockDeep<CapabilityStore>()
 
-    const clientService = announceClientService({ app, configStore, authStore, capabilityStore })
+    const clientService = announceClientService({ app, configStore, authStore })
 
-    expect(ClientService).toHaveBeenCalledWith(
-      expect.objectContaining({ configStore, authStore, capabilityStore })
-    )
+    expect(ClientService).toHaveBeenCalledWith(expect.objectContaining({ configStore, authStore }))
     expect(app.config.globalProperties.$clientService).toBe(clientService)
   })
 })
