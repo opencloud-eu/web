@@ -208,6 +208,13 @@ Store the mechanism, encrypt only as refresher:
    API involved; works for every scheme since listings *arrive* in server form.
    Invariant: `serverName` exists iff decryption happened; absent ⇒ `name` *is* the
    server form (locked vaults, non-vault resources, zip).
+   *`indexed`-layout caveats*: (a) children of a listing arrive as entries (last
+   segment = entry name ✓), but the listed folder *itself* arrives in container form
+   (`d/XX/YYYY…`) — capturing its last path segment would store a hash fragment.
+   For `indexed` layouts the self-resource's `serverName` comes from the navigation
+   context (last route segment / the engine's chain cache) instead. (b) The
+   `webDavPath` rewrite must *rebuild* from dav-root + clear path; the current
+   suffix-swap assumes a mirrored tree.
 2. **Link building** (the existing narrow waist: `useResourceRouteResolver`,
    `createFileRouteOptions`, `useFolderLink`): child link = current route path
    (already ciphertext) + `/` + `serverName ?? name`. Synchronous — no async
@@ -225,6 +232,37 @@ Store the mechanism, encrypt only as refresher:
 5. **Simplification**: the worker handoffs (`encryptResourcePathsForServer`) can read
    `serverName` instead of re-encrypting — one less engine dependency in a delicate
    spot.
+
+### Depth mismatch (flat layouts)
+
+For Cryptomator the URL is deliberately **not a server path** — it is a chain of
+per-level *entry names*, so URL depth always equals virtual depth:
+
+```
+virtual:  /vault/notes/q1.txt                  (depth 2)
+URL:      /vault/R7wQz3Lk….c9r/m2Vt8xAq….c9r   (depth 2 — entry names)
+server:   /vault/d/QR/STUVWX…/m2Vt8xAq….c9r    (depth 4, flat — never in the URL)
+```
+
+The chain is forward-resolvable level by level without a reverse index (root
+container is computable from dirId `""`; each segment's `dir.c9r` yields the next
+container) — even cheaper than a clear path, since segments need no re-encryption.
+URL prefixes remain valid virtual levels (breadcrumbs), and `dirname()` works on
+both the route and the clear `resource.path`.
+
+The flat layout pokes through the generic mechanics in exactly three places:
+
+1. the **self-resource** of a listing (container form — see capture caveat above),
+2. **trash originals** and **`getPathForFileId`** — the only sources handing us
+   server paths *without* listing context; their parent chain is hash-form and only
+   translatable via the on-demand index (hence the v1 degrades), and
+3. **`.c9s`-shortened names** — the `serverName` is the shortened form (stable,
+   addressable, navigable); only the clear-text display costs one extra `name.c9s`
+   read, which chain resolution performs anyway.
+
+Side note: with the flat layout the *server* path depth is constant regardless of
+virtual depth — deep virtual trees never stress server path limits; only the URL
+grows. Under rclone-crypt both grow together.
 
 ## 7. Security issue in current main (ship first, independent of Cryptomator)
 
