@@ -324,6 +324,12 @@ const loadResourceTask = useTask(function* (signal) {
         }
       }
     }
+    if (isProjectSpaceResource(unref(space))) {
+      yield spacesStore.loadGraphPermissions({
+        ids: [unref(space).id],
+        graphClient: clientService.graphAuthenticated
+      })
+    }
     resourcesStore.initResourceList({ currentFolder: null, resources: [unref(resource)] })
     selectedResources.value = [unref(resource)]
   } catch (e) {
