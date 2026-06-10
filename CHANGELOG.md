@@ -1,5 +1,48 @@
 # Changelog
 
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-10
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @micbar, @tammi-23
+
+### 🔒 Security
+
+- chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
+
+### 📈 Enhancement
+
+- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
+- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
+-  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
+- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
+- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
+
+### 🐛 Bug Fixes
+
+- fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
+- fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
+- fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
+
+### 📦️ Dependencies
+
+- fix(deps): update sentry-javascript monorepo to v10.57.0 [[#2656](https://github.com/opencloud-eu/web/pull/2656)]
+- chore(deps): update collabora/code docker tag to v26 [[#2645](https://github.com/opencloud-eu/web/pull/2645)]
+- chore(deps): update typescript-eslint monorepo to v8.61.0 [[#2647](https://github.com/opencloud-eu/web/pull/2647)]
+- chore(deps): update dependency axios to v1.17.0 [[#2644](https://github.com/opencloud-eu/web/pull/2644)]
+- fix(deps): update sentry-javascript monorepo to v10.56.0 [[#2615](https://github.com/opencloud-eu/web/pull/2615)]
+- fix(deps): update dependency vue-router to v5.1.0 [[#2617](https://github.com/opencloud-eu/web/pull/2617)]
+- chore(deps): update tiptap monorepo to v3.26.0 [[#2620](https://github.com/opencloud-eu/web/pull/2620)]
+- chore(deps): update typescript-eslint monorepo to v8.60.1 [[#2630](https://github.com/opencloud-eu/web/pull/2630)]
+- chore(deps): update dependency dompurify to v3.4.8 [[#2641](https://github.com/opencloud-eu/web/pull/2641)]
+- chore(deps): update traefik docker tag to v3.7.4 [[#2642](https://github.com/opencloud-eu/web/pull/2642)]
+- chore(deps): update apache/tika docker tag to v3.3.1.0 [[#2607](https://github.com/opencloud-eu/web/pull/2607)]
+- chore(deps): update pnpm to v11.5.2 [[#2619](https://github.com/opencloud-eu/web/pull/2619)]
+- fix(deps): update dependency fuse.js to v7.4.2 [[#2623](https://github.com/opencloud-eu/web/pull/2623)]
+- chore(deps): update dependency eslint-plugin-vue to v10.9.2 [[#2635](https://github.com/opencloud-eu/web/pull/2635)]
+- [full-ci] Update OPENCLOUD_COMMITID for testing [[#2628](https://github.com/opencloud-eu/web/pull/2628)]
+
 ## [7.1.0](https://github.com/opencloud-eu/web/releases/tag/v7.1.0) - 2026-06-01
 
 ### ❤️ Thanks to all contributors! ❤️
