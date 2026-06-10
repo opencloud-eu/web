@@ -1,20 +1,20 @@
-import { useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
+import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
 
 /**
  * Searches the Open-Xchange addressbook for contacts and maps them to share
- * recipients of type "contact". Only active when the `open_xchange.enabled`
+ * recipients of type "contact". Only active when the `config.options.oxAppSuite.enabled`
  * capability is set.
  */
 export const useOpenXchangeContacts = () => {
   const clientService = useClientService()
-  const capabilityStore = useCapabilityStore()
+  const configStore = useConfigStore()
 
   const searchContacts = async (
     query: string,
     signal?: AbortSignal
   ): Promise<CollaboratorAutoCompleteItem[]> => {
-    if (!capabilityStore.openXchangeEnabled) {
+    if (!configStore.options.oxAppSuite?.enabled) {
       return []
     }
 

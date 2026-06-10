@@ -104,7 +104,13 @@ const OptionsConfigSchema = z.object({
     })
     .optional(),
   userListRequiresFilter: z.boolean().optional(),
-  hideLogo: z.boolean().optional()
+  hideLogo: z.boolean().optional(),
+  oxAppSuite: z
+    .object({
+      enabled: z.boolean().optional(),
+      apiUrl: z.string().optional()
+    })
+    .optional()
 })
 
 export type OptionsConfig = z.infer<typeof OptionsConfigSchema>

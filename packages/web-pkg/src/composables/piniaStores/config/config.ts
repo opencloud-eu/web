@@ -31,7 +31,11 @@ const defaultOptions = {
   },
   tokenStorageLocal: true,
   userListRequiresFilter: false,
-  hideLogo: false
+  hideLogo: false,
+  oxAppSuite: {
+    enabled: false,
+    apiUrl: ''
+  }
 } satisfies Partial<OptionsConfig>
 
 export const useConfigStore = defineStore('config', () => {

@@ -10,7 +10,7 @@ import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { Language } from 'vue3-gettext'
 import { FetchEventSourceInit } from '@microsoft/fetch-event-source'
 import { sse } from '@opencloud-eu/web-client/sse'
-import { AuthStore, CapabilityStore, ConfigStore } from '../../composables'
+import { AuthStore, ConfigStore } from '../../composables'
 import { createVaultWebDav } from './vaultWebDav'
 
 const createFetchOptions = (authParams: AuthParameters, language: string): FetchEventSourceInit => {
@@ -28,14 +28,12 @@ export interface ClientServiceOptions {
   configStore: ConfigStore
   language: Language
   authStore: AuthStore
-  capabilityStore: CapabilityStore
 }
 
 export class ClientService {
   private configStore: ConfigStore
   private language: Language
   private authStore: AuthStore
-  private capabilityStore: CapabilityStore
 
   private httpAuthenticatedClient: HttpClient
   private httpUnAuthenticatedClient: HttpClient
@@ -56,7 +54,6 @@ export class ClientService {
     this.configStore = options.configStore
     this.language = options.language
     this.authStore = options.authStore
-    this.capabilityStore = options.capabilityStore
 
     this.initGraphClient()
     this.initOcsClient()
@@ -145,7 +142,7 @@ export class ClientService {
       Object.assign(config.headers, this.getDynamicHeaders())
       return config
     })
-    this.oxClient = ox(axiosClient, () => this.capabilityStore.openXchangeApiUrl)
+    this.oxClient = ox(axiosClient, () => this.configStore.options.oxAppSuite?.apiUrl)
   }
 
   private initWebDavClient() {

@@ -301,8 +301,7 @@ function getWrapper({
   mocks.$clientService.ox.autocompleteContacts.mockResolvedValue(openXchangeContacts)
 
   const capabilities = {
-    files_sharing: { federation: { incoming: true, outgoing: true } },
-    open_xchange: { enabled: openXchange, api_url: openXchange ? 'https://ox.example.com/api' : '' }
+    files_sharing: { federation: { incoming: true, outgoing: true } }
   }
 
   return {
@@ -314,7 +313,15 @@ function getWrapper({
             piniaOptions: {
               userState: { user },
               capabilityState: { capabilities },
-              configState: { options: { concurrentRequests: { shares: { create: 1 } } } },
+              configState: {
+                options: {
+                  concurrentRequests: { shares: { create: 1 } },
+                  oxAppSuite: {
+                    enabled: openXchange,
+                    apiUrl: openXchange ? 'https://ox.example.com/api' : ''
+                  }
+                }
+              },
               sharesState: {
                 collaboratorShares: existingCollaborators
               }
