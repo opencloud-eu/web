@@ -219,10 +219,23 @@ Store the mechanism, encrypt only as refresher:
    `createFileRouteOptions`, `useFolderLink`): child link = current route path
    (already ciphertext) + `/` + `serverName ?? name`. Synchronous — no async
    `encryptPath` in render paths.
-3. **Reverse direction in the folder loader**: decrypt URL segments via
-   `decryptPath` (async is fine there; for Cryptomator this is ordinary forward
+3. **Reverse direction — two route-decode points, not one**: decrypt URL segments
+   via `decryptPath` (async is fine there; for Cryptomator this is ordinary forward
    resolution). Breadcrumb *labels* from cleartext, breadcrumb *links* from the
-   route's ciphertext segments.
+   route's ciphertext segments. This decode is needed in **both** route consumers:
+   the files app's folder loader **and** the app file context
+   (`useAppDefaults`/`currentFileContext`, fed from `useDriveResolver` — the
+   preview/editor apps derive the parent folder via `dirname(resource.path)` on the
+   *decrypted* stat result and list it through the decorator, so everything past the
+   decode keeps working unchanged). `useDriveResolver` is the natural shared hook so
+   both consumers inherit the decode.
+   *Route healing trap*: `replaceInvalidFileRoute` (app context load) compares the
+   route path against `resource.path` and rewrites the route from the resource on
+   mismatch. With ciphertext routes, (a) the rewrite must build from the server name
+   form — automatic once `createFileRouteOptions` (already a waist point) does — and
+   (b) the staleness comparison must compare within one domain, otherwise ciphertext
+   route vs. decrypted `resource.path` mismatches on every load and rewrites the
+   clear path back into the URL (re-leak + endless healing).
 4. **Staleness — the one bug magnet**: `serverName` is a cache. Three refresh
    points: rename/move handlers (store patch), upload announce (the pipeline already
    computes the encrypted name), and the decorator's `moveFiles`, which today returns
