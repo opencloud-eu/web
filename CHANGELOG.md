@@ -4,11 +4,15 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @micbar, @tammi-23
+@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @micbar, @openclouders, @tammi-23
 
 ### 🔒 Security
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
+
+### 📚 Documentation
+
+- 🎉 Release 7.2.0-beta.1 [[#2629](https://github.com/opencloud-eu/web/pull/2629)]
 
 ### 📈 Enhancement
 
