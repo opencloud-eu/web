@@ -407,6 +407,7 @@ export default defineComponent({
       const saveQueue = new PQueue({ concurrency: unref(createSharesConcurrentRequests) })
       const savePromises: Promise<void>[] = []
       const errors: { displayName: string; error: Error }[] = []
+      const contactErrors: { displayName: string; error: Error }[] = []
       const addedShares: CollaboratorShare[] = []
       let invitedContactCount = 0
 
@@ -427,7 +428,7 @@ export default defineComponent({
                 invitedContactCount++
               } catch (error) {
                 console.error(error)
-                errors.push({ displayName, error })
+                contactErrors.push({ displayName, error })
                 throw error
               }
             })
@@ -436,7 +437,6 @@ export default defineComponent({
         }
 
         const type = shareType === ShareTypes.group.value ? 'group' : 'user'
-
         savePromises.push(
           saveQueue.add(async () => {
             try {
@@ -494,6 +494,14 @@ export default defineComponent({
       errors.forEach((e) => {
         showErrorMessage({
           title: $gettext('Failed to add share for "%{displayName}"', {
+            displayName: e.displayName
+          }),
+          errors: [e.error]
+        })
+      })
+      contactErrors.forEach((e) => {
+        showErrorMessage({
+          title: $gettext('Failed to send invite link for "%{displayName}"', {
             displayName: e.displayName
           }),
           errors: [e.error]
