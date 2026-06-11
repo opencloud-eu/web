@@ -10,9 +10,12 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
-### 📚 Documentation
+### 🐛 Bug Fixes
 
-- 🎉 Release 7.2.0-beta.1 [[#2629](https://github.com/opencloud-eu/web/pull/2629)]
+- fix: finetune contact invite error messages [[#2669](https://github.com/opencloud-eu/web/pull/2669)]
+- fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
+- fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
+- fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
 
 ### 📈 Enhancement
 
@@ -22,12 +25,6 @@
 - feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
 - feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
-
-### 🐛 Bug Fixes
-
-- fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
-- fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
-- fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
 
 ### 📦️ Dependencies
 
