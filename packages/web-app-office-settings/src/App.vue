@@ -15,7 +15,7 @@
               <div class="flex">
                 <oc-file-input
                   v-model="files"
-                  fileTypes=".ttf,.otf"
+                  file-types=".ttf,.otf"
                   :multiple="true"
                   :label="$gettext('Select font')"
                   class="my-6"

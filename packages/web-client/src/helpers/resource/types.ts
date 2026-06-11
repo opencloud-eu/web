@@ -83,6 +83,7 @@ export interface Resource {
   canRename?(args?: { user?: User; ability?: Ability }): boolean
   canBeDeleted?(args?: { user?: User; ability?: Ability }): boolean
   canEditTags?(): boolean
+  canListVersions?(args?: { user?: User }): boolean
 
   getDomSelector?(): string
 
