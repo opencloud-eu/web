@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.9 [[#2663](https://github.com/opencloud-eu/web/pull/2663)]
 - chore(deps): update pnpm to v11.5.3 [[#2665](https://github.com/opencloud-eu/web/pull/2665)]
 - fix(deps): update sentry-javascript monorepo to v10.57.0 [[#2656](https://github.com/opencloud-eu/web/pull/2656)]
 - chore(deps): update collabora/code docker tag to v26 [[#2645](https://github.com/opencloud-eu/web/pull/2645)]
