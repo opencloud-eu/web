@@ -20,6 +20,9 @@ Feature: server sent events
       | link-created            | x |
       | link-removed            | x |
       | link-updated            | x |
+      | space-disabled          | x |
+      | space-enabled           | x |
+      | space-deleted           | x |
 
 
   Background:
@@ -124,6 +127,35 @@ Feature: server sent events
     Then "Alice" should get "space-member-removed" SSE event
     And "Brian" should get "space-member-removed" SSE event
     And "Brian" should not see space "marketing"
+
+
+    # space-disabled
+    When "Alice" adds the following members to the space "Marketing" using API
+      | user  | role     | shareType |
+      | Brian | Can view | user      |
+    And "Alice" navigates to the projects space page
+    And "Alice" disables the following space using the batch-actions
+      | id     |
+      | marketing |
+    Then "Alice" should get "space-disabled" SSE event
+    And "Brian" should get "space-disabled" SSE event
+
+    # space-enabled
+    When "Alice" enables the following space using the batch-actions
+      | id     |
+      | marketing |
+    Then "Alice" should get "space-enabled" SSE event
+    And "Brian" should get "space-enabled" SSE event
+
+    # space-deleted
+    And "Alice" disables the following space using the batch-actions 
+      | id     |
+      | marketing |
+    And "Alice" deletes the following space using the batch-actions
+      | id     |
+      | marketing |
+    Then "Alice" should get "space-deleted" SSE event
+    And "Brian" should get "space-deleted" SSE event
 
     And "Brian" logs out
     And "Alice" logs out
