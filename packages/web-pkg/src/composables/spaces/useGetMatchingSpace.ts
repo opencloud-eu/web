@@ -62,7 +62,8 @@ export const useGetMatchingSpace = (options?: GetMatchingSpaceOptions) => {
       spacesStore.createShareSpace({
         driveAliasPrefix,
         id: resource.remoteItemId,
-        shareName
+        shareName,
+        graphPermissions: isIncomingShareResource(resource) ? resource.sharePermissions : []
       })
     )
   }

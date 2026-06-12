@@ -116,12 +116,14 @@ export function buildShareSpaceResource({
   driveAliasPrefix,
   id,
   shareName,
-  serverUrl
+  serverUrl,
+  graphPermissions
 }: {
   driveAliasPrefix: 'share' | 'ocm-share'
   id: string
   shareName: string
   serverUrl: string
+  graphPermissions?: GraphSharePermission[]
 }): ShareSpaceResource {
   const space = buildSpace({
     id,
@@ -134,6 +136,10 @@ export function buildShareSpaceResource({
     space.driveAlias = `${driveAliasPrefix}/${newName}`
     space.name = newName
   }
+  if (graphPermissions) {
+    space.graphPermissions = graphPermissions
+  }
+
   return space
 }
 
@@ -281,11 +287,8 @@ export function buildSpace(
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canListVersions: function ({ user }: { user?: User } = {}) {
-      if (isPersonalSpaceResource(this) && this.isOwner(user)) {
-        return true
-      }
-      return this.graphPermissions?.includes(GraphSharePermission.readVersions)
+    canListVersions: function () {
+      return false
     },
     canCreate: function () {
       return true

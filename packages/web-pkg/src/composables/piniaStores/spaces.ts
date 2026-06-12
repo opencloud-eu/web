@@ -7,7 +7,11 @@ import {
 } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
-import type { CollaboratorShare, MountPointSpaceResource } from '@opencloud-eu/web-client'
+import type {
+  CollaboratorShare,
+  GraphSharePermission,
+  MountPointSpaceResource
+} from '@opencloud-eu/web-client'
 import { useUserStore } from './user'
 import { useConfigStore } from './config'
 import { useSharesStore } from './shares'
@@ -118,17 +122,20 @@ export const useSpacesStore = defineStore('spaces', () => {
   const createShareSpace = ({
     driveAliasPrefix,
     id,
-    shareName
+    shareName,
+    graphPermissions
   }: {
     driveAliasPrefix: 'share' | 'ocm-share'
     id: string
     shareName: string
+    graphPermissions?: GraphSharePermission[]
   }) => {
     const space = buildShareSpaceResource({
       driveAliasPrefix,
       id,
       shareName,
-      serverUrl: configStore.serverUrl
+      serverUrl: configStore.serverUrl,
+      graphPermissions
     })
     addSpaces([space])
     return space

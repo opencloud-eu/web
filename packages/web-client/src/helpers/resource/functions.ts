@@ -202,6 +202,9 @@ export function buildResource(
         this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
       )
     },
+    canListVersions: function () {
+      return !this.isFolder
+    },
     isMounted: function () {
       return this.permissions.indexOf(DavPermission.Mounted) >= 0
     },
@@ -259,6 +262,7 @@ export function buildDeletedResource(resource: WebDavResponseResource): TrashRes
     isReceivedShare: () => false,
     hasPreview: () => false,
     isShareRoot: () => false,
+    canListVersions: () => false,
     getDomSelector: () => extractDomSelector(id)
   }
 }
