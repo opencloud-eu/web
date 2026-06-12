@@ -168,7 +168,8 @@ import {
   CollaboratorShare,
   ShareRole,
   ShareTypes,
-  call
+  call,
+  isSpaceResource
 } from '@opencloud-eu/web-client'
 import {
   useCapabilityStore,
@@ -370,9 +371,12 @@ export default defineComponent({
         shareType: ShareTypes.group.value
       })) as CollaboratorAutoCompleteItem[]
 
-      const guests = (yield* call(
-        searchOpenXchangeContacts(query, signal)
-      )) as CollaboratorAutoCompleteItem[]
+      const isSpace = !unref(resource) || isSpaceResource(unref(resource))
+      const guests = isSpace
+        ? []
+        : ((yield* call(
+            searchOpenXchangeContacts(query, signal)
+          )) as CollaboratorAutoCompleteItem[])
 
       autocompleteResults.value = [...users, ...groups, ...guests].filter(
         (collaborator: CollaboratorAutoCompleteItem) => {
