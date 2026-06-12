@@ -4,11 +4,15 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @micbar, @openclouders, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @fschade, @kulmann, @micbar, @openclouders, @tammi-23
 
 ### 🔒 Security
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
+
+### ✅ Tests
+
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 🐛 Bug Fixes
 
