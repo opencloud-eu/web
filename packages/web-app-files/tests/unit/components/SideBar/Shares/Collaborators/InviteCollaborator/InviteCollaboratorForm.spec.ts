@@ -136,6 +136,17 @@ describe('InviteCollaboratorForm', () => {
       )
       expect(contact?.mail).toBe('jane@example.com')
     })
+    it('does not query Open-Xchange when the resource is a space', async () => {
+      const { wrapper, mocks } = getWrapper({
+        users: [{ id: '2' } as User],
+        openXchange: true,
+        openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }],
+        resource: mock<SpaceResource>(spaceMock)
+      })
+      await wrapper.vm.fetchRecipientsTask.last
+
+      expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
+    })
   })
   describe('share action', () => {
     it('creates a public link and emails the contact for address book contact recipients', async () => {
