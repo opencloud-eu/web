@@ -35,7 +35,6 @@ export interface SpaceResource extends Resource {
   canRestore(args?: { user?: User; ability?: Ability }): boolean
   canDeleteFromTrashBin(args?: { user?: User }): boolean
   canRestoreFromTrashbin(args?: { user?: User }): boolean
-  canListVersions(args?: { user?: User }): boolean
 
   getWebDavUrl({ path }: { path: string }): string
   getWebDavTrashUrl({ path }: { path: string }): string
