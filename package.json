@@ -69,7 +69,7 @@
     "eslint": "10.4.0",
     "franc-min": "^6.2.0",
     "happy-dom": "20.9.0",
-    "license-checker-rseidelsohn": "4.4.2",
+    "license-checker-rseidelsohn": "5.0.1",
     "node-fetch": "3.3.2",
     "pino": "10.3.1",
     "pino-pretty": "13.1.3",
