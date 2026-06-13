@@ -45,7 +45,7 @@
     "@axe-core/playwright": "^4.11.1",
     "@cucumber/cucumber": "12.9.0",
     "@cucumber/messages": "32.3.1",
-    "@cucumber/pretty-formatter": "3.3.1",
+    "@cucumber/pretty-formatter": "4.0.0",
     "@module-federation/runtime": "2.3.1",
     "@module-federation/vite": "1.14.2",
     "@noble/hashes": "2.2.0",
