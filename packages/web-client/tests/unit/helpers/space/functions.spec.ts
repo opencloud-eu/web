@@ -34,33 +34,39 @@ describe('buildSpace', () => {
   describe('canBeDeleted', () => {
     it.each([
       {
-        userCan: false,
+        abilities: [],
         permissions: [GraphSharePermission.deletePermissions],
         disabled: true,
         expectedResult: true
       },
       {
-        userCan: false,
+        abilities: [],
         permissions: [],
         disabled: true,
         expectedResult: false
       },
       {
-        userCan: true,
+        abilities: ['delete-all'],
         permissions: [],
         disabled: true,
         expectedResult: true
       },
       {
-        userCan: true,
+        abilities: ['create-all'],
+        permissions: [],
+        disabled: true,
+        expectedResult: true
+      },
+      {
+        abilities: ['delete-all'],
         permissions: [],
         disabled: false,
         expectedResult: false
       }
     ])(
       'behaves accordingly to the given permissions, abilities and disabled state',
-      ({ permissions, expectedResult, userCan, disabled }) => {
-        const ability = mock<Ability>({ can: () => userCan })
+      ({ permissions, expectedResult, abilities, disabled }) => {
+        const ability = mock<Ability>({ can: (action) => abilities.includes(action) })
         const space = getSpace({ permissions })
         space.disabled = disabled
         expect(space.canBeDeleted({ user: mock<User>({ id, memberOf: [] }), ability })).toBe(
@@ -73,24 +79,29 @@ describe('buildSpace', () => {
   describe('canRename', () => {
     it.each([
       {
-        userCan: false,
+        abilities: [],
         permissions: [GraphSharePermission.deletePermissions],
         expectedResult: true
       },
       {
-        userCan: false,
+        abilities: [],
         permissions: [],
         expectedResult: false
       },
       {
-        userCan: true,
+        abilities: ['update-all'],
+        permissions: [],
+        expectedResult: true
+      },
+      {
+        abilities: ['create-all'],
         permissions: [],
         expectedResult: true
       }
     ])(
       'behaves accordingly to the given role, permissions and abilities',
-      ({ permissions, expectedResult, userCan }) => {
-        const ability = mock<Ability>({ can: () => userCan })
+      ({ permissions, expectedResult, abilities }) => {
+        const ability = mock<Ability>({ can: (action) => abilities.includes(action) })
         const space = getSpace({ permissions })
         expect(space.canRename({ user: mock<User>({ id, memberOf: [] }), ability })).toBe(
           expectedResult
@@ -102,24 +113,29 @@ describe('buildSpace', () => {
   describe('canEditDescription', () => {
     it.each([
       {
-        userCan: false,
+        abilities: [],
         permissions: [GraphSharePermission.deletePermissions],
         expectedResult: true
       },
       {
-        userCan: false,
+        abilities: [],
         permissions: [],
         expectedResult: false
       },
       {
-        userCan: true,
+        abilities: ['update-all'],
+        permissions: [],
+        expectedResult: true
+      },
+      {
+        abilities: ['create-all'],
         permissions: [],
         expectedResult: true
       }
     ])(
       'behaves accordingly to the given role, permissions and abilities',
-      ({ permissions, expectedResult, userCan }) => {
-        const ability = mock<Ability>({ can: () => userCan })
+      ({ permissions, expectedResult, abilities }) => {
+        const ability = mock<Ability>({ can: (action) => abilities.includes(action) })
         const space = getSpace({ permissions })
         expect(space.canEditDescription({ user: mock<User>({ id, memberOf: [] }), ability })).toBe(
           expectedResult
@@ -147,33 +163,39 @@ describe('buildSpace', () => {
   describe('canRestore', () => {
     it.each([
       {
-        userCan: false,
+        abilities: [],
         permissions: [GraphSharePermission.deletePermissions],
         disabled: true,
         expectedResult: true
       },
       {
-        userCan: false,
+        abilities: [],
         permissions: [],
         disabled: true,
         expectedResult: false
       },
       {
-        userCan: true,
+        abilities: ['update-all'],
         permissions: [],
         disabled: true,
         expectedResult: true
       },
       {
-        userCan: true,
+        abilities: ['create-all'],
+        permissions: [],
+        disabled: true,
+        expectedResult: true
+      },
+      {
+        abilities: ['update-all'],
         permissions: [],
         disabled: false,
         expectedResult: false
       }
     ])(
       'behaves accordingly to the given role, permissions, abilities and disabled state',
-      ({ permissions, expectedResult, userCan, disabled }) => {
-        const ability = mock<Ability>({ can: () => userCan })
+      ({ permissions, expectedResult, abilities, disabled }) => {
+        const ability = mock<Ability>({ can: (action) => abilities.includes(action) })
         const space = getSpace({ permissions })
         space.disabled = disabled
         expect(space.canRestore({ user: mock<User>({ id, memberOf: [] }), ability })).toBe(

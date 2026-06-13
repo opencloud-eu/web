@@ -220,7 +220,7 @@ export function buildSpace(
       if (!this.disabled) {
         return false
       }
-      if (ability?.can('delete-all', 'Drive')) {
+      if (ability?.can('delete-all', 'Drive') || ability?.can('create-all', 'Drive')) {
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
@@ -244,7 +244,7 @@ export function buildSpace(
       if (!this.disabled) {
         return false
       }
-      if (ability?.can('update-all', 'Drive')) {
+      if (ability?.can('update-all', 'Drive') || ability?.can('create-all', 'Drive')) {
         return true
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
