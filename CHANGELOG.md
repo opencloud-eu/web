@@ -1,14 +1,27 @@
 # Changelog
 
-## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-10
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-14
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @micbar, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @fschade, @kulmann, @micbar, @openclouders, @tammi-23
 
 ### 🔒 Security
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
+
+### 🐛 Bug Fixes
+
+- fix: don't query contacts for space members [[#2678](https://github.com/opencloud-eu/web/pull/2678)]
+- fix: listing versions for share receivers [[#2667](https://github.com/opencloud-eu/web/pull/2667)]
+- fix: finetune contact invite error messages [[#2669](https://github.com/opencloud-eu/web/pull/2669)]
+- fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
+- fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
+- fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
+
+### ✅ Tests
+
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 📈 Enhancement
 
@@ -19,14 +32,10 @@
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
 - feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
-### 🐛 Bug Fixes
-
-- fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
-- fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
-- fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
-
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.9 [[#2663](https://github.com/opencloud-eu/web/pull/2663)]
+- chore(deps): update pnpm to v11.5.3 [[#2665](https://github.com/opencloud-eu/web/pull/2665)]
 - fix(deps): update sentry-javascript monorepo to v10.57.0 [[#2656](https://github.com/opencloud-eu/web/pull/2656)]
 - chore(deps): update collabora/code docker tag to v26 [[#2645](https://github.com/opencloud-eu/web/pull/2645)]
 - chore(deps): update typescript-eslint monorepo to v8.61.0 [[#2647](https://github.com/opencloud-eu/web/pull/2647)]
