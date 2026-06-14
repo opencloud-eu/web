@@ -41,9 +41,10 @@ export const useFileActionsImmutable = () => {
   }
 
   const actions = computed((): FileAction[] => [
+    // File: not frozen/protected → leaf icon → click to freeze (with confirmation)
     {
       name: 'freeze-file',
-      icon: 'snowflake',
+      icon: 'leaf',
       label: () => $gettext('Freeze file'),
       handler: ({ space, resources }) => {
         const resource = resources[0]
@@ -61,13 +62,48 @@ export const useFileActionsImmutable = () => {
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
         const r = resources[0]
-        return r.type === 'file' && !r.immutable
+        return r.type === 'file' && !r.immutableState
       },
       class: 'oc-files-actions-freeze-trigger'
     },
+    // File: frozen → snowflake icon → no action (irreversible)
+    {
+      name: 'frozen-file',
+      icon: 'snowflake',
+      label: () => $gettext('File is frozen'),
+      handler: () => {
+        // no-op: frozen files cannot be unfrozen
+      },
+      isVisible: ({ resources }) => {
+        if (resources.length !== 1) return false
+        const r = resources[0]
+        return r.type === 'file' && r.immutableState === 'frozen'
+      },
+      isDisabled: () => true,
+      disabledTooltip: () => $gettext('This file is permanently frozen and cannot be modified.'),
+      class: 'oc-files-actions-frozen-indicator'
+    },
+    // File: protected (parent is protected) → snowflake outline → no action
+    {
+      name: 'protected-file',
+      icon: 'shield-fill',
+      label: () => $gettext('File is in a protected folder'),
+      handler: () => {
+        // no-op: inherited protection
+      },
+      isVisible: ({ resources }) => {
+        if (resources.length !== 1) return false
+        const r = resources[0]
+        return r.type === 'file' && r.immutableState === 'protected'
+      },
+      isDisabled: () => true,
+      disabledTooltip: () => $gettext('This file is in a protected folder and cannot be modified.'),
+      class: 'oc-files-actions-protected-file-indicator'
+    },
+    // Folder: not protected → empty shield → click to protect
     {
       name: 'protect-folder',
-      icon: 'shield-check',
+      icon: 'shield-line',
       label: () => $gettext('Protect folder'),
       handler: ({ space, resources }) => {
         callImmutableEndpoint(space.id, resources[0].id, 'protect')
@@ -75,13 +111,14 @@ export const useFileActionsImmutable = () => {
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
         const r = resources[0]
-        return r.type === 'folder' && !r.immutable
+        return r.type === 'folder' && !r.immutableState
       },
       class: 'oc-files-actions-protect-trigger'
     },
+    // Folder: protected (self) → filled shield → click to unprotect
     {
       name: 'unprotect-folder',
-      icon: 'shield',
+      icon: 'shield-fill',
       label: () => $gettext('Remove protection'),
       handler: ({ space, resources }) => {
         callImmutableEndpoint(space.id, resources[0].id, 'protect', 'DELETE')
@@ -89,7 +126,7 @@ export const useFileActionsImmutable = () => {
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
         const r = resources[0]
-        return r.type === 'folder' && r.immutable === true
+        return r.type === 'folder' && r.immutableState === 'protected'
       },
       class: 'oc-files-actions-unprotect-trigger'
     }

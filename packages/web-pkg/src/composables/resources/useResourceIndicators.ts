@@ -168,17 +168,17 @@ export const useResourceIndicators = () => {
   }
 
   const getImmutableIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
-    const isFolder = resource.type === 'folder'
+    const isFrozen = resource.immutableState === 'frozen'
     return {
       id: `resource-immutable-${resource.getDomSelector()}`,
       kind: 'icon',
-      accessibleDescription: isFolder
-        ? $gettext('Folder is protected')
-        : $gettext('File is frozen'),
-      label: isFolder
-        ? $gettext('This folder is protected')
-        : $gettext('This file is frozen'),
-      icon: isFolder ? 'shield-check' : 'snowflake',
+      accessibleDescription: isFrozen
+        ? $gettext('File is frozen')
+        : $gettext('Item is protected'),
+      label: isFrozen
+        ? $gettext('This file is frozen')
+        : $gettext('This item is protected'),
+      icon: isFrozen ? 'snowflake' : 'shield-fill',
       category: 'system',
       type: 'resource-immutable',
       fillType: 'line'
@@ -235,7 +235,7 @@ export const useResourceIndicators = () => {
       indicators.push(getLockedIndicator({ resource }))
     }
 
-    if (resource.immutable) {
+    if (resource.immutableState) {
       indicators.push(getImmutableIndicator({ resource }))
     }
 
