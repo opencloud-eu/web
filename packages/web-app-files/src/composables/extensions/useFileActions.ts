@@ -14,6 +14,7 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsFavorite,
   useFileActionsEnableSync,
+  useFileActionsImmutable,
   useFileActionsMove,
   useFileActionsPaste,
   useFileActionsOpenShortcut,
@@ -45,6 +46,14 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: setSpaceImageActions } = useSpaceActionsSetImage()
   const { actions: showDetailsActions } = useFileActionsShowDetails()
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
+  const { actions: immutableActions } = useFileActionsImmutable()
+
+  const singleItemActions = unref(immutableActions).filter(
+    (a) => !a.name.startsWith('protect-folder') && !a.name.startsWith('unprotect-folder')
+  )
+  const batchableActions = unref(immutableActions).filter(
+    (a) => a.name === 'protect-folder' || a.name === 'unprotect-folder'
+  )
 
   return [
     {
@@ -217,6 +226,26 @@ export const useFileActions = (): ActionExtension[] => {
         ...unref(toggleHideShareActions)[0],
         category: 'tertiary'
       }
-    }
+    },
+    // Immutable: single-item quick actions (freeze, frozen, shielded indicators)
+    ...singleItemActions.map((action) => ({
+      id: `com.github.opencloud-eu.web.files.quick-action.${action.name}`,
+      extensionPointIds: [quickActionsExtensionPoint.id],
+      type: 'action' as const,
+      action
+    })),
+    // Immutable: protect/unprotect as quick action + batch action
+    ...batchableActions.map((action) => ({
+      id: `com.github.opencloud-eu.web.files.quick-action.${action.name}`,
+      extensionPointIds: [quickActionsExtensionPoint.id],
+      type: 'action' as const,
+      action
+    })),
+    ...batchableActions.map((action) => ({
+      id: `com.github.opencloud-eu.web.files.batch-action.${action.name}`,
+      extensionPointIds: [batchActionsExtensionPoint.id],
+      type: 'action' as const,
+      action
+    }))
   ]
 }
