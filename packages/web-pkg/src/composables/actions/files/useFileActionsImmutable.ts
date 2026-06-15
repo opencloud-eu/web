@@ -11,9 +11,24 @@ export const useFileActionsImmutable = () => {
   const { dispatchModal } = useModals()
   const resourcesStore = useResourcesStore()
 
+  const resolveNewState = (
+    resource: { id: string; parentFolderId?: string },
+    explicitState: 'frozen' | 'protected' | undefined
+  ): 'frozen' | 'protected' | 'shielded' | undefined => {
+    if (explicitState) return explicitState
+    // After unprotect: check if parent is still protected → shielded
+    const parent = resourcesStore.resources.find(
+      (r) => r.id === resource.parentFolderId
+    )
+    if (parent?.immutableState === 'protected' || parent?.immutableState === 'shielded') {
+      return 'shielded'
+    }
+    return undefined
+  }
+
   const callImmutableEndpoint = async (
     driveId: string,
-    itemId: string,
+    resource: { id: string; parentFolderId?: string },
     action: 'freeze' | 'protect',
     method: 'POST' | 'DELETE' = 'POST',
     newState: 'frozen' | 'protected' | undefined = undefined
@@ -23,13 +38,13 @@ export const useFileActionsImmutable = () => {
     try {
       const response = await httpClient.request({
         method,
-        url: `/graph/v1beta1/drives/${driveId}/items/${itemId}/${endpoint}`
+        url: `/graph/v1beta1/drives/${driveId}/items/${resource.id}/${endpoint}`
       })
       if (response.status === 204) {
         resourcesStore.updateResourceField({
-          id: itemId,
+          id: resource.id,
           field: 'immutableState',
-          value: newState
+          value: resolveNewState(resource, newState)
         })
         const msg =
           action === 'freeze'
@@ -62,7 +77,7 @@ export const useFileActionsImmutable = () => {
             'Freezing a file is irreversible. The file content cannot be changed or deleted afterwards. Are you sure?'
           ),
           onConfirm: () => {
-            callImmutableEndpoint(space.id, resource.id, 'freeze', 'POST', 'frozen')
+            callImmutableEndpoint(space.id, resource, 'freeze', 'POST', 'frozen')
           }
         })
       },
@@ -103,33 +118,45 @@ export const useFileActionsImmutable = () => {
       disabledTooltip: () => $gettext('This file is in a protected folder and cannot be modified.'),
       class: 'oc-files-actions-shielded-file-indicator'
     },
-    // Folder: normal → shield → protect
+    // Folder(s): normal/shielded → protect (single + batch)
     {
       name: 'protect-folder',
       icon: 'shield',
-      label: () => $gettext('Protect folder'),
+      label: ({ resources }) =>
+        resources?.length > 1
+          ? $gettext('Protect %{count} folders', { count: String(resources.length) })
+          : $gettext('Protect folder'),
       handler: ({ space, resources }) => {
-        callImmutableEndpoint(space.id, resources[0].id, 'protect', 'POST', 'protected')
+        for (const r of resources) {
+          callImmutableEndpoint(space.id, r, 'protect', 'POST', 'protected')
+        }
       },
       isVisible: ({ resources }) => {
-        if (resources.length !== 1) return false
-        const r = resources[0]
-        return r.type === 'folder' && (!r.immutableState || r.immutableState === 'shielded')
+        if (!resources.length) return false
+        return resources.every(
+          (r) => r.type === 'folder' && (!r.immutableState || r.immutableState === 'shielded')
+        )
       },
       class: 'oc-files-actions-protect-trigger'
     },
-    // Folder: protected (self) → shield-fill → unprotect
+    // Folder(s): protected → unprotect (single + batch)
     {
       name: 'unprotect-folder',
       icon: 'shield',
-      label: () => $gettext('Remove protection'),
+      label: ({ resources }) =>
+        resources?.length > 1
+          ? $gettext('Unprotect %{count} folders', { count: String(resources.length) })
+          : $gettext('Remove protection'),
       handler: ({ space, resources }) => {
-        callImmutableEndpoint(space.id, resources[0].id, 'protect', 'DELETE', undefined)
+        for (const r of resources) {
+          callImmutableEndpoint(space.id, r, 'protect', 'DELETE')
+        }
       },
       isVisible: ({ resources }) => {
-        if (resources.length !== 1) return false
-        const r = resources[0]
-        return r.type === 'folder' && r.immutableState === 'protected'
+        if (!resources.length) return false
+        return resources.every(
+          (r) => r.type === 'folder' && r.immutableState === 'protected'
+        )
       },
       class: 'oc-files-actions-unprotect-trigger'
     }
