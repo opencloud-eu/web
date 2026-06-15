@@ -22,6 +22,7 @@ export interface OXMailRecipient {
 export interface OX {
   autocompleteContacts(args: { query: string; signal?: AbortSignal }): Promise<Contact[]>
   sendMail(args: {
+    from: OXMailRecipient
     to: OXMailRecipient
     subject: string
     htmlContent: string
@@ -60,7 +61,7 @@ export const ox = (axiosClient: AxiosInstance, getApiUrl: () => string | undefin
       return z.array(ContactSchema).parse(contacts)
     },
 
-    async sendMail({ to, subject, htmlContent, signal }) {
+    async sendMail({ from, to, subject, htmlContent, signal }) {
       const apiUrl = getApiUrl()
       if (!apiUrl) {
         throw new Error('Open-Xchange API url is not configured')
@@ -73,11 +74,16 @@ export const ox = (axiosClient: AxiosInstance, getApiUrl: () => string | undefin
       })
       const { data: space } = OxComposeSpaceResponseSchema.parse(openData)
 
-      // 2. send the message (recipients are [displayName, email] tuples per the OX Address schema)
+      // 2. send the message. Addresses are [displayName, email] tuples per the OX Address schema.
+      // A `type=new` composition space has no default `from`/`sender`, so we must set them
+      // explicitly: the middleware rejects the send with a "missing field: from" error otherwise.
+      const sender: [string, string] = [from.name ?? '', from.email]
       const formData = new FormData()
       formData.append(
         'JSON',
         JSON.stringify({
+          from: sender,
+          sender,
           to: [[to.name ?? '', to.email]],
           subject,
           content: htmlContent,

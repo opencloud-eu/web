@@ -1,10 +1,12 @@
 import { unref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
   useClientService,
   useLinkTypes,
   usePasswordPolicyService,
-  useSharesStore
+  useSharesStore,
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { CollaboratorAutoCompleteItem, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { renderContactShareEmail } from './renderContactShareEmail'
@@ -23,6 +25,7 @@ export const useInviteContactViaEmail = () => {
   const { defaultLinkType, isPasswordEnforcedForLinkType } = useLinkTypes()
   const passwordPolicyService = usePasswordPolicyService()
   const { addLink } = useSharesStore()
+  const { user } = storeToRefs(useUserStore())
 
   const inviteContact = async ({
     space,
@@ -59,6 +62,7 @@ export const useInviteContactViaEmail = () => {
     )
 
     await clientService.ox.sendMail({
+      from: { name: unref(user)?.displayName, email: unref(user)?.mail },
       to: { name: contact.displayName, email },
       subject,
       htmlContent: html
