@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: after disabling and enabling space user cannot create resources/… [[#2687](https://github.com/opencloud-eu/web/pull/2687)]
 - fix: don't query contacts for space members [[#2678](https://github.com/opencloud-eu/web/pull/2678)]
 - fix: listing versions for share receivers [[#2667](https://github.com/opencloud-eu/web/pull/2667)]
 - fix: finetune contact invite error messages [[#2669](https://github.com/opencloud-eu/web/pull/2669)]
