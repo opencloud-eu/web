@@ -201,7 +201,7 @@ export default defineComponent({
   }
 
   .oc-modal.save-as-modal .oc-modal-body-message {
-    @apply m-0 h-[85vh];
+    @apply m-0 h-[70vh];
   }
 }
 </style>
