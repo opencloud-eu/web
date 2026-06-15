@@ -35,6 +35,9 @@
 
 ### 📦️ Dependencies
 
+- Update traefik Docker tag to v3.7.5 [[#2666](https://github.com/opencloud-eu/web/pull/2666)]
+- Update pnpm to v11.6.0 [[#2679](https://github.com/opencloud-eu/web/pull/2679)]
+- Update dependency dompurify to v3.4.10 [[#2680](https://github.com/opencloud-eu/web/pull/2680)]
 - chore(deps): update dependency dompurify to v3.4.9 [[#2663](https://github.com/opencloud-eu/web/pull/2663)]
 - chore(deps): update pnpm to v11.5.3 [[#2665](https://github.com/opencloud-eu/web/pull/2665)]
 - fix(deps): update sentry-javascript monorepo to v10.57.0 [[#2656](https://github.com/opencloud-eu/web/pull/2656)]
