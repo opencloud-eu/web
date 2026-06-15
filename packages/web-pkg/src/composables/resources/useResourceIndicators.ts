@@ -168,20 +168,30 @@ export const useResourceIndicators = () => {
   }
 
   const getImmutableIndicator = ({ resource }: { resource: Resource }): ResourceIndicator => {
-    const isFrozen = resource.immutableState === 'frozen'
+    const state = resource.immutableState
+    if (state === 'frozen' && resource.type === 'folder') {
+      console.error(`BUG: folder "${resource.name}" has immutableState "frozen" — folders can only be "protected" or "shielded"`)
+    }
+    const isFrozen = state === 'frozen'
+    const isProtected = state === 'protected'
+    // frozen = snowflake, protected (self) = shield-fill, shielded (inherited) = shield-line
     return {
       id: `resource-immutable-${resource.getDomSelector()}`,
       kind: 'icon',
       accessibleDescription: isFrozen
         ? $gettext('File is frozen')
-        : $gettext('Item is protected'),
+        : isProtected
+          ? $gettext('Item is protected')
+          : $gettext('Item is in a protected folder'),
       label: isFrozen
         ? $gettext('This file is frozen')
-        : $gettext('This item is protected'),
-      icon: isFrozen ? 'snowflake' : 'shield-fill',
+        : isProtected
+          ? $gettext('This item is protected')
+          : $gettext('This item is in a protected folder'),
+      icon: isFrozen ? 'snowflake' : 'shield',
       category: 'system',
       type: 'resource-immutable',
-      fillType: 'line'
+      fillType: isFrozen ? 'line' : isProtected ? 'fill' : 'line'
     }
   }
 

@@ -1,7 +1,7 @@
 import { useGettext } from 'vue3-gettext'
 import { FileAction } from '../types'
 import { computed } from 'vue'
-import { useMessages, useModals } from '../../piniaStores'
+import { useMessages, useModals, useResourcesStore } from '../../piniaStores'
 import { useClientService } from '../../clientService'
 
 export const useFileActionsImmutable = () => {
@@ -9,12 +9,14 @@ export const useFileActionsImmutable = () => {
   const clientService = useClientService()
   const { showMessage, showErrorMessage } = useMessages()
   const { dispatchModal } = useModals()
+  const resourcesStore = useResourcesStore()
 
   const callImmutableEndpoint = async (
     driveId: string,
     itemId: string,
     action: 'freeze' | 'protect',
-    method: 'POST' | 'DELETE' = 'POST'
+    method: 'POST' | 'DELETE' = 'POST',
+    newState: 'frozen' | 'protected' | undefined = undefined
   ) => {
     const httpClient = clientService.httpAuthenticated
     const endpoint = action === 'freeze' ? 'freeze' : 'protect'
@@ -24,6 +26,11 @@ export const useFileActionsImmutable = () => {
         url: `/graph/v1beta1/drives/${driveId}/items/${itemId}/${endpoint}`
       })
       if (response.status === 204) {
+        resourcesStore.updateResourceField({
+          id: itemId,
+          field: 'immutableState',
+          value: newState
+        })
         const msg =
           action === 'freeze'
             ? $gettext('File has been frozen.')
@@ -41,7 +48,7 @@ export const useFileActionsImmutable = () => {
   }
 
   const actions = computed((): FileAction[] => [
-    // File: not frozen/protected → leaf icon → click to freeze (with confirmation)
+    // File: normal → leaf → freeze (with confirmation)
     {
       name: 'freeze-file',
       icon: 'leaf',
@@ -55,7 +62,7 @@ export const useFileActionsImmutable = () => {
             'Freezing a file is irreversible. The file content cannot be changed or deleted afterwards. Are you sure?'
           ),
           onConfirm: () => {
-            callImmutableEndpoint(space.id, resource.id, 'freeze')
+            callImmutableEndpoint(space.id, resource.id, 'freeze', 'POST', 'frozen')
           }
         })
       },
@@ -66,14 +73,12 @@ export const useFileActionsImmutable = () => {
       },
       class: 'oc-files-actions-freeze-trigger'
     },
-    // File: frozen → snowflake icon → no action (irreversible)
+    // File: frozen → snowflake (disabled)
     {
       name: 'frozen-file',
       icon: 'snowflake',
       label: () => $gettext('File is frozen'),
-      handler: () => {
-        // no-op: frozen files cannot be unfrozen
-      },
+      handler: () => {},
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
         const r = resources[0]
@@ -83,45 +88,43 @@ export const useFileActionsImmutable = () => {
       disabledTooltip: () => $gettext('This file is permanently frozen and cannot be modified.'),
       class: 'oc-files-actions-frozen-indicator'
     },
-    // File: protected (parent is protected) → snowflake outline → no action
+    // File: shielded (inherited from parent) → shield (disabled)
     {
-      name: 'protected-file',
-      icon: 'shield-fill',
+      name: 'shielded-file',
+      icon: 'shield',
       label: () => $gettext('File is in a protected folder'),
-      handler: () => {
-        // no-op: inherited protection
-      },
+      handler: () => {},
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
         const r = resources[0]
-        return r.type === 'file' && r.immutableState === 'protected'
+        return r.type === 'file' && r.immutableState === 'shielded'
       },
       isDisabled: () => true,
       disabledTooltip: () => $gettext('This file is in a protected folder and cannot be modified.'),
-      class: 'oc-files-actions-protected-file-indicator'
+      class: 'oc-files-actions-shielded-file-indicator'
     },
-    // Folder: not protected → empty shield → click to protect
+    // Folder: normal → shield → protect
     {
       name: 'protect-folder',
-      icon: 'shield-line',
+      icon: 'shield',
       label: () => $gettext('Protect folder'),
       handler: ({ space, resources }) => {
-        callImmutableEndpoint(space.id, resources[0].id, 'protect')
+        callImmutableEndpoint(space.id, resources[0].id, 'protect', 'POST', 'protected')
       },
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
         const r = resources[0]
-        return r.type === 'folder' && !r.immutableState
+        return r.type === 'folder' && (!r.immutableState || r.immutableState === 'shielded')
       },
       class: 'oc-files-actions-protect-trigger'
     },
-    // Folder: protected (self) → filled shield → click to unprotect
+    // Folder: protected (self) → shield-fill → unprotect
     {
       name: 'unprotect-folder',
-      icon: 'shield-fill',
+      icon: 'shield',
       label: () => $gettext('Remove protection'),
       handler: ({ space, resources }) => {
-        callImmutableEndpoint(space.id, resources[0].id, 'protect', 'DELETE')
+        callImmutableEndpoint(space.id, resources[0].id, 'protect', 'DELETE', undefined)
       },
       isVisible: ({ resources }) => {
         if (resources.length !== 1) return false
