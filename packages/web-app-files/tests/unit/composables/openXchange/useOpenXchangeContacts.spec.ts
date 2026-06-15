@@ -37,6 +37,7 @@ describe('useOpenXchangeContacts', () => {
   })
 
   it('returns an empty list when the api call fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const { instance } = getWrapper({ enabled: true, rejects: true })
     const result = await instance.searchContacts('j')
     expect(result).toEqual([])

@@ -103,6 +103,7 @@ describe('DateFilter', () => {
         expect(wrapper.emitted('selectionChange')).not.toBeDefined()
       })
       it('is not clickable when from date is after to date', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
         const { wrapper } = getWrapper()
         ;(wrapper.vm as any).fromDate = DateTime.now().plus({ days: 1 })
         ;(wrapper.vm as any).toDate = DateTime.now()

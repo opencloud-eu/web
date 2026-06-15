@@ -26,6 +26,7 @@ const getClientServiceMock = () => {
 }
 const v4uuid = '00000000-0000-0000-0000-000000000000'
 vi.mock('uuid', () => ({ v4: () => v4uuid }))
+vi.mock('../../../src/http')
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   graph: vi.fn(),
@@ -44,7 +45,6 @@ describe('ClientService', () => {
       expect(clientService.httpAuthenticated).toBeInstanceOf(HttpClient)
     })
     it('initializes the http client with baseURL and static headers', () => {
-      vi.mock('../../../src/http')
       const mocky = vi.mocked(HttpClient)
       getClientServiceMock()
 
@@ -63,7 +63,6 @@ describe('ClientService', () => {
       expect(clientService.httpUnAuthenticated).toBeInstanceOf(HttpClient)
     })
     it('initializes the http client with baseURL and static headers', () => {
-      vi.mock('../../../src/http')
       const mocky = vi.mocked(HttpClient)
       getClientServiceMock()
 
