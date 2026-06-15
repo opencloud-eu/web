@@ -10,7 +10,9 @@
         <oc-button
           id="collapse-upload-info-btn"
           :aria-label="
-            bodyCollapsed ? $gettext('Expand upload info body') : $gettext('Collapse upload info body')
+            bodyCollapsed
+              ? $gettext('Expand upload info body')
+              : $gettext('Collapse upload info body')
           "
           appearance="raw"
           @click="toggleBodyCollapsed"
