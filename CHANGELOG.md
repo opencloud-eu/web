@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: lock- and unlock vault action on shared with me page [[#2692](https://github.com/opencloud-eu/web/pull/2692)]
 - fix: add sender to ox send mail [[#2691](https://github.com/opencloud-eu/web/pull/2691)]
 - fix: make upload dialog collapsible so it won't overlap certain views [[#2688](https://github.com/opencloud-eu/web/pull/2688)]
 - fix: allow downloading vault roots [[#2690](https://github.com/opencloud-eu/web/pull/2690)]
