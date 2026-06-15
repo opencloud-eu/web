@@ -102,6 +102,10 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  .oc-modal-background:has(.file-picker-modal) {
+    @apply z-[calc(var(--z-index-modal)+2)];
+  }
+
   .file-picker-modal {
     @apply overflow-hidden;
     max-width: 90vw;

@@ -189,6 +189,10 @@ export default defineComponent({
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  .oc-modal-background:has(.save-as-modal) {
+    @apply z-[calc(var(--z-index-modal)+2)];
+  }
+
   .oc-modal.save-as-modal {
     @apply overflow-hidden;
     max-width: 90vw;

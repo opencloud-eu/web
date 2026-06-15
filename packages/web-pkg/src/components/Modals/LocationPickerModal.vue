@@ -96,6 +96,10 @@ const iframeSrc = iframeUrl.href
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  .oc-modal-background:has(.location-picker-modal) {
+    @apply z-[calc(var(--z-index-modal)+2)];
+  }
+
   .location-picker-modal {
     @apply overflow-hidden;
     max-width: 90vw;
