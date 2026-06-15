@@ -5,6 +5,7 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
+import { User } from '@opencloud-eu/web-client/graph/generated'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useSharesStore } from '@opencloud-eu/web-pkg'
 import { useInviteContactViaEmail } from '../../../../src/composables/openXchange/useInviteContactViaEmail'
@@ -32,6 +33,7 @@ describe('useInviteContactViaEmail', () => {
 
     expect(mocks.$clientService.ox.sendMail).toHaveBeenCalledWith(
       expect.objectContaining({
+        from: { name: 'Admin User', email: 'admin@example.com' },
         to: { name: 'Contact', email: 'contact@example.com' },
         subject: '«Report.pdf» was shared with you'
       })
@@ -75,6 +77,9 @@ function getWrapper({ enforcePassword = false }: { enforcePassword?: boolean } =
       provide: mocks,
       pluginOptions: {
         piniaOptions: {
+          userState: {
+            user: mock<User>({ displayName: 'Admin User', mail: 'admin@example.com' })
+          },
           capabilityState: {
             capabilities: {
               files_sharing: {
