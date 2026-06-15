@@ -7,6 +7,8 @@ import { HttpError } from '@opencloud-eu/web-client'
 const selectors = {
   overlay: '#upload-info',
   title: '.upload-info-title p',
+  body: '.upload-info-body',
+  collapseButton: '#collapse-upload-info-btn',
   progress: '.upload-info-progress',
   success: '.upload-info-success',
   error: '.upload-info-danger',
@@ -29,6 +31,19 @@ describe('UploadInfo component', () => {
     await nextTick()
     const overlay = wrapper.find(selectors.overlay)
     expect(overlay.exists()).toBeTruthy()
+  })
+  it('should keep title visible and hide body when collapsed', async () => {
+    const { wrapper } = getShallowWrapper()
+    wrapper.vm.showInfo = true
+    await nextTick()
+
+    expect(wrapper.find(selectors.title).exists()).toBeTruthy()
+    expect(wrapper.find(selectors.body).exists()).toBeTruthy()
+
+    await wrapper.find(selectors.collapseButton).trigger('click')
+
+    expect(wrapper.find(selectors.title).exists()).toBeTruthy()
+    expect(wrapper.find(selectors.body).exists()).toBeFalsy()
   })
   describe('title', () => {
     it('should show that an upload is in progress', async () => {
