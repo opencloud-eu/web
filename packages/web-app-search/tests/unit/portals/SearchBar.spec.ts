@@ -92,7 +92,6 @@ beforeEach(() => {
 })
 
 describe('Search Bar portal component', () => {
-  vi.spyOn(console, 'warn').mockImplementation(undefined)
   test('does not render a search field if no availableProviders given', () => {
     const { wrapper } = getMountedWrapper({ providers: [] })
     expect(wrapper.find(selectors.search).exists()).toBeFalsy()
@@ -195,7 +194,7 @@ describe('Search Bar portal component', () => {
     })
     wrapper
       .findComponent<typeof SearchBarFilter>(selectors.searchFilters)
-      .vm.$emit('update:model-value', {
+      .vm.$emit('update:modelValue', {
         value: { id: SearchLocationFilterConstants.currentFolder }
       })
 
@@ -214,7 +213,7 @@ describe('Search Bar portal component', () => {
     const { wrapper } = getMountedWrapper()
     wrapper
       .findComponent<typeof SearchBarFilter>(selectors.searchFilters)
-      .vm.$emit('update:model-value', {
+      .vm.$emit('update:modelValue', {
         value: { id: SearchLocationFilterConstants.currentFolder }
       })
 
