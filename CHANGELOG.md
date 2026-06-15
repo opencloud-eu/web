@@ -35,6 +35,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.26.1 [[#2673](https://github.com/opencloud-eu/web/pull/2673)]
+- chore(deps): update dependency axios to v1.18.0 [[#2689](https://github.com/opencloud-eu/web/pull/2689)]
 - Update tailwindcss monorepo to v4.3.1 [[#2681](https://github.com/opencloud-eu/web/pull/2681)]
 - Update traefik Docker tag to v3.7.5 [[#2666](https://github.com/opencloud-eu/web/pull/2666)]
 - Update pnpm to v11.6.0 [[#2679](https://github.com/opencloud-eu/web/pull/2679)]
