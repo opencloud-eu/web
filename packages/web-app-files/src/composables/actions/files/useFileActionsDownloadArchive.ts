@@ -5,12 +5,14 @@ import {
   FileAction,
   FileActionOptions,
   formatFileSize,
+  getVaultClaim,
   isLocationCommonActive,
   isLocationPublicActive,
   isLocationSharesActive,
   isLocationSpacesActive,
   useArchiverService,
   useAuthStore,
+  useExtensionRegistry,
   useIsFilesAppActive,
   useMessages,
   useRouter
@@ -23,6 +25,7 @@ export const useFileActionsDownloadArchive = () => {
   const { $ngettext, $gettext, current } = useGettext()
   const authStore = useAuthStore()
   const isFilesAppActive = useIsFilesAppActive()
+  const extensionRegistry = useExtensionRegistry()
 
   const handler = ({ space, resources }: FileActionOptions) => {
     if (resources.length > 1) {
@@ -84,7 +87,7 @@ export const useFileActionsDownloadArchive = () => {
             : ''
         },
         isDisabled: ({ resources }) => areArchiverLimitsExceeded(resources),
-        isVisible: ({ resources }) => {
+        isVisible: ({ space, resources }) => {
           if (
             unref(isFilesAppActive) &&
             !isLocationSpacesActive(router, 'files-spaces-generic') &&
@@ -108,7 +111,13 @@ export const useFileActionsDownloadArchive = () => {
           // The archive is zipped server-side from the raw (ciphertext) blobs
           // under their encrypted names - we can't decrypt that client-side,
           // so hide archive download whenever a vault resource is involved.
-          if (resources.some((r) => r.isInVault)) {
+          // A vault root however can be downloaded (with encrypted contents).
+          if (
+            resources.some((r) => {
+              const claim = getVaultClaim(extensionRegistry, space, r.path)
+              return r.isInVault && claim?.vaultRoot !== r.path
+            })
+          ) {
             return false
           }
           if (resources.length === 1 && !resources[0].isFolder) {
