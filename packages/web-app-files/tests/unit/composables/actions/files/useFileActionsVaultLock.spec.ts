@@ -13,6 +13,7 @@ let unlocked = false
 let claim: any = null
 let matchedSpace: any = { id: 'space-1', driveAlias: 'personal/admin' }
 let routeParams: Record<string, unknown> = {}
+let currentFolder: any = { id: '1' }
 
 vi.mock('@opencloud-eu/web-pkg', () => ({
   createFileRouteOptions: vi.fn(() => ({ name: 'files-spaces-generic' })),
@@ -21,6 +22,7 @@ vi.mock('@opencloud-eu/web-pkg', () => ({
   useFolderVaultStore: () => ({ clearEngine, isUnlocked: () => unlocked }),
   useGetMatchingSpace: () => ({ getMatchingSpace: () => matchedSpace }),
   useMessages: () => ({ showMessage }),
+  useResourcesStore: () => ({ currentFolder }),
   useRouter: () => ({
     currentRoute: { fullPath: '/back', params: routeParams },
     push
@@ -38,6 +40,7 @@ beforeEach(() => {
   claim = { vaultRoot, unlockRoute: { name: 'unlock', query: { spaceId: 'space-1', vaultRoot } } }
   matchedSpace = { id: 'space-1', driveAlias: 'personal/admin' }
   routeParams = {}
+  currentFolder = { id: '1' }
 })
 
 describe('lock-vault action', () => {
@@ -81,6 +84,18 @@ describe('lock-vault action', () => {
     // `/my.vault-notes` merely starts with `/my.vault`; a naive substring match
     // would wrongly bounce the user out. The segment-wise compare must not.
     routeParams = { driveAliasAndItem: 'personal/admin/my.vault-notes' }
+    const { actions } = useFileActionsLockVault()
+    unref(actions)[0].handler({ resources: [rootResource()] } as any)
+    expect(clearEngine).toHaveBeenCalledWith('space-1', vaultRoot)
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('does not redirect when there is no current folder (e.g. shared-with-me listing)', () => {
+    // The path matches the vault root, but a flat listing like "Shared with me"
+    // has no `currentFolder` - the user isn't actually sitting inside the vault,
+    // so locking it must not bounce them anywhere.
+    routeParams = { driveAliasAndItem: 'personal/admin/my.vault' }
+    currentFolder = null
     const { actions } = useFileActionsLockVault()
     unref(actions)[0].handler({ resources: [rootResource()] } as any)
     expect(clearEngine).toHaveBeenCalledWith('space-1', vaultRoot)

@@ -13,6 +13,7 @@ import {
   useFolderVaultStore,
   useGetMatchingSpace,
   useMessages,
+  useResourcesStore,
   useRouter
 } from '@opencloud-eu/web-pkg'
 
@@ -42,6 +43,7 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
   const extensionRegistry = useExtensionRegistry()
   const { showMessage } = useMessages()
   const { getMatchingSpace } = useGetMatchingSpace()
+  const resourcesStore = useResourcesStore()
   const router = useRouter()
 
   const actions = computed((): FileAction[] => [
@@ -58,7 +60,7 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
           return
         }
         const vaultRoot = resource.path
-        vaultStore.clearEngine(resource.storageId, vaultRoot)
+        vaultStore.clearEngine(space.id, vaultRoot)
         showMessage({
           title: $gettext('»%{vault}« was locked', { vault: resource.name })
         })
@@ -76,7 +78,9 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
             ? driveAliasAndItem.slice(space.driveAlias.length)
             : driveAliasAndItem
           ).replace(/^\/+/, '')
-        const insideVault = itemPath === vaultRoot || itemPath.startsWith(`${vaultRoot}/`)
+        const insideVault =
+          (itemPath === vaultRoot || itemPath.startsWith(`${vaultRoot}/`)) &&
+          resourcesStore.currentFolder
         if (insideVault) {
           router.push(createFileRouteOptions(space, { path: dirname(vaultRoot) }))
         }
@@ -87,7 +91,7 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
         if (!claimForRoot(extensionRegistry, space, resource)) {
           return false
         }
-        return vaultStore.isUnlocked(resource.storageId, resource.path)
+        return vaultStore.isUnlocked(space.id, resource.path)
       },
       class: 'oc-files-actions-lock-vault'
     }
@@ -135,7 +139,7 @@ export const useFileActionsUnlockVault = (): { actions: Ref<FileAction[]> } => {
         if (!claim?.unlockRoute) {
           return false
         }
-        return !vaultStore.isUnlocked(resource.storageId, resource.path)
+        return !vaultStore.isUnlocked(space.id, resource.path)
       },
       class: 'oc-files-actions-unlock-vault'
     }
