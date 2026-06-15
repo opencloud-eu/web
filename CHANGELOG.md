@@ -35,6 +35,7 @@
 
 ### 📦️ Dependencies
 
+- Update tailwindcss monorepo to v4.3.1 [[#2681](https://github.com/opencloud-eu/web/pull/2681)]
 - Update traefik Docker tag to v3.7.5 [[#2666](https://github.com/opencloud-eu/web/pull/2666)]
 - Update pnpm to v11.6.0 [[#2679](https://github.com/opencloud-eu/web/pull/2679)]
 - Update dependency dompurify to v3.4.10 [[#2680](https://github.com/opencloud-eu/web/pull/2680)]
