@@ -247,12 +247,12 @@ When(
 )
 
 When(
-  /^"([^"]*)" downloads the space (?:"[^"]*")$/,
-  async function (this: World, stepUser: string): Promise<void> {
+  '{string} downloads the space {string}',
+  async function (this: World, stepUser: string, space: string): Promise<void> {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const spacesObject = new objects.applicationFiles.Spaces({ page })
     const downloadedResource = await spacesObject.downloadSpace()
-    expect(downloadedResource).toContain('download.zip')
+    expect(downloadedResource).toContain(`${space}.zip`)
   }
 )
 

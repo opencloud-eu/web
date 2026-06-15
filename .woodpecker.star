@@ -25,6 +25,7 @@ READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
 WEB_PUBLISH_NPM_PACKAGES = ["design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
 CACHE_S3_SERVER = "https://s3.ci.opencloud.eu"
+MACHINE_AUTH_API_KEY = "4f9e8d1c7a5b2e6f93c0a1d8e7b4f6c2d9a3e8f1b7c5d0a6e4f2c9b8a1d7e3f6"
 
 dir = {
     "base": "/woodpecker/src/github.com/opencloud-eu/web",
@@ -130,6 +131,7 @@ config = {
                 "NATS_NATS_PORT": 9233,
                 "COLLABORA_DOMAIN": "collabora:9980",
                 "WEB_UI_CONFIG_FILE": None,
+                "OC_MACHINE_AUTH_API_KEY": MACHINE_AUTH_API_KEY,
             },
         },
         "app-provider-onlyOffice": {
@@ -145,6 +147,7 @@ config = {
                 "NATS_NATS_PORT": 9233,
                 "ONLYOFFICE_DOMAIN": "onlyoffice:443",
                 "WEB_UI_CONFIG_FILE": None,
+                "OC_MACHINE_AUTH_API_KEY": MACHINE_AUTH_API_KEY,
             },
         },
         "oidc-refresh-token": {
@@ -1493,6 +1496,8 @@ def wopiCollaborationService(name):
         "COLLABORATION_CS3API_DATAGATEWAY_INSECURE": True,
         "OC_JWT_SECRET": "some-opencloud-jwt-secret",
         "COLLABORATION_WOPI_SECRET": "some-wopi-secret",
+        "OC_EVENTS_ENDPOINT": "opencloud:9233",
+        "OC_MACHINE_AUTH_API_KEY": MACHINE_AUTH_API_KEY,
     }
 
     if name == "collabora":
