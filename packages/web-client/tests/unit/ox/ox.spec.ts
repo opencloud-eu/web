@@ -76,17 +76,23 @@ describe('ox client', () => {
     it('throws when no api url is configured', async () => {
       const { client, axiosClient } = getClient('')
       await expect(
-        client.sendMail({ to: { email: 'guest@example.com' }, subject: 's', htmlContent: '<p/>' })
+        client.sendMail({
+          from: { name: 'Admin User', email: 'admin@example.com' },
+          to: { email: 'guest@example.com' },
+          subject: 's',
+          htmlContent: '<p/>'
+        })
       ).rejects.toThrow()
       expect(axiosClient.post).not.toHaveBeenCalled()
     })
 
-    it('opens a composition space and sends the message', async () => {
+    it('opens a composition space and sends the message including the sender as from', async () => {
       const { client, axiosClient } = getClient()
       axiosClient.post.mockResolvedValueOnce({ data: { data: { id: 'space-1' } } })
       axiosClient.post.mockResolvedValueOnce({ data: { success: true } })
 
       await client.sendMail({
+        from: { name: 'Admin User', email: 'admin@example.com' },
         to: { name: 'Jane Doe', email: 'jane@example.com' },
         subject: '«Report.pdf» was shared with you',
         htmlContent: '<p>hello</p>'
@@ -105,6 +111,8 @@ describe('ox client', () => {
       expect(url).toBe('https://ox.example.com/api/mail/compose/space-1/send')
       expect(body).toBeInstanceOf(FormData)
       expect(JSON.parse((body as FormData).get('JSON') as string)).toEqual({
+        from: ['Admin User', 'admin@example.com'],
+        sender: ['Admin User', 'admin@example.com'],
         to: [['Jane Doe', 'jane@example.com']],
         subject: '«Report.pdf» was shared with you',
         content: '<p>hello</p>',
