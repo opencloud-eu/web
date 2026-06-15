@@ -17,18 +17,31 @@ const unlockRoute = {
 
 type Guard = (to: any) => Promise<unknown>
 
+const loadMountPoints = vi.fn()
+const createShareSpace = vi.fn()
+
 function installGuard({
   spaces = [] as any[],
   claim = null as any,
-  engine = null as any
+  engine = null as any,
+  spacesInitialized = true,
+  mountPointsInitialized = true
 } = {}): Guard {
-  vi.mocked(useSpacesStore).mockReturnValue({ spaces, spacesInitialized: true } as any)
+  vi.mocked(useSpacesStore).mockReturnValue({
+    spaces,
+    spacesInitialized,
+    mountPointsInitialized,
+    loadMountPoints,
+    createShareSpace
+  } as any)
   vi.mocked(getVaultClaim).mockReturnValue(claim)
   vi.mocked(resolveFolderVault).mockResolvedValue(engine)
 
+  const clientService = { graphAuthenticated: {} } as any
+
   let guard: Guard
   const router = { beforeEach: (fn: Guard) => (guard = fn) } as unknown as Router
-  setupVaultUnlockGuard(router)
+  setupVaultUnlockGuard(router, clientService)
   return guard
 }
 
@@ -128,5 +141,94 @@ describe('setupVaultUnlockGuard', () => {
       name: 'rclone-crypt-unlock',
       query: { spaceId: 's1', vaultRoot: '/', redirectUrl: '/files/spaces/share/myvault.vault' }
     })
+  })
+
+  it('lazy-loads mount-points and builds the share space, then redirects a locked vault', async () => {
+    // On a hard reload into a share space, the share space isn't in the store
+    // yet (mount-point spaces are fetched on demand). Given the `shareId` query,
+    // the guard loads the mount points, finds the matching one, builds a share
+    // space from it, and only then gates the vault - otherwise a locked vault
+    // would slip through unguarded.
+    const mountPoint = {
+      id: 'mp1',
+      name: 'myvault.vault',
+      root: { remoteItem: { id: 'share-123' } }
+    }
+    const builtShareSpace = { id: 'share-123', driveAlias: 'share/myvault.vault' }
+    const spaces: any[] = []
+    loadMountPoints.mockImplementation(() => {
+      // simulate the store getting populated once the load resolves
+      spaces.push(mountPoint)
+    })
+    createShareSpace.mockReturnValue(builtShareSpace)
+
+    const guard = installGuard({
+      spaces,
+      mountPointsInitialized: false,
+      claim: {
+        vaultRoot: '/',
+        unlockRoute: {
+          name: 'rclone-crypt-unlock',
+          query: { spaceId: 'share-123', vaultRoot: '/' }
+        }
+      },
+      engine: null
+    })
+
+    const result = await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault' },
+      query: { shareId: 'share-123' },
+      fullPath: '/files/spaces/share/myvault.vault'
+    })
+
+    expect(loadMountPoints).toHaveBeenCalledWith({ graphClient: expect.anything() })
+    expect(createShareSpace).toHaveBeenCalledWith({
+      driveAliasPrefix: 'share',
+      id: 'share-123',
+      shareName: 'myvault.vault'
+    })
+    expect(result).toEqual({
+      name: 'rclone-crypt-unlock',
+      query: {
+        spaceId: 'share-123',
+        vaultRoot: '/',
+        redirectUrl: '/files/spaces/share/myvault.vault'
+      }
+    })
+  })
+
+  it('does not build a share space when no mount point matches the share id', async () => {
+    const guard = installGuard({
+      spaces: [{ id: 'other', root: { remoteItem: { id: 'different' } } }],
+      mountPointsInitialized: true
+    })
+
+    const result = await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault' },
+      query: { shareId: 'share-123' },
+      fullPath: '/x'
+    })
+
+    expect(result).toBe(true)
+    expect(createShareSpace).not.toHaveBeenCalled()
+    expect(getVaultClaim).not.toHaveBeenCalled()
+  })
+
+  it('skips the mount-point lazy load when the share space is already in the store', async () => {
+    const shareSpace = { id: 's1', driveAlias: 'share/myvault.vault' }
+    const guard = installGuard({
+      spaces: [shareSpace],
+      mountPointsInitialized: false,
+      claim: null
+    })
+
+    await guard({
+      params: { driveAliasAndItem: 'share/myvault.vault' },
+      query: { shareId: 'share-123' },
+      fullPath: '/x'
+    })
+
+    expect(loadMountPoints).not.toHaveBeenCalled()
+    expect(createShareSpace).not.toHaveBeenCalled()
   })
 })
