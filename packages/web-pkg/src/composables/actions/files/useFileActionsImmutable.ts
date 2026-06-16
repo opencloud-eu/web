@@ -16,11 +16,9 @@ export const useFileActionsImmutable = () => {
     explicitState: 'frozen' | 'protected' | undefined
   ): 'frozen' | 'protected' | 'shielded' | undefined => {
     if (explicitState) return explicitState
-    // After unprotect: check if parent is still protected → shielded
-    const parent = resourcesStore.resources.find(
-      (r) => r.id === resource.parentFolderId
-    )
-    if (parent?.immutableState === 'protected' || parent?.immutableState === 'shielded') {
+    // After unprotect: check if current folder (parent) is still protected → shielded
+    const currentFolder = resourcesStore.currentFolder
+    if (currentFolder?.immutableState === 'protected' || currentFolder?.immutableState === 'shielded') {
       return 'shielded'
     }
     return undefined
@@ -122,9 +120,9 @@ export const useFileActionsImmutable = () => {
     {
       name: 'protect-folder',
       icon: 'shield',
-      label: ({ resources }) =>
-        resources?.length > 1
-          ? $gettext('Protect %{count} folders', { count: String(resources.length) })
+      label: (options) =>
+        options?.resources?.length > 1
+          ? $gettext('Protect %{count} folders', { count: String(options.resources.length) })
           : $gettext('Protect folder'),
       handler: ({ space, resources }) => {
         for (const r of resources) {
@@ -143,9 +141,9 @@ export const useFileActionsImmutable = () => {
     {
       name: 'unprotect-folder',
       icon: 'shield',
-      label: ({ resources }) =>
-        resources?.length > 1
-          ? $gettext('Unprotect %{count} folders', { count: String(resources.length) })
+      label: (options) =>
+        options?.resources?.length > 1
+          ? $gettext('Unprotect %{count} folders', { count: String(options.resources.length) })
           : $gettext('Remove protection'),
       handler: ({ space, resources }) => {
         for (const r of resources) {
