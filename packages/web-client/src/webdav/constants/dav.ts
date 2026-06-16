@@ -78,7 +78,7 @@ const DavPropertyMapping = {
     type: null as Photo
   },
   Immutable: defString('immutable' as const),
-  Notice: defString('md-oy-notice' as const),
+  Notice: defString('md-note' as const),
   ETag: defString('getetag' as const),
   MimeType: defString('getcontenttype' as const),
   ResourceType: defStringArray('resourcetype' as const),

@@ -212,7 +212,7 @@ async function loadNotice() {
     const response = await httpClient.get(
       `/graph/v1beta1/drives/${sp.id}/items/${res.id}/metadata`
     )
-    const val = response.data?.['oy.notice'] || ''
+    const val = response.data?.['note'] || ''
     noticeText.value = val
     noticeOriginal.value = val
   } catch {
