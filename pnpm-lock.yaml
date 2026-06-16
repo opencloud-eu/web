@@ -191,8 +191,8 @@ importers:
         specifier: 4.0.0-beta.6
         version: 4.0.0-beta.6(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
-        specifier: 4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        specifier: 4.0.1
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -313,7 +313,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -399,7 +399,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -442,7 +442,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -464,7 +464,7 @@ importers:
         version: 0.3.93
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -498,7 +498,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -562,7 +562,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       web-app-search:
         specifier: workspace:*
         version: link:../web-app-search
@@ -614,7 +614,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -672,7 +672,7 @@ importers:
         version: 14.3.0(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
 
   packages/web-app-pdf-viewer:
     dependencies:
@@ -681,7 +681,7 @@ importers:
         version: link:../web-pkg
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -712,7 +712,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -734,7 +734,7 @@ importers:
         version: 3.5.38(typescript@6.0.3)
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
 
   packages/web-app-search:
     dependencies:
@@ -761,7 +761,7 @@ importers:
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -783,7 +783,7 @@ importers:
         version: 5.0.3(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -995,8 +995,8 @@ importers:
         specifier: ^5.0.4
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
-        specifier: 4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        specifier: 4.0.1
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       zod:
         specifier: ^4.3.6
         version: 4.4.3
@@ -1101,8 +1101,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
-        specifier: 4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        specifier: 4.0.1
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -1150,8 +1150,8 @@ importers:
         specifier: ^5.0.4
         version: 5.1.0(@vue/compiler-sfc@3.5.38)(pinia@3.0.4(typescript@6.0.3)(vue@3.5.38(typescript@6.0.3)))(vite@8.0.16(@types/node@25.9.1)(jiti@2.7.0)(sass@1.100.0)(yaml@2.9.0))(vue@3.5.38(typescript@6.0.3))
       vue3-gettext:
-        specifier: 4.0.0-beta.1
-        version: 4.0.0-beta.1(@vue/compiler-sfc@3.5.38)(vue@3.5.38(typescript@6.0.3))
+        specifier: 4.0.1
+        version: 4.0.1(vue@3.5.38(typescript@6.0.3))
     devDependencies:
       '@types/node':
         specifier: ^25.5.0
@@ -5592,6 +5592,13 @@ packages:
     hasBin: true
     peerDependencies:
       '@vue/compiler-sfc': '>=3.0.0'
+      vue: '>=3.0.0'
+
+  vue3-gettext@4.0.1:
+    resolution: {integrity: sha512-dbqBv0X7L8EOnEjL78sNfAelig96lOBVnVN7zIJs8kekXaOQ+xUlYCyc4epFBFyXoFtYGzMCLS5uCJn9KozmWg==}
+    engines: {node: '>= 20.19.0'}
+    hasBin: true
+    peerDependencies:
       vue: '>=3.0.0'
 
   vue@3.5.38:
@@ -10325,6 +10332,16 @@ snapshots:
       chalk: 5.6.2
       command-line-args: 6.0.2
       glob: 11.1.0
+      lilconfig: 3.1.3
+      pofile: 1.1.4
+      vue: 3.5.38(typescript@6.0.3)
+    transitivePeerDependencies:
+      - '@75lb/nature'
+
+  vue3-gettext@4.0.1(vue@3.5.38(typescript@6.0.3)):
+    dependencies:
+      command-line-args: 6.0.2
+      glob: 13.0.6
       lilconfig: 3.1.3
       pofile: 1.1.4
       vue: 3.5.38(typescript@6.0.3)
