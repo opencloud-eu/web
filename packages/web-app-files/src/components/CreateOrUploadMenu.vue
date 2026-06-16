@@ -75,12 +75,18 @@
       <li
         v-for="(fileAction, fileActionIndex) in group"
         :key="`file-creation-item-${groupIndex}-${fileActionIndex}`"
+        v-oc-tooltip="
+          isActionDisabled(fileAction) && fileAction.disabledTooltip
+            ? fileAction.disabledTooltip()
+            : null
+        "
       >
         <oc-button
           appearance="raw"
           class="w-full"
           justify-content="left"
           :class="['new-file-btn-' + fileAction.ext]"
+          :disabled="isActionDisabled(fileAction)"
           @click="() => fileAction.handler()"
         >
           <resource-icon
@@ -163,13 +169,21 @@ const extensionActions = computed(() => {
   return extensionRegistry.requestExtensions(uploadMenuExtensionPoint).map((e) => e.action)
 })
 
+const visibleCreateNewFileActions = computed(() => {
+  return unref(createNewFileActions).filter((action) =>
+    action.isVisible({ space: unref(currentSpace) })
+  )
+})
+
 const createFileActionsGroups = computed((): FileAction[][] => {
   const result: FileAction[][] = []
-  const externalFileActions = unref(createNewFileActions).filter(({ isExternal }) => isExternal)
+  const externalFileActions = unref(visibleCreateNewFileActions).filter(
+    ({ isExternal }) => isExternal
+  )
   if (externalFileActions.length) {
     result.push(externalFileActions)
   }
-  const appFileActions = unref(createNewFileActions).filter(({ isExternal }) => !isExternal)
+  const appFileActions = unref(visibleCreateNewFileActions).filter(({ isExternal }) => !isExternal)
   if (appFileActions.length) {
     result.push(appFileActions)
   }
@@ -191,7 +205,7 @@ const canUpload = computed(() => {
 })
 
 const isActionDisabled = (action: Action) => {
-  return action.isDisabled ? action.isDisabled() : false
+  return action.isDisabled ? action.isDisabled({ space: unref(currentSpace) }) : false
 }
 
 const getActionIcon = (action: Action) => {
