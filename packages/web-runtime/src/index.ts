@@ -1,5 +1,6 @@
 import { loadDesignSystem, pages, loadTranslations, supportedLanguages } from './defaults'
 import { router } from './router'
+import { setupVaultUnlockGuard } from './router/setupVaultUnlockGuard'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 
@@ -73,6 +74,13 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   const gettext = announceGettext({ app, availableLanguages: supportedLanguages })
 
   const clientService = announceClientService({ app, configStore, authStore })
+
+  // Registered here (not at router module load) so the guard can receive the
+  // `clientService` it needs to lazy-load mount-point spaces. Registering it
+  // after `setupAuthGuard` keeps the guard order intact: auth context (and
+  // thus the access token) is ready before the vault guard runs.
+  setupVaultUnlockGuard(router, clientService)
+
   announceAuthService({
     app,
     configStore,
