@@ -467,4 +467,8 @@ export class Resource {
   ): Promise<Locator> {
     return await showExpirationDateIndicator(this.#page, resource, context)
   }
+
+  async enterVault({ vault, passphrase }: { vault: string; passphrase: string }): Promise<void> {
+    await po.enterVault({ page: this.#page, vault, passphrase })
+  }
 }

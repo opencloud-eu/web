@@ -12,7 +12,6 @@ import pino from 'pino'
 import { Browser, chromium, firefox, webkit } from '@playwright/test'
 import path from 'path'
 import fs from 'fs'
-import { spawnSync } from 'node:child_process'
 import { v4 as uuidv4 } from 'uuid'
 
 import { World } from './world'
@@ -36,28 +35,7 @@ const logger = pino({
 setDefaultTimeout(config.debug ? -1 : config.testTimeout * 1000)
 setWorldConstructor(World)
 
-// The @rclone-crypt vault scenarios shell out to the rclone CLI to build and
-// verify encrypted fixtures. Probe once whether rclone is on PATH so we can
-// skip those scenarios (instead of hard-failing) for developers who don't have
-// it installed. CI installs a pinned rclone, so they run there.
-let rcloneAvailable: boolean | undefined
-function isRcloneAvailable(): boolean {
-  if (rcloneAvailable === undefined) {
-    rcloneAvailable = spawnSync('rclone', ['version'], { stdio: 'ignore' }).status === 0
-  }
-  return rcloneAvailable
-}
-
 Before(async function (this: World, { pickle }: ITestCaseHookParameter) {
-  if (pickle.tags.some((tag) => tag.name === '@rclone-crypt') && !isRcloneAvailable()) {
-    // console (not the pino logger) so the skip reason is visible regardless of
-    // the configured log level.
-    console.warn(
-      'rclone not found on PATH - skipping @rclone-crypt scenario. Install rclone (https://rclone.org/install/) to run the vault e2e tests.'
-    )
-    return 'skipped'
-  }
-
   this.feature = pickle
   this.actorsEnvironment.on('console', (actorId, message): void => {
     const msg = {

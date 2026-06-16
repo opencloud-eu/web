@@ -27,7 +27,8 @@ When(
       await resourceObject.create({
         name: info.resource,
         type: info.type as createResourceTypes,
-        content: info.content
+        content: info.content,
+        password: info.password
       })
     }
   }
@@ -43,7 +44,8 @@ When(
         to: info.to,
         resources: [this.filesEnvironment.getFile({ name: info.resource })],
         option: info.option,
-        type: info.type
+        type: info.type,
+        password: info.password
       })
     }
   }
@@ -834,7 +836,7 @@ When(
     const resources = stepTable
       .hashes()
       .map((item) => this.filesEnvironment.getFile({ name: item.resource }))
-    await resourceObject.dropUpload({ resources })
+    await resourceObject.dropUpload({ resources, password: stepTable.hashes()[0].password })
   }
 )
 
@@ -1201,5 +1203,25 @@ Then(
     const resourceObject = new objects.applicationFiles.Resource({ page })
     const locator = await resourceObject.showExpirationDateIndicator(resource, context)
     await expect(locator).toBeVisible()
+  }
+)
+
+When(
+  '{string} enters the vault {string} with passphrase {string}',
+  async function (this: World, stepUser: string, vault: string, passphrase: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.enterVault({ vault, passphrase: passphrase })
+  }
+)
+
+When(
+  '{string} fails to enter the vault {string} with the wrong passphrase {string}',
+  async function (this: World, stepUser: string, vault: string, passphrase: string): Promise<void> {
+    const { page } = this.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.enterVault({ vault, passphrase: passphrase })
+    await expect(page.getByText('Incorrect passphrase.')).toBeVisible()
+    expect(page.url()).toContain('/rclone-crypt/unlock')
   }
 )

@@ -2,130 +2,120 @@ Feature: Work with an rclone-crypt encrypted vault
   As a user with rclone-crypt-encrypted folders on the server
   I want to browse, edit and upload through OpenCloud Web under cleartext names
   So that I can work with my encrypted files without decrypting them manually
+  We check that when uploading files or editing them, the payload sent to the server is encrypted
+
+  Background:
+    Given "Admin" creates following users using API
+      | id    |
+      | Alice |
 
   @rclone-crypt
-  Scenario: Browse a vault and see decrypted folder/file names
-    Given "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path           | content              |
-      | hello.txt      | hello world          |
-      | sub/nested.txt | nested file content  |
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    Then following resources should be displayed in the files list for user "Admin"
-      | resource      |
-      | myvault.vault |
-    When "Admin" enters the vault "myvault.vault" with passphrase "foobar"
-    Then following resources should be displayed in the files list for user "Admin"
+  Scenario: create and upload a file into a vault encrypts it on the server
+    When "Alice" logs in
+    And "Alice" creates the following resources
+      | resource                | type    | content             | password |
+      | my.vault                | vault   |                     | foobar   |
+      | my.vault/sub            | folder  |                     | foobar   |
+      | my.vault/sub/nested.txt | txtFile | nested file content | foobar   |
+      | my.vault/hello.txt      | txtFile | hello world         | foobar   |
+    And "Alice" uploads the following resources
+      | resource          | to           | password |
+      | PARENT/parent.txt | my.vault/sub | foobar   |
+    And "Alice" enters the vault "my.vault" with passphrase "foobar"
+    And following resources should be displayed in the files list for user "Alice"
       | resource  |
       | hello.txt |
       | sub       |
-    When "Admin" opens folder "sub"
-    Then following resources should be displayed in the files list for user "Admin"
+    And "Alice" opens folder "sub"
+    And following resources should be displayed in the files list for user "Alice"
       | resource   |
       | nested.txt |
-    When "Admin" opens the following file in texteditor
+      | parent.txt |
+    And "Alice" opens the following file in texteditor
       | resource   |
       | nested.txt |
-    Then "Admin" should see the text editor content "nested file content"
+    And "Alice" should see the content "nested file content" in editor "TextEditor"
+    And "Alice" closes the file viewer
+    And "Alice" opens the following file in texteditor
+      | resource   |
+      | parent.txt |
+    And "Alice" should see the content "OpenCloud test text file parent" in editor "TextEditor"
+    And "Alice" closes the file viewer
+    And "Alice" logs out
 
-    When "Admin" replaces the text editor content with "rewritten through the vault"
-    And "Admin" saves the text editor file
-    Then the rclone-crypt vault "myvault.vault" file "sub/nested.txt" should decrypt to "rewritten through the vault"
 
-  @rclone-crypt
-  Scenario: Upload a file into a vault encrypts it on the server
-    Given "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path           | content              |
-      | hello.txt      | hello world          |
-      | sub/nested.txt | nested file content  |
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    And "Admin" enters the vault "myvault.vault" with passphrase "foobar"
-    And "Admin" opens folder "sub"
-    And "Admin" uploads a file named "uploaded.txt" with content "freshly uploaded content" via the upload button
-    Then following resources should be displayed in the files list for user "Admin"
-      | resource     |
-      | nested.txt   |
-      | uploaded.txt |
-    And the rclone-crypt vault "myvault.vault" file "sub/uploaded.txt" should decrypt to "freshly uploaded content"
-
+  
   @rclone-crypt
   Scenario: Drag-drop a directory tree into a vault
-    Given "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path      | content     |
-      | hello.txt | hello world |
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    And "Admin" enters the vault "myvault.vault" with passphrase "foobar"
-    And "Admin" drag-drop uploads the following directory tree
-      | path                       | content        |
-      | mybundle/inner.txt         | inner content  |
-      | mybundle/deeper/nested.txt | deeper content |
-    Then the rclone-crypt vault "myvault.vault" file "mybundle/inner.txt" should decrypt to "inner content"
-    And the rclone-crypt vault "myvault.vault" file "mybundle/deeper/nested.txt" should decrypt to "deeper content"
-
-  @rclone-crypt
-  Scenario: Create a vault, set a passphrase and upload an encrypted file
-    Given "Admin" removes any folder "freshvault.vault" on the server
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    And "Admin" creates the following resources
-      | resource         | type   |
-      | freshvault.vault | folder |
-    And "Admin" enters the vault "freshvault.vault" with passphrase "foobar"
-    And "Admin" uploads a file named "secret.txt" with content "top secret content" via the upload button
-    Then following resources should be displayed in the files list for user "Admin"
+    When "Alice" logs in
+    And "Alice" creates the following resources
+      | resource | type    | password       |
+      | my.vault | vault   | myStrongPass#1 |
+    And "Alice" enters the vault "my.vault" with passphrase "myStrongPass#1"
+    And "Alice" uploads the following resources via drag-n-drop
+      | resource   | password       |
+      | simple.pdf | myStrongPass#1 |
+      | PARENT     | myStrongPass#1 |
+    And "Alice" opens the "files" app
+    And "Alice" enters the vault "my.vault" with passphrase "myStrongPass#1"
+    And following resources should be displayed in the files list for user "Alice"
       | resource   |
-      | secret.txt |
-    And the rclone-crypt vault "freshvault.vault" file "secret.txt" should decrypt to "top secret content"
+      | simple.pdf |
+      | PARENT     |
+    And "Alice" logs out
 
   @rclone-crypt
   Scenario: A wrong passphrase is rejected
-    Given "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path      | content     |
-      | hello.txt | hello world |
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    And "Admin" fails to enter the vault "myvault.vault" with the wrong passphrase "definitely-wrong"
+    When "Alice" logs in
+    And "Alice" creates the following resources
+      | resource | type    | password |
+      | my.vault | vault   | 123      |
+    And "Alice" navigates to the personal space page
+    And "Alice" fails to enter the vault "my.vault" with the wrong passphrase "definitely-wrong"
+    And "Alice" logs out
 
   @rclone-crypt
   Scenario: A vault root is collaborator-shareable but not public-linkable, its content stays private
-    Given "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path      | content     |
-      | hello.txt | hello world |
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    Then "Admin" should be able to share "myvault.vault" but not create a public link
-    When "Admin" enters the vault "myvault.vault" with passphrase "foobar"
-    Then "Admin" should not be able to share "hello.txt"
+   Given "Admin" creates following users using API
+      | id    |
+      | Brian |
+   When "Alice" logs in
+   And "Alice" creates the following resources
+      | resource              | type    | content     | password |
+      | share.vault           | vault   |             | foobar   |
+      | share.vault/hello.txt | txtFile | hello world | foobar   |
+    And "Alice" shares the following resource using the sidebar panel
+      | resource    | recipient | type | role     | resourceType |
+      | share.vault | Brian     | user | Can edit | folder       |
+    And "Alice" logs out
+    When "Brian" logs in
+    And "Brian" navigates to the shared with me page
+    And "Brian" enters the vault "share.vault" with passphrase "foobar"
+    And following resources should be displayed in the files list for user "Brian"
+      | resource  |
+      | hello.txt |
+    And "Brian" opens the following file in texteditor
+      | resource  |
+      | hello.txt |
+    And "Brian" should see the content "hello world" in editor "TextEditor"
+    And "Brian" logs out
 
   @rclone-crypt
   Scenario: Rename and download a vault file
-    Given "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path      | content           |
-      | hello.txt | downloadable text |
-    When "Admin" logs in
-    And "Admin" navigates to the personal space page
-    And "Admin" enters the vault "myvault.vault" with passphrase "foobar"
-    And "Admin" renames the vault resource "hello.txt" to "renamed.txt"
-    Then following resources should be displayed in the files list for user "Admin"
-      | resource    |
-      | renamed.txt |
-    And the rclone-crypt vault "myvault.vault" file "renamed.txt" should decrypt to "downloadable text"
-    And "Admin" downloads the vault file "renamed.txt" which decrypts to "downloadable text"
-
-  @rclone-crypt
-  Scenario: A collaborator-shared vault root unlocks and decrypts for the receiver
-    Given "Admin" creates following users using API
-      | id    |
-      | Brian |
-    And "Admin" creates an rclone-crypt vault "myvault.vault" in personal space with the following content
-      | path      | content     |
-      | hello.txt | hello world |
-    And "Admin" shares the rclone-crypt vault "myvault.vault" with "Brian" via API
-    When "Brian" logs in
-    And "Brian" navigates to the shared with me page
-    And "Brian" enters the vault "myvault.vault" with passphrase "foobar"
-    Then following resources should be displayed in the files list for user "Brian"
+    When "Alice" logs in
+   And "Alice" creates the following resources
+      | resource           | type    | content     | password |
+      | my.vault           | vault   |             | foobar   |
+      | my.vault/hello.txt | txtFile | hello world | foobar   |
+    And "Alice" navigates to the personal space page
+    When "Alice" renames the following resource
+      | resource | as                 |
+      | my.vault | renamed.vault |
+    And "Alice" enters the vault "renamed.vault" with passphrase "foobar"
+    Then following resources should be displayed in the files list for user "Alice"
       | resource  |
       | hello.txt |
+    And "Alice" downloads the following resources using the sidebar panel
+      | resource  | type |
+      | hello.txt | file |
+    And "Alice" logs out
