@@ -10,6 +10,11 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
+### ✅ Tests
+
+- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
+
 ### 🐛 Bug Fixes
 
 - fix: unlock vault cancel in shared vaults [[#2705](https://github.com/opencloud-eu/web/pull/2705)]
@@ -38,10 +43,6 @@
 - feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
 - feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
-
-### ✅ Tests
-
-- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 📦️ Dependencies
 
