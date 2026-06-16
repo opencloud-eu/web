@@ -198,20 +198,30 @@ const space = inject<Ref<SpaceResource>>('space')
 
 const preview = ref<string>(undefined)
 
-// Notice (oc:md-notice xattr)
+// Notice (user.oc.md.oy.notice xattr, loaded via metadata API)
 const noticeText = ref('')
 const noticeSaving = ref(false)
 const noticeOriginal = ref('')
 
-watch(
-  () => unref(resource),
-  (res) => {
-    const val = res?.notice || ''
+async function loadNotice() {
+  const res = unref(resource)
+  const sp = unref(space)
+  if (!res?.id || !sp?.id) return
+  try {
+    const httpClient = clientService.httpAuthenticated
+    const response = await httpClient.get(
+      `/graph/v1beta1/drives/${sp.id}/items/${res.id}/metadata`
+    )
+    const val = response.data?.['oy.notice'] || ''
     noticeText.value = val
     noticeOriginal.value = val
-  },
-  { immediate: true }
-)
+  } catch {
+    noticeText.value = ''
+    noticeOriginal.value = ''
+  }
+}
+
+watch(() => unref(resource)?.id, () => loadNotice(), { immediate: true })
 
 async function saveNotice() {
   if (unref(noticeText) === unref(noticeOriginal)) return
