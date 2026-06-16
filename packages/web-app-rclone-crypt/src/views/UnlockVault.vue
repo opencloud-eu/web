@@ -69,6 +69,7 @@
 import { computed, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
+  createLocationShares,
   queryItemAsString,
   useClientService,
   useFolderVaultStore,
@@ -77,6 +78,7 @@ import {
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import { createEngine } from '../crypto/engine'
+import { isShareSpaceResource } from '@opencloud-eu/web-client'
 
 const { $gettext } = useGettext()
 const route = useRoute()
@@ -220,8 +222,15 @@ const onCancel = async () => {
   const root = unref(vaultRoot) || '/'
   const parent = root.replace(/\/[^/]+$/, '') || '/'
   const space = unref(spacesStore.spaces).find((s) => s.id === unref(spaceId))
+  if (isShareSpaceResource(space) && root === '/') {
+    await router.push(createLocationShares('files-shares-with-me'))
+    return
+  }
   if (space) {
-    await router.push(`/files/spaces/${space.driveAlias}${parent === '/' ? '' : parent}`)
+    await router.push({
+      path: `/files/spaces/${space.driveAlias}${parent === '/' ? '' : parent}`,
+      ...(isShareSpaceResource(space) && { query: { shareId: space.id } })
+    })
     return
   }
   await router.push('/files/spaces/personal')
