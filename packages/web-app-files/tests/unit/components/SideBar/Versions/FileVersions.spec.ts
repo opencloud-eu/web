@@ -1,10 +1,13 @@
 import { DateTime } from 'luxon'
 import FileVersions from '../../../../../src/components/SideBar/Versions/FileVersions.vue'
-import { defaultComponentMocks, defaultStubs } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultStubs,
+  PartialComponentProps
+} from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ShareResource, ShareSpaceResource } from '@opencloud-eu/web-client'
-import { DavPermission } from '@opencloud-eu/web-client/webdav'
+import { GraphSharePermission, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { ProjectSpaceResource, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { useDownloadFile, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
@@ -76,17 +79,44 @@ describe('FileVersions', () => {
             const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
             expect(revertVersionButton.length).toBe(defaultVersions.length)
           })
-          it('should be possible for a share with write permissions', () => {
-            const resource = mockDeep<ShareResource>({ permissions: DavPermission.Updateable })
-            const space = mockDeep<ShareSpaceResource>({ driveType: 'share' })
-            const { wrapper } = getMountedWrapper({ resource, space })
+          it('should not be possible when isReadOnly prop is true', () => {
+            const { wrapper } = getMountedWrapper({ props: { isReadOnly: true } })
+            const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
+            expect(revertVersionButton.length).toBe(0)
+          })
+          it('should be possible for a share space with updateVersions graph permission', () => {
+            const space = mockDeep<ShareSpaceResource>({
+              driveType: 'share',
+              graphPermissions: [GraphSharePermission.updateVersions]
+            })
+            const { wrapper } = getMountedWrapper({ space })
             const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
             expect(revertVersionButton.length).toBe(defaultVersions.length)
           })
-          it('should not be possible for a share with read-only permissions', () => {
-            const resource = mockDeep<ShareResource>({ permissions: '' })
-            const space = mockDeep<ShareSpaceResource>({ driveType: 'share' })
-            const { wrapper } = getMountedWrapper({ resource, space })
+          it('should not be possible for a share space without updateVersions graph permission', () => {
+            const space = mockDeep<ShareSpaceResource>({
+              driveType: 'share',
+              graphPermissions: []
+            })
+            const { wrapper } = getMountedWrapper({ space })
+            const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
+            expect(revertVersionButton.length).toBe(0)
+          })
+          it('should be possible for a project space with updateVersions graph permission', () => {
+            const space = mockDeep<ProjectSpaceResource>({
+              driveType: 'project',
+              graphPermissions: [GraphSharePermission.updateVersions]
+            })
+            const { wrapper } = getMountedWrapper({ space })
+            const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
+            expect(revertVersionButton.length).toBe(defaultVersions.length)
+          })
+          it('should not be possible for a project space without updateVersions graph permission', () => {
+            const space = mockDeep<ProjectSpaceResource>({
+              driveType: 'project',
+              graphPermissions: [GraphSharePermission.readVersions]
+            })
+            const { wrapper } = getMountedWrapper({ space })
             const revertVersionButton = wrapper.findAll(selectors.revertVersionButton)
             expect(revertVersionButton.length).toBe(0)
           })
@@ -125,12 +155,14 @@ function getMountedWrapper({
   mountType = mount,
   space = undefined,
   versions = defaultVersions,
-  resource = mock<Resource>({ id: '1', size: 0, mdate: '' })
+  resource = mock<Resource>({ id: '1', size: 0, mdate: '' }),
+  props = {}
 }: {
   mountType?: typeof mount
   space?: SpaceResource
   versions?: Resource[]
   resource?: Resource
+  props?: PartialComponentProps<typeof FileVersions>
 } = {}) {
   const downloadFile = vi.fn()
   vi.mocked(useDownloadFile).mockReturnValue({ downloadFile })
@@ -142,6 +174,7 @@ function getMountedWrapper({
 
   return {
     wrapper: mountType(FileVersions, {
+      props,
       global: {
         mocks,
         renderStubDefaultSlot: true,

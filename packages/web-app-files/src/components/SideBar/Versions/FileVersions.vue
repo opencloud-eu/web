@@ -48,7 +48,6 @@
   </div>
 </template>
 <script lang="ts">
-import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import {
   formatRelativeDateFromHTTP,
   formatDateFromJSDate,
@@ -58,7 +57,13 @@ import {
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { computed, defineComponent, inject, Ref, unref } from 'vue'
-import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  GraphSharePermission,
+  isProjectSpaceResource,
+  isShareSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 
 export default defineComponent({
@@ -85,10 +90,8 @@ export default defineComponent({
         return false
       }
 
-      if (isShareSpaceResource(unref(space)) || unref(resource).isReceivedShare()) {
-        if (unref(resource).permissions !== undefined) {
-          return unref(resource).permissions.includes(DavPermission.Updateable)
-        }
+      if (isShareSpaceResource(unref(space)) || isProjectSpaceResource(unref(space))) {
+        return unref(space).graphPermissions.includes(GraphSharePermission.updateVersions)
       }
 
       return true
