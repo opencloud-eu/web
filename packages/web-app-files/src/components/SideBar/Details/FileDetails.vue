@@ -228,7 +228,12 @@ async function saveNotice() {
   noticeSaving.value = true
   try {
     const res = unref(resource)
-    await clientService.webdav.setNotice(unref(space), { path: res.path }, unref(noticeText))
+    const sp = unref(space)
+    const httpClient = clientService.httpAuthenticated
+    await httpClient.put(
+      `/graph/v1beta1/drives/${sp.id}/items/${res.id}/metadata`,
+      { note: unref(noticeText) }
+    )
     noticeOriginal.value = unref(noticeText)
     resourcesStore.updateResourceField({
       id: res.id,
