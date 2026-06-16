@@ -42,6 +42,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.9.0 [[#2696](https://github.com/opencloud-eu/web/pull/2696)]
+- chore(deps): update pnpm to v11.7.0 [[#2697](https://github.com/opencloud-eu/web/pull/2697)]
+- chore(deps): update typescript-eslint monorepo to v8.61.1 [[#2701](https://github.com/opencloud-eu/web/pull/2701)]
+- fix(deps): update sentry-javascript monorepo to v10.58.0 [[#2698](https://github.com/opencloud-eu/web/pull/2698)]
 - chore(deps): update tiptap monorepo to v3.26.1 [[#2673](https://github.com/opencloud-eu/web/pull/2673)]
 - chore(deps): update dependency axios to v1.18.0 [[#2689](https://github.com/opencloud-eu/web/pull/2689)]
 - Update tailwindcss monorepo to v4.3.1 [[#2681](https://github.com/opencloud-eu/web/pull/2681)]
