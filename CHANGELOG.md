@@ -12,6 +12,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: unlock vault cancel in shared vaults [[#2705](https://github.com/opencloud-eu/web/pull/2705)]
+- fix: reduce fields in Upload-Metadata header [[#2702](https://github.com/opencloud-eu/web/pull/2702)]
 - fix: new menu entries for external apps in vaults [[#2700](https://github.com/opencloud-eu/web/pull/2700)]
 - fix: vault route guard for share spaces [[#2693](https://github.com/opencloud-eu/web/pull/2693)]
 - fix: version loading on search and favorite pages [[#2676](https://github.com/opencloud-eu/web/pull/2676)]
@@ -27,18 +29,19 @@
 - fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
 
-### ✅ Tests
-
-- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
-
 ### 📈 Enhancement
 
+- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
 - feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
 - rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
 -  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
 - feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
 - feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
+
+### ✅ Tests
+
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 📦️ Dependencies
 
