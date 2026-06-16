@@ -22,12 +22,12 @@ Feature: download space
       | name                  | content    |
       | spaceFolder/lorem.txt | space team |
     And "Alice" navigates to the project space "team.1"
-    When "Alice" downloads the space "team.1"
+    When "Alice" downloads the space "team"
     And "Alice" adds following users to the project space
       | user     | role     | kind  |
       | Brian    | Can edit | user  |
     And "Alice" logs out
     And "Brian" logs in
     And "Brian" navigates to the project space "team.1"
-    When "Brian" downloads the space "team.1"
+    When "Brian" downloads the space "team"
     And "Brian" logs out

@@ -540,18 +540,16 @@ export const processDownload = async (
     })
 
     downloads.forEach((download) => {
-      const { name } = path.parse(download.suggestedFilename())
-      downloadedResources.push(name)
+      downloadedResources.push(download.suggestedFilename())
     })
 
     if (actionType === 'sidebar panel' || actionType === 'preview topbar') {
       expect(downloads.length).toBe(files.length)
       for (const resource of files) {
-        const fileOrFolderName = path.parse(resource.name).name
         if (resource.type === 'file') {
-          expect(downloadedResources).toContain(fileOrFolderName)
+          expect(downloadedResources).toContain(resource.name)
         } else {
-          expect(downloadedResources).toContain('download')
+          expect(downloadedResources).toContain(`${resource.name}.zip`)
         }
       }
     }
