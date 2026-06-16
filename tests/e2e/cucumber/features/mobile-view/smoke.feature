@@ -37,7 +37,7 @@ Feature: Mobile device test
     Then "Alice" is in a media-viewer
     And "Alice" downloads the following resources using the preview topbar
       | resource       | type |
-      | testavatar.jpg | file |
+      | testavatar.png | file |
     And "Alice" closes the file viewer
     And "Alice" sees the resources displayed as "tiles"
     And "Alice" switches to the "table" view
