@@ -1,6 +1,7 @@
 import { Router } from 'vue-router'
 import { watch } from 'vue'
 import {
+  ClientService,
   getVaultClaim,
   resolveFolderVault,
   useExtensionRegistry,
@@ -18,8 +19,12 @@ import {
  * route that doesn't need user-context anyway - public links etc. resolve
  * their own context first, and the vault guard kicks in afterwards if the
  * target lives inside a vault).
+ *
+ * Receives the `clientService` because the guard runs outside of a component
+ * setup context (so `useClientService()`'s `inject` wouldn't resolve). It's
+ * needed to lazy-load mount-point (share) spaces, see below.
  */
-export const setupVaultUnlockGuard = (router: Router) => {
+export const setupVaultUnlockGuard = (router: Router, clientService: ClientService) => {
   router.beforeEach(async (to) => {
     const driveAliasAndItem = to.params?.driveAliasAndItem as string | undefined
     if (!driveAliasAndItem) return true
@@ -47,9 +52,36 @@ export const setupVaultUnlockGuard = (router: Router) => {
       })
     }
 
-    const space = spacesStore.spaces.find(
+    let space = spacesStore.spaces.find(
       (s) => driveAliasAndItem === s.driveAlias || driveAliasAndItem.startsWith(`${s.driveAlias}/`)
     )
+
+    const isShareSpace =
+      driveAliasAndItem.startsWith('share/') || driveAliasAndItem.startsWith('ocm-share/')
+
+    if (!space && isShareSpace && to.query?.shareId) {
+      // Share spaces are loaded as mount-point spaces, which we only fetch on
+      // demand (it's expensive). `spacesInitialized` doesn't cover them, so we
+      // trigger the lazy load explicitly here. `loadMountPoints` is idempotent
+      // and early-returns once `mountPointsInitialized` is set.
+      if (!spacesStore.mountPointsInitialized) {
+        await spacesStore.loadMountPoints({ graphClient: clientService.graphAuthenticated })
+      }
+
+      // Find a matching mount point for the given share id and create a share space.
+      const mountPoint = spacesStore.spaces.find((s) => s.root?.remoteItem?.id === to.query.shareId)
+      if (!mountPoint) {
+        return true
+      }
+
+      const driveAliasPrefix = driveAliasAndItem.startsWith('ocm-share/') ? 'ocm-share' : 'share'
+      space = spacesStore.createShareSpace({
+        driveAliasPrefix,
+        id: mountPoint.root?.remoteItem?.id,
+        shareName: mountPoint.name
+      })
+    }
+
     if (!space) return true
     const path = '/' + driveAliasAndItem.slice(space.driveAlias.length).replace(/^\/+/, '')
 
