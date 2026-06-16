@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-11
+## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-16
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @JammingBen, @micbar
+
+### 🐛 Bug Fixes
+
+- fix: reduce fields in Upload-Metadata header [[#2706](https://github.com/opencloud-eu/web/pull/2706)]
 
 ### 📦️ Dependencies
 
