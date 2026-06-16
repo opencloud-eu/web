@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: new menu entries for external apps in vaults [[#2700](https://github.com/opencloud-eu/web/pull/2700)]
 - fix: vault route guard for share spaces [[#2693](https://github.com/opencloud-eu/web/pull/2693)]
 - fix: version loading on search and favorite pages [[#2676](https://github.com/opencloud-eu/web/pull/2676)]
 - fix: lock- and unlock vault action on shared with me page [[#2692](https://github.com/opencloud-eu/web/pull/2692)]
