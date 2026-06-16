@@ -285,7 +285,7 @@ watch(
 
     try {
       if (
-        !space.graphPermissions &&
+        !space?.graphPermissions &&
         (isShareSpaceResource(space) || isProjectSpaceResource(space))
       ) {
         await loadGraphPermissionsTask.perform()

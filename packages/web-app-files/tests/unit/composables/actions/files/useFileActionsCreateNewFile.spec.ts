@@ -48,15 +48,86 @@ describe('useFileActionsCreateNewFile', () => {
       })
     })
   })
+
+  describe('isDisabled / disabledTooltip', () => {
+    it('disables external editor app actions inside a vault', () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      getWrapper({
+        space,
+        currentFolder: mock<Resource>({ id: '1', path: '/', isInVault: true }),
+        fileExtensions: [
+          mock<ApplicationFileExtension>({
+            app: 'external-collabora',
+            extension: '.odt',
+            newFileMenu: { menuTitle: vi.fn() }
+          })
+        ],
+        setup: ({ actions }) => {
+          const action = unref(actions)[0]
+          expect(action.isDisabled()).toBe(true)
+        }
+      })
+    })
+
+    it('does not disable external editor app actions outside of a vault', () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      getWrapper({
+        space,
+        currentFolder: mock<Resource>({ id: '1', path: '/', isInVault: false }),
+        fileExtensions: [
+          mock<ApplicationFileExtension>({
+            app: 'external-collabora',
+            extension: '.odt',
+            newFileMenu: { menuTitle: vi.fn() }
+          })
+        ],
+        setup: ({ actions }) => {
+          const action = unref(actions)[0]
+          expect(action.isDisabled()).toBe(false)
+          expect(action.disabledTooltip()).toBeUndefined()
+        }
+      })
+    })
+
+    it('does not disable non-external app actions inside a vault', () => {
+      const space = mock<SpaceResource>({ id: '1' })
+      getWrapper({
+        space,
+        currentFolder: mock<Resource>({ id: '1', path: '/', isInVault: true }),
+        fileExtensions: [
+          mock<ApplicationFileExtension>({
+            app: 'text-editor',
+            extension: '.txt',
+            newFileMenu: { menuTitle: vi.fn() }
+          })
+        ],
+        setup: ({ actions }) => {
+          const action = unref(actions)[0]
+          expect(action.isDisabled()).toBe(false)
+          expect(action.disabledTooltip()).toBeUndefined()
+        }
+      })
+    })
+  })
 })
 
 function getWrapper({
   resolveCreateFile = true,
   space = undefined,
+  currentFolder = mock<Resource>({ id: '1', path: '/' }),
+  fileExtensions = [
+    mock<ApplicationFileExtension>({
+      app: 'text-editor',
+      extension: '.txt',
+      newFileMenu: { menuTitle: vi.fn() }
+    })
+  ],
   setup
 }: {
   resolveCreateFile?: boolean
   space?: SpaceResource
+  currentFolder?: Resource
+  fileExtensions?: ApplicationFileExtension[]
   setup: (instance: ReturnType<typeof useFileActionsCreateNewFile>) => void
 }) {
   const mocks = {
@@ -77,8 +148,6 @@ function getWrapper({
     return Promise.reject('error')
   })
 
-  const currentFolder = mock<Resource>({ id: '1', path: '/' })
-
   return {
     wrapper: getComposableWrapper(
       () => {
@@ -91,13 +160,7 @@ function getWrapper({
         pluginOptions: {
           piniaOptions: {
             appsState: {
-              fileExtensions: [
-                mock<ApplicationFileExtension>({
-                  app: 'text-editor',
-                  extension: '.txt',
-                  newFileMenu: { menuTitle: vi.fn() }
-                })
-              ]
+              fileExtensions
             },
             resourcesStore: { currentFolder }
           }
