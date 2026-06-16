@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/extension-sdk",
-  "version": "7.2.0-beta.2",
+  "version": "7.2.0-beta.3",
   "description": "OpenCloud Web Extension SDK",
   "license": "AGPL-3.0",
   "main": "dist/extension-sdk.js",
