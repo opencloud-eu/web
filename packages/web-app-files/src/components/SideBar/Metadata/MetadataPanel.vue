@@ -62,7 +62,7 @@ export default defineComponent({
       try {
         const httpClient = clientService.httpAuthenticated
         const response = await httpClient.get(
-          `/graph/v1.0/drives/${sp.id}/items/${res.id}/metadata`
+          `/graph/v1beta1/drives/${sp.id}/items/${res.id}/metadata`
         )
         if (response.status === 200) {
           metadata.value = response.data as Record<string, string>
