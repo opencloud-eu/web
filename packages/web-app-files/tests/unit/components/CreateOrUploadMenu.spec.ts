@@ -49,6 +49,47 @@ describe('CreateOrUploadMenu component', () => {
       const { wrapper } = getWrapper()
       expect(wrapper.html()).toMatchSnapshot()
     })
+
+    it('should only show new file handlers that are visible', () => {
+      const { wrapper } = getWrapper({
+        createActions: [
+          mock<FileAction>({
+            label: () => 'Plain text file',
+            ext: 'txt',
+            isExternal: false,
+            isVisible: () => true,
+            isDisabled: () => false
+          }),
+          mock<FileAction>({
+            label: () => 'Vault',
+            ext: 'vault',
+            isExternal: false,
+            isVisible: () => false,
+            isDisabled: () => false
+          })
+        ]
+      })
+      expect(wrapper.find('.new-file-btn-txt').exists()).toBeTruthy()
+      expect(wrapper.find('.new-file-btn-vault').exists()).toBeFalsy()
+    })
+
+    it('should disable new file handlers that are disabled', () => {
+      const { wrapper } = getWrapper({
+        createActions: [
+          mock<FileAction>({
+            label: () => 'Collabora document',
+            ext: 'odt',
+            isExternal: true,
+            isVisible: () => true,
+            isDisabled: () => true,
+            disabledTooltip: () => 'External apps cannot create files inside vaults'
+          })
+        ]
+      })
+      const button = wrapper.find('.new-file-btn-odt')
+      expect(button.exists()).toBeTruthy()
+      expect(button.attributes('disabled')).toBe('true')
+    })
   })
 })
 
@@ -56,8 +97,20 @@ function getWrapper({
   currentFolder = mock<Resource>({ canUpload: () => true }),
   areFileExtensionsShown = false,
   createActions = [
-    mock<FileAction>({ label: () => 'Plain text file', ext: 'txt', isExternal: false }),
-    mock<FileAction>({ label: () => 'Mark-down file', ext: 'md', isExternal: false })
+    mock<FileAction>({
+      label: () => 'Plain text file',
+      ext: 'txt',
+      isExternal: false,
+      isVisible: () => true,
+      isDisabled: () => false
+    }),
+    mock<FileAction>({
+      label: () => 'Mark-down file',
+      ext: 'md',
+      isExternal: false,
+      isVisible: () => true,
+      isDisabled: () => false
+    })
   ],
   extensionActions = [],
   createFolderHandler = vi.fn(),
