@@ -68,6 +68,11 @@ export type OcUppyMeta = {
   isFolder: boolean
 }
 export type OcUppyBody = Body
+
+// Meta fields safe to put in the tus `Upload-Metadata` header. This should
+// only include fields that are part of the TUS spec.
+export const TUS_ALLOWED_META_FIELDS: (keyof OcUppyMeta)[] = ['name', 'mtime']
+
 export type OcUppyFile = UppyFile<OcUppyMeta, OcUppyBody>
 type OcUppyPlugin = typeof BasePlugin<any, OcUppyMeta, OcUppyBody>
 export type OcMinimalUppyFile = MinimalRequiredUppyFile<OcUppyMeta, OcUppyBody>
@@ -164,6 +169,7 @@ export class UppyService {
       retryDelays: [0, 500, 1000],
       uploadDataDuringCreation,
       limit: 5,
+      allowedMetaFields: TUS_ALLOWED_META_FIELDS,
       headers,
       onBeforeRequest,
       onShouldRetry: (err, retryAttempt, options, next) => {
