@@ -113,6 +113,21 @@
           <tags-select data-testid="tags" :resource="resource" class="w-full" />
         </div>
       </div>
+      <div class="mt-2">
+        <div class="text-sm mb-0.5">{{ $gettext('Notice') }}</div>
+        <textarea
+          v-model="noticeText"
+          data-testid="notice"
+          class="w-full rounded border border-role-outline p-2 text-sm"
+          rows="2"
+          :placeholder="$gettext('Add a notice…')"
+          @blur="saveNotice"
+          @keydown.ctrl.enter="saveNotice"
+        />
+        <div v-if="noticeSaving" class="text-xs text-role-on-surface-muted">
+          {{ $gettext('Saving…') }}
+        </div>
+      </div>
     </div>
     <p v-else data-testid="noContentText" v-text="$gettext('No information to display')" />
   </div>
@@ -131,7 +146,8 @@ import {
   useResourceContents,
   useLoadPreview,
   useSideBar,
-  useResourceIndicators
+  useResourceIndicators,
+  useClientService
 } from '@opencloud-eu/web-pkg'
 import upperFirst from 'lodash-es/upperFirst'
 import {
@@ -166,6 +182,7 @@ const { loadPreview, previewsLoading } = useLoadPreview()
 const { openSideBarPanel } = useSideBar()
 const { getIndicators } = useResourceIndicators()
 const { tagsHelper } = useContextualHelpers()
+const clientService = useClientService()
 
 const language = useGettext()
 const { $gettext, current: currentLanguage } = language
@@ -180,6 +197,40 @@ const versionsLoading = inject<Ref<boolean>>('versionsLoading')
 const space = inject<Ref<SpaceResource>>('space')
 
 const preview = ref<string>(undefined)
+
+// Notice (oc:md-notice xattr)
+const noticeText = ref('')
+const noticeSaving = ref(false)
+const noticeOriginal = ref('')
+
+watch(
+  () => unref(resource),
+  (res) => {
+    const val = res?.notice || ''
+    noticeText.value = val
+    noticeOriginal.value = val
+  },
+  { immediate: true }
+)
+
+async function saveNotice() {
+  if (unref(noticeText) === unref(noticeOriginal)) return
+  noticeSaving.value = true
+  try {
+    const res = unref(resource)
+    await clientService.webdav.setNotice(unref(space), { path: res.path }, unref(noticeText))
+    noticeOriginal.value = unref(noticeText)
+    resourcesStore.updateResourceField({
+      id: res.id,
+      field: 'notice',
+      value: unref(noticeText) || undefined
+    })
+  } catch (e) {
+    console.error('Failed to save notice', e)
+  } finally {
+    noticeSaving.value = false
+  }
+}
 
 const authStore = useAuthStore()
 const { publicLinkContextReady } = storeToRefs(authStore)

@@ -54,6 +54,7 @@ export interface Resource {
   lockOwner?: string
   lockTime?: string
   immutableState?: 'frozen' | 'protected' | 'shielded'
+  notice?: string
   mimeType?: string
   isFolder?: boolean
   mdate?: string

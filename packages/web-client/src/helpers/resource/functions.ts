@@ -148,6 +148,7 @@ export function buildResource(
     lockOwner,
     lockTime,
     immutableState: resource.props[DavProperty.Immutable] || undefined,
+    notice: resource.props[DavProperty.Notice] || undefined,
     processing: resource.processing || false,
     mdate: resource.props[DavProperty.LastModifiedDate],
     size: isFolder

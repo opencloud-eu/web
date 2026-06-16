@@ -19,6 +19,7 @@ import { GetPathForFileIdFactory } from './getPathForFileId'
 import { DAV } from './client/dav'
 import { ListFileVersionsFactory } from './listFileVersions'
 import { SetFavoriteFactory } from './setFavorite'
+import { SetNoticeFactory } from './setNotice'
 
 export * from './constants'
 export * from './types'
@@ -78,6 +79,7 @@ export const webdav = (baseURI: string, headers?: () => Headers): WebDAV => {
   const { search } = SearchFactory(dav, options)
 
   const { setFavorite } = SetFavoriteFactory(dav, options)
+  const { setNotice } = SetNoticeFactory(dav, options)
 
   return {
     copyFiles,
@@ -98,6 +100,7 @@ export const webdav = (baseURI: string, headers?: () => Headers): WebDAV => {
     clearTrashBin,
     search,
     setFavorite,
+    setNotice,
 
     registerExtraProp
   }

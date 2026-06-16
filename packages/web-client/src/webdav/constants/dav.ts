@@ -78,6 +78,7 @@ const DavPropertyMapping = {
     type: null as Photo
   },
   Immutable: defString('immutable' as const),
+  Notice: defString('md-note' as const),
   ETag: defString('getetag' as const),
   MimeType: defString('getcontenttype' as const),
   ResourceType: defStringArray('resourcetype' as const),
@@ -147,6 +148,7 @@ export abstract class DavProperties {
     DavProperty.ResourceType,
     DavProperty.Tags,
     DavProperty.Immutable,
+    DavProperty.Notice,
     DavProperty.Audio,
     DavProperty.Location,
     DavProperty.Image,
