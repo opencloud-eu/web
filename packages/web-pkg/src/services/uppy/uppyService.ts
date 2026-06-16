@@ -69,28 +69,9 @@ export type OcUppyMeta = {
 }
 export type OcUppyBody = Body
 
-// Meta fields safe to put in the tus `Upload-Metadata` header. Deliberately
-// EXCLUDES the path-revealing fields (currentFolder, relativeFolder,
-// relativePath, routeDriveAliasAndItem) so a folder-vault upload never leaks the
-// cleartext directory structure to the server. Keep this in sync with OcUppyMeta:
-// a new field stays out of the header (fail-closed) until added here on purpose.
-export const TUS_ALLOWED_META_FIELDS: (keyof OcUppyMeta)[] = [
-  'name',
-  'mtime',
-  'spaceId',
-  'spaceName',
-  'driveAlias',
-  'driveType',
-  'currentFolderId',
-  'fileId',
-  'uppyId',
-  'tusEndpoint',
-  'uploadId',
-  'topLevelFolderId',
-  'routeName',
-  'routeShareId',
-  'isFolder'
-]
+// Meta fields safe to put in the tus `Upload-Metadata` header. This should
+// only include fields that are part of the TUS spec.
+export const TUS_ALLOWED_META_FIELDS: (keyof OcUppyMeta)[] = ['name', 'mtime']
 
 export type OcUppyFile = UppyFile<OcUppyMeta, OcUppyBody>
 type OcUppyPlugin = typeof BasePlugin<any, OcUppyMeta, OcUppyBody>
