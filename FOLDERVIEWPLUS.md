@@ -9,6 +9,13 @@ welche Aktionen verfügbar sind und welche Metadaten gepflegt werden.
 Designed für **DMS/Aktenplan-Szenarien** (z.B. WINYARD/Archikart), aber generisch nutzbar
 für jede hierarchische Strukturierung.
 
+**Wichtig: FolderViewPlus ist ein reiner UI-Ansatz.** Auf WebDAV- oder Reva-Ebene wird
+nichts verhindert oder erzwungen. Es gibt keine serverseitige Validierung der Typ-Hierarchie.
+Ein User kann per WebDAV oder CLI weiterhin beliebige Ordner anlegen, verschieben oder
+umbenennen. FolderViewPlus verbessert die **Lesbarkeit, Strukturierbarkeit und
+Prozessunterstützung** im Web UI — es macht Ordnerstrukturen verständlicher und leitet
+User durch definierte Workflows, ohne die Flexibilität des Dateisystems einzuschränken.
+
 ## Kernprinzip: Dateisystem-native Typisierung
 
 ```
