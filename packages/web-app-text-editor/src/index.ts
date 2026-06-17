@@ -122,7 +122,52 @@ export default defineWebApplication({
         { extension: 'ps1', label: () => $gettext('PowerShell script') },
 
         { extension: 'info', label: () => $gettext('GNU info documentation file') },
-        { extension: 'man', label: () => $gettext('Manual page file') }
+        { extension: 'man', label: () => $gettext('Manual page file') },
+        { extension: 'text', label: () => $gettext('Plain text file') },
+
+        { extension: 'htm', label: () => $gettext('HTML file') },
+        { extension: 'mjs', label: () => $gettext('JavaScript module file') },
+        { extension: 'cjs', label: () => $gettext('CommonJS module file') },
+
+        { extension: 'h', label: () => $gettext('C/C++ header file') },
+        { extension: 'hpp', label: () => $gettext('C++ header file') },
+        { extension: 'cc', label: () => $gettext('C++ source file') },
+        { extension: 'cxx', label: () => $gettext('C++ source file') },
+        { extension: 'hh', label: () => $gettext('C++ header file') },
+        { extension: 'hxx', label: () => $gettext('C++ header file') },
+
+        { extension: 's', label: () => $gettext('Assembler source file') },
+        { extension: 'S', label: () => $gettext('Preprocessed assembler source file') },
+
+        { extension: 'd', label: () => $gettext('D source file') },
+        { extension: 'jl', label: () => $gettext('Julia source file') },
+        { extension: 'groovy', label: () => $gettext('Groovy source file') },
+        { extension: 'tcl', label: () => $gettext('Tcl script') },
+        { extension: 'vb', label: () => $gettext('Visual Basic source file') },
+
+        { extension: 'cnf', label: () => $gettext('Configuration file') },
+        { extension: 'config', label: () => $gettext('Configuration file') },
+
+        { extension: 'pem', label: () => $gettext('PEM certificate or key file') },
+        { extension: 'crt', label: () => $gettext('Certificate file') },
+        { extension: 'key', label: () => $gettext('Private key file') },
+        { extension: 'csr', label: () => $gettext('Certificate signing request file') },
+        { extension: 'pub', label: () => $gettext('Public key file') },
+
+        { extension: 'ldif', label: () => $gettext('LDAP data interchange file') },
+
+        { extension: 'nfo', label: () => $gettext('Information file') },
+        { extension: 'pod', label: () => $gettext('Perl POD documentation file') },
+
+        { extension: 'kts', label: () => $gettext('Kotlin script file') },
+        { extension: 'bzl', label: () => $gettext('Bazel Starlark file') },
+        { extension: 'BUILD', label: () => $gettext('Bazel build file') },
+        { extension: 'WORKSPACE', label: () => $gettext('Bazel workspace file') },
+
+        { extension: 'tfvars', label: () => $gettext('Terraform variables file') },
+
+        { extension: 'bash', label: () => $gettext('Bash script') },
+        { extension: 'ksh', label: () => $gettext('Korn shell script') }
       ]
 
       const config = applicationConfig || {}
