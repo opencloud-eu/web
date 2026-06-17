@@ -46,6 +46,17 @@
             </template>
           </no-content-message>
           <template v-else>
+            <div
+              v-if="isTyped"
+              class="typed-folder-bar flex items-center gap-3 mx-4 my-2 px-4 py-2 rounded-md bg-role-surface-container"
+            >
+              <span class="typed-badge text-xs font-semibold px-2 py-0.5 rounded bg-primary-100 text-primary-800">
+                {{ typedSchema?.label || currentFolderType }}
+              </span>
+              <span v-if="typedSchema?.icon" class="text-sm text-role-on-surface-variant">
+                {{ typedSchema?.columns?.length || 0 }} Spalten
+              </span>
+            </div>
             <list-header
               v-if="readmeFile && !isSpaceFrontpage"
               :space="space"
@@ -401,29 +412,15 @@ const readmeFile = computed(() => {
   )
 })
 
-// Typed Folder View: load type from metadata API when folder changes
-const currentFolderType = ref<string | undefined>(undefined)
-
-async function loadFolderType() {
-  const folder = resourcesStore.currentFolder
-  const sp = unref(space)
-  if (!folder?.id || !sp?.id) {
-    currentFolderType.value = undefined
-    return
-  }
-  try {
-    const response = await clientService.httpAuthenticated.get(
-      `/graph/v1beta1/drives/${sp.id}/items/${folder.id}/metadata`
-    )
-    currentFolderType.value = response.data?.type || undefined
-  } catch {
-    currentFolderType.value = undefined
-  }
-}
+// Typed Folder View: detect .type_* from PROPFIND listing (no extra API call)
+const currentFolderType = computed(() => {
+  const resources = resourcesStore.resources
+  if (!resources?.length) return undefined
+  const typeFile = resources.find((r) => r.name?.startsWith('.type_'))
+  return typeFile ? typeFile.name.substring(6) : undefined
+})
 
 const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
-
-watch(() => resourcesStore.currentFolder?.id, () => loadFolderType())
 
 onMounted(() => {
   performLoaderTask(false)
