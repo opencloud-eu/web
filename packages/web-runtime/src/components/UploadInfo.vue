@@ -6,153 +6,169 @@
   >
     <div class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-xl">
       <p v-oc-tooltip="uploadDetails" class="my-1 font-bold" v-text="uploadInfoTitle" />
-      <oc-button
-        v-if="!itemsInProgressCount"
-        id="close-upload-info-btn"
-        :aria-label="$gettext('Close')"
-        appearance="raw"
-        @click="closeInfo"
-      >
-        <oc-icon name="close" />
-      </oc-button>
-    </div>
-    <div
-      class="px-4 pt-4 flex justify-between items-center"
-      :class="{
-        'pb-4': !runningUploads
-      }"
-    >
-      <div v-if="runningUploads" class="flex items-center">
-        <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
-        <oc-spinner v-else size="small" class="mr-1" />
-        <span class="text-sm text-role-on-surface-variant leading-7" v-text="remainingTime" />
+      <div class="flex items-center">
+        <oc-button
+          id="collapse-upload-info-btn"
+          :aria-label="
+            bodyCollapsed
+              ? $gettext('Expand upload info body')
+              : $gettext('Collapse upload info body')
+          "
+          appearance="raw"
+          @click="toggleBodyCollapsed"
+        >
+          <oc-icon :name="bodyCollapsed ? 'arrow-up-s' : 'arrow-down-s'" fill-type="line" />
+        </oc-button>
+        <oc-button
+          v-if="!itemsInProgressCount"
+          id="close-upload-info-btn"
+          :aria-label="$gettext('Close')"
+          appearance="raw"
+          @click="closeInfo"
+        >
+          <oc-icon name="close" />
+        </oc-button>
       </div>
+    </div>
+    <div v-if="!bodyCollapsed" class="upload-info-body">
       <div
-        v-else
-        class="upload-info-label"
+        class="px-4 pt-4 flex justify-between items-center"
         :class="{
-          'upload-info-danger text-role-error': Object.keys(errors).length && !uploadsCancelled,
-          'upload-info-success': !Object.keys(errors).length && !uploadsCancelled
+          'pb-4': !runningUploads
         }"
       >
-        {{ uploadingLabel }}
-      </div>
-      <div class="flex">
-        <oc-button
-          appearance="raw"
-          class="text-role-on-surface-variant text-sm upload-info-toggle-details-btn"
-          no-hover
-          @click="toggleInfo"
+        <div v-if="runningUploads" class="flex items-center">
+          <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
+          <oc-spinner v-else size="small" class="mr-1" />
+          <span class="text-sm text-role-on-surface-variant leading-7" v-text="remainingTime" />
+        </div>
+        <div
+          v-else
+          class="upload-info-label"
+          :class="{
+            'upload-info-danger text-role-error': Object.keys(errors).length && !uploadsCancelled,
+            'upload-info-success': !Object.keys(errors).length && !uploadsCancelled
+          }"
         >
-          {{ infoExpanded ? $gettext('Hide details') : $gettext('Show details') }}
-        </oc-button>
-        <oc-button
-          v-if="!runningUploads && Object.keys(errors).length && !disableActions"
-          v-oc-tooltip="$gettext('Retry all failed uploads')"
-          class="ml-1 p-1"
-          appearance="raw"
-          :aria-label="$gettext('Retry all failed uploads')"
-          @click="retryUploads"
-        >
-          <oc-icon name="restart" fill-type="line" />
-        </oc-button>
+          {{ uploadingLabel }}
+        </div>
+        <div class="flex">
+          <oc-button
+            appearance="raw"
+            class="text-role-on-surface-variant text-sm upload-info-toggle-details-btn"
+            no-hover
+            @click="toggleInfo"
+          >
+            {{ infoExpanded ? $gettext('Hide details') : $gettext('Show details') }}
+          </oc-button>
+          <oc-button
+            v-if="!runningUploads && Object.keys(errors).length && !disableActions"
+            v-oc-tooltip="$gettext('Retry all failed uploads')"
+            class="ml-1 p-1"
+            appearance="raw"
+            :aria-label="$gettext('Retry all failed uploads')"
+            @click="retryUploads"
+          >
+            <oc-icon name="restart" fill-type="line" />
+          </oc-button>
 
-        <oc-button
-          v-if="
-            runningUploads &&
-            uploadsPausable &&
-            !inPreparation &&
-            !inFinalization &&
-            !disableActions
-          "
-          id="pause-upload-info-btn"
-          v-oc-tooltip="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
-          class="ml-1 p-1"
-          appearance="raw"
-          :aria-label="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
-          @click="togglePauseUploads"
-        >
-          <oc-icon :name="uploadsPaused ? 'play-circle' : 'pause-circle'" fill-type="line" />
-        </oc-button>
-        <oc-button
-          v-if="runningUploads && !inPreparation && !inFinalization && !disableActions"
-          id="cancel-upload-info-btn"
-          v-oc-tooltip="$gettext('Cancel upload')"
-          class="ml-1 p-1"
-          appearance="raw"
-          :aria-label="$gettext('Cancel upload')"
-          @click="cancelAllUploads"
-        >
-          <oc-icon name="close-circle" fill-type="line" />
-        </oc-button>
+          <oc-button
+            v-if="
+              runningUploads &&
+              uploadsPausable &&
+              !inPreparation &&
+              !inFinalization &&
+              !disableActions
+            "
+            id="pause-upload-info-btn"
+            v-oc-tooltip="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
+            class="ml-1 p-1"
+            appearance="raw"
+            :aria-label="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
+            @click="togglePauseUploads"
+          >
+            <oc-icon :name="uploadsPaused ? 'play-circle' : 'pause-circle'" fill-type="line" />
+          </oc-button>
+          <oc-button
+            v-if="runningUploads && !inPreparation && !inFinalization && !disableActions"
+            id="cancel-upload-info-btn"
+            v-oc-tooltip="$gettext('Cancel upload')"
+            class="ml-1 p-1"
+            appearance="raw"
+            :aria-label="$gettext('Cancel upload')"
+            @click="cancelAllUploads"
+          >
+            <oc-icon name="close-circle" fill-type="line" />
+          </oc-button>
+        </div>
       </div>
-    </div>
-    <div v-if="runningUploads" class="upload-info-progress mx-4 pb-4 mt-2 oc-text">
-      <oc-progress
-        :value="totalProgress"
-        :max="100"
-        size="small"
-        :indeterminate="!itemsInProgressCount"
+      <div v-if="runningUploads" class="upload-info-progress mx-4 pb-4 mt-2 oc-text">
+        <oc-progress
+          :value="totalProgress"
+          :max="100"
+          size="small"
+          :indeterminate="!itemsInProgressCount"
+        />
+      </div>
+      <div
+        v-if="infoExpanded"
+        class="upload-info-items px-4 pb-4 max-h-[50vh] overflow-y-auto"
+        :class="{ 'max-h-[calc(50vh-100px)]': showErrorLog }"
+      >
+        <ul class="oc-list">
+          <li v-for="(item, idx) in uploads" :key="idx">
+            <span class="flex items-center">
+              <oc-icon
+                v-if="item.status === 'error'"
+                name="close"
+                size="small"
+                color="var(--oc-role-error)"
+              />
+              <oc-icon v-else-if="item.status === 'success'" name="check" size="small" />
+              <oc-icon v-else-if="item.status === 'cancelled'" name="close" size="small" />
+              <oc-icon v-else-if="uploadsPaused" name="pause" size="small" />
+              <div v-else class="flex"><oc-spinner size="small" /></div>
+              <resource-list-item
+                v-if="displayFileAsResource(item)"
+                :key="item.path"
+                class="ml-2"
+                :resource="item as Resource"
+                :is-path-displayed="true"
+                :is-resource-clickable="isResourceClickable(item)"
+                :parent-folder-name="parentFolderName(item)"
+                :link="resourceLink(item)"
+                :parent-folder-link="parentFolderLink(item)"
+              />
+              <span v-else class="flex items-center truncate">
+                <resource-icon
+                  :resource="item as Resource"
+                  size="large"
+                  class="file_info__icon mx-2"
+                />
+                <resource-name
+                  :name="item.name"
+                  :extension="item.extension"
+                  :type="item.type"
+                  full-path=""
+                  :is-path-displayed="false"
+                />
+              </span>
+            </span>
+            <span
+              v-if="getUploadItemMessage(item)"
+              class="upload-info-message ml-1 text-sm"
+              :class="getUploadItemClass(item)"
+              v-text="getUploadItemMessage(item)"
+            ></span>
+          </li>
+        </ul>
+      </div>
+      <oc-error-log
+        v-if="showErrorLog"
+        class="upload-info-error-log pt-4 pb-4 px-4"
+        :content="uploadErrorLogContent"
       />
     </div>
-    <div
-      v-if="infoExpanded"
-      class="upload-info-items px-4 pb-4 max-h-[50vh] overflow-y-auto"
-      :class="{ 'max-h-[calc(50vh-100px)]': showErrorLog }"
-    >
-      <ul class="oc-list">
-        <li v-for="(item, idx) in uploads" :key="idx">
-          <span class="flex items-center">
-            <oc-icon
-              v-if="item.status === 'error'"
-              name="close"
-              size="small"
-              color="var(--oc-role-error)"
-            />
-            <oc-icon v-else-if="item.status === 'success'" name="check" size="small" />
-            <oc-icon v-else-if="item.status === 'cancelled'" name="close" size="small" />
-            <oc-icon v-else-if="uploadsPaused" name="pause" size="small" />
-            <div v-else class="flex"><oc-spinner size="small" /></div>
-            <resource-list-item
-              v-if="displayFileAsResource(item)"
-              :key="item.path"
-              class="ml-2"
-              :resource="item as Resource"
-              :is-path-displayed="true"
-              :is-resource-clickable="isResourceClickable(item)"
-              :parent-folder-name="parentFolderName(item)"
-              :link="resourceLink(item)"
-              :parent-folder-link="parentFolderLink(item)"
-            />
-            <span v-else class="flex items-center truncate">
-              <resource-icon
-                :resource="item as Resource"
-                size="large"
-                class="file_info__icon mx-2"
-              />
-              <resource-name
-                :name="item.name"
-                :extension="item.extension"
-                :type="item.type"
-                full-path=""
-                :is-path-displayed="false"
-              />
-            </span>
-          </span>
-          <span
-            v-if="getUploadItemMessage(item)"
-            class="upload-info-message ml-1 text-sm"
-            :class="getUploadItemClass(item)"
-            v-text="getUploadItemMessage(item)"
-          ></span>
-        </li>
-      </ul>
-    </div>
-    <oc-error-log
-      v-if="showErrorLog"
-      class="upload-info-error-log pt-4 pb-4 px-4"
-      :content="uploadErrorLogContent"
-    />
   </div>
 </template>
 
@@ -190,6 +206,7 @@ export default defineComponent({
     const { options: configOptions } = storeToRefs(configStore)
 
     const showInfo = ref(false) // show the overlay?
+    const bodyCollapsed = ref(false)
     const infoExpanded = ref(false) // show the info including all uploads?
     const uploads = ref<Record<string, UploadResult>>({}) // uploads that are being displayed via "infoExpanded"
     const errors = ref<Record<string, HttpError>>({}) // all failed files
@@ -225,6 +242,7 @@ export default defineComponent({
     return {
       configOptions,
       showInfo,
+      bodyCollapsed,
       infoExpanded,
       uploads,
       errors,
@@ -545,6 +563,7 @@ export default defineComponent({
     },
     closeInfo() {
       this.showInfo = false
+      this.bodyCollapsed = false
       this.infoExpanded = false
       this.cleanOverlay()
       this.resetProgress()
@@ -646,6 +665,9 @@ export default defineComponent({
     },
     toggleInfo() {
       this.infoExpanded = !this.infoExpanded
+    },
+    toggleBodyCollapsed() {
+      this.bodyCollapsed = !this.bodyCollapsed
     },
     retryUploads() {
       this.itemsInProgressCount += Object.keys(this.errors).length
