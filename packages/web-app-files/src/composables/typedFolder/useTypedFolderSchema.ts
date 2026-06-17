@@ -20,7 +20,8 @@ export function useTypedFolderSchema(
   async function loadSchema() {
     const type = unref(folderType)
     const sp = unref(space)
-    if (!type || !sp) {
+    console.log('[TypedFolder] loadSchema called', { type, spaceId: sp?.id })
+    if (!type || !sp?.id) {
       schema.value = null
       return
     }
@@ -32,6 +33,7 @@ export function useTypedFolderSchema(
     }
     const spaceSchemas = schemaCache.get(spaceId)!
     if (spaceSchemas.has(type)) {
+      console.log('[TypedFolder] cache hit for', type)
       schema.value = spaceSchemas.get(type)!
       return
     }
@@ -41,27 +43,24 @@ export function useTypedFolderSchema(
     try {
       const { getFileContents } = clientService.webdav
       const viewPath = `.space/views/${type}.json`
+      console.log('[TypedFolder] loading schema from', viewPath)
       const { body } = await getFileContents(sp, { path: viewPath })
+      console.log('[TypedFolder] schema loaded, length:', (body as string)?.length)
       const parsed = JSON.parse(body as string) as TypedFolderSchema
 
-      if (!parsed.label || !Array.isArray(parsed.children)) {
-        error.value = `Invalid schema for type "${type}": missing label or children`
+      if (!parsed.label) {
+        console.warn('[TypedFolder] schema missing label for', type)
         schema.value = null
         spaceSchemas.set(type, null)
         return
       }
 
+      console.log('[TypedFolder] schema OK:', parsed.label, 'children:', parsed.children)
       schema.value = parsed
       spaceSchemas.set(type, parsed)
-    } catch (e: any) {
-      if (e?.statusCode === 404 || e?.response?.status === 404) {
-        // No schema for this type — not an error, just no typed view
-        schema.value = null
-        spaceSchemas.set(type, null)
-      } else {
-        error.value = `Failed to load schema for type "${type}": ${e.message || e}`
-        schema.value = null
-      }
+    } catch (e) {
+      console.warn('[TypedFolder] schema load failed for', type, e)
+      schema.value = null
     } finally {
       loading.value = false
     }
@@ -76,7 +75,7 @@ export function useTypedFolderSchema(
     }
   }
 
-  watch([folderType, space], () => loadSchema(), { immediate: true })
+  watch([folderType, space], () => loadSchema())
 
   return {
     schema,

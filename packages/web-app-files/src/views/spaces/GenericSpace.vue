@@ -60,10 +60,36 @@
                       {{ typedSchema?.label || currentFolderType }}
                     </span>
                   </div>
-                  <p v-if="typedSchema" class="m-0 mt-1 text-sm text-role-on-surface-variant">
-                    {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
-                  </p>
+                  <div class="flex items-center gap-3 mt-1">
+                    <span v-if="currentFolderRef" class="text-sm font-mono text-primary-800">
+                      {{ currentFolderRef }}
+                    </span>
+                    <span class="text-sm text-role-on-surface-variant">
+                      {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
+                    </span>
+                  </div>
                 </div>
+              </div>
+              <!-- Aktenzeichen-Leiste für Kinder -->
+              <div v-if="fileRefs.size > 0" class="typed-refs mt-3 pt-3 border-t border-role-outline">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-left text-role-on-surface-variant">
+                      <th class="py-1 font-medium">Aktenzeichen</th>
+                      <th class="py-1 font-medium">Name</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="item in paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_') && !r.name.startsWith('.') && getRef(r.id))"
+                      :key="item.id"
+                      class="hover:bg-role-surface-container-highlight cursor-pointer"
+                    >
+                      <td class="py-1 font-mono text-primary-800 whitespace-nowrap">{{ getRef(item.id) }}</td>
+                      <td class="py-1">{{ item.name }}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
             <list-header
@@ -175,7 +201,7 @@ import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
-import { useTypedFolderSchema } from '../../composables/typedFolder'
+import { useTypedFolderSchema, useFileReferences } from '../../composables/typedFolder'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
@@ -435,6 +461,15 @@ const currentFolderType = computed(() => {
 })
 
 const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
+
+// File references (Aktenzeichen) for typed folders
+const allResources = computed(() => resourcesStore.resources)
+const { fileRefs, currentFolderRef, getRef, loadCurrentFolderRef } = useFileReferences(space, allResources, isTyped)
+
+// Load current folder's Aktenzeichen when folder changes
+watch(() => resourcesStore.currentFolder?.id, (id) => {
+  if (id && unref(isTyped)) loadCurrentFolderRef(id)
+})
 
 onMounted(() => {
   performLoaderTask(false)
