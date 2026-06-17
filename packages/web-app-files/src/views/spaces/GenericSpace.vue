@@ -46,29 +46,28 @@
             </template>
           </no-content-message>
           <template v-else>
-            <div v-if="isTyped" class="typed-folder-header p-4">
-              <div class="flex items-start gap-6">
-                <div
-                  class="typed-folder-icon flex items-center justify-center w-[160px] min-w-[160px] aspect-[16/9] rounded-lg"
-                  :style="{ background: space?.color || '#5c6bc0' }"
-                >
-                  <oc-icon :name="typedSchema?.icon || 'archive'" size="xxlarge" class="text-white" />
-                </div>
-                <div class="flex-1 min-w-0">
-                  <h2 class="m-0 break-all">
+            <div v-if="isTyped" class="space-header p-4">
+              <div class="flex items-center justify-between max-w-full">
+                <div class="flex items-center max-w-full">
+                  <oc-icon
+                    :name="typedSchema?.icon || 'archive'"
+                    size="large"
+                    class="mr-3"
+                    variation="passive"
+                  />
+                  <h2 class="break-all my-0">
                     {{ resourcesStore.currentFolder?.name || '' }}
                   </h2>
-                  <div class="flex items-center gap-2 mt-1">
-                    <span v-if="currentFolderRef" class="text-sm font-mono font-semibold opacity-80">
-                      {{ currentFolderRef }}
-                    </span>
-                    <span class="text-sm opacity-60">
-                      {{ typedSchema?.label || currentFolderType }}
-                      · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
-                    </span>
-                  </div>
                 </div>
               </div>
+              <p class="mt-1 mb-0">
+                <span v-if="currentFolderRef" class="font-mono font-semibold">{{ currentFolderRef }}</span>
+                <span v-if="currentFolderRef"> · </span>
+                <span class="opacity-60">
+                  {{ typedSchema?.label || currentFolderType }}
+                  · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
+                </span>
+              </p>
             </div>
             <list-header
               v-if="readmeFile && !isSpaceFrontpage"
