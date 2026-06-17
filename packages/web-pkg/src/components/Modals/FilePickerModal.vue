@@ -113,7 +113,7 @@ export default defineComponent({
     @apply p-0;
   }
   .file-picker-modal .oc-modal-body-message {
-    @apply m-0 h-[85vh];
+    @apply m-0 h-[70vh];
   }
 }
 </style>
