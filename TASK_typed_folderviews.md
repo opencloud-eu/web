@@ -2,7 +2,10 @@
 
 ## Ziel
 
-Hierarchisch typisierte Ordneransichten für OpenCloud — ein Ordner hat einen Typ (xattr `user.oc.md.type`), der bestimmt welche Kinder erlaubt sind, welche Spalten angezeigt werden und welche Aktionen verfügbar sind. Typ-Konfigurationen liegen als JSON im Space-Root unter `.space/views/<type>.json`.
+Hierarchisch typisierte Ordneransichten für OpenCloud. Jeder Ordner kann einen Typ tragen,
+der bestimmt welche Kinder erlaubt sind, welche Spalten angezeigt werden und welche Aktionen
+verfügbar sind. Die Typisierung muss auch ohne WebDAV/API funktionieren — z.B. bei nativem
+Dateisystemzugriff (NFS, SMB, lokaler Mount).
 
 ## Referenz
 
@@ -11,14 +14,36 @@ Hierarchisch typisierte Ordneransichten für OpenCloud — ein Ordner hat einen 
 
 ## Architektur
 
-### Datenmodell
+### Typ-Marker: `.type_<name>` Datei
 
-**Typ-xattr auf jedem Ordner:**
+**Statt xattr** wird der Typ über eine versteckte Marker-Datei im Ordner signalisiert:
+
 ```
-user.oc.md.type = "akte" | "register" | "vorgang" | "sachgruppe" | ...
+11.12.01 Kommunalverwaltung/
+  .type_akte              ← leere Datei, markiert Ordner als Typ "akte"
+  11.12.01.03-01/
+    .type_vorgang
+    Bescheid.pdf
+    Antrag.docx
+  11.12.01.03-02/
+    .type_vorgang
+    ...
 ```
 
-**Typ-Konfiguration im Space-Root:**
+**Vorteile gegenüber xattr:**
+- **Nativ sichtbar**: Jeder Dateisystem-Client (NFS, SMB, Explorer, Finder) sieht den Typ
+- **Kein API nötig**: Desktop-Client kann Typ erkennen ohne WebDAV/Graph-API
+- **Einfach zu setzen**: `touch .type_akte` — kein spezielles Tool nötig
+- **Backup-sicher**: Typ überlebt jeden Backup/Restore-Vorgang (xattrs oft nicht)
+- **Grep-bar**: `find . -name ".type_*"` zeigt die gesamte Typ-Hierarchie
+
+**Konvention:**
+- Genau eine `.type_*` Datei pro Ordner (die erste gefundene zählt)
+- Keine `.type_*` = untypisierter Ordner → normaler FolderView
+- Die Datei ist leer (0 Bytes) oder kann optionale JSON-Daten enthalten (Overrides)
+
+### Typ-Schema im Space-Root
+
 ```
 .space/
   views/
@@ -45,54 +70,82 @@ user.oc.md.type = "akte" | "register" | "vorgang" | "sachgruppe" | ...
 }
 ```
 
+### `.special/` für individuelle Ordner-Anpassungen
+
+`.type_*` definiert die **Klasse** des Ordners (gleicher Typ = gleiches Verhalten).
+`.special/` bleibt für **individuelle** Anpassungen pro Ordner:
+
+```
+11.12.01 Kommunalverwaltung/
+  .type_sachgruppe
+  .special/
+    icon.svg              ← individuelles Icon für diesen Ordner
+    view.json             ← Override: andere Spalten, andere Actions
+    data.json             ← ordnerspezifische Hilfsdaten
+```
+
+`.special/` ist optional und selten. Die meisten Ordner brauchen nur `.type_*`.
+
 ### Space-Typ
 
-Der `type` auf dem Space-Root (`.space`) ist der Einstieg. Wenn kein `type` gesetzt ist, wird der **normale OpenCloud FolderView** verwendet — kein Typed View, kein Schema-Lookup. Nur Spaces mit explizitem Typ aktivieren das Typed-View-System.
+Der Space-Root hat ebenfalls eine `.type_*` Datei (z.B. `.type_aktenplan`).
+**Wenn keine `.type_*` im Space-Root** → normaler OpenCloud FolderView, kein Typed-View-System.
+Bestehende Spaces sind nicht betroffen — Opt-in pro Space.
 
-Bestehende Spaces sind nicht betroffen. Erst wenn ein Admin den Space-Root typisiert (z.B. `type=aktenplan`), schaltet der Space in den Typed-View-Modus um.
+### Typ-Erkennung im Web UI
 
-### Typ-Liste und Typ-Verwaltung
+Der Typ wird aus der **PROPFIND-Dateiliste** erkannt — kein zusätzlicher API-Call:
 
-**Verfügbare Typen** eines Space ergeben sich aus den Dateinamen in `.space/views/`:
-- PROPFIND auf `.space/views/` → Dateiliste → `aktenplan.json` = Typ "aktenplan"
-- Gecacht pro Space beim ersten Zugriff
-- Manager kann Cache manuell refreshen (z.B. nach Upload neuer Type-JSONs)
+1. PROPFIND liefert alle Kinder des Ordners (wie bisher)
+2. Client sucht in der Liste nach `.type_*` Einträgen
+3. Gefunden → `type = name.substring(6)` (nach `.type_`)
+4. Lade `.space/views/<type>.json` (gecacht pro Space)
+5. Render: Spalten, Actions, Kind-Typen
 
-**Typ setzen/ändern** (Manager+):
-- Dropdown "Typ" in der Sidebar (FileDetails.vue) unterhalb Notice
-- Zeigt nur Typen aus der Space-Typ-Liste
-- Setzt `user.oc.md.type` via `PUT /metadata { "type": "akte" }`
-- Nur für Nutzer mit globaler Rolle Manager/SpaceAdmin/Admin sichtbar
+**Kein Performance-Impact** — die `.type_*` Datei kommt im normalen Listing mit.
 
-**Betroffene Dateien für Typ-Verwaltung:**
-1. `useTypedFolderTypes.ts` (neu) — Lädt Typ-Liste per PROPFIND `.space/views/`, cacht pro Space, Refresh-Methode
-2. `FileDetails.vue` — Dropdown "Typ" in Sidebar, nur für Manager+
-3. `GenericSpace.vue` — Liest type, übergibt an Schema-Loader (existiert bereits)
-4. `useTypedFolderActions.ts` — "Neuer [Kind-Typ]" nutzt Typ-Liste für Labels/Icons
+### Typ-Erkennung für nativen Desktop-Client
 
-**Keine Backend-Änderung nötig** — PROPFIND für Dateiliste und Metadata PUT existieren bereits.
+Ein nativer Desktop-Client (z.B. erweiterter Dateimanager) kann:
+1. Ordner öffnen → `.type_akte` sehen → Typ erkannt
+2. Space-Root `.space/views/akte.json` lesen → Schema bekannt
+3. "Neuer Vorgang" anbieten → Ordner erstellen + `touch .type_vorgang`
+4. Spalten/Metadaten anzeigen basierend auf Schema
 
-### Flow
+### Typ setzen/ändern
 
-1. User öffnet Ordner → Metadata API liefert `type` (aus xattr)
-2. FolderView prüft: Hat der **Space-Root** einen `type`?
-3. Nein → **normaler FolderView**, keine weitere Prüfung
-4. Ja → Prüfe `type` des aktuellen Ordners
-5. Lade `.space/views/<type>.json` via WebDAV getFileContents (gecacht pro Space)
-6. Render: Spalten aus `columns`, Actions aus `children`
-7. "Neu"-Button bietet nur die in `children` definierten Typen an
-8. Beim Anlegen: Ordner erstellen + `type` xattr setzen via Metadata PUT
+**Im Web UI** (Manager+):
+- Sidebar Dropdown "Typ" → zeigt verfügbare Typen aus `.space/views/`
+- Setzt Typ: alte `.type_*` löschen + neue `.type_<typ>` erstellen
+- Kein Typ: `.type_*` löschen → normaler FolderView
+
+**Nativ / CLI:**
+```bash
+rm .type_*; touch .type_vorgang
+```
+
+**Beim Anlegen neuer Ordner:**
+- "Neuer [Kind-Typ]" Action erstellt Ordner + `.type_<typ>` in einem Schritt
+
+### Flow (Web UI)
+
+1. User öffnet Ordner → PROPFIND liefert Kinder
+2. Client prüft: Gibt es `.type_*` in der Liste?
+3. Nein → normaler FolderView
+4. Ja → Typ extrahieren, `.space/views/<type>.json` laden (Cache)
+5. Render: Spalten aus `columns`, Actions aus `children`
+6. "Neu"-Button bietet nur die in `children` definierten Typen an
+7. Beim Anlegen: Ordner erstellen + `.type_<kind>` anlegen
 
 ### Skelett / Initialisierung
 
-- Space-Root bekommt `type` beim Erstellen (z.B. `type=aktenplan`)
-- Die `views/*.json` werden aus einer Vorlage kopiert (Template-Space oder manueller Upload)
-- Alternative: Admin-Action "Aktenplan initialisieren" die die JSONs + Root-Typ anlegt
+- Space-Root bekommt `.type_aktenplan` + `.space/views/*.json` aus Vorlage
+- Admin-Action "Aktenplan initialisieren" oder Template-Space
 - Langfristig: Schema-Editor im UI
 
 ### Deployment
 
-Typed FolderView Handler werden unter `views/` abgelegt (neben `core/` und `apps/`):
+Typed FolderView Handler unter `views/` (neben `core/` und `apps/`):
 ```
 /var/lib/opencloud/web/assets/
   core/          ← OpenCloud Web Runtime
@@ -103,55 +156,54 @@ Typed FolderView Handler werden unter `views/` abgelegt (neben `core/` und `apps
       remoteEntry.mjs
 ```
 
-Jeder View-Handler ist eine Module Federation Extension die sich am Extension Point `app.files.folder-views.special-typed` registriert.
-
 ### Generischer vs. Spezifischer Handler
 
-- **Generischer Handler**: Interpretiert `<type>.json` und rendert Spalten/Actions dynamisch. Reicht für 80% der Fälle.
-- **Spezifischer Handler**: Eigene Vue-Komponente pro Typ für Sonderfälle (z.B. Aktenzeichen-Generator, Formular-Ansicht).
+- **Generischer Handler**: Interpretiert `<type>.json` dynamisch. Reicht für 80% der Fälle.
+- **Spezifischer Handler**: Eigene Vue-Komponente für Sonderfälle (z.B. Aktenzeichen-Generator).
 - Fallback: Generischer Handler wenn kein spezifischer gefunden.
 
 ## Implementierung (Schritte)
 
-### Phase 1: Grundgerüst ✅
-1. ~~Schema-Loader Composable: `useTypedFolderSchema(space, type)` → lädt + cacht `.space/views/<type>.json`~~
-2. ~~Typed Actions Composable: `useTypedFolderActions` → erstellt Kind-Ordner mit type-xattr~~
-3. ~~Integration in GenericSpace.vue: type aus Metadata API laden~~
-4. ~~Typ-Definitionen: `TypedFolderSchema`, `TypedFieldDef`~~
+### Phase 1: Grundgerüst ✅ (teilweise, muss auf .type_ umgestellt werden)
+1. ~~Schema-Loader: `useTypedFolderSchema(space, type)` → lädt + cacht `.space/views/<type>.json`~~
+2. ~~Typed Actions: `useTypedFolderActions` → erstellt Kind-Ordner~~ (muss `.type_` statt xattr setzen)
+3. ~~GenericSpace.vue Integration~~ (muss von Metadata API auf PROPFIND-Dateiliste umgestellt werden)
+4. ~~Typ-Definitionen~~
 
-### Phase 1b: Typ-Verwaltung (aktuell)
-5. `useTypedFolderTypes` — Typ-Liste per PROPFIND `.space/views/` laden + cachen
-6. Sidebar Dropdown "Typ" in FileDetails.vue (Manager+)
-7. Typ setzen via Metadata PUT
-8. Cache-Refresh für Manager
+### Phase 1b: Umstellung auf .type_ (aktuell)
+5. Typ-Erkennung aus PROPFIND-Dateiliste statt Metadata API
+6. `useTypedFolderTypes` — Typ-Liste per PROPFIND `.space/views/` laden
+7. Sidebar Dropdown "Typ" → löscht/erstellt `.type_*` Dateien
+8. "Neuer [Kind-Typ]" Action → erstellt Ordner + `.type_<kind>`
 
 ### Phase 2: Rendering
-9. Typed FolderView Komponente: rendert Spalten basierend auf Schema `columns`
-10. "Neues [Kind-Typ]" Dialog mit Name-Input + Typ-Auswahl
-11. Aktenzeichen-Generierung: `namePattern` aus Schema, Sequenz-Counter per xattr am Parent
-12. Typ-spezifische Metadaten: Sidebar zeigt `metadata`-Felder aus Schema
+9. Typed FolderView Komponente: Spalten aus Schema
+10. "Neues [Kind-Typ]" Dialog
+11. Aktenzeichen-Generierung: `namePattern` + Sequenz-Counter
+12. Typ-spezifische Metadaten in Sidebar
 
 ### Phase 3: Views-Deployment
-13. View-Handler als Module Federation Extension unter `views/`
+13. Module Federation Extension Handler unter `views/`
 14. Extension Point für typed views
-15. Admin-UI: Schema-Editor (JSON) für `.space/views/`
+15. Admin-UI: Schema-Editor für `.space/views/`
 
 ### Phase 4: Baumansicht
-16. Treeview-Sidebar (siehe TASK_treeview.md)
+16. Treeview-Sidebar
 17. Navigation via Baumstruktur
-18. Breadcrumb zeigt Aktenzeichen-Pfad
+18. Breadcrumb mit Aktenzeichen-Pfad
 
 ## Offene Fragen
 
-- **Performance**: Schema-Cache pro Space — invalidieren per etag auf `.space/views/`?
-- **Rechte**: Wer darf `.space/views/` editieren? → Space-Manager (reguläre Datei-Permissions)
-- **Vererbung**: Soll ein Sub-Space das Schema vom Parent erben?
-- **Migration**: Bestehende Ordner typisieren → Batch-Script das type-xattr setzt
-- **PROPFIND für type**: Namespace-Problematik (wie bei notice) → type über Metadata API laden (aktueller Ansatz)
-- **Typ löschen**: Was passiert wenn ein Typ entfernt wird aber Ordner ihn noch haben? → Fallback auf normalen View
+- **Performance**: `.type_*` kommt im Listing gratis mit — kein Extra-Call
+- **Schema-Cache**: Invalidieren per etag auf `.space/views/`?
+- **Rechte**: `.space/views/` editieren → Space-Manager
+- **Vererbung**: Sub-Space Schema vom Parent erben?
+- **Migration**: Bestehende Ordner typisieren → `find . -type d -exec touch {}/.type_default \;`
+- **Kollision**: Mehrere `.type_*` im gleichen Ordner? → erste Datei zählt, Warning loggen
+- **Versteckte Dateien**: `.type_*` wird im normalen UI ausgeblendet (wie `.space/`)
 
 ## Abhängigkeiten
 
-- Metadata API GET+PUT (opencloud#2960) — zum Setzen/Lesen von `type` xattr
-- Module Federation Extension SDK 7.x für View-Handler Deployment
-- Globale Manager-Rolle mit `Drives.ManageImmutable` für Typ-Verwaltungs-Berechtigung
+- WebDAV createFile / deleteFile für `.type_*` Management
+- Metadata API GET+PUT (opencloud#2960) für typ-spezifische Metadaten
+- Module Federation Extension SDK 7.x für View-Handler
