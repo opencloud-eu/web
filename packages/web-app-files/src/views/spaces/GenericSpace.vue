@@ -31,7 +31,7 @@
           :class="{ 'h-[40vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header v-if="isSpaceFrontpage" :space="space" class="px-4" />
+          <space-header v-if="isSpaceFrontpage && !isTyped" :space="space" class="px-4" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
@@ -46,50 +46,28 @@
             </template>
           </no-content-message>
           <template v-else>
-            <div v-if="isTyped" class="typed-folder-header mx-4 my-3 p-4 rounded-xl bg-role-surface-container">
-              <div class="flex items-center gap-4">
-                <div class="typed-folder-icon flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100">
-                  <oc-icon :name="typedSchema?.icon || 'archive'" size="large" class="text-primary-800" />
+            <div v-if="isTyped" class="typed-folder-header p-4">
+              <div class="flex items-start gap-6">
+                <div
+                  class="typed-folder-icon flex items-center justify-center w-[160px] min-w-[160px] aspect-[16/9] rounded-lg"
+                  :style="{ background: space?.color || '#5c6bc0' }"
+                >
+                  <oc-icon :name="typedSchema?.icon || 'archive'" size="xxlarge" class="text-white" />
                 </div>
                 <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2">
-                    <h3 class="m-0 text-lg font-semibold truncate">
-                      {{ resourcesStore.currentFolder?.name || '' }}
-                    </h3>
-                    <span class="typed-badge shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-800">
-                      {{ typedSchema?.label || currentFolderType }}
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-3 mt-1">
-                    <span v-if="currentFolderRef" class="text-sm font-mono text-primary-800">
+                  <h2 class="m-0 break-all">
+                    {{ resourcesStore.currentFolder?.name || '' }}
+                  </h2>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span v-if="currentFolderRef" class="text-sm font-mono font-semibold opacity-80">
                       {{ currentFolderRef }}
                     </span>
-                    <span class="text-sm text-role-on-surface-variant">
-                      {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
+                    <span class="text-sm opacity-60">
+                      {{ typedSchema?.label || currentFolderType }}
+                      · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
                     </span>
                   </div>
                 </div>
-              </div>
-              <!-- Aktenzeichen-Leiste für Kinder -->
-              <div v-if="fileRefs.size > 0" class="typed-refs mt-3 pt-3 border-t border-role-outline">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr class="text-left text-role-on-surface-variant">
-                      <th class="py-1 font-medium">Aktenzeichen</th>
-                      <th class="py-1 font-medium">Name</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="item in paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_') && !r.name.startsWith('.') && getRef(r.id))"
-                      :key="item.id"
-                      class="hover:bg-role-surface-container-highlight cursor-pointer"
-                    >
-                      <td class="py-1 font-mono text-primary-800 whitespace-nowrap">{{ getRef(item.id) }}</td>
-                      <td class="py-1">{{ item.name }}</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
             <list-header
