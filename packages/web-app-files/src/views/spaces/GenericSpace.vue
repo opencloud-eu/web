@@ -51,22 +51,18 @@
                 <div class="flex items-center max-w-full">
                   <oc-icon
                     :name="typedSchema?.icon || 'archive'"
-                    size="large"
-                    class="mr-3"
+                    size="xxlarge"
+                    class="mr-4"
                     variation="passive"
                   />
                   <h2 class="break-all my-0">
-                    {{ resourcesStore.currentFolder?.name || '' }}
+                    <span v-if="currentFolderRef" class="font-mono">{{ currentFolderRef }} </span>{{ resourcesStore.currentFolder?.name || '' }}
                   </h2>
                 </div>
               </div>
-              <p class="mt-1 mb-0">
-                <span v-if="currentFolderRef" class="font-mono font-semibold">{{ currentFolderRef }}</span>
-                <span v-if="currentFolderRef"> · </span>
-                <span class="opacity-60">
-                  {{ typedSchema?.label || currentFolderType }}
-                  · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
-                </span>
+              <p class="mt-1 mb-0 opacity-60">
+                {{ typedSchema?.label || currentFolderType }}
+                · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
               </p>
             </div>
             <list-header
@@ -84,7 +80,7 @@
               :is="folderView.component"
               v-else
               v-model:selected-ids="selectedResourcesIds"
-              :resources="paginatedResources"
+              :resources="typedResources"
               :view-mode="viewMode"
               :space="space"
               :drag-drop="true"
@@ -446,6 +442,19 @@ const { fileRefs, currentFolderRef, getRef, loadCurrentFolderRef } = useFileRefe
 // Load current folder's Aktenzeichen when folder changes
 watch(() => resourcesStore.currentFolder?.id, (id) => {
   if (id && unref(isTyped)) loadCurrentFolderRef(id)
+})
+
+// Resources with Aktencode prefix in display name for typed folders
+const typedResources = computed(() => {
+  const resources = unref(paginatedResources)
+  if (!unref(isTyped) || unref(fileRefs).size === 0) return resources
+  return resources.map((r) => {
+    const ref = getRef(r.id)
+    if (ref && r.type === 'folder' && !r.name.startsWith('_type_')) {
+      return { ...r, name: `${ref} ${r.name}` }
+    }
+    return r
+  })
 })
 
 onMounted(() => {
