@@ -45,20 +45,10 @@ export const useSpaceActionsRestore = () => {
             space.spaceQuota = updatedSpace.spaceQuota
           }
           spacesStore.upsertSpace(updatedSpace)
-          return true
+          return space.id
         })
     )
     const results = await Promise.allSettled(promises)
-
-    try {
-      await spacesStore.loadGraphPermissions({ ids: spaces.map((s) => s.id), graphClient: client })
-    } catch (error) {
-      console.error(error)
-      showErrorMessage({
-        title: $gettext('Failed to update permissions for enabled spaces'),
-        errors: [error]
-      })
-    }
 
     const succeeded = results.filter(isPromiseFulfilled)
     if (succeeded.length) {
@@ -71,12 +61,21 @@ export const useSpaceActionsRestore = () => {
               succeeded.length,
               { spaceCount: succeeded.length.toString() }
             )
-      await spacesStore.loadGraphPermissions({
-        ids: spaces.map((s) => s.id),
-        graphClient: client,
-        useCache: false
-      })
       showMessage({ title })
+
+      try {
+        await spacesStore.loadGraphPermissions({
+          ids: succeeded.map(({ value }) => value),
+          graphClient: client,
+          useCache: false
+        })
+      } catch (error) {
+        console.error(error)
+        showErrorMessage({
+          title: $gettext('Failed to update space permissions'),
+          errors: [error]
+        })
+      }
     }
 
     const failed = results.filter(isPromiseRejected)
