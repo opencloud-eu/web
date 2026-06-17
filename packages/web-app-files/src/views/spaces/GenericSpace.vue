@@ -107,7 +107,7 @@
 <script setup lang="ts">
 import { omit, last } from 'lodash-es'
 import { basename } from 'path'
-import { computed, onBeforeUnmount, onMounted, unref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import {
@@ -155,6 +155,7 @@ import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
+import { useTypedFolderSchema } from '../../composables/typedFolder'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
@@ -399,6 +400,30 @@ const readmeFile = computed(() => {
     ['readme.md', '.readme.md'].includes(item.name.toLowerCase())
   )
 })
+
+// Typed Folder View: load type from metadata API when folder changes
+const currentFolderType = ref<string | undefined>(undefined)
+
+async function loadFolderType() {
+  const folder = resourcesStore.currentFolder
+  const sp = unref(space)
+  if (!folder?.id || !sp?.id) {
+    currentFolderType.value = undefined
+    return
+  }
+  try {
+    const response = await clientService.httpAuthenticated.get(
+      `/graph/v1beta1/drives/${sp.id}/items/${folder.id}/metadata`
+    )
+    currentFolderType.value = response.data?.type || undefined
+  } catch {
+    currentFolderType.value = undefined
+  }
+}
+
+const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
+
+watch(() => resourcesStore.currentFolder?.id, () => loadFolderType())
 
 onMounted(() => {
   performLoaderTask(false)
