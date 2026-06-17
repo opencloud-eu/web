@@ -46,16 +46,25 @@
             </template>
           </no-content-message>
           <template v-else>
-            <div
-              v-if="isTyped"
-              class="typed-folder-bar flex items-center gap-3 mx-4 my-2 px-4 py-2 rounded-md bg-role-surface-container"
-            >
-              <span class="typed-badge text-xs font-semibold px-2 py-0.5 rounded bg-primary-100 text-primary-800">
-                {{ typedSchema?.label || currentFolderType }}
-              </span>
-              <span v-if="typedSchema?.icon" class="text-sm text-role-on-surface-variant">
-                {{ typedSchema?.columns?.length || 0 }} Spalten
-              </span>
+            <div v-if="isTyped" class="typed-folder-header mx-4 my-3 p-4 rounded-xl bg-role-surface-container">
+              <div class="flex items-center gap-4">
+                <div class="typed-folder-icon flex items-center justify-center w-12 h-12 rounded-lg bg-primary-100">
+                  <oc-icon :name="typedSchema?.icon || 'archive'" size="large" class="text-primary-800" />
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <h3 class="m-0 text-lg font-semibold truncate">
+                      {{ resourcesStore.currentFolder?.name || '' }}
+                    </h3>
+                    <span class="typed-badge shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-primary-100 text-primary-800">
+                      {{ typedSchema?.label || currentFolderType }}
+                    </span>
+                  </div>
+                  <p v-if="typedSchema" class="m-0 mt-1 text-sm text-role-on-surface-variant">
+                    {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
+                  </p>
+                </div>
+              </div>
             </div>
             <list-header
               v-if="readmeFile && !isSpaceFrontpage"
@@ -418,7 +427,11 @@ const currentFolderType = computed(() => {
   const resources = resourcesStore.resources
   if (!resources?.length) return undefined
   const typeFile = resources.find((r) => r.name?.startsWith('_type_'))
-  return typeFile ? typeFile.name.substring(6) : undefined
+  const type = typeFile ? typeFile.name.substring(6) : undefined
+  if (type) {
+    console.log('[TypedFolder] detected type:', type, 'from', typeFile.name, 'in', resources.length, 'resources')
+  }
+  return type
 })
 
 const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
