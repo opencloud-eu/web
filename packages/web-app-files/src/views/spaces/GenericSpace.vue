@@ -412,11 +412,12 @@ const readmeFile = computed(() => {
   )
 })
 
-// Typed Folder View: detect .type_* from PROPFIND listing (no extra API call)
+// Typed Folder View: detect _type_* from PROPFIND listing (no extra API call)
+// Uses _type_ (not .type_) because OpenCloud filters dotfiles from listings
 const currentFolderType = computed(() => {
   const resources = resourcesStore.resources
   if (!resources?.length) return undefined
-  const typeFile = resources.find((r) => r.name?.startsWith('.type_'))
+  const typeFile = resources.find((r) => r.name?.startsWith('_type_'))
   return typeFile ? typeFile.name.substring(6) : undefined
 })
 
