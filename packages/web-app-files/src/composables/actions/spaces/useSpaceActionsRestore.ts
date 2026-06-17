@@ -46,7 +46,7 @@ export const useSpaceActionsRestore = () => {
             space.disabled = false
             space.spaceQuota = updatedSpace.spaceQuota
           }
-          spacesStore.updateSpaceField({ id: space.id, field: 'disabled', value: false })
+          spacesStore.upsertSpace(updatedSpace)
           return true
         })
     )
