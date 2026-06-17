@@ -4,54 +4,56 @@
 
 ```
 Space (Typ: aktenplan)
-└── Aktenschrank (geschützt bis zur letzten Ebene)
-    └── ... (Sachgruppen, beliebig tief, alle protected)
-        └── Letzte Sachgruppe (shielded, nicht selbst protected)
+└── Aktenplan (Sachgruppen, beliebig tief, protected)
+    └── ... (weitere Sachgruppen, protected)
+        └── Aktenschrank (letztes Blatt, shielded)
             └── Akte (der "Leitzordner")
-                ├── Variante 1: leer (nur Dokumente)
-                ├── Variante 2: thematisiert (mit Vorgängen)
-                │   └── Vorgang
-                │       └── Dokumente
-                └── Variante 3: voll (mit Vorgängen und Registern)
-                    └── Vorgang
-                        └── Register
-                            └── Dokumente
+                ├── Variante 1: leer (nur Dokumente direkt in der Akte)
+                ├── Variante 2: thematisiert
+                │   └── Vorgang → Dokumente
+                └── Variante 3: voll
+                    └── Vorgang → Register → Dokumente
 ```
 
 ## Typen
 
-| Typ | `.type_` | Beschreibung | Kinder | Protected |
-|-----|----------|-------------|--------|-----------|
-| **Aktenplan** | `.type_aktenplan` | Space-Root | aktenschrank | — |
-| **Aktenschrank** | `.type_aktenschrank` | Sachgruppe (beliebig tief verschachtelbar) — letztes Blatt des Aktenplans | aktenschrank, akte | shielded (geerbt, Aktenplan-Struktur ist protected) |
+| Typ | `.type_` | Beschreibung | Kinder | Schutz |
+|-----|----------|-------------|--------|--------|
+| **Aktenplan** | `.type_aktenplan` | Sachgruppen-Hierarchie (beliebig tief), inkl. Aktenschrank als letztes Blatt | aktenplan, akte | protected (Aktenschrank: shielded) |
 | **Akte** | `.type_akte` | Leitzordner | vorgang, dokument | — |
-| **Vorgang** | `.type_vorgang` | Thematische Gruppierung in einer Akte | register, dokument | — |
+| **Vorgang** | `.type_vorgang` | Thematische Gruppierung | register, dokument | — |
 | **Register** | `.type_register` | Feingliederung innerhalb eines Vorgangs | dokument | — |
+
+Der **Aktenplan** ist ein einziger Typ für die gesamte Sachgruppen-Hierarchie. Der **Aktenschrank**
+ist kein eigener Typ sondern das letzte Blatt des Aktenplans — er trägt ebenfalls `.type_aktenplan`,
+ist aber `shielded` (geerbt) statt `protected`, weil darin Akten angelegt werden dürfen.
 
 **Register ist optional** — eine Akte kann sein:
 - **leer**: nur Dokumente direkt in der Akte
 - **thematisiert**: Vorgänge mit Dokumenten
 - **voll**: Vorgänge → Register → Dokumente
 
-## Aktenschrank und Schutz
+**Dokumente** liegen je nach Variante direkt unter Akte, Vorgang oder Register.
 
-Der Aktenschrank ist das **letzte Blatt des Aktenplans** — die Sachgruppe direkt über
-den Akten. Die gesamte Aktenplan-Struktur darüber ist `protected`, der Aktenschrank
-selbst erbt den Schutz als `shielded`:
+## Aktenplan und Schutz
+
+Die gesamte Sachgruppen-Hierarchie ist ein einziger Typ `.type_aktenplan`. Die oberen
+Ebenen sind `protected` (Struktur fixiert). Das letzte Blatt (Aktenschrank) ist `shielded`
+(geerbt) — darin dürfen Akten angelegt werden:
 
 ```
 11 Innere Verwaltung/                          ← .type_aktenplan, protected
 ├── 11.11 Verwaltungssteuerung/                ← .type_aktenplan, protected
 ├── 11.12 Kommunalverwaltung/                  ← .type_aktenplan, protected
 │   ├── 11.12.01 Organisationsangelegenheiten/ ← .type_aktenplan, protected
-│   │   ├── 11.12.01.03 Satzungen/             ← .type_aktenschrank, shielded
+│   │   ├── 11.12.01.03 Satzungen/             ← .type_aktenplan, shielded (Aktenschrank)
 │   │   │   ├── 11.12.01.03-01 Entschädigungssatzung/  ← .type_akte
 │   │   │   └── 11.12.01.03-02 Feuerwehrsatzung/       ← .type_akte
 ```
 
-- Die **Aktenplan-Ebenen** (Hauptgruppen, Sachgruppen) sind `protected` — Struktur fixiert
-- Der **Aktenschrank** (letztes Blatt) ist `shielded` — geerbt, darin werden Akten angelegt
-- Akten, Vorgänge und Register sind **nicht** automatisch protected
+- **Aktenplan protected**: Sachgruppen-Struktur ist fixiert, keine neuen Ordner
+- **Aktenschrank shielded**: Letztes Blatt, erbt Schutz vom Parent, Akten dürfen angelegt werden
+- **Akte/Vorgang/Register**: Nicht automatisch protected
 
 ## Aktencode (Syntax)
 
@@ -96,24 +98,9 @@ Register        11.12.01.03-01/1#1  + "#" + laufend
 {
   "label": "Aktenplan",
   "icon": "archive",
-  "children": ["aktenschrank"],
-  "columns": ["name", "aktencode", "status"],
-  "namePattern": "{seq:2}",
-  "metadata": {
-    "aktencode": { "label": "Aktencode", "type": "string", "auto": true }
-  }
-}
-```
-
-### aktenschrank.json
-```json
-{
-  "label": "Aktenschrank",
-  "icon": "folder-shield",
-  "children": ["aktenschrank", "akte"],
+  "children": ["aktenplan", "akte"],
   "columns": ["name", "aktencode", "anzahl-akten"],
   "namePattern": "{parentCode}.{seq:2} {title}",
-  "protect": true,
   "metadata": {
     "aktencode": { "label": "Aktencode", "type": "string", "auto": true }
   }
@@ -178,8 +165,8 @@ Archikart DMS/                                              .type_aktenplan
 │   ├── 11.11 Verwaltungssteuerung/                         .type_aktenplan   protected
 │   ├── 11.12 Innere Verwaltungsangelegenheiten/            .type_aktenplan   protected
 │   │   ├── 11.12.01 Organisationsangelegenheiten/          .type_aktenplan   protected
-│   │   │   ├── 11.12.01.00 Allg. Organisationsang./       .type_aktenschrank shielded
-│   │   │   ├── 11.12.01.03 Satzungen/                     .type_aktenschrank shielded
+│   │   │   ├── 11.12.01.00 Allg. Organisationsang./       .type_aktenplan shielded
+│   │   │   ├── 11.12.01.03 Satzungen/                     .type_aktenplan shielded
 │   │   │   │   ├── 11.12.01.03-01 Entschädigungssatzung/  .type_akte
 │   │   │   │   │   ├── 11.12.01.03-01/1 Fassung 2016/     .type_vorgang
 │   │   │   │   │   │   ├── 11.12.01.03-01/1#1 Vorlagen/   .type_register
@@ -189,7 +176,7 @@ Archikart DMS/                                              .type_aktenplan
 │   │   │   │   │   │   └── Beschluss.pdf
 │   │   │   │   │   └── 11.12.01.03-01/2 Fassung 2026/     .type_vorgang
 │   │   │   │   └── 11.12.01.03-02 Feuerwehrsatzung/       .type_akte
-│   │   │   └── 11.12.01.05 Landratsamt/                   .type_aktenschrank shielded
+│   │   │   └── 11.12.01.05 Landratsamt/                   .type_aktenplan shielded
 │   │   └── 11.12.02 Personalangelegenheiten/               .type_aktenplan   protected
 │   └── 11.13 Finanzverwaltung/                             .type_aktenplan   protected
 ├── 12 Sicherheit und Ordnung/                              .type_aktenplan   protected
