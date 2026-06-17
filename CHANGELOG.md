@@ -1,13 +1,15 @@
 # Changelog
 
-## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-16
+## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @micbar
+@AlexAndBear, @JammingBen, @micbar
 
 ### 🐛 Bug Fixes
 
+- [stable-7.1] fix: after disabling and enabling space user cannot create resources/share space or recources (#2687) [[#2708](https://github.com/opencloud-eu/web/pull/2708)]
+- [stable-7.1] fix: make upload dialog collapsible so it won't overlap certain views (#2688) [[#2707](https://github.com/opencloud-eu/web/pull/2707)]
 - fix: reduce fields in Upload-Metadata header [[#2706](https://github.com/opencloud-eu/web/pull/2706)]
 
 ### 📦️ Dependencies
