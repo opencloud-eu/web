@@ -38,6 +38,12 @@ export const onSSESpaceEnabledEvent = async ({
   const space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
   spacesStore.upsertSpace(space)
 
+  await spacesStore.loadGraphPermissions({
+    ids: [space.id],
+    graphClient: clientService.graphAuthenticated,
+    useCache: false
+  })
+
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
     return
   }
@@ -59,6 +65,12 @@ export const onSSESpaceDisabledEvent = async ({
 
   const space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
   spacesStore.upsertSpace(space)
+
+  await spacesStore.loadGraphPermissions({
+    ids: [space.id],
+    graphClient: clientService.graphAuthenticated,
+    useCache: false
+  })
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
     return
