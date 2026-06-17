@@ -20,7 +20,8 @@ import {
   EventSchemaType,
   onSSESpaceCreatedEvent,
   onSSESpaceDeletedEvent,
-  onSSESpaceDisabledEvent
+  onSSESpaceDisabledEvent,
+  onSSESpaceEnabledEvent
 } from '../../../../src/container/sse'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
@@ -72,8 +73,56 @@ describe('spaces events', () => {
     })
   })
 
+  describe('onSSESpaceEnabledEvent', () => {
+    it('calls "upsertSpace" and reloads the graph permissions when space has been enabled', async () => {
+      const space = mock<SpaceResource>({ id: 'space1' })
+      const mocks = getMocks()
+      const sseData = mock<EventSchemaType>({ spaceid: space.id })
+      mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+
+      await onSSESpaceEnabledEvent({ sseData, ...mocks })
+
+      expect(mocks.clientService.graphAuthenticated.drives.getDrive).toHaveBeenCalledWith(space.id)
+      expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+      expect(mocks.spacesStore.loadGraphPermissions).toHaveBeenCalledWith({
+        ids: [space.id],
+        graphClient: mocks.clientService.graphAuthenticated,
+        useCache: false
+      })
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+    })
+
+    it('calls "upsertResource" when space has been enabled and current route equals "files-spaces-projects"', async () => {
+      const space = mock<SpaceResource>({ id: 'space1' })
+      const mocks = getMocks({ currentRouteFilesSpacesProjects: true })
+      const sseData = mock<EventSchemaType>({ spaceid: space.id })
+      mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+
+      await onSSESpaceEnabledEvent({ sseData, ...mocks })
+
+      expect(mocks.clientService.graphAuthenticated.drives.getDrive).toHaveBeenCalledWith(space.id)
+      expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(space)
+    })
+
+    it('does not trigger any action when initiator ids are identical', async () => {
+      const mocks = getMocks()
+      const sseData = mock<EventSchemaType>({
+        spaceid: 'space1',
+        initiatorid: 'local1'
+      })
+
+      await onSSESpaceEnabledEvent({ sseData, ...mocks })
+
+      expect(mocks.clientService.graphAuthenticated.drives.getDrive).not.toHaveBeenCalled()
+      expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
+      expect(mocks.spacesStore.loadGraphPermissions).not.toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
+    })
+  })
+
   describe('onSSESpaceDisabledEvent', () => {
-    it('calls "upsertSpace" when space has been disabled', async () => {
+    it('calls "upsertSpace" and reloads the graph permissions when space has been disabled', async () => {
       const space = mock<SpaceResource>({ id: 'space1' })
       const mocks = getMocks()
       const sseData = mock<EventSchemaType>({ spaceid: space.id })
@@ -83,6 +132,11 @@ describe('spaces events', () => {
 
       expect(mocks.clientService.graphAuthenticated.drives.getDrive).toHaveBeenCalledWith(space.id)
       expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+      expect(mocks.spacesStore.loadGraphPermissions).toHaveBeenCalledWith({
+        ids: [space.id],
+        graphClient: mocks.clientService.graphAuthenticated,
+        useCache: false
+      })
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
 
