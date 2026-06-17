@@ -46,6 +46,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2603](https://github.com/opencloud-eu/web/pull/2603)]
 - fix(deps): update dependency vue3-gettext to v4.0.1 [[#2643](https://github.com/opencloud-eu/web/pull/2643)]
 - chore(deps): update dependency fast-xml-parser to v5.9.0 [[#2696](https://github.com/opencloud-eu/web/pull/2696)]
 - chore(deps): update pnpm to v11.7.0 [[#2697](https://github.com/opencloud-eu/web/pull/2697)]
