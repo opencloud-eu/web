@@ -106,15 +106,13 @@ async function toggleExpand(resource: Resource) {
 function handleFileClick(options: any) { emit('fileClick', options) }
 function handleSort(options: any) { emit('sort', options) }
 
-const visibleResources = computed(() => {
-  const result: Resource[] = []
-  const depths = new Map<string, number>()
+const flatTree = computed(() => {
+  const result: { resource: Resource; depth: number }[] = []
 
   function walk(resources: Resource[], depth: number) {
     for (const r of resources) {
       if (r.name?.startsWith('_type_')) continue
-      result.push(r)
-      depths.set(r.id, depth)
+      result.push({ resource: r, depth })
       if (r.type === 'folder' && expanded.value.has(r.id) && childrenMap.value.has(r.id)) {
         walk(childrenMap.value.get(r.id)!, depth + 1)
       }
@@ -122,9 +120,17 @@ const visibleResources = computed(() => {
   }
 
   walk(props.resources.filter(r => !r.name?.startsWith('_type_')), 0)
-  depthMap.value = depths
   return result
 })
+
+const visibleResources = computed(() => flatTree.value.map(e => e.resource))
+
+// Keep depthMap in sync reactively
+watch(flatTree, (tree) => {
+  const m = new Map<string, number>()
+  tree.forEach(e => m.set(e.resource.id, e.depth))
+  depthMap.value = m
+}, { immediate: true })
 
 watch(() => props.resources, () => {
   expanded.value = new Set()
