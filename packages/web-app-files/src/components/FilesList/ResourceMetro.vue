@@ -99,14 +99,14 @@ const gridStyle = computed(() => {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-color: rgba(0, 0, 0, 0.15);
 }
-.metro-color-0 { background: #e3f2fd; }
-.metro-color-1 { background: #e8f5e9; }
-.metro-color-2 { background: #fff3e0; }
-.metro-color-3 { background: #fce4ec; }
-.metro-color-4 { background: #f3e5f5; }
-.metro-color-5 { background: #e0f2f1; }
-.metro-color-6 { background: #fff8e1; }
-.metro-color-7 { background: #e8eaf6; }
-.metro-color-8 { background: #fbe9e7; }
-.metro-color-9 { background: #e0f7fa; }
+.metro-color-0 { background: #1565c0; color: #fff; }
+.metro-color-1 { background: #2e7d32; color: #fff; }
+.metro-color-2 { background: #e65100; color: #fff; }
+.metro-color-3 { background: #ad1457; color: #fff; }
+.metro-color-4 { background: #6a1b9a; color: #fff; }
+.metro-color-5 { background: #00695c; color: #fff; }
+.metro-color-6 { background: #f9a825; color: #333; }
+.metro-color-7 { background: #283593; color: #fff; }
+.metro-color-8 { background: #bf360c; color: #fff; }
+.metro-color-9 { background: #00838f; color: #fff; }
 </style>
