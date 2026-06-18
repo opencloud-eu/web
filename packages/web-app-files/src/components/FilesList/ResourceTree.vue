@@ -32,6 +32,10 @@
         <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-1" />
       </template>
 
+      <template #quickActions="{ resource }">
+        <slot name="quickActions" :resource="resource" />
+      </template>
+
       <template #contextMenu="{ resource }">
         <slot name="contextMenu" :resource="resource" />
       </template>
