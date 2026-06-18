@@ -7,6 +7,15 @@
       @click="handleClick(resource)"
     >
       <div class="tile-name">{{ resource.name }}</div>
+      <button
+        class="tile-menu"
+        @click.stop="toggleMenu(resource.id)"
+      >
+        <oc-icon name="more-2" size="small" />
+      </button>
+      <div v-if="openMenu === resource.id" class="tile-context" @click.stop>
+        <slot name="contextMenu" :resource="resource" />
+      </div>
     </div>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
       No items
@@ -15,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
@@ -35,15 +44,19 @@ const props = defineProps<{
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const router = useRouter()
+const openMenu = ref<string | null>(null)
 
 function handleClick(resource: Resource) {
-  // Navigate directly — emit doesn't reliably trigger through dynamic component
   if (resource.type === 'folder') {
     const opts = createFileRouteOptions(props.space, resource)
     router.push(opts)
   } else {
     emit('fileClick', { resources: [resource], space: props.space })
   }
+}
+
+function toggleMenu(id: string) {
+  openMenu.value = openMenu.value === id ? null : id
 }
 
 const filteredResources = computed(() => {
@@ -61,6 +74,7 @@ const filteredResources = computed(() => {
   border-radius: 10px;
   cursor: pointer;
   padding: 16px;
+  position: relative;
   transition: transform 0.15s, box-shadow 0.15s;
   background: var(--oc-color-background-hover, #f5f5f5);
   border: 1px solid var(--oc-color-border, #e0e0e0);
@@ -71,10 +85,6 @@ const filteredResources = computed(() => {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   background: var(--oc-color-background-highlight, #eee);
 }
-.tile-icon {
-  margin-bottom: 8px;
-  pointer-events: none;
-}
 .tile-name {
   font-size: 14px;
   font-weight: 700;
@@ -82,5 +92,35 @@ const filteredResources = computed(() => {
   word-break: break-word;
   text-align: center;
   pointer-events: none;
+}
+.tile-menu {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.4;
+  transition: opacity 0.15s;
+}
+.resource-metro-tile:hover .tile-menu {
+  opacity: 0.8;
+}
+.tile-menu:hover {
+  background: rgba(0, 0, 0, 0.08);
+  opacity: 1;
+}
+.tile-context {
+  position: absolute;
+  bottom: 32px;
+  right: 4px;
+  z-index: 10;
+  background: var(--oc-color-background-default, #fff);
+  border: 1px solid var(--oc-color-border, #e0e0e0);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 180px;
 }
 </style>
