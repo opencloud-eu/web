@@ -61,35 +61,47 @@ const filteredResources = computed(() => {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
 }
 .resource-metro-wrapper .oc-tile-card {
-  background: var(--oc-role-primary, #1565c0) !important;
-  border: none !important;
+  background: var(--oc-role-surface-container, #f0f0f0) !important;
+  border: 1px solid var(--oc-role-outline, #ccc) !important;
   border-radius: 10px !important;
   overflow: hidden;
 }
 .resource-metro-wrapper .oc-tile-card:hover {
-  filter: brightness(1.1);
+  background: var(--oc-role-surface-container-highlight, #e4e4e4) !important;
 }
 /* Hide thumbnail/preview */
 .resource-metro-wrapper .oc-tile-card-preview {
   display: none !important;
 }
-/* Title: white, bold, centered */
+/* Title: inversed color, bold, centered vertically + horizontally */
 .resource-metro-wrapper .oc-resource-name,
 .resource-metro-wrapper .oc-resource-basename,
 .resource-metro-wrapper .oc-resource-extension {
-  color: white !important;
+  color: var(--oc-role-on-surface, #333) !important;
   font-weight: 700 !important;
 }
 .resource-metro-wrapper .oc-resource-name {
   justify-content: center !important;
   text-align: center;
 }
-/* Content area fills tile, centers content */
+.resource-metro-wrapper .oc-resource-details {
+  text-align: center !important;
+}
+/* Content area fills tile, centers content vertically */
 .resource-metro-wrapper .oc-tile-card-content {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  min-height: 100px;
+  flex: 1 !important;
+  padding: 16px !important;
+}
+/* Hide resource icon in tile — just show name */
+.resource-metro-wrapper .oc-tile-card-content .oc-resource-icon {
+  display: none !important;
+}
+/* Make the oc-resource fill and center */
+.resource-metro-wrapper .oc-tile-card-content .oc-resource {
+  justify-content: center !important;
 }
 /* Checkbox: fixed top-left */
 .resource-metro-wrapper .oc-tile-card-selection {
