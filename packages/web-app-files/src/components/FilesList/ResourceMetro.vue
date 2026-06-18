@@ -61,28 +61,50 @@ const filteredResources = computed(() => {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
 }
 .resource-metro-wrapper .oc-tile-card {
-  background: var(--oc-color-background-hover, #f5f5f5) !important;
-  border: 1px solid var(--oc-color-border, #e0e0e0) !important;
+  background: var(--oc-role-primary, #1565c0) !important;
+  border: none !important;
   border-radius: 10px !important;
-  aspect-ratio: 4 / 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
 }
 .resource-metro-wrapper .oc-tile-card:hover {
-  transform: scale(1.04);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  filter: brightness(1.1);
 }
-.resource-metro-wrapper .oc-tile-card .oc-resource-name {
-  font-weight: 700 !important;
-  justify-content: center;
-}
-.resource-metro-wrapper .metro-image-placeholder {
-  display: none;
-}
-/* Hide tile thumbnail area */
+/* Hide thumbnail/preview */
 .resource-metro-wrapper .oc-tile-card-preview {
   display: none !important;
+}
+/* Title: white, bold, centered */
+.resource-metro-wrapper .oc-resource-name,
+.resource-metro-wrapper .oc-resource-basename,
+.resource-metro-wrapper .oc-resource-extension {
+  color: white !important;
+  font-weight: 700 !important;
+}
+.resource-metro-wrapper .oc-resource-name {
+  justify-content: center !important;
+  text-align: center;
+}
+/* Content area fills tile, centers content */
+.resource-metro-wrapper .oc-tile-card-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 100px;
+}
+/* Checkbox: fixed top-left */
+.resource-metro-wrapper .oc-tile-card-selection {
+  position: absolute !important;
+  top: 8px !important;
+  left: 8px !important;
+}
+/* Context menu button: fixed bottom-right */
+.resource-metro-wrapper .resource-tiles-btn-action-dropdown {
+  position: absolute !important;
+  bottom: 8px !important;
+  right: 8px !important;
+}
+/* Make tile position relative for absolute children */
+.resource-metro-wrapper .oc-tiles-item {
+  position: relative;
 }
 </style>
