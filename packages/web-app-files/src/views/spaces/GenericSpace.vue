@@ -92,7 +92,7 @@
               :is="folderView.component"
               v-else
               v-model:selected-ids="selectedResourcesIds"
-              :resources="paginatedResources"
+              :resources="displayResources"
               :view-mode="viewMode"
               :space="space"
               :drag-drop="true"
@@ -446,6 +446,13 @@ const currentFolderType = computed(() => {
 })
 
 const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
+
+// Filter _type_* markers from display
+const displayResources = computed(() => {
+  const resources = unref(paginatedResources)
+  if (!unref(isTyped)) return resources
+  return resources.filter((r) => !r.name?.startsWith('_type_'))
+})
 
 onMounted(() => {
   performLoaderTask(false)
