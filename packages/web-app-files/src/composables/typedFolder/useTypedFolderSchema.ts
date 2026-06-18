@@ -42,7 +42,7 @@ export function useTypedFolderSchema(
     error.value = null
     try {
       const { getFileContents } = clientService.webdav
-      const viewPath = `.space/views/${type}.json`
+      const viewPath = `.views/${type}.json`
       console.log('[TypedFolder] loading schema from', viewPath)
       const { body } = await getFileContents(sp, { path: viewPath })
       console.log('[TypedFolder] schema loaded, length:', (body as string)?.length)
