@@ -3,13 +3,13 @@
     <div
       v-for="resource in filteredResources"
       :key="resource.id"
-      class="resource-metro-tile flex items-center justify-center rounded-lg cursor-pointer transition-all hover:scale-105 hover:shadow-lg"
-      :style="tileStyle(resource)"
+      class="resource-metro-tile"
+      :class="tileClass(resource)"
       @click="handleClick(resource)"
     >
-      <div class="text-center p-3">
+      <div class="text-center p-4">
         <oc-resource-icon :resource="resource" size="large" class="mb-2 mx-auto" />
-        <div class="resource-metro-name text-sm font-medium leading-tight" :style="{ color: textColor(resource) }">
+        <div class="resource-metro-name text-sm font-bold leading-tight">
           {{ resource.name }}
         </div>
       </div>
@@ -38,7 +38,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'fileClick': [{ resources: Resource[], space: SpaceResource, event: Event }]
+  'fileClick': [{ resources: Resource[], space: SpaceResource }]
   'fileDropped': [string]
   'itemVisible': [Resource]
   'sort': [{ sortBy: string; sortDir: string }]
@@ -48,11 +48,10 @@ const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
 const { $gettext } = useGettext()
 
-// Color palette for tiles — deterministic based on name hash
-const colors = [
-  '#e3f2fd', '#e8f5e9', '#fff3e0', '#fce4ec', '#f3e5f5',
-  '#e0f2f1', '#fff8e1', '#e8eaf6', '#fbe9e7', '#e0f7fa',
-  '#f1f8e9', '#ede7f6', '#efebe9', '#eceff1', '#e1f5fe'
+// Deterministic color class based on name hash
+const colorClasses = [
+  'metro-color-0', 'metro-color-1', 'metro-color-2', 'metro-color-3', 'metro-color-4',
+  'metro-color-5', 'metro-color-6', 'metro-color-7', 'metro-color-8', 'metro-color-9'
 ]
 
 function hashName(name: string): number {
@@ -63,24 +62,12 @@ function hashName(name: string): number {
   return Math.abs(h)
 }
 
-function tileColor(resource: Resource): string {
-  return colors[hashName(resource.name) % colors.length]
-}
-
-function tileStyle(resource: Resource) {
-  return {
-    background: tileColor(resource),
-    minHeight: '120px'
-  }
-}
-
-function textColor(resource: Resource): string {
-  // Dark text on light backgrounds
-  return '#333'
+function tileClass(resource: Resource): string {
+  return colorClasses[hashName(resource.name) % colorClasses.length]
 }
 
 function handleClick(resource: Resource) {
-  emit('fileClick', { resources: [resource], space: props.space, event: new MouseEvent('click') })
+  emit('fileClick', { resources: [resource], space: props.space })
 }
 
 const filteredResources = computed(() => {
@@ -98,9 +85,28 @@ const gridStyle = computed(() => {
 
 <style scoped>
 .resource-metro-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 .resource-metro-tile:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   border-color: rgba(0, 0, 0, 0.15);
 }
+.metro-color-0 { background: #e3f2fd; }
+.metro-color-1 { background: #e8f5e9; }
+.metro-color-2 { background: #fff3e0; }
+.metro-color-3 { background: #fce4ec; }
+.metro-color-4 { background: #f3e5f5; }
+.metro-color-5 { background: #e0f2f1; }
+.metro-color-6 { background: #fff8e1; }
+.metro-color-7 { background: #e8eaf6; }
+.metro-color-8 { background: #fbe9e7; }
+.metro-color-9 { background: #e0f7fa; }
 </style>

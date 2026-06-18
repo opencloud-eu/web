@@ -1,36 +1,40 @@
 <template>
   <div class="resource-tree">
-    <div
-      v-for="resource in visibleResources"
-      :key="resource.id"
-      class="resource-tree-node"
-    >
-      <div
-        class="resource-tree-row flex items-center py-1.5 px-4 cursor-pointer hover:bg-role-surface-container-highlight"
-        :style="{ paddingLeft: `${(resource._depth || 0) * 24 + 16}px` }"
-        @click="handleClick(resource)"
-      >
-        <button
-          v-if="resource.type === 'folder'"
-          class="tree-toggle mr-1 p-0.5"
-          @click.stop="toggleExpand(resource)"
+    <table class="resource-tree-table w-full text-sm">
+      <tbody>
+        <tr
+          v-for="resource in visibleResources"
+          :key="resource.id"
+          class="resource-tree-row hover:bg-role-surface-container-highlight cursor-pointer border-b border-role-outline"
+          @click="handleClick(resource)"
         >
-          <oc-icon
-            :name="isExpanded(resource.id) ? 'arrow-down-s' : 'arrow-right-s'"
-            size="small"
-          />
-        </button>
-        <span v-else class="tree-toggle-spacer mr-1 w-5" />
-        <oc-resource-icon :resource="resource" size="small" class="mr-2" />
-        <span class="resource-tree-name flex-1 truncate text-sm">{{ resource.name }}</span>
-        <span class="resource-tree-size text-xs opacity-50 ml-4">
-          {{ resource.type === 'folder' ? '' : formatSize(resource.size) }}
-        </span>
-      </div>
-      <div v-if="isExpanded(resource.id) && isLoading(resource.id)" class="pl-12 py-1">
-        <oc-spinner size="xsmall" />
-      </div>
-    </div>
+          <td class="py-1.5 whitespace-nowrap" :style="{ paddingLeft: `${(resource._depth || 0) * 20 + 8}px` }">
+            <div class="flex items-center">
+              <button
+                v-if="resource.type === 'folder'"
+                class="tree-toggle mr-1"
+                @click.stop="toggleExpand(resource)"
+              >
+                <oc-icon
+                  :name="isExpanded(resource.id) ? 'arrow-down-s' : 'arrow-right-s'"
+                  size="small"
+                />
+              </button>
+              <span v-else class="inline-block w-5 mr-1" />
+              <oc-resource-icon :resource="resource" size="small" class="mr-2 shrink-0" />
+              <span class="truncate">{{ resource.name }}</span>
+              <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-2" />
+            </div>
+          </td>
+          <td class="py-1.5 text-right opacity-50 pr-4 whitespace-nowrap">
+            {{ resource.type === 'folder' ? '' : formatSize(resource.size) }}
+          </td>
+          <td class="py-1.5 text-right opacity-50 pr-4 whitespace-nowrap">
+            {{ formatDate(resource.mdate) }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
     <div v-if="!visibleResources.length" class="p-4 text-sm opacity-50">
       {{ $gettext('No items') }}
     </div>
@@ -40,9 +44,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useClientService } from '@opencloud-eu/web-pkg'
+import { useClientService, formatDateFromJSDate, formatFileSize } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import { formatFileSize } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
@@ -57,7 +60,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  'fileClick': [{ resources: Resource[], space: SpaceResource, event: Event }]
+  'fileClick': [{ resources: Resource[], space: SpaceResource }]
   'fileDropped': [string]
   'itemVisible': [Resource]
   'sort': [{ sortBy: string; sortDir: string }]
@@ -79,38 +82,37 @@ function formatSize(size: number) {
   return formatFileSize(size, currentLanguage)
 }
 
+function formatDate(date: string) {
+  if (!date) return ''
+  return formatDateFromJSDate(new Date(date), currentLanguage)
+}
+
 async function toggleExpand(resource: Resource) {
   const id = resource.id
   if (expanded.value.has(id)) {
-    expanded.value.delete(id)
-    expanded.value = new Set(expanded.value)
+    expanded.value = new Set([...expanded.value].filter(x => x !== id))
     return
   }
 
-  expanded.value.add(id)
-  expanded.value = new Set(expanded.value)
+  expanded.value = new Set([...expanded.value, id])
 
   if (!childrenMap.value.has(id)) {
-    loadingSet.value.add(id)
-    loadingSet.value = new Set(loadingSet.value)
+    loadingSet.value = new Set([...loadingSet.value, id])
     try {
       const { children } = await clientService.webdav.listFiles(props.space, { path: resource.path })
-      childrenMap.value.set(id, children)
-      childrenMap.value = new Map(childrenMap.value)
+      childrenMap.value = new Map([...childrenMap.value, [id, children]])
     } catch {
-      childrenMap.value.set(id, [])
+      childrenMap.value = new Map([...childrenMap.value, [id, []]])
     } finally {
-      loadingSet.value.delete(id)
-      loadingSet.value = new Set(loadingSet.value)
+      loadingSet.value = new Set([...loadingSet.value].filter(x => x !== id))
     }
   }
 }
 
 function handleClick(resource: Resource) {
-  emit('fileClick', { resources: [resource], space: props.space, event: new MouseEvent('click') })
+  emit('fileClick', { resources: [resource], space: props.space })
 }
 
-// Flatten tree into visible list
 const visibleResources = computed(() => {
   const result: (Resource & { _depth?: number })[] = []
 
@@ -128,7 +130,6 @@ const visibleResources = computed(() => {
   return result
 })
 
-// Reset when resources change (navigated to different folder)
 watch(() => props.resources, () => {
   expanded.value = new Set()
   childrenMap.value = new Map()
@@ -136,14 +137,16 @@ watch(() => props.resources, () => {
 </script>
 
 <style scoped>
-.resource-tree-row:hover {
-  background: var(--oc-color-background-hover);
-}
 .tree-toggle {
   background: none;
   border: none;
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  padding: 2px;
+}
+.tree-toggle:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
 }
 </style>
