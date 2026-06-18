@@ -17,8 +17,8 @@
     @item-visible="$emit('itemVisible', $event)"
     @sort="$emit('sort', $event)"
   >
-    <template #image>
-      <span />
+    <template #image="{ resource }">
+      <span class="metro-tile-label">{{ resource.name }}</span>
     </template>
     <template #contextMenu="{ resource }">
       <slot name="contextMenu" :resource="resource" />
@@ -52,12 +52,20 @@ const filteredResources = computed(() => {
 </script>
 
 <style>
-/* Metro: only hide preview image, fill tile, bold centered name */
+/* Metro: tile fill color, name centered in preview area, bottom bar hidden */
 .metro-view .oc-tile-card {
   outline-color: var(--oc-role-outline-variant) !important;
   background: var(--oc-role-outline-variant) !important;
 }
-.metro-view .oc-tile-card-preview { visibility: hidden !important; height: 0 !important; min-height: 0 !important; overflow: hidden !important; }
-.metro-view .oc-resource-name { justify-content: center !important; font-weight: 700 !important; }
-.metro-view .oc-resource-details { text-align: center !important; }
+/* Center the label in the preview area */
+.metro-view .metro-tile-label {
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.4;
+  padding: 8px;
+}
+/* Hide the bottom name bar (name is now in preview area) */
+.metro-view .oc-card-body > .p-2 { display: none !important; }
 </style>
