@@ -61,23 +61,23 @@ const filteredResources = computed(() => {
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
 }
 .resource-metro-wrapper .oc-tile-card {
-  background: var(--oc-role-surface-container, #f0f0f0) !important;
-  border: 1px solid var(--oc-role-outline, #ccc) !important;
+  background: var(--oc-role-primary-container) !important;
+  border: none !important;
   border-radius: 10px !important;
   overflow: hidden;
 }
 .resource-metro-wrapper .oc-tile-card:hover {
-  background: var(--oc-role-surface-container-highlight, #e4e4e4) !important;
+  filter: brightness(0.95);
 }
 /* Hide thumbnail/preview */
 .resource-metro-wrapper .oc-tile-card-preview {
   display: none !important;
 }
-/* Title: inversed color, bold, centered vertically + horizontally */
+/* Title: matching container text color, bold, centered */
 .resource-metro-wrapper .oc-resource-name,
 .resource-metro-wrapper .oc-resource-basename,
 .resource-metro-wrapper .oc-resource-extension {
-  color: var(--oc-role-on-surface, #333) !important;
+  color: var(--oc-role-on-primary-container) !important;
   font-weight: 700 !important;
 }
 .resource-metro-wrapper .oc-resource-name {
