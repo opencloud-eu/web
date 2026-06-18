@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceTable, ResourceIcon, useClientService } from '@opencloud-eu/web-pkg'
+import { ResourceTable, ResourceIcon, useClientService, useResourcesStore } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
@@ -62,6 +62,7 @@ const props = defineProps<{
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const clientService = useClientService()
+const resourcesStore = useResourcesStore()
 
 const expanded = ref(new Set<string>())
 const childrenMap = ref(new Map<string, Resource[]>())
@@ -88,6 +89,8 @@ async function toggleExpand(resource: Resource) {
     try {
       const { children } = await clientService.webdav.listFiles(props.space, { path: resource.path })
       childrenMap.value = new Map([...childrenMap.value, [id, children]])
+      // Add to store so batch actions and selections work
+      children.forEach((child) => resourcesStore.upsertResource(child))
     } catch {
       childrenMap.value = new Map([...childrenMap.value, [id, []]])
     } finally {
