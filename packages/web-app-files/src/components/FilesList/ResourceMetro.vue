@@ -4,9 +4,10 @@
       v-for="resource in filteredResources"
       :key="resource.id"
       class="resource-metro-tile"
-      :class="tileClass(resource)"
-      @click.prevent="handleClick(resource, $event)"
-      @dblclick.prevent="handleClick(resource, $event)"
+      role="button"
+      tabindex="0"
+      @click="handleClick(resource)"
+      @keydown.enter="handleClick(resource)"
     >
       <div class="tile-content">
         <oc-resource-icon :resource="resource" size="large" class="tile-icon" />
@@ -39,24 +40,8 @@ const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'up
 
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
-const colorClasses = [
-  'metro-color-0', 'metro-color-1', 'metro-color-2', 'metro-color-3', 'metro-color-4',
-  'metro-color-5', 'metro-color-6', 'metro-color-7', 'metro-color-8', 'metro-color-9'
-]
-
-function hashName(name: string): number {
-  let h = 0
-  for (let i = 0; i < name.length; i++) {
-    h = ((h << 5) - h + name.charCodeAt(i)) | 0
-  }
-  return Math.abs(h)
-}
-
-function tileClass(resource: Resource): string {
-  return colorClasses[hashName(resource.name) % colorClasses.length]
-}
-
-function handleClick(resource: Resource, event: MouseEvent) {
+function handleClick(resource: Resource) {
+  console.log('[Metro] click', resource.name, resource.type)
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
@@ -74,10 +59,14 @@ const filteredResources = computed(() => {
   border-radius: 10px;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
+  background: var(--oc-color-background-hover, #f5f5f5);
+  border: 1px solid var(--oc-color-border, #e0e0e0);
+  color: var(--oc-color-text-default, #333);
 }
 .resource-metro-tile:hover {
   transform: scale(1.04);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  background: var(--oc-color-background-highlight, #eee);
 }
 .tile-content {
   text-align: center;
@@ -92,14 +81,4 @@ const filteredResources = computed(() => {
   line-height: 1.3;
   word-break: break-word;
 }
-.metro-color-0 { background: #1565c0; color: #fff; }
-.metro-color-1 { background: #2e7d32; color: #fff; }
-.metro-color-2 { background: #e65100; color: #fff; }
-.metro-color-3 { background: #ad1457; color: #fff; }
-.metro-color-4 { background: #6a1b9a; color: #fff; }
-.metro-color-5 { background: #00695c; color: #fff; }
-.metro-color-6 { background: #f9a825; color: #333; }
-.metro-color-7 { background: #283593; color: #fff; }
-.metro-color-8 { background: #bf360c; color: #fff; }
-.metro-color-9 { background: #00838f; color: #fff; }
 </style>

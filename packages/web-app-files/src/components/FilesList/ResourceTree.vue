@@ -1,14 +1,22 @@
 <template>
   <div class="resource-tree">
+    <!-- Header row -->
+    <div class="resource-tree-header flex items-center py-1.5 px-2 border-b-2 border-role-outline text-xs font-semibold opacity-60">
+      <span class="flex-1" style="padding-left: 60px">{{ $gettext('Name') }}</span>
+      <span class="w-16 text-right mr-4">{{ $gettext('Size') }}</span>
+      <span class="w-36 text-right mr-4">{{ $gettext('Modified') }}</span>
+    </div>
+
+    <!-- Data rows -->
     <div
       v-for="resource in visibleResources"
       :key="resource.id + '-' + (resource._depth || 0)"
-      class="resource-tree-row"
     >
       <div
-        class="flex items-center py-1 px-2 cursor-pointer hover:bg-role-surface-container-highlight border-b border-role-outline"
-        :style="{ paddingLeft: `${(resource._depth || 0) * 24 + 8}px` }"
+        class="resource-tree-row flex items-center py-1.5 px-2 cursor-pointer hover:bg-role-surface-container-highlight border-b border-role-outline"
+        :style="{ paddingLeft: `${(resource._depth || 0) * 20 + 8}px` }"
       >
+        <!-- Expand toggle -->
         <button
           v-if="resource.type === 'folder'"
           class="tree-expand-btn"
@@ -21,26 +29,30 @@
         </button>
         <span v-else class="tree-expand-spacer" />
 
+        <!-- Name + icon (clickable) -->
         <div
           class="flex items-center flex-1 min-w-0 cursor-pointer"
           @click="handleClick(resource)"
         >
           <oc-resource-icon :resource="resource" size="small" class="mr-2 shrink-0" />
           <span class="truncate text-sm">{{ resource.name }}</span>
+          <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-2" />
         </div>
 
-        <span class="text-xs opacity-40 whitespace-nowrap ml-3 w-20 text-right">
+        <!-- Size -->
+        <span class="text-xs opacity-50 w-16 text-right mr-4 whitespace-nowrap shrink-0">
           {{ resource.type !== 'folder' ? formatSize(resource.size) : '' }}
         </span>
-        <span class="text-xs opacity-40 whitespace-nowrap ml-3 w-32 text-right">
+
+        <!-- Modified -->
+        <span class="text-xs opacity-50 w-36 text-right mr-4 whitespace-nowrap shrink-0">
           {{ formatDate(resource.mdate) }}
         </span>
-
-        <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-2" />
       </div>
     </div>
+
     <div v-if="!visibleResources.length" class="p-4 text-sm opacity-50">
-      No items
+      {{ $gettext('No items') }}
     </div>
   </div>
 </template>
@@ -67,7 +79,7 @@ const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'up
 
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
-const { current: currentLanguage } = useGettext()
+const { $gettext, current: currentLanguage } = useGettext()
 const clientService = useClientService()
 
 const expanded = ref(new Set<string>())
@@ -106,13 +118,9 @@ async function toggleExpand(resource: Resource) {
 
     try {
       const { children } = await clientService.webdav.listFiles(props.space, { path: resource.path })
-      const cm = new Map(childrenMap.value)
-      cm.set(id, children)
-      childrenMap.value = cm
+      childrenMap.value = new Map([...childrenMap.value, [id, children]])
     } catch {
-      const cm = new Map(childrenMap.value)
-      cm.set(id, [])
-      childrenMap.value = cm
+      childrenMap.value = new Map([...childrenMap.value, [id, []]])
     } finally {
       const ls2 = new Set(loadingSet.value)
       ls2.delete(id)
@@ -155,11 +163,12 @@ watch(() => props.resources, () => {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  padding: 2px;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   margin-right: 4px;
   border-radius: 4px;
-  width: 24px;
-  justify-content: center;
+  shrink: 0;
 }
 .tree-expand-btn:hover {
   background: rgba(0, 0, 0, 0.08);
@@ -168,5 +177,6 @@ watch(() => props.resources, () => {
   display: inline-block;
   width: 24px;
   margin-right: 4px;
+  flex-shrink: 0;
 }
 </style>
