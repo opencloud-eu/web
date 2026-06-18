@@ -26,7 +26,7 @@
             />
           </button>
           <span v-else class="tree-expand-spacer" />
-          <oc-resource-icon :resource="resource" size="medium" class="mr-1" />
+          <resource-icon :resource="resource" size="medium" class="mr-1" />
           <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-1" />
         </div>
       </template>
@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceTable, useClientService } from '@opencloud-eu/web-pkg'
+import { ResourceTable, ResourceIcon, useClientService } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
