@@ -50,19 +50,31 @@
               <div class="flex items-center justify-between max-w-full">
                 <div class="flex items-center max-w-full">
                   <oc-icon
-                    :name="typedSchema?.icon || 'archive'"
+                    v-if="typedSchema"
+                    :name="typedSchema.icon || 'folder'"
                     size="xxlarge"
                     class="mr-4"
                     variation="passive"
+                  />
+                  <oc-icon
+                    v-else
+                    name="error-warning"
+                    size="xxlarge"
+                    class="mr-4"
+                    variation="danger"
                   />
                   <h2 class="break-all my-0">
                     {{ resourcesStore.currentFolder?.name || '' }}
                   </h2>
                 </div>
               </div>
-              <p class="mt-1 mb-0 opacity-60">
-                {{ typedSchema?.label || currentFolderType }}
+              <p v-if="typedSchema" class="mt-1 mb-0 opacity-60">
+                {{ typedSchema.label }}
                 · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
+              </p>
+              <p v-else class="mt-1 mb-0 text-danger-500">
+                {{ $gettext('No view found for type "%{type}"', { type: currentFolderType }) }}
+                — .views/{{ currentFolderType }}.json missing
               </p>
             </div>
             <list-header
