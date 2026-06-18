@@ -72,12 +72,12 @@ const resourcesStore = useResourcesStore()
 const expanded = ref(new Set<string>())
 const childrenMap = ref(new Map<string, Resource[]>())
 const loadingSet = ref(new Set<string>())
-// Depth lookup by resource ID — built separately from visibleResources
-const depths = ref(new Map<string, number>())
+// Depth lookup by resource ID
+const depths = new Map<string, number>()
 
 function isExpanded(id: string) { return expanded.value.has(id) }
 function isLoading(id: string) { return loadingSet.value.has(id) }
-function getDepth(id: string) { return depths.value.get(id) || 0 }
+function getDepth(id: string) { return depths.get(id) || 0 }
 
 async function toggleExpand(resource: Resource) {
   const id = resource.id
@@ -103,16 +103,16 @@ async function toggleExpand(resource: Resource) {
 function handleFileClick(options: any) { emit('fileClick', options) }
 function handleSort(options: any) { emit('sort', options) }
 
-// Build flat tree + depth map
+// Build flat tree + depth map (non-reactive map, updated synchronously)
 const visibleResources = computed(() => {
   const result: Resource[] = []
-  const depthMap = new Map<string, number>()
+  depths.clear()
 
   function walk(resources: Resource[], depth: number) {
     for (const r of resources) {
       if (r.name?.startsWith('_type_')) continue
       result.push(r)
-      depthMap.set(r.id, depth)
+      depths.set(r.id, depth)
       if (r.type === 'folder' && expanded.value.has(r.id) && childrenMap.value.has(r.id)) {
         walk(childrenMap.value.get(r.id)!, depth + 1)
       }
@@ -120,15 +120,13 @@ const visibleResources = computed(() => {
   }
 
   walk(props.resources.filter(r => !r.name?.startsWith('_type_')), 0)
-  // Update depths ref outside of computed (via nextTick-like pattern)
-  Promise.resolve().then(() => { depths.value = depthMap })
   return result
 })
 
 watch(() => props.resources, () => {
   expanded.value = new Set()
   childrenMap.value = new Map()
-  depths.value = new Map()
+  depths.clear()
 })
 </script>
 
