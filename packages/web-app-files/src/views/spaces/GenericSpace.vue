@@ -56,7 +56,7 @@
                     variation="passive"
                   />
                   <h2 class="break-all my-0">
-                    <span v-if="currentFolderRef" class="font-mono">{{ currentFolderRef }}&nbsp;</span>{{ resourcesStore.currentFolder?.name || '' }}
+                    {{ resourcesStore.currentFolder?.name || '' }}
                   </h2>
                 </div>
               </div>
@@ -80,7 +80,7 @@
               :is="folderView.component"
               v-else
               v-model:selected-ids="selectedResourcesIds"
-              :resources="typedResources"
+              :resources="paginatedResources"
               :view-mode="viewMode"
               :space="space"
               :drag-drop="true"
@@ -174,7 +174,7 @@ import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
-import { useTypedFolderSchema, useFileReferences } from '../../composables/typedFolder'
+import { useTypedFolderSchema } from '../../composables/typedFolder'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
@@ -434,28 +434,6 @@ const currentFolderType = computed(() => {
 })
 
 const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
-
-// File references (Aktenzeichen) for typed folders
-const allResources = computed(() => resourcesStore.resources)
-const { fileRefs, currentFolderRef, getRef, loadCurrentFolderRef } = useFileReferences(space, allResources, isTyped)
-
-// Load current folder's Aktenzeichen when folder changes
-watch(() => resourcesStore.currentFolder?.id, (id) => {
-  if (id && unref(isTyped)) loadCurrentFolderRef(id)
-})
-
-// Resources with Aktencode prefix in display name for typed folders
-const typedResources = computed(() => {
-  const resources = unref(paginatedResources)
-  if (!unref(isTyped) || unref(fileRefs).size === 0) return resources
-  return resources.map((r) => {
-    const ref = getRef(r.id)
-    if (ref && r.type === 'folder' && !r.name.startsWith('_type_')) {
-      return { ...r, name: `${ref} ${r.name}` }
-    }
-    return r
-  })
-})
 
 onMounted(() => {
   performLoaderTask(false)
