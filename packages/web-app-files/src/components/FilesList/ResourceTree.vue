@@ -48,7 +48,7 @@
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceIcon, useClientService, formatDateFromJSDate, formatFileSize, createFileRouteOptions } from '@opencloud-eu/web-pkg'
+import { ResourceIcon, useClientService, useResourcesStore, formatDateFromJSDate, formatFileSize, createFileRouteOptions } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
@@ -69,7 +69,7 @@ const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const { current: currentLanguage } = useGettext()
 const clientService = useClientService()
 const router = useRouter()
-const resourcesStore = (await import('@opencloud-eu/web-pkg')).useResourcesStore()
+const resourcesStore = useResourcesStore()
 
 const expanded = ref(new Set<string>())
 const childrenMap = ref(new Map<string, Resource[]>())
