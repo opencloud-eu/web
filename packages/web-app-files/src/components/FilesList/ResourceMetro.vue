@@ -9,7 +9,7 @@
       <div class="tile-name">{{ resource.name }}</div>
       <button
         class="tile-menu"
-        @click.stop="openContextMenu(resource, $event)"
+        @click.stop="openContextMenu(resource)"
       >
         <oc-icon name="more-2" size="small" />
       </button>
@@ -24,7 +24,7 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
+import { createFileRouteOptions, eventBus } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
@@ -59,15 +59,10 @@ function handleClick(resource: Resource) {
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
-function openContextMenu(resource: Resource, event: MouseEvent) {
-  // Select the resource first, then simulate right-click for context menu
+function openContextMenu(resource: Resource) {
   selectedIds.value = [resource.id]
-  const contextEvent = new MouseEvent('contextmenu', {
-    bubbles: true,
-    clientX: event.clientX,
-    clientY: event.clientY
-  })
-  ;(event.target as HTMLElement)?.dispatchEvent(contextEvent)
+  eventBus.publish('app.files.list.clicked', resource)
+  eventBus.publish('sidebar.open')
 }
 
 function toggleMenu(id: string) {
