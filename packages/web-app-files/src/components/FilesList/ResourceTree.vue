@@ -46,8 +46,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceIcon, useClientService, formatDateFromJSDate, formatFileSize } from '@opencloud-eu/web-pkg'
+import { ResourceIcon, useClientService, formatDateFromJSDate, formatFileSize, createFileRouteOptions } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
@@ -67,6 +68,7 @@ const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
 const { current: currentLanguage } = useGettext()
 const clientService = useClientService()
+const router = useRouter()
 const resourcesStore = (await import('@opencloud-eu/web-pkg')).useResourcesStore()
 
 const expanded = ref(new Set<string>())
@@ -100,7 +102,12 @@ async function toggleExpand(resource: Resource) {
 }
 
 function handleClick(resource: Resource) {
-  emit('fileClick', { resources: [resource], space: props.space })
+  if (resource.type === 'folder') {
+    const opts = createFileRouteOptions(props.space, resource)
+    router.push(opts)
+  } else {
+    emit('fileClick', { resources: [resource], space: props.space })
+  }
 }
 
 const flatTree = computed(() => {

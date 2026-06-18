@@ -6,7 +6,6 @@
       class="resource-metro-tile"
       @click="handleClick(resource)"
     >
-      <resource-icon :resource="resource" size="large" class="tile-icon" />
       <div class="tile-name">{{ resource.name }}</div>
     </div>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
@@ -17,8 +16,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ResourceIcon } from '@opencloud-eu/web-pkg'
+import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
@@ -34,9 +34,16 @@ const props = defineProps<{
 
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
+const router = useRouter()
 
 function handleClick(resource: Resource) {
-  emit('fileClick', { resources: [resource], space: props.space })
+  // Navigate directly — emit doesn't reliably trigger through dynamic component
+  if (resource.type === 'folder') {
+    const opts = createFileRouteOptions(props.space, resource)
+    router.push(opts)
+  } else {
+    emit('fileClick', { resources: [resource], space: props.space })
+  }
 }
 
 const filteredResources = computed(() => {
