@@ -66,6 +66,7 @@ const filteredResources = computed(() => {
   line-height: 1.4;
   padding: 8px;
 }
-/* Hide only the name in the bottom bar (name is now in preview area) */
+/* Hide name in bottom bar, push icons to the right */
 .metro-view .resource-name-wrapper { display: none !important; }
+.metro-view .oc-card-body > .p-2 > .flex { justify-content: flex-end !important; }
 </style>
