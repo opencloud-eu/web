@@ -12,6 +12,8 @@ import {
   folderViewsTrashOverviewExtensionPoint
 } from '../../extensionPoints'
 import { markRaw } from 'vue'
+import ResourceTree from '../../components/FilesList/ResourceTree.vue'
+import ResourceMetro from '../../components/FilesList/ResourceMetro.vue'
 
 export const useFolderViews = (): FolderViewExtension[] => {
   const { $gettext } = useGettext()
@@ -87,6 +89,40 @@ export const useFolderViews = (): FolderViewExtension[] => {
           fillType: 'none'
         },
         component: markRaw(ResourceTiles)
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-tree',
+      type: 'folderView',
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id
+      ],
+      folderView: {
+        name: 'resource-tree',
+        label: $gettext('Tree view'),
+        icon: {
+          name: 'node-tree',
+          fillType: 'none'
+        },
+        component: markRaw(ResourceTree)
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-metro',
+      type: 'folderView',
+      extensionPointIds: [
+        folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id
+      ],
+      folderView: {
+        name: 'resource-metro',
+        label: $gettext('Metro tiles view'),
+        icon: {
+          name: 'layout-grid',
+          fillType: 'none'
+        },
+        component: markRaw(ResourceMetro)
       }
     }
   ]
