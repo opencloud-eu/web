@@ -1,42 +1,46 @@
 <template>
   <div class="resource-tree">
-    <table class="resource-tree-table w-full text-sm">
-      <tbody>
-        <tr
-          v-for="resource in visibleResources"
-          :key="resource.id"
-          class="resource-tree-row hover:bg-role-surface-container-highlight cursor-pointer border-b border-role-outline"
+    <div
+      v-for="resource in visibleResources"
+      :key="resource.id + '-' + (resource._depth || 0)"
+      class="resource-tree-row"
+    >
+      <div
+        class="flex items-center py-1 px-2 cursor-pointer hover:bg-role-surface-container-highlight border-b border-role-outline"
+        :style="{ paddingLeft: `${(resource._depth || 0) * 24 + 8}px` }"
+      >
+        <button
+          v-if="resource.type === 'folder'"
+          class="tree-expand-btn"
+          @click.stop="toggleExpand(resource)"
+        >
+          <oc-icon
+            :name="isExpanded(resource.id) ? 'arrow-down-s' : 'arrow-right-s'"
+            size="small"
+          />
+        </button>
+        <span v-else class="tree-expand-spacer" />
+
+        <div
+          class="flex items-center flex-1 min-w-0 cursor-pointer"
           @click="handleClick(resource)"
         >
-          <td class="py-1.5 whitespace-nowrap" :style="{ paddingLeft: `${(resource._depth || 0) * 20 + 8}px` }">
-            <div class="flex items-center">
-              <button
-                v-if="resource.type === 'folder'"
-                class="tree-toggle mr-1"
-                @click.stop="toggleExpand(resource)"
-              >
-                <oc-icon
-                  :name="isExpanded(resource.id) ? 'arrow-down-s' : 'arrow-right-s'"
-                  size="small"
-                />
-              </button>
-              <span v-else class="inline-block w-5 mr-1" />
-              <oc-resource-icon :resource="resource" size="small" class="mr-2 shrink-0" />
-              <span class="truncate">{{ resource.name }}</span>
-              <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-2" />
-            </div>
-          </td>
-          <td class="py-1.5 text-right opacity-50 pr-4 whitespace-nowrap">
-            {{ resource.type === 'folder' ? '' : formatSize(resource.size) }}
-          </td>
-          <td class="py-1.5 text-right opacity-50 pr-4 whitespace-nowrap">
-            {{ formatDate(resource.mdate) }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+          <oc-resource-icon :resource="resource" size="small" class="mr-2 shrink-0" />
+          <span class="truncate text-sm">{{ resource.name }}</span>
+        </div>
+
+        <span class="text-xs opacity-40 whitespace-nowrap ml-3 w-20 text-right">
+          {{ resource.type !== 'folder' ? formatSize(resource.size) : '' }}
+        </span>
+        <span class="text-xs opacity-40 whitespace-nowrap ml-3 w-32 text-right">
+          {{ formatDate(resource.mdate) }}
+        </span>
+
+        <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-2" />
+      </div>
+    </div>
     <div v-if="!visibleResources.length" class="p-4 text-sm opacity-50">
-      {{ $gettext('No items') }}
+      No items
     </div>
   </div>
 </template>
@@ -59,21 +63,16 @@ const props = defineProps<{
   viewSize?: number
 }>()
 
-const emit = defineEmits<{
-  'fileClick': [{ resources: Resource[], space: SpaceResource }]
-  'fileDropped': [string]
-  'itemVisible': [Resource]
-  'sort': [{ sortBy: string; sortDir: string }]
-}>()
+const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
-const { $gettext, current: currentLanguage } = useGettext()
+const { current: currentLanguage } = useGettext()
 const clientService = useClientService()
 
-const expanded = ref<Set<string>>(new Set())
-const childrenMap = ref<Map<string, Resource[]>>(new Map())
-const loadingSet = ref<Set<string>>(new Set())
+const expanded = ref(new Set<string>())
+const childrenMap = ref(new Map<string, Resource[]>())
+const loadingSet = ref(new Set<string>())
 
 function isExpanded(id: string) { return expanded.value.has(id) }
 function isLoading(id: string) { return loadingSet.value.has(id) }
@@ -89,22 +88,35 @@ function formatDate(date: string) {
 
 async function toggleExpand(resource: Resource) {
   const id = resource.id
-  if (expanded.value.has(id)) {
-    expanded.value = new Set([...expanded.value].filter(x => x !== id))
+  const next = new Set(expanded.value)
+
+  if (next.has(id)) {
+    next.delete(id)
+    expanded.value = next
     return
   }
 
-  expanded.value = new Set([...expanded.value, id])
+  next.add(id)
+  expanded.value = next
 
   if (!childrenMap.value.has(id)) {
-    loadingSet.value = new Set([...loadingSet.value, id])
+    const ls = new Set(loadingSet.value)
+    ls.add(id)
+    loadingSet.value = ls
+
     try {
       const { children } = await clientService.webdav.listFiles(props.space, { path: resource.path })
-      childrenMap.value = new Map([...childrenMap.value, [id, children]])
+      const cm = new Map(childrenMap.value)
+      cm.set(id, children)
+      childrenMap.value = cm
     } catch {
-      childrenMap.value = new Map([...childrenMap.value, [id, []]])
+      const cm = new Map(childrenMap.value)
+      cm.set(id, [])
+      childrenMap.value = cm
     } finally {
-      loadingSet.value = new Set([...loadingSet.value].filter(x => x !== id))
+      const ls2 = new Set(loadingSet.value)
+      ls2.delete(id)
+      loadingSet.value = ls2
     }
   }
 }
@@ -116,17 +128,17 @@ function handleClick(resource: Resource) {
 const visibleResources = computed(() => {
   const result: (Resource & { _depth?: number })[] = []
 
-  function addLevel(resources: Resource[], depth: number) {
+  function walk(resources: Resource[], depth: number) {
     for (const r of resources) {
       if (r.name?.startsWith('_type_')) continue
       result.push({ ...r, _depth: depth })
       if (r.type === 'folder' && expanded.value.has(r.id) && childrenMap.value.has(r.id)) {
-        addLevel(childrenMap.value.get(r.id)!, depth + 1)
+        walk(childrenMap.value.get(r.id)!, depth + 1)
       }
     }
   }
 
-  addLevel(props.resources.filter(r => !r.name?.startsWith('_type_')), 0)
+  walk(props.resources.filter(r => !r.name?.startsWith('_type_')), 0)
   return result
 })
 
@@ -137,16 +149,24 @@ watch(() => props.resources, () => {
 </script>
 
 <style scoped>
-.tree-toggle {
+.tree-expand-btn {
   background: none;
   border: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   padding: 2px;
-}
-.tree-toggle:hover {
-  background: rgba(0, 0, 0, 0.05);
+  margin-right: 4px;
   border-radius: 4px;
+  width: 24px;
+  justify-content: center;
+}
+.tree-expand-btn:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+.tree-expand-spacer {
+  display: inline-block;
+  width: 24px;
+  margin-right: 4px;
 }
 </style>

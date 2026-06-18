@@ -1,21 +1,20 @@
 <template>
-  <div class="resource-metro grid gap-3 p-4" :style="gridStyle">
+  <div class="resource-metro grid gap-4 p-4" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))">
     <div
       v-for="resource in filteredResources"
       :key="resource.id"
       class="resource-metro-tile"
       :class="tileClass(resource)"
-      @click="handleClick(resource)"
+      @click.prevent="handleClick(resource, $event)"
+      @dblclick.prevent="handleClick(resource, $event)"
     >
-      <div class="text-center p-4">
-        <oc-resource-icon :resource="resource" size="large" class="mb-2 mx-auto" />
-        <div class="resource-metro-name text-sm font-bold leading-tight">
-          {{ resource.name }}
-        </div>
+      <div class="tile-content">
+        <oc-resource-icon :resource="resource" size="large" class="tile-icon" />
+        <div class="tile-name">{{ resource.name }}</div>
       </div>
     </div>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
-      {{ $gettext('No items') }}
+      No items
     </div>
   </div>
 </template>
@@ -23,7 +22,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
   resources: Resource[]
@@ -37,18 +35,10 @@ const props = defineProps<{
   viewSize?: number
 }>()
 
-const emit = defineEmits<{
-  'fileClick': [{ resources: Resource[], space: SpaceResource }]
-  'fileDropped': [string]
-  'itemVisible': [Resource]
-  'sort': [{ sortBy: string; sortDir: string }]
-}>()
+const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
-const { $gettext } = useGettext()
-
-// Deterministic color class based on name hash
 const colorClasses = [
   'metro-color-0', 'metro-color-1', 'metro-color-2', 'metro-color-3', 'metro-color-4',
   'metro-color-5', 'metro-color-6', 'metro-color-7', 'metro-color-8', 'metro-color-9'
@@ -66,38 +56,41 @@ function tileClass(resource: Resource): string {
   return colorClasses[hashName(resource.name) % colorClasses.length]
 }
 
-function handleClick(resource: Resource) {
+function handleClick(resource: Resource, event: MouseEvent) {
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
 const filteredResources = computed(() => {
   return props.resources.filter(r => !r.name?.startsWith('_type_'))
 })
-
-const gridStyle = computed(() => {
-  const size = props.viewSize || 3
-  const cols = Math.max(2, Math.min(6, size + 1))
-  return {
-    gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`
-  }
-})
 </script>
 
 <style scoped>
 .resource-metro-tile {
+  aspect-ratio: 4 / 3;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 120px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
   transition: transform 0.15s, box-shadow 0.15s;
-  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 .resource-metro-tile:hover {
-  transform: scale(1.03);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.15);
+  transform: scale(1.04);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+.tile-content {
+  text-align: center;
+  padding: 16px;
+}
+.tile-icon {
+  margin-bottom: 8px;
+}
+.tile-name {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.3;
+  word-break: break-word;
 }
 .metro-color-0 { background: #1565c0; color: #fff; }
 .metro-color-1 { background: #2e7d32; color: #fff; }
