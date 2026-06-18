@@ -1,10 +1,5 @@
 <template>
   <div class="resource-tree">
-    <!--
-      Reuse the real ResourceTable in condensed mode.
-      We flatten the tree into a single resource list and inject
-      depth markers via a wrapper around the name slot.
-    -->
     <resource-table
       v-model:selected-ids="selectedIds"
       :resources="visibleResources"
@@ -17,12 +12,12 @@
       @file-click="handleFileClick"
       @sort="handleSort"
     >
-      <template #name="{ resource }">
-        <div class="flex items-center" :style="{ paddingLeft: `${(resource._depth || 0) * 20}px` }">
+      <!-- Inject expand toggle before the resource icon via the image slot -->
+      <template #image="{ resource }">
+        <div class="tree-indent flex items-center" :style="{ paddingLeft: `${(resource._depth || 0) * 20}px` }">
           <button
             v-if="resource.type === 'folder'"
             class="tree-expand-btn"
-            :aria-label="isExpanded(resource.id) ? 'Collapse' : 'Expand'"
             @click.stop="toggleExpand(resource)"
           >
             <oc-icon
@@ -31,9 +26,8 @@
             />
           </button>
           <span v-else class="tree-expand-spacer" />
-          <oc-resource-icon :resource="resource" size="small" class="mr-2 shrink-0" />
-          <span class="truncate">{{ resource.name }}</span>
-          <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-2" />
+          <oc-resource-icon :resource="resource" size="small" />
+          <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-1" />
         </div>
       </template>
 
@@ -45,10 +39,6 @@
         <slot name="footer" />
       </template>
     </resource-table>
-
-    <div v-if="!visibleResources.length" class="p-4 text-sm opacity-50">
-      No items
-    </div>
   </div>
 </template>
 
@@ -70,9 +60,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
-
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
-
 const clientService = useClientService()
 
 const expanded = ref(new Set<string>())
@@ -110,13 +98,8 @@ async function toggleExpand(resource: Resource) {
   }
 }
 
-function handleFileClick(options: any) {
-  emit('fileClick', options)
-}
-
-function handleSort(options: any) {
-  emit('sort', options)
-}
+function handleFileClick(options: any) { emit('fileClick', options) }
+function handleSort(options: any) { emit('sort', options) }
 
 const visibleResources = computed(() => {
   const result: (Resource & { _depth?: number })[] = []
