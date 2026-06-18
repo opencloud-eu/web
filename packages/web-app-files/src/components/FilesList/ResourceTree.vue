@@ -14,7 +14,7 @@
     >
       <!-- Expand toggle + indent + icon (image slot replaces default icon, so we re-add it) -->
       <template #image="{ resource }">
-        <div class="tree-indent flex items-center" :style="{ marginLeft: `${getDepth(resource.id) * 20}px` }">
+        <div class="tree-indent flex items-center" :style="{ paddingLeft: `${getDepth(resource.id) * 20}px`, minWidth: `${getDepth(resource.id) * 20 + 48}px` }">
           <button
             v-if="resource.type === 'folder'"
             class="tree-expand-btn"
