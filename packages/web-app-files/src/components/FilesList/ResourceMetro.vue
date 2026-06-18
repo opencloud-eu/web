@@ -1,19 +1,14 @@
 <template>
   <div class="resource-metro grid gap-4 p-4" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))">
-    <div
+    <a
       v-for="resource in filteredResources"
       :key="resource.id"
+      :href="getLink(resource)"
       class="resource-metro-tile"
-      @click="handleClick(resource)"
+      @click.prevent="navigate(resource)"
     >
-      <div class="tile-name">{{ resource.name }}</div>
-      <button
-        class="tile-menu"
-        @click.stop="handleMenuClick(resource)"
-      >
-        <oc-icon name="more-2" size="small" />
-      </button>
-    </div>
+      <span class="tile-name">{{ resource.name }}</span>
+    </a>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
       No items
     </div>
@@ -42,20 +37,26 @@ const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'up
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const router = useRouter()
 
-function handleClick(resource: Resource) {
-  // Space listing: resource has driveType (project/personal)
-  if ((resource as any).driveType) {
-    router.push(createFileRouteOptions(resource as any as SpaceResource, { path: '' }))
-    return
-  }
-  // Normal folder/file
-  emit('fileClick', { resources: [resource], space: props.space })
+function getRouteOpts(resource: Resource) {
+  const space = (resource as any).driveType ? (resource as any as SpaceResource) : props.space
+  return createFileRouteOptions(space, { path: (resource as any).driveType ? '' : (resource.path || ''), fileId: resource.fileId || resource.id })
 }
 
-function handleMenuClick(resource: Resource) {
-  // Select item, then emit fileClick which triggers context actions via sidebar
-  selectedIds.value = [resource.id]
-  emit('fileClick', { resources: [resource], space: props.space })
+function getLink(resource: Resource): string {
+  try {
+    const route = router.resolve(getRouteOpts(resource))
+    return route.href
+  } catch {
+    return '#'
+  }
+}
+
+function navigate(resource: Resource) {
+  try {
+    router.push(getRouteOpts(resource))
+  } catch {
+    emit('fileClick', { resources: [resource], space: props.space })
+  }
 }
 
 const filteredResources = computed(() => {
@@ -67,13 +68,12 @@ const filteredResources = computed(() => {
 .resource-metro-tile {
   aspect-ratio: 4 / 3;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
   cursor: pointer;
   padding: 16px;
-  position: relative;
+  text-decoration: none;
   transition: transform 0.15s, box-shadow 0.15s;
   background: var(--oc-color-background-hover, #f5f5f5);
   border: 1px solid var(--oc-color-border, #e0e0e0);
@@ -90,25 +90,5 @@ const filteredResources = computed(() => {
   line-height: 1.3;
   word-break: break-word;
   text-align: center;
-  pointer-events: none;
-}
-.tile-menu {
-  position: absolute;
-  bottom: 6px;
-  right: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
-  opacity: 0.4;
-  transition: opacity 0.15s;
-}
-.resource-metro-tile:hover .tile-menu {
-  opacity: 0.8;
-}
-.tile-menu:hover {
-  background: rgba(0, 0, 0, 0.08);
-  opacity: 1;
 }
 </style>
