@@ -119,8 +119,8 @@ export const useFolderViews = (): FolderViewExtension[] => {
         name: 'resource-metro',
         label: $gettext('Metro tiles view'),
         icon: {
-          name: 'layout-grid',
-          fillType: 'none'
+          name: 'dashboard',
+          fillType: 'fill'
         },
         component: markRaw(ResourceMetro)
       }

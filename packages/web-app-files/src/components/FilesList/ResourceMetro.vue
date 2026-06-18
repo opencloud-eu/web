@@ -47,9 +47,16 @@ const router = useRouter()
 const openMenu = ref<string | null>(null)
 
 function handleClick(resource: Resource) {
-  if (resource.type === 'folder') {
-    const opts = createFileRouteOptions(props.space, resource)
-    router.push(opts)
+  // In space listing, resources are spaces with driveType; in folder listing they have type=folder
+  if (resource.type === 'folder' || (resource as any).driveType) {
+    try {
+      const space = (resource as any).driveType ? resource as any : props.space
+      const target = (resource as any).driveType ? { ...resource, path: '' } : resource
+      const opts = createFileRouteOptions(space, target)
+      router.push(opts)
+    } catch {
+      emit('fileClick', { resources: [resource], space: props.space })
+    }
   } else {
     emit('fileClick', { resources: [resource], space: props.space })
   }
