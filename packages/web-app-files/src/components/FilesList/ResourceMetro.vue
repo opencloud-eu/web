@@ -9,13 +9,10 @@
       <div class="tile-name">{{ resource.name }}</div>
       <button
         class="tile-menu"
-        @click.stop="toggleMenu(resource.id)"
+        @click.stop="openContextMenu(resource, $event)"
       >
         <oc-icon name="more-2" size="small" />
       </button>
-      <div v-if="openMenu === resource.id" class="tile-context" @click.stop>
-        <slot name="contextMenu" :resource="resource" />
-      </div>
     </div>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
       No items
@@ -44,7 +41,6 @@ const props = defineProps<{
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const router = useRouter()
-const openMenu = ref<string | null>(null)
 
 function handleClick(resource: Resource) {
   // Space listing: resource itself is a SpaceResource with getDriveAliasAndItem
@@ -61,6 +57,17 @@ function handleClick(resource: Resource) {
   }
   // File: trigger default action
   emit('fileClick', { resources: [resource], space: props.space })
+}
+
+function openContextMenu(resource: Resource, event: MouseEvent) {
+  // Select the resource first, then simulate right-click for context menu
+  selectedIds.value = [resource.id]
+  const contextEvent = new MouseEvent('contextmenu', {
+    bubbles: true,
+    clientX: event.clientX,
+    clientY: event.clientY
+  })
+  ;(event.target as HTMLElement)?.dispatchEvent(contextEvent)
 }
 
 function toggleMenu(id: string) {
@@ -119,16 +126,5 @@ const filteredResources = computed(() => {
 .tile-menu:hover {
   background: rgba(0, 0, 0, 0.08);
   opacity: 1;
-}
-.tile-context {
-  position: absolute;
-  bottom: 32px;
-  right: 4px;
-  z-index: 10;
-  background: var(--oc-color-background-default, #fff);
-  border: 1px solid var(--oc-color-border, #e0e0e0);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  min-width: 180px;
 }
 </style>
