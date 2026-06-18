@@ -15,7 +15,7 @@
       <template #image="{ resource }">
         <span
           class="tree-indent-block"
-          :style="{ width: getDepth(resource.id) * 20 + 'px', display: 'inline-block', flexShrink: 0 }"
+          :style="{ width: calcDepth(resource) * 20 + 'px', display: 'inline-block', flexShrink: 0 }"
         />
         <button
           v-if="resource.type === 'folder'"
@@ -72,12 +72,23 @@ const resourcesStore = useResourcesStore()
 const expanded = ref(new Set<string>())
 const childrenMap = ref(new Map<string, Resource[]>())
 const loadingSet = ref(new Set<string>())
-// Depth lookup by resource ID
-const depths = new Map<string, number>()
-
 function isExpanded(id: string) { return expanded.value.has(id) }
 function isLoading(id: string) { return loadingSet.value.has(id) }
-function getDepth(id: string) { return depths.get(id) || 0 }
+
+// Calculate depth from path segments relative to root resources
+function calcDepth(resource: Resource): number {
+  if (!resource.path) return 0
+  const rootPaths = props.resources.filter(r => !r.name?.startsWith('_type_')).map(r => r.path)
+  const segments = resource.path.split('/').filter(Boolean)
+  // Find the shortest root path segment count
+  let minRootSegments = Infinity
+  for (const rp of rootPaths) {
+    const cnt = rp.split('/').filter(Boolean).length
+    if (cnt < minRootSegments) minRootSegments = cnt
+  }
+  if (minRootSegments === Infinity) return 0
+  return segments.length - minRootSegments
+}
 
 async function toggleExpand(resource: Resource) {
   const id = resource.id
@@ -103,30 +114,26 @@ async function toggleExpand(resource: Resource) {
 function handleFileClick(options: any) { emit('fileClick', options) }
 function handleSort(options: any) { emit('sort', options) }
 
-// Build flat tree + depth map (non-reactive map, updated synchronously)
 const visibleResources = computed(() => {
   const result: Resource[] = []
-  depths.clear()
 
-  function walk(resources: Resource[], depth: number) {
+  function walk(resources: Resource[]) {
     for (const r of resources) {
       if (r.name?.startsWith('_type_')) continue
       result.push(r)
-      depths.set(r.id, depth)
       if (r.type === 'folder' && expanded.value.has(r.id) && childrenMap.value.has(r.id)) {
-        walk(childrenMap.value.get(r.id)!, depth + 1)
+        walk(childrenMap.value.get(r.id)!)
       }
     }
   }
 
-  walk(props.resources.filter(r => !r.name?.startsWith('_type_')), 0)
+  walk(props.resources.filter(r => !r.name?.startsWith('_type_')))
   return result
 })
 
 watch(() => props.resources, () => {
   expanded.value = new Set()
   childrenMap.value = new Map()
-  depths.clear()
 })
 </script>
 
