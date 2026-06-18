@@ -16,7 +16,7 @@
       <template #image="{ resource }">
         <div class="tree-indent flex items-center" :style="{ marginLeft: `${(resource._depth || 0) * 20}px` }">
           <button
-            v-if="resource.type === 'folder' && Number(resource.size) > 0"
+            v-if="resource.type === 'folder'"
             class="tree-expand-btn"
             @click.stop="toggleExpand(resource)"
           >
