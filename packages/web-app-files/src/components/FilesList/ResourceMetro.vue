@@ -47,19 +47,20 @@ const router = useRouter()
 const openMenu = ref<string | null>(null)
 
 function handleClick(resource: Resource) {
-  // In space listing, resources are spaces with driveType; in folder listing they have type=folder
-  if (resource.type === 'folder' || (resource as any).driveType) {
-    try {
-      const space = (resource as any).driveType ? resource as any : props.space
-      const target = (resource as any).driveType ? { ...resource, path: '' } : resource
-      const opts = createFileRouteOptions(space, target)
-      router.push(opts)
-    } catch {
-      emit('fileClick', { resources: [resource], space: props.space })
-    }
-  } else {
-    emit('fileClick', { resources: [resource], space: props.space })
+  // Space listing: resource itself is a SpaceResource with getDriveAliasAndItem
+  if (typeof (resource as any).getDriveAliasAndItem === 'function') {
+    const opts = createFileRouteOptions(resource as any as SpaceResource, { path: '' })
+    router.push(opts)
+    return
   }
+  // Folder listing: navigate into folder
+  if (resource.type === 'folder') {
+    const opts = createFileRouteOptions(props.space, resource)
+    router.push(opts)
+    return
+  }
+  // File: trigger default action
+  emit('fileClick', { resources: [resource], space: props.space })
 }
 
 function toggleMenu(id: string) {
