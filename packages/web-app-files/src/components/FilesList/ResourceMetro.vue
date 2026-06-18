@@ -5,14 +5,21 @@
       :key="resource.id"
       class="resource-metro-tile"
       @click="handleClick(resource)"
+      @contextmenu.prevent="onRightClick($event, resource)"
     >
       <div class="tile-name">{{ resource.name }}</div>
-      <button
+      <context-menu-quick-action
+        :ref="(el) => { if (el) drops[resource.id] = (el as any).drop }"
+        :title="resource.name"
+        :item="resource"
+        :resource-dom-selector="() => resource.id"
         class="tile-menu"
-        @click.stop="openContextMenu(resource)"
+        @quick-action-clicked="onMenuClick($event, resource)"
       >
-        <oc-icon name="more-2" size="small" />
-      </button>
+        <template #contextMenu>
+          <slot name="contextMenu" :resource="resource" />
+        </template>
+      </context-menu-quick-action>
     </div>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
       No items
@@ -21,10 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, ComponentPublicInstance } from 'vue'
 import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { createFileRouteOptions, eventBus } from '@opencloud-eu/web-pkg'
+import { createFileRouteOptions, ContextMenuQuickAction } from '@opencloud-eu/web-pkg'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const props = defineProps<{
   resources: Resource[]
@@ -41,32 +49,30 @@ const props = defineProps<{
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const router = useRouter()
+const drops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
 function handleClick(resource: Resource) {
-  // Space listing: resource itself is a SpaceResource with getDriveAliasAndItem
   if (typeof (resource as any).getDriveAliasAndItem === 'function') {
     const opts = createFileRouteOptions(resource as any as SpaceResource, { path: '' })
     router.push(opts)
     return
   }
-  // Folder listing: navigate into folder
   if (resource.type === 'folder') {
     const opts = createFileRouteOptions(props.space, resource)
     router.push(opts)
     return
   }
-  // File: trigger default action
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
-function openContextMenu(resource: Resource) {
+function onMenuClick(event: MouseEvent | KeyboardEvent, resource: Resource) {
   selectedIds.value = [resource.id]
-  eventBus.publish('app.files.list.clicked', resource)
-  eventBus.publish('sidebar.open')
+  drops.value[resource.id]?.show({ event })
 }
 
-function toggleMenu(id: string) {
-  openMenu.value = openMenu.value === id ? null : id
+function onRightClick(event: MouseEvent, resource: Resource) {
+  selectedIds.value = [resource.id]
+  drops.value[resource.id]?.show({ event })
 }
 
 const filteredResources = computed(() => {
@@ -107,19 +113,10 @@ const filteredResources = computed(() => {
   position: absolute;
   bottom: 6px;
   right: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 4px;
   opacity: 0.4;
   transition: opacity 0.15s;
 }
 .resource-metro-tile:hover .tile-menu {
   opacity: 0.8;
-}
-.tile-menu:hover {
-  background: rgba(0, 0, 0, 0.08);
-  opacity: 1;
 }
 </style>
