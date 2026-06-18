@@ -4,15 +4,10 @@
       v-for="resource in filteredResources"
       :key="resource.id"
       class="resource-metro-tile"
-      role="button"
-      tabindex="0"
       @click="handleClick(resource)"
-      @keydown.enter="handleClick(resource)"
     >
-      <div class="tile-content">
-        <oc-resource-icon :resource="resource" size="large" class="tile-icon" />
-        <div class="tile-name">{{ resource.name }}</div>
-      </div>
+      <resource-icon :resource="resource" size="large" class="tile-icon" />
+      <div class="tile-name">{{ resource.name }}</div>
     </div>
     <div v-if="!filteredResources.length" class="col-span-full p-4 text-sm opacity-50 text-center">
       No items
@@ -23,6 +18,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { ResourceIcon } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
@@ -37,11 +33,9 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
-
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 
 function handleClick(resource: Resource) {
-  console.log('[Metro] click', resource.name, resource.type)
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
@@ -54,10 +48,12 @@ const filteredResources = computed(() => {
 .resource-metro-tile {
   aspect-ratio: 4 / 3;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 10px;
   cursor: pointer;
+  padding: 16px;
   transition: transform 0.15s, box-shadow 0.15s;
   background: var(--oc-color-background-hover, #f5f5f5);
   border: 1px solid var(--oc-color-border, #e0e0e0);
@@ -68,17 +64,16 @@ const filteredResources = computed(() => {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   background: var(--oc-color-background-highlight, #eee);
 }
-.tile-content {
-  text-align: center;
-  padding: 16px;
-}
 .tile-icon {
   margin-bottom: 8px;
+  pointer-events: none;
 }
 .tile-name {
   font-size: 14px;
   font-weight: 700;
   line-height: 1.3;
   word-break: break-word;
+  text-align: center;
+  pointer-events: none;
 }
 </style>
