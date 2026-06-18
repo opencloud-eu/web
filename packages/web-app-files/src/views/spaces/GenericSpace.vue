@@ -56,7 +56,7 @@
                     variation="passive"
                   />
                   <h2 class="break-all my-0">
-                    <span v-if="currentFolderRef" class="font-mono">{{ currentFolderRef }} </span>{{ resourcesStore.currentFolder?.name || '' }}
+                    <span v-if="currentFolderRef" class="font-mono">{{ currentFolderRef }}&nbsp;</span>{{ resourcesStore.currentFolder?.name || '' }}
                   </h2>
                 </div>
               </div>
