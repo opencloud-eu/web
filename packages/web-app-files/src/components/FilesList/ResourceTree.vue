@@ -12,9 +12,9 @@
       @file-click="handleFileClick"
       @sort="handleSort"
     >
-      <!-- Inject expand toggle before the resource icon via the image slot -->
+      <!-- Expand toggle + indent + icon (image slot replaces default icon, so we re-add it) -->
       <template #image="{ resource }">
-        <div class="tree-indent flex items-center" :style="{ paddingLeft: `${(resource._depth || 0) * 20}px` }">
+        <div class="tree-indent flex items-center" :style="{ marginLeft: `${(resource._depth || 0) * 20}px` }">
           <button
             v-if="resource.type === 'folder'"
             class="tree-expand-btn"
@@ -26,7 +26,7 @@
             />
           </button>
           <span v-else class="tree-expand-spacer" />
-          <oc-resource-icon :resource="resource" size="small" />
+          <oc-resource-icon :resource="resource" size="medium" class="mr-1" />
           <oc-spinner v-if="isLoading(resource.id)" size="xsmall" class="ml-1" />
         </div>
       </template>
