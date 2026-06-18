@@ -43,12 +43,12 @@ const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
 const router = useRouter()
 
 function handleClick(resource: Resource) {
-  // Space listing: resource is a SpaceResource with getDriveAliasAndItem
-  if (typeof (resource as any).getDriveAliasAndItem === 'function') {
+  // Space listing: resource has driveType (project/personal)
+  if ((resource as any).driveType) {
     router.push(createFileRouteOptions(resource as any as SpaceResource, { path: '' }))
     return
   }
-  // Normal folder/file: emit for GenericSpace triggerDefaultAction
+  // Normal folder/file
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
