@@ -66,6 +66,6 @@ const filteredResources = computed(() => {
   line-height: 1.4;
   padding: 8px;
 }
-/* Hide the bottom name bar (name is now in preview area) */
-.metro-view .oc-card-body > .p-2 { display: none !important; }
+/* Hide only the name in the bottom bar (name is now in preview area) */
+.metro-view .resource-name-wrapper { display: none !important; }
 </style>
