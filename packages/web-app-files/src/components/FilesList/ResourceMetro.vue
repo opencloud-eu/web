@@ -22,7 +22,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 
 const props = defineProps<{
   resources: Resource[]
@@ -38,8 +40,15 @@ const props = defineProps<{
 
 const emit = defineEmits(['fileClick', 'fileDropped', 'itemVisible', 'sort', 'update:selectedIds'])
 const selectedIds = defineModel<string[]>('selectedIds', { default: () => [] })
+const router = useRouter()
 
 function handleClick(resource: Resource) {
+  // Space listing: resource is a SpaceResource with getDriveAliasAndItem
+  if (typeof (resource as any).getDriveAliasAndItem === 'function') {
+    router.push(createFileRouteOptions(resource as any as SpaceResource, { path: '' }))
+    return
+  }
+  // Normal folder/file: emit for GenericSpace triggerDefaultAction
   emit('fileClick', { resources: [resource], space: props.space })
 }
 
