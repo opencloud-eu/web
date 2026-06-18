@@ -14,7 +14,7 @@
     >
       <!-- Expand toggle + indent + icon (image slot replaces default icon, so we re-add it) -->
       <template #image="{ resource }">
-        <div class="tree-indent flex items-center" :style="{ marginLeft: `${(resource._depth || 0) * 20}px` }">
+        <div class="tree-indent flex items-center" :style="{ marginLeft: `${getDepth(resource.id) * 20}px` }">
           <button
             v-if="resource.type === 'folder'"
             class="tree-expand-btn"
@@ -67,9 +67,11 @@ const resourcesStore = useResourcesStore()
 const expanded = ref(new Set<string>())
 const childrenMap = ref(new Map<string, Resource[]>())
 const loadingSet = ref(new Set<string>())
+const depthMap = ref(new Map<string, number>())
 
 function isExpanded(id: string) { return expanded.value.has(id) }
 function isLoading(id: string) { return loadingSet.value.has(id) }
+function getDepth(id: string) { return depthMap.value.get(id) || 0 }
 
 async function toggleExpand(resource: Resource) {
   const id = resource.id
@@ -105,12 +107,14 @@ function handleFileClick(options: any) { emit('fileClick', options) }
 function handleSort(options: any) { emit('sort', options) }
 
 const visibleResources = computed(() => {
-  const result: (Resource & { _depth?: number })[] = []
+  const result: Resource[] = []
+  const depths = new Map<string, number>()
 
   function walk(resources: Resource[], depth: number) {
     for (const r of resources) {
       if (r.name?.startsWith('_type_')) continue
-      result.push({ ...r, _depth: depth })
+      result.push(r)
+      depths.set(r.id, depth)
       if (r.type === 'folder' && expanded.value.has(r.id) && childrenMap.value.has(r.id)) {
         walk(childrenMap.value.get(r.id)!, depth + 1)
       }
@@ -118,6 +122,7 @@ const visibleResources = computed(() => {
   }
 
   walk(props.resources.filter(r => !r.name?.startsWith('_type_')), 0)
+  depthMap.value = depths
   return result
 })
 
