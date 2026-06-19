@@ -102,5 +102,6 @@ export type ExtensionPoint<T extends Extension> = {
   userPreference?: {
     label: string
     description?: string
+    type?: 'select' | 'checkbox'
   }
 }

@@ -1,5 +1,13 @@
 <template>
+  <oc-checkbox
+    v-if="isCheckbox"
+    :model-value="checkboxModel"
+    size="large"
+    :label="extensionPoint.userPreference.label"
+    @update:model-value="updateCheckbox"
+  />
   <oc-select
+    v-else
     v-model="model"
     class="extension-preference"
     :label="extensionPoint.userPreference.label"
@@ -28,7 +36,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
-  name: 'ExtensionRegistry',
+  name: 'ExtensionPreference',
   props: {
     extensionPoint: {
       type: Object as PropType<ExtensionPoint<Extension>>,
@@ -39,6 +47,8 @@ export default defineComponent({
     const extensionRegistry = useExtensionRegistry()
     const extensionPreferences = useExtensionPreferencesStore()
 
+    const isCheckbox = computed(() => props.extensionPoint.userPreference?.type === 'checkbox')
+
     const allExtensions = computed(() => extensionRegistry.requestExtensions(props.extensionPoint))
     const defaultExtensionIds = computed(() => {
       return extensionPreferences.extractDefaultExtensionIds(
@@ -48,7 +58,6 @@ export default defineComponent({
     })
     const extensions = computed(() => {
       return unref(allExtensions).sort((extension1, extension2) => {
-        // default extension first
         if (
           unref(defaultExtensionIds).length &&
           (unref(defaultExtensionIds).includes(extension1.id) ||
@@ -56,11 +65,36 @@ export default defineComponent({
         ) {
           return extension1.id === props.extensionPoint.defaultExtensionId ? -1 : 1
         }
-        // all other extension sorted by id
         return extension1.id.localeCompare(extension2.id)
       })
     })
 
+    // Checkbox mode: exactly 2 extensions expected (enabled/disabled),
+    // checked = first extension selected, unchecked = second (or none)
+    const checkboxModel = computed(() => {
+      const preference = extensionPreferences.getExtensionPreference(
+        props.extensionPoint.id,
+        unref(defaultExtensionIds)
+      )
+      const exts = unref(extensions)
+      if (!exts.length) return false
+      return preference.selectedExtensionIds.includes(exts[0].id)
+    })
+
+    const updateCheckbox = (checked: boolean) => {
+      const exts = unref(extensions)
+      if (!exts.length) return
+      if (checked) {
+        extensionPreferences.setSelectedExtensionIds(props.extensionPoint.id, [exts[0].id])
+      } else {
+        extensionPreferences.setSelectedExtensionIds(
+          props.extensionPoint.id,
+          exts.length > 1 ? [exts[1].id] : []
+        )
+      }
+    }
+
+    // Select mode (existing logic)
     const modelSingleSelect = computed({
       get(): Extension {
         const preference = extensionPreferences.getExtensionPreference(
@@ -99,6 +133,9 @@ export default defineComponent({
       )
     }
     return {
+      isCheckbox,
+      checkboxModel,
+      updateCheckbox,
       extensions,
       filterOptions,
       model: props.extensionPoint.multiple ? modelMultiSelect : modelSingleSelect
