@@ -21,6 +21,7 @@ export default defineConfig({
     globals: true,
     environment: 'happy-dom',
     clearMocks: true,
+    pool: 'threads',
     include: ['**/*.spec.ts'],
     setupFiles: ['tests/unit/config/vitest.init.ts', '@vitest/web-worker'],
     exclude: [
