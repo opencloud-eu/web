@@ -31,7 +31,7 @@
           :class="{ 'h-[40vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header v-if="isSpaceFrontpage && !isTyped" :space="space" class="px-4" />
+          <space-header v-if="isSpaceFrontpage" :space="space" class="px-4" />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
@@ -46,37 +46,6 @@
             </template>
           </no-content-message>
           <template v-else>
-            <div v-if="isTyped" class="space-header p-4">
-              <div class="flex items-center justify-between max-w-full">
-                <div class="flex items-center max-w-full">
-                  <oc-icon
-                    v-if="typedSchema"
-                    :name="typedSchema.icon || 'folder'"
-                    size="xxlarge"
-                    class="mr-4"
-                    variation="passive"
-                  />
-                  <oc-icon
-                    v-else
-                    name="error-warning"
-                    size="xxlarge"
-                    class="mr-4"
-                    variation="danger"
-                  />
-                  <h2 class="break-all my-0">
-                    {{ resourcesStore.currentFolder?.name || '' }}
-                  </h2>
-                </div>
-              </div>
-              <p v-if="typedSchema" class="mt-1 mb-0 opacity-60">
-                {{ typedSchema.label }}
-                · {{ paginatedResources.filter(r => r.type === 'folder' && !r.name.startsWith('_type_')).length }} Einträge
-              </p>
-              <p v-else class="mt-1 mb-0 text-danger-500">
-                {{ $gettext('No view found for type "%{type}"', { type: currentFolderType }) }}
-                — .views/{{ currentFolderType }}.json missing
-              </p>
-            </div>
             <list-header
               v-if="readmeFile && !isSpaceFrontpage"
               :space="space"
@@ -92,7 +61,7 @@
               :is="folderView.component"
               v-else
               v-model:selected-ids="selectedResourcesIds"
-              :resources="displayResources"
+              :resources="paginatedResources"
               :view-mode="viewMode"
               :space="space"
               :drag-drop="true"
@@ -186,7 +155,6 @@ import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaults } from '../../composables'
-import { useTypedFolderSchema } from '../../composables/typedFolder'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
@@ -430,28 +398,6 @@ const readmeFile = computed(() => {
   return resourcesStore.resources.find((item) =>
     ['readme.md', '.readme.md'].includes(item.name.toLowerCase())
   )
-})
-
-// Typed Folder View: detect _type_* from PROPFIND listing (no extra API call)
-// Uses _type_ (not .type_) because OpenCloud filters dotfiles from listings
-const currentFolderType = computed(() => {
-  const resources = resourcesStore.resources
-  if (!resources?.length) return undefined
-  const typeFile = resources.find((r) => r.name?.startsWith('_type_'))
-  const type = typeFile ? typeFile.name.substring(6) : undefined
-  if (type) {
-    console.log('[TypedFolder] detected type:', type, 'from', typeFile.name, 'in', resources.length, 'resources')
-  }
-  return type
-})
-
-const { schema: typedSchema, isTyped } = useTypedFolderSchema(space, currentFolderType)
-
-// Filter _type_* markers from display
-const displayResources = computed(() => {
-  const resources = unref(paginatedResources)
-  if (!unref(isTyped)) return resources
-  return resources.filter((r) => !r.name?.startsWith('_type_'))
 })
 
 onMounted(() => {
