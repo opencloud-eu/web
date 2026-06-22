@@ -164,11 +164,11 @@ importers:
         specifier: ^5.6.0
         version: 5.6.0
       focus-trap:
-        specifier: ^7.8.0
-        version: 7.8.0
+        specifier: ^8.0.0
+        version: 8.2.2
       focus-trap-vue:
         specifier: ^4.1.0
-        version: 4.1.0(focus-trap@7.8.0)(vue@3.5.38(typescript@6.0.3))
+        version: 4.1.0(focus-trap@8.2.2)(vue@3.5.38(typescript@6.0.3))
       fuse.js:
         specifier: ^7.1.0
         version: 7.4.2
@@ -3692,6 +3692,9 @@ packages:
   focus-trap@7.8.0:
     resolution: {integrity: sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==}
 
+  focus-trap@8.2.2:
+    resolution: {integrity: sha512-qV0g8hRYBqgACcFOH3f9wXc4zPKhr/0z9RI2a6ZijZ72EeBi4g8oBy8zAWuUR1TsMpOzwpUMFvjdasrC41Joug==}
+
   follow-redirects@1.16.0:
     resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
     engines: {node: '>=4.0'}
@@ -5127,8 +5130,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  tabbable@6.4.0:
-    resolution: {integrity: sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==}
+  tabbable@6.5.0:
+    resolution: {integrity: sha512-wieBHXygIm7OyQOu5hQlkk62/WyCFYGlWg7L6/ZCUZwx0o398Zkn4pVmMyfYhfMG8kGrj/Krt8eIk6UKC6VzwA==}
 
   tagged-tag@1.0.0:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
@@ -8313,14 +8316,18 @@ snapshots:
 
   flatted@3.4.2: {}
 
-  focus-trap-vue@4.1.0(focus-trap@7.8.0)(vue@3.5.38(typescript@6.0.3)):
+  focus-trap-vue@4.1.0(focus-trap@8.2.2)(vue@3.5.38(typescript@6.0.3)):
     dependencies:
-      focus-trap: 7.8.0
+      focus-trap: 8.2.2
       vue: 3.5.38(typescript@6.0.3)
 
   focus-trap@7.8.0:
     dependencies:
-      tabbable: 6.4.0
+      tabbable: 6.5.0
+
+  focus-trap@8.2.2:
+    dependencies:
+      tabbable: 6.5.0
 
   follow-redirects@1.16.0: {}
 
@@ -9851,7 +9858,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  tabbable@6.4.0: {}
+  tabbable@6.5.0: {}
 
   tagged-tag@1.0.0: {}
 
