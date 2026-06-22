@@ -59,8 +59,8 @@ x-opencloud-server: &opencloud-service
 
     # GROUPWARE
     GROUPWARE_JMAP_BASE_URL: https://${STALWART_DOMAIN:-stalwart.opencloud.test}
-    GROUPWARE_JMAP_MASTER_USERNAME: "admin@example.org"
-    GROUPWARE_JMAP_MASTER_PASSWORD: "admin"
+    GROUPWARE_JMAP_MASTER_USERNAME: 'admin@example.org'
+    GROUPWARE_JMAP_MASTER_PASSWORD: 'admin'
 
     # PROXY
     PROXY_ENABLE_BASIC_AUTH: '${PROXY_ENABLE_BASIC_AUTH:-true}'
@@ -94,8 +94,8 @@ services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
-    entrypoint: ["/bin/sh","-c"]
-    command: ["[ -f /etc/opencloud/opencloud.yaml ] || opencloud init; opencloud server"]
+    entrypoint: ['/bin/sh', '-c']
+    command: ['[ -f /etc/opencloud/opencloud.yaml ] || opencloud init; opencloud server']
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
@@ -347,9 +347,9 @@ services:
       - ./dev/docker/stalwart/stalwart-config.json:/etc/stalwart/config.json
       - stalwart-data:/var/lib/stalwart
     environment:
-      STALWART_RECOVERY_ADMIN: "admin:secret"
+      STALWART_RECOVERY_ADMIN: 'admin:secret'
       STALWART_RECOVERY_MODE_PORT: 8180
-      STALWART_PUBLIC_URL: "https://${STALWART_DOMAIN:-stalwart.opencloud.test}"
+      STALWART_PUBLIC_URL: 'https://${STALWART_DOMAIN:-stalwart.opencloud.test}'
     labels:
       traefik.enable: true
       traefik.http.routers.stalwart.entrypoints: stalwart-tls
@@ -364,7 +364,7 @@ services:
       traefik.http.services.stalwart.loadbalancer.server.port: 8180
     logging:
       driver: ${LOG_DRIVER:-local}
-    entrypoint: ["/bin/sh", "-c"]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         if [ ! -f /var/lib/stalwart/.initialized ]; then
@@ -383,7 +383,7 @@ services:
     build:
       context: ./config/
       args:
-        VERSION: "1.0.8"
+        VERSION: '1.0.8'
       dockerfile_inline: |
         FROM alpine:latest AS downloader
         ARG VERSION
@@ -402,10 +402,10 @@ services:
       - ./dev/docker/stalwart/${STALWART_AUTH_DIRECTORY:-idmldap}.json:/snapshot.json:ro
       - stalwart-data:/var/lib/stalwart
     environment:
-      STALWART_URL: "http://stalwart:8180"
-      STALWART_USER: "admin"
-      STALWART_PASSWORD: "secret"
-    entrypoint: ["/bin/sh", "-c"]
+      STALWART_URL: 'http://stalwart:8180'
+      STALWART_USER: 'admin'
+      STALWART_PASSWORD: 'secret'
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         if [ -f /var/lib/stalwart/.initialized ]; then
