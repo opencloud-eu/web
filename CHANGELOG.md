@@ -1,10 +1,10 @@
 # Changelog
 
-## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-17
+## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-22
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @micbar
+@AlexAndBear, @JammingBen, @kulmann, @micbar
 
 ### 🐛 Bug Fixes
 
