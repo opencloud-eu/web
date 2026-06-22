@@ -94,6 +94,8 @@ services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
+    entrypoint: ["/bin/sh","-c"]
+    command: ["[ -f /etc/opencloud/opencloud.yaml ] || opencloud init; opencloud server"]
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
