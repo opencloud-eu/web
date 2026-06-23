@@ -10,6 +10,12 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
+### ✅ Tests
+
+- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
+- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
+
 ### 📈 Enhancement
 
 - feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
@@ -40,11 +46,6 @@
 - fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
 - fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
-
-### ✅ Tests
-
-- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
-- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 📦️ Dependencies
 
