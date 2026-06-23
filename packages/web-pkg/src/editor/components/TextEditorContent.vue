@@ -1,11 +1,11 @@
 <template>
   <div v-if="textEditor.editor.value" class="text-editor-content h-full">
     <EditorContent v-show="!isMarkdownSourceMode" :editor="textEditor.editor.value" />
-    <div v-if="isMarkdownSourceMode" class="flex size-full justify-center p-4">
+    <div v-if="isMarkdownSourceMode" class="flex size-full justify-center">
       <textarea
         ref="sourceModeTextarea"
         :value="sourceContent"
-        class="w-full max-w-4xl resize-none border-0 focus:outline-none"
+        class="w-full max-w-[800px] p-4 resize-none border-0 focus:outline-none"
         @input="onMarkdownSourceInput"
       />
     </div>
