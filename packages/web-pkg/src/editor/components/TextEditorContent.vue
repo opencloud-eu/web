@@ -4,8 +4,9 @@
     <div v-if="isMarkdownSourceMode" class="flex size-full justify-center p-4">
       <textarea
         ref="sourceModeTextarea"
-        v-model="sourceContent"
+        :value="sourceContent"
         class="w-full max-w-4xl resize-none border-0 focus:outline-none"
+        @input="onSourceInput"
       />
     </div>
   </div>
@@ -27,6 +28,16 @@ const isMarkdownSourceMode = computed(
   () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)
 )
 
+const onSourceInput = (event: Event) => {
+  const value = (event.target as HTMLTextAreaElement).value
+  sourceContent.value = value
+
+  textEditor.editor.value?.commands.setContent(value, {
+    contentType: 'markdown',
+    emitUpdate: true
+  })
+}
+
 watch(isMarkdownSourceMode, async () => {
   if (unref(isMarkdownSourceMode)) {
     sourceContent.value = textEditor.getContent()
@@ -36,11 +47,6 @@ watch(isMarkdownSourceMode, async () => {
     sourceModeTextareaRef.value?.scrollTo(0, 0)
     return
   }
-
-  textEditor.editor.value?.commands.setContent(sourceContent.value, {
-    contentType: 'markdown',
-    emitUpdate: true
-  })
 })
 </script>
 

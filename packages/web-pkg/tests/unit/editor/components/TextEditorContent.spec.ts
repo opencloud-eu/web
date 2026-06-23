@@ -51,7 +51,7 @@ function mountEditorContent({
 }
 
 describe('TextEditorContent', () => {
-  it('shows raw markdown in source mode and writes it back on exit', async () => {
+  it('shows raw markdown in source mode and updates editor content while typing', async () => {
     const { wrapper, textEditor, setContent } = mountEditorContent()
 
     textEditor.state.sourceMode.value = true
@@ -62,6 +62,11 @@ describe('TextEditorContent', () => {
     expect((textarea.element as HTMLTextAreaElement).value).toBe('# Initial')
 
     await textarea.setValue('| a | b |\n|---|---|\n| 1 | 2 |')
+    expect(setContent).toHaveBeenCalledWith('| a | b |\n|---|---|\n| 1 | 2 |', {
+      contentType: 'markdown',
+      emitUpdate: true
+    })
+
     textEditor.state.sourceMode.value = false
     await nextTick()
 
