@@ -32,11 +32,11 @@
         />
         <template v-else>
           <custom-component-target
-            v-if="isSpaceFrontpage && hasSpaceHeaderExtension"
-            :extension-point="spaceHeaderExtensionPoint"
+            v-if="hasGenericSpaceHeaderExtension"
+            :extension-point="genericSpaceHeaderExtensionPoint"
           />
           <space-header
-            v-else-if="isSpaceFrontpage"
+            v-if="isSpaceFrontpage"
             :space="space"
             class="px-4"
           />
@@ -157,7 +157,7 @@ import {
   FolderLoaderOptions,
   CustomComponentTarget
 } from '@opencloud-eu/web-pkg'
-import { spaceHeaderExtensionPoint } from '../../extensionPoints'
+import { genericSpaceHeaderExtensionPoint } from '../../extensionPoints'
 import CreateAndUpload from '../../components/AppBar/CreateAndUpload.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -211,8 +211,8 @@ const canUpload = computed(() => {
 
 const folderNotFound = computed(() => unref(currentFolder) === null)
 
-const hasSpaceHeaderExtension = computed(() => {
-  return extensionRegistry.requestExtensions(spaceHeaderExtensionPoint).length > 0
+const hasGenericSpaceHeaderExtension = computed(() => {
+  return extensionRegistry.requestExtensions(genericSpaceHeaderExtensionPoint).length > 0
 })
 const isCurrentFolderEmpty = computed(() => unref(paginatedResources).length < 1)
 
