@@ -1,10 +1,6 @@
 <template>
   <div v-if="textEditor.editor.value" class="text-editor-content h-full">
-    <EditorContent
-      v-show="!isMarkdownSourceMode"
-      class="h-full"
-      :editor="textEditor.editor.value"
-    />
+    <EditorContent v-show="!isMarkdownSourceMode" :editor="textEditor.editor.value" />
     <div v-if="isMarkdownSourceMode" class="flex h-full w-full justify-center p-4">
       <textarea
         ref="sourceModeTextarea"
