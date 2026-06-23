@@ -37,3 +37,6 @@ patchedDependencies:
 overrides:
   'epubjs>@xmldom/xmldom': ^0.9.10
   '@module-federation/dts-plugin>axios': ^1.6.0
+minimumReleaseAgeExclude:
+  # Renovate security update: dompurify@3.4.11
+  - dompurify@3.4.11
