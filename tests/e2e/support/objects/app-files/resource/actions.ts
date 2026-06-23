@@ -7,6 +7,7 @@ import { environment, utils } from '../../../../support'
 import { config } from '../../../../config'
 import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
+import { readFileSync } from 'fs'
 
 const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -157,6 +158,8 @@ const tilesSlider = '#tiles-size-slider'
 const undoBtn = 'action-handler'
 const previewFavoriteButton = '.preview-controls-favorite'
 const uploadList = '#upload-list'
+const createVaultBtn = '.new-file-btn-vault'
+const unlockVaultBtn = '#vault-unlock-submit'
 
 export const getResourceLocator = ({
   page,
@@ -209,10 +212,12 @@ export const clickResourceInFrame = async ({
 
 export const clickResource = async ({
   page,
-  path
+  path,
+  password
 }: {
   page: Page
   path: string
+  password?: string
 }): Promise<void> => {
   const paths = path.split('/')
   for (const name of paths) {
@@ -224,6 +229,9 @@ export const clickResource = async ({
       (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
     )
     await resource.click()
+    if (password && folder.includes('.vault')) {
+      await unlockVault({ page, passphrase: password })
+    }
     await propfindPromise
     // wait for the loading spinner to disappear and page is loaded
     await expect(page.locator('#app-loading-spinner')).toBeHidden()
@@ -264,12 +272,14 @@ export type createResourceTypes =
   | 'Document'
   | 'OpenDocument'
   | 'Microsoft Word'
+  | 'vault'
 
 export interface createResourceArgs {
   page: Page
   name: string
   type: createResourceTypes
   content?: string
+  password?: string
 }
 
 export const createSpaceFromFolder = async ({
@@ -414,7 +424,7 @@ export const createNewFolder = async ({
 }
 
 export const createNewFileOrFolder = async (args: createResourceArgs): Promise<void> => {
-  const { page, name, type, content } = args
+  const { page, name, type, content, password } = args
   await expect(page.locator(addNewResourceButton)).toBeVisible()
   await expect(page.locator(addNewResourceButton)).toBeEnabled()
   await page.locator(addNewResourceButton).click()
@@ -433,7 +443,7 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
         page.waitForResponse((resp) => resp.status() === 201 && resp.request().method() === 'PUT'),
         page.locator(util.format(actionConfirmationButton, 'Create')).click()
       ])
-      await editTextDocument({ page, content, name })
+      await editTextDocument({ page, content, name, password })
       break
     }
     case 'mdFile': {
@@ -456,6 +466,40 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
     case 'Microsoft Word': {
       // By Default when Microsoft Word document is created, it is opened with OnlyOffice if both app-provider services are running together
       await createDocumentFile(args, 'OnlyOffice')
+      break
+    }
+    case 'vault': {
+      await page.locator(createVaultBtn).click()
+      const resourceInput = page.locator(resourceNameInput)
+      await resourceInput.clear()
+      await page.locator(resourceNameInput).fill(name)
+      const createBtn = page.locator(util.format(actionConfirmationButton, 'Create'))
+      const mkcolPromise = page.waitForResponse(
+        (resp) => resp.status() === 201 && resp.request().method() === 'MKCOL'
+      )
+
+      await createBtn.click()
+      await mkcolPromise
+
+      // const propfindPromise = page.waitForResponse(
+      //   (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND' && resp.url().endsWith(encodeURIComponent(name))
+      // )
+
+      const prom = page.waitForURL((url) => !url.pathname.includes('/rclone-crypt/unlock'), {
+        timeout: 10_000
+      })
+
+      const unlockButton = page.locator(unlockVaultBtn)
+      await expect(unlockButton).toBeDisabled()
+      await page.locator('#vault-passphrase').fill(password)
+      await page.locator('#vault-passphrase-confirm').fill(password)
+      await unlockButton.click()
+      // await propfindPromise
+      await prom
+
+      // create empty folder
+      await page.locator(addNewResourceButton).click()
+      await createNewFolder({ page, resource: '.empty' })
       break
     }
   }
@@ -625,34 +669,45 @@ const isAppProviderServiceForOfficeSuitesReadyInWebUI = async (page: Page, type:
 }
 
 export const createResources = async (args: createResourceArgs): Promise<void> => {
-  const { page, name, type, content } = args
+  const { page, name, type, content, password } = args
   const paths = name.split('/')
   const resource = paths.pop()
 
   for (const path of paths) {
-    await clickResource({ page, path })
+    await clickResource({ page, path, password })
   }
-  await createNewFileOrFolder({ page, name: resource, type, content })
+  await createNewFileOrFolder({ page, name: resource, type, content, password })
 }
 
 export const editTextDocument = async ({
   page,
   name,
-  content
+  content,
+  password
 }: {
   page: Page
   name: string
   content: string
+  password?: string
 }): Promise<void> => {
   await page.locator(textEditorPlainTextInput).fill(content)
-  await Promise.all([
+  const [putRequest] = await Promise.all([
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'PUT'),
     page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
     page.locator(saveTextFileInEditorButton).click()
   ])
+
+  // in vault case where we need set password, check that body request data is encrypted
+  const bodyBuffer = putRequest.request().postDataBuffer()
+  if (password) {
+    expect(bodyBuffer).not.toBeNull()
+    // rclone crypt magic header
+    const magic = bodyBuffer!.subarray(0, 6).toString('ascii')
+    expect(magic).toBe('RCLONE')
+    expect(bodyBuffer!.toString('utf-8')).not.toContain(content)
+  }
   await editor.close(page)
-  await page.reload()
-  await page.locator(util.format(resourceNameSelector, name)).waitFor()
+  await expect(page.locator(util.format(resourceNameSelector, name))).toBeVisible()
 }
 
 /**/
@@ -665,12 +720,13 @@ export interface uploadResourceArgs {
   error?: string
   expectToFail?: boolean
   type?: string
+  password?: string
 }
 
 const performUpload = async (args: uploadResourceArgs): Promise<void> => {
-  const { page, resources, to, option, error, expectToFail, type } = args
+  const { page, resources, to, option, error, expectToFail, type, password } = args
   if (to) {
-    await clickResource({ page, path: to })
+    await clickResource({ page, path: to, password })
   }
 
   const respPromise = page.waitForResponse(
@@ -711,8 +767,35 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     expect(await page.locator(notificationMessageDialog).textContent()).toBe(error)
     return
   }
-  await uploadAction
-  await respPromise
+
+  if (password) {
+    const capturedBodies: Buffer[] = []
+
+    await page.route('**/dav/spaces/**', async (route) => {
+      const body = route.request().postDataBuffer()
+      if (body && body.length > 0) {
+        capturedBodies.push(body)
+      }
+      await route.continue()
+    })
+
+    await uploadAction
+    await respPromise
+
+    await page.unroute('**/dav/spaces/**')
+
+    // check that the uploaded content is encrypted by rclone crypt and not the original content
+    const encryptedRequest = capturedBodies.find(
+      (b) => b.subarray(0, 6).toString('ascii') === 'RCLONE'
+    )
+    expect(encryptedRequest).not.toBeUndefined()
+
+    const originalContent = readFileSync(resources[0].path)
+    expect(encryptedRequest!.equals(originalContent)).toBe(false)
+  } else {
+    await uploadAction
+    await respPromise
+  }
 }
 
 export const uploadLargeNumberOfResources = async (args: uploadResourceArgs): Promise<void> => {
@@ -751,11 +834,40 @@ export const tryToUploadResource = async (args: uploadResourceArgs): Promise<voi
 }
 
 export const dropUploadFiles = async (args: uploadResourceArgs): Promise<void> => {
-  const { page, resources } = args
+  const { page, resources, password } = args
 
   // waiting to files view
   await expect(page.locator(addNewResourceButton)).not.toHaveAttribute('disabled')
-  await utils.dragDropFiles(page, resources, filesView)
+
+  if (password) {
+    const capturedBodies: Buffer[] = []
+
+    await page.route('**/dav/spaces/**', async (route) => {
+      const body = route.request().postDataBuffer()
+      if (body && body.length > 0) {
+        capturedBodies.push(body)
+      }
+      await route.continue()
+    })
+
+    const respPromise = page.waitForResponse(
+      (resp) =>
+        [201, 204].includes(resp.status()) &&
+        ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
+    )
+
+    await utils.dragDropFiles(page, resources, filesView)
+    await respPromise
+
+    await page.unroute('**/dav/spaces/**')
+
+    const encryptedRequest = capturedBodies.find(
+      (b) => b.subarray(0, 6).toString('ascii') === 'RCLONE'
+    )
+    expect(encryptedRequest).not.toBeUndefined()
+  } else {
+    await utils.dragDropFiles(page, resources, filesView)
+  }
 
   await page.locator(uploadInfoCloseButton).click()
   await Promise.all(
@@ -949,7 +1061,7 @@ export interface moveOrCopyMultipleResourceArgs extends Omit<moveOrCopyResourceA
 }
 
 export const pasteResource = async (args: moveOrCopyResourceArgs): Promise<void> => {
-  const { page, resource, newLocation, action, method, option } = args
+  const { page, resource, newLocation, action, option } = args
   const newLocationPath = newLocation.split('/')
   const frame = page.frameLocator('iframe[title="OpenCloud"]')
 
@@ -2550,4 +2662,30 @@ export const unmarkAsFavorite = async ({
       break
   }
   await deletePromise
+}
+
+export const enterVault = async ({
+  page,
+  vault,
+  passphrase
+}: {
+  page: Page
+  vault: string
+  passphrase: string
+}): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, vault)).click()
+  await unlockVault({ page, passphrase })
+}
+
+const unlockVault = async ({
+  page,
+  passphrase
+}: {
+  page: Page
+  passphrase: string
+}): Promise<void> => {
+  const unlockButton = page.locator(unlockVaultBtn)
+  await expect(unlockButton).toBeDisabled()
+  await page.locator('#vault-passphrase').fill(passphrase)
+  await unlockButton.click()
 }
