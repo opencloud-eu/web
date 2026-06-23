@@ -60,7 +60,114 @@ export default defineWebApplication({
         { extension: 'ics', label: () => $gettext('Calendar file') },
         { extension: 'rtf', label: () => $gettext('Rich Text Format file') },
         { extension: 'dockerfile', label: () => $gettext('Dockerfile') },
-        { extension: 'makefile', label: () => $gettext('Makefile') }
+        { extension: 'makefile', label: () => $gettext('Makefile') },
+        { extension: 'sql', label: () => $gettext('SQL script file') },
+        { extension: 'rs', label: () => $gettext('Rust source file') },
+        { extension: 'go', label: () => $gettext('Go source file') },
+        { extension: 'kt', label: () => $gettext('Kotlin source file') },
+        { extension: 'swift', label: () => $gettext('Swift source file') },
+        { extension: 'rb', label: () => $gettext('Ruby source file') },
+        { extension: 'pl', label: () => $gettext('Perl script') },
+        { extension: 'lua', label: () => $gettext('Lua script') },
+        { extension: 'r', label: () => $gettext('R script') },
+        { extension: 'm', label: () => $gettext('Objective-C or MATLAB file') },
+        { extension: 'scala', label: () => $gettext('Scala source file') },
+        { extension: 'cs', label: () => $gettext('C# source file') },
+        { extension: 'fs', label: () => $gettext('F# source file') },
+        { extension: 'clj', label: () => $gettext('Clojure source file') },
+        { extension: 'hs', label: () => $gettext('Haskell source file') },
+        { extension: 'erl', label: () => $gettext('Erlang source file') },
+        { extension: 'ex', label: () => $gettext('Elixir source file') },
+        { extension: 'zig', label: () => $gettext('Zig source file') },
+        { extension: 'nim', label: () => $gettext('Nim source file') },
+        { extension: 'odin', label: () => $gettext('Odin source file') },
+        { extension: 'ml', label: () => $gettext('OCaml source file') },
+        { extension: 'v', label: () => $gettext('V language source file') },
+        { extension: 'dart', label: () => $gettext('Dart source file') },
+
+        { extension: 'gitignore', label: () => $gettext('Git ignore file') },
+        { extension: 'gitattributes', label: () => $gettext('Git attributes file') },
+        { extension: 'editorconfig', label: () => $gettext('EditorConfig file') },
+        { extension: 'properties', label: () => $gettext('Java properties file') },
+        { extension: 'cfg', label: () => $gettext('Configuration file') },
+        { extension: 'service', label: () => $gettext('systemd service file') },
+        { extension: 'desktop', label: () => $gettext('Desktop entry file') },
+        { extension: 'npmrc', label: () => $gettext('npm configuration file') },
+        { extension: 'lock', label: () => $gettext('Lock file') },
+        { extension: 'gradle', label: () => $gettext('Gradle build script') },
+
+        { extension: 'tex', label: () => $gettext('LaTeX file') },
+        { extension: 'adoc', label: () => $gettext('AsciiDoc file') },
+        { extension: 'rst', label: () => $gettext('reStructuredText file') },
+        { extension: 'org', label: () => $gettext('Org mode file') },
+        { extension: 'wiki', label: () => $gettext('Wiki markup file') },
+
+        { extension: 'ndjson', label: () => $gettext('Newline-delimited JSON file') },
+        { extension: 'jsonl', label: () => $gettext('JSON Lines file') },
+        { extension: 'geojson', label: () => $gettext('GeoJSON file') },
+        { extension: 'graphql', label: () => $gettext('GraphQL schema or query file') },
+        { extension: 'proto', label: () => $gettext('Protocol Buffers schema file') },
+
+        { extension: 'tf', label: () => $gettext('Terraform file') },
+        { extension: 'hcl', label: () => $gettext('HashiCorp configuration file') },
+        { extension: 'nomad', label: () => $gettext('Nomad job file') },
+
+        { extension: 'cmake', label: () => $gettext('CMake script') },
+        { extension: 'mk', label: () => $gettext('Make include file') },
+        { extension: 'gradle.kts', label: () => $gettext('Kotlin Gradle build script') },
+        { extension: 'bazel', label: () => $gettext('Bazel build file') },
+
+        { extension: 'zsh', label: () => $gettext('Z shell script') },
+        { extension: 'fish', label: () => $gettext('Fish shell script') },
+        { extension: 'ps1', label: () => $gettext('PowerShell script') },
+
+        { extension: 'info', label: () => $gettext('GNU info documentation file') },
+        { extension: 'man', label: () => $gettext('Manual page file') },
+        { extension: 'text', label: () => $gettext('Plain text file') },
+
+        { extension: 'htm', label: () => $gettext('HTML file') },
+        { extension: 'mjs', label: () => $gettext('JavaScript module file') },
+        { extension: 'cjs', label: () => $gettext('CommonJS module file') },
+
+        { extension: 'h', label: () => $gettext('C/C++ header file') },
+        { extension: 'hpp', label: () => $gettext('C++ header file') },
+        { extension: 'cc', label: () => $gettext('C++ source file') },
+        { extension: 'cxx', label: () => $gettext('C++ source file') },
+        { extension: 'hh', label: () => $gettext('C++ header file') },
+        { extension: 'hxx', label: () => $gettext('C++ header file') },
+
+        { extension: 's', label: () => $gettext('Assembler source file') },
+        { extension: 'S', label: () => $gettext('Preprocessed assembler source file') },
+
+        { extension: 'd', label: () => $gettext('D source file') },
+        { extension: 'jl', label: () => $gettext('Julia source file') },
+        { extension: 'groovy', label: () => $gettext('Groovy source file') },
+        { extension: 'tcl', label: () => $gettext('Tcl script') },
+        { extension: 'vb', label: () => $gettext('Visual Basic source file') },
+
+        { extension: 'cnf', label: () => $gettext('Configuration file') },
+        { extension: 'config', label: () => $gettext('Configuration file') },
+
+        { extension: 'pem', label: () => $gettext('PEM certificate or key file') },
+        { extension: 'crt', label: () => $gettext('Certificate file') },
+        { extension: 'key', label: () => $gettext('Private key file') },
+        { extension: 'csr', label: () => $gettext('Certificate signing request file') },
+        { extension: 'pub', label: () => $gettext('Public key file') },
+
+        { extension: 'ldif', label: () => $gettext('LDAP data interchange file') },
+
+        { extension: 'nfo', label: () => $gettext('Information file') },
+        { extension: 'pod', label: () => $gettext('Perl POD documentation file') },
+
+        { extension: 'kts', label: () => $gettext('Kotlin script file') },
+        { extension: 'bzl', label: () => $gettext('Bazel Starlark file') },
+        { extension: 'BUILD', label: () => $gettext('Bazel build file') },
+        { extension: 'WORKSPACE', label: () => $gettext('Bazel workspace file') },
+
+        { extension: 'tfvars', label: () => $gettext('Terraform variables file') },
+
+        { extension: 'bash', label: () => $gettext('Bash script') },
+        { extension: 'ksh', label: () => $gettext('Korn shell script') }
       ]
 
       const config = applicationConfig || {}
