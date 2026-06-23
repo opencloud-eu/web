@@ -41,7 +41,7 @@ export const buildPropFindBody = (
     bodyType = 'oc:filter-files'
   }
 
-  const object = properties.reduce((obj, item) => Object.assign(obj, { [item]: null }), {})
+  const object = properties.reduce<Record<string, unknown>>((obj, item) => Object.assign(obj, { [item]: null }), {})
   // Include extra props in the request so they appear in PROPFIND
   for (const ep of extraProps) {
     if (!(ep in object)) {
