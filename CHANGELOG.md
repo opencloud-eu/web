@@ -48,6 +48,8 @@
 
 ### 📦️ Dependencies
 
+- Update devDependencies (non-major) [[#2713](https://github.com/opencloud-eu/web/pull/2713)]
+- Update dependency fast-xml-parser to v5.9.3 [[#2716](https://github.com/opencloud-eu/web/pull/2716)]
 - Update dependency uuid to v14.0.1 [[#2724](https://github.com/opencloud-eu/web/pull/2724)]
 - Update sentry-javascript monorepo [[#2722](https://github.com/opencloud-eu/web/pull/2722)]
 - Update pnpm to v11.8.0 [[#2719](https://github.com/opencloud-eu/web/pull/2719)]
