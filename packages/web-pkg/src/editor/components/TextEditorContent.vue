@@ -37,6 +37,7 @@ watch(isMarkdownSourceMode, async () => {
     await nextTick()
     sourceModeTextareaRef.value?.focus()
     sourceModeTextareaRef.value?.setSelectionRange(0, 0)
+    sourceModeTextareaRef.value?.scrollTo(0, 0)
     return
   }
 
