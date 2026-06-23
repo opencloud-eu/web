@@ -6,7 +6,7 @@
         ref="sourceModeTextarea"
         :value="sourceContent"
         class="w-full max-w-4xl resize-none border-0 focus:outline-none"
-        @input="onSourceInput"
+        @input="onMarkdownSourceInput"
       />
     </div>
   </div>
@@ -28,7 +28,7 @@ const isMarkdownSourceMode = computed(
   () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)
 )
 
-const onSourceInput = (event: Event) => {
+const onMarkdownSourceInput = (event: Event) => {
   const value = (event.target as HTMLTextAreaElement).value
   sourceContent.value = value
 
