@@ -5,7 +5,7 @@
       <textarea
         ref="sourceModeTextarea"
         :value="sourceContent"
-        class="w-full max-w-[800px] p-4 resize-none border-0 focus:outline-none"
+        class="w-full max-w-[800px] p-[1rem] resize-none border-0 focus:outline-none"
         @input="onMarkdownSourceInput"
       />
     </div>
