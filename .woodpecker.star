@@ -71,6 +71,7 @@ config = {
             "suites": [
                 "admin-settings",
                 "spaces",
+                "rclone-crypt",
             ],
         },
         "3": {
@@ -96,14 +97,6 @@ config = {
                 "user-settings",
                 "file-action",
                 "app-store",
-            ],
-        },
-        "rclone-crypt": {
-            "earlyFail": True,
-            "skip": False,
-            "rcloneNeeded": True,
-            "suites": [
-                "rclone-crypt",
             ],
         },
         "a11y": {
@@ -549,31 +542,6 @@ def unitTests(ctx):
         ],
     }]
 
-def installRclone(params):
-    # The rclone-crypt e2e suite shells out to the rclone CLI to build encrypted
-    # vault fixtures on the backend and to verify decryption against the
-    # reference implementation. rclone is a single static binary; pin the
-    # version (crypt format stays reproducible) AND verify the archive against a
-    # pinned SHA256 before extracting, so a tampered or corrupted download fails
-    # the step instead of installing an unverified binary.
-    if not params["rcloneNeeded"]:
-        return []
-    version = "v1.74.0"
-    archive = "rclone-%s-linux-amd64.zip" % version
-
-    # SHA256 of the official archive, from https://downloads.rclone.org/v1.74.0/SHA256SUMS
-    sha256 = "61de0a78d8776fe3e080f8385ebe96d817f2ee6a6003fe36b2d9f3b49d3e36ea"
-    url = "https://downloads.rclone.org/%s/%s" % (version, archive)
-    return [
-        "command -v unzip || (apt-get update && apt-get install -y unzip)",
-        "curl -fsSL %s -o /tmp/rclone.zip" % url,
-        # abort the step on any checksum mismatch, before we trust the archive
-        "echo '%s  /tmp/rclone.zip' | sha256sum -c -" % sha256,
-        "unzip -j /tmp/rclone.zip '*/rclone' -d /usr/local/bin",
-        "chmod +x /usr/local/bin/rclone",
-        "rclone version",
-    ]
-
 def e2eTests(ctx):
     default = {
         "skip": False,
@@ -583,7 +551,6 @@ def e2eTests(ctx):
         "suites": [],
         "features": [],
         "tikaNeeded": False,
-        "rcloneNeeded": False,
         "federationServer": False,
         "failOnUncaughtConsoleError": False,
         "extraServerEnvironment": {},
@@ -695,7 +662,7 @@ def e2eTests(ctx):
                          "name": "e2e-tests",
                          "image": OC_CI_NODEJS,
                          "environment": environment,
-                         "commands": installRclone(params) + [
+                         "commands": [
                              command,
                          ],
                      }] + \
