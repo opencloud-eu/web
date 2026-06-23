@@ -3,6 +3,7 @@ import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick, ref } from 'vue'
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
+import { EditorActionGroup } from '../../../../src/editor/composables'
 
 vi.mock('@tiptap/vue-3', () => ({
   EditorContent: defineComponent({
@@ -31,7 +32,7 @@ function mountEditorContent({
     state: {
       sourceMode: ref(sourceMode)
     },
-    actionGroups: () => [],
+    actionGroups: (): EditorActionGroup[] => [],
     getContent: vi.fn(() => markdown),
     isEmpty: ref(false),
     isFocused: ref(false),
