@@ -95,7 +95,7 @@ services:
     <<: *opencloud-service
     container_name: web_oc
     entrypoint: ['/bin/sh', '-c']
-    command: ["mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server"]
+    command: ['mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server']
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
