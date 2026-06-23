@@ -4,11 +4,22 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @fschade, @kulmann, @openclouders, @tammi-23
+@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @fschade, @kulmann, @openclouders, @tammi-23, @tralph3
 
 ### 🔒 Security
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
+
+### 📈 Enhancement
+
+- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
+- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
+- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
+- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
+-  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
+- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
+- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 🐛 Bug Fixes
 
@@ -35,18 +46,12 @@
 - e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
 - e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
-### 📈 Enhancement
-
-- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
-- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
-- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
--  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
-- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
-- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
-- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
-
 ### 📦️ Dependencies
 
+- Update dependency uuid to v14.0.1 [[#2724](https://github.com/opencloud-eu/web/pull/2724)]
+- Update sentry-javascript monorepo [[#2722](https://github.com/opencloud-eu/web/pull/2722)]
+- Update pnpm to v11.8.0 [[#2719](https://github.com/opencloud-eu/web/pull/2719)]
+- Update dependency dompurify to v3.4.11 [SECURITY] [[#2723](https://github.com/opencloud-eu/web/pull/2723)]
 - chore(deps): update devdependencies (non-major) [[#2603](https://github.com/opencloud-eu/web/pull/2603)]
 - fix(deps): update dependency vue3-gettext to v4.0.1 [[#2643](https://github.com/opencloud-eu/web/pull/2643)]
 - chore(deps): update dependency fast-xml-parser to v5.9.0 [[#2696](https://github.com/opencloud-eu/web/pull/2696)]
