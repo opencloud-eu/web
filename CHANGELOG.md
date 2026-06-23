@@ -49,6 +49,8 @@
 
 ### 📦️ Dependencies
 
+- Update typescript-eslint monorepo to v8.62.0 [[#2732](https://github.com/opencloud-eu/web/pull/2732)]
+- Update dependency axios to v1.18.1 [[#2731](https://github.com/opencloud-eu/web/pull/2731)]
 - Update devDependencies (non-major) [[#2713](https://github.com/opencloud-eu/web/pull/2713)]
 - Update dependency fast-xml-parser to v5.9.3 [[#2716](https://github.com/opencloud-eu/web/pull/2716)]
 - Update dependency uuid to v14.0.1 [[#2724](https://github.com/opencloud-eu/web/pull/2724)]
