@@ -42,7 +42,13 @@ function mountMenu(items: FlatSlashCommandItem[], command = vi.fn()) {
       query: '',
       text: '/',
       decorationNode: null,
-      clientRect: defaultClientRect
+      clientRect: defaultClientRect,
+      placement: 'bottom-start',
+      offset: { mainAxis: 4, crossAxis: 0 },
+      flip: true,
+      floatingUi: {} as any,
+      mount: () => () => undefined,
+      loading: false
     },
     global: {
       plugins: [createGettext({ translations: {}, silent: true })],
