@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- Update tiptap monorepo to v3.27.1 [[#2717](https://github.com/opencloud-eu/web/pull/2717)]
 - Update dependency focus-trap to v8 [[#2685](https://github.com/opencloud-eu/web/pull/2685)]
 - Update sentry-javascript monorepo [[#2735](https://github.com/opencloud-eu/web/pull/2735)]
 - Update Node.js to v24.18.0 [[#2718](https://github.com/opencloud-eu/web/pull/2718)]
