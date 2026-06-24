@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- Update sentry-javascript monorepo [[#2735](https://github.com/opencloud-eu/web/pull/2735)]
 - Update Node.js to v24.18.0 [[#2718](https://github.com/opencloud-eu/web/pull/2718)]
 - Update typescript-eslint monorepo to v8.62.0 [[#2732](https://github.com/opencloud-eu/web/pull/2732)]
 - Update dependency axios to v1.18.1 [[#2731](https://github.com/opencloud-eu/web/pull/2731)]
