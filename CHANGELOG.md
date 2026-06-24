@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: disable copy / move to actions for vaults [[#2741](https://github.com/opencloud-eu/web/pull/2741)]
 - fix: markdown toggle source [[#2733](https://github.com/opencloud-eu/web/pull/2733)]
 - fix: delete space action showing for space managers [[#2649](https://github.com/opencloud-eu/web/pull/2649)]
 - fix: unlock vault cancel in shared vaults [[#2705](https://github.com/opencloud-eu/web/pull/2705)]
@@ -50,6 +51,7 @@
 
 ### 📦️ Dependencies
 
+- Update devDependencies (non-major) [[#2738](https://github.com/opencloud-eu/web/pull/2738)]
 - Update devDependencies (non-major) [[#2734](https://github.com/opencloud-eu/web/pull/2734)]
 - Update pnpm to v11.9.0 [[#2736](https://github.com/opencloud-eu/web/pull/2736)]
 - Update tiptap monorepo to v3.27.1 [[#2717](https://github.com/opencloud-eu/web/pull/2717)]
