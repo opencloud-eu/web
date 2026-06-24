@@ -321,7 +321,8 @@ services:
     networks:
       - traefik
     healthcheck:
-      test:  [
+      test:
+        [
           'CMD',
           'bash',
           '-c',
