@@ -13,9 +13,7 @@ exports[`Users view > list view > renders initially warning if filters are manda
             </div>
           </div>
           <div class="flex items-center justify-between min-h-10 px-3 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high">
-            <div class="flex">
-              <!--v-if-->
-            </div>
+            <!--v-if-->
             <!--v-if-->
           </div>
         </div>
@@ -59,9 +57,7 @@ exports[`Users view > list view > renders list initially 1`] = `
             </div>
           </div>
           <div class="flex items-center justify-between min-h-10 px-3 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high">
-            <div class="flex">
-              <!--v-if-->
-            </div>
+            <!--v-if-->
             <!--v-if-->
           </div>
         </div>

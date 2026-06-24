@@ -35,19 +35,12 @@
               <div
                 class="flex items-center justify-between min-h-10 px-3 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
               >
-                <div class="flex">
-                  <slot
-                    name="topbarActions"
-                    :limited-screen-space="limitedScreenSpace"
-                    class="flex-1 flex flex-start"
-                  />
-                  <batch-actions
-                    v-if="showBatchActions"
-                    :actions="batchActions"
-                    :action-options="{ resources: batchActionItems }"
-                    :limited-screen-space="limitedScreenSpace"
-                  />
-                </div>
+                <batch-actions
+                  v-if="showBatchActions"
+                  :actions="batchActions"
+                  :action-options="{ resources: batchActionItems }"
+                  :limited-screen-space="limitedScreenSpace"
+                />
                 <div v-if="batchActionItems.length" class="flex items-center gap-1">
                   <oc-button
                     v-oc-tooltip="$gettext('Clear selection')"
