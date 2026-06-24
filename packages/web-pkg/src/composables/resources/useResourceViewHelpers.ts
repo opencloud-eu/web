@@ -59,6 +59,10 @@ export const useResourceViewHelpers = ({
   }
 
   const isResourceDisabled = (resource: Resource) => {
+    if (unref(isEmbedModeEnabled) && resource.isInVault) {
+      return true
+    }
+
     if (unref(isEmbedModeEnabled) && unref(embedModeFileTypes)?.length) {
       return (
         !unref(embedModeFileTypes).includes(resource.extension) &&
