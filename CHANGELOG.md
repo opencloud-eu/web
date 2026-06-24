@@ -49,6 +49,8 @@
 
 ### 📦️ Dependencies
 
+- Update devDependencies (non-major) [[#2734](https://github.com/opencloud-eu/web/pull/2734)]
+- Update pnpm to v11.9.0 [[#2736](https://github.com/opencloud-eu/web/pull/2736)]
 - Update tiptap monorepo to v3.27.1 [[#2717](https://github.com/opencloud-eu/web/pull/2717)]
 - Update dependency focus-trap to v8 [[#2685](https://github.com/opencloud-eu/web/pull/2685)]
 - Update sentry-javascript monorepo [[#2735](https://github.com/opencloud-eu/web/pull/2735)]
