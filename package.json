@@ -52,7 +52,7 @@
     "@opencloud-eu/eslint-config": "workspace:*",
     "@opencloud-eu/prettier-config": "workspace:*",
     "@opencloud-eu/tsconfig": "workspace:*",
-    "@playwright/test": "1.61.0",
+    "@playwright/test": "1.61.1",
     "@tailwindcss/vite": "^4.2.2",
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.7.1",
