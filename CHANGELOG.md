@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.2](https://github.com/opencloud-eu/web/releases/tag/v7.1.2) - 2026-06-24
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @kulmann
+
+### 🐛 Bug Fixes
+
+- [stable-7.1] Merge pull request #2733 from opencloud-eu/md-toggle-source [[#2740](https://github.com/opencloud-eu/web/pull/2740)]
+
 ## [7.1.1](https://github.com/opencloud-eu/web/releases/tag/v7.1.1) - 2026-06-22
 
 ### ❤️ Thanks to all contributors! ❤️
