@@ -44,10 +44,10 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions flex items-center justify-end min-h-9">
+      <div class="files-app-bar-actions flex items-center justify-end min-h-10">
         <slot v-if="!showBatchActions" name="actions" :limited-screen-space="limitedScreenSpace" />
         <div
-          class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
+          class="flex-1 flex justify-between items-center px-3 min-h-10 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
         >
           <batch-actions
             v-if="showBatchActions && !batchActionsLoading"
@@ -63,14 +63,16 @@
               v-oc-tooltip="$gettext('Clear selection')"
               :aria-label="$gettext('Clear selection')"
               appearance="raw"
+              gap-size="small"
+              class="p-1"
               @click="resetSelection"
             >
+              <span
+                class="text-sm"
+                v-text="$gettext('%{count} selected', { count: selectedResources.length })"
+              />
               <oc-icon fill-type="line" name="close" />
             </oc-button>
-            <span
-              class="text-sm"
-              v-text="$gettext('%{count} selected', { count: selectedResources.length })"
-            />
           </div>
         </div>
       </div>

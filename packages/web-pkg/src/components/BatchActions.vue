@@ -14,10 +14,9 @@
         :action="action"
         :action-options="actionOptions"
         appearance="raw"
-        class="batch-actions float-left [&_.action-menu-item]:p-2 [&_.action-menu-item]:gap-1 [&_button]:py-1!"
+        class="batch-actions float-left [&_.action-menu-item]:p-2 [&_button]:py-1!"
         :shortcut-hint="false"
         :show-tooltip="limitedScreenSpace"
-        :size="limitedScreenSpace ? 'medium' : 'small'"
       />
     </oc-list>
   </div>

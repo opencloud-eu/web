@@ -9,6 +9,7 @@
     :batch-actions="batchActions"
     :batch-action-items="selectedUsers"
     :show-view-options="true"
+    @clear-selection="userSettingsStore.setSelectedUsers([])"
   >
     <template #sideBarHeader>
       <div v-if="selectedUsers.length === 1" class="flex items-center min-w-0">

@@ -9,6 +9,7 @@
     :batch-actions="batchActions"
     :batch-action-items="selectedSpaces"
     :show-view-options="true"
+    @clear-selection="spaceSettingsStore.setSelectedSpaces([])"
   >
     <template #sideBarHeader>
       <div v-if="selectedSpaces.length === 1" class="flex items-center min-w-0 pl-2">
