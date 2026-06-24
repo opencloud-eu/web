@@ -878,9 +878,12 @@ def buildAndPublishRelease(ctx):
                     "bash -c '[ \"%s\" == \"web-pkg\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
                     "bash -c '[ \"%s\" == \"web-test-helpers\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
                     "bash -c '[ \"%s\" == \"extension-sdk\" ] && pnpm --filter \"%s\" build || true'" % (package, full_package_name),
+                    # pnpm 11's rewritten publish ignores npm_config_* env vars (pnpm/pnpm#11098),
+                    # so the npm token must be provided via a workspace-root .npmrc instead.
+                    # The token is only ever written to the file (never echoed to stdout) and the
+                    # file is removed on exit via a trap; Woodpecker additionally masks secrets in logs.
                     # until https://github.com/pnpm/pnpm/issues/5775 is resolved, we print pnpm whoami because that fails when the npm_token is invalid
-                    "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm whoami",
-                    "env \"npm_config_//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" pnpm publish --no-git-checks --filter %s --access public --tag latest" % full_package_name,
+                    "bash -c 'set -e; trap \"rm -f .npmrc\" EXIT; echo \"//registry.npmjs.org/:_authToken=$${NPM_TOKEN}\" > .npmrc; pnpm whoami; pnpm publish --no-git-checks --filter %s --access public --tag latest'" % full_package_name,
                 ],
                 "when": [event["tag"]],
             },
