@@ -26,6 +26,7 @@
                 'text-editor-toolbar-btn--active': isItemActive(item)
               }"
               :aria-label="item.title"
+              :disabled="!isItemEnabled(item)"
             >
               <oc-icon
                 :name="getActiveIcon(item).icon"
@@ -137,7 +138,16 @@ const visible = computed(() => {
   return !!unref(textEditor.editor)
 })
 
+const isMarkdownSourceMode = computed(
+  () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)
+)
+const sourceModeEnabledActionIds = ['source-mode']
+
 const isItemEnabled = (item: EditorAction) => {
+  if (unref(isMarkdownSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
+    return false
+  }
+
   const editor = unref(textEditor.editor)
   if (!editor) {
     return false
