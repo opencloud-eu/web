@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/web-pkg",
-  "version": "7.1.1",
+  "version": "7.1.2",
   "description": "OpenCloud web pkg",
   "license": "AGPL-3.0",
   "main": "src/index.ts",
