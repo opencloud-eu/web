@@ -26,15 +26,19 @@ Feature: Integration with Collabora online office
       | OpenDocument.odt |
     And "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
-    Then "Anonymous" should see the content "OpenDocument Content" in editor "Collabora"
-    When "Alice" edits the following resource
-      | resource         | type         | content                           |
-      | OpenDocument.odt | OpenDocument | Alice Edited OpenDocument Content |
-    Then "Anonymous" should see the content "Alice Edited OpenDocument Content" in editor "Collabora"
+    Then "Anonymous" should see the content "OpenDocument Content" in editor "CollaboraOnline"
     When "Anonymous" edits the following resource
       | resource         | type         | content                     |
       | OpenDocument.odt | OpenDocument | Edited OpenDocument Content |
-    Then "Alice" should see the content "Edited OpenDocument Content" in editor "Collabora"
+    Then "Alice" should see the content "Edited OpenDocument Content" in editor "CollaboraOnline"
+    When "Alice" edits the following resource
+      | resource         | type         | content                           |
+      | OpenDocument.odt | OpenDocument | Alice Edited OpenDocument Content |
+    Then "Anonymous" should see the content "Alice Edited OpenDocument Content" in editor "CollaboraOnline"
+    When "Anonymous" edits the following resource
+      | resource         | type         | content                     |
+      | OpenDocument.odt | OpenDocument | Edited OpenDocument Content |
+    Then "Alice" should see the content "Edited OpenDocument Content" in editor "CollaboraOnline"
     And "Alice" closes the file viewer
     When "Alice" edits the public link named "Unnamed link" of resource "OpenDocument.odt" changing role to "Can view"
     And "Anonymous" opens the public link "Unnamed link"
@@ -67,11 +71,11 @@ Feature: Integration with Collabora online office
     And "Alice" edits the following resource
       | resource         | type         | content                           |
       | OpenDocument.odt | OpenDocument | Alice Edited OpenDocument Content |
-    Then "Brian" should see the content "Alice Edited OpenDocument Content" in editor "Collabora"
+    Then "Brian" should see the content "Alice Edited OpenDocument Content" in editor "CollaboraOnline"
     When "Brian" edits the following resource
       | resource         | type         | content                           |
       | OpenDocument.odt | OpenDocument | Brian Edited OpenDocument Content |
-    Then "Alice" should see the content "Brian Edited OpenDocument Content" in editor "Collabora"
+    Then "Alice" should see the content "Brian Edited OpenDocument Content" in editor "CollaboraOnline"
     And "Brian" logs out
     And "Alice" logs out
 
@@ -112,14 +116,14 @@ Feature: Integration with Collabora online office
     And "Alice" opens the following file in Collabora
       | resource           |
       | usingSpaceLink.odt |
-    Then "Alice" should see the content "public can create files in the project space using spaceLink" in editor "Collabora"
+    Then "Alice" should see the content "public can create files in the project space using spaceLink" in editor "CollaboraOnline"
     And "Alice" closes the file viewer
 
     When "Alice" opens folder "myfolder"
     And "Alice" opens the following file in Collabora
       | resource            |
       | usingFolderLink.odt |
-    Then "Alice" should see the content "OpenDocument Content" in editor "Collabora"
+    Then "Alice" should see the content "OpenDocument Content" in editor "CollaboraOnline"
     And "Alice" logs out
 
 
@@ -128,16 +132,16 @@ Feature: Integration with Collabora online office
       | localFile     | to            |
       | Template.ott  | Template.ott  |
 
-    When "Alice" creates a file from template file "Template.ott" via "Collabora" using the context menu
-    Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Collabora"
+    When "Alice" creates a file from template file "Template.ott" via "CollaboraOnline" using the context menu
+    Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "CollaboraOnline"
 
     When "Alice" closes the file viewer
     And following resources should be displayed in the files list for user "Alice"
       | resource      |
       | Template.odt  |
 
-    When "Alice" opens template file "Template.ott" via "Collabora" using the context menu
-    Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Collabora"
+    When "Alice" opens template file "Template.ott" via "CollaboraOnline" using the context menu
+    Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "CollaboraOnline"
 
     When "Alice" closes the file viewer
     Then following resources should not be displayed in the files list for user "Alice"
@@ -150,8 +154,8 @@ Feature: Integration with Collabora online office
     Given "Alice" creates the following files into personal space using API
       | pathToFile | content      |
       | new.txt    | test content |
-    When "Alice" opens file "new.txt" via "collabora" using the context menu
-    Then "Alice" should see the content "test content" in editor "Collabora"
+    When "Alice" opens file "new.txt" via "collabora-online" using the context menu
+    Then "Alice" should see the content "test content" in editor "CollaboraOnline"
     And "Alice" closes the file viewer
     When "Alice" opens file "new.txt" via "text-editor" using the context menu
     And "Alice" closes the file viewer

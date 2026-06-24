@@ -29,7 +29,7 @@ When(
 )
 
 When(
-  /^"([^"]*)" opens the file "([^"]*)" of space "([^"]*)" in (Collabora|OnlyOffice) through the URL for (mobile|desktop) client$/,
+  /^"([^"]*)" opens the file "([^"]*)" of space "([^"]*)" in (CollaboraOnline|Euro-Office) through the URL for (mobile|desktop) client$/,
   async function (
     this: World,
     stepUser: string,

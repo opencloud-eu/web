@@ -20,7 +20,7 @@ Here are some examples of what you can do with OpenCloud Web:
 - 🗂 **Files**: Upload, download, search and manage files (as you may know it for example from Dropbox, OneDrive, Google Drive etc.).
 - 👥 **Share:** Allow fine-grained access to files and whole folders directly with other users on your OpenCloud.
 - 🔗 **Links**: Create links and share them with anyone in the world - optional password-protection available.
-- 📝 **Write**: Edit your documents with the editor of your choice like Collabora, ONLYOFFICE or Microsoft Word and more.
+- 📝 **Write**: Edit your documents with the editor of your choice like Collabora, Euro-office or Microsoft Word and more.
 - 🤝 **Collaborate** in real-time on documents.
 - 🚀 **Spaces**: You have to manage important projects? Let Spaces, the new special folders, keep order.
 - ◀️ **Versioning** Saved the wrong version? We have the time machine you were looking for! Easily go back in time and restore older versions of your files.

@@ -17,10 +17,10 @@ Feature: url stability for mobile and desktop client
       | OpenDocument.odt | OpenDocument Content |
 
     # desktop feature
-    When "Alice" opens the file "OpenDocument.odt" of space "personal" in Collabora through the URL for desktop client
-    Then "Alice" should see the content "OpenDocument Content" in editor "Collabora"
+    When "Alice" opens the file "OpenDocument.odt" of space "personal" in CollaboraOnline through the URL for desktop client
+    Then "Alice" should see the content "OpenDocument Content" in editor "CollaboraOnline"
    
     # mobile feature
-    When "Alice" opens the file "OpenDocument.odt" of space "personal" in Collabora through the URL for mobile client
-    Then "Alice" should see the content "OpenDocument Content" in editor "Collabora"
+    When "Alice" opens the file "OpenDocument.odt" of space "personal" in CollaboraOnline through the URL for mobile client
+    Then "Alice" should see the content "OpenDocument Content" in editor "CollaboraOnline"
     And "Alice" logs out

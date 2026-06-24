@@ -41,23 +41,23 @@ Feature: Secure view
 
     # we copy the contents of the file and compare the clipboard with the expected contents.
     # In case the user does not have download permissions and tries to copy file content, the clipboard should be set to “Copying from document disabled”.
-    Then "Brian" should see the content "Copying from the document disabled" in editor "Collabora"
+    Then "Brian" should see the content "Copying from the document disabled" in editor "CollaboraOnline"
     And "Brian" closes the file viewer
     When "Brian" opens folder "shared folder"
     And "Brian" opens the following file in Collabora
       | resource   |
       | simple.pdf |
-    Then "Brian" should see the content "Copying from the document disabled" in editor "Collabora"
+    Then "Brian" should see the content "Copying from the document disabled" in editor "CollaboraOnline"
     And "Brian" closes the file viewer
     And "Brian" opens the following file in Collabora
       | resource        |
       | testavatar.jpeg |
-    Then "Brian" should see the content "Copying from the document disabled" in editor "Collabora"
+    Then "Brian" should see the content "Copying from the document disabled" in editor "CollaboraOnline"
     And "Brian" closes the file viewer
     And "Brian" opens the following file in Collabora
       | resource  |
       | lorem.txt |
-    Then "Brian" should see the content "Copying from the document disabled" in editor "Collabora"
+    Then "Brian" should see the content "Copying from the document disabled" in editor "CollaboraOnline"
     And "Brian" logs out
 
 
@@ -90,7 +90,6 @@ Feature: Secure view
       | action     |
       | Download   |
       | Copy       |
-      | OnlyOffice |
     And "Brian" should not see preview for file "secureDocument.odt"
 
     # folder
@@ -131,7 +130,6 @@ Feature: Secure view
       | Download    |
       | Copy        |
       | Text Editor |
-      | OnlyOffice  |
     And "Brian" should not see thumbnail and preview for file "secureFile.txt"
 
     # check available actions and files preview in the seach result page
@@ -152,7 +150,6 @@ Feature: Secure view
       | Download    |
       | Copy        |
       | Text Editor |
-      | OnlyOffice  |
     And "Brian" should not see thumbnail and preview for file "secureFile.txt"
 
     # .jpeg file
@@ -185,6 +182,5 @@ Feature: Secure view
       | action     |
       | Download   |
       | Copy       |
-      | OnlyOffice |
     And "Brian" should not see preview for file "secureDocument.odt"
     And "Brian" logs out
