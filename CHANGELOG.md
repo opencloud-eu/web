@@ -49,6 +49,7 @@
 
 ### 📦️ Dependencies
 
+- Update dependency focus-trap to v8 [[#2685](https://github.com/opencloud-eu/web/pull/2685)]
 - Update sentry-javascript monorepo [[#2735](https://github.com/opencloud-eu/web/pull/2735)]
 - Update Node.js to v24.18.0 [[#2718](https://github.com/opencloud-eu/web/pull/2718)]
 - Update typescript-eslint monorepo to v8.62.0 [[#2732](https://github.com/opencloud-eu/web/pull/2732)]
