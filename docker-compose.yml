@@ -100,8 +100,6 @@ services:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
       OC_ADD_RUN_SERVICES: auth-api,groupware
-      #GROUPWARE_JMAP_MASTER_USERNAME: master
-      #GROUPWARE_JMAP_MASTER_PASSWORD: admin
       OC_CORS_ALLOW_ORIGINS: https://host.docker.internal:9200,https://host.docker.internal:9201
       OCM_WEBAPP_TEMPLATE: https://host.docker.internal:9201/o/{{.Token}}/{relative-path-to-shared-resource}
       # make the registry available to the app provider containers
@@ -134,6 +132,11 @@ services:
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
       - opencloud-config:/etc/opencloud
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web.config.json}:/web/config.json:ro
+    depends_on:
+      traefik:
+        condition: service_started
+      tika:
+        condition: service_healthy
 
   opencloud-federated:
     <<: *opencloud-service
@@ -317,6 +320,17 @@ services:
     restart: unless-stopped
     networks:
       - traefik
+    healthcheck:
+      test:  [
+          'CMD',
+          'bash',
+          '-c',
+          "exec 3<>/dev/tcp/127.0.0.1/9998 && echo -e 'GET /version HTTP/1.0\r\n\r\n' >&3 && head -n 1 <&3 | grep -q ."
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   radicale:
     image: ${RADICALE_DOCKER_IMAGE:-opencloudeu/radicale}:${RADICALE_DOCKER_TAG:-latest}
