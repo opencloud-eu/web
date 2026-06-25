@@ -135,7 +135,10 @@ import {
   useKeyboardActions,
   useRoute,
   useRouteQuery,
-  FolderLoaderOptions
+  FolderLoaderOptions,
+  useClipboardStore,
+  useService,
+  UppyService
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -156,6 +159,7 @@ import {
 import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
 import ListHeader from '../../components/FilesList/ListHeader.vue'
+import { useEventListener } from '@vueuse/core'
 
 const props = defineProps<{
   space?: SpaceResource
@@ -174,6 +178,8 @@ const { startWorker } = usePasteWorker()
 const { breadcrumbsFromPath, concatBreadcrumbs } = useBreadcrumbsFromPath()
 const { openWithDefaultApp } = useOpenWithDefaultApp()
 const { triggerDefaultAction } = useFileActions()
+const clipboardStore = useClipboardStore()
+const uppyService = useService<UppyService>('$uppyService')
 
 const space = computed(() => props.space)
 
@@ -511,4 +517,20 @@ watch(
     performLoaderTask(true)
   }
 )
+
+useEventListener(document, 'paste', (event: ClipboardEvent) => {
+  // Ignore file in clipboard if there are already files from OpenCloud in the clipboard
+  if (clipboardStore.resources.length || !unref(canUpload)) {
+    return
+  }
+  // Browsers only allow single files to be pasted for security reasons
+  const items = event.clipboardData.items
+  const fileItem = [...items].find((i) => i.kind === 'file')
+  if (!fileItem) {
+    return
+  }
+  const file = fileItem.getAsFile()
+  uppyService.addFiles([file])
+  event.preventDefault()
+})
 </script>
