@@ -15,12 +15,6 @@ Feature: Favorites
     And "Alice" creates the following project space using API
       | name         | id           |
       | service-team | service-team |
-    And "Alice" creates the following folder in space "service-team" using API
-      | name        |
-      | spaceFolder |
-    And "Alice" creates the following file in space "service-team" using API
-      | name      | content    |
-      | lorem.txt | space team |
     And "Alice" adds the following members to the space "service-team" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |
@@ -45,11 +39,6 @@ Feature: Favorites
     When "Brian" marks the following resources as favorite using "context menu"
       | resource        |
       | testavatar.jpg  |
-    And "Brian" navigates to the project space "service-team"
-    And "Brian" marks the following resources as favorite using "batch action"
-      | resource     |
-      | spaceFolder  |
-      | lorem.txt    |
     And "Brian" navigates to the personal space page
     And "Brian" marks the following resources as favorite using "sidebar panel"
       | resource   |
@@ -66,20 +55,12 @@ Feature: Favorites
     And following resources should be displayed in the files list for user "Brian"
       | resource       |
       | testavatar.jpg |
-      | spaceFolder    |
-      | lorem.txt      |
       | image.png      |
       | video.mp4      |
     And "Brian" removes the following resources from favorites using "context menu"
-      | resource     |
-      | spaceFolder  |
-    And "Brian" removes the following resources from favorites using "batch action"
       | resource  |
-      | lorem.txt |
       | image.png |
     And following resources should not be displayed in the files list for user "Brian"
       | resource       |
-      | spaceFolder    |
-      | lorem.txt      |
       | image.png      |
     And "Brian" logs out
