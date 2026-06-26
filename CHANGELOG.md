@@ -51,6 +51,7 @@
 
 ### 📦️ Dependencies
 
+- Update dependency @sentry/vue to v10.61.0 [[#2751](https://github.com/opencloud-eu/web/pull/2751)]
 - Update vue monorepo to v3.5.39 [[#2750](https://github.com/opencloud-eu/web/pull/2750)]
 - Update dependency qs to v6.15.3 [[#2747](https://github.com/opencloud-eu/web/pull/2747)]
 - Update devDependencies (non-major) [[#2738](https://github.com/opencloud-eu/web/pull/2738)]
