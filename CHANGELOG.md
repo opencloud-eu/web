@@ -51,6 +51,8 @@
 
 ### 📦️ Dependencies
 
+- Update vue monorepo to v3.5.39 [[#2750](https://github.com/opencloud-eu/web/pull/2750)]
+- Update dependency qs to v6.15.3 [[#2747](https://github.com/opencloud-eu/web/pull/2747)]
 - Update devDependencies (non-major) [[#2738](https://github.com/opencloud-eu/web/pull/2738)]
 - Update devDependencies (non-major) [[#2734](https://github.com/opencloud-eu/web/pull/2734)]
 - Update pnpm to v11.9.0 [[#2736](https://github.com/opencloud-eu/web/pull/2736)]
