@@ -17,8 +17,13 @@
   >
     <div
       v-if="isHidden"
-      class="oc-tile-card-lazy-shimmer h-30 overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-20 after:animate-shimmer"
-    />
+      class="oc-tile-card-lazy-shimmer overflow-hidden relative after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-20 after:animate-shimmer"
+    >
+      <div class="w-full aspect-[16/9]" />
+      <div class="p-2">
+        <div class="h-6" />
+      </div>
+    </div>
     <template v-else>
       <resource-link
         class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"

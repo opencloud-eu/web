@@ -72,7 +72,7 @@ export function useAppNavigation({
   currentFileContext
 }: AppNavigationOptions): AppNavigationResult {
   const navigateToContext = (context: MaybeRef<FileContext>) => {
-    const { fileName, routeName, routeParams, routeQuery } = unref(context)
+    const { itemId, routeName, routeParams, routeQuery } = unref(context)
 
     if (!unref(routeName)) {
       return router.push({ path: '/' })
@@ -83,7 +83,7 @@ export function useAppNavigation({
       params: unref(routeParams),
       query: {
         ...unref(routeQuery),
-        scrollTo: unref(fileName)
+        scrollTo: unref(itemId)
       }
     })
   }
