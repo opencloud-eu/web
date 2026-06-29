@@ -31,7 +31,15 @@
           :class="{ 'h-[40vh]': isSpaceFrontpage }"
         />
         <template v-else>
-          <space-header v-if="isSpaceFrontpage" :space="space" class="px-4" />
+          <custom-component-target
+            v-if="hasGenericSpaceHeaderExtension"
+            :extension-point="genericSpaceHeaderExtensionPoint"
+          />
+          <space-header
+            v-if="isSpaceFrontpage"
+            :space="space"
+            class="px-4"
+          />
           <no-content-message
             v-if="isCurrentFolderEmpty"
             id="files-space-empty"
@@ -146,8 +154,10 @@ import {
   useKeyboardActions,
   useRoute,
   useRouteQuery,
-  FolderLoaderOptions
+  FolderLoaderOptions,
+  CustomComponentTarget
 } from '@opencloud-eu/web-pkg'
+import { genericSpaceHeaderExtensionPoint } from '../../extensionPoints'
 import CreateAndUpload from '../../components/AppBar/CreateAndUpload.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -200,6 +210,10 @@ const canUpload = computed(() => {
 })
 
 const folderNotFound = computed(() => unref(currentFolder) === null)
+
+const hasGenericSpaceHeaderExtension = computed(() => {
+  return extensionRegistry.requestExtensions(genericSpaceHeaderExtensionPoint).length > 0
+})
 const isCurrentFolderEmpty = computed(() => unref(paginatedResources).length < 1)
 
 const titleSegments = computed(() => {

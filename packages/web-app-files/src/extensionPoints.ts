@@ -97,6 +97,11 @@ export const folderViewsSearchExtensionPoint: ExtensionPoint<FolderViewExtension
   extensionType: 'folderView'
 }
 
+export const genericSpaceHeaderExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
+  id: 'app.files.generic-space-header',
+  extensionType: 'customComponent'
+}
+
 export const fileSideBarFileDetailsTableExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
   id: 'app.files.sidebar.file-details.table',
   extensionType: 'customComponent'
@@ -133,6 +138,7 @@ export const extensionPoints = () => {
       folderViewsSharedViaLinkExtensionPoint,
       folderViewsSharedWithOthersExtensionPoint,
       folderViewsSearchExtensionPoint,
+      genericSpaceHeaderExtensionPoint,
       floatingActionButtonExtension,
       fileSideBarFileDetailsTableExtensionPoint,
       fileSideBarSharesPanelSharedWithTopExtensionPoint,
