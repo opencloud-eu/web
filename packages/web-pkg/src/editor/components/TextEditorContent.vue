@@ -1,12 +1,12 @@
 <template>
   <div v-if="textEditor.editor.value" class="text-editor-content h-full">
-    <EditorContent v-show="!isMarkdownSourceMode" :editor="textEditor.editor.value" />
-    <div v-if="isMarkdownSourceMode" class="flex size-full justify-center">
+    <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" />
+    <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea
         ref="sourceModeTextarea"
         :value="sourceContent"
         class="w-full max-w-[800px] p-[1rem] resize-none border-0 focus:outline-none"
-        @input="onMarkdownSourceInput"
+        @input="onSourceInput"
       />
     </div>
   </div>
@@ -24,22 +24,25 @@ const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 
-const isMarkdownSourceMode = computed(
-  () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)
-)
+const isSourceMode = computed(() => {
+  const contentType = unref(textEditor.contentType)
+  const sourceModeSupported = contentType === 'markdown' || contentType === 'html'
+  return sourceModeSupported && unref(textEditor.state.sourceMode)
+})
 
-const onMarkdownSourceInput = (event: Event) => {
+const onSourceInput = (event: Event) => {
   const value = (event.target as HTMLTextAreaElement).value
   sourceContent.value = value
 
+  const contentType = unref(textEditor.contentType)
   textEditor.editor.value?.commands.setContent(value, {
-    contentType: 'markdown',
+    contentType,
     emitUpdate: true
   })
 }
 
-watch(isMarkdownSourceMode, async () => {
-  if (unref(isMarkdownSourceMode)) {
+watch(isSourceMode, async () => {
+  if (unref(isSourceMode)) {
     sourceContent.value = textEditor.getContent()
     await nextTick()
     sourceModeTextareaRef.value?.focus()

@@ -138,13 +138,15 @@ const visible = computed(() => {
   return !!unref(textEditor.editor)
 })
 
-const isMarkdownSourceMode = computed(
-  () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)
-)
+const isSourceMode = computed(() => {
+  const contentType = unref(textEditor.contentType)
+  const sourceModeSupported = contentType === 'markdown' || contentType === 'html'
+  return sourceModeSupported && unref(textEditor.state.sourceMode)
+})
 const sourceModeEnabledActionIds = ['source-mode']
 
 const isItemEnabled = (item: EditorAction) => {
-  if (unref(isMarkdownSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
+  if (unref(isSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
     return false
   }
 
