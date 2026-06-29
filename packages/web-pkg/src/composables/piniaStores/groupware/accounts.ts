@@ -92,8 +92,9 @@ export const useGroupwareAccountsStore = defineStore('accounts', () => {
     if (query) {
       queryAccount = unref(accounts).find(({ accountId }) => accountId === query)
     }
+    const personalAccount = unref(accounts).find((account) => account.isPersonal)
 
-    setCurrentAccount(queryAccount || unref(accounts)[0])
+    setCurrentAccount(queryAccount || personalAccount || unref(accounts)[0])
   }
 
   return {
