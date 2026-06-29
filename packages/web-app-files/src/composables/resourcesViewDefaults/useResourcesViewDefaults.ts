@@ -9,7 +9,8 @@ import {
   useExtensionRegistry,
   ExtensionPoint,
   FolderViewExtension,
-  FolderView
+  FolderView,
+  useRouter
 } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import {
@@ -70,6 +71,7 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
   const language = useGettext()
   const resourcesStore = useResourcesStore()
   const extensionRegistry = useExtensionRegistry()
+  const router = useRouter()
   const storeItems = computed(() => resourcesStore.activeResources) as unknown as Ref<T[]>
 
   const { refresh: refreshFileListHeaderPosition, y: fileListHeaderY } = useFileListHeaderPosition()
@@ -114,6 +116,14 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
     page: paginationPage
   } = usePagination<T>({ items, perPageStoragePrefix: 'files' })
 
+  const scrollToParam = useRouteQuery('scrollTo')
+  const resetScrollToParam = async () => {
+    await router.push({
+      ...unref(router.currentRoute),
+      query: { ...unref(router.currentRoute).query, scrollTo: undefined }
+    })
+  }
+
   resourcesStore.$onAction((action) => {
     action.after(async () => {
       switch (action.name) {
@@ -125,6 +135,23 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
           await nextTick()
           for (const resource of action.args[0]) {
             fileList.accentuateItem(resource.id)
+          }
+          break
+        case 'toggleSelection':
+          if (!resourcesStore.selectedIds.includes(action.args[0]) && unref(scrollToParam)) {
+            // resource got deselected
+            resetScrollToParam()
+          }
+          break
+        case 'resetSelection':
+          if (unref(scrollToParam)) {
+            resetScrollToParam()
+          }
+          break
+        case 'setSelection':
+          if (action.args[0].length === 0 && unref(scrollToParam)) {
+            // selection reset
+            resetScrollToParam()
           }
           break
       }
