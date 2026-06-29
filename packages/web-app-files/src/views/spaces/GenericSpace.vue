@@ -34,9 +34,17 @@
           <custom-component-target
             v-if="hasGenericSpaceHeaderExtension"
             :extension-point="genericSpaceHeaderExtensionPoint"
-          />
+          >
+            <template #fallback>
+              <space-header
+                v-if="isSpaceFrontpage"
+                :space="space"
+                class="px-4"
+              />
+            </template>
+          </custom-component-target>
           <space-header
-            v-if="isSpaceFrontpage"
+            v-else-if="isSpaceFrontpage"
             :space="space"
             class="px-4"
           />
@@ -115,7 +123,7 @@
 <script setup lang="ts">
 import { omit, last } from 'lodash-es'
 import { basename } from 'path'
-import { computed, onBeforeUnmount, onMounted, unref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import {

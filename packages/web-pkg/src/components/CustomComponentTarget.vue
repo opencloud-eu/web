@@ -1,14 +1,17 @@
 <template>
-  <component
-    :is="extension.content"
-    v-for="extension in extensions"
-    :key="`custom-component-${extension.id}`"
-    v-bind="extension.componentProps ? extension.componentProps() : undefined"
-  />
+  <template v-for="extension in extensions" :key="`custom-component-${extension.id}`">
+    <component
+      :is="extension.content"
+      v-bind="extension.componentProps ? extension.componentProps() : undefined"
+      @vue:mounted="onChildMounted"
+      @vue:unmounted="onChildUnmounted"
+    />
+  </template>
+  <slot v-if="!hasRenderedContent" name="fallback" />
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import {
   CustomComponentExtension,
   ExtensionPoint,
@@ -22,6 +25,24 @@ const props = defineProps<{
 
 const extensionRegistry = useExtensionRegistry()
 const extensionPreferences = useExtensionPreferencesStore()
+
+// Track whether any extension component actually rendered visible content
+const mountedCount = ref(0)
+const hasRenderedContent = computed(() => mountedCount.value > 0)
+
+function onChildMounted(e: any) {
+  // Check if the component rendered something visible (not just a comment node)
+  const el = e?.el
+  if (el && el.nodeType !== 8 /* Comment */) {
+    mountedCount.value++
+  }
+}
+
+function onChildUnmounted() {
+  if (mountedCount.value > 0) mountedCount.value--
+}
+
+defineExpose({ hasRenderedContent })
 
 const allExtensions = computed(() => {
   return extensionRegistry.requestExtensions(props.extensionPoint)
