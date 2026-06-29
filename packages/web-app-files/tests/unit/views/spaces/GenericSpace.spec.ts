@@ -171,7 +171,7 @@ describe('GenericSpace view', () => {
       it('renders the ResourceDetails component', () => {
         const { wrapper } = getMountedWrapper({
           currentFolder: {
-            ...mock<Resource>()
+            ...mock<Resource>({ canUpload: () => true })
           },
           files: [{ ...mock<Resource>({ name: 'file.txt' }), isFolder: false }],
           space: mock<SpaceResource>({
@@ -183,25 +183,6 @@ describe('GenericSpace view', () => {
         })
         expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
       })
-    })
-  })
-  describe('create and upload actions', () => {
-    const AppBarStub = { template: '<div><slot name="actions" /></div>' }
-
-    it('should not render create folder button when not in embed mode', () => {
-      const { wrapper } = getMountedWrapper({
-        stubs: { 'app-bar': AppBarStub, CreateAndUpload: true }
-      })
-
-      expect(wrapper.find(selectors.btnCreateFolder).exists()).toBe(false)
-    })
-
-    it('should render create and upload actions when not in embed mode', () => {
-      const { wrapper } = getMountedWrapper({
-        stubs: { 'app-bar': AppBarStub, CreateAndUpload: true }
-      })
-
-      expect(wrapper.find(selectors.actionsCreateAndUpload).exists()).toBe(true)
     })
   })
   describe('list header', () => {

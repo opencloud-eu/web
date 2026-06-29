@@ -11,18 +11,7 @@
         :space="space"
         :view-modes="viewModes"
         @item-dropped="fileDropped"
-      >
-        <template #actions="{ limitedScreenSpace }">
-          <create-and-upload
-            key="create-and-upload-actions"
-            data-testid="actions-create-and-upload"
-            :space="space"
-            :item="item"
-            :item-id="itemId"
-            :limited-screen-space="limitedScreenSpace"
-          />
-        </template>
-      </app-bar>
+      />
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <not-found-message
@@ -146,9 +135,11 @@ import {
   useKeyboardActions,
   useRoute,
   useRouteQuery,
-  FolderLoaderOptions
+  FolderLoaderOptions,
+  useClipboardStore,
+  useService,
+  UppyService
 } from '@opencloud-eu/web-pkg'
-import CreateAndUpload from '../../components/AppBar/CreateAndUpload.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
@@ -157,7 +148,7 @@ import ResourceDetails from '../../components/FilesList/ResourceDetails.vue'
 import SpaceHeader from '../../components/Spaces/SpaceHeader.vue'
 import WhitespaceContextMenu from '../../components/Spaces/WhitespaceContextMenu.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { useResourcesViewDefaults } from '../../composables'
+import { useFileUpload, useResourcesViewDefaults } from '../../composables'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { v4 as uuidV4 } from 'uuid'
 import {
@@ -168,6 +159,7 @@ import {
 import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
 import ListHeader from '../../components/FilesList/ListHeader.vue'
+import { useEventListener } from '@vueuse/core'
 
 const props = defineProps<{
   space?: SpaceResource
@@ -186,8 +178,12 @@ const { startWorker } = usePasteWorker()
 const { breadcrumbsFromPath, concatBreadcrumbs } = useBreadcrumbsFromPath()
 const { openWithDefaultApp } = useOpenWithDefaultApp()
 const { triggerDefaultAction } = useFileActions()
+const clipboardStore = useClipboardStore()
+const uppyService = useService<UppyService>('$uppyService')
 
 const space = computed(() => props.space)
+
+useFileUpload(space)
 
 const resourcesStore = useResourcesStore()
 const { removeResources, resetSelection } = resourcesStore
@@ -521,4 +517,20 @@ watch(
     performLoaderTask(true)
   }
 )
+
+useEventListener(document, 'paste', (event: ClipboardEvent) => {
+  // Ignore file in clipboard if there are already files from OpenCloud in the clipboard
+  if (clipboardStore.resources.length || !unref(canUpload)) {
+    return
+  }
+  // Browsers only allow single files to be pasted for security reasons
+  const items = event.clipboardData.items
+  const fileItem = [...items].find((i) => i.kind === 'file')
+  if (!fileItem) {
+    return
+  }
+  const file = fileItem.getAsFile()
+  uppyService.addFiles([file])
+  event.preventDefault()
+})
 </script>

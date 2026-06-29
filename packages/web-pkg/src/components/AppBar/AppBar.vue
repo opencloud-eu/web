@@ -44,9 +44,11 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions flex items-center justify-end min-h-10 gap-2">
-        <div class="flex-1 flex justify-start items-center">
-          <slot name="actions" :limited-screen-space="limitedScreenSpace" />
+      <div class="files-app-bar-actions flex items-baseline justify-end min-h-10">
+        <slot v-if="!showBatchActions" name="actions" :limited-screen-space="limitedScreenSpace" />
+        <div
+          class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
+        >
           <batch-actions
             v-if="showBatchActions && !batchActionsLoading"
             :actions="batchActions"
@@ -55,6 +57,22 @@
           />
           <div v-else-if="showBatchActions && batchActionsLoading">
             <oc-spinner :aria-label="$gettext('Loading actions')" />
+          </div>
+          <div v-if="selectedResources.length" class="flex items-center gap-1">
+            <oc-button
+              v-oc-tooltip="$gettext('Clear selection')"
+              :aria-label="$gettext('Clear selection')"
+              appearance="raw"
+              gap-size="small"
+              class="p-1"
+              @click="resetSelection"
+            >
+              <span
+                class="text-sm"
+                v-text="$gettext('%{count} selected', { count: selectedResources.length })"
+              />
+              <oc-icon fill-type="line" name="close" />
+            </oc-button>
           </div>
         </div>
       </div>
@@ -76,7 +94,7 @@ import {
 import BatchActions from '../BatchActions.vue'
 import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
-import { isLocationCommonActive, isLocationTrashActive } from '../../router'
+import { isLocationTrashActive } from '../../router'
 import { FolderView } from '../../ui/types'
 import {
   useFileActionsDelete,
@@ -153,6 +171,7 @@ export default defineComponent({
 
     const resourcesStore = useResourcesStore()
     const { selectedResources } = storeToRefs(resourcesStore)
+    const { resetSelection } = resourcesStore
 
     const space = computed(() => props.space)
 
@@ -161,7 +180,6 @@ export default defineComponent({
     const { actions: restoreActions } = useFileActionsRestore()
 
     const breadcrumbMaxWidth = ref<number>(0)
-    const isSearchLocation = useActiveLocation(isLocationCommonActive, 'files-common-search')
 
     const hasSharesNavigation = computed(
       () => Object.hasOwn(useSlots(), 'navigation') && can('create-all', 'Share')
@@ -180,9 +198,22 @@ export default defineComponent({
 
       actions = [...actions, ...unref(deleteActions), ...unref(restoreActions)]
 
-      return actions.filter((item) =>
-        item.isVisible({ space: unref(space), resources: resourcesStore.selectedResources })
-      )
+      const categoryOrder: Record<string, number> = {
+        primary: 0,
+        secondary: 1,
+        tertiary: 2,
+        quaternary: 3
+      }
+
+      return actions
+        .filter((item) =>
+          item.isVisible({ space: unref(space), resources: resourcesStore.selectedResources })
+        )
+        .sort((a, b) => {
+          const aOrder = categoryOrder[a.category ?? 'tertiary'] ?? 2
+          const bOrder = categoryOrder[b.category ?? 'tertiary'] ?? 2
+          return aOrder - bOrder
+        })
     })
 
     const spaces = computed(() =>
@@ -221,6 +252,8 @@ export default defineComponent({
       return unref(space)?.name || ''
     })
 
+    const showBatchActions = computed(() => props.hasBulkActions && unref(batchActions).length)
+
     return {
       router,
       hasSharesNavigation,
@@ -233,7 +266,9 @@ export default defineComponent({
       pageTitle,
       selectedResources,
       isSticky,
-      isSideBarOpen
+      isSideBarOpen,
+      showBatchActions,
+      resetSelection
     }
   },
   data: function () {
@@ -245,13 +280,6 @@ export default defineComponent({
   computed: {
     showContextActions() {
       return last<BreadcrumbItem>(this.breadcrumbs).allowContextActions
-    },
-    showBatchActions() {
-      return (
-        this.hasBulkActions &&
-        (this.selectedResources.length >= 1 ||
-          isLocationTrashActive(this.router, 'files-trash-generic'))
-      )
     },
     selectedResourcesAnnouncement() {
       if (this.selectedResources.length === 0) {
@@ -292,7 +320,7 @@ export default defineComponent({
       this.breadcrumbMaxWidth =
         totalContentWidth - leftSidebarWidth - rightSidebarWidth - rightControlsWidth
       this.limitedScreenSpace = this.isSideBarOpen
-        ? window.innerWidth <= 1280
+        ? window.innerWidth <= 1400
         : window.innerWidth <= 1000
     }
   }

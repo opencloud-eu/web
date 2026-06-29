@@ -32,18 +32,33 @@
                   />
                 </div>
               </div>
-              <div class="flex items-center min-h-12">
-                <slot
-                  name="topbarActions"
-                  :limited-screen-space="limitedScreenSpace"
-                  class="flex-1 flex flex-start"
-                />
-                <batch-actions
-                  v-if="showBatchActions"
-                  :actions="batchActions"
-                  :action-options="{ resources: batchActionItems }"
-                  :limited-screen-space="limitedScreenSpace"
-                />
+              <div class="flex items-baseline justify-end w-full min-h-10">
+                <div
+                  class="flex-1 flex items-center justify-between min-h-9 px-3 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
+                >
+                  <batch-actions
+                    v-if="showBatchActions"
+                    :actions="batchActions"
+                    :action-options="{ resources: batchActionItems }"
+                    :limited-screen-space="limitedScreenSpace"
+                  />
+                  <div v-if="batchActionItems.length" class="flex items-center gap-1">
+                    <oc-button
+                      v-oc-tooltip="$gettext('Clear selection')"
+                      :aria-label="$gettext('Clear selection')"
+                      appearance="raw"
+                      gap-size="small"
+                      class="p-1"
+                      @click="$emit('clearSelection')"
+                    >
+                      <span
+                        class="text-sm"
+                        v-text="$gettext('%{count} selected', { count: batchActionItems.length })"
+                      />
+                      <oc-icon fill-type="line" name="close" />
+                    </oc-button>
+                  </div>
+                </div>
               </div>
             </div>
             <slot name="mainContent" />
@@ -140,6 +155,7 @@ export default defineComponent({
       default: (): Action[] => []
     }
   },
+  emits: ['clearSelection'],
   setup() {
     const sidebarStore = useSideBar()
     const { isSideBarOpen } = storeToRefs(sidebarStore)
