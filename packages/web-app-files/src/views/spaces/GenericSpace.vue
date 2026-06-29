@@ -383,7 +383,12 @@ const performLoaderTask = async (sameRoute: boolean, path?: string, fileId?: str
     console.error(e)
   }
 
-  scrollToResourceFromRoute([unref(currentFolder), ...unref(paginatedResources)], 'files-app-bar')
+  if (!unref(displayResourceAsSingleResource)) {
+    // when a single resource is shown (e.g. a public link to a file), the file list table
+    // - and therefore the row to scroll to - is not rendered, so there is nothing to scroll to
+    scrollToResourceFromRoute([unref(currentFolder), ...unref(paginatedResources)], 'files-app-bar')
+  }
+
   refreshFileListHeaderPosition()
   focusAndAnnounceBreadcrumb(sameRoute)
 

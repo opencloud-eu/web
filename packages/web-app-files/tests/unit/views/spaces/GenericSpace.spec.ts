@@ -135,6 +135,11 @@ describe('GenericSpace view', () => {
     })
   })
   describe('loader task', () => {
+    it('scrolls to the resource from the route when a file list is rendered', async () => {
+      const { mocks } = getMountedWrapper()
+      await flushPromises()
+      expect(mocks.scrollToResourceFromRoute).toHaveBeenCalledTimes(1)
+    })
     it('re-loads the resources on item change', async () => {
       const { wrapper, mocks } = getMountedWrapper()
       await flushPromises()
@@ -182,6 +187,22 @@ describe('GenericSpace view', () => {
           })
         })
         expect(wrapper.find('resource-details-stub').exists()).toBeTruthy()
+      })
+      it('does not scroll to the resource since no file list is rendered', async () => {
+        const { mocks } = getMountedWrapper({
+          currentFolder: {
+            ...mock<Resource>()
+          },
+          files: [{ ...mock<Resource>({ name: 'file.txt' }), isFolder: false }],
+          space: mock<SpaceResource>({
+            id: '1',
+            getDriveAliasAndItem: vi.fn(),
+            name: 'Personal space',
+            driveType: 'public'
+          })
+        })
+        await flushPromises()
+        expect(mocks.scrollToResourceFromRoute).not.toHaveBeenCalled()
       })
     })
   })
