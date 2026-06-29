@@ -51,6 +51,8 @@
 
 ### 📦️ Dependencies
 
+- Update dependency filesize to v11.0.19 [[#2753](https://github.com/opencloud-eu/web/pull/2753)]
+- Update devDependencies (non-major) [[#2749](https://github.com/opencloud-eu/web/pull/2749)]
 - Update dependency @sentry/vue to v10.62.0 [[#2754](https://github.com/opencloud-eu/web/pull/2754)]
 - Update dependency @sentry/vue to v10.61.0 [[#2751](https://github.com/opencloud-eu/web/pull/2751)]
 - Update vue monorepo to v3.5.39 [[#2750](https://github.com/opencloud-eu/web/pull/2750)]
