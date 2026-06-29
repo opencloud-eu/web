@@ -833,6 +833,9 @@ def determineReleaseVersion(ctx):
 
     return ctx.build.ref.replace("refs/tags/" + package + "-v", "")
 
+def isPrerelease(ctx):
+    return len(ctx.build.ref.split("-")) > 1
+
 def buildAndPublishRelease(ctx):
     steps = []
     package = determineReleasePackage(ctx)
@@ -866,11 +869,46 @@ def buildAndPublishRelease(ctx):
                         "sha256",
                     ],
                     "title": ctx.build.ref.replace("refs/tags/v", ""),
-                    "prerelease": len(ctx.build.ref.split("-")) > 1,
+                    "prerelease": isPrerelease(ctx),
                 },
                 "when": [event["tag"]],
             },
         ]
+
+        # On a stable release tag (vX.Y.Z), create and push the per-package tags (<package>-vX.Y.Z)
+        # so the npm publish runs for each library. All package versions are kept in sync with the
+        # root version, so we reuse the version from the release tag. Skipped for prereleases.
+        if not isPrerelease(ctx):
+            remote = "https://x-access-token:$${GITHUB_TOKEN}@github.com/opencloud-eu/web.git"
+            tag_script = "; ".join([
+                "set -e",
+                "git config user.email \"devops@opencloud.eu\"",
+                "git config user.name \"OpenCloud DevOps\"",
+                "for pkg in %s" % " ".join(WEB_PUBLISH_NPM_PACKAGES),
+                "do tag=\"$pkg-v%s\"" % version,
+                "if git ls-remote --exit-code \"%s\" \"refs/tags/$tag\" >/dev/null 2>&1" % remote,
+                "then echo \"$tag already exists, skipping\"",
+                "else git tag -a \"$tag\" -m \"$tag\"",
+                "git push \"%s\" \"$tag\"" % remote,
+                "echo \"$tag created and pushed\"",
+                "fi",
+                "done",
+            ])
+            steps.append(
+                {
+                    "name": "create-package-tags",
+                    "image": OC_CI_NODEJS,
+                    "environment": {
+                        "GITHUB_TOKEN": {
+                            "from_secret": "github_token",
+                        },
+                    },
+                    "commands": [
+                        "bash -c '%s'" % tag_script,
+                    ],
+                    "when": [event["tag"]],
+                },
+            )
     else:
         full_package_name = "%s/%s" % (WEB_PUBLISH_NPM_ORGANIZATION, package)
         steps.append(
