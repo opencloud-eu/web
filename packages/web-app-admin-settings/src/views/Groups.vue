@@ -9,6 +9,7 @@
     :batch-actions="batchActions"
     :batch-action-items="selectedGroups"
     :show-view-options="true"
+    @clear-selection="groupSettingsStore.setSelectedGroups([])"
   >
     <template #sideBarHeader>
       <div v-if="selectedGroups.length === 1" class="flex items-center min-w-0">
