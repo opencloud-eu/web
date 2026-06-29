@@ -24,11 +24,7 @@ const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 
-const isSourceMode = computed(() => {
-  const contentType = unref(textEditor.contentType)
-  const sourceModeSupported = contentType === 'markdown' || contentType === 'html'
-  return sourceModeSupported && unref(textEditor.state.sourceMode)
-})
+const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 
 const onSourceInput = (event: Event) => {
   const value = (event.target as HTMLTextAreaElement).value
