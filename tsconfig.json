@@ -1,3 +1,6 @@
 {
-  "extends": "@opencloud-eu/tsconfig"
+  "extends": "@opencloud-eu/tsconfig",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  }
 }
