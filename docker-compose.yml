@@ -347,7 +347,7 @@ services:
     restart: unless-stopped
 
   stalwart:
-    image: ghcr.io/stalwartlabs/stalwart:v0.16.8-alpine
+    image: ghcr.io/stalwartlabs/stalwart:v0.16.11-alpine
     hostname: ${STALWART_DOMAIN:-stalwart.opencloud.test}
     depends_on:
       opencloud:
