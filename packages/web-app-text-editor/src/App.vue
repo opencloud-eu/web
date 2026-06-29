@@ -7,7 +7,7 @@
     :editor="TextEditorBinding"
     :app-version="pkg.version"
     document-prefix="text-editor"
-    :realtime-url="(applicationConfig?.realtimeUrl as string | null | undefined) ?? undefined"
+    :realtime-url="(applicationConfig?.realtimeUrl as string | null | undefined) ?? null"
     @update:current-content="$emit('update:currentContent', $event)"
     @update:server-content="$emit('update:serverContent', $event)"
     @update:etag="$emit('update:etag', $event)"

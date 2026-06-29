@@ -152,7 +152,8 @@ describe('CollaborativeWrapper — local mode (no realtimeUrl)', () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const wrapper = mountWrapper({ currentContent: 'hello local' })
     await flushPromises()
-    // Hydration is gated by a 150ms awareness-settle wait.
+    // Local mode skips the collab-only 150ms awareness-settle wait and
+    // hydrates immediately; advancing timers here is just belt-and-braces.
     vi.advanceTimersByTime(200)
     await flushPromises()
 
