@@ -10,6 +10,18 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
+### 📈 Enhancement
+
+- feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
+- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
+- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
+- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
+- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
+-  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
+- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
+- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
+
 ### 🐛 Bug Fixes
 
 - fix: disable copy / move to actions for vaults [[#2741](https://github.com/opencloud-eu/web/pull/2741)]
@@ -37,17 +49,6 @@
 - [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
 - e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
 - e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
-
-### 📈 Enhancement
-
-- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
-- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
-- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
-- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
--  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
-- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
-- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
-- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 📦️ Dependencies
 
