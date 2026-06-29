@@ -6,7 +6,6 @@
   },
   "apps": [
     "files",
-    "text-editor",
     "pdf-viewer",
     "search",
     "external",
@@ -20,9 +19,28 @@
     "mail",
     "contacts",
     "rclone-crypt",
-    "office-settings",
-    "codemirror",
-    "tiptap",
-    "excalidraw"
+    "office-settings"
+  ],
+  "external_apps": [
+    {
+      "id": "text-editor",
+      "path": "web-app-text-editor",
+      "config": { "realtimeUrl": "wss://host.docker.internal:9200/realtime" }
+    },
+    {
+      "id": "codemirror",
+      "path": "web-app-codemirror",
+      "config": { "realtimeUrl": "wss://host.docker.internal:9200/realtime" }
+    },
+    {
+      "id": "tiptap",
+      "path": "web-app-tiptap",
+      "config": { "realtimeUrl": "wss://host.docker.internal:9200/realtime" }
+    },
+    {
+      "id": "excalidraw",
+      "path": "web-app-excalidraw",
+      "config": { "realtimeUrl": "wss://host.docker.internal:9200/realtime" }
+    }
   ]
 }

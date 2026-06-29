@@ -4,9 +4,6 @@
   "apps": [
     "files",
     "text-editor",
-    "codemirror",
-    "tiptap",
-    "excalidraw",
     "preview",
     "pdf-viewer",
     "search",
@@ -14,5 +11,22 @@
     "ocm",
     "app-store",
     "rclone-crypt"
+  ],
+  "external_apps": [
+    {
+      "id": "codemirror",
+      "path": "web-app-codemirror",
+      "config": { "realtimeUrl": "wss://opencloud:9200/realtime" }
+    },
+    {
+      "id": "tiptap",
+      "path": "web-app-tiptap",
+      "config": { "realtimeUrl": "wss://opencloud:9200/realtime" }
+    },
+    {
+      "id": "excalidraw",
+      "path": "web-app-excalidraw",
+      "config": { "realtimeUrl": "wss://opencloud:9200/realtime" }
+    }
   ]
 }

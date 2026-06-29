@@ -475,17 +475,22 @@ async function onProviderSynced(
   if (props.adapter.hasContent(doc)) return
   if (effectiveReadOnly.value) return // never seed from a read-only view
 
-  // Let other clients announce themselves via awareness before electing.
-  // In local mode nobody else exists, but the 150ms wait costs nothing
-  // and keeps the codepath identical.
-  await new Promise<void>((resolve) => setTimeout(resolve, 150))
+  // Peer election to avoid double-hydration: let other clients announce
+  // themselves via awareness, then the lowest awareness clientId wins. This
+  // only matters in collab mode. In local mode there are no peers, and the
+  // 150ms announce wait would just delay first paint — and lose the race
+  // against consumers that read editor content right after the editor mounts
+  // (e.g. e2e steps reading innerText) — so hydrate immediately.
+  if (prov) {
+    await new Promise<void>((resolve) => setTimeout(resolve, 150))
 
-  if (props.adapter.hasContent(doc)) return // someone beat us
+    if (props.adapter.hasContent(doc)) return // someone beat us
 
-  const myId = doc.clientID
-  const peers = Array.from(awarenessInstance.getStates().keys())
-  const lowest = peers.length ? Math.min(myId, ...peers) : myId
-  if (myId !== lowest) return
+    const myId = doc.clientID
+    const peers = Array.from(awarenessInstance.getStates().keys())
+    const lowest = peers.length ? Math.min(myId, ...peers) : myId
+    if (myId !== lowest) return
+  }
 
   await Promise.resolve(props.adapter.hydrate(doc, props.currentContent))
 }
