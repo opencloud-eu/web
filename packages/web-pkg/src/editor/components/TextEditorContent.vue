@@ -31,10 +31,12 @@ const onSourceInput = (event: Event) => {
   sourceContent.value = value
 
   const contentType = unref(textEditor.contentType)
-  textEditor.editor.value?.commands.setContent(value, {
-    contentType,
-    emitUpdate: true
-  })
+
+  if (contentType === 'html' || contentType === 'markdown') {
+    textEditor.editor.value?.commands.setContent(value, { contentType, emitUpdate: true })
+  } else {
+    textEditor.editor.value?.commands.setContent(value, { emitUpdate: true })
+  }
 }
 
 watch(isSourceMode, async () => {
