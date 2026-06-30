@@ -17,7 +17,7 @@ import * as webClientOcs from '@opencloud-eu/web-client/ocs'
 import * as webClientSse from '@opencloud-eu/web-client/sse'
 import * as webClientWebdav from '@opencloud-eu/web-client/webdav'
 
-import type { ModuleFederation } from '@module-federation/runtime'
+import { ModuleFederation } from '@module-federation/runtime'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { App } from 'vue'
 import { AppConfigObject, ClassicApplicationScript } from '@opencloud-eu/web-pkg'
@@ -75,24 +75,27 @@ const loadScriptDynamicImport = async <T>(moduleUri: string) => {
   return ((await import(/* @vite-ignore */ moduleUri)) as any).default as T
 }
 
-const loadScriptModuleFederation = async <T>(
-  federation: ModuleFederation,
-  remoteUrl: string
-): Promise<T> => {
+const loadScriptModuleFederation = async <T>(remoteUrl: string, name: string): Promise<T> => {
+  // Each remote gets its own Module Federation instance with an isolated shared scope.
+  // All remotes loaded through a single instance share the same `shareScopeMap` by
+  // reference, so a faulty app that corrupts that scope during init breaks every other
+  // app too. Per-instance isolation contains such failures to the offending app.
+  // This is cheap: the shared modules are imported once at the top of this file and only
+  // referenced here, so creating an instance just registers a handful of lazy descriptors.
+  const federation = new ModuleFederation({ name: `opencloud-web-${name}`, remotes: [] })
+  registerSharedModules(federation)
   federation.registerRemotes([{ name: remoteUrl, entry: remoteUrl, type: 'module' }])
   const module = await federation.loadRemote(remoteUrl)
   return (module as any).default as T
 }
 
 export const loadApplication = async ({
-  federation,
   appName,
   applicationKey,
   applicationPath,
   applicationConfig,
   configStore
 }: {
-  federation: ModuleFederation
   appName?: string
   applicationKey: string
   applicationPath: string
@@ -110,40 +113,51 @@ export const loadApplication = async ({
   }
 
   let applicationScript: ClassicApplicationScript
-  try {
-    if (applicationPath.includes('/')) {
-      if (
-        !applicationPath.startsWith('http://') &&
-        !applicationPath.startsWith('https://') &&
-        !applicationPath.startsWith('//')
-      ) {
-        applicationPath = urlJoin(configStore.serverUrl, applicationPath)
-      }
+  if (applicationPath.includes('/')) {
+    if (
+      !applicationPath.startsWith('http://') &&
+      !applicationPath.startsWith('https://') &&
+      !applicationPath.startsWith('//')
+    ) {
+      applicationPath = urlJoin(configStore.serverUrl, applicationPath)
+    }
 
-      if (applicationPath.endsWith('.mjs')) {
+    if (applicationPath.endsWith('.mjs')) {
+      try {
         applicationScript = await loadScriptModuleFederation<ClassicApplicationScript>(
-          federation,
-          applicationPath
+          applicationPath,
+          applicationKey
         )
-      } else {
+      } catch (e) {
         throw new RuntimeError(
-          'cannot load application as applicationPath is not a valid module federation remote entry'
+          `failed to load external application ${applicationKey}`,
+          applicationKey,
+          e
         )
       }
     } else {
-      const productionModule = window.WEB_APPS_MAP?.[applicationPath]
-      if (productionModule) {
+      throw new RuntimeError(
+        `cannot load external application ${applicationKey} as applicationPath is not a valid module federation remote entry`
+      )
+    }
+  } else {
+    const productionModule = window.WEB_APPS_MAP?.[applicationPath]
+    if (productionModule) {
+      try {
         applicationScript =
           await loadScriptDynamicImport<ClassicApplicationScript>(productionModule)
-      } else {
+      } catch (e) {
         throw new RuntimeError(
-          'cannot load application as only a name (and no path) is given and that name is not known to the application import map'
+          `failed to load internal application ${applicationKey}`,
+          applicationKey,
+          e
         )
       }
+    } else {
+      throw new RuntimeError(
+        `cannot load internalapplication ${applicationKey} as only a name (and no path) is given and that name is not known to the application import map`
+      )
     }
-  } catch (e) {
-    console.trace(e)
-    throw new RuntimeError('cannot load application', applicationPath, e)
   }
 
   return {
