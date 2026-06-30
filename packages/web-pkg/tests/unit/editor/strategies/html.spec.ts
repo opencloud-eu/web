@@ -40,6 +40,12 @@ describe('useStrategyHtml', () => {
       expect(allIds).toContain('table-menu')
       expect(allIds).toContain('font-size')
     })
+
+    it('includes source mode toggle', () => {
+      const strategy = createStrategy()
+      const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
+      expect(allIds).toContain('source-mode')
+    })
   })
 
   describe('serialize', () => {
