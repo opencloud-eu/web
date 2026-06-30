@@ -45,7 +45,8 @@ class HoverInsertMenuView {
   }
 
   update(): void {
-    // Clean up menu reference if it was closed externally
+    // The menu can be removed by outside interactions (e.g. escape/click-away),
+    // so we keep local state in sync with the actual DOM.
     if (this.menu && !document.body.contains(this.menu.el)) this.closeMenu()
 
     // Hide button when user types (but not when menu is open)
@@ -67,6 +68,8 @@ class HoverInsertMenuView {
 
   private onMove = (e: MouseEvent): void => {
     const rect = this.view.dom.getBoundingClientRect()
+    // Keep the button visible while moving from the block to the left-side button.
+    // This check is based on the active block's vertical range, not pointer target.
     if (this.isHoveringActiveBlock(e, rect)) return
 
     const block = this.editor.isEditable && !this.menu ? this.getHoveredBlock(e) : null
@@ -161,6 +164,7 @@ class HoverInsertMenuView {
     const blockPos = $pos.before(this.activeBlock.blockDepth)
     const isEmpty = node.textContent.length === 0
 
+    // Reuse the empty hovered block directly; otherwise create a fresh paragraph below it.
     if (isEmpty) return blockPos + 1
 
     const afterBlockPos = blockPos + node.nodeSize
@@ -174,6 +178,8 @@ class HoverInsertMenuView {
   }
 
   private runCommand(item: FlatSlashCommandItem, insertPos: number): void {
+    // Clicking the floating UI can move focus/selection. Restore both explicitly so
+    // command actions (e.g. toggling marks) target the hovered insertion position.
     this.editor.chain().focus().setTextSelection(insertPos).run()
     item.slashCommandAction({ editor: this.editor, range: { from: insertPos, to: insertPos } })
     this.closeMenu()
