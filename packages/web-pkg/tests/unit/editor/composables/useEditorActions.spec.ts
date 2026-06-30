@@ -263,13 +263,7 @@ describe('useEditorActions', () => {
 
         it('isActive checks the correct alignment', () => {
           const editor = createMockEditor({
-            isActive: (attrs) => {
-              if (!attrs || typeof attrs !== 'object') {
-                return false
-              }
-
-              return (attrs as { textAlign?: string }).textAlign === alignment
-            }
+            isActive: (attrs) => (attrs as { textAlign?: string } | null)?.textAlign === alignment
           })
           expect(actions[name]().isActive!(editor)).toBe(true)
         })
