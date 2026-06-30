@@ -109,6 +109,38 @@ export function useEditorActions(
     }))
   })
 
+  const alignLeft = (): EditorAction => ({
+    id: 'align-left',
+    title: $gettext('Align left'),
+    icon: 'align-left',
+    toolbarAction: (editor) => editor.chain().focus().setTextAlign('left').run(),
+    isActive: (editor) => editor.isActive({ textAlign: 'left' })
+  })
+
+  const alignCenter = (): EditorAction => ({
+    id: 'align-center',
+    title: $gettext('Align center'),
+    icon: 'align-center',
+    toolbarAction: (editor) => editor.chain().focus().setTextAlign('center').run(),
+    isActive: (editor) => editor.isActive({ textAlign: 'center' })
+  })
+
+  const alignRight = (): EditorAction => ({
+    id: 'align-right',
+    title: $gettext('Align right'),
+    icon: 'align-right',
+    toolbarAction: (editor) => editor.chain().focus().setTextAlign('right').run(),
+    isActive: (editor) => editor.isActive({ textAlign: 'right' })
+  })
+
+  const alignJustify = (): EditorAction => ({
+    id: 'align-justify',
+    title: $gettext('Align justify'),
+    icon: 'align-justify',
+    toolbarAction: (editor) => editor.chain().focus().setTextAlign('justify').run(),
+    isActive: (editor) => editor.isActive({ textAlign: 'justify' })
+  })
+
   const textColor = (): EditorAction => ({
     id: 'text-color',
     title: $gettext('Text color'),
@@ -653,6 +685,10 @@ export function useEditorActions(
     heading4,
     fontSize,
     textColor,
+    alignLeft,
+    alignCenter,
+    alignRight,
+    alignJustify,
     backgroundColor,
     bold,
     italic,
