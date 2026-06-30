@@ -597,7 +597,7 @@ When(
 )
 
 When(
-  /^"([^"].*)" opens the following file(?:s)? in (mediaviewer|pdfviewer|texteditor|Collabora|OnlyOffice)$/,
+  /^"([^"].*)" opens the following file(?:s)? in (mediaviewer|pdfviewer|texteditor|Collabora|Euro-Office)$/,
   async function (this: World, stepUser: string, actionType: string, stepTable: DataTable) {
     const { page } = this.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
@@ -610,7 +610,7 @@ When(
           | 'pdfviewer'
           | 'texteditor'
           | 'Collabora'
-          | 'OnlyOffice'
+          | 'Euro-Office'
       })
     }
   }
@@ -903,7 +903,7 @@ Then(
 
     actionType === 'should'
       ? await expect(lockLocator).toBeVisible()
-      : // can take more than 5 seconds for lock to be released in case of OnlyOffice
+      : // can take more than 5 seconds for lock to be released in case of Euro-Office
         await expect(lockLocator).not.toBeVisible({ timeout: config.timeout * 1000 })
   }
 )
@@ -1103,7 +1103,7 @@ Then(
 When(
   '{string} opens file {string} via {string} using the context menu',
   async function (this: World, stepUser: string, file: string, fileViewer: string): Promise<void> {
-    const allowedViewers = ['collabora', 'text-editor', 'preview'] as const
+    const allowedViewers = ['collabora-online', 'text-editor', 'preview'] as const
 
     if (!allowedViewers.includes(fileViewer as any)) {
       throw new Error(`Unsupported file viewer: ${fileViewer}`)
