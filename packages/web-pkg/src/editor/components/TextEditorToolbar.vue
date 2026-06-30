@@ -59,7 +59,13 @@
                     @click="child.toolbarAction?.(textEditor.editor.value!)"
                   >
                     <span class="inline-flex items-center gap-2">
+                      <span
+                        v-if="child.swatchColor"
+                        class="inline-block size-4 rounded-full border-2 border-role-outline-variant"
+                        :style="{ backgroundColor: child.swatchColor }"
+                      />
                       <oc-icon
+                        v-else
                         :name="child.icon"
                         :fill-type="child.iconFillType || 'none'"
                         size="small"
