@@ -131,20 +131,33 @@ export const loadApplication = async ({
           applicationKey
         )
       } catch (e) {
-        throw new RuntimeError('failed to load application', applicationKey, e)
+        throw new RuntimeError(
+          `failed to load external application ${applicationKey}`,
+          applicationKey,
+          e
+        )
       }
     } else {
       throw new RuntimeError(
-        'cannot load application as applicationPath is not a valid module federation remote entry'
+        `cannot load external application ${applicationKey} as applicationPath is not a valid module federation remote entry`
       )
     }
   } else {
     const productionModule = window.WEB_APPS_MAP?.[applicationPath]
     if (productionModule) {
-      applicationScript = await loadScriptDynamicImport<ClassicApplicationScript>(productionModule)
+      try {
+        applicationScript =
+          await loadScriptDynamicImport<ClassicApplicationScript>(productionModule)
+      } catch (e) {
+        throw new RuntimeError(
+          `failed to load internal application ${applicationKey}`,
+          applicationKey,
+          e
+        )
+      }
     } else {
       throw new RuntimeError(
-        'cannot load application as only a name (and no path) is given and that name is not known to the application import map'
+        `cannot load internalapplication ${applicationKey} as only a name (and no path) is given and that name is not known to the application import map`
       )
     }
   }
