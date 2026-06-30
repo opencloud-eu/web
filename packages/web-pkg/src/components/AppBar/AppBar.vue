@@ -44,18 +44,21 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions flex items-baseline justify-end min-h-10">
-        <slot v-if="!showBatchActions" name="actions" :limited-screen-space="limitedScreenSpace" />
+      <div class="files-app-bar-actions relative flex items-start justify-end min-h-10">
+        <div class="peer flex [&:not(:empty)]:w-full" :class="{ invisible: showBatchActions }">
+          <slot name="actions" :limited-screen-space="limitedScreenSpace" />
+        </div>
         <div
-          class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
+          v-if="showBatchActions"
+          class="flex flex-1 has-[_ul:first-child>*]:flex justify-between items-center px-3 h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high peer-[:not(:empty)]:absolute peer-[:not(:empty)]:inset-x-0 peer-[:not(:empty)]:top-1/2 peer-[:not(:empty)]:-translate-y-1/2"
         >
           <batch-actions
-            v-if="showBatchActions && !batchActionsLoading"
+            v-if="!batchActionsLoading"
             :actions="batchActions"
             :action-options="{ space, resources: selectedResources }"
             :limited-screen-space="limitedScreenSpace"
           />
-          <div v-else-if="showBatchActions && batchActionsLoading">
+          <div v-else>
             <oc-spinner :aria-label="$gettext('Loading actions')" />
           </div>
           <div v-if="selectedResources.length" class="flex items-center gap-1">

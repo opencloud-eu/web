@@ -1,7 +1,7 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes" :breadcrumbs="breadcrumbs">
+      <app-bar :view-modes="viewModes" :breadcrumbs="breadcrumbs" has-bulk-actions>
         <template #navigation>
           <SharesNavigation />
         </template>
