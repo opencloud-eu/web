@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-29
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-06-30
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: select personal account (isPersonal) instead of first in account… [[#2762](https://github.com/opencloud-eu/web/pull/2762)]
 - fix: file list scroll after closing an editor [[#2752](https://github.com/opencloud-eu/web/pull/2752)]
 - fix: disable copy / move to actions for vaults [[#2741](https://github.com/opencloud-eu/web/pull/2741)]
 - fix: markdown toggle source [[#2733](https://github.com/opencloud-eu/web/pull/2733)]
