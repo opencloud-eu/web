@@ -11,6 +11,7 @@ import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/vue-3'
 import { TextEditorState } from '../../types'
+import { HoverInsertMenu } from '../../extensions'
 
 export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -43,7 +44,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TableHeader,
       TaskList,
       TaskItem.configure({ nested: true }),
-      Image.configure({ inline: false })
+      Image.configure({ inline: false }),
+      HoverInsertMenu.configure({ getGroups: editorActionGroups })
     ]
   }
 
