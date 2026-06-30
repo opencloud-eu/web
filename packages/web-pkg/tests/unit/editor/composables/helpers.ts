@@ -67,6 +67,7 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'setLineHeight',
       'setColor',
       'setBackgroundColor',
+      'setTextAlign',
       'addRowBefore',
       'addRowAfter',
       'addColumnBefore',
