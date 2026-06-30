@@ -3,12 +3,12 @@
     ref="buttonRef"
     type="button"
     appearance="raw"
+    class="transition-all duration-150 ease-out will-change-transform"
+    :class="visible ? 'opacity-100 translate-x-0 pointer-events-auto' : 'opacity-0 -translate-x-1 pointer-events-none'"
     :style="{
       position: 'fixed',
       top: `${position.top}px`,
-      left: `${position.left}px`,
-      opacity: visible ? '1' : '0',
-      visibility: visible ? 'visible' : 'hidden'
+      left: `${position.left}px`
     }"
     aria-label="Insert block"
     @mouseenter="onMouseEnter"
