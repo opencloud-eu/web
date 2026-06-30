@@ -1,4 +1,3 @@
-import { ModuleFederation } from '@module-federation/runtime'
 import { buildApplication, loadApplication, NextApplication } from './application'
 import { RouteLocationRaw, Router, RouteRecordNormalized } from 'vue-router'
 import { App, computed, watch } from 'vue'
@@ -212,14 +211,12 @@ export const announceConfiguration = async ({
  * - bulk initializes all applications
  */
 export const initializeApplications = async ({
-  federation,
   app,
   configStore,
   router,
   appProviderService,
   appProviderApps
 }: {
-  federation: ModuleFederation
   app: App
   configStore: ConfigStore
   router: Router
@@ -245,7 +242,6 @@ export const initializeApplications = async ({
     applicationResponses = await Promise.allSettled(
       appProviderService.appNames.map((appName) =>
         loadApplication({
-          federation,
           appName,
           applicationKey: `web-app-external-${appName}`,
           applicationPath: 'web-app-external',
@@ -266,7 +262,6 @@ export const initializeApplications = async ({
     applicationResponses = await Promise.allSettled(
       rawApplications.map((rawApplication) =>
         loadApplication({
-          federation,
           applicationKey: rawApplication.path,
           applicationPath: rawApplication.path,
           applicationConfig: rawApplication.config || {},
