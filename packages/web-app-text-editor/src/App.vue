@@ -46,9 +46,7 @@ const parsedContentType = computed<ContentType>(() => {
   if (ext === 'md' || ext === 'markdown' || mimeType === 'text/markdown') {
     return 'markdown'
   }
-  if (ext === 'html' || ext === 'htm' || mimeType === 'text/html') {
-    return 'html'
-  }
+
   return 'plain-text'
 })
 
