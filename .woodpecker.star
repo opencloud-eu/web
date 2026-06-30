@@ -11,7 +11,7 @@ OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
 OC_CI_NODEJS_ALPINE = "quay.io/opencloudeu/nodejs-alpine-ci:24"
 OC_CI_WAIT_FOR = "quay.io/opencloudeu/wait-for-ci:latest"
-ONLYOFFICE_DOCUMENT_SERVER = "onlyoffice/documentserver:8.1.3"
+EURO_OFFICE_DOCUMENT_SERVER = "ghcr.io/euro-office/documentserver:v9.3.2"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
 PLUGINS_GIT_ACTION = "quay.io/thegeeklab/wp-git-action:2"
@@ -125,12 +125,20 @@ config = {
                 "COLLABORA_DOMAIN": "collabora:9980",
                 "WEB_UI_CONFIG_FILE": None,
                 "OC_MACHINE_AUTH_API_KEY": MACHINE_AUTH_API_KEY,
+                "OC_ADD_RUN_SERVICES": "collaboration",
+                "COLLABORATION_WOPI_SRC": "https://opencloud:9200",
+                "COLLABORATION_APP_NAME": "CollaboraOnline",
+                "COLLABORATION_APP_PRODUCT": "Collabora",
+                "COLLABORATION_APP_ADDR": "https://collabora:9980",
+                "COLLABORATION_APP_ICON": "https://collabora:9980/favicon.ico",
+                "COLLABORATION_APP_INSECURE": True,
+                "COLLABORATION_CS3API_DATAGATEWAY_INSECURE": True,
             },
         },
-        "app-provider-onlyOffice": {
+        "app-provider-euro-office": {
             "skip": False,
             "suites": [
-                "app-provider-onlyOffice",
+                "app-provider-euro-office",
             ],
             "extraServerEnvironment": {
                 "GATEWAY_GRPC_ADDR": "0.0.0.0:9142",
@@ -138,9 +146,18 @@ config = {
                 "MICRO_REGISTRY_ADDRESS": "0.0.0.0:9233",
                 "NATS_NATS_HOST": "0.0.0.0",
                 "NATS_NATS_PORT": 9233,
-                "ONLYOFFICE_DOMAIN": "onlyoffice:443",
+                "EURO_OFFICE_DOMAIN": "euro-office:443",
                 "WEB_UI_CONFIG_FILE": None,
                 "OC_MACHINE_AUTH_API_KEY": MACHINE_AUTH_API_KEY,
+                "OC_ADD_RUN_SERVICES": "collaboration",
+                "COLLABORATION_WOPI_SRC": "https://opencloud:9200",
+                "COLLABORATION_APP_NAME": "Euro-Office",
+                "COLLABORATION_APP_PRODUCT": "OnlyOffice",
+                "COLLABORATION_APP_ADDR": "https://euro-office:443",
+                "COLLABORATION_APP_ICON": "http://euro-office/web-apps/apps/documenteditor/main/resources/img/favicon.ico",
+                "COLLABORATION_APP_INSECURE": True,
+                "COLLABORATION_CS3API_DATAGATEWAY_INSECURE": True,
+                "COLLABORATION_APP_PROOF_DISABLE": True,
             },
         },
         "oidc-refresh-token": {
@@ -575,7 +592,7 @@ def e2eTests(ctx):
         for item in default:
             params[item] = matrix[item] if item in matrix else default[item]
 
-        if "app-provider-onlyOffice" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
+        if "app-provider-euro-office" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
             continue
 
         if "ocm" in suite and not "full-ci" in ctx.build.title.lower() and ctx.build.event != "cron":
@@ -612,21 +629,17 @@ def e2eTests(ctx):
                     restoreBuildArtifactCache(ctx, "web-dist", "dist") + \
                     restoreOpenCloudCache()
 
-            if "app-provider-onlyOffice" in suite:
+            if "app-provider-euro-office" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
-                steps += onlyofficeService() + \
-                         waitForWebOffice("https://onlyoffice") + \
-                         openCloudService(params["extraServerEnvironment"]) + \
-                         wopiCollaborationService("onlyoffice") + \
-                         waitForService("wopi-onlyoffice", "9300")
+                steps += euroOfficeService() + \
+                         waitForWebOffice("https://euro-office:443") + \
+                         openCloudService(params["extraServerEnvironment"])
 
             elif "app-provider" in suite:
                 environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
                 steps += collaboraService() + \
                          waitForWebOffice("https://collabora:9980") + \
-                         openCloudService(params["extraServerEnvironment"]) + \
-                         wopiCollaborationService("collabora") + \
-                         waitForService("wopi-collabora", "9300")
+                         openCloudService(params["extraServerEnvironment"])
 
             elif "ocm" in suite:
                 steps += openCloudService(params["extraServerEnvironment"]) + \
@@ -1424,6 +1437,7 @@ def collaboraService():
             "detach": True,
             "environment": {
                 "DONT_GEN_SSL_CERT": "set",
+                "aliasgroup1": "https://opencloud:9200",
                 "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:home_mode.enable=true --o:net.frame_ancestors=https://opencloud:9200",
             },
             "commands": [
@@ -1433,64 +1447,25 @@ def collaboraService():
         },
     ]
 
-def onlyofficeService():
+def euroOfficeService():
     return [
         {
-            "name": "onlyoffice",
-            "image": ONLYOFFICE_DOCUMENT_SERVER,
+            "name": "euro-office",
+            "image": EURO_OFFICE_DOCUMENT_SERVER,
             "detach": True,
             "environment": {
                 "WOPI_ENABLED": True,
-                "USE_UNAUTHORIZED_STORAGE": True,  # self signed certificates
+                "USE_UNAUTHORIZED_STORAGE": True,
+                "SSL_CERTIFICATE_PATH": "/var/www/euro-office/Data/certs/euro-office.crt",
+                "SSL_KEY_PATH": "/var/www/euro-office/Data/certs/euro-office.key",
             },
             "commands": [
-                "cp %s/tests/woodpecker/onlyoffice/local.json /etc/onlyoffice/documentserver/local.json" % dir["web"],
-                "openssl req -x509 -newkey rsa:4096 -keyout onlyoffice.key -out onlyoffice.crt -sha256 -days 365 -batch -nodes",
-                "mkdir -p /var/www/onlyoffice/Data/certs",
-                "cp onlyoffice.key /var/www/onlyoffice/Data/certs/",
-                "cp onlyoffice.crt /var/www/onlyoffice/Data/certs/",
-                "chmod 400 /var/www/onlyoffice/Data/certs/onlyoffice.key",
-                "/app/ds/run-document-server.sh",
-            ],
-        },
-    ]
-
-def wopiCollaborationService(name):
-    service_name = "wopi-%s" % name
-    environment = {
-        "MICRO_REGISTRY": "nats-js-kv",
-        "MICRO_REGISTRY_ADDRESS": "opencloud:9233",
-        "COLLABORATION_GRPC_ADDR": "0.0.0.0:9301",
-        "COLLABORATION_HTTP_ADDR": "0.0.0.0:9300",
-        "COLLABORATION_APP_INSECURE": True,
-        "COLLABORATION_CS3API_DATAGATEWAY_INSECURE": True,
-        "OC_JWT_SECRET": "some-opencloud-jwt-secret",
-        "COLLABORATION_WOPI_SECRET": "some-wopi-secret",
-        "OC_EVENTS_ENDPOINT": "opencloud:9233",
-        "OC_MACHINE_AUTH_API_KEY": MACHINE_AUTH_API_KEY,
-    }
-
-    if name == "collabora":
-        environment["COLLABORATION_APP_NAME"] = "Collabora"
-        environment["COLLABORATION_APP_PRODUCT"] = "Collabora"
-        environment["COLLABORATION_APP_ADDR"] = "https://collabora:9980"
-        environment["COLLABORATION_APP_ICON"] = "https://collabora:9980/favicon.ico"
-    elif name == "onlyoffice":
-        environment["COLLABORATION_APP_NAME"] = "OnlyOffice"
-        environment["COLLABORATION_APP_PRODUCT"] = "OnlyOffice"
-        environment["COLLABORATION_APP_ADDR"] = "https://onlyoffice"
-        environment["COLLABORATION_APP_ICON"] = "https://onlyoffice/web-apps/apps/documenteditor/main/resources/img/favicon.ico"
-
-    environment["COLLABORATION_WOPI_SRC"] = "http://%s:9300" % service_name
-
-    return [
-        {
-            "name": service_name,
-            "image": OC_CI_GOLANG,
-            "detach": True,
-            "environment": environment,
-            "commands": [
-                "./opencloud collaboration server",
+                "openssl req -x509 -newkey rsa:4096 -keyout euro-office.key -out euro-office.crt -sha256 -days 365 -batch -nodes",
+                "mkdir -p /var/www/euro-office/Data/certs",
+                "cp euro-office.key /var/www/euro-office/Data/certs/",
+                "cp euro-office.crt /var/www/euro-office/Data/certs/",
+                "chmod 400 /var/www/euro-office/Data/certs/euro-office.key",
+                "/entrypoint.sh",
             ],
         },
     ]

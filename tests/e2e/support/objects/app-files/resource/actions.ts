@@ -137,14 +137,14 @@ const textEditorContainer = '.text-editor-provider .ProseMirror'
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
 const collaboraDocTextAreaSelector = '#clipboard-area'
 const collaboraCanvasEditorSelector = '#document-canvas'
-// OnlyOffice
-const onlyOfficeInnerFrameSelector = '[name="frameEditor"]'
-const onlyOfficeSaveButtonSelector = '#slot-btn-dt-save > button'
-const onlyofficeDocTextAreaSelector = '#area_id'
-const onlyOfficeCanvasEditorSelector = '#id_viewer_overlay'
-const onlyOfficeCanvasCursorSelector = '#id_target_cursor'
-const onlyOfficeInfoDialog = '.alert .info-box'
-const onlyOfficeInfoDialogConfirm = `.alert button[result="ok"]`
+// Euro-Office
+const euroOfficeInnerFrameSelector = '[name="frameEditor"]'
+const euroOfficeSaveButtonSelector = '#slot-btn-dt-save > button'
+const euroOfficeDocTextAreaSelector = '#area_id'
+const euroOfficeCanvasEditorSelector = '#id_viewer_overlay'
+const euroOfficeCanvasCursorSelector = '#id_target_cursor'
+const euroOfficeInfoDialog = '.alert .info-box'
+const euroOfficeInfoDialogConfirm = `.alert button[result="ok"]`
 
 const fileThumbnail = `//img[@data-test-thumbnail-resource-name="%s"]`
 const fileIcon = '#oc-file-details-sidebar .details-icon'
@@ -464,8 +464,8 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       break
     }
     case 'Microsoft Word': {
-      // By Default when Microsoft Word document is created, it is opened with OnlyOffice if both app-provider services are running together
-      await createDocumentFile(args, 'OnlyOffice')
+      // By Default when Microsoft Word document is created, it is opened with Euro-Office if both app-provider services are running together
+      await createDocumentFile(args, 'Euro-Office')
       break
     }
     case 'vault': {
@@ -554,15 +554,15 @@ const createDocumentFile = async (
       }
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
       break
-    case 'OnlyOffice':
-      const innerIframe = editorMainFrame.frameLocator(onlyOfficeInnerFrameSelector)
-      await innerIframe.locator(onlyofficeDocTextAreaSelector).fill(content)
-      const saveButtonDisabledLocator = innerIframe.locator(onlyOfficeSaveButtonSelector)
+    case 'Euro-Office':
+      const innerIframe = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
+      await innerIframe.locator(euroOfficeDocTextAreaSelector).fill(content)
+      const saveButtonDisabledLocator = innerIframe.locator(euroOfficeSaveButtonSelector)
       await expect(saveButtonDisabledLocator).toHaveAttribute('disabled', 'disabled')
       break
     default:
       throw new Error(
-        "Editor should be either 'Collabora' or 'OnlyOffice' but found " + editorToOpen
+        "Editor should be either 'Collabora' or 'Euro-Office' but found " + editorToOpen
       )
   }
   await Promise.all([
@@ -594,11 +594,11 @@ export const fillContentOfDocument = async ({
       await page.keyboard.press('ControlOrMeta+A')
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(text)
       break
-    case 'OnlyOffice':
-      const innerIframe = editorMainFrame.frameLocator(onlyOfficeInnerFrameSelector)
-      await innerIframe.locator(onlyofficeDocTextAreaSelector).focus()
+    case 'Euro-Office':
+      const innerIframe = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
+      await innerIframe.locator(euroOfficeDocTextAreaSelector).focus()
       await page.keyboard.press('ControlOrMeta+A')
-      await innerIframe.locator(onlyofficeDocTextAreaSelector).fill(text)
+      await innerIframe.locator(euroOfficeDocTextAreaSelector).fill(text)
       break
     default:
       throw new Error("Editor should be 'TextEditor' but found " + editorToOpen)
@@ -620,17 +620,17 @@ export const openAndGetContentOfDocument = async ({
   await page.waitForURL(/.*\/external-.*/)
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
-    case 'Collabora':
+    case 'CollaboraOnline':
       await editorMainFrame.locator(collaboraCanvasEditorSelector).click()
       break
-    case 'OnlyOffice':
-      const innerFrame = editorMainFrame.frameLocator(onlyOfficeInnerFrameSelector)
-      await innerFrame.locator(onlyOfficeCanvasEditorSelector).click()
-      await innerFrame.locator(onlyOfficeCanvasCursorSelector).waitFor()
+    case 'Euro-Office':
+      const innerFrame = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
+      await innerFrame.locator(euroOfficeCanvasEditorSelector).click()
+      await innerFrame.locator(euroOfficeCanvasCursorSelector).waitFor()
       break
     default:
       throw new Error(
-        "Editor should be either 'Collabora' or 'OnlyOffice' but found " + editorToOpen
+        "Editor should be either 'Collabora' or 'Euro-Office' but found " + editorToOpen
       )
   }
   return await tryCopyClipboard(page)
@@ -1942,7 +1942,7 @@ export const editResources = async (args: editResourcesArgs): Promise<void> => {
       await fillContentOfDocument({ page, text: content, editorToOpen: 'Collabora' })
       break
     case 'Microsoft Word':
-      await fillContentOfDocument({ page, text: content, editorToOpen: 'OnlyOffice' })
+      await fillContentOfDocument({ page, text: content, editorToOpen: 'Euro-Office' })
       break
     default:
       await page.locator(util.format(resourceNameSelector, resourceName)).click()
@@ -2008,7 +2008,7 @@ export interface openFileInViewerArgs {
     | 'pdfviewer'
     | 'texteditor'
     | 'Collabora'
-    | 'OnlyOffice'
+    | 'Euro-Office'
 }
 
 export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void> => {
@@ -2016,7 +2016,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
   await waitProcessingToFinish(page, name)
 
   switch (actionType) {
-    case 'OnlyOffice':
+    case 'Euro-Office':
       await Promise.all([
         page.waitForResponse(
           (resp) =>
@@ -2027,26 +2027,26 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
 
-      const onlyOfficeIframe = page
+      const euroOfficeIframe = page
         .frameLocator(externalEditorIframe)
-        .frameLocator(onlyOfficeInnerFrameSelector)
+        .frameLocator(euroOfficeInnerFrameSelector)
 
       // wait for the iframe to load
-      await onlyOfficeIframe.locator('div#viewport').waitFor()
+      await euroOfficeIframe.locator('div#viewport').waitFor()
 
       // close the info dialog if visible
       try {
-        await onlyOfficeIframe
-          .locator(onlyOfficeInfoDialog)
+        await euroOfficeIframe
+          .locator(euroOfficeInfoDialog)
           .waitFor({ timeout: config.minTimeout * 1000 })
-        await onlyOfficeIframe.locator(onlyOfficeInfoDialogConfirm).click()
+        await euroOfficeIframe.locator(euroOfficeInfoDialogConfirm).click()
         // NOTE: page reload is required if the info dialog appears
         await page.reload()
       } catch {
         console.log('No info dialog. Continue...')
       }
 
-      await onlyOfficeIframe.locator(onlyofficeDocTextAreaSelector).waitFor()
+      await euroOfficeIframe.locator(euroOfficeDocTextAreaSelector).waitFor()
       break
     case 'Collabora':
       await Promise.all([
@@ -2327,10 +2327,10 @@ export const canEditContent = async ({
       ).trim()
       return collaboraDocPermissionModeText === 'Edit'
     case 'Microsoft Word':
-      // By Default when "Microsoft Word document" is created, it is opened with "OnlyOffice" if both app-provider services are running together
-      const innerFrame = editorMainFrame.frameLocator(onlyOfficeInnerFrameSelector)
+      // By Default when "Microsoft Word document" is created, it is opened with "Euro-Office" if both app-provider services are running together
+      const innerFrame = editorMainFrame.frameLocator(euroOfficeInnerFrameSelector)
       try {
-        await expect(innerFrame.locator(onlyOfficeSaveButtonSelector)).toBeVisible()
+        await expect(innerFrame.locator(euroOfficeSaveButtonSelector)).toBeVisible()
         return true
       } catch {
         return false
