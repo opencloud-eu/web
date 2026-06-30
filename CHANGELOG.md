@@ -55,6 +55,7 @@
 
 ### 📦️ Dependencies
 
+- Update typescript-eslint monorepo to v8.62.1 [[#2769](https://github.com/opencloud-eu/web/pull/2769)]
 - Update dependency filesize to v11.0.19 [[#2753](https://github.com/opencloud-eu/web/pull/2753)]
 - Update devDependencies (non-major) [[#2749](https://github.com/opencloud-eu/web/pull/2749)]
 - Update dependency @sentry/vue to v10.62.0 [[#2754](https://github.com/opencloud-eu/web/pull/2754)]
