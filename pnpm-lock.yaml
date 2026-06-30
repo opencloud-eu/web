@@ -10,6 +10,7 @@ overrides:
 
 patchedDependencies:
   caf@15.0.1: b09bdde8a1f7e834af8677123b32ceb4f485966fdb476facf5b6c64157c9fc14
+  vite-plugin-static-copy@4.1.1: b4b816bcbbbd46a52560de210fc39a55df2f65d64cc8b1ac8dcc6e097258ad1c
   vue-inline-svg@4.0.1: 29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b
 
 importers:
@@ -132,7 +133,7 @@ importers:
         version: 0.28.0(rollup@4.60.0)(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
       vite-plugin-static-copy:
         specifier: ^4.0.0
-        version: 4.1.1(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
+        version: 4.1.1(patch_hash=b4b816bcbbbd46a52560de210fc39a55df2f65d64cc8b1ac8dcc6e097258ad1c)(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
       vitest:
         specifier: ^4.1.2
         version: 4.1.9(@types/node@25.9.4)(@vitest/coverage-v8@4.1.9)(happy-dom@20.10.6)(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
@@ -278,7 +279,7 @@ importers:
     devDependencies:
       vite-plugin-static-copy:
         specifier: ^4.0.0
-        version: 4.1.1(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
+        version: 4.1.1(patch_hash=b4b816bcbbbd46a52560de210fc39a55df2f65d64cc8b1ac8dcc6e097258ad1c)(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
 
   packages/prettier-config:
     dependencies:
@@ -9146,7 +9147,7 @@ snapshots:
   normalize-package-data@8.0.0:
     dependencies:
       hosted-git-info: 9.0.2
-      semver: 7.8.5
+      semver: 7.7.4
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
@@ -10161,7 +10162,7 @@ snapshots:
     transitivePeerDependencies:
       - rollup
 
-  vite-plugin-static-copy@4.1.1(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0)):
+  vite-plugin-static-copy@4.1.1(patch_hash=b4b816bcbbbd46a52560de210fc39a55df2f65d64cc8b1ac8dcc6e097258ad1c)(vite@8.1.2(@types/node@25.9.4)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0)):
     dependencies:
       chokidar: 3.6.0
       p-map: 7.0.4
