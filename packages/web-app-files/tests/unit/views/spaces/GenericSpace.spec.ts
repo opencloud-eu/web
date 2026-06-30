@@ -191,7 +191,7 @@ describe('GenericSpace view', () => {
       it('does not scroll to the resource since no file list is rendered', async () => {
         const { mocks } = getMountedWrapper({
           currentFolder: {
-            ...mock<Resource>()
+            ...mock<Resource>({ canUpload: () => true })
           },
           files: [{ ...mock<Resource>({ name: 'file.txt' }), isFolder: false }],
           space: mock<SpaceResource>({

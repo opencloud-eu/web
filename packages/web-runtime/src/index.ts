@@ -4,8 +4,6 @@ import { setupVaultUnlockGuard } from './router/setupVaultUnlockGuard'
 import { abilitiesPlugin } from '@casl/vue'
 import { createMongoAbility } from '@casl/ability'
 
-import { ModuleFederation } from '@module-federation/runtime'
-import { registerSharedModules } from './container/application'
 import {
   announceConfiguration,
   initializeApplications,
@@ -97,8 +95,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     clientService
   })
 
-  const federation = new ModuleFederation({ name: 'opencloud-web', remotes: [] })
-  registerSharedModules(federation)
   announceLoadingService({ app })
   announceArchiverService({ app, configStore, userStore, capabilityStore })
   announcePreviewService({
@@ -115,7 +111,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     loadCustomTranslations({ configStore }),
     announceTheme({ app, designSystem, configStore }),
     initializeApplications({
-      federation,
       app,
       configStore,
       router,
@@ -130,7 +125,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   // Reason: the `external` app serves as a blueprint for creating the app provider apps.
   if (applicationStore.has('web-app-external')) {
     await initializeApplications({
-      federation,
       app,
       configStore,
       router,
