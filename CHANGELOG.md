@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix (tiptap): don't render html files via html strategy [[#2774](https://github.com/opencloud-eu/web/pull/2774)]
 - fix: isolate module federation shared scope per app [[#2768](https://github.com/opencloud-eu/web/pull/2768)]
 - fix: select personal account (isPersonal) instead of first in account… [[#2762](https://github.com/opencloud-eu/web/pull/2762)]
 - fix: file list scroll after closing an editor [[#2752](https://github.com/opencloud-eu/web/pull/2752)]
