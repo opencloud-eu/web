@@ -19,6 +19,7 @@ import {
 } from '@tiptap/extension-text-style'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
+import { HoverInsertMenu } from '../../extensions'
 
 export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -57,7 +58,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       Color,
       BackgroundColor,
       FontSize,
-      LineHeight
+      LineHeight,
+      HoverInsertMenu.configure({ getGroups: editorActionGroups })
     ]
   }
 
