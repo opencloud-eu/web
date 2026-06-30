@@ -53,11 +53,13 @@
             </item-filter>
           </div>
           <div>
-            <oc-text-input
+            <oc-search-bar
               v-model="filterTerm"
               class="search-filter w-3xs"
               :label="$gettext('Search')"
-              autocomplete="off"
+              :placeholder="$gettext('Search for shares')"
+              button-hidden
+              :is-rounded="false"
             />
           </div>
         </div>

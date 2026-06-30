@@ -78,24 +78,21 @@
             </item-filter>
           </div>
           <div class="flex items-center">
-            <oc-text-input
-              id="users-filter"
-              v-model.trim="filterTermDisplayName"
+            <oc-search-bar
+              v-model="filterTermDisplayName"
               class="w-3xs"
               :label="$gettext('Search')"
-              autocomplete="off"
-              @keypress.enter="filterDisplayName"
+              :placeholder="$gettext('Search for users')"
+              :is-rounded="false"
+              button-hidden
+              @search="
+                (term) => {
+                  filterTermDisplayName = term
+                  filterDisplayName()
+                }
+              "
+              @advanced-search="filterDisplayName"
             />
-            <oc-button
-              id="users-filter-confirm"
-              v-oc-tooltip="$gettext('Search')"
-              class="ml-1 p-1 mt-5"
-              appearance="raw"
-              :aria-label="$gettext('Search users')"
-              @click="filterDisplayName"
-            >
-              <oc-icon name="search" fill-type="line" aria-hidden="true" />
-            </oc-button>
           </div>
         </template>
         <template #noResults>
@@ -225,7 +222,7 @@ export default defineComponent({
     const sideBarLoading = ref(false)
     const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
     const displayNameQuery = useRouteQuery('q_displayName')
-    const filterTermDisplayName = ref(queryItemAsString(unref(displayNameQuery)))
+    const filterTermDisplayName = ref(queryItemAsString(unref(displayNameQuery)) || '')
 
     let editQuotaActionEventToken: string
 

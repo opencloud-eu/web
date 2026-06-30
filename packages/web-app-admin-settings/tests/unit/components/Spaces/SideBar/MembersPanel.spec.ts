@@ -66,7 +66,7 @@ function getWrapper({ spaceResource = spaceMock } = {}) {
   return {
     wrapper: shallowMount(MembersPanel, {
       global: {
-        stubs: { OcTextInput: false },
+        stubs: { OcSearchBar: false },
         plugins: [...defaultPlugins({ piniaOptions: { sharesState: { graphRoles } } })],
         provide: { resource: spaceResource }
       }
