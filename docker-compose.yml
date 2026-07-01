@@ -175,7 +175,7 @@ services:
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
 
   collabora:
-    image: collabora/code:26.04.1.4.1
+    image: collabora/code:26.04.2.1.1
     entrypoint: ['/bin/bash', '-c']
     command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
