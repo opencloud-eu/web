@@ -556,15 +556,6 @@ async function recoverFromStaleState(
 
 <template>
   <div class="oc-width-1-1 oc-height-1-1 oc-flex oc-flex-column">
-    <!-- Compact status strip — connection state + lifecycle errors only.
-         Save / dirty / etag UX is owned by the hosting AppWrapper. -->
-    <div class="oc-p-s oc-text-meta oc-flex oc-flex-middle">
-      <span>— {{ status }}</span>
-      <span v-if="lifecycleError" class="oc-ml-m oc-text-danger"
-        >— {{ lifecycleError.message }}</span
-      >
-      <span v-if="effectiveReadOnly" class="oc-ml-m">(read-only)</span>
-    </div>
     <component
       :is="editor"
       v-if="ydoc && awareness"

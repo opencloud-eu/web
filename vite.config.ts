@@ -7,7 +7,6 @@ import {
   ViteDevServer
 } from 'vite'
 import vue from '@vitejs/plugin-vue'
-import react from '@vitejs/plugin-react'
 import { Target, viteStaticCopy } from 'vite-plugin-static-copy'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
@@ -192,20 +191,9 @@ export default defineConfig(({ mode, command }) => {
         'process.env.PACKAGE_VERSION': JSON.stringify(version)
       },
       resolve: {
-        // `react`/`react-dom` are dedup'd because Excalidraw (React-only) is
-        // mounted into Vue via veaury, which itself pulls tunnel-rat/zustand —
-        // both expect React as a peer.
-        dedupe: ['vue3-gettext', 'react', 'react-dom'],
+        dedupe: ['vue3-gettext'],
         alias: {
-          crypto: join(projectRootDir, 'polyfills/crypto.js'),
-          // tunnel-rat and zustand (pulled in by veaury) declare react as a
-          // peer but pnpm doesn't symlink it into their own node_modules,
-          // and rolldown can't follow pnpm's peer-resolution suffix on its
-          // own. Aliasing react / react-dom to web-app-excalidraw's
-          // installed copy points every importer at the same instance and
-          // sidesteps the resolution failure.
-          react: join(projectRootDir, 'packages/web-app-excalidraw/node_modules/react'),
-          'react-dom': join(projectRootDir, 'packages/web-app-excalidraw/node_modules/react-dom')
+          crypto: join(projectRootDir, 'polyfills/crypto.js')
         }
       },
       plugins: [
@@ -222,12 +210,6 @@ export default defineConfig(({ mode, command }) => {
             compilerOptions
           }
         }),
-        // Only matches files outside .vue templates: web-app-excalidraw is the
-        // sole React user today (Excalidraw is React-only). vue-plugin and
-        // react-plugin coexist cleanly because the file extensions don't
-        // overlap (.vue vs .tsx). The `include` filter keeps Babel out of
-        // every other package's hot path.
-        react({ include: /packages\/web-app-excalidraw\/.*\.(tsx|ts)$/ }),
         viteStaticCopy({
           targets: (() => {
             return [
@@ -246,49 +228,9 @@ export default defineConfig(({ mode, command }) => {
                 dest: '.',
                 rename: { stripBase: 0 }
               }
-              // Excalidraw fetches its fonts + locales + lib data at runtime
-              // via `window.EXCALIDRAW_ASSET_PATH`. Without an override it
-              // falls back to esm.sh, which would require whitelisting that
-              // host in OC's CSP — a non-starter for an official app. We
-              // mirror the upstream `dist/prod/{fonts,locales,data}` tree
-              // into our own dist and the React canvas points
-              // EXCALIDRAW_ASSET_PATH at it via `import.meta.url` so the
-              // URL resolves correctly under any OC subpath deployment.
             ]
           })()
         }),
-        // Excalidraw fetches fonts / locales / lib data at runtime via
-        // `window.EXCALIDRAW_ASSET_PATH`. Without an override it falls back
-        // to `https://esm.sh/...` — would force whitelisting esm.sh in OC's
-        // CSP, non-starter for an official app. We mirror the upstream
-        // `dist/prod/{fonts,locales,data}` tree into our own dist;
-        // ExcalidrawCanvas.tsx points EXCALIDRAW_ASSET_PATH at it via
-        // `new URL('../excalidraw-assets/', import.meta.url)` so it resolves
-        // correctly under any OC subpath deployment.
-        //
-        // vite-plugin-static-copy flattens nested dirs when used with `**/*`
-        // (even with custom rename), so we just do the recursive copy
-        // ourselves in `writeBundle`. Cheap, ~17MB, one-shot per build.
-        {
-          name: '@opencloud-eu/vite-plugin-copy-excalidraw-assets',
-          async writeBundle() {
-            const { promises: fsp } = await import('fs')
-            const srcRoot = join(
-              projectRootDir,
-              'packages/web-app-excalidraw/node_modules/@excalidraw/excalidraw/dist/prod'
-            )
-            const destRoot = join(projectRootDir, dist, 'excalidraw-assets')
-            for (const sub of ['fonts', 'locales', 'data']) {
-              const src = join(srcRoot, sub)
-              const dest = join(destRoot, sub)
-              try {
-                await fsp.cp(src, dest, { recursive: true })
-              } catch (e) {
-                console.warn(`[excalidraw-assets] skipped ${sub}:`, (e as Error).message)
-              }
-            }
-          }
-        },
         registrationHost,
         {
           name: '@opencloud-eu/vite-plugin-runtime-config',
