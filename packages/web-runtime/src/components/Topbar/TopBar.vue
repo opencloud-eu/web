@@ -15,7 +15,7 @@
           <oc-image
             :src="currentTheme.logo"
             :alt="sidebarLogoAlt"
-            class="oc-logo-image align-middle ml-1 h-[28px] w-auto select-none"
+            class="oc-logo-image align-middle ml-1 h-[28px] md:h-[36px] w-auto select-none"
           />
         </picture>
       </router-link>
