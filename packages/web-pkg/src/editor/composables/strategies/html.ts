@@ -9,6 +9,8 @@ import Image from '@tiptap/extension-image'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import TextAlign from '@tiptap/extension-text-align'
+
 import {
   TextStyle,
   FontFamily,
@@ -51,6 +53,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       TableHeader,
       TaskList,
       TaskItem.configure({ nested: true }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph']
+      }),
       FontFamily,
       TextStyle,
       Underline,
@@ -78,6 +83,10 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     heading2,
     heading3,
     heading4,
+    alignLeft,
+    alignCenter,
+    alignRight,
+    alignJustify,
     bulletList,
     orderedList,
     taskList,
@@ -123,6 +132,11 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           underline(),
           strikethrough()
         ]
+      },
+      {
+        id: 'text-align',
+        title: $gettext('Text align'),
+        actions: [alignLeft(), alignCenter(), alignRight(), alignJustify()]
       },
       {
         id: 'lists',

@@ -244,6 +244,33 @@ describe('useEditorActions', () => {
     })
   })
 
+  describe('text align actions', () => {
+    const alignActions = [
+      { name: 'alignLeft', alignment: 'left' },
+      { name: 'alignCenter', alignment: 'center' },
+      { name: 'alignRight', alignment: 'right' },
+      { name: 'alignJustify', alignment: 'justify' }
+    ] as const
+
+    for (const { name, alignment } of alignActions) {
+      describe(name, () => {
+        it('toolbarAction sets the correct text alignment', () => {
+          const editor = createMockEditor()
+          actions[name]().toolbarAction!(editor)
+          expect(editor._chain.setTextAlign).toHaveBeenCalledWith(alignment)
+          expect(editor._chain.run).toHaveBeenCalled()
+        })
+
+        it('isActive checks the correct alignment', () => {
+          const editor = createMockEditor({
+            isActive: (attrs) => (attrs as { textAlign?: string } | null)?.textAlign === alignment
+          })
+          expect(actions[name]().isActive!(editor)).toBe(true)
+        })
+      })
+    }
+  })
+
   describe('list actions', () => {
     const listActions = [
       { name: 'bulletList', toggleMethod: 'toggleBulletList', markName: 'bulletList' },
