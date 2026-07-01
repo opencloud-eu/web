@@ -257,18 +257,17 @@ export function useEditorActions(
     title: $gettext('Turn into'),
     icon: 'text',
     activeIcon: (editor) => {
-      for (const level of [1, 2, 3, 4] as const) {
-        if (editor.isActive('heading', { level })) {
-          return { icon: `h-${level}` }
+      for (const action of [
+        heading1(),
+        heading2(),
+        heading3(),
+        heading4(),
+        blockquote(),
+        codeBlock()
+      ]) {
+        if (action.isActive?.(editor)) {
+          return { icon: action.icon }
         }
-      }
-
-      if (editor.isActive('blockquote')) {
-        return { icon: 'chat-quote-line' }
-      }
-
-      if (editor.isActive('codeBlock')) {
-        return { icon: 'code-box-line' }
       }
 
       return undefined
