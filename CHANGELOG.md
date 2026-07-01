@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat(tiptap): add text alignment controls [[#2778](https://github.com/opencloud-eu/web/pull/2778)]
 - feat(tiptap): show colors in text color and background color actions [[#2779](https://github.com/opencloud-eu/web/pull/2779)]
 - feat (tiptap): enable source mode for html files [[#2760](https://github.com/opencloud-eu/web/pull/2760)]
 - feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
