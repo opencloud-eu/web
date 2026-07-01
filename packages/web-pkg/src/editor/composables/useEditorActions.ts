@@ -12,8 +12,9 @@ export interface EditorAction {
   // Display properties
   title: string
   description?: string
-  icon: string
+  icon?: string
   iconFillType?: 'fill' | 'line' | 'none'
+  swatchColor?: string
   activeIcon?: (
     editor: Editor
   ) => { icon: string; iconFillType?: 'fill' | 'line' | 'none' } | undefined
@@ -132,7 +133,7 @@ export function useEditorActions(
     ].map(({ value, label }) => ({
       id: `text-color-${value.replace('#', '')}`,
       title: label,
-      icon: 'font-color',
+      swatchColor: value,
       toolbarAction: (editor) => editor.chain().focus().setColor(value).run(),
       isActive: (editor) => editor.getAttributes('textStyle').color === value
     }))
@@ -162,8 +163,7 @@ export function useEditorActions(
     ].map(({ value, label }) => ({
       id: `background-color-${value.replace('#', '')}`,
       title: label,
-      icon: 'mark-pen',
-      iconFillType: 'line' as const,
+      swatchColor: value,
       toolbarAction: (editor) => editor.chain().focus().setBackgroundColor(value).run(),
       isActive: (editor) => editor.getAttributes('textStyle').backgroundColor === value
     }))

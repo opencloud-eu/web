@@ -64,6 +64,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
   const {
     undo,
     redo,
+    toggleSourceMode,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -98,6 +99,11 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         id: 'history',
         title: $gettext('History'),
         actions: [undo(), redo()]
+      },
+      {
+        id: 'view-options',
+        title: $gettext('View options'),
+        actions: [toggleSourceMode()]
       },
       {
         id: 'formatting',

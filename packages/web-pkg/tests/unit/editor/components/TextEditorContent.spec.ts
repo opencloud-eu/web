@@ -16,11 +16,11 @@ vi.mock('@tiptap/vue-3', () => ({
 function mountEditorContent({
   contentType = 'markdown',
   sourceMode = false,
-  markdown = '# Initial'
+  content = '# Initial'
 }: {
   contentType?: 'markdown' | 'html'
   sourceMode?: boolean
-  markdown?: string
+  content?: string
 } = {}) {
   const setContent = vi.fn()
   const textEditor = {
@@ -33,7 +33,7 @@ function mountEditorContent({
       sourceMode: ref(sourceMode)
     },
     actionGroups: (): EditorActionGroup[] => [],
-    getContent: vi.fn(() => markdown),
+    getContent: vi.fn(() => content),
     isEmpty: ref(false),
     isFocused: ref(false),
     focus: vi.fn(),
@@ -82,6 +82,26 @@ describe('TextEditorContent', () => {
     textEditor.state.sourceMode.value = true
     await nextTick()
 
-    expect(wrapper.find('textarea').exists()).toBe(false)
+    expect(wrapper.find('textarea').exists()).toBe(true)
+  })
+
+  it('updates editor content as html in source mode', async () => {
+    const { wrapper, textEditor, setContent } = mountEditorContent({
+      contentType: 'html',
+      content: '<p>Initial</p>'
+    })
+
+    textEditor.state.sourceMode.value = true
+    await nextTick()
+
+    const textarea = wrapper.find('textarea')
+    expect(textarea.exists()).toBe(true)
+    expect((textarea.element as HTMLTextAreaElement).value).toBe('<p>Initial</p>')
+
+    await textarea.setValue('<h1>Hello</h1><p>World</p>')
+    expect(setContent).toHaveBeenCalledWith('<h1>Hello</h1><p>World</p>', {
+      contentType: 'html',
+      emitUpdate: true
+    })
   })
 })
