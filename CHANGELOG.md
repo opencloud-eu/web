@@ -59,6 +59,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2781](https://github.com/opencloud-eu/web/pull/2781)]
 - Update devDependencies (non-major) to v4.3.2 [[#2766](https://github.com/opencloud-eu/web/pull/2766)]
 - Update typescript-eslint monorepo to v8.62.1 [[#2769](https://github.com/opencloud-eu/web/pull/2769)]
 - Update dependency filesize to v11.0.19 [[#2753](https://github.com/opencloud-eu/web/pull/2753)]
