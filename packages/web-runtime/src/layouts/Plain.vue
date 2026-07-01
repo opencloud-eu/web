@@ -9,7 +9,7 @@
       <img
         v-if="!backgroundImg && !pathIsRoot"
         alt="OpenCloud emblem"
-        src="/packages/design-system/src/assets/images/icon-lilac.svg"
+        :src="emblemSrc"
         class="hidden sm:block fixed w-3xs xs:w-xs md:w-md lg:w-lg bottom-[-40px] right-[-40px]"
       />
     </template>
@@ -36,6 +36,11 @@ const pageTitle = computed(() => {
 const backgroundImg = computed(() => unref(currentTheme).background)
 const backgroundImgStyle = computed(() => {
   return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
+})
+const emblemSrc = computed(() => {
+  return unref(currentTheme).isDark
+    ? '/packages/design-system/src/assets/images/icon-lilac.svg'
+    : '/packages/design-system/src/assets/images/icon-petrol.svg'
 })
 
 const pathIsRoot = computed(() => {
