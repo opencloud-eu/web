@@ -11,7 +11,7 @@
             <div
               id="admin-settings-app-bar"
               ref="appBarRef"
-              class="py-1 px-4 top-0 z-20 bg-role-surface"
+              class="py-1 px-4 top-0 z-20 rounded-t-xl bg-role-surface"
               :class="{ sticky: isSticky }"
             >
               <div class="flex justify-between items-center h-12">
