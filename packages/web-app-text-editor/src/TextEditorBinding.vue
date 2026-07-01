@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { inject, type ComputedRef, type PropType } from 'vue'
+import { inject, type ComputedRef } from 'vue'
 import type * as Y from 'yjs'
 import type { Awareness } from 'y-protocols/awareness'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
@@ -21,25 +21,27 @@ import {
 // (App.vue) provides it via inject because adding it to the wrapper's
 // editor-prop signature would couple the editor-agnostic wrapper to
 // text-editor specifics.
-const props = defineProps({
-  ydoc: { type: Object as PropType<Y.Doc>, required: true },
-  awareness: { type: Object as PropType<Awareness>, required: true },
-  provider: {
-    type: Object as PropType<HocuspocusProvider | null>,
-    required: false,
-    default: null
-  },
-  isReadOnly: { type: Boolean, default: false }
-})
+interface Props {
+  ydoc: Y.Doc
+  awareness: Awareness
+  // Declared only so the wrapper's `:provider` binding lands as a prop rather
+  // than falling through to the root element via `$attrs`. This component
+  // never reads it; the default keeps it optional for consumers.
+  provider?: HocuspocusProvider | null
+  isReadOnly?: boolean
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { ydoc, awareness, provider = null, isReadOnly = false } = defineProps<Props>()
 
 const contentType = inject<ComputedRef<ContentType>>('textEditorContentType')!
 const placeholder = inject<ComputedRef<string | undefined>>('textEditorPlaceholder', undefined)
 
 const textEditor = useTextEditor({
   contentType: contentType.value,
-  readonly: props.isReadOnly,
-  ydoc: props.ydoc,
-  awareness: props.awareness,
+  readonly: isReadOnly,
+  ydoc,
+  awareness,
   placeholder: placeholder?.value
 })
 
