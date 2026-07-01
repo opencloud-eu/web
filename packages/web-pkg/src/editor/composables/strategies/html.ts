@@ -90,8 +90,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     bulletList,
     orderedList,
     taskList,
-    blockquote,
-    codeBlock,
     horizontalRule,
     tableMenu,
     createTable,
@@ -142,11 +140,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         id: 'lists',
         title: $gettext('Lists'),
         actions: [bulletList(), orderedList(), taskList()]
-      },
-      {
-        id: 'blocks',
-        title: $gettext('Blocks'),
-        actions: [blockquote(), codeBlock()]
       },
       {
         id: 'insert',

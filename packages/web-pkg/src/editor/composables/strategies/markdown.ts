@@ -62,8 +62,6 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     bulletList,
     orderedList,
     taskList,
-    blockquote,
-    codeBlock,
     horizontalRule,
     image,
     imageUrl,
@@ -107,11 +105,6 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'lists',
         title: $gettext('Lists'),
         actions: [bulletList(), orderedList(), taskList()]
-      },
-      {
-        id: 'blocks',
-        title: $gettext('Blocks'),
-        actions: [blockquote(), codeBlock()]
       },
       {
         id: 'insert',

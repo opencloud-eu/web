@@ -253,20 +253,51 @@ export function useEditorActions(
 
   // Heading actions
   const heading = (): EditorAction => ({
-    id: 'heading',
-    title: $gettext('Heading'),
-    icon: 'heading',
+    id: 'turn-into',
+    title: $gettext('Turn into'),
+    icon: 'text',
     activeIcon: (editor) => {
       for (const level of [1, 2, 3, 4] as const) {
         if (editor.isActive('heading', { level })) {
           return { icon: `h-${level}` }
         }
       }
+
+      if (editor.isActive('blockquote')) {
+        return { icon: 'chat-quote-line' }
+      }
+
+      if (editor.isActive('codeBlock')) {
+        return { icon: 'code-box-line' }
+      }
+
       return undefined
     },
-    isActive: (editor) => editor.isActive('heading'),
+    isActive: (editor) =>
+      editor.isActive('heading') || editor.isActive('blockquote') || editor.isActive('codeBlock'),
     showInSlashCommands: false,
-    childActions: [heading1(), heading2(), heading3(), heading4()]
+    childActions: [
+      paragraph(),
+      heading1(),
+      heading2(),
+      heading3(),
+      heading4(),
+      blockquote(),
+      codeBlock()
+    ]
+  })
+
+  const paragraph = (): EditorAction => ({
+    id: 'paragraph',
+    title: $gettext('Paragraph'),
+    description: $gettext('Text paragraph'),
+    icon: 'text',
+    keywords: ['paragraph', 'text'],
+    toolbarAction: (editor) => editor.chain().focus().setParagraph().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).setNode('paragraph').run()
+    },
+    showInToolbar: false
   })
 
   const heading1 = (): EditorAction => ({
