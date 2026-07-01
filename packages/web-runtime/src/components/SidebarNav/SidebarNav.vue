@@ -10,7 +10,7 @@
             :id="getButtonId(floatingActionButton.id)"
             :disabled="isFloatingActionButtonDisabled"
             appearance="filled"
-            class="oc-app-floating-action-button w-full"
+            class="oc-app-floating-action-button w-full !bg-gradient-to-r !from-role-secondary !to-role-primary shadow-md transition-[filter,box-shadow] duration-150 ease-out hover:brightness-110 shadow-md"
             @click="floatingActionButton.handler?.()"
           >
             <oc-icon :name="floatingActionButton.icon" />
