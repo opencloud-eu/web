@@ -47,7 +47,7 @@ function getButtonId(extensionId: string): string {
 @reference '@opencloud-eu/design-system/tailwind';
 
 .oc-app-floating-action-button [id^='mobile-app-floating-action-button-'] {
-  @apply bg-gradient-to-r from-role-secondary to-role-primary text-role-on-secondary shadow-md;
+  @apply bg-gradient-to-r from-role-secondary to-role-primary shadow-md;
   @apply transition-[filter,box-shadow] duration-150 ease-out;
 }
 
