@@ -1,5 +1,16 @@
 # Changelog
 
+## [7.1.3](https://github.com/opencloud-eu/web/releases/tag/v7.1.3) - 2026-06-30
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @kulmann
+
+### 🐛 Bug Fixes
+
+- [stable-7.1] fix (tiptap): don't render html files via html strategy (#2774) [[#2776](https://github.com/opencloud-eu/web/pull/2776)]
+- fix: isolate module federation shared scope per app [[#2770](https://github.com/opencloud-eu/web/pull/2770)]
+
 ## [7.1.2](https://github.com/opencloud-eu/web/releases/tag/v7.1.2) - 2026-06-24
 
 ### ❤️ Thanks to all contributors! ❤️
