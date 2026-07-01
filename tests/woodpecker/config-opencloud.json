@@ -3,6 +3,7 @@
   "theme": "https://opencloud:9200/themes/opencloud/theme.json",
   "apps": [
     "files",
+    "text-editor",
     "preview",
     "pdf-viewer",
     "search",
@@ -10,12 +11,5 @@
     "ocm",
     "app-store",
     "rclone-crypt"
-  ],
-  "external_apps": [
-    {
-      "id": "text-editor",
-      "path": "web-app-text-editor",
-      "config": { "realtimeUrl": "wss://opencloud:9200/realtime" }
-    }
   ]
 }

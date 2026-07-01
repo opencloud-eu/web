@@ -200,13 +200,6 @@ config = {
                 "OCM_OCM_PROVIDER_AUTHORIZER_PROVIDERS_FILE": "%s" % dir["ocmProviders"],
             },
         },
-        "collab": {
-            "earlyFail": True,
-            "skip": False,
-            "suites": [
-                "collaboration",
-            ],
-        },
         "mobile-view": {
             "skip": False,
             "suites": [
@@ -650,12 +643,6 @@ def e2eTests(ctx):
             elif "ocm" in suite:
                 steps += openCloudService(params["extraServerEnvironment"]) + \
                          (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
-            elif "collab" in suite:
-                # Realtime collab: start hocuspocus alongside OC. The OC
-                # reverse proxy forwards /realtime to it via the proxy.yaml
-                # mounted in openCloudService.
-                steps += hocuspocusService() + \
-                         openCloudService(params["extraServerEnvironment"])
             else:
                 # OpenCloud specific steps
                 steps += (tikaService() if params["tikaNeeded"] else []) + \
@@ -1016,7 +1003,6 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
                 "mkdir -p /srv/app/tmp/opencloud/storage/users/",
                 "./opencloud init",
                 "cp %s/tests/woodpecker/app-registry.yaml /root/.opencloud/config/app-registry.yaml" % dir["web"],
-                "cp %s/tests/woodpecker/proxy.yaml /root/.opencloud/config/proxy.yaml" % dir["web"],
                 "./opencloud server",
             ],
         },
@@ -1475,30 +1461,6 @@ def tikaService():
         "image": APACHE_TIKA,
         "detach": True,
     }] + waitForService("tika", "9998")
-
-def hocuspocusService():
-    # Build + start the hocuspocus realtime collab sidecar in-place from the
-    # checked-out web tree. Plain HTTP on :1234; OC's reverse proxy
-    # WebSocket-upgrades and forwards via the `additional_policies` entry in
-    # tests/woodpecker/proxy.yaml. Mirrors the dev/docker/hocuspocus image
-    # setup but skips Docker — we install the same way the Dockerfile does,
-    # then run server.js with node.
-    sidecar_dir = "%s/dev/docker/hocuspocus" % dir["web"]
-    return [{
-        "name": "hocuspocus",
-        "image": OC_CI_NODEJS,
-        "detach": True,
-        "environment": {
-            "PORT": "1234",
-            "OPENCLOUD_URL": "https://opencloud:9200",
-            "NODE_TLS_REJECT_UNAUTHORIZED": "0",
-        },
-        "commands": [
-            "cd %s" % sidecar_dir,
-            "npm install --omit=dev --no-audit --no-fund --loglevel=error",
-            "node server.js",
-        ],
-    }] + waitForService("hocuspocus", "1234")
 
 def collaboraService():
     return [
