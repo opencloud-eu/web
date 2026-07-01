@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, shallowRef, unref, watch, type Component, type PropType } from 'vue'
+import { computed, ref, shallowRef, unref, watch, type Component } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import { HocuspocusProvider } from '@hocuspocus/provider'
@@ -9,17 +9,17 @@ import semverCompare from 'semver/functions/compare'
 import semverValid from 'semver/functions/valid'
 import type { CollaborativeAdapter } from './types'
 
-const props = defineProps({
-  resource: { type: Object as PropType<Resource>, required: true },
-  currentContent: { type: String, required: true },
-  isReadOnly: { type: Boolean, default: false },
-  adapter: { type: Object as PropType<CollaborativeAdapter>, required: true },
-  editor: { type: Object as PropType<Component>, required: true },
+interface Props {
+  resource: Resource
+  currentContent: string
+  isReadOnly?: boolean
+  adapter: CollaborativeAdapter
+  editor: Component
   // App version owned by the consuming app — typically `pkg.version` from
   // its own package.json, baked in at build time by Vite. Used to detect
   // schema mismatch between peers in the same Y.Doc room. The wrapper
   // itself stays agnostic of where the version comes from.
-  appVersion: { type: String, required: true },
+  appVersion: string
   // Realtime sync URL (wss://.../realtime). Three states:
   //   - `undefined` (the default): derive from `configStore.serverUrl` —
   //     convention is the sidecar lives at `/realtime` on the OC host.
@@ -30,11 +30,7 @@ const props = defineProps({
   //     runs immediately from `currentContent`.
   //   - a string: use this exact URL. Lets a deployment override the
   //     convention (e.g. when the sidecar lives on a separate host).
-  realtimeUrl: {
-    type: String as PropType<string | null | undefined>,
-    required: false,
-    default: undefined
-  },
+  realtimeUrl?: string | null | undefined
   // Namespace for the collab room (and the underlying SQLite key in the
   // sidecar). Different editor apps that can open the same file —
   // codemirror, tiptap, text-editor, a future excalidraw — have
@@ -44,8 +40,19 @@ const props = defineProps({
   // doesn't collide on schema or app-version. Optional only so a fresh
   // consumer can experiment without thinking about it; production
   // editors should always set it.
-  documentPrefix: { type: String, required: false, default: '' }
-})
+  documentPrefix?: string
+}
+
+const {
+  resource,
+  currentContent,
+  isReadOnly = false,
+  adapter,
+  editor,
+  appVersion,
+  realtimeUrl = undefined,
+  documentPrefix = ''
+} = defineProps<Props>()
 
 // The hosting AppWrapper drives isEditor / isDirty / autoSave / Ctrl+S /
 // the unsaved-changes modal off `update:currentContent` emissions. We push
@@ -67,7 +74,7 @@ const emit = defineEmits<{
 
 const META_KEY = '_oc_meta'
 const SERIALIZE_DEBOUNCE_MS = 300
-const APP_VERSION = props.appVersion
+const APP_VERSION = appVersion
 
 // Semver comparison via the official `semver` package: handles pre-release
 // ordering (`1.0.0-rc.1 < 1.0.0`), multi-digit segments (`0.20.0 > 0.3.0`),
@@ -86,7 +93,7 @@ const configStore = useConfigStore()
 // See the `realtimeUrl` prop docs for the three-state contract. We resolve
 // `undefined` here so the watch / template see a stable string-or-null.
 const effectiveRealtimeUrl = computed<string | null>(() => {
-  if (props.realtimeUrl !== undefined) return props.realtimeUrl
+  if (realtimeUrl !== undefined) return realtimeUrl
   const base = configStore.serverUrl?.replace(/\/$/, '') ?? ''
   if (!base) return null
   return base.replace(/^http/, 'ws') + '/realtime'
@@ -130,7 +137,7 @@ const INTERNAL_ORIGINS = new Set<string>([
 ])
 
 const documentName = computed(() => {
-  const r = props.resource as Resource & { remoteItemId?: string }
+  const r = resource as Resource & { remoteItemId?: string }
   // OC's canonical composite id `<storageid>$<spaceid>!<opaqueid>`. The
   // owner reads it from `r.id`, a share recipient reads the same composite
   // from `r.remoteItemId` (which points at the owner's drive+item). Both
@@ -140,10 +147,10 @@ const documentName = computed(() => {
   if (!fileId) return null
   // Prefix with the consuming app's id so two different editors opening
   // the same file land in separate rooms (different Y.Doc schemas).
-  return props.documentPrefix ? `${props.documentPrefix}::${fileId}` : fileId
+  return documentPrefix ? `${documentPrefix}::${fileId}` : fileId
 })
 
-const effectiveReadOnly = computed(() => props.isReadOnly || isLockedForReload.value)
+const effectiveReadOnly = computed(() => isReadOnly || isLockedForReload.value)
 
 // ---------------------------------------------------------------------------
 // Y.Doc + (optional) provider lifecycle — rebuilt whenever the file identity
@@ -193,7 +200,7 @@ watch(
       serializeTimer = window.setTimeout(() => {
         serializeTimer = undefined
         if (doc.isDestroyed) return
-        if (!props.adapter.hasContent(doc)) return
+        if (!adapter.hasContent(doc)) return
         try {
           // The bound editor component may expose a `getAdapterContext()` via
           // `defineExpose`. Tiptap-style adapters use it to reach the live
@@ -202,7 +209,7 @@ watch(
           const editorCtx = (
             editorRef.value as { getAdapterContext?: () => unknown } | null
           )?.getAdapterContext?.()
-          const serialized = props.adapter.serialize(doc, editorCtx)
+          const serialized = adapter.serialize(doc, editorCtx)
           if (typeof serialized === 'string') {
             emit('update:currentContent', serialized)
             return
@@ -226,12 +233,12 @@ watch(
     let prov: HocuspocusProvider | null = null
     let aw: Awareness
 
-    const realtimeUrl = effectiveRealtimeUrl.value
-    if (realtimeUrl) {
+    const resolvedRealtimeUrl = unref(effectiveRealtimeUrl)
+    if (resolvedRealtimeUrl) {
       // ---------- Collab mode ----------
       // HocuspocusProvider has no `parameters` option; we get query params to
       // the sidecar's requestParameters by appending them to the URL ourselves.
-      const wsUrlWithParams = `${realtimeUrl}?appVersion=${encodeURIComponent(APP_VERSION)}`
+      const wsUrlWithParams = `${resolvedRealtimeUrl}?appVersion=${encodeURIComponent(APP_VERSION)}`
       prov = new HocuspocusProvider({
         url: wsUrlWithParams,
         name,
@@ -296,13 +303,13 @@ watch(
       if (
         event.keysChanged.has('lastSavedAt') &&
         transaction.origin !== LOCAL_SAVE_ORIGIN &&
-        props.adapter.hasContent(doc)
+        adapter.hasContent(doc)
       ) {
         try {
           const editorCtx = (
             editorRef.value as { getAdapterContext?: () => unknown } | null
           )?.getAdapterContext?.()
-          const serialized = props.adapter.serialize(doc, editorCtx)
+          const serialized = adapter.serialize(doc, editorCtx)
           if (typeof serialized === 'string') {
             emit('update:serverContent', serialized)
           } else {
@@ -380,7 +387,7 @@ watch(
 const LOCAL_SAVE_ORIGIN = 'local-save'
 
 watch(
-  () => props.resource.etag,
+  () => resource.etag,
   (newEtag) => {
     const doc = unref(ydoc)
     if (!doc || doc.isDestroyed || !newEtag) return
@@ -487,7 +494,7 @@ async function runInitialHydration(
   // Stamping native etag into a sidecar field lets the recovery path
   // settle the final value into `_oc_meta.etag` without an extra fetch.
   const docEtag = meta.get('etag') as string | undefined
-  const nativeEtag = props.resource.etag
+  const nativeEtag = resource.etag
   if (docEtag && nativeEtag && docEtag !== nativeEtag) {
     doc.transact(() => {
       meta.set('nativeEtag', nativeEtag)
@@ -501,7 +508,7 @@ async function runInitialHydration(
     })
   }
 
-  if (props.adapter.hasContent(doc)) return
+  if (adapter.hasContent(doc)) return
   if (effectiveReadOnly.value) return // never seed from a read-only view
 
   // Peer election to avoid double-hydration: let other clients announce
@@ -513,7 +520,7 @@ async function runInitialHydration(
   if (prov) {
     await new Promise<void>((resolve) => setTimeout(resolve, 150))
 
-    if (props.adapter.hasContent(doc)) return // someone beat us
+    if (adapter.hasContent(doc)) return // someone beat us
 
     const myId = doc.clientID
     const peers = Array.from(awarenessInstance.getStates().keys())
@@ -521,7 +528,7 @@ async function runInitialHydration(
     if (myId !== lowest) return
   }
 
-  await Promise.resolve(props.adapter.hydrate(doc, props.currentContent))
+  await Promise.resolve(adapter.hydrate(doc, currentContent))
 }
 
 // ---------------------------------------------------------------------------
@@ -541,7 +548,7 @@ async function recoverFromStaleState(
 ) {
   const meta = doc.getMap(META_KEY)
   if (effectiveReadOnly.value) return
-  if (typeof props.adapter.reset !== 'function') {
+  if (typeof adapter.reset !== 'function') {
     lockForReload(
       prov,
       'This file was changed externally and your editor cannot recover in-place. Please reload.'
@@ -559,16 +566,16 @@ async function recoverFromStaleState(
   const lowest = peers.length ? Math.min(myId, ...peers) : myId
   if (myId !== lowest) return
 
-  const freshEtag = (meta.get('nativeEtag') as string | undefined) ?? props.resource.etag ?? ''
+  const freshEtag = (meta.get('nativeEtag') as string | undefined) ?? resource.etag ?? ''
 
   // Split into three phases so a crash between reset and hydrate leaves
   // `isStale` set: the next peer entering the room then re-runs recovery
   // instead of inheriting an empty doc with cleared flags.
   doc.transact(() => {
-    props.adapter.reset?.(doc)
+    adapter.reset?.(doc)
   }, 'stale-recovery-reset')
 
-  await Promise.resolve(props.adapter.hydrate(doc, props.currentContent))
+  await Promise.resolve(adapter.hydrate(doc, currentContent))
 
   doc.transact(() => {
     meta.delete('isStale')
