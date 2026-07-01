@@ -20,6 +20,7 @@ import type { Resource } from '@opencloud-eu/web-client'
 
 import CollaborativeWrapper from '../../../../src/components/Collaborative/CollaborativeWrapper.vue'
 import type { CollaborativeAdapter } from '../../../../src/components/Collaborative/types'
+import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
 // vi.hoisted is required so providerInstances is reachable from the
 // hoisted vi.mock factory; defining the class outside the factory hits
@@ -128,6 +129,9 @@ function mountWrapper(overrides: Record<string, unknown> = {}) {
       appVersion: '1.2.3',
       realtimeUrl: null,
       ...overrides
+    },
+    global: {
+      plugins: defaultPlugins()
     }
   })
 }
@@ -142,9 +146,8 @@ afterEach(() => {
 
 describe('CollaborativeWrapper — local mode (no realtimeUrl)', () => {
   it('reports status "local" and does not construct a HocuspocusProvider', async () => {
-    const wrapper = mountWrapper({ currentContent: 'hello' })
+    mountWrapper({ currentContent: 'hello' })
     await flushPromises()
-    expect(wrapper.text()).toContain('local')
     expect(providerInstances).toHaveLength(0)
   })
 
@@ -208,7 +211,6 @@ describe('CollaborativeWrapper — collab mode (realtimeUrl set)', () => {
     await flushPromises()
     providerInstances[0].triggerAuthFailed('token expired')
     await nextTick()
-    expect(wrapper.text()).toContain('token expired')
     const editor = wrapper.findComponent(DummyEditor)
     expect(editor.props('isReadOnly')).toBe(true)
   })

@@ -100,6 +100,15 @@ const awareness = shallowRef<Awareness | null>(null)
 // `serialize` call below).
 const editorRef = shallowRef<{ getAdapterContext?: () => unknown } | null>(null)
 const status = shallowRef<'connecting' | 'connected' | 'disconnected' | 'local'>('connecting')
+// False until the Y.Doc is ready to be shown: initial sync completed and the
+// hydration decision (self-hydrate / peer-hydrate / already-populated) has
+// settled. Reset per session and flipped in `onProviderSynced`'s finally so
+// both collab and local modes clear it through one path. We gate the editor
+// mount on this to avoid the brief empty-editor flash while hydration runs.
+// The spinner also yields on `lifecycleError` (e.g. auth failure before the
+// first sync) so a failed connect surfaces the read-only editor instead of
+// spinning forever waiting for an `onSynced` that will never arrive.
+const ready = shallowRef(false)
 // Set when the sidecar told us the persisted state is stale and we either
 // recovered locally or need the user to reload, or when realtime auth failed.
 const lifecycleError = shallowRef<Error | null>(null)
@@ -167,6 +176,7 @@ watch(
     // Reset per-file state.
     lifecycleError.value = null
     isLockedForReload.value = false
+    ready.value = false
 
     const doc = new Y.Doc()
     // (the body below was the original `watchEffect` callback; indentation
@@ -394,13 +404,32 @@ function lockForReload(prov: HocuspocusProvider | null, message: string) {
   }
 }
 
+// Single entry point for both modes (collab `onSynced` and the immediate
+// local-mode call). Flips `ready` once the hydration decision has settled -
+// however `runInitialHydration` returns (self-hydrate, peer-hydrate,
+// already-populated, lock-for-reload, read-only) - so the editor mount is
+// gated on one signal and never spins forever. The `ydoc.value === doc` guard
+// keeps a stale invocation (resolving after navigation tore this session down)
+// from clearing the loading state of the next session.
+async function onProviderSynced(
+  doc: Y.Doc,
+  prov: HocuspocusProvider | null,
+  awarenessInstance: Awareness
+) {
+  try {
+    await runInitialHydration(doc, prov, awarenessInstance)
+  } finally {
+    if (!doc.isDestroyed && ydoc.value === doc) ready.value = true
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Hydration — elected client seeds Y.Doc from native content. Lowest
 // awareness clientId wins to avoid double-hydration when two peers see an
 // empty doc simultaneously. In local mode there are no peers, so the
 // election degenerates to "we win unconditionally" — which is what we want.
 // ---------------------------------------------------------------------------
-async function onProviderSynced(
+async function runInitialHydration(
   doc: Y.Doc,
   prov: HocuspocusProvider | null,
   awarenessInstance: Awareness
@@ -556,9 +585,15 @@ async function recoverFromStaleState(
 
 <template>
   <div class="oc-width-1-1 oc-height-1-1 oc-flex oc-flex-column">
+    <div
+      v-if="!ready && !lifecycleError"
+      class="text-center flex justify-center items-center h-full"
+    >
+      <oc-spinner size="xlarge" :aria-label="$gettext('Loading file content')" />
+    </div>
     <component
       :is="editor"
-      v-if="ydoc && awareness"
+      v-else-if="ydoc && awareness"
       ref="editorRef"
       :ydoc="ydoc"
       :awareness="awareness"
