@@ -42,3 +42,16 @@ function getButtonId(extensionId: string): string {
   return `mobile-app-floating-action-button-${extensionId.replace(/\./g, '-')}`
 }
 </script>
+
+<style>
+@reference '@opencloud-eu/design-system/tailwind';
+
+.oc-app-floating-action-button [id^='mobile-app-floating-action-button-'] {
+  @apply bg-gradient-to-r from-role-secondary to-role-primary text-role-on-secondary shadow-md;
+  @apply transition-[filter,box-shadow] duration-150 ease-out;
+}
+
+.oc-app-floating-action-button [id^='mobile-app-floating-action-button-']:hover {
+  @apply brightness-110 shadow-lg;
+}
+</style>
