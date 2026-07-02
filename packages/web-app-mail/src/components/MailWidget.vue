@@ -33,7 +33,7 @@
 
       <div class="flex flex-col flex-1 min-h-0">
         <div class="flex-1 min-h-0 overflow-auto">
-          <MailComposeForm v-model="composeState" />
+          <MailComposeForm v-model="composeState" :toolbar-variant="composeToolbarVariant" />
         </div>
 
         <div class="px-4 pt-3 pb-2">
@@ -83,7 +83,10 @@
     <template #content>
       <div class="flex flex-col flex-1 min-h-0">
         <div class="flex-1 min-h-0 overflow-auto">
-          <MailComposeForm v-model="composeState" />
+          <MailComposeForm
+            v-model="composeState"
+            :toolbar-variant="expandedComposeToolbarVariant"
+          />
         </div>
 
         <div class="px-4 pt-3">
@@ -115,7 +118,9 @@ import { ref, computed, unref, watch, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
+import type { TextEditorToolbarVariant } from '@opencloud-eu/web-pkg/editor'
 import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
 import MailSavedHint from './MailSavedHint.vue'
@@ -150,6 +155,7 @@ const emit = defineEmits<{
 const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
 const connector = useMailDraftConnector()
+const { isMobile } = useIsMobile()
 
 const { currentAccount } = storeToRefs(accountsStore)
 const { mailboxes } = storeToRefs(mailboxesStore)
@@ -169,6 +175,14 @@ const selectedIdentityId = computed(() => {
 })
 
 const isExpanded = ref(false)
+
+const composeToolbarVariant = computed<TextEditorToolbarVariant>(() => {
+  return unref(isMobile) ? 'mobile' : 'expanded-compose'
+})
+
+const expandedComposeToolbarVariant = computed<TextEditorToolbarVariant>(() => {
+  return unref(isMobile) ? 'mobile' : 'default'
+})
 
 const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
 
