@@ -296,6 +296,10 @@ export function useEditorActions(
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).setNode('paragraph').run()
     },
+    isActive: (editor) => {
+      const { $from } = editor.state.selection
+      return $from.parent.type.name === 'paragraph' && $from.depth === 1
+    },
     showInToolbar: false
   })
 
@@ -380,7 +384,8 @@ export function useEditorActions(
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleBlockquote().run()
     },
-    isActive: (editor) => editor.isActive('blockquote')
+    isActive: (editor) => editor.isActive('blockquote'),
+    showInToolbar: false
   })
 
   const codeBlock = (): EditorAction => ({
@@ -393,7 +398,8 @@ export function useEditorActions(
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).toggleCodeBlock().run()
     },
-    isActive: (editor) => editor.isActive('codeBlock')
+    isActive: (editor) => editor.isActive('codeBlock'),
+    showInToolbar: false
   })
 
   // List actions
@@ -709,6 +715,7 @@ export function useEditorActions(
     toggleSourceMode,
     // Text formatting
     heading,
+    paragraph,
     heading1,
     heading2,
     heading3,
