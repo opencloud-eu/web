@@ -19,10 +19,17 @@ import {
   FontSize,
   LineHeight
 } from '@tiptap/extension-text-style'
-import { EditorActionGroup, useEditorActions } from '../useEditorActions'
+import {
+  useEditorActions,
+  type EditorActionGroup,
+  type UseEditorActionsOptions
+} from '../useEditorActions'
 import { TextEditorState } from '../../types'
 
-export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
+export const useStrategyHtml = (
+  editorState: TextEditorState,
+  editorActionOptions: UseEditorActionsOptions = {}
+): ContentTypeStrategy => {
   const { $gettext } = useGettext()
 
   const editorContentType = () => {
@@ -94,6 +101,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     orderedList,
     taskList,
     horizontalRule,
+    link,
     tableMenu,
     createTable,
     addRowBefore,
@@ -102,7 +110,13 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     addColumnBefore,
     addColumnAfter,
     deleteColumn
-  } = useEditorActions(editorState)
+  } = useEditorActions(editorState, editorActionOptions)
+
+  const toolbarLink = () => ({
+    ...link(),
+    showInToolbar: false
+  })
+
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
@@ -159,7 +173,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           addRowBefore(),
           deleteColumn(),
           deleteRow(),
-          horizontalRule()
+          horizontalRule(),
+          toolbarLink()
         ]
       }
     ]

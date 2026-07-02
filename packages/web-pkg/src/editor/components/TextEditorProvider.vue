@@ -5,12 +5,14 @@
 </template>
 
 <script setup lang="ts">
-import { provide } from 'vue'
-import type { TextEditorInstance } from '../types'
+import { provide, toRef } from 'vue'
+import type { TextEditorInstance, TextEditorToolbarVariant } from '../types'
 
-const { editor } = defineProps<{
+const props = defineProps<{
   editor: TextEditorInstance
+  toolbarVariant?: TextEditorToolbarVariant
 }>()
 
-provide('textEditor', editor)
+provide('textEditor', props.editor)
+provide('textEditorToolbarVariant', toRef(props, 'toolbarVariant'))
 </script>
