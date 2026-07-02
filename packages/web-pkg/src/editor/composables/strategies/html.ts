@@ -79,10 +79,13 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     underline,
     strikethrough,
     heading,
+    paragraph,
     heading1,
     heading2,
     heading3,
     heading4,
+    blockquote,
+    codeBlock,
     alignLeft,
     alignCenter,
     alignRight,
@@ -90,8 +93,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     bulletList,
     orderedList,
     taskList,
-    blockquote,
-    codeBlock,
     horizontalRule,
     tableMenu,
     createTable,
@@ -119,10 +120,13 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         title: $gettext('Formatting'),
         actions: [
           heading(),
+          paragraph(),
           heading1(),
           heading2(),
           heading3(),
           heading4(),
+          blockquote(),
+          codeBlock(),
           fontSize(),
           lineHeight(),
           backgroundColor(),
@@ -142,11 +146,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         id: 'lists',
         title: $gettext('Lists'),
         actions: [bulletList(), orderedList(), taskList()]
-      },
-      {
-        id: 'blocks',
-        title: $gettext('Blocks'),
-        actions: [blockquote(), codeBlock()]
       },
       {
         id: 'insert',
