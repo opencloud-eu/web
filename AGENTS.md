@@ -20,7 +20,7 @@ OpenCloud Web is a TypeScript/Vue 3 single-page application that serves as the b
 │   ├── extension-sdk/ # Utilities for custom extensions
 │   └── web-app-*/     # Standalone apps/extensions (files, search, preview, …)
 ├── tests/
-│   └── e2e/           # End-to-end tests (Playwright + Cucumber)
+│   └── e2e/           # End-to-end tests (Playwright + Playwright BDD)
 ├── dev/               # Docker/infrastructure config for local development
 ├── docker-compose.yml
 ├── vite.config.ts     # Root Vite config
@@ -50,7 +50,7 @@ pnpm format:write      # Auto-fix formatting with Prettier
 pnpm check:types       # TypeScript type checking via vue-tsc
 pnpm check:all         # Types + lint + format + unit tests (run before opening a PR)
 pnpm test:unit --run   # Run all unit tests with Vitest (--run prevents watch mode)
-pnpm test:e2e:cucumber # Run e2e tests (default browser)
+pnpm test:e2e          # Run end-to-end tests (requires pnpm build and a running backend)
 ```
 
 ---
@@ -100,10 +100,10 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 
 ### End-to-End Tests
 
-- **Framework:** [Playwright](https://playwright.dev/) + [Cucumber](https://cucumber.io/)
+- **Framework:** [Playwright](https://playwright.dev/) + [Playwright BDD](https://vitalets.github.io/playwright-bdd/)
 - **Location:** `tests/e2e/` (outside of `packages/`)
 - **Prerequisites:** Run `pnpm build` before executing e2e tests. A running OpenCloud backend is also required — use `docker-compose up -d` to start one locally.
-- **Run:** `pnpm test:e2e:cucumber`
+- **Run:** `pnpm test:e2e`
 
 ## Documentation
 

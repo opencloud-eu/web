@@ -4,9 +4,10 @@ import path from 'path'
 import { waitForResources } from './utils'
 import { editor, sidebar } from '../utils'
 import { environment, utils } from '../../../../support'
-import { config } from '../../../../config'
+import { appConfig } from '../../../../playwright.config'
 import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
+import { state } from '../../../../environment/shared'
 import { readFileSync } from 'fs'
 
 const appLoadingSpinner = '#app-loading-spinner'
@@ -549,7 +550,7 @@ const createDocumentFile = async (
   const editorMainFrame = page.frameLocator(externalEditorIframe)
   switch (editorToOpen) {
     case 'Collabora':
-      if (config.browser === 'mobile-chromium' || config.browser === 'mobile-webkit') {
+      if (state.projectName === 'mobile-chromium' || state.projectName === 'mobile-webkit') {
         await editorMainFrame.locator('#mobile-edit-button').click()
       }
       await editorMainFrame.locator(collaboraDocTextAreaSelector).fill(content)
@@ -804,7 +805,7 @@ export const uploadLargeNumberOfResources = async (args: uploadResourceArgs): Pr
   await page.locator(uploadInfoCloseButton).waitFor()
   await expect(page.locator(uploadInfoSuccessLabelSelector)).toHaveText(
     `${resources.length} files uploaded`,
-    { timeout: config.timeout * 1000 }
+    { timeout: appConfig.timeout * 1000 }
   )
 }
 
@@ -815,8 +816,8 @@ export const uploadResource = async (args: uploadResourceArgs): Promise<void> =>
 
   if (
     option !== 'skip' &&
-    config.browser !== 'mobile-chromium' &&
-    config.browser !== 'mobile-webkit'
+    state.projectName !== 'mobile-chromium' &&
+    state.projectName !== 'mobile-webkit'
   ) {
     await page.locator(uploadInfoCloseButton).click()
   }
@@ -918,7 +919,7 @@ export const resumeResourceUpload = async (page: Page): Promise<void> => {
 
   await page
     .locator(uploadInfoSuccessLabelSelector)
-    .waitFor({ timeout: config.largeUploadTimeout * 1000 })
+    .waitFor({ timeout: appConfig.largeUploadTimeout * 1000 })
 
   await page.locator(uploadInfoCloseButton).click()
 }
@@ -1825,7 +1826,7 @@ export const getDisplayedResourcesFromFilesList = async (page: Page): Promise<st
   const result = page.locator('[data-test-resource-path]')
 
   try {
-    await result.first().waitFor({ timeout: config.minTimeout * 1000 })
+    await result.first().waitFor({ timeout: appConfig.minTimeout * 1000 })
   } catch {
     console.log('Files list is empty')
   }
@@ -1855,7 +1856,7 @@ export const getDisplayedResourcesFromTrashbin = async (page: Page): Promise<str
   const files = []
   const result = page.locator('[data-test-resource-path]')
   try {
-    await result.first().waitFor({ timeout: config.minTimeout * 1000 })
+    await result.first().waitFor({ timeout: appConfig.minTimeout * 1000 })
   } catch {
     console.log('Trashbin is empty')
   }
@@ -1876,7 +1877,7 @@ export interface switchViewModeArgs {
 export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<void> => {
   const { page, target } = args
 
-  if (config.browser === 'mobile-chromium' || config.browser === 'mobile-webkit') {
+  if (state.projectName === 'mobile-chromium' || state.projectName === 'mobile-webkit') {
     await page.locator(mobileViewmodeSwitchBtn).click()
     await expect(page.locator(mobileViewmodeSwitchDropdown)).toBeVisible()
 
@@ -2038,7 +2039,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       try {
         await euroOfficeIframe
           .locator(euroOfficeInfoDialog)
-          .waitFor({ timeout: config.minTimeout * 1000 })
+          .waitFor({ timeout: appConfig.minTimeout * 1000 })
         await euroOfficeIframe.locator(euroOfficeInfoDialogConfirm).click()
         // NOTE: page reload is required if the info dialog appears
         await page.reload()

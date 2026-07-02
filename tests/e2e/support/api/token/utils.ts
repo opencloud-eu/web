@@ -1,5 +1,5 @@
 import { TokenEnvironmentFactory } from '../../environment'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 import { request, APIRequestContext } from '@playwright/test'
 import { User } from '../../types'
 
@@ -25,10 +25,10 @@ export const setAccessAndRefreshToken = async (user: User) => {
 }
 
 const getAuthorizedEndPoint = async (context: APIRequestContext, user: User): Promise<string> => {
-  const logonResponse = await context.post(config.baseUrl + logonUrl, {
+  const logonResponse = await context.post(appConfig.baseUrl + logonUrl, {
     headers: {
       'Kopano-Konnect-XSRF': '1',
-      Referer: config.baseUrl,
+      Referer: appConfig.baseUrl,
       'Content-Type': 'application/json'
     },
     data: {
@@ -36,7 +36,7 @@ const getAuthorizedEndPoint = async (context: APIRequestContext, user: User): Pr
       hello: {
         scope: 'openid profile email',
         client_id: 'web',
-        redirect_uri: config.baseUrl + redirectUrl,
+        redirect_uri: appConfig.baseUrl + redirectUrl,
         flow: 'oidc'
       }
     }
@@ -55,7 +55,7 @@ const getCode = async (context: APIRequestContext, continueUrl: string): Promise
   const params = new URLSearchParams({
     client_id: 'web',
     prompt: 'none',
-    redirect_uri: config.baseUrl + redirectUrl,
+    redirect_uri: appConfig.baseUrl + redirectUrl,
     response_mode: 'query',
     response_type: 'code',
     scope: 'openid profile offline_access email'
@@ -84,11 +84,11 @@ interface Token {
 }
 
 const getToken = async (context: APIRequestContext, code: string): Promise<Token> => {
-  const response = await context.post(config.baseUrl + tokenUrl, {
+  const response = await context.post(appConfig.baseUrl + tokenUrl, {
     form: {
       client_id: 'web',
       code: code,
-      redirect_uri: config.baseUrl + redirectUrl,
+      redirect_uri: appConfig.baseUrl + redirectUrl,
       grant_type: 'authorization_code'
     }
   })
