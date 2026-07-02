@@ -38,11 +38,11 @@ describe('SharedWithMe view', () => {
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper({ loading: true })
-      expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
+      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeTruthy()
     })
     it('does not show the loading spinner after loading finished', () => {
       const { wrapper } = getMountedWrapper()
-      expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
+      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeFalsy()
     })
   })
   describe('open with default app', () => {
@@ -206,7 +206,12 @@ function getMountedWrapper({
       global: {
         plugins,
         mocks: defaultMocks,
-        stubs: { ...defaultStubs, itemFilterInline: true, ItemFilter: true }
+        stubs: {
+          ...defaultStubs,
+          itemFilterInline: true,
+          ItemFilter: true,
+          AppLoadingSpinner: true
+        }
       }
     })
   }

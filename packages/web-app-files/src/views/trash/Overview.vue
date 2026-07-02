@@ -18,12 +18,13 @@
         </no-content-message>
         <template v-else>
           <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
-            <oc-text-input
-              id="trash-filter"
+            <oc-search-bar
               v-model="filterTerm"
               class="w-3xs"
               :label="$gettext('Search')"
-              autocomplete="off"
+              :placeholder="$gettext('Search for spaces')"
+              button-hidden
+              :is-rounded="false"
             />
           </div>
           <no-content-message

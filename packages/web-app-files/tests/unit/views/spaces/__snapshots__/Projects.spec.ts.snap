@@ -6,15 +6,25 @@ exports[`Projects view > different files view states > lists all available proje
     <div id="files-view" class="outline-0 z-0 flex flex-col">
       <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="true" batchactionsloading="false"></app-bar-stub>
       <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
-        <div class="w-3xs"><label class="inline-block mb-0.5" for="spaces-filter">Search
-            <!--v-if-->
-          </label>
-          <div class="relative">
-            <!--v-if--> <input id="spaces-filter" autocomplete="off" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="">
-            <!--v-if-->
-          </div>
+        <div data-v-8440503a="" role="search" class="oc-search flex items-center w-3xs">
+          <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Search" placeholder="Search for spaces" type="search"> <button data-v-8440503a="" type="button" aria-label="Search" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0">
+              <!--v-if-->
+              <!-- @slot Content of the button --> <span data-v-8440503a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/search-line.svg" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+              <oc-spinner-stub data-v-8440503a="" arialabel="Loading results" size="medium" style="display: none;"></oc-spinner-stub>
+            </button></div>
+          <div data-v-8440503a="" class="oc-search-button-wrapper sr-only"><button data-v-8440503a="" type="button" disabled="" class="oc-button-secondary oc-button-filled oc-button-secondary-filled gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]">
+              <!--v-if-->
+              <!-- @slot Content of the button --> Search
+            </button></div>
           <!--v-if-->
-          <div id="v-0"></div>
         </div>
       </div>
       <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu spaces-table" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1" id="files-space-table" selection="">

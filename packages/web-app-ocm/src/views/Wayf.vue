@@ -54,18 +54,14 @@
         <div v-else class="flex-1 grid grid-rows-[auto_1fr_auto] min-h-0">
           <!-- Search Section -->
           <div class="px-4 pb-2 border-b shrink-0 overflow-hidden min-h-[80px]">
-            <oc-text-input
-              id="wayf-search"
+            <oc-search-bar
               v-model="query"
               :label="$gettext('Search providers')"
-              type="text"
-              name="search"
+              :placeholder="$gettext('Search providers')"
               class="mb-2"
-            >
-              <template #icon>
-                <oc-icon name="magnify" size="medium" />
-              </template>
-            </oc-text-input>
+              button-hidden
+              :is-rounded="false"
+            />
           </div>
 
           <!-- Empty State (no federations or no matches) -->
