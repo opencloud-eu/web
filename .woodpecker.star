@@ -3,6 +3,8 @@ docker_repo_slug = "opencloudeu/web"
 
 ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
+
+# renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.1.4.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:26.6.1"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
@@ -11,6 +13,8 @@ OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
 OC_CI_NODEJS_ALPINE = "quay.io/opencloudeu/nodejs-alpine-ci:24"
 OC_CI_WAIT_FOR = "quay.io/opencloudeu/wait-for-ci:latest"
+
+# renovate: datasource=docker depName=ghcr.io/euro-office/documentserver
 EURO_OFFICE_DOCUMENT_SERVER = "ghcr.io/euro-office/documentserver:v9.3.2"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
