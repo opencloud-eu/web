@@ -5,7 +5,20 @@
   "prConcurrentLimit": 15,
   "postUpdateOptions": ["pnpmDedupe"],
   "labels": ["Type:Dependencies"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^\\.woodpecker\\.star$/"],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>.*?) depName=(?<depName>.*?)\\s+\\w+ = \"[^:]+:(?<currentValue>[^\"]+)\""
+      ]
+    }
+  ],
   "packageRules": [
+    {
+      "matchPackageNames": ["collabora/code"],
+      "groupName": "collabora"
+    },
     {
       "matchDepTypes": ["devDependencies"],
       "matchUpdateTypes": ["patch", "minor"],
