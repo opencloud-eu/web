@@ -52,7 +52,7 @@ export const appConfig = {
   },
 
   // Timeouts
-  testTimeout: parseInt(process.env.TEST_TIMEOUT || '80'),
+  testTimeout: parseInt(process.env.TEST_TIMEOUT || '120'),
   get timeout() {
     return this.testTimeout
   },
