@@ -162,6 +162,27 @@ describe('useEditorActions', () => {
   })
 
   describe('heading', () => {
+    const getParagraphAction = () => {
+      return actions.heading().childActions!.find(({ id }) => id === 'paragraph')!
+    }
+
+    describe('paragraph', () => {
+      it('toolbarAction sets paragraph', () => {
+        const editor = createMockEditor()
+        getParagraphAction().toolbarAction!(editor)
+        expect(editor._chain.setParagraph).toHaveBeenCalled()
+        expect(editor._chain.run).toHaveBeenCalled()
+      })
+
+      it('slashCommandAction deletes range then sets paragraph node', () => {
+        const editor = createMockEditor()
+        getParagraphAction().slashCommandAction!({ editor, range: mockRange })
+        expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+        expect(editor._chain.setNode).toHaveBeenCalledWith('paragraph')
+        expect(editor._chain.run).toHaveBeenCalled()
+      })
+    })
+
     const blockActions: ReadonlyArray<{
       name: 'heading1' | 'heading2' | 'heading3' | 'heading4'
       markName: string

@@ -55,15 +55,16 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     italic,
     strikethrough,
     heading,
+    paragraph,
     heading1,
     heading2,
     heading3,
     heading4,
+    blockquote,
+    codeBlock,
     bulletList,
     orderedList,
     taskList,
-    blockquote,
-    codeBlock,
     horizontalRule,
     image,
     imageUrl,
@@ -94,10 +95,13 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         title: $gettext('Formatting'),
         actions: [
           heading(),
+          paragraph(),
           heading1(),
           heading2(),
           heading3(),
           heading4(),
+          blockquote(),
+          codeBlock(),
           bold(),
           italic(),
           strikethrough()
@@ -107,11 +111,6 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'lists',
         title: $gettext('Lists'),
         actions: [bulletList(), orderedList(), taskList()]
-      },
-      {
-        id: 'blocks',
-        title: $gettext('Blocks'),
-        actions: [blockquote(), codeBlock()]
       },
       {
         id: 'insert',
