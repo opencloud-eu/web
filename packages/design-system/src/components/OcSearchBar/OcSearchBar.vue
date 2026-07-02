@@ -12,6 +12,7 @@
         :aria-label="label"
         :disabled="loading"
         :placeholder="placeholder"
+        type="search"
         @keydown.enter="onSearch"
         @keyup="$emit('keyup', $event)"
       />
@@ -132,6 +133,11 @@ export interface Props {
    */
   cancelButtonColorRole?: OcButtonProps['colorRole']
   /**
+   * @docs Determines if the search bar should have rounded corners.
+   * @default true
+   */
+  isRounded?: boolean
+  /**
    * @docs The handler for the cancel button.
    */
   cancelHandler?: () => void
@@ -176,6 +182,7 @@ const {
   showCancelButton = false,
   cancelButtonAppearance = 'raw',
   cancelButtonColorRole = 'secondary',
+  isRounded = true,
   cancelHandler = () => {}
 } = defineProps<Props>()
 
@@ -196,8 +203,6 @@ const inputClass = computed(() => {
   const classes = [
     'oc-search-input',
     'oc-input',
-    'p-4',
-    'rounded-4xl',
     'disabled:cursor-not-allowed',
     'focus:bg-none',
     'focus:outline focus:outline-offset-2 focus:outline-white'
@@ -208,7 +213,10 @@ const inputClass = computed(() => {
   if (small) {
     classes.push(...['leading-7', 'h-8'])
   } else {
-    classes.push('h-10')
+    classes.push('h-9')
+  }
+  if (isRounded) {
+    classes.push(...['rounded-4xl', 'p-4'])
   }
   return classes
 })
@@ -229,3 +237,11 @@ const onCancel = () => {
   cancelHandler()
 }
 </script>
+
+<style scoped>
+[type='search']::-webkit-search-cancel-button,
+[type='search']::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+</style>

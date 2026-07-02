@@ -12,7 +12,7 @@ const selectors = {
   selectAppTitle: '//a[contains(.,"%s")]',
   appDetailsBack: '.app-details-back',
   appDetailsTitle: '//h2[contains(@class, "app-details-title")][text()="%s"]',
-  appsFilter: '#apps-filter',
+  appsFilter: '.apps-filter input',
   tag: '//button[contains(@class,"oc-tag")][span[text()="%s"]]',
   appTag: '//a[contains(.,"%s")]/following::button[contains(@class,"oc-tag")][span[text()="%s"]]'
 }

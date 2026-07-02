@@ -2,15 +2,14 @@
 
 exports[`MembersPanel > should display an empty result if no matching members found 1`] = `
 "<div class="ml-2">
-  <div class="mr-2 mt-4"><label class="inline-block mb-0.5" for="oc-textinput-3">Filter members
-      <!--v-if-->
-    </label>
-    <div class="relative">
-      <!--v-if--> <input id="oc-textinput-3" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="no-match">
-      <!--v-if-->
+  <div data-v-8440503a="" role="search" class="oc-search flex items-center mr-2 mt-4">
+    <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Filter members" placeholder="Search for members" type="search">
+      <oc-button-stub data-v-8440503a="" arialabel="Search" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"></oc-button-stub>
+    </div>
+    <div data-v-8440503a="" class="oc-search-button-wrapper sr-only">
+      <oc-button-stub data-v-8440503a="" appearance="filled" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]"></oc-button-stub>
     </div>
     <!--v-if-->
-    <div id="v-0"></div>
   </div>
   <div data-testid="space-members">
     <div>
@@ -32,15 +31,14 @@ exports[`MembersPanel > should display an empty result if no matching members fo
 
 exports[`MembersPanel > should render all members accordingly to their role assignments 1`] = `
 "<div class="ml-2">
-  <div class="mr-2 mt-4"><label class="inline-block mb-0.5" for="oc-textinput-1">Filter members
-      <!--v-if-->
-    </label>
-    <div class="relative">
-      <!--v-if--> <input id="oc-textinput-1" aria-invalid="false" class="oc-text-input oc-input h-9" type="text" teleport-id="v-0" value="">
-      <!--v-if-->
+  <div data-v-8440503a="" role="search" class="oc-search flex items-center mr-2 mt-4">
+    <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Filter members" placeholder="Search for members" type="search">
+      <oc-button-stub data-v-8440503a="" arialabel="Search" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"></oc-button-stub>
+    </div>
+    <div data-v-8440503a="" class="oc-search-button-wrapper sr-only">
+      <oc-button-stub data-v-8440503a="" appearance="filled" colorrole="secondary" disabled="true" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]"></oc-button-stub>
     </div>
     <!--v-if-->
-    <div id="v-0"></div>
   </div>
   <div data-testid="space-members">
     <!--v-if-->

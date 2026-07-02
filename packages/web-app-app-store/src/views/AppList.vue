@@ -5,12 +5,13 @@
       <app-contextual-helper />
     </h1>
     <div class="flex items-center mb-4">
-      <oc-text-input
-        id="apps-filter"
+      <oc-search-bar
+        class="apps-filter"
         :model-value="filterTermInput"
         :label="$gettext('Search')"
-        :clear-button-enabled="true"
-        autocomplete="off"
+        :placeholder="$gettext('Search for apps')"
+        button-hidden
+        :is-rounded="false"
         @update:model-value="setFilterTerm"
       />
     </div>

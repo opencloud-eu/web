@@ -2,7 +2,7 @@
 
 exports[`MembersPanel > should display an empty result if no matching members found 1`] = `
 "<div class="ml-2">
-  <oc-text-input-stub label="Filter members" id="oc-textinput-3" type="text" modelvalue="no-match" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" inlinelabel="false" errormessagedebouncedtime="500" fixmessageline="false" readonly="false" requiredmark="false" passwordpolicy="[object Object]" hasborder="true" class="mr-2 mt-4"></oc-text-input-stub>
+  <oc-search-bar-stub label="Filter members" icon="search" placeholder="Search for members" small="false" buttonlabel="Search" buttonhidden="true" typeahead="false" trimquery="true" loading="false" isfilter="false" loadingaccessiblelabel="" showcancelbutton="false" cancelbuttonappearance="raw" cancelbuttoncolorrole="secondary" isrounded="false" cancelhandler="[Function]" modelvalue="no-match" class="mr-2 mt-4"></oc-search-bar-stub>
   <div data-testid="space-members">
     <div>
       <h3 class="font-semibold text-base">No members found</h3>
@@ -14,7 +14,7 @@ exports[`MembersPanel > should display an empty result if no matching members fo
 
 exports[`MembersPanel > should render all members accordingly to their role assignments 1`] = `
 "<div class="ml-2">
-  <oc-text-input-stub label="Filter members" id="oc-textinput-1" type="text" modelvalue="" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" inlinelabel="false" errormessagedebouncedtime="500" fixmessageline="false" readonly="false" requiredmark="false" passwordpolicy="[object Object]" hasborder="true" class="mr-2 mt-4"></oc-text-input-stub>
+  <oc-search-bar-stub label="Filter members" icon="search" placeholder="Search for members" small="false" buttonlabel="Search" buttonhidden="true" typeahead="false" trimquery="true" loading="false" isfilter="false" loadingaccessiblelabel="" showcancelbutton="false" cancelbuttonappearance="raw" cancelbuttoncolorrole="secondary" isrounded="false" cancelhandler="[Function]" modelvalue="" class="mr-2 mt-4"></oc-search-bar-stub>
   <div data-testid="space-members">
     <!--v-if-->
     <div class="mb-4" data-testid="group-members">

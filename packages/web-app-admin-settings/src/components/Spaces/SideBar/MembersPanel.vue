@@ -1,6 +1,13 @@
 <template>
   <div class="ml-2">
-    <oc-text-input v-model="filterTerm" class="mr-2 mt-4" :label="$gettext('Filter members')" />
+    <oc-search-bar
+      v-model="filterTerm"
+      class="mr-2 mt-4"
+      :label="$gettext('Filter members')"
+      :placeholder="$gettext('Search for members')"
+      button-hidden
+      :is-rounded="false"
+    />
     <div ref="membersListRef" data-testid="space-members">
       <div v-if="!filteredPermissions.length">
         <h3 class="font-semibold text-base" v-text="$gettext('No members found')" />
