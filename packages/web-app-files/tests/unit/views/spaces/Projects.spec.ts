@@ -96,7 +96,7 @@ describe('Projects view', () => {
       expect(wrapper.find('.spaces-table').exists()).toBeTruthy()
     })
     it('shows only filtered spaces if filter applied', async () => {
-      const { wrapper } = getMountedWrapper({ spaces: spacesResources })
+      const { wrapper } = getMountedWrapper({ spaces: spacesResources, stubAppBar: false })
       await flushPromises()
       wrapper.find('input').setValue('Some other space')
       await nextTick()
@@ -179,11 +179,13 @@ function getMountedWrapper({
     }
   ] satisfies FolderViewExtension[]
   const { requestExtensions } = useExtensionRegistry()
-  vi.mocked(requestExtensions).mockReturnValue(extensions)
+  vi.mocked(requestExtensions).mockImplementation((extensionPoint) =>
+    extensions.filter((e) => e.type === extensionPoint.extensionType)
+  )
 
   const defaultMocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects' })
+      currentRoute: mock<RouteLocation>({ name: 'files-spaces-projects', path: '/' })
     }),
     ...(mocks && mocks)
   }
