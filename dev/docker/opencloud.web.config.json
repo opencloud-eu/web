@@ -6,7 +6,6 @@
   },
   "apps": [
     "files",
-    "text-editor",
     "pdf-viewer",
     "search",
     "external",
@@ -21,5 +20,12 @@
     "contacts",
     "rclone-crypt",
     "office-settings"
+  ],
+  "external_apps": [
+    {
+      "id": "text-editor",
+      "path": "web-app-text-editor",
+      "config": { "realtimeUrl": "wss://host.docker.internal:9200/realtime" }
+    }
   ]
 }
