@@ -13,9 +13,25 @@
         :view-mode-default="FolderViewModeConstants.defaultModeName"
       >
         <template #actions>
-          <div v-if="!selectedResourcesIds?.length" class="flex items-center">
-            <span v-text="$gettext('Learn about spaces')" />
-            <oc-contextual-helper :list="spacesHelpList" :title="$gettext('Spaces')" class="ml-1" />
+          <div class="flex items-center justify-between w-full my-2">
+            <div class="flex items-center h-full">
+              <span v-text="$gettext('Learn about spaces')" />
+              <oc-contextual-helper
+                :list="spacesHelpList"
+                :title="$gettext('Spaces')"
+                class="ml-1"
+              />
+            </div>
+            <div class="flex justify-end flex-wrap items-end">
+              <oc-search-bar
+                v-model="filterTerm"
+                class="w-3xs"
+                :label="$gettext('Search')"
+                :placeholder="$gettext('Search for spaces')"
+                button-hidden
+                :is-rounded="false"
+              />
+            </div>
           </div>
         </template>
       </app-bar>
@@ -34,16 +50,6 @@
           </template>
         </no-content-message>
         <template v-else>
-          <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
-            <oc-search-bar
-              v-model="filterTerm"
-              class="w-3xs"
-              :label="$gettext('Search')"
-              :placeholder="$gettext('Search for spaces')"
-              button-hidden
-              :is-rounded="false"
-            />
-          </div>
           <no-content-message
             v-if="!items.length"
             id="files-spaces-empty"

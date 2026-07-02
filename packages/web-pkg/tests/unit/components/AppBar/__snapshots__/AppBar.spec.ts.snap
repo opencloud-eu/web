@@ -12,11 +12,9 @@ exports[`AppBar component > renders > by default no breadcrumbs, no bulkactions,
       </div>
     </div>
     <!--v-if-->
-    <div class="files-app-bar-actions flex items-baseline justify-end min-h-10">
-      <div class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high">
-        <!--v-if-->
-        <!--v-if-->
-      </div>
+    <div class="files-app-bar-actions relative flex items-start justify-end min-h-10">
+      <div class="peer flex [&amp;:not(:empty)]:w-full"></div>
+      <!--v-if-->
     </div>
   </div>
 </div>"
@@ -34,11 +32,9 @@ exports[`AppBar component > renders > if given, with content in the actions slot
       </div>
     </div>
     <!--v-if-->
-    <div class="files-app-bar-actions flex items-baseline justify-end min-h-10"><button class="action-slot">Click</button>
-      <div class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high">
-        <!--v-if-->
-        <!--v-if-->
-      </div>
+    <div class="files-app-bar-actions relative flex items-start justify-end min-h-10">
+      <div class="peer flex [&amp;:not(:empty)]:w-full"><button class="action-slot">Click</button></div>
+      <!--v-if-->
     </div>
   </div>
 </div>"
@@ -56,11 +52,9 @@ exports[`AppBar component > renders > if given, with content in the content slot
       </div>
     </div>
     <!--v-if-->
-    <div class="files-app-bar-actions flex items-baseline justify-end min-h-10">
-      <div class="flex-1 flex justify-between items-center px-3 min-h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high">
-        <!--v-if-->
-        <!--v-if-->
-      </div>
+    <div class="files-app-bar-actions relative flex items-start justify-end min-h-10">
+      <div class="peer flex [&amp;:not(:empty)]:w-full"></div>
+      <!--v-if-->
     </div>
     <div class="content-slot">Foo</div>
   </div>
