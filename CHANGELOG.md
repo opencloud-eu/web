@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @ScharfViktor, @dschmidt, @fschade, @kulmann, @openclouders, @pbleser-oc, @tammi-23, @tralph3
+@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @openclouders, @pbleser-oc, @tammi-23, @tralph3, @v-scharf
 
 ### 🔒 Security
 
