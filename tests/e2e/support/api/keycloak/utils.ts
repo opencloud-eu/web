@@ -1,9 +1,9 @@
 import { APIResponse } from '@playwright/test'
 import { request as httpRequest } from '../http'
 import { User } from '../../types'
-import { config } from '../../../config'
+import { appConfig } from '../../../playwright.config'
 
-export const realmBasePath = `admin/realms/${config.keycloakRealm}`
+export const realmBasePath = `admin/realms/${appConfig.keycloakRealm}`
 
 export const request = async (args: {
   method: 'POST' | 'DELETE' | 'PUT' | 'GET' | 'MKCOL' | 'PROPFIND' | 'PATCH'
@@ -21,10 +21,10 @@ export const getUserIdFromResponse = (response: APIResponse): string => {
 
 export const getKeycloakAdminUser = () => {
   return {
-    id: config.keycloakAdminUser,
-    username: config.keycloakAdminUser,
-    displayName: config.keycloakAdminUser,
-    password: config.keycloakAdminPassword,
-    email: `${config.keycloakAdminUser}@mail.test`
+    id: appConfig.keycloakAdminUser,
+    username: appConfig.keycloakAdminUser,
+    displayName: appConfig.keycloakAdminUser,
+    password: appConfig.keycloakAdminPassword,
+    email: `${appConfig.keycloakAdminUser}@mail.test`
   }
 }

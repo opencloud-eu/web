@@ -43,7 +43,7 @@ export class ActorsEnvironment extends EventEmitter {
     await Promise.all([...actorStore.values()].map((actor) => actor.close()))
   }
 
-  public generateNamespace(scenarioTitle: string, user: string): string {
-    return kebabCase([scenarioTitle, user, DateTime.now().toFormat('yyyy-M-d-hh-mm-ss')].join('-'))
+  public generateNamespace(user: string): string {
+    return kebabCase([user, DateTime.now().toFormat('yyyy-M-d-hh-mm-ss')].join('-'))
   }
 }
