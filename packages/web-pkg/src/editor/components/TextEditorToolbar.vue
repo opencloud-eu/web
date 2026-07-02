@@ -1,20 +1,21 @@
 <template>
-  <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
+  <div
+    v-if="visible"
+    class="text-editor-toolbar relative border-b border-b-role-border py-1"
+    :class="{ 'text-editor-toolbar--compact': isCompactToolbar }"
+  >
     <div
       ref="scrollContainer"
       class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
       @scroll="updateScrollState"
     >
       <div
-        v-for="(group, groupIndex) in textEditor.actionGroups()"
+        v-for="(group, groupIndex) in toolbarGroups"
         :key="`toolbar-group-${group.id}`"
         class="text-editor-toolbar-group inline-flex items-stretch"
         :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
       >
-        <template
-          v-for="item in group.actions.filter((a) => a.showInToolbar !== false)"
-          :key="`toolbar-item-${item.id}`"
-        >
+        <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
           <template v-if="item.childActions">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
@@ -111,15 +112,67 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
-import type { TextEditorInstance } from '../types'
-import { EditorAction } from '../composables'
+import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import type { Ref } from 'vue'
+import type { TextEditorInstance, TextEditorToolbarVariant } from '../types'
+import type { EditorAction, EditorActionGroup } from '../composables'
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
+const providedToolbarVariant = inject<Ref<TextEditorToolbarVariant | undefined>>(
+  'textEditorToolbarVariant',
+  ref<TextEditorToolbarVariant | undefined>()
+)
+
+const toolbarVariant = computed<TextEditorToolbarVariant>(() => {
+  return unref(providedToolbarVariant) ?? 'default'
+})
 
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+const toolbarActionsByVariant: Record<TextEditorToolbarVariant, string[] | null> = {
+  default: null,
+  'expanded-compose': [
+    'undo',
+    'redo',
+    'heading',
+    'font-size',
+    'bold',
+    'italic',
+    'underline',
+    'strikethrough',
+    'bullet-list',
+    'ordered-list',
+    'task-list',
+    'blockquote',
+    'code-block',
+    'link'
+  ],
+  mobile: ['bold', 'italic', 'underline', 'bullet-list', 'ordered-list', 'link']
+}
+
+const isCompactToolbar = computed(() => unref(toolbarVariant) !== 'default')
+
+const isToolbarItemVisible = (item: EditorAction) => {
+  const actionIds = toolbarActionsByVariant[unref(toolbarVariant)]
+
+  if (!actionIds) {
+    return item.showInToolbar !== false
+  }
+
+  return actionIds.includes(item.id)
+}
+
+const toolbarGroups = computed<EditorActionGroup[]>(() => {
+  return textEditor
+    .actionGroups()
+    .map((group) => ({
+      ...group,
+      actions: group.actions.filter(isToolbarItemVisible)
+    }))
+    .filter((group) => group.actions.length)
+})
 
 const updateScrollState = () => {
   const el = scrollContainerRef.value
@@ -133,6 +186,11 @@ const updateScrollState = () => {
 }
 
 onMounted(async () => {
+  await nextTick()
+  updateScrollState()
+})
+
+watch(toolbarGroups, async () => {
   await nextTick()
   updateScrollState()
 })
@@ -202,6 +260,11 @@ const getActiveIcon = (item: EditorAction) => {
 .text-editor-toolbar-btn {
   gap: 0 !important;
 }
+
+.text-editor-toolbar--compact .text-editor-toolbar-btn {
+  @apply min-w-9 p-1;
+}
+
 .text-editor-toolbar-btn--active {
   @apply bg-role-secondary-container;
 }
