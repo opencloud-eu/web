@@ -61,6 +61,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.63.0 [[#2788](https://github.com/opencloud-eu/web/pull/2788)]
 - chore(deps): update traefik docker tag to v3.7.6 [[#2784](https://github.com/opencloud-eu/web/pull/2784)]
 - chore(deps): update devdependencies (non-major) [[#2781](https://github.com/opencloud-eu/web/pull/2781)]
 - Update devDependencies (non-major) to v4.3.2 [[#2766](https://github.com/opencloud-eu/web/pull/2766)]
