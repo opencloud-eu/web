@@ -10,6 +10,13 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
+### ✅ Tests
+
+- [full-ci] replace cucumber [[#2476](https://github.com/opencloud-eu/web/pull/2476)]
+- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
+- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
+
 ### 🐛 Bug Fixes
 
 - fix: align inline search inputs & a11y [[#2775](https://github.com/opencloud-eu/web/pull/2775)]
@@ -53,12 +60,6 @@
 - feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
 - Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
 - feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
-
-### ✅ Tests
-
-- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
-- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
-- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 📦️ Dependencies
 
