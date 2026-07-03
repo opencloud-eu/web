@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-app-top-bar self-center flex col-[1/4] gap-4 row-2 sm:col-2 sm:row-1 [&_.parent-folder]:text-role-on-chrome"
+    class="oc-app-top-bar self-center flex col-[1/3] row-1 sm:col-2 [&_.parent-folder]:text-role-on-chrome"
   >
     <oc-button
       id="app-top-bar-close"
@@ -13,7 +13,7 @@
       <oc-icon name="arrow-left-s" fill-type="line" />
     </oc-button>
     <div
-      class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
+      class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center bg-role-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
     >
       <div class="open-file-bar flex">
         <resource-list-item
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -110,7 +110,7 @@ import {
   useResourcesStore
 } from '../composables'
 import ResourceListItem from './FilesList/ResourceListItem.vue'
-import { isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
 import { Duration } from 'luxon'
 import { MenuSection } from './ContextActions'
 
@@ -158,8 +158,4 @@ const autoSaveTooltipText = computed(() => {
 })
 
 const space = computed(() => getMatchingSpace(resource))
-
-const isPathDisplayed = computed(() => {
-  return !isPublicSpaceResource(unref(space))
-})
 </script>
