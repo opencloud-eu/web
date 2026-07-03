@@ -4,7 +4,7 @@
     class="sticky my-1 grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto] grid-cols-[auto_9fr_1fr] sm:grid-cols-[1fr_auto_1fr]"
     :aria-label="$gettext('Top bar')"
   >
-    <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1">
+    <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1 oc-logo-wrapper">
       <sidebar-nav-mobile class="pt-1" />
       <router-link v-if="!hideLogo" :to="homeLink">
         <picture>
@@ -145,8 +145,12 @@ const feedbackLinkOptions = computed(() => {
     @apply hidden;
   }
 
+  #oc-topbar:has(> :last-child:nth-child(4)) .oc-logo-wrapper {
+    @apply hidden;
+  }
+
   #oc-topbar:has(> :last-child:nth-child(4)) {
-    @apply grid-cols-[auto_9fr_1fr];
+    @apply grid-cols-[auto_9fr_1fr] gap-0;
   }
 
   #oc-topbar .oc-logo-image {
