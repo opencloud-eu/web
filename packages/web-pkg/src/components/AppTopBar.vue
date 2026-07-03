@@ -1,9 +1,19 @@
 <template>
   <div
-    class="oc-app-top-bar self-center flex col-[1/4] row-2 sm:col-2 sm:row-1 [&_.parent-folder]:text-role-on-chrome"
+    class="oc-app-top-bar self-center flex col-[1/4] gap-4 row-2 sm:col-2 sm:row-1 [&_.parent-folder]:text-role-on-chrome"
   >
+    <oc-button
+      id="app-top-bar-close"
+      appearance="raw-inverse"
+      color-role="chrome"
+      class="p-1"
+      :aria-label="$gettext('Close')"
+      @click="$emit('close')"
+    >
+      <oc-icon name="arrow-left-s" fill-type="line" />
+    </oc-button>
     <div
-      class="pl-4 pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome border border-role-on-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
+      class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center justify-between bg-role-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
     >
       <div class="open-file-bar flex">
         <resource-list-item
@@ -14,11 +24,6 @@
           :is-extension-displayed="areFileExtensionsShown"
           :path-prefix="getPathPrefix(resource)"
           :resource="resource"
-          :parent-folder-name="getParentFolderName(resource)"
-          :parent-folder-link-icon-additional-attributes="
-            getParentFolderLinkIconAdditionalAttributes(resource)
-          "
-          :is-path-displayed="isPathDisplayed"
           :is-favorite-displayed="false"
           :is-resource-clickable="false"
         />
@@ -87,16 +92,6 @@
             color-role="chrome"
           />
         </template>
-        <oc-button
-          id="app-top-bar-close"
-          appearance="raw-inverse"
-          color-role="chrome"
-          class="p-1"
-          :aria-label="$gettext('Close')"
-          @click="$emit('close')"
-        >
-          <oc-icon name="close" />
-        </oc-button>
       </div>
     </div>
   </div>

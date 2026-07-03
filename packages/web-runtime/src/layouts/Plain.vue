@@ -38,9 +38,7 @@ const backgroundImgStyle = computed(() => {
   return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
 })
 const emblemSrc = computed(() => {
-  return unref(currentTheme).isDark
-    ? '/packages/design-system/src/assets/images/icon-lilac.svg'
-    : '/packages/design-system/src/assets/images/icon-petrol.svg'
+  return unref(currentTheme).isDark ? '/images/icon-lilac.svg' : '/images/icon-petrol.svg'
 })
 
 const pathIsRoot = computed(() => {
