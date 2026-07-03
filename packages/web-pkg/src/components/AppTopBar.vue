@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-app-top-bar self-center flex gap-4 col-[1/3] row-1 sm:col-2 [&_.parent-folder]:text-role-on-chrome"
+    class="oc-app-top-bar self-center flex col-[1/3] row-1 sm:col-2 [&_.parent-folder]:text-role-on-chrome"
   >
     <oc-button
       id="app-top-bar-close"
@@ -19,7 +19,7 @@
         <resource-list-item
           v-if="resource"
           id="app-top-bar-resource"
-          class="[&_.oc-resource-name]:max-w-60 xs:[&_.oc-resource-name]:max-w-full sm:[&_.oc-resource-name]:max-w-20 md:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
+          class="[&_.oc-resource-name]:max-w-20 sm:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
           :is-thumbnail-displayed="false"
           :is-extension-displayed="areFileExtensionsShown"
           :path-prefix="getPathPrefix(resource)"
