@@ -39,7 +39,7 @@ const getFiles = (
   return files
 }
 
-export const dragDropFiles = async (
+export const dragDropFolder = async (
   page: Page,
   resources: ResourceInput[],
   targetSelector: string
