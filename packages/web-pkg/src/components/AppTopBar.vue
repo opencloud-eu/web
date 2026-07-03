@@ -22,13 +22,48 @@
           class="[&_.oc-resource-name]:max-w-20 sm:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
           :is-thumbnail-displayed="false"
           :is-extension-displayed="areFileExtensionsShown"
-          :path-prefix="getPathPrefix(resource)"
           :resource="resource"
           :is-favorite-displayed="false"
           :is-resource-clickable="false"
         />
       </div>
       <div class="flex">
+        <span
+          v-if="hasAutosave && !isReadOnly"
+          class="flex items-center"
+          data-testid="autosave-indicator"
+        >
+          <oc-icon
+            v-oc-tooltip="autoSaveTooltipText"
+            :accessible-label="autoSaveTooltipText"
+            name="refresh"
+            color="var(--oc-role-on-chrome)"
+            class="ox-p-xs mx-1"
+          />
+        </span>
+        <template v-if="mainActions.length && resource">
+          <context-action-menu
+            :menu-sections="[
+              {
+                name: 'main-actions',
+                items: mainActions
+                  .filter((action) => action.isVisible())
+                  .map((action) => {
+                    return {
+                      ...action,
+                      class: 'p-1 text-role-on-chrome [&_svg]:!fill-role-on-chrome',
+                      hideLabel: true
+                    }
+                  })
+              }
+            ]"
+            :action-options="{
+              resources: [resource]
+            }"
+            appearance="raw-inverse"
+            color-role="chrome"
+          />
+        </template>
         <template v-if="dropDownMenuSections.length">
           <oc-button
             id="oc-openfile-contextmenu-trigger"
@@ -55,43 +90,6 @@
             />
           </oc-drop>
         </template>
-        <span
-          v-if="hasAutosave && !isReadOnly"
-          class="flex items-center"
-          data-testid="autosave-indicator"
-        >
-          <oc-icon
-            v-oc-tooltip="autoSaveTooltipText"
-            :accessible-label="autoSaveTooltipText"
-            name="refresh"
-            color="var(--oc-role-on-chrome)"
-            class="ox-p-xs mx-1"
-          />
-        </span>
-        <template v-if="mainActions.length && resource">
-          <context-action-menu
-            :menu-sections="[
-              {
-                name: 'main-actions',
-                items: mainActions
-                  .filter((action) => action.isVisible())
-                  .map((action) => {
-                    return {
-                      ...action,
-                      class:
-                        'p-1 text-role-on-chrome [&_svg]:!fill-role-on-chrome [&:hover:not(:disabled)_svg]:!fill-role-chrome',
-                      hideLabel: true
-                    }
-                  })
-              }
-            ]"
-            :action-options="{
-              resources: [resource]
-            }"
-            appearance="raw-inverse"
-            color-role="chrome"
-          />
-        </template>
       </div>
     </div>
   </div>
@@ -101,14 +99,7 @@
 import { computed } from 'vue'
 import ContextActionMenu from './ContextActions/ContextActionMenu.vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  Action,
-  FileActionOptions,
-  useConfigStore,
-  useFolderLink,
-  useGetMatchingSpace,
-  useResourcesStore
-} from '../composables'
+import { Action, FileActionOptions, useConfigStore, useResourcesStore } from '../composables'
 import ResourceListItem from './FilesList/ResourceListItem.vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { Duration } from 'luxon'
@@ -140,9 +131,6 @@ defineEmits<{ (e: 'close'): void }>()
 const { $gettext, current: currentLanguage } = useGettext()
 const resourcesStore = useResourcesStore()
 const configStore = useConfigStore()
-const { getMatchingSpace } = useGetMatchingSpace()
-const { getParentFolderName, getPathPrefix, getParentFolderLinkIconAdditionalAttributes } =
-  useFolderLink()
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 const contextMenuLabel = computed(() => $gettext('Show context menu'))
@@ -156,6 +144,4 @@ const autoSaveTooltipText = computed(() => {
   )
   return $gettext(`Autosave (every %{ duration })`, { duration: duration.toHuman() })
 })
-
-const space = computed(() => getMatchingSpace(resource))
 </script>
