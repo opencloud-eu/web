@@ -13,13 +13,13 @@
       <oc-icon name="arrow-left-s" fill-type="line" />
     </oc-button>
     <div
-      class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center bg-role-chrome rounded-lg h-10 gap-4 w-full sm:w-fit"
+      class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center bg-role-chrome rounded-lg h-10 gap-2 w-full sm:w-fit"
     >
       <div class="open-file-bar flex">
         <resource-list-item
           v-if="resource"
           id="app-top-bar-resource"
-          class="[&_.oc-resource-name]:max-w-20 sm:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
+          class="[&_.oc-resource-name]:max-w-16 sm:[&_.oc-resource-name]:max-w-60 [&_svg]:!fill-role-on-chrome [&_span]:text-role-on-chrome"
           :is-thumbnail-displayed="false"
           :is-extension-displayed="areFileExtensionsShown"
           :resource="resource"
@@ -30,7 +30,7 @@
       <div class="flex">
         <span
           v-if="hasAutosave && !isReadOnly"
-          class="flex items-center"
+          class="hidden sm:flex items-center"
           data-testid="autosave-indicator"
         >
           <oc-icon
