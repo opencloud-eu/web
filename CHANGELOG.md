@@ -64,6 +64,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency vite to v8.1.3 [[#2801](https://github.com/opencloud-eu/web/pull/2801)]
 - chore(deps): update collabora/code docker tag to v26.04.2.1.1 [[#2790](https://github.com/opencloud-eu/web/pull/2790)]
 - chore(deps): update collabora/code docker tag to v26.04.2.1.1 [[#2787](https://github.com/opencloud-eu/web/pull/2787)]
 - fix(deps): update dependency @sentry/vue to v10.63.0 [[#2788](https://github.com/opencloud-eu/web/pull/2788)]
