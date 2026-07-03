@@ -37,7 +37,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
 
   const extensions = (): Extension[] => {
     return [
-      StarterKit.configure({ link: false }),
+      // See markdown strategy for why `undoRedo: false`.
+      StarterKit.configure({ link: false, undoRedo: false }),
       Link.configure({
         openOnClick: true,
         autolink: true,

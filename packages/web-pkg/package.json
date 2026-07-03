@@ -49,11 +49,13 @@
   "dependencies": {
     "@casl/ability": "^7.0.0",
     "@casl/vue": "^3.0.0",
+    "@hocuspocus/provider": "^4.0.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
     "@sentry/vue": "^10.46.0",
     "@tiptap/core": "^3.20.4",
+    "@tiptap/extension-collaboration": "^3.20.4",
     "@tiptap/extension-document": "^3.20.4",
     "@tiptap/extension-hard-break": "^3.20.4",
     "@tiptap/extension-image": "^3.20.4",
@@ -72,6 +74,7 @@
     "@tiptap/starter-kit": "^3.20.4",
     "@tiptap/suggestion": "^3.20.4",
     "@tiptap/vue-3": "^3.20.4",
+    "@tiptap/y-tiptap": "^3.0.0",
     "@uppy/core": "^5.2.0",
     "@uppy/tus": "^5.1.1",
     "@uppy/utils": "^7.2.0",
@@ -92,16 +95,20 @@
     "password-sheriff": "^2.0.0",
     "pinia": "^3.0.4",
     "qs": "^6.15.0",
+    "semver": "^7.8.0",
     "uuid": "^14.0.0",
     "vue-concurrency": "^5.0.3",
     "vue-router": "^5.0.4",
     "vue3-gettext": "4.0.1",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:^",
     "@types/lodash-es": "4.17.12",
     "@types/node": "^25.5.0",
+    "@types/semver": "^7.7.0",
     "@vitest/web-worker": "^4.1.2",
     "vite-plugin-node-polyfills": "0.28.0"
   }
