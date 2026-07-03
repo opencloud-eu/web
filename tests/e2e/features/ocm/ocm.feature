@@ -9,7 +9,7 @@ Feature: federation management
     And "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name         |
       | folderPublic |
     And "Alice" uploads the following local file into personal space using API
@@ -38,7 +38,7 @@ Feature: federation management
       | user         | email             |
       | Brian Murphy | brian@example.org |
     And "Alice" opens the "files" app
-    And "Alice" shares the following resource using the sidebar panel
+    And "Alice" shares the following resources using the sidebar panel
       | resource       | recipient | type | role     | resourceType | shareType |
       | folderPublic   | Brian     | user | Can edit | folder       | external  |
       | sampleGif.gif  | Brian     | user | Can edit | file         | external  |
@@ -63,7 +63,7 @@ Feature: federation management
       | folderPublic   | folder |
       | sampleGif.gif  | file   |
       | testavatar.jpg | file   |
-    When "Brian" uploads the following resources
+    When "Brian" uploads the following resource
       | resource       | to           |
       | testavatar.png | folderPublic |
     And "Brian" opens folder "folderPublic"

@@ -2,14 +2,14 @@ Feature: web can be navigated through urls
 
 
   Scenario: navigate web directly through urls
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name   |
       | FOLDER |
     And "Alice" creates the following files into personal space using API
@@ -26,7 +26,7 @@ Feature: web can be navigated through urls
       | spaceTextfile.txt | This is test file. Cheers |
     And "Alice" logs in
     When "Alice" navigates to "versions" details panel of file "lorem.txt" of space "personal" through the URL
-    Then "Alice" restores following resources version
+    Then "Alice" restores following resource version
       | resource  | to | version | openDetailsPanel |
       | lorem.txt | /  | 1       | false            |
     When "Alice" navigates to "sharing" details panel of file "lorem.txt" of space "personal" through the URL

@@ -14,7 +14,7 @@ Feature: Upload large resources
       | largefile.txt |
     And "Alice" pauses the file upload
     And "Alice" cancels the file upload
-    Then following resources should not be displayed in the files list for user "Alice"
+    Then following resource should not be displayed in the files list for user "Alice"
       | resource      |
       | largefile.txt |
     When "Alice" starts uploading the following large resources from the temp upload directory
@@ -22,7 +22,7 @@ Feature: Upload large resources
       | largefile.txt |
     And "Alice" pauses the file upload
     And "Alice" resumes the file upload
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource      |
       | largefile.txt |
     And "Alice" logs out

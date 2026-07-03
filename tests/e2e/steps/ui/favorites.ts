@@ -13,7 +13,7 @@ When(
 )
 
 When(
-  '{string} removes the following resources from favorites using {string}',
+  '{string} removes the following resource(s) from favorites using {string}',
   async (
     { world }: { world: World },
     stepUser: string,

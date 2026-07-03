@@ -14,15 +14,15 @@ Feature: access breadcrumb
       | parent                         | folder |
       | parent/folder%2Fwith%2FSlashes | folder |
     And "Alice" opens folder "parent/folder%2Fwith%2FSlashes"
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource               | type   |
       | 'single-double quotes" | folder |
     And "Alice" opens folder "\'single-double quotes\""
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource              | type   |
       | "inner" double quotes | folder |
     And "Alice" opens folder "\"inner\" double quotes"
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource   | type   |
       | sub-folder | folder |
     And "Alice" opens folder "sub-folder"

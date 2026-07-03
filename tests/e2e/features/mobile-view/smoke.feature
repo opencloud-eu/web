@@ -5,10 +5,10 @@ Feature: Mobile device test
       | id    |
       | Alice |
       | Brian |
-    And "Admin" creates following groups using API
+    And "Admin" creates following group using API
       | id    |
       | sales |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     
@@ -27,7 +27,7 @@ Feature: Mobile device test
       | resource   |
       | simple.pdf |
     Then "Alice" is in a pdf-viewer
-    And "Alice" downloads the following resources using the preview topbar
+    And "Alice" downloads the following resource using the preview topbar
       | resource   | type |
       | simple.pdf | file |
     And "Alice" closes the file viewer
@@ -35,7 +35,7 @@ Feature: Mobile device test
       | resource       |
       | testavatar.png |
     Then "Alice" is in a media-viewer
-    And "Alice" downloads the following resources using the preview topbar
+    And "Alice" downloads the following resource using the preview topbar
       | resource       | type |
       | testavatar.png | file |
     And "Alice" closes the file viewer

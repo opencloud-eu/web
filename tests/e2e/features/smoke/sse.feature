@@ -26,7 +26,7 @@ Feature: server sent events
 
 
   Background:
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
@@ -34,7 +34,7 @@ Feature: server sent events
   
   @webkit-skip
   Scenario: space sse events
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Brian" logs in
@@ -46,7 +46,7 @@ Feature: server sent events
       | Marketing | marketing |
 
     # space-member-added
-    When "Alice" adds the following members to the space "Marketing" using API
+    When "Alice" adds the following member to the space "Marketing" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |
     Then "Alice" should get "space-member-added" SSE event
@@ -61,14 +61,14 @@ Feature: server sent events
       | space-folder |
     Then "Alice" should get "folder-created" SSE event
     And "Brian" should get "folder-created" SSE event
-    And following resources should be displayed in the files list for user "Brian"
+    And following resource should be displayed in the files list for user "Brian"
       | resource     |
       | space-folder |
     And "Brian" should not be able to edit folder "space-folder"
 
     # space-share-updated
     When "Alice" navigates to the project space "marketing"
-    And "Alice" changes the roles of the following users in the project space
+    And "Alice" changes the roles of the following user in the project space
       | user  | role     |
       | Brian | Can edit |
     Then "Alice" should get "space-share-updated" SSE event
@@ -121,7 +121,7 @@ Feature: server sent events
     # space-member-removed
     When "Brian" navigates to the projects space page
     And "Alice" navigates to the project space "marketing"
-    And "Alice" removes access to following users from the project space
+    And "Alice" removes access to following user from the project space
       | user  |
       | Brian |
     Then "Alice" should get "space-member-removed" SSE event
@@ -130,7 +130,7 @@ Feature: server sent events
 
 
     # space-disabled
-    When "Alice" adds the following members to the space "Marketing" using API
+    When "Alice" adds the following member to the space "Marketing" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |
     And "Alice" navigates to the projects space page
@@ -199,13 +199,13 @@ Feature: server sent events
 
   @webkit-skip
   Scenario: sse events on file operations
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following project space using API
       | name      | id        |
       | Marketing | marketing |
-    And "Alice" adds the following members to the space "Marketing" using API
+    And "Alice" adds the following member to the space "Marketing" using API
       | user  | role     | shareType |
       | Brian | Can edit | user      |
     And "Alice" creates the following folder in space "Marketing" using API
@@ -217,25 +217,25 @@ Feature: server sent events
     And "Brian" navigates to the project space "marketing"
 
     # postprocessing-finished - upload file
-    When "Brian" uploads the following resources
+    When "Brian" uploads the following resource
       | resource   |
       | simple.pdf |
     Then "Brian" should get "postprocessing-finished" SSE event
     And "Alice" should get "postprocessing-finished" SSE event
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource   |
       | simple.pdf |
 
     # postprocessing-finished - create file
     # file-touched -create file
-    When "Alice" creates the following resources
+    When "Alice" creates the following resource
       | resource    | type    | content   |
       | example.txt | txtFile | some text |
     Then "Alice" should get "postprocessing-finished" SSE event
     And "Alice" should get "file-touched" SSE event
     And "Brian" should get "postprocessing-finished" SSE event
     And "Brian" should get "file-touched" SSE event
-    And following resources should be displayed in the files list for user "Brian"
+    And following resource should be displayed in the files list for user "Brian"
       | resource    |
       | example.txt |
 
@@ -245,7 +245,7 @@ Feature: server sent events
       | simple.pdf | simple-renamed.pdf |
     Then "Brian" should get "item-renamed" SSE event
     And "Alice" should get "item-renamed" SSE event
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource           |
       | simple-renamed.pdf |
 
@@ -255,19 +255,19 @@ Feature: server sent events
       | example.txt |
     Then "Alice" should get "item-trashed" SSE event
     And "Brian" should get "item-trashed" SSE event
-    And following resources should not be displayed in the files list for user "Brian"
+    And following resource should not be displayed in the files list for user "Brian"
       | resource    |
       | example.txt |
 
     # item-restored
     When "Brian" navigates to the trashbin
     When "Brian" opens trashbin of the project space "marketing"
-    And "Brian" restores the following resources from trashbin
+    And "Brian" restores the following resource from trashbin
       | resource    |
       | example.txt |
     Then "Brian" should get "item-restored" SSE event
     And "Alice" should get "item-restored" SSE event
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource    |
       | example.txt |
 
@@ -279,7 +279,7 @@ Feature: server sent events
       | simple-renamed.pdf | space-folder |
     Then "Alice" should get "item-moved" SSE event
     And "Brian" should get "item-moved" SSE event
-    And following resources should be displayed in the files list for user "Brian"
+    And following resource should be displayed in the files list for user "Brian"
       | resource           |
       | simple-renamed.pdf |
 

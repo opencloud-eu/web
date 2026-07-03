@@ -13,7 +13,7 @@ Feature: Integrate with online office suites using Euro-Office online office
 
 
   Scenario: create a Microsoft Word file with Euro-Office
-    When "Alice" creates the following resources
+    When "Alice" creates the following resource
       | resource           | type           | content                |
       | MicrosoftWord.docx | Microsoft Word | Microsoft Word Content |
     And "Alice" creates a public link of following resource using the sidebar panel
@@ -76,7 +76,7 @@ Feature: Integrate with online office suites using Euro-Office online office
 
 
   Scenario: public creates a Microsoft Word file with Euro-Office
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following project space using API
@@ -96,14 +96,14 @@ Feature: Integrate with online office suites using Euro-Office online office
     # public create .docx file using spaceLink
     When "Anonymous" opens the public link "spaceLink"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" creates the following resources
+    And "Anonymous" creates the following resource
       | resource            | type           | content                                                      |
       | usingSpaceLink.docx | Microsoft Word | public can create files in the project space using spaceLink |
 
     # public create .docx file using folderLink
     When "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" creates the following resources
+    And "Anonymous" creates the following resource
       | resource             | type           | content                |
       | usingFolderLink.docx | Microsoft Word | Microsoft Word Content |
 
@@ -131,7 +131,7 @@ Feature: Integrate with online office suites using Euro-Office online office
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Euro-Office"
     And "Alice" closes the file viewer
 
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource      |
       | Template.docx |
 
@@ -139,7 +139,7 @@ Feature: Integrate with online office suites using Euro-Office online office
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Euro-Office"
 
     When "Alice" closes the file viewer
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource          |
       | Template (1).docx |
 

@@ -14,7 +14,7 @@ Feature: link
       | name                   |
       | folderPublic           |
       | folderPublic/SubFolder |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile             | content     |
       | folderPublic/lorem.txt | lorem ipsum |
 
@@ -27,7 +27,7 @@ Feature: link
     And "Alice" sets the expiration date of the public link named "myPublicLink" of resource "folderPublic" to "+5 days"
     When "Anonymous" opens the public link "myPublicLink"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" drop uploads following resources
+    And "Anonymous" drop uploads following resource
       | resource     |
       | textfile.txt |
 
@@ -35,7 +35,7 @@ Feature: link
     When "Brian" logs in
     And "Brian" opens the public link "myPublicLink"
     And "Brian" unlocks the public link with password "%public%"
-    And "Brian" drop uploads following resources
+    And "Brian" drop uploads following resource
       | resource   |
       | simple.pdf |
 
@@ -55,7 +55,7 @@ Feature: link
       | simple.pdf   |
       | SubFolder    |
       | lorem.txt    |
-    And "Brian" deletes the following resources from public link using sidebar panel
+    And "Brian" deletes the following resource from public link using sidebar panel
       | resource   |
       | simple.pdf |
     And "Brian" logs out
@@ -73,7 +73,7 @@ Feature: link
       | resource       | type   |
       | myfolder       | folder |
       | myfolder/child | folder |
-    And "Anonymous" uploads the following resources in public link page
+    And "Anonymous" uploads the following resource in public link page
       | resource | type   |
       | PARENT   | folder |
     And "Anonymous" moves the following resource using drag-drop
@@ -96,12 +96,12 @@ Feature: link
 
 
   Scenario: public link for folder and file (by authenticated user)
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Brian |
       | Carol |
     And "Alice" logs in
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name         |
       | folderPublic |
     And "Alice" creates the following files into personal space using API
@@ -113,7 +113,7 @@ Feature: link
       | simple.pdf     | simple.pdf     |
       | testavatar.jpg | testavatar.jpg |
       | test_video.mp4 | test_video.mp4 |
-    And "Alice" shares the following resource using API
+    And "Alice" shares the following resources using API
       | resource       | recipient | type | role     |
       | folderPublic   | Brian     | user | Can edit |
       | simple.pdf     | Brian     | user | Can edit |
@@ -153,7 +153,7 @@ Feature: link
     And "Brian" downloads the following public link resources using the sidebar panel
       | resource         | type |
       | shareToBrian.txt | file |
-    And "Brian" uploads the following resources
+    And "Brian" uploads the following resource
       | resource  |
       | lorem.txt |
     When "Brian" opens the public link "textLink"
@@ -256,7 +256,7 @@ Feature: link
 
   Scenario: add banned password for public link
     When "Alice" logs in
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile | content   |
       | lorem.txt  | some text |
 
@@ -287,10 +287,10 @@ Feature: link
 
   Scenario: edit password of the public link
     When "Alice" logs in
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name         |
       | folderPublic |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile             | content     |
       | folderPublic/lorem.txt | lorem ipsum |
     And "Alice" opens the "files" app
@@ -311,10 +311,10 @@ Feature: link
 
   Scenario: link indication
     When "Alice" logs in
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name         |
       | folderPublic |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile             | content     |
       | folderPublic/lorem.txt | lorem ipsum |
     And "Alice" opens the "files" app
@@ -329,7 +329,7 @@ Feature: link
     Then "Alice" should see link-indirect indicator on the file "lorem.txt"
 
     And "Alice" navigates to the shared via link page
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource     |
       | folderPublic |
 
@@ -338,18 +338,18 @@ Feature: link
     And "Alice" copies the link "Unnamed link" of resource "folderPublic"
     And "Alice" opens the "%clipboard%" url
     And "Alice" unlocks the public link with password "%public%"
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource  |
       | lorem.txt |
     And "Alice" logs out
 
 
   Scenario: password is triggered when changing public link to writable role
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role  |
       | Alice | Admin |
     When "Alice" logs in
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name         |
       | folderPublic |
     And "Alice" opens the "files" app

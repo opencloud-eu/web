@@ -15,7 +15,7 @@ Feature: Integration with Collabora online office
 
 
   Scenario: create an OpenDocument file with Collabora
-    When "Alice" creates the following resources
+    When "Alice" creates the following resource
       | resource         | type         | content              |
       | OpenDocument.odt | OpenDocument | OpenDocument Content |
     And "Alice" creates a public link of following resource using the sidebar panel
@@ -81,7 +81,7 @@ Feature: Integration with Collabora online office
 
 
   Scenario: public creates a Microsoft Word file with Collabora
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following project space using API
@@ -101,14 +101,14 @@ Feature: Integration with Collabora online office
     # public create .odt file using spaceLink
     When "Anonymous" opens the public link "spaceLink"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" creates the following resources
+    And "Anonymous" creates the following resource
       | resource           | type         | content                                                      |
       | usingSpaceLink.odt | OpenDocument | public can create files in the project space using spaceLink |
 
     # public create .odt file using folderLink
     When "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" creates the following resources
+    And "Anonymous" creates the following resource
       | resource            | type         | content              |
       | usingFolderLink.odt | OpenDocument | OpenDocument Content |
 
@@ -136,7 +136,7 @@ Feature: Integration with Collabora online office
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "CollaboraOnline"
 
     When "Alice" closes the file viewer
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource      |
       | Template.odt  |
 
@@ -144,14 +144,14 @@ Feature: Integration with Collabora online office
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "CollaboraOnline"
 
     When "Alice" closes the file viewer
-    Then following resources should not be displayed in the files list for user "Alice"
+    Then following resource should not be displayed in the files list for user "Alice"
       | resource          |
       | Template (1).docx |
     And "Alice" logs out
 
 
   Scenario: open the file using the context menu
-    Given "Alice" creates the following files into personal space using API
+    Given "Alice" creates the following file into personal space using API
       | pathToFile | content      |
       | new.txt    | test content |
     When "Alice" opens file "new.txt" via "collabora-online" using the context menu

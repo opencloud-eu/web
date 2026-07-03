@@ -8,11 +8,11 @@ Feature: url stability for mobile and desktop client
 
 
   Scenario: open office suite files with Collabora
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
     And "Alice" logs in
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile       | content              |
       | OpenDocument.odt | OpenDocument Content |
 

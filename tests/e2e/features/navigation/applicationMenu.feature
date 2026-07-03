@@ -12,7 +12,7 @@ Feature: Application menu
     And "Alice" enters the text "Hello world" in editor "TextEditor"
     And "Alice" saves the file viewer
     And "Alice" closes the file viewer
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource     |
       | New file.txt |
     And "Alice" logs out

@@ -85,7 +85,7 @@ When(
 )
 
 When(
-  '{string} updates following sharee role(s)',
+  '{string} updates following sharee(s) role(s)',
   async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const shareObject = new objects.applicationFiles.Share({ page })

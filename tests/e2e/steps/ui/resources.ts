@@ -384,7 +384,7 @@ When(
 )
 
 Then(
-  /^following resources (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
+  /^following resources? (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
   async (
     { world }: { world: World },
     actionType: string,
@@ -407,7 +407,7 @@ Then(
 )
 
 Then(
-  /^following resources (should|should not) be displayed in the search list for user "([^"]*)"$/,
+  /^following resources? (should|should not) be displayed in the search list for user "([^"]*)"$/,
   async (
     { world }: { world: World },
     actionType: string,
@@ -1220,7 +1220,7 @@ When(
 )
 
 When(
-  '{string} marks the following resources as favorite using {string}',
+  '{string} marks the following resource(s) as favorite using {string}',
   async (
     { world }: { world: World },
     stepUser: string,

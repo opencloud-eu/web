@@ -8,7 +8,7 @@ Feature: groups management
       | id       |
       | sales    |
       | security |
-    Then "Admin" should see the following group
+    Then "Admin" should see the following groups
       | group    |
       | sales    |
       | security |
@@ -44,7 +44,7 @@ Feature: groups management
     Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" creates following groups using API
+    And "Admin" creates following group using API
       | id    |
       | sales |
     And "Admin" logs in

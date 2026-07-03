@@ -8,7 +8,7 @@ Feature: spaces public link
       | Carol |
       | David |
       | Edith |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     When "Alice" logs in
@@ -18,7 +18,7 @@ Feature: spaces public link
     And "Alice" creates the following folder in space "team" using API
       | name                  |
       | spaceFolder/subFolder |
-    And "Alice" creates the following file in space "team" using API
+    And "Alice" creates the following files in space "team" using API
       | name                                  | content   |
       | spaceFolder/shareToBrian.txt          | some text |
       | spaceFolder/subFolder/shareToBrian.md | readme    |
@@ -109,10 +109,10 @@ Feature: spaces public link
       | subFolder | folder |
 
   Scenario: crud operation to public link for space
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     When "Alice" logs in
@@ -133,13 +133,13 @@ Feature: spaces public link
     And "Anonymous" downloads the following public link resources using the sidebar panel
       | resource    | type |
       | example.txt | file |
-    And "Anonymous" uploads the following resources in public link page
+    And "Anonymous" uploads the following resource in public link page
       | resource      |
       | new-lorem.txt |
     And "Anonymous" renames the following public link resources
       | resource    | as          |
       | example.txt | renamed.txt |
-    And "Anonymous" edits the following resources
+    And "Anonymous" edits the following resource
       | resource    | content     |
       | renamed.txt | new content |
     When "Anonymous" deletes the following resources using the sidebar panel
