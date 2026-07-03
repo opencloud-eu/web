@@ -1,6 +1,6 @@
 <template>
   <div
-    class="oc-app-top-bar self-center flex col-[1/3] row-1 sm:col-2 [&_.parent-folder]:text-role-on-chrome"
+    class="oc-app-top-bar self-center flex gap-4 col-[1/3] row-1 sm:col-2 [&_.parent-folder]:text-role-on-chrome"
   >
     <oc-button
       id="app-top-bar-close"
