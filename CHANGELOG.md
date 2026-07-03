@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: redesign app top bar [[#2797](https://github.com/opencloud-eu/web/pull/2797)]
 - feat(tiptap): make heading toolbar more versatile (turn into) [[#2786](https://github.com/opencloud-eu/web/pull/2786)]
 - feat: add gradient to new fab button [[#2783](https://github.com/opencloud-eu/web/pull/2783)]
 - feat(tiptap): add text alignment controls [[#2778](https://github.com/opencloud-eu/web/pull/2778)]
