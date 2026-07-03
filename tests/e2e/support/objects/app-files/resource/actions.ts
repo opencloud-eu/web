@@ -8,7 +8,7 @@ import { appConfig } from '../../../../playwright.config'
 import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
 import { state } from '../../../../environment/shared'
-import { readFileSync } from 'fs'
+import { lstatSync, readFileSync } from 'fs'
 
 const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -840,6 +840,12 @@ export const dropUploadFiles = async (args: uploadResourceArgs): Promise<void> =
   // waiting to files view
   await expect(page.locator(addNewResourceButton)).not.toHaveAttribute('disabled')
 
+  const isDir = resources.some((resource) => lstatSync(resource.path).isDirectory())
+  const performDrop = (): Promise<void> =>
+    isDir || state.projectName === 'webkit'
+      ? utils.dragDropFolder(page, resources, filesView)
+      : page.locator(filesView).drop({ files: resources.map((resource) => resource.path) })
+
   if (password) {
     const capturedBodies: Buffer[] = []
 
@@ -857,7 +863,7 @@ export const dropUploadFiles = async (args: uploadResourceArgs): Promise<void> =
         ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
     )
 
-    await utils.dragDropFiles(page, resources, filesView)
+    await performDrop()
     await respPromise
 
     await page.unroute('**/dav/spaces/**')
@@ -867,7 +873,7 @@ export const dropUploadFiles = async (args: uploadResourceArgs): Promise<void> =
     )
     expect(encryptedRequest).not.toBeUndefined()
   } else {
-    await utils.dragDropFiles(page, resources, filesView)
+    await performDrop()
   }
 
   await page.locator(uploadInfoCloseButton).click()
