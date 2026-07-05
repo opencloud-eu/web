@@ -9,7 +9,7 @@
       :error-message="errorMessage"
       :fix-message-line="true"
       :selection-range="inputSelectionRange"
-      @keydown.enter.prevent="emit('confirm')"
+      @keydown.enter.prevent="onKeydownEnter"
     />
     <input type="submit" class="hidden" />
   </form>
@@ -23,6 +23,7 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import {
+  isComposingEvent,
   Modal,
   resolveFileNameDuplicate,
   useClientService,
@@ -89,6 +90,13 @@ const errorMessage = computed(() => {
   }
   return undefined
 })
+
+const onKeydownEnter = (event: KeyboardEvent) => {
+  if (isComposingEvent(event)) {
+    return
+  }
+  emit('confirm')
+}
 
 const onConfirm = async () => {
   await callbackFn(unref(newFileName))

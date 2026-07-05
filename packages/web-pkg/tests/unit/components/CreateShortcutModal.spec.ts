@@ -34,6 +34,28 @@ describe('CreateShortcutModal', () => {
       expect(showErrorMessage).toHaveBeenCalled()
     })
   })
+  describe('method "onKeyEnterDrop"', () => {
+    it('handles the event when the drop is open', () => {
+      const { wrapper } = getWrapper()
+      wrapper.vm.onShowDrop()
+      // move the active drop item index out of range to not interact with the stubbed drop
+      wrapper.vm.onKeyUpDrop()
+      const event = new KeyboardEvent('keydown', { key: 'Enter' })
+      const stopPropagation = vi.spyOn(event, 'stopPropagation')
+      wrapper.vm.onKeyEnterDrop(event)
+
+      expect(stopPropagation).toHaveBeenCalled()
+    })
+    it('ignores the event while an IME composition session is active', () => {
+      const { wrapper } = getWrapper()
+      wrapper.vm.onShowDrop()
+      const event = new KeyboardEvent('keydown', { key: 'Enter', isComposing: true })
+      const stopPropagation = vi.spyOn(event, 'stopPropagation')
+      wrapper.vm.onKeyEnterDrop(event)
+
+      expect(stopPropagation).not.toHaveBeenCalled()
+    })
+  })
   describe('method "searchTask"', () => {
     it('should set "searchResult" correctly', async () => {
       const { wrapper } = getWrapper()

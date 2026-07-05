@@ -11,7 +11,7 @@
     required-mark
     @password-challenge-completed="$emit('update:confirmDisabled', false)"
     @password-challenge-failed="$emit('update:confirmDisabled', true)"
-    @keydown.enter.prevent="$emit('confirm')"
+    @keydown.enter.prevent="onKeydownEnter"
     @update:model-value="onInput"
   />
 </template>
@@ -21,6 +21,7 @@ import { defineComponent, ref, unref, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { upperFirst } from 'lodash-es'
 import {
+  isComposingEvent,
   Modal,
   useClientService,
   useMessages,
@@ -53,6 +54,13 @@ export default defineComponent({
     const errorMessage = ref<string>()
 
     emit('update:confirmDisabled', true)
+
+    const onKeydownEnter = (event: KeyboardEvent) => {
+      if (isComposingEvent(event)) {
+        return
+      }
+      emit('confirm')
+    }
 
     const onInput = (value: string) => {
       password.value = value
@@ -97,6 +105,7 @@ export default defineComponent({
     return {
       password,
       onInput,
+      onKeydownEnter,
       errorMessage,
       passwordPolicyService,
       inputPasswordPolicy: passwordPolicyService.getPolicy({ enforcePassword: true }),

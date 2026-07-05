@@ -70,7 +70,7 @@
               :fix-message-line="true"
               :selection-range="inputSelectionRange"
               @update:model-value="inputOnInput"
-              @keydown.enter.prevent="confirm"
+              @keydown.enter.prevent="onInputKeydownEnter"
             />
           </template>
         </div>
@@ -334,6 +334,14 @@ const confirm = () => {
     return
   }
   emit('confirm', unref(userInputValue))
+}
+
+const onInputKeydownEnter = (event: KeyboardEvent) => {
+  // ignore the enter confirming an IME composition (keyCode 229 for Safari)
+  if (event.isComposing || event.keyCode === 229) {
+    return
+  }
+  confirm()
 }
 
 const inputOnInput = (value: string) => {
