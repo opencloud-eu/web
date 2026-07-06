@@ -1,12 +1,13 @@
 <template>
   <div class="no-content-message flex flex-col justify-center items-center text-center">
-    <oc-image
+    <inline-svg
       v-if="imgSrc"
+      :src="imgSrc"
+      class="mb-4 no-content-message-svg-wrapper"
+      :class="{ 'is-light': !currentTheme.isDark }"
       width="120"
       height="120"
-      class="mb-4"
-      :src="imgSrc"
-      :alt="$gettext('No content image')"
+      :aria-label="$gettext('No content image')"
     />
     <oc-icon
       v-if="icon"
@@ -26,7 +27,15 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+import InlineSvg from 'vue-inline-svg'
 import { FillType } from '@opencloud-eu/design-system/helpers'
+import { useThemeStore } from '../composables'
+
+InlineSvg.name = 'inline-svg'
+
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
 const {
   icon = '',
@@ -44,6 +53,10 @@ const {
 @layer components {
   .no-content-message {
     height: 65vh;
+  }
+
+  .no-content-message-svg-wrapper.is-light :deep(.background-splash) {
+    fill: #f2f4f5;
   }
 }
 </style>
