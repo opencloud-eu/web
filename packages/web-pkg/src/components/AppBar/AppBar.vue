@@ -70,7 +70,7 @@
               :aria-label="$gettext('Clear selection')"
               appearance="raw"
               gap-size="small"
-              class="p-1"
+              class="p-1 clear-selection-btn"
               @click="resetSelection"
             >
               <span
