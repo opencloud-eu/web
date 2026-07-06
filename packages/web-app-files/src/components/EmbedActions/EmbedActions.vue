@@ -142,6 +142,7 @@ const emitSelect = (): void => {
       fileName: unref(fileName),
       locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
     })
+    return
   }
 
   // TODO: adjust type to embedModeLocationPickMessageData later (breaking)

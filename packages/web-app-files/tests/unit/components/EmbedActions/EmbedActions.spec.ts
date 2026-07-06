@@ -108,6 +108,7 @@ describe('EmbedActions', () => {
           contextRouteQuery: {}
         }
       })
+      expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
     })
   })
 
