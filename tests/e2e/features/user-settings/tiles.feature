@@ -8,13 +8,13 @@ Feature: Tiles
       | id    |
       | Alice |
     And "Alice" logs in
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource    | type   |
       | tile_folder | folder |
     And "Alice" switches to the "tiles" view
     And "Alice" sees the resources displayed as "tiles"
     And "Alice" opens folder "tile_folder"
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource     | type   |
       | tile_folder2 | folder |
     And "Alice" sees the resources displayed as "tiles"

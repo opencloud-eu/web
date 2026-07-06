@@ -6,7 +6,7 @@ Feature: Embed mode with delegated authentication
 
 
   Scenario: embed mode stays active after delegated authentication
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
     When "Alice" opens the app in embed mode with delegated authentication

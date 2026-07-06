@@ -4,7 +4,7 @@ Feature: Download
 
 
   Background:
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
@@ -15,13 +15,13 @@ Feature: Download
       | name         |
       | folderPublic |
       | emptyFolder  |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile                | content     |
       | folderPublic/new file.txt | lorem ipsum |
     And "Alice" uploads the following local file into personal space using API
       | localFile      | to             |
       | testavatar.jpg | testavatar.jpg |
-    And "Alice" shares the following resource using API
+    And "Alice" shares the following resources using API
       | resource       | recipient | type | role     |
       | folderPublic   | Brian     | user | Can edit |
       | emptyFolder    | Brian     | user | Can edit |
@@ -36,7 +36,7 @@ Feature: Download
     And "Alice" opens the following file in mediaviewer
       | resource       |
       | testavatar.jpg |
-    And "Alice" downloads the following resources using the preview topbar
+    And "Alice" downloads the following resource using the preview topbar
       | resource       | type |
       | testavatar.jpg | file |
     And "Alice" closes the file viewer
@@ -58,7 +58,7 @@ Feature: Download
     And "Brian" opens the following file in mediaviewer
       | resource       |
       | testavatar.jpg |
-    And "Brian" downloads the following resources using the preview topbar
+    And "Brian" downloads the following resource using the preview topbar
       | resource       | type |
       | testavatar.jpg | file |
     And "Brian" logs out

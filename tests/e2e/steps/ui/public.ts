@@ -104,7 +104,7 @@ When(
 )
 
 When(
-  '{string} drop uploads following resources',
+  '{string} drop uploads following resource(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const pageObject = new objects.applicationFiles.page.Public({ page })
@@ -177,7 +177,7 @@ Then(
 )
 
 When(
-  /^"([^"]*)" deletes the following resources from public link using (sidebar panel|batch action)$/,
+  /^"([^"]*)" deletes the following resources? from public link using (sidebar panel|batch action)$/,
   async (
     { world }: { world: World },
     stepUser: string,

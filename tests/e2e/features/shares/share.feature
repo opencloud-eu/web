@@ -9,17 +9,17 @@ Feature: share
   Scenario: folder
     # disabling auto accepting to check accepting share
     Given "Brian" disables auto-accepting using API
-    And "Alice" creates the following folder in personal space using API
+    And "Alice" creates the following folders in personal space using API
       | name               |
       | folder_to_shared   |
       | folder_to_shared_2 |
       | shared_folder      |
     And "Alice" logs in
-    And "Alice" uploads the following resource
+    And "Alice" uploads the following resources
       | resource      | to                 |
       | lorem.txt     | folder_to_shared   |
       | lorem-big.txt | folder_to_shared_2 |
-    When "Alice" shares the following resource using the sidebar panel
+    When "Alice" shares the following resources using the sidebar panel
       | resource           | recipient | type | role     | resourceType |
       | folder_to_shared   | Brian     | user | Can edit | folder       |
       | shared_folder      | Brian     | user | Can edit | folder       |
@@ -29,7 +29,7 @@ Feature: share
     And "Brian" navigates to the shared with me page
     And "Brian" opens folder "folder_to_shared"
     # user should have access to unsynced shares
-    Then following resources should be displayed in the files list for user "Brian"
+    Then following resource should be displayed in the files list for user "Brian"
       | resource  |
       | lorem.txt |
     When "Brian" navigates to the shared with me page
@@ -47,11 +47,11 @@ Feature: share
     And "Brian" renames the following resource
       | resource                   | as            |
       | folder_to_shared/lorem.txt | lorem_new.txt |
-    And "Brian" uploads the following resource
+    And "Brian" uploads the following resources
       | resource        | to                 |
       | simple.pdf      | folder_to_shared   |
       | testavatar.jpeg | folder_to_shared_2 |
-    When "Brian" deletes the following resources using the sidebar panel
+    When "Brian" deletes the following resource using the sidebar panel
       | resource      | from               |
       | lorem-big.txt | folder_to_shared_2 |
     And "Alice" opens the "files" app
@@ -87,7 +87,7 @@ Feature: share
       | resource         | content                   |
       | shareToBrian.txt | new content edited        |
       | shareToBrian.md  | new readme content edited |
-    And "Alice" uploads the following resource
+    And "Alice" uploads the following resources
       | resource        |
       | simple.pdf      |
       | sampleGif.gif   |
@@ -138,7 +138,7 @@ Feature: share
       | resource       | type |
       | test_video.mp4 | file |
     And "Alice" closes the file viewer
-    And "Alice" shares the following resource using the sidebar panel
+    And "Alice" shares the following resources using the sidebar panel
       | resource         | recipient | type | role     | resourceType |
       | shareToBrian.txt | Brian     | user | Can edit | file         |
       | shareToBrian.md  | Brian     | user | Can edit | file         |
@@ -176,7 +176,7 @@ Feature: share
       | simple.pdf |
     And "Brian" closes the file viewer
     And "Alice" navigates to the personal space page
-    And "Alice" removes following sharee
+    And "Alice" removes following sharees
       | resource         | recipient |
       | shareToBrian.txt | Brian     |
       | shareToBrian.md  | Brian     |
@@ -195,7 +195,7 @@ Feature: share
     And "Admin" adds user to the group using API
       | user  | group |
       | Brian | sales |
-    And "Alice" creates the following folder in personal space using API
+    And "Alice" creates the following folders in personal space using API
       | name       |
       | myfolder   |
       | mainFolder |
@@ -204,7 +204,7 @@ Feature: share
       | new.txt              | some content |
       | mainFolder/lorem.txt | lorem epsum  |
     And "Alice" logs in
-    When "Alice" shares the following resource using the sidebar panel
+    When "Alice" shares the following resources using the sidebar panel
       | resource   | recipient | type  | role     | resourceType | expirationDate |
       | new.txt    | Brian     | user  | Can edit | file         | +5 days        |
       | myfolder   | sales     | group | Can view | folder       | +10 days       |
@@ -232,17 +232,17 @@ Feature: share
 
 
   Scenario: receive two shares with same name
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Carol |
     And "Alice" creates the following folder in personal space using API
       | name        |
       | test-folder |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile   | content      |
       | testfile.txt | example text |
     And "Alice" logs in
-    And "Alice" shares the following resource using the sidebar panel
+    And "Alice" shares the following resources using the sidebar panel
       | resource     | recipient | type | role     |
       | testfile.txt | Brian     | user | Can view |
       | test-folder  | Brian     | user | Can view |
@@ -250,11 +250,11 @@ Feature: share
     And "Carol" creates the following folder in personal space using API
       | name        |
       | test-folder |
-    And "Carol" creates the following files into personal space using API
+    And "Carol" creates the following file into personal space using API
       | pathToFile   | content      |
       | testfile.txt | example text |
     And "Carol" logs in
-    And "Carol" shares the following resource using the sidebar panel
+    And "Carol" shares the following resources using the sidebar panel
       | resource     | recipient | type | role     |
       | testfile.txt | Brian     | user | Can view |
       | test-folder  | Brian     | user | Can view |
@@ -271,7 +271,7 @@ Feature: share
 
 
   Scenario: check file with same name but different paths are displayed correctly in shared with others page
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Carol |
     And "Alice" creates the following folder in personal space using API
@@ -281,7 +281,7 @@ Feature: share
       | pathToFile               | content      |
       | testfile.txt             | example text |
       | test-folder/testfile.txt | some text    |
-    And "Alice" shares the following resource using API
+    And "Alice" shares the following resources using API
       | resource                 | recipient | type | role     |
       | testfile.txt             | Brian     | user | Can edit |
       | test-folder/testfile.txt | Brian     | user | Can edit |
@@ -295,7 +295,7 @@ Feature: share
 
 
   Scenario: share indication
-    When "Alice" creates the following folders in personal space using API
+    When "Alice" creates the following folder in personal space using API
       | name                  |
       | shareFolder/subFolder |
     And "Alice" shares the following resource using API

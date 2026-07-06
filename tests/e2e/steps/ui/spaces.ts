@@ -173,7 +173,7 @@ When(
 )
 
 When(
-  '{string} removes access to following users from the project space',
+  '{string} removes access to following user(s) from the project space',
   async function (
     { world }: { world: World },
     stepUser: string,
@@ -209,7 +209,7 @@ Then(
 )
 
 When(
-  '{string} changes the roles of the following users in the project space',
+  '{string} changes the roles of the following user(s) in the project space',
   async function (
     { world }: { world: World },
     stepUser: string,

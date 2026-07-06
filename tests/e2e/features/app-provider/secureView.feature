@@ -23,7 +23,7 @@ Feature: Secure view
       | simple.pdf      | shared folder/simple.pdf      |
       | testavatar.jpeg | shared folder/testavatar.jpeg |
       | lorem.txt       | shared folder/lorem.txt       |
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource           | type         | content                 |
       | secureDocument.odt | OpenDocument | very important document |
 
@@ -70,7 +70,7 @@ Feature: Secure view
       | simple.pdf      | shared folder/secure.pdf       |
       | testavatar.jpeg | shared folder/securePhoto.jpeg |
       | lorem.txt       | shared folder/secureFile.txt   |
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource           | type         | content                 |
       | secureDocument.odt | OpenDocument | very important document |
     And "Alice" shares the following resources using the sidebar panel

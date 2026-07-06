@@ -8,7 +8,7 @@ Feature: download space
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
@@ -23,7 +23,7 @@ Feature: download space
       | spaceFolder/lorem.txt | space team |
     And "Alice" navigates to the project space "team.1"
     When "Alice" downloads the space "team"
-    And "Alice" adds following users to the project space
+    And "Alice" adds following user to the project space
       | user     | role     | kind  |
       | Brian    | Can edit | user  |
     And "Alice" logs out

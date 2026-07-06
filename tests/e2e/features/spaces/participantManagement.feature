@@ -8,7 +8,7 @@ Feature: spaces participant management
       | Carol |
       | David |
       | Edith |
-    And "Admin" creates following group using API
+    And "Admin" creates following groups using API
       | id       |
       | sales    |
       | security |
@@ -16,7 +16,7 @@ Feature: spaces participant management
       | user  | group    |
       | David | sales    |
       | Edith | security |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
@@ -32,10 +32,10 @@ Feature: spaces participant management
       | security | Can edit | group |
     When "Brian" logs in
     And "Brian" navigates to the project space "team.1"
-    And "Brian" creates the following resources
+    And "Brian" creates the following resource
       | resource | type   |
       | parent   | folder |
-    And "Brian" uploads the following resources
+    And "Brian" uploads the following resource
       | resource  | to     |
       | lorem.txt | parent |
     When "David" logs in
@@ -44,10 +44,10 @@ Feature: spaces participant management
     And "David" logs out
     When "Edith" logs in
     And "Edith" navigates to the project space "team.1"
-    And "Edith" creates the following resources
+    And "Edith" creates the following resource
       | resource | type   |
       | edith    | folder |
-    And "Edith" uploads the following resources
+    And "Edith" uploads the following resource
       | resource  | to    |
       | lorem.txt | edith |
     And "Edith" logs out
@@ -59,13 +59,13 @@ Feature: spaces participant management
       | parent   | Can edit | %public% |
     And "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" uploads the following resources in public link page
+    And "Anonymous" uploads the following resource in public link page
       | resource     |
       | textfile.txt |
-    And "Anonymous" deletes the following resources from public link using sidebar panel
+    And "Anonymous" deletes the following resource from public link using sidebar panel
       | resource  | from |
       | lorem.txt |      |
-    When "Brian" deletes the following resources using the sidebar panel
+    When "Brian" deletes the following resource using the sidebar panel
       | resource     | from   |
       | textfile.txt | parent |
     When "Carol" navigates to the trashbin
@@ -87,12 +87,12 @@ Feature: spaces participant management
       | resource            |
       | parent/textfile.txt |
     And "Alice" navigates to the project space "team.1"
-    And "Alice" removes access to following users from the project space
+    And "Alice" removes access to following user from the project space
       | user  |
       | Brian |
     Then "Brian" should not see space "team.1"
     And "Brian" logs out
-    When "Alice" changes the roles of the following users in the project space
+    When "Alice" changes the roles of the following user in the project space
       | user  | role       |
       | Carol | Can manage |
     And "Carol" navigates to the trashbin

@@ -7,10 +7,10 @@ Feature: Users can create shortcuts for resources and sites
       | Brian |
 
   Scenario: shortcut
-    When "Alice" creates the following folders in personal space using API
+    When "Alice" creates the following folder in personal space using API
       | name |
       | docs |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile      | content           |
       | docs/notice.txt | important content |
     And "Alice" uploads the following local file into personal space using API
@@ -33,7 +33,7 @@ Feature: Users can create shortcuts for resources and sites
       | docs                       |                | folder  |
       | https://opencloud.eu/news/ | companyNews    | website |
 
-    And "Alice" downloads the following resources using the sidebar panel
+    And "Alice" downloads the following resource using the sidebar panel
       | resource           | type |
       | important file.url | file |
 
@@ -46,7 +46,7 @@ Feature: Users can create shortcuts for resources and sites
 
     # create a shortcut to the shared file
     When "Brian" logs in
-    And "Brian" creates a shortcut for the following resources
+    And "Brian" creates a shortcut for the following resource
       | resource       | name | type |
       | testavatar.jpg | logo | file |
     And "Brian" opens a shortcut "logo.url"
@@ -55,7 +55,7 @@ Feature: Users can create shortcuts for resources and sites
 
     # create a shortcut to the public link
     When "Brian" opens the "files" app
-    And "Brian" creates a shortcut for the following resources
+    And "Brian" creates a shortcut for the following resource
       | resource     | name             | type        |
       | myPublicLink | linkToNoticeFile | public link |
     And "Brian" opens a shortcut "linkToNoticeFile.url"

@@ -3,19 +3,19 @@ Feature: Favorites
   I want to mark resources as favorites and find them in the favorites section
 
   Background:
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
 
   Scenario: mark resources as favorites
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following project space using API
       | name         | id           |
       | service-team | service-team |
-    And "Alice" adds the following members to the space "service-team" using API
+    And "Alice" adds the following member to the space "service-team" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |
     And "Alice" creates the following folder in personal space using API
@@ -36,18 +36,18 @@ Feature: Favorites
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
     And "Brian" opens folder "shared"
-    When "Brian" marks the following resources as favorite using "context menu"
+    When "Brian" marks the following resource as favorite using "context menu"
       | resource        |
       | testavatar.jpg  |
     And "Brian" navigates to the personal space page
-    And "Brian" marks the following resources as favorite using "sidebar panel"
+    And "Brian" marks the following resource as favorite using "sidebar panel"
       | resource   |
       | image.png  |
     And "Brian" opens the following file in mediaviewer
       | resource  |
       | video.mp4 |
     And "Brian" is in a media-viewer
-    And "Brian" marks the following resources as favorite using "preview"
+    And "Brian" marks the following resource as favorite using "preview"
       | resource  |
       | video.mp4 |
     And "Brian" closes the file viewer
@@ -57,10 +57,10 @@ Feature: Favorites
       | testavatar.jpg |
       | image.png      |
       | video.mp4      |
-    And "Brian" removes the following resources from favorites using "context menu"
+    And "Brian" removes the following resource from favorites using "context menu"
       | resource  |
       | image.png |
-    And following resources should not be displayed in the files list for user "Brian"
+    And following resource should not be displayed in the files list for user "Brian"
       | resource       |
       | image.png      |
     And "Brian" logs out

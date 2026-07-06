@@ -16,7 +16,7 @@ Feature: Search
       | localFile         | to                |
       | new-lorem-big.txt | new-lorem-big.txt |
     And "Brian" logs in
-    And "Brian" shares the following resource using the sidebar panel
+    And "Brian" shares the following resources using the sidebar panel
       | resource             | recipient | type | role     | resourceType |
       | new_share_from_brian | Alice     | user | Can view | folder       |
       | new-lorem-big.txt    | Alice     | user | Can view | file         |
@@ -31,7 +31,7 @@ Feature: Search
       | FolDer/child-one/child-two | folder |
       | strängéनेपालीName          | folder |
     And "Alice" enables the option to display the hidden file
-    And "Alice" uploads the following resources
+    And "Alice" uploads the following resource
       | resource         |
       | .hidden-file.txt |
 
@@ -49,7 +49,7 @@ Feature: Search
 
     # search for hidden file
     When "Alice" searches "hidden" using the global search and the "all files" filter
-    Then following resources should be displayed in the search list for user "Alice"
+    Then following resource should be displayed in the search list for user "Alice"
       | resource         |
       | .hidden-file.txt |
     But following resources should not be displayed in the search list for user "Alice"
@@ -86,7 +86,7 @@ Feature: Search
     And "Alice" opens the "files" app
 
     # search renamed resources
-    When "Alice" renames the following resource
+    When "Alice" renames the following resources
       | resource | as            |
       | folder   | renamedFolder |
       | FolDer   | renamedFolDer |
@@ -112,7 +112,7 @@ Feature: Search
       | resource          | from |
       | strängéनेपालीName |      |
     And "Alice" searches "forDeleting" using the global search and the "all files" filter
-    Then following resources should not be displayed in the search list for user "Alice"
+    Then following resource should not be displayed in the search list for user "Alice"
       | resource          |
       | strängéनेपालीName |
 
@@ -120,10 +120,10 @@ Feature: Search
 
 
   Scenario: Search using "current folder" filter
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name                 |
       | mainFolder/subFolder |
     And "Alice" creates the following files into personal space using API
@@ -145,17 +145,17 @@ Feature: Search
       | resource                                  |
       | mainFolder/exampleInsideTheMainFolder.txt |
       | …/subFolder/exampleInsideTheSubFolder.txt |
-    But following resources should not be displayed in the search list for user "Alice"
+    But following resource should not be displayed in the search list for user "Alice"
       | resource                          |
       | exampleInsideThePersonalSpace.txt |
     And "Alice" logs out
 
 
   Scenario: Search using mediaType filter
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name      |
       | mediaTest |
     And "Alice" uploads the following local file into personal space using API
@@ -171,22 +171,22 @@ Feature: Search
     And "Alice" searches "mediaTest" using the global search and the "all files" filter and presses enter
     And "Alice" enables the option to search title only
     And "Alice" selects mediaType "Document" from the search result filter chip
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource      |
       | mediaTest.txt |
     And "Alice" clears mediaType filter
     When "Alice" selects mediaType "PDF" from the search result filter chip
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource      |
       | mediaTest.pdf |
     And "Alice" clears mediaType filter
     When "Alice" selects mediaType "Audio" from the search result filter chip
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource      |
       | mediaTest.mp3 |
     And "Alice" clears mediaType filter
     When "Alice" selects mediaType "Archive" from the search result filter chip
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource      |
       | mediaTest.zip |
     And "Alice" clears mediaType filter
@@ -207,10 +207,10 @@ Feature: Search
 
 
   Scenario: Search using lastModified filter
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name       |
       | mainFolder |
     And "Alice" creates the following files with mtime into personal space using API
@@ -233,11 +233,11 @@ Feature: Search
       | resource                 |
       | mainFolder/mediaTest.txt |
       | mainFolder/mediaTest.md  |
-    But following resources should not be displayed in the files list for user "Alice"
+    But following resource should not be displayed in the files list for user "Alice"
       | resource                 |
       | mainFolder/mediaTest.pdf |
     When "Alice" selects lastModified "today" from the search result filter chip
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource                |
       | mainFolder/mediaTest.md |
     But following resources should not be displayed in the files list for user "Alice"

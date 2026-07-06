@@ -5,14 +5,14 @@ Feature: Group actions
   - accepting multiple shares by using a batch action
 
   Scenario: batch share a resource to multiple users and groups
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
       | Carol |
       | David |
       | Edith |
-    And "Admin" creates following group using API
+    And "Admin" creates following groups using API
       | id       |
       | sales    |
       | finance  |
@@ -35,7 +35,7 @@ Feature: Group actions
       | folder4                |
       | folder5                |
       | parentFolder/SubFolder |
-    And "Alice" shares the following resource using API
+    And "Alice" shares the following resources using API
       | resource     | recipient | type | role     |
       | folder1      | Brian     | user | Can edit |
       | folder2      | Brian     | user | Can edit |

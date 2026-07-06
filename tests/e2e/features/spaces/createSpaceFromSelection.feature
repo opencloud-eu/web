@@ -1,14 +1,14 @@
 Feature: create Space shortcut
 
   Scenario: create Space from folder
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
-    And "Alice" creates the following folder in personal space using API
+    And "Alice" creates the following folders in personal space using API
       | name             |
       | spaceFolder      |
       | spaceFolder/test |
@@ -27,10 +27,10 @@ Feature: create Space shortcut
     And "Alice" logs out
 
   Scenario: create space from resources
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in

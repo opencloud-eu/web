@@ -4,17 +4,17 @@ Feature: check files pagination in personal and project spaces
   So that I do not have to scroll deep down
 
   Scenario: pagination in the project space
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
     And "Alice" creates 55 folders in personal space using API
     And "Alice" creates 55 files in personal space using API
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
        | pathToFile           | content                |
        | .hidden-testFile.txt | This is a hidden file. |
     When "Alice" navigates to page "2" of the project space files view
@@ -22,10 +22,10 @@ Feature: check files pagination in personal and project spaces
       | resource        |
       | testfile50.txt |
     And "Alice" closes the file viewer
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource        |
       | testfile50.txt |
-    And following resources should not be displayed in the files list for user "Alice"
+    And following resource should not be displayed in the files list for user "Alice"
       | resource      |
       | testfile1.txt |
     And "Alice" should see the text "111 items with 1 kB in total (56 files including 1 hidden, 55 folders)" at the footer of the page
@@ -45,10 +45,10 @@ Feature: check files pagination in personal and project spaces
       | resource        |
       | testfile50.txt |
     And "Alice" closes the file viewer
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource        |
       | testfile50.txt |
-    And following resources should not be displayed in the files list for user "Alice"
+    And following resource should not be displayed in the files list for user "Alice"
       | resource      |
       | testfile1.txt |
     And "Alice" should see the text "112 items with 12 kB in total (56 files, 56 folders)" at the footer of the page

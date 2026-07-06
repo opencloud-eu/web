@@ -12,7 +12,7 @@ Feature: lock
       | Brian |
       | Carol |
     And "Alice" logs in
-    When "Alice" creates the following resources
+    When "Alice" creates the following resource
       | resource | type         | content      |
       | test.odt | OpenDocument | some content |
     And "Alice" shares the following resource using API

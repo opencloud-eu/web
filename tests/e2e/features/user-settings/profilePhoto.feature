@@ -27,7 +27,7 @@ Feature: profile photo
 
 
   Scenario: profile photo
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
@@ -37,7 +37,7 @@ Feature: profile photo
     And "Alice" creates the following folder in personal space using API
       | name         |
       | sharedFolder |
-    And "Alice" shares the following resource using API
+    And "Alice" shares the following resources using API
       | resource       | recipient | type | role     |
       | sharedFolder   | Brian     | user | Can edit |
       | sharedFolder   | Carol     | user | Can edit |

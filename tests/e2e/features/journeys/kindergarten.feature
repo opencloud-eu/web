@@ -10,7 +10,7 @@ Feature: Kindergarten can use web to organize a day
       | Alice |
       | Brian |
       | Carol |
-    And "Admin" creates following group using API
+    And "Admin" creates following groups using API
       | id       |
       | sales    |
       | security |
@@ -59,7 +59,7 @@ Feature: Kindergarten can use web to organize a day
       | groups/Teddy Bear Daycare/meal plan/data.zip       | Brian     | user  | Can edit | file         |
       | groups/Teddy Bear Daycare/meal plan/data.zip       | Carol     | user  | Can edit | file         |
     # update share
-    And "Alice" updates following sharee role
+    And "Alice" updates following sharees role
       | resource                                           | recipient | type  | role     | resourceType |
       | groups/Pre-Schools Pirates/meal plan               | Carol     | user  | Can view | folder       |
       | groups/Pre-Schools Pirates/meal plan/lorem-big.txt | sales     | group | Can edit | file         |
@@ -68,7 +68,7 @@ Feature: Kindergarten can use web to organize a day
     # Then what do we check for to be confident that the above things done by Alice have worked?
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
-    And "Brian" downloads the following resources using the sidebar panel
+    And "Brian" downloads the following resource using the sidebar panel
       | resource | from      | type |
       | data.zip | meal plan | file |
     # Then what do we check for to be confident that the above things done by Brian have worked?

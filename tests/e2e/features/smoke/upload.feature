@@ -50,7 +50,7 @@ Feature: Upload
 
 
   Scenario: upload folder
-    When "Alice" uploads the following resources
+    When "Alice" uploads the following resource
       | resource | type   |
       | PARENT   | folder |
     # check that folder content exist
@@ -61,11 +61,11 @@ Feature: Upload
     And "Alice" closes the file viewer
     
     # folder upload via drag-n-drop
-    When "Alice" uploads the following resources via drag-n-drop
+    When "Alice" uploads the following resource via drag-n-drop
       | resource |
       | PARENT   |
     And "Alice" opens folder "PARENT/CHILD"
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource  |
       | child.txt |
     And "Alice" logs out
@@ -79,13 +79,13 @@ Feature: Upload
     And "Admin" logs out
 
     And "Alice" opens the "files" app
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource          | type    | content             |
       | new-lorem-big.txt | txtFile | new lorem big file  |
     When "Alice" tries to upload the following resource
       | resource      | error              |
       | lorem-big.txt | Insufficient quota |
-    Then following resources should not be displayed in the files list for user "Alice"
+    Then following resource should not be displayed in the files list for user "Alice"
       | resource      |
       | lorem-big.txt |
     And "Alice" logs out
@@ -93,7 +93,7 @@ Feature: Upload
 
   Scenario: upload resource from clipboard
     When "Alice" uploads an image from the clipboard
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource  |
       | image.png |
     And "Alice" opens the following file in mediaviewer
@@ -110,12 +110,12 @@ Feature: Upload
     Given "Alice" creates the following folder in personal space using API
       | name   |
       | PARENT |
-    And "Alice" creates the following files into personal space using API
+    And "Alice" creates the following file into personal space using API
       | pathToFile      | content      |
       | PARENT/test.txt | some content |
     
     # keep both option
-    And "Alice" uploads the following resources
+    And "Alice" uploads the following resource
       | resource  | type   | option    |
       | PARENT    | folder | keep both |
     Then following resources should be displayed in the files list for user "Alice"
@@ -123,25 +123,25 @@ Feature: Upload
       | PARENT     |
       | PARENT (1) |
     And "Alice" opens folder "PARENT"
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource  |
       | test.txt  |
     And "Alice" opens the "files" app
     And "Alice" opens folder "PARENT (1)"
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource   |
       | parent.txt |
     And "Alice" opens folder "CHILD"
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource  |
       | child.txt |
     
     # replace option
-    Given "Alice" creates the following files into personal space using API
+    Given "Alice" creates the following file into personal space using API
       | pathToFile        | content      |
       | PARENT/parent.txt | some content |
     When "Alice" opens the "files" app
-    And "Alice" uploads the following resources
+    And "Alice" uploads the following resource
       | resource  | type   | option |
       | PARENT    | folder | merge  |
     And "Alice" opens folder "PARENT"

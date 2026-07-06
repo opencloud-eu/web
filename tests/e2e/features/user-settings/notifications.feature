@@ -9,17 +9,17 @@ Feature: Notifications
       | Alice |
       | Brian |
       | Carol |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Admin" creates following groups using API
+    And "Admin" creates following group using API
       | id    |
       | sales |
     And "Admin" adds user to the group using API
       | user  | group |
       | Alice | sales |
       | Brian | sales |
-    And "Alice" creates the following folder in personal space using API
+    And "Alice" creates the following folders in personal space using API
       | name             |
       | folder_to_shared |
       | share_to_group   |
@@ -27,7 +27,7 @@ Feature: Notifications
       | name | id     |
       | team | team.1 |
     And "Alice" logs in
-    When "Alice" shares the following resource using the sidebar panel
+    When "Alice" shares the following resources using the sidebar panel
       | resource         | recipient | type  | role     | resourceType |
       | folder_to_shared | Brian     | user  | Can edit | folder       |
       | share_to_group   | sales     | group | Can edit | folder       |
@@ -51,7 +51,7 @@ Feature: Notifications
       | Alice Hansen unshared folder_to_shared with you |
       | Alice Hansen added you to Space team            |
     And "Brian" marks all notifications as read
-    When "Alice" removes access to following users from the project space
+    When "Alice" removes access to following user from the project space
       | user  | role     | kind |
       | Carol | Can edit | user |
     And "Carol" logs in
@@ -63,11 +63,11 @@ Feature: Notifications
     When "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
     And "Alice" disables the space "team.1" using the context-menu
-    Then "Brian" should see the following notifications
+    Then "Brian" should see the following notification
       | message                          |
       | Alice Hansen disabled Space team |
     When "Alice" deletes the space "team.1" using the context-menu
-    Then "Brian" should see the following notifications
+    Then "Brian" should see the following notification
       | message                         |
       | Alice Hansen deleted Space team |
     And "Brian" logs out

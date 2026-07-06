@@ -23,7 +23,7 @@ Feature: language settings
     Then "Alice" should see the following account page title "Einstellungen"
     When "Alice" logs out
     And "Alice" logs in
-    Then "Alice" should see the following notifications
+    Then "Alice" should see the following notification
       | message                                          |
       | Brian Murphy hat check_message mit Ihnen geteilt |
     And "Alice" logs out
