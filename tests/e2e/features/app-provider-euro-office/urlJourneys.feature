@@ -5,11 +5,11 @@ Feature: url stability for mobile and desktop client
 
 
   Scenario: open office suite files with Euro-Office
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
     And "Alice" logs in
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource           | type           | content                |
       | MicrosoftWord.docx | Microsoft Word | Microsoft Word Content |
     And for "Alice" file "MicrosoftWord.docx" should not be locked

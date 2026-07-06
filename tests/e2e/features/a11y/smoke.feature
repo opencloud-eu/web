@@ -6,7 +6,7 @@ Feature: Accessibility checks
       | id    |
       | Alice |
       | Brian |
-    And "Admin" creates following groups using API
+    And "Admin" creates following group using API
       | id    |
       | sales |
     And "Admin" assigns following roles to the users using API
@@ -33,10 +33,10 @@ Feature: Accessibility checks
       | localFile       | to              |
       | testavatar.jpeg | testavatar.jpeg |
       | lorem.txt       | lorem.txt       |
-    And "Alice" adds the following tags for the following resources using API
+    And "Alice" adds the following tag for the following resource using API
       | resource        | tags      |
       | testavatar.jpeg | alice tag |
-    And "Alice" shares the following resource using API
+    And "Alice" shares the following resources using API
       | resource | recipient | type  | role     |
       | parent   | Brian     | user  | Can edit |
       | parent   | sales     | group | Can edit |

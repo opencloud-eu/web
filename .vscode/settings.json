@@ -18,8 +18,13 @@
   "editor.quickSuggestions": {
     "strings": true
   },
-  "cucumberautocomplete.steps": ["tests/e2e/cucumber/steps/**/*.ts"],
+  "cucumberautocomplete.steps": [
+    "tests/e2e/steps/**/*.ts",
+    "tests/e2e/environment/fixtures.ts",
+    "tests/e2e/environment/hooks.ts"
+  ],
   "cucumberautocomplete.strictGherkinCompletion": true,
+  "cucumberautocomplete.pureTextSteps": false,
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "vue.server.includeLanguages": ["vue"]
 }

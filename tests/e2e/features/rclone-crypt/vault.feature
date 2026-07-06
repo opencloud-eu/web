@@ -5,7 +5,7 @@ Feature: Work with an rclone-crypt encrypted vault
   We check that when uploading files or editing them, the payload sent to the server is encrypted
 
   Background:
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
 
@@ -18,7 +18,7 @@ Feature: Work with an rclone-crypt encrypted vault
       | my.vault/sub            | folder  |                     | foobar   |
       | my.vault/sub/nested.txt | txtFile | nested file content | foobar   |
       | my.vault/hello.txt      | txtFile | hello world         | foobar   |
-    And "Alice" uploads the following resources
+    And "Alice" uploads the following resource
       | resource          | to           | password |
       | PARENT/parent.txt | my.vault/sub | foobar   |
     And "Alice" enters the vault "my.vault" with passphrase "foobar"
@@ -48,7 +48,7 @@ Feature: Work with an rclone-crypt encrypted vault
   @rclone-crypt
   Scenario: Drag-drop a directory tree into a vault
     When "Alice" logs in
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource | type    | password       |
       | my.vault | vault   | myStrongPass#1 |
     And "Alice" enters the vault "my.vault" with passphrase "myStrongPass#1"
@@ -67,7 +67,7 @@ Feature: Work with an rclone-crypt encrypted vault
   @rclone-crypt
   Scenario: A wrong passphrase is rejected
     When "Alice" logs in
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource | type    | password |
       | my.vault | vault   | 123      |
     And "Alice" navigates to the personal space page
@@ -76,7 +76,7 @@ Feature: Work with an rclone-crypt encrypted vault
 
   @rclone-crypt
   Scenario: A vault root is collaborator-shareable but not public-linkable, its content stays private
-   Given "Admin" creates following users using API
+   Given "Admin" creates following user using API
       | id    |
       | Brian |
    When "Alice" logs in
@@ -91,7 +91,7 @@ Feature: Work with an rclone-crypt encrypted vault
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
     And "Brian" enters the vault "share.vault" with passphrase "foobar"
-    And following resources should be displayed in the files list for user "Brian"
+    And following resource should be displayed in the files list for user "Brian"
       | resource  |
       | hello.txt |
     And "Brian" opens the following file in texteditor
@@ -112,10 +112,10 @@ Feature: Work with an rclone-crypt encrypted vault
       | resource | as                 |
       | my.vault | renamed.vault |
     And "Alice" enters the vault "renamed.vault" with passphrase "foobar"
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource  |
       | hello.txt |
-    And "Alice" downloads the following resources using the sidebar panel
+    And "Alice" downloads the following resource using the sidebar panel
       | resource  | type |
       | hello.txt | file |
     And "Alice" logs out

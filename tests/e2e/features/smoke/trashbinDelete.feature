@@ -4,7 +4,7 @@ Feature: Trashbin delete
   So that I can control my trashbin space and which files are kept in that space
 
   Background:
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
@@ -53,7 +53,7 @@ Feature: Trashbin delete
       | folderToShare/lorem.txt | lorem ipsum |
       | sample.txt              | sample      |
     And "Alice" opens the "files" app
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource   |
       | sample.txt |
     And "Alice" shares the following resource using the sidebar panel
@@ -62,14 +62,14 @@ Feature: Trashbin delete
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
     And "Brian" opens folder "folderToShare"
-    And following resources should be displayed in the files list for user "Brian"
+    And following resource should be displayed in the files list for user "Brian"
       | resource  |
       | lorem.txt |
-    When "Brian" deletes the following resources using the sidebar panel
+    When "Brian" deletes the following resource using the sidebar panel
       | resource  |
       | lorem.txt |
     And "Brian" navigates to the trashbin
-    Then following resources should not be displayed in the trashbin for user "Brian"
+    Then following resource should not be displayed in the trashbin for user "Brian"
       | resource                |
       | folderToShare/lorem.txt |
     When "Alice" deletes the following resources using the sidebar panel
@@ -77,10 +77,10 @@ Feature: Trashbin delete
       | sample.txt   |
       | empty-folder |
     And "Alice" navigates to the trashbin
-    Then following resources should be displayed in the trashbin for user "Alice"
+    Then following resource should be displayed in the trashbin for user "Alice"
       | resource                |
       | folderToShare/lorem.txt |
-    And "Alice" restores the following resources from trashbin
+    And "Alice" restores the following resource from trashbin
       | resource                |
       | folderToShare/lorem.txt |
     And "Alice" restores the following resources from trashbin using the batch action
@@ -89,12 +89,12 @@ Feature: Trashbin delete
       | empty-folder            |
     And "Alice" opens the "files" app
     And "Alice" opens folder "folderToShare"
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource  |
       | lorem.txt |
     And "Brian" navigates to the shared with me page
     And "Brian" opens folder "folderToShare"
-    And following resources should be displayed in the files list for user "Brian"
+    And following resource should be displayed in the files list for user "Brian"
       | resource  |
       | lorem.txt |
     And "Brian" logs out
@@ -102,7 +102,7 @@ Feature: Trashbin delete
 
 
   Scenario: empty trashbin using quick action
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Brian | Space Admin |
     And "Brian" creates the following project space using API
@@ -115,7 +115,7 @@ Feature: Trashbin delete
     And "Brian" logs in
 
     When "Brian" navigates to the project space "sales"
-    And "Brian" deletes the following resources using the sidebar panel
+    And "Brian" deletes the following resource using the sidebar panel
       | resource |
       | f1       |
 
@@ -134,7 +134,7 @@ Feature: Trashbin delete
       | hr       |
     And "Brian" should see the text "3 trash bins in total (including 2 empty)" at the footer of the trashbin page
     When "Brian" empties the trashbin for space "sales" using quick action
-    Then following resources should not be displayed in the trashbin for user "Brian"
+    Then following resource should not be displayed in the trashbin for user "Brian"
       | resource |
       | sales    |
     And "Brian" logs out

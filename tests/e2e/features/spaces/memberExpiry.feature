@@ -5,7 +5,7 @@ Feature: spaces member expiry
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
@@ -13,7 +13,7 @@ Feature: spaces member expiry
       | name | id     |
       | team | team.1 |
     And "Alice" navigates to the project space "team.1"
-    And "Alice" adds following users to the project space
+    And "Alice" adds following user to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
     And "Alice" sets the expiration date of the member "Brian" of the project space to "+5 days"

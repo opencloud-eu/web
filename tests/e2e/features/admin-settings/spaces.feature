@@ -1,10 +1,10 @@
 Feature: spaces management
 
   Scenario: spaces can be created
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Admin" creates the following project spaces using API
@@ -61,7 +61,7 @@ Feature: spaces management
     Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following project spaces using API
@@ -120,7 +120,7 @@ Feature: spaces management
       | Carol |
       | David |
       | Edith |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Admin" creates the following project spaces using API

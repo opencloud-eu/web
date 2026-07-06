@@ -19,7 +19,7 @@ Feature: spaces.personal
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
@@ -72,10 +72,10 @@ Feature: spaces.personal
     And "Alice" deletes the space "team.2" image using context menu
     And "Alice" changes the space "team.2" icon to "😜" using context menu
 
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource     | type   |
       | folderPublic | folder |
-    And "Alice" uploads the following resources
+    And "Alice" uploads the following resource
       | resource  | to           |
       | lorem.txt | folderPublic |
 
@@ -90,7 +90,7 @@ Feature: spaces.personal
     # borrowed from link.feature, all existing resource actions can be reused
     When "Anonymous" opens the public link "team.1"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" drop uploads following resources
+    And "Anonymous" drop uploads following resource
       | resource     |
       | textfile.txt |
 
@@ -125,7 +125,7 @@ Feature: spaces.personal
     # borrowed from link.feature, all existing resource actions can be reused
     When "Anonymous" opens the public link "team.2"
     And "Anonymous" unlocks the public link with password "new-strongPass1"
-    And "Anonymous" drop uploads following resources
+    And "Anonymous" drop uploads following resource
       | resource     |
       | textfile.txt |
 
@@ -136,7 +136,7 @@ Feature: spaces.personal
       | Alice |
       | Brian |
       | Carol |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
@@ -148,7 +148,7 @@ Feature: spaces.personal
       | resource            | type    | content             |
       | parent              | folder  |                      |
       | parent/textfile.txt | txtFile | some random content  |
-    When "Alice" uploads the following resources
+    When "Alice" uploads the following resource
       | resource     | to     | option  |
       | textfile.txt | parent | replace |
     And "Alice" adds following users to the project space
@@ -169,7 +169,7 @@ Feature: spaces.personal
     And "Brian" downloads old version of the following resource
       | resource     | to     |
       | textfile.txt | parent |
-    And "Brian" restores following resources version
+    And "Brian" restores following resource version
       | resource     | to     | version | openDetailsPanel |
       | textfile.txt | parent | 1       | true             |
     And "Brian" logs out

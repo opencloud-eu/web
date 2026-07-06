@@ -4,7 +4,7 @@ Feature: Delete
 
 
   Background:
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
@@ -20,10 +20,10 @@ Feature: Delete
       | resource     |
       | new file.txt |
     When "Alice" deletes the resource using the app topbar
-    Then following resources should not be displayed in the files list for user "Alice"
+    Then following resource should not be displayed in the files list for user "Alice"
       | resource     |
       | new file.txt |
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource         |
       | new testfile.txt |
     And "Alice" logs out
@@ -50,14 +50,14 @@ Feature: Delete
       | testavatar.jpg |
       | testavatar.png |
       | sampleGif.gif  |
-    And following resources should be displayed in the files list for user "Alice"
+    And following resource should be displayed in the files list for user "Alice"
       | resource         |
       | textfile.txt |
     And "Alice" logs out
 
   
   Scenario: quick restore deleted files
-    Given "Admin" assigns following roles to the users using API
+    Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following folder in personal space using API

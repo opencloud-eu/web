@@ -43,7 +43,7 @@ Given(
 )
 
 Given(
-  '{string} assigns following roles to the users using API',
+  '{string} assigns following role(s) to the users using API',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const admin = world.usersEnvironment.getUser({ key: stepUser })
     for await (const info of stepTable.hashes()) {
@@ -54,7 +54,7 @@ Given(
 )
 
 Given(
-  'admin assigns following roles to the user(s) using keycloak API',
+  'admin assigns following role(s) to the user(s) using keycloak API',
   async ({ world }: { world: World }, stepTable: DataTable): Promise<void> => {
     for await (const info of stepTable.hashes()) {
       const user = world.usersEnvironment.getCreatedUser({ key: info.id })
@@ -140,7 +140,7 @@ Given(
 )
 
 Given(
-  '{string} shares the following resource using API',
+  '{string} shares the following resource(s) using API',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
     for (const info of stepTable.hashes()) {
@@ -303,7 +303,7 @@ Given(
 )
 
 Given(
-  '{string} adds the following tags for the following resources using API',
+  '{string} adds the following tag(s) for the following resource(s) using API',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
     for (const info of stepTable.hashes()) {

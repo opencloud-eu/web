@@ -10,7 +10,7 @@ Feature: keycloak integration
       | Alice |
       | Brian |
       | Carol |
-    And admin assigns following roles to the users using keycloak API
+    And admin assigns following role to the users using keycloak API
       | id    | role        |
       | Alice | Space Admin |
     # Group role assignment - all members of the group inherit the assigned role
@@ -44,7 +44,7 @@ Feature: keycloak integration
       | security-folder | folder  |
       | finance-folder  | folder  |
       
-    And "Alice" shares the following resource using the sidebar panel
+    And "Alice" shares the following resources using the sidebar panel
       | resource        | recipient | type  | role     | resourceType |
       | finance-folder  | finance   | group | Can edit | folder       |
       | security-folder | Brian     | user  | Can edit | folder       |

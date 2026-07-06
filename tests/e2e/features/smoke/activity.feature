@@ -5,7 +5,7 @@ Feature: Users can see all activities of the resources and spaces
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
 
@@ -13,7 +13,7 @@ Feature: Users can see all activities of the resources and spaces
     Given "Alice" creates the following project space using API
       | name | id     |
       | team | team.1 |
-    And "Alice" adds the following members to the space "team" using API
+    And "Alice" adds the following member to the space "team" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |
     And "Alice" creates a public link of the space using API
@@ -34,7 +34,7 @@ Feature: Users can see all activities of the resources and spaces
 
     When "Anonymous" opens the public link "Unnamed link"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" edits the following resources
+    And "Anonymous" edits the following resource
       | resource     | content     |
       | textfile.txt | new content |
     Then "Anonymous" should not see any activity of the following resource
@@ -48,7 +48,7 @@ Feature: Users can see all activities of the resources and spaces
     And "Alice" deletes the following resource using the sidebar panel
       | resource  | from         |
       | subFolder | sharedFolder |
-    Then "Alice" should see activity of the following resource
+    Then "Alice" should see activity of the following resources
       | resource     | activity                                         |
       | sharedFolder | Alice Hansen deleted subFolder from sharedFolder |
       | sharedFolder | Alice Hansen renamed textfile.txt to new.txt     |

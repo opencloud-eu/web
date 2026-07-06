@@ -171,21 +171,21 @@ Feature: Copy
     And "Alice" logs in
 
     # copy and move file
-    When "Alice" copies the following resource using sidebar-panel
+    When "Alice" copies the following resources using sidebar-panel
       | resource     | to                  | option    |
       | example1.txt | Personal/folder1   | keep both |
       | example1.txt | Personal/folder1   | replace   |
-    And "Alice" moves the following resource using sidebar-panel
+    And "Alice" moves the following resources using sidebar-panel
       | resource             | to                   | option    |
       | example1.txt         | Personal/sub/folder1 | keep both |
       | folder1/example1.txt | Personal/sub/folder1 | replace   |
 
     # copy and move folder
-    And "Alice" copies the following resource using sidebar-panel
+    And "Alice" copies the following resources using sidebar-panel
       | resource | to           | option    |
       | folder1  | Personal/sub | keep both |
       | folder1  | Personal/sub | replace   |
-    And "Alice" moves the following resource using sidebar-panel
+    And "Alice" moves the following resources using sidebar-panel
       | resource     | to           | option    |
       | folder1      | Personal/sub | keep both |
       | sub1/folder1 | Personal/sub | replace   |
@@ -193,23 +193,23 @@ Feature: Copy
 
   
   Scenario: copy/move resources between spaces
-    Given "Admin" creates following user using API
+    Given "Admin" creates following users using API
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" creates the following project spaces using API
       | name    | id      |
       | mySpace | mySpace |
-    And "Brian" creates the following folders in personal space using API
+    And "Brian" creates the following folder in personal space using API
       | name  |
       | share |
-    And "Alice" creates the following folders in personal space using API
+    And "Alice" creates the following folder in personal space using API
       | name        |
       | f1/f2/f3/f4 |
-    And "Brian" creates the following files into personal space using API
+    And "Brian" creates the following file into personal space using API
       | pathToFile     | content     |
       | share/file.txt | lorem ipsum |
     And "Brian" shares the following resource using API

@@ -6,10 +6,10 @@ Feature: Token renewal using iframe
 
 
   Scenario: access token renewal via iframe
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
@@ -20,10 +20,10 @@ Feature: Token renewal using iframe
       | team | team.1 |
     When "Alice" waits for token renewal via iframe
     And "Alice" navigates to the project space "team.1"
-    And "Alice" creates the following resources
+    And "Alice" creates the following resource
       | resource     | type   |
       | space-folder | folder |
-    Then following resources should be displayed in the files list for user "Alice"
+    Then following resource should be displayed in the files list for user "Alice"
       | resource     |
       | space-folder |
     And "Alice" logs out

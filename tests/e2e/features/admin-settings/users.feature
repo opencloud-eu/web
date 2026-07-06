@@ -71,7 +71,7 @@ Feature: users management
       | Alice |
       | Brian |
     When "Admin" reloads the page
-    Then "Admin" should see the following users
+    Then "Admin" should see the following user
       | user  |
       | Carol |
     And "Admin" should not see the following users
@@ -147,7 +147,7 @@ Feature: users management
       | Alice |
       | Brian |
       | Carol |
-    And "Admin" should not see the following users
+    And "Admin" should not see the following user
       | user  |
       | David |
     When "Admin" deletes the following users using the batch actions

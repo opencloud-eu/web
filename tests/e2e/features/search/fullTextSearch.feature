@@ -8,13 +8,13 @@ Feature: Search
       | id    |
       | Alice |
       | Brian |
-    And "Admin" assigns following roles to the users using API
+    And "Admin" assigns following role to the users using API
       | id    | role        |
       | Brian | Space Admin |
     And "Alice" uploads the following local file into personal space using API
       | localFile    | to              |
       | textfile.txt | fileToShare.txt |
-    And "Alice" adds the following tags for the following resources using API
+    And "Alice" adds the following tag for the following resource using API
       | resource        | tags      |
       | fileToShare.txt | alice tag |
     And "Alice" shares the following resource using API
@@ -47,7 +47,7 @@ Feature: Search
     Then "Brian" should see the message "Search for files" on the search result
 
     When "Brian" selects tag "alice tag" from the search result filter chip
-    Then following resources should be displayed in the files list for user "Brian"
+    Then following resource should be displayed in the files list for user "Brian"
       | resource        |
       | fileToShare.txt |
 
@@ -59,7 +59,7 @@ Feature: Search
       | withTag.txt     |
 
     When "Brian" searches "file" using the global search and the "all files" filter and presses enter
-    Then following resources should be displayed in the files list for user "Brian"
+    Then following resource should be displayed in the files list for user "Brian"
       | resource        |
       | fileWithTag.txt |
 

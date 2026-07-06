@@ -4,7 +4,7 @@ Feature: GDPR export
   So I know what data is currently being stored on the system
 
   Background:
-    Given "Admin" creates following users using API
+    Given "Admin" creates following user using API
       | id    |
       | Alice |
 
