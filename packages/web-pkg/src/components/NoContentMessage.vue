@@ -1,13 +1,13 @@
 <template>
   <div class="no-content-message flex flex-col justify-center items-center text-center">
-    <inline-svg
+    <component
+      :is="isSvg ? InlineSvg : 'oc-image'"
       v-if="imgSrc"
       :src="imgSrc"
-      class="mb-4 no-content-message-svg"
-      :class="{ 'is-light': !currentTheme.isDark }"
+      class="mb-4 no-content-message-image"
       width="120"
       height="120"
-      :aria-label="$gettext('No content image')"
+      :alt="$gettext('No content image')"
     />
     <oc-icon
       v-if="icon"
@@ -27,15 +27,11 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
+import { computed } from 'vue'
 import InlineSvg from 'vue-inline-svg'
 import { FillType } from '@opencloud-eu/design-system/helpers'
-import { useThemeStore } from '../composables'
 
 InlineSvg.name = 'inline-svg'
-
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 
 const {
   icon = '',
@@ -46,6 +42,8 @@ const {
   iconFillType?: FillType
   imgSrc?: string
 }>()
+
+const isSvg = computed(() => imgSrc.toLowerCase().endsWith('.svg'))
 </script>
 <style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
@@ -55,8 +53,8 @@ const {
     height: 65vh;
   }
 
-  .no-content-message-svg.is-light :deep(.background-splash) {
-    fill: #f2f4f5;
+  .no-content-message-image :deep(.background-splash) {
+    fill: var(--oc-role-surface-container-highest);
   }
 }
 </style>
