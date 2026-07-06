@@ -7,6 +7,7 @@
         :has-hidden-files="false"
         :has-file-extensions="false"
         :has-pagination="false"
+        :show-actions-bar="false"
         :view-modes="viewModes"
       />
       <app-loading-spinner v-if="areResourcesLoading" />

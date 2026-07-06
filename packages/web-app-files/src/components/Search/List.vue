@@ -1,70 +1,76 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes" />
-      <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap mx-4 mb-4 mt-1">
-        <item-filter
-          v-if="availableMediaTypeValues.length"
-          ref="mediaTypeFilter"
-          :allow-multiple="true"
-          :filter-label="$gettext('Type')"
-          :filterable-attributes="['label']"
-          :items="availableMediaTypeValues"
-          class="mr-2"
-          display-name-attribute="label"
-          filter-name="mediaType"
-        >
-          <template #image="{ item }">
-            <div class="flex items-center" :data-test-id="`media-type-${item.id.toLowerCase()}`">
-              <resource-icon :resource="getFakeResourceForIcon(item)" />
-              <span class="ml-2">{{ item.label }}</span>
-            </div>
-          </template>
-        </item-filter>
-        <item-filter
-          v-if="availableTags.length"
-          ref="tagFilter"
-          :allow-multiple="true"
-          :filter-label="$gettext('Tags')"
-          :filterable-attributes="['label']"
-          :items="availableTags"
-          :option-filter-label="$gettext('Filter tags')"
-          :show-option-filter="true"
-          class="files-search-filter-tags mr-2"
-          display-name-attribute="label"
-          filter-name="tags"
-        >
-          <template #image="{ item }">
-            <div class="flex items-center">
-              <oc-icon name="price-tag-3" size="small" />
-              <span class="ml-2">{{ item.label }}</span>
-            </div>
-          </template>
-        </item-filter>
-        <item-filter
-          v-if="availableLastModifiedValues.length"
-          ref="lastModifiedFilter"
-          :filter-label="$gettext('Last Modified')"
-          :filterable-attributes="['label']"
-          :items="availableLastModifiedValues"
-          :show-option-filter="false"
-          :close-on-click="true"
-          class="files-search-filter-last-modified mr-2"
-          display-name-attribute="label"
-          filter-name="lastModified"
-        >
-          <template #item="{ item }">
-            <span v-text="item.label" />
-          </template>
-        </item-filter>
+      <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes">
+        <template #actions>
+          <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap my-2">
+            <item-filter
+              v-if="availableMediaTypeValues.length"
+              ref="mediaTypeFilter"
+              :allow-multiple="true"
+              :filter-label="$gettext('Type')"
+              :filterable-attributes="['label']"
+              :items="availableMediaTypeValues"
+              class="mr-2"
+              display-name-attribute="label"
+              filter-name="mediaType"
+            >
+              <template #image="{ item }">
+                <div
+                  class="flex items-center"
+                  :data-test-id="`media-type-${item.id.toLowerCase()}`"
+                >
+                  <resource-icon :resource="getFakeResourceForIcon(item)" />
+                  <span class="ml-2">{{ item.label }}</span>
+                </div>
+              </template>
+            </item-filter>
+            <item-filter
+              v-if="availableTags.length"
+              ref="tagFilter"
+              :allow-multiple="true"
+              :filter-label="$gettext('Tags')"
+              :filterable-attributes="['label']"
+              :items="availableTags"
+              :option-filter-label="$gettext('Filter tags')"
+              :show-option-filter="true"
+              class="files-search-filter-tags mr-2"
+              display-name-attribute="label"
+              filter-name="tags"
+            >
+              <template #image="{ item }">
+                <div class="flex items-center">
+                  <oc-icon name="price-tag-3" size="small" />
+                  <span class="ml-2">{{ item.label }}</span>
+                </div>
+              </template>
+            </item-filter>
+            <item-filter
+              v-if="availableLastModifiedValues.length"
+              ref="lastModifiedFilter"
+              :filter-label="$gettext('Last Modified')"
+              :filterable-attributes="['label']"
+              :items="availableLastModifiedValues"
+              :show-option-filter="false"
+              :close-on-click="true"
+              class="files-search-filter-last-modified mr-2"
+              display-name-attribute="label"
+              filter-name="lastModified"
+            >
+              <template #item="{ item }">
+                <span v-text="item.label" />
+              </template>
+            </item-filter>
 
-        <item-filter-toggle
-          v-if="fullTextSearchEnabled"
-          :filter-label="$gettext('Title only')"
-          filter-name="titleOnly"
-          class="files-search-filter-title-only mr-2"
-        />
-      </div>
+            <item-filter-toggle
+              v-if="fullTextSearchEnabled"
+              :filter-label="$gettext('Title only')"
+              filter-name="titleOnly"
+              class="files-search-filter-title-only mr-2"
+            />
+          </div>
+        </template>
+      </app-bar>
       <app-loading-spinner v-if="loading" />
       <template v-else>
         <no-content-message

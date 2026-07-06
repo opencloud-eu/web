@@ -7,7 +7,7 @@ import { createRouter, createMemoryHistory } from 'vue-router'
 
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 import { AppBar, ItemFilter, queryItemAsString, useResourcesStore } from '@opencloud-eu/web-pkg'
-import { ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
@@ -19,6 +19,13 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useAppDefaults: vi.fn(),
   useFileActions: () => ({ triggerDefaultAction: vi.fn() })
 }))
+
+const AppBarStub = defineComponent({
+  props: AppBar.props,
+  setup(_, { slots }) {
+    return () => h('app-bar-stub', {}, [slots.actions?.()])
+  }
+})
 
 const selectors = {
   noContentMessageStub: 'no-content-message-stub',
@@ -259,7 +266,8 @@ function getWrapper({
         mocks: localMocks,
         provide: localMocks,
         stubs: {
-          FilesViewWrapper: false
+          FilesViewWrapper: false,
+          AppBar: AppBarStub
         },
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
       }

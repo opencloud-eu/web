@@ -5,27 +5,45 @@
         <template #navigation>
           <SharesNavigation />
         </template>
+        <template #actions>
+          <div
+            class="flex w-full mt-2 mb-4 items-center"
+            :class="{
+              'justify-between': shareTypes.length > 1,
+              'justify-end': shareTypes.length < 1
+            }"
+          >
+            <div v-if="shareTypes.length > 1" class="flex">
+              <item-filter
+                :allow-multiple="true"
+                :filter-label="$gettext('Share Type')"
+                :filterable-attributes="['label']"
+                :items="shareTypes"
+                :option-filter-label="$gettext('Filter share types')"
+                :show-option-filter="true"
+                id-attribute="key"
+                class="share-type-filter"
+                display-name-attribute="label"
+                filter-name="shareType"
+              >
+                <template #item="{ item }">
+                  <span class="ml-2" v-text="item.label" />
+                </template>
+              </item-filter>
+            </div>
+            <oc-search-bar
+              v-model="filterTerm"
+              class="search-filter w-3xs"
+              :label="$gettext('Search')"
+              :placeholder="$gettext('Search for shares')"
+              button-hidden
+              :is-rounded="false"
+            />
+          </div>
+        </template>
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
-        <div v-if="shareTypes.length > 1" class="flex m-4">
-          <item-filter
-            :allow-multiple="true"
-            :filter-label="$gettext('Share Type')"
-            :filterable-attributes="['label']"
-            :items="shareTypes"
-            :option-filter-label="$gettext('Filter share types')"
-            :show-option-filter="true"
-            id-attribute="key"
-            class="share-type-filter mx-2"
-            display-name-attribute="label"
-            filter-name="shareType"
-          >
-            <template #item="{ item }">
-              <span class="ml-2" v-text="item.label" />
-            </template>
-          </item-filter>
-        </div>
         <no-content-message
           v-if="isEmpty"
           id="files-shared-with-others-empty"
@@ -75,6 +93,7 @@
 <script lang="ts">
 import {
   createLocationShares,
+  defaultFuseOptions,
   queryItemAsString,
   useAppsStore,
   useCapabilityStore,
@@ -97,7 +116,7 @@ import { ContextActions } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { defineComponent, computed, unref } from 'vue'
+import { defineComponent, computed, unref, ref, watch } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
@@ -105,6 +124,8 @@ import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
+import Fuse from 'fuse.js'
+import Mark from 'mark.js'
 
 export default defineComponent({
   components: {
@@ -134,8 +155,13 @@ export default defineComponent({
     const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
       folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
     })
-    const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
-      resourcesViewDefaults
+    const {
+      loadResourcesTask,
+      selectedResourcesIds,
+      paginatedResources,
+      viewMode,
+      areResourcesLoading
+    } = resourcesViewDefaults
     const { loadPreview } = useLoadPreview(viewMode)
 
     const breadcrumbs = computed(() => {
@@ -166,16 +192,38 @@ export default defineComponent({
       })
     })
     const selectedShareTypesQuery = useRouteQuery('q_shareType')
+    const filterTerm = ref('')
     const filteredItems = computed(() => {
+      let items = unref(paginatedResources)
+      if (unref(filterTerm)) {
+        const searchEngine = new Fuse(items, { ...defaultFuseOptions, keys: ['name'] })
+        items = searchEngine.search(unref(filterTerm)).map((r) => r.item)
+      }
+
       const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
       if (!selectedShareTypes || selectedShareTypes.length === 0) {
-        return unref(paginatedResources)
+        return items
       }
-      return unref(paginatedResources).filter((item) => {
+      return items.filter((item) => {
         return ShareTypes.getByKeys(selectedShareTypes)
           .map(({ value }) => value)
           .some((t) => item.shareTypes.includes(t))
       })
+    })
+
+    let markInstance: Mark | undefined
+    watch(filteredItems, () => {
+      if (!unref(areResourcesLoading)) {
+        if (!markInstance) {
+          markInstance = new Mark('.oc-resource-details')
+        }
+
+        markInstance.unmark()
+        markInstance.mark(unref(filterTerm), {
+          element: 'span',
+          className: 'mark-highlight'
+        })
+      }
     })
 
     resourcesStore.$onAction((action) => {
@@ -209,7 +257,8 @@ export default defineComponent({
       shareTypes,
       getMatchingSpace,
       loadPreview,
-      breadcrumbs
+      breadcrumbs,
+      filterTerm
     }
   },
 

@@ -4,7 +4,7 @@ exports[`TrashOverview > view states > should render trash list 1`] = `
 "<div class="flex w-full">
   <div class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
     <div id="files-view" class="outline-0 z-0 flex flex-col">
-      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsonselection="false" batchactionsloading="false"></app-bar-stub>
+      <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="false" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsbar="false" showactionsonselection="false" batchactionsloading="false"></app-bar-stub>
       <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
         <div data-v-8440503a="" role="search" class="oc-search flex items-center w-3xs">
           <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Search" placeholder="Search for spaces" type="search"> <button data-v-8440503a="" type="button" aria-label="Search" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0">
