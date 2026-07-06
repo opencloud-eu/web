@@ -12,6 +12,7 @@
 
 ### ✅ Tests
 
+- fix(e2e): sync singular/plural wording in step tables [[#2799](https://github.com/opencloud-eu/web/pull/2799)]
 - tests: use native locator.drop() [[#2798](https://github.com/opencloud-eu/web/pull/2798)]
 - [full-ci] replace cucumber [[#2476](https://github.com/opencloud-eu/web/pull/2476)]
 - [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
