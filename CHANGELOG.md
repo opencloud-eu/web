@@ -67,6 +67,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency p-queue to v9.3.1 [[#2802](https://github.com/opencloud-eu/web/pull/2802)]
 - chore(deps): update dependency vite to v8.1.3 [[#2801](https://github.com/opencloud-eu/web/pull/2801)]
 - chore(deps): update collabora/code docker tag to v26.04.2.1.1 [[#2790](https://github.com/opencloud-eu/web/pull/2790)]
 - chore(deps): update collabora/code docker tag to v26.04.2.1.1 [[#2787](https://github.com/opencloud-eu/web/pull/2787)]
