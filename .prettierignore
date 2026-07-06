@@ -5,6 +5,7 @@ packages/web-client/src/graph/generated/
 tests/woodpecker/csp.yaml
 pnpm-lock.yaml
 .github/settings.yml
+.features-gen
 
 **/translations.json
 /CHANGELOG.md
