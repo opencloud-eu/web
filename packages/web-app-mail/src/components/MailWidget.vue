@@ -33,9 +33,12 @@
 
       <div class="flex flex-col flex-1 min-h-0">
         <div class="flex-1 min-h-0 overflow-auto">
-          <MailComposeForm v-model="composeState" />
+          <MailComposeForm
+            v-model="composeState"
+            :toolbar-drop-teleport="composeToolbarDropTeleport"
+          />
         </div>
-
+        <div :id="composeToolbarDropId" />
         <div class="px-4 pt-3 pb-2">
           <div class="flex items-center justify-start gap-3">
             <oc-button
@@ -83,9 +86,12 @@
     <template #content>
       <div class="flex flex-col flex-1 min-h-0">
         <div class="flex-1 min-h-0 overflow-auto">
-          <MailComposeForm v-model="composeState" />
+          <MailComposeForm
+            v-model="composeState"
+            :toolbar-drop-teleport="composeToolbarDropTeleport"
+          />
         </div>
-
+        <div :id="composeToolbarDropId" />
         <div class="px-4 pt-3">
           <div class="flex items-center justify-start gap-3">
             <oc-button
@@ -169,6 +175,9 @@ const selectedIdentityId = computed(() => {
 })
 
 const isExpanded = ref(false)
+
+const composeToolbarDropId = 'mail-compose-toolbar-drop'
+const composeToolbarDropTeleport = `#${composeToolbarDropId}`
 
 const { showSavedHint, flashSavedHint, clearSavedHint } = useSavedHint(SAVED_HINT_DURATION_MS)
 

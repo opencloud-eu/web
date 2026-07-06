@@ -38,6 +38,7 @@
             <oc-drop
               :drop-id="`toolbar-dropdown-${item.id}`"
               :toggle="`#toolbar-dropdown-trigger-${item.id}`"
+              :teleport="teleport"
               mode="click"
               class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
@@ -114,6 +115,10 @@
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import type { TextEditorInstance } from '../types'
 import { EditorAction } from '../composables'
+
+defineProps<{
+  teleport?: string
+}>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
 
