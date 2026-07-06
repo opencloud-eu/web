@@ -3,7 +3,7 @@
     <inline-svg
       v-if="imgSrc"
       :src="imgSrc"
-      class="mb-4 no-content-message-svg-wrapper"
+      class="mb-4 no-content-message-svg"
       :class="{ 'is-light': !currentTheme.isDark }"
       width="120"
       height="120"
@@ -55,7 +55,7 @@ const {
     height: 65vh;
   }
 
-  .no-content-message-svg-wrapper.is-light :deep(.background-splash) {
+  .no-content-message-svg.is-light :deep(.background-splash) {
     fill: #f2f4f5;
   }
 }
