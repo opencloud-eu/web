@@ -102,7 +102,7 @@
           appearance="raw"
           @click="createNewShortcutAction"
         >
-          <oc-icon name="external-link" size="medium" />
+          <resource-icon :resource="shortcutIconResource" />
           <span v-text="$gettext('Shortcut')" />
           <span v-if="areFileExtensionsShown" class="ml-auto text-sm" v-text="'url'" />
         </oc-button>
@@ -212,5 +212,9 @@ const getIconResource = (fileHandler: FileAction) => {
 
 const folderIconResource = computed(() => {
   return { isFolder: true, extension: '' } as Resource
+})
+
+const shortcutIconResource = computed(() => {
+  return { type: 'file', extension: 'url' } as Resource
 })
 </script>
