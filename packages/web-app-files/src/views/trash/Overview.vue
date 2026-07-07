@@ -23,7 +23,7 @@
               v-model="filterTerm"
               class="w-3xs"
               :label="$gettext('Search')"
-              :placeholder="$gettext('Search for spaces')"
+              :placeholder="$gettext('Search for trash bins')"
               button-hidden
               :is-rounded="false"
             />
