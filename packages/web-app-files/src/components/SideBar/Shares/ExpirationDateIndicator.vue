@@ -10,46 +10,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import { DateTime } from 'luxon'
 import { formatDateFromDateTime, formatRelativeDateFromDateTime } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'ExpirationDateIndicator',
-  props: {
-    expirationDate: { type: Object as PropType<DateTime>, required: false, default: null }
-  },
-  setup(props) {
-    const { $gettext, current: currentLanguage } = useGettext()
+const { expirationDate = null } = defineProps<{ expirationDate?: DateTime }>()
 
-    const expirationDateRelative = computed(() => {
-      return formatRelativeDateFromDateTime(props.expirationDate, currentLanguage)
-    })
+const { $gettext, current: currentLanguage } = useGettext()
 
-    const dateExpire = computed(() => {
-      return formatDateFromDateTime(props.expirationDate, currentLanguage)
-    })
+const expirationDateRelative = computed(() => {
+  return formatRelativeDateFromDateTime(expirationDate, currentLanguage)
+})
 
-    const expirationDateTooltip = computed(() => {
-      return $gettext('Expires %{timeToExpiry} (%{expiryDate})', {
-        timeToExpiry: unref(expirationDateRelative),
-        expiryDate: unref(dateExpire)
-      })
-    })
+const dateExpire = computed(() => {
+  return formatDateFromDateTime(expirationDate, currentLanguage)
+})
 
-    const screenreaderShareExpiration = computed(() => {
-      return $gettext('Share expires %{ expiryDateRelative } (%{ expiryDate })', {
-        expiryDateRelative: unref(expirationDateRelative),
-        expiryDate: unref(dateExpire)
-      })
-    })
+const expirationDateTooltip = computed(() => {
+  return $gettext('Expires %{timeToExpiry} (%{expiryDate})', {
+    timeToExpiry: unref(expirationDateRelative),
+    expiryDate: unref(dateExpire)
+  })
+})
 
-    return {
-      expirationDateTooltip,
-      screenreaderShareExpiration
-    }
-  }
+const screenreaderShareExpiration = computed(() => {
+  return $gettext('Share expires %{ expiryDateRelative } (%{ expiryDate })', {
+    expiryDateRelative: unref(expirationDateRelative),
+    expiryDate: unref(dateExpire)
+  })
 })
 </script>

@@ -8,14 +8,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { useResourceContents } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  setup: () => {
-    const { resourceContentsText } = useResourceContents()
-    return { resourceContentsText }
-  }
-})
+const { resourceContentsText } = useResourceContents()
 </script>
