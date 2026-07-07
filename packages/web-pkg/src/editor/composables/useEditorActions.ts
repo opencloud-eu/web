@@ -1,6 +1,7 @@
 import { unref } from 'vue'
 import type { MaybeRef } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
+import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
 import { useModals } from '../../composables/piniaStores'
 import { TextEditorState } from '../types'
