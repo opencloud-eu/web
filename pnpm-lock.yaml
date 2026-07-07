@@ -862,7 +862,7 @@ importers:
         version: 7.0.0
       '@casl/vue':
         specifier: ^3.0.0
-        version: 3.0.0(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))
+        version: 3.0.1(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))
       '@microsoft/fetch-event-source':
         specifier: ^2.0.1
         version: 2.0.1
@@ -1031,7 +1031,7 @@ importers:
         version: 7.0.0
       '@casl/vue':
         specifier: ^3.0.0
-        version: 3.0.0(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))
+        version: 3.0.1(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))
       '@microsoft/fetch-event-source':
         specifier: 2.0.1
         version: 2.0.1
@@ -1125,7 +1125,7 @@ importers:
         version: 7.0.0
       '@casl/vue':
         specifier: ^3.0.0
-        version: 3.0.0(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))
+        version: 3.0.1(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))
       '@opencloud-eu/design-system':
         specifier: workspace:^
         version: link:../design-system
@@ -1325,8 +1325,8 @@ packages:
   '@casl/ability@7.0.0':
     resolution: {integrity: sha512-QhwRflkTucpdS2uw1XScrzLWbgLYJGvPoq2Xm5OjeRci3dwtPixxnjUKJ04Ss1ivNS9tZQ8y4sjWeelWsrwo4g==}
 
-  '@casl/vue@3.0.0':
-    resolution: {integrity: sha512-ZLJeVchZvmtz0VLTvHwsH4epE+CREBSbFQi0bIUmi0vZh4tF8B4Ylp6YiRWCP4Am7O5caJJqxARQGya2XUX4fw==}
+  '@casl/vue@3.0.1':
+    resolution: {integrity: sha512-iCNvKqQMAUmhmwkrhReVoshTyfDSWZS7Vda4HzyGadplG0tQK3WrYulkrdEeWlR7g5r2aAdez/0Fs30oLL4roA==}
     peerDependencies:
       '@casl/ability': ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.1.0 || ^6.0.0 || ^7.0.0
       vue: ^3.0.0
@@ -5678,7 +5678,7 @@ snapshots:
     dependencies:
       '@ucast/mongo2js': 2.0.0
 
-  '@casl/vue@3.0.0(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))':
+  '@casl/vue@3.0.1(@casl/ability@7.0.0)(vue@3.5.39(typescript@6.0.3))':
     dependencies:
       '@casl/ability': 7.0.0
       vue: 3.5.39(typescript@6.0.3)
