@@ -8,7 +8,7 @@
         :key="item.label"
         class="mb-2 rounded-full"
         appearance="filled"
-        color-role="secondary"
+        :color-role="colorRole"
         :type="item.to ? routerLinkComponent : 'button'"
         :to="item.to"
         @click="onChildButtonClicked(item)"
@@ -21,7 +21,7 @@
       :id="buttonId"
       class="rounded-full size-14"
       appearance="filled"
-      color-role="secondary"
+      :color-role="colorRole"
       :aria-label="computedAriaLabel"
       :type="mode === 'action' && to ? routerLinkComponent : 'button'"
       :to="to"
@@ -35,6 +35,7 @@
 import { computed, ref, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
+import { ColorRoleType } from '../../helpers'
 
 export interface Props {
   /**
@@ -47,6 +48,11 @@ export interface Props {
    * @default 'Open actions menu'
    */
   ariaLabel?: string
+  /**
+   * @docs The color role of the floating action button.
+   * @default secondary
+   */
+  colorRole?: ColorRoleType
   /**
    * @docs The mode of the floating action button.
    * @default menu
@@ -79,6 +85,7 @@ export interface Props {
 const {
   buttonId = '',
   ariaLabel = '',
+  colorRole = 'secondary',
   mode = 'menu',
   items = [],
   handler = null,

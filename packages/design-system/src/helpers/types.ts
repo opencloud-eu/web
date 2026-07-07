@@ -77,6 +77,19 @@ export interface BreadcrumbItem {
 }
 
 export type AppearanceType = 'filled' | 'outline' | 'raw' | 'raw-inverse'
+export type ColorRoleType =
+  | 'primary'
+  | 'primaryContainer'
+  | 'primaryFixed'
+  | 'secondary'
+  | 'secondaryContainer'
+  | 'secondaryFixed'
+  | 'tertiary'
+  | 'tertiaryContainer'
+  | 'tertiaryFixed'
+  | 'surface'
+  | 'surfaceContainer'
+  | 'chrome'
 export type FillType = 'fill' | 'line' | 'none'
 export type SizeType = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'
 export type JustifyContentType =

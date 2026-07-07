@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
-import { AppearanceType, JustifyContentType, SizeType } from '../../helpers'
+import { ColorRoleType, AppearanceType, JustifyContentType, SizeType } from '../../helpers'
 import { kebabCase } from 'lodash-es'
 import { getTailwindGapClass, getTailwindJustifyContentClass } from '../../helpers/tailwind'
 
@@ -48,19 +48,7 @@ export interface Props {
    * @docs Material design color role.
    * @default secondary
    */
-  colorRole?:
-    | 'primary'
-    | 'primaryContainer'
-    | 'primaryFixed'
-    | 'secondary'
-    | 'secondaryContainer'
-    | 'secondaryFixed'
-    | 'tertiary'
-    | 'tertiaryContainer'
-    | 'tertiaryFixed'
-    | 'surface'
-    | 'surfaceContainer'
-    | 'chrome'
+  colorRole?: ColorRoleType
   /**
    * @docs Determines if the button is disabled.
    * @default false
