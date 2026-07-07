@@ -89,14 +89,14 @@
           :shared-parent-route="sharedParentRoute"
           :access-details="accessDetails"
           @expiration-date-changed="shareExpirationChanged"
-          @remove-share="removeShare"
+          @remove-share="$emit('onDelete', share)"
         />
       </div>
     </div>
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { DateTime } from 'luxon'
 
@@ -111,7 +111,7 @@ import {
   useSharesStore
 } from '@opencloud-eu/web-pkg'
 import { Resource, extractDomSelector } from '@opencloud-eu/web-client'
-import { computed, defineComponent, inject, PropType, Ref, unref } from 'vue'
+import { computed, inject, Ref, unref } from 'vue'
 import { formatDateFromDateTime, useClientService, UserAvatar } from '@opencloud-eu/web-pkg'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
@@ -119,245 +119,179 @@ import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
 
-export default defineComponent({
-  name: 'ListItem',
-  components: {
-    UserAvatar,
-    ExpirationDateIndicator,
-    EditDropdown,
-    RoleDropdown
-  },
-  props: {
-    share: {
-      type: Object as PropType<CollaboratorShare>,
-      required: true
-    },
-    modifiable: {
-      type: Boolean,
-      default: false
-    },
-    removable: {
-      type: Boolean,
-      default: false
-    },
-    sharedParentRoute: {
-      type: Object as PropType<RouteLocationNamedRaw>,
-      default: null
-    },
-    resourceName: {
-      type: String,
-      default: ''
-    },
-    isLocked: {
-      type: Boolean,
-      default: false
-    },
-    isSpaceShare: {
-      type: Boolean,
-      default: false
-    }
-  },
-  emits: ['onDelete'],
-  setup(props) {
-    const { showMessage, showErrorMessage } = useMessages()
-    const userStore = useUserStore()
-    const clientService = useClientService()
-    const language = useGettext()
-    const { $gettext } = language
+const {
+  share,
+  modifiable = false,
+  removable = false,
+  sharedParentRoute = null,
+  isLocked = false,
+  isSpaceShare = false
+} = defineProps<{
+  share: CollaboratorShare
+  modifiable?: boolean
+  removable?: boolean
+  sharedParentRoute?: RouteLocationNamedRaw
+  isLocked?: boolean
+  isSpaceShare?: boolean
+}>()
 
-    const sharesStore = useSharesStore()
-    const { updateShare } = sharesStore
-    const { upsertSpace, loadGraphPermissions } = useSpacesStore()
+defineEmits<{
+  (e: 'onDelete', share: CollaboratorShare): void
+}>()
 
-    const { user } = storeToRefs(userStore)
+const { showMessage, showErrorMessage } = useMessages()
+const userStore = useUserStore()
+const clientService = useClientService()
+const language = useGettext()
+const { $gettext } = language
 
-    const sharedParentDir = computed(() => {
-      return queryItemAsString(props.sharedParentRoute?.params?.driveAliasAndItem).split('/').pop()
-    })
+const sharesStore = useSharesStore()
+const { updateShare } = sharesStore
+const { upsertSpace, loadGraphPermissions } = useSpacesStore()
 
-    const shareDate = computed(() => {
-      return formatDateFromDateTime(DateTime.fromISO(props.share.createdDateTime), language.current)
-    })
+const { user } = storeToRefs(userStore)
 
-    const isExternalShare = computed(() => props.share.shareType === ShareTypes.remote.value)
-
-    const sharedViaTooltip = computed(() =>
-      $gettext('Shared via the parent folder "%{sharedParentDir}"', {
-        sharedParentDir: unref(sharedParentDir)
-      })
-    )
-    return {
-      resource: inject<Ref<Resource>>('resource'),
-      space: inject<Ref<SpaceResource>>('space'),
-      updateShare,
-      user,
-      clientService,
-      sharedParentDir,
-      shareDate,
-      showMessage,
-      showErrorMessage,
-      upsertSpace,
-      isExternalShare,
-      sharedViaTooltip,
-      DateTime,
-      loadGraphPermissions
-    }
-  },
-  computed: {
-    shareType() {
-      return ShareTypes.getByValue(this.share.shareType)
-    },
-
-    shareTypeIcon() {
-      return this.shareType.icon
-    },
-
-    shareTypeKey() {
-      return this.shareType.key
-    },
-
-    shareDomSelector() {
-      if (!this.share.id) {
-        return undefined
-      }
-      return extractDomSelector(this.share.id)
-    },
-
-    isAnyUserShareType() {
-      return ShareTypes.user === this.shareType
-    },
-
-    shareTypeText() {
-      return this.$gettext(this.shareType.label)
-    },
-
-    shareCategory() {
-      return ShareTypes.isIndividual(this.shareType) ? 'user' : 'group'
-    },
-
-    shareDisplayName() {
-      if (this.user.id === this.share.sharedWith.id) {
-        return this.$gettext('%{collaboratorName} (me)', {
-          collaboratorName: this.share.sharedWith.displayName
-        })
-      }
-      return this.share.sharedWith.displayName
-    },
-
-    screenreaderShareDisplayName() {
-      const context = {
-        displayName: this.share.sharedWith.displayName
-      }
-
-      return this.$gettext('Share receiver name: %{ displayName }', context)
-    },
-
-    hasExpirationDate() {
-      return !!this.share.expirationDateTime
-    },
-
-    expirationDate() {
-      return formatDateFromDateTime(
-        DateTime.fromISO(this.share.expirationDateTime).endOf('day'),
-        this.$language.current
-      )
-    },
-    shareOwnerDisplayName() {
-      return this.share.sharedBy.displayName
-    },
-    accessDetails() {
-      const list: ContextualHelperDataListItem[] = []
-
-      list.push({ text: this.$gettext('Name'), headline: true }, { text: this.shareDisplayName })
-
-      list.push({ text: this.$gettext('Type'), headline: true }, { text: this.shareTypeText })
-      list.push(
-        { text: this.$gettext('Access expires'), headline: true },
-        { text: this.hasExpirationDate ? this.expirationDate : this.$gettext('no') }
-      )
-      list.push({ text: this.$gettext('Shared on'), headline: true }, { text: this.shareDate })
-
-      if (!this.isSpaceShare) {
-        list.push(
-          { text: this.$gettext('Invited by'), headline: true },
-          { text: this.shareOwnerDisplayName }
-        )
-      }
-
-      return list
-    }
-  },
-  methods: {
-    removeShare() {
-      this.$emit('onDelete', this.share)
-    },
-
-    async shareRoleChanged(role: ShareRole) {
-      const expirationDateTime = this.share.expirationDateTime
-      try {
-        await this.saveShareChanges({ role, expirationDateTime })
-      } catch (e) {
-        console.error(e)
-        this.showErrorMessage({
-          title: this.$gettext('Failed to apply new permissions'),
-          errors: [e]
-        })
-      }
-    },
-
-    async shareExpirationChanged({ expirationDateTime }: { expirationDateTime: string }) {
-      const role = this.share.role
-      try {
-        await this.saveShareChanges({ role, expirationDateTime })
-      } catch (e) {
-        console.error(e)
-        this.showErrorMessage({
-          title: this.$gettext('Failed to apply expiration date'),
-          errors: [e]
-        })
-      }
-    },
-
-    async saveShareChanges({
-      role,
-      expirationDateTime
-    }: {
-      role: ShareRole
-      expirationDateTime?: string
-    }) {
-      try {
-        await this.updateShare({
-          clientService: this.$clientService,
-          space: this.space,
-          resource: this.resource,
-          collaboratorShare: this.share,
-          options: { roles: [role.id], expirationDateTime }
-        })
-
-        if (isProjectSpaceResource(this.resource)) {
-          const client = this.clientService.graphAuthenticated
-          const space = await client.drives.getDrive(this.resource.id)
-          this.upsertSpace({ ...space, graphPermissions: this.resource.graphPermissions })
-
-          if (this.share.sharedWith.id === this.user.id) {
-            // re-fetch current user permissions because they might have changed
-            await this.loadGraphPermissions({
-              ids: [this.resource.id],
-              graphClient: this.clientService.graphAuthenticated,
-              useCache: false
-            })
-          }
-        }
-
-        this.showMessage({ title: this.$gettext('Share successfully changed') })
-      } catch (e) {
-        console.error(e)
-        this.showErrorMessage({
-          title: this.$gettext('Error while editing the share.'),
-          errors: [e]
-        })
-      }
-    }
-  }
+const sharedParentDir = computed(() => {
+  return queryItemAsString(sharedParentRoute?.params?.driveAliasAndItem).split('/').pop()
 })
+
+const shareDate = computed(() => {
+  return formatDateFromDateTime(DateTime.fromISO(share.createdDateTime), language.current)
+})
+
+const isExternalShare = computed(() => share.shareType === ShareTypes.remote.value)
+
+const sharedViaTooltip = computed(() =>
+  $gettext('Shared via the parent folder "%{sharedParentDir}"', {
+    sharedParentDir: unref(sharedParentDir)
+  })
+)
+
+const resource = inject<Ref<Resource>>('resource')
+const space = inject<Ref<SpaceResource>>('space')
+
+const shareType = computed(() => ShareTypes.getByValue(share.shareType))
+const shareTypeIcon = computed(() => unref(shareType).icon)
+const shareTypeKey = computed(() => unref(shareType).key)
+const shareDomSelector = computed(() => {
+  if (!share.id) {
+    return undefined
+  }
+  return extractDomSelector(share.id)
+})
+const isAnyUserShareType = computed(() => ShareTypes.user === unref(shareType))
+const shareTypeText = computed(() => $gettext(unref(shareType).label))
+const shareCategory = computed(() => (ShareTypes.isIndividual(unref(shareType)) ? 'user' : 'group'))
+const shareDisplayName = computed(() => {
+  if (user.value.id === share.sharedWith.id) {
+    return $gettext('%{collaboratorName} (me)', {
+      collaboratorName: share.sharedWith.displayName
+    })
+  }
+  return share.sharedWith.displayName
+})
+const screenreaderShareDisplayName = computed(() => {
+  const context = {
+    displayName: share.sharedWith.displayName
+  }
+
+  return $gettext('Share receiver name: %{ displayName }', context)
+})
+const hasExpirationDate = computed(() => !!share.expirationDateTime)
+const expirationDate = computed(() => {
+  return formatDateFromDateTime(
+    DateTime.fromISO(share.expirationDateTime).endOf('day'),
+    language.current
+  )
+})
+const shareOwnerDisplayName = computed(() => share.sharedBy.displayName)
+const accessDetails = computed<ContextualHelperDataListItem[]>(() => {
+  const list: ContextualHelperDataListItem[] = []
+
+  list.push({ text: $gettext('Name'), headline: true }, { text: shareDisplayName.value })
+
+  list.push({ text: $gettext('Type'), headline: true }, { text: shareTypeText.value })
+  list.push(
+    { text: $gettext('Access expires'), headline: true },
+    { text: hasExpirationDate.value ? expirationDate.value : $gettext('no') }
+  )
+  list.push({ text: $gettext('Shared on'), headline: true }, { text: shareDate.value })
+
+  if (!isSpaceShare) {
+    list.push(
+      { text: $gettext('Invited by'), headline: true },
+      { text: shareOwnerDisplayName.value }
+    )
+  }
+
+  return list
+})
+
+const shareRoleChanged = async (role: ShareRole) => {
+  const expirationDateTime = share.expirationDateTime
+  try {
+    await saveShareChanges({ role, expirationDateTime })
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({
+      title: $gettext('Failed to apply new permissions'),
+      errors: [e]
+    })
+  }
+}
+
+const shareExpirationChanged = async ({ expirationDateTime }: { expirationDateTime: DateTime }) => {
+  const role = share.role
+  try {
+    await saveShareChanges({ role, expirationDateTime: expirationDateTime?.toISO() ?? null })
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({
+      title: $gettext('Failed to apply expiration date'),
+      errors: [e]
+    })
+  }
+}
+
+const saveShareChanges = async ({
+  role,
+  expirationDateTime
+}: {
+  role: ShareRole
+  expirationDateTime?: string | null
+}) => {
+  try {
+    await updateShare({
+      clientService,
+      space: unref(space),
+      resource: unref(resource),
+      collaboratorShare: share,
+      options: { roles: [role.id], expirationDateTime }
+    })
+
+    const item = unref(resource)
+    if (isProjectSpaceResource(item)) {
+      const client = clientService.graphAuthenticated
+      const space = await client.drives.getDrive(item.id)
+      upsertSpace({ ...space, graphPermissions: item.graphPermissions })
+
+      if (share.sharedWith.id === user.value.id) {
+        // re-fetch current user permissions because they might have changed
+        await loadGraphPermissions({
+          ids: [item.id],
+          graphClient: clientService.graphAuthenticated,
+          useCache: false
+        })
+      }
+    }
+
+    showMessage({ title: $gettext('Share successfully changed') })
+  } catch (e) {
+    console.error(e)
+    showErrorMessage({
+      title: $gettext('Error while editing the share.'),
+      errors: [e]
+    })
+  }
+}
 </script>

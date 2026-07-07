@@ -46,7 +46,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   createLocationPublic,
   createLocationSpaces,
@@ -55,37 +55,24 @@ import {
 } from '@opencloud-eu/web-pkg'
 
 import { useRouter } from '@opencloud-eu/web-pkg'
-import { defineComponent, PropType } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { createFileRouteOptions } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  name: 'NotFoundMessage',
-  props: {
-    space: {
-      type: Object as PropType<SpaceResource>,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const router = useRouter()
-    const isProjectSpace = props.space?.driveType === 'project'
-    return {
-      showPublicLinkButton: isLocationPublicActive(router, 'files-public-link'),
-      showHomeButton: isLocationSpacesActive(router, 'files-spaces-generic') && !isProjectSpace,
-      showSpacesButton: isLocationSpacesActive(router, 'files-spaces-generic') && isProjectSpace,
-      homeRoute: createLocationSpaces('files-spaces-generic', {
-        params: {
-          driveAliasAndItem: 'personal'
-        }
-      }),
-      publicLinkRoute: createLocationPublic(
-        'files-public-link',
-        createFileRouteOptions(props.space, {})
-      ),
-      spacesRoute: createLocationSpaces('files-spaces-projects')
-    }
+const { space = null } = defineProps<{
+  space?: SpaceResource | null
+}>()
+
+const router = useRouter()
+const isProjectSpace = space?.driveType === 'project'
+
+const showPublicLinkButton = isLocationPublicActive(router, 'files-public-link')
+const showHomeButton = isLocationSpacesActive(router, 'files-spaces-generic') && !isProjectSpace
+const showSpacesButton = isLocationSpacesActive(router, 'files-spaces-generic') && isProjectSpace
+const homeRoute = createLocationSpaces('files-spaces-generic', {
+  params: {
+    driveAliasAndItem: 'personal'
   }
 })
+const publicLinkRoute = createLocationPublic('files-public-link', createFileRouteOptions(space, {}))
+const spacesRoute = createLocationSpaces('files-spaces-projects')
 </script>

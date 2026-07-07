@@ -16,8 +16,8 @@
   />
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, unref, PropType } from 'vue'
+<script setup lang="ts">
+import { ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { upperFirst } from 'lodash-es'
 import {
@@ -30,90 +30,82 @@ import {
 import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 
-export default defineComponent({
-  name: 'SetLinkPasswordModal',
-  props: {
-    modal: { type: Object as PropType<Modal>, required: true },
-    space: { type: Object as PropType<SpaceResource>, required: true },
-    resource: { type: Object as PropType<Resource>, required: true },
-    link: { type: Object as PropType<LinkShare>, required: true },
-    callbackFn: {
-      type: Function as PropType<() => void>,
-      default: undefined
-    }
-  },
-  emits: ['confirm', 'update:confirmDisabled'],
-  setup(props, { emit, expose }) {
-    const { showMessage, showErrorMessage } = useMessages()
-    const clientService = useClientService()
-    const passwordPolicyService = usePasswordPolicyService()
-    const { $gettext } = useGettext()
-    const { updateLink } = useSharesStore()
+const {
+  space,
+  resource,
+  link,
+  callbackFn = undefined
+} = defineProps<{
+  modal: Modal
+  space: SpaceResource
+  resource: Resource
+  link: LinkShare
+  callbackFn?: () => void
+}>()
 
-    const password = ref('')
-    const errorMessage = ref<string>()
+const emit = defineEmits<{
+  (e: 'confirm'): void
+  (e: 'update:confirmDisabled', value: boolean): void
+}>()
 
-    emit('update:confirmDisabled', true)
+const { showMessage, showErrorMessage } = useMessages()
+const clientService = useClientService()
+const passwordPolicyService = usePasswordPolicyService()
+const { $gettext } = useGettext()
+const { updateLink } = useSharesStore()
 
-    const onKeydownEnter = (event: KeyboardEvent) => {
-      if (isComposingEvent(event)) {
-        return
-      }
-      emit('confirm')
-    }
+const password = ref('')
+const errorMessage = ref<string>()
 
-    const onInput = (value: string) => {
-      password.value = value
-      errorMessage.value = undefined
+emit('update:confirmDisabled', true)
 
-      if (!value) {
-        emit('update:confirmDisabled', true)
-      }
-    }
-
-    const onConfirm = async () => {
-      try {
-        await updateLink({
-          clientService,
-          space: props.space,
-          resource: props.resource,
-          linkShare: props.link,
-          options: { password: unref(password) }
-        })
-        if (props.callbackFn) {
-          props.callbackFn()
-          return
-        }
-        showMessage({ title: $gettext('Link was updated successfully') })
-      } catch (e) {
-        // Human-readable error message is provided, for example when password is on banned list
-        if (e.response?.status === 400) {
-          const errorMsg = e.response.data.error.message
-          errorMessage.value = $gettext(upperFirst(errorMsg))
-          return Promise.reject()
-        }
-
-        showErrorMessage({
-          title: $gettext('Failed to update link'),
-          errors: [e]
-        })
-      }
-    }
-
-    expose({ onConfirm })
-
-    return {
-      password,
-      onInput,
-      onKeydownEnter,
-      errorMessage,
-      passwordPolicyService,
-      inputPasswordPolicy: passwordPolicyService.getPolicy({ enforcePassword: true }),
-      inputGeneratePasswordMethod: () => passwordPolicyService.generatePassword(),
-
-      // unit tests
-      onConfirm
-    }
+const onKeydownEnter = (event: KeyboardEvent) => {
+  if (isComposingEvent(event)) {
+    return
   }
-})
+  emit('confirm')
+}
+
+const onInput = (value: string) => {
+  password.value = value
+  errorMessage.value = undefined
+
+  if (!value) {
+    emit('update:confirmDisabled', true)
+  }
+}
+
+const onConfirm = async () => {
+  try {
+    await updateLink({
+      clientService,
+      space,
+      resource,
+      linkShare: link,
+      options: { password: unref(password) }
+    })
+    if (callbackFn) {
+      callbackFn()
+      return
+    }
+    showMessage({ title: $gettext('Link was updated successfully') })
+  } catch (e) {
+    // Human-readable error message is provided, for example when password is on banned list
+    if (e.response?.status === 400) {
+      const errorMsg = e.response.data.error.message
+      errorMessage.value = $gettext(upperFirst(errorMsg))
+      return Promise.reject()
+    }
+
+    showErrorMessage({
+      title: $gettext('Failed to update link'),
+      errors: [e]
+    })
+  }
+}
+
+const inputPasswordPolicy = passwordPolicyService.getPolicy({ enforcePassword: true })
+const inputGeneratePasswordMethod = () => passwordPolicyService.generatePassword()
+
+defineExpose({ onConfirm })
 </script>

@@ -8,8 +8,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { provide, computed, unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 import FileActions from '../SideBar/Actions/FileActions.vue'
@@ -17,40 +17,23 @@ import FileDetails from '../SideBar/Details/FileDetails.vue'
 import { FileInfo, useOpenWithDefaultApp } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  components: {
-    FileActions,
-    FileDetails,
-    FileInfo
-  },
-  provide() {
-    return {
-      // provide resource and space for sub-components
-      resource: computed(() => this.singleResource),
-      space: computed(() => this.space)
-    }
-  },
-  props: {
-    singleResource: {
-      type: Object as PropType<Resource>,
-      required: false,
-      default: null
-    },
-    space: {
-      type: Object as PropType<SpaceResource>,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const { openWithDefaultApp } = useOpenWithDefaultApp()
-    const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
-    if (unref(openWithDefaultAppQuery) === 'true') {
-      openWithDefaultApp({
-        space: props.space,
-        resource: props.singleResource
-      })
-    }
-  }
-})
+const { singleResource = null, space = null } = defineProps<{
+  singleResource?: Resource | null
+  space?: SpaceResource | null
+}>()
+
+provide(
+  'resource',
+  computed(() => singleResource)
+)
+provide(
+  'space',
+  computed(() => space)
+)
+
+const { openWithDefaultApp } = useOpenWithDefaultApp()
+const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
+if (unref(openWithDefaultAppQuery) === 'true') {
+  openWithDefaultApp({ space, resource: singleResource })
+}
 </script>

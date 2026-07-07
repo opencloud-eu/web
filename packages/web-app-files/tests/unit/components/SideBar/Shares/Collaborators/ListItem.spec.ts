@@ -16,7 +16,7 @@ import { useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
 import EditDropdown from '../../../../../../src/components/SideBar/Shares/Collaborators/EditDropdown.vue'
 import RoleDropdown from '../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { mock } from 'vitest-mock-extended'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource } from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 
 const selectors = {
@@ -142,21 +142,16 @@ describe('Collaborator ListItem component', () => {
       expect(sharesStore.updateShare).toHaveBeenCalled()
     })
     it('shows a message on error', async () => {
-      const resource = mock<SpaceResource>({ driveType: 'project' })
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = createWrapper()
-      vi.spyOn(wrapper.vm, 'saveShareChanges').mockImplementation(() => {
-        throw new Error()
-      })
+      const sharesStore = useSharesStore()
+      vi.mocked(sharesStore.updateShare).mockRejectedValue(new Error())
       wrapper.findComponent<typeof RoleDropdown>('role-dropdown-stub').vm.$emit('optionChange', {
-        share: getShareMock({ shareType: ShareTypes.user.value }),
-        resource
+        share: getShareMock({ shareType: ShareTypes.user.value })
       })
 
       await nextTicks(4)
 
-      const sharesStore = useSharesStore()
-      expect(sharesStore.updateShare).not.toHaveBeenCalled()
       const messagesStore = useMessages()
       expect(messagesStore.showErrorMessage).toHaveBeenCalled()
     })
@@ -172,19 +167,19 @@ describe('Collaborator ListItem component', () => {
       const sharesStore = useSharesStore()
       expect(sharesStore.updateShare).toHaveBeenCalled()
     })
-    it('shows a message on error', () => {
+    it('shows a message on error', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = createWrapper()
-      vi.spyOn(wrapper.vm, 'saveShareChanges').mockImplementation(() => {
-        throw new Error()
-      })
+      const sharesStore = useSharesStore()
+      vi.mocked(sharesStore.updateShare).mockRejectedValue(new Error())
       wrapper
         .findComponent<typeof EditDropdown>('edit-dropdown-stub')
         .vm.$emit('expirationDateChanged', {
           shareExpirationChanged: new Date()
         })
-      const sharesStore = useSharesStore()
-      expect(sharesStore.updateShare).not.toHaveBeenCalled()
+
+      await nextTicks(4)
+
       const messagesStore = useMessages()
       expect(messagesStore.showErrorMessage).toHaveBeenCalled()
     })
