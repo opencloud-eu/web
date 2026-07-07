@@ -58,6 +58,7 @@ Feature: users management
       | Alice |
       | Brian |
       | Carol |
+    And "Admin" clears the selection
     When "Admin" sets the following filter
       | filter | values        |
       | groups | sales,finance |
@@ -139,6 +140,7 @@ Feature: users management
     And "Admin" opens the "admin-settings" app
     And "Admin" navigates to the users management page
     And "Admin" changes role to "Space Admin" for user "David" using the sidebar panel
+    And "Admin" clears the selection
     When "Admin" sets the following filter
       | filter | values     |
       | roles  | User,Admin |
