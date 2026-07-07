@@ -71,6 +71,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @casl/vue to v3.0.1 [[#2813](https://github.com/opencloud-eu/web/pull/2813)]
 - chore(deps): update tiptap monorepo to v3.27.2 [[#2809](https://github.com/opencloud-eu/web/pull/2809)]
 - chore(deps): update typescript-eslint monorepo to v8.63.0 [[#2811](https://github.com/opencloud-eu/web/pull/2811)]
 - chore(deps): update devdependencies (non-major) to v4.1.10 [[#2808](https://github.com/opencloud-eu/web/pull/2808)]
