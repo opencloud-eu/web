@@ -1,11 +1,12 @@
 <template>
   <div class="no-content-message flex flex-col justify-center items-center text-center">
-    <oc-image
+    <component
+      :is="isSvg ? InlineSvg : 'oc-image'"
       v-if="imgSrc"
+      :src="imgSrc"
+      class="mb-4 no-content-message-image"
       width="120"
       height="120"
-      class="mb-4"
-      :src="imgSrc"
       :alt="$gettext('No content image')"
     />
     <oc-icon
@@ -26,7 +27,11 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import InlineSvg from 'vue-inline-svg'
 import { FillType } from '@opencloud-eu/design-system/helpers'
+
+InlineSvg.name = 'inline-svg'
 
 const {
   icon = '',
@@ -37,6 +42,8 @@ const {
   iconFillType?: FillType
   imgSrc?: string
 }>()
+
+const isSvg = computed(() => imgSrc.toLowerCase().endsWith('.svg'))
 </script>
 <style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
@@ -44,6 +51,10 @@ const {
 @layer components {
   .no-content-message {
     height: 65vh;
+  }
+
+  .no-content-message-image :deep(.background-splash) {
+    fill: var(--oc-role-surface-container-highest);
   }
 }
 </style>
