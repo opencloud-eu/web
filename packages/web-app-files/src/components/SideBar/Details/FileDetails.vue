@@ -4,13 +4,15 @@
       <div class="flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4">
         <div v-if="preview || isPreviewLoading" data-testid="preview">
           <oc-spinner v-if="isPreviewLoading" :aria-label="$gettext('Loading preview')" />
-          <img
+          <motion-photo-overlay
             v-else
-            key="file-thumbnail"
-            :src="preview"
-            class="details-preview h-[160px]"
-            alt=""
-          />
+            :resource="resource"
+            :space="space"
+            badge-size="medium"
+            badge-class="top-1 right-1"
+          >
+            <img key="file-thumbnail" :src="preview" class="details-preview h-[160px]" alt="" />
+          </motion-photo-overlay>
         </div>
         <resource-icon v-else class="details-icon" :resource="resource" size="xxxlarge" />
       </div>
@@ -140,7 +142,7 @@ import {
   isTrashResource,
   ShareTypes
 } from '@opencloud-eu/web-client'
-import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
+import { MotionPhotoOverlay, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import { formatFileSize, formatRelativeDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
