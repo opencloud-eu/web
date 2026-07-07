@@ -2,7 +2,7 @@
   <template v-if="floatingActionButton && isTablet && !floatingActionButton?.isDisabled?.()">
     <oc-floating-action-button
       :button-id="getButtonId(floatingActionButton.id)"
-      :color-role="currentTheme.isDark ? 'primary-container' : 'primary'"
+      :color-role="currentTheme.isDark ? 'primaryContainer' : 'primary'"
       class="oc-app-floating-action-button"
       :class="{
         'bottom-[70px]': isEmbedModeEnabled,

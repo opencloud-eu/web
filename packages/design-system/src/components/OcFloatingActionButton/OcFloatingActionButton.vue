@@ -35,6 +35,7 @@
 import { computed, ref, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
+import { ColorRoleType } from '../../helpers'
 
 export interface Props {
   /**
@@ -51,7 +52,7 @@ export interface Props {
    * @docs The color role of the floating action button.
    * @default secondary
    */
-  colorRole?: string
+  colorRole?: ColorRoleType
   /**
    * @docs The mode of the floating action button.
    * @default menu
