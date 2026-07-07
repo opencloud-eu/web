@@ -5,7 +5,7 @@ exports[`InviteCollaborator RecipientContainer > displays an avatar image if cap
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
@@ -14,33 +14,33 @@ exports[`InviteCollaborator RecipientContainer > renders a recipient with a dese
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
 exports[`InviteCollaborator RecipientContainer > renders a recipient with a deselect button > different recipients for different shareTypes 2`] = `
-"<span data-v-1e6c8369="" class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md wrap-anywhere" data-testid="recipient-container-Albert Einstein"><div data-v-1e6c8369="" data-test-item-name="Group" aria-label="Group" role="img" data-testid="recipient-icon"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-secondary); width: 16.8px; height: 16.8px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="fill" name="group" size="xsmall" type="span"></oc-icon-stub></span></div>
+"<span data-v-1e6c8369="" class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md wrap-anywhere" data-testid="recipient-container-Albert Einstein"><div data-v-1e6c8369="" data-test-item-name="Group" aria-label="Group" role="img" data-testid="recipient-icon"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-secondary); width: 16.8px; height: 16.8px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="fill" name="group" size="xsmall" sizeclass="size-5" type="span"></oc-icon-stub></span></div>
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
 exports[`InviteCollaborator RecipientContainer > renders a recipient with a deselect button > different recipients for different shareTypes 3`] = `
-"<span data-v-1e6c8369="" class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md wrap-anywhere" data-testid="recipient-container-Albert Einstein"><div data-v-1e6c8369="" data-test-item-name="Guest user" aria-label="Guest user" role="img" data-testid="recipient-icon"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-secondary); width: 16.8px; height: 16.8px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="fill" name="global" size="xsmall" type="span"></oc-icon-stub></span></div>
+"<span data-v-1e6c8369="" class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md wrap-anywhere" data-testid="recipient-container-Albert Einstein"><div data-v-1e6c8369="" data-test-item-name="Guest user" aria-label="Guest user" role="img" data-testid="recipient-icon"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-secondary); width: 16.8px; height: 16.8px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="fill" name="global" size="xsmall" sizeclass="size-5" type="span"></oc-icon-stub></span></div>
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
 exports[`InviteCollaborator RecipientContainer > renders a recipient with a deselect button > different recipients for different shareTypes 4`] = `
-"<span data-v-1e6c8369="" class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md wrap-anywhere" data-testid="recipient-container-Albert Einstein"><div data-v-1e6c8369="" data-test-item-name="External user" aria-label="External user" role="img" data-testid="recipient-icon"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-secondary); width: 16.8px; height: 16.8px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="fill" name="earth" size="xsmall" type="span"></oc-icon-stub></span></div>
+"<span data-v-1e6c8369="" class="oc-recipient bg-role-surface-container flex items-center justify-center outline outline-role-outline rounded-md wrap-anywhere" data-testid="recipient-container-Albert Einstein"><div data-v-1e6c8369="" data-test-item-name="External user" aria-label="External user" role="img" data-testid="recipient-icon"><span class="oc-avatar-item inline-flex items-center justify-center rounded-[50%] bg-center bg-no-repeat bg-size-[18px]" style="background-color: var(--oc-role-secondary); width: 16.8px; height: 16.8px;"><oc-icon-stub accessiblelabel="" color="var(--oc-role-on-surface)" filltype="fill" name="earth" size="xsmall" sizeclass="size-5" type="span"></oc-icon-stub></span></div>
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
 </button></span>"
 `;

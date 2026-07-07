@@ -64,6 +64,7 @@ export interface ApplicationFileExtension {
   label?: string | (() => string)
   name?: string
   icon?: string
+  iconFillType?: IconFillType
   mimeType?: string
   newFileMenu?: {
     menuTitle: () => string

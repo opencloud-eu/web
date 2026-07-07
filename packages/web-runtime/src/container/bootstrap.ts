@@ -337,10 +337,11 @@ export const announceApplicationsReady = async ({
     const app = appsStore.apps[fileExtensions.app]
 
     const getIconDefinition = () => {
+      const fillType = fileExtensions.iconFillType || app.iconFillType
       return {
         name: fileExtensions.icon || app.icon,
-        ...(app.iconFillType && {
-          fillType: app.iconFillType
+        ...(fillType && {
+          fillType
         }),
         ...(app.iconColor && {
           color: app.iconColor

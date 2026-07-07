@@ -1,7 +1,7 @@
 <template>
   <div v-if="resource" class="flex justify-between min-w-0 ml-2">
     <div class="flex items-center min-w-0">
-      <resource-icon :resource="resource" size="large" class="mr-2 relative shrink-0" />
+      <resource-icon :resource="resource" class="mr-2 relative shrink-0" />
       <div class="min-w-0">
         <h2 data-testid="files-info-name" class="font-semibold m-0 text-base min-w-0">
           <resource-name

@@ -173,7 +173,7 @@ import {
   FileActionOptions,
   useResourceViewHelpers
 } from '../../composables'
-import { SizeType, SortDir } from '@opencloud-eu/design-system/helpers'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 import ResourceStatusIndicators from './ResourceStatusIndicators.vue'
 import { storeToRefs } from 'pinia'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -274,17 +274,17 @@ const selectSorting = (field: SortField) => {
   emit('sort', { sortBy: field.name, sortDir: unref(field.sortDir) })
 }
 
-const resourceIconSize = computed<SizeType>(() => {
+const resourceIconSize = computed(() => {
   const sizeMap: Record<number, string> = {
-    1: 'xlarge',
-    2: 'xlarge',
-    3: 'xxlarge',
-    4: 'xxlarge',
-    5: 'xxxlarge',
-    6: 'xxxlarge'
+    1: 'size-12',
+    2: 'size-12',
+    3: 'size-22',
+    4: 'size-22',
+    5: 'size-42',
+    6: 'size-42'
   }
   const size = unref(viewSizeCurrent)
-  return (sizeMap[size] ?? 'xxlarge') as SizeType
+  return sizeMap[size] ?? 'size-22'
 })
 
 const viewWidth = ref(0)

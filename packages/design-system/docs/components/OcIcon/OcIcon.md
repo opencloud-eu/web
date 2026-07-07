@@ -48,18 +48,14 @@ The available fill types are: `fill`, `line` and `none`.
 
 ### Sizes
 
-The available sizes are: `xsmall`, `small`, `medium`, `large`, `xlarge`, `xxlarge` and `xxxlarge`.
+You can use Tailwind size classes to set the size of the icon.
 
 ::: livecode
 
 ```html
-<oc-icon name="check" size="xsmall" />
-<oc-icon name="check" size="small" />
-<oc-icon name="check" size="medium" />
-<oc-icon name="check" size="large" />
-<oc-icon name="check" size="xlarge" />
-<oc-icon name="check" size="xxlarge" />
-<oc-icon name="check" size="xxxlarge" />
+<oc-icon name="check" size-class="size-4" />
+<oc-icon name="check" size-class="size-6" />
+<oc-icon name="check" size-class="size-8" />
 ```
 
 :::
