@@ -18,7 +18,7 @@
     "required": false,
     "description": "Material design color role.",
     "default": "secondary",
-    "type": "| 'primary'\n    | 'primaryContainer'\n    | 'primaryFixed'\n    | 'secondary'\n    | 'secondaryContainer'\n    | 'secondaryFixed'\n    | 'tertiary'\n    | 'tertiaryContainer'\n    | 'tertiaryFixed'\n    | 'surface'\n    | 'surfaceContainer'\n    | 'chrome'"
+    "type": "ColorRoleType"
   },
   {
     "name": "disabled",
