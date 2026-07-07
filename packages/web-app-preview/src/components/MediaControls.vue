@@ -110,6 +110,17 @@
           />
         </oc-button>
       </div>
+      <oc-button
+        v-if="showMotionControl"
+        v-oc-tooltip="motionDescription"
+        class="preview-controls-motion raw-hover-surface p-1"
+        data-testid="motion-photo-toggle"
+        appearance="raw"
+        :aria-label="motionDescription"
+        @click="emit('toggleMotion')"
+      >
+        <oc-icon fill-type="line" :name="isMotionPlaying ? 'pause-circle' : 'play-circle'" />
+      </oc-button>
 
       <template v-if="showFavoriteButton || showDeleteButton">
         <span
@@ -163,6 +174,8 @@ const {
   isFullScreenModeActivated = false,
   isFolderLoading = false,
   showImageControls = false,
+  showMotionControl = false,
+  isMotionPlaying = false,
   currentImageRotation = 0
 } = defineProps<{
   files: MediaFile[]
@@ -170,6 +183,8 @@ const {
   isFullScreenModeActivated?: boolean
   isFolderLoading?: boolean
   showImageControls?: boolean
+  showMotionControl?: boolean
+  isMotionPlaying?: boolean
   currentImageRotation?: number
   photoRollEnabled?: boolean
 }>()
@@ -187,6 +202,7 @@ const emit = defineEmits<{
   (e: 'resetImage'): void
   (e: 'deleteResource'): void
   (e: 'togglePhotoRoll'): void
+  (e: 'toggleMotion'): void
 }>()
 
 const { $gettext } = useGettext()
@@ -274,4 +290,7 @@ const imageRotateRightDescription = computed(() =>
 )
 const previousDescription = computed(() => $gettext('Show previous media file in folder'))
 const nextDescription = computed(() => $gettext('Show next media file in folder'))
+const motionDescription = computed(() =>
+  isMotionPlaying ? $gettext('Pause motion photo') : $gettext('Play motion photo')
+)
 </script>

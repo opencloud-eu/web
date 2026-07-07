@@ -31,6 +31,7 @@ directives:
     - '''self'''
   media-src:
     - '''self'''
+    - 'blob:'
   object-src:
     - '''self'''
     - 'blob:'
