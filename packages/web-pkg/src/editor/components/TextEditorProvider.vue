@@ -11,10 +11,8 @@ import type { TextEditorInstance } from '../types'
 const props = defineProps<{
   editor: TextEditorInstance
   actionsToDisplay?: string[]
-  toolbarCompact?: boolean
 }>()
 
 provide('textEditor', props.editor)
 provide('textEditorActionsToDisplay', toRef(props, 'actionsToDisplay'))
-provide('textEditorToolbarCompact', toRef(props, 'toolbarCompact'))
 </script>

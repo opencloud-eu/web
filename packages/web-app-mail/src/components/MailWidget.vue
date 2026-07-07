@@ -36,7 +36,7 @@
           <MailComposeForm
             v-model="composeState"
             :actions-to-display="composeActionsToDisplay"
-            toolbar-compact
+            :toolbar-drop-teleport="composeToolbarDropTeleport"
           />
         </div>
         <div :id="composeToolbarDropId" />
@@ -90,7 +90,6 @@
           <MailComposeForm
             v-model="composeState"
             :actions-to-display="expandedComposeActionsToDisplay"
-            :toolbar-compact="isMobile"
             :toolbar-drop-teleport="composeToolbarDropTeleport"
           />
         </div>

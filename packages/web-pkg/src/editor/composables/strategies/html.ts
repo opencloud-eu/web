@@ -9,6 +9,8 @@ import Image from '@tiptap/extension-image'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import TextAlign from '@tiptap/extension-text-align'
+
 import {
   TextStyle,
   FontFamily,
@@ -18,8 +20,8 @@ import {
   LineHeight
 } from '@tiptap/extension-text-style'
 import {
+  EditorActionGroup,
   useEditorActions,
-  type EditorActionGroup,
   type UseEditorActionsOptions
 } from '../useEditorActions'
 import { TextEditorState } from '../../types'
@@ -58,6 +60,9 @@ export const useStrategyHtml = (
       TableHeader,
       TaskList,
       TaskItem.configure({ nested: true }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph']
+      }),
       FontFamily,
       TextStyle,
       Underline,
@@ -71,6 +76,7 @@ export const useStrategyHtml = (
   const {
     undo,
     redo,
+    toggleSourceMode,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -87,6 +93,10 @@ export const useStrategyHtml = (
     heading4,
     blockquote,
     codeBlock,
+    alignLeft,
+    alignCenter,
+    alignRight,
+    alignJustify,
     bulletList,
     orderedList,
     taskList,
@@ -115,6 +125,11 @@ export const useStrategyHtml = (
         actions: [undo(), redo()]
       },
       {
+        id: 'view-options',
+        title: $gettext('View options'),
+        actions: [toggleSourceMode()]
+      },
+      {
         id: 'formatting',
         title: $gettext('Formatting'),
         actions: [
@@ -135,6 +150,11 @@ export const useStrategyHtml = (
           underline(),
           strikethrough()
         ]
+      },
+      {
+        id: 'text-align',
+        title: $gettext('Text align'),
+        actions: [alignLeft(), alignCenter(), alignRight(), alignJustify()]
       },
       {
         id: 'lists',
