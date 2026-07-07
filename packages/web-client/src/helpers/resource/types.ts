@@ -1,5 +1,13 @@
 import { DavFileInfoResponse } from '@opencloud-eu/web-client/webdav'
-import { Audio, GeoCoordinates, Identity, Image, Photo, User } from '../../graph/generated'
+import {
+  Audio,
+  GeoCoordinates,
+  Identity,
+  Image,
+  MotionPhoto,
+  Photo,
+  User
+} from '../../graph/generated'
 import { MongoAbility, SubjectRawRule } from '@casl/ability'
 import { DAVResultResponseProps, FileStat } from 'webdav'
 
@@ -44,6 +52,7 @@ export interface Resource {
   location?: GeoCoordinates
   image?: Image
   photo?: Photo
+  motionPhoto?: MotionPhoto
   path: string
   webDavPath?: string
   downloadURL?: string
