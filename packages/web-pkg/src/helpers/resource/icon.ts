@@ -5,6 +5,7 @@ export type IconType = {
   name: string
   color?: string
   fillType?: IconFillType
+  hasDarkVariant?: boolean
 }
 
 export type ResourceIconMapping = Record<'mimeType' | 'extension', Record<string, IconType>>
@@ -12,7 +13,7 @@ export const resourceIconMappingInjectionKey = 'oc-resource-icon-mapping'
 
 const fileIcon = {
   archive: {
-    icon: { name: 'resource-type-archive', color: 'var(--oc-color-icon-archive)' },
+    icon: { name: 'resource-type-archive' },
     extensions: [
       '7z',
       'apk',
@@ -31,7 +32,7 @@ const fileIcon = {
     ]
   },
   audio: {
-    icon: { name: 'resource-type-audio', color: 'var(--oc-color-icon-audio)' },
+    icon: { name: 'resource-type-audio' },
     extensions: [
       '3gp',
       '8svx',
@@ -79,7 +80,7 @@ const fileIcon = {
     ]
   },
   code: {
-    icon: { name: 'resource-type-code', color: 'var(--oc-role-on-surface)' },
+    icon: { name: 'resource-type-code', hasDarkVariant: true },
     extensions: [
       'bash',
       'c++',
@@ -92,8 +93,6 @@ const fileIcon = {
       'h',
       'hh',
       'hpp',
-      'htm',
-      'html',
       'java',
       'js',
       'json',
@@ -110,8 +109,20 @@ const fileIcon = {
       'yml'
     ]
   },
+  csv: {
+    icon: { name: 'resource-type-csv', hasDarkVariant: true },
+    extensions: ['csv']
+  },
+  html: {
+    icon: { name: 'resource-type-html', hasDarkVariant: true },
+    extensions: ['htm', 'html']
+  },
+  svg: {
+    icon: { name: 'resource-type-svg', hasDarkVariant: true },
+    extensions: ['svg']
+  },
   default: {
-    icon: { name: 'resource-type-file', color: 'var(--oc-role-on-surface)' },
+    icon: { name: 'resource-type-file', hasDarkVariant: true },
     extensions: ['accdb', 'rss', 'swf']
   },
   drawio: {
@@ -119,7 +130,7 @@ const fileIcon = {
     extensions: ['drawio']
   },
   document: {
-    icon: { name: 'resource-type-document', color: 'var(--oc-color-icon-document)' },
+    icon: { name: 'resource-type-document', hasDarkVariant: true },
     extensions: ['doc', 'docm', 'docx', 'dot', 'dotx', 'lwp', 'odt', 'one', 'vsd', 'wpd']
   },
   ifc: {
@@ -127,11 +138,11 @@ const fileIcon = {
     extensions: ['ifc']
   },
   ipynb: {
-    icon: { name: 'resource-type-jupyter', color: 'var(--oc-color-icon-jupyter)' },
+    icon: { name: 'resource-type-jupyter', hasDarkVariant: true },
     extensions: ['ipynb']
   },
   image: {
-    icon: { name: 'resource-type-image', color: 'var(--oc-color-icon-image)' },
+    icon: { name: 'resource-type-image' },
     extensions: [
       'ai',
       'cdr',
@@ -145,7 +156,6 @@ const fileIcon = {
       'png',
       'ps',
       'psd',
-      'svg',
       'ttf',
       'webp',
       'woff',
@@ -157,7 +167,7 @@ const fileIcon = {
     extensions: ['docf', 'docxf', 'oform']
   },
   markdown: {
-    icon: { name: 'resource-type-markdown', color: 'var(--oc-color-icon-markdown)' },
+    icon: { name: 'resource-type-markdown', hasDarkVariant: true },
     extensions: ['md', 'markdown']
   },
   odg: {
@@ -165,11 +175,11 @@ const fileIcon = {
     extensions: ['odg']
   },
   pdf: {
-    icon: { name: 'resource-type-pdf', color: 'var(--oc-color-icon-pdf)' },
+    icon: { name: 'resource-type-pdf', hasDarkVariant: true },
     extensions: ['pdf']
   },
   presentation: {
-    icon: { name: 'resource-type-presentation', color: 'var(--oc-color-icon-presentation)' },
+    icon: { name: 'resource-type-presentation', hasDarkVariant: true },
     extensions: [
       'odp',
       'otp',
@@ -191,11 +201,11 @@ const fileIcon = {
     extensions: ['root']
   },
   spreadsheet: {
-    icon: { name: 'resource-type-spreadsheet', color: 'var(--oc-color-icon-spreadsheet)' },
-    extensions: ['csv', 'ods', 'xla', 'xlam', 'xls', 'xlsb', 'xlsm', 'xlsx', 'xlt', 'xltm', 'xltx']
+    icon: { name: 'resource-type-spreadsheet', hasDarkVariant: true },
+    extensions: ['ods', 'xla', 'xlam', 'xls', 'xlsb', 'xlsm', 'xlsx', 'xlt', 'xltm', 'xltx']
   },
   text: {
-    icon: { name: 'resource-type-text', color: 'var(--oc-role-on-surface)' },
+    icon: { name: 'resource-type-text', hasDarkVariant: true },
     extensions: ['cb7', 'cba', 'cbr', 'cbt', 'cbtc', 'cbz', 'cvbdl', 'eml', 'mdb', 'tex', 'txt']
   },
   url: {
@@ -204,13 +214,12 @@ const fileIcon = {
   },
   video: {
     icon: {
-      name: 'resource-type-video',
-      color: 'var(--oc-color-icon-video)'
+      name: 'resource-type-video'
     },
     extensions: ['mov', 'mp4', 'webm', 'wmv']
   },
   epub: {
-    icon: { name: 'resource-type-book', color: 'var(--oc-color-icon-epub)' },
+    icon: { name: 'resource-type-book', hasDarkVariant: true },
     extensions: ['epub']
   },
   board: {
@@ -218,9 +227,13 @@ const fileIcon = {
     extensions: ['ggs']
   },
   notes: {
-    icon: { name: 'resource-type-sticky-note', color: 'var(--oc-color-icon-notes)' },
+    icon: { name: 'resource-type-sticky-note', hasDarkVariant: true },
     extensions: ['ocnb']
   }
+}
+
+export function getResourceIconName(icon: IconType, isDark: boolean) {
+  return icon.hasDarkVariant && isDark ? `${icon.name}-dark` : icon.name
 }
 
 export function createDefaultFileIconMapping() {

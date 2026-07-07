@@ -2,7 +2,7 @@
   <div class="mail-attachment-item flex justify-between items-center">
     <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
       <oc-icon
-        :name="icon?.name ?? 'file-2'"
+        :name="iconName"
         :color="icon?.color"
         size="large"
         class="inline-flex items-center"
@@ -41,6 +41,7 @@
 <script setup lang="ts">
 import { urlJoin } from '@opencloud-eu/web-client'
 import { computed, inject } from 'vue'
+import { storeToRefs } from 'pinia'
 import type { MailBodyPart } from '../types'
 import type { MailComposeAttachment } from './MailComposeForm.vue'
 import {
@@ -48,10 +49,12 @@ import {
   useConfigStore,
   formatFileSize,
   useMessages,
+  getResourceIconName,
   ResourceIconMapping,
   resourceIconMappingInjectionKey,
   createDefaultFileIconMapping,
-  triggerDownloadWithFilename
+  triggerDownloadWithFilename,
+  useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { hasBlobId, hasId } from '../helpers/mailAttachmentGuards'
@@ -80,6 +83,8 @@ const { current: currentLanguage, $gettext } = useGettext()
 const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
 const defaultFileIconMapping = createDefaultFileIconMapping()
 
+const { currentTheme } = storeToRefs(useThemeStore())
+
 const mimeType = computed(() => {
   return attachment.type ?? ''
 })
@@ -95,6 +100,13 @@ const icon = computed(() => {
     (mimeType.value && iconMappingInjection?.mimeType?.[mimeType.value]) ||
     (extension && iconMappingInjection?.extension?.[extension])
   )
+})
+
+const iconName = computed(() => {
+  if (!icon.value) {
+    return 'file-2'
+  }
+  return getResourceIconName(icon.value, !!currentTheme.value?.isDark)
 })
 
 const attachmentBlobId = computed(() => {

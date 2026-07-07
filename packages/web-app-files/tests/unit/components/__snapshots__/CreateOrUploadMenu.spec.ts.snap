@@ -5,7 +5,7 @@ exports[`CreateOrUploadMenu component > action buttons > should show and be enab
   <oc-list-stub raw="false" id="create-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-folder-btn" class="w-full">
-        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Folder</span>
+        <resource-icon-stub resource="[object Object]" sizeclass="size-5"></resource-icon-stub> <span>Folder</span>
       </oc-button-stub>
     </li>
   </oc-list-stub>
@@ -21,13 +21,13 @@ exports[`CreateOrUploadMenu component > action buttons > should show and be enab
   <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-txt">
-        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Plain text file</span>
+        <resource-icon-stub resource="[object Object]" sizeclass="size-5"></resource-icon-stub> <span>Plain text file</span>
         <!--v-if-->
       </oc-button-stub>
     </li>
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-md">
-        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Mark-down file</span>
+        <resource-icon-stub resource="[object Object]" sizeclass="size-5"></resource-icon-stub> <span>Mark-down file</span>
         <!--v-if-->
       </oc-button-stub>
     </li>
@@ -35,7 +35,7 @@ exports[`CreateOrUploadMenu component > action buttons > should show and be enab
   <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-shortcut-btn" class="w-full">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="external-link" size="medium" type="span"></oc-icon-stub> <span>Shortcut</span>
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="external-link" size="medium" sizeclass="size-5" type="span"></oc-icon-stub> <span>Shortcut</span>
         <!--v-if-->
       </oc-button-stub>
     </li>
@@ -48,7 +48,7 @@ exports[`CreateOrUploadMenu component > file handlers > should show entries for 
   <oc-list-stub raw="false" id="create-list" class="py-2 sm:first:pt-0 sm:last:pb-0">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-folder-btn" class="w-full">
-        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Folder</span>
+        <resource-icon-stub resource="[object Object]" sizeclass="size-5"></resource-icon-stub> <span>Folder</span>
       </oc-button-stub>
     </li>
   </oc-list-stub>
@@ -64,13 +64,13 @@ exports[`CreateOrUploadMenu component > file handlers > should show entries for 
   <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-txt">
-        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Plain text file</span>
+        <resource-icon-stub resource="[object Object]" sizeclass="size-5"></resource-icon-stub> <span>Plain text file</span>
         <!--v-if-->
       </oc-button-stub>
     </li>
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="w-full new-file-btn-md">
-        <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span>Mark-down file</span>
+        <resource-icon-stub resource="[object Object]" sizeclass="size-5"></resource-icon-stub> <span>Mark-down file</span>
         <!--v-if-->
       </oc-button-stub>
     </li>
@@ -78,7 +78,7 @@ exports[`CreateOrUploadMenu component > file handlers > should show entries for 
   <oc-list-stub raw="false" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
     <li>
       <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="left" showspinner="false" size="medium" submit="button" type="button" nohover="false" id="new-shortcut-btn" class="w-full">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="external-link" size="medium" type="span"></oc-icon-stub> <span>Shortcut</span>
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="external-link" size="medium" sizeclass="size-5" type="span"></oc-icon-stub> <span>Shortcut</span>
         <!--v-if-->
       </oc-button-stub>
     </li>

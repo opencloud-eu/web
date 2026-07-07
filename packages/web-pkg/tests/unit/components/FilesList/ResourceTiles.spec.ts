@@ -239,12 +239,12 @@ describe('ResourceTiles component', () => {
   })
 
   it.each([
-    { viewSize: 1, expected: 'xlarge' },
-    { viewSize: 2, expected: 'xlarge' },
-    { viewSize: 3, expected: 'xxlarge' },
-    { viewSize: 4, expected: 'xxlarge' },
-    { viewSize: 5, expected: 'xxxlarge' },
-    { viewSize: 6, expected: 'xxxlarge' }
+    { viewSize: 1, expected: 'size-12' },
+    { viewSize: 2, expected: 'size-12' },
+    { viewSize: 3, expected: 'size-22' },
+    { viewSize: 4, expected: 'size-22' },
+    { viewSize: 5, expected: 'size-42' },
+    { viewSize: 6, expected: 'size-42' }
   ])('passes the "viewSize" to the OcTile component', async (data) => {
     const { wrapper } = getWrapper({
       props: { resources: spacesResources, viewSize: data.viewSize }

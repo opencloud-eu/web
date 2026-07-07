@@ -21,11 +21,7 @@
           appearance="raw"
           @click="createNewFolderAction"
         >
-          <resource-icon
-            :resource="folderIconResource"
-            size="medium"
-            class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
-          />
+          <resource-icon :resource="folderIconResource" />
           <span v-text="$gettext('Folder')" />
         </oc-button>
       </li>
@@ -89,11 +85,7 @@
           :disabled="isActionDisabled(fileAction)"
           @click="() => fileAction.handler()"
         >
-          <resource-icon
-            :resource="getIconResource(fileAction)"
-            size="medium"
-            class="[&_svg]:h-5.5! sm:[&_svg]:h-full"
-          />
+          <resource-icon :resource="getIconResource(fileAction)" />
           <span>{{ fileAction.label() }}</span>
           <span v-if="areFileExtensionsShown && fileAction.ext" class="ml-auto text-sm">
             {{ fileAction.ext }}
@@ -222,13 +214,3 @@ const folderIconResource = computed(() => {
   return { isFolder: true, extension: '' } as Resource
 })
 </script>
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  #create-or-upload-drop .oc-icon svg {
-    /* reset the resource icon height because the ResourceIcon component messes with it */
-    @apply h-5.5;
-  }
-}
-</style>

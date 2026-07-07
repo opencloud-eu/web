@@ -21,6 +21,8 @@ export default defineWebApplication({
         {
           extension: 'vault',
           type: 'folder',
+          icon: 'resource-type-vault',
+          iconFillType: 'fill',
           newFileMenu: {
             menuTitle() {
               return $gettext('Vault')

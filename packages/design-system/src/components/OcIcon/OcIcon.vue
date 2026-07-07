@@ -52,8 +52,14 @@ export interface Props {
   /**
    * @docs Size of the icon.
    * @default medium
+   * @deprecated use sizeClass instead
    */
   size?: SizeType
+  /**
+   * @docs Tailwind size class for the icon. Please refer to Tailwind documentation for a list of available size classes.
+   * @default size-5
+   */
+  sizeClass?: string
   /**
    * @docs HTML element to be used for the icon.
    * @default span
@@ -73,7 +79,8 @@ const {
   color = '',
   fillType = 'fill',
   name = 'info',
-  size = 'medium',
+  size = undefined,
+  sizeClass = 'size-5',
   type = 'span'
 } = defineProps<Props>()
 
@@ -90,15 +97,26 @@ const nameWithFillType = computed(() => {
   return `${path}${name}-${lowerFillType}.svg`
 })
 
-const tailwindSize = computed(() => ({
-  'size-3': size === 'xsmall',
-  'size-4': size === 'small',
-  'size-5': size === 'medium',
-  'size-8': size === 'large',
-  'size-12': size === 'xlarge',
-  'size-22': size === 'xxlarge',
-  'size-42': size === 'xxxlarge'
-}))
+const tailwindSize = computed(() => {
+  const getSize = (s: string) => {
+    return {
+      'size-3': s === 'xsmall',
+      'size-4': s === 'small',
+      'size-5': s === 'medium',
+      'size-8': s === 'large',
+      'size-12': s === 'xlarge',
+      'size-22': s === 'xxlarge',
+      'size-42': s === 'xxxlarge'
+    }
+  }
+  if (size) {
+    return getSize(size)
+  }
+  if (sizeClass) {
+    return sizeClass
+  }
+  return getSize('medium')
+})
 
 const transformSvgElement = (svg: SVGElement) => {
   if (accessibleLabel !== '') {

@@ -68,7 +68,7 @@
             <resource-icon
               v-else
               :resource="resource"
-              :size="resourceIconSize"
+              :size-class="resourceIconSize"
               class="tile-default-image pt-1 relative"
             >
               <template v-if="showStatusIcon" #status>
@@ -123,7 +123,6 @@ import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
 import { OcCard } from '@opencloud-eu/design-system/components'
 import { useFolderLink } from '../../composables'
 
@@ -136,7 +135,7 @@ const {
   isResourceDisabled = false,
   isExtensionDisplayed = true,
   isPathDisplayed = false,
-  resourceIconSize = 'xlarge',
+  resourceIconSize = 'size-12',
   lazy = false,
   isLoading = false
 } = defineProps<{
@@ -148,7 +147,7 @@ const {
   isResourceDisabled?: boolean
   isExtensionDisplayed?: boolean
   isPathDisplayed?: boolean
-  resourceIconSize?: SizeType
+  resourceIconSize?: string
   lazy?: boolean
   isLoading?: boolean
 }>()

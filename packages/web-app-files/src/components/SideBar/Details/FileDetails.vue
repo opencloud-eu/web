@@ -12,7 +12,12 @@
             alt=""
           />
         </div>
-        <resource-icon v-else class="details-icon" :resource="resource" size="xxxlarge" />
+        <resource-icon
+          v-else
+          class="details-icon h-[160px]"
+          :resource="resource"
+          size-class="size-22"
+        />
       </div>
       <div
         v-if="!publicLinkContextReady && shareIndicators.length"

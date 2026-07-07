@@ -8,7 +8,7 @@ exports[`OcModal > displays input 1`] = `
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Create new folder</h2>
         <div class="flex items-center gap-1">
           <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
-            <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="medium" type="span"></oc-icon-stub>
+            <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span"></oc-icon-stub>
           </oc-button-stub>
         </div>
       </div>
@@ -67,7 +67,7 @@ exports[`OcModal > matches snapshot 1`] = `
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1">
           <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
-            <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="medium" type="span"></oc-icon-stub>
+            <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span"></oc-icon-stub>
           </oc-button-stub>
         </div>
       </div>
@@ -94,7 +94,7 @@ exports[`OcModal > overrides props message with slot 1`] = `
         <h2 id="oc-modal-title" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1">
           <oc-button-stub arialabel="Cancel" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="oc-modal-title-actions-cancel">
-            <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="medium" type="span"></oc-icon-stub>
+            <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span"></oc-icon-stub>
           </oc-button-stub>
         </div>
       </div>

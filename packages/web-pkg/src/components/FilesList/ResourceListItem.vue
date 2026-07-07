@@ -22,7 +22,7 @@
         v-oc-tooltip="tooltipLabelIcon"
         :src="thumbnail"
         :data-test-thumbnail-resource-name="resource.name"
-        class="rounded-xs size-8 object-cover max-w-fit"
+        class="rounded-xs size-6 object-cover max-w-fit"
         :aria-label="tooltipLabelIcon"
         alt=""
       />
@@ -32,6 +32,7 @@
         :aria-label="tooltipLabelIcon"
         aria-hidden="true"
         :resource="resource"
+        size-class="size-6"
       />
     </resource-link>
     <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">
@@ -64,7 +65,7 @@
           class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
           :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >
-          <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" />
+          <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" size-class="size-4" />
           <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
         </component>
       </div>
