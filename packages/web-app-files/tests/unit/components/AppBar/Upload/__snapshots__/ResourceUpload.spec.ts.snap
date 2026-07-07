@@ -4,7 +4,7 @@ exports[`Resource Upload Component > file upload > should render component 1`] =
 "<div class="relative"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
     <!-- @slot Content of the button -->
-    <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span id="files-file-upload-button">Files</span>
+    <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-file-upload" sizeclass="size-5" type="span"></oc-icon-stub> <span id="files-file-upload-button">Files</span>
   </button> <input id="files-file-upload-input" multiple="" class="hidden" type="file" aria-labelledby="files-file-upload-button" name="folder" tabindex="-1" hidden=""></div>"
 `;
 
@@ -12,6 +12,6 @@ exports[`Resource Upload Component > folder upload > should render component 1`]
 "<div class="relative"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
     <!--v-if-->
     <!-- @slot Content of the button -->
-    <resource-icon-stub resource="[object Object]" size="medium" class="[&amp;_svg]:h-5.5! sm:[&amp;_svg]:h-full"></resource-icon-stub> <span id="files-folder-upload-button">Folder</span>
+    <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder-upload" sizeclass="size-5" type="span"></oc-icon-stub> <span id="files-folder-upload-button">Folder</span>
   </button> <input id="files-folder-upload-input" webkitdirectory="true" mozdirectory="true" allowdirs="true" class="hidden" type="file" aria-labelledby="files-folder-upload-button" name="file" tabindex="-1" hidden=""></div>"
 `;

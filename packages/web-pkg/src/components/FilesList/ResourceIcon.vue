@@ -1,16 +1,16 @@
 <template>
   <oc-icon
-    :key="`resource-icon-${icon.name}`"
-    :name="icon.name"
+    :key="`resource-icon-${iconName}`"
+    :name="iconName"
     :color="icon.color"
-    :size="size"
+    :size="size ? size : sizeClass ? undefined : 'medium'"
+    :size-class="sizeClass"
     :class="[
       'oc-resource-icon',
       'inline-flex',
       'items-center',
       {
-        'opacity-80 grayscale': hasDisabledSpaceIcon,
-        '[&_svg]:h-[70%]': !hasSpaceIcon && !hasFolderIcon
+        'opacity-80 grayscale': hasDisabledSpaceIcon
       }
     ]"
   />
@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
 import { computed, inject, unref } from 'vue'
+import { storeToRefs } from 'pinia'
 import {
   isPersonalSpaceResource,
   isProjectSpaceResource,
@@ -27,14 +28,15 @@ import {
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import {
   createDefaultFileIconMapping,
+  getResourceIconName,
   IconType,
   ResourceIconMapping,
   resourceIconMappingInjectionKey
 } from '../../helpers'
+import { useThemeStore } from '../../composables'
 
 const defaultFolderIcon: IconType = {
-  name: 'resource-type-folder',
-  color: 'var(--oc-color-icon-folder)'
+  name: 'resource-type-folder'
 }
 
 const defaultPersonalSpaceIcon: IconType = {
@@ -54,21 +56,25 @@ const defaultSpaceIconDisabled: IconType = {
 
 const defaultFileIcon: IconType = {
   name: 'resource-type-file',
-  color: 'var(--oc-role-on-surface)'
+  hasDarkVariant: true
 }
 
 const defaultFileIconMapping = createDefaultFileIconMapping()
 
-const { resource, size = 'large' } = defineProps<{
+const {
+  resource,
+  size = undefined,
+  sizeClass = 'size-5'
+} = defineProps<{
   resource: Resource | SpaceResource
+  /** @deprecated use sizeClass instead */
   size?: SizeType
+  sizeClass?: string
 }>()
 
 const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
 
-const hasFolderIcon = computed(() => {
-  return unref(icon)?.name === defaultFolderIcon.name
-})
+const { currentTheme } = storeToRefs(useThemeStore())
 
 const hasSpaceIcon = computed(() => {
   return resource.type === 'space'
@@ -111,9 +117,10 @@ const icon = computed((): IconType => {
     iconMappingInjection?.mimeType[unref(mimeType)] ||
     iconMappingInjection?.extension[unref(extension)]
 
-  return {
-    ...unref(fallbackIcon),
-    ...typeIconOrUndefined
-  }
+  return typeIconOrUndefined ?? unref(fallbackIcon)
+})
+
+const iconName = computed(() => {
+  return getResourceIconName(unref(icon), !!unref(currentTheme)?.isDark)
 })
 </script>

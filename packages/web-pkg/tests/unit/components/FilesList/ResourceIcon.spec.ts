@@ -1,4 +1,4 @@
-import { shallowMount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { AVAILABLE_SIZES, SizeType } from '@opencloud-eu/design-system/helpers'
 import ResourceIcon from '../../../../src/components/FilesList/ResourceIcon.vue'
 import {
@@ -61,6 +61,7 @@ function getWrapper({ resource, size }: { resource: Partial<Resource>; size: Siz
   return {
     wrapper: shallowMount(ResourceIcon, {
       global: {
+        plugins: [...defaultPlugins()],
         provide: {
           [resourceIconMappingInjectionKey]: resourceIconMapping
         }

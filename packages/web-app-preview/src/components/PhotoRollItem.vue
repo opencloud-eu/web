@@ -20,7 +20,7 @@
         referrerpolicy="no-referrer"
       />
       <div v-else class="aspect-video h-25 flex items-center justify-center">
-        <resource-icon class="aspect-video" :resource="iconResource" size="xlarge" />
+        <resource-icon class="aspect-video" :resource="iconResource" size-class="size-12" />
       </div>
       <span class="w-full">
         <resource-name

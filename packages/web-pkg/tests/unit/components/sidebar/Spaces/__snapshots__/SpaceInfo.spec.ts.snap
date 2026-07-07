@@ -2,7 +2,7 @@
 
 exports[`SpaceInfo > shows space info 1`] = `
 "<div class="flex items-center min-w-0 ml-2">
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="small" type="span" class="mr-2 shrink-0"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="small" sizeclass="size-5" type="span" class="mr-2 shrink-0"></oc-icon-stub>
   <h2 data-testid="space-info-name" class="font-semibold m-0 text-base min-w-0 flex-1 truncate"> space</h2>
 </div>"
 `;

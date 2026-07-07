@@ -29,11 +29,11 @@ describe('OcTile component', () => {
     const wrapper = getWrapper({ resource: getSpaceMock(), isResourceSelected: true })
     expect(wrapper.find('.oc-tile-card-selected').exists()).toBeTruthy()
   })
-  it.each(['xlarge, xxlarge, xxxlarge'])(
+  it.each(['size-12, size-22, size-42'])(
     'renders resource icon size correctly',
     (resourceIconSize) => {
       const wrapper = getWrapper({ resource: getSpaceMock(), resourceIconSize })
-      expect(wrapper.find('resource-icon-stub').attributes().size).toEqual(resourceIconSize)
+      expect(wrapper.find('resource-icon-stub').attributes('sizeclass')).toEqual(resourceIconSize)
     }
   )
   it('shows a loading spinner if isLoading is set to true', () => {

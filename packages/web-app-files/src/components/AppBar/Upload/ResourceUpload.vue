@@ -12,7 +12,7 @@
       :disabled="isRemoteUploadInProgress"
       @click="triggerUpload"
     >
-      <resource-icon :resource="resource" size="medium" class="[&_svg]:h-5.5! sm:[&_svg]:h-full" />
+      <oc-icon :name="uploadIcon" size-class="size-5" />
       <span :id="uploadLabelId">{{ buttonLabel }}</span>
     </oc-button>
     <input
@@ -31,8 +31,13 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, unref, useTemplateRef } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
-import { useService, ResourceIcon, convertToMinimalUppyFile } from '@opencloud-eu/web-pkg'
+import { storeToRefs } from 'pinia'
+import {
+  useService,
+  getResourceIconName,
+  useThemeStore,
+  convertToMinimalUppyFile
+} from '@opencloud-eu/web-pkg'
 import type { UppyService } from '@opencloud-eu/web-pkg'
 import { getItemsViaDirectoryPicker } from '../../../helpers/directoryPicker'
 import { useGettext } from 'vue3-gettext'
@@ -56,8 +61,11 @@ const isRemoteUploadInProgress = ref(uppyService.isRemoteUploadInProgress())
 let uploadStartedSub: string
 let uploadCompletedSub: string
 
-const resource = computed(() => {
-  return { extension: '', isFolder } as Resource
+const { currentTheme } = storeToRefs(useThemeStore())
+
+const uploadIcon = computed(() => {
+  const name = isFolder ? 'resource-type-folder-upload' : 'resource-type-file-upload'
+  return getResourceIconName({ name, hasDarkVariant: true }, !!unref(currentTheme)?.isDark)
 })
 
 const onUploadStarted = () =>
