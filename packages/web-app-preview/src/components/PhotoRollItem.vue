@@ -12,16 +12,23 @@
       :aria-current="isActive ? 'true' : 'false'"
       @click="$emit('select')"
     >
-      <img
-        v-if="item && item.resource.thumbnail"
-        :src="item.resource.thumbnail"
-        class="object-cover h-25 rounded-md aspect-video"
-        :alt="item.name"
-        referrerpolicy="no-referrer"
-      />
-      <div v-else class="aspect-video h-25 flex items-center justify-center">
-        <resource-icon class="aspect-video" :resource="iconResource" size="xlarge" />
-      </div>
+      <motion-photo-overlay
+        class="mx-auto w-fit"
+        :resource="item.resource"
+        badge-class="top-0 right-0 m-1"
+        video-class="rounded-md"
+      >
+        <img
+          v-if="item && item.resource.thumbnail"
+          :src="item.resource.thumbnail"
+          class="object-cover h-25 rounded-md aspect-video"
+          :alt="item.name"
+          referrerpolicy="no-referrer"
+        />
+        <div v-else class="aspect-video h-25 flex items-center justify-center">
+          <resource-icon class="aspect-video" :resource="iconResource" size="xlarge" />
+        </div>
+      </motion-photo-overlay>
       <span class="w-full">
         <resource-name
           :name="item.resource.name"
@@ -43,6 +50,7 @@
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../helpers/types'
 import {
+  MotionPhotoOverlay,
   ResourceIcon,
   ResourceName,
   useResourcesStore,

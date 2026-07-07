@@ -23,6 +23,11 @@ const fileResourceWithoutParentFoldername = {
   isFolder: false,
   extension: 'pdf'
 } as Resource
+const motionPhotoResource = {
+  ...fileResource,
+  name: 'motion.jpg',
+  motionPhoto: { version: 1, presentationTimestampUs: 500000, videoSize: 1234567 }
+} as Resource
 
 describe('OcResource', () => {
   it("doesn't emit a click if the resource is not clickable", () => {
@@ -56,6 +61,30 @@ describe('OcResource', () => {
 
     await wrapper.find('.oc-resource-name').trigger('click')
     expect(wrapper.emitted('click')).toHaveLength(1)
+  })
+
+  it('shows a motion photo badge when the resource has a motionPhoto facet', () => {
+    const wrapper = mount(ResourceListItem, {
+      props: { resource: motionPhotoResource },
+      global: {
+        stubs: { RouterLink: true },
+        renderStubDefaultSlot: true,
+        plugins: [...defaultPlugins()]
+      }
+    })
+    expect(wrapper.find('.motion-photo-badge').exists()).toBeTruthy()
+  })
+
+  it('does not show a motion photo badge for regular resources', () => {
+    const wrapper = mount(ResourceListItem, {
+      props: { resource: fileResource },
+      global: {
+        stubs: { RouterLink: true },
+        renderStubDefaultSlot: true,
+        plugins: [...defaultPlugins()]
+      }
+    })
+    expect(wrapper.find('.motion-photo-badge').exists()).toBeFalsy()
   })
 
   it('emits a click for a folder', () => {

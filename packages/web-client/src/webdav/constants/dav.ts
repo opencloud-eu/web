@@ -1,4 +1,4 @@
-import { Audio, GeoCoordinates, Image, Photo } from '../../graph/generated'
+import { Audio, GeoCoordinates, Image, MotionPhoto, Photo } from '../../graph/generated'
 
 export abstract class DavPermission {
   static readonly Shared: string = 'S'
@@ -77,6 +77,11 @@ const DavPropertyMapping = {
     value: 'photo',
     type: null as Photo
   },
+  // oc:motionPhoto, keep in sync with the property the backend emits
+  MotionPhoto: {
+    value: 'motionPhoto',
+    type: null as MotionPhoto
+  },
   ETag: defString('getetag' as const),
   MimeType: defString('getcontenttype' as const),
   ResourceType: defStringArray('resourcetype' as const),
@@ -149,6 +154,7 @@ export abstract class DavProperties {
     DavProperty.Location,
     DavProperty.Image,
     DavProperty.Photo,
+    DavProperty.MotionPhoto,
     DavProperty.HasPreview
   ]
 

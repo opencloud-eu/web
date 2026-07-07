@@ -32,6 +32,8 @@
         :is-resource-clickable="isResourceClickable"
         tabindex="-1"
         @click="$emit('fileNameClicked', $event)"
+        @mouseenter="startMotionPlayback"
+        @mouseleave="stopMotionPlayback"
       >
         <div
           class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
@@ -48,6 +50,26 @@
         >
           <span v-text="$gettext('Disabled')" />
         </oc-tag>
+        <motion-photo-badge
+          v-if="resource.motionPhoto"
+          class="z-20 absolute top-0 right-0 m-2"
+          size="medium"
+          interactive
+          :loading="showMotionSpinner"
+          :icon="isMotionPlaying ? 'pause-circle' : 'play-circle'"
+          :label="isMotionPlaying ? $gettext('Pause motion photo') : $gettext('Play motion photo')"
+          @click.stop.prevent="toggleMotionPlayback"
+        />
+        <video
+          v-if="isMotionPlaying && motionVideoUrl"
+          :src="motionVideoUrl"
+          class="tile-motion-video z-[5] absolute inset-0 size-full object-cover aspect-[16/9] rounded-t-sm pointer-events-none"
+          muted
+          loop
+          autoplay
+          playsinline
+          @loadedmetadata="seekMotionToStill"
+        />
         <div
           v-oc-tooltip="tooltipLabelIcon"
           class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
@@ -118,6 +140,7 @@ import { computed, ref, unref, useTemplateRef } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
+import MotionPhotoBadge from './MotionPhotoBadge.vue'
 import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
@@ -125,7 +148,7 @@ import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import { OcCard } from '@opencloud-eu/design-system/components'
-import { useFolderLink } from '../../composables'
+import { useFolderLink, useMotionPhotoPlayback } from '../../composables'
 
 const {
   resource,
@@ -173,6 +196,23 @@ const { $gettext } = useGettext()
 const { getParentFolderName, getParentFolderLink } = useFolderLink({
   space: ref(space)
 })
+
+// Kept inline instead of using MotionPhotoOverlay: the tile's hover must span the
+// whole media area (resource-link) so moving toward the selection checkbox does
+// not stop playback, and the badge/video sit within the tile's absolute/z-index
+// layering. Hover plays the clip over the thumbnail; the badge toggles play/pause.
+const {
+  isPlaying: isMotionPlaying,
+  isLoading: showMotionSpinner,
+  videoUrl: motionVideoUrl,
+  hoverPlay: startMotionPlayback,
+  stop: stopMotionPlayback,
+  toggle: toggleMotionPlayback,
+  seekToStill: seekMotionToStill
+} = useMotionPhotoPlayback(
+  () => resource,
+  () => space
+)
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)

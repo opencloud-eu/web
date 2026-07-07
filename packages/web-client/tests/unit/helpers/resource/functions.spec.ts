@@ -124,6 +124,42 @@ describe('buildResource', () => {
     })
   })
 
+  describe('motionPhoto facet', () => {
+    it('maps the motion photo facet and camel-cases its keys', () => {
+      const webDavResponse = mockDeep<WebDavResponseResource>({
+        props: {
+          // WebDAV delivers the facet's nested keys in kebab-case (matching a
+          // live PROPFIND: <oc:presentation-timestamp-us>, <oc:video-size>).
+          // buildResource normalizes them to camelCase. Cast because the mapped
+          // prop type describes the post-conversion (camelCase) shape.
+          [DavProperty.MotionPhoto]: {
+            version: 1,
+            'presentation-timestamp-us': 500000,
+            'video-size': 1234567
+          } as never,
+          [DavProperty.Tags]: undefined
+        }
+      })
+      const resource = buildResource(webDavResponse)
+      expect(resource.motionPhoto).toEqual({
+        version: 1,
+        presentationTimestampUs: 500000,
+        videoSize: 1234567
+      })
+    })
+
+    it('leaves motionPhoto undefined when the facet is absent', () => {
+      const webDavResponse = mockDeep<WebDavResponseResource>({
+        props: {
+          [DavProperty.MotionPhoto]: undefined,
+          [DavProperty.Tags]: undefined
+        }
+      })
+      const resource = buildResource(webDavResponse)
+      expect(resource.motionPhoto).toBeUndefined()
+    })
+  })
+
   it('handles extraProps', () => {
     const webDavResponse = mockDeep<WebDavResponseResource>({
       props: {
