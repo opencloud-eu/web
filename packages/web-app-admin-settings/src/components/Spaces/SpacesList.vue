@@ -1,14 +1,4 @@
 <template>
-  <div class="space-filters flex justify-end flex-wrap items-end mx-4 mb-4">
-    <oc-search-bar
-      v-model="filterTerm"
-      class="w-3xs"
-      :label="$gettext('Search')"
-      :placeholder="$gettext('Search for spaces')"
-      button-hidden
-      :is-rounded="false"
-    />
-  </div>
   <no-content-message
     v-if="!items.length"
     id="admin-settings-spaces-empty"
@@ -177,9 +167,10 @@ const { isSticky } = useIsTopBarSticky()
 const sharesStore = useSharesStore()
 const { openSideBar } = useSideBar()
 
+const { filterTerm = '' } = defineProps<{ filterTerm?: string }>()
+
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-const filterTerm = ref('')
 
 const lastSelectedSpaceIndex = ref(0)
 const lastSelectedSpaceId = ref<string>()
@@ -197,7 +188,7 @@ const filter = (spaces: SpaceResource[], filterTerm: string) => {
   return searchEngine.search(filterTerm).map((r) => r.item)
 }
 
-const filteredSpaces = computed(() => filter(unref(spaces), unref(filterTerm)))
+const filteredSpaces = computed(() => filter(unref(spaces), filterTerm))
 
 const sortFields = translateSortFields(availableSortFields, language)
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
@@ -383,13 +374,16 @@ onMounted(() => {
   })
 })
 
-watch(filterTerm, async () => {
-  await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
-})
+watch(
+  () => filterTerm,
+  async () => {
+    await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+  }
+)
 
-watch([filterTerm, paginatedItems], () => {
+watch([() => filterTerm, paginatedItems], () => {
   markInstance?.unmark()
-  markInstance?.mark(unref(filterTerm), {
+  markInstance?.mark(filterTerm, {
     element: 'span',
     className: 'mark-highlight'
   })

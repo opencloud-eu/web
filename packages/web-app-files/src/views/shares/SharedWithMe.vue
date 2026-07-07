@@ -5,54 +5,51 @@
         <template #navigation>
           <SharesNavigation />
         </template>
-      </app-bar>
-      <app-loading-spinner v-if="areResourcesLoading" />
-      <template v-else>
-        <div class="flex justify-between flex-wrap items-end mx-4 mb-4">
-          <div class="flex flex-wrap">
-            <item-filter-inline
-              class="share-visibility-filter"
-              filter-name="share-visibility"
-              :filter-options="visibilityOptions"
-              @toggle-filter="setAreHiddenFilesShown"
-            />
-            <item-filter
-              :allow-multiple="true"
-              :filter-label="$gettext('Share Type')"
-              :filterable-attributes="['label']"
-              :items="shareTypes"
-              :option-filter-label="$gettext('Filter share types')"
-              :show-option-filter="true"
-              id-attribute="key"
-              class="share-type-filter ml-2"
-              display-name-attribute="label"
-              filter-name="shareType"
-            >
-              <template #item="{ item }">
-                <span class="ml-2" v-text="item.label" />
-              </template>
-            </item-filter>
-            <item-filter
-              :allow-multiple="true"
-              :filter-label="$gettext('Shared By')"
-              :filterable-attributes="['displayName']"
-              :items="fileOwners"
-              :option-filter-label="$gettext('Filter shared by')"
-              :show-option-filter="true"
-              id-attribute="id"
-              class="shared-by-filter ml-2"
-              display-name-attribute="displayName"
-              filter-name="sharedBy"
-            >
-              <template #image="{ item }">
-                <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
-              </template>
-              <template #item="{ item }">
-                <span class="ml-2" v-text="item.displayName" />
-              </template>
-            </item-filter>
-          </div>
-          <div>
+        <template #actions>
+          <div class="flex justify-between w-full mt-2 mb-4 items-center">
+            <div class="flex flex-wrap">
+              <item-filter-inline
+                class="share-visibility-filter"
+                filter-name="share-visibility"
+                :filter-options="visibilityOptions"
+                @toggle-filter="setAreHiddenFilesShown"
+              />
+              <item-filter
+                :allow-multiple="true"
+                :filter-label="$gettext('Share Type')"
+                :filterable-attributes="['label']"
+                :items="shareTypes"
+                :option-filter-label="$gettext('Filter share types')"
+                :show-option-filter="true"
+                id-attribute="key"
+                class="share-type-filter ml-2"
+                display-name-attribute="label"
+                filter-name="shareType"
+              >
+                <template #item="{ item }">
+                  <span class="ml-2" v-text="item.label" />
+                </template>
+              </item-filter>
+              <item-filter
+                :allow-multiple="true"
+                :filter-label="$gettext('Shared By')"
+                :filterable-attributes="['displayName']"
+                :items="fileOwners"
+                :option-filter-label="$gettext('Filter shared by')"
+                :show-option-filter="true"
+                id-attribute="id"
+                class="shared-by-filter ml-2"
+                display-name-attribute="displayName"
+                filter-name="sharedBy"
+              >
+                <template #image="{ item }">
+                  <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
+                </template>
+                <template #item="{ item }">
+                  <span class="ml-2" v-text="item.displayName" />
+                </template>
+              </item-filter>
+            </div>
             <oc-search-bar
               v-model="filterTerm"
               class="search-filter w-3xs"
@@ -62,7 +59,10 @@
               :is-rounded="false"
             />
           </div>
-        </div>
+        </template>
+      </app-bar>
+      <app-loading-spinner v-if="areResourcesLoading" />
+      <template v-else>
         <shared-with-me-section
           id="files-shared-with-me-view"
           class="h-full"
@@ -250,17 +250,20 @@ const shareTypes = computed(() => {
     uniqueShareTypes.push(ShareTypes.remote.value)
   }
 
-  return ShareTypes.getByValues(uniqueShareTypes).map((shareType) => {
-    return {
-      key: shareType.key,
-      value: shareType.value,
-      label: $gettext(shareType.label)
-    }
-  })
+  return ShareTypes.getByValues(uniqueShareTypes)
+    .filter(Boolean)
+    .map((shareType) => {
+      return {
+        key: shareType.key,
+        value: shareType.value,
+        label: $gettext(shareType.label)
+      }
+    })
 })
 
 const fileOwners = computed(() => {
   const flatList = unref(paginatedResources)
+    .filter((i) => i.sharedBy)
     .map((i) => i.sharedBy)
     .flat()
   return [...new Map(flatList.map((item) => [item.displayName, item])).values()]

@@ -6,7 +6,6 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
-import { nextTick } from 'vue'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
@@ -126,8 +125,7 @@ describe('SpacesList', () => {
   })
   it('shows only filtered spaces if filter applied', async () => {
     const { wrapper } = getWrapper({ spaces: spaceMocks })
-    ;(wrapper.vm as any).filterTerm = 'Another'
-    await nextTick()
+    await wrapper.setProps({ filterTerm: 'Another' })
     expect((wrapper.vm as any).items).toEqual([spaceMocks[1]])
   })
   it('should show the space details on details button click', async () => {
