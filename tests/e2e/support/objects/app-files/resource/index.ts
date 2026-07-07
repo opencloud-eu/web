@@ -351,6 +351,26 @@ export class Resource {
     return po.getFileThumbnailLocator({ page: this.#page, resource })
   }
 
+  getMotionPhotoBadgeLocator(resource: string): Locator {
+    return po.getMotionPhotoBadgeLocator({ page: this.#page, resource })
+  }
+
+  getPreviewMotionPhotoBadgeLocator(resource: string): Locator {
+    return po.getPreviewMotionPhotoBadgeLocator({ page: this.#page, resource })
+  }
+
+  getMotionPhotoViewerControlLocator(): Locator {
+    return po.getMotionPhotoViewerControlLocator({ page: this.#page })
+  }
+
+  async playMotionPhotoInSidebar(): Promise<void> {
+    await po.playMotionPhotoInSidebar({ page: this.#page })
+  }
+
+  getSidebarMotionPhotoVideoSource(): Promise<string> {
+    return po.getSidebarMotionPhotoVideoSource({ page: this.#page })
+  }
+
   async shouldSeeFilePreview({ resource }: { resource: string }): Promise<void> {
     await po.shouldSeeFilePreview({ page: this.#page, resource })
   }
