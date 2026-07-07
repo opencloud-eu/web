@@ -32,9 +32,16 @@
                   />
                 </div>
               </div>
-              <div class="flex items-baseline justify-end w-full min-h-10">
+              <div class="flex relative flex items-start justify-end min-h-10">
                 <div
-                  class="flex-1 flex items-center justify-between min-h-9 px-3 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high"
+                  class="peer flex [&:not(:empty)]:w-full"
+                  :class="{ invisible: showBatchActions }"
+                >
+                  <slot name="actions" :limited-screen-space="limitedScreenSpace" />
+                </div>
+                <div
+                  v-if="showBatchActions"
+                  class="flex flex-1 has-[_ul:first-child>*]:flex justify-between items-center px-3 h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high peer-[:not(:empty)]:absolute peer-[:not(:empty)]:inset-x-0 peer-[:not(:empty)]:top-1/2 peer-[:not(:empty)]:-translate-y-1/2"
                 >
                   <batch-actions
                     v-if="showBatchActions"
@@ -48,7 +55,7 @@
                       :aria-label="$gettext('Clear selection')"
                       appearance="raw"
                       gap-size="small"
-                      class="p-1"
+                      class="p-1 clear-selection-btn"
                       @click="$emit('clearSelection')"
                     >
                       <span

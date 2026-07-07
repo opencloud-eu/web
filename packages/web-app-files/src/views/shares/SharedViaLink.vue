@@ -5,6 +5,18 @@
         <template #navigation>
           <SharesNavigation />
         </template>
+        <template #actions>
+          <div class="flex justify-end w-full mt-2 mb-4 items-center">
+            <oc-search-bar
+              v-model="filterTerm"
+              class="search-filter w-3xs"
+              :label="$gettext('Search')"
+              :placeholder="$gettext('Search for shares')"
+              button-hidden
+              :is-rounded="false"
+            />
+          </div>
+        </template>
       </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
@@ -26,7 +38,7 @@
           v-model:selected-ids="selectedResourcesIds"
           :fields-displayed="['name', 'sdate']"
           :are-paths-displayed="true"
-          :resources="paginatedResources"
+          :resources="filteredItems"
           :header-position="fileListHeaderY"
           :sort-by="sortBy"
           :sort-dir="sortDir"
@@ -45,7 +57,7 @@
           </template>
           <template #footer>
             <pagination :pages="paginationPages" :current-page="paginationPage" />
-            <list-info v-if="paginatedResources.length > 0" class="w-full my-2" />
+            <list-info v-if="filteredItems.length > 0" class="w-full my-2" />
           </template>
         </component>
       </template>
@@ -57,6 +69,7 @@
 <script lang="ts">
 import {
   createLocationShares,
+  defaultFuseOptions,
   FileSideBar,
   useConfigStore,
   useFileActions,
@@ -73,7 +86,7 @@ import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 
 import { useResourcesViewDefaults } from '../../composables'
-import { computed, defineComponent, unref } from 'vue'
+import { computed, defineComponent, ref, unref, watch } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { storeToRefs } from 'pinia'
@@ -81,6 +94,8 @@ import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 import { useGettext } from 'vue3-gettext'
+import Fuse from 'fuse.js'
+import Mark from 'mark.js'
 
 export default defineComponent({
   components: {
@@ -109,10 +124,42 @@ export default defineComponent({
     const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
       folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint
     })
-    const { loadResourcesTask, selectedResourcesIds, paginatedResources, viewMode } =
-      resourcesViewDefaults
+    const {
+      loadResourcesTask,
+      selectedResourcesIds,
+      paginatedResources,
+      viewMode,
+      areResourcesLoading
+    } = resourcesViewDefaults
 
     const { loadPreview } = useLoadPreview(viewMode)
+
+    const filterTerm = ref('')
+    const filteredItems = computed(() => {
+      if (unref(filterTerm)) {
+        const searchEngine = new Fuse(unref(paginatedResources), {
+          ...defaultFuseOptions,
+          keys: ['name']
+        })
+        return searchEngine.search(unref(filterTerm)).map((r) => r.item)
+      }
+      return unref(paginatedResources)
+    })
+
+    let markInstance: Mark | undefined
+    watch(filteredItems, () => {
+      if (!unref(areResourcesLoading)) {
+        if (!markInstance) {
+          markInstance = new Mark('.oc-resource-details')
+        }
+
+        markInstance.unmark()
+        markInstance.mark(unref(filterTerm), {
+          element: 'span',
+          className: 'mark-highlight'
+        })
+      }
+    })
 
     resourcesStore.$onAction((action) => {
       if (action.name !== 'updateResourceField') {
@@ -153,7 +200,9 @@ export default defineComponent({
       getMatchingSpace,
       totalResourcesCount,
       loadPreview,
-      breadcrumbs
+      breadcrumbs,
+      filterTerm,
+      filteredItems
     }
   },
 
@@ -163,7 +212,7 @@ export default defineComponent({
     },
 
     isEmpty() {
-      return this.paginatedResources.length < 1
+      return this.filteredItems.length < 1
     }
   },
 

@@ -20,6 +20,18 @@
         />
       </div>
     </template>
+    <template #actions>
+      <div class="flex justify-end w-full my-2 items-center">
+        <oc-search-bar
+          v-model="filterTerm"
+          class="w-3xs"
+          :label="$gettext('Search')"
+          :placeholder="$gettext('Search for spaces')"
+          button-hidden
+          :is-rounded="false"
+        />
+      </div>
+    </template>
 
     <template #mainContent>
       <app-loading-spinner v-if="isLoading" />
@@ -37,7 +49,10 @@
           </template>
         </no-content-message>
         <template v-else>
-          <spaces-list :class="{ 'settings-spaces-table-squashed': isSideBarOpen }">
+          <spaces-list
+            :filter-term="filterTerm"
+            :class="{ 'settings-spaces-table-squashed': isSideBarOpen }"
+          >
             <template #contextMenu>
               <context-actions :items="selectedSpaces" />
             </template>
@@ -78,6 +93,7 @@ import {
   onBeforeUnmount,
   onMounted,
   provide,
+  ref,
   unref,
   useTemplateRef
 } from 'vue'
@@ -99,6 +115,8 @@ let updateQuotaForSpaceEventToken: string
 const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+
+const filterTerm = ref('')
 
 const currentPageQuery = useRouteQuery('page', '1')
 const currentPage = computed(() => {

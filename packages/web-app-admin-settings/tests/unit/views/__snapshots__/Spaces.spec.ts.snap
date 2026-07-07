@@ -12,14 +12,34 @@ exports[`Spaces view > loading states > should render spaces list after loading 
               <view-options-stub perpagestorageprefix="admin-settings" hashiddenfiles="false" hasfileextensions="false" haspagination="true" paginationoptions="20,50,100,250" perpagequeryname="items-per-page" perpagedefault="50" viewmodedefault="resource-tiles" viewmodes=""></view-options-stub>
             </div>
           </div>
-          <div class="flex items-baseline justify-end w-full min-h-10">
-            <div class="flex-1 flex items-center justify-between min-h-9 px-3 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high">
-              <!--v-if-->
-              <!--v-if-->
+          <div class="flex relative flex items-start justify-end min-h-10">
+            <div class="peer flex [&amp;:not(:empty)]:w-full">
+              <div class="flex justify-end w-full my-2 items-center">
+                <div data-v-8440503a="" role="search" class="oc-search flex items-center w-3xs">
+                  <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Search" placeholder="Search for spaces" type="search"> <button data-v-8440503a="" type="button" aria-label="Search" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0">
+                      <!--v-if-->
+                      <!-- @slot Content of the button --> <span data-v-8440503a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/search-line.svg" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span data-v-8440503a="" class="oc-spinner inline-block after:block after:bg-transparent after:border after:border-current after:rounded-full after:size-full relative after:relative animate-spin after:content-[''] after:border-b-transparent size-5" aria-label="Loading results" aria-live="polite" tabindex="-1" role="img" style="display: none;"></span>
+                    </button></div>
+                  <div data-v-8440503a="" class="oc-search-button-wrapper sr-only"><button data-v-8440503a="" type="button" disabled="" class="oc-button-secondary oc-button-filled oc-button-secondary-filled gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]">
+                      <!--v-if-->
+                      <!-- @slot Content of the button --> Search
+                    </button></div>
+                  <!--v-if-->
+                </div>
+              </div>
             </div>
+            <!--v-if-->
           </div>
         </div>
-        <spaces-list-stub class=""></spaces-list-stub>
+        <spaces-list-stub filterterm="" class=""></spaces-list-stub>
       </div>
     </div>
   </div>
