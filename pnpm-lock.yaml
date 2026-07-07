@@ -473,6 +473,9 @@ importers:
 
   packages/web-app-external:
     dependencies:
+      '@opencloud-eu/design-system':
+        specifier: workspace:^
+        version: link:../design-system
       '@opencloud-eu/web-client':
         specifier: workspace:*
         version: link:../web-client
