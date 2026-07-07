@@ -49,6 +49,40 @@ describe('OcModal', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  describe('enter key on the input', () => {
+    const mountInputModal = () =>
+      mount(Modal, {
+        global: {
+          renderStubDefaultSlot: true,
+          plugins: [...defaultPlugins()],
+          stubs: { 'focus-trap': true }
+        },
+        props: inputProps
+      })
+
+    it('emits confirm', async () => {
+      const wrapper = mountInputModal()
+      await wrapper.find('.oc-modal-body-input input').trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('confirm')).toEqual([['New folder']])
+    })
+
+    it('does not emit confirm while an IME composition session is active', async () => {
+      const wrapper = mountInputModal()
+      await wrapper
+        .find('.oc-modal-body-input input')
+        .trigger('keydown', { key: 'Enter', isComposing: true })
+      expect(wrapper.emitted('confirm')).toBeUndefined()
+    })
+
+    it('does not emit confirm when the keydown event has keyCode 229', async () => {
+      const wrapper = mountInputModal()
+      await wrapper
+        .find('.oc-modal-body-input input')
+        .trigger('keydown', { key: 'Enter', keyCode: 229 })
+      expect(wrapper.emitted('confirm')).toBeUndefined()
+    })
+  })
+
   it('displays loading state', async () => {
     const waitForSpinnerToShow = async () => {
       await wrapper.vm.$nextTick()

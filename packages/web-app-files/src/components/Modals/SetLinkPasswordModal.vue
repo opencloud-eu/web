@@ -11,7 +11,7 @@
     required-mark
     @password-challenge-completed="$emit('update:confirmDisabled', false)"
     @password-challenge-failed="$emit('update:confirmDisabled', true)"
-    @keydown.enter.prevent="$emit('confirm')"
+    @keydown.enter.prevent="onKeydownEnter"
     @update:model-value="onInput"
   />
 </template>
@@ -27,6 +27,7 @@ import {
   usePasswordPolicyService,
   useSharesStore
 } from '@opencloud-eu/web-pkg'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 export default defineComponent({
@@ -53,6 +54,13 @@ export default defineComponent({
     const errorMessage = ref<string>()
 
     emit('update:confirmDisabled', true)
+
+    const onKeydownEnter = (event: KeyboardEvent) => {
+      if (isComposingEvent(event)) {
+        return
+      }
+      emit('confirm')
+    }
 
     const onInput = (value: string) => {
       password.value = value
@@ -97,6 +105,7 @@ export default defineComponent({
     return {
       password,
       onInput,
+      onKeydownEnter,
       errorMessage,
       passwordPolicyService,
       inputPasswordPolicy: passwordPolicyService.getPolicy({ enforcePassword: true }),

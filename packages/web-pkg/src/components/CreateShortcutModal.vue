@@ -143,6 +143,7 @@ import { useGettext } from 'vue3-gettext'
 import DOMPurify from 'dompurify'
 import Mark from 'mark.js'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { resolveFileNameDuplicate } from '../helpers'
 import { useTask } from 'vue-concurrency'
 import { debounce } from 'lodash-es'
@@ -320,8 +321,8 @@ export default defineComponent({
       unref(dropRef).hide()
     }
 
-    const onKeyEnterDrop = (e: Event) => {
-      if (!unref(isDropOpen)) {
+    const onKeyEnterDrop = (e: KeyboardEvent) => {
+      if (isComposingEvent(e) || !unref(isDropOpen)) {
         return
       }
 
