@@ -10,7 +10,7 @@
             class="flex w-full mt-2 mb-4 items-center"
             :class="{
               'justify-between': shareTypes.length > 1,
-              'justify-end': shareTypes.length < 1
+              'justify-end': shareTypes.length <= 1
             }"
           >
             <div v-if="shareTypes.length > 1" class="flex">
