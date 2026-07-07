@@ -154,6 +154,45 @@ export const uploadFileInsideSpaceBySpaceName = async ({
   await createFile({ user, pathToFile, content, webDavEndPathToRoot })
 }
 
+// The motion photo facet is written by the search service after the upload,
+// once tika has extracted the file. Poll until the property shows up so UI
+// steps do not race the extraction (a fresh tika takes a few seconds for the
+// first file).
+export const waitForMotionPhotoFacet = async ({
+  user,
+  pathToFile,
+  timeoutMs = 30000
+}: {
+  user: User
+  pathToFile: string
+  timeoutMs?: number
+}): Promise<void> => {
+  const body =
+    '<?xml version="1.0"?>\n' +
+    '<d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">\n' +
+    '  <d:prop>\n' +
+    '    <oc:motion-photo />\n' +
+    '  </d:prop>\n' +
+    '</d:propfind>'
+  const path = urlJoin(
+    'remote.php',
+    'dav',
+    'spaces',
+    await getSpaceIdBySpaceName({ user, spaceType: 'personal' }),
+    encodeWebDavPath(pathToFile)
+  )
+  const deadline = Date.now() + timeoutMs
+  while (Date.now() < deadline) {
+    const response = await request({ method: 'PROPFIND', path, body, user })
+    checkResponseStatus(response, `Failed while getting the motion photo facet of ${pathToFile}`)
+    if ((await response.text()).includes('<oc:video-size>')) {
+      return
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500))
+  }
+  throw new Error(`Timed out waiting for the motion photo facet of ${pathToFile}`)
+}
+
 export const getDataOfFileInsideSpace = async ({
   user,
   pathToFileName,
