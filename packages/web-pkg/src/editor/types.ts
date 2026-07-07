@@ -3,7 +3,6 @@ import type { Editor } from '@tiptap/vue-3'
 import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
-export type TextEditorToolbarVariant = 'default' | 'expanded-compose' | 'mobile'
 
 export interface TextEditorOptions {
   contentType: ContentType

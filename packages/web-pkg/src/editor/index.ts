@@ -1,9 +1,4 @@
-export type {
-  ContentType,
-  TextEditorOptions,
-  TextEditorInstance,
-  TextEditorToolbarVariant
-} from './types'
+export type { ContentType, TextEditorOptions, TextEditorInstance } from './types'
 export { useTextEditor } from './composables/useTextEditor'
 export { default as TextEditorProvider } from './components/TextEditorProvider.vue'
 export { default as TextEditorContent } from './components/TextEditorContent.vue'

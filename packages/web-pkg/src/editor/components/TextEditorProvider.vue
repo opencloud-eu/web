@@ -6,13 +6,15 @@
 
 <script setup lang="ts">
 import { provide, toRef } from 'vue'
-import type { TextEditorInstance, TextEditorToolbarVariant } from '../types'
+import type { TextEditorInstance } from '../types'
 
 const props = defineProps<{
   editor: TextEditorInstance
-  toolbarVariant?: TextEditorToolbarVariant
+  actionsToDisplay?: string[]
+  toolbarCompact?: boolean
 }>()
 
 provide('textEditor', props.editor)
-provide('textEditorToolbarVariant', toRef(props, 'toolbarVariant'))
+provide('textEditorActionsToDisplay', toRef(props, 'actionsToDisplay'))
+provide('textEditorToolbarCompact', toRef(props, 'toolbarCompact'))
 </script>

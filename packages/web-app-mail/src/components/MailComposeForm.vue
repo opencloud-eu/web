@@ -51,7 +51,11 @@
     <div class="flex-1 flex flex-col min-h-0">
       <div class="mail-body-editor flex flex-col gap-2 h-full min-h-0 flex-1">
         <div class="mail-body-editor-wrapper flex-1 min-h-0" @click="onWrapperClick">
-          <TextEditorProvider :editor="textEditor" :toolbar-variant="toolbarVariant">
+          <TextEditorProvider
+            :editor="textEditor"
+            :actions-to-display="actionsToDisplay"
+            :toolbar-compact="toolbarCompact"
+          >
             <TextEditorToolbar :teleport="toolbarDropTeleport" />
             <TextEditorContent />
           </TextEditorProvider>
@@ -74,8 +78,7 @@ import {
   useTextEditor,
   TextEditorProvider,
   TextEditorContent,
-  TextEditorToolbar,
-  type TextEditorToolbarVariant
+  TextEditorToolbar
 } from '@opencloud-eu/web-pkg/editor'
 import { storeToRefs } from 'pinia'
 import DOMPurify from 'dompurify'
@@ -111,11 +114,12 @@ export type ComposeFormState = {
 
 const {
   modelValue,
-  toolbarVariant = 'default',
-  toolbarDropTeleport = undefined
+  actionsToDisplay,
+  toolbarCompact = false
 } = defineProps<{
   modelValue: ComposeFormState
-  toolbarVariant?: TextEditorToolbarVariant
+  actionsToDisplay?: string[]
+  toolbarCompact?: boolean
   toolbarDropTeleport?: string
 }>()
 

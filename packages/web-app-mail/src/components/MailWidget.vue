@@ -35,8 +35,8 @@
         <div class="flex-1 min-h-0 overflow-auto">
           <MailComposeForm
             v-model="composeState"
-            :toolbar-variant="composeToolbarVariant"
-            :toolbar-drop-teleport="composeToolbarDropTeleport"
+            :actions-to-display="composeActionsToDisplay"
+            toolbar-compact
           />
         </div>
         <div :id="composeToolbarDropId" />
@@ -89,7 +89,8 @@
         <div class="flex-1 min-h-0 overflow-auto">
           <MailComposeForm
             v-model="composeState"
-            :toolbar-variant="expandedComposeToolbarVariant"
+            :actions-to-display="expandedComposeActionsToDisplay"
+            :toolbar-compact="isMobile"
             :toolbar-drop-teleport="composeToolbarDropTeleport"
           />
         </div>
@@ -125,7 +126,6 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useGroupwareAccountsStore, useModals } from '@opencloud-eu/web-pkg'
-import type { TextEditorToolbarVariant } from '@opencloud-eu/web-pkg/editor'
 import MailComposeForm, { type ComposeFormState } from './MailComposeForm.vue'
 import MailComposeAttachmentButton from './MailComposeAttachmentButton.vue'
 import MailSavedHint from './MailSavedHint.vue'
@@ -148,6 +148,32 @@ const appliedDraftId = ref<string | null>(null)
 
 const SAVED_HINT_DURATION_MS = 2000
 const AUTO_SAVE_INTERVAL_MS = 120000 // 2(min) * 60 * 1000
+
+const COMPACT_COMPOSE_ACTIONS = [
+  'undo',
+  'redo',
+  'heading',
+  'font-size',
+  'bold',
+  'italic',
+  'underline',
+  'strikethrough',
+  'bullet-list',
+  'ordered-list',
+  'task-list',
+  'blockquote',
+  'code-block',
+  'link'
+]
+
+const MOBILE_COMPOSE_ACTIONS = [
+  'bold',
+  'italic',
+  'underline',
+  'bullet-list',
+  'ordered-list',
+  'link'
+]
 
 const props = defineProps<{
   draftMail?: Mail | null
@@ -181,12 +207,12 @@ const selectedIdentityId = computed(() => {
 
 const isExpanded = ref(false)
 
-const composeToolbarVariant = computed<TextEditorToolbarVariant>(() => {
-  return unref(isMobile) ? 'mobile' : 'expanded-compose'
+const composeActionsToDisplay = computed(() => {
+  return unref(isMobile) ? MOBILE_COMPOSE_ACTIONS : COMPACT_COMPOSE_ACTIONS
 })
 
-const expandedComposeToolbarVariant = computed<TextEditorToolbarVariant>(() => {
-  return unref(isMobile) ? 'mobile' : 'default'
+const expandedComposeActionsToDisplay = computed(() => {
+  return unref(isMobile) ? MOBILE_COMPOSE_ACTIONS : undefined
 })
 
 const composeToolbarDropId = 'mail-compose-toolbar-drop'

@@ -64,13 +64,7 @@
                     @click.stop="child.toolbarAction?.(textEditor.editor.value!)"
                   >
                     <span class="inline-flex items-center gap-2">
-                      <span
-                        v-if="child.swatchColor"
-                        class="inline-block size-4 rounded-full border-2 border-role-outline-variant"
-                        :style="{ backgroundColor: child.swatchColor }"
-                      />
                       <oc-icon
-                        v-else
                         :name="child.icon"
                         :fill-type="child.iconFillType || 'none'"
                         size="small"
@@ -118,52 +112,37 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import type { Ref } from 'vue'
-import type { TextEditorInstance, TextEditorToolbarVariant } from '../types'
+import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
+
+const { actionsToDisplay, compact = undefined } = defineProps<{
+  actionsToDisplay?: string[]
+  compact?: boolean
+}>()
 
 defineProps<{
   teleport?: string
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
-const providedToolbarVariant = inject<Ref<TextEditorToolbarVariant | undefined>>(
-  'textEditorToolbarVariant',
-  ref<TextEditorToolbarVariant | undefined>()
+const providedActionsToDisplay = inject<Ref<string[] | undefined>>(
+  'textEditorActionsToDisplay',
+  ref<string[] | undefined>()
+)
+const providedToolbarCompact = inject<Ref<boolean | undefined>>(
+  'textEditorToolbarCompact',
+  ref<boolean | undefined>()
 )
 
-const toolbarVariant = computed<TextEditorToolbarVariant>(() => {
-  return unref(providedToolbarVariant) ?? 'default'
-})
+const visibleActionIds = computed(() => actionsToDisplay ?? unref(providedActionsToDisplay))
+const isCompactToolbar = computed(() => compact ?? unref(providedToolbarCompact) ?? false)
 
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
-const toolbarActionsByVariant: Record<TextEditorToolbarVariant, string[] | null> = {
-  default: null,
-  'expanded-compose': [
-    'undo',
-    'redo',
-    'heading',
-    'font-size',
-    'bold',
-    'italic',
-    'underline',
-    'strikethrough',
-    'bullet-list',
-    'ordered-list',
-    'task-list',
-    'blockquote',
-    'code-block',
-    'link'
-  ],
-  mobile: ['bold', 'italic', 'underline', 'bullet-list', 'ordered-list', 'link']
-}
-
-const isCompactToolbar = computed(() => unref(toolbarVariant) !== 'default')
-
 const isToolbarItemVisible = (item: EditorAction) => {
-  const actionIds = toolbarActionsByVariant[unref(toolbarVariant)]
+  const actionIds = unref(visibleActionIds)
 
   if (!actionIds) {
     return item.showInToolbar !== false
@@ -210,11 +189,13 @@ const visible = computed(() => {
   return !!unref(textEditor.editor)
 })
 
-const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
+const isMarkdownSourceMode = computed(
+  () => unref(textEditor.contentType) === 'markdown' && unref(textEditor.state.sourceMode)
+)
 const sourceModeEnabledActionIds = ['source-mode']
 
 const isItemEnabled = (item: EditorAction) => {
-  if (unref(isSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
+  if (unref(isMarkdownSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
     return false
   }
 
