@@ -10,7 +10,11 @@
             :id="getButtonId(floatingActionButton.id)"
             :disabled="isFloatingActionButtonDisabled"
             appearance="filled"
+            :color-role="currentTheme.isDark ? 'primary-container' : 'primary'"
             class="oc-app-floating-action-button w-full !bg-gradient-to-r !from-role-secondary !to-role-primary shadow-md transition-[filter,box-shadow] duration-150 ease-out hover:brightness-110 shadow-md"
+            :class="{
+              '!from-role-secondary-container !to-role-primary-container': currentTheme.isDark
+            }"
             @click="floatingActionButton.handler?.()"
           >
             <oc-icon :name="floatingActionButton.icon" />
@@ -51,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { computed, onBeforeUnmount, ref, unref, watchEffect } from 'vue'
 import SidebarNavItem from './SidebarNavItem.vue'
 import {
@@ -63,7 +68,8 @@ import {
   CustomComponentExtension,
   useActiveApp,
   useExtensionRegistry,
-  FloatingActionButtonExtension
+  FloatingActionButtonExtension,
+  useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -76,6 +82,9 @@ const activeApp = useActiveApp()
 const { requestExtensions } = useExtensionRegistry()
 
 const { isTablet } = useIsMobile()
+
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,

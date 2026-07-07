@@ -2,8 +2,12 @@
   <template v-if="floatingActionButton && isTablet && !floatingActionButton?.isDisabled?.()">
     <oc-floating-action-button
       :button-id="getButtonId(floatingActionButton.id)"
+      :color-role="currentTheme.isDark ? 'primary-container' : 'primary'"
       class="oc-app-floating-action-button"
-      :class="{ 'bottom-[70px]': isEmbedModeEnabled }"
+      :class="{
+        'bottom-[70px]': isEmbedModeEnabled,
+        'is-dark-mode': currentTheme.isDark
+      }"
       mode="action"
       :handler="floatingActionButton.handler"
     />
@@ -17,12 +21,14 @@
 </template>
 
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import {
   FloatingActionButtonExtension,
   useActiveApp,
   useEmbedMode,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -30,6 +36,9 @@ const { requestExtensions } = useExtensionRegistry()
 const { isTablet } = useIsMobile()
 const activeApp = useActiveApp()
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
+
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({
@@ -47,8 +56,11 @@ function getButtonId(extensionId: string): string {
 @reference '@opencloud-eu/design-system/tailwind';
 
 .oc-app-floating-action-button [id^='mobile-app-floating-action-button-'] {
-  @apply bg-gradient-to-r from-role-secondary to-role-primary shadow-md;
-  @apply transition-[filter,box-shadow] duration-150 ease-out;
+  @apply bg-gradient-to-r from-role-secondary to-role-primary shadow-md transition-[filter,box-shadow] duration-150 ease-out;
+}
+
+.oc-app-floating-action-button.is-dark-mode [id^='mobile-app-floating-action-button-'] {
+  @apply from-role-secondary-container to-role-primary-container;
 }
 
 .oc-app-floating-action-button [id^='mobile-app-floating-action-button-']:hover {
