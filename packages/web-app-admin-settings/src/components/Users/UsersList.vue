@@ -1,7 +1,4 @@
 <template>
-  <div class="user-filters flex justify-between flex-wrap items-end mx-4 mb-4">
-    <slot name="filter" />
-  </div>
   <app-loading-spinner v-if="isLoading" />
   <template v-else>
     <slot v-if="!users.length" name="noResults" />

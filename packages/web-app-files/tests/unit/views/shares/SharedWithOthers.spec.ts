@@ -1,14 +1,14 @@
 import SharedWithOthers from '../../../../src/views/shares/SharedWithOthers.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { defaultStubs, RouteLocation } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { useSortMock } from '../../../mocks/useSortMock'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
+import { AppBar, ResourceTable } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -18,6 +18,13 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useRouteQuery: vi.fn(),
   useFileActions: vi.fn()
 }))
+
+const AppBarStub = defineComponent({
+  props: AppBar.props,
+  setup(_, { slots }) {
+    return () => h('app-bar-stub', {}, [slots.actions?.()])
+  }
+})
 
 describe('SharedWithOthers view', () => {
   it('appBar always present', () => {
@@ -31,11 +38,11 @@ describe('SharedWithOthers view', () => {
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper({ loading: true })
-      expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
+      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeTruthy()
     })
     it('shows the no-content-message after loading', () => {
       const { wrapper } = getMountedWrapper()
-      expect(wrapper.find('oc-spinner-stub').exists()).toBeFalsy()
+      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
     it('shows the files table when files are available', () => {
@@ -104,7 +111,7 @@ function getMountedWrapper({
         plugins,
         mocks: defaultMocks,
         provide: defaultMocks,
-        stubs: { ...defaultStubs, ItemFilter: true }
+        stubs: { ...defaultStubs, 'app-bar': AppBarStub, ItemFilter: true, AppLoadingSpinner: true }
       }
     })
   }

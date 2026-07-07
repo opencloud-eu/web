@@ -272,6 +272,15 @@ When(
 )
 
 When(
+  /^"([^"]*)" clears the selection$/,
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    await usersObject.clearSelection()
+  }
+)
+
+When(
   /^"([^"]*)" changes (userName|displayName|email|password|role) to "([^"]*)" for user "([^"]*)" using the sidebar panel$/,
   async (
     { world }: { world: World },

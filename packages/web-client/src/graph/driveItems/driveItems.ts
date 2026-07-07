@@ -12,7 +12,12 @@ export const DriveItemsFactory = ({
 
   return {
     async getDriveItem(driveId, itemId, requestOptions) {
-      const { data } = await driveItemApiFactory.getDriveItem(driveId, itemId, requestOptions)
+      const { data } = await driveItemApiFactory.getDriveItem(
+        driveId,
+        itemId,
+        undefined,
+        requestOptions
+      )
       return data
     },
 

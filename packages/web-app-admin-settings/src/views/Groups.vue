@@ -26,6 +26,18 @@
         />
       </div>
     </template>
+    <template #actions>
+      <div class="flex justify-end w-full my-2 items-center">
+        <oc-search-bar
+          v-model="filterTerm"
+          class="w-3xs"
+          :label="$gettext('Search')"
+          :placeholder="$gettext('Search for groups')"
+          button-hidden
+          :is-rounded="false"
+        />
+      </div>
+    </template>
 
     <template #mainContent>
       <app-loading-spinner v-if="isLoading" />
@@ -43,7 +55,7 @@
           </template>
         </no-content-message>
         <template v-else>
-          <groups-list>
+          <groups-list :filter-term="filterTerm">
             <template #contextMenu>
               <context-actions :action-options="{ resources: selectedGroups }" />
             </template>
@@ -74,6 +86,7 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import {
   computed,
   defineComponent,
+  ref,
   unref,
   onBeforeUnmount,
   onMounted,
@@ -104,6 +117,7 @@ export default defineComponent({
     const { selectedGroups, groups } = storeToRefs(groupSettingsStore)
     const clientService = useClientService()
     const { $gettext } = useGettext()
+    const filterTerm = ref('')
 
     const loadResourcesTask = useTask(function* (signal) {
       const loadedGroups = yield* call(
@@ -180,6 +194,7 @@ export default defineComponent({
     return {
       groups,
       selectedGroups,
+      filterTerm,
       template,
       loadResourcesTask,
       clientService,

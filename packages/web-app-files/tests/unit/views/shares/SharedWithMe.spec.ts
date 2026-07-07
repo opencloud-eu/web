@@ -5,10 +5,11 @@ import {
   InlineFilterOption,
   useSort,
   useOpenWithDefaultApp,
-  ItemFilter
+  ItemFilter,
+  AppBar
 } from '@opencloud-eu/web-pkg'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { ref } from 'vue'
+import { defineComponent, h, ref } from 'vue'
 import { defaultStubs, RouteLocation } from '@opencloud-eu/web-test-helpers'
 import { useSortMock } from '../../../../tests/mocks/useSortMock'
 import { mock } from 'vitest-mock-extended'
@@ -25,6 +26,13 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useRouteQuery: vi.fn(),
   useOpenWithDefaultApp: vi.fn()
 }))
+
+const AppBarStub = defineComponent({
+  props: AppBar.props,
+  setup(_, { slots }) {
+    return () => h('app-bar-stub', {}, [slots.actions?.()])
+  }
+})
 
 describe('SharedWithMe view', () => {
   it('appBar always present', () => {
@@ -208,6 +216,7 @@ function getMountedWrapper({
         mocks: defaultMocks,
         stubs: {
           ...defaultStubs,
+          'app-bar': AppBarStub,
           itemFilterInline: true,
           ItemFilter: true,
           AppLoadingSpinner: true
