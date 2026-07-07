@@ -70,7 +70,7 @@
               :fix-message-line="true"
               :selection-range="inputSelectionRange"
               @update:model-value="inputOnInput"
-              @keydown.enter.prevent="confirm"
+              @keydown.enter.prevent="onInputKeydownEnter"
             />
           </template>
         </div>
@@ -104,7 +104,7 @@ import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
-import { ContextualHelperData } from '../../helpers'
+import { ContextualHelperData, isComposingEvent } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {
@@ -334,6 +334,13 @@ const confirm = () => {
     return
   }
   emit('confirm', unref(userInputValue))
+}
+
+const onInputKeydownEnter = (event: KeyboardEvent) => {
+  if (isComposingEvent(event)) {
+    return
+  }
+  confirm()
 }
 
 const inputOnInput = (value: string) => {

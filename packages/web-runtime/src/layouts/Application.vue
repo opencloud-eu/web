@@ -23,7 +23,7 @@
           <router-view
             v-for="name in ['default', 'app', 'fullscreen']"
             :key="`router-view-${name}`"
-            class="app-content border w-full bg-role-surface rounded-l-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
+            class="app-content border w-full bg-role-surface rounded-xl transition-all duration-350 ease-[cubic-bezier(0.34,0.11,0,1.12)]"
             :name="name"
           />
         </template>

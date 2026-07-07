@@ -64,6 +64,9 @@ export class Users {
       uuid: this.getUUID({ key })
     })
   }
+  async clearSelection(): Promise<void> {
+    await po.clearSelection({ page: this.#page })
+  }
   async addToGroupsBatchAtion({
     userIds,
     groups

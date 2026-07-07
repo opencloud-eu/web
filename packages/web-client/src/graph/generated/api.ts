@@ -413,10 +413,15 @@ export interface DriveItem {
     'permissions'?: Array<Permission>;
     'audio'?: Audio;
     'video'?: Video;
+    '@libre.graph.motionPhoto'?: MotionPhoto;
     /**
      * Indicates if the item is synchronized with the underlying storage provider. Read-only.
      */
     '@client.synchronize'?: boolean;
+    /**
+     * A pre-authenticated URL that can be used to download the item\'s content without providing an Authorization header. The URL is short-lived and cannot be cached.  This annotation is only populated when explicitly requested via `$select`, and only for items that have a `file` facet. The returned URL is valid for a limited time and should be used promptly. 
+     */
+    '@microsoft.graph.downloadUrl'?: string;
     /**
      * Properties or facets (see UI.Facet) annotated with this term will not be rendered if the annotation evaluates to true. Users can set this to hide permissions.
      */
@@ -900,6 +905,23 @@ export interface ItemReference {
 }
 export interface MemberReference {
     '@odata.id'?: string;
+}
+/**
+ * Motion Photo metadata. A Motion Photo is a still image with a short video clip appended to the end of the file. The presence of this facet on a driveItem indicates that the item is a Motion Photo; absence indicates it is not.  Based on the Google Motion Photo format v1.0 specification: https://developer.android.com/media/platform/motion-photo-format 
+ */
+export interface MotionPhoto {
+    /**
+     * The file format version of the Motion Photo. Currently always 1. Read-only.
+     */
+    'version'?: number;
+    /**
+     * Presentation timestamp in microseconds of the video frame that corresponds to the still image. A value of -1 indicates unspecified. If absent, readers should use a timestamp near the middle of the video track. Read-only. 
+     */
+    'presentationTimestampUs'?: number;
+    /**
+     * Size in bytes of the embedded video portion of the file. The video is appended at the end of the file, so clients can fetch it with a Range request: `Range: bytes=<fileSize - videoSize>-`. Read-only. 
+     */
+    'videoSize'?: number;
 }
 /**
  * Represents an identity used to sign in to a user account
@@ -1595,7 +1617,7 @@ export const ApplicationsApiAxiosParamCreator = function (configuration?: Config
             // verify required parameter 'applicationId' is not null or undefined
             assertParamExists('getApplication', 'applicationId', applicationId)
             const localVarPath = `/v1.0/applications/{application-id}`
-                .replace(`{${"application-id"}}`, encodeURIComponent(String(applicationId)));
+                .replace('{application-id}', encodeURIComponent(String(applicationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1772,8 +1794,8 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('deleteDriveItem', 'itemId', itemId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1807,17 +1829,66 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
          * @summary Get a DriveItem.
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
+         * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDriveItem: async (driveId: string, itemId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getDriveItem: async (driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getDriveItem', 'driveId', driveId)
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('getDriveItem', 'itemId', itemId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication openId required
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            if ($select) {
+                localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
+            }
+
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Download the contents of the primary stream (file) of a driveItem. Only driveItem objects with a `file` facet can be downloaded.  The response is a `302 Found` redirecting to a pre-authenticated download URL for the file. This is the same URL that is returned via the `@microsoft.graph.downloadUrl` instance annotation on the driveItem when requested via `$select`. Choose between the two based on whether you want to call the redirecting `/content` endpoint directly (for example, with a client that follows redirects automatically) or you want to inspect / schedule / prefetch the URL yourself via the annotation.  The pre-authenticated URL is short-lived and does not require an `Authorization` header.  To download a partial range of bytes, apply the `Range` header to the redirect target (the pre-authenticated URL), not to the `/content` request. 
+         * @summary Download the content of a DriveItem
+         * @param {string} driveId key: id of drive
+         * @param {string} itemId key: id of item
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDriveItemContent: async (driveId: string, itemId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'driveId' is not null or undefined
+            assertParamExists('getDriveItemContent', 'driveId', driveId)
+            // verify required parameter 'itemId' is not null or undefined
+            assertParamExists('getDriveItemContent', 'itemId', itemId)
+            const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/content`
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1863,8 +1934,8 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
             // verify required parameter 'driveItem' is not null or undefined
             assertParamExists('updateDriveItem', 'driveItem', driveItem)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -1923,13 +1994,28 @@ export const DriveItemApiFp = function(configuration?: Configuration) {
          * @summary Get a DriveItem.
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
+         * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDriveItem(driveId: string, itemId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItem(driveId, itemId, options);
+        async getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItem(driveId, itemId, $select, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DriveItemApi.getDriveItem']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Download the contents of the primary stream (file) of a driveItem. Only driveItem objects with a `file` facet can be downloaded.  The response is a `302 Found` redirecting to a pre-authenticated download URL for the file. This is the same URL that is returned via the `@microsoft.graph.downloadUrl` instance annotation on the driveItem when requested via `$select`. Choose between the two based on whether you want to call the redirecting `/content` endpoint directly (for example, with a client that follows redirects automatically) or you want to inspect / schedule / prefetch the URL yourself via the annotation.  The pre-authenticated URL is short-lived and does not require an `Authorization` header.  To download a partial range of bytes, apply the `Range` header to the redirect target (the pre-authenticated URL), not to the `/content` request. 
+         * @summary Download the content of a DriveItem
+         * @param {string} driveId key: id of drive
+         * @param {string} itemId key: id of item
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getDriveItemContent(driveId: string, itemId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OdataError>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItemContent(driveId, itemId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DriveItemApi.getDriveItemContent']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -1972,11 +2058,23 @@ export const DriveItemApiFactory = function (configuration?: Configuration, base
          * @summary Get a DriveItem.
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
+         * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDriveItem(driveId: string, itemId: string, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
-            return localVarFp.getDriveItem(driveId, itemId, options).then((request) => request(axios, basePath));
+        getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+            return localVarFp.getDriveItem(driveId, itemId, $select, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Download the contents of the primary stream (file) of a driveItem. Only driveItem objects with a `file` facet can be downloaded.  The response is a `302 Found` redirecting to a pre-authenticated download URL for the file. This is the same URL that is returned via the `@microsoft.graph.downloadUrl` instance annotation on the driveItem when requested via `$select`. Choose between the two based on whether you want to call the redirecting `/content` endpoint directly (for example, with a client that follows redirects automatically) or you want to inspect / schedule / prefetch the URL yourself via the annotation.  The pre-authenticated URL is short-lived and does not require an `Authorization` header.  To download a partial range of bytes, apply the `Range` header to the redirect target (the pre-authenticated URL), not to the `/content` request. 
+         * @summary Download the content of a DriveItem
+         * @param {string} driveId key: id of drive
+         * @param {string} itemId key: id of item
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getDriveItemContent(driveId: string, itemId: string, options?: RawAxiosRequestConfig): AxiosPromise<OdataError> {
+            return localVarFp.getDriveItemContent(driveId, itemId, options).then((request) => request(axios, basePath));
         },
         /**
          * Update a DriveItem.  The request body must include a JSON object with the properties to update. Only the properties that are provided will be updated.  Currently it supports updating the following properties:  * `@UI.Hidden` - Hides the item from the UI. 
@@ -2014,11 +2112,24 @@ export class DriveItemApi extends BaseAPI {
      * @summary Get a DriveItem.
      * @param {string} driveId key: id of drive
      * @param {string} itemId key: id of item
+     * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getDriveItem(driveId: string, itemId: string, options?: RawAxiosRequestConfig) {
-        return DriveItemApiFp(this.configuration).getDriveItem(driveId, itemId, options).then((request) => request(this.axios, this.basePath));
+    public getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options?: RawAxiosRequestConfig) {
+        return DriveItemApiFp(this.configuration).getDriveItem(driveId, itemId, $select, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Download the contents of the primary stream (file) of a driveItem. Only driveItem objects with a `file` facet can be downloaded.  The response is a `302 Found` redirecting to a pre-authenticated download URL for the file. This is the same URL that is returned via the `@microsoft.graph.downloadUrl` instance annotation on the driveItem when requested via `$select`. Choose between the two based on whether you want to call the redirecting `/content` endpoint directly (for example, with a client that follows redirects automatically) or you want to inspect / schedule / prefetch the URL yourself via the annotation.  The pre-authenticated URL is short-lived and does not require an `Authorization` header.  To download a partial range of bytes, apply the `Range` header to the redirect target (the pre-authenticated URL), not to the `/content` request. 
+     * @summary Download the content of a DriveItem
+     * @param {string} driveId key: id of drive
+     * @param {string} itemId key: id of item
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public getDriveItemContent(driveId: string, itemId: string, options?: RawAxiosRequestConfig) {
+        return DriveItemApiFp(this.configuration).getDriveItemContent(driveId, itemId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2035,6 +2146,10 @@ export class DriveItemApi extends BaseAPI {
     }
 }
 
+export const GetDriveItemSelectEnum = {
+    MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
+} as const;
+export type GetDriveItemSelectEnum = typeof GetDriveItemSelectEnum[keyof typeof GetDriveItemSelectEnum];
 
 
 /**
@@ -2095,7 +2210,7 @@ export const DrivesApiAxiosParamCreator = function (configuration?: Configuratio
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('deleteDrive', 'driveId', driveId)
             const localVarPath = `/v1.0/drives/{drive-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2139,7 +2254,7 @@ export const DrivesApiAxiosParamCreator = function (configuration?: Configuratio
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getDrive', 'driveId', driveId)
             const localVarPath = `/v1.0/drives/{drive-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2186,7 +2301,7 @@ export const DrivesApiAxiosParamCreator = function (configuration?: Configuratio
             // verify required parameter 'driveUpdate' is not null or undefined
             assertParamExists('updateDrive', 'driveUpdate', driveUpdate)
             const localVarPath = `/v1.0/drives/{drive-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2633,8 +2748,8 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('createLink', 'itemId', itemId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/createLink`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2682,9 +2797,9 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'permId' is not null or undefined
             assertParamExists('deletePermission', 'permId', permId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/permissions/{perm-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2730,9 +2845,9 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'permId' is not null or undefined
             assertParamExists('getPermission', 'permId', permId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/permissions/{perm-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2776,8 +2891,8 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('invite', 'itemId', itemId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/invite`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2826,8 +2941,8 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('listPermissions', 'itemId', itemId)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/permissions`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2892,9 +3007,9 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'sharingLinkPassword' is not null or undefined
             assertParamExists('setPermissionPassword', 'sharingLinkPassword', sharingLinkPassword)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/permissions/{perm-id}/setPassword`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -2945,9 +3060,9 @@ export const DrivesPermissionsApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'permission' is not null or undefined
             assertParamExists('updatePermission', 'permission', permission)
             const localVarPath = `/v1beta1/drives/{drive-id}/items/{item-id}/permissions/{perm-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{item-id}', encodeURIComponent(String(itemId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3324,7 +3439,7 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('createDriveItem', 'driveId', driveId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/children`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3367,7 +3482,7 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('createLinkSpaceRoot', 'driveId', driveId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/createLink`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3412,8 +3527,8 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'permId' is not null or undefined
             assertParamExists('deletePermissionSpaceRoot', 'permId', permId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/permissions/{perm-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3456,8 +3571,8 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'permId' is not null or undefined
             assertParamExists('getPermissionSpaceRoot', 'permId', permId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/permissions/{perm-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3497,7 +3612,7 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getRoot', 'driveId', driveId)
             const localVarPath = `/v1.0/drives/{drive-id}/root`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3538,7 +3653,7 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('inviteSpaceRoot', 'driveId', driveId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/invite`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3584,7 +3699,7 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('listPermissionsSpaceRoot', 'driveId', driveId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/permissions`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3646,8 +3761,8 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'sharingLinkPassword' is not null or undefined
             assertParamExists('setPermissionPasswordSpaceRoot', 'sharingLinkPassword', sharingLinkPassword)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/permissions/{perm-id}/setPassword`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -3695,8 +3810,8 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
             // verify required parameter 'permission' is not null or undefined
             assertParamExists('updatePermissionSpaceRoot', 'permission', permission)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/permissions/{perm-id}`
-                .replace(`{${"drive-id"}}`, encodeURIComponent(String(driveId)))
-                .replace(`{${"perm-id"}}`, encodeURIComponent(String(permId)));
+                .replace('{drive-id}', encodeURIComponent(String(driveId)))
+                .replace('{perm-id}', encodeURIComponent(String(permId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4125,7 +4240,7 @@ export const EducationClassApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'classMemberReference' is not null or undefined
             assertParamExists('addUserToClass', 'classMemberReference', classMemberReference)
             const localVarPath = `/v1.0/education/classes/{class-id}/members/$ref`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4204,7 +4319,7 @@ export const EducationClassApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'classId' is not null or undefined
             assertParamExists('deleteClass', 'classId', classId)
             const localVarPath = `/v1.0/education/classes/{class-id}`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4245,8 +4360,8 @@ export const EducationClassApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('deleteUserFromClass', 'userId', userId)
             const localVarPath = `/v1.0/education/classes/{class-id}/members/{user-id}/$ref`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)))
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)))
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4284,7 +4399,7 @@ export const EducationClassApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'classId' is not null or undefined
             assertParamExists('getClass', 'classId', classId)
             const localVarPath = `/v1.0/education/classes/{class-id}`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4322,7 +4437,7 @@ export const EducationClassApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'classId' is not null or undefined
             assertParamExists('listClassMembers', 'classId', classId)
             const localVarPath = `/v1.0/education/classes/{class-id}/members`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4397,7 +4512,7 @@ export const EducationClassApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'educationClass' is not null or undefined
             assertParamExists('updateClass', 'educationClass', educationClass)
             const localVarPath = `/v1.0/education/classes/{class-id}`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4751,7 +4866,7 @@ export const EducationClassTeachersApiAxiosParamCreator = function (configuratio
             // verify required parameter 'classTeacherReference' is not null or undefined
             assertParamExists('addTeacherToClass', 'classTeacherReference', classTeacherReference)
             const localVarPath = `/v1.0/education/classes/{class-id}/teachers/$ref`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4794,8 +4909,8 @@ export const EducationClassTeachersApiAxiosParamCreator = function (configuratio
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('deleteTeacherFromClass', 'userId', userId)
             const localVarPath = `/v1.0/education/classes/{class-id}/teachers/{user-id}/$ref`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)))
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)))
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -4833,7 +4948,7 @@ export const EducationClassTeachersApiAxiosParamCreator = function (configuratio
             // verify required parameter 'classId' is not null or undefined
             assertParamExists('getTeachers', 'classId', classId)
             const localVarPath = `/v1.0/education/classes/{class-id}/teachers`
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5015,7 +5130,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'classReference' is not null or undefined
             assertParamExists('addClassToSchool', 'classReference', classReference)
             const localVarPath = `/v1.0/education/schools/{school-id}/classes/$ref`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5058,7 +5173,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'educationUserReference' is not null or undefined
             assertParamExists('addUserToSchool', 'educationUserReference', educationUserReference)
             const localVarPath = `/v1.0/education/schools/{school-id}/users/$ref`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5140,8 +5255,8 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'classId' is not null or undefined
             assertParamExists('deleteClassFromSchool', 'classId', classId)
             const localVarPath = `/v1.0/education/schools/{school-id}/classes/{class-id}/$ref`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)))
-                .replace(`{${"class-id"}}`, encodeURIComponent(String(classId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)))
+                .replace('{class-id}', encodeURIComponent(String(classId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5179,7 +5294,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'schoolId' is not null or undefined
             assertParamExists('deleteSchool', 'schoolId', schoolId)
             const localVarPath = `/v1.0/education/schools/{school-id}`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5220,8 +5335,8 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('deleteUserFromSchool', 'userId', userId)
             const localVarPath = `/v1.0/education/schools/{school-id}/users/{user-id}/$ref`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)))
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)))
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5259,7 +5374,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'schoolId' is not null or undefined
             assertParamExists('getSchool', 'schoolId', schoolId)
             const localVarPath = `/v1.0/education/schools/{school-id}`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5297,7 +5412,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'schoolId' is not null or undefined
             assertParamExists('listSchoolClasses', 'schoolId', schoolId)
             const localVarPath = `/v1.0/education/schools/{school-id}/classes`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5335,7 +5450,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'schoolId' is not null or undefined
             assertParamExists('listSchoolUsers', 'schoolId', schoolId)
             const localVarPath = `/v1.0/education/schools/{school-id}/users`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5415,7 +5530,7 @@ export const EducationSchoolApiAxiosParamCreator = function (configuration?: Con
             // verify required parameter 'educationSchool' is not null or undefined
             assertParamExists('updateSchool', 'educationSchool', educationSchool)
             const localVarPath = `/v1.0/education/schools/{school-id}`
-                .replace(`{${"school-id"}}`, encodeURIComponent(String(schoolId)));
+                .replace('{school-id}', encodeURIComponent(String(schoolId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5916,7 +6031,7 @@ export const EducationUserApiAxiosParamCreator = function (configuration?: Confi
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('deleteEducationUser', 'userId', userId)
             const localVarPath = `/v1.0/education/users/{user-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -5955,7 +6070,7 @@ export const EducationUserApiAxiosParamCreator = function (configuration?: Confi
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getEducationUser', 'userId', userId)
             const localVarPath = `/v1.0/education/users/{user-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6049,7 +6164,7 @@ export const EducationUserApiAxiosParamCreator = function (configuration?: Confi
             // verify required parameter 'educationUser' is not null or undefined
             assertParamExists('updateEducationUser', 'educationUser', educationUser)
             const localVarPath = `/v1.0/education/users/{user-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6324,7 +6439,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             // verify required parameter 'memberReference' is not null or undefined
             assertParamExists('addMember', 'memberReference', memberReference)
             const localVarPath = `/v1.0/groups/{group-id}/members/$ref`
-                .replace(`{${"group-id"}}`, encodeURIComponent(String(groupId)));
+                .replace('{group-id}', encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6367,7 +6482,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             // verify required parameter 'groupId' is not null or undefined
             assertParamExists('deleteGroup', 'groupId', groupId)
             const localVarPath = `/v1.0/groups/{group-id}`
-                .replace(`{${"group-id"}}`, encodeURIComponent(String(groupId)));
+                .replace('{group-id}', encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6414,8 +6529,8 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             // verify required parameter 'directoryObjectId' is not null or undefined
             assertParamExists('deleteMember', 'directoryObjectId', directoryObjectId)
             const localVarPath = `/v1.0/groups/{group-id}/members/{directory-object-id}/$ref`
-                .replace(`{${"group-id"}}`, encodeURIComponent(String(groupId)))
-                .replace(`{${"directory-object-id"}}`, encodeURIComponent(String(directoryObjectId)));
+                .replace('{group-id}', encodeURIComponent(String(groupId)))
+                .replace('{directory-object-id}', encodeURIComponent(String(directoryObjectId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6460,7 +6575,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             // verify required parameter 'groupId' is not null or undefined
             assertParamExists('getGroup', 'groupId', groupId)
             const localVarPath = `/v1.0/groups/{group-id}`
-                .replace(`{${"group-id"}}`, encodeURIComponent(String(groupId)));
+                .replace('{group-id}', encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6508,7 +6623,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             // verify required parameter 'groupId' is not null or undefined
             assertParamExists('listMembers', 'groupId', groupId)
             const localVarPath = `/v1.0/groups/{group-id}/members`
-                .replace(`{${"group-id"}}`, encodeURIComponent(String(groupId)));
+                .replace('{group-id}', encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -6551,7 +6666,7 @@ export const GroupApiAxiosParamCreator = function (configuration?: Configuration
             // verify required parameter 'group' is not null or undefined
             assertParamExists('updateGroup', 'group', group)
             const localVarPath = `/v1.0/groups/{group-id}`
-                .replace(`{${"group-id"}}`, encodeURIComponent(String(groupId)));
+                .replace('{group-id}', encodeURIComponent(String(groupId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7125,7 +7240,7 @@ export const InvitationsApiAxiosParamCreator = function (configuration?: Configu
             // verify required parameter 'invitationId' is not null or undefined
             assertParamExists('getInvitation', 'invitationId', invitationId)
             const localVarPath = `/v1.0/invitations/{invitation-id}`
-                .replace(`{${"invitation-id"}}`, encodeURIComponent(String(invitationId)));
+                .replace('{invitation-id}', encodeURIComponent(String(invitationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7441,7 +7556,7 @@ export const MeDriveApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('followDriveItem', 'itemId', itemId)
             const localVarPath = `/v1.0/me/drive/items/{item-id}/follow`
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -7599,7 +7714,7 @@ export const MeDriveApiAxiosParamCreator = function (configuration?: Configurati
             // verify required parameter 'itemId' is not null or undefined
             assertParamExists('unfollowDriveItem', 'itemId', itemId)
             const localVarPath = `/v1.0/me/drive/following/{item-id}`
-                .replace(`{${"item-id"}}`, encodeURIComponent(String(itemId)));
+                .replace('{item-id}', encodeURIComponent(String(itemId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8764,7 +8879,7 @@ export const RoleManagementApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'roleId' is not null or undefined
             assertParamExists('getPermissionRoleDefinition', 'roleId', roleId)
             const localVarPath = `/v1beta1/roleManagement/permissions/roleDefinitions/{role-id}`
-                .replace(`{${"role-id"}}`, encodeURIComponent(String(roleId)));
+                .replace('{role-id}', encodeURIComponent(String(roleId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9185,7 +9300,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('deleteUser', 'userId', userId)
             const localVarPath = `/v1.0/users/{user-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9229,7 +9344,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('exportPersonalData', 'userId', userId)
             const localVarPath = `/v1.0/users/{user-id}/exportPersonalData`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9273,7 +9388,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getUser', 'userId', userId)
             const localVarPath = `/v1.0/users/{user-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9324,7 +9439,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
             // verify required parameter 'userUpdate' is not null or undefined
             assertParamExists('updateUser', 'userUpdate', userUpdate)
             const localVarPath = `/v1.0/users/{user-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9571,7 +9686,7 @@ export const UserAppRoleAssignmentApiAxiosParamCreator = function (configuration
             // verify required parameter 'appRoleAssignment' is not null or undefined
             assertParamExists('userCreateAppRoleAssignments', 'appRoleAssignment', appRoleAssignment)
             const localVarPath = `/v1.0/users/{user-id}/appRoleAssignments`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9617,8 +9732,8 @@ export const UserAppRoleAssignmentApiAxiosParamCreator = function (configuration
             // verify required parameter 'appRoleAssignmentId' is not null or undefined
             assertParamExists('userDeleteAppRoleAssignments', 'appRoleAssignmentId', appRoleAssignmentId)
             const localVarPath = `/v1.0/users/{user-id}/appRoleAssignments/{appRoleAssignment-id}`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)))
-                .replace(`{${"appRoleAssignment-id"}}`, encodeURIComponent(String(appRoleAssignmentId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)))
+                .replace('{appRoleAssignment-id}', encodeURIComponent(String(appRoleAssignmentId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9661,7 +9776,7 @@ export const UserAppRoleAssignmentApiAxiosParamCreator = function (configuration
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('userListAppRoleAssignments', 'userId', userId)
             const localVarPath = `/v1.0/users/{user-id}/appRoleAssignments`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -9845,7 +9960,7 @@ export const UserPhotoApiAxiosParamCreator = function (configuration?: Configura
             // verify required parameter 'userId' is not null or undefined
             assertParamExists('getUserPhoto', 'userId', userId)
             const localVarPath = `/v1.0/users/{user-id}/photo/$value`
-                .replace(`{${"user-id"}}`, encodeURIComponent(String(userId)));
+                .replace('{user-id}', encodeURIComponent(String(userId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

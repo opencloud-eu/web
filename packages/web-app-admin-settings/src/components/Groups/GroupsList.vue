@@ -1,14 +1,4 @@
 <template>
-  <div class="group-filters flex justify-end flex-wrap items-end mx-4 mb-4">
-    <oc-search-bar
-      v-model="filterTerm"
-      class="w-3xs"
-      :label="$gettext('Search')"
-      :placeholder="$gettext('Search for groups')"
-      button-hidden
-      :is-rounded="false"
-    />
-  </div>
   <no-content-message
     v-if="!items.length"
     id="admin-settings-groups-empty"
@@ -170,13 +160,18 @@ import { OcDrop } from '@opencloud-eu/design-system/components'
 export default defineComponent({
   name: 'GroupsList',
   components: { NoContentMessage, ContextMenuQuickAction, Pagination },
-  setup() {
+  props: {
+    filterTerm: {
+      type: String,
+      default: ''
+    }
+  },
+  setup(props) {
     const { $gettext } = useGettext()
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
     const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
     const sortBy = ref<keyof Group>('displayName')
     const sortDir = ref<SortDir>(SortDir.Asc)
-    const filterTerm = ref('')
     const router = useRouter()
     const route = useRoute()
     const { isSticky } = useIsTopBarSticky()
@@ -287,7 +282,7 @@ export default defineComponent({
 
     const items = computed(() => {
       return orderBy(
-        filter(unref(groups), unref(filterTerm)),
+        filter(unref(groups), props.filterTerm),
         unref(sortBy),
         unref(sortDir) === SortDir.Desc
       )
@@ -359,19 +354,22 @@ export default defineComponent({
       unselectAllGroups()
     })
 
-    watch(filterTerm, async () => {
-      await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
-    })
+    watch(
+      () => props.filterTerm,
+      async () => {
+        await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+      }
+    )
 
     let markInstance: Mark | undefined
     onMounted(async () => {
       await nextTick()
       markInstance = new Mark('.mark-element')
     })
-    watch([filterTerm, paginatedItems], () => {
+    watch([() => props.filterTerm, paginatedItems], () => {
       markInstance?.unmark()
-      if (unref(filterTerm)) {
-        markInstance?.mark(unref(filterTerm), {
+      if (props.filterTerm) {
+        markInstance?.mark(props.filterTerm, {
           element: 'span',
           className: 'mark-highlight'
         })
@@ -388,7 +386,6 @@ export default defineComponent({
       contextMenuDrops,
       showEditPanel,
       readOnlyLabel,
-      filterTerm,
       sortBy,
       sortDir,
       items,

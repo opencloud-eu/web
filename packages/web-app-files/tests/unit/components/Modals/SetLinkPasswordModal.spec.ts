@@ -25,6 +25,20 @@ describe('SetLinkPasswordModal', () => {
     const emitted = wrapper.emitted('update:confirmDisabled')!
     expect(emitted[emitted.length - 1]).toEqual([true])
   })
+  describe('method "onKeydownEnter"', () => {
+    it('emits confirm', () => {
+      const { wrapper } = getWrapper()
+      wrapper.vm.onKeydownEnter(new KeyboardEvent('keydown', { key: 'Enter' }))
+
+      expect(wrapper.emitted('confirm')).toBeTruthy()
+    })
+    it('does not emit confirm while an IME composition session is active', () => {
+      const { wrapper } = getWrapper()
+      wrapper.vm.onKeydownEnter(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }))
+
+      expect(wrapper.emitted('confirm')).toBeUndefined()
+    })
+  })
   describe('method "onConfirm"', () => {
     it('updates the link', async () => {
       const { wrapper } = getWrapper()
