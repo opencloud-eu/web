@@ -35,6 +35,13 @@
     "type": "SizeType"
   },
   {
+    "name": "sizeClass",
+    "required": false,
+    "description": "Tailwind size class for the icon. Please refer to Tailwind documentation for a list of available size classes.",
+    "default": "size-5",
+    "type": "string"
+  },
+  {
     "name": "type",
     "required": false,
     "description": "HTML element to be used for the icon.",
