@@ -115,12 +115,13 @@ import type { Ref } from 'vue'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 
-const { actionsToDisplay, compact = undefined } = defineProps<{
+const {
+  actionsToDisplay,
+  compact = undefined,
+  teleport = undefined
+} = defineProps<{
   actionsToDisplay?: string[]
   compact?: boolean
-}>()
-
-defineProps<{
   teleport?: string
 }>()
 
