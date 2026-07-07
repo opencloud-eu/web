@@ -25,7 +25,66 @@
         />
       </div>
     </template>
-
+    <template #actions>
+      <div class="flex justify-between w-full my-2 items-center">
+        <div class="flex items-center">
+          <item-filter
+            v-if="groups.length"
+            :allow-multiple="true"
+            :filter-label="$gettext('Groups')"
+            :filterable-attributes="['displayName']"
+            :items="groups"
+            :option-filter-label="$gettext('Filter groups')"
+            :show-option-filter="true"
+            class="mr-2"
+            display-name-attribute="displayName"
+            filter-name="groups"
+            @selection-change="filterGroups"
+          >
+            <template #image="{ item }">
+              <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
+            </template>
+            <template #item="{ item }">
+              <div class="ml-2" v-text="item.displayName" />
+            </template>
+          </item-filter>
+          <item-filter
+            v-if="roles.length"
+            :allow-multiple="true"
+            :filter-label="$gettext('Roles')"
+            :filterable-attributes="['displayName']"
+            :items="roles"
+            :option-filter-label="$gettext('Filter roles')"
+            :show-option-filter="true"
+            display-name-attribute="displayName"
+            filter-name="roles"
+            @selection-change="filterRoles"
+          >
+            <template #image="{ item }">
+              <oc-avatar :width="32" :userid="item.id" :user-name="$gettext(item.displayName)" />
+            </template>
+            <template #item="{ item }">
+              <div class="ml-2" v-text="$gettext(item.displayName)" />
+            </template>
+          </item-filter>
+        </div>
+        <oc-search-bar
+          v-model="filterTermDisplayName"
+          class="w-3xs"
+          :label="$gettext('Search')"
+          :placeholder="$gettext('Search for users')"
+          :is-rounded="false"
+          button-hidden
+          @search="
+            (term) => {
+              filterTermDisplayName = term
+              filterDisplayName()
+            }
+          "
+          @advanced-search="filterDisplayName"
+        />
+      </div>
+    </template>
     <template #mainContent>
       <users-list
         :is-loading="isLoading"
@@ -34,66 +93,6 @@
       >
         <template #contextMenu>
           <context-actions :items="selectedUsers" />
-        </template>
-        <template #filter>
-          <div class="flex items-center">
-            <item-filter
-              v-if="groups.length"
-              :allow-multiple="true"
-              :filter-label="$gettext('Groups')"
-              :filterable-attributes="['displayName']"
-              :items="groups"
-              :option-filter-label="$gettext('Filter groups')"
-              :show-option-filter="true"
-              class="mr-2"
-              display-name-attribute="displayName"
-              filter-name="groups"
-              @selection-change="filterGroups"
-            >
-              <template #image="{ item }">
-                <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
-              </template>
-              <template #item="{ item }">
-                <div class="ml-2" v-text="item.displayName" />
-              </template>
-            </item-filter>
-            <item-filter
-              v-if="roles.length"
-              :allow-multiple="true"
-              :filter-label="$gettext('Roles')"
-              :filterable-attributes="['displayName']"
-              :items="roles"
-              :option-filter-label="$gettext('Filter roles')"
-              :show-option-filter="true"
-              display-name-attribute="displayName"
-              filter-name="roles"
-              @selection-change="filterRoles"
-            >
-              <template #image="{ item }">
-                <oc-avatar :width="32" :userid="item.id" :user-name="$gettext(item.displayName)" />
-              </template>
-              <template #item="{ item }">
-                <div class="ml-2" v-text="$gettext(item.displayName)" />
-              </template>
-            </item-filter>
-          </div>
-          <div class="flex items-center">
-            <oc-search-bar
-              v-model="filterTermDisplayName"
-              class="w-3xs"
-              :label="$gettext('Search')"
-              :placeholder="$gettext('Search for users')"
-              :is-rounded="false"
-              button-hidden
-              @search="
-                (term) => {
-                  filterTermDisplayName = term
-                  filterDisplayName()
-                }
-              "
-              @advanced-search="filterDisplayName"
-            />
-          </div>
         </template>
         <template #noResults>
           <no-content-message

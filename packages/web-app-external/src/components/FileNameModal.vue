@@ -9,7 +9,7 @@
       :error-message="errorMessage"
       :fix-message-line="true"
       :selection-range="inputSelectionRange"
-      @keydown.enter.prevent="emit('confirm')"
+      @keydown.enter.prevent="onKeydownEnter"
     />
     <input type="submit" class="hidden" />
   </form>
@@ -28,6 +28,7 @@ import {
   useClientService,
   useIsResourceNameValid
 } from '@opencloud-eu/web-pkg'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import { useTask } from 'vue-concurrency'
@@ -89,6 +90,13 @@ const errorMessage = computed(() => {
   }
   return undefined
 })
+
+const onKeydownEnter = (event: KeyboardEvent) => {
+  if (isComposingEvent(event)) {
+    return
+  }
+  emit('confirm')
+}
 
 const onConfirm = async () => {
   await callbackFn(unref(newFileName))

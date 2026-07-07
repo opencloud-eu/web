@@ -44,7 +44,10 @@
         </div>
       </div>
       <slot v-if="hasSharesNavigation" name="navigation" />
-      <div class="files-app-bar-actions relative flex items-start justify-end min-h-10">
+      <div
+        v-if="showActionsBar"
+        class="files-app-bar-actions relative flex items-start justify-end min-h-10"
+      >
         <div class="peer flex [&:not(:empty)]:w-full" :class="{ invisible: showBatchActions }">
           <slot name="actions" :limited-screen-space="limitedScreenSpace" />
         </div>
@@ -67,7 +70,7 @@
               :aria-label="$gettext('Clear selection')"
               appearance="raw"
               gap-size="small"
-              class="p-1"
+              class="p-1 clear-selection-btn"
               @click="resetSelection"
             >
               <span
@@ -153,6 +156,7 @@ export default defineComponent({
     hasHiddenFiles: { type: Boolean, default: true },
     hasFileExtensions: { type: Boolean, default: true },
     hasPagination: { type: Boolean, default: true },
+    showActionsBar: { type: Boolean, default: true },
     showActionsOnSelection: { type: Boolean, default: false },
     batchActionsLoading: { type: Boolean, default: false },
     space: {

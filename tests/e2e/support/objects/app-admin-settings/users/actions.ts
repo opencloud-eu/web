@@ -25,6 +25,7 @@ const usersTable = '.users-table'
 const quotaInput = '#quota-select-form .vs__search'
 const quotaValueDropDown = 'ul.vs__dropdown-menu'
 const userCheckboxSelector = `[data-item-id="%s"] input[type=checkbox]`
+const clearSelectionBtn = '.clear-selection-btn'
 const editQuotaBtn = '.oc-users-actions-edit-quota-trigger'
 const quotaInputBatchAction = '.quota-select-batch-action-form .vs__search'
 const userInput = '#%s-input'
@@ -157,6 +158,11 @@ export const selectUser = async (args: { page: Page; uuid: string }): Promise<vo
     return
   }
   await checkbox.click()
+}
+
+export const clearSelection = async (args: { page: Page }): Promise<void> => {
+  const { page } = args
+  await page.locator(clearSelectionBtn).click()
 }
 
 export const addSelectedUsersToGroups = async (args: {
