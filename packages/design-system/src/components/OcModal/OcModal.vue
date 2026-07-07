@@ -104,7 +104,7 @@ import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
 import { FocusTargetOrFalse, FocusTrapTabbableOptions } from 'focus-trap'
-import { ContextualHelperData } from '../../helpers'
+import { ContextualHelperData, isComposingEvent } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {
@@ -337,8 +337,7 @@ const confirm = () => {
 }
 
 const onInputKeydownEnter = (event: KeyboardEvent) => {
-  // ignore the enter confirming an IME composition (keyCode 229 for Safari)
-  if (event.isComposing || event.keyCode === 229) {
+  if (isComposingEvent(event)) {
     return
   }
   confirm()

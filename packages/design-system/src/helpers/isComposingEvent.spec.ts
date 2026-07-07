@@ -1,4 +1,4 @@
-import { isComposingEvent } from '../../../src/helpers'
+import { isComposingEvent } from './isComposingEvent'
 
 describe('isComposingEvent', () => {
   it('returns true when the event is part of an IME composition session', () => {

@@ -23,12 +23,12 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import {
-  isComposingEvent,
   Modal,
   resolveFileNameDuplicate,
   useClientService,
   useIsResourceNameValid
 } from '@opencloud-eu/web-pkg'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import { useTask } from 'vue-concurrency'

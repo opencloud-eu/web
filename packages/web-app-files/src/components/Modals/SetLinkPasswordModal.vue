@@ -21,13 +21,13 @@ import { defineComponent, ref, unref, PropType } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { upperFirst } from 'lodash-es'
 import {
-  isComposingEvent,
   Modal,
   useClientService,
   useMessages,
   usePasswordPolicyService,
   useSharesStore
 } from '@opencloud-eu/web-pkg'
+import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 export default defineComponent({
