@@ -75,7 +75,7 @@
     }
   },
   "scripts": {
-    "generate-openapi": "rm -rf src/graph/generated && docker run --rm -v \"${PWD}/src/graph:/local\" openapitools/openapi-generator-cli generate -i https://raw.githubusercontent.com/opencloud-eu/libre-graph-api/main/api/openapi-spec/v1.0.yaml  -g typescript-axios -o /local/generated",
+    "generate-openapi": "rm -rf src/graph/generated && docker run --rm -v \"${PWD}/src/graph:/local\" openapitools/openapi-generator-cli:v7.23.0 generate -i https://raw.githubusercontent.com/opencloud-eu/libre-graph-api/main/api/openapi-spec/v1.0.yaml  -g typescript-axios -o /local/generated",
     "vite": "vite",
     "build": "vite build && vue-tsc --project tsconfig.build.json",
     "check:types": "vue-tsc --declaration --noEmit --project tsconfig.build.json"
