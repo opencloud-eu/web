@@ -28,7 +28,6 @@
         <li v-for="collaborator in displayCollaborators" :key="collaborator.id">
           <collaborator-list-item
             :share="collaborator"
-            :resource-name="resource.name"
             :modifiable="isShareModifiable(collaborator)"
             :removable="isShareRemovable(collaborator)"
             :shared-parent-route="getSharedParentRoute(collaborator)"
@@ -62,7 +61,6 @@
         <li v-for="(collaborator, i) in displaySpaceMembers" :key="i">
           <collaborator-list-item
             :share="collaborator"
-            :resource-name="resource.name"
             :modifiable="false"
             :is-space-share="true"
           />
@@ -77,7 +75,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import {
   useGetMatchingSpace,
@@ -85,12 +83,13 @@ import {
   useUserStore,
   useMessages,
   useSpacesStore,
-  useCapabilityStore,
   useConfigStore,
   useSharesStore,
   useResourcesStore,
   useCanShare,
-  CustomComponentTarget
+  CustomComponentTarget,
+  useClientService,
+  useRouter
 } from '@opencloud-eu/web-pkg'
 import { isLocationSharesActive } from '@opencloud-eu/web-pkg'
 import { textUtils } from '../../../helpers/textUtils'
@@ -98,7 +97,7 @@ import { isShareSpaceResource, ShareTypes } from '@opencloud-eu/web-client'
 import InviteCollaboratorForm from './Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import CollaboratorListItem from './Collaborators/ListItem.vue'
 import { useContextualHelpers } from '../../../composables/contextualHelpers'
-import { computed, defineComponent, inject, ref, Ref, unref } from 'vue'
+import { computed, inject, ref, Ref, unref } from 'vue'
 import {
   isProjectSpaceResource,
   Resource,
@@ -110,252 +109,195 @@ import {
   fileSideBarSharesPanelSharedWithTopExtensionPoint,
   fileSideBarSharesPanelSharedWithBottomExtensionPoint
 } from '../../../extensionPoints'
+import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'FileShares',
-  components: {
-    InviteCollaboratorForm,
-    CollaboratorListItem,
-    CustomComponentTarget
-  },
-  setup() {
-    const userStore = useUserStore()
-    const capabilityStore = useCapabilityStore()
-    const capabilityRefs = storeToRefs(capabilityStore)
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const { dispatchModal } = useModals()
-    const { canShare } = useCanShare()
-    const { showMessage, showErrorMessage } = useMessages()
-    const { shareInviteCollaboratorHelp } = useContextualHelpers()
+const { $gettext } = useGettext()
+const clientService = useClientService()
+const userStore = useUserStore()
+const { getMatchingSpace } = useGetMatchingSpace()
+const { dispatchModal } = useModals()
+const { canShare } = useCanShare()
+const router = useRouter()
+const { showMessage, showErrorMessage } = useMessages()
+const { shareInviteCollaboratorHelp } = useContextualHelpers()
 
-    const resourcesStore = useResourcesStore()
-    const { removeResources, getAncestorById } = resourcesStore
+const resourcesStore = useResourcesStore()
+const { removeResources, getAncestorById } = resourcesStore
 
-    const { getSpaceMembers } = useSpacesStore()
+const { getSpaceMembers } = useSpacesStore()
 
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
+const configStore = useConfigStore()
+const { options: configOptions } = storeToRefs(configStore)
 
-    const sharesStore = useSharesStore()
-    const { addShare, deleteShare } = sharesStore
+const sharesStore = useSharesStore()
+const { deleteShare } = sharesStore
 
-    const { user } = storeToRefs(userStore)
+const { user } = storeToRefs(userStore)
 
-    const resource = inject<Ref<Resource>>('resource')
-    const space = inject<Ref<SpaceResource>>('space')
+const resource = inject<Ref<Resource>>('resource')
+const space = inject<Ref<SpaceResource>>('space')
 
-    const collaboratorShares = computed(() => {
-      if (isProjectSpaceResource(unref(space))) {
-        // filter out project space members, they are listed separately (see down below)
-        return sharesStore.collaboratorShares.filter((c) => c.resourceId !== unref(space).id)
-      }
-      return sharesStore.collaboratorShares
-    })
-
-    const spaceMembers = computed(() => getSpaceMembers(unref(space)))
-
-    const sharesListCollapsed = ref(true)
-    const toggleShareListCollapsed = () => {
-      sharesListCollapsed.value = !unref(sharesListCollapsed)
-    }
-    const memberListCollapsed = ref(true)
-    const toggleMemberListCollapsed = () => {
-      memberListCollapsed.value = !unref(memberListCollapsed)
-    }
-
-    const matchingSpace = computed(() => {
-      return getMatchingSpace(unref(resource))
-    })
-
-    const collaborators = computed(() => {
-      const collaboratorsComparator = (c1: CollaboratorShare, c2: CollaboratorShare) => {
-        // Sorted by: type, direct, display name, creation date
-        const name1 = c1.sharedWith.displayName.toLowerCase().trim()
-        const name2 = c2.sharedWith.displayName.toLowerCase().trim()
-        const c1UserShare = ShareTypes.containsAnyValue(ShareTypes.individuals, [c1.shareType])
-        const c2UserShare = ShareTypes.containsAnyValue(ShareTypes.individuals, [c2.shareType])
-        const c1DirectShare = !c1.indirect
-        const c2DirectShare = !c2.indirect
-
-        if (c1UserShare === c2UserShare) {
-          if (c1DirectShare === c2DirectShare) {
-            return textUtils.naturalSortCompare(name1, name2)
-          }
-
-          return c1DirectShare ? -1 : 1
-        }
-
-        return c1UserShare ? -1 : 1
-      }
-
-      return unref(collaboratorShares).sort(collaboratorsComparator)
-    })
-
-    const inviteCollaboratorHelp = computed(() =>
-      shareInviteCollaboratorHelp({
-        configStore
-      })
-    )
-
-    return {
-      addShare,
-      deleteShare,
-      user,
-      resource,
-      space,
-      matchingSpace,
-      sharesListCollapsed,
-      toggleShareListCollapsed,
-      memberListCollapsed,
-      toggleMemberListCollapsed,
-      filesPrivateLinks: capabilityRefs.filesPrivateLinks,
-      getAncestorById,
-      configStore,
-      configOptions,
-      dispatchModal,
-      spaceMembers,
-      removeResources,
-      collaborators,
-      canShare,
-      showMessage,
-      showErrorMessage,
-      inviteCollaboratorHelp,
-      fileSideBarSharesPanelSharedWithTopExtensionPoint,
-      fileSideBarSharesPanelSharedWithBottomExtensionPoint
-    }
-  },
-  computed: {
-    helpersEnabled() {
-      return this.configOptions.contextHelpers
-    },
-
-    sharedWithLabel() {
-      return this.$gettext('Shared with')
-    },
-
-    spaceMemberLabel() {
-      return this.$gettext('Space members')
-    },
-
-    collapseButtonTitle() {
-      return this.sharesListCollapsed ? this.$gettext('Show more') : this.$gettext('Show less')
-    },
-
-    collapseMemberButtonTitle() {
-      return this.memberListCollapsed ? this.$gettext('Show more') : this.$gettext('Show less')
-    },
-
-    hasSharees() {
-      return this.displayCollaborators.length > 0
-    },
-
-    displayCollaborators() {
-      if (this.collaborators.length > 3 && this.sharesListCollapsed) {
-        return this.collaborators.slice(0, 3)
-      }
-
-      return this.collaborators
-    },
-
-    displaySpaceMembers() {
-      if (this.spaceMembers.length > 3 && this.memberListCollapsed) {
-        return this.spaceMembers.slice(0, 3)
-      }
-      return this.spaceMembers
-    },
-
-    showShareToggle() {
-      return this.collaborators.length > 3
-    },
-
-    showMemberToggle() {
-      return this.spaceMembers.length > 3
-    },
-
-    noSharePermsMessage() {
-      const translatedFile = this.$gettext("You don't have permission to share this file.")
-      const translatedFolder = this.$gettext("You don't have permission to share this folder.")
-      return this.resource.type === 'file' ? translatedFile : translatedFolder
-    },
-
-    showSpaceMembers() {
-      return isProjectSpaceResource(this.space) && this.resource.type !== 'space'
-    }
-  },
-  methods: {
-    deleteShareConfirmation(collaboratorShare: CollaboratorShare) {
-      this.dispatchModal({
-        title: this.$gettext('Remove share'),
-        confirmText: this.$gettext('Remove'),
-        message: this.$gettext('Are you sure you want to remove this share?'),
-        hasInput: false,
-        onConfirm: async () => {
-          const lastShareId = this.collaborators.length === 1 ? this.collaborators[0].id : undefined
-
-          try {
-            await this.deleteShare({
-              clientService: this.$clientService,
-              space: this.space,
-              resource: this.resource,
-              collaboratorShare
-            })
-
-            this.showMessage({
-              title: this.$gettext('Share was removed successfully')
-            })
-            if (lastShareId && isLocationSharesActive(this.$router, 'files-shares-with-others')) {
-              this.removeResources([{ id: lastShareId }] as Resource[])
-            }
-          } catch (error) {
-            console.error(error)
-            this.showErrorMessage({
-              title: this.$gettext('Failed to remove share'),
-              errors: [error]
-            })
-          }
-        }
-      })
-    },
-
-    getSharedParentRoute(collaborator: CollaboratorShare) {
-      if (!collaborator.indirect) {
-        return null
-      }
-      const sharedAncestor = this.getAncestorById(collaborator.resourceId)
-      if (!sharedAncestor) {
-        return null
-      }
-
-      return getSharedAncestorRoute({
-        sharedAncestor,
-        matchingSpace: this.space || this.matchingSpace
-      })
-    },
-
-    isShareModifiable(collaborator: CollaboratorShare) {
-      if (collaborator.indirect || collaborator.shareType === ShareTypes.remote.value) {
-        return false
-      }
-
-      if (isProjectSpaceResource(this.space) || isShareSpaceResource(this.space)) {
-        return this.space.canShare({ user: this.user })
-      }
-
-      return true
-    },
-    isShareRemovable(collaborator: CollaboratorShare) {
-      if (collaborator.indirect) {
-        return false
-      }
-
-      if (isProjectSpaceResource(this.space) || isShareSpaceResource(this.space)) {
-        return this.space.canShare({ user: this.user })
-      }
-
-      return true
-    }
+const collaboratorShares = computed(() => {
+  if (isProjectSpaceResource(unref(space))) {
+    // filter out project space members, they are listed separately (see down below)
+    return sharesStore.collaboratorShares.filter((c) => c.resourceId !== unref(space).id)
   }
+  return sharesStore.collaboratorShares
 })
+
+const spaceMembers = computed(() => getSpaceMembers(unref(space)))
+
+const sharesListCollapsed = ref(true)
+const toggleShareListCollapsed = () => {
+  sharesListCollapsed.value = !unref(sharesListCollapsed)
+}
+const memberListCollapsed = ref(true)
+const toggleMemberListCollapsed = () => {
+  memberListCollapsed.value = !unref(memberListCollapsed)
+}
+
+const matchingSpace = computed(() => {
+  return getMatchingSpace(unref(resource))
+})
+
+const collaborators = computed(() => {
+  const collaboratorsComparator = (c1: CollaboratorShare, c2: CollaboratorShare) => {
+    // Sorted by: type, direct, display name, creation date
+    const name1 = c1.sharedWith.displayName.toLowerCase().trim()
+    const name2 = c2.sharedWith.displayName.toLowerCase().trim()
+    const c1UserShare = ShareTypes.containsAnyValue(ShareTypes.individuals, [c1.shareType])
+    const c2UserShare = ShareTypes.containsAnyValue(ShareTypes.individuals, [c2.shareType])
+    const c1DirectShare = !c1.indirect
+    const c2DirectShare = !c2.indirect
+
+    if (c1UserShare === c2UserShare) {
+      if (c1DirectShare === c2DirectShare) {
+        return textUtils.naturalSortCompare(name1, name2)
+      }
+
+      return c1DirectShare ? -1 : 1
+    }
+
+    return c1UserShare ? -1 : 1
+  }
+
+  return unref(collaboratorShares).sort(collaboratorsComparator)
+})
+
+const inviteCollaboratorHelp = computed(() =>
+  shareInviteCollaboratorHelp({
+    configStore
+  })
+)
+
+const helpersEnabled = computed(() => unref(configOptions).contextHelpers)
+const sharedWithLabel = computed(() => $gettext('Shared with'))
+const spaceMemberLabel = computed(() => $gettext('Space members'))
+const collapseButtonTitle = computed(() =>
+  unref(sharesListCollapsed) ? $gettext('Show more') : $gettext('Show less')
+)
+const collapseMemberButtonTitle = computed(() =>
+  unref(memberListCollapsed) ? $gettext('Show more') : $gettext('Show less')
+)
+const hasSharees = computed(() => unref(collaborators).length > 0)
+const displayCollaborators = computed(() => {
+  if (unref(collaborators).length > 3 && unref(sharesListCollapsed)) {
+    return unref(collaborators).slice(0, 3)
+  }
+
+  return unref(collaborators)
+})
+const displaySpaceMembers = computed(() => {
+  if (unref(spaceMembers).length > 3 && unref(memberListCollapsed)) {
+    return unref(spaceMembers).slice(0, 3)
+  }
+
+  return unref(spaceMembers)
+})
+
+const showShareToggle = computed(() => unref(collaborators).length > 3)
+const showMemberToggle = computed(() => unref(spaceMembers).length > 3)
+const noSharePermsMessage = computed(() => {
+  const translatedFile = $gettext("You don't have permission to share this file.")
+  const translatedFolder = $gettext("You don't have permission to share this folder.")
+  return unref(resource).type === 'file' ? translatedFile : translatedFolder
+})
+const showSpaceMembers = computed(() => {
+  return isProjectSpaceResource(unref(space)) && unref(resource).type !== 'space'
+})
+
+const deleteShareConfirmation = (collaboratorShare: CollaboratorShare) => {
+  dispatchModal({
+    title: $gettext('Remove share'),
+    confirmText: $gettext('Remove'),
+    message: $gettext('Are you sure you want to remove this share?'),
+    hasInput: false,
+    onConfirm: async () => {
+      const lastShareId = unref(collaborators).length === 1 ? unref(collaborators)[0].id : undefined
+
+      try {
+        await deleteShare({
+          clientService,
+          space: unref(space),
+          resource: unref(resource),
+          collaboratorShare
+        })
+
+        showMessage({
+          title: $gettext('Share was removed successfully')
+        })
+        if (lastShareId && isLocationSharesActive(router, 'files-shares-with-others')) {
+          removeResources([{ id: lastShareId }] as Resource[])
+        }
+      } catch (error) {
+        console.error(error)
+        showErrorMessage({
+          title: $gettext('Failed to remove share'),
+          errors: [error]
+        })
+      }
+    }
+  })
+}
+
+const getSharedParentRoute = (collaborator: CollaboratorShare) => {
+  if (!collaborator.indirect) {
+    return null
+  }
+  const sharedAncestor = getAncestorById(collaborator.resourceId)
+  if (!sharedAncestor) {
+    return null
+  }
+
+  return getSharedAncestorRoute({
+    sharedAncestor,
+    matchingSpace: unref(space) || unref(matchingSpace)
+  })
+}
+
+const isShareModifiable = (collaborator: CollaboratorShare) => {
+  if (collaborator.indirect || collaborator.shareType === ShareTypes.remote.value) {
+    return false
+  }
+
+  if (isProjectSpaceResource(unref(space)) || isShareSpaceResource(unref(space))) {
+    return unref(space).canShare({ user: unref(user) })
+  }
+
+  return true
+}
+
+const isShareRemovable = (collaborator: CollaboratorShare) => {
+  if (collaborator.indirect) {
+    return false
+  }
+
+  if (isProjectSpaceResource(unref(space)) || isShareSpaceResource(unref(space))) {
+    return unref(space).canShare({ user: unref(user) })
+  }
+
+  return true
+}
 </script>
 
 <style scoped>

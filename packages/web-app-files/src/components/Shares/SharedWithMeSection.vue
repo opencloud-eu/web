@@ -75,152 +75,82 @@
   </div>
 </template>
 
-<script lang="ts">
-import {
-  FolderView,
-  ResourceTable,
-  SortField,
-  useCapabilityStore,
-  useConfigStore,
-  useFileActions,
-  useLoadPreview,
-  useResourcesStore
-} from '@opencloud-eu/web-pkg'
-import { computed, defineComponent, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { FolderView, SortField, useFileActions, useLoadPreview } from '@opencloud-eu/web-pkg'
+import { computed, ref, unref } from 'vue'
 import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
-import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
+import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { ContextActions } from '@opencloud-eu/web-pkg'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useSelectedResources } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { useFileActionsToggleHideShare } from '../../composables/actions/files'
+import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  components: {
-    ResourceTable,
-    ContextActions,
-    ListInfo,
-    NoContentMessage
-  },
+const {
+  title,
+  items,
+  sortBy = undefined,
+  sortDir = undefined,
+  sortHandler,
+  folderView,
+  showMoreToggle = false,
+  showMoreToggleCount = 3,
+  resourceClickable = true,
+  fileListHeaderY = 0,
+  viewMode,
+  viewSize,
+  sortFields
+} = defineProps<{
+  title: string
+  items: IncomingShareResource[]
+  sortBy?: string
+  sortDir?: SortDir
+  sortHandler: ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }) => void
+  folderView: FolderView
+  showMoreToggle?: boolean
+  showMoreToggleCount?: number
+  resourceClickable?: boolean
+  fileListHeaderY?: number
+  viewMode: string
+  viewSize: number
+  sortFields: SortField[]
+}>()
 
-  props: {
-    title: {
-      type: String,
-      required: true
-    },
-    items: {
-      type: Array as PropType<IncomingShareResource[]>,
-      required: true
-    },
-    sortBy: {
-      type: String,
-      required: false,
-      default: undefined
-    },
-    sortDir: {
-      type: String as PropType<SortDir>,
-      required: false,
-      default: undefined,
-      validator: (value: string) => {
-        return (
-          value === undefined || [SortDir.Asc.toString(), SortDir.Desc.toString()].includes(value)
-        )
-      }
-    },
-    sortHandler: {
-      type: Function as PropType<any>,
-      required: true
-    },
-    folderView: {
-      required: true,
-      type: Object as PropType<FolderView>
-    },
-    showMoreToggle: {
-      type: Boolean,
-      default: false
-    },
-    showMoreToggleCount: {
-      type: Number,
-      default: 3
-    },
-    resourceClickable: {
-      type: Boolean,
-      default: true
-    },
-    fileListHeaderY: {
-      type: Number,
-      default: 0
-    },
-    viewMode: {
-      type: String,
-      required: true
-    },
-    viewSize: {
-      type: Number,
-      required: true
-    },
-    sortFields: {
-      type: Object as PropType<SortField[]>,
-      required: true
-    }
-  },
-  setup(props) {
-    const capabilityStore = useCapabilityStore()
-    const configStore = useConfigStore()
-    const { getMatchingSpace } = useGetMatchingSpace()
+const { $gettext } = useGettext()
+const { getMatchingSpace } = useGetMatchingSpace()
 
-    const { loadPreview } = useLoadPreview(computed(() => props.viewMode))
+const { loadPreview } = useLoadPreview(computed(() => viewMode))
 
-    const { triggerDefaultAction } = useFileActions()
-    const { actions: hideShareActions } = useFileActionsToggleHideShare()
-    const hideShareAction = computed(() => unref(hideShareActions)[0])
+const { triggerDefaultAction } = useFileActions()
+const { actions: hideShareActions } = useFileActionsToggleHideShare()
+const hideShareAction = computed(() => unref(hideShareActions)[0])
 
-    const { updateResourceField } = useResourcesStore()
+const { selectedResources, selectedResourcesIds, isResourceInSelection } = useSelectedResources()
 
-    const isExternalShare = (resource: IncomingShareResource) => {
-      return resource.shareTypes.includes(ShareTypes.remote.value)
-    }
+const showMore = ref(false)
 
-    return {
-      capabilityStore,
-      configStore,
-      triggerDefaultAction,
-      hideShareAction,
-      ...useSelectedResources(),
-      getMatchingSpace,
-      updateResourceField,
-      isExternalShare,
-      ShareTypes,
-      loadPreview
-    }
-  },
-
-  data: () => ({
-    showMore: false
-  }),
-
-  computed: {
-    displayedFields() {
-      return ['name', 'sharedBy', 'sdate', 'sharedWith']
-    },
-    toggleMoreLabel() {
-      return this.showMore ? this.$gettext('Show less') : this.$gettext('Show more')
-    },
-    hasMore() {
-      return this.items.length > this.showMoreToggleCount
-    },
-    resourceItems() {
-      if (!this.showMoreToggle || this.showMore) {
-        return this.items
-      }
-      return this.items.slice(0, this.showMoreToggleCount)
-    }
-  },
-  methods: {
-    toggleShowMore() {
-      this.showMore = !this.showMore
-    }
-  }
+const displayedFields = computed(() => {
+  return ['name', 'sharedBy', 'sdate', 'sharedWith']
 })
+
+const toggleMoreLabel = computed(() => {
+  return unref(showMore) ? $gettext('Show less') : $gettext('Show more')
+})
+
+const hasMore = computed(() => {
+  return items.length > showMoreToggleCount
+})
+
+const resourceItems = computed(() => {
+  if (!showMoreToggle || unref(showMore)) {
+    return items
+  }
+  return items.slice(0, showMoreToggleCount)
+})
+
+const toggleShowMore = () => {
+  showMore.value = !showMore.value
+}
 </script>

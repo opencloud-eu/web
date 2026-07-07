@@ -64,147 +64,108 @@
   </div>
 </template>
 
-<script lang="ts">
-import { storeToRefs } from 'pinia'
+<script setup lang="ts">
 import RoleItem from '../Shared/RoleItem.vue'
 import { v4 as uuidV4 } from 'uuid'
-import { defineComponent, inject, PropType, computed, ref, unref, Ref, watch } from 'vue'
-import { useAbility, useUserStore } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
+import { inject, computed, ref, unref, Ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { ShareRole } from '@opencloud-eu/web-client'
 
-export default defineComponent({
-  name: 'RoleDropdown',
-  components: { RoleItem },
-  props: {
-    existingShareRole: {
-      type: Object as PropType<ShareRole>,
-      required: false,
-      default: undefined
-    },
-    existingSharePermissions: {
-      type: Array as PropType<string[]>,
-      required: false,
-      default: (): string[] => []
-    },
-    domSelector: {
-      type: String,
-      required: false,
-      default: undefined
-    },
-    mode: {
-      type: String,
-      required: false,
-      default: 'create'
-    },
-    isLocked: {
-      type: Boolean,
-      default: false
-    },
-    // only show external share roles
-    isExternal: {
-      type: Boolean,
-      default: false
+const {
+  existingShareRole = undefined,
+  existingSharePermissions = [],
+  domSelector = undefined,
+  mode = 'create',
+  isLocked = false,
+  isExternal = false
+} = defineProps<{
+  existingShareRole?: ShareRole
+  existingSharePermissions?: string[]
+  domSelector?: string
+  mode?: 'create' | 'edit'
+  isLocked?: boolean
+  isExternal?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'optionChange', role: ShareRole): void
+}>()
+
+const { $gettext } = useGettext()
+
+const dropButtonTooltip = computed(() => {
+  if (isLocked) {
+    return $gettext('Resource is temporarily locked, unable to manage share')
+  }
+
+  return ''
+})
+const customPermissionsText = computed(() =>
+  $gettext('Dear user, please replace this legacy role with one of the currently available roles')
+)
+
+const availableInternalRoles = inject<Ref<ShareRole[]>>('availableInternalShareRoles')
+const availableExternalRoles = inject<Ref<ShareRole[]>>('availableExternalShareRoles')
+const availableRoles = computed(() => {
+  let roles = availableInternalRoles
+  if (isExternal) {
+    roles = availableExternalRoles
+  }
+
+  return unref(roles)
+})
+
+let initialSelectedRole: ShareRole
+const hasExistingShareRole = computed(() => !!existingShareRole)
+const hasExistingSharePermissions = computed(() => !!existingSharePermissions.length)
+const isDisabledRole = computed(
+  () => !unref(hasExistingShareRole) && unref(hasExistingSharePermissions)
+)
+switch (true) {
+  // if no role is set and no permissions are set, we use the first available role as the default
+  case !unref(hasExistingShareRole) && !unref(hasExistingSharePermissions):
+    initialSelectedRole = unref(availableRoles)[0]
+    break
+  // in the rare case that a role is disabled and permissions are set aka a disabled unified role ...
+  case unref(isDisabledRole):
+    // ... we need to create a fake role as an indicator that the permissions are custom
+    initialSelectedRole = {
+      displayName: $gettext('Custom permissions')
     }
-  },
-  emits: ['optionChange'],
-  setup(props, { emit }) {
-    const ability = useAbility()
-    const userStore = useUserStore()
-    const { user } = storeToRefs(userStore)
-    const { $gettext } = useGettext()
+    break
+  default:
+    initialSelectedRole = existingShareRole
+    break
+}
 
-    const dropButtonTooltip = computed(() => {
-      if (props.isLocked) {
-        return $gettext('Resource is temporarily locked, unable to manage share')
-      }
+const selectedRole = ref<ShareRole>(initialSelectedRole)
+const isSelectedRole = (role: ShareRole) => {
+  return unref(selectedRole).id === role.id
+}
 
-      return ''
-    })
-    const customPermissionsText = computed(() =>
-      $gettext(
-        'Dear user, please replace this legacy role with one of the currently available roles'
-      )
-    )
+const selectRole = (role: ShareRole) => {
+  selectedRole.value = role
+  emit('optionChange', unref(selectedRole))
+}
 
-    const availableInternalRoles = inject<Ref<ShareRole[]>>('availableInternalShareRoles')
-    const availableExternalRoles = inject<Ref<ShareRole[]>>('availableExternalShareRoles')
-    const availableRoles = computed(() => {
-      let roles = availableInternalRoles
-      if (props.isExternal) {
-        roles = availableExternalRoles
-      }
-
-      return unref(roles)
-    })
-
-    let initialSelectedRole: ShareRole
-    const hasExistingShareRole = computed(() => !!props.existingShareRole)
-    const hasExistingSharePermissions = computed(() => !!props.existingSharePermissions.length)
-    const isDisabledRole = computed(
-      () => !unref(hasExistingShareRole) && unref(hasExistingSharePermissions)
-    )
-    switch (true) {
-      // if no role is set and no permissions are set, we use the first available role as the default
-      case !unref(hasExistingShareRole) && !unref(hasExistingSharePermissions):
-        initialSelectedRole = unref(availableRoles)[0]
-        break
-      // in the rare case that a role is disabled and permissions are set aka a disabled unified role ...
-      case unref(isDisabledRole):
-        // ... we need to create a fake role as an indicator that the permissions are custom
-        initialSelectedRole = {
-          displayName: $gettext('Custom permissions')
-        }
-        break
-      default:
-        initialSelectedRole = props.existingShareRole
-        break
-    }
-
-    const selectedRole = ref<ShareRole>(initialSelectedRole)
-    const isSelectedRole = (role: ShareRole) => {
-      return unref(selectedRole).id === role.id
-    }
-
-    const selectRole = (role: ShareRole) => {
-      selectedRole.value = role
-      emit('optionChange', unref(selectedRole))
-    }
-
-    watch(
-      () => props.isExternal,
-      () => {
-        if (!unref(hasExistingShareRole)) {
-          // when no role exists and the external flag changes, we need to reset the selected role
-          selectedRole.value = unref(availableRoles)[0]
-        }
-      }
-    )
-
-    return {
-      ability,
-      user,
-      dropButtonTooltip,
-      customPermissionsText,
-      resource: inject<Resource>('resource'),
-      selectedRole,
-      availableRoles,
-      isSelectedRole,
-      selectRole,
-      isDisabledRole
-    }
-  },
-  computed: {
-    roleButtonId() {
-      if (this.domSelector) {
-        return `files-collaborators-role-button-${this.domSelector}-${uuidV4()}`
-      }
-      return 'files-collaborators-role-button-new'
-    },
-    inviteLabel() {
-      return this.$gettext(this.selectedRole?.displayName || '')
+watch(
+  () => isExternal,
+  () => {
+    if (!unref(hasExistingShareRole)) {
+      // when no role exists and the external flag changes, we need to reset the selected role
+      selectedRole.value = unref(availableRoles)[0]
     }
   }
+)
+
+const roleButtonId = computed(() => {
+  if (domSelector) {
+    return `files-collaborators-role-button-${domSelector}-${uuidV4()}`
+  }
+  return 'files-collaborators-role-button-new'
+})
+
+const inviteLabel = computed(() => {
+  return $gettext(selectedRole.value?.displayName || '')
 })
 </script>

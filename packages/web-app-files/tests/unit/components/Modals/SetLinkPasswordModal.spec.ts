@@ -16,11 +16,11 @@ describe('SetLinkPasswordModal', () => {
     expect(wrapper.emitted('update:confirmDisabled')).toBeTruthy()
     expect(wrapper.emitted('update:confirmDisabled')![0]).toEqual([true])
   })
-  it('should disable the confirm button when the password is cleared', async () => {
+  it('should disable the confirm button when the password is cleared', () => {
     const { wrapper } = getWrapper()
 
-    wrapper.vm.onInput('somepassword')
-    wrapper.vm.onInput('')
+    ;(wrapper.vm as any).onInput('somepassword')
+    ;(wrapper.vm as any).onInput('')
 
     const emitted = wrapper.emitted('update:confirmDisabled')!
     expect(emitted[emitted.length - 1]).toEqual([true])
@@ -28,13 +28,15 @@ describe('SetLinkPasswordModal', () => {
   describe('method "onKeydownEnter"', () => {
     it('emits confirm', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.onKeydownEnter(new KeyboardEvent('keydown', { key: 'Enter' }))
+      ;(wrapper.vm as any).onKeydownEnter(new KeyboardEvent('keydown', { key: 'Enter' }))
 
       expect(wrapper.emitted('confirm')).toBeTruthy()
     })
     it('does not emit confirm while an IME composition session is active', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.onKeydownEnter(new KeyboardEvent('keydown', { key: 'Enter', isComposing: true }))
+      ;(wrapper.vm as any).onKeydownEnter(
+        new KeyboardEvent('keydown', { key: 'Enter', isComposing: true })
+      )
 
       expect(wrapper.emitted('confirm')).toBeUndefined()
     })
