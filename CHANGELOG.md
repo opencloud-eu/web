@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @fschade, @kulmann, @neverether, @openclouders, @pbleser-oc, @tammi-23, @tralph3, @v-scharf
+@AlexAndBear, @JammingBen, @dschmidt, @flash7777, @fschade, @kulmann, @neverether, @openclouders, @pbleser-oc, @tammi-23, @tralph3, @v-scharf
 
 ### 🔒 Security
 
@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: include registered extra props in PROPFIND request body [[#2726](https://github.com/opencloud-eu/web/pull/2726)]
 - fix: Prevent Enter during IME compose in submission dialogs [[#2803](https://github.com/opencloud-eu/web/pull/2803)]
 - fix: fixing mailcompose Tiptap toolbar dropdowns [[#2795](https://github.com/opencloud-eu/web/pull/2795)]
 - fix: align inline search inputs & a11y [[#2775](https://github.com/opencloud-eu/web/pull/2775)]
