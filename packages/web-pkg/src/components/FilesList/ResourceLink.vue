@@ -17,7 +17,7 @@
   >
     <slot />
   </component>
-  <span v-else>
+  <span v-else class="oc-resource-link max-w-full">
     <slot />
   </span>
 </template>
