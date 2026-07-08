@@ -37,12 +37,27 @@ describe('OcSidebarNav', () => {
       expect(wrapper.find('[data-testid="extension-bottom"]').exists()).toBeFalsy()
     })
   })
+
+  describe('sponsor link', () => {
+    it('renders the sponsor link by default', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeTruthy()
+    })
+
+    it('does not render the sponsor link when disabled in config', () => {
+      const { wrapper } = getWrapper({
+        configOptions: { disableSponsorLink: true }
+      })
+      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
+    })
+  })
 })
 
 function getWrapper({
   closed = false,
   route = '/files/spaces',
-  extensions = [] as Extension[]
+  extensions = [] as Extension[],
+  configOptions = {}
 } = {}) {
   const mocks = defaultComponentMocks({ currentRoute: mock({ path: route }) })
 
@@ -54,6 +69,9 @@ function getWrapper({
             status: { productversion: '3.5.0' }
           }
         }
+      },
+      configState: {
+        options: configOptions
       }
     }
   })

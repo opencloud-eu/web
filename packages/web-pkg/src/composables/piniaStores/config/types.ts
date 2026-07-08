@@ -63,6 +63,7 @@ const OptionsConfigSchema = z.object({
   defaultAppId: z.string().optional(),
   disabledExtensions: z.array(z.string()).optional(),
   disableFeedbackLink: z.boolean().optional(),
+  disableSponsorLink: z.boolean().optional(),
   accountEditLink: z
     .object({
       href: z.string().optional()
