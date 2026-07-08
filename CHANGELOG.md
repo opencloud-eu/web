@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: markdown resoure icon alignment [[#2836](https://github.com/opencloud-eu/web/pull/2836)]
 - fix: reintroduce add to favorites to batch actions [[#2835](https://github.com/opencloud-eu/web/pull/2835)]
 - fix: unsettling color on floating action button in dark mode [[#2827](https://github.com/opencloud-eu/web/pull/2827)]
 - fix: include registered extra props in PROPFIND request body [[#2726](https://github.com/opencloud-eu/web/pull/2726)]
