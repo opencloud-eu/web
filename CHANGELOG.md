@@ -10,6 +10,16 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
+### ✅ Tests
+
+- e2e-test: add to favorites using batch action [[#2840](https://github.com/opencloud-eu/web/pull/2840)]
+- fix(e2e): sync singular/plural wording in step tables [[#2799](https://github.com/opencloud-eu/web/pull/2799)]
+- tests: use native locator.drop() [[#2798](https://github.com/opencloud-eu/web/pull/2798)]
+- [full-ci] replace cucumber [[#2476](https://github.com/opencloud-eu/web/pull/2476)]
+- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
+- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
+
 ### 📈 Enhancement
 
 - feat: add sponsor link to left sidebar [[#2839](https://github.com/opencloud-eu/web/pull/2839)]
@@ -65,15 +75,6 @@
 - fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
 - fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
-
-### ✅ Tests
-
-- fix(e2e): sync singular/plural wording in step tables [[#2799](https://github.com/opencloud-eu/web/pull/2799)]
-- tests: use native locator.drop() [[#2798](https://github.com/opencloud-eu/web/pull/2798)]
-- [full-ci] replace cucumber [[#2476](https://github.com/opencloud-eu/web/pull/2476)]
-- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
-- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
-- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
 
 ### 📦️ Dependencies
 
