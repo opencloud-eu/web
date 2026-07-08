@@ -190,6 +190,7 @@ export const useFileActions = (): ActionExtension[] => {
       extensionPointIds: [
         previewToolBarActionsExtensionPointId,
         contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
         fileSideBarActionsExtensionPoint.id
       ],
       type: 'action',
