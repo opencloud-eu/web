@@ -393,14 +393,29 @@ Then(
   ): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
+    const isFavoritesPage = page.url().includes('/favorites')
+
     for (const info of stepTable.hashes()) {
-      if (actionType === 'should') {
+      if (isFavoritesPage) {
+        // In the favorites page, the resource may not be immediately visible due the search index update delay.
+        await expect(async () => {
+          const isVisible = await resourceObject.getResourceLocator(info.resource).isVisible()
+          if (isVisible !== (actionType === 'should')) {
+            await page.reload()
+            await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
+          }
+          expect(isVisible).toBe(actionType === 'should')
+        }).toPass({ timeout: appConfig.timeout * 1000 })
+      } else if (actionType === 'should') {
         await expect(resourceObject.getResourceLocator(info.resource)).toBeVisible({
           timeout: appConfig.timeout * 1000
         })
-        await waitProcessingToFinish(page, info.resource)
       } else {
         await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
+      }
+
+      if (actionType === 'should') {
+        await waitProcessingToFinish(page, info.resource)
       }
     }
   }
