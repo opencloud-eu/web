@@ -88,31 +88,31 @@ describe('FileShares', () => {
     })
     it('toggles the share list', async () => {
       const { wrapper } = getWrapper({ mountType: mount, collaborators })
-      expect(wrapper.vm.sharesListCollapsed).toBe(true)
+      expect((wrapper.vm as any).sharesListCollapsed).toBe(true)
       await wrapper.find('.toggle-shares-list-btn').trigger('click')
-      expect(wrapper.vm.sharesListCollapsed).toBe(false)
+      expect((wrapper.vm as any).sharesListCollapsed).toBe(false)
     })
     it('share should be modifiable if its personal space share', () => {
       const space = mock<SpaceResource>({ driveType: 'personal' })
       const { wrapper } = getWrapper({ space, mountType: shallowMount, collaborators })
-      expect(wrapper.vm.isShareModifiable(collaborators[0])).toBe(true)
+      expect((wrapper.vm as any).isShareModifiable(collaborators[0])).toBe(true)
     })
     it('share should not be modifiable if collaborator is indirect', () => {
       const space = mock<SpaceResource>({ driveType: 'personal' })
       const { wrapper } = getWrapper({ space, mountType: shallowMount, collaborators })
       collaborators[0]['indirect'] = true
-      expect(wrapper.vm.isShareModifiable(collaborators[0])).toBe(false)
+      expect((wrapper.vm as any).isShareModifiable(collaborators[0])).toBe(false)
     })
     it('share should not be modifiable if its a project space user cannot share', () => {
       const space = mock<SpaceResource>({ driveType: 'project', canShare: () => false })
       collaborators[0]['indirect'] = true
       const { wrapper } = getWrapper({ space, mountType: shallowMount, collaborators })
-      expect(wrapper.vm.isShareModifiable(collaborators[0])).toBe(false)
+      expect((wrapper.vm as any).isShareModifiable(collaborators[0])).toBe(false)
     })
     it('share should be modifiable if its a project space and user can share', () => {
       const space = mock<SpaceResource>({ driveType: 'project', canShare: () => true })
       const { wrapper } = getWrapper({ space, mountType: shallowMount, collaborators })
-      expect(wrapper.vm.isShareModifiable(collaborators[0])).toBe(true)
+      expect((wrapper.vm as any).isShareModifiable(collaborators[0])).toBe(true)
     })
   })
 
@@ -140,7 +140,7 @@ describe('FileShares', () => {
     it('dispatches a modal', () => {
       const { wrapper } = getWrapper()
       const { dispatchModal } = useModals()
-      wrapper.vm.deleteShareConfirmation(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).deleteShareConfirmation(mock<CollaboratorShare>())
       expect(dispatchModal).toHaveBeenCalled()
     })
   })
