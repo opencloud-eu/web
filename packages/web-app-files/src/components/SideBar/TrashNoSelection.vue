@@ -4,10 +4,4 @@
     <p data-testid="selectTrashText" v-text="$gettext('Select a trash bin to view details')" />
   </div>
 </template>
-<script lang="ts">
-import { defineComponent } from 'vue'
-
-export default defineComponent({
-  name: 'TrashNoSelection'
-})
-</script>
+<script setup lang="ts"></script>
