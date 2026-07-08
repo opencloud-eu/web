@@ -19,7 +19,7 @@
         <resource-list-item
           v-if="resource"
           id="app-top-bar-resource"
-          class="[&_.oc-resource-name]:max-w-16 sm:[&_.oc-resource-name]:max-w-60 [&_span]:flex"
+          class="[&_.oc-resource-name]:max-w-16 sm:[&_.oc-resource-name]:max-w-60"
           :is-thumbnail-displayed="false"
           :is-extension-displayed="areFileExtensionsShown"
           :resource="resource"
