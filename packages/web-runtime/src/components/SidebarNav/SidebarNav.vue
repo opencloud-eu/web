@@ -52,7 +52,7 @@
           href="https://github.com/sponsors/opencloud-eu"
           target="_blank"
           rel="noopener noreferrer"
-          class="oc-sidebar-nav-sponsor-link mb-2 flex items-center justify-center hover:underline"
+          class="oc-sidebar-nav-sponsor-link mb-2"
         >
           {{ $gettext('Sponsor us ❤️') }}
         </a>
