@@ -9,32 +9,18 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import FileLinks from './FileLinks.vue'
 import FileShares from './FileShares.vue'
 import SpaceMembers from './SpaceMembers.vue'
 import { useSharesStore } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  name: 'SharesPanel',
-  components: {
-    FileLinks,
-    FileShares,
-    SpaceMembers
-  },
-  props: {
-    showSpaceMembers: { type: Boolean, default: false },
-    showLinks: { type: Boolean, default: false }
-  },
-  setup() {
-    const sharesStore = useSharesStore()
-    const { loading: sharesLoading } = storeToRefs(sharesStore)
+const { showSpaceMembers = false, showLinks = false } = defineProps<{
+  showSpaceMembers?: boolean
+  showLinks?: boolean
+}>()
 
-    return {
-      sharesLoading
-    }
-  }
-})
+const sharesStore = useSharesStore()
+const { loading: sharesLoading } = storeToRefs(sharesStore)
 </script>

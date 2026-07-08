@@ -15,47 +15,27 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import { Action, useEmbedMode, useExtensionRegistry } from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { unref } from 'vue'
 import { quickActionsExtensionPoint } from '../../extensionPoints'
 
-export default defineComponent({
-  name: 'QuickActions',
-  props: {
-    item: {
-      type: Object as PropType<Resource>,
-      required: true
-    },
-    space: {
-      type: Object as PropType<SpaceResource>,
-      default: undefined
-    }
-  },
-  setup(props) {
-    const extensionRegistry = useExtensionRegistry()
-    const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
+const { item, space = undefined } = defineProps<{
+  item: Resource
+  space?: SpaceResource
+}>()
+const extensionRegistry = useExtensionRegistry()
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
-    const filteredActions = computed(() => {
-      return unref(extensionRegistry)
-        .requestExtensions(quickActionsExtensionPoint)
-        .map((e) => e.action)
-        .filter(({ isVisible }) => isVisible({ space: props.space, resources: [props.item] }))
-    })
-
-    const getIconFromAction = (action: Action) => {
-      return typeof action.icon === 'function'
-        ? action.icon({ space: props.space, resources: [props.item] })
-        : action.icon
-    }
-
-    return {
-      getIconFromAction,
-      filteredActions,
-      isEmbedModeEnabled
-    }
-  }
+const filteredActions = computed(() => {
+  return unref(extensionRegistry)
+    .requestExtensions(quickActionsExtensionPoint)
+    .map((e) => e.action)
+    .filter(({ isVisible }) => isVisible({ space, resources: [item] }))
 })
+
+const getIconFromAction = (action: Action) => {
+  return typeof action.icon === 'function' ? action.icon({ space, resources: [item] }) : action.icon
+}
 </script>

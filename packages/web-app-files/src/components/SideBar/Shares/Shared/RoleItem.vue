@@ -8,17 +8,10 @@
   </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { ShareRole } from '@opencloud-eu/web-client'
-import { defineComponent, PropType } from 'vue'
 
-export default defineComponent({
-  name: 'RoleItem',
-  props: {
-    role: {
-      type: Object as PropType<ShareRole>,
-      required: true
-    }
-  }
-})
+const { role } = defineProps<{
+  role: ShareRole
+}>()
 </script>

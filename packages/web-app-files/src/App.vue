@@ -7,40 +7,35 @@
     <router-view tabindex="0" class="files-wrapper flex-1 h-full flex-nowrap sm:flex-wrap" />
   </main>
 </template>
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, watch, ref, unref } from 'vue'
+<script setup lang="ts">
+import { onBeforeUnmount, watch, ref, unref } from 'vue'
 import { useRoute, eventBus, useResourcesStore } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  setup() {
-    const dragareaEnabled = ref(false)
-    const { resetSelection } = useResourcesStore()
-    const route = useRoute()
+const dragareaEnabled = ref(false)
+const { resetSelection } = useResourcesStore()
+const route = useRoute()
 
-    watch(
-      () => unref(route).path,
-      () => {
-        resetSelection()
-      }
-    )
-
-    const hideDropzone = () => {
-      dragareaEnabled.value = false
-    }
-    const onDragOver = (event: DragEvent) => {
-      dragareaEnabled.value = (event.dataTransfer.types || []).some((e) => e === 'Files')
-    }
-
-    const dragOver = eventBus.subscribe('drag-over', onDragOver)
-    const dragOut = eventBus.subscribe('drag-out', hideDropzone)
-    const drop = eventBus.subscribe('drop', hideDropzone)
-
-    onBeforeUnmount(() => {
-      eventBus.unsubscribe('drag-over', dragOver)
-      eventBus.unsubscribe('drag-out', dragOut)
-      eventBus.unsubscribe('drop', drop)
-    })
-    return { dragareaEnabled }
+watch(
+  () => unref(route).path,
+  () => {
+    resetSelection()
   }
+)
+
+const hideDropzone = () => {
+  dragareaEnabled.value = false
+}
+const onDragOver = (event: DragEvent) => {
+  dragareaEnabled.value = (event.dataTransfer.types || []).some((e) => e === 'Files')
+}
+
+const dragOver = eventBus.subscribe('drag-over', onDragOver)
+const dragOut = eventBus.subscribe('drag-out', hideDropzone)
+const drop = eventBus.subscribe('drop', hideDropzone)
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('drag-over', dragOver)
+  eventBus.unsubscribe('drag-out', dragOut)
+  eventBus.unsubscribe('drop', drop)
 })
 </script>
