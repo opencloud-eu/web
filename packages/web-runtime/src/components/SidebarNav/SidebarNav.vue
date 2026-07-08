@@ -47,6 +47,15 @@
     <div class="flex flex-col gap-2">
       <custom-component-target :extension-point="dynamicExtensionPointBottom" />
       <div class="flex flex-col pb-4 px-4 text-xs text-role-on-surface-variant">
+        <a
+          v-if="!options.disableSponsorLink"
+          href="https://github.com/sponsors/opencloud-eu"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mb-2"
+        >
+          {{ $gettext('Sponsor us ❤️') }}
+        </a>
         <span v-text="backendVersion" />
         <version-check />
       </div>
@@ -69,7 +78,8 @@ import {
   useActiveApp,
   useExtensionRegistry,
   FloatingActionButtonExtension,
-  useThemeStore
+  useThemeStore,
+  useConfigStore
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -85,6 +95,9 @@ const { isTablet } = useIsMobile()
 
 const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
+
+const configStore = useConfigStore()
+const { options } = storeToRefs(configStore)
 
 const dynamicExtensionPointMain = computed<ExtensionPoint<CustomComponentExtension>>(() => ({
   id: `app.${unref(activeApp)}.sidebar-nav.main`,

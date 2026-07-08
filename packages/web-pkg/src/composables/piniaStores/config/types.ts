@@ -63,6 +63,7 @@ const OptionsConfigSchema = z.object({
   defaultAppId: z.string().optional(),
   disabledExtensions: z.array(z.string()).optional(),
   disableFeedbackLink: z.boolean().optional(),
+  disableSponsorLink: z.boolean().optional(),
   accountEditLink: z
     .object({
       href: z.string().optional()
@@ -110,7 +111,8 @@ const OptionsConfigSchema = z.object({
       enabled: z.boolean().optional(),
       apiUrl: z.string().optional()
     })
-    .optional()
+    .optional(),
+  disableSponsorLink: z.boolean().optional()
 })
 
 export type OptionsConfig = z.infer<typeof OptionsConfigSchema>
