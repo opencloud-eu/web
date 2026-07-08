@@ -11,13 +11,13 @@
     :type="!isNavigatable ? 'button' : undefined"
     :no-hover="!isNavigatable ? true : undefined"
     :draggable="false"
-    class="oc-resource-link max-w-full"
+    class="oc-resource-link max-w-full inline-flex"
     @dragstart.prevent.stop
     @click="emitClick"
   >
     <slot />
   </component>
-  <span v-else>
+  <span v-else class="inline-flex">
     <slot />
   </span>
 </template>
@@ -100,12 +100,3 @@ export default {
   }
 }
 </script>
-<style scoped>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer components {
-  .oc-resource-link {
-    @apply inline-flex;
-  }
-}
-</style>
