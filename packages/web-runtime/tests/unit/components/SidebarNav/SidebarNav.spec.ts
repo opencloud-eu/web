@@ -37,12 +37,40 @@ describe('OcSidebarNav', () => {
       expect(wrapper.find('[data-testid="extension-bottom"]').exists()).toBeFalsy()
     })
   })
+
+  describe('sponsor link', () => {
+    it('renders the sponsor link by default', () => {
+      const { wrapper } = getWrapper()
+      const sponsorLink = wrapper.find('[href="https://github.com/sponsors/opencloud-eu"]')
+      expect(sponsorLink.exists()).toBeTruthy()
+      expect(sponsorLink.text()).toBe('Sponsor us ❤️')
+      expect(sponsorLink.attributes('target')).toBe('_blank')
+      expect(sponsorLink.attributes('rel')).toBe('noopener noreferrer')
+    })
+
+    it('does not render the sponsor link when disabled in config', () => {
+      const { wrapper } = getWrapper({
+        configOptions: { disableSponsorLink: true }
+      })
+      const sponsorLink = wrapper.find('[href="https://github.com/sponsors/opencloud-eu"]')
+      expect(sponsorLink.exists()).toBeFalsy()
+    })
+
+    it('renders the sponsor link when explicitly enabled in config', () => {
+      const { wrapper } = getWrapper({
+        configOptions: { disableSponsorLink: false }
+      })
+      const sponsorLink = wrapper.find('[href="https://github.com/sponsors/opencloud-eu"]')
+      expect(sponsorLink.exists()).toBeTruthy()
+    })
+  })
 })
 
 function getWrapper({
   closed = false,
   route = '/files/spaces',
-  extensions = [] as Extension[]
+  extensions = [] as Extension[],
+  configOptions = {}
 } = {}) {
   const mocks = defaultComponentMocks({ currentRoute: mock({ path: route }) })
 
@@ -54,6 +82,9 @@ function getWrapper({
             status: { productversion: '3.5.0' }
           }
         }
+      },
+      configState: {
+        options: configOptions
       }
     }
   })

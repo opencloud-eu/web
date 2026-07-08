@@ -111,8 +111,7 @@ const OptionsConfigSchema = z.object({
       enabled: z.boolean().optional(),
       apiUrl: z.string().optional()
     })
-    .optional(),
-  disableSponsorLink: z.boolean().optional()
+    .optional()
 })
 
 export type OptionsConfig = z.infer<typeof OptionsConfigSchema>
