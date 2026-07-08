@@ -451,7 +451,7 @@ export class Resource {
   }
 
   async unmarkAsFavorite(args: {
-    method: 'context menu' | 'batch action'
+    method: 'context menu' | 'sidebar panel' | 'batch action'
     resources: string[]
   }): Promise<void> {
     await po.unmarkAsFavorite({

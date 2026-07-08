@@ -17,7 +17,7 @@ When(
   async (
     { world }: { world: World },
     stepUser: string,
-    method: 'context menu' | 'batch action',
+    method: 'context menu' | 'sidebar panel' | 'batch action',
     stepTable: DataTable
   ): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })

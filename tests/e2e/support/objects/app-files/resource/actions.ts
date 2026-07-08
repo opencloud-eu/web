@@ -1,4 +1,4 @@
-import { Download, Locator, Page, expect } from '@playwright/test'
+import { Download, Locator, Page, Response, expect } from '@playwright/test'
 import util from 'util'
 import path from 'path'
 import { waitForResources } from './utils'
@@ -2599,41 +2599,54 @@ export const markAsFavorite = async ({
   method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview'
   resources: string[]
 }): Promise<void> => {
-  const postPromise = page.waitForResponse(
-    (resp) =>
-      resp.status() === 201 && resp.request().method() === 'POST' && resp.url().endsWith('/follow')
-  )
+  const waitForFollowResponse = (): Promise<Response> =>
+    page.waitForResponse(
+      (resp) =>
+        resp.status() === 201 &&
+        resp.request().method() === 'POST' &&
+        resp.url().endsWith('/follow')
+    )
+
   switch (method) {
     case 'context menu':
       for (const resource of resources) {
+        const postPromise = waitForFollowResponse()
         await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
         await page.locator(util.format(filesContextMenuAction, 'favorite')).click()
+        await postPromise
       }
       break
 
     case 'sidebar panel':
       for (const resource of resources) {
+        const postPromise = waitForFollowResponse()
         await sidebar.open({ page, resource })
         await sidebar.openPanel({ page, name: 'actions' })
         await page.locator(util.format(sideBarActionButton, 'Add to favorites')).click()
+        await postPromise
       }
       break
 
-    case 'batch action':
+    case 'batch action': {
+      const postPromises = resources.map(() => waitForFollowResponse())
       for (const resource of resources) {
         await page.locator(util.format(checkBox, resource)).click()
       }
       await selectBatchAction(page, 'favorite')
+      await Promise.all(postPromises)
       break
+    }
 
-    case 'preview':
+    case 'preview': {
+      const postPromise = waitForFollowResponse()
       const favoriteBtn = page.locator(previewFavoriteButton)
       await expect(favoriteBtn).toHaveAttribute('aria-label', 'Add to favorites')
       await favoriteBtn.click()
       await expect(favoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
+      await postPromise
       break
+    }
   }
-  await postPromise
 }
 
 export const unmarkAsFavorite = async ({
@@ -2642,33 +2655,52 @@ export const unmarkAsFavorite = async ({
   resources
 }: {
   page: Page
-  method: 'context menu' | 'batch action'
+  method: 'context menu' | 'sidebar panel' | 'batch action'
   resources: string[]
 }): Promise<void> => {
-  const deletePromise = page.waitForResponse(
-    (resp) =>
-      resp.status() === 204 &&
-      resp.request().method() === 'DELETE' &&
-      resp.url().includes('me/drive/following')
-  )
+  const waitForUnfollowResponse = (): Promise<Response> =>
+    page.waitForResponse(
+      (resp) =>
+        resp.status() === 204 &&
+        resp.request().method() === 'DELETE' &&
+        resp.url().includes('me/drive/following')
+    )
+
   switch (method) {
     case 'context menu':
       for (const resource of resources) {
+        const deletePromise = waitForUnfollowResponse()
         await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
         const removeFavoriteBtn = page.locator(util.format(filesContextMenuAction, 'favorite'))
         await expect(removeFavoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
         await removeFavoriteBtn.click()
+        await deletePromise
       }
       break
 
-    case 'batch action':
+    case 'sidebar panel':
+      for (const resource of resources) {
+        const deletePromise = waitForUnfollowResponse()
+        await sidebar.open({ page, resource })
+        await sidebar.openPanel({ page, name: 'actions' })
+        const removeFavoriteBtn = page.locator(
+          util.format(sideBarActionButton, 'Remove from favorites')
+        )
+        await removeFavoriteBtn.click()
+        await deletePromise
+      }
+      break
+
+    case 'batch action': {
+      const deletePromises = resources.map(() => waitForUnfollowResponse())
       for (const resource of resources) {
         await page.locator(util.format(checkBox, resource)).click()
       }
       await selectBatchAction(page, 'favorite')
+      await Promise.all(deletePromises)
       break
+    }
   }
-  await deletePromise
 }
 
 export const enterVault = async ({
