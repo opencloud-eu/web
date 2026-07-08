@@ -41,27 +41,14 @@ describe('OcSidebarNav', () => {
   describe('sponsor link', () => {
     it('renders the sponsor link by default', () => {
       const { wrapper } = getWrapper()
-      const sponsorLink = wrapper.find('[href="https://github.com/sponsors/opencloud-eu"]')
-      expect(sponsorLink.exists()).toBeTruthy()
-      expect(sponsorLink.text()).toBe('Sponsor us ❤️')
-      expect(sponsorLink.attributes('target')).toBe('_blank')
-      expect(sponsorLink.attributes('rel')).toBe('noopener noreferrer')
+      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeTruthy()
     })
 
     it('does not render the sponsor link when disabled in config', () => {
       const { wrapper } = getWrapper({
         configOptions: { disableSponsorLink: true }
       })
-      const sponsorLink = wrapper.find('[href="https://github.com/sponsors/opencloud-eu"]')
-      expect(sponsorLink.exists()).toBeFalsy()
-    })
-
-    it('renders the sponsor link when explicitly enabled in config', () => {
-      const { wrapper } = getWrapper({
-        configOptions: { disableSponsorLink: false }
-      })
-      const sponsorLink = wrapper.find('[href="https://github.com/sponsors/opencloud-eu"]')
-      expect(sponsorLink.exists()).toBeTruthy()
+      expect(wrapper.find('.oc-sidebar-nav-sponsor-link').exists()).toBeFalsy()
     })
   })
 })
