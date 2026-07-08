@@ -769,7 +769,7 @@ def installBrowsers():
             "if $BROWSER_CACHE_FOUND; then exit 0; fi",
             "pnpm exec playwright install",
             "pnpm exec playwright install --list",
-            "tar -czvf %s .playwright" % dir["playwrightBrowsersArchive"],
+            "tar -czvf %s -C tests/e2e .playwright" % dir["playwrightBrowsersArchive"],
         ],
     }]
 
