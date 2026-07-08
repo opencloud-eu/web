@@ -10,40 +10,9 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
-### ✅ Tests
-
-- e2e-test: add to favorites using batch action [[#2840](https://github.com/opencloud-eu/web/pull/2840)]
-- fix(e2e): sync singular/plural wording in step tables [[#2799](https://github.com/opencloud-eu/web/pull/2799)]
-- tests: use native locator.drop() [[#2798](https://github.com/opencloud-eu/web/pull/2798)]
-- [full-ci] replace cucumber [[#2476](https://github.com/opencloud-eu/web/pull/2476)]
-- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
-- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
-- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
-
-### 📈 Enhancement
-
-- feat: add sponsor link to left sidebar [[#2839](https://github.com/opencloud-eu/web/pull/2839)]
-- feat: new file type icons [[#2822](https://github.com/opencloud-eu/web/pull/2822)]
-- feat: adjust no content message image colors design system tokens [[#2805](https://github.com/opencloud-eu/web/pull/2805)]
-- feat: remove unnecessary white spaces [[#2806](https://github.com/opencloud-eu/web/pull/2806)]
-- feat: redesign app top bar [[#2797](https://github.com/opencloud-eu/web/pull/2797)]
-- feat(tiptap): make heading toolbar more versatile (turn into) [[#2786](https://github.com/opencloud-eu/web/pull/2786)]
-- feat: add gradient to new fab button [[#2783](https://github.com/opencloud-eu/web/pull/2783)]
-- feat(tiptap): add text alignment controls [[#2778](https://github.com/opencloud-eu/web/pull/2778)]
-- feat(tiptap): show colors in text color and background color actions [[#2779](https://github.com/opencloud-eu/web/pull/2779)]
-- feat (tiptap): enable source mode for html files [[#2760](https://github.com/opencloud-eu/web/pull/2760)]
-- feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
-- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
-- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
-- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
-- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
--  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
-- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
-- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
-- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
-
 ### 🐛 Bug Fixes
 
+- fix: app top bar truncation dots won't be displayed [[#2837](https://github.com/opencloud-eu/web/pull/2837)]
 - fix: markdown resoure icon alignment [[#2836](https://github.com/opencloud-eu/web/pull/2836)]
 - fix: reintroduce add to favorites to batch actions [[#2835](https://github.com/opencloud-eu/web/pull/2835)]
 - fix: unsettling color on floating action button in dark mode [[#2827](https://github.com/opencloud-eu/web/pull/2827)]
@@ -75,6 +44,38 @@
 - fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
 - fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
+
+### ✅ Tests
+
+- e2e-test: add to favorites using batch action [[#2840](https://github.com/opencloud-eu/web/pull/2840)]
+- fix(e2e): sync singular/plural wording in step tables [[#2799](https://github.com/opencloud-eu/web/pull/2799)]
+- tests: use native locator.drop() [[#2798](https://github.com/opencloud-eu/web/pull/2798)]
+- [full-ci] replace cucumber [[#2476](https://github.com/opencloud-eu/web/pull/2476)]
+- [e2e-test] Vault test [[#2730](https://github.com/opencloud-eu/web/pull/2730)]
+- e2e-test: archive uses folder name [[#2694](https://github.com/opencloud-eu/web/pull/2694)]
+- e2e-test: enable-disable-delete sse event [[#2670](https://github.com/opencloud-eu/web/pull/2670)]
+
+### 📈 Enhancement
+
+- feat: add sponsor link to left sidebar [[#2839](https://github.com/opencloud-eu/web/pull/2839)]
+- feat: new file type icons [[#2822](https://github.com/opencloud-eu/web/pull/2822)]
+- feat: adjust no content message image colors design system tokens [[#2805](https://github.com/opencloud-eu/web/pull/2805)]
+- feat: remove unnecessary white spaces [[#2806](https://github.com/opencloud-eu/web/pull/2806)]
+- feat: redesign app top bar [[#2797](https://github.com/opencloud-eu/web/pull/2797)]
+- feat(tiptap): make heading toolbar more versatile (turn into) [[#2786](https://github.com/opencloud-eu/web/pull/2786)]
+- feat: add gradient to new fab button [[#2783](https://github.com/opencloud-eu/web/pull/2783)]
+- feat(tiptap): add text alignment controls [[#2778](https://github.com/opencloud-eu/web/pull/2778)]
+- feat(tiptap): show colors in text color and background color actions [[#2779](https://github.com/opencloud-eu/web/pull/2779)]
+- feat (tiptap): enable source mode for html files [[#2760](https://github.com/opencloud-eu/web/pull/2760)]
+- feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
+- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
+- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
+- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
+- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
+-  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
+- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
+- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 📦️ Dependencies
 
