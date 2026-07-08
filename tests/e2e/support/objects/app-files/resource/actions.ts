@@ -2602,7 +2602,9 @@ export const markAsFavorite = async ({
   const waitForFollowResponse = (): Promise<Response> =>
     page.waitForResponse(
       (resp) =>
-        resp.status() === 201 && resp.request().method() === 'POST' && resp.url().endsWith('/follow')
+        resp.status() === 201 &&
+        resp.request().method() === 'POST' &&
+        resp.url().endsWith('/follow')
     )
 
   switch (method) {
@@ -2681,7 +2683,9 @@ export const unmarkAsFavorite = async ({
         const deletePromise = waitForUnfollowResponse()
         await sidebar.open({ page, resource })
         await sidebar.openPanel({ page, name: 'actions' })
-        const removeFavoriteBtn = page.locator(util.format(sideBarActionButton, 'Remove from favorites'))
+        const removeFavoriteBtn = page.locator(
+          util.format(sideBarActionButton, 'Remove from favorites')
+        )
         await removeFavoriteBtn.click()
         await deletePromise
       }
