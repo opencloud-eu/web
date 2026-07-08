@@ -76,6 +76,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.64.0 [[#2834](https://github.com/opencloud-eu/web/pull/2834)]
 - fix(deps): update dependency @casl/ability to v7.0.1 [[#2815](https://github.com/opencloud-eu/web/pull/2815)]
 - chore(deps): update dependency @casl/vue to v3.0.1 [[#2813](https://github.com/opencloud-eu/web/pull/2813)]
 - chore(deps): update tiptap monorepo to v3.27.2 [[#2809](https://github.com/opencloud-eu/web/pull/2809)]
