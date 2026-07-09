@@ -170,6 +170,10 @@ const fileIcon = {
     icon: { name: 'resource-type-markdown', hasDarkVariant: true },
     extensions: ['md', 'markdown']
   },
+  nes: {
+    icon: { name: 'resource-type-markdown-nes' },
+    extensions: ['nes']
+  },
   odg: {
     icon: { name: 'resource-type-graphic', color: 'var(--oc-color-icon-graphic)' },
     extensions: ['odg']
