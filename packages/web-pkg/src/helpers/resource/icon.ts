@@ -171,7 +171,7 @@ const fileIcon = {
     extensions: ['md', 'markdown']
   },
   nes: {
-    icon: { name: 'resource-type-markdown-nes' },
+    icon: { name: 'resource-type-nes' },
     extensions: ['nes']
   },
   odg: {
