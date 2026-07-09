@@ -73,10 +73,20 @@ describe('filterResources', () => {
     })
     it.each([
       { name: 'afolder', isFolder: true },
-      { name: 'afolder', type: 'dir' },
-      { name: 'afolder', type: 'folder' }
+      { name: 'afolder', type: 'folder' },
+      { name: 'afolder', type: 'directory' }
     ])('should return empty string if folder', (resource) => {
       expect(extractExtensionFromFile(resource as Resource)).toEqual('')
+    })
+    it.each([
+      { name: 'afolder.with.dot', isFolder: true },
+      { name: 'afolder.with.dot', type: 'folder' },
+      { name: 'afolder.with.dot', type: 'directory' },
+      { name: 'my.vault', isFolder: true, type: 'folder' }
+    ])('should keep extension information for dotted folder names', (resource) => {
+      expect(extractExtensionFromFile(resource as Resource)).toEqual(
+        resource.name.split('.').pop() || ''
+      )
     })
   })
 })

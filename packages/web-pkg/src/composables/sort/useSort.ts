@@ -7,6 +7,7 @@ import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 export interface SortableItem {
   type?: string
+  isFolder?: boolean
   extension?: string
 }
 
@@ -139,7 +140,8 @@ export const sortHelper = <T extends SortableItem>(
   const collator = new Intl.Collator(navigator.language, { sensitivity: 'base', numeric: true })
 
   if (sortBy === 'name') {
-    const isFolder = (item: T) => item.type === 'folder' && !item.extension
+    const isFolder = (item: T) =>
+      item.isFolder || item.type === 'folder' || item.type === 'directory'
     const folders = [...items.filter((i) => isFolder(i))].sort((a, b) =>
       compare(a, b, collator, sortBy, sortDir, sortable)
     )
