@@ -48,7 +48,8 @@ vi.mock('../../../src/components/AppFloatingActionButton.vue', () => ({
   default: { template: '<div />' }
 }))
 vi.mock('../../../src/extensionPoints', () => ({
-  progressBarExtensionPoint: { id: 'progress-bar', extensionType: 'customComponent' }
+  progressBarExtensionPoint: { id: 'progress-bar', extensionType: 'customComponent' },
+  snackbarExtensionPoint: { id: 'snackbar', extensionType: 'customComponent' }
 }))
 
 describe('Application layout', () => {
