@@ -77,11 +77,8 @@ const onLocationPick = ({ data }: MessageEvent) => {
     return
   }
 
-  const payload = data.data as
-    | embedModeLocationPickMessageData
-    | embedModeLocationPickMessageData['resources']
-  let resources = (payload as embedModeLocationPickMessageData)?.resources
-  let fileName = (payload as embedModeLocationPickMessageData)?.fileName
+  let resources = (data.data as embedModeLocationPickMessageData)?.resources
+  let fileName = (data.data as embedModeLocationPickMessageData)?.fileName
   if (Array.isArray(data.data)) {
     resources = data.data as embedModeLocationPickMessageData['resources']
     fileName = undefined
