@@ -31,6 +31,12 @@ export const progressBarExtensionPoint: ExtensionPoint<CustomComponentExtension>
   }
 }
 
+export const snackbarExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
+  id: 'app.runtime.snackbars',
+  extensionType: 'customComponent',
+  multiple: true
+}
+
 export const topBarCenterExtensionPoint: ExtensionPoint<CustomComponentExtension> = {
   id: 'app.runtime.header.center',
   extensionType: 'customComponent',
@@ -55,6 +61,7 @@ export const extensionPoints = () => {
       appMenuExtensionPoint,
       preferencesPanelExtensionPoint,
       progressBarExtensionPoint,
+      snackbarExtensionPoint,
       topBarCenterExtensionPoint,
       topBarLeftExtensionPoint,
       topBarRightExtensionPoint
