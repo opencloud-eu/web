@@ -34,7 +34,8 @@
       <div id="app-runtime-footer" class="w-full" />
     </div>
     <div
-      class="snackbars absolute inset-x-[20px] sm:left-auto bottom-[20px] z-[calc(var(--z-index-modal)+1)]"
+      class="snackbars absolute inset-x-[20px] sm:left-auto z-[calc(var(--z-index-modal)+1)]"
+      :class="{ 'bottom-[70px]': isEmbedModeEnabled, 'bottom-[20px]': !isEmbedModeEnabled }"
     >
       <message-bar />
       <upload-info />
@@ -50,6 +51,7 @@ import {
   CustomComponentTarget,
   FloatingActionButtonExtension,
   useActiveApp,
+  useEmbedMode,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -67,6 +69,7 @@ const { $gettext } = useGettext()
 const { navItems } = useNavItems()
 const { requestExtensions } = useExtensionRegistry()
 const activeApp = useActiveApp()
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
 const requiredAuthContext = useRouteMeta('authContext')
 const { areSpacesLoading } = useSpacesLoading()
