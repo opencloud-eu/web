@@ -1,10 +1,10 @@
 # Changelog
 
-## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-07-08
+## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-07-09
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @flash7777, @fschade, @kulmann, @neverether, @openclouders, @pbleser-oc, @tammi-23, @tralph3, @v-scharf
+@AlexAndBear, @JammingBen, @cheneyveron, @dschmidt, @flash7777, @fschade, @kulmann, @neverether, @openclouders, @pbleser-oc, @tammi-23, @tralph3, @v-scharf
 
 ### 🔒 Security
 
