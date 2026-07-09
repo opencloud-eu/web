@@ -42,7 +42,16 @@ describe('useSort', () => {
       { id: '6', name: 'b.png', path: '', webDavPath: '', mdate: '1' },
       { id: '7', name: 'Dir1', path: '', webDavPath: '', mdate: '5', type: 'folder' },
       { id: '8', name: 'dir11', path: '', webDavPath: '', mdate: '8', type: 'folder' },
-      { id: '9', name: 'dir3', path: '', webDavPath: '', mdate: '9', type: 'folder' }
+      { id: '9', name: 'dir3', path: '', webDavPath: '', mdate: '9', type: 'folder' },
+      {
+        id: '10',
+        name: 'dir.with.dot',
+        extension: 'dot',
+        path: '',
+        webDavPath: '',
+        mdate: '10',
+        type: 'folder'
+      }
     ]
 
     it('sorts resources by name', () => {
@@ -67,6 +76,7 @@ describe('useSort', () => {
         const { items } = useSort<Resource>(input)
 
         expect(unref(items).map((i) => i.name)).toMatchObject([
+          'dir.with.dot',
           'Dir1',
           'dir2',
           'dir3',
@@ -88,7 +98,8 @@ describe('useSort', () => {
           'Dir4',
           'dir3',
           'dir2',
-          'Dir1'
+          'Dir1',
+          'dir.with.dot'
         ])
       })
     })
