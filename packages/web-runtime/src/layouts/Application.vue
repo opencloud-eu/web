@@ -38,6 +38,7 @@
     >
       <message-bar />
       <upload-info />
+      <custom-component-target :extension-point="snackbarExtensionPoint" />
     </div>
   </div>
 </template>
@@ -59,7 +60,7 @@ import UploadInfo from '../components/UploadInfo.vue'
 import { useRouteMeta, useSpacesLoading, useNavItems } from '@opencloud-eu/web-pkg'
 import { computed, nextTick, onMounted, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { progressBarExtensionPoint } from '../extensionPoints'
+import { progressBarExtensionPoint, snackbarExtensionPoint } from '../extensionPoints'
 import AppFloatingActionButton from '../components/AppFloatingActionButton.vue'
 
 const { $gettext } = useGettext()
