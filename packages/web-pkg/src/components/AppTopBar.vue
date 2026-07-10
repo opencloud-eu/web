@@ -10,7 +10,7 @@
       :aria-label="$gettext('Close')"
       @click="$emit('close')"
     >
-      <oc-icon name="arrow-left-s" fill-type="line" />
+      <oc-icon name="close" fill-type="line" />
     </oc-button>
     <div
       class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center bg-role-chrome rounded-lg h-10 gap-2 w-full sm:w-fit"
