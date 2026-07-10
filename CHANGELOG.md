@@ -14,10 +14,6 @@
 
 - fix (tiptap): no content hint color on dark mode [[#2851](https://github.com/opencloud-eu/web/pull/2851)]
 - fix: name sorting in files table is off when folder name contains a dot [[#2843](https://github.com/opencloud-eu/web/pull/2843)]
-- fix: app top bar truncation dots won't be displayed [[#2837](https://github.com/opencloud-eu/web/pull/2837)]
-- fix: markdown resoure icon alignment [[#2836](https://github.com/opencloud-eu/web/pull/2836)]
-- fix: reintroduce add to favorites to batch actions [[#2835](https://github.com/opencloud-eu/web/pull/2835)]
-- fix: unsettling color on floating action button in dark mode [[#2827](https://github.com/opencloud-eu/web/pull/2827)]
 - fix: include registered extra props in PROPFIND request body [[#2726](https://github.com/opencloud-eu/web/pull/2726)]
 - fix: Prevent Enter during IME compose in submission dialogs [[#2803](https://github.com/opencloud-eu/web/pull/2803)]
 - fix: fixing mailcompose Tiptap toolbar dropdowns [[#2795](https://github.com/opencloud-eu/web/pull/2795)]
