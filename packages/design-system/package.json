@@ -32,6 +32,7 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
+    "Firefox ESR",
     "not Explorer > 0",
     "not ExplorerMobile > 0",
     "not BlackBerry > 0",
