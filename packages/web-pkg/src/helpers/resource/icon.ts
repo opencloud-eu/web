@@ -170,9 +170,9 @@ const fileIcon = {
     icon: { name: 'resource-type-markdown', hasDarkVariant: true },
     extensions: ['md', 'markdown']
   },
-  nes: {
-    icon: { name: 'resource-type-nes' },
-    extensions: ['nes']
+  game: {
+    icon: { name: 'resource-type-game' },
+    extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'sfc', 'smc', 'n64']
   },
   odg: {
     icon: { name: 'resource-type-graphic', color: 'var(--oc-color-icon-graphic)' },
