@@ -75,7 +75,7 @@
     "vitest": "^4.1.2",
     "vitest-mock-extended": "4.0.0",
     "vue": "^3.5.31",
-    "vue-tsc": "3.3.6",
+    "vue-tsc": "3.3.7",
     "vue3-gettext": "^4.0.0"
   },
   "engines": {
