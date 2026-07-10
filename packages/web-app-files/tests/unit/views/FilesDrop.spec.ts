@@ -18,7 +18,7 @@ describe('FilesDrop view', () => {
     })
     it('shows the "resource-upload"-component after loading', async () => {
       const { wrapper } = getMountedWrapper()
-      wrapper.vm.loading = false
+      ;(wrapper.vm as any).loading = false
       await wrapper.vm.$nextTick()
       expect(wrapper.find('app-loading-spinner').exists()).toBeFalsy()
       expect(wrapper.find('resource-upload-stub').exists()).toBeTruthy()

@@ -53,130 +53,115 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onBeforeUnmount, onMounted, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
 import {
   useClientService,
-  useConfigStore,
   useSpacesStore,
   useResourcesStore,
   useLoadPreview,
-  createLocationCommon
+  createLocationCommon,
+  AppLoadingSpinner,
+  FileSideBar,
+  NoContentMessage,
+  Pagination,
+  eventBus,
+  AppBar,
+  useGetMatchingSpace,
+  ContextActions,
+  useFileActions
 } from '@opencloud-eu/web-pkg'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import { FileSideBar, NoContentMessage } from '@opencloud-eu/web-pkg'
-import { Pagination } from '@opencloud-eu/web-pkg'
-import { eventBus } from '@opencloud-eu/web-pkg'
-import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
-
-import { AppBar } from '@opencloud-eu/web-pkg'
 import QuickActions from '../components/FilesList/QuickActions.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
-import { ContextActions } from '@opencloud-eu/web-pkg'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../components/FilesViewWrapper.vue'
 import { useResourcesViewDefaults } from '../composables'
-import { useFileActions } from '@opencloud-eu/web-pkg'
-import { storeToRefs } from 'pinia'
 import { folderViewsFavoritesExtensionPoint } from '../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { v4 as uuidV4 } from 'uuid'
 
-export default defineComponent({
-  components: {
-    FilesViewWrapper,
-    AppBar,
-    FileSideBar,
-    ResourceTable,
-    QuickActions,
-    AppLoadingSpinner,
-    Pagination,
-    NoContentMessage,
-    ListInfo,
-    ContextActions
-  },
+const { getMatchingSpace } = useGetMatchingSpace()
+const { loadGraphPermissions } = useSpacesStore()
+const clientService = useClientService()
+const { $gettext } = useGettext()
 
-  setup() {
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const configStore = useConfigStore()
-    const { loadGraphPermissions } = useSpacesStore()
-    const clientService = useClientService()
-    const { $gettext } = useGettext()
-    const { options: configOptions } = storeToRefs(configStore)
+const resourcesStore = useResourcesStore()
 
-    const resourcesStore = useResourcesStore()
+const {
+  paginatedResources,
+  selectedResources,
+  selectedResourcesIds,
+  viewMode,
+  viewModes,
+  areResourcesLoading,
+  sortBy,
+  sortDir,
+  sortFields,
+  viewSize,
+  folderView,
+  fileListHeaderY,
+  paginationPages,
+  paginationPage,
+  loadResourcesTask,
+  selectedResourceSpace,
+  handleSort,
+  isResourceInSelection,
+  scrollToResourceFromRoute
+} = useResourcesViewDefaults<Resource, any, any[]>({
+  folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
+})
 
-    const resourcesViewDefaults = useResourcesViewDefaults<Resource, any, any[]>({
-      folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
-    })
+const { triggerDefaultAction } = useFileActions()
 
-    const { selectedResources, selectedResourcesIds, viewMode } = resourcesViewDefaults
+const { loadPreview } = useLoadPreview(viewMode)
 
-    const { loadPreview } = useLoadPreview(viewMode)
-
-    const breadcrumbs = computed(() => {
-      return [
-        {
-          id: uuidV4(),
-          text: $gettext('Favorites'),
-          to: createLocationCommon('files-common-favorites'),
-          isStaticNav: true
-        }
-      ]
-    })
-
-    let loadResourcesEventToken: string
-    onMounted(() => {
-      loadResourcesEventToken = eventBus.subscribe(
-        'app.files.list.removeFromFavorites',
-        (resourceId: string) => {
-          resourcesStore.removeResources([{ id: resourceId }] as Resource[])
-        }
-      )
-    })
-
-    onBeforeUnmount(() => {
-      eventBus.unsubscribe('app.files.list.removeFromFavorites', loadResourcesEventToken)
-    })
-
-    watch(selectedResourcesIds, async (ids) => {
-      if (!ids.length) {
-        return
-      }
-
-      const projectSpaceIds = unref(selectedResources)
-        .filter(isProjectSpaceResource)
-        .map((space) => space.id)
-      if (!projectSpaceIds.length) {
-        return
-      }
-
-      await loadGraphPermissions({
-        ids: projectSpaceIds,
-        graphClient: clientService.graphAuthenticated
-      })
-    })
-
-    return {
-      ...useFileActions(),
-      ...resourcesViewDefaults,
-      configOptions,
-      getMatchingSpace,
-      loadPreview,
-      breadcrumbs
+const breadcrumbs = computed(() => {
+  return [
+    {
+      id: uuidV4(),
+      text: $gettext('Favorites'),
+      to: createLocationCommon('files-common-favorites'),
+      isStaticNav: true
     }
-  },
+  ]
+})
 
-  computed: {
-    isEmpty() {
-      return this.paginatedResources.length < 1
+let loadResourcesEventToken: string
+onMounted(async () => {
+  loadResourcesEventToken = eventBus.subscribe(
+    'app.files.list.removeFromFavorites',
+    (resourceId: string) => {
+      resourcesStore.removeResources([{ id: resourceId }] as Resource[])
     }
-  },
+  )
 
-  async created() {
-    await this.loadResourcesTask.perform()
-    this.scrollToResourceFromRoute(this.paginatedResources, 'files-app-bar')
+  await loadResourcesTask.perform()
+  scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.list.removeFromFavorites', loadResourcesEventToken)
+})
+
+watch(selectedResourcesIds, async (ids) => {
+  if (!ids.length) {
+    return
   }
+
+  const projectSpaceIds = unref(selectedResources)
+    .filter(isProjectSpaceResource)
+    .map((space) => space.id)
+  if (!projectSpaceIds.length) {
+    return
+  }
+
+  await loadGraphPermissions({
+    ids: projectSpaceIds,
+    graphClient: clientService.graphAuthenticated
+  })
+})
+
+const isEmpty = computed(() => {
+  return unref(paginatedResources).length < 1
 })
 </script>

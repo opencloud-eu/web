@@ -8,7 +8,6 @@
         isEnabled: helpersEnabled,
         data: inviteCollaboratorHelp
       }"
-      :resource="resource"
       class="mt-2"
     />
     <p v-else key="no-share-permissions-message" v-text="noSharePermsMessage" />

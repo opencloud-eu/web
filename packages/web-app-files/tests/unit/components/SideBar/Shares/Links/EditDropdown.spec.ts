@@ -1,4 +1,6 @@
-import EditDropdown from '../../../../../../src/components/SideBar/Shares/Links/EditDropdown.vue'
+import EditDropdown, {
+  EditOption
+} from '../../../../../../src/components/SideBar/Shares/Links/EditDropdown.vue'
 import { LinkShare, ShareTypes, SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultPlugins,
@@ -56,17 +58,25 @@ describe('EditDropdown component', () => {
     describe('expiration date', () => {
       it('does contain "add-expiration" option', () => {
         const { wrapper } = getWrapper()
-        expect(wrapper.vm.editOptions.some((option) => option.id === 'add-expiration')).toBeTruthy()
+        expect(
+          (wrapper.vm as any).editOptions.some(
+            (option: EditOption) => option.id === 'add-expiration'
+          )
+        ).toBeTruthy()
       })
     })
     describe('rename', () => {
       it('does not contain "rename" option if user cannot rename the link', () => {
         const { wrapper } = getWrapper({ canRename: false })
-        expect(wrapper.vm.editOptions.some((option) => option.id === 'rename')).toBeFalsy()
+        expect(
+          (wrapper.vm as any).editOptions.some((option: EditOption) => option.id === 'rename')
+        ).toBeFalsy()
       })
       it('contains "rename" option if user can rename the link', () => {
         const { wrapper } = getWrapper({ canRename: true })
-        expect(wrapper.vm.editOptions.some((option) => option.id === 'rename')).toBeTruthy()
+        expect(
+          (wrapper.vm as any).editOptions.some((option: EditOption) => option.id === 'rename')
+        ).toBeTruthy()
       })
     })
   })

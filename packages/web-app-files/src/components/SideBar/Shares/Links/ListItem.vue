@@ -53,7 +53,13 @@
 
 <script setup lang="ts">
 import { DateTime } from 'luxon'
-import { LinkRoleDropdown, useAbility, useLinkTypes, useModals } from '@opencloud-eu/web-pkg'
+import {
+  LinkRoleDropdown,
+  UpdateLinkOptions,
+  useAbility,
+  useLinkTypes,
+  useModals
+} from '@opencloud-eu/web-pkg'
 import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed, inject, markRaw, Ref, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
@@ -79,7 +85,13 @@ const {
 
 const emit = defineEmits<{
   (e: 'removePublicLink', linkShare: { link: LinkShare }): void
-  (e: 'updateLink', payload: { linkShare: LinkShare; options: { type: SharingLinkType } }): void
+  (
+    e: 'updateLink',
+    payload: {
+      linkShare: LinkShare
+      options: UpdateLinkOptions['options']
+    }
+  ): void
 }>()
 
 const { dispatchModal } = useModals()

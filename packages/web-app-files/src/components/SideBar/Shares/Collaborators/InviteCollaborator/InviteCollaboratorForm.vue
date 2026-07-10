@@ -128,7 +128,6 @@
             <li>
               <expiration-datepicker
                 v-if="!saving"
-                :share-types="selectedCollaborators.map(({ shareType }) => shareType)"
                 :current-expiration-date="expirationDate"
                 :on-option-change="collaboratorExpiryChanged"
               />
@@ -140,13 +139,13 @@
           key="new-collaborator-save-button"
           class="ml-2 px-7"
           data-testid="new-collaborators-form-create-button"
-          :disabled="!$_isValid || saving"
+          :disabled="!isValid || saving"
           :appearance="saving ? 'outline' : 'filled'"
           submit="submit"
           :show-spinner="savingDelayed"
           @click="share"
         >
-          <span v-text="$gettext(saveButtonLabel)" />
+          <span v-text="$gettext(saveLabel)" />
         </oc-button>
       </div>
     </div>
@@ -154,7 +153,7 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { debounce } from 'lodash-es'
 import PQueue from 'p-queue'
 import Mark from 'mark.js'
@@ -178,22 +177,10 @@ import {
   useSpacesStore,
   useConfigStore,
   useSharesStore,
-  useUserStore,
-  $gettext
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 
-import {
-  computed,
-  defineComponent,
-  inject,
-  ref,
-  unref,
-  watch,
-  onMounted,
-  nextTick,
-  Ref,
-  PropType
-} from 'vue'
+import { computed, inject, ref, unref, watch, onMounted, nextTick, Ref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -213,456 +200,388 @@ type DropDownShouldOpenOptions = { open: boolean; search: string[] }
 
 export type ShareRoleType = { id: string; label: string; longLabel: string }
 
-export default defineComponent({
-  name: 'InviteCollaboratorForm',
-  components: {
-    CopyPrivateLink,
-    ExpirationDateIndicator,
-    AutocompleteItem,
-    RoleDropdown,
-    RecipientContainer,
-    ExpirationDatepicker
+const {
+  saveButtonLabel = '',
+  label = '',
+  inviteLabel = '',
+  contextualHelper = undefined
+} = defineProps<{
+  saveButtonLabel?: string
+  label?: string
+  inviteLabel?: string
+  contextualHelper?: ContextualHelper
+}>()
+
+const { $gettext, $ngettext } = useGettext()
+const clientService = useClientService()
+const { showMessage, showErrorMessage } = useMessages()
+const spacesStore = useSpacesStore()
+const { upsertSpace } = spacesStore
+const capabilityStore = useCapabilityStore()
+const configStore = useConfigStore()
+const userStore = useUserStore()
+
+const sharesStore = useSharesStore()
+const { addShare } = sharesStore
+const { collaboratorShares } = storeToRefs(sharesStore)
+
+const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
+const { inviteContact } = useInviteContactViaEmail()
+
+const showMoreShareOptionsDropRef = useTemplateRef<typeof OcDrop>('showMoreShareOptionsDropRef')
+
+const searchQuery = ref('')
+const searchInProgress = ref(false)
+const autocompleteResults = ref<CollaboratorAutoCompleteItem[]>([])
+
+const saving = ref(false)
+const savingDelayed = ref(false)
+const expirationDate = ref<string | null>(null)
+const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>([])
+const announcement = ref<string>('')
+const selectedRole = ref<ShareRole>()
+
+const resource = inject<Resource>('resource')
+const space = inject<SpaceResource>('space')
+const availableInternalRoles = inject<Ref<ShareRole[]>>('availableInternalShareRoles')
+const availableExternalRoles = inject<Ref<ShareRole[]>>('availableExternalShareRoles')
+
+const isOpen = ref(false)
+
+const externalShareRolesEnabled = computed(() => unref(availableExternalRoles).length)
+
+const internalShareRoleType = '1'
+const externalShareRoleType = '2'
+const shareRoleTypes = computed<ShareRoleType[]>(() => [
+  {
+    id: internalShareRoleType,
+    label: $gettext('Internal'),
+    longLabel: $gettext('Internal users')
   },
-  props: {
-    saveButtonLabel: {
-      type: String,
-      required: false,
-      default: () => $gettext('Share')
-    },
-    label: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    inviteLabel: {
-      type: String,
-      required: false,
-      default: ''
-    },
-    contextualHelper: {
-      type: Object as PropType<ContextualHelper>,
-      required: false,
-      default: null
-    },
-    resource: {
-      type: Object as PropType<SpaceResource | Resource>,
-      required: true
+  ...((unref(externalShareRolesEnabled) && [
+    {
+      id: externalShareRoleType,
+      label: $gettext('External'),
+      longLabel: $gettext('External users')
     }
-  },
+  ]) ||
+    [])
+])
+const currentShareRoleType = ref<ShareRoleType>(unref(shareRoleTypes)[0])
+const isExternalShareRoleType = computed(
+  () => unref(currentShareRoleType).id === externalShareRoleType
+)
 
-  setup() {
-    const { $gettext, $ngettext } = useGettext()
-    const clientService = useClientService()
-    const { showMessage, showErrorMessage } = useMessages()
-    const spacesStore = useSpacesStore()
-    const { upsertSpace } = spacesStore
-    const capabilityStore = useCapabilityStore()
-    const capabilityRefs = storeToRefs(capabilityStore)
-    const configStore = useConfigStore()
-    const userStore = useUserStore()
+const saveLabel = computed(() => saveButtonLabel || $gettext('Share'))
 
-    const sharesStore = useSharesStore()
-    const { addShare } = sharesStore
-    const { collaboratorShares } = storeToRefs(sharesStore)
+const onOpen = () => {
+  isOpen.value = true
+}
 
-    const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
-    const { inviteContact } = useInviteContactViaEmail()
+const onClose = () => {
+  isOpen.value = false
+}
 
-    const searchQuery = ref('')
-    const searchInProgress = ref(false)
-    const autocompleteResults = ref<CollaboratorAutoCompleteItem[]>([])
-
-    const saving = ref(false)
-    const savingDelayed = ref(false)
-    const expirationDate = ref<string | null>(null)
-    const selectedCollaborators = ref<CollaboratorAutoCompleteItem[]>([])
-    const announcement = ref<string>('')
-    const selectedRole = ref<ShareRole>()
-
-    const resource = inject<Resource>('resource')
-    const space = inject<SpaceResource>('space')
-    const availableInternalRoles = inject<Ref<ShareRole[]>>('availableInternalShareRoles')
-    const availableExternalRoles = inject<Ref<ShareRole[]>>('availableExternalShareRoles')
-
-    const isOpen = ref(false)
-
-    const onOpen = () => {
-      isOpen.value = true
+watch(saving, (newValue) => {
+  if (!newValue) {
+    savingDelayed.value = false
+    return
+  }
+  setTimeout(() => {
+    if (!unref(saving)) {
+      savingDelayed.value = false
+      return
     }
+    savingDelayed.value = true
+  }, 700)
+})
 
-    const onClose = () => {
-      isOpen.value = false
-    }
+let markInstance: Mark | undefined
+watch([autocompleteResults, isOpen], async () => {
+  if (!unref(isOpen)) {
+    return
+  }
 
-    watch(saving, (newValue) => {
-      if (!newValue) {
-        savingDelayed.value = false
-        return
-      }
-      setTimeout(() => {
-        if (!unref(saving)) {
-          savingDelayed.value = false
-          return
-        }
-        savingDelayed.value = true
-      }, 700)
-    })
+  await nextTick()
+  markInstance?.unmark()
+  markInstance?.mark(unref(searchQuery), {
+    element: 'span',
+    className: 'mark-highlight'
+  })
+})
 
-    let markInstance: Mark | undefined
-    watch([autocompleteResults, isOpen], async () => {
-      if (!unref(isOpen)) {
-        return
-      }
+const setInitialSelectedRole = () => {
+  selectedRole.value = unref(isExternalShareRoleType)
+    ? unref(availableExternalRoles)[0]
+    : unref(availableInternalRoles)[0]
+}
 
-      await nextTick()
-      markInstance?.unmark()
-      markInstance?.mark(unref(searchQuery), {
-        element: 'span',
-        className: 'mark-highlight'
-      })
-    })
+onMounted(async () => {
+  setInitialSelectedRole()
+  await nextTick()
+  markInstance = new Mark('.mark-element')
+})
 
-    const setInitialSelectedRole = () => {
-      selectedRole.value = unref(isExternalShareRoleType)
-        ? unref(availableExternalRoles)[0]
-        : unref(availableInternalRoles)[0]
-    }
+const createSharesConcurrentRequests = computed(() => {
+  return configStore.options.concurrentRequests.shares.create
+})
 
-    onMounted(async () => {
-      setInitialSelectedRole()
-      await nextTick()
-      markInstance = new Mark('.mark-element')
-    })
+const fetchRecipientsTask = useTask(function* (signal, query: string) {
+  let filter: string
+  if (unref(isExternalShareRoleType)) {
+    // filter for external user types only
+    filter = `(userType eq 'Federated')`
+  }
 
-    const createSharesConcurrentRequests = computed(() => {
-      return configStore.options.concurrentRequests.shares.create
-    })
+  const client = clientService.graphAuthenticated
+  const userData = yield* call(
+    client.users.listUsers({ orderBy: ['displayName'], search: `"${query}"`, filter }, { signal })
+  )
 
-    const fetchRecipientsTask = useTask(function* (signal, query: string) {
-      let filter: string
-      if (unref(isExternalShareRoleType)) {
-        // filter for external user types only
-        filter = `(userType eq 'Federated')`
+  let groupData: Group[]
+  if (!unref(isExternalShareRoleType)) {
+    // groups are only available for internal shares
+    groupData = yield* call(
+      client.groups.listGroups({ orderBy: ['displayName'], search: `"${query}"` }, { signal })
+    )
+  }
+
+  const users = (userData || []).map((u) => ({
+    ...u,
+    shareType: unref(isExternalShareRoleType) ? ShareTypes.remote.value : ShareTypes.user.value
+  })) as CollaboratorAutoCompleteItem[]
+
+  const groups = (groupData || []).map((u) => ({
+    ...u,
+    shareType: ShareTypes.group.value
+  })) as CollaboratorAutoCompleteItem[]
+
+  const isSpace = !unref(resource) || isSpaceResource(unref(resource))
+  const guests = isSpace
+    ? []
+    : ((yield* call(searchOpenXchangeContacts(query, signal))) as CollaboratorAutoCompleteItem[])
+
+  autocompleteResults.value = [...users, ...groups, ...guests].filter(
+    (collaborator: CollaboratorAutoCompleteItem) => {
+      if (collaborator.id === userStore.user.id) {
+        // filter current user
+        return false
       }
 
-      const client = clientService.graphAuthenticated
-      const userData = yield* call(
-        client.users.listUsers(
-          { orderBy: ['displayName'], search: `"${query}"`, filter },
-          { signal }
-        )
-      )
+      const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
+      const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
+      const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
 
-      let groupData: Group[]
-      if (!unref(isExternalShareRoleType)) {
-        // groups are only available for internal shares
-        groupData = yield* call(
-          client.groups.listGroups({ orderBy: ['displayName'], search: `"${query}"` }, { signal })
-        )
+      if (selected || exists) {
+        return false
       }
 
-      const users = (userData || []).map((u) => ({
-        ...u,
-        shareType: unref(isExternalShareRoleType) ? ShareTypes.remote.value : ShareTypes.user.value
-      })) as CollaboratorAutoCompleteItem[]
+      announcement.value = $gettext('Person was added')
 
-      const groups = (groupData || []).map((u) => ({
-        ...u,
-        shareType: ShareTypes.group.value
-      })) as CollaboratorAutoCompleteItem[]
-
-      const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-      const guests = isSpace
-        ? []
-        : ((yield* call(
-            searchOpenXchangeContacts(query, signal)
-          )) as CollaboratorAutoCompleteItem[])
-
-      autocompleteResults.value = [...users, ...groups, ...guests].filter(
-        (collaborator: CollaboratorAutoCompleteItem) => {
-          if (collaborator.id === userStore.user.id) {
-            // filter current user
-            return false
-          }
-
-          const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-          const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-          const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
-
-          if (selected || exists) {
-            return false
-          }
-
-          announcement.value = $gettext('Person was added')
-
-          return true
-        }
-      )
-      searchInProgress.value = false
-    }).restartable()
-
-    const fetchRecipients = async (query: string) => {
-      await fetchRecipientsTask.perform(query)
+      return true
     }
+  )
+  searchInProgress.value = false
+}).restartable()
 
-    const share = async () => {
-      saving.value = true
+const fetchRecipients = debounce((query: string) => {
+  fetchRecipientsTask.perform(query)
+}, 500)
 
-      const saveQueue = new PQueue({ concurrency: unref(createSharesConcurrentRequests) })
-      const savePromises: Promise<void>[] = []
-      const errors: { displayName: string; error: Error }[] = []
-      const contactErrors: { displayName: string; error: Error }[] = []
-      const addedShares: CollaboratorShare[] = []
-      let invitedContactCount = 0
+const share = async () => {
+  saving.value = true
 
-      unref(selectedCollaborators).forEach((collaborator) => {
-        const { id, shareType, displayName } = collaborator
+  const saveQueue = new PQueue({ concurrency: unref(createSharesConcurrentRequests) })
+  const savePromises: Promise<void>[] = []
+  const errors: { displayName: string; error: Error }[] = []
+  const contactErrors: { displayName: string; error: Error }[] = []
+  const addedShares: CollaboratorShare[] = []
+  let invitedContactCount = 0
 
-        if (shareType === ShareTypes.contact.value) {
-          // address book contacts are not OpenCloud users: create a public link
-          // and email it to them, never a collaborator share
-          savePromises.push(
-            saveQueue.add(async () => {
-              try {
-                await inviteContact({
-                  space: unref(space),
-                  resource: unref(resource),
-                  contact: collaborator
-                })
-                invitedContactCount++
-              } catch (error) {
-                console.error(error)
-                contactErrors.push({ displayName, error })
-                throw error
-              }
+  unref(selectedCollaborators).forEach((collaborator) => {
+    const { id, shareType, displayName } = collaborator
+
+    if (shareType === ShareTypes.contact.value) {
+      // address book contacts are not OpenCloud users: create a public link
+      // and email it to them, never a collaborator share
+      savePromises.push(
+        saveQueue.add(async () => {
+          try {
+            await inviteContact({
+              space: unref(space),
+              resource: unref(resource),
+              contact: collaborator
             })
-          )
-          return
-        }
+            invitedContactCount++
+          } catch (error) {
+            console.error(error)
+            contactErrors.push({ displayName, error })
+            throw error
+          }
+        })
+      )
+      return
+    }
 
-        const type = shareType === ShareTypes.group.value ? 'group' : 'user'
-        savePromises.push(
-          saveQueue.add(async () => {
-            try {
-              const share = await addShare({
-                clientService,
-                space: unref(space),
-                resource: unref(resource),
-                options: {
-                  roles: [unref(selectedRole).id],
-                  expirationDateTime: unref(expirationDate),
-                  recipients: [
-                    {
-                      objectId: id,
-                      '@libre.graph.recipient.type': type
-                    }
-                  ]
+    const type = shareType === ShareTypes.group.value ? 'group' : 'user'
+    savePromises.push(
+      saveQueue.add(async () => {
+        try {
+          const share = await addShare({
+            clientService,
+            space: unref(space),
+            resource: unref(resource),
+            options: {
+              roles: [unref(selectedRole).id],
+              expirationDateTime: unref(expirationDate),
+              recipients: [
+                {
+                  objectId: id,
+                  '@libre.graph.recipient.type': type
                 }
-              })
-
-              addedShares.push(share)
-            } catch (error) {
-              console.error(error)
-              errors.push({ displayName, error })
-              throw error
+              ]
             }
           })
-        )
-      })
 
-      await Promise.allSettled(savePromises)
-
-      if (isProjectSpaceResource(unref(resource))) {
-        const updatedSpace = await clientService.graphAuthenticated.drives.getDrive(
-          unref(resource).id
-        )
-
-        upsertSpace({ ...updatedSpace, graphPermissions: unref(space).graphPermissions })
-      }
-
-      if (addedShares.length > 0) {
-        showMessage({ title: $gettext('Share was added successfully') })
-      }
-
-      if (invitedContactCount > 0) {
-        showMessage({
-          title: $ngettext(
-            'Sent a read-only link to %{count} contact',
-            'Sent read-only links to %{count} contacts',
-            invitedContactCount,
-            { count: invitedContactCount.toString() }
-          )
-        })
-      }
-
-      errors.forEach((e) => {
-        showErrorMessage({
-          title: $gettext('Failed to add share for "%{displayName}"', {
-            displayName: e.displayName
-          }),
-          errors: [e.error]
-        })
-      })
-      contactErrors.forEach((e) => {
-        showErrorMessage({
-          title: $gettext('Failed to send invite link for "%{displayName}"', {
-            displayName: e.displayName
-          }),
-          errors: [e.error]
-        })
-      })
-
-      expirationDate.value = null
-      selectedCollaborators.value = []
-      saving.value = false
-    }
-
-    const externalShareRolesEnabled = computed(() => unref(availableExternalRoles).length)
-
-    const internalShareRoleType = '1'
-    const externalShareRoleType = '2'
-    const shareRoleTypes = computed<ShareRoleType[]>(() => [
-      {
-        id: internalShareRoleType,
-        label: $gettext('Internal'),
-        longLabel: $gettext('Internal users')
-      },
-      ...((unref(externalShareRolesEnabled) && [
-        {
-          id: externalShareRoleType,
-          label: $gettext('External'),
-          longLabel: $gettext('External users')
+          addedShares.push(share)
+        } catch (error) {
+          console.error(error)
+          errors.push({ displayName, error })
+          throw error
         }
-      ]) ||
-        [])
-    ])
-    const currentShareRoleType = ref<ShareRoleType>(unref(shareRoleTypes)[0])
-    const isExternalShareRoleType = computed(
-      () => unref(currentShareRoleType).id === externalShareRoleType
+      })
     )
-    const selectShareRoleType = async (shareRoleType: ShareRoleType) => {
-      if (unref(currentShareRoleType).id !== shareRoleType.id) {
-        currentShareRoleType.value = shareRoleType
-        selectedCollaborators.value = []
+  })
 
-        if (unref(searchQuery)) {
-          await fetchRecipients(unref(searchQuery))
-        }
-      }
-      focusShareInput()
-      setInitialSelectedRole()
-    }
+  await Promise.allSettled(savePromises)
 
-    const focusShareInput = () => {
-      const inviteInput = document.getElementById('files-share-invite-input')
-      if (inviteInput) {
-        inviteInput.focus()
-      }
-    }
+  if (isProjectSpaceResource(unref(resource))) {
+    const updatedSpace = await clientService.graphAuthenticated.drives.getDrive(unref(resource).id)
 
-    const noOptionsLabel = computed(() => {
-      if (unref(isExternalShareRoleType)) {
-        return $gettext('No external users found.')
-      }
-      return $gettext('No users or groups found.')
-    })
+    upsertSpace({ ...updatedSpace, graphPermissions: unref(space).graphPermissions })
+  }
 
-    const showShareTypeFilter = computed(
-      () => unref(shareRoleTypes).length > 1 && !isProjectSpaceResource(unref(resource))
-    )
+  if (addedShares.length > 0) {
+    showMessage({ title: $gettext('Share was added successfully') })
+  }
 
-    return {
-      minSearchLength: capabilityRefs.sharingSearchMinLength,
-      saving,
-      savingDelayed,
-      searchInProgress,
-      searchQuery,
-      autocompleteResults,
-      onOpen,
-      onClose,
-      expirationDate,
-      selectedRole,
-      announcement,
-      selectedCollaborators,
-      fetchRecipients,
-      share,
-      shareRoleTypes,
-      currentShareRoleType,
-      isExternalShareRoleType,
-      selectShareRoleType,
-      focusShareInput,
-      noOptionsLabel,
-      DateTime,
-      showShareTypeFilter,
-      showMessage,
-      showErrorMessage,
-
-      // unit tests
-      fetchRecipientsTask
-    }
-  },
-
-  computed: {
-    $_isValid() {
-      return this.selectedCollaborators.length > 0
-    },
-
-    selectedCollaboratorsPlaceholder() {
-      return this.inviteLabel || this.$gettext('Search')
-    }
-  },
-  mounted() {
-    this.fetchRecipients = debounce(this.fetchRecipients, 500)
-  },
-
-  methods: {
-    onSearch(query: string) {
-      this.autocompleteResults = []
-      this.searchQuery = query
-
-      if (query.length < this.minSearchLength) {
-        this.searchInProgress = false
-
-        return
-      }
-
-      this.searchInProgress = true
-      this.fetchRecipients(query)
-    },
-
-    filterRecipients(recipients: CollaboratorAutoCompleteItem[], query: string) {
-      if (recipients.length < 1) {
-        return []
-      }
-
-      // Allow advanced queries
-      query = query.split(':')[1] || query
-
-      return recipients.filter(
-        (recipient) =>
-          recipient.shareType === ShareTypes.remote.value ||
-          recipient.displayName.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1 ||
-          recipient.mail?.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1
+  if (invitedContactCount > 0) {
+    showMessage({
+      title: $ngettext(
+        'Sent a read-only link to %{count} contact',
+        'Sent read-only links to %{count} contacts',
+        invitedContactCount,
+        { count: invitedContactCount.toString() }
       )
-    },
+    })
+  }
 
-    collaboratorRoleChanged(role: ShareRole) {
-      this.selectedRole = role
-    },
+  errors.forEach((e) => {
+    showErrorMessage({
+      title: $gettext('Failed to add share for "%{displayName}"', {
+        displayName: e.displayName
+      }),
+      errors: [e.error]
+    })
+  })
+  contactErrors.forEach((e) => {
+    showErrorMessage({
+      title: $gettext('Failed to send invite link for "%{displayName}"', {
+        displayName: e.displayName
+      }),
+      errors: [e.error]
+    })
+  })
 
-    collaboratorExpiryChanged(expirationDate: string | null) {
-      this.expirationDate = expirationDate
-      ;(this.$refs.showMoreShareOptionsDropRef as InstanceType<typeof OcDrop>).hide()
-    },
+  expirationDate.value = null
+  selectedCollaborators.value = []
+  saving.value = false
+}
 
-    resetFocusOnInvite(event: CollaboratorAutoCompleteItem[]) {
-      this.selectedCollaborators = event
-      this.autocompleteResults = []
-      this.searchQuery = ''
-      this.$nextTick(() => {
-        this.focusShareInput()
-      })
+const selectShareRoleType = async (shareRoleType: ShareRoleType) => {
+  if (unref(currentShareRoleType).id !== shareRoleType.id) {
+    currentShareRoleType.value = shareRoleType
+    selectedCollaborators.value = []
+
+    if (unref(searchQuery)) {
+      await fetchRecipients(unref(searchQuery))
     }
   }
+  focusShareInput()
+  setInitialSelectedRole()
+}
+
+const focusShareInput = () => {
+  const inviteInput = document.getElementById('files-share-invite-input')
+  if (inviteInput) {
+    inviteInput.focus()
+  }
+}
+
+const noOptionsLabel = computed(() => {
+  if (unref(isExternalShareRoleType)) {
+    return $gettext('No external users found.')
+  }
+  return $gettext('No users or groups found.')
 })
+
+const showShareTypeFilter = computed(
+  () => unref(shareRoleTypes).length > 1 && !isProjectSpaceResource(unref(resource))
+)
+
+const isValid = computed(() => {
+  return unref(selectedCollaborators).length > 0
+})
+const selectedCollaboratorsPlaceholder = computed(() => {
+  return inviteLabel || $gettext('Search')
+})
+const minSearchLength = computed(() => capabilityStore.sharingSearchMinLength)
+
+const onSearch = (query: string) => {
+  autocompleteResults.value = []
+  searchQuery.value = query
+
+  if (query.length < unref(minSearchLength)) {
+    searchInProgress.value = false
+
+    return
+  }
+
+  searchInProgress.value = true
+  fetchRecipients(query)
+}
+
+const filterRecipients = (recipients: CollaboratorAutoCompleteItem[], query: string) => {
+  if (!(query || '').trim()) {
+    return recipients
+  }
+
+  // Allow advanced queries
+  query = query.split(':')[1] || query
+
+  return recipients.filter(
+    (recipient) =>
+      recipient.shareType === ShareTypes.remote.value ||
+      recipient.displayName.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1 ||
+      recipient.mail?.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1
+  )
+}
+
+const collaboratorRoleChanged = (role: ShareRole) => {
+  selectedRole.value = role
+}
+
+const collaboratorExpiryChanged = (date: string | null) => {
+  expirationDate.value = date
+  unref(showMoreShareOptionsDropRef).hide()
+}
+
+const resetFocusOnInvite = (event: CollaboratorAutoCompleteItem[]) => {
+  selectedCollaborators.value = event
+  autocompleteResults.value = []
+  searchQuery.value = ''
+  nextTick(() => {
+    focusShareInput()
+  })
+}
 </script>

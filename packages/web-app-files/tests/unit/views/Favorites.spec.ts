@@ -15,7 +15,7 @@ import { RouteLocation } from 'vue-router'
 vi.mock('../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useFileActions: vi.fn()
+  useFileActions: () => ({ triggerDefaultAction: vi.fn() })
 }))
 
 describe('Favorites view', () => {

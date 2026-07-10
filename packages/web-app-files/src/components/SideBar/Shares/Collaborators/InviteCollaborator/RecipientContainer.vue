@@ -25,92 +25,74 @@
   </oc-recipient>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { computed, defineComponent, PropType } from 'vue'
+import { computed, unref } from 'vue'
 import { Recipient } from '@opencloud-eu/design-system/helpers'
 import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  components: { UserAvatar },
-  props: {
-    recipient: {
-      type: Object as PropType<CollaboratorAutoCompleteItem>,
-      required: true
-    },
-    deselect: {
-      type: Function,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const externalIssuer = computed(() => {
-      if (props.recipient.shareType === ShareTypes.remote.value) {
-        return props.recipient.identities?.[0]?.issuer
-      }
-      return ''
-    })
+const { recipient, deselect = undefined } = defineProps<{
+  recipient: CollaboratorAutoCompleteItem
+  deselect?: (recipient: CollaboratorAutoCompleteItem) => void
+}>()
 
-    return {
-      externalIssuer,
-      ShareTypes
-    }
-  },
-  data(): { formattedRecipient: Recipient } {
-    let name = this.recipient.displayName
-    if (this.externalIssuer) {
-      name += ` (${this.externalIssuer})`
-    }
+const { $gettext } = useGettext()
 
-    return {
-      formattedRecipient: {
-        name,
-        icon: this.getRecipientIcon()
-      }
-    }
-  },
+const externalIssuer = computed(() => {
+  if (recipient.shareType === ShareTypes.remote.value) {
+    return recipient.identities?.[0]?.issuer
+  }
+  return ''
+})
 
-  computed: {
-    btnDeselectRecipientLabel() {
-      return this.$gettext('Deselect %{name}', { name: this.recipient.displayName })
-    }
-  },
+const formattedRecipient = computed<Recipient>(() => {
+  let name = unref(recipient).displayName
+  if (externalIssuer.value) {
+    name += ` (${externalIssuer.value})`
+  }
 
-  methods: {
-    getRecipientIcon() {
-      switch (this.recipient.shareType) {
-        case ShareTypes.group.value:
-          return {
-            name: ShareTypes.group.icon,
-            label: this.$gettext('Group')
-          }
-
-        case ShareTypes.guest.value:
-          return {
-            name: ShareTypes.guest.icon,
-            label: this.$gettext('Guest user')
-          }
-
-        case ShareTypes.contact.value:
-          return {
-            name: ShareTypes.contact.icon,
-            label: this.$gettext('Contact')
-          }
-
-        case ShareTypes.remote.value:
-          return {
-            name: ShareTypes.remote.icon,
-            label: this.$gettext('External user')
-          }
-
-        default:
-          return {
-            name: ShareTypes.user.icon,
-            label: this.$gettext('User')
-          }
-      }
-    }
+  return {
+    name,
+    icon: getRecipientIcon()
   }
 })
+
+const btnDeselectRecipientLabel = computed(() => {
+  return $gettext('Deselect %{name}', { name: recipient.displayName })
+})
+
+const getRecipientIcon = (): Recipient['icon'] => {
+  switch (recipient.shareType) {
+    case ShareTypes.group.value:
+      return {
+        name: ShareTypes.group.icon,
+        label: $gettext('Group')
+      }
+
+    case ShareTypes.guest.value:
+      return {
+        name: ShareTypes.guest.icon,
+        label: $gettext('Guest user')
+      }
+
+    case ShareTypes.contact.value:
+      return {
+        name: ShareTypes.contact.icon,
+        label: $gettext('Contact')
+      }
+
+    case ShareTypes.remote.value:
+      return {
+        name: ShareTypes.remote.icon,
+        label: $gettext('External user')
+      }
+
+    default:
+      return {
+        name: ShareTypes.user.icon,
+        label: $gettext('User')
+      }
+  }
+}
 </script>

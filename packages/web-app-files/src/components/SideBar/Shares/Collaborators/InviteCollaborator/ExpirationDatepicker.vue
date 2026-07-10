@@ -28,94 +28,70 @@
   </oc-button>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { DateTime } from 'luxon'
-import { defineComponent, customRef, markRaw, PropType, unref, watch } from 'vue'
+import { customRef, markRaw, unref, watch } from 'vue'
 import { useModals, DatePickerModal } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'DateCurrentpicker',
-  props: {
-    shareTypes: {
-      type: Array as PropType<number[]>,
-      required: false,
-      default: (): number[] => []
+const { currentExpirationDate = null, onOptionChange = null } = defineProps<{
+  currentExpirationDate?: string | null
+  onOptionChange?: ((expirationDate: string | null) => void) | null
+}>()
+
+const language = useGettext()
+const { dispatchModal } = useModals()
+
+const dateCurrent = customRef<DateTime>((track, trigger) => {
+  let date: DateTime = null
+  return {
+    get() {
+      track()
+      return date
     },
-    currentExpirationDate: {
-      type: String as PropType<string | null>,
-      required: false,
-      default: null
-    },
-    onOptionChange: {
-      type: Function as PropType<(expirationDate: string | null) => void>,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const language = useGettext()
-    const { dispatchModal } = useModals()
-
-    const dateCurrent = customRef<DateTime>((track, trigger) => {
-      let date: DateTime = null
-      return {
-        get() {
-          track()
-          return date
-        },
-        set(val: DateTime) {
-          date = val
-          trigger()
-        }
-      }
-    })
-
-    watch(
-      () => props.currentExpirationDate,
-      () => {
-        if (!props.currentExpirationDate) {
-          dateCurrent.value = null
-          return
-        }
-
-        const parsedDate = DateTime.fromISO(props.currentExpirationDate)
-        dateCurrent.value = parsedDate.isValid ? parsedDate : null
-      },
-      { immediate: true }
-    )
-
-    const showDatePickerModal = () => {
-      dispatchModal({
-        title: language.$gettext('Set expiration date'),
-        hideActions: true,
-        customComponent: markRaw(DatePickerModal),
-        customComponentAttrs: () => ({
-          currentDate: unref(dateCurrent),
-          minDate: DateTime.now()
-        }),
-        onConfirm: (expirationDateTime: DateTime) => {
-          dateCurrent.value = expirationDateTime
-          setExpirationDateChange(expirationDateTime)
-        }
-      })
-    }
-
-    const setExpirationDateChange = (expirationDate: DateTime | null) => {
-      props.onOptionChange?.(expirationDate?.isValid ? expirationDate.toISO() : null)
-    }
-
-    const removeExpirationDate = () => {
-      dateCurrent.value = null
-      setExpirationDateChange(null)
-    }
-
-    return {
-      language,
-      dateCurrent,
-      showDatePickerModal,
-      removeExpirationDate
+    set(val: DateTime) {
+      date = val
+      trigger()
     }
   }
 })
+
+watch(
+  () => currentExpirationDate,
+  () => {
+    if (!currentExpirationDate) {
+      dateCurrent.value = null
+      return
+    }
+
+    const parsedDate = DateTime.fromISO(currentExpirationDate)
+    dateCurrent.value = parsedDate.isValid ? parsedDate : null
+  },
+  { immediate: true }
+)
+
+const showDatePickerModal = () => {
+  dispatchModal({
+    title: language.$gettext('Set expiration date'),
+    hideActions: true,
+    customComponent: markRaw(DatePickerModal),
+    customComponentAttrs: () => ({
+      currentDate: unref(dateCurrent),
+      minDate: DateTime.now()
+    }),
+    onConfirm: (expirationDateTime: DateTime) => {
+      dateCurrent.value = expirationDateTime
+      setExpirationDateChange(expirationDateTime)
+    }
+  })
+}
+
+const setExpirationDateChange = (expirationDate: DateTime | null) => {
+  onOptionChange?.(expirationDate?.isValid ? expirationDate.toISO() : null)
+}
+
+const removeExpirationDate = () => {
+  dateCurrent.value = null
+  setExpirationDateChange(null)
+}
 </script>
