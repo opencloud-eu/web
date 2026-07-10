@@ -32,6 +32,7 @@
   },
   "browserslist": [
     "last 1 year",
+    "Firefox ESR",
     "> .2%",
     "not dead",
     "not Explorer > 0",
