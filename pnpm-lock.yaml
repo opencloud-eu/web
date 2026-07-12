@@ -591,7 +591,7 @@ importers:
         version: 1.18.1
       dompurify:
         specifier: ^3.2.3
-        version: 3.4.11
+        version: 3.4.12
       fuse.js:
         specifier: 7.4.2
         version: 7.4.2
@@ -961,7 +961,7 @@ importers:
         version: 4.3.1
       dompurify:
         specifier: ^3.3.3
-        version: 3.4.11
+        version: 3.4.12
       filesize:
         specifier: ^11.0.14
         version: 11.0.22
@@ -3353,8 +3353,8 @@ packages:
     resolution: {integrity: sha512-IGBwjF7tNk3cwypFNH/7bfzBcgSCbaMOD3GsaY1AU/JRrnHnYgEM0+9kQt52iZxjNsjBtJYtao146V+f8jFZNw==}
     engines: {node: '>=10'}
 
-  dompurify@3.4.11:
-    resolution: {integrity: sha512-zhlUV12GsaRzMsf9q5M254YhA4+VuF0fG+QFqu6aYpoGlKtz+w8//jBcGVYBgQkR5GHjUomejY84AV+/uPbWdw==}
+  dompurify@3.4.12:
+    resolution: {integrity: sha512-zQvGet8Z2sWbQhCmfFz/T5QWH2oBmjnqK3qvOjaqaNLrLEF912WamU+ohnTp0TCep/MFVHpdJuCZEdFOdTnEFg==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -7693,7 +7693,7 @@ snapshots:
 
   domain-browser@4.22.0: {}
 
-  dompurify@3.4.11:
+  dompurify@3.4.12:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
