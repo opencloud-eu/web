@@ -68,13 +68,7 @@
           autocomplete="off"
         />
         <div class="flex items-center gap-2 mt-4">
-          <oc-button
-            id="vault-unlock-cancel"
-            appearance="outline"
-            type="button"
-            class="min-w-[140px]"
-            @click="onCancel"
-          >
+          <oc-button id="vault-unlock-cancel" appearance="outline" type="button" @click="onCancel">
             <span v-text="$gettext('Cancel')" />
           </oc-button>
           <oc-button
