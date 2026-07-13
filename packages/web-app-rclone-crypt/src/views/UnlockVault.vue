@@ -18,7 +18,7 @@
         <span v-text="$gettext('End-to-end encrypted')" />
       </oc-tag>
       <div class="flex flex-col items-center text-center">
-        <inline-svg src="/images/vault.svg" class="mb-4 h-30 w-30" aria-hidden="true" />
+        <inline-svg src="/images/vault.svg" class="h-30 w-30" aria-hidden="true" />
         <p class="mt-0 text-sm break-all" data-testid="vault-name" v-text="vaultName" />
         <p class="mb-0 text-lg font-semibold" v-text="cardTitle" />
         <p class="mb-4 text-sm" v-text="vaultDescription" />
