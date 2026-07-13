@@ -12,6 +12,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: batch actions space issues [[#2852](https://github.com/opencloud-eu/web/pull/2852)]
 - fix: adjust vault to our overall design language [[#2865](https://github.com/opencloud-eu/web/pull/2865)]
 - fix (tiptap): no content hint color on dark mode [[#2851](https://github.com/opencloud-eu/web/pull/2851)]
 - fix: name sorting in files table is off when folder name contains a dot [[#2843](https://github.com/opencloud-eu/web/pull/2843)]
