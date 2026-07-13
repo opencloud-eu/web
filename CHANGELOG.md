@@ -4,9 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@JammingBen, @v-scharf
 
+### ✅ Tests
 
+- add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
 
 ## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-07-13
 
