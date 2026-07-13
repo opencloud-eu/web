@@ -19,11 +19,7 @@
       </oc-tag>
       <div class="flex flex-col items-center text-center">
         <img :src="'/images/vault.svg'" alt="" aria-hidden="true" class="h-30 w-30" />
-        <p
-          class="mb-2 text-2xl font-semibold break-all"
-          data-testid="vault-name"
-          v-text="vaultName"
-        />
+        <p class="mt-0 text-sm break-all" data-testid="vault-name" v-text="vaultName" />
         <p class="mb-0 text-lg font-semibold" v-text="cardTitle" />
         <p class="mb-4 text-sm" v-text="vaultDescription" />
       </div>
