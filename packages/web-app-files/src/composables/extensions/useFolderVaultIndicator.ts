@@ -51,11 +51,8 @@ export const useFolderVaultIndicator = (): ResourceIndicatorExtension => {
               ? $gettext('This vault is unlocked in your session')
               : $gettext('This vault is locked'),
             label: unlocked ? $gettext('Vault unlocked') : $gettext('Vault locked'),
-            // Closed padlock = solid filled, open padlock = outline. The
-            // fill/line contrast is what users actually notice at this size;
-            // same icon family with different fill state alone is too subtle.
             icon: unlocked ? 'lock-unlock' : 'lock-2',
-            fillType: unlocked ? 'line' : 'fill',
+            fillType: 'line',
             category: 'system',
             type: unlocked ? 'vault-unlocked' : 'vault-locked'
           }
