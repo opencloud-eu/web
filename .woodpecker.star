@@ -75,7 +75,7 @@ config = {
             "suites": [
                 "admin-settings/",
                 "spaces/",
-                "rclone-crypt",
+                "rclone-crypt/",
             ],
         },
         "3": {
@@ -101,6 +101,7 @@ config = {
                 "user-settings/",
                 "file-action/",
                 "app-store/",
+                "embed/",
             ],
         },
         "a11y": {

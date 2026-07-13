@@ -23,7 +23,22 @@
     "tests/e2e/environment/fixtures.ts",
     "tests/e2e/environment/hooks.ts"
   ],
+  "cucumberautocomplete.syncfeatures": "tests/e2e/features/**/*.feature",
   "cucumberautocomplete.strictGherkinCompletion": true,
+  "cucumberautocomplete.strictGherkinValidation": true,
+  "cucumberautocomplete.smartSnippets": true,
+  "cucumberautocomplete.stepsInvariants": true,
+  "cucumberautocomplete.customParameters": [
+    { "parameter": "{string}", "value": ".*" },
+    { "parameter": "{ab}", "value": "(a|b)" }
+  ],
+  "cucumberautocomplete.skipDocStringsFormat": true,
+  "cucumberautocomplete.formatConfOverride": {
+    "And": 3,
+    "But": "relative"
+  },
+  "cucumberautocomplete.onTypeFormat": true,
+  "cucumberautocomplete.gherkinDefinitionPart": "(Given|When|Then|But)\\(",
   "cucumberautocomplete.pureTextSteps": false,
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "vue.server.includeLanguages": ["vue"]
