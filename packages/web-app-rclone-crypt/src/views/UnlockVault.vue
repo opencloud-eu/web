@@ -97,12 +97,14 @@ import {
   queryItemAsString,
   useClientService,
   useFolderVaultStore,
+  useResourcesStore,
   useRoute,
   useRouter,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import { createEngine } from '../crypto/engine'
 import { isShareSpaceResource } from '@opencloud-eu/web-client'
+import { storeToRefs } from 'pinia'
 
 InlineSvg.name = 'inline-svg'
 
@@ -112,6 +114,8 @@ const router = useRouter()
 const clientService = useClientService()
 const spacesStore = useSpacesStore()
 const vaultStore = useFolderVaultStore()
+const resourcesStore = useResourcesStore()
+const { areFileExtensionsShown } = storeToRefs(resourcesStore)
 
 const passwordInput = useTemplateRef<HTMLInputElement>('passwordInput')
 const password = ref('')
@@ -136,7 +140,17 @@ const vaultName = computed(() => {
   // Strip the leading path so only the cleartext folder name (e.g.
   // "myvault.vault") shows up - that's what users recognise. For a root vault
   // "/" (a directly-shared vault) the name lives on the share space instead.
-  return root.split('/').filter(Boolean).pop() || unref(space)?.name || root
+  let name = root.split('/').filter(Boolean).pop() || unref(space)?.name || root
+
+  // Respect file extensions setting - if extensions are disabled, strip the extension
+  if (!unref(areFileExtensionsShown)) {
+    const lastDotIndex = name.lastIndexOf('.')
+    if (lastDotIndex > 0) {
+      name = name.substring(0, lastDotIndex)
+    }
+  }
+
+  return name
 })
 
 const vaultDescription = computed(() =>
