@@ -16,7 +16,7 @@ import { ResourceTable } from '@opencloud-eu/web-pkg'
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useFileActions: vi.fn()
+  useFileActions: () => ({ triggerDefaultAction: vi.fn() })
 }))
 
 describe('SharedViaLink view', () => {

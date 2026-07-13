@@ -20,6 +20,7 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { OcButton } from '@opencloud-eu/design-system/components'
 import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
+import { flushPromises } from '@vue/test-utils'
 
 vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn() }))
 
@@ -61,16 +62,16 @@ describe('InviteCollaboratorForm', () => {
     })
     it('is disabled when currently saving', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
-      wrapper.vm.saving = true
+      ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
+      ;(wrapper.vm as any).saving = true
       await wrapper.vm.$nextTick()
       const btn = wrapper.findComponent<typeof OcButton>('#new-collaborators-form-create-button')
       expect(btn.props('disabled')).toBeTruthy()
     })
     it('is enabled when collaborators selected and not saving', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
-      wrapper.vm.saving = false
+      ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
+      ;(wrapper.vm as any).saving = false
       await wrapper.vm.$nextTick()
       const btn = wrapper.findComponent<typeof OcButton>('#new-collaborators-form-create-button')
       expect(btn.props('disabled')).toBeFalsy()
@@ -78,30 +79,30 @@ describe('InviteCollaboratorForm', () => {
   })
   describe('fetching recipients', () => {
     it('fetches recipients upon mount', async () => {
-      const { wrapper, mocks } = getWrapper()
-      await wrapper.vm.fetchRecipientsTask.last
+      const { mocks } = getWrapper()
+      await flushPromises()
 
       expect(mocks.$clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(1)
       expect(mocks.$clientService.graphAuthenticated.groups.listGroups).toHaveBeenCalledTimes(1)
     })
     it('fetches users and groups returned from the server', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2' } as User], groups: [{ id: '3' }] })
-      await wrapper.vm.fetchRecipientsTask.last
+      await flushPromises()
 
-      expect(wrapper.vm.autocompleteResults.length).toBe(2)
+      expect((wrapper.vm as any).autocompleteResults.length).toBe(2)
     })
     it('filters out the current user', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '1' } as User], groups: [{ id: '3' }] })
-      await wrapper.vm.fetchRecipientsTask.last
+      await flushPromises()
 
-      expect(wrapper.vm.autocompleteResults.length).toBe(1)
+      expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('filters out selected users', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2' } as User], groups: [{ id: '3' }] })
-      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
-      await wrapper.vm.fetchRecipientsTask.last
+      ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
+      await flushPromises()
 
-      expect(wrapper.vm.autocompleteResults.length).toBe(1)
+      expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('filters out existing direct shares', async () => {
       const { wrapper } = getWrapper({
@@ -112,13 +113,13 @@ describe('InviteCollaboratorForm', () => {
         ]
       })
 
-      await wrapper.vm.fetchRecipientsTask.last
+      await flushPromises()
 
-      expect(wrapper.vm.autocompleteResults.length).toBe(1)
+      expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('does not query Open-Xchange when the capability is disabled', async () => {
-      const { wrapper, mocks } = getWrapper({ users: [{ id: '2' } as User] })
-      await wrapper.vm.fetchRecipientsTask.last
+      const { mocks } = getWrapper({ users: [{ id: '2' } as User] })
+      await flushPromises()
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
@@ -128,22 +129,22 @@ describe('InviteCollaboratorForm', () => {
         openXchange: true,
         openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }]
       })
-      await wrapper.vm.fetchRecipientsTask.last
+      await flushPromises()
 
-      expect(wrapper.vm.autocompleteResults.length).toBe(2)
-      const contact = wrapper.vm.autocompleteResults.find(
-        (r) => r.shareType === ShareTypes.contact.value
+      expect((wrapper.vm as any).autocompleteResults.length).toBe(2)
+      const contact = (wrapper.vm as any).autocompleteResults.find(
+        (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.contact.value
       )
       expect(contact?.mail).toBe('jane@example.com')
     })
     it('does not query Open-Xchange when the resource is a space', async () => {
-      const { wrapper, mocks } = getWrapper({
+      const { mocks } = getWrapper({
         users: [{ id: '2' } as User],
         openXchange: true,
         openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }],
         resource: mock<SpaceResource>(spaceMock)
       })
-      await wrapper.vm.fetchRecipientsTask.last
+      await flushPromises()
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
@@ -156,8 +157,7 @@ describe('InviteCollaboratorForm', () => {
         mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
       )
       mocks.$clientService.ox.sendMail.mockResolvedValue(undefined)
-
-      wrapper.vm.selectedCollaborators = [
+      ;(wrapper.vm as any).selectedCollaborators = [
         mock<CollaboratorAutoCompleteItem>({
           id: 'contact@example.com',
           mail: 'contact@example.com',
@@ -166,7 +166,7 @@ describe('InviteCollaboratorForm', () => {
         })
       ]
       await wrapper.vm.$nextTick()
-      await wrapper.vm.share()
+      await (wrapper.vm as any).share()
 
       expect(addLink).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -185,8 +185,7 @@ describe('InviteCollaboratorForm', () => {
         mock<LinkShare>({ webUrl: 'https://cloud.example.com/s/abc' })
       )
       mocks.$clientService.ox.sendMail.mockResolvedValue(undefined)
-
-      wrapper.vm.selectedCollaborators = [
+      ;(wrapper.vm as any).selectedCollaborators = [
         mock<CollaboratorAutoCompleteItem>({
           id: 'a@example.com',
           mail: 'a@example.com',
@@ -201,7 +200,7 @@ describe('InviteCollaboratorForm', () => {
         })
       ]
       await wrapper.vm.$nextTick()
-      await wrapper.vm.share()
+      await (wrapper.vm as any).share()
 
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalledTimes(1)
@@ -211,10 +210,9 @@ describe('InviteCollaboratorForm', () => {
       const { wrapper } = getWrapper()
       const { addShare } = useSharesStore()
       vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
-
-      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
+      ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
       await wrapper.vm.$nextTick()
-      await wrapper.vm.share()
+      await (wrapper.vm as any).share()
 
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalledTimes(1)
@@ -222,7 +220,7 @@ describe('InviteCollaboratorForm', () => {
     })
     it('clicking the invite-sharees button calls the "share"-action', async () => {
       const { wrapper } = getWrapper()
-      const shareSpy = vi.spyOn(wrapper.vm, 'share')
+      const shareSpy = vi.spyOn(wrapper.vm as any, 'share')
       const shareBtn = wrapper.find('#new-collaborators-form-create-button')
       expect(shareBtn.exists()).toBeTruthy()
 
@@ -240,13 +238,13 @@ describe('InviteCollaboratorForm', () => {
         resource: dataSet.resource
       })
 
-      wrapper.vm.selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
+      ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>()]
 
       const { addShare } = useSharesStore()
       vi.mocked(addShare).mockResolvedValue(undefined)
 
       await wrapper.vm.$nextTick()
-      await wrapper.vm.share()
+      await (wrapper.vm as any).share()
 
       expect(addShare).toHaveBeenCalled()
     })
@@ -266,7 +264,7 @@ describe('InviteCollaboratorForm', () => {
     it('correctly passes the external prop to the role dropdown component', async () => {
       const externalRoles = [mock<ShareRole>()]
       const { wrapper } = getWrapper({ externalShareRoles: externalRoles })
-      wrapper.vm.currentShareRoleType = mock<ShareRoleType>({ id: '2' })
+      ;(wrapper.vm as any).currentShareRoleType = mock<ShareRoleType>({ id: '2' })
       await wrapper.vm.$nextTick()
 
       const roleDropdown = wrapper.findComponent<typeof RoleDropdown>('role-dropdown-stub')

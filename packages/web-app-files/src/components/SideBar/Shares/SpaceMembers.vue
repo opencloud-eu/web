@@ -10,7 +10,6 @@
         isEnabled: helpersEnabled,
         data: spaceAddMemberHelp
       }"
-      :resource="resource"
       class="mt-2"
     />
     <template v-if="hasCollaborators">

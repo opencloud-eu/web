@@ -24,7 +24,7 @@ describe('InviteCollaborator RecipientContainer', () => {
   it('renders the contact icon and label for address book contact recipients', () => {
     const recipient = getRecipient(ShareTypes.contact.value)
     const { wrapper } = getMountedWrapper(recipient)
-    expect(wrapper.vm.formattedRecipient.icon).toEqual({
+    expect((wrapper.vm as any).formattedRecipient.icon).toEqual({
       name: ShareTypes.contact.icon,
       label: 'Contact'
     })

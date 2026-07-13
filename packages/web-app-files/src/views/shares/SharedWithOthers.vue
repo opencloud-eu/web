@@ -90,187 +90,161 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   createLocationShares,
   defaultFuseOptions,
   queryItemAsString,
   useAppsStore,
-  useCapabilityStore,
-  useConfigStore,
   useFileActions,
   useLoadPreview,
   useResourcesStore,
-  useRouteQuery
+  useRouteQuery,
+  FileSideBar,
+  AppLoadingSpinner,
+  NoContentMessage,
+  AppBar,
+  Pagination,
+  useGetMatchingSpace,
+  ContextActions,
+  ItemFilter
 } from '@opencloud-eu/web-pkg'
-import { ItemFilter } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
-
-import { FileSideBar, ResourceTable } from '@opencloud-eu/web-pkg'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
-import { AppBar } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
-import { Pagination } from '@opencloud-eu/web-pkg'
-import { ContextActions } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
-
 import { useResourcesViewDefaults } from '../../composables'
-import { defineComponent, computed, unref, ref, watch } from 'vue'
-import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
+import { computed, unref, ref, watch, onMounted } from 'vue'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
-import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 
-export default defineComponent({
-  components: {
-    SharesNavigation,
-    FilesViewWrapper,
-    AppBar,
-    FileSideBar,
-    ResourceTable,
-    AppLoadingSpinner,
-    NoContentMessage,
-    ListInfo,
-    Pagination,
-    ContextActions,
-    ItemFilter
-  },
+const { getMatchingSpace } = useGetMatchingSpace()
+const appsStore = useAppsStore()
+const { $gettext } = useGettext()
 
-  setup() {
-    const capabilityStore = useCapabilityStore()
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const configStore = useConfigStore()
-    const appsStore = useAppsStore()
-    const { options: configOptions } = storeToRefs(configStore)
-    const { $gettext } = useGettext()
+const resourcesStore = useResourcesStore()
 
-    const resourcesStore = useResourcesStore()
+const {
+  paginatedResources,
+  selectedResources,
+  selectedResourcesIds,
+  viewMode,
+  viewModes,
+  areResourcesLoading,
+  sortBy,
+  sortDir,
+  sortFields,
+  viewSize,
+  folderView,
+  fileListHeaderY,
+  paginationPages,
+  paginationPage,
+  loadResourcesTask,
+  selectedResourceSpace,
+  handleSort,
+  isResourceInSelection,
+  scrollToResourceFromRoute
+} = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
+  folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
+})
 
-    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
-      folderViewExtensionPoint: folderViewsSharedWithOthersExtensionPoint
-    })
-    const {
-      loadResourcesTask,
-      selectedResourcesIds,
-      paginatedResources,
-      viewMode,
-      areResourcesLoading
-    } = resourcesViewDefaults
-    const { loadPreview } = useLoadPreview(viewMode)
+const { triggerDefaultAction } = useFileActions()
 
-    const breadcrumbs = computed(() => {
-      return [
-        {
-          id: uuidV4(),
-          text: $gettext('Shares'),
-          to: createLocationShares('files-shares-with-others'),
-          isStaticNav: true
-        }
-      ]
-    })
+const { loadPreview } = useLoadPreview(viewMode)
 
-    const shareTypes = computed(() => {
-      const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
-
-      const ocmAvailable = appsStore.appIds.includes('open-cloud-mesh')
-      if (ocmAvailable && !uniqueShareTypes.includes(ShareTypes.remote.value)) {
-        uniqueShareTypes.push(ShareTypes.remote.value)
-      }
-
-      return ShareTypes.getByValues(uniqueShareTypes).map((shareType) => {
-        return {
-          key: shareType.key,
-          value: shareType.value,
-          label: $gettext(shareType.label)
-        }
-      })
-    })
-    const selectedShareTypesQuery = useRouteQuery('q_shareType')
-    const filterTerm = ref('')
-    const filteredItems = computed(() => {
-      let items = unref(paginatedResources)
-      if (unref(filterTerm)) {
-        const searchEngine = new Fuse(items, { ...defaultFuseOptions, keys: ['name'] })
-        items = searchEngine.search(unref(filterTerm)).map((r) => r.item)
-      }
-
-      const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
-      if (!selectedShareTypes || selectedShareTypes.length === 0) {
-        return items
-      }
-      return items.filter((item) => {
-        return ShareTypes.getByKeys(selectedShareTypes)
-          .map(({ value }) => value)
-          .some((t) => item.shareTypes.includes(t))
-      })
-    })
-
-    let markInstance: Mark | undefined
-    watch(filteredItems, () => {
-      if (!unref(areResourcesLoading)) {
-        if (!markInstance) {
-          markInstance = new Mark('.oc-resource-details')
-        }
-
-        markInstance.unmark()
-        markInstance.mark(unref(filterTerm), {
-          element: 'span',
-          className: 'mark-highlight'
-        })
-      }
-    })
-
-    resourcesStore.$onAction((action) => {
-      if (action.name !== 'updateResourceField') {
-        return
-      }
-
-      if (selectedResourcesIds.value.length !== 1) return
-      const id = selectedResourcesIds.value[0]
-
-      const match = unref(paginatedResources).find((r) => {
-        return r.id === id
-      })
-      if (!match) return
-
-      loadResourcesTask.perform()
-
-      const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
-      if (!matchedNewResource) return
-
-      selectedResourcesIds.value = [matchedNewResource.id]
-    })
-
-    return {
-      ...useFileActions(),
-      ...resourcesViewDefaults,
-      configStore,
-      configOptions,
-      capabilityStore,
-      filteredItems,
-      shareTypes,
-      getMatchingSpace,
-      loadPreview,
-      breadcrumbs,
-      filterTerm
+const breadcrumbs = computed(() => {
+  return [
+    {
+      id: uuidV4(),
+      text: $gettext('Shares'),
+      to: createLocationShares('files-shares-with-others'),
+      isStaticNav: true
     }
-  },
+  ]
+})
 
-  computed: {
-    isEmpty() {
-      return this.filteredItems.length < 1
-    }
-  },
+const shareTypes = computed(() => {
+  const uniqueShareTypes = uniq(unref(paginatedResources).flatMap((i) => i.shareTypes))
 
-  async created() {
-    await this.loadResourcesTask.perform()
-    this.scrollToResourceFromRoute(this.filteredItems, 'files-app-bar')
+  const ocmAvailable = appsStore.appIds.includes('open-cloud-mesh')
+  if (ocmAvailable && !uniqueShareTypes.includes(ShareTypes.remote.value)) {
+    uniqueShareTypes.push(ShareTypes.remote.value)
   }
+
+  return ShareTypes.getByValues(uniqueShareTypes).map((shareType) => {
+    return {
+      key: shareType.key,
+      value: shareType.value,
+      label: $gettext(shareType.label)
+    }
+  })
+})
+const selectedShareTypesQuery = useRouteQuery('q_shareType')
+const filterTerm = ref('')
+const filteredItems = computed(() => {
+  let items = unref(paginatedResources)
+  if (unref(filterTerm)) {
+    const searchEngine = new Fuse(items, { ...defaultFuseOptions, keys: ['name'] })
+    items = searchEngine.search(unref(filterTerm)).map((r) => r.item)
+  }
+
+  const selectedShareTypes = queryItemAsString(unref(selectedShareTypesQuery))?.split('+')
+  if (!selectedShareTypes || selectedShareTypes.length === 0) {
+    return items
+  }
+  return items.filter((item) => {
+    return ShareTypes.getByKeys(selectedShareTypes)
+      .map(({ value }) => value)
+      .some((t) => item.shareTypes.includes(t))
+  })
+})
+
+let markInstance: Mark | undefined
+watch(filteredItems, () => {
+  if (!unref(areResourcesLoading)) {
+    if (!markInstance) {
+      markInstance = new Mark('.oc-resource-details')
+    }
+
+    markInstance.unmark()
+    markInstance.mark(unref(filterTerm), {
+      element: 'span',
+      className: 'mark-highlight'
+    })
+  }
+})
+
+resourcesStore.$onAction((action) => {
+  if (action.name !== 'updateResourceField') {
+    return
+  }
+
+  if (selectedResourcesIds.value.length !== 1) return
+  const id = selectedResourcesIds.value[0]
+
+  const match = unref(paginatedResources).find((r) => {
+    return r.id === id
+  })
+  if (!match) return
+
+  loadResourcesTask.perform()
+
+  const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
+  if (!matchedNewResource) return
+
+  selectedResourcesIds.value = [matchedNewResource.id]
+})
+
+const isEmpty = computed(() => {
+  return unref(filteredItems).length < 1
+})
+
+onMounted(async () => {
+  await loadResourcesTask.perform()
+  scrollToResourceFromRoute(unref(filteredItems), 'files-app-bar')
 })
 </script>

@@ -66,30 +66,26 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   createLocationShares,
   defaultFuseOptions,
   FileSideBar,
-  useConfigStore,
   useFileActions,
   useLoadPreview,
-  useResourcesStore
+  useResourcesStore,
+  AppLoadingSpinner,
+  NoContentMessage,
+  AppBar,
+  Pagination,
+  useGetMatchingSpace,
+  ContextActions
 } from '@opencloud-eu/web-pkg'
-import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
-import { AppBar } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
-import { ContextActions } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
-import { ResourceTable } from '@opencloud-eu/web-pkg'
-import { Pagination } from '@opencloud-eu/web-pkg'
-
 import { useResourcesViewDefaults } from '../../composables'
-import { computed, defineComponent, ref, unref, watch } from 'vue'
-import { useGetMatchingSpace } from '@opencloud-eu/web-pkg'
+import { computed, onMounted, ref, unref, watch } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
-import { storeToRefs } from 'pinia'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
@@ -97,128 +93,105 @@ import { useGettext } from 'vue3-gettext'
 import Fuse from 'fuse.js'
 import Mark from 'mark.js'
 
-export default defineComponent({
-  components: {
-    SharesNavigation,
-    FilesViewWrapper,
-    AppBar,
-    ResourceTable,
-    AppLoadingSpinner,
-    NoContentMessage,
-    ListInfo,
-    Pagination,
-    ContextActions,
-    FileSideBar
-  },
+const { $gettext } = useGettext()
 
-  setup() {
-    const { $gettext } = useGettext()
+const { getMatchingSpace } = useGetMatchingSpace()
 
-    const { getMatchingSpace } = useGetMatchingSpace()
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
+const resourcesStore = useResourcesStore()
 
-    const resourcesStore = useResourcesStore()
-    const { totalResourcesCount } = storeToRefs(resourcesStore)
+const {
+  paginatedResources,
+  selectedResources,
+  selectedResourcesIds,
+  viewMode,
+  viewModes,
+  areResourcesLoading,
+  sortBy,
+  sortDir,
+  sortFields,
+  viewSize,
+  folderView,
+  fileListHeaderY,
+  paginationPages,
+  paginationPage,
+  loadResourcesTask,
+  selectedResourceSpace,
+  handleSort,
+  isResourceInSelection,
+  scrollToResourceFromRoute
+} = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
+  folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint
+})
 
-    const resourcesViewDefaults = useResourcesViewDefaults<OutgoingShareResource, any, any[]>({
-      folderViewExtensionPoint: folderViewsSharedViaLinkExtensionPoint
+const { triggerDefaultAction } = useFileActions()
+
+const { loadPreview } = useLoadPreview(viewMode)
+
+const filterTerm = ref('')
+const filteredItems = computed(() => {
+  if (unref(filterTerm)) {
+    const searchEngine = new Fuse(unref(paginatedResources), {
+      ...defaultFuseOptions,
+      keys: ['name']
     })
-    const {
-      loadResourcesTask,
-      selectedResourcesIds,
-      paginatedResources,
-      viewMode,
-      areResourcesLoading
-    } = resourcesViewDefaults
-
-    const { loadPreview } = useLoadPreview(viewMode)
-
-    const filterTerm = ref('')
-    const filteredItems = computed(() => {
-      if (unref(filterTerm)) {
-        const searchEngine = new Fuse(unref(paginatedResources), {
-          ...defaultFuseOptions,
-          keys: ['name']
-        })
-        return searchEngine.search(unref(filterTerm)).map((r) => r.item)
-      }
-      return unref(paginatedResources)
-    })
-
-    let markInstance: Mark | undefined
-    watch(filteredItems, () => {
-      if (!unref(areResourcesLoading)) {
-        if (!markInstance) {
-          markInstance = new Mark('.oc-resource-details')
-        }
-
-        markInstance.unmark()
-        markInstance.mark(unref(filterTerm), {
-          element: 'span',
-          className: 'mark-highlight'
-        })
-      }
-    })
-
-    resourcesStore.$onAction((action) => {
-      if (action.name !== 'updateResourceField') {
-        return
-      }
-
-      if (selectedResourcesIds.value.length !== 1) return
-      const id = selectedResourcesIds.value[0]
-
-      const match = unref(paginatedResources).find((r) => {
-        return r.id === id
-      })
-      if (!match) return
-
-      loadResourcesTask.perform()
-
-      const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
-      if (!matchedNewResource) return
-
-      selectedResourcesIds.value = [matchedNewResource.id]
-    })
-
-    const breadcrumbs = computed(() => {
-      return [
-        {
-          id: uuidV4(),
-          text: $gettext('Shares'),
-          to: createLocationShares('files-shares-via-link'),
-          isStaticNav: true
-        }
-      ]
-    })
-
-    return {
-      ...useFileActions(),
-      ...resourcesViewDefaults,
-      configOptions,
-      getMatchingSpace,
-      totalResourcesCount,
-      loadPreview,
-      breadcrumbs,
-      filterTerm,
-      filteredItems
-    }
-  },
-
-  computed: {
-    helpersEnabled() {
-      return this.configOptions.contextHelpers
-    },
-
-    isEmpty() {
-      return this.filteredItems.length < 1
-    }
-  },
-
-  async created() {
-    await this.loadResourcesTask.perform()
-    this.scrollToResourceFromRoute(this.paginatedResources, 'files-app-bar')
+    return searchEngine.search(unref(filterTerm)).map((r) => r.item)
   }
+  return unref(paginatedResources)
+})
+
+let markInstance: Mark | undefined
+watch(filteredItems, () => {
+  if (!unref(areResourcesLoading)) {
+    if (!markInstance) {
+      markInstance = new Mark('.oc-resource-details')
+    }
+
+    markInstance.unmark()
+    markInstance.mark(unref(filterTerm), {
+      element: 'span',
+      className: 'mark-highlight'
+    })
+  }
+})
+
+resourcesStore.$onAction((action) => {
+  if (action.name !== 'updateResourceField') {
+    return
+  }
+
+  if (selectedResourcesIds.value.length !== 1) return
+  const id = selectedResourcesIds.value[0]
+
+  const match = unref(paginatedResources).find((r) => {
+    return r.id === id
+  })
+  if (!match) return
+
+  loadResourcesTask.perform()
+
+  const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
+  if (!matchedNewResource) return
+
+  selectedResourcesIds.value = [matchedNewResource.id]
+})
+
+const breadcrumbs = computed(() => {
+  return [
+    {
+      id: uuidV4(),
+      text: $gettext('Shares'),
+      to: createLocationShares('files-shares-via-link'),
+      isStaticNav: true
+    }
+  ]
+})
+
+const isEmpty = computed(() => {
+  return unref(filteredItems).length < 1
+})
+
+onMounted(async () => {
+  await loadResourcesTask.perform()
+  scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
 })
 </script>
