@@ -60,6 +60,7 @@
                     >
                       <span
                         class="text-sm"
+                        :class="{ hidden: limitedScreenSpace }"
                         v-text="$gettext('%{count} selected', { count: batchActionItems.length })"
                       />
                       <oc-icon fill-type="line" name="close" />
