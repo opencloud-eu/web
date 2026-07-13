@@ -2,7 +2,7 @@
   <div class="oc-vault-unlock flex justify-center h-full overflow-y-auto p-8">
     <no-content-message v-if="!space" img-src="/images/vault.svg" class="my-auto">
       <template #message>
-        <span v-text="$gettext('Target space not found')" />
+        <span v-text="$gettext('Vault not found')" />
       </template>
       <template #callToAction>
         <span v-text="$gettext('Go back and open the vault again from its original location')" />
