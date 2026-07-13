@@ -10,30 +10,9 @@
 
 - chore(deps): bump transitive axios to v1.6 [[#2640](https://github.com/opencloud-eu/web/pull/2640)]
 
-### 📈 Enhancement
-
-- feat: LocationPickerModal allow file name suggestions [[#2829](https://github.com/opencloud-eu/web/pull/2829)]
-- feat: set icon for game files [[#2856](https://github.com/opencloud-eu/web/pull/2856)]
-- feat: add icon for nes files [[#2846](https://github.com/opencloud-eu/web/pull/2846)]
-- feat: add sponsor link to left sidebar [[#2839](https://github.com/opencloud-eu/web/pull/2839)]
-- feat: new file type icons [[#2822](https://github.com/opencloud-eu/web/pull/2822)]
-- feat: adjust no content message image colors design system tokens [[#2805](https://github.com/opencloud-eu/web/pull/2805)]
-- feat: remove unnecessary white spaces [[#2806](https://github.com/opencloud-eu/web/pull/2806)]
-- feat: redesign app top bar [[#2797](https://github.com/opencloud-eu/web/pull/2797)]
-- feat(tiptap): make heading toolbar more versatile (turn into) [[#2786](https://github.com/opencloud-eu/web/pull/2786)]
-- feat: add gradient to new fab button [[#2783](https://github.com/opencloud-eu/web/pull/2783)]
-- feat(tiptap): add text alignment controls [[#2778](https://github.com/opencloud-eu/web/pull/2778)]
-- feat(tiptap): show colors in text color and background color actions [[#2779](https://github.com/opencloud-eu/web/pull/2779)]
-- feat (tiptap): enable source mode for html files [[#2760](https://github.com/opencloud-eu/web/pull/2760)]
-- feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
-- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
-- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
--  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
-- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
-- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
-
 ### 🐛 Bug Fixes
 
+- fix: adjust vault to our overall design language [[#2865](https://github.com/opencloud-eu/web/pull/2865)]
 - fix (tiptap): no content hint color on dark mode [[#2851](https://github.com/opencloud-eu/web/pull/2851)]
 - fix: name sorting in files table is off when folder name contains a dot [[#2843](https://github.com/opencloud-eu/web/pull/2843)]
 - fix: include registered extra props in PROPFIND request body [[#2726](https://github.com/opencloud-eu/web/pull/2726)]
@@ -57,6 +36,28 @@
 - fix: load missing space permissions in app wrapper [[#2653](https://github.com/opencloud-eu/web/pull/2653)]
 - fix: prevent loosing mailcompose state [[#2618](https://github.com/opencloud-eu/web/pull/2618)]
 - fix: some logos won't be shown in top bar [[#2627](https://github.com/opencloud-eu/web/pull/2627)]
+
+### 📈 Enhancement
+
+- feat: LocationPickerModal allow file name suggestions [[#2829](https://github.com/opencloud-eu/web/pull/2829)]
+- feat: set icon for game files [[#2856](https://github.com/opencloud-eu/web/pull/2856)]
+- feat: add icon for nes files [[#2846](https://github.com/opencloud-eu/web/pull/2846)]
+- feat: add sponsor link to left sidebar [[#2839](https://github.com/opencloud-eu/web/pull/2839)]
+- feat: new file type icons [[#2822](https://github.com/opencloud-eu/web/pull/2822)]
+- feat: adjust no content message image colors design system tokens [[#2805](https://github.com/opencloud-eu/web/pull/2805)]
+- feat: remove unnecessary white spaces [[#2806](https://github.com/opencloud-eu/web/pull/2806)]
+- feat: redesign app top bar [[#2797](https://github.com/opencloud-eu/web/pull/2797)]
+- feat(tiptap): make heading toolbar more versatile (turn into) [[#2786](https://github.com/opencloud-eu/web/pull/2786)]
+- feat: add gradient to new fab button [[#2783](https://github.com/opencloud-eu/web/pull/2783)]
+- feat(tiptap): add text alignment controls [[#2778](https://github.com/opencloud-eu/web/pull/2778)]
+- feat(tiptap): show colors in text color and background color actions [[#2779](https://github.com/opencloud-eu/web/pull/2779)]
+- feat (tiptap): enable source mode for html files [[#2760](https://github.com/opencloud-eu/web/pull/2760)]
+- feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
+- feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
+- feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
+-  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
+- feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
+- feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### ✅ Tests
 
