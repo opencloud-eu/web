@@ -6,7 +6,7 @@
       id="app-top-bar-close"
       appearance="raw-inverse"
       color-role="chrome"
-      class="p-1"
+      class="mr-2"
       :aria-label="$gettext('Close')"
       @click="$emit('close')"
     >
