@@ -39,7 +39,7 @@
               class="m-0 text-sm text-yellow-800"
               v-text="
                 $gettext(
-                  'OpenCloud can’t recover it if you lose it — without it, the vault stays locked.'
+                  'OpenCloud can’t recover it if you lose it - without it, the vault stays locked permanently.'
                 )
               "
             />
