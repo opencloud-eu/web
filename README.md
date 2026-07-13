@@ -9,7 +9,8 @@ With OpenCloud Web you can manage your OpenCloud in your browser.
 
 </div>
 
-![image](https://github.com/user-attachments/assets/f7d0b419-674c-44b5-aa30-1dd6b6d029de)
+<img width="2578" height="1730" alt="CleanShot 2026-07-11 at 09 33 19@2x" src="https://github.com/user-attachments/assets/c05a0550-d8d9-4195-8ebc-0ba0b2e8a4ae" />
+
 
 OpenCloud Web is a single page, standalone frontend, based on modern web technologies. It brings new features as well as improved user flows and can be deployed independent of the backend server.
 
