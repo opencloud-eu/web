@@ -11,7 +11,7 @@
     <oc-card
       v-else
       body-class="px-8 py-4"
-      class="rounded-lg bg-role-surface-container w-[560px] my-auto"
+      class="rounded-lg bg-role-surface-container w-xl my-auto"
     >
       <oc-tag rounded size="small" color="primary" appearance="filled" class="mb-4">
         <oc-icon name="lock-password" size="small" fill-type="line" />
