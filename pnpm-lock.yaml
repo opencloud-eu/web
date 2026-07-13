@@ -733,12 +733,15 @@ importers:
       '@opencloud-eu/web-pkg':
         specifier: workspace:*
         version: link:../web-pkg
+      pinia:
+        specifier: 3.0.4
+        version: 3.0.4(typescript@6.0.3)(vue@3.5.39(typescript@6.0.3))
       vue:
         specifier: ^3.5.0
         version: 3.5.39(typescript@6.0.3)
       vue-inline-svg:
-        specifier: ^3.1.3
-        version: 3.1.4(vue@3.5.39(typescript@6.0.3))
+        specifier: ^4.0.1
+        version: 4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.39(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.39(typescript@6.0.3))
@@ -5347,11 +5350,6 @@ packages:
     peerDependencies:
       eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
 
-  vue-inline-svg@3.1.4:
-    resolution: {integrity: sha512-2WrOViZroRvB0UqwkwxDlCz516pkmT9ojsWri9Vxp8wBcQ1/wzfF0ubw5J/ZxNgjkBBAp0qkTiXDdzBPonT21A==}
-    peerDependencies:
-      vue: ^3
-
   vue-inline-svg@4.0.1:
     resolution: {integrity: sha512-yh92MOcTpL/yXj0MjI9JqQpI33nj5ewdddt6enunU8pBpy6JqrMXF+O4WI1DbckhLIoXzp6hSxkeqXDqpqtKXw==}
     peerDependencies:
@@ -9846,10 +9844,6 @@ snapshots:
       semver: 7.8.5
     transitivePeerDependencies:
       - supports-color
-
-  vue-inline-svg@3.1.4(vue@3.5.39(typescript@6.0.3)):
-    dependencies:
-      vue: 3.5.39(typescript@6.0.3)
 
   vue-inline-svg@4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.39(typescript@6.0.3)):
     dependencies:

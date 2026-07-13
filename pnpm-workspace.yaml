@@ -29,6 +29,7 @@ allowBuilds:
   core-js: true
   es5-ext: true
   esbuild: true
+  vue-demi: set this to true or false
 
 patchedDependencies:
   caf@15.0.1: patches/caf@15.0.1.patch
