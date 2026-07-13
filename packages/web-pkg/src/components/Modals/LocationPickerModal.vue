@@ -25,11 +25,23 @@ import {
 import { RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 
-const { modal, parentFolderLink, submitButtonTitle, callbackFn } = defineProps<{
+const {
+  modal,
+  parentFolderLink,
+  submitButtonTitle,
+  chooseFileName,
+  chooseFileNameSuggestion,
+  callbackFn
+} = defineProps<{
   modal: Modal
   parentFolderLink: RouteLocationRaw
   submitButtonTitle?: string
-  callbackFn: (resources: embedModeLocationPickMessageData['resources']) => void
+  chooseFileName?: boolean
+  chooseFileNameSuggestion?: string
+  callbackFn: (
+    resources: embedModeLocationPickMessageData['resources'],
+    options?: { fileName?: string }
+  ) => void
 }>()
 
 const iframeRef = ref<HTMLIFrameElement>()
@@ -48,6 +60,12 @@ iframeUrl.searchParams.append('embed-delegate-authentication', 'false')
 if (submitButtonTitle) {
   iframeUrl.searchParams.append('embed-submit-button-title', submitButtonTitle)
 }
+if (chooseFileName) {
+  iframeUrl.searchParams.append('embed-choose-file-name', 'true')
+}
+if (chooseFileNameSuggestion) {
+  iframeUrl.searchParams.append('embed-choose-file-name-suggestion', chooseFileNameSuggestion)
+}
 
 const onLoad = () => {
   isLoading.value = false
@@ -60,15 +78,17 @@ const onLocationPick = ({ data }: MessageEvent) => {
   }
 
   let resources = (data.data as embedModeLocationPickMessageData)?.resources
+  let fileName = (data.data as embedModeLocationPickMessageData)?.fileName
   if (Array.isArray(data.data)) {
-    resources = data.data
+    resources = data.data as embedModeLocationPickMessageData['resources']
+    fileName = undefined
   }
 
   if (!resources?.length) {
     return
   }
 
-  callbackFn(resources)
+  callbackFn(resources, { fileName })
   removeModal(modal.id)
 }
 

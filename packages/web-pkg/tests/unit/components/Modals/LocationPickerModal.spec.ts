@@ -22,6 +22,15 @@ describe('LocationPickerModal', () => {
         'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-delegate-authentication=false&embed-submit-button-title=Move+here'
       )
     })
+    it('sets file name picker parameters in iframe src when provided', () => {
+      const { wrapper } = getWrapper({
+        chooseFileName: true,
+        chooseFileNameSuggestion: 'archive.zip'
+      })
+      expect((wrapper.vm as any).iframeSrc).toEqual(
+        'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-delegate-authentication=false&embed-choose-file-name=true&embed-choose-file-name-suggestion=archive.zip'
+      )
+    })
   })
   describe('method "onLocationPick"', () => {
     it('does nothing if the event message does not equal "opencloud-embed:select"', () => {
@@ -47,6 +56,24 @@ describe('LocationPickerModal', () => {
       expect((wrapper.vm as any).callbackFn).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalled()
     })
+    it('passes file name to the callback', () => {
+      const { wrapper } = getWrapper()
+      ;(wrapper.vm as any).onLocationPick({
+        data: {
+          name: 'opencloud-embed:select',
+          data: {
+            resources: [mock<Resource>({ storageId: '1' })],
+            fileName: 'archive.zip'
+          }
+        }
+      } as MessageEvent)
+      expect((wrapper.vm as any).callbackFn).toHaveBeenCalledWith(
+        expect.any(Array),
+        expect.objectContaining({
+          fileName: 'archive.zip'
+        })
+      )
+    })
     it('calls callback function for legacy array payload when message does equal "opencloud-embed:select"', () => {
       const { wrapper } = getWrapper()
       const modalStore = useModals()
@@ -64,7 +91,15 @@ describe('LocationPickerModal', () => {
   })
 })
 
-function getWrapper({ submitButtonTitle }: { submitButtonTitle?: string } = {}) {
+function getWrapper({
+  submitButtonTitle,
+  chooseFileName,
+  chooseFileNameSuggestion
+}: {
+  submitButtonTitle?: string
+  chooseFileName?: boolean
+  chooseFileNameSuggestion?: string
+} = {}) {
   const mocks = defaultComponentMocks()
 
   return {
@@ -74,6 +109,8 @@ function getWrapper({ submitButtonTitle }: { submitButtonTitle?: string } = {}) 
         modal: mock<Modal>(),
         callbackFn: vi.fn(),
         submitButtonTitle,
+        chooseFileName,
+        chooseFileNameSuggestion,
         parentFolderLink: {
           name: 'files-spaces-generic',
           params: {
