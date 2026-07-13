@@ -236,7 +236,7 @@ export const useFileActionsPaste = () => {
 
         return ''
       },
-      class: 'oc-files-actions-copy-trigger font-bold'
+      class: 'oc-files-actions-copy-trigger'
     }
   ])
 
