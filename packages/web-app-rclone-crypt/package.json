@@ -5,7 +5,8 @@
   "description": "OpenCloud Web plugin: browse, edit and upload rclone-crypt encrypted folder vaults",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@fyears/rclone-crypt": "^0.0.7"
+    "@fyears/rclone-crypt": "^0.0.7",
+    "vue-inline-svg": "^3.1.3"
   },
   "peerDependencies": {
     "@opencloud-eu/web-client": "workspace:*",

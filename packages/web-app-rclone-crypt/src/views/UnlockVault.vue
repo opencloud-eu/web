@@ -18,7 +18,7 @@
         <span v-text="$gettext('End-to-end encrypted')" />
       </oc-tag>
       <div class="flex flex-col items-center text-center">
-        <img :src="'/images/vault.svg'" alt="" aria-hidden="true" class="h-30 w-30" />
+        <inline-svg src="/images/vault.svg" class="mb-4 h-30 w-30" aria-hidden="true" />
         <p class="mt-0 text-sm break-all" data-testid="vault-name" v-text="vaultName" />
         <p class="mb-0 text-lg font-semibold" v-text="cardTitle" />
         <p class="mb-4 text-sm" v-text="vaultDescription" />
@@ -96,6 +96,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import InlineSvg from 'vue-inline-svg'
 import {
   createLocationShares,
   NoContentMessage,
@@ -108,6 +109,8 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { createEngine } from '../crypto/engine'
 import { isShareSpaceResource } from '@opencloud-eu/web-client'
+
+InlineSvg.name = 'inline-svg'
 
 const { $gettext } = useGettext()
 const route = useRoute()
@@ -263,3 +266,9 @@ const onCancel = async () => {
   await router.push('/files/spaces/personal')
 }
 </script>
+
+<style scoped>
+.oc-vault-unlock :deep(.background-splash) {
+  fill: var(--oc-role-surface-container-highest);
+}
+</style>
