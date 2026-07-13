@@ -27,12 +27,9 @@
 - feat (tiptap): enable source mode for html files [[#2760](https://github.com/opencloud-eu/web/pull/2760)]
 - feat: redesign batch actions [[#2589](https://github.com/opencloud-eu/web/pull/2589)]
 - feat: add extra extensions to text editor app [[#2512](https://github.com/opencloud-eu/web/pull/2512)]
-- feat: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
 - feat: make collaboration settings app public [[#2654](https://github.com/opencloud-eu/web/pull/2654)]
-- rclone crypt port second batch [[#2655](https://github.com/opencloud-eu/web/pull/2655)]
 -  feat: rclone-crypt folder vault [[#2639](https://github.com/opencloud-eu/web/pull/2639)]
 - feat: add sse event handler for space enabled [[#2652](https://github.com/opencloud-eu/web/pull/2652)]
-- Port ox contact invites [[#2638](https://github.com/opencloud-eu/web/pull/2638)]
 - feat: implement user mentions in Collabora docs [[#2601](https://github.com/opencloud-eu/web/pull/2601)]
 
 ### 🐛 Bug Fixes
@@ -47,15 +44,11 @@
 - fix: isolate module federation shared scope per app [[#2768](https://github.com/opencloud-eu/web/pull/2768)]
 - fix: select personal account (isPersonal) instead of first in account… [[#2762](https://github.com/opencloud-eu/web/pull/2762)]
 - fix: file list scroll after closing an editor [[#2752](https://github.com/opencloud-eu/web/pull/2752)]
-- fix: disable copy / move to actions for vaults [[#2741](https://github.com/opencloud-eu/web/pull/2741)]
 - fix: markdown toggle source [[#2733](https://github.com/opencloud-eu/web/pull/2733)]
 - fix: delete space action showing for space managers [[#2649](https://github.com/opencloud-eu/web/pull/2649)]
-- fix: unlock vault cancel in shared vaults [[#2705](https://github.com/opencloud-eu/web/pull/2705)]
+- fix: hide restore action in the version sidebar panel if the resource permission is missing [[#2704](https://github.com/opencloud-eu/web/pull/2704)]
 - fix: reduce fields in Upload-Metadata header [[#2702](https://github.com/opencloud-eu/web/pull/2702)]
-- fix: new menu entries for external apps in vaults [[#2700](https://github.com/opencloud-eu/web/pull/2700)]
-- fix: vault route guard for share spaces [[#2693](https://github.com/opencloud-eu/web/pull/2693)]
 - fix: version loading on search and favorite pages [[#2676](https://github.com/opencloud-eu/web/pull/2676)]
-- fix: lock- and unlock vault action on shared with me page [[#2692](https://github.com/opencloud-eu/web/pull/2692)]
 - fix: make upload dialog collapsible so it won't overlap certain views [[#2688](https://github.com/opencloud-eu/web/pull/2688)]
 - fix: after disabling and enabling space user cannot create resources/… [[#2687](https://github.com/opencloud-eu/web/pull/2687)]
 - fix: don't query contacts for space members [[#2678](https://github.com/opencloud-eu/web/pull/2678)]
@@ -77,6 +70,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.65.0 [[#2859](https://github.com/opencloud-eu/web/pull/2859)]
 - chore(deps): update pnpm to v11.12.0 [[#2850](https://github.com/opencloud-eu/web/pull/2850)]
 - chore(deps): update devdependencies (non-major) [[#2861](https://github.com/opencloud-eu/web/pull/2861)]
 - chore(deps): update dependency @floating-ui/dom to v1.8.0 [[#2862](https://github.com/opencloud-eu/web/pull/2862)]
