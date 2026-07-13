@@ -12,6 +12,7 @@
 
 ### 📈 Enhancement
 
+- feat: LocationPickerModal allow file name suggestions [[#2829](https://github.com/opencloud-eu/web/pull/2829)]
 - feat: set icon for game files [[#2856](https://github.com/opencloud-eu/web/pull/2856)]
 - feat: add icon for nes files [[#2846](https://github.com/opencloud-eu/web/pull/2846)]
 - feat: add sponsor link to left sidebar [[#2839](https://github.com/opencloud-eu/web/pull/2839)]
