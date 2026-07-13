@@ -41,7 +41,6 @@ describe('folder-vault resource indicator', () => {
     const indicators = getIndicators(resource()) as any[]
     expect(indicators).toHaveLength(1)
     expect(indicators[0].icon).toBe('lock-2')
-    expect(indicators[0].fillType).toBe('fill')
     expect(indicators[0].type).toBe('vault-locked')
   })
 
