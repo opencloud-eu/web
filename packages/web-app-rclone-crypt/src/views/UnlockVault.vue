@@ -1,40 +1,61 @@
 <template>
-  <div class="oc-vault-unlock h-screen flex flex-col justify-center items-center p-4">
-    <oc-card
-      :title="cardTitle"
-      body-class="text-center"
-      header-class="text-center"
-      class="w-auto md:w-lg rounded-lg"
-    >
-      <div class="mb-4 flex flex-col items-center gap-2">
-        <oc-icon name="folder-lock" fill-type="line" size="xlarge" />
+  <div class="oc-vault-unlock flex justify-center items-center h-full overflow-y-auto px-8">
+    <no-content-message v-if="!space" img-src="/images/vault.svg">
+      <template #message>
+        <span v-text="$gettext('Target space not found')" />
+      </template>
+      <template #callToAction>
+        <span v-text="$gettext('Go back and open the vault again from its original location')" />
+      </template>
+    </no-content-message>
+    <oc-card v-else body-class="px-8 py-4" class="rounded-lg bg-role-surface-container w-[560px]">
+      <oc-tag rounded size="small" color="primary" appearance="filled" class="mb-4">
+        <oc-icon name="lock-password" size="small" fill-type="line" />
+        <span v-text="$gettext('End-to-end encrypted')" />
+      </oc-tag>
+      <div class="flex flex-col items-center text-center">
+        <img :src="'/images/vault.svg'" alt="" aria-hidden="true" class="h-30 w-30" />
         <p
-          class="m-0 text-xl font-semibold break-all"
+          class="mb-2 text-2xl font-semibold break-all"
           data-testid="vault-name"
           v-text="vaultName"
         />
+        <p class="mb-0 text-lg font-semibold" v-text="cardTitle" />
+        <p class="mb-4 text-sm" v-text="vaultDescription" />
       </div>
-      <p class="mb-2" v-text="vaultDescription" />
-      <p
+      <div
         v-if="isEmpty === true"
-        class="mb-3 text-sm opacity-80"
+        class="mb-4 rounded-xl border border-yellow-300 bg-yellow-100 p-4"
         data-testid="empty-vault-hint"
-        v-text="
-          $gettext(
-            'This vault is still empty, so there is no right or wrong passphrase yet. The passphrase you enter here will be locked in when the first file gets uploaded and cannot be changed from within OpenCloud afterwards.'
-          )
-        "
-      />
+      >
+        <div class="flex items-start gap-2">
+          <oc-icon name="error-warning" size="small" fill-type="line" class="text-yellow-800" />
+          <div>
+            <p
+              class="m-0 mb-2 text-sm font-semibold text-yellow-900"
+              v-text="$gettext('Store your passphrase somewhere safe')"
+            />
+            <p
+              class="m-0 text-sm text-yellow-800"
+              v-text="
+                $gettext(
+                  'OpenCloud can’t recover it if you lose it — without it, the vault stays locked.'
+                )
+              "
+            />
+          </div>
+        </div>
+      </div>
       <form @submit.prevent="onSubmit">
         <oc-text-input
           id="vault-passphrase"
           ref="passwordInput"
           v-model="password"
           :error-message="errorMessage"
+          :fix-message-line="true"
           :label="passphraseLabel"
           type="password"
           autocomplete="off"
-          class="mb-3 [&_.oc-text-input-message]:justify-center"
         />
         <oc-text-input
           v-if="isEmpty === true"
@@ -42,12 +63,18 @@
           v-model="confirmPassword"
           :error-message="confirmErrorMessage"
           :label="$gettext('Repeat passphrase')"
+          :fix-message-line="true"
           type="password"
           autocomplete="off"
-          class="mb-3 [&_.oc-text-input-message]:justify-center"
         />
-        <div class="flex justify-center gap-2">
-          <oc-button id="vault-unlock-cancel" appearance="outline" type="button" @click="onCancel">
+        <div class="flex items-center gap-2 mt-4">
+          <oc-button
+            id="vault-unlock-cancel"
+            appearance="outline"
+            type="button"
+            class="min-w-[140px]"
+            @click="onCancel"
+          >
             <span v-text="$gettext('Cancel')" />
           </oc-button>
           <oc-button
@@ -55,6 +82,7 @@
             appearance="filled"
             submit="submit"
             :disabled="submitDisabled"
+            class="flex-1"
           >
             <oc-spinner v-if="verifying" :aria-hidden="true" size="small" />
             <span v-else v-text="submitLabel" />
@@ -70,6 +98,7 @@ import { computed, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   createLocationShares,
+  NoContentMessage,
   queryItemAsString,
   useClientService,
   useFolderVaultStore,
@@ -115,12 +144,14 @@ const vaultName = computed(() => {
 
 const vaultDescription = computed(() =>
   unref(isEmpty) === true
-    ? $gettext('No content has been uploaded yet.')
+    ? $gettext(
+        'Files are encrypted on your device before they upload, and only your passphrase can unlock them.'
+      )
     : $gettext('Enter the passphrase to unlock this vault.')
 )
 
 const cardTitle = computed(() =>
-  unref(isEmpty) === true ? $gettext('Set up vault') : $gettext('Unlock vault')
+  unref(isEmpty) === true ? $gettext('Set Up Encrypted Vault') : $gettext('Unlock vault')
 )
 
 const passphraseLabel = computed(() =>
@@ -135,7 +166,7 @@ const submitLabel = computed(() =>
 // so the field doesn't show an error before they've had a chance to fill it.
 const confirmErrorMessage = computed(() =>
   unref(isEmpty) === true && unref(confirmPassword) && unref(password) !== unref(confirmPassword)
-    ? $gettext('Passphrases do not match.')
+    ? $gettext('Passphrases do not match')
     : null
 )
 
@@ -162,10 +193,6 @@ const onSubmit = async () => {
     //    verify the key against. Doesn't decrypt anything - names stay raw.
     //    rclone-crypt's filename encryption is deterministic; one valid
     //    decrypt is a strong signal that the key fits.
-    if (!unref(space)) {
-      errorMessage.value = $gettext('Could not find the target space.')
-      return
-    }
     const { children } = await clientService.webdav.listFiles(unref(space), {
       path: unref(vaultRoot)
     })
@@ -189,7 +216,7 @@ const onSubmit = async () => {
     await router.push(target || `/files/spaces${unref(vaultRoot)}`)
   } catch (e) {
     console.error(e)
-    errorMessage.value = $gettext('Unlocking failed. Please try again.')
+    errorMessage.value = $gettext('Unlocking failed. Please try again')
   } finally {
     verifying.value = false
   }
