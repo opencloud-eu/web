@@ -1,6 +1,6 @@
 <template>
-  <div class="oc-vault-unlock flex justify-center items-center h-full overflow-y-auto px-8">
-    <no-content-message v-if="!space" img-src="/images/vault.svg">
+  <div class="oc-vault-unlock flex justify-center h-full overflow-y-auto p-8">
+    <no-content-message v-if="!space" img-src="/images/vault.svg" class="my-auto">
       <template #message>
         <span v-text="$gettext('Target space not found')" />
       </template>
@@ -8,7 +8,11 @@
         <span v-text="$gettext('Go back and open the vault again from its original location')" />
       </template>
     </no-content-message>
-    <oc-card v-else body-class="px-8 py-4" class="rounded-lg bg-role-surface-container w-[560px]">
+    <oc-card
+      v-else
+      body-class="px-8 py-4"
+      class="rounded-lg bg-role-surface-container w-[560px] my-auto"
+    >
       <oc-tag rounded size="small" color="primary" appearance="filled" class="mb-4">
         <oc-icon name="lock-password" size="small" fill-type="line" />
         <span v-text="$gettext('End-to-end encrypted')" />
