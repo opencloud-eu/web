@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen, @v-scharf
+@AlexAndBear, @JammingBen, @v-scharf
+
+### 🐛 Bug Fixes
+
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
 
 ### ✅ Tests
 
