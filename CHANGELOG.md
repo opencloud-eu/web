@@ -79,6 +79,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.12.0 [[#2850](https://github.com/opencloud-eu/web/pull/2850)]
 - chore(deps): update devdependencies (non-major) [[#2861](https://github.com/opencloud-eu/web/pull/2861)]
 - chore(deps): update dependency @floating-ui/dom to v1.8.0 [[#2862](https://github.com/opencloud-eu/web/pull/2862)]
 - chore(deps): update dependency dompurify to v3.4.12 [[#2863](https://github.com/opencloud-eu/web/pull/2863)]
