@@ -14,6 +14,10 @@
 
 - add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
 
+### 📦️ Dependencies
+
+- chore(deps): update dependency postcss to v8.5.18 [[#2869](https://github.com/opencloud-eu/web/pull/2869)]
+
 ## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-07-13
 
 ### ❤️ Thanks to all contributors! ❤️
