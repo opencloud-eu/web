@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @cheneyveron, @dschmidt, @flash7777, @fschade, @kulmann, @neverether, @openclouders, @pbleser-oc, @tammi-23, @tralph3, @v-scharf
+@AlexAndBear, @JammingBen, @cheneyveron, @dschmidt, @flash7777, @fschade, @kulmann, @neverether, @openclouders, @pbleser-oc, @tammi-23, @tbsbdr, @tralph3, @v-scharf
 
 ### 🔒 Security
 
@@ -79,6 +79,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2861](https://github.com/opencloud-eu/web/pull/2861)]
+- chore(deps): update dependency @floating-ui/dom to v1.8.0 [[#2862](https://github.com/opencloud-eu/web/pull/2862)]
+- chore(deps): update dependency dompurify to v3.4.12 [[#2863](https://github.com/opencloud-eu/web/pull/2863)]
+- chore(deps): update dependency fast-xml-parser to v5.10.0 [[#2864](https://github.com/opencloud-eu/web/pull/2864)]
 - chore(deps): update devdependencies (non-major) [[#2844](https://github.com/opencloud-eu/web/pull/2844)]
 - chore(deps): update tiptap monorepo to v3.27.3 [[#2833](https://github.com/opencloud-eu/web/pull/2833)]
 - chore(deps): update dependency filesize to v11.0.22 [[#2848](https://github.com/opencloud-eu/web/pull/2848)]
