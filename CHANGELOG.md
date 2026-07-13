@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
 - fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
 
 ### ✅ Tests
