@@ -1,12 +1,14 @@
 # Changelog
 
-## [7.1.4](https://github.com/opencloud-eu/web/releases/tag/v7.1.4) - 2026-07-10
+## [7.1.4](https://github.com/opencloud-eu/web/releases/tag/v7.1.4) - 2026-07-13
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear
+@AlexAndBear, @kulmann
 
+### 🐛 Bug Fixes
 
+- [stable-7.1] chore: add Firefox ESR to supported browser list [[#2855](https://github.com/opencloud-eu/web/pull/2855)]
 
 ## [7.1.3](https://github.com/opencloud-eu/web/releases/tag/v7.1.3) - 2026-06-30
 
