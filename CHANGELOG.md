@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
+
 ### 📚 Documentation
 
 - docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
@@ -14,11 +20,6 @@
 
 - fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
 - feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
-
-### 🐛 Bug Fixes
-
-- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
-- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
 
 ### ✅ Tests
 
