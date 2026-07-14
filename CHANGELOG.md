@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.2.1](https://github.com/opencloud-eu/web/releases/tag/v7.2.1) - 2026-07-14
+## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-07-14
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @v-scharf
+@AlexAndBear, @JammingBen, @cheneyveron, @v-scharf
+
+### 📈 Enhancement
+
+- feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
 
 ### 🐛 Bug Fixes
 
