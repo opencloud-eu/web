@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### 📚 Documentation
+
+- docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
+
 ### 📈 Enhancement
 
 - fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
