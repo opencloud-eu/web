@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 import { defineBddConfig } from 'playwright-bdd'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
  * Read environment variables from file.
@@ -8,7 +12,7 @@ import { defineBddConfig } from 'playwright-bdd'
 // import dotenv from 'dotenv';
 // import path from 'path';
 const testDir = defineBddConfig({
-  featuresRoot: './features',
+  featuresRoot: path.join(__dirname, 'features'),
   steps: ['steps/ui/*.ts', 'steps/*.ts', 'environment/fixtures.ts', 'environment/hooks.ts']
 })
 
