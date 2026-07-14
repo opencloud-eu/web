@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "@vitejs/plugin-vue": "6.0.7",
+    "@vitejs/plugin-vue": "6.0.8",
     "vite": "^8.0.3"
   },
   "dependencies": {
