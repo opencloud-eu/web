@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### 📈 Enhancement
+
+- fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
+- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
+- feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
+
 ### 🐛 Bug Fixes
 
 - fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
@@ -15,11 +21,6 @@
 ### 📚 Documentation
 
 - docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
-
-### 📈 Enhancement
-
-- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
-- feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
 
 ### ✅ Tests
 
