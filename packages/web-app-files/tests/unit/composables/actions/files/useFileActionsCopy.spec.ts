@@ -92,6 +92,23 @@ describe('copy', () => {
           }
         })
       })
+      it('returns false in search context when resources contain a project space', () => {
+        getWrapper({
+          searchLocation: true,
+          setup: ({ actions }) => {
+            const projectSpace = {
+              ...mock<Resource>({ id: '1', canDownload: () => true }),
+              driveType: 'project'
+            } as Resource
+            expect(
+              unref(actions)[0].isVisible({
+                space: null,
+                resources: [projectSpace]
+              })
+            ).toBeFalsy()
+          }
+        })
+      })
     })
   })
 })
