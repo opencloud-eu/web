@@ -113,7 +113,6 @@
 
 <script setup lang="ts">
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
-import type { Ref } from 'vue'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 
