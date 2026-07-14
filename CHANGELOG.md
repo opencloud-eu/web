@@ -26,8 +26,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.27.4 [[#2876](https://github.com/opencloud-eu/web/pull/2876)]
 - fix(deps): update dependency fuse.js to v7.5.0 [[#2877](https://github.com/opencloud-eu/web/pull/2877)]
-- chore(deps): update typescript-eslint monorepo to v8.64.0 [[#2878](https://github.com/opencloud-eu/web/pull/2878)]
+- chore(deps): update typescript-eslint monorepo to v8.64.0 - autoclosed [[#2878](https://github.com/opencloud-eu/web/pull/2878)]
 - fix(deps): update dependency vitest-mock-extended to v5 [[#2879](https://github.com/opencloud-eu/web/pull/2879)]
 - chore(deps): update pnpm to v11.13.0 [[#2883](https://github.com/opencloud-eu/web/pull/2883)]
 - chore(deps): update dependency postcss to v8.5.18 [[#2869](https://github.com/opencloud-eu/web/pull/2869)]
