@@ -228,6 +228,10 @@ export const useFileActionsMove = () => {
           return false
         }
 
+        if (resources.some((r) => isProjectSpaceResource(r))) {
+          return false
+        }
+
         // Moving a vault entry would either expose ciphertext outside the
         // vault (cross-vault move) or rename the encrypted blob in a way
         // the client can't replay against rclone-crypt's path-derived

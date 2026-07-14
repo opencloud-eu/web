@@ -79,6 +79,19 @@ describe('useFileActionsMove', () => {
           }
         })
       })
+      it('returns false in search context when resources contain a project space', () => {
+        getWrapper({
+          searchLocation: true,
+          setup: ({ actions }) => {
+            expect(
+              unref(actions)[0].isVisible({
+                space: mock<SpaceResource>(),
+                resources: [getResource({ id: '1', driveType: 'project', storageId: 'space-1' })]
+              })
+            ).toBeFalsy()
+          }
+        })
+      })
     })
   })
 })
@@ -97,14 +110,18 @@ function getResource(resource: Partial<Resource>): Resource {
 
 function getWrapper({
   currentFolder = mock<Resource>({ id: 'cf-1', path: '/source' }),
+  searchLocation = false,
   setup
 }: {
   currentFolder?: Resource
+  searchLocation?: boolean
   setup: (instance: ReturnType<typeof useFileActionsMove>) => Promise<void> | void
 }) {
+  const routeName = searchLocation ? 'files-common-search' : 'files-spaces-generic'
+
   const mocks = {
     ...defaultComponentMocks({
-      currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
+      currentRoute: mock<RouteLocation>({ name: routeName })
     })
   }
 
