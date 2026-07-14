@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @cheneyveron, @v-scharf
+@AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
 ### 📈 Enhancement
 
+- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
 - feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
 
 ### 🐛 Bug Fixes
