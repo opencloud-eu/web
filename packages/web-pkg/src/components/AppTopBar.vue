@@ -8,6 +8,7 @@
       color-role="chrome"
       class="mr-2"
       :aria-label="$gettext('Close')"
+      no-hover
       @click="$emit('close')"
     >
       <oc-icon name="close" fill-type="line" />
@@ -19,7 +20,7 @@
         <resource-list-item
           v-if="resource"
           id="app-top-bar-resource"
-          class="[&_.oc-resource-name]:max-w-16 sm:[&_.oc-resource-name]:max-w-60"
+          class="[&_.oc-resource-name]:max-w-16 sm:[&_.oc-resource-name]:max-w-60 [&_.oc-resource-basename]:text-role-on-chrome [&_.oc-resource-extension]:text-role-on-chrome"
           :is-thumbnail-displayed="false"
           :is-extension-displayed="areFileExtensionsShown"
           :resource="resource"
@@ -51,7 +52,7 @@
                   .map((action) => {
                     return {
                       ...action,
-                      class: 'p-1 text-role-on-chrome [&_svg]:!fill-role-on-chrome',
+                      class: 'p-1 text-role-on-chrome [&_svg]:!fill-role-on-chrome no-hover',
                       hideLabel: true
                     }
                   })
@@ -72,6 +73,7 @@
             appearance="raw-inverse"
             color-role="chrome"
             class="p-1"
+            no-hover
           >
             <oc-icon name="more-2" />
           </oc-button>
