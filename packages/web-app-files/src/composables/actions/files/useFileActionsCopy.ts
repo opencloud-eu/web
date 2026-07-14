@@ -206,6 +206,10 @@ export const useFileActionsCopy = () => {
             return false
           }
 
+          if (resources.some((r) => isProjectSpaceResource(r))) {
+            return false
+          }
+
           // Copying a vault entry would either drop the ciphertext into
           // an unencrypted location (no key to read it later) or land it
           // in another vault under the wrong path-derived encryption.
