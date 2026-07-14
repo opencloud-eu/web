@@ -8,14 +8,24 @@
       :class="getSectionClasses(sectionIndex)"
     >
       <template v-if="section.items">
-        <action-menu-item
+        <template
           v-for="(action, actionIndex) in section.items"
           :key="`section-${section.name}-action-${actionIndex}`"
-          :action="action"
-          :appearance="appearance"
-          :action-options="actionOptions"
-          class="context-menu"
-        />
+        >
+          <action-menu-drop-item
+            v-if="action.children"
+            :menu-section-drop="actionToDropItem(action)"
+            :appearance="appearance"
+            :action-options="actionOptions"
+          />
+          <action-menu-item
+            v-else
+            :action="action"
+            :appearance="appearance"
+            :action-options="actionOptions"
+            class="context-menu"
+          />
+        </template>
       </template>
       <template v-for="drop in section.dropItems">
         <action-menu-drop-item
@@ -33,10 +43,10 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import ActionMenuItem from './ActionMenuItem.vue'
-import { ActionOptions } from '../../composables'
+import { Action, ActionOptions } from '../../composables'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 import ActionMenuDropItem from './ActionMenuDropItem.vue'
-import { MenuSection } from './types'
+import { MenuSection, MenuSectionDrop } from './types'
 
 export default defineComponent({
   name: 'ContextActionMenu',
@@ -56,6 +66,14 @@ export default defineComponent({
     }
   },
   methods: {
+    actionToDropItem(action: Action): MenuSectionDrop {
+      return {
+        label: action.label(this.actionOptions),
+        name: action.name,
+        icon: typeof action.icon === 'function' ? action.icon(this.actionOptions) : action.icon,
+        items: (action.children || []).filter((child) => child.isVisible(this.actionOptions))
+      }
+    },
     getSectionClasses(index: number) {
       const classes: string[] = []
       if (!this.menuSections.length) {

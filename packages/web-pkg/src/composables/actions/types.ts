@@ -95,6 +95,10 @@ export interface Action<T = ActionOptions> {
    */
   label(options?: T): string
   /**
+   * Optional child actions rendered as a nested context menu.
+   */
+  children?: Action<T>[]
+  /**
    * Determines whether the action should be visible in the UI based on the given options.
    */
   isVisible(options?: T): boolean
