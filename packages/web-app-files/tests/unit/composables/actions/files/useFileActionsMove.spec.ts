@@ -83,10 +83,14 @@ describe('useFileActionsMove', () => {
         getWrapper({
           searchLocation: true,
           setup: ({ actions }) => {
+            const projectSpace = {
+              ...getResource({ id: '1', storageId: 'space-1' }),
+              driveType: 'project'
+            } as Resource
             expect(
               unref(actions)[0].isVisible({
                 space: mock<SpaceResource>(),
-                resources: [getResource({ id: '1', driveType: 'project', storageId: 'space-1' })]
+                resources: [projectSpace]
               })
             ).toBeFalsy()
           }

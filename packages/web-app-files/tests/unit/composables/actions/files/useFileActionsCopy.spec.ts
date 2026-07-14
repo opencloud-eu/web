@@ -96,12 +96,14 @@ describe('copy', () => {
         getWrapper({
           searchLocation: true,
           setup: ({ actions }) => {
+            const projectSpace = {
+              ...mock<Resource>({ id: '1', canDownload: () => true }),
+              driveType: 'project'
+            } as Resource
             expect(
               unref(actions)[0].isVisible({
                 space: null,
-                resources: [
-                  mock<Resource>({ id: '1', canDownload: () => true, driveType: 'project' })
-                ]
+                resources: [projectSpace]
               })
             ).toBeFalsy()
           }
