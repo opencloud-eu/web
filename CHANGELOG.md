@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2874](https://github.com/opencloud-eu/web/pull/2874)]
 - chore(deps): update tiptap monorepo to v3.27.4 [[#2876](https://github.com/opencloud-eu/web/pull/2876)]
 - fix(deps): update dependency fuse.js to v7.5.0 [[#2877](https://github.com/opencloud-eu/web/pull/2877)]
 - chore(deps): update typescript-eslint monorepo to v8.64.0 - autoclosed [[#2878](https://github.com/opencloud-eu/web/pull/2878)]
