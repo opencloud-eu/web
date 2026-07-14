@@ -114,7 +114,7 @@ export const useStrategyHtml = (
 
   const toolbarLink = () => ({
     ...link(),
-    showInToolbar: false
+    showInToolbar: true
   })
 
   const editorActionGroups = (): EditorActionGroup[] => {

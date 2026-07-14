@@ -123,25 +123,17 @@ const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
-const providedActionsToDisplay = inject<Ref<string[] | undefined>>(
-  'textEditorActionsToDisplay',
-  ref<string[] | undefined>()
-)
-
-const visibleActionIds = computed(() => actionsToDisplay ?? unref(providedActionsToDisplay))
 
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
 const isToolbarItemVisible = (item: EditorAction) => {
-  const actionIds = unref(visibleActionIds)
-
-  if (!actionIds) {
+  if (!actionsToDisplay) {
     return item.showInToolbar !== false
   }
 
-  return actionIds.includes(item.id)
+  return actionsToDisplay.includes(item.id)
 }
 
 const toolbarGroups = computed<EditorActionGroup[]>(() => {
