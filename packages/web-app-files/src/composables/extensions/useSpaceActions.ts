@@ -94,15 +94,6 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(navigateToTrashActions)[0],
-        category: 'secondary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-space-image-menu',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
@@ -135,6 +126,15 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(deleteSpaceImageActions)[0],
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
+      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(navigateToTrashActions)[0],
         category: 'secondary'
       }
     },
