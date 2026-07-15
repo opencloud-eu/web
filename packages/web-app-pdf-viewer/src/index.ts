@@ -32,12 +32,11 @@ export default defineWebApplication({
         name: $gettext('PDF Viewer'),
         id: appId,
         icon: 'resource-type-pdf',
-        iconFillType: 'fill',
-        iconColor: 'var(--oc-color-icon-pdf)',
         extensions: [
           {
             extension: 'pdf',
-            routeName: 'pdf-viewer'
+            routeName: 'pdf-viewer',
+            iconFillType: 'fill'
           }
         ]
       },
