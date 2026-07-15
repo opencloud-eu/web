@@ -1,4 +1,4 @@
-import { mergeConfig, searchForWorkspaceRoot, ViteDevServer } from 'vite'
+import { mergeConfig, ViteDevServer } from 'vite'
 import { join, posix as posixPath } from 'path'
 import { cwd } from 'process'
 import { readFileSync, existsSync } from 'fs'
@@ -39,9 +39,7 @@ export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
     const isTesting = mode === 'test'
 
     // read package name from vite workspace
-    const packageJson = JSON.parse(
-      readFileSync(join(searchForWorkspaceRoot(cwd()), 'package.json')).toString()
-    )
+    const packageJson = JSON.parse(readFileSync(join(cwd(), 'package.json')).toString())
 
     const name = overrides.name || packageJson.name
 
@@ -135,7 +133,7 @@ export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
               ]
             : []),
           tailwindcss(),
-          manifestPlugin(remoteEntryName),
+          manifestPlugin(remoteEntryName, packageJson),
           federationRegistrationClient({
             hostUrl,
             name,
