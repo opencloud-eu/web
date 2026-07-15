@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(extension-sdk): inject package.json metadata into manifest.json [[#2894](https://github.com/opencloud-eu/web/pull/2894)]
 - fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
 - fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
 - feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
