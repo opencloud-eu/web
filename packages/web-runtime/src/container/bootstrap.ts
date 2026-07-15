@@ -51,7 +51,8 @@ import {
   LoadingService,
   getExtensionNavItems,
   getBackendVersion,
-  getWebVersion
+  getWebVersion,
+  IconType
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -336,7 +337,7 @@ export const announceApplicationsReady = async ({
   appsStore.fileExtensions.forEach((fileExtensions) => {
     const app = appsStore.apps[fileExtensions.app]
 
-    const getIconDefinition = () => {
+    const getIconDefinition = (): IconType => {
       return {
         name: fileExtensions.icon || app.icon,
         color: fileExtensions.iconColor || app.color
