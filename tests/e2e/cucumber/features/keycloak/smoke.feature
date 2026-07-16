@@ -69,7 +69,19 @@ Feature: keycloak integration
       | displayname | Carol King        |
       | email       | carol@example.org |
       | groups      | finance, security |
-    
+    And "Carol" logs out
+
+
+  Scenario: disabling and enabling users in keycloak
+    Given admin creates following users using keycloak API
+      | id    |
+      | Carol |
+    When "Carol" logs in
+    Then "Carol" should have self info:
+      | key         | value             |
+      | username    | carol             |
+      | displayname | Carol King        |
+      | email       | carol@example.org |
     # disble user and delete user sessions to force logout
     When admin disables user "Carol" using keycloak API
     And admin deletes sessions of user "Carol" using keycloak API
@@ -80,5 +92,4 @@ Feature: keycloak integration
     When admin enables user "Carol" using keycloak API
     Then "Carol" logs in
     And "Carol" opens the "files" app
-    And "Carol" navigates to the project space "brianSpace.1"
     And "Carol" logs out
