@@ -6,7 +6,7 @@ import {
   RouteLocation,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { SideBar, useIsTopBarSticky, useSideBar } from '@opencloud-eu/web-pkg'
+import { SideBar, SideBarPanel, useIsTopBarSticky, useSideBar } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -117,7 +117,7 @@ function getWrapper({ props = {}, isMobile = false, isSideBarOpen = true } = {})
       props: {
         loading: false,
         breadcrumbs: [],
-        sideBarAvailablePanels: [],
+        sideBarAvailablePanels: [mock<SideBarPanel<any, any, any>>()],
         ...props
       },
       global: {

@@ -162,7 +162,7 @@ function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useFileActi
                 },
                 external: {
                   defaultExtension: '',
-                  icon: 'check_box_outline_blank',
+                  icon: 'puzzle',
                   name: 'External',
                   id: 'external'
                 }

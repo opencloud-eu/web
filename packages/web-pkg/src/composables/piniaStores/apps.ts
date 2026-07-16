@@ -5,6 +5,7 @@ import { Translations } from 'vue3-gettext'
 
 export const useAppsStore = defineStore('apps', () => {
   const apps = ref<Record<string, ApplicationInformation>>({})
+  const appLoadingFailure = ref<Record<string, { error?: Error }>>({})
   const externalAppConfig = ref<Record<string, AppConfigObject>>({})
   const fileExtensions = ref<ApplicationFileExtension[]>([])
 
@@ -23,7 +24,7 @@ export const useAppsStore = defineStore('apps', () => {
 
     unref(apps)[appInfo.id] = {
       defaultExtension: appInfo.defaultExtension || '',
-      icon: 'check_box_outline_blank',
+      icon: 'puzzle',
       name: appInfo.name || appInfo.id,
       translations,
       ...appInfo
@@ -56,8 +57,13 @@ export const useAppsStore = defineStore('apps', () => {
     return unref(appIds).includes(appId)
   }
 
+  const registerAppLoadingFailure = (appId: string, error?: Error) => {
+    unref(appLoadingFailure)[appId] = { error }
+  }
+
   return {
     apps,
+    appLoadingFailure,
     externalAppConfig,
     appIds,
     fileExtensions,
@@ -65,7 +71,8 @@ export const useAppsStore = defineStore('apps', () => {
     registerApp,
     registerFileExtension,
     loadExternalAppConfig,
-    isAppEnabled
+    isAppEnabled,
+    registerAppLoadingFailure
   }
 })
 

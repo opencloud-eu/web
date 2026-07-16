@@ -74,7 +74,7 @@
         </div>
       </div>
       <side-bar
-        v-if="isSideBarOpen"
+        v-if="isSideBarOpen && sideBarAvailablePanels.length"
         :available-panels="sideBarAvailablePanels"
         :panel-context="sideBarPanelContext"
         :loading="sideBarLoading"
