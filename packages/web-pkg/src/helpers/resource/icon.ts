@@ -80,6 +80,10 @@ const fileIcon = {
       'wv'
     ]
   },
+  bpmn: {
+    icon: { name: 'resource-type-bpmn', hasDarkVariant: true },
+    extensions: ['bpmn']
+  },
   code: {
     icon: { name: 'resource-type-code', hasDarkVariant: true },
     extensions: [
@@ -127,7 +131,7 @@ const fileIcon = {
     extensions: ['accdb', 'rss', 'swf']
   },
   drawio: {
-    icon: { name: 'resource-type-drawio', color: 'var(--oc-color-icon-drawio)' },
+    icon: { name: 'resource-type-drawio', hasDarkVariant: true },
     extensions: ['drawio']
   },
   document: {
@@ -135,7 +139,7 @@ const fileIcon = {
     extensions: ['doc', 'docm', 'docx', 'dot', 'dotx', 'lwp', 'odt', 'one', 'vsd', 'wpd']
   },
   ifc: {
-    icon: { name: 'resource-type-ifc', color: 'var(--oc-color-icon-ifc)' },
+    icon: { name: 'resource-type-ifc', hasDarkVariant: true },
     extensions: ['ifc']
   },
   ipynb: {
@@ -164,7 +168,7 @@ const fileIcon = {
     ]
   },
   form: {
-    icon: { name: 'resource-type-form', color: 'var(--oc-color-icon-form)' },
+    icon: { name: 'resource-type-form', hasDarkVariant: true },
     extensions: ['docf', 'docxf', 'oform']
   },
   markdown: {
@@ -172,11 +176,11 @@ const fileIcon = {
     extensions: ['md', 'markdown']
   },
   game: {
-    icon: { name: 'resource-type-game' },
+    icon: { name: 'resource-type-game', hasDarkVariant: true },
     extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'sfc', 'smc', 'n64']
   },
   odg: {
-    icon: { name: 'resource-type-graphic', color: 'var(--oc-color-icon-graphic)' },
+    icon: { name: 'resource-type-graphic', hasDarkVariant: true },
     extensions: ['odg']
   },
   pdf: {
@@ -202,7 +206,7 @@ const fileIcon = {
     ]
   },
   root: {
-    icon: { name: 'resource-type-root', color: 'var(--oc-color-icon-root)' },
+    icon: { name: 'resource-type-root', hasDarkVariant: true },
     extensions: ['root']
   },
   spreadsheet: {
@@ -214,7 +218,7 @@ const fileIcon = {
     extensions: ['cb7', 'cba', 'cbr', 'cbt', 'cbtc', 'cbz', 'cvbdl', 'eml', 'mdb', 'tex', 'txt']
   },
   url: {
-    icon: { name: 'resource-type-url', color: 'var(--oc-role-on-surface)' },
+    icon: { name: 'resource-type-url', hasDarkVariant: true },
     extensions: ['url']
   },
   video: {
