@@ -80,6 +80,10 @@ const fileIcon = {
       'wv'
     ]
   },
+  bpmn: {
+    icon: { name: 'resource-type-bpmn', hasDarkVariant: true },
+    extensions: ['bpmn']
+  },
   code: {
     icon: { name: 'resource-type-code', hasDarkVariant: true },
     extensions: [
