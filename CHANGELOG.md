@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.1.5](https://github.com/opencloud-eu/web/releases/tag/v7.1.5) - 2026-07-16
+
+### ❤️ Thanks to all contributors! ❤️
+
+@v-scharf
+
+### ✅ Tests
+
+- split keycloak test [[#2897](https://github.com/opencloud-eu/web/pull/2897)]
+
 ## [7.1.4](https://github.com/opencloud-eu/web/releases/tag/v7.1.4) - 2026-07-13
 
 ### ❤️ Thanks to all contributors! ❤️
