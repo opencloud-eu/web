@@ -4,6 +4,7 @@ export type IconFillType = FillType
 export type IconType = {
   name: string
   color?: string
+  /** @deprecated this property is not supported anymore */
   fillType?: IconFillType
   hasDarkVariant?: boolean
 }
