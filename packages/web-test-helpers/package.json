@@ -50,7 +50,7 @@
     "@casl/vue": "^3.0.0",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
-    "@pinia/testing": "^1.0.3",
+    "@pinia/testing": "^2.0.0",
     "axios": "^1.13.6",
     "pinia": "^4.0.0",
     "vitest-mock-extended": "^5.0.0",
