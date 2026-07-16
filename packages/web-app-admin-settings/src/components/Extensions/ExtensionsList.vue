@@ -21,7 +21,7 @@
     class="extensions-table"
   >
     <template #name="{ item }">
-      <div class="flex items-center gap-2 pl-4">
+      <div class="flex items-center gap-2">
         <oc-icon :name="item.icon || 'puzzle'" size="medium" fill-type="line" />
         <span v-text="item.name" />
       </div>
@@ -62,7 +62,7 @@ interface ExtensionInfo {
   loaded: boolean
 }
 
-const { filterTerm = '' } = defineProps<{
+const { extensions, filterTerm = '' } = defineProps<{
   extensions: ExtensionInfo[]
   filterTerm?: string
 }>()
@@ -70,12 +70,12 @@ const { filterTerm = '' } = defineProps<{
 const { $gettext } = useGettext()
 
 const filteredExtensions = computed(() => {
-  const term = unref(props.filterTerm).toLowerCase()
+  const term = unref(filterTerm).toLowerCase()
   if (!term) {
-    return unref(props.extensions)
+    return unref(extensions)
   }
 
-  return unref(props.extensions).filter((extension) => {
+  return unref(extensions).filter((extension) => {
     const name = String(extension.name || '').toLowerCase()
     return name.includes(term)
   })
@@ -86,6 +86,8 @@ const fields = computed(() => [
     name: 'name',
     title: $gettext('Name'),
     type: 'slot',
+    thClass: 'pl-4',
+    tdClass: 'pl-4',
     width: 'expand' as const
   },
   {
