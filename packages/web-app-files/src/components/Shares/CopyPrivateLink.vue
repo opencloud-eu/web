@@ -7,7 +7,11 @@
       no-hover
       @click="copyLinkToClipboard"
     >
-      <oc-icon size="small" :name="copied ? 'checkbox-circle' : 'file-copy'" fill-type="line" />
+      <oc-icon
+        size-class="size-4"
+        :name="copied ? 'checkbox-circle' : 'file-copy'"
+        fill-type="line"
+      />
       <span class="ml-1" v-text="$gettext('Permanent link')" />
     </oc-button>
   </div>

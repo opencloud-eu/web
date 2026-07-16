@@ -24,7 +24,7 @@
         }"
         class="transition-all duration-250"
         name="check"
-        size="small"
+        size-class="size-4"
       />
       <span
         class="truncate oc-filter-chip-label"
@@ -34,7 +34,7 @@
       <oc-icon
         v-if="!filterActive && !isToggle"
         name="arrow-down-s"
-        size="small"
+        size-class="size-4"
         fill-type="line"
         class="ml-1"
       />
@@ -63,7 +63,7 @@
       :no-hover="filterActive"
       @click="emit('clearFilter')"
     >
-      <oc-icon name="close" size="small" />
+      <oc-icon name="close" size-class="size-4" />
     </oc-button>
   </div>
 </template>

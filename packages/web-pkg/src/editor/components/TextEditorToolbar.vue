@@ -31,9 +31,9 @@
               <oc-icon
                 :name="getActiveIcon(item).icon"
                 :fill-type="getActiveIcon(item).iconFillType || 'none'"
-                size="small"
+                size-class="size-4"
               />
-              <oc-icon name="arrow-down-s" fill-type="line" size="small" />
+              <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
             </oc-button>
             <oc-drop
               :drop-id="`toolbar-dropdown-${item.id}`"
@@ -69,7 +69,7 @@
                         v-else
                         :name="child.icon"
                         :fill-type="child.iconFillType || 'none'"
-                        size="small"
+                        size-class="size-4"
                       />
                       <span>{{ child.title }}</span>
                     </span>
@@ -77,7 +77,7 @@
                       v-if="isItemActive(child)"
                       name="check"
                       fill-type="line"
-                      size="small"
+                      size-class="size-4"
                     />
                   </oc-button>
                 </li>
@@ -95,7 +95,11 @@
             :disabled="!isItemEnabled(item)"
             @click.stop="item.toolbarAction?.(textEditor.editor.value!)"
           >
-            <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
+            <oc-icon
+              :name="item.icon"
+              :fill-type="item.iconFillType || 'none'"
+              size-class="size-4"
+            />
           </oc-button>
         </template>
       </div>

@@ -4,7 +4,7 @@
     <template v-else>
       <h1 class="text-lg mt-2" v-text="$gettext('Calendar')" />
       <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
-        <oc-icon name="information" size="small" fill-type="line" class="mr-1" />
+        <oc-icon name="information" size-class="size-4" fill-type="line" class="mr-1" />
 
         <span
           class="calendar-not-configured-message"
@@ -54,7 +54,7 @@
                 no-hover
                 @click="copyCalDavUrlToClipboard"
               >
-                <oc-icon :name="copyCalDavUrlIcon" size="small" />
+                <oc-icon :name="copyCalDavUrlIcon" size-class="size-4" />
                 <span class="ml-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
               </oc-button>
             </oc-table-td>
@@ -72,7 +72,7 @@
                 no-hover
                 @click="copyCalDavUsernameToClipboard"
               >
-                <oc-icon :name="copyCalDavUsernameIcon" size="small" />
+                <oc-icon :name="copyCalDavUsernameIcon" size-class="size-4" />
                 <span class="ml-0.5">{{ $gettext('Copy CalDAV username') }}</span>
               </oc-button>
             </oc-table-td>

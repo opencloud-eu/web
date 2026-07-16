@@ -5,17 +5,17 @@ exports[`SharesNavigation component > renders a shares navigation for both mobil
   <oc-list-stub raw="false" class="hidden sm:flex">
     <li>
       <oc-button-stub to="/files/shares/with-me/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="mr-4 py-2 w-full border-b border-role-secondary rounded-none">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="share-forward" size="small" sizeclass="size-5" type="span"></oc-icon-stub> <span>Shared with me</span>
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="share-forward" sizeclass="size-4" type="span"></oc-icon-stub> <span>Shared with me</span>
       </oc-button-stub>
     </li>
     <li>
       <oc-button-stub to="/files/shares/with-others/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="mr-4 py-2 w-full">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="reply" size="small" sizeclass="size-5" type="span"></oc-icon-stub> <span>Shared with others</span>
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="reply" sizeclass="size-4" type="span"></oc-icon-stub> <span>Shared with others</span>
       </oc-button-stub>
     </li>
     <li>
       <oc-button-stub to="/files/shares/via-link/" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="mr-4 py-2 w-full">
-        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="link" size="small" sizeclass="size-5" type="span"></oc-icon-stub> <span>Shared via link</span>
+        <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="link" sizeclass="size-4" type="span"></oc-icon-stub> <span>Shared via link</span>
       </oc-button-stub>
     </li>
   </oc-list-stub>

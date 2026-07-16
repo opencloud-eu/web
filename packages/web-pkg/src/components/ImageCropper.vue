@@ -43,7 +43,7 @@
       </cropper-selection>
     </cropper-canvas>
     <div class="text-sm text-role-on-surface-variant flex items-center mt-1">
-      <oc-icon class="mr-1" name="information" size="small" fill-type="line" />
+      <oc-icon class="mr-1" name="information" size-class="size-4" fill-type="line" />
       <span
         v-text="
           $gettext('Zoom via %{ zoomKeys }, pan via %{ panKeys }', {

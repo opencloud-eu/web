@@ -123,7 +123,7 @@ const parentFolderLinkIconAttrs = computed(() => {
   return {
     'fill-type': 'line' as const,
     name: 'folder-2',
-    size: 'small' as const,
+    sizeClass: 'size-4' as const,
     ...parentFolderLinkIconAdditionalAttributes
   }
 })

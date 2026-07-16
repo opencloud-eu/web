@@ -1,7 +1,7 @@
 <template>
   <div v-if="hasActions" class="hidden md:flex items-center h-14 -mx-4 px-4 border-b">
     <oc-button appearance="raw" :aria-label="$gettext('Edit draft')" @click="$emit('edit-draft')">
-      <oc-icon name="pencil" fill-type="line" size="medium" />
+      <oc-icon name="pencil" fill-type="line" size-class="size-5" />
     </oc-button>
   </div>
 </template>

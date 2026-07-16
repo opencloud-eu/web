@@ -22,7 +22,7 @@
   >
     <template #name="{ item }">
       <div class="flex items-center gap-2">
-        <oc-icon :name="item.icon || 'puzzle'" size="medium" fill-type="line" />
+        <oc-icon :name="item.icon || 'puzzle'" size-class="size-5" fill-type="line" />
         <span v-text="item.name" />
       </div>
     </template>

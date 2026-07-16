@@ -7,7 +7,7 @@
       :aria-label="dateCurrent ? $gettext('Edit expiration date') : $gettext('Set expiration date')"
       @click="showDatePickerModal"
     >
-      <oc-icon name="calendar-event" fill-type="line" size="medium" />
+      <oc-icon name="calendar-event" fill-type="line" size-class="size-5" />
       <span
         v-if="!dateCurrent"
         key="no-expiration-date-label"
@@ -23,7 +23,7 @@
     :aria-label="$gettext('Remove expiration date')"
     @click="removeExpirationDate"
   >
-    <oc-icon name="calendar-close" fill-type="line" size="medium" />
+    <oc-icon name="calendar-close" fill-type="line" size-class="size-5" />
     <span key="no-expiration-date-label" v-text="$gettext('Remove expiration date')" />
   </oc-button>
 </template>

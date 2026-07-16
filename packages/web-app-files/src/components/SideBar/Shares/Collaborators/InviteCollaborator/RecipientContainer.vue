@@ -19,7 +19,7 @@
         :aria-label="btnDeselectRecipientLabel"
         @click.stop="deselect(recipient)"
       >
-        <oc-icon name="close" size="small" />
+        <oc-icon name="close" size-class="size-4" />
       </oc-button>
     </template>
   </oc-recipient>

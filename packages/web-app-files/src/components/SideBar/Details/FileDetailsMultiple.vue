@@ -2,7 +2,7 @@
   <div id="oc-file-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <div class="mb-6 text-center rounded-sm">
       <div>
-        <oc-icon size="xxlarge" name="file-copy" />
+        <oc-icon size-class="size-22" name="file-copy" />
         <p data-testid="selectedFilesText" v-text="selectedFilesString" />
       </div>
     </div>

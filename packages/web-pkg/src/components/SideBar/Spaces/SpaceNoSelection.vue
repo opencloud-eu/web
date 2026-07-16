@@ -1,7 +1,7 @@
 <template>
   <div class="mt-12">
     <div class="flex flex-col items-center space-info text-center">
-      <oc-icon name="layout-grid" size="xxlarge" />
+      <oc-icon name="layout-grid" size-class="size-22" />
       <p v-text="$gettext('Select a space to view details')" />
     </div>
   </div>

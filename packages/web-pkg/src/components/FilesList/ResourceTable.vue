@@ -124,7 +124,7 @@
           <oc-icon
             :name="getResourceTableActionIcon(action, item)"
             fill-type="line"
-            size="small"
+            size-class="size-4"
             color="var(--oc-role-on-surface)"
           />
         </oc-button>
@@ -151,7 +151,7 @@
           :rounded="true"
           size="small"
         >
-          <oc-icon name="price-tag-3" size="small" />
+          <oc-icon name="price-tag-3" size-class="size-4" />
           <span class="truncate">{{ tag }}</span>
         </oc-tag>
       </component>
