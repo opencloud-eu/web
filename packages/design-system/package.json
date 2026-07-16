@@ -111,7 +111,7 @@
     "vue3-gettext": "4.0.1"
   },
   "peerDependencies": {
-    "pinia": "^3.0.3"
+    "pinia": "^3.0.3 || ^4.0.0"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*",
