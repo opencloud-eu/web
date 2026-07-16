@@ -62,15 +62,10 @@ interface ExtensionInfo {
   loaded: boolean
 }
 
-const props = withDefaults(
-  defineProps<{
-    extensions: ExtensionInfo[]
-    filterTerm?: string
-  }>(),
-  {
-    filterTerm: ''
-  }
-)
+const { filterTerm = '' } = defineProps<{
+  extensions: ExtensionInfo[]
+  filterTerm?: string
+}>()
 
 const { $gettext } = useGettext()
 
