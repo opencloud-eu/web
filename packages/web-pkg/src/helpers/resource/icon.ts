@@ -218,7 +218,7 @@ const fileIcon = {
     extensions: ['cb7', 'cba', 'cbr', 'cbt', 'cbtc', 'cbz', 'cvbdl', 'eml', 'mdb', 'tex', 'txt']
   },
   url: {
-    icon: { name: 'resource-type-url', color: 'var(--oc-role-on-surface)' },
+    icon: { name: 'resource-type-url', hasDarkVariant: true },
     extensions: ['url']
   },
   video: {
