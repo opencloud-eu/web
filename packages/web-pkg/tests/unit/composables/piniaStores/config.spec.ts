@@ -30,7 +30,7 @@ describe('useConfigStore', () => {
     it('loads config for external apps', () => {
       getWrapper({
         setup: (instance) => {
-          const externalApp = { id: '1', config: { foo: 'bar' }, path: '' }
+          const externalApp = { id: '1', config: { foo: 'bar' }, path: '', version: '1.2.3' }
           const data = {
             server: 'https://foo.bar',
             theme: undefined,
