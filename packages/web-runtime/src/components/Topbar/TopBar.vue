@@ -1,10 +1,11 @@
 <template>
   <header
     id="oc-topbar"
-    class="sticky my-1 grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto] grid-cols-[auto_9fr_1fr] sm:grid-cols-[1fr_auto_1fr]"
+    class="sticky my-1 grid z-50 items-center px-4 h-auto sm:h-13 sm:gap-10 grid-rows-[52px_auto] grid-cols-[auto_9fr_1fr]"
     :aria-label="$gettext('Top bar')"
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1 oc-logo-wrapper">
+      <custom-component-target :extension-point="topBarLeftExtensionPoint" />
       <sidebar-nav-mobile class="pt-1" />
       <router-link v-if="!hideLogo" :to="homeLink">
         <picture>
@@ -40,7 +41,6 @@
         <user-menu />
       </template>
     </div>
-    <custom-component-target :extension-point="topBarLeftExtensionPoint" />
   </header>
 </template>
 
@@ -58,6 +58,7 @@ import {
   useConfigStore,
   useEmbedMode,
   useExtensionRegistry,
+  useIsAppActive,
   useRouter,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
@@ -80,6 +81,7 @@ const { currentTheme } = storeToRefs(themeStore)
 const configStore = useConfigStore()
 const { options: configOptions } = storeToRefs(configStore)
 const extensionRegistry = useExtensionRegistry()
+const isAppActive = useIsAppActive()
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -89,7 +91,7 @@ const appMenuExtensions = computed(() => {
   return extensionRegistry.requestExtensions(appMenuExtensionPoint)
 })
 
-const hideLogo = computed(() => unref(configOptions).hideLogo)
+const hideLogo = computed(() => unref(configOptions).hideLogo || unref(isAppActive))
 
 const isNotificationBellEnabled = computed(() => {
   return authStore.userContextReady && capabilityStore.notificationsOcsEndpoints.includes('list')
@@ -141,18 +143,6 @@ const feedbackLinkOptions = computed(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  #oc-topbar:has(> :last-child:nth-child(4)) .topbar-center {
-    @apply hidden;
-  }
-
-  #oc-topbar:has(> :last-child:nth-child(4)) .oc-logo-wrapper {
-    @apply hidden;
-  }
-
-  #oc-topbar:has(> :last-child:nth-child(4)) {
-    @apply grid-cols-[auto_9fr_1fr] gap-0;
-  }
-
   #oc-topbar .oc-logo-image {
     image-rendering: auto;
     image-rendering: crisp-edges;
