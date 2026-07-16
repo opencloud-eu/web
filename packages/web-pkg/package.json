@@ -90,7 +90,7 @@
     "oidc-client-ts": "^3.5.0",
     "p-queue": "^9.1.0",
     "password-sheriff": "^2.0.0",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.0",
     "qs": "^6.15.0",
     "uuid": "^14.0.0",
     "vue-concurrency": "^5.0.3",
