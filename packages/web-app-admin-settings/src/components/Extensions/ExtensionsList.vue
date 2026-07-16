@@ -21,9 +21,9 @@
     class="extensions-table"
   >
     <template #name="{ item }">
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 pl-4">
         <oc-icon :name="item.icon || 'puzzle'" size="medium" fill-type="line" />
-        <span class="font-semibold" v-text="item.name" />
+        <span v-text="item.name" />
       </div>
     </template>
     <template #version="{ item }">
