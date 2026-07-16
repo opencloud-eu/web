@@ -29,6 +29,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency pinia to v4 [[#2891](https://github.com/opencloud-eu/web/pull/2891)]
 - fix(deps): update dependency vue-router to v5.2.0 [[#2896](https://github.com/opencloud-eu/web/pull/2896)]
 - chore(deps): update devdependencies (non-major) [[#2874](https://github.com/opencloud-eu/web/pull/2874)]
 - chore(deps): update tiptap monorepo to v3.27.4 [[#2876](https://github.com/opencloud-eu/web/pull/2876)]
