@@ -63,7 +63,29 @@ export interface ApplicationFileExtension {
   hasPriority?: boolean
   label?: string | (() => string)
   name?: string
+  /**
+   * Defines the icon for the given file type in the file list, the "New"-
+   * and the "Open with..."-menu.
+   * Defaults to the `icon` property of the application if not specified.
+   *
+   * Note that in the file list, the icon might be overridden if there is a
+   * default icon defined for the given file type.
+   */
   icon?: string
+  /**
+   * Defines the color of the icon in the file list.
+   * In the "New"- and "Open with..."-menu, colors are not used, so this will be ignored.
+   * Defaults to the `color` property of the application if not specified.
+   *
+   * Note that in the file list, the icon might be overridden if there is a
+   * default icon defined for the given file type.
+   */
+  iconColor?: string
+  /**
+   * Defines the fill type of the icon in the "Open with..."-menu.
+   * In the file list and the "New"-menu, the fill type is always `fill`, so this will be ignored.
+   * Defaults to `line` in the "Open with..."-menu if not specified.
+   */
   iconFillType?: IconFillType
   mimeType?: string
   newFileMenu?: {
@@ -83,7 +105,9 @@ export interface ApplicationInformation {
   id?: string
   name?: string
   icon?: string
+  /** @deprecated use the iconFillType on ApplicationFileExtension instead */
   iconFillType?: IconFillType
+  /** @deprecated use the iconColor on ApplicationFileExtension instead */
   iconColor?: string
   img?: string
   meta?: {
