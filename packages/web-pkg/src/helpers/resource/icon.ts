@@ -176,7 +176,7 @@ const fileIcon = {
     extensions: ['md', 'markdown']
   },
   game: {
-    icon: { name: 'resource-type-game' },
+    icon: { name: 'resource-type-game', hasDarkVariant: true },
     extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'sfc', 'smc', 'n64']
   },
   odg: {
