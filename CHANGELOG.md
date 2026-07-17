@@ -6,6 +6,11 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### ✅ Tests
+
+- e2e-fix: a11y flaky in webkit [[#2913](https://github.com/opencloud-eu/web/pull/2913)]
+- add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
+
 ### 🐛 Bug Fixes
 
 - fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
@@ -25,10 +30,6 @@
 ### 📚 Documentation
 
 - docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
-
-### ✅ Tests
-
-- add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
 
 ### 📦️ Dependencies
 
