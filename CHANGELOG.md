@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @tailwindcss/vite to v4.3.3 [[#2908](https://github.com/opencloud-eu/web/pull/2908)]
 - chore(deps): update vue monorepo to v3.5.40 [[#2910](https://github.com/opencloud-eu/web/pull/2910)]
 - chore(deps): update traefik docker tag to v3.7.8 [[#2899](https://github.com/opencloud-eu/web/pull/2899)]
 - chore(deps): update dependency fast-xml-parser to v5.10.1 - autoclosed [[#2904](https://github.com/opencloud-eu/web/pull/2904)]
