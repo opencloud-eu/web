@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.28.0 [[#2903](https://github.com/opencloud-eu/web/pull/2903)]
 - chore(deps): update dependency @tailwindcss/vite to v4.3.3 [[#2908](https://github.com/opencloud-eu/web/pull/2908)]
 - chore(deps): update vue monorepo to v3.5.40 [[#2910](https://github.com/opencloud-eu/web/pull/2910)]
 - chore(deps): update traefik docker tag to v3.7.8 [[#2899](https://github.com/opencloud-eu/web/pull/2899)]
