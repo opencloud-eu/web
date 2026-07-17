@@ -31,6 +31,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.8 [[#2899](https://github.com/opencloud-eu/web/pull/2899)]
+- chore(deps): update dependency fast-xml-parser to v5.10.1 [[#2904](https://github.com/opencloud-eu/web/pull/2904)]
+- chore(deps): update pnpm to v11.13.1 [[#2902](https://github.com/opencloud-eu/web/pull/2902)]
 - fix(deps): update dependency @pinia/testing to v2 [[#2890](https://github.com/opencloud-eu/web/pull/2890)]
 - fix(deps): update dependency pinia to v4 [[#2891](https://github.com/opencloud-eu/web/pull/2891)]
 - fix(deps): update dependency vue-router to v5.2.0 [[#2896](https://github.com/opencloud-eu/web/pull/2896)]
