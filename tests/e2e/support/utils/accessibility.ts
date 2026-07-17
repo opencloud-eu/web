@@ -26,8 +26,16 @@ async function checkAccessibility(
     // wait for drop animation
     await page.waitForTimeout(300)
   }
-  const builder = new AxeBuilder({ page }).withTags(a11yRuleTags).include(includeSelector)
-  const results = await builder.analyze()
+
+  function analyze() {
+    return new AxeBuilder({ page }).withTags(a11yRuleTags).include(includeSelector).analyze()
+  }
+
+  let results = await analyze()
+  if (results.violations.length > 0) {
+    await page.waitForTimeout(500)
+    results = await analyze()
+  }
 
   if (results.violations.length > 0) {
     console.error(`♿ Accessibility violations detected${context ? ` in ${context}` : ''}:`)

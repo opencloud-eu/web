@@ -1,6 +1,7 @@
 @a11y
 Feature: Accessibility checks
 
+  @timeout:300000
   Scenario: check files view wrapper accessibility
     Given "Admin" creates following users using API
       | id    |

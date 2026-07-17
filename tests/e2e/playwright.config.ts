@@ -55,7 +55,8 @@ export const appConfig = {
     return withHttp(url)
   },
 
-  // Timeouts
+  // Timeouts (in seconds; multiply by 1000 when passing to Playwright APIs).
+  // (@slow / @timeout:<ms>)
   testTimeout: parseInt(process.env.TEST_TIMEOUT || '120'),
   get timeout() {
     return this.testTimeout
