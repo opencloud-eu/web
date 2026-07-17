@@ -206,7 +206,7 @@ export default defineWebApplication({
       name: $gettext('Admin Settings'),
       id: APPID,
       icon: 'settings-4',
-      color: '#2b2b2b'
+      color: '#887ef1'
     }
 
     const extensions = computed<Extension[]>(() => {
