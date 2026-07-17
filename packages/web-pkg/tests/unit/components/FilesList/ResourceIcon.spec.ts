@@ -10,14 +10,12 @@ import { Resource } from '@opencloud-eu/web-client'
 const resourceIconMapping: ResourceIconMapping = {
   extension: {
     'not-a-real-extension': {
-      name: 'resource-type-madeup-extension',
-      color: 'red'
+      name: 'resource-type-madeup-extension'
     }
   },
   mimeType: {
     'not-a-real-mimetype': {
-      name: 'resource-type-file',
-      color: 'var(--oc-role-on-surface)'
+      name: 'resource-type-file'
     }
   }
 }

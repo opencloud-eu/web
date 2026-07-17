@@ -1,27 +1,5 @@
 :host,
 :root {
-  --oc-color-icon-archive: rgb(251, 190, 84);
-  --oc-color-icon-audio: rgb(112, 4, 96);
-  --oc-color-icon-code: #171C1F;
-  --oc-color-icon-document: rgb(59, 68, 166);
-  --oc-color-icon-drawio: rgb(255, 111, 0);
-  --oc-color-icon-epub: rgb(244, 187, 68);
-  --oc-color-icon-file: #171C1F;
-  --oc-color-icon-folder: rgb(77, 126, 175);
-  --oc-color-icon-form: rgb(102, 166, 163);
-  --oc-color-icon-graphic: rgb(235, 201, 74);
-  --oc-color-icon-ifc: rgb(208, 67, 236);
-  --oc-color-icon-image: rgb(238, 107, 59);
-  --oc-color-icon-jupyter: rgb(243, 119, 38);
-  --oc-color-icon-markdown: rgb(75, 100, 137);
-  --oc-color-icon-medical: rgb(9, 132, 219);
-  --oc-color-icon-notes: rgb(244, 187, 68);
-  --oc-color-icon-pdf: rgb(236, 13, 71);
-  --oc-color-icon-presentation: rgb(238, 107, 59);
-  --oc-color-icon-root: rgb(0, 187, 219);
-  --oc-color-icon-spreadsheet: rgb(21, 194, 134);
-  --oc-color-icon-text: #171C1F;
-  --oc-color-icon-video: rgb(4, 84, 89);
   --oc-font-family: OpenCloud, Inter, sans-serif;
   --oc-role-background: #FFFFFF;
   --oc-role-chrome: #20434F;
