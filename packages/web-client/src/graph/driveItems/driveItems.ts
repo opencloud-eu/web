@@ -16,6 +16,7 @@ export const DriveItemsFactory = ({
         driveId,
         itemId,
         undefined,
+        undefined,
         requestOptions
       )
       return data

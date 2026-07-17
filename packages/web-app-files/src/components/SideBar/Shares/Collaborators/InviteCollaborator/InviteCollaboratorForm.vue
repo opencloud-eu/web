@@ -155,6 +155,7 @@
 
 <script setup lang="ts">
 import PQueue from 'p-queue'
+import * as EmailValidator from 'email-validator'
 import { storeToRefs } from 'pinia'
 import AutocompleteItem from './AutocompleteItem.vue'
 import RoleDropdown from '../RoleDropdown.vue'
@@ -168,6 +169,7 @@ import {
   isSpaceResource
 } from '@opencloud-eu/web-client'
 import {
+  useAbility,
   useClientService,
   useMessages,
   useSpacesStore,
@@ -186,6 +188,7 @@ import { DateTime } from 'luxon'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { DriveRecipient } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
@@ -217,6 +220,7 @@ const spacesStore = useSpacesStore()
 const { upsertSpace } = spacesStore
 const configStore = useConfigStore()
 const userStore = useUserStore()
+const { can } = useAbility()
 
 const sharesStore = useSharesStore()
 const { addShare } = sharesStore
@@ -307,6 +311,7 @@ const createSharesConcurrentRequests = computed(() => {
 const {
   autocompleteResults,
   fetchRecipients,
+  fetchRecipientsTask,
   filterRecipients,
   minSearchLength,
   onSearch,
@@ -319,25 +324,42 @@ const {
   })
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const guests = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
+  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
 
-  return [...collaborators, ...guests].filter((collaborator: CollaboratorAutoCompleteItem) => {
-    if (collaborator.id === userStore.user.id) {
-      return false
+  const emailBelongsToAccount = (query: string) => {
+    return collaborators.some((c) =>
+      [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
+        query.toLowerCase()
+      )
+    )
+  }
+  const trimmedQuery = (query || '').trim()
+  const guests: CollaboratorAutoCompleteItem[] =
+    can('create-all', 'GuestInvite') &&
+    !emailBelongsToAccount(trimmedQuery) &&
+    EmailValidator.validate(trimmedQuery)
+      ? [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.guest.value }]
+      : []
+
+  return [...collaborators, ...contacts, ...guests].filter(
+    (collaborator: CollaboratorAutoCompleteItem) => {
+      if (collaborator.id === userStore.user.id) {
+        return false
+      }
+
+      const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
+      const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
+      const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
+
+      if (selected || exists) {
+        return false
+      }
+
+      announcement.value = $gettext('Person was added')
+
+      return true
     }
-
-    const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-    const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-    const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
-
-    if (selected || exists) {
-      return false
-    }
-
-    announcement.value = $gettext('Person was added')
-
-    return true
-  })
+  )
 })
 
 const share = async () => {
@@ -375,7 +397,26 @@ const share = async () => {
       return
     }
 
-    const type = shareType === ShareTypes.group.value ? 'group' : 'user'
+    const isGuest = shareType === ShareTypes.guest.value
+
+    // the backend rejects the invite when a recipient carries both a mail address and an object with
+    // objectId and recipient type, so guests are addressed by mail alone
+    const recipient: DriveRecipient = isGuest
+      ? { email: id }
+      : {
+          objectId: id,
+          '@libre.graph.recipient.type':
+            shareType === ShareTypes.group.value ? ShareTypes.group.key : ShareTypes.user.key
+        }
+
+    // guests are internal-style shares and must never receive a federated role, so fall back to
+    // the first internal role when a guest is invited from the external share mode
+    // FIXME: clean up this internal vs external share type selection mess :-(
+    let roleId = unref(selectedRole).id
+    if (isGuest && unref(isExternalShareRoleType)) {
+      roleId = unref(availableInternalRoles)[0]?.id
+    }
+
     savePromises.push(
       saveQueue.add(async () => {
         try {
@@ -384,14 +425,9 @@ const share = async () => {
             space: unref(space),
             resource: unref(resource),
             options: {
-              roles: [unref(selectedRole).id],
+              roles: [roleId],
               expirationDateTime: unref(expirationDate),
-              recipients: [
-                {
-                  objectId: id,
-                  '@libre.graph.recipient.type': type
-                }
-              ]
+              recipients: [recipient]
             }
           })
 
