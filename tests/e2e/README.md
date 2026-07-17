@@ -11,6 +11,7 @@
 - [Running Tests in VS Code](#running-tests-in-vs-code)
 - [Test Report](#test-report)
 - [Debugging](#debugging)
+- [Timeouts](#timeouts)
 
 ## Prerequisites
 
@@ -87,3 +88,18 @@ Install [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?
   (combine with `--project=chromium -g "scenario name"` to target one test).
 - `pnpm playwright show-trace <trace.zip>` — [Trace Viewer](https://playwright.dev/docs/trace-viewer) for a recorded
   trace (recorded `on-first-retry` by default, see `playwright.config.ts`).
+
+## Timeouts
+
+There is a single **per-test** timeout, `testTimeout` (default `120`s, override with `TEST_TIMEOUT`). It is the
+budget for the whole scenario (all steps + hooks)
+
+When a scenario needs more time, use ([playwright-bdd special tags](https://vitalets.github.io/playwright-bdd/#/writing-features/special-tags)):
+
+```gherkin
+@slow                 # test.slow() → triples the timeout
+Scenario: Upload large resources ...
+
+@timeout:300000       # exact timeout in milliseconds
+Scenario: something even longer ...
+```
