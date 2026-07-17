@@ -72,6 +72,7 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 - **TypeScript everywhere** – use types to catch bugs at compile time and support IDE tooling.
 - **Composables over services** – encapsulate reusable logic in composables. Avoid services.
 - **Early returns** – prefer early returns to keep code readable and performant.
+- **Arrow functions** – Prefer arrow functions for concise, modern, and readable code.
 - **Translations** – use `$gettext` (or its variants) for all user-facing strings. Don't manually edit the generated `l10n/translations.json` files inside a package.
 - **Minimal dependencies** – avoid adding new dependencies unless necessary, to keep bundle size small and reduce security surface.
 - **Vue unref() vs .value** – prefer `unref()` for accessing Ref values for better readability. Use `.value` only when setting values (e.g. `foo.value = 'bar'` or `foo.value.push('bar')`).

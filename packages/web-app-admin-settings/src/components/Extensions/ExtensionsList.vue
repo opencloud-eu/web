@@ -14,11 +14,14 @@
   <oc-table
     v-else
     :data-testid="'extensions-table'"
+    :sort-by="sortBy"
+    :sort-dir="sortDir"
     :fields="fields"
-    :data="filteredExtensions"
+    :data="items"
     :hover="true"
     :sticky="true"
     class="extensions-table"
+    @sort="handleSort"
   >
     <template #name="{ item }">
       <div class="flex items-center gap-2">
@@ -52,7 +55,8 @@
 
 <script setup lang="ts">
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
-import { computed, unref } from 'vue'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 interface ExtensionInfo {
@@ -68,6 +72,8 @@ const { extensions, filterTerm = '' } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
+const sortBy = ref<keyof ExtensionInfo>('name')
+const sortDir = ref<SortDir>(SortDir.Asc)
 
 const filteredExtensions = computed(() => {
   const term = unref(filterTerm).toLowerCase()
@@ -81,11 +87,25 @@ const filteredExtensions = computed(() => {
   })
 })
 
+const items = computed(() => {
+  return [...unref(filteredExtensions)].sort((a, b) => {
+    const c = (a[unref(sortBy)] || '').toString()
+    const d = (b[unref(sortBy)] || '').toString()
+    return unref(sortDir) === SortDir.Desc ? d.localeCompare(c) : c.localeCompare(d)
+  })
+})
+
+function handleSort(event: { sortBy: string; sortDir: SortDir }) {
+  sortBy.value = event.sortBy as keyof ExtensionInfo
+  sortDir.value = event.sortDir
+}
+
 const fields = computed(() => [
   {
     name: 'name',
     title: $gettext('Name'),
     type: 'slot',
+    sortable: true,
     thClass: 'pl-4',
     tdClass: 'pl-4',
     width: 'expand' as const
