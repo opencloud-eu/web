@@ -44,7 +44,6 @@ describe('ExtensionsList', () => {
       'Alpha',
       'Zulu'
     ])
-
     ;(wrapper.vm as any).handleSort({ sortBy: 'name', sortDir: SortDir.Desc })
     expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
       'Zulu',
