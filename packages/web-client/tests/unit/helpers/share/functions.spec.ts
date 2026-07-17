@@ -276,6 +276,21 @@ describe('share helper functions', () => {
 
         expect(result.shareType).toEqual(ShareTypes.remote.value)
       })
+      it('is mail type if grantedToV2 includes a user with the mail user type', () => {
+        const graphPermission = mock<Permission>({
+          '@libre.graph.permissions.actions': [],
+          grantedToV2: { user: { '@libre.graph.userType': 'mail' }, group: undefined },
+          link: undefined
+        })
+
+        const result = buildCollaboratorShare({
+          graphPermission,
+          graphRoles,
+          resourceId
+        })
+
+        expect(result.shareType).toEqual(ShareTypes.mail.value)
+      })
     })
     describe('permissions', () => {
       it('sets permissions if given directly via property', () => {
