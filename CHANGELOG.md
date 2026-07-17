@@ -6,6 +6,14 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
+- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
+- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
+
 ### 📈 Enhancement
 
 - feat(admin-settings): extension overview [[#2889](https://github.com/opencloud-eu/web/pull/2889)]
@@ -13,13 +21,6 @@
 - fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
 - fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
 - feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
-
-### 🐛 Bug Fixes
-
-- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
-- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
-- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
-- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
 
 ### 📚 Documentation
 
