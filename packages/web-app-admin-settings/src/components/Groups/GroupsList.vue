@@ -64,7 +64,7 @@
           v-if="rowData.item.groupTypes?.includes('ReadOnly')"
           v-oc-tooltip="readOnlyLabel"
           name="lock"
-          size="small"
+          size-class="size-4"
           fill-type="line"
           class="ml-2"
           :accessible-label="readOnlyLabel"

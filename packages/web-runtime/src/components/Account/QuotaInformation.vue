@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center">
-    <oc-icon name="hard-drive-2" size="small" fill-type="line" class="mr-1" />
+    <oc-icon name="hard-drive-2" size-class="size-4" fill-type="line" class="mr-1" />
     <div>
       <p class="my-0">
         <span class="quota-information-text" v-text="personalStorageDetailsLabel" />

@@ -7,7 +7,7 @@
       class="flex items-center"
       no-hover
     >
-      <oc-icon name="question" fill-type="line" size="small" />
+      <oc-icon name="question" fill-type="line" size-class="size-4" />
     </oc-button>
     <oc-info-drop :drop-id="dropId" :toggle="toggleId" v-bind="props" />
   </div>

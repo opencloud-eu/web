@@ -18,7 +18,7 @@
                   v-if="entry.item.icon"
                   :name="entry.item.icon"
                   :fill-type="entry.item.iconFillType || 'none'"
-                  size="small"
+                  size-class="size-4"
                   class="text-editor-slash-menu__item-icon"
                 />
                 <span class="text-editor-slash-menu__item-text">

@@ -16,7 +16,7 @@
         <div class="flex justify-between items-center info-header border-b pb-2">
           <h4 class="m-0 info-title text-lg font-normal" v-text="$gettext(title)" />
           <oc-button appearance="raw" :aria-label="$gettext('Close')" class="align-middle">
-            <oc-icon name="close" fill-type="line" size="medium" />
+            <oc-icon name="close" fill-type="line" size-class="size-5" />
           </oc-button>
         </div>
         <p v-if="text" class="info-text first:mt-0 last:mb-0" v-text="$gettext(text)" />

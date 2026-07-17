@@ -44,7 +44,7 @@
         <oc-table v-else :fields="fields" :data="connections" :highlighted="highlightedConnections">
           <template #actions="{ item }">
             <oc-button appearance="raw" class="p-2" @click="deleteConnection(item)">
-              <oc-icon name="delete-bin-5" fill-type="line" size="medium" />
+              <oc-icon name="delete-bin-5" fill-type="line" size-class="size-5" />
               <span v-text="$gettext('Delete')" />
             </oc-button>
           </template>

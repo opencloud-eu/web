@@ -72,7 +72,7 @@
               class="tile-default-image pt-1 relative"
             >
               <template v-if="showStatusIcon" #status>
-                <oc-icon v-bind="statusIconAttrs" size="xsmall" />
+                <oc-icon v-bind="statusIconAttrs" size-class="size-3" />
               </template>
             </resource-icon>
           </slot>

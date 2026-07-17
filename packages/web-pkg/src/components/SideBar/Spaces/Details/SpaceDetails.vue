@@ -12,7 +12,7 @@
         <img :src="spaceImage" alt="" class="h-[160px]" />
       </div>
       <div v-else>
-        <oc-icon name="layout-grid" size="xxxlarge" class="space-default-image px-4 py-4" />
+        <oc-icon name="layout-grid" size-class="size-42" class="space-default-image px-4 py-4" />
       </div>
     </div>
     <div
@@ -26,7 +26,7 @@
         no-hover
         @click="openSideBarPanel('space-share')"
       >
-        <oc-icon name="group" size="small" fill-type="line" />
+        <oc-icon name="group" size-class="size-4" fill-type="line" />
       </oc-button>
       <oc-button
         v-if="hasLinkShares"
@@ -35,7 +35,7 @@
         no-hover
         @click="openSideBarPanel('space-share')"
       >
-        <oc-icon name="link" size="small" fill-type="line" />
+        <oc-icon name="link" size-class="size-4" fill-type="line" />
       </oc-button>
       <p v-text="shareLabel" />
       <oc-button

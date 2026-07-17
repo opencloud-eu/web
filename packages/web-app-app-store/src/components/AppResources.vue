@@ -11,7 +11,7 @@
           v-if="resource.icon"
           data-testid="resource-icon"
           :name="resource.icon"
-          size="medium"
+          size-class="size-5"
           class="mr-1"
         />
         <span data-testid="resource-label">{{ resource.label }}</span>

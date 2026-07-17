@@ -32,7 +32,10 @@
           no-hover
           @click="copyLocationToClipboard"
         >
-          <oc-icon size="small" :name="isCopiedToClipboard ? 'checkbox-circle' : 'file-copy'" />
+          <oc-icon
+            size-class="size-4"
+            :name="isCopiedToClipboard ? 'checkbox-circle' : 'file-copy'"
+          />
         </oc-button>
       </dd>
       <dd v-else data-testid="exif-panel-location" v-text="location" />

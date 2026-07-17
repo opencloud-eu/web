@@ -1,6 +1,6 @@
 <template>
   <div v-if="noGroups" class="flex flex-col items-center text-center mt-12">
-    <oc-icon name="group-2" size="xxlarge" />
+    <oc-icon name="group-2" size-class="size-22" />
     <p v-text="$gettext('Select a group to view details')" />
   </div>
   <div
@@ -8,7 +8,7 @@
     id="oc-groups-details-multiple-sidebar"
     class="flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
   >
-    <oc-icon name="group-2" size="xxlarge" />
+    <oc-icon name="group-2" size-class="size-22" />
     <p>{{ multipleGroupsSelectedText }}</p>
   </div>
   <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">

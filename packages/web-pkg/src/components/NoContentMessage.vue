@@ -13,7 +13,7 @@
       v-if="icon"
       :name="icon"
       type="div"
-      size="xxlarge"
+      size-class="size-22"
       :fill-type="iconFillType"
       class="mb-4"
     />

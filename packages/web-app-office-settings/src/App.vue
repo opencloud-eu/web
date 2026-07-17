@@ -41,7 +41,7 @@
                   <oc-table-td class="hidden md:table-cell">{{ font.designer }}</oc-table-td>
                   <oc-table-td class="text-right">
                     <oc-button :aria-label="$gettext('Delete')" @click="deleteFont(font)">
-                      <oc-icon name="delete-bin" fill-type="line" size="small" />
+                      <oc-icon name="delete-bin" fill-type="line" size-class="size-4" />
                     </oc-button>
                   </oc-table-td>
                 </oc-table-tr>

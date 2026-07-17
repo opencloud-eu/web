@@ -40,7 +40,7 @@
             >
               <template #image="{ item }">
                 <div class="flex items-center">
-                  <oc-icon name="price-tag-3" size="small" />
+                  <oc-icon name="price-tag-3" size-class="size-4" />
                   <span class="ml-2">{{ item.label }}</span>
                 </div>
               </template>

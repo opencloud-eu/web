@@ -18,7 +18,7 @@
             class="mr-2"
             @click="emptyTrashBinAction.handler({ resources: [space] })"
           >
-            <oc-icon :name="emptyTrashBinActionIcon" size="medium" />
+            <oc-icon :name="emptyTrashBinActionIcon" size-class="size-5" />
             {{ emptyTrashBinAction.label() }}
           </oc-button>
         </template>

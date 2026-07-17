@@ -17,7 +17,7 @@
 
         <div v-else class="p-4">
           <div class="flex items-center mb-4">
-            <oc-icon name="user-received" size="large" class="mr-4" />
+            <oc-icon name="user-received" size-class="size-8" class="mr-4" />
             <div>
               <h3 v-text="$gettext('You have received an invitation')" />
               <p

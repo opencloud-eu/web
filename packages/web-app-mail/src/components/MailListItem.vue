@@ -5,7 +5,7 @@
         <span class="mail-list-item-indicator flex w-[12px]">
           <oc-icon
             v-if="!mail.keywords?.['$seen']"
-            size="xsmall"
+            size-class="size-3"
             name="circle"
             color="var(--oc-role-error)"
           />
