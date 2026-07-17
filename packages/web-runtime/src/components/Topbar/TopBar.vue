@@ -6,7 +6,7 @@
   >
     <div class="flex items-center flex-start gap-2.5 sm:gap-5 col-1 oc-logo-wrapper">
       <custom-component-target :extension-point="topBarLeftExtensionPoint" />
-      <sidebar-nav-mobile class="pt-1" />
+      <sidebar-nav-mobile class="flex" />
       <router-link v-if="!hideLogo" :to="homeLink">
         <picture>
           <source
