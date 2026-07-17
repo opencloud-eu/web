@@ -11,7 +11,7 @@
       :aria-expanded="isMenuOpen"
       @click="isMenuOpen = true"
     >
-      <oc-icon name="menu" size="large" />
+      <oc-icon name="menu" size-class="size-8" />
     </oc-button>
     <teleport to="body">
       <transition name="mobile-nav">

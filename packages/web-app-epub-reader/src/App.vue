@@ -29,8 +29,8 @@
             gap-size="none"
             @click="decreaseFontSize"
           >
-            <oc-icon name="font-family" fill-type="none" size="small" />
-            <oc-icon name="subtract" size="xsmall" />
+            <oc-icon name="font-family" fill-type="none" size-class="size-4" />
+            <oc-icon name="subtract" size-class="size-3" />
           </oc-button>
           <oc-button
             v-oc-tooltip="$gettext('Reset font size')"
@@ -47,8 +47,8 @@
             gap-size="none"
             @click="increaseFontSize"
           >
-            <oc-icon name="font-family" fill-type="none" size="small" />
-            <oc-icon name="add" size="xsmall" />
+            <oc-icon name="font-family" fill-type="none" size-class="size-4" />
+            <oc-icon name="add" size-class="size-3" />
           </oc-button>
         </div>
         <oc-select
@@ -70,7 +70,7 @@
             appearance="raw"
             @click="navigateLeft"
           >
-            <oc-icon name="arrow-left-s" fill-type="line" size="xlarge" />
+            <oc-icon name="arrow-left-s" fill-type="line" size-class="size-12" />
           </oc-button>
         </div>
         <div id="reader" ref="bookContainer" class="flex justify-center" />
@@ -83,7 +83,7 @@
             appearance="raw"
             @click="navigateRight"
           >
-            <oc-icon name="arrow-right-s" fill-type="line" size="xlarge" />
+            <oc-icon name="arrow-right-s" fill-type="line" size-class="size-12" />
           </oc-button>
         </div>
       </div>

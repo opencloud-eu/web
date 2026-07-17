@@ -5,7 +5,7 @@ exports[`InviteCollaborator RecipientContainer > displays an avatar image if cap
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-4" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
@@ -14,7 +14,7 @@ exports[`InviteCollaborator RecipientContainer > renders a recipient with a dese
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-4" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
@@ -23,7 +23,7 @@ exports[`InviteCollaborator RecipientContainer > renders a recipient with a dese
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-4" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
@@ -32,7 +32,7 @@ exports[`InviteCollaborator RecipientContainer > renders a recipient with a dese
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-4" type="span"></oc-icon-stub>
 </button></span>"
 `;
 
@@ -41,6 +41,6 @@ exports[`InviteCollaborator RecipientContainer > renders a recipient with a dese
 <p data-v-1e6c8369="" class="oc-recipient-name m-0" data-testid="recipient-name">Albert Einstein</p> <!-- @slot Append content (actions, additional info, etc.)  --> <button type="button" aria-label="Deselect Albert Einstein" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default files-share-invite-recipient-btn-remove raw-hover-surface">
   <!--v-if-->
   <!-- @slot Content of the button -->
-  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" size="small" sizeclass="size-5" type="span"></oc-icon-stub>
+  <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-4" type="span"></oc-icon-stub>
 </button></span>"
 `;

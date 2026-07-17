@@ -3,7 +3,7 @@
     id="files-list-not-found-message"
     class="text-center items-center flex justify-center flex-col h-[75vh]"
   >
-    <oc-icon name="cloud" type="div" size="xxlarge" />
+    <oc-icon name="cloud" type="div" size-class="size-22" />
     <div class="text-role-on-surface-variant text-xl">
       <span v-text="$gettext('Resource not found')" />
     </div>

@@ -51,11 +51,16 @@
       <template #selected-option-container="{ option, deselect }">
         <span class="vs__selected" :class="{ 'vs__selected-readonly': option.readonly }">
           <slot name="selected-option" v-bind="option">
-            <oc-icon v-if="readOnly" name="lock" class="mr-1" size="small" />
+            <oc-icon v-if="readOnly" name="lock" class="mr-1" size-class="size-4" />
             {{ getOptionLabel(option) }}
           </slot>
           <span v-if="multiple" class="flex items-center ml-2 mr-1">
-            <oc-icon v-if="option.readonly" class="vs__deselect-lock" name="lock" size="small" />
+            <oc-icon
+              v-if="option.readonly"
+              class="vs__deselect-lock"
+              name="lock"
+              size-class="size-4"
+            />
             <oc-button
               v-else
               appearance="raw"
@@ -66,13 +71,13 @@
               @mousedown.stop.prevent
               @click="deselect(option)"
             >
-              <oc-icon name="close" size="small" />
+              <oc-icon name="close" size-class="size-4" />
             </oc-button>
           </span>
         </span>
       </template>
       <template #open-indicator>
-        <oc-icon name="arrow-down-s" size="small" />
+        <oc-icon name="arrow-down-s" size-class="size-4" />
       </template>
     </vue-select>
 
@@ -87,7 +92,7 @@
       <oc-icon
         v-if="!!errorMessage"
         name="error-warning"
-        size="small"
+        size-class="size-4"
         fill-type="line"
         aria-hidden="true"
         class="mr-1"

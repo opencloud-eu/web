@@ -70,7 +70,7 @@
                 class="ml-1"
                 @click="copyPlainToken(rowData)"
               >
-                <oc-icon name="file-copy" size="small" />
+                <oc-icon name="file-copy" size-class="size-4" />
               </oc-button>
               <oc-button
                 id="oc-sciencemesh-copy-base64"
@@ -80,7 +80,7 @@
                 class="ml-1"
                 @click="copyToken(rowData)"
               >
-                <oc-icon name="code" size="small" />
+                <oc-icon name="code" size-class="size-4" />
               </oc-button>
               <oc-button
                 id="oc-sciencemesh-copy-wayf"
@@ -90,7 +90,7 @@
                 class="ml-1"
                 @click="copyWayfLink(rowData)"
               >
-                <oc-icon name="link" size="small" />
+                <oc-icon name="link" size-class="size-4" />
               </oc-button>
             </div>
           </template>

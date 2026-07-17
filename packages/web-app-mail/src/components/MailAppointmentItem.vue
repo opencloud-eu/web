@@ -33,18 +33,18 @@
     </template>
     <div class="mail-appointment-list-body text-role-on-surface-variant">
       <div v-if="icalEvent.location" class="flex items-center gap-2">
-        <oc-icon name="map-pin" size="small" fill-type="line" />
+        <oc-icon name="map-pin" size-class="size-4" fill-type="line" />
         <span class="truncate" v-text="icalEvent.location" />
       </div>
       <div v-if="organizer" class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
-        <oc-icon name="user" size="small" fill-type="line" />
+        <oc-icon name="user" size-class="size-4" fill-type="line" />
         <span class="font-medium" v-text="$gettext('Organizer')" />
         <div class="col-start-2 text-sm">
           <span v-text="organizer" />
         </div>
       </div>
       <div v-if="attendees && attendees.length" class="grid grid-cols-[auto_1fr] gap-x-2 mt-3">
-        <oc-icon name="group" size="small" fill-type="line" />
+        <oc-icon name="group" size-class="size-4" fill-type="line" />
         <span class="font-medium" v-text="$gettext('Participants')" />
         <oc-list class="col-start-2">
           <li
@@ -60,11 +60,11 @@
         </div>
       </div>
       <div v-if="icalEvent.description" class="flex gap-2 mt-3">
-        <oc-icon name="sticky-note" size="small" fill-type="line" />
+        <oc-icon name="sticky-note" size-class="size-4" fill-type="line" />
         <span class="grid grid-cols-[auto_1fr]" v-text="icalEvent.description" />
       </div>
       <oc-button class="w-full mt-4" appearance="outline" size="large" @click="download">
-        <oc-icon size="medium" name="download-2" fill-type="line" />
+        <oc-icon size-class="size-5" name="download-2" fill-type="line" />
         <span v-text="$gettext('Download')" />
       </oc-button>
     </div>

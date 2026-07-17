@@ -4,7 +4,7 @@
     class="flex flex-col items-center text-center mt-12"
     data-testid="no-users-selected"
   >
-    <oc-icon name="user" size="xxlarge" />
+    <oc-icon name="user" size-class="size-22" />
     <p>{{ $gettext('Select a user to view details') }}</p>
   </div>
   <div
@@ -12,7 +12,7 @@
     id="oc-users-details-multiple-sidebar"
     class="flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
   >
-    <oc-icon name="group" size="xxlarge" />
+    <oc-icon name="group" size-class="size-22" />
     <p>{{ multipleUsersSelectedText }}</p>
   </div>
   <div v-if="user" id="oc-user-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">

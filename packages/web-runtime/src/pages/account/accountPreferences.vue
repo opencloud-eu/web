@@ -19,7 +19,7 @@
               <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
                 <div class="flex items-center">
                   <span v-text="$gettext('Help to translate')" />
-                  <oc-icon class="ml-1" size="small" fill-type="line" name="service" />
+                  <oc-icon class="ml-1" size-class="size-4" fill-type="line" name="service" />
                 </div>
               </a>
             </div>

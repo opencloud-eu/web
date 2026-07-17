@@ -27,7 +27,7 @@
       size="small"
       @click="showPassword = !showPassword"
     >
-      <oc-icon size="small" :name="showPassword ? 'eye-off' : 'eye'" />
+      <oc-icon size-class="size-4" :name="showPassword ? 'eye-off' : 'eye'" />
     </oc-button>
     <oc-button
       v-if="password && !disabled"
@@ -38,7 +38,7 @@
       size="small"
       @click="copyPasswordToClipboard"
     >
-      <oc-icon size="small" :name="copyPasswordIcon" />
+      <oc-icon size-class="size-4" :name="copyPasswordIcon" />
     </oc-button>
     <oc-button
       v-if="generatePasswordMethod && !disabled"
@@ -49,7 +49,7 @@
       size="small"
       @click="generatePassword"
     >
-      <oc-icon size="small" name="refresh" fill-type="line" />
+      <oc-icon size-class="size-4" name="refresh" fill-type="line" />
     </oc-button>
   </div>
   <teleport v-if="showPasswordPolicyInformation" defer :to="`#${teleportId}`">
@@ -60,7 +60,7 @@
         class="flex items-center oc-text-input-password-policy-rule"
       >
         <oc-icon
-          size="small"
+          size-class="size-4"
           class="mr-1"
           :name="testedRule.verified ? 'checkbox-circle' : 'close-circle'"
           :color="testedRule.verified ? 'var(--oc-role-on-surface)' : 'var(--oc-role-error)'"

@@ -33,7 +33,7 @@
               fill-type="line"
               :class="{ 'sr-only': sortBy !== field.name }"
               class="p-1 rounded-sm"
-              size="small"
+              size-class="size-4"
             />
           </oc-button>
           <div v-else>
