@@ -1,4 +1,5 @@
 import ExtensionsList from '../../../../src/components/Extensions/ExtensionsList.vue'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 const extensions = [
@@ -29,15 +30,36 @@ describe('ExtensionsList', () => {
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
     expect(wrapper.find('oc-table-stub').exists()).toBeFalsy()
   })
+
+  it('sorts by name ascending and descending', () => {
+    const { wrapper } = getWrapper({
+      extensions: [
+        { name: 'Zulu', version: '1.0.0', loaded: true },
+        { name: 'Alpha', version: '2.0.0', loaded: true }
+      ]
+    })
+
+    ;(wrapper.vm as any).handleSort({ sortBy: 'name', sortDir: SortDir.Asc })
+    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
+      'Alpha',
+      'Zulu'
+    ])
+
+    ;(wrapper.vm as any).handleSort({ sortBy: 'name', sortDir: SortDir.Desc })
+    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
+      'Zulu',
+      'Alpha'
+    ])
+  })
 })
 
-function getWrapper({
+const getWrapper = ({
   extensions: extensionData = extensions,
   filterTerm = ''
 }: {
   extensions?: { name: string; version?: string; loaded: boolean }[]
   filterTerm?: string
-} = {}) {
+} = {}) => {
   return {
     wrapper: mount(ExtensionsList, {
       props: {
