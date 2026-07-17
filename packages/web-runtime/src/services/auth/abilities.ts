@@ -45,6 +45,7 @@ export const getAbilities = (
       { action: 'create-all', subject: 'Share' },
       { action: 'update-all', subject: 'Share' }
     ],
+    'Shares.GuestMailWrite.all': [{ action: 'create-all', subject: 'GuestInvite' }],
     'Settings.ReadWrite.all': [
       { action: 'read-all', subject: 'Setting' },
       { action: 'update-all', subject: 'Setting' }

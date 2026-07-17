@@ -148,6 +148,61 @@ describe('InviteCollaboratorForm', () => {
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
+    it('offers the entered value as a guest suggestion when it is a valid email address', async () => {
+      const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'someone@else.com' } as User] })
+      await (wrapper.vm as any).fetchRecipientsTask.perform('guest@example.com')
+      await flushPromises()
+
+      const guest = (wrapper.vm as any).autocompleteResults.find(
+        (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+      )
+      expect(guest?.id).toBe('guest@example.com')
+      expect(guest?.displayName).toBe('guest@example.com')
+    })
+    it('does not offer a guest suggestion for an invalid email', async () => {
+      const { wrapper } = getWrapper()
+      await (wrapper.vm as any).fetchRecipientsTask.perform('not-an-email')
+      await flushPromises()
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion without the guest invite permission', async () => {
+      const { wrapper } = getWrapper({ canInviteGuests: false })
+      await (wrapper.vm as any).fetchRecipientsTask.perform('guest@example.com')
+      await flushPromises()
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion for an address with a display name', async () => {
+      const { wrapper } = getWrapper()
+      await (wrapper.vm as any).fetchRecipientsTask.perform('Test User <guest@example.com>')
+      await flushPromises()
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion when the email belongs to a known account', async () => {
+      const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
+      await (wrapper.vm as any).fetchRecipientsTask.perform('guest@example.com')
+      await flushPromises()
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
   })
   describe('share action', () => {
     it('creates a public link and emails the contact for address book contact recipients', async () => {
@@ -248,6 +303,55 @@ describe('InviteCollaboratorForm', () => {
 
       expect(addShare).toHaveBeenCalled()
     })
+    it('invites a guest by email only, without objectId or recipient type', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            recipients: [{ email: 'guest@example.com' }]
+          })
+        })
+      )
+    })
+    it('assigns an internal role to a guest invited from the external share mode', async () => {
+      const internalRole = mock<ShareRole>({ id: 'internal-role' })
+      const externalRole = mock<ShareRole>({ id: 'external-role' })
+      const { wrapper } = getWrapper({
+        internalShareRoles: [internalRole],
+        externalShareRoles: [externalRole]
+      })
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).currentShareRoleType = mock<ShareRoleType>({ id: '2' })
+      ;(wrapper.vm as any).selectedRole = externalRole
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({ roles: ['internal-role'] })
+        })
+      )
+    })
     it.todo('resets focus upon selecting an invitee')
   })
   describe('share role type filter', () => {
@@ -286,20 +390,24 @@ function getWrapper({
   users = [],
   groups = [],
   existingCollaborators = [],
+  internalShareRoles = [mock<ShareRole>()],
   externalShareRoles = [],
   user = mock<User>({ id: '1' }),
   openXchange = false,
-  openXchangeContacts = []
+  openXchangeContacts = [],
+  canInviteGuests = true
 }: {
   storageId?: string
   resource?: Resource
   users?: User[]
   groups?: Group[]
   existingCollaborators?: CollaboratorShare[]
+  internalShareRoles?: ShareRole[]
   externalShareRoles?: ShareRole[]
   user?: User
   openXchange?: boolean
   openXchangeContacts?: Contact[]
+  canInviteGuests?: boolean
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -319,6 +427,7 @@ function getWrapper({
       global: {
         plugins: [
           ...defaultPlugins({
+            abilities: canInviteGuests ? [{ action: 'create-all', subject: 'GuestInvite' }] : [],
             piniaOptions: {
               userState: { user },
               capabilityState: { capabilities },
@@ -341,7 +450,7 @@ function getWrapper({
           ...mocks,
           resource,
           availableExternalShareRoles: externalShareRoles,
-          availableInternalShareRoles: [mock<ShareRole>()]
+          availableInternalShareRoles: internalShareRoles
         },
         mocks,
         stubs: { OcSelect: false, VueSelect: false }

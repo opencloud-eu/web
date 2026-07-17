@@ -276,6 +276,21 @@ describe('share helper functions', () => {
 
         expect(result.shareType).toEqual(ShareTypes.remote.value)
       })
+      it('is guest type if grantedToV2 includes a user with the Guest user type', () => {
+        const graphPermission = mock<Permission>({
+          '@libre.graph.permissions.actions': [],
+          grantedToV2: { user: { '@libre.graph.userType': 'Guest' }, group: undefined },
+          link: undefined
+        })
+
+        const result = buildCollaboratorShare({
+          graphPermission,
+          graphRoles,
+          resourceId
+        })
+
+        expect(result.shareType).toEqual(ShareTypes.guest.value)
+      })
     })
     describe('permissions', () => {
       it('sets permissions if given directly via property', () => {
