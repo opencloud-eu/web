@@ -1217,6 +1217,7 @@ def designSystemDocs(ctx):
             },
         ],
         "when": [
+            event["pull_request"],
             event["main_branch"],
         ],
         "workspace": web_workspace,
