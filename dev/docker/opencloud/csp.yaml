@@ -4,6 +4,7 @@ directives:
   connect-src:
     - '''self'''
     - 'blob:'
+    - 'data:'
     - 'https://raw.githubusercontent.com/opencloud-eu/awesome-apps/'
     - 'https://update.opencloud.eu/'
     - 'https://host.docker.internal:*'
@@ -40,9 +41,14 @@ directives:
   script-src:
     - '''self'''
     - '''unsafe-inline'''
+    - "'unsafe-eval'"
+    - 'blob:'
     - 'https://www.gstatic.com/'
     - 'https://host.docker.internal:*'
   style-src:
     - '''self'''
     - '''unsafe-inline'''
     - 'https://host.docker.internal:*'
+  worker-src:
+    - "'self'"
+    - 'blob:'
