@@ -173,7 +173,7 @@ const fileIcon = {
   },
   game: {
     icon: { name: 'resource-type-game' },
-    extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'sfc', 'smc', 'n64']
+    extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'snes', 'sfc', 'smc', 'n64', 'v64', 'z64']
   },
   odg: {
     icon: { name: 'resource-type-graphic' },
