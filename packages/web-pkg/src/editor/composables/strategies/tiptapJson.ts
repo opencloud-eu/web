@@ -44,7 +44,16 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         linkOnPaste: true,
         HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
       }),
-      Image.configure({ inline: false }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        resize: {
+          enabled: true,
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true
+        }
+      }),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,

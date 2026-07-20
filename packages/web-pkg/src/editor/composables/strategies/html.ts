@@ -46,7 +46,16 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         linkOnPaste: true,
         HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
       }),
-      Image.configure({ inline: false }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        resize: {
+          enabled: true,
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true
+        }
+      }),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,
@@ -95,6 +104,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     orderedList,
     taskList,
     horizontalRule,
+    image,
+    imageUrl,
+    imageUpload,
     menuEmoji,
     tableMenu,
     createTable,
@@ -153,6 +165,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          image(),
+          imageUrl(),
+          imageUpload(),
           tableMenu(),
           menuEmoji(),
           createTable(),
