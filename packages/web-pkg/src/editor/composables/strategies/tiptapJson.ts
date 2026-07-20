@@ -19,6 +19,7 @@ import {
   TextStyle
 } from '@tiptap/extension-text-style'
 import { TextEditorState } from '../../types'
+import { imageFileHandlerExtension } from './imageFileHandler'
 
 export const useStrategyTiptapJson = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -54,6 +55,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           alwaysPreserveAspectRatio: true
         }
       }),
+      imageFileHandlerExtension(),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,

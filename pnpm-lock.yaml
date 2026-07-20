@@ -187,7 +187,7 @@ importers:
         version: 4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.40(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.4
-        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
+        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
       vue-select:
         specifier: 4.0.0-beta.6
         version: 4.0.0-beta.6(vue@3.5.40(typescript@6.0.3))
@@ -887,6 +887,9 @@ importers:
       '@tiptap/extension-document':
         specifier: ^3.20.4
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
+      '@tiptap/extension-file-handler':
+        specifier: ^3.28.0
+        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-text-style@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0)))(@tiptap/pm@3.28.0)
       '@tiptap/extension-hard-break':
         specifier: ^3.20.4
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
@@ -1009,7 +1012,7 @@ importers:
         version: 4.0.1(patch_hash=29bc386a6e932912ee46485a87911f6ff5409dca9ed70ba0ff32c52d6f56986b)(vue@3.5.40(typescript@6.0.3))
       vue-router:
         specifier: ^5.0.4
-        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
+        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
       vue3-gettext:
         specifier: 4.0.1
         version: 4.0.1(vue@3.5.40(typescript@6.0.3))
@@ -1164,7 +1167,7 @@ importers:
         version: 3.5.40(typescript@6.0.3)
       vue-router:
         specifier: ^5.0.4
-        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
+        version: 5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3))
       vue3-gettext:
         specifier: 4.0.1
         version: 4.0.1(vue@3.5.40(typescript@6.0.3))
@@ -2326,6 +2329,13 @@ packages:
     resolution: {integrity: sha512-JA+dXQjjfJBpD0nVsZeddGVXRsmanESM9+8CtM35hI9wJnYMXay/B+5GUhswO20zhT3zhB2ZOTGe9knu6A8nIQ==}
     peerDependencies:
       '@tiptap/extensions': 3.28.0
+
+  '@tiptap/extension-file-handler@3.28.0':
+    resolution: {integrity: sha512-5CWeTYfjcE8PMGrM8/G+pS4fxBU1uhirVLdPdy9BnfwAwSDO8l94FYWjza6lgX7OsG5jjkS1r8yJpt0OdqC/sg==}
+    peerDependencies:
+      '@tiptap/core': 3.28.0
+      '@tiptap/extension-text-style': 3.28.0
+      '@tiptap/pm': 3.28.0
 
   '@tiptap/extension-floating-menu@3.28.0':
     resolution: {integrity: sha512-59SECvJq3pQfeJBuydEdhQqrpl0oDlk8N1Ovs1Si3/fJa6rEQAJB2zIvcpBHky9Z+5JodI2eueDnv8eimiyGbg==}
@@ -6583,6 +6593,12 @@ snapshots:
     dependencies:
       '@tiptap/extensions': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
 
+  '@tiptap/extension-file-handler@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-text-style@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0)))(@tiptap/pm@3.28.0)':
+    dependencies:
+      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
+      '@tiptap/extension-text-style': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
+      '@tiptap/pm': 3.28.0
+
   '@tiptap/extension-floating-menu@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
     dependencies:
       '@floating-ui/dom': 1.8.0
@@ -9691,6 +9707,17 @@ snapshots:
       rollup: 4.60.0
       vite: 8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0)
 
+  unplugin@3.3.0(esbuild@0.21.5)(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0)):
+    dependencies:
+      '@jridgewell/remapping': 2.3.5
+      picomatch: 4.0.5
+      webpack-virtual-modules: 0.6.2
+    optionalDependencies:
+      esbuild: 0.21.5
+      rolldown: 1.1.5
+      rollup: 4.60.0
+      vite: 8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0)
+
   update-browserslist-db@1.2.3(browserslist@4.28.1):
     dependencies:
       browserslist: 4.28.1
@@ -9913,6 +9940,41 @@ snapshots:
       scule: 1.3.0
       tinyglobby: 0.2.17
       unplugin: 3.3.0(esbuild@0.21.5)(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
+      unplugin-utils: 0.3.2
+      vue: 3.5.40(typescript@6.0.3)
+      yaml: 2.9.0
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.5.40
+      pinia: 4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3))
+      vite: 8.1.5(@types/node@25.9.5)(esbuild@0.21.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0)
+    transitivePeerDependencies:
+      - '@farmfe/core'
+      - '@rspack/core'
+      - bun-types-no-globals
+      - esbuild
+      - rolldown
+      - rollup
+      - unloader
+      - webpack
+
+  vue-router@5.2.0(@vue/compiler-sfc@3.5.40)(esbuild@0.21.5)(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))(vue@3.5.40(typescript@6.0.3)):
+    dependencies:
+      '@babel/generator': 8.0.0
+      '@vue-macros/common': 3.1.3(vue@3.5.40(typescript@6.0.3))
+      '@vue/devtools-api': 8.1.5
+      ast-walker-scope: 0.9.0
+      chokidar: 5.0.0
+      json5: 2.2.3
+      local-pkg: 1.2.1
+      magic-string: 0.30.21
+      mlly: 1.8.2
+      muggle-string: 0.4.1
+      nostics: 1.1.4
+      pathe: 2.0.3
+      picomatch: 4.0.5
+      scule: 1.3.0
+      tinyglobby: 0.2.17
+      unplugin: 3.3.0(esbuild@0.21.5)(rolldown@1.1.5)(rollup@4.60.0)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
       unplugin-utils: 0.3.2
       vue: 3.5.40(typescript@6.0.3)
       yaml: 2.9.0

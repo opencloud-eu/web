@@ -11,6 +11,7 @@ import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/vue-3'
 import { TextEditorState } from '../../types'
+import { imageFileHandlerExtension } from './imageFileHandler'
 
 export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -76,7 +77,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TableHeader,
       TaskList,
       TaskItem.configure({ nested: true }),
-      markdownImage
+      markdownImage,
+      imageFileHandlerExtension()
     ]
   }
 
