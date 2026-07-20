@@ -15,7 +15,7 @@
           v-for="item in group.actions.filter((a) => a.showInToolbar !== false)"
           :key="`toolbar-item-${item.id}`"
         >
-          <template v-if="item.childActions">
+          <template v-if="item.childActions || item.menuComponent">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
               v-oc-tooltip="item.title"
@@ -42,9 +42,14 @@
               mode="click"
               class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
-              close-on-click
+              :close-on-click="item.menuCloseOnClick ?? true"
             >
-              <ul class="oc-list">
+              <component
+                :is="item.menuComponent"
+                v-if="item.menuComponent"
+                v-bind="getMenuComponentAttrs(item)"
+              />
+              <ul v-else class="oc-list">
                 <li
                   v-for="child in item.childActions"
                   :key="`${item.id}-${child.id}`"
@@ -193,6 +198,14 @@ const getActiveIcon = (item: EditorAction) => {
     }
   }
   return { icon: item.icon, iconFillType: item.iconFillType }
+}
+
+const getMenuComponentAttrs = (item: EditorAction) => {
+  const editor = unref(textEditor.editor)
+  if (!editor || !item.menuComponentAttrs) {
+    return {}
+  }
+  return item.menuComponentAttrs(editor)
 }
 </script>
 
