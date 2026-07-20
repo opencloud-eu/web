@@ -159,6 +159,7 @@
   touch-action: none;
 }
 
+/* Resize handles */
 .text-editor-content .ProseMirror [data-resize-handle]:hover {
   background: rgba(0, 0, 0, 0.8);
 }
