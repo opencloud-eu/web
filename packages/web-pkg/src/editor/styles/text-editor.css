@@ -204,7 +204,7 @@
 }
 
 .text-editor-content .ProseMirror [data-resize-wrapper] {
-    overflow: visible;
+  overflow: visible;
 }
 
 .text-editor-content
