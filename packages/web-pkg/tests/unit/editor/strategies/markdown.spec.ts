@@ -22,12 +22,42 @@ describe('useStrategyMarkdown', () => {
   describe('extensions', () => {
     it('includes markdown-relevant extensions but not underline', () => {
       const strategy = createStrategy()
-      const names = strategy.extensions().map((e) => e.name)
+      const extensions = strategy.extensions()
+      const names = extensions.map((e) => e.name)
       expect(names).toContain('link')
       expect(names).toContain('table')
       expect(names).toContain('taskList')
       expect(names).toContain('image')
       expect(names).not.toContain('underline')
+
+      const imageExtension = extensions.find((e) => e.name === 'image') as any
+      expect(imageExtension.options.allowBase64).toBe(true)
+      expect(imageExtension.options.resize).toMatchObject({
+        enabled: true,
+        minWidth: 50,
+        minHeight: 50,
+        alwaysPreserveAspectRatio: true
+      })
+    })
+
+    it('renders resized images as html img to persist width and height in markdown', () => {
+      const strategy = createStrategy()
+      const imageExtension = strategy.extensions().find((e) => e.name === 'image') as any
+
+      const markdown = imageExtension.config.renderMarkdown({
+        attrs: {
+          src: 'data:image/png;base64,abc123',
+          alt: 'diagram',
+          title: 'doc',
+          width: 320,
+          height: 180
+        }
+      })
+
+      expect(markdown).toContain('<img ')
+      expect(markdown).toContain('src="data:image/png;base64,abc123"')
+      expect(markdown).toContain('width="320"')
+      expect(markdown).toContain('height="180"')
     })
   })
 
