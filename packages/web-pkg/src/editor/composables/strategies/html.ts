@@ -69,9 +69,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
   const {
     undo,
     redo,
-    zoomIn,
-    zoomOut,
-    zoomReset,
+    zoomMenu,
     toggleSourceMode,
     fontSize,
     lineHeight,
@@ -112,7 +110,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       {
         id: 'history',
         title: $gettext('History'),
-        actions: [undo(), redo()]
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'view-options',
@@ -167,11 +165,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           horizontalRule()
         ]
       },
-      {
-        id: 'zoom',
-        title: $gettext('Zoom'),
-        actions: [zoomOut(), zoomIn(), zoomReset()]
-      }
     ]
   }
 

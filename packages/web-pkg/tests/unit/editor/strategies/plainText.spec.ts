@@ -30,7 +30,7 @@ describe('useStrategyPlainText', () => {
     it('returns history, emoji and zoom groups groups', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
-      expect(groups).toHaveLength(2)
+      expect(groups).toHaveLength(3)
       expect(groups[0]).toMatchObject({
         id: 'history',
         title: 'History'

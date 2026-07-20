@@ -144,6 +144,16 @@ export function useEditorActions(
     showInSlashCommands: false
   })
 
+  const zoomMenu = (): EditorAction => ({
+    id: 'menu-zoom',
+    title: `${$gettext('Zoom')} (${state.editorZoom.value}%)`,
+    icon: 'zoom-in',
+    iconFillType: 'line',
+    showInSlashCommands: false,
+    closeOnClick: false,
+    childActions: [zoomOut(), zoomIn(), zoomReset()]
+  })
+
   // Text formatting actions
   const fontSize = (): EditorAction => ({
     id: 'font-size',
@@ -784,6 +794,7 @@ export function useEditorActions(
     zoomIn,
     zoomOut,
     zoomReset,
+    zoomMenu,
     toggleSourceMode,
     // Text formatting
     heading,
