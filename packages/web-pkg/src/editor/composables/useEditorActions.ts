@@ -134,9 +134,7 @@ export function useEditorActions(
 
   const zoomReset = (): EditorAction => ({
     id: 'zoom-reset',
-    title: $gettext('Reset zoom (%{zoom})', {
-      zoom: `${state.editorZoom.value}%`
-    }),
+    title: $gettext('Reset zoom'),
     icon: 'reset-left',
     iconFillType: 'line',
     toolbarAction: () => {

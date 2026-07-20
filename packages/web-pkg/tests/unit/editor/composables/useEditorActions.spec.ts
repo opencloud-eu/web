@@ -88,11 +88,6 @@ describe('useEditorActions', () => {
   })
 
   describe('zoom actions', () => {
-    it('zoomReset title includes current zoom level', () => {
-      state.editorZoom.value = 130
-      expect(actions.zoomReset().title).toBe('Reset zoom (130%)')
-    })
-
     it('zoomIn increases zoom in 10% steps and caps at 200%', () => {
       const editor = createMockEditor()
       actions.zoomIn().toolbarAction!(editor)
