@@ -150,7 +150,7 @@ export function useEditorActions(
     icon: 'zoom-in',
     iconFillType: 'line',
     showInSlashCommands: false,
-    closeOnClick: false,
+    menuCloseOnClick: false,
     childActions: [zoomOut(), zoomIn(), zoomReset()]
   })
 
