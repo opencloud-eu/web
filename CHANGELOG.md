@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(tiptap): add image drag and drop [[#2926](https://github.com/opencloud-eu/web/pull/2926)]
 - feat(tiptap): add image resizing [[#2924](https://github.com/opencloud-eu/web/pull/2924)]
 - feat(tiptap): add zoom feature [[#2922](https://github.com/opencloud-eu/web/pull/2922)]
 - feat(tiptap): add emoji menu [[#2923](https://github.com/opencloud-eu/web/pull/2923)]
