@@ -39,7 +39,5 @@ const insertDroppedImages = async (editor: Editor, files: File[], pos: number) =
 
 export const imageFileHandlerExtension = (): Extension =>
   FileHandler.configure({
-    onDrop: (editor, files, pos) => {
-      void insertDroppedImages(editor, files, pos)
-    }
+    onDrop: (editor, files, pos) => insertDroppedImages(editor, files, pos)
   })
