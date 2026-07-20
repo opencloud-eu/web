@@ -9,7 +9,7 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false) }
+  const state: TextEditorState = { sourceMode: ref(false), editorZoom: ref(100) }
   return useStrategyPlainText(state)
 }
 
@@ -27,20 +27,32 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('returns history and emoji groups', () => {
+    it('returns history, emoji and view options groups with zoom menu action', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
-      expect(groups).toHaveLength(2)
-      expect(groups[0]).toMatchObject({
+      expect(groups).toHaveLength(3)
+      const historyGroup = groups.find((group) => group.id === 'history')
+      const emojiGroup = groups.find((group) => group.id === 'emoji')
+      const viewOptionsGroup = groups.find((group) => group.id === 'view-options')
+
+      expect(historyGroup).toMatchObject({
         id: 'history',
         title: 'History'
       })
-      expect(groups[0].actions.map((action) => action.id)).toEqual(['undo', 'redo'])
-      expect(groups[1]).toMatchObject({
+      expect(historyGroup?.actions.map((action) => action.id)).toEqual(['undo', 'redo'])
+
+      expect(emojiGroup).toMatchObject({
         id: 'emoji',
         title: 'Emoji'
       })
-      expect(groups[1].actions.map((action) => action.id)).toEqual(['menu-emoji'])
+      expect(emojiGroup?.actions.map((action) => action.id)).toEqual(['menu-emoji'])
+
+      expect(viewOptionsGroup).toMatchObject({
+        id: 'view-options',
+        title: 'View options'
+      })
+      expect(viewOptionsGroup?.actions.map((action) => action.id)).toEqual(['menu-zoom'])
+      expect(groups.at(-1)?.id).toBe('view-options')
     })
   })
 

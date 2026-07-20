@@ -71,6 +71,11 @@ export function useEditorActions(
   const themeStore = useThemeStore()
   const { currentTheme } = storeToRefs(themeStore)
 
+  const zoomStep = 10
+  const zoomMin = 50
+  const zoomMax = 200
+  const clampZoom = (value: number) => Math.min(zoomMax, Math.max(zoomMin, value))
+
   // History actions
   const undo = (): EditorAction => ({
     id: 'undo',
@@ -101,6 +106,52 @@ export function useEditorActions(
     toolbarAction: () => (state.sourceMode.value = !state.sourceMode.value),
     isActive: () => state.sourceMode.value,
     showInSlashCommands: false
+  })
+
+  const zoomIn = (): EditorAction => ({
+    id: 'zoom-in',
+    title: $gettext('Zoom in'),
+    icon: 'zoom-in',
+    iconFillType: 'line',
+    toolbarAction: () => {
+      state.editorZoom.value = clampZoom(state.editorZoom.value + zoomStep)
+    },
+    isEnabled: () => state.editorZoom.value < zoomMax,
+    showInSlashCommands: false
+  })
+
+  const zoomOut = (): EditorAction => ({
+    id: 'zoom-out',
+    title: $gettext('Zoom out'),
+    icon: 'zoom-out',
+    iconFillType: 'line',
+    toolbarAction: () => {
+      state.editorZoom.value = clampZoom(state.editorZoom.value - zoomStep)
+    },
+    isEnabled: () => state.editorZoom.value > zoomMin,
+    showInSlashCommands: false
+  })
+
+  const zoomReset = (): EditorAction => ({
+    id: 'zoom-reset',
+    title: $gettext('Reset zoom'),
+    icon: 'reset-left',
+    iconFillType: 'line',
+    toolbarAction: () => {
+      state.editorZoom.value = 100
+    },
+    isEnabled: () => state.editorZoom.value !== 100,
+    showInSlashCommands: false
+  })
+
+  const zoomMenu = (): EditorAction => ({
+    id: 'menu-zoom',
+    title: `${$gettext('Zoom')} (${state.editorZoom.value}%)`,
+    icon: 'zoom-in',
+    iconFillType: 'line',
+    showInSlashCommands: false,
+    menuCloseOnClick: false,
+    childActions: [zoomOut(), zoomIn(), zoomReset()]
   })
 
   // Text formatting actions
@@ -740,6 +791,10 @@ export function useEditorActions(
     undo,
     redo,
     // View options
+    zoomIn,
+    zoomOut,
+    zoomReset,
+    zoomMenu,
     toggleSourceMode,
     // Text formatting
     heading,
