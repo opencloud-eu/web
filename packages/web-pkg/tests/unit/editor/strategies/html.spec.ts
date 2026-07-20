@@ -25,6 +25,7 @@ describe('useStrategyHtml', () => {
       const names = strategy.extensions().map((e) => e.name)
       expect(names).toContain('underline')
       expect(names).toContain('image')
+      expect(names).toContain('fileHandler')
       expect(names).toContain('link')
       expect(names).toContain('table')
       expect(names).toContain('taskList')
