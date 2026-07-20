@@ -1161,7 +1161,7 @@ importers:
         version: 4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3))
       vitest-mock-extended:
         specifier: ^5.0.0
-        version: 5.0.0(typescript@6.0.3)(vitest@4.1.10)
+        version: 5.1.0(typescript@6.0.3)(vitest@4.1.10)
       vue:
         specifier: ^3.5.10
         version: 3.5.40(typescript@6.0.3)
@@ -5061,8 +5061,8 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
-  ts-essentials@10.1.1:
-    resolution: {integrity: sha512-4aTB7KLHKmUvkjNj8V+EdnmuVTiECzn3K+zIbRthumvHu+j44x3w63xpfs0JL3NGIzGXqoQ7AV591xHO+XrOTw==}
+  ts-essentials@10.2.1:
+    resolution: {integrity: sha512-+Id1fRkuir+CsgK2x04/icS2b4V1hQmq7ObzIrDjhN0ozfRYivnP7aaKMVJfLApQm0trjR39A6NIMVchiB9Erw==}
     peerDependencies:
       typescript: '>=4.5.0'
     peerDependenciesMeta:
@@ -5327,6 +5327,12 @@ packages:
 
   vitest-mock-extended@5.0.0:
     resolution: {integrity: sha512-fnPf7Q5eVQPs8cCoNVdRA46khG1t1PL4LkdE7cYYZeT665jm0dGibYdBKCAQRCJhaw4Aam1QgraFiHMYnheTag==}
+    peerDependencies:
+      typescript: 3.x || 4.x || 5.x || 6.x || 7.x
+      vitest: '>=4.0.0'
+
+  vitest-mock-extended@5.1.0:
+    resolution: {integrity: sha512-xW28qmo6CbEROzwFRKw+fhLQcwoxBbUHdezDtBJXiHinthfyYZ3pwt4ez4r+XPdimTbXJcFetjzKBJqMw1A6Jw==}
     peerDependencies:
       typescript: 3.x || 4.x || 5.x || 6.x || 7.x
       vitest: '>=4.0.0'
@@ -9597,7 +9603,7 @@ snapshots:
     dependencies:
       typescript: 6.0.3
 
-  ts-essentials@10.1.1(typescript@6.0.3):
+  ts-essentials@10.2.1(typescript@6.0.3):
     optionalDependencies:
       typescript: 6.0.3
 
@@ -9851,7 +9857,13 @@ snapshots:
 
   vitest-mock-extended@5.0.0(typescript@6.0.3)(vitest@4.1.10):
     dependencies:
-      ts-essentials: 10.1.1(typescript@6.0.3)
+      ts-essentials: 10.2.1(typescript@6.0.3)
+      typescript: 6.0.3
+      vitest: 4.1.10(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@20.10.6)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
+
+  vitest-mock-extended@5.1.0(typescript@6.0.3)(vitest@4.1.10):
+    dependencies:
+      ts-essentials: 10.2.1(typescript@6.0.3)
       typescript: 6.0.3
       vitest: 4.1.10(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@20.10.6)(vite@8.1.5(@types/node@25.9.5)(jiti@2.7.0)(sass@1.101.0)(yaml@2.9.0))
 
