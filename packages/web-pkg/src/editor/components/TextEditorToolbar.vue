@@ -36,13 +36,16 @@
               <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
             </oc-button>
             <oc-drop
-              :ref="(el) => setDropRef(item.id, el)"
+              :ref="
+                (el) => setDropRef(item.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+              "
               :drop-id="`toolbar-dropdown-${item.id}`"
               :toggle="`#toolbar-dropdown-trigger-${item.id}`"
               :teleport="teleport"
               mode="click"
               class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
+              :close-on-click="item.menuCloseOnClick ?? true"
             >
               <component
                 :is="item.menuComponent"
@@ -122,8 +125,10 @@
 
 <script setup lang="ts">
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
 import { EditorAction } from '../composables'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 defineProps<{
   teleport?: string
@@ -135,9 +140,9 @@ const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
-const dropRefs = ref<Record<string, any>>({})
+const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
-function setDropRef(itemId: string, el: any) {
+function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
   if (el) {
     dropRefs.value[itemId] = el
   }
