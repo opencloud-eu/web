@@ -1,6 +1,6 @@
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { ContentTypeStrategy } from './types'
-import type { Extension } from '@tiptap/core'
+import type { Extension, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
 import Image from '@tiptap/extension-image'
@@ -28,6 +28,39 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   }
 
   const extensions = (): Extension[] => {
+    const markdownImage = Image.extend({
+      renderMarkdown: (node: JSONContent) => {
+        const src = (node.attrs?.src as string | undefined) ?? ''
+        const alt = (node.attrs?.alt as string | undefined) ?? ''
+        const title = (node.attrs?.title as string | undefined) ?? ''
+        const width = node.attrs?.width
+        const height = node.attrs?.height
+
+        if (width || height) {
+          const sizeAttributes = [
+            width ? `width="${width}"` : '',
+            height ? `height="${height}"` : ''
+          ]
+            .filter(Boolean)
+            .join(' ')
+          const titleAttribute = title ? ` title="${title}"` : ''
+          const altAttribute = alt ? ` alt="${alt}"` : ''
+          return `<img src="${src}"${altAttribute}${titleAttribute} ${sizeAttributes} />`
+        }
+
+        return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`
+      }
+    }).configure({
+      inline: false,
+      allowBase64: true,
+      resize: {
+        enabled: true,
+        minWidth: 50,
+        minHeight: 50,
+        alwaysPreserveAspectRatio: true
+      }
+    })
+
     return [
       StarterKit.configure({ link: false }),
       Markdown,
@@ -43,7 +76,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TableHeader,
       TaskList,
       TaskItem.configure({ nested: true }),
-      Image.configure({ inline: false })
+      markdownImage
     ]
   }
 

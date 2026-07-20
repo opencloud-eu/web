@@ -176,3 +176,106 @@
   border-top: 1px solid var(--oc-role-outline-variant);
   margin: 12px 0;
 }
+
+.text-editor-content .ProseMirror [data-resize-handle] {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  display: block;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 2px;
+  z-index: 10;
+  pointer-events: none;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+/* Resize handles */
+.text-editor-content .ProseMirror [data-resize-handle]:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.text-editor-content .ProseMirror [data-resize-wrapper] {
+  overflow: visible;
+}
+
+.text-editor-content
+  .ProseMirror
+  [data-resize-container].ProseMirror-selectednode
+  [data-resize-handle],
+.text-editor-content
+  .ProseMirror
+  [data-resize-container][data-resize-state='true']
+  [data-resize-handle] {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='top'],
+.text-editor-content .ProseMirror [data-resize-handle='bottom'],
+.text-editor-content .ProseMirror [data-resize-handle='left'],
+.text-editor-content .ProseMirror [data-resize-handle='right'] {
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='top-left'] {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='top-right'] {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='bottom-left'] {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='bottom-right'] {
+  bottom: 0;
+  right: 0;
+  cursor: nwse-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='top'] {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='bottom'] {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: ns-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='left'] {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-handle='right'] {
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: ew-resize !important;
+}
+
+.text-editor-content .ProseMirror [data-resize-state='true'] [data-resize-wrapper] {
+  outline: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 0.125rem;
+}
