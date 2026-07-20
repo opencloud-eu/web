@@ -155,8 +155,10 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 2px;
   z-index: 10;
-  pointer-events: auto;
+  pointer-events: none;
   touch-action: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
 }
 
 /* Resize handles */
@@ -166,6 +168,12 @@
 
 .text-editor-content .ProseMirror [data-resize-wrapper] {
   overflow: visible;
+}
+
+.text-editor-content .ProseMirror [data-resize-container].ProseMirror-selectednode [data-resize-handle],
+.text-editor-content .ProseMirror [data-resize-container][data-resize-state='true'] [data-resize-handle] {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .text-editor-content .ProseMirror [data-resize-handle='top'],
