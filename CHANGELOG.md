@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-07-19
+## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-07-20
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(tiptap): add emoji menu [[#2923](https://github.com/opencloud-eu/web/pull/2923)]
 - feat(admin-settings): enable name sorting for extension overview [[#2907](https://github.com/opencloud-eu/web/pull/2907)]
 - feat(admin-settings): extension overview [[#2889](https://github.com/opencloud-eu/web/pull/2889)]
 - feat(extension-sdk): inject package.json metadata into manifest.json [[#2894](https://github.com/opencloud-eu/web/pull/2894)]
