@@ -170,8 +170,14 @@
   overflow: visible;
 }
 
-.text-editor-content .ProseMirror [data-resize-container].ProseMirror-selectednode [data-resize-handle],
-.text-editor-content .ProseMirror [data-resize-container][data-resize-state='true'] [data-resize-handle] {
+.text-editor-content
+  .ProseMirror
+  [data-resize-container].ProseMirror-selectednode
+  [data-resize-handle],
+.text-editor-content
+  .ProseMirror
+  [data-resize-container][data-resize-state='true']
+  [data-resize-handle] {
   opacity: 1;
   pointer-events: auto;
 }
