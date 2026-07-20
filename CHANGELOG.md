@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(tiptap): add zoom feature [[#2922](https://github.com/opencloud-eu/web/pull/2922)]
 - feat(tiptap): add emoji menu [[#2923](https://github.com/opencloud-eu/web/pull/2923)]
 - feat(admin-settings): enable name sorting for extension overview [[#2907](https://github.com/opencloud-eu/web/pull/2907)]
 - feat(admin-settings): extension overview [[#2889](https://github.com/opencloud-eu/web/pull/2889)]
