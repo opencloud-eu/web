@@ -6,7 +6,7 @@
       '--text-editor-zoom-factor': zoomFactor
     }"
   >
-    <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" />
+    <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea
         ref="sourceModeTextarea"
