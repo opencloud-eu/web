@@ -193,12 +193,18 @@
 }
 
 /* Resize handles */
+
+/* Prevent images from stretching */
+.text-editor-content .ProseMirror img {
+  height: auto !important;
+}
+
 .text-editor-content .ProseMirror [data-resize-handle]:hover {
   background: rgba(0, 0, 0, 0.8);
 }
 
 .text-editor-content .ProseMirror [data-resize-wrapper] {
-  overflow: visible;
+    overflow: visible;
 }
 
 .text-editor-content
