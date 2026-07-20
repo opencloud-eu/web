@@ -164,7 +164,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           deleteRow(),
           horizontalRule()
         ]
-      },
+      }
     ]
   }
 

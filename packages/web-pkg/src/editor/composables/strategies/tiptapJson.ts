@@ -150,7 +150,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           deleteRow(),
           horizontalRule()
         ]
-      },
+      }
     ]
   }
 

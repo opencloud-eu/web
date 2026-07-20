@@ -132,7 +132,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           deleteRow(),
           horizontalRule()
         ]
-      },
+      }
     ]
   }
 
