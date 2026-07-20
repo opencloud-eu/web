@@ -37,6 +37,20 @@ describe('useStrategyTiptapJson', () => {
     })
   })
 
+  describe('editorActionGroups', () => {
+    it('keeps zoom menu in view options as the last group', () => {
+      const strategy = createStrategy()
+      const groups = strategy.editorActionGroups()
+      const historyIds = groups.find((g) => g.id === 'history')?.actions.map((a) => a.id) || []
+      const viewOptionIds =
+        groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
+
+      expect(historyIds).toEqual(['undo', 'redo'])
+      expect(viewOptionIds).toContain('menu-zoom')
+      expect(groups.at(-1)?.id).toBe('view-options')
+    })
+  })
+
   describe('deserialize', () => {
     it('parses JSON string to object', () => {
       const strategy = createStrategy()

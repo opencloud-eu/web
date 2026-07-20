@@ -85,7 +85,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       {
         id: 'history',
         title: $gettext('History'),
-        actions: [undo(), redo(), zoomMenu()]
+        actions: [undo(), redo()]
       },
       {
         id: 'view-options',
@@ -132,6 +132,11 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           deleteRow(),
           horizontalRule()
         ]
+      },
+      {
+        id: 'zoom',
+        title: $gettext('Zoom'),
+        actions: [zoomMenu()]
       }
     ]
   }

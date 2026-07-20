@@ -48,6 +48,25 @@ describe('useStrategyMarkdown', () => {
       expect(allIds).toContain('source-mode')
     })
 
+    it('places view options group at the end', () => {
+      const strategy = createStrategy()
+      const groupIds = strategy.editorActionGroups().map((g) => g.id)
+      expect(groupIds.at(-1)).toBe('zoom')
+    })
+
+    it('keeps source toggle next to history and zoom in the rightmost group', () => {
+      const strategy = createStrategy()
+      const groups = strategy.editorActionGroups()
+      const historyIds = groups.find((g) => g.id === 'history')?.actions.map((a) => a.id) || []
+      const sourceGroupIds =
+        groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
+      const zoomGroupIds = groups.find((g) => g.id === 'zoom')?.actions.map((a) => a.id) || []
+
+      expect(historyIds).not.toContain('menu-zoom')
+      expect(sourceGroupIds).toEqual(['source-mode'])
+      expect(zoomGroupIds).toEqual(['menu-zoom'])
+    })
+
     it('returns expected group structure', () => {
       const strategy = createStrategy()
       const groupIds = strategy.editorActionGroups().map((g) => g.id)

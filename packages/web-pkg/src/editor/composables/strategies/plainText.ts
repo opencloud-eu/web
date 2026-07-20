@@ -55,7 +55,7 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
     ]
   }
 
-  const { undo, redo, zoomIn, zoomOut, zoomReset, menuEmoji } = useEditorActions(editorState)
+  const { undo, redo, zoomMenu, menuEmoji } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
@@ -69,9 +69,9 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         actions: [menuEmoji()]
       },
       {
-        id: 'zoom',
-        title: $gettext('Zoom'),
-        actions: [zoomOut(), zoomIn(), zoomReset()]
+        id: 'view-options',
+        title: $gettext('View options'),
+        actions: [zoomMenu()]
       }
     ]
   }
