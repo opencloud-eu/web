@@ -64,6 +64,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
   const {
     undo,
     redo,
+    zoomMenu,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -149,6 +150,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           deleteRow(),
           horizontalRule()
         ]
+      },
+      {
+        id: 'view-options',
+        title: $gettext('View options'),
+        actions: [zoomMenu()]
       }
     ]
   }

@@ -69,6 +69,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
   const {
     undo,
     redo,
+    zoomMenu,
     toggleSourceMode,
     fontSize,
     lineHeight,
@@ -163,6 +164,11 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           deleteRow(),
           horizontalRule()
         ]
+      },
+      {
+        id: 'zoom',
+        title: $gettext('Zoom'),
+        actions: [zoomMenu()]
       }
     ]
   }

@@ -13,7 +13,7 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useModals } from '../../../../src/composables/piniaStores'
 
 function createState(): TextEditorState {
-  return { sourceMode: ref(false) }
+  return { sourceMode: ref(false), editorZoom: ref(100) }
 }
 
 const mockRange: Range = { from: 0, to: 5 }
@@ -84,6 +84,50 @@ describe('useEditorActions', () => {
 
     it('is hidden from slash commands', () => {
       expect(actions.toggleSourceMode().showInSlashCommands).toBe(false)
+    })
+  })
+
+  describe('zoom actions', () => {
+    it('zoomIn increases zoom in 10% steps and caps at 200%', () => {
+      const editor = createMockEditor()
+      actions.zoomIn().toolbarAction!(editor)
+      expect(state.editorZoom.value).toBe(110)
+
+      state.editorZoom.value = 200
+      actions.zoomIn().toolbarAction!(editor)
+      expect(state.editorZoom.value).toBe(200)
+    })
+
+    it('zoomOut decreases zoom in 10% steps and floors at 50%', () => {
+      const editor = createMockEditor()
+      actions.zoomOut().toolbarAction!(editor)
+      expect(state.editorZoom.value).toBe(90)
+
+      state.editorZoom.value = 50
+      actions.zoomOut().toolbarAction!(editor)
+      expect(state.editorZoom.value).toBe(50)
+    })
+
+    it('zoomReset restores 100%', () => {
+      const editor = createMockEditor()
+      state.editorZoom.value = 140
+      actions.zoomReset().toolbarAction!(editor)
+      expect(state.editorZoom.value).toBe(100)
+    })
+
+    it('zoom action enabled states reflect current zoom', () => {
+      const editor = createMockEditor()
+      state.editorZoom.value = 100
+      expect(actions.zoomIn().isEnabled!(editor)).toBe(true)
+      expect(actions.zoomOut().isEnabled!(editor)).toBe(true)
+      expect(actions.zoomReset().isEnabled!(editor)).toBe(false)
+
+      state.editorZoom.value = 200
+      expect(actions.zoomIn().isEnabled!(editor)).toBe(false)
+      state.editorZoom.value = 50
+      expect(actions.zoomOut().isEnabled!(editor)).toBe(false)
+      state.editorZoom.value = 120
+      expect(actions.zoomReset().isEnabled!(editor)).toBe(true)
     })
   })
 
