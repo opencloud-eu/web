@@ -36,13 +36,13 @@
               <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
             </oc-button>
             <oc-drop
+              :ref="(el) => setDropRef(item.id, el)"
               :drop-id="`toolbar-dropdown-${item.id}`"
               :toggle="`#toolbar-dropdown-trigger-${item.id}`"
               :teleport="teleport"
               mode="click"
               class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
-              :close-on-click="item.menuCloseOnClick ?? true"
             >
               <component
                 :is="item.menuComponent"
@@ -135,6 +135,14 @@ const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
+const dropRefs = ref<Record<string, any>>({})
+
+function setDropRef(itemId: string, el: any) {
+  if (el) {
+    dropRefs.value[itemId] = el
+  }
+}
+
 const updateScrollState = () => {
   const el = scrollContainerRef.value
   if (!el) {
@@ -205,7 +213,15 @@ const getMenuComponentAttrs = (item: EditorAction) => {
   if (!editor || !item.menuComponentAttrs) {
     return {}
   }
-  return item.menuComponentAttrs(editor)
+
+  const closeMenu = () => {
+    const dropRef = dropRefs.value[item.id]
+    if (dropRef?.hide) {
+      dropRef.hide()
+    }
+  }
+
+  return item.menuComponentAttrs(editor, closeMenu)
 }
 </script>
 

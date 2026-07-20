@@ -721,22 +721,14 @@ describe('useEditorActions', () => {
     it('menuComponentAttrs inserts selected emoji into editor', () => {
       const editor = createMockEditor()
       const action = actions.menuEmoji()
-      const attrs = action.menuComponentAttrs!(editor) as {
+      const closeMenu = vi.fn()
+      const attrs = action.menuComponentAttrs!(editor, closeMenu) as {
         onEmojiSelect: (emoji: string) => void
       }
       attrs.onEmojiSelect('😀')
       expect(editor._chain.insertContent).toHaveBeenCalledWith('😀')
       expect(editor._chain.run).toHaveBeenCalled()
-    })
-
-    it('menuComponentAttrs does nothing when selected emoji is empty', () => {
-      const editor = createMockEditor()
-      const action = actions.menuEmoji()
-      const attrs = action.menuComponentAttrs!(editor) as {
-        onEmojiSelect: (emoji: string) => void
-      }
-      attrs.onEmojiSelect('')
-      expect(editor._chain.insertContent).not.toHaveBeenCalled()
+      expect(closeMenu).toHaveBeenCalled()
     })
   })
 

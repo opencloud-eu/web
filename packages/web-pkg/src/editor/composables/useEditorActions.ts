@@ -38,7 +38,7 @@ export interface EditorAction {
   showInSlashCommands?: boolean
   menuCloseOnClick?: boolean
   menuComponent?: Component
-  menuComponentAttrs?: (editor: Editor) => Record<string, unknown>
+  menuComponentAttrs?: (editor: Editor, closeMenu: () => void) => Record<string, unknown>
 
   // Child actions (rendered as a dropdown menu in the toolbar)
   // For child actions to appear as slash commands, they must be registered
@@ -540,11 +540,13 @@ export function useEditorActions(
     iconFillType: 'line',
     keywords: ['emoji', 'smiley', 'emoticon'],
     showInSlashCommands: false,
+    menuCloseOnClick: false,
     menuComponent: markRaw(OcEmojiPicker),
-    menuComponentAttrs: (editor) => ({
+    menuComponentAttrs: (editor, closeMenu) => ({
       theme: unref(currentTheme)?.isDark ? 'dark' : 'light',
       onEmojiSelect: (selectedEmoji: string) => {
         editor.chain().focus().insertContent(selectedEmoji).run()
+        closeMenu()
       }
     }),
     isActive: () => false
