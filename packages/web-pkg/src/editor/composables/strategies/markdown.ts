@@ -50,6 +50,9 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   const {
     undo,
     redo,
+    zoomIn,
+    zoomOut,
+    zoomReset,
     toggleSourceMode,
     bold,
     italic,
@@ -131,6 +134,11 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           deleteRow(),
           horizontalRule()
         ]
+      },
+      {
+        id: 'zoom',
+        title: $gettext('Zoom'),
+        actions: [zoomOut(), zoomIn(), zoomReset()]
       }
     ]
   }

@@ -9,7 +9,7 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false) }
+  const state: TextEditorState = { sourceMode: ref(false), editorZoom: ref(100) }
   return useStrategyPlainText(state)
 }
 
@@ -27,7 +27,7 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('returns history and emoji groups', () => {
+    it('returns history, emoji and zoom groups groups', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
       expect(groups).toHaveLength(2)
@@ -37,10 +37,19 @@ describe('useStrategyPlainText', () => {
       })
       expect(groups[0].actions.map((action) => action.id)).toEqual(['undo', 'redo'])
       expect(groups[1]).toMatchObject({
+        id: 'zoom',
+        title: 'Zoom'
+      })
+      expect(groups[1].actions.map((action) => action.id)).toEqual([
+        'zoom-out',
+        'zoom-in',
+        'zoom-reset'
+      ])
+
+      expect(groups[2]).toMatchObject({
         id: 'emoji',
         title: 'Emoji'
       })
-      expect(groups[1].actions.map((action) => action.id)).toEqual(['menu-emoji'])
     })
   })
 

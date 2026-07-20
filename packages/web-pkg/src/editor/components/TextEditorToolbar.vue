@@ -172,7 +172,7 @@ const visible = computed(() => {
 })
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
-const sourceModeEnabledActionIds = ['source-mode']
+const sourceModeEnabledActionIds = ['source-mode', 'zoom-in', 'zoom-out', 'zoom-reset']
 
 const isItemEnabled = (item: EditorAction) => {
   if (unref(isSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {

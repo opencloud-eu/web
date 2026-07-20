@@ -10,7 +10,8 @@ import { useContentStrategy } from './useContentStrategy'
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
   const state: TextEditorState = {
-    sourceMode: ref(false)
+    sourceMode: ref(false),
+    editorZoom: ref(100)
   }
 
   const contentType = ref(options.contentType)

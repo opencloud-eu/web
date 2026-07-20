@@ -17,6 +17,7 @@ export interface TextEditorOptions {
 
 export interface TextEditorState {
   sourceMode: Ref<boolean>
+  editorZoom: Ref<number>
 }
 
 export interface TextEditorInstance {

@@ -10,7 +10,7 @@ import { useStrategyHtml } from '../../../../src/editor/composables/strategies/h
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false) }
+  const state: TextEditorState = { sourceMode: ref(false), editorZoom: ref(100) }
   return useStrategyHtml(state)
 }
 

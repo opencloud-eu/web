@@ -10,7 +10,7 @@ import { useContentStrategy } from '../../../../src/editor/composables/useConten
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createState(): TextEditorState {
-  return { sourceMode: ref(false) }
+  return { sourceMode: ref(false), editorZoom: ref(100) }
 }
 
 describe('useContentStrategy', () => {
