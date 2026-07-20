@@ -28,6 +28,7 @@ describe('useStrategyMarkdown', () => {
       expect(names).toContain('table')
       expect(names).toContain('taskList')
       expect(names).toContain('image')
+      expect(names).toContain('fileHandler')
       expect(names).not.toContain('underline')
 
       const imageExtension = extensions.find((e) => e.name === 'image') as any

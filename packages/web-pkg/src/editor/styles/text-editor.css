@@ -14,7 +14,8 @@
 
 .text-editor-content .ProseMirror {
   flex: 1;
-  min-height: 128px;
+  min-height: 100%;
+  height: 100%;
   width: 100%;
   box-sizing: border-box;
   outline: none;
