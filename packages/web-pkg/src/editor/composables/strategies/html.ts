@@ -94,6 +94,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     orderedList,
     taskList,
     horizontalRule,
+    menuEmoji,
     tableMenu,
     createTable,
     addRowBefore,
@@ -152,6 +153,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         title: $gettext('Insert'),
         actions: [
           tableMenu(),
+          menuEmoji(),
           createTable(),
           addColumnAfter(),
           addColumnBefore(),

@@ -710,6 +710,28 @@ describe('useEditorActions', () => {
     })
   })
 
+  describe('menuEmoji', () => {
+    it('uses menu component mode and is hidden from slash commands', () => {
+      const action = actions.menuEmoji()
+      expect(action.id).toBe('menu-emoji')
+      expect(action.menuComponent).toBeTruthy()
+      expect(action.showInSlashCommands).toBe(false)
+    })
+
+    it('menuComponentAttrs inserts selected emoji into editor', () => {
+      const editor = createMockEditor()
+      const action = actions.menuEmoji()
+      const closeMenu = vi.fn()
+      const attrs = action.menuComponentAttrs!(editor, closeMenu) as {
+        onEmojiSelect: (emoji: string) => void
+      }
+      attrs.onEmojiSelect('😀')
+      expect(editor._chain.insertContent).toHaveBeenCalledWith('😀')
+      expect(editor._chain.run).toHaveBeenCalled()
+      expect(closeMenu).toHaveBeenCalled()
+    })
+  })
+
   describe('action metadata', () => {
     it('all actions have id, title, and icon', () => {
       for (const [key, factory] of Object.entries(actions)) {

@@ -1,8 +1,11 @@
-import { unref } from 'vue'
+import { markRaw, unref } from 'vue'
 import type { MaybeRef } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
+import type { Component } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useModals } from '../../composables/piniaStores'
+import { storeToRefs } from 'pinia'
+import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
+import { useModals, useThemeStore } from '../../composables/piniaStores'
 import { TextEditorState } from '../types'
 
 export interface EditorAction {
@@ -33,6 +36,9 @@ export interface EditorAction {
   // Visibility control
   showInToolbar?: boolean
   showInSlashCommands?: boolean
+  menuCloseOnClick?: boolean
+  menuComponent?: Component
+  menuComponentAttrs?: (editor: Editor, closeMenu: () => void) => Record<string, unknown>
 
   // Child actions (rendered as a dropdown menu in the toolbar)
   // For child actions to appear as slash commands, they must be registered
@@ -62,6 +68,8 @@ export function useEditorActions(
 ) {
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
+  const themeStore = useThemeStore()
+  const { currentTheme } = storeToRefs(themeStore)
 
   // History actions
   const undo = (): EditorAction => ({
@@ -524,6 +532,26 @@ export function useEditorActions(
     isActive: () => false
   })
 
+  const menuEmoji = (): EditorAction => ({
+    id: 'menu-emoji',
+    title: $gettext('Insert emoji'),
+    description: $gettext('Insert an emoji'),
+    icon: 'emoji-sticker',
+    iconFillType: 'line',
+    keywords: ['emoji', 'smiley', 'emoticon'],
+    showInSlashCommands: false,
+    menuCloseOnClick: false,
+    menuComponent: markRaw(OcEmojiPicker),
+    menuComponentAttrs: (editor, closeMenu) => ({
+      theme: unref(currentTheme)?.isDark ? 'dark' : 'light',
+      onEmojiSelect: (selectedEmoji: string) => {
+        editor.chain().focus().insertContent(selectedEmoji).run()
+        closeMenu()
+      }
+    }),
+    isActive: () => false
+  })
+
   const maxImageSizeBytes = 5 * 1024 * 1024 // 5 MB
 
   const insertImageFromFile = (editor: Editor) => {
@@ -743,6 +771,7 @@ export function useEditorActions(
     // Insert
     link,
     image,
+    menuEmoji,
     imageUrl,
     imageUpload,
     horizontalRule,

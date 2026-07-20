@@ -15,7 +15,7 @@
           v-for="item in group.actions.filter((a) => a.showInToolbar !== false)"
           :key="`toolbar-item-${item.id}`"
         >
-          <template v-if="item.childActions">
+          <template v-if="item.childActions || item.menuComponent">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
               v-oc-tooltip="item.title"
@@ -36,15 +36,23 @@
               <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
             </oc-button>
             <oc-drop
+              :ref="
+                (el) => setDropRef(item.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+              "
               :drop-id="`toolbar-dropdown-${item.id}`"
               :toggle="`#toolbar-dropdown-trigger-${item.id}`"
               :teleport="teleport"
               mode="click"
               class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
-              close-on-click
+              :close-on-click="item.menuCloseOnClick ?? true"
             >
-              <ul class="oc-list">
+              <component
+                :is="item.menuComponent"
+                v-if="item.menuComponent"
+                v-bind="getMenuComponentAttrs(item)"
+              />
+              <ul v-else class="oc-list">
                 <li
                   v-for="child in item.childActions"
                   :key="`${item.id}-${child.id}`"
@@ -117,8 +125,10 @@
 
 <script setup lang="ts">
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
 import { EditorAction } from '../composables'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 defineProps<{
   teleport?: string
@@ -129,6 +139,14 @@ const textEditor = inject<TextEditorInstance>('textEditor')!
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+
+function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
+  if (el) {
+    dropRefs.value[itemId] = el
+  }
+}
 
 const updateScrollState = () => {
   const el = scrollContainerRef.value
@@ -193,6 +211,22 @@ const getActiveIcon = (item: EditorAction) => {
     }
   }
   return { icon: item.icon, iconFillType: item.iconFillType }
+}
+
+const getMenuComponentAttrs = (item: EditorAction) => {
+  const editor = unref(textEditor.editor)
+  if (!editor || !item.menuComponentAttrs) {
+    return {}
+  }
+
+  const closeMenu = () => {
+    const dropRef = dropRefs.value[item.id]
+    if (dropRef?.hide) {
+      dropRef.hide()
+    }
+  }
+
+  return item.menuComponentAttrs(editor, closeMenu)
 }
 </script>
 

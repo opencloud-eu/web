@@ -27,17 +27,20 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('returns history group with undo and redo', () => {
+    it('returns history and emoji groups', () => {
       const strategy = createStrategy()
-      expect(strategy.editorActionGroups()).toHaveLength(1)
-      expect(strategy.editorActionGroups()[0]).toMatchObject({
+      const groups = strategy.editorActionGroups()
+      expect(groups).toHaveLength(2)
+      expect(groups[0]).toMatchObject({
         id: 'history',
         title: 'History'
       })
-      expect(strategy.editorActionGroups()[0].actions.map((action) => action.id)).toEqual([
-        'undo',
-        'redo'
-      ])
+      expect(groups[0].actions.map((action) => action.id)).toEqual(['undo', 'redo'])
+      expect(groups[1]).toMatchObject({
+        id: 'emoji',
+        title: 'Emoji'
+      })
+      expect(groups[1].actions.map((action) => action.id)).toEqual(['menu-emoji'])
     })
   })
 
