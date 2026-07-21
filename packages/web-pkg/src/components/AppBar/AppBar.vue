@@ -328,8 +328,8 @@ export default defineComponent({
       this.breadcrumbMaxWidth =
         totalContentWidth - leftSidebarWidth - rightSidebarWidth - rightControlsWidth
       this.limitedScreenSpace = this.isSideBarOpen
-        ? window.innerWidth <= 1400
-        : window.innerWidth <= 1000
+        ? window.innerWidth <= 1600
+        : window.innerWidth <= 1200
     }
   }
 })
