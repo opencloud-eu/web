@@ -8,6 +8,7 @@
     "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {
+    "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "vue3-gettext": "^4.0.0-beta.1"
   }
