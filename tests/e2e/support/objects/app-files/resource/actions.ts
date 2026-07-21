@@ -130,7 +130,7 @@ const mobileViewmodeSwitchBtn = '#viewmode-switch-toggle'
 const mobileViewmodeSwitchDropdown = '#viewmode-switch-drop'
 
 // file viewer
-const pdfViewerContainer = '#pdf-viewer object.pdf-viewer'
+const pdfViewerContainer = '#pdf-viewer .pdf-viewer'
 const textEditorContainer = '.text-editor-provider .ProseMirror'
 
 // online office locators
