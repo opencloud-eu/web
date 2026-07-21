@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
-import type { TextEditorState } from '../../../../src/editor/types'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
@@ -10,7 +10,10 @@ import { useStrategyTiptapJson } from '../../../../src/editor/composables/strate
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false) }
+  const state: TextEditorState = {
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+  }
   return useStrategyTiptapJson(state)
 }
 
@@ -25,6 +28,25 @@ describe('useStrategyTiptapJson', () => {
       const names = strategy.extensions().map((e) => e.name)
       expect(names).toContain('underline')
       expect(names).toContain('image')
+      expect(names).toContain('link')
+      const link = strategy.extensions().find(({ name }) => name === 'link')!
+      expect(link.options).toMatchObject({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true
+      })
+    })
+  })
+
+  describe('editorActionGroups', () => {
+    it('shows link in both toolbar and slash commands', () => {
+      const action = createStrategy()
+        .editorActionGroups()
+        .flatMap(({ actions }) => actions)
+        .find(({ id }) => id === 'link')!
+      expect(action.showInToolbar).not.toBe(false)
+      expect(action.showInSlashCommands).not.toBe(false)
+      expect(action.slashCommandAction).toBeTypeOf('function')
     })
   })
 

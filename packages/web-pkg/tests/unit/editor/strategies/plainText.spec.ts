@@ -1,6 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ref } from 'vue'
-import type { TextEditorState } from '../../../../src/editor/types'
+import { Editor } from '@tiptap/vue-3'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 import { useStrategyPlainText } from '../../../../src/editor/composables/strategies/plainText'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
@@ -9,7 +10,10 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false) }
+  const state: TextEditorState = {
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+  }
   return useStrategyPlainText(state)
 }
 
@@ -23,6 +27,24 @@ describe('useStrategyPlainText', () => {
       const strategy = createStrategy()
       const names = strategy.extensions().map((e) => e.name)
       expect(names).toEqual(['starterKit'])
+      expect(names).not.toContain('link')
+    })
+
+    it('does not register the link mark bundled in the starter kit', () => {
+      const strategy = createStrategy()
+      const editor = new Editor({ extensions: strategy.extensions() })
+      expect(editor.schema.marks.link).toBeUndefined()
+      editor.destroy()
+    })
+
+    it('does not autolink pasted URLs', () => {
+      const strategy = createStrategy()
+      const editor = new Editor({ extensions: strategy.extensions() })
+
+      editor.view.pasteText('https://opencloud.eu ')
+
+      expect(editor.state.doc.firstChild?.firstChild?.marks).toHaveLength(0)
+      editor.destroy()
     })
   })
 
@@ -38,6 +60,9 @@ describe('useStrategyPlainText', () => {
         'undo',
         'redo'
       ])
+      expect(
+        strategy.editorActionGroups().flatMap(({ actions }) => actions.map(({ id }) => id))
+      ).not.toContain('link')
     })
   })
 

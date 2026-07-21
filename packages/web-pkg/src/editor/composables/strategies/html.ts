@@ -4,7 +4,6 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
@@ -21,6 +20,7 @@ import {
 } from '@tiptap/extension-text-style'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
+import { createLinkExtension } from '../../extensions'
 
 export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -40,12 +40,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
   const extensions = (): Extension[] => {
     return [
       StarterKit.configure({ link: false }),
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
-      }),
+      createLinkExtension(),
       Image.configure({ inline: false }),
       Table.configure({ resizable: false }),
       TableRow,
@@ -94,6 +89,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     orderedList,
     taskList,
     horizontalRule,
+    link,
     tableMenu,
     createTable,
     addRowBefore,
@@ -151,6 +147,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          link(),
           tableMenu(),
           createTable(),
           addColumnAfter(),

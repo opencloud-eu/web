@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
-import type { TextEditorState } from '../../../../src/editor/types'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
@@ -10,7 +10,10 @@ import { useStrategyHtml } from '../../../../src/editor/composables/strategies/h
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false) }
+  const state: TextEditorState = {
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+  }
   return useStrategyHtml(state)
 }
 
@@ -29,6 +32,17 @@ describe('useStrategyHtml', () => {
       expect(names).toContain('table')
       expect(names).toContain('taskList')
     })
+
+    it('configures safe automatic links without opening them on click', () => {
+      const link = createStrategy()
+        .extensions()
+        .find(({ name }) => name === 'link')!
+      expect(link.options).toMatchObject({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true
+      })
+    })
   })
 
   describe('editorActionGroups', () => {
@@ -39,6 +53,14 @@ describe('useStrategyHtml', () => {
       expect(allIds).toContain('bold')
       expect(allIds).toContain('table-menu')
       expect(allIds).toContain('font-size')
+      expect(allIds).toContain('link')
+      const link = strategy
+        .editorActionGroups()
+        .flatMap(({ actions }) => actions)
+        .find(({ id }) => id === 'link')!
+      expect(link.slashCommandAction).toBeTypeOf('function')
+      expect(link.showInToolbar).not.toBe(false)
+      expect(link.showInSlashCommands).not.toBe(false)
     })
 
     it('includes source mode toggle', () => {

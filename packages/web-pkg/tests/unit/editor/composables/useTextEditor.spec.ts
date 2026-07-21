@@ -70,6 +70,136 @@ describe('useTextEditor', () => {
     })
   })
 
+  describe('links', () => {
+    it('opens the panel and prevents navigation when an existing link is clicked', () => {
+      const { result } = createEditor({
+        modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
+      })
+      const editor = result.editor.value!
+      const anchor = editor.view.dom.querySelector('a')!
+      const event = new MouseEvent('click', { cancelable: true })
+      Object.defineProperty(event, 'target', { value: anchor })
+      const open = vi.spyOn(window, 'open').mockImplementation(() => null)
+
+      const handled = editor.options.editorProps.handleClick!(editor.view, 2, event)
+
+      expect(handled).toBe(true)
+      expect(event.defaultPrevented).toBe(true)
+      expect(open).not.toHaveBeenCalled()
+      expect(result.state.linkPanel.value).toMatchObject({
+        href: 'https://opencloud.eu',
+        text: 'OpenCloud',
+        view: 'actions'
+      })
+    })
+
+    it('does not open the link panel when normal text is clicked', () => {
+      const { result } = createEditor({ modelValue: toRef('<p>OpenCloud</p>') })
+      const editor = result.editor.value!
+      const paragraph = editor.view.dom.querySelector('p')!
+      const event = new MouseEvent('click', { cancelable: true })
+      Object.defineProperty(event, 'target', { value: paragraph })
+
+      const handled = editor.options.editorProps.handleClick!(editor.view, 2, event)
+
+      expect(handled).toBe(false)
+      expect(event.defaultPrevented).toBe(false)
+      expect(result.state.linkPanel.value).toBeNull()
+    })
+
+    it('allows native link navigation when readonly', () => {
+      const { result } = createEditor({
+        modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>'),
+        readonly: true
+      })
+      const editor = result.editor.value!
+      const anchor = editor.view.dom.querySelector('a')!
+      const event = new MouseEvent('click', { cancelable: true })
+      Object.defineProperty(event, 'target', { value: anchor })
+
+      const handled = editor.options.editorProps.handleClick!(editor.view, 2, event)
+
+      expect(handled).toBe(false)
+      expect(event.defaultPrevented).toBe(false)
+      expect(result.state.linkPanel.value).toBeNull()
+    })
+
+    it('prevents auxiliary clicks from opening a link', () => {
+      const { result } = createEditor({
+        modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
+      })
+      const editor = result.editor.value!
+      const anchor = editor.view.dom.querySelector('a')!
+      const event = new PointerEvent('auxclick', { button: 1, cancelable: true })
+      Object.defineProperty(event, 'target', { value: anchor })
+
+      const handled = editor.options.editorProps.handleDOMEvents!.auxclick!(editor.view, event)
+
+      expect(handled).toBe(true)
+      expect(event.defaultPrevented).toBe(true)
+    })
+
+    it('allows native auxiliary link navigation when readonly', () => {
+      const { result } = createEditor({
+        modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>'),
+        readonly: true
+      })
+      const editor = result.editor.value!
+      const anchor = editor.view.dom.querySelector('a')!
+      const event = new PointerEvent('auxclick', { button: 1, cancelable: true })
+      Object.defineProperty(event, 'target', { value: anchor })
+
+      const handled = editor.options.editorProps.handleDOMEvents!.auxclick!(editor.view, event)
+
+      expect(handled).toBe(false)
+      expect(event.defaultPrevented).toBe(false)
+      expect(result.state.linkPanel.value).toBeNull()
+    })
+
+    it.each(['markdown', 'html', 'tiptap-json'] as const)(
+      'autolinks pasted URLs for the %s strategy',
+      (contentType) => {
+        const modelValue =
+          contentType === 'tiptap-json'
+            ? JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] })
+            : ''
+        const { result } = createEditor({ contentType, modelValue: toRef(modelValue) })
+        const editor = result.editor.value!
+
+        editor.view.pasteText('https://opencloud.eu ')
+
+        const textNode = editor.state.doc.firstChild?.firstChild
+        expect(editor.state.doc.textContent).toBe('https://opencloud.eu ')
+        expect(textNode?.text).toBe('https://opencloud.eu')
+        expect(textNode?.marks.find(({ type }) => type.name === 'link')?.attrs.href).toBe(
+          'https://opencloud.eu'
+        )
+      }
+    )
+
+    it.each(['markdown', 'html', 'tiptap-json'] as const)(
+      'links selected text when a URL is pasted for the %s strategy',
+      (contentType) => {
+        const modelValue =
+          contentType === 'tiptap-json'
+            ? JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] })
+            : ''
+        const { result } = createEditor({ contentType, modelValue: toRef(modelValue) })
+        const editor = result.editor.value!
+        editor.commands.insertContent('OpenCloud')
+        editor.commands.setTextSelection({ from: 1, to: 10 })
+
+        editor.view.pasteText('https://opencloud.eu')
+
+        const textNode = editor.state.doc.firstChild?.firstChild
+        expect(textNode?.text).toBe('OpenCloud')
+        expect(textNode?.marks.find(({ type }) => type.name === 'link')?.attrs.href).toBe(
+          'https://opencloud.eu'
+        )
+      }
+    )
+  })
+
   describe('onUpdate debounce', () => {
     beforeEach(() => {
       vi.useFakeTimers()

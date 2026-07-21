@@ -3,14 +3,21 @@ import { useEditor } from '@tiptap/vue-3'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
-import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
+import type {
+  TextEditorOptions,
+  TextEditorInstance,
+  TextEditorLinkPanelRequest,
+  TextEditorState
+} from '../types'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
+import { findLinkRange, requestLinkPanel } from './useEditorLink'
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
   const state: TextEditorState = {
-    sourceMode: ref(false)
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
   }
 
   const contentType = ref(options.contentType)
@@ -59,12 +66,59 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editorOptions.contentType = strategy.editorContentType()
   }
 
-  if (options.placeholder) {
-    editorOptions.editorProps = {
-      attributes: {
+  editorOptions.editorProps = {
+    attributes: {
+      ...(options.placeholder && {
         'aria-placeholder': options.placeholder,
         'aria-multiline': 'true'
+      })
+    },
+    handleDOMEvents: {
+      auxclick(view: Editor['view'], event: Event) {
+        const target = event.target
+        if (!(target instanceof Element)) {
+          return false
+        }
+
+        const anchor = target.closest<HTMLAnchorElement>('a')
+        if (!anchor || !view.dom.contains(anchor)) {
+          return false
+        }
+
+        if (!view.editable) {
+          return false
+        }
+
+        event.preventDefault()
+        return true
       }
+    },
+    handleClick(view: Editor['view'], position: number, event: MouseEvent) {
+      const target = event.target
+      if (!(target instanceof Element)) {
+        return false
+      }
+
+      const anchor = target.closest<HTMLAnchorElement>('a')
+      if (!anchor || !view.dom.contains(anchor)) {
+        return false
+      }
+
+      if (!view.editable) {
+        return false
+      }
+
+      event.preventDefault()
+      const currentEditor = unref(editor)
+      if (!currentEditor) {
+        return true
+      }
+
+      const linkRange = findLinkRange(currentEditor, position)
+      if (linkRange) {
+        requestLinkPanel(currentEditor, state, { linkRange, view: 'actions' })
+      }
+      return true
     }
   }
 
@@ -128,6 +182,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     }
     editor.value?.destroy()
     editor.value = null
+    state.linkPanel.value = null
   }
 
   const triggerEditorUpdate = () => triggerRef(editor)

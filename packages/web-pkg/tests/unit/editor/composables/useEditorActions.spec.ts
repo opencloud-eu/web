@@ -1,6 +1,8 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { ref } from 'vue'
 import type { Range } from '@tiptap/core'
+import { Editor } from '@tiptap/vue-3'
+import StarterKit from '@tiptap/starter-kit'
 import { createMockEditor } from './helpers'
 
 vi.mock('vue3-gettext', () => ({
@@ -8,12 +10,23 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 import { useEditorActions } from '../../../../src/editor/composables/useEditorActions'
-import type { TextEditorState } from '../../../../src/editor/types'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useModals } from '../../../../src/composables/piniaStores'
+import { createLinkExtension } from '../../../../src/editor/extensions/link'
 
 function createState(): TextEditorState {
-  return { sourceMode: ref(false) }
+  return {
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+  }
+}
+
+function createLinkEditor(content: string): Editor {
+  return new Editor({
+    extensions: [StarterKit.configure({ link: false }), createLinkExtension()],
+    content
+  })
 }
 
 const mockRange: Range = { from: 0, to: 5 }
@@ -323,19 +336,49 @@ describe('useEditorActions', () => {
   })
 
   describe('link', () => {
-    it('toolbarAction calls onRequestLinkUrl with editor and current href', () => {
-      const onRequestLinkUrl = vi.fn()
-      const actionsWithOpts = useEditorActions(state, { onRequestLinkUrl })
-      const editor = createMockEditor({
-        attributes: { link: { href: 'https://example.com' } }
+    it('toolbarAction requests the panel with an existing link and its full range', () => {
+      const editor = createLinkEditor('<p><a href="https://example.com">Example</a></p>')
+      editor.commands.setTextSelection(2)
+
+      actions.link().toolbarAction!(editor)
+
+      expect(state.linkPanel.value).toEqual({
+        range: { from: 1, to: 8 },
+        href: 'https://example.com',
+        text: 'Example',
+        view: 'edit'
       })
-      actionsWithOpts.link().toolbarAction!(editor)
-      expect(onRequestLinkUrl).toHaveBeenCalledWith(editor, 'https://example.com')
+      editor.destroy()
     })
 
-    it('toolbarAction is a no-op when onRequestLinkUrl is undefined', () => {
-      const editor = createMockEditor()
-      expect(() => actions.link().toolbarAction!(editor)).not.toThrow()
+    it('toolbarAction preserves selected text for a new link', () => {
+      const editor = createLinkEditor('<p>Example</p>')
+      editor.commands.setTextSelection({ from: 1, to: 8 })
+
+      actions.link().toolbarAction!(editor)
+
+      expect(state.linkPanel.value).toEqual({
+        range: { from: 1, to: 8 },
+        href: '',
+        text: 'Example',
+        view: 'edit'
+      })
+      editor.destroy()
+    })
+
+    it('slashCommandAction removes the command and opens the panel at its position', () => {
+      const editor = createLinkEditor('<p>/link</p>')
+
+      actions.link().slashCommandAction!({ editor, range: { from: 1, to: 6 } })
+
+      expect(editor.getText()).toBe('')
+      expect(state.linkPanel.value).toMatchObject({
+        range: { from: 1, to: 1 },
+        href: '',
+        text: '',
+        view: 'edit'
+      })
+      editor.destroy()
     })
 
     it('isActive checks link mark', () => {
@@ -343,8 +386,12 @@ describe('useEditorActions', () => {
       expect(actions.link().isActive!(editor)).toBe(true)
     })
 
-    it('is hidden from slash commands', () => {
-      expect(actions.link().showInSlashCommands).toBe(false)
+    it('is available from toolbar and slash commands', () => {
+      const action = actions.link()
+      expect(action.showInToolbar).not.toBe(false)
+      expect(action.showInSlashCommands).not.toBe(false)
+      expect(action.slashCommandAction).toBeTypeOf('function')
+      expect(action.keywords).toEqual(expect.arrayContaining(['link', 'url', 'website']))
     })
   })
 

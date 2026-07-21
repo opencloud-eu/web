@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
-import type { TextEditorState } from '../../../../src/editor/types'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
@@ -10,7 +10,10 @@ import { useContentStrategy } from '../../../../src/editor/composables/useConten
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createState(): TextEditorState {
-  return { sourceMode: ref(false) }
+  return {
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+  }
 }
 
 describe('useContentStrategy', () => {

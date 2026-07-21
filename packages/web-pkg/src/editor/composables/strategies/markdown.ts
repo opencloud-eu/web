@@ -4,13 +4,13 @@ import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
 import Image from '@tiptap/extension-image'
-import Link from '@tiptap/extension-link'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/vue-3'
 import { TextEditorState } from '../../types'
+import { createLinkExtension } from '../../extensions'
 
 export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -31,12 +31,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     return [
       StarterKit.configure({ link: false }),
       Markdown,
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
-      }),
+      createLinkExtension(),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,
@@ -66,6 +61,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     orderedList,
     taskList,
     horizontalRule,
+    link,
     image,
     imageUrl,
     imageUpload,
@@ -116,6 +112,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          link(),
           image(),
           imageUrl(),
           imageUpload(),
