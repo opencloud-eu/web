@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(tiptap): prevent images from stretching while increasing size [[#2927](https://github.com/opencloud-eu/web/pull/2927)]
 - fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
 - fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
 - fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
