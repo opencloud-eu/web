@@ -160,6 +160,7 @@ import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
 import ListHeader from '../../components/FilesList/ListHeader.vue'
 import { useEventListener } from '@vueuse/core'
+import { RouteLocationRaw } from 'vue-router'
 
 const props = defineProps<{
   space?: SpaceResource
@@ -421,7 +422,7 @@ onBeforeUnmount(() => {
   resourcesStore.setCurrentFolder(null)
 })
 
-const fileDropped = async (fileTarget: string | { name: string; path: string }) => {
+const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
   const selected = [...unref(selectedResources)]
   let targetFolder: Resource = null
   if (typeof fileTarget === 'string') {
