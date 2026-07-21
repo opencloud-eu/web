@@ -6,6 +6,15 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
+- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
+- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
+- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
+
 ### 📈 Enhancement
 
 - feat(tiptap): add image drag and drop [[#2926](https://github.com/opencloud-eu/web/pull/2926)]
@@ -23,14 +32,6 @@
 
 - e2e-fix: a11y flaky in webkit [[#2913](https://github.com/opencloud-eu/web/pull/2913)]
 - add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
-
-### 🐛 Bug Fixes
-
-- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
-- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
-- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
-- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
-- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
 
 ### 📚 Documentation
 
