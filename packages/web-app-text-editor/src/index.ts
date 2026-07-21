@@ -218,7 +218,7 @@ export default defineWebApplication({
       color: '#0D856F',
       defaultExtension: 'txt',
       meta: {
-        fileSizeLimit: 2000000
+        fileSizeLimit: 50000000
       },
       extensions: fileExtensions().map((extensionItem) => {
         return {

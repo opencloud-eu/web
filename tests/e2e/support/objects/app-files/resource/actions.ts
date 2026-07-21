@@ -1902,6 +1902,7 @@ export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<voi
     await page.locator('#viewmode-switch-toggle').click()
     await page.locator(`#viewmode-switch-drop .${webSelectors[target]}`).click()
   }
+  await expect(page.locator(mobileViewmodeSwitchDropdown)).toBeHidden()
 }
 
 export const expectThatResourcesAreDisplayedAs = async (args: {

@@ -12,7 +12,8 @@ vi.mock('vue3-gettext', () => ({
 function createStrategy() {
   const state: TextEditorState = {
     sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
+    editorZoom: ref(100)
   }
   return useStrategyPlainText(state)
 }
@@ -49,17 +50,32 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('returns history group with undo and redo', () => {
+    it('returns history, emoji and view options groups with zoom menu action', () => {
       const strategy = createStrategy()
-      expect(strategy.editorActionGroups()).toHaveLength(1)
-      expect(strategy.editorActionGroups()[0]).toMatchObject({
+      const groups = strategy.editorActionGroups()
+      expect(groups).toHaveLength(3)
+      const historyGroup = groups.find((group) => group.id === 'history')
+      const emojiGroup = groups.find((group) => group.id === 'emoji')
+      const viewOptionsGroup = groups.find((group) => group.id === 'view-options')
+
+      expect(historyGroup).toMatchObject({
         id: 'history',
         title: 'History'
       })
-      expect(strategy.editorActionGroups()[0].actions.map((action) => action.id)).toEqual([
-        'undo',
-        'redo'
-      ])
+      expect(historyGroup?.actions.map((action) => action.id)).toEqual(['undo', 'redo'])
+
+      expect(emojiGroup).toMatchObject({
+        id: 'emoji',
+        title: 'Emoji'
+      })
+      expect(emojiGroup?.actions.map((action) => action.id)).toEqual(['menu-emoji'])
+
+      expect(viewOptionsGroup).toMatchObject({
+        id: 'view-options',
+        title: 'View options'
+      })
+      expect(viewOptionsGroup?.actions.map((action) => action.id)).toEqual(['menu-zoom'])
+      expect(groups.at(-1)?.id).toBe('view-options')
       expect(
         strategy.editorActionGroups().flatMap(({ actions }) => actions.map(({ id }) => id))
       ).not.toContain('link')

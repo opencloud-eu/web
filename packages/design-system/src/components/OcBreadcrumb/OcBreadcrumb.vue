@@ -154,7 +154,7 @@
         'lg:hidden': mobileBreakpoint === 'lg'
       }"
     >
-      <oc-icon name="arrow-left-s" fill-type="line" size="large" />
+      <oc-icon name="arrow-left-s" fill-type="line" size-class="size-8" />
     </oc-button>
   </nav>
   <div

@@ -19,6 +19,7 @@ import {
 } from '@tiptap/extension-text-style'
 import { TextEditorState } from '../../types'
 import { createLinkExtension } from '../../extensions'
+import { imageFileHandlerExtension } from './imageFileHandler'
 
 export const useStrategyTiptapJson = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -39,7 +40,17 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     return [
       StarterKit.configure({ link: false }),
       createLinkExtension(),
-      Image.configure({ inline: false }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        resize: {
+          enabled: true,
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true
+        }
+      }),
+      imageFileHandlerExtension(),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,
@@ -59,6 +70,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
   const {
     undo,
     redo,
+    zoomMenu,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -79,6 +91,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     codeBlock,
     horizontalRule,
     link,
+    menuEmoji,
     image,
     imageUrl,
     imageUpload,
@@ -135,6 +148,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           imageUrl(),
           imageUpload(),
           tableMenu(),
+          menuEmoji(),
           createTable(),
           addColumnAfter(),
           addColumnBefore(),
@@ -144,6 +158,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           deleteRow(),
           horizontalRule()
         ]
+      },
+      {
+        id: 'view-options',
+        title: $gettext('View options'),
+        actions: [zoomMenu()]
       }
     ]
   }

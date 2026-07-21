@@ -3,6 +3,8 @@ Feature: Upload large resources
   I want to upload large resources
   So that I can pause and resume the upload
 
+  # a 1GB upload can run longer than the default test timeout; @slow triples it
+  @slow
   Scenario: Upload large resources in personal space
     Given "Admin" creates following user using API
       | id    |

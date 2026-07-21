@@ -21,6 +21,7 @@ import {
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
 import { createLinkExtension } from '../../extensions'
+import { imageFileHandlerExtension } from './imageFileHandler'
 
 export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -41,7 +42,17 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     return [
       StarterKit.configure({ link: false }),
       createLinkExtension(),
-      Image.configure({ inline: false }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        resize: {
+          enabled: true,
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true
+        }
+      }),
+      imageFileHandlerExtension(),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,
@@ -64,6 +75,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
   const {
     undo,
     redo,
+    zoomMenu,
     toggleSourceMode,
     fontSize,
     lineHeight,
@@ -90,6 +102,10 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     taskList,
     horizontalRule,
     link,
+    image,
+    imageUrl,
+    imageUpload,
+    menuEmoji,
     tableMenu,
     createTable,
     addRowBefore,
@@ -148,7 +164,11 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         title: $gettext('Insert'),
         actions: [
           link(),
+          image(),
+          imageUrl(),
+          imageUpload(),
           tableMenu(),
+          menuEmoji(),
           createTable(),
           addColumnAfter(),
           addColumnBefore(),
@@ -158,6 +178,11 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           deleteRow(),
           horizontalRule()
         ]
+      },
+      {
+        id: 'zoom',
+        title: $gettext('Zoom'),
+        actions: [zoomMenu()]
       }
     ]
   }

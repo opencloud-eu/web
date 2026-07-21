@@ -34,7 +34,7 @@
             no-hover
             @click.stop="onClear"
           >
-            <oc-icon name="close" size="small" />
+            <oc-icon name="close" size-class="size-4" />
           </oc-button>
         </div>
         <div
@@ -50,7 +50,7 @@
           <oc-icon
             v-if="!!errorMessage"
             name="error-warning"
-            size="small"
+            size-class="size-4"
             fill-type="line"
             aria-hidden="true"
             class="mr-1"

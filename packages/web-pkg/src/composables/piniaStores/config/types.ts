@@ -119,6 +119,7 @@ export type OptionsConfig = z.infer<typeof OptionsConfigSchema>
 const ExternalApp = z.object({
   id: z.string(),
   path: z.string(),
+  version: z.string().optional(),
   config: z.record(z.string(), z.unknown()).optional()
 })
 

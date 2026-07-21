@@ -9,7 +9,7 @@
           appearance="raw"
           :to="navItem.to"
         >
-          <oc-icon size="small" :name="navItem.icon" />
+          <oc-icon size-class="size-4" :name="navItem.icon" />
           <span v-text="navItem.text" />
         </oc-button>
       </li>

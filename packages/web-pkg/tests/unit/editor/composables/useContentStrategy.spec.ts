@@ -12,7 +12,8 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 function createState(): TextEditorState {
   return {
     sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
+    editorZoom: ref(100)
   }
 }
 

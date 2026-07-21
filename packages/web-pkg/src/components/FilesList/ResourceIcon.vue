@@ -40,18 +40,11 @@ const defaultFolderIcon: IconType = {
 }
 
 const defaultPersonalSpaceIcon: IconType = {
-  name: 'resource-type-folder',
-  color: 'var(--oc-role-secondary)'
+  name: 'resource-type-folder'
 }
 
 const defaultSpaceIcon: IconType = {
-  name: 'layout-grid',
-  color: 'var(--oc-role-secondary)'
-}
-
-const defaultSpaceIconDisabled: IconType = {
-  name: 'layout-grid',
-  color: 'var(--oc-role-secondary)'
+  name: 'layout-grid'
 }
 
 const defaultFileIcon: IconType = {
@@ -104,9 +97,6 @@ const mimeType = computed(() => {
 const icon = computed((): IconType => {
   if (unref(hasPersonalSpaceIcon)) {
     return defaultPersonalSpaceIcon
-  }
-  if (unref(hasDisabledSpaceIcon)) {
-    return defaultSpaceIconDisabled
   }
   if (unref(hasSpaceIcon)) {
     return defaultSpaceIcon

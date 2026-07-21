@@ -17,7 +17,8 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
   const state: TextEditorState = {
     sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
+    editorZoom: ref(100)
   }
 
   const contentType = ref(options.contentType)

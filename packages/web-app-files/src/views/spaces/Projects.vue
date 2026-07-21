@@ -122,7 +122,7 @@
                 no-hover
                 @click="openSidebarSharePanel(resource as SpaceResource)"
               >
-                <oc-icon name="group" fill-type="line" size="small" />
+                <oc-icon name="group" fill-type="line" size-class="size-4" />
               </oc-button>
             </template>
             <template #contextMenu="{ resource }">

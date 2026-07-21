@@ -44,7 +44,6 @@ export default {
     }
 
     const themeOptions = options.tokens
-    initializeCustomProps(themeOptions?.colorPalette, 'color-')
     initializeCustomProps(themeOptions?.roles, 'role-')
     applyCustomProp('font-family', themeOptions?.fontFamily)
     if (!themeOptions?.roles?.chrome) {

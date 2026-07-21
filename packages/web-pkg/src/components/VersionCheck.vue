@@ -7,7 +7,7 @@
     <template v-else>
       <div v-if="!updateAvailable" class="version-check-no-updates flex items-center">
         <span v-text="$gettext('Up to date')" />
-        <oc-icon class="ml-0.5" name="checkbox-circle" size="xsmall" fill-type="line" />
+        <oc-icon class="ml-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
       </div>
       <oc-button
         v-else
@@ -24,7 +24,7 @@
           class="text-xs"
           v-text="$gettext('Version %{version} available', { version: updateData.current_version })"
         />
-        <oc-icon name="refresh" size="xsmall" fill-type="line" />
+        <oc-icon name="refresh" size-class="size-3" fill-type="line" />
       </oc-button>
       <oc-tag
         v-if="showCritical"

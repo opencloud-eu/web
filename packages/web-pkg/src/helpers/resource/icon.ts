@@ -4,6 +4,7 @@ export type IconFillType = FillType
 export type IconType = {
   name: string
   color?: string
+  /** @deprecated this property is not supported anymore */
   fillType?: IconFillType
   hasDarkVariant?: boolean
 }
@@ -126,7 +127,7 @@ const fileIcon = {
     extensions: ['accdb', 'rss', 'swf']
   },
   drawio: {
-    icon: { name: 'resource-type-drawio', color: 'var(--oc-color-icon-drawio)' },
+    icon: { name: 'resource-type-drawio' },
     extensions: ['drawio']
   },
   document: {
@@ -134,7 +135,7 @@ const fileIcon = {
     extensions: ['doc', 'docm', 'docx', 'dot', 'dotx', 'lwp', 'odt', 'one', 'vsd', 'wpd']
   },
   ifc: {
-    icon: { name: 'resource-type-ifc', color: 'var(--oc-color-icon-ifc)' },
+    icon: { name: 'resource-type-ifc' },
     extensions: ['ifc']
   },
   ipynb: {
@@ -163,7 +164,7 @@ const fileIcon = {
     ]
   },
   form: {
-    icon: { name: 'resource-type-form', color: 'var(--oc-color-icon-form)' },
+    icon: { name: 'resource-type-form' },
     extensions: ['docf', 'docxf', 'oform']
   },
   markdown: {
@@ -172,10 +173,10 @@ const fileIcon = {
   },
   game: {
     icon: { name: 'resource-type-game' },
-    extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'sfc', 'smc', 'n64']
+    extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'snes', 'sfc', 'smc', 'n64', 'v64', 'z64']
   },
   odg: {
-    icon: { name: 'resource-type-graphic', color: 'var(--oc-color-icon-graphic)' },
+    icon: { name: 'resource-type-graphic' },
     extensions: ['odg']
   },
   pdf: {
@@ -201,7 +202,7 @@ const fileIcon = {
     ]
   },
   root: {
-    icon: { name: 'resource-type-root', color: 'var(--oc-color-icon-root)' },
+    icon: { name: 'resource-type-root' },
     extensions: ['root']
   },
   spreadsheet: {
@@ -213,7 +214,7 @@ const fileIcon = {
     extensions: ['cb7', 'cba', 'cbr', 'cbt', 'cbtc', 'cbz', 'cvbdl', 'eml', 'mdb', 'tex', 'txt']
   },
   url: {
-    icon: { name: 'resource-type-url', color: 'var(--oc-role-on-surface)' },
+    icon: { name: 'resource-type-url' },
     extensions: ['url']
   },
   video: {

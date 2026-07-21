@@ -26,7 +26,7 @@
           v-else
           :name="previewIcon"
           :fill-type="previewIconFillType"
-          size="large"
+          size-class="size-8"
           color="var(--oc-role-on-surface-variant)"
         />
       </div>
@@ -48,7 +48,7 @@
           <oc-icon
             v-if="!!errorMessage"
             name="error-warning"
-            size="small"
+            size-class="size-4"
             class="mr-1"
             fill-type="line"
             aria-hidden="true"
@@ -82,7 +82,7 @@
             class="oc-file-input-button oc-text-input-btn"
             @click="addFiles"
           >
-            <oc-icon name="upload-cloud" fill-type="line" size="small" class="mr-1" />
+            <oc-icon name="upload-cloud" fill-type="line" size-class="size-4" class="mr-1" />
             {{ $ngettext('Upload file', 'Upload files', multiple ? 2 : 1) }}
           </oc-button>
           <oc-button
@@ -92,7 +92,7 @@
             :aria-label="$gettext('Clear input')"
             @click="onClear"
           >
-            <oc-icon name="delete-bin" fill-type="line" size="small" />
+            <oc-icon name="delete-bin" fill-type="line" size-class="size-4" />
           </oc-button>
         </div>
       </div>

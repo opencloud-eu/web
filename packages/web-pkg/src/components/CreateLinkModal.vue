@@ -23,7 +23,7 @@
       no-hover
       @click="setAdvancedMode()"
     >
-      <oc-icon name="settings-3" size="small" fill-type="fill" />
+      <oc-icon name="settings-3" size-class="size-4" fill-type="fill" />
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
@@ -71,7 +71,7 @@
         :disabled="confirmButtonDisabled"
         :aria-label="$gettext('More options')"
       >
-        <oc-icon size="small" name="arrow-down-s" />
+        <oc-icon size-class="size-4" name="arrow-down-s" />
         <span class="sr-only">{{ $gettext('More options') }}</span>
       </oc-button>
       <oc-drop

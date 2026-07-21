@@ -9,7 +9,7 @@ function mountToolbar(sourceMode = false, contentType: 'markdown' | 'html' = 'ma
     editor: ref({}),
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
-    state: { sourceMode: ref(sourceMode) },
+    state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
     actionGroups: () => [
       {
         id: 'view-options',

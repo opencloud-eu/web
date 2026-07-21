@@ -18,7 +18,7 @@
         class="w-full max-w-full object-cover aspect-3/2"
       />
       <div v-else class="fallback-icon bg-white flex items-center justify-center w-full aspect-3/2">
-        <oc-icon name="computer" size="xxlarge" />
+        <oc-icon name="computer" size-class="size-22" />
       </div>
     </div>
     <ul
@@ -39,7 +39,7 @@
         >
           <oc-icon
             name="circle"
-            size="small"
+            size-class="size-4"
             :fill-type="index === currentImageIndex ? 'fill' : 'line'"
           />
         </oc-button>

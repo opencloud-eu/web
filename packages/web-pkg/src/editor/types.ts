@@ -26,6 +26,7 @@ export interface TextEditorLinkPanelRequest {
 export interface TextEditorState {
   sourceMode: Ref<boolean>
   linkPanel: Ref<TextEditorLinkPanelRequest | null>
+  editorZoom: Ref<number>
 }
 
 export interface TextEditorInstance {

@@ -91,9 +91,6 @@ When(
 
 When(
   '{string} {word} the file upload',
-  // increase the test timeout for large uploads.
-  // ignores the global timeout.
-  // { timeout: config.largeUploadTimeout * 1000 },
   async ({ world }: { world: World }, stepUser: string, action: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })

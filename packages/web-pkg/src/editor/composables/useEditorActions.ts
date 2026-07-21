@@ -1,6 +1,10 @@
+import { markRaw, unref } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
+import type { Component } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useModals } from '../../composables/piniaStores'
+import { storeToRefs } from 'pinia'
+import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
+import { useModals, useThemeStore } from '../../composables/piniaStores'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from './useEditorLink'
 
@@ -32,6 +36,9 @@ export interface EditorAction {
   // Visibility control
   showInToolbar?: boolean
   showInSlashCommands?: boolean
+  menuCloseOnClick?: boolean
+  menuComponent?: Component
+  menuComponentAttrs?: (editor: Editor, closeMenu: () => void) => Record<string, unknown>
 
   // Child actions (rendered as a dropdown menu in the toolbar)
   // For child actions to appear as slash commands, they must be registered
@@ -53,6 +60,13 @@ export interface ContentTypeActions {
 export function useEditorActions(state: TextEditorState) {
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
+  const themeStore = useThemeStore()
+  const { currentTheme } = storeToRefs(themeStore)
+
+  const zoomStep = 10
+  const zoomMin = 50
+  const zoomMax = 200
+  const clampZoom = (value: number) => Math.min(zoomMax, Math.max(zoomMin, value))
 
   // History actions
   const undo = (): EditorAction => ({
@@ -84,6 +98,52 @@ export function useEditorActions(state: TextEditorState) {
     toolbarAction: () => (state.sourceMode.value = !state.sourceMode.value),
     isActive: () => state.sourceMode.value,
     showInSlashCommands: false
+  })
+
+  const zoomIn = (): EditorAction => ({
+    id: 'zoom-in',
+    title: $gettext('Zoom in'),
+    icon: 'zoom-in',
+    iconFillType: 'line',
+    toolbarAction: () => {
+      state.editorZoom.value = clampZoom(state.editorZoom.value + zoomStep)
+    },
+    isEnabled: () => state.editorZoom.value < zoomMax,
+    showInSlashCommands: false
+  })
+
+  const zoomOut = (): EditorAction => ({
+    id: 'zoom-out',
+    title: $gettext('Zoom out'),
+    icon: 'zoom-out',
+    iconFillType: 'line',
+    toolbarAction: () => {
+      state.editorZoom.value = clampZoom(state.editorZoom.value - zoomStep)
+    },
+    isEnabled: () => state.editorZoom.value > zoomMin,
+    showInSlashCommands: false
+  })
+
+  const zoomReset = (): EditorAction => ({
+    id: 'zoom-reset',
+    title: $gettext('Reset zoom'),
+    icon: 'reset-left',
+    iconFillType: 'line',
+    toolbarAction: () => {
+      state.editorZoom.value = 100
+    },
+    isEnabled: () => state.editorZoom.value !== 100,
+    showInSlashCommands: false
+  })
+
+  const zoomMenu = (): EditorAction => ({
+    id: 'menu-zoom',
+    title: `${$gettext('Zoom')} (${state.editorZoom.value}%)`,
+    icon: 'zoom-in',
+    iconFillType: 'line',
+    showInSlashCommands: false,
+    menuCloseOnClick: false,
+    childActions: [zoomOut(), zoomIn(), zoomReset()]
   })
 
   // Text formatting actions
@@ -517,6 +577,26 @@ export function useEditorActions(state: TextEditorState) {
     isActive: () => false
   })
 
+  const menuEmoji = (): EditorAction => ({
+    id: 'menu-emoji',
+    title: $gettext('Insert emoji'),
+    description: $gettext('Insert an emoji'),
+    icon: 'emoji-sticker',
+    iconFillType: 'line',
+    keywords: ['emoji', 'smiley', 'emoticon'],
+    showInSlashCommands: false,
+    menuCloseOnClick: false,
+    menuComponent: markRaw(OcEmojiPicker),
+    menuComponentAttrs: (editor, closeMenu) => ({
+      theme: unref(currentTheme)?.isDark ? 'dark' : 'light',
+      onEmojiSelect: (selectedEmoji: string) => {
+        editor.chain().focus().insertContent(selectedEmoji).run()
+        closeMenu()
+      }
+    }),
+    isActive: () => false
+  })
+
   const maxImageSizeBytes = 5 * 1024 * 1024 // 5 MB
 
   const insertImageFromFile = (editor: Editor) => {
@@ -705,6 +785,10 @@ export function useEditorActions(state: TextEditorState) {
     undo,
     redo,
     // View options
+    zoomIn,
+    zoomOut,
+    zoomReset,
+    zoomMenu,
     toggleSourceMode,
     // Text formatting
     heading,
@@ -736,6 +820,7 @@ export function useEditorActions(state: TextEditorState) {
     // Insert
     link,
     image,
+    menuEmoji,
     imageUrl,
     imageUpload,
     horizontalRule,

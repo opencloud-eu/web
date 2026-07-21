@@ -4,7 +4,7 @@
       <div class="flex flex-col flex-1 min-h-0">
         <!-- Header Section -->
         <div class="flex items-center px-4 py-2 border-b shrink-0 min-h-[60px]">
-          <oc-icon name="cloud" size="large" class="mr-2" />
+          <oc-icon name="cloud" size-class="size-8" class="mr-2" />
           <h1 class="px-2 text-2xl font-semibold m-0" v-text="$gettext('Where Are You From?')" />
           <oc-contextual-helper class="pl-1" v-bind="helperContent" />
         </div>
@@ -100,7 +100,7 @@
               <div
                 class="flex items-center px-4 py-2 bg-role-surface-container-highest border-b min-h-[42px]"
               >
-                <oc-icon name="shield-check" size="small" class="mr-2" />
+                <oc-icon name="shield-check" size-class="size-4" class="mr-2" />
                 <h2 class="text-lg font-semibold m-0 truncate flex-1" :title="federation">
                   {{ federation }}
                 </h2>
@@ -141,7 +141,7 @@
             "
           >
             <div class="flex items-center mb-2">
-              <oc-icon name="cloud" size="medium" class="mr-2" />
+              <oc-icon name="cloud" size-class="size-5" class="mr-2" />
               <h3 class="text-base font-semibold m-0" v-text="$gettext('Manual Provider Entry')" />
             </div>
             <oc-text-input
@@ -154,7 +154,7 @@
               @keyup.enter="goToManualProvider"
             >
               <template #icon>
-                <oc-icon name="cloud" size="medium" />
+                <oc-icon name="cloud" size-class="size-5" />
               </template>
             </oc-text-input>
             <oc-button

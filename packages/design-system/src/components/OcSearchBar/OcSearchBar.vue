@@ -25,7 +25,7 @@
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
       >
-        <oc-icon v-show="!loading" :name="icon" size="small" fill-type="line" />
+        <oc-icon v-show="!loading" :name="icon" size-class="size-4" fill-type="line" />
         <oc-spinner
           v-show="loading"
           :size="small ? 'xsmall' : 'medium'"

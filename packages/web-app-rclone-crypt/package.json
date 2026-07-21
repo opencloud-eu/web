@@ -11,7 +11,7 @@
   "peerDependencies": {
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "pinia": "3.0.4",
+    "pinia": "4.0.2",
     "vue": "^3.5.0",
     "vue3-gettext": "^4.0.0-beta.1"
   }
