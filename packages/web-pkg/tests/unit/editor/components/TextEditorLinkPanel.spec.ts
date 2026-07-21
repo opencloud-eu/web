@@ -132,7 +132,8 @@ function mountPanel(content: string) {
   const tiptapEditor = createEditor(content)
   const state: TextEditorState = {
     sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
+    editorZoom: ref(100)
   }
   const textEditor = {
     state,

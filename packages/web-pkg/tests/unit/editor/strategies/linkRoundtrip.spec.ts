@@ -18,7 +18,8 @@ vi.mock('vue3-gettext', () => ({
 function createStrategy(contentType: ContentType): ContentTypeStrategy {
   const state: TextEditorState = {
     sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null)
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
+    editorZoom: ref(100)
   }
   switch (contentType) {
     case 'markdown':
