@@ -19,7 +19,6 @@
         <component
           :is="folderView.component"
           v-else
-          v-model:selected-ids="selectedResourcesIds"
           :are-paths-displayed="true"
           :resources="paginatedResources"
           :view-mode="viewMode"
@@ -32,6 +31,7 @@
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
+          @update:selected-ids="selectedResourcesIds = $event"
         >
           <template #quickActions="props">
             <quick-actions class="hidden sm:block" :item="props.resource" />

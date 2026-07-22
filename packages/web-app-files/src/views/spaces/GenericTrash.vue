@@ -42,7 +42,6 @@
         <component
           :is="folderView.component"
           v-else
-          v-model:selected-ids="selectedResourcesIds"
           :fields-displayed="['name', 'ddate']"
           :are-paths-displayed="true"
           :resources="paginatedResources"
@@ -57,6 +56,7 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-size="viewSize"
           @sort="handleSort"
+          @update:selected-ids="selectedResourcesIds = $event"
         >
           <template #contextMenu="{ resource }">
             <context-actions

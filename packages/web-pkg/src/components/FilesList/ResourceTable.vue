@@ -14,7 +14,7 @@
     ]"
     :data="resources"
     :fields="fields"
-    :highlighted="selectedIds"
+    :is-highlighted="isRowSelected"
     :disabled="disabledResources"
     :sticky="isSticky"
     :header-position="headerPosition"
@@ -36,20 +36,13 @@
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template v-if="!isLocationPicker && !isFilePicker" #selectHeader>
-      <div class="resource-table-select-all flex justify-center items-center">
-        <oc-checkbox
-          id="resource-table-select-all"
-          v-oc-tooltip="selectAllCheckboxLabel"
-          size="large"
-          :label="selectAllCheckboxLabel"
-          :disabled="resources.length === disabledResources.length"
-          :label-hidden="true"
-          :model-value="areAllResourcesSelected"
-          @click.stop="toggleSelectionAll"
-        />
-      </div>
+      <resource-table-select-all
+        :resources="resources"
+        :disabled-resources="disabledResources"
+        @update:selected-ids="$emit('update:selectedIds', $event)"
+      />
     </template>
-    <template v-if="!isLocationPicker && !isFilePicker" #select="{ item }">
+    <template v-if="!isLocationPicker && !isFilePicker" #select="{ item, highlighted }">
       <div class="flex justify-center items-center">
         <oc-spinner
           v-if="isResourceInDeleteQueue(item.id)"
@@ -65,8 +58,7 @@
           :label-hidden="true"
           size="large"
           :disabled="isResourceDisabled(item)"
-          :model-value="isResourceSelected(item)"
-          :outline="isLatestSelectedItem(item)"
+          :model-value="highlighted"
           :data-test-selection-resource-name="item.name"
           :data-test-selection-resource-path="item.path"
           @click.stop="fileCheckboxClicked({ resource: item, event: $event })"
@@ -314,6 +306,7 @@ import {
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceGhostElement from './ResourceGhostElement.vue'
 import ResourceSize from './ResourceSize.vue'
+import ResourceTableSelectAll from './ResourceTableSelectAll.vue'
 import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
@@ -334,7 +327,6 @@ const {
   resources,
   resourceDomSelector = (resource: Resource) => extractDomSelector(resource.id),
   arePathsDisplayed = false,
-  selectedIds = [],
   hasActions = true,
   showRenameQuickAction = true,
   areResourcesClickable = true,
@@ -353,7 +345,6 @@ const {
   resources: Resource[]
   resourceDomSelector?: (resource: Resource) => string
   arePathsDisplayed?: boolean
-  selectedIds?: string[]
   hasActions?: boolean
   showRenameQuickAction?: boolean
   areResourcesClickable?: boolean
@@ -410,7 +401,6 @@ const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const { isLocationPicker, isFilePicker } = useEmbedMode()
 const {
   disabledResources,
-  isResourceSelected,
   fileContainerClicked,
   fileNameClicked,
   fileCheckboxClicked,
@@ -427,14 +417,10 @@ const {
   shouldShowContextDrop,
   showContextMenuOnRightClick,
   showContextMenuOnBtnClick,
-  selectAllCheckboxLabel,
-  getResourceCheckboxLabel,
-  toggleSelectionAll,
-  areAllResourcesSelected
+  getResourceCheckboxLabel
 } = useResourceViewHelpers({
   space: computed(() => space),
   resources: computed(() => resources),
-  selectedIds: computed(() => selectedIds),
   emit
 })
 
@@ -445,7 +431,12 @@ const authStore = useAuthStore()
 const { userContextReady } = storeToRefs(authStore)
 
 const resourcesStore = useResourcesStore()
-const { areFileExtensionsShown, latestSelectedId } = storeToRefs(resourcesStore)
+const { areFileExtensionsShown } = storeToRefs(resourcesStore)
+
+// Stable resolvers passed to OcTable. Reading the store happens inside each row's
+// render (not here), so a selection change re-renders only the affected rows -
+// not ResourceTable or OcTable.
+const isRowSelected = (item: Resource) => resourcesStore.selectedIdsSet.has(item.id)
 
 const { width } = useWindowSize()
 const hasTags = computed(
@@ -675,9 +666,6 @@ const getTagComponentAttrs = (tag: string) => {
   return {
     to: getTagLink(tag)
   }
-}
-const isLatestSelectedItem = (item: Resource) => {
-  return item.id === unref(latestSelectedId)
 }
 const getResourceTableActions = (item: Resource): Action<FileActionOptions>[] => {
   if (!showRenameQuickAction) {

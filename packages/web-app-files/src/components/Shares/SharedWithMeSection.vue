@@ -20,7 +20,6 @@
     <component
       :is="folderView.component"
       v-else
-      v-model:selected-ids="selectedResourcesIds"
       :fields-displayed="displayedFields"
       :resources="resourceItems"
       :are-resources-clickable="resourceClickable"
@@ -33,6 +32,7 @@
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
       @sort="sortHandler"
+      @update:selected-ids="selectedResourcesIds = $event"
     >
       <template #contextMenu="{ resource }">
         <context-actions

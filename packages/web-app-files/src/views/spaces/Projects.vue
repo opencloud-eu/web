@@ -65,7 +65,6 @@
           <component
             :is="folderView.component"
             v-else
-            v-model:selected-ids="selectedResourcesIds"
             resource-type="space"
             :resources="paginatedItems"
             :fields-displayed="tableDisplayFields"
@@ -78,6 +77,7 @@
             v-bind="folderView.componentAttrs?.()"
             @sort="handleSort"
             @item-visible="loadPreview({ space: $event, resource: $event })"
+            @update:selected-ids="selectedResourcesIds = $event"
           >
             <template #image="{ resource }">
               <template v-if="viewMode === FolderViewModeConstants.name.tiles">

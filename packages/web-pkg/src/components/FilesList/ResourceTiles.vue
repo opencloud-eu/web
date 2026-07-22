@@ -179,7 +179,6 @@ import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const {
   resources = [],
-  selectedIds = [],
   isSelectable = true,
   space,
   sortFields = [],
@@ -192,7 +191,6 @@ const {
   arePathsDisplayed = false
 } = defineProps<{
   resources?: Resource[]
-  selectedIds?: string[]
   isSelectable?: boolean
   space?: SpaceResource
   sortFields?: SortField[]
@@ -256,7 +254,6 @@ const {
 } = useResourceViewHelpers({
   space: computed(() => space),
   resources: computed(() => resources),
-  selectedIds: computed(() => selectedIds),
   emit
 })
 
