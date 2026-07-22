@@ -279,7 +279,7 @@ def main(ctx):
         print("Errors detected. Review messages above.")
         return []
 
-    after = pipelinesDependsOn(afterPipelines(ctx), pnpmCache(ctx)) + designSystemDocs(ctx)
+    after = pipelinesDependsOn(afterPipelines(ctx), pnpmCache(ctx)) + designSystemDocs(ctx) + e2eTestingDocs(ctx)
 
     pipelines = release + before + stages + after
 
@@ -1212,6 +1212,52 @@ def designSystemDocs(ctx):
                         "event": ["push"],
                         "branch": "${CI_REPO_DEFAULT_BRANCH}",
                         "path": "packages/design-system/**",
+                    },
+                ],
+            },
+        ],
+        "when": [
+            event["pull_request"],
+            event["main_branch"],
+        ],
+        "workspace": web_workspace,
+    }]
+
+def e2eTestingDocs(ctx):
+    return [{
+        "name": "e2e-testing-docs",
+        "steps": [
+            {
+                "name": "build",
+                "image": OC_CI_NODEJS,
+                "commands": [
+                    "node tests/e2e/scripts/generate-docs.mjs",
+                    # add dummy woodpecker config to disable CI on push to the docs branch
+                    "printf 'def main(ctx):\n    return [{\n        \"name\":\"dummy-pipeline\",\n" +
+                    "        \"steps\":[{\"name\":\"dummy-step\",\"image\":\"alpine:latest\"}],\n" +
+                    "        \"when\":[{\"branch\":[\"main\"]}],\n    }]\n' > tests/e2e/.docs-dist/.woodpecker.star",
+                ],
+            },
+            {
+                "name": "publish",
+                "image": PLUGINS_GH_PAGES,
+                "settings": {
+                    "username": {
+                        "from_secret": "github_username",
+                    },
+                    "password": {
+                        "from_secret": "github_token",
+                    },
+                    "pages_directory": "tests/e2e/.docs-dist/",
+                    "copy_contents": True,
+                    "target_branch": "web-testing-docs",
+                    "delete": True,
+                },
+                "when": [
+                    {
+                        "event": ["push"],
+                        "branch": "${CI_REPO_DEFAULT_BRANCH}",
+                        "path": "tests/e2e/README.md",
                     },
                 ],
             },
