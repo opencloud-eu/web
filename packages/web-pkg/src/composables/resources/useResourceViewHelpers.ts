@@ -46,12 +46,10 @@ export const useResourceViewHelpers = ({
   const clipboardStore = useClipboardStore()
   const { resources: clipboardResources, action: clipboardAction } = storeToRefs(clipboardStore)
 
-  const selectedResources = computed(() => {
-    return unref(resources).filter((resource) => unref(selectedIds).includes(resource.id))
-  })
+  const selectedIdsSet = computed(() => new Set(unref(selectedIds)))
 
   const isResourceSelected = (item: Resource) => {
-    return unref(selectedIds).includes(item.id)
+    return unref(selectedIdsSet).has(item.id)
   }
 
   const isResourceInDeleteQueue = (id: string): boolean => {
@@ -222,7 +220,6 @@ export const useResourceViewHelpers = ({
   }
 
   return {
-    selectedResources,
     disabledResources,
     isResourceSelected,
     isResourceInDeleteQueue,
@@ -233,7 +230,7 @@ export const useResourceViewHelpers = ({
     fileNameClicked,
     fileCheckboxClicked,
     getResourceLink,
-    ...useResourceViewDrag({ selectedIds, selectedResources, emit }),
+    ...useResourceViewDrag({ selectedIds, resources, emit }),
     ...useResourceViewContextMenu({ isResourceDisabled, isResourceSelected, emit }),
     ...useResourceViewSelection({ resources, disabledResources, selectedIds, emit })
   }
