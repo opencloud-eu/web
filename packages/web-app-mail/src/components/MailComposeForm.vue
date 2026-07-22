@@ -52,7 +52,10 @@
       <div class="mail-body-editor flex flex-col gap-2 h-full min-h-0 flex-1">
         <div class="mail-body-editor-wrapper flex-1 min-h-0" @click="onWrapperClick">
           <TextEditorProvider :editor="textEditor">
-            <TextEditorToolbar :teleport="toolbarDropTeleport" />
+            <TextEditorToolbar
+              :actions-to-display="actionsToDisplay"
+              :teleport="toolbarDropTeleport"
+            />
             <TextEditorContent />
           </TextEditorProvider>
         </div>
@@ -108,8 +111,9 @@ export type ComposeFormState = {
   attachments?: MailComposeAttachment[]
 }
 
-const { modelValue, toolbarDropTeleport = undefined } = defineProps<{
+const { modelValue, actionsToDisplay } = defineProps<{
   modelValue: ComposeFormState
+  actionsToDisplay?: string[]
   toolbarDropTeleport?: string
 }>()
 
