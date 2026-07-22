@@ -9,3 +9,6 @@ node_modules/
 
 # Playwright-BDD
 /.features-gen/
+
+# Generated docs page (published to the web-testing-docs branch by CI)
+/.docs-dist/
