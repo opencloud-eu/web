@@ -41,6 +41,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.67.0 [[#2929](https://github.com/opencloud-eu/web/pull/2929)]
+- chore(deps): update dependency p-queue to v9.3.2 [[#2934](https://github.com/opencloud-eu/web/pull/2934)]
 - fix(deps): update dependency @sentry/vue to v10.66.0 [[#2912](https://github.com/opencloud-eu/web/pull/2912)]
 - chore(deps): update dependency vite to v8.1.5 [[#2905](https://github.com/opencloud-eu/web/pull/2905)]
 - chore(deps): update tiptap monorepo to v3.28.0 [[#2903](https://github.com/opencloud-eu/web/pull/2903)]
