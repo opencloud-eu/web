@@ -41,6 +41,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-vue to v10.10.0 [[#2928](https://github.com/opencloud-eu/web/pull/2928)]
 - chore(deps): update devdependencies (non-major) [[#2919](https://github.com/opencloud-eu/web/pull/2919)]
 - chore(deps): update pnpm to v11.15.1 [[#2917](https://github.com/opencloud-eu/web/pull/2917)]
 - fix(deps): update dependency @sentry/vue to v10.67.0 [[#2929](https://github.com/opencloud-eu/web/pull/2929)]
