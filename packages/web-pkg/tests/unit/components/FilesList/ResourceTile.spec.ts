@@ -26,7 +26,8 @@ describe('OcTile component', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
   it('renders selected resource correctly', () => {
-    const wrapper = getWrapper({ resource: getSpaceMock(), isResourceSelected: true })
+    const resource = getSpaceMock()
+    const wrapper = getWrapper({ resource }, { selectedIds: [resource.id] })
     expect(wrapper.find('.oc-tile-card-selected').exists()).toBeTruthy()
   })
   it.each(['size-12, size-22, size-42'])(
@@ -41,7 +42,7 @@ describe('OcTile component', () => {
     expect(wrapper.find('.oc-tile-card-loading-spinner').exists()).toBeTruthy()
   })
 
-  function getWrapper(props = {}) {
+  function getWrapper(props = {}, resourcesStore = {}) {
     const defaultMocks = defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files' })
     })
@@ -50,7 +51,9 @@ describe('OcTile component', () => {
       props,
       global: {
         plugins: [
-          ...defaultPlugins({ piniaOptions: { spacesState: { spaces: [getSpaceMock(false)] } } })
+          ...defaultPlugins({
+            piniaOptions: { spacesState: { spaces: [getSpaceMock(false)] }, resourcesStore }
+          })
         ],
         renderStubDefaultSlot: true,
         mocks: defaultMocks,

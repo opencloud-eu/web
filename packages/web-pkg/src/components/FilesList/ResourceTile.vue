@@ -39,7 +39,7 @@
           <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
           </div>
-          <slot v-else name="selection" :item="resource" />
+          <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
         </div>
         <oc-tag
           v-if="isProjectSpaceResource(resource) && resource.disabled"
@@ -124,13 +124,12 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { OcCard } from '@opencloud-eu/design-system/components'
-import { useFolderLink } from '../../composables'
+import { useFolderLink, useResourcesStore } from '../../composables'
 
 const {
   resource,
   space,
   resourceRoute,
-  isResourceSelected = false,
   isResourceClickable = true,
   isResourceDisabled = false,
   isExtensionDisplayed = true,
@@ -142,7 +141,6 @@ const {
   resource?: Resource
   resourceRoute?: RouteLocationRaw
   space?: SpaceResource
-  isResourceSelected?: boolean
   isResourceClickable?: boolean
   isResourceDisabled?: boolean
   isExtensionDisplayed?: boolean
@@ -164,7 +162,7 @@ defineSlots<{
   contextMenu?: (props: { item: Resource }) => unknown
   imageField?: (props: { item: Resource }) => unknown
   indicators?: (props: { item: Resource }) => unknown
-  selection?: (props: { item: Resource }) => unknown
+  selection?: (props: { item: Resource; selected: boolean }) => unknown
   additionalResourceContent?: (props: { item: Resource }) => unknown
 }>()
 
@@ -172,6 +170,9 @@ const { $gettext } = useGettext()
 const { getParentFolderName, getParentFolderLink } = useFolderLink({
   space: ref(space)
 })
+
+const resourcesStore = useResourcesStore()
+const isResourceSelected = computed(() => resourcesStore.selectedIdsSet.has(resource.id))
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
