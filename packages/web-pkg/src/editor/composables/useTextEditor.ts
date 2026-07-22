@@ -4,6 +4,7 @@ import { Placeholder } from '@tiptap/extension-placeholder'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { TextEditorOptions, TextEditorInstance, TextEditorState } from '../types'
+import type { UseEditorActionsOptions } from './useEditorActions'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
 
@@ -14,9 +15,21 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editorZoom: ref(100)
   }
 
+  const editorActionOptions: UseEditorActionsOptions = {}
+  if (options.onRequestLinkUrl) {
+    editorActionOptions.onRequestLinkUrl = async (editor, currentUrl) => {
+      const href = await options.onRequestLinkUrl?.(currentUrl)
+      if (!href) {
+        return
+      }
+
+      editor.chain().focus().extendMarkRange('link').setLink({ href }).run()
+    }
+  }
+
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
-  const strategy = resolveStrategy(options.contentType, state)
+  const strategy = resolveStrategy(options.contentType, state, editorActionOptions)
 
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
