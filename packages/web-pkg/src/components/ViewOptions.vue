@@ -38,14 +38,14 @@
                   <oc-icon
                     :name="viewMode.icon.name"
                     :fill-type="viewMode.icon.fillType"
-                    size="medium"
+                    size-class="size-5"
                   />
                   <span v-text="$gettext(viewMode.label)" />
                 </span>
                 <oc-icon
                   v-if="viewModeQuery === viewMode.name"
                   name="check"
-                  size="medium"
+                  size-class="size-5"
                   class="ml-1"
                 />
               </div>

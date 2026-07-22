@@ -8,7 +8,7 @@
         class="create-app-token-btn ml-4"
         @click="openCreateAppTokenModal"
       >
-        <oc-icon name="add" size="small" />
+        <oc-icon name="add" size-class="size-4" />
         <span v-text="$gettext('New')" />
       </oc-button>
     </div>
@@ -64,7 +64,7 @@
             :aria-label="$gettext('Delete app token')"
             @click="openDeleteAppTokenModal(item)"
           >
-            <oc-icon name="delete-bin-5" size="small" fill-type="line" />
+            <oc-icon name="delete-bin-5" size-class="size-4" fill-type="line" />
             <span class="ml-1" v-text="$gettext('Delete')" />
           </oc-button>
         </template>

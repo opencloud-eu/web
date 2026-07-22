@@ -24,7 +24,7 @@
             :aria-expanded="isFilterOpen"
             @click="toggleFilter"
           >
-            <oc-icon name="search" fill-type="line" size="small" />
+            <oc-icon name="search" fill-type="line" size-class="size-4" />
           </oc-button>
         </div>
       </div>

@@ -16,6 +16,12 @@ export default defineConfig({
   appearance: false,
   head: [['link', { rel: 'icon', href: '/logo.svg' }]],
   vite: {
+    // Pinia (like Vue's own esm-bundler build) references Vue's compile-time
+    // feature flags such as `__VUE_PROD_DEVTOOLS__`. VitePress externalizes deps
+    // during SSR, so force-bundle Pinia to let Vite substitute those flags.
+    ssr: {
+      noExternal: ['pinia']
+    },
     resolve: {
       alias: {
         // necessary to allow compiling our live code blocks
@@ -98,10 +104,6 @@ export default defineConfig({
             {
               text: 'Color roles',
               link: '/designTokens/colorRoles'
-            },
-            {
-              text: 'Color palette',
-              link: '/designTokens/colorPalette'
             }
           ]
         },

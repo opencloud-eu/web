@@ -18,7 +18,7 @@ Feature: Kindergarten can use web to organize a day
       | user  | group |
       | Brian | sales |
 
-  @firefox-skip @webkit-skip
+  @firefox-skip @webkit-skip @timeout:300000
   Scenario: Alice can share this weeks meal plan with all parents
     When "Alice" logs in
     And "Alice" navigates to the personal space page

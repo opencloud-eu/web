@@ -14,7 +14,7 @@
       class="rounded-lg bg-role-surface-container w-xl my-auto"
     >
       <oc-tag rounded size="small" color="primary" appearance="filled" class="mb-4">
-        <oc-icon name="lock-password" size="small" fill-type="line" />
+        <oc-icon name="lock-password" size-class="size-4" fill-type="line" />
         <span v-text="$gettext('End-to-end encrypted')" />
       </oc-tag>
       <div class="flex flex-col items-center text-center">
@@ -37,7 +37,12 @@
         data-testid="empty-vault-hint"
       >
         <div class="flex items-start gap-2">
-          <oc-icon name="error-warning" size="small" fill-type="line" class="text-yellow-800" />
+          <oc-icon
+            name="error-warning"
+            size-class="size-4"
+            fill-type="line"
+            class="text-yellow-800"
+          />
           <div>
             <p
               class="m-0 mb-2 text-sm font-semibold text-yellow-900"

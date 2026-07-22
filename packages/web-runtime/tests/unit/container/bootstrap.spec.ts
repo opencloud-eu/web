@@ -91,6 +91,37 @@ describe('initialize applications', () => {
     })
     expect(ready).toHaveBeenCalledTimes(2)
   })
+
+  it('tracks loading failures for all applications', async () => {
+    createTestingPinia({ stubActions: false })
+
+    const fishyError = new Error('fishy')
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    const loadApplicationMock = vi
+      .fn()
+      .mockImplementation(({ applicationPath }: { applicationPath: string }) => {
+        return Promise.reject(new Error(`${applicationPath}-${fishyError.message}`))
+      })
+    vi.mocked(loadApplication).mockImplementation(loadApplicationMock)
+    vi.mocked(buildApplication).mockImplementation(vi.fn())
+
+    const configStore = useConfigStore()
+    configStore.apps = ['internal']
+    configStore.externalApps = [{ id: 'external-id', path: 'external-path' }]
+
+    await initializeApplications({
+      app: createApp(defineComponent({})),
+      configStore,
+      router: undefined,
+      appProviderService: undefined
+    })
+
+    const appsStore = useAppsStore()
+    expect(appsStore.appLoadingFailure['external-id']).toBeDefined()
+    expect(appsStore.appLoadingFailure['web-app-internal']).toBeDefined()
+    expect(errorSpy).toHaveBeenCalledTimes(2)
+  })
 })
 
 describe('announceCustomScripts', () => {

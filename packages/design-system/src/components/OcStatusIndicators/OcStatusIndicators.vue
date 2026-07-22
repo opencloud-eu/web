@@ -36,7 +36,7 @@
           no-hover
           @click="(e: MouseEvent) => indicator.handler?.(resource, e)"
         >
-          <oc-icon :name="indicator.icon" size="small" :fill-type="indicator.fillType" />
+          <oc-icon :name="indicator.icon" size-class="size-4" :fill-type="indicator.fillType" />
         </oc-button>
         <oc-icon
           v-else
@@ -44,7 +44,7 @@
           :key="indicator.id"
           v-oc-tooltip="$gettext(indicator.label)"
           tabindex="-1"
-          size="small"
+          size-class="size-4"
           class="oc-status-indicators-indicator"
           :class="{ 'ml-1': index > 0 }"
           :name="indicator.icon"

@@ -19,7 +19,8 @@ import {
   useSpaceActionsRestore,
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers,
-  useSpaceActionsUploadImage
+  useSpaceActionsUploadImage,
+  useSpaceActionsEditImageMenu
 } from '../actions'
 
 const adminSettingsSpacesContextActionsExtensionPointId =
@@ -38,6 +39,7 @@ export const useSpaceActions = (): ActionExtension[] => {
   const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
   const { actions: renameActions } = useSpaceActionsRename()
   const { actions: restoreActions } = useSpaceActionsRestore()
+  const { actions: editSpaceImageMenu } = useSpaceActionsEditImageMenu()
   const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
   const { actions: uploadSpaceImage } = useSpaceActionsUploadImage()
   const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
@@ -92,17 +94,17 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-space-image-menu',
+      extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: {
-        ...unref(navigateToTrashActions)[0],
+        ...unref(editSpaceImageMenu)[0],
         category: 'secondary'
       }
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.upload-space-image',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(uploadSpaceImage)[0],
@@ -111,7 +113,7 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.set-space-icon',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(setSpaceIconActions)[0],
@@ -120,10 +122,19 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.delete-space-image',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(deleteSpaceImageActions)[0],
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
+      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(navigateToTrashActions)[0],
         category: 'secondary'
       }
     },

@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^25.5.0",
-    "@vitejs/plugin-vue": "6.0.7",
+    "@vitejs/plugin-vue": "6.0.8",
     "vite": "^8.0.3"
   },
   "dependencies": {
@@ -50,10 +50,10 @@
     "@casl/vue": "^3.0.0",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
-    "@pinia/testing": "^1.0.3",
+    "@pinia/testing": "^2.0.0",
     "axios": "^1.13.6",
-    "pinia": "^3.0.4",
-    "vitest-mock-extended": "^4.0.0",
+    "pinia": "^4.0.0",
+    "vitest-mock-extended": "^5.0.0",
     "vue-router": "^5.0.4",
     "vue3-gettext": "4.0.1"
   }

@@ -1,8 +1,10 @@
 <template>
-  <div v-if="isLoading" class="flex justify-center">
-    <oc-spinner size="large" />
+  <div class="min-w-[352px]">
+    <div v-if="isLoading" class="flex justify-center">
+      <oc-spinner size="large" />
+    </div>
+    <div v-else ref="emojiPickerRef"></div>
   </div>
-  <div v-else ref="emojiPickerRef"></div>
 </template>
 
 <script setup lang="ts">

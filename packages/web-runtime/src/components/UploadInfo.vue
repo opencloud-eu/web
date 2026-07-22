@@ -38,7 +38,7 @@
         }"
       >
         <div v-if="runningUploads" class="flex items-center">
-          <oc-icon v-if="uploadsPaused" name="pause" size="small" class="mr-1" />
+          <oc-icon v-if="uploadsPaused" name="pause" size-class="size-4" class="mr-1" />
           <oc-spinner v-else size="small" class="mr-1" />
           <span class="text-sm text-role-on-surface-variant leading-7" v-text="remainingTime" />
         </div>
@@ -121,12 +121,12 @@
               <oc-icon
                 v-if="item.status === 'error'"
                 name="close"
-                size="small"
+                size-class="size-4"
                 color="var(--oc-role-error)"
               />
-              <oc-icon v-else-if="item.status === 'success'" name="check" size="small" />
-              <oc-icon v-else-if="item.status === 'cancelled'" name="close" size="small" />
-              <oc-icon v-else-if="uploadsPaused" name="pause" size="small" />
+              <oc-icon v-else-if="item.status === 'success'" name="check" size-class="size-4" />
+              <oc-icon v-else-if="item.status === 'cancelled'" name="close" size-class="size-4" />
+              <oc-icon v-else-if="uploadsPaused" name="pause" size-class="size-4" />
               <div v-else class="flex"><oc-spinner size="small" /></div>
               <resource-list-item
                 v-if="displayFileAsResource(item)"

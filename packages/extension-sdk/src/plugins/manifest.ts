@@ -8,7 +8,10 @@ export const manifestPath = join('./src/', manifestFile)
 /**
  * Generates manifest.json for OpenCloud app discovery.
  */
-export function manifestPlugin(remoteEntryName: string): Plugin {
+export function manifestPlugin(
+  remoteEntryName: string,
+  packageJson: Record<string, unknown>
+): Plugin {
   let outputDir = ''
 
   return {
@@ -50,6 +53,13 @@ export function manifestPlugin(remoteEntryName: string): Plugin {
           )
         }
       }
+
+      const metaData = ['name', 'version', 'description', 'license', 'author']
+      metaData.forEach((key) => {
+        if (packageJson[key] && typeof packageJson[key] === 'string') {
+          manifest[key] = packageJson[key]
+        }
+      })
 
       // set entryPoint
       manifest.entrypoint = entryChunk!.fileName

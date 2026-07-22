@@ -57,7 +57,7 @@
           no-hover
           @click="openSideBarSharePanel"
         >
-          <oc-icon name="group" fill-type="line" size="small" />
+          <oc-icon name="group" fill-type="line" size-class="size-4" />
           <span
             v-if="memberCount"
             class="space-header-people-count text-sm whitespace-nowrap"

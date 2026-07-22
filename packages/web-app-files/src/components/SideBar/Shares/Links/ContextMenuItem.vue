@@ -6,7 +6,7 @@
     :to="option.to"
     @click="option.method"
   >
-    <oc-icon :name="option.icon" fill-type="line" size="medium" />
+    <oc-icon :name="option.icon" fill-type="line" size-class="size-5" />
     <span v-text="option.title" />
   </oc-button>
 </template>

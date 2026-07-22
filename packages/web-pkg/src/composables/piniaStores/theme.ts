@@ -32,7 +32,8 @@ const CommonSection = z.object({
 
 const DesignTokens = z.object({
   roles: z.record(z.string(), z.string()).optional(),
-  colorPalette: z.record(z.string(), z.string()).optional(),
+  /** @deprecated */
+  colorPalette: z.record(z.string(), z.string()).optional().meta({ deprecated: true }),
   fontFamily: z.string().optional()
 })
 

@@ -14,7 +14,7 @@
         :aria-label="previousDescription"
         @click="emit('togglePrevious')"
       >
-        <oc-icon size="large" name="arrow-drop-left" />
+        <oc-icon size-class="size-8" name="arrow-drop-left" />
       </oc-button>
       <p v-if="!isFolderLoading" class="m-0 preview-controls-action-count">
         <span aria-hidden="true" v-text="ariaHiddenFileCount" />
@@ -27,7 +27,7 @@
         :aria-label="nextDescription"
         @click="emit('toggleNext')"
       >
-        <oc-icon size="large" name="arrow-drop-right" />
+        <oc-icon size-class="size-8" name="arrow-drop-right" />
       </oc-button>
       <oc-button
         v-oc-tooltip="togglePhotoRollDescription"

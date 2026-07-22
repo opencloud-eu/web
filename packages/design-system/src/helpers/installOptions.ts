@@ -87,7 +87,6 @@ export type InstallOptions = {
       chrome?: string
       onChrome?: string
     }
-    colorPalette?: Record<string, string>
     fontFamily?: string
   }
 }

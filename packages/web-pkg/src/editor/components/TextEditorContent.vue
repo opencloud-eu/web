@@ -1,6 +1,12 @@
 <template>
-  <div v-if="textEditor.editor.value" class="text-editor-content h-full">
-    <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" />
+  <div
+    v-if="textEditor.editor.value"
+    class="text-editor-content h-full"
+    :style="{
+      '--text-editor-zoom-factor': zoomFactor
+    }"
+  >
+    <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea
         ref="sourceModeTextarea"
@@ -25,6 +31,9 @@ const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
+const zoomFactor = computed(() => {
+  return `${(unref(textEditor.state.editorZoom) || 100) / 100}`
+})
 
 const onSourceInput = (event: Event) => {
   const value = (event.target as HTMLTextAreaElement).value

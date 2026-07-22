@@ -3,6 +3,7 @@ import General from './views/General.vue'
 import Users from './views/Users.vue'
 import Groups from './views/Groups.vue'
 import Spaces from './views/Spaces.vue'
+import Extensions from './views/Extensions.vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
   ApplicationInformation,
@@ -105,6 +106,21 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
       authContext: 'user',
       title: $gettext('Spaces')
     }
+  },
+  {
+    path: '/extensions',
+    name: 'admin-settings-extensions',
+    component: Extensions,
+    beforeEnter: (to, from, next) => {
+      if (!$ability.can('read-all', 'Setting')) {
+        next({ path: '/' })
+      }
+      next()
+    },
+    meta: {
+      authContext: 'user',
+      title: $gettext('Extensions')
+    }
   }
 ]
 
@@ -152,6 +168,18 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
       return $ability.can('read-all', 'Drive')
     },
     priority: 40
+  },
+  {
+    name: $gettext('Extensions'),
+    icon: 'puzzle',
+    fillType: 'line',
+    route: {
+      path: `/${APPID}/extensions?`
+    },
+    isVisible: () => {
+      return $ability.can('read-all', 'Setting')
+    },
+    priority: 50
   }
 ]
 
@@ -178,7 +206,7 @@ export default defineWebApplication({
       name: $gettext('Admin Settings'),
       id: APPID,
       icon: 'settings-4',
-      color: '#2b2b2b'
+      color: '#887ef1'
     }
 
     const extensions = computed<Extension[]>(() => {

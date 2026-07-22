@@ -51,7 +51,8 @@ import {
   LoadingService,
   getExtensionNavItems,
   getBackendVersion,
-  getWebVersion
+  getWebVersion,
+  IconType
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { init as sentryInit } from '@sentry/vue'
@@ -225,6 +226,7 @@ export const initializeApplications = async ({
   appProviderApps?: boolean
 }): Promise<NextApplication[]> => {
   type RawApplication = {
+    id?: string
     path?: string
     config?: AppConfigObject
   }
@@ -236,6 +238,7 @@ export const initializeApplications = async ({
     applicationScript: ClassicApplicationScript
   }
 
+  const appsStore = useAppsStore()
   let applicationKeys: string[] = []
   let applicationResponses: PromiseSettledResult<ApplicationResponse>[] = []
   if (appProviderApps) {
@@ -254,16 +257,17 @@ export const initializeApplications = async ({
   } else {
     const rawApplications: RawApplication[] = [
       ...configStore.apps.map((application) => ({
+        id: `web-app-${application}`,
         path: `web-app-${application}`
       })),
       ...configStore.externalApps
     ]
 
-    applicationKeys = rawApplications.map((rawApplication) => rawApplication.path)
+    applicationKeys = rawApplications.map((rawApplication) => rawApplication.id)
     applicationResponses = await Promise.allSettled(
       rawApplications.map((rawApplication) =>
         loadApplication({
-          applicationKey: rawApplication.path,
+          applicationKey: rawApplication.id,
           applicationPath: rawApplication.path,
           applicationConfig: rawApplication.config || {},
           configStore
@@ -272,10 +276,15 @@ export const initializeApplications = async ({
     )
   }
   const applicationScripts = applicationResponses.reduce<ApplicationResponse[]>(
-    (acc, applicationResponse) => {
+    (acc, applicationResponse, index) => {
       // we don't want to fail hard with the full system when one specific application can't get loaded. only log the error.
       if (applicationResponse.status !== 'fulfilled') {
         console.error(applicationResponse.reason)
+        const error =
+          applicationResponse.reason instanceof Error
+            ? applicationResponse.reason
+            : new Error(String(applicationResponse.reason))
+        appsStore.registerAppLoadingFailure(applicationKeys[index], error)
       } else {
         acc.push(applicationResponse.value)
       }
@@ -304,6 +313,10 @@ export const initializeApplications = async ({
       )
     } catch (error) {
       console.error(error)
+      appsStore.registerAppLoadingFailure(
+        applicationKey,
+        error instanceof Error ? error : new Error(String(error))
+      )
     }
   }
 
@@ -336,16 +349,10 @@ export const announceApplicationsReady = async ({
   appsStore.fileExtensions.forEach((fileExtensions) => {
     const app = appsStore.apps[fileExtensions.app]
 
-    const getIconDefinition = () => {
-      const fillType = fileExtensions.iconFillType || app.iconFillType
+    const getIconDefinition = (): IconType => {
       return {
         name: fileExtensions.icon || app.icon,
-        ...(fillType && {
-          fillType
-        }),
-        ...(app.iconColor && {
-          color: app.iconColor
-        })
+        color: fileExtensions.iconColor || app.color
       }
     }
 

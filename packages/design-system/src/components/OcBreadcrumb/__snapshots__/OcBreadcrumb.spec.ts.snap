@@ -32,7 +32,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
     </li>
   </ol>
   <oc-button-stub data-v-5914b352="" arialabel="Navigate one level up" to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="oc-breadcrumb-mobile-navigation flex sm:hidden">
-    <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="" filltype="line" name="arrow-left-s" size="large" sizeclass="size-5" type="span"></oc-icon-stub>
+    <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="" filltype="line" name="arrow-left-s" sizeclass="size-8" type="span"></oc-icon-stub>
   </oc-button-stub>
 </nav>
 
@@ -71,7 +71,7 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
     </li>
   </ol>
   <oc-button-stub data-v-5914b352="" arialabel="Navigate one level up" to="[object Object]" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="router-link" nohover="false" class="oc-breadcrumb-mobile-navigation flex sm:hidden">
-    <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="" filltype="line" name="arrow-left-s" size="large" sizeclass="size-5" type="span"></oc-icon-stub>
+    <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="" filltype="line" name="arrow-left-s" sizeclass="size-8" type="span"></oc-icon-stub>
   </oc-button-stub>
 </nav>
 

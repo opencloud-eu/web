@@ -9,14 +9,14 @@
       class="!py-[1px] items-center"
       size="small"
     >
-      <oc-icon size="xsmall" name="arrow-go-back" fill-type="line" />
+      <oc-icon size-class="size-3" name="arrow-go-back" fill-type="line" />
       <span v-text="mail.threadSize" />
     </oc-tag>
     <oc-icon
       v-if="mail.hasAttachment"
       v-oc-tooltip="$gettext('Attachment')"
       :aria-label="$gettext('This mail has attachments')"
-      size="small"
+      size-class="size-4"
       name="attachment-2"
       fill-type="none"
     />
@@ -24,7 +24,7 @@
       v-if="mail.keywords?.['$draft']"
       v-oc-tooltip="$gettext('Draft')"
       :aria-label="$gettext('This mail is a draft')"
-      size="small"
+      size-class="size-4"
       name="pencil"
       fill-type="line"
     />
@@ -32,7 +32,7 @@
       v-if="mail.keywords?.['$flagged']"
       v-oc-tooltip="$gettext('Flagged')"
       :aria-label="$gettext('This mail is flagged')"
-      size="small"
+      size-class="size-4"
       name="flag"
       fill-type="fill"
     />
@@ -40,7 +40,7 @@
       v-if="mail.keywords?.['$answered']"
       v-oc-tooltip="$gettext('Answered')"
       :aria-label="$gettext('This mail has been answered')"
-      size="small"
+      size-class="size-4"
       name="reply"
       fill-type="fill"
     />
@@ -49,7 +49,7 @@
       v-oc-tooltip="$gettext('Forwarded')"
       :aria-label="$gettext('This mail has been forwarded')"
       class="rotate-180 scale-y-[-1]"
-      size="small"
+      size-class="size-4"
       name="reply"
       fill-type="fill"
     />
@@ -59,7 +59,7 @@
       size="small"
       appearance="filled"
     >
-      <oc-icon size="small" name="spam" fill-type="fill" color="#996102" />
+      <oc-icon size-class="size-4" name="spam" fill-type="fill" color="#996102" />
       <span v-text="$gettext('Spam')" />
     </oc-tag>
   </div>

@@ -25,6 +25,7 @@ import {
   type UseEditorActionsOptions
 } from '../useEditorActions'
 import { TextEditorState } from '../../types'
+import { imageFileHandlerExtension } from './imageFileHandler'
 
 export const useStrategyHtml = (
   editorState: TextEditorState,
@@ -53,7 +54,17 @@ export const useStrategyHtml = (
         linkOnPaste: true,
         HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
       }),
-      Image.configure({ inline: false }),
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+        resize: {
+          enabled: true,
+          minWidth: 50,
+          minHeight: 50,
+          alwaysPreserveAspectRatio: true
+        }
+      }),
+      imageFileHandlerExtension(),
       Table.configure({ resizable: false }),
       TableRow,
       TableCell,
@@ -76,6 +87,7 @@ export const useStrategyHtml = (
   const {
     undo,
     redo,
+    zoomMenu,
     toggleSourceMode,
     fontSize,
     lineHeight,
@@ -102,6 +114,10 @@ export const useStrategyHtml = (
     taskList,
     horizontalRule,
     link,
+    image,
+    imageUrl,
+    imageUpload,
+    menuEmoji,
     tableMenu,
     createTable,
     addRowBefore,
@@ -165,7 +181,11 @@ export const useStrategyHtml = (
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          image(),
+          imageUrl(),
+          imageUpload(),
           tableMenu(),
+          menuEmoji(),
           createTable(),
           addColumnAfter(),
           addColumnBefore(),
@@ -176,6 +196,11 @@ export const useStrategyHtml = (
           horizontalRule(),
           toolbarLink()
         ]
+      },
+      {
+        id: 'zoom',
+        title: $gettext('Zoom'),
+        actions: [zoomMenu()]
       }
     ]
   }

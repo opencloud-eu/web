@@ -3,7 +3,7 @@
     class="oc-application-icon inline-flex items-center justify-center rounded-sm w-8 h-8"
     :style="iconStyle"
   >
-    <oc-icon :name="icon" color="var(--oc-role-on-secondary)" size="medium" />
+    <oc-icon :name="icon" color="var(--oc-role-on-secondary)" size-class="size-5" />
   </div>
 </template>
 

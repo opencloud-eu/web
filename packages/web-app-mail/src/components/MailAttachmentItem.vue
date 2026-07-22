@@ -4,7 +4,7 @@
       <oc-icon
         :name="iconName"
         :color="icon?.color"
-        size="large"
+        size-class="size-8"
         class="inline-flex items-center"
       />
       <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
@@ -23,7 +23,7 @@
         :aria-label="$gettext('Remove attachment')"
         @click="remove"
       >
-        <oc-icon size="medium" name="delete-bin-6-line" fill-type="none" />
+        <oc-icon size-class="size-5" name="delete-bin-6-line" fill-type="none" />
       </oc-button>
       <oc-button
         v-else
@@ -32,7 +32,7 @@
         :disabled="!canDownload"
         @click="download"
       >
-        <oc-icon size="medium" name="download-2" fill-type="line" />
+        <oc-icon size-class="size-5" name="download-2" fill-type="line" />
       </oc-button>
     </div>
   </div>

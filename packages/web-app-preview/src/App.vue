@@ -35,7 +35,7 @@
           v-else-if="activeMediaFile.isError"
           class="w-full flex flex-col items-center justify-center"
         >
-          <oc-icon name="file-damage" size="xlarge" color="var(--oc-role-error)" />
+          <oc-icon name="file-damage" size-class="size-12" color="var(--oc-role-error)" />
           <p>
             {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFile.name }) }}
           </p>

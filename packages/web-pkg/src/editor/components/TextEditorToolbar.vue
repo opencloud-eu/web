@@ -12,7 +12,7 @@
         :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
       >
         <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
-          <template v-if="item.childActions">
+          <template v-if="item.childActions || item.menuComponent">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
               v-oc-tooltip="item.title"
@@ -30,20 +30,28 @@
               <oc-icon
                 :name="getActiveIcon(item).icon"
                 :fill-type="getActiveIcon(item).iconFillType || 'none'"
-                size="small"
+                size-class="size-4"
               />
-              <oc-icon name="arrow-down-s" fill-type="line" size="small" />
+              <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
             </oc-button>
             <oc-drop
+              :ref="
+                (el) => setDropRef(item.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+              "
               :drop-id="`toolbar-dropdown-${item.id}`"
               :toggle="`#toolbar-dropdown-trigger-${item.id}`"
               :teleport="teleport"
               mode="click"
               class="text-editor-toolbar-dropdown w-auto min-w-40"
               padding-size="small"
-              close-on-click
+              :close-on-click="item.menuCloseOnClick ?? true"
             >
-              <ul class="oc-list">
+              <component
+                :is="item.menuComponent"
+                v-if="item.menuComponent"
+                v-bind="getMenuComponentAttrs(item)"
+              />
+              <ul v-else class="oc-list">
                 <li
                   v-for="child in item.childActions"
                   :key="`${item.id}-${child.id}`"
@@ -69,7 +77,7 @@
                         v-else
                         :name="child.icon"
                         :fill-type="child.iconFillType || 'none'"
-                        size="small"
+                        size-class="size-4"
                       />
                       <span>{{ child.title }}</span>
                     </span>
@@ -77,7 +85,7 @@
                       v-if="isItemActive(child)"
                       name="check"
                       fill-type="line"
-                      size="small"
+                      size-class="size-4"
                     />
                   </oc-button>
                 </li>
@@ -95,7 +103,11 @@
             :disabled="!isItemEnabled(item)"
             @click.stop="item.toolbarAction?.(textEditor.editor.value!)"
           >
-            <oc-icon :name="item.icon" :fill-type="item.iconFillType || 'none'" size="small" />
+            <oc-icon
+              :name="item.icon"
+              :fill-type="item.iconFillType || 'none'"
+              size-class="size-4"
+            />
           </oc-button>
         </template>
       </div>
@@ -113,8 +125,10 @@
 
 <script setup lang="ts">
 import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -145,6 +159,14 @@ const toolbarGroups = computed<EditorActionGroup[]>(() => {
     .filter((group) => group.actions.length)
 })
 
+const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+
+function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
+  if (el) {
+    dropRefs.value[itemId] = el
+  }
+}
+
 const updateScrollState = () => {
   const el = scrollContainerRef.value
   if (!el) {
@@ -174,7 +196,7 @@ const visible = computed(() => {
 })
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
-const sourceModeEnabledActionIds = ['source-mode']
+const sourceModeEnabledActionIds = ['source-mode', 'menu-zoom', 'zoom-in', 'zoom-out', 'zoom-reset']
 
 const isItemEnabled = (item: EditorAction) => {
   if (unref(isSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
@@ -213,6 +235,22 @@ const getActiveIcon = (item: EditorAction) => {
     }
   }
   return { icon: item.icon, iconFillType: item.iconFillType }
+}
+
+const getMenuComponentAttrs = (item: EditorAction) => {
+  const editor = unref(textEditor.editor)
+  if (!editor || !item.menuComponentAttrs) {
+    return {}
+  }
+
+  const closeMenu = () => {
+    const dropRef = dropRefs.value[item.id]
+    if (dropRef?.hide) {
+      dropRef.hide()
+    }
+  }
+
+  return item.menuComponentAttrs(editor, closeMenu)
 }
 </script>
 

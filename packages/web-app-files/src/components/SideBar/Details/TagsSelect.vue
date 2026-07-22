@@ -28,12 +28,17 @@
           class="flex items-center max-w-50"
           @click="closeSideBar()"
         >
-          <oc-icon name="price-tag-3" class="mr-1" size="small" />
+          <oc-icon name="price-tag-3" class="mr-1" size-class="size-4" />
           <span class="truncate">{{ option.label }}</span>
         </component>
 
         <span class="flex items-center mr-1">
-          <oc-icon v-if="option.readonly" class="vs__deselect-lock" name="lock" size="small" />
+          <oc-icon
+            v-if="option.readonly"
+            class="vs__deselect-lock"
+            name="lock"
+            size-class="size-4"
+          />
           <oc-button
             v-else
             appearance="raw"
@@ -43,7 +48,7 @@
             @mousedown.stop.prevent
             @click="deselect(option)"
           >
-            <oc-icon name="close" size="small" />
+            <oc-icon name="close" size-class="size-4" />
           </oc-button>
         </span>
       </oc-tag>
@@ -52,7 +57,7 @@
       <div class="flex test">
         <span class="flex justify-center">
           <oc-tag class="tags-select-tag ml-1 max-w-50" :rounded="true" size="small">
-            <oc-icon name="price-tag-3" size="small" />
+            <oc-icon name="price-tag-3" size-class="size-4" />
             <span class="truncate">{{ label }}</span>
           </oc-tag>
         </span>

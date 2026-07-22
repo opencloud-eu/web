@@ -11,7 +11,7 @@
       </label>
     </slot>
     <div class="relative" :class="{ 'grow-1': inlineLabel }">
-      <oc-icon v-if="readOnly" name="lock" size="small" class="mt-2 ml-2 absolute" />
+      <oc-icon v-if="readOnly" name="lock" size-class="size-4" class="mt-2 ml-2 absolute" />
       <component
         :is="inputComponent"
         :id="id"
@@ -44,7 +44,7 @@
         no-hover
         @click="onClear"
       >
-        <oc-icon name="close" size="small" />
+        <oc-icon name="close" size-class="size-4" />
       </oc-button>
     </div>
     <div
@@ -60,7 +60,7 @@
         <oc-icon
           v-if="showErrorMessage"
           name="error-warning"
-          size="small"
+          size-class="size-4"
           fill-type="line"
           aria-hidden="true"
           class="mr-1"

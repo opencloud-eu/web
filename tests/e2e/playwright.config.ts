@@ -1,5 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 import { defineBddConfig } from 'playwright-bdd'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 /**
  * Read environment variables from file.
@@ -8,7 +12,7 @@ import { defineBddConfig } from 'playwright-bdd'
 // import dotenv from 'dotenv';
 // import path from 'path';
 const testDir = defineBddConfig({
-  featuresRoot: './features',
+  featuresRoot: path.join(__dirname, 'features'),
   steps: ['steps/ui/*.ts', 'steps/*.ts', 'environment/fixtures.ts', 'environment/hooks.ts']
 })
 
@@ -51,7 +55,8 @@ export const appConfig = {
     return withHttp(url)
   },
 
-  // Timeouts
+  // Timeouts (in seconds; multiply by 1000 when passing to Playwright APIs).
+  // (@slow / @timeout:<ms>)
   testTimeout: parseInt(process.env.TEST_TIMEOUT || '120'),
   get timeout() {
     return this.testTimeout

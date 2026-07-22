@@ -2,7 +2,7 @@
   <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
     <div class="text-center mb-6 rounded-sm">
       <div>
-        <oc-icon size="xxlarge" name="layout-grid" />
+        <oc-icon size-class="size-22" name="layout-grid" />
         <p v-text="selectedSpacesString" />
       </div>
     </div>
