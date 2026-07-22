@@ -10,9 +10,9 @@ import { provide } from 'vue'
 import type { TextEditorInstance } from '../types'
 import TextEditorLinkPanel from './TextEditorLinkPanel.vue'
 
-const { editor } = defineProps<{
+const props = defineProps<{
   editor: TextEditorInstance
 }>()
 
-provide('textEditor', editor)
+provide('textEditor', props.editor)
 </script>

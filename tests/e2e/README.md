@@ -25,7 +25,7 @@ Feature files (`tests/e2e/features/**/*.feature`) are compiled into Playwright s
 files with [playwright-bdd](https://github.com/vitalets/playwright-bdd):
 
 ```bash
-(cd tests/e2e pnpm bddgen)
+(cd tests/e2e && pnpm bddgen)
 ```
 
 > [!IMPORTANT]

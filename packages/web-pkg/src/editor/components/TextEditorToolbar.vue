@@ -6,15 +6,12 @@
       @scroll="updateScrollState"
     >
       <div
-        v-for="(group, groupIndex) in textEditor.actionGroups()"
+        v-for="(group, groupIndex) in toolbarGroups"
         :key="`toolbar-group-${group.id}`"
         class="text-editor-toolbar-group inline-flex items-stretch"
         :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
       >
-        <template
-          v-for="item in group.actions.filter((a) => a.showInToolbar !== false)"
-          :key="`toolbar-item-${item.id}`"
-        >
+        <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
           <template v-if="item.childActions || item.menuComponent">
             <oc-button
               :id="`toolbar-dropdown-trigger-${item.id}`"
@@ -27,6 +24,8 @@
               }"
               :aria-label="item.title"
               :disabled="!isItemEnabled(item)"
+              @mousedown.prevent
+              @click.stop
             >
               <oc-icon
                 :name="getActiveIcon(item).icon"
@@ -65,6 +64,7 @@
                     justify-content="space-between"
                     class="p-1"
                     :disabled="!isItemEnabled(child)"
+                    @mousedown.prevent
                     @click="child.toolbarAction?.(textEditor.editor.value!)"
                   >
                     <span class="inline-flex items-center gap-2">
@@ -124,13 +124,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
-import { EditorAction } from '../composables'
+import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
-defineProps<{
+const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
+  actionsToDisplay?: string[]
   teleport?: string
 }>()
 
@@ -139,6 +140,24 @@ const textEditor = inject<TextEditorInstance>('textEditor')!
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+const isToolbarItemVisible = (item: EditorAction) => {
+  if (!actionsToDisplay) {
+    return item.showInToolbar !== false
+  }
+
+  return actionsToDisplay.includes(item.id)
+}
+
+const toolbarGroups = computed<EditorActionGroup[]>(() => {
+  return textEditor
+    .actionGroups()
+    .map((group) => ({
+      ...group,
+      actions: group.actions.filter(isToolbarItemVisible)
+    }))
+    .filter((group) => group.actions.length)
+})
 
 const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
@@ -160,6 +179,11 @@ const updateScrollState = () => {
 }
 
 onMounted(async () => {
+  await nextTick()
+  updateScrollState()
+})
+
+watch(toolbarGroups, async () => {
   await nextTick()
   updateScrollState()
 })
@@ -245,6 +269,7 @@ const getMenuComponentAttrs = (item: EditorAction) => {
 .text-editor-toolbar-btn {
   gap: 0 !important;
 }
+
 .text-editor-toolbar-btn--active {
   @apply bg-role-secondary-container;
 }

@@ -87,9 +87,8 @@ const resources: Resource[] = [
 describe('ResourceTiles component', () => {
   const originalGetElementById = document.getElementById
   beforeEach(() => {
-    const mockElement = {
-      clientWidth: 800
-    } as HTMLElement
+    const mockElement = document.createElement('div')
+    Object.defineProperty(mockElement, 'clientWidth', { value: 800, configurable: true })
     document.getElementById = vi.fn((id) => {
       if (id === 'tiles-view') {
         return mockElement

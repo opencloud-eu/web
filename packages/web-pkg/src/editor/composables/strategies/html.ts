@@ -115,6 +115,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     addColumnAfter,
     deleteColumn
   } = useEditorActions(editorState)
+
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {

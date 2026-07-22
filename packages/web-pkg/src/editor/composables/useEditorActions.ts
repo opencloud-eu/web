@@ -1,6 +1,7 @@
 import { markRaw, unref } from 'vue'
-import type { Editor, Range } from '@tiptap/core'
 import type { Component } from 'vue'
+import type { Editor, Range } from '@tiptap/core'
+import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
