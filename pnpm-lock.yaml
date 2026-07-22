@@ -649,6 +649,9 @@ importers:
 
   packages/web-app-pdf-viewer:
     dependencies:
+      '@opencloud-eu/web-client':
+        specifier: workspace:*
+        version: link:../web-client
       '@opencloud-eu/web-pkg':
         specifier: workspace:*
         version: link:../web-pkg
