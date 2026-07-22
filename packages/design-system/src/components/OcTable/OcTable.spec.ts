@@ -166,7 +166,7 @@ describe('OcTable', () => {
       props: {
         fields,
         data,
-        highlighted: '4b136c0a-5057-11eb-ac70-eba264112003'
+        highlighted: ['4b136c0a-5057-11eb-ac70-eba264112003']
       },
       global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
     })

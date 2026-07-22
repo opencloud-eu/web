@@ -165,7 +165,7 @@ export interface Props {
   /**
    * @docs The IDs of the rows that should be highlighted.
    */
-  highlighted?: string | string[]
+  highlighted?: string[]
   /**
    * @docs Determines if the table rows should have a hover effect.
    * @default false
@@ -454,24 +454,16 @@ const extractCellProps = (field: FieldType): Record<string, string> => {
   }
 }
 
+const highlightedSet = computed(() => new Set(highlighted))
+
+const disabledSet = computed(() => new Set(disabled))
+
 const isHighlighted = (item: Item) => {
-  if (!highlighted) {
-    return false
-  }
-
-  if (Array.isArray(highlighted)) {
-    return highlighted.indexOf(item[idKey as keyof Item]) > -1
-  }
-
-  return highlighted === item[idKey as keyof Item]
+  return highlightedSet.value.has(item[idKey as keyof Item])
 }
 
 const isDisabled = (item: Item) => {
-  if (!disabled.length) {
-    return false
-  }
-
-  return disabled.indexOf(item[idKey as keyof Item]) > -1
+  return disabledSet.value.has(item[idKey as keyof Item])
 }
 
 const cellKey = (field: FieldType, index: number, item: Item) => {
