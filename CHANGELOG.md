@@ -6,6 +6,11 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @v-scharf
 
+### 📚 Documentation
+
+- ci: sync e2e/README.md to docs [[#2938](https://github.com/opencloud-eu/web/pull/2938)]
+- docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
+
 ### 🐛 Bug Fixes
 
 - fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
@@ -34,10 +39,6 @@
 
 - e2e-fix: a11y flaky in webkit [[#2913](https://github.com/opencloud-eu/web/pull/2913)]
 - add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
-
-### 📚 Documentation
-
-- docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
 
 ### 📦️ Dependencies
 
