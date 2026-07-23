@@ -43,6 +43,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2943](https://github.com/opencloud-eu/web/pull/2943)]
 - chore(deps): update dependency p-queue to v9.3.3 [[#2942](https://github.com/opencloud-eu/web/pull/2942)]
 - chore(deps): update dependency postcss to v8.5.22 [[#2941](https://github.com/opencloud-eu/web/pull/2941)]
 - chore(deps): update typescript-eslint monorepo to v8.65.0 [[#2932](https://github.com/opencloud-eu/web/pull/2932)]
