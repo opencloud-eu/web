@@ -1,7 +1,7 @@
 <template>
   <oc-card
     ref="observerTarget"
-    body-class="p-0"
+    body-class="p-0 flex flex-col"
     class="oc-tile-card flex flex-col h-full shadow-none [&.item-accentuated]:bg-role-secondary-container"
     :data-item-id="resource.id"
     :class="{
@@ -121,15 +121,13 @@ import ResourceLink from './ResourceLink.vue'
 import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
-import { RouteLocationRaw } from 'vue-router'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { OcCard } from '@opencloud-eu/design-system/components'
-import { useFolderLink, useResourcesStore } from '../../composables'
+import { useFolderLink, useResourceLink, useResourcesStore } from '../../composables'
 
 const {
   resource,
-  space,
-  resourceRoute,
+  space = undefined,
   isResourceClickable = true,
   isResourceDisabled = false,
   isExtensionDisplayed = true,
@@ -138,8 +136,7 @@ const {
   lazy = false,
   isLoading = false
 } = defineProps<{
-  resource?: Resource
-  resourceRoute?: RouteLocationRaw
+  resource: Resource
   space?: SpaceResource
   isResourceClickable?: boolean
   isResourceDisabled?: boolean
@@ -180,6 +177,9 @@ const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?
 const showStatusIcon = computed(() => {
   return resource.locked || resource.processing
 })
+
+const { getResourceLink } = useResourceLink({ space: computed(() => space) })
+const resourceRoute = computed(() => getResourceLink(resource))
 
 const statusIconAttrs = computed(() => {
   if (resource.locked) {

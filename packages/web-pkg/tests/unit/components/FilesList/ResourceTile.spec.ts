@@ -1,8 +1,13 @@
-import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  PartialComponentProps,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
 import ResourceTile from '../../../../src/components/FilesList/ResourceTile.vue'
 import { mock } from 'vitest-mock-extended'
 import { RouteLocation } from 'vue-router'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 const getSpaceMock = (disabled = false) =>
   ({
@@ -42,7 +47,10 @@ describe('OcTile component', () => {
     expect(wrapper.find('.oc-tile-card-loading-spinner').exists()).toBeTruthy()
   })
 
-  function getWrapper(props = {}, resourcesStore = {}) {
+  function getWrapper(
+    props: PartialComponentProps<typeof ResourceTile> & { resource: Resource },
+    resourcesStore = {}
+  ) {
     const defaultMocks = defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files' })
     })
