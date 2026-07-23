@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- perf: improve file selection in tiles view [[#2939](https://github.com/opencloud-eu/web/pull/2939)]
 - feat(tiptap): add Tiptap toolbar support [[#2793](https://github.com/opencloud-eu/web/pull/2793)]
 - feat(tiptap): add image drag and drop [[#2926](https://github.com/opencloud-eu/web/pull/2926)]
 - feat(tiptap): add image resizing [[#2924](https://github.com/opencloud-eu/web/pull/2924)]
