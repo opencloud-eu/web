@@ -13,7 +13,6 @@ export interface TextEditorOptions {
   placeholder?: string
   onUpdate?: (content: string) => void
   onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
-  onRequestImageUrl?: () => Promise<string | null>
 }
 
 export interface TextEditorLinkPanelRequest {
