@@ -5,7 +5,7 @@ exports[`Projects view > different files view states > lists all available proje
   <div class="files-view-wrapper relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0">
     <div id="files-view" class="outline-0 z-0 flex flex-col">
       <app-bar-stub viewmodedefault="resource-tiles" breadcrumbs="[object Object]" breadcrumbscontextactionsitems="" viewmodes="[object Object]" hasbulkactions="true" hasviewoptions="true" hashiddenfiles="false" hasfileextensions="false" haspagination="false" showactionsbar="true" showactionsonselection="true" batchactionsloading="false"></app-bar-stub>
-      <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu spaces-table" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1" id="files-space-table" selection="">
+      <table data-v-3c9ab66c="" class="oc-table oc-table-hover oc-table-sticky has-item-context-menu spaces-table" sort-fields="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" view-size="1" id="files-space-table">
         <thead data-v-3c9ab66c="" class="oc-thead border-b">
           <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-table-header-row h-10.5">
             <th data-v-27e13406="" data-v-c53469a5="" data-v-3c9ab66c="" class="oc-table-cell text-left align-middle w-px oc-th aria-[sort]:cursor-pointer oc-table-header-cell oc-table-header-cell-select z-10 pl-4" style="top: 0px;">

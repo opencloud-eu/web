@@ -54,7 +54,6 @@
           :resource="resource"
           :space="space"
           :resource-route="getResourceLink(resource)"
-          :is-resource-selected="isResourceSelected(resource)"
           :is-resource-clickable="isResourceClickable(resource, areResourcesClickable)"
           :is-resource-disabled="isResourceDisabled(resource)"
           :is-extension-displayed="areFileExtensionsShown"
@@ -76,7 +75,7 @@
           @item-visible="$emit('itemVisible', resource)"
           @tile-clicked="fileContainerClicked({ resource, event: $event[1] })"
         >
-          <template #selection>
+          <template #selection="{ selected }">
             <oc-checkbox
               v-if="isSelectable && !isLocationPicker && !isFilePicker"
               :label="getResourceCheckboxLabel(resource)"
@@ -84,7 +83,7 @@
               size="large"
               class="inline-flex p-2.5"
               :disabled="isResourceDisabled(resource)"
-              :model-value="isResourceSelected(resource)"
+              :model-value="selected"
               :data-test-selection-resource-name="resource.name"
               :data-test-selection-resource-path="resource.path"
               @click.stop="fileCheckboxClicked({ resource, event: $event })"
@@ -234,7 +233,6 @@ const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
 const {
   disabledResources,
-  isResourceSelected,
   fileContainerClicked,
   fileNameClicked,
   fileCheckboxClicked,

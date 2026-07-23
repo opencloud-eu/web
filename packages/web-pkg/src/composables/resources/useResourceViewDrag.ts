@@ -5,11 +5,11 @@ import ResourceGhostElement from '../../components/FilesList/ResourceGhostElemen
 
 export const useResourceViewDrag = ({
   selectedIds,
-  selectedResources,
+  resources,
   emit
 }: {
   selectedIds: Ref<string[]>
-  selectedResources: Ref<Resource[]>
+  resources: Ref<Resource[]>
   emit: ReturnType<typeof defineEmits>
 }) => {
   const resourcesStore = useResourcesStore()
@@ -38,7 +38,9 @@ export const useResourceViewDrag = ({
   }
 
   const dragSelection = computed(() => {
-    return unref(selectedResources).filter(({ id }) => id !== unref(dragItem)?.id)
+    const selectedIdsSet = new Set(unref(selectedIds))
+    const draggedId = unref(dragItem)?.id
+    return unref(resources).filter(({ id }) => selectedIdsSet.has(id) && id !== draggedId)
   })
 
   const getFileDropPayload = (event: DragEvent) => {

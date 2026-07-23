@@ -107,8 +107,10 @@ export const useResourcesStore = defineStore('resources', () => {
   const selectedIds = ref<string[]>([])
   const latestSelectedId = ref<string>(null)
 
+  const selectedIdsSet = computed(() => new Set(unref(selectedIds)))
+
   const selectedResources = computed(() => {
-    return unref(resources).filter((f) => unref(selectedIds).includes(f.id))
+    return unref(resources).filter((f) => unref(selectedIdsSet).has(f.id))
   })
 
   const setSelection = (ids: string[]) => {
@@ -304,6 +306,7 @@ export const useResourcesStore = defineStore('resources', () => {
     clearResourceList,
 
     selectedIds,
+    selectedIdsSet,
     latestSelectedId,
     selectedResources,
     setSelection,
