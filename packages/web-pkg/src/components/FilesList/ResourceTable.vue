@@ -21,7 +21,6 @@
     :drag-drop="dragDrop"
     :hover="hover"
     :item-dom-selector="resourceDomSelector"
-    :selection="selectedResources"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :lazy="lazy"
@@ -410,7 +409,6 @@ const { isSticky } = useIsTopBarSticky()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const { isLocationPicker, isFilePicker } = useEmbedMode()
 const {
-  selectedResources,
   disabledResources,
   isResourceSelected,
   fileContainerClicked,

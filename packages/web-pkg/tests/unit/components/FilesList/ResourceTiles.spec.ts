@@ -2,7 +2,7 @@ import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-
 import ResourceTiles from '../../../../src/components/FilesList/ResourceTiles.vue'
 import { sortFields } from '../../../../src/helpers/ui/resourceTiles'
 import { Resource, SpaceResource, extractDomSelector } from '@opencloud-eu/web-client'
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
@@ -138,7 +138,15 @@ describe('ResourceTiles component', () => {
     })
   })
 
-  it('emits update:selectedIds event on resource selection and sets the selection', async () => {
+  it('reflects the store selection on the resource tile', async () => {
+    const { wrapper } = getWrapper({ props: { resources: spacesResources } })
+    const resourcesStore = useResourcesStore()
+    resourcesStore.selectedIds = [spacesResources[0].id]
+    await nextTick()
+    expect(wrapper.find('.oc-tile-card-selected').exists()).toBeTruthy()
+  })
+
+  it('emits update:selectedIds event on resource selection', async () => {
     const { wrapper } = getWrapper({
       props: {
         resources: spacesResources,
@@ -146,9 +154,6 @@ describe('ResourceTiles component', () => {
       }
     })
     await wrapper.find('#tiles-view-select-all').trigger('click')
-    expect(
-      wrapper.findComponent({ name: 'resource-tile' }).props('isResourceSelected')
-    ).toBeTruthy()
     expect(wrapper.emitted('update:selectedIds')).toBeTruthy()
   })
 
