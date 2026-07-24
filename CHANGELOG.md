@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- perf: improve folder loading times in tiles view [[#2945](https://github.com/opencloud-eu/web/pull/2945)]
 - perf: improve file selection in table view [[#2940](https://github.com/opencloud-eu/web/pull/2940)]
 - perf: improve file selection in tiles view [[#2939](https://github.com/opencloud-eu/web/pull/2939)]
 - feat(tiptap): add Tiptap toolbar support [[#2793](https://github.com/opencloud-eu/web/pull/2793)]
@@ -45,6 +46,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.16.0 [[#2947](https://github.com/opencloud-eu/web/pull/2947)]
+- chore(deps): update dependency sass to v1.101.6 [[#2946](https://github.com/opencloud-eu/web/pull/2946)]
 - chore(deps): update devdependencies (non-major) [[#2943](https://github.com/opencloud-eu/web/pull/2943)]
 - chore(deps): update dependency p-queue to v9.3.3 [[#2942](https://github.com/opencloud-eu/web/pull/2942)]
 - chore(deps): update dependency postcss to v8.5.22 [[#2941](https://github.com/opencloud-eu/web/pull/2941)]
