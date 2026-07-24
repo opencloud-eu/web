@@ -53,7 +53,6 @@
         <resource-tile
           :resource="resource"
           :space="space"
-          :resource-route="getResourceLink(resource)"
           :is-resource-clickable="isResourceClickable(resource, areResourcesClickable)"
           :is-resource-disabled="isResourceDisabled(resource)"
           :is-extension-displayed="areFileExtensionsShown"
@@ -238,7 +237,6 @@ const {
   isResourceInDeleteQueue,
   isResourceClickable,
   isResourceCut,
-  getResourceLink,
   dragItem,
   dragSelection,
   dragStart,
