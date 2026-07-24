@@ -46,7 +46,8 @@
 
 ### 📦️ Dependencies
 
-- chore(deps): update pnpm to v11.16.0 [[#2947](https://github.com/opencloud-eu/web/pull/2947)]
+- chore(deps): update pnpm to v11.17.0 [[#2948](https://github.com/opencloud-eu/web/pull/2948)]
+- chore(deps): update pnpm to v11.17.0 [[#2947](https://github.com/opencloud-eu/web/pull/2947)]
 - chore(deps): update dependency sass to v1.101.6 [[#2946](https://github.com/opencloud-eu/web/pull/2946)]
 - chore(deps): update devdependencies (non-major) [[#2943](https://github.com/opencloud-eu/web/pull/2943)]
 - chore(deps): update dependency p-queue to v9.3.3 [[#2942](https://github.com/opencloud-eu/web/pull/2942)]
