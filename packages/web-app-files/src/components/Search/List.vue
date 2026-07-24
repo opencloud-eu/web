@@ -97,7 +97,6 @@
         <component
           :is="folderView.component"
           v-else
-          v-model:selected-ids="selectedResourcesIds"
           :header-position="fileListHeaderY"
           :resources="paginatedResources"
           :are-paths-displayed="true"
@@ -112,6 +111,7 @@
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
+          @update:selected-ids="selectedResourcesIds = $event"
         >
           <template #additionalResourceContent="{ resource }">
             <!-- eslint-disable vue/no-v-html -->

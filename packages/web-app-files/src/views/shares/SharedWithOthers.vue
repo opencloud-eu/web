@@ -59,7 +59,6 @@
         <component
           :is="folderView.component"
           v-else
-          v-model:selected-ids="selectedResourcesIds"
           :fields-displayed="['name', 'sharedWith', 'sdate']"
           :are-paths-displayed="true"
           :resources="filteredItems"
@@ -72,6 +71,7 @@
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @sort="handleSort"
+          @update:selected-ids="selectedResourcesIds = $event"
         >
           <template #contextMenu="{ resource }">
             <context-actions

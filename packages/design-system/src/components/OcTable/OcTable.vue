@@ -53,14 +53,19 @@
       </oc-tr>
     </oc-thead>
     <oc-tbody class="has-item-context-menu">
-      <oc-tr
+      <oc-table-row
         v-for="(item, trIndex) in data"
         :key="`oc-tbody-tr-${domSelector(item) || trIndex}`"
         :ref="`row-${trIndex}`"
-        v-bind="extractTbodyTrProps(item, trIndex)"
-        :data-item-id="item[idKey as keyof Item]"
-        :draggable="dragDrop"
-        class="border-t h-10.5"
+        :item="item"
+        :fields="fields"
+        :id-key="idKey"
+        :dom-selector="domSelector(item) || trIndex"
+        :padding-x="paddingX"
+        :lazy="lazy"
+        :drag-drop="dragDrop"
+        :is-highlighted="isHighlighted ?? defaultIsHighlighted"
+        :is-disabled="isDisabled ?? defaultIsDisabled"
         @click="$emit(constants.EVENT_TROW_CLICKED, [item, $event])"
         @contextmenu="
           $emit(
@@ -70,34 +75,16 @@
             item
           )
         "
-        @vue:mounted="
-          $emit(
-            constants.EVENT_TROW_MOUNTED,
-            item,
-            ($refs[`row-${trIndex}`] as Array<typeof OcTr>)[0]
-          )
-        "
         @dragstart="dragStart(item, $event)"
         @drop="dropRowEvent(item, $event)"
-        @dragenter.prevent="dropRowStyling(item, false, $event)"
-        @dragleave.prevent="dropRowStyling(item, true, $event)"
-        @dragover="dragOver($event)"
+        @dragenter="dropRowStyling(item, false, $event)"
+        @dragleave="dropRowStyling(item, true, $event)"
         @item-visible="$emit('itemVisible', item)"
       >
-        <oc-td
-          v-for="(field, tdIndex) in fields"
-          :key="'oc-tbody-td-' + cellKey(field, tdIndex, item)"
-          v-bind="extractTdProps(field, tdIndex, item)"
-        >
-          <slot v-if="isFieldTypeSlot(field)" :name="field.name" :item="item" />
-          <template v-else-if="isFieldTypeCallback(field)">
-            {{ field.callback(item[field.name as keyof Item]) }}
-          </template>
-          <template v-else>
-            {{ item[field.name as keyof Item] }}
-          </template>
-        </oc-td>
-      </oc-tr>
+        <template v-for="(_, name) in $slots" #[name]="slotProps">
+          <slot :name="name" v-bind="slotProps" />
+        </template>
+      </oc-table-row>
     </oc-tbody>
     <tfoot v-if="$slots.footer" class="oc-table-footer border-t">
       <tr class="oc-table-footer-row h-10.5">
@@ -119,13 +106,19 @@ import OcThead from '../OcTableHead/OcTableHead.vue'
 import OcTbody from '../OcTableBody/OcTableBody.vue'
 import OcTr from '../OcTableTr/OcTableTr.vue'
 import OcTh from '../OcTableTh/OcTableTh.vue'
-import OcTd from '../OcTableTd/OcTableTd.vue'
+import OcTableRow from '../OcTableRow/OcTableRow.vue'
 import OcButton from '../OcButton/OcButton.vue'
-import { Item as BaseItem, FieldType, SizeType, SortDir } from '../../helpers'
+import {
+  Item as BaseItem,
+  FieldType,
+  SizeType,
+  SortDir,
+  extractCellProps,
+  getTailwindXPadding
+} from '../../helpers'
 import {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
-  EVENT_TROW_MOUNTED,
   EVENT_TROW_CONTEXTMENU,
   EVENT_ITEM_DROPPED,
   EVENT_ITEM_DRAGGED
@@ -165,7 +158,20 @@ export interface Props {
   /**
    * @docs The IDs of the rows that should be highlighted.
    */
-  highlighted?: string | string[]
+  highlighted?: string[]
+  /**
+   * @docs Optional resolver to decide per row whether it should be highlighted.
+   * When provided it takes precedence over `highlighted`. It's recommended to
+   * use this over `highlighted` for larger data sets (> 100 rows) because it
+   * ensures that only the affected rows re-render instead of the entire table.
+   */
+  isHighlighted?: (item: Item) => boolean
+  /**
+   * @docs Optional resolver to decide per row whether it should be disabled.
+   * When provided it takes precedence over `disabled`. See `isHighlighted` for
+   * more details on when to use it.
+   */
+  isDisabled?: (item: Item) => boolean
   /**
    * @docs Determines if the table rows should have a hover effect.
    * @default false
@@ -227,11 +233,6 @@ export interface Emits {
   (e: 'highlight', args: [Item, MouseEvent]): void
 
   /**
-   * @docs Emitted when a table row has been mounted.
-   */
-  (e: 'rowMounted', item: Item, element: typeof OcTr): void
-
-  /**
    * @docs Emitted when a table row has been right-clicked.
    */
   (
@@ -275,7 +276,9 @@ const {
   dragDrop = false,
   hasHeader = true,
   headerPosition = 0,
-  highlighted,
+  highlighted = undefined,
+  isHighlighted = undefined,
+  isDisabled = undefined,
   hover = false,
   idKey = 'id',
   itemDomSelector,
@@ -292,7 +295,6 @@ defineSlots<Slots>()
 const constants = {
   EVENT_THEAD_CLICKED,
   EVENT_TROW_CLICKED,
-  EVENT_TROW_MOUNTED,
   EVENT_TROW_CONTEXTMENU
 }
 
@@ -323,10 +325,6 @@ const fullColspan = computed(() => {
   return fields.length
 })
 
-const dragOver = (event: DragEvent) => {
-  event.preventDefault()
-}
-
 const dragStart = (item: Item, event: DragEvent) => {
   emit(EVENT_ITEM_DRAGGED, [item, event])
 }
@@ -337,14 +335,6 @@ const dropRowEvent = (item: Item, event: DragEvent) => {
 
 const dropRowStyling = (item: Item, leaving: boolean, event: DragEvent) => {
   emit('dropRowStyling', item, leaving, event)
-}
-
-const isFieldTypeSlot = (field: FieldType) => {
-  return field.type === 'slot'
-}
-
-const isFieldTypeCallback = (field: FieldType) => {
-  return ['callback', 'function'].indexOf(field.type) >= 0
 }
 
 const extractFieldTitle = (field: FieldType) => {
@@ -360,26 +350,6 @@ const extractTableProps = () => {
   }
 }
 
-const getTailwindXPadding = (side: 'right' | 'left') => {
-  // we can't interpolate tailwind classes, they might be missing in the bundle then
-  switch (paddingX) {
-    case 'remove':
-      return side === 'right' ? 'pr-0' : 'pl-0'
-    case 'xsmall':
-      return side === 'right' ? 'pr-1' : 'pl-1'
-    case 'small':
-      return side === 'right' ? 'pr-2' : 'pl-2'
-    case 'medium':
-      return side === 'right' ? 'pr-4' : 'pl-4'
-    case 'large':
-      return side === 'right' ? 'pr-6' : 'pl-6'
-    case 'xlarge':
-      return side === 'right' ? 'pr-12' : 'pl-12'
-    case 'xxlarge':
-      return side === 'right' ? 'pr-24' : 'pl-24'
-  }
-}
-
 const extractThProps = (field: FieldType, index: number) => {
   const props = extractCellProps(field)
   props.class = `oc-table-header-cell oc-table-header-cell-${field.name}`
@@ -392,11 +362,11 @@ const extractThProps = (field: FieldType, index: number) => {
   }
 
   if (index === 0) {
-    props.class += ` ${getTailwindXPadding('left')} `
+    props.class += ` ${getTailwindXPadding(paddingX, 'left')} `
   }
 
   if (index === fields.length - 1) {
-    props.class += ` ${getTailwindXPadding('right')}`
+    props.class += ` ${getTailwindXPadding(paddingX, 'right')}`
   }
 
   extractSortThProps(props, field)
@@ -404,88 +374,20 @@ const extractThProps = (field: FieldType, index: number) => {
   return props
 }
 
-const extractTbodyTrProps = (item: Item, index: number) => {
-  return {
-    ...(lazy && { lazy: { colspan: fullColspan.value } }),
-    class: [
-      'oc-tbody-tr',
-      `oc-tbody-tr-${domSelector(item) || index}`,
-      isHighlighted(item) ? 'oc-table-highlighted' : undefined,
-      ...(isDisabled(item)
-        ? ['oc-table-disabled', 'opacity-70', 'pointer-events-none', 'grayscale-60']
-        : [])
-    ].filter(Boolean)
-  }
+const highlightedSet = computed(() => new Set(highlighted))
+
+const disabledSet = computed(() => new Set(disabled))
+
+// Stable default resolvers used when no `isHighlighted`/`isDisabled` prop is
+// passed. Their references never change, so the table's own render only reads
+// the (stable) function - the reactive Set lookup happens inside each row,
+// isolating re-renders to the rows instead of re-rendering the entire table.
+const defaultIsHighlighted = (item: Item) => {
+  return highlightedSet.value.has(item[idKey as keyof Item])
 }
 
-const extractTdProps = (field: FieldType, index: number, item: Item) => {
-  const props = extractCellProps(field)
-  props.class = `oc-table-data-cell oc-table-data-cell-${field.name}`
-  if (Object.prototype.hasOwnProperty.call(field, 'tdClass')) {
-    props.class += ` ${field.tdClass}`
-  }
-  if (Object.prototype.hasOwnProperty.call(field, 'wrap')) {
-    props.wrap = field.wrap
-  }
-
-  if (index === 0) {
-    props.class += ` ${getTailwindXPadding('left')} `
-  }
-
-  if (index === fields.length - 1) {
-    props.class += ` ${getTailwindXPadding('right')}`
-  }
-
-  if (Object.prototype.hasOwnProperty.call(field, 'accessibleLabelCallback')) {
-    props['aria-label'] = field.accessibleLabelCallback(item)
-  }
-
-  return props
-}
-
-const extractCellProps = (field: FieldType): Record<string, string> => {
-  return {
-    ...(field?.alignH && { alignH: field.alignH }),
-    ...(field?.alignV && { alignV: field.alignV }),
-    ...(field?.width && { width: field.width }),
-    class: undefined,
-    wrap: undefined,
-    style: undefined
-  }
-}
-
-const isHighlighted = (item: Item) => {
-  if (!highlighted) {
-    return false
-  }
-
-  if (Array.isArray(highlighted)) {
-    return highlighted.indexOf(item[idKey as keyof Item]) > -1
-  }
-
-  return highlighted === item[idKey as keyof Item]
-}
-
-const isDisabled = (item: Item) => {
-  if (!disabled.length) {
-    return false
-  }
-
-  return disabled.indexOf(item[idKey as keyof Item]) > -1
-}
-
-const cellKey = (field: FieldType, index: number, item: Item) => {
-  const prefix = [item[idKey as keyof Item], index + 1].filter(Boolean)
-
-  if (isFieldTypeSlot(field)) {
-    return [...prefix, field.name].join('-')
-  }
-
-  if (isFieldTypeCallback(field)) {
-    return [...prefix, field.callback(item[field.name as keyof Item])].join('-')
-  }
-
-  return [...prefix, item[field.name as keyof Item]].join('-')
+const defaultIsDisabled = (item: Item) => {
+  return disabledSet.value.has(item[idKey as keyof Item])
 }
 
 const getSortLabel = (name: string) => {
@@ -522,13 +424,6 @@ const handleSort = (field: FieldType) => {
   if (sortBy !== field.name || sortDir === undefined) {
     sortDirection = (field.sortDir || SortDir.Desc) as SortDir
   }
-
-  /**
-   * Triggers when table heads are clicked
-   *
-   * @property {string} sortBy requested column to sort by
-   * @property {string} sortDir requested order to sort in (either asc or desc)
-   */
 
   emit('sort', {
     sortBy: field.name,

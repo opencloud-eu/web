@@ -49,7 +49,6 @@
             <component
               :is="folderView.component"
               v-else
-              v-model:selected-ids="selectedResourcesIds"
               :resources="paginatedResources"
               :view-mode="viewMode"
               :space="space"
@@ -64,6 +63,7 @@
               @file-click="triggerDefaultAction"
               @item-visible="loadPreview({ space, resource: $event })"
               @sort="handleSort"
+              @update:selected-ids="selectedResourcesIds = $event"
             >
               <template #contextMenu="{ resource }">
                 <context-actions
