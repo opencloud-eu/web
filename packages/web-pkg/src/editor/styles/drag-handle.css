@@ -1,0 +1,28 @@
+/* Drag handle styles */
+.custom-drag-handle::after {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.25rem;
+  margin-right: 0.25rem;
+  margin-top: 0.25rem;
+  content: '⠿';
+  font-weight: 700;
+  cursor: grab;
+  color: var(--color-role-on-surface-variant);
+  border-radius: 0.25rem;
+  font-size: 1.5em;
+}
+
+.custom-drag-handle:hover::after {
+  background: var(--color-role-surface-container);
+}
+
+@media (max-width: 840px) {
+  .custom-drag-handle::after {
+    margin-right: 0;
+    width: 0.8rem;
+    font-size: 1.25em;
+  }
+}
