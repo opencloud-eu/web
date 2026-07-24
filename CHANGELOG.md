@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat (tiptap): move blocks [[#2950](https://github.com/opencloud-eu/web/pull/2950)]
 - perf: improve folder loading times in tiles view [[#2945](https://github.com/opencloud-eu/web/pull/2945)]
 - perf: improve file selection in table view [[#2940](https://github.com/opencloud-eu/web/pull/2940)]
 - perf: improve file selection in tiles view [[#2939](https://github.com/opencloud-eu/web/pull/2939)]
