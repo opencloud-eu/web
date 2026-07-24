@@ -21,15 +21,14 @@ import { storeToRefs } from 'pinia'
 export const useResourceViewHelpers = ({
   space,
   resources,
-  selectedIds,
   emit
 }: {
   space: Ref<SpaceResource>
   resources: Ref<Resource[]>
-  selectedIds: Ref<string[]>
   emit: ReturnType<typeof defineEmits>
 }) => {
   const resourcesStore = useResourcesStore()
+  const { selectedIds } = storeToRefs(resourcesStore)
   const router = useRouter()
   const eventBus = useEventBus()
   const { interceptModifierClick } = useInterceptModifierClick()

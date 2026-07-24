@@ -166,9 +166,13 @@ describe('OcTable', () => {
       props: {
         fields,
         data,
-        highlighted: '4b136c0a-5057-11eb-ac70-eba264112003'
+        highlighted: ['4b136c0a-5057-11eb-ac70-eba264112003']
       },
-      global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { OcTableRow: false },
+        plugins: defaultPlugins()
+      }
     })
 
     expect(wrapper.findAll('.oc-table-highlighted').length).toEqual(1)
@@ -184,7 +188,11 @@ describe('OcTable', () => {
           '8468c9f0-5057-11eb-924b-934c6fd827a2'
         ]
       },
-      global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { OcTableRow: false },
+        plugins: defaultPlugins()
+      }
     })
 
     expect(wrapper.findAll('.oc-table-highlighted').length).toEqual(2)
@@ -197,7 +205,11 @@ describe('OcTable', () => {
         data,
         highlighted: []
       },
-      global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { OcTableRow: false },
+        plugins: defaultPlugins()
+      }
     })
     expect(wrapper.html().indexOf('data-item-id')).toBeGreaterThan(-1)
   })
@@ -210,7 +222,11 @@ describe('OcTable', () => {
         highlighted: [],
         itemDomSelector: (item: { id: string }) => ['custom', item.id].join('-')
       },
-      global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { OcTableRow: false },
+        plugins: defaultPlugins()
+      }
     })
     data.forEach((item) => {
       expect(wrapper.find(['.oc-tbody-tr-custom', item.id].join('-')).exists()).toBeTruthy()
@@ -224,7 +240,11 @@ describe('OcTable', () => {
         data,
         highlighted: []
       },
-      global: { renderStubDefaultSlot: true, stubs: { OcTr: false }, plugins: defaultPlugins() }
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { OcTableRow: false, OcTr: false },
+        plugins: defaultPlugins()
+      }
     })
     await wrapper.find('.oc-tbody-tr').trigger('contextmenu')
     expect(wrapper.emitted().contextmenuClicked.length).toBe(1)
@@ -238,7 +258,11 @@ describe('OcTable', () => {
         highlighted: [],
         dragDrop: true
       },
-      global: { renderStubDefaultSlot: true, plugins: defaultPlugins() }
+      global: {
+        renderStubDefaultSlot: true,
+        stubs: { OcTableRow: false },
+        plugins: defaultPlugins()
+      }
     })
     expect(wrapper.html().indexOf('draggable')).toBeGreaterThan(-1)
   })

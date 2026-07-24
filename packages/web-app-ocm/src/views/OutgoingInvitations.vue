@@ -56,7 +56,12 @@
             <span v-text="$gettext('You have no invitation links')" />
           </template>
         </no-content-message>
-        <oc-table v-else :fields="fields" :data="sortedTokens" :highlighted="lastCreatedToken">
+        <oc-table
+          v-else
+          :fields="fields"
+          :data="sortedTokens"
+          :highlighted="lastCreatedToken ? [lastCreatedToken] : []"
+        >
           <template #token="rowData">
             <div class="w-3xs flex">
               <div class="truncate max-w-full">

@@ -33,10 +33,10 @@ exports[`Projects view > different files view states > lists all available proje
     </tr>
     </thead>
     <tbody data-v-3c9ab66c="" class="has-item-context-menu">
-      <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-2 border-t h-10.5" data-item-id="2" draggable="false">
+      <tr data-v-98c4aba8="" data-v-3c9ab66c="" data-item-id="2" draggable="false" class="oc-tbody-tr border-t h-10.5 oc-tbody-tr-2">
         <td data-v-27e13406="" data-v-98c4aba8="" class="oc-table-cell text-left align-middle oc-td" colspan="4"><span data-v-98c4aba8="" class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"></span></td>
       </tr>
-      <tr data-v-98c4aba8="" data-v-3c9ab66c="" class="oc-tbody-tr oc-tbody-tr-1 border-t h-10.5" data-item-id="1" draggable="false">
+      <tr data-v-98c4aba8="" data-v-3c9ab66c="" data-item-id="1" draggable="false" class="oc-tbody-tr border-t h-10.5 oc-tbody-tr-1">
         <td data-v-27e13406="" data-v-98c4aba8="" class="oc-table-cell text-left align-middle oc-td" colspan="4"><span data-v-98c4aba8="" class="shimmer inline-block bg-role-shadow overflow-hidden absolute inset-x-2 inset-y-3 after:absolute after:inset-0 after:transform-[translateX(-100%)] opacity-10 after:animate-shimmer"></span></td>
       </tr>
     </tbody>

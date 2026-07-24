@@ -363,8 +363,8 @@ describe('ResourceTable', () => {
       it('de-selects all resources via the select-all checkbox', async () => {
         const { wrapper } = getMountedWrapper({
           deleteQueue: [],
+          selectedIds: resourcesWithAllFields.map((resource) => resource.id),
           props: {
-            selectedIds: resourcesWithAllFields.map((resource) => resource.id),
             resources: resourcesWithAllFields
           }
         })
@@ -512,7 +512,7 @@ describe('ResourceTable', () => {
     })
 
     it('should not emit select event when clicking on the row of an already selected resource', async () => {
-      const { wrapper } = getMountedWrapper({ props: { selectedIds: ['forest'] } })
+      const { wrapper } = getMountedWrapper({ selectedIds: ['forest'] })
       const tableRow = wrapper.find('.oc-tbody-tr-forest .oc-table-data-cell-size')
       await tableRow.trigger('click')
 
@@ -677,7 +677,8 @@ function getMountedWrapper({
   canBeOpenedWithSecureView = true,
   hasRenameAction = true,
   resources = resourcesWithAllFields,
-  deleteQueue = ['in-delete-queue==']
+  deleteQueue = ['in-delete-queue=='],
+  selectedIds = []
 }: {
   props?: PartialComponentProps<typeof ResourceTable>
   userContextReady?: boolean
@@ -686,6 +687,7 @@ function getMountedWrapper({
   hasRenameAction?: boolean
   resources?: Resource[]
   deleteQueue?: string[]
+  selectedIds?: string[]
 } = {}) {
   const capabilities = {
     files: { tags: true }
@@ -739,7 +741,7 @@ function getMountedWrapper({
             piniaOptions: {
               authState: { userContextReady },
               capabilityState: { capabilities },
-              resourcesStore: { deleteQueue }
+              resourcesStore: { deleteQueue, selectedIds }
             }
           })
         ],
