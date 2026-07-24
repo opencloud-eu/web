@@ -23,7 +23,8 @@ import {
   useFileActions,
   useFolderLink,
   useResourcesStore,
-  useLoadPreview
+  useLoadPreview,
+  useResourceLink
 } from '../../composables'
 import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
 import ResourceListItem from '../FilesList/ResourceListItem.vue'
@@ -44,7 +45,6 @@ const {
 
 const { triggerDefaultAction } = useFileActions()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { getDefaultAction } = useFileActions()
 const { loadPreview } = useLoadPreview()
 
 const resourceListItem = useTemplateRef<typeof ResourceListItem>('resourceListItem')
@@ -53,8 +53,7 @@ const {
   getPathPrefix,
   getParentFolderName,
   getParentFolderLink,
-  getParentFolderLinkIconAdditionalAttributes,
-  getFolderLink
+  getParentFolderLinkIconAdditionalAttributes
 } = useFolderLink()
 const resourcesStore = useResourcesStore()
 
@@ -73,6 +72,7 @@ const resource = computed((): Resource => {
 })
 
 const space = computed(() => getMatchingSpace(unref(resource)))
+const { getResourceLink } = useResourceLink({ space })
 
 const resourceDisabled = computed(() => {
   const res = unref(resource)
@@ -100,20 +100,10 @@ const additionalAttrs = computed(() => {
 })
 
 const resourceLink = computed(() => {
-  if (unref(resource).isFolder) {
-    return getFolderLink(unref(resource))
-  }
-
-  const action = getDefaultAction({ resources: [unref(resource)], space: unref(space) })
-
-  if (!action?.route) {
+  const route = getResourceLink(unref(resource)) as RouteLocationPathRaw
+  if (!route) {
     return null
   }
-
-  const route = action.route({
-    space: unref(space),
-    resources: [unref(resource)]
-  }) as RouteLocationPathRaw
 
   // add search term to query param
   route.query = {

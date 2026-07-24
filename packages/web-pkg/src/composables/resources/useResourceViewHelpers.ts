@@ -9,11 +9,11 @@ import { routeToContextQuery } from '../appDefaults'
 import { useGetMatchingSpace } from '../spaces'
 import { useResourceViewDrag } from './useResourceViewDrag'
 import { useCanBeOpenedWithSecureView } from './useCanBeOpenedWithSecureView'
-import { useFileActions } from '../actions'
 import { useResourceViewContextMenu } from './useResourceViewContextMenu'
 import { useResourceViewSelection } from './useResourceViewSelection'
 import { ClipboardActions } from '../../helpers'
 import { storeToRefs } from 'pinia'
+import { useResourceLink } from './useResourceLink'
 
 /**
  * Shared helpers for resource view components (like ResourceTable and ResourceTiles).
@@ -34,7 +34,6 @@ export const useResourceViewHelpers = ({
   const { interceptModifierClick } = useInterceptModifierClick()
   const { getMatchingSpace } = useGetMatchingSpace()
   const { canBeOpenedWithSecureView } = useCanBeOpenedWithSecureView()
-  const { getDefaultAction } = useFileActions()
   const {
     isEnabled: isEmbedModeEnabled,
     fileTypes: embedModeFileTypes,
@@ -51,8 +50,9 @@ export const useResourceViewHelpers = ({
     return unref(selectedIdsSet).has(item.id)
   }
 
+  const deleteQueueSet = computed(() => new Set(resourcesStore.deleteQueue))
   const isResourceInDeleteQueue = (id: string): boolean => {
-    return resourcesStore.deleteQueue.includes(id)
+    return unref(deleteQueueSet).has(id)
   }
 
   const isResourceDisabled = (resource: Resource) => {
@@ -203,21 +203,6 @@ export const useResourceViewHelpers = ({
     emit('update:selectedIds', [...resourcesStore.selectedIds])
   }
 
-  const getResourceLink = (resource: Resource) => {
-    let matchingSpace = unref(space)
-    if (!matchingSpace) {
-      matchingSpace = getMatchingSpace(resource)
-    }
-
-    const action = getDefaultAction({ resources: [resource], space: matchingSpace })
-
-    if (!action?.route) {
-      return
-    }
-
-    return action.route({ space: matchingSpace, resources: [resource] })
-  }
-
   return {
     disabledResources,
     isResourceSelected,
@@ -228,7 +213,7 @@ export const useResourceViewHelpers = ({
     fileContainerClicked,
     fileNameClicked,
     fileCheckboxClicked,
-    getResourceLink,
+    ...useResourceLink({ space }),
     ...useResourceViewDrag({ selectedIds, resources, emit }),
     ...useResourceViewContextMenu({ isResourceDisabled, isResourceSelected, emit }),
     ...useResourceViewSelection({ resources, disabledResources, selectedIds, emit })
