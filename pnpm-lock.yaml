@@ -854,64 +854,73 @@ importers:
         specifier: ^10.46.0
         version: 10.67.0(pinia@4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3)))(vue@3.5.40(typescript@6.0.3))
       '@tiptap/core':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/pm@3.28.0)
       '@tiptap/extension-document':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
+      '@tiptap/extension-drag-handle':
+        specifier: ^3.28.0
+        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))
+      '@tiptap/extension-drag-handle-vue-3':
+        specifier: ^3.28.0
+        version: 3.28.0(@tiptap/extension-drag-handle@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)))(@tiptap/pm@3.28.0)(@tiptap/vue-3@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(vue@3.5.40(typescript@6.0.3)))(vue@3.5.40(typescript@6.0.3))
       '@tiptap/extension-file-handler':
         specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-text-style@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0)))(@tiptap/pm@3.28.0)
       '@tiptap/extension-hard-break':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extension-image':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extension-link':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
+        version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+      '@tiptap/extension-node-range':
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
       '@tiptap/extension-paragraph':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extension-placeholder':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/extensions@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))
       '@tiptap/extension-table':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
       '@tiptap/extension-task-item':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/extension-list@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))
       '@tiptap/extension-task-list':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/extension-list@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))
       '@tiptap/extension-text':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extension-text-align':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extension-text-style':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/extension-underline':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
       '@tiptap/markdown':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
       '@tiptap/pm':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0
       '@tiptap/starter-kit':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0
       '@tiptap/suggestion':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
       '@tiptap/vue-3':
-        specifier: ^3.20.4
+        specifier: ^3.28.0
         version: 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(vue@3.5.40(typescript@6.0.3))
       '@uppy/core':
         specifier: ^5.2.0
@@ -970,6 +979,9 @@ importers:
       pinia:
         specifier: ^4.0.0
         version: 4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3))
+      prosemirror-transform:
+        specifier: ^1.12.0
+        version: 1.12.0
       qs:
         specifier: ^6.15.0
         version: 6.15.3
@@ -2292,10 +2304,35 @@ packages:
     peerDependencies:
       '@tiptap/core': 3.28.0
 
+  '@tiptap/extension-collaboration@3.28.0':
+    resolution: {integrity: sha512-4RUyRPhieqPD7fvCeniIE0QBSwb1exOWJlYvF8s8wWTwc5uywa95gUhRbnHwgTReeG0WW+177eFSEr9xZaUseg==}
+    peerDependencies:
+      '@tiptap/core': 3.28.0
+      '@tiptap/pm': 3.28.0
+      '@tiptap/y-tiptap': ^3.0.7
+      yjs: ^13
+
   '@tiptap/extension-document@3.28.0':
     resolution: {integrity: sha512-5SAKtlB1Tr/eZFhISL86HqmUup6rItvPtuPyRjmZo/VgbMwXEwiyAh1sMgFp5VNaeSMM14vJSyQpjhSaOmaBqg==}
     peerDependencies:
       '@tiptap/core': 3.28.0
+
+  '@tiptap/extension-drag-handle-vue-3@3.28.0':
+    resolution: {integrity: sha512-kbZrALXV9PEOV/vT3Qbb9N8EXA/GoWy6vuLqXWEYQXla7H/zUzT0fBIFzilQRF+fGYNDAgRJsjOvJLG34UkkTA==}
+    peerDependencies:
+      '@tiptap/extension-drag-handle': 3.28.0
+      '@tiptap/pm': 3.28.0
+      '@tiptap/vue-3': 3.28.0
+      vue: ^3.0.0
+
+  '@tiptap/extension-drag-handle@3.28.0':
+    resolution: {integrity: sha512-Ta/ZmyFcbUGmxb/OtfJ+znWPTtSNPC0Z7diMkbg3aOo387qtrVEtbq/8w2+6PayOQGEiQN8xYU1ZjCdOhwmVAQ==}
+    peerDependencies:
+      '@tiptap/core': 3.28.0
+      '@tiptap/extension-collaboration': 3.28.0
+      '@tiptap/extension-node-range': 3.28.0
+      '@tiptap/pm': 3.28.0
+      '@tiptap/y-tiptap': ^3.0.7
 
   '@tiptap/extension-dropcursor@3.28.0':
     resolution: {integrity: sha512-JA+dXQjjfJBpD0nVsZeddGVXRsmanESM9+8CtM35hI9wJnYMXay/B+5GUhswO20zhT3zhB2ZOTGe9knu6A8nIQ==}
@@ -2365,6 +2402,12 @@ packages:
 
   '@tiptap/extension-list@3.28.0':
     resolution: {integrity: sha512-zQ66i5DuhVOndmZ0d7H475Y5Yb+BMx+zfCjFkCzEc6WVef5MumtxBVTkGLQ0ibxUaD71s4QQZbjHWagpaTg0eQ==}
+    peerDependencies:
+      '@tiptap/core': 3.28.0
+      '@tiptap/pm': 3.28.0
+
+  '@tiptap/extension-node-range@3.28.0':
+    resolution: {integrity: sha512-bH2rxZgSVk/qeFCcJC3Fjl7CYqp1TYjx5fXLtyL+r5qz/KR8qCItLZWndfH+POVD5D9RvEwNnJHBD8Sa2hDI4w==}
     peerDependencies:
       '@tiptap/core': 3.28.0
       '@tiptap/pm': 3.28.0
@@ -2457,6 +2500,16 @@ packages:
       '@tiptap/core': 3.28.0
       '@tiptap/pm': 3.28.0
       vue: ^3.0.0
+
+  '@tiptap/y-tiptap@3.0.7':
+    resolution: {integrity: sha512-3VG01F7i2JDghWsBZSBKi7ypMiN5UVVSyD18IwoXx7ilm0ZynrTS+XNpmgxfuiSBjdauWk7tUlP04xfM8Bw4Vw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      prosemirror-model: ^1.7.1
+      prosemirror-state: ^1.2.3
+      prosemirror-view: ^1.9.10
+      y-protocols: ^1.0.1
+      yjs: ^13.5.38
 
   '@transloadit/prettier-bytes@0.3.5':
     resolution: {integrity: sha512-xF4A3d/ZyX2LJWeQZREZQw+qFX4TGQ8bGVP97OLRt6sPO6T0TNHBFTuRHOJh7RNmYOBmQ9MHxpolD9bXihpuVA==}
@@ -3920,6 +3973,9 @@ packages:
     peerDependencies:
       ws: '*'
 
+  isomorphic.js@0.2.5:
+    resolution: {integrity: sha512-PIeMbHqMt4DnUP3MA/Flc0HElYjMXArsw1qwJZcm9sqR8mq3l8NYizFMty0pWwE/tzIGH3EKK5+jes5mAr85yw==}
+
   istanbul-lib-coverage@3.2.2:
     resolution: {integrity: sha512-O8dpsF+r0WV/8MNRKfnmrtCWhuKjxrq2w+jpzBL5UZKTi2LeVWnWOmWRxFlesJONmc+wLAGvKQZEOanko0LFTg==}
     engines: {node: '>=8'}
@@ -4000,6 +4056,11 @@ packages:
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
+
+  lib0@0.2.117:
+    resolution: {integrity: sha512-DeXj9X5xDCjgKLU/7RR+/HQEVzuuEUiwldwOGsHK/sfAfELGWEyTcf0x+uOvCvK3O2zPmZePXWL85vtia6GyZw==}
+    engines: {node: '>=16'}
+    hasBin: true
 
   license-checker-rseidelsohn@4.4.2:
     resolution: {integrity: sha512-Sf8WaJhd2vELvCne+frS9AXqnY/vv591s2/nZcJDwTnoNgltG4mAmoenffVb8L2YPRYbxARLyrHJBC38AVfpuA==}
@@ -5516,10 +5577,20 @@ packages:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
     engines: {node: '>=0.4'}
 
+  y-protocols@1.0.7:
+    resolution: {integrity: sha512-YSVsLoXxO67J6eE/nV4AtFtT3QEotZf5sK5BHxFBXso7VDUT3Tx07IfA6hsu5Q5OmBdMkQVmFZ9QOA7fikWvnw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
+    peerDependencies:
+      yjs: ^13.0.0
+
   yaml@2.9.0:
     resolution: {integrity: sha512-2AvhNX3mb8zd6Zy7INTtSpl1F15HW6Wnqj0srWlkKLcpYl/gMIMJiyuGq2KeI2YFxUPjdlB+3Lc10seMLtL4cA==}
     engines: {node: '>= 14.6'}
     hasBin: true
+
+  yjs@13.6.31:
+    resolution: {integrity: sha512-Eq+5BRfbeGyqGVrTJL3bEcr8gKkxPuyuoHmAwpk52fDb8kOVMrfVSTRPd6yiGgX5Fskb96qCRjzjbRjrL4YEnw==}
+    engines: {node: '>=16.0.0', npm: '>=8.0.0'}
 
   yn@3.1.1:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
@@ -6557,9 +6628,32 @@ snapshots:
     dependencies:
       '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
 
+  '@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31)':
+    dependencies:
+      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
+      '@tiptap/pm': 3.28.0
+      '@tiptap/y-tiptap': 3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)
+      yjs: 13.6.31
+
   '@tiptap/extension-document@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))':
     dependencies:
       '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
+
+  '@tiptap/extension-drag-handle-vue-3@3.28.0(@tiptap/extension-drag-handle@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)))(@tiptap/pm@3.28.0)(@tiptap/vue-3@3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(vue@3.5.40(typescript@6.0.3)))(vue@3.5.40(typescript@6.0.3))':
+    dependencies:
+      '@tiptap/extension-drag-handle': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))
+      '@tiptap/pm': 3.28.0
+      '@tiptap/vue-3': 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(vue@3.5.40(typescript@6.0.3))
+      vue: 3.5.40(typescript@6.0.3)
+
+  '@tiptap/extension-drag-handle@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/extension-collaboration@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31))(@tiptap/extension-node-range@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))':
+    dependencies:
+      '@floating-ui/dom': 1.8.0
+      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
+      '@tiptap/extension-collaboration': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)(@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31))(yjs@13.6.31)
+      '@tiptap/extension-node-range': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+      '@tiptap/pm': 3.28.0
+      '@tiptap/y-tiptap': 3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)
 
   '@tiptap/extension-dropcursor@3.28.0(@tiptap/extensions@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0))':
     dependencies:
@@ -6618,6 +6712,11 @@ snapshots:
       '@tiptap/extension-list': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
 
   '@tiptap/extension-list@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
+    dependencies:
+      '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
+      '@tiptap/pm': 3.28.0
+
+  '@tiptap/extension-node-range@3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)':
     dependencies:
       '@tiptap/core': 3.28.0(@tiptap/pm@3.28.0)
       '@tiptap/pm': 3.28.0
@@ -6736,6 +6835,15 @@ snapshots:
     optionalDependencies:
       '@tiptap/extension-bubble-menu': 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
       '@tiptap/extension-floating-menu': 3.28.0(@floating-ui/dom@1.8.0)(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))(@tiptap/pm@3.28.0)
+
+  '@tiptap/y-tiptap@3.0.7(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.1)(y-protocols@1.0.7(yjs@13.6.31))(yjs@13.6.31)':
+    dependencies:
+      lib0: 0.2.117
+      prosemirror-model: 1.25.11
+      prosemirror-state: 1.4.4
+      prosemirror-view: 1.42.1
+      y-protocols: 1.0.7(yjs@13.6.31)
+      yjs: 13.6.31
 
   '@transloadit/prettier-bytes@0.3.5': {}
 
@@ -8364,6 +8472,8 @@ snapshots:
     dependencies:
       ws: 8.18.0
 
+  isomorphic.js@0.2.5: {}
+
   istanbul-lib-coverage@3.2.2: {}
 
   istanbul-lib-report@3.0.1:
@@ -8438,6 +8548,10 @@ snapshots:
     dependencies:
       prelude-ls: 1.2.1
       type-check: 0.4.0
+
+  lib0@0.2.117:
+    dependencies:
+      isomorphic.js: 0.2.5
 
   license-checker-rseidelsohn@4.4.2(supports-color@7.2.0):
     dependencies:
@@ -10042,7 +10156,16 @@ snapshots:
 
   xtend@4.0.2: {}
 
+  y-protocols@1.0.7(yjs@13.6.31):
+    dependencies:
+      lib0: 0.2.117
+      yjs: 13.6.31
+
   yaml@2.9.0: {}
+
+  yjs@13.6.31:
+    dependencies:
+      lib0: 0.2.117
 
   yn@3.1.1: {}
 

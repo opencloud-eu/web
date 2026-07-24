@@ -13,6 +13,14 @@ vi.mock('@tiptap/vue-3', () => ({
   })
 }))
 
+vi.mock('@tiptap/extension-drag-handle-vue-3', () => ({
+  DragHandle: defineComponent({
+    name: 'DragHandle',
+    props: { editor: { type: Object, required: false } },
+    template: '<div class="mock-drag-handle"><slot /></div>'
+  })
+}))
+
 function mountEditorContent({
   contentType = 'markdown',
   sourceMode = false,

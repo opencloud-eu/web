@@ -42,7 +42,6 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         bulletList: false,
         code: false,
         codeBlock: false,
-        dropcursor: false,
         gapcursor: false,
         heading: false,
         horizontalRule: false,
