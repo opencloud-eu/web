@@ -22,6 +22,18 @@ import { Ability } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
 import { PublicLinkType } from '@opencloud-eu/web-client'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
+import { ErrorTimeout } from 'oidc-client-ts'
+import { resetSSE } from '@opencloud-eu/web-client/sse'
+
+/**
+ * Network-class errors during silent renewal are transient (e.g. the device just
+ * woke from sleep and the connection isn't back yet) and worth retrying. Any other
+ * error (most notably an OAuth error response) means the session is truly gone and
+ * must not be retried.
+ */
+function isTransientRenewError(error: unknown): boolean {
+  return error instanceof ErrorTimeout || error instanceof TypeError
+}
 
 export class AuthService implements AuthServiceInterface {
   private clientService: ClientService
@@ -38,6 +50,7 @@ export class AuthService implements AuthServiceInterface {
 
   private tokenTimerWorker: ReturnType<typeof useTokenTimerWorker>
   private tokenTimerInitialized = false
+  private silentRenewRetryPromise: Promise<boolean> | null = null
 
   // number of seconds before an access token is to expire to raise the accessTokenExpiring event
   private accessTokenExpiryThreshold = 10
@@ -289,28 +302,70 @@ export class AuthService implements AuthServiceInterface {
       })
     }
     if (isUserContextRequired(this.router, route) || isIdpContextRequired(this.router, route)) {
-      const throwAuthError = async () => {
-        await this.userManager.removeUser('authError')
-        this.tokenTimerWorker?.resetTokenTimer()
-      }
       const user = await this.userManager.getUser()
-      if (user?.expired === true) {
-        // token expired, attempt an immediate silent signin
-        try {
-          await this.userManager.signinSilent({ silentRequestTimeoutInSeconds: 2 })
-        } catch {
-          await throwAuthError()
-        }
+
+      // An auth error occurred: an expired token after the device woke from sleep,
+      // or a 401 on a request. Before logging the user out, attempt a silent
+      // renewal with retries. The server may have rejected a token the client
+      // still considers valid (e.g. clock skew after wake) or one that just
+      // expired, while the IdP session is usually still alive. Only log the user
+      // out if renewal ultimately fails (non-transient error or retries
+      // exhausted), so a brief interruption doesn't kill an otherwise-valid
+      // session.
+      if (user && (await this.renewTokenWithBackoff())) {
         return
       }
 
-      await throwAuthError()
+      await this.userManager.removeUser('authError')
+      this.tokenTimerWorker?.resetTokenTimer()
       return
     }
     // authGuard is taking care of redirecting the user to the
     // accessDenied page if hasAuthErrorOccurred is set to true
     // we can't push the route ourselves, see authGuard for details.
     this.hasAuthErrorOccurred = true
+  }
+
+  /**
+   * Attempts a silent token renewal, retrying transient network failures with
+   * exponential backoff. Resolves to `true` if a renewal succeeded, or `false` if
+   * it failed with a non-transient error or exhausted all retries.
+   *
+   * Concurrent callers share the same in-flight attempt to avoid overlapping
+   * silent renewals.
+   */
+  private renewTokenWithBackoff(): Promise<boolean> {
+    if (this.silentRenewRetryPromise) {
+      return this.silentRenewRetryPromise
+    }
+
+    const maxAttempts = 5
+    const baseDelayInMs = 1000
+
+    const run = async (): Promise<boolean> => {
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          await this.userManager.signinSilent()
+          return true
+        } catch (error) {
+          console.warn(
+            `silent token renewal failed (attempt ${attempt + 1}/${maxAttempts}, error: ${(error as Error)?.constructor?.name})`,
+            error
+          )
+          if (!isTransientRenewError(error) || attempt === maxAttempts - 1) {
+            return false
+          }
+          await new Promise((resolve) => setTimeout(resolve, baseDelayInMs * 2 ** attempt))
+        }
+      }
+      return false
+    }
+
+    this.silentRenewRetryPromise = run().finally(() => {
+      this.silentRenewRetryPromise = null
+    })
+
+    return this.silentRenewRetryPromise
   }
 
   public resolvePublicLink(
@@ -346,6 +401,8 @@ export class AuthService implements AuthServiceInterface {
     // TODO: create UserUnloadTask interface and allow registering unload-tasks in the authService
     this.userStore.reset()
     this.authStore.clearUserContext()
+    // stop the SSE stream from reconnecting with the now-removed access token
+    resetSSE()
   }
 
   public async getRefreshToken() {
