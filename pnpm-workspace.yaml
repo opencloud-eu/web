@@ -9,6 +9,7 @@ sharedWorkspaceLockfile: true
 # c.f. https://github.com/vuejs/test-utils/pull/2197
 hoistPattern:
   - '@vue/server-renderer'
+  - 'prosemirror-transform'
 
 # eslint and prettier (public so they are picked up by IDEs)
 publicHoistPattern:

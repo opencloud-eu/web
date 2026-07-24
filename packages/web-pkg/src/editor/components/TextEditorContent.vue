@@ -6,6 +6,9 @@
       '--text-editor-zoom-factor': zoomFactor
     }"
   >
+    <DragHandle v-if="!isSourceMode" :editor="textEditor.editor.value">
+      <div class="custom-drag-handle" />
+    </DragHandle>
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea
@@ -21,6 +24,7 @@
 <script setup lang="ts">
 import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
+import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import type { TextEditorInstance } from '../types'
 
 const { editor = undefined } = defineProps<{
