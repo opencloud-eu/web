@@ -5,7 +5,8 @@ describe('TextEditorProvider', () => {
   it('renders slot content', () => {
     const wrapper = mount(TextEditorProvider, {
       props: { editor: {} as any },
-      slots: { default: '<div class="child">content</div>' }
+      slots: { default: '<div class="child">content</div>' },
+      global: { stubs: { TextEditorLinkPanel: true } }
     })
     expect(wrapper.find('.child').exists()).toBe(true)
   })
@@ -14,8 +15,10 @@ describe('TextEditorProvider', () => {
     const editor = { contentType: { value: 'html' } } as any
     const wrapper = mount(TextEditorProvider, {
       props: { editor },
-      slots: { default: '<div />' }
+      slots: { default: '<div />' },
+      global: { stubs: { TextEditorLinkPanel: true } }
     })
     expect(wrapper.find('.text-editor-provider').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'TextEditorLinkPanel' }).exists()).toBe(true)
   })
 })

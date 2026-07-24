@@ -1,6 +1,6 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
-import type { TextEditorState } from '../../../../src/editor/types'
+import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
@@ -10,7 +10,11 @@ import { useStrategyMarkdown } from '../../../../src/editor/composables/strategi
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
-  const state: TextEditorState = { sourceMode: ref(false), editorZoom: ref(100) }
+  const state: TextEditorState = {
+    sourceMode: ref(false),
+    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
+    editorZoom: ref(100)
+  }
   return useStrategyMarkdown(state)
 }
 
@@ -60,6 +64,18 @@ describe('useStrategyMarkdown', () => {
       expect(markdown).toContain('width="320"')
       expect(markdown).toContain('height="180"')
     })
+
+    it('configures safe automatic links without opening them on click', () => {
+      const link = createStrategy()
+        .extensions()
+        .find(({ name }) => name === 'link')!
+      expect(link.options).toMatchObject({
+        openOnClick: false,
+        autolink: true,
+        linkOnPaste: true,
+        defaultProtocol: 'https'
+      })
+    })
   })
 
   describe('editorActionGroups', () => {
@@ -71,6 +87,14 @@ describe('useStrategyMarkdown', () => {
       expect(allIds).toContain('image')
       expect(allIds).toContain('image-url')
       expect(allIds).toContain('image-upload')
+      expect(allIds).toContain('link')
+      const link = strategy
+        .editorActionGroups()
+        .flatMap(({ actions }) => actions)
+        .find(({ id }) => id === 'link')!
+      expect(link.slashCommandAction).toBeTypeOf('function')
+      expect(link.showInToolbar).not.toBe(false)
+      expect(link.showInSlashCommands).not.toBe(false)
     })
 
     it('includes source mode toggle', () => {

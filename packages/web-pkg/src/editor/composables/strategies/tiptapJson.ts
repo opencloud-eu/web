@@ -4,7 +4,6 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
@@ -19,6 +18,7 @@ import {
   TextStyle
 } from '@tiptap/extension-text-style'
 import { TextEditorState } from '../../types'
+import { createLinkExtension } from '../../extensions'
 import { imageFileHandlerExtension } from './imageFileHandler'
 
 export const useStrategyTiptapJson = (editorState: TextEditorState): ContentTypeStrategy => {
@@ -39,12 +39,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
   const extensions = (): Extension[] => {
     return [
       StarterKit.configure({ link: false }),
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
-      }),
+      createLinkExtension(),
       Image.configure({
         inline: false,
         allowBase64: true,
@@ -95,6 +90,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     blockquote,
     codeBlock,
     horizontalRule,
+    link,
     menuEmoji,
     image,
     imageUrl,
@@ -147,6 +143,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          link(),
           image(),
           imageUrl(),
           imageUpload(),

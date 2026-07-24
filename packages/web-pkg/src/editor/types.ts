@@ -1,4 +1,5 @@
 import type { ShallowRef, Ref, ComputedRef } from 'vue'
+import type { Range } from '@tiptap/core'
 import type { Editor } from '@tiptap/vue-3'
 import type { EditorActionGroup } from './composables'
 
@@ -12,11 +13,18 @@ export interface TextEditorOptions {
   placeholder?: string
   onUpdate?: (content: string) => void
   onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
-  onRequestImageUrl?: () => Promise<string | null>
+}
+
+export interface TextEditorLinkPanelRequest {
+  range: Range
+  href: string
+  text: string
+  view: 'actions' | 'edit'
 }
 
 export interface TextEditorState {
   sourceMode: Ref<boolean>
+  linkPanel: Ref<TextEditorLinkPanelRequest | null>
   editorZoom: Ref<number>
 }
 

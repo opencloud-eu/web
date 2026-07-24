@@ -1,5 +1,5 @@
 import { markRaw, unref } from 'vue'
-import type { Component, MaybeRef } from 'vue'
+import type { Component } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
 import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
@@ -7,6 +7,7 @@ import { storeToRefs } from 'pinia'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
 import { useModals, useThemeStore } from '../../composables/piniaStores'
 import { TextEditorState } from '../types'
+import { requestLinkPanel } from './useEditorLink'
 
 export interface EditorAction {
   // Core identification
@@ -52,20 +53,12 @@ export interface EditorActionGroup {
   actions: EditorAction[]
 }
 
-export interface UseEditorActionsOptions {
-  onRequestLinkUrl?: (editor: Editor, currentUrl?: string) => void
-  onRequestImageUrl?: (editor: Editor) => void
-}
-
 export interface ContentTypeActions {
   toolbarGroups: EditorAction[][]
   slashCommandGroups: EditorActionGroup[]
 }
 
-export function useEditorActions(
-  state: TextEditorState,
-  options: MaybeRef<UseEditorActionsOptions> = {}
-) {
+export function useEditorActions(state: TextEditorState) {
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
   const themeStore = useThemeStore()
@@ -505,16 +498,18 @@ export function useEditorActions(
   const link = (): EditorAction => ({
     id: 'link',
     title: $gettext('Link'),
+    description: $gettext('Link to a website'),
     icon: 'link',
-    toolbarAction: (editor) => {
-      const opts = unref(options)
-      if (opts.onRequestLinkUrl) {
-        const previousUrl = editor.getAttributes('link').href as string | undefined
-        opts.onRequestLinkUrl(editor, previousUrl)
-      }
+    keywords: ['link', 'url', 'website', 'hyperlink'],
+    toolbarAction: (editor) => requestLinkPanel(editor, state),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run()
+      requestLinkPanel(editor, state, {
+        range: { from: range.from, to: range.from },
+        linkRange: null
+      })
     },
-    isActive: (editor) => editor.isActive('link'),
-    showInSlashCommands: false
+    isActive: (editor) => editor.isActive('link')
   })
 
   const dispatchImageModal = (editor: Editor) => {
