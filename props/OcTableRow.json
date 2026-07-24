@@ -1,0 +1,65 @@
+[
+  {
+    "name": "item",
+    "required": true,
+    "description": "The item (row data) to be rendered.",
+    "default": "",
+    "type": "Item"
+  },
+  {
+    "name": "fields",
+    "required": true,
+    "description": "The fields to be displayed as table cells.",
+    "default": "",
+    "type": "FieldType[]"
+  },
+  {
+    "name": "domSelector",
+    "required": true,
+    "description": "A precomputed dom selector used for the row's identifying class.",
+    "default": "",
+    "type": "string | number"
+  },
+  {
+    "name": "isHighlighted",
+    "required": true,
+    "description": "Resolves whether the row should be highlighted. Kept as a stable\nfunction reference so the parent table's render does not subscribe to\nselection state - only the affected row re-renders.",
+    "default": "",
+    "type": "(item: Item) => boolean"
+  },
+  {
+    "name": "isDisabled",
+    "required": true,
+    "description": "Resolves whether the row should be disabled.",
+    "default": "",
+    "type": "(item: Item) => boolean"
+  },
+  {
+    "name": "idKey",
+    "required": false,
+    "description": "The key to be used as the unique identifier for each row.",
+    "default": "'id'",
+    "type": "string"
+  },
+  {
+    "name": "lazy",
+    "required": false,
+    "description": "Determines if the row should be lazy loaded.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "dragDrop",
+    "required": false,
+    "description": "Determines if the row is draggable.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "paddingX",
+    "required": false,
+    "description": "The horizontal padding size of the row's cells.",
+    "default": "small",
+    "type": "SizeType | 'remove'"
+  }
+]

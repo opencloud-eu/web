@@ -20,11 +20,6 @@
     "type": "(e: 'highlight', args: [Item, MouseEvent]): void"
   },
   {
-    "name": "rowMounted",
-    "description": "Emitted when a table row has been mounted.",
-    "type": "(e: 'rowMounted', item: Item, element: typeof OcTr): void"
-  },
-  {
     "name": "contextmenuClicked",
     "description": "Emitted when a table row has been right-clicked.",
     "type": "(\n    e: 'contextmenuClicked',\n    element: ComponentPublicInstance<unknown>,\n    event: MouseEvent,\n    item: Item\n  ): void"

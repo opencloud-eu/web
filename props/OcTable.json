@@ -46,7 +46,21 @@
     "required": false,
     "description": "The IDs of the rows that should be highlighted.",
     "default": "",
-    "type": "string | string[]"
+    "type": "string[]"
+  },
+  {
+    "name": "isHighlighted",
+    "required": false,
+    "description": "Optional resolver to decide per row whether it should be highlighted.\nWhen provided it takes precedence over `highlighted`. It's recommended to\nuse this over `highlighted` for larger data sets (> 100 rows) because it\nensures that only the affected rows re-render instead of the entire table.",
+    "default": "",
+    "type": "(item: Item) => boolean"
+  },
+  {
+    "name": "isDisabled",
+    "required": false,
+    "description": "Optional resolver to decide per row whether it should be disabled.\nWhen provided it takes precedence over `disabled`. See `isHighlighted` for\nmore details on when to use it.",
+    "default": "",
+    "type": "(item: Item) => boolean"
   },
   {
     "name": "hover",
