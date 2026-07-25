@@ -8,7 +8,7 @@
     <no-content-message
       v-if="!items.length"
       class="files-empty"
-      img-src="/images/empty-states/empty-shared-with-me.svg"
+      img-src="images/empty-states/empty-shared-with-me.svg"
     >
       <template #message>
         <span v-text="$gettext('Nothing shared, yet')" />

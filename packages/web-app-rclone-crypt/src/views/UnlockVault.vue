@@ -1,6 +1,6 @@
 <template>
   <div class="oc-vault-unlock flex justify-center h-full overflow-y-auto p-8">
-    <no-content-message v-if="!space" img-src="/images/vault.svg" class="my-auto">
+    <no-content-message v-if="!space" img-src="images/vault.svg" class="my-auto">
       <template #message>
         <span v-text="$gettext('Vault not found')" />
       </template>
@@ -18,7 +18,7 @@
         <span v-text="$gettext('End-to-end encrypted')" />
       </oc-tag>
       <div class="flex flex-col items-center text-center">
-        <inline-svg src="/images/vault.svg" class="h-30 w-30" aria-hidden="true" />
+        <inline-svg src="images/vault.svg" class="h-30 w-30" aria-hidden="true" />
         <p class="mt-0 text-sm break-all" data-testid="vault-name">
           <resource-name
             :name="vaultName"
