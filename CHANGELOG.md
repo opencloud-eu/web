@@ -47,6 +47,9 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.68.0 [[#2953](https://github.com/opencloud-eu/web/pull/2953)]
+- chore(deps): update tiptap monorepo to v3.29.0 [[#2954](https://github.com/opencloud-eu/web/pull/2954)]
+- chore(deps): update traefik docker tag to v3.7.9 [[#2955](https://github.com/opencloud-eu/web/pull/2955)]
 - chore(deps): update pnpm to v11.17.0 [[#2948](https://github.com/opencloud-eu/web/pull/2948)]
 - chore(deps): update pnpm to v11.17.0 [[#2947](https://github.com/opencloud-eu/web/pull/2947)]
 - chore(deps): update dependency sass to v1.101.6 [[#2946](https://github.com/opencloud-eu/web/pull/2946)]
