@@ -15,7 +15,7 @@
       <no-content-message
         v-if="!mails || !mails.length"
         class="mail-list-empty min-w-[306px]"
-        img-src="/images/empty-states/empty-mails.svg"
+        img-src="images/empty-states/empty-mails.svg"
       >
         <template #message>
           <span v-text="$gettext('No mails in this mailbox')" />

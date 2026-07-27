@@ -24,7 +24,7 @@
       <no-content-message
         v-else-if="!extensions.length"
         id="admin-settings-extensions-empty"
-        img-src="/images/empty-states/empty-extensions.svg"
+        img-src="images/empty-states/empty-extensions.svg"
       >
         <template #message>
           <span v-text="$gettext('No extensions found')" />

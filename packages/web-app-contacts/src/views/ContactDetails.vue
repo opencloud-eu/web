@@ -1,5 +1,5 @@
 <template>
-  <no-content-message v-if="!currentContact" img-src="/images/empty-states/empty-contacts.svg">
+  <no-content-message v-if="!currentContact" img-src="images/empty-states/empty-contacts.svg">
     <template #message>
       <span v-text="$gettext('No contact selected')" />
     </template>

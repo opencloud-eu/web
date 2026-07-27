@@ -23,7 +23,7 @@
         <no-content-message
           v-if="isEmpty"
           id="files-shared-via-link-empty"
-          img-src="/images/empty-states/empty-shared-via-link.svg"
+          img-src="images/empty-states/empty-shared-via-link.svg"
         >
           <template #message>
             <span v-text="$gettext('Nothing shared, yet')" />

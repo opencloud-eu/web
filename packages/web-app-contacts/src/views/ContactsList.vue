@@ -21,7 +21,7 @@
     <no-content-message
       v-if="!sortedContacts.length"
       id="contacts-empty"
-      img-src="/images/empty-states/empty-contacts.svg"
+      img-src="images/empty-states/empty-contacts.svg"
     >
       <template #message>
         <span v-text="$gettext('No contacts available yet.')" />
@@ -30,7 +30,7 @@
     <no-content-message
       v-else-if="!filteredContacts.length"
       id="contacts-search-empty"
-      img-src="/images/empty-states/empty-contacts.svg"
+      img-src="images/empty-states/empty-contacts.svg"
     >
       <template #message>
         <span v-text="$gettext('No contacts found.')" />
