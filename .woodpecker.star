@@ -5,7 +5,7 @@ ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
 
 # renovate: datasource=docker depName=collabora/code
-COLLABORA_CODE = "collabora/code:26.04.2.1.1"
+COLLABORA_CODE = "collabora/code:26.04.2.4.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:26.6.1"
 MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
@@ -138,6 +138,9 @@ config = {
                 "COLLABORATION_APP_ICON": "https://collabora:9980/favicon.ico",
                 "COLLABORATION_APP_INSECURE": True,
                 "COLLABORATION_CS3API_DATAGATEWAY_INSECURE": True,
+                # collabora reads the WOPI proof key from the hardcoded path /etc/coolwsd/proof_key,
+                # which cannot be provided from a woodpecker step
+                "COLLABORATION_APP_PROOF_DISABLE": True,
             },
         },
         "app-provider-euro-office": {
@@ -1511,20 +1514,17 @@ def tikaService():
     }] + waitForService("tika", "9998")
 
 def collaboraService():
+    # the image has no shell, so it has to run its own entrypoint without any commands.
+    # coolwsd generates a self-signed certificate on startup, which is good enough for CI.
     return [
         {
             "name": "collabora",
             "image": COLLABORA_CODE,
             "detach": True,
             "environment": {
-                "DONT_GEN_SSL_CERT": "set",
                 "aliasgroup1": "https://opencloud:9200",
-                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:home_mode.enable=true --o:net.frame_ancestors=https://opencloud:9200",
+                "extra_params": "--o:ssl.enable=true --o:ssl.termination=true --o:ssl.ssl_verification=false --o:welcome.enable=false --o:home_mode.enable=true --o:net.frame_ancestors=https://opencloud:9200",
             },
-            "commands": [
-                "coolconfig generate-proof-key",
-                "bash /start-collabora-online.sh",
-            ],
         },
     ]
 
