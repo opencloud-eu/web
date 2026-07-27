@@ -176,12 +176,9 @@ services:
 
   collabora:
     image: collabora/code:26.04.2.4.1
-    entrypoint: ['/bin/bash', '-c']
-    command: ['coolconfig generate-proof-key && /start-collabora-online.sh']
     environment:
       aliasgroup1: ${OC_URL:-https://host.docker.internal:9200}
-      DONT_GEN_SSL_CERT: YES
-      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200}
+      extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:welcome.enable=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200}
       username: ${COLLABORA_ADMIN_USER:-admin}
       password: ${COLLABORA_ADMIN_PASSWORD:-admin}
     cap_add:
@@ -189,13 +186,6 @@ services:
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     healthcheck:
-      test:
-        [
-          'CMD',
-          'bash',
-          '-c',
-          "exec 3<>/dev/tcp/127.0.0.1/9980 && printf 'GET /hosting/discovery HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | head -1 | grep -q '200 OK'"
-        ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -207,9 +197,41 @@ services:
       traefik.http.services.collabora.loadbalancer.server.port: 9980
     networks:
       - traefik
+    volumes:
+      - type: volume
+        source: collabora-proof-key
+        target: /etc/coolwsd/proof_key
+        read_only: true
+        volume:
+          subpath: proof_key
     restart: unless-stopped
     depends_on:
-      - traefik
+      collabora-proof-key:
+        condition: service_completed_successfully
+      traefik:
+        condition: service_started
+
+  # generates the WOPI proof key on first start and keeps it in a named volume
+  collabora-proof-key:
+    image: alpine/openssl:3.5.7
+    entrypoint: ['/bin/sh']
+    command:
+      - -ec
+      - |
+        if [ ! -s /proof/proof_key ]; then
+          openssl genrsa -traditional -out /proof/proof_key.tmp 4096
+          chown 1001:1001 /proof/proof_key.tmp
+          chmod 400 /proof/proof_key.tmp
+          mv /proof/proof_key.tmp /proof/proof_key
+          echo "WOPI proof key generated"
+        else
+          echo "WOPI proof key already exists"
+        fi
+    volumes:
+      - collabora-proof-key:/proof
+    logging:
+      driver: ${LOG_DRIVER:-local}
+    restart: 'no'
 
   traefik:
     image: traefik:v3.7.8
@@ -408,6 +430,7 @@ volumes:
   opencloud-config:
   opencloud-federated-config:
   stalwart-data:
+  collabora-proof-key:
 
 networks:
   traefik:
