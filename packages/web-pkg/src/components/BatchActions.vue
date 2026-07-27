@@ -14,7 +14,7 @@
         :action="action"
         :action-options="actionOptions"
         appearance="raw"
-        class="batch-actions float-left [&_.action-menu-item]:p-2 [&_button]:py-1!"
+        class="batch-actions float-left [&_.action-menu-item]:p-2 [&_button]:py-1! [&_button]:hover:bg-role-surface"
         :shortcut-hint="false"
         :show-tooltip="limitedScreenSpace"
       />
