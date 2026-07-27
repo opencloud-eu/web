@@ -227,13 +227,7 @@ export default defineComponent({
 
     const loadGroupsTask = useTask(function* (signal) {
       groups.value = yield* call(
-        clientService.graphAuthenticated.groups.listGroups(
-          {
-            orderBy: ['displayName'],
-            expand: ['members']
-          },
-          { signal }
-        )
+        clientService.graphAuthenticated.groups.listGroups({ orderBy: ['displayName'] }, { signal })
       )
     }).restartable()
 
@@ -291,9 +285,11 @@ export default defineComponent({
     })
 
     const loadResourcesTask = useTask(function* () {
-      yield loadUsersTask.perform()
-      yield loadGroupsTask.perform()
-      yield loadAppRolesTask.perform()
+      yield Promise.all([
+        loadUsersTask.perform(),
+        loadGroupsTask.perform(),
+        loadAppRolesTask.perform()
+      ])
     })
 
     /**
