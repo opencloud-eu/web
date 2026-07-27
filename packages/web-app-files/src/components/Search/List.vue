@@ -75,7 +75,7 @@
       <template v-else>
         <no-content-message
           v-if="!paginatedResources.length"
-          img-src="/images/empty-states/empty-search-results.svg"
+          img-src="images/empty-states/empty-search-results.svg"
         >
           <template #message>
             <p class="text-role-on-surface-variant">

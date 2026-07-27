@@ -1259,15 +1259,20 @@ def e2eTestingDocs(ctx):
                 "when": [
                     {
                         "event": ["push"],
-                        "branch": "${CI_REPO_DEFAULT_BRANCH}",
-                        "path": "tests/e2e/README.md",
                     },
                 ],
             },
         ],
         "when": [
-            event["pull_request"],
-            event["main_branch"],
+            {
+                "event": "pull_request",
+                "path": "tests/e2e/README.md",
+            },
+            {
+                "event": "push",
+                "branch": "${CI_REPO_DEFAULT_BRANCH}",
+                "path": "tests/e2e/README.md",
+            },
         ],
         "workspace": web_workspace,
     }]

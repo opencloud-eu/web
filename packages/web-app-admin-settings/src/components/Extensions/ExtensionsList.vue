@@ -2,7 +2,7 @@
   <no-content-message
     v-if="!filteredExtensions.length"
     id="admin-settings-extensions-empty-filtered"
-    img-src="/images/empty-states/empty-extensions.svg"
+    img-src="images/empty-states/empty-extensions.svg"
   >
     <template #message>
       <span v-text="$gettext('No extensions found')" />
