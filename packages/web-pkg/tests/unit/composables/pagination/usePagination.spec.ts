@@ -1,6 +1,6 @@
 import { ref, unref } from 'vue'
 import { usePagination } from '../../../../src/composables'
-import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { createRouter, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 
 describe('usePagination', () => {
   describe('computed items', () => {
@@ -36,6 +36,28 @@ describe('usePagination', () => {
         currentPage: 1,
         itemsPerPage
       })
+    })
+  })
+  describe('computed perPage', () => {
+    it('falls back to the default while the route query is still unset', async () => {
+      const router = createRouter({ routes: [{ path: '/', redirect: null }] })
+      router.push('/')
+      await router.isReady()
+
+      const mocks = { $router: router }
+      getComposableWrapper(
+        () => {
+          const { items: paginatedItems, perPage } = usePagination({
+            items: ref([1, 2, 3, 4, 5, 6]),
+            perPageDefault: '2',
+            perPageStoragePrefix: 'unit-tests'
+          })
+
+          expect(unref(perPage)).toBe(2)
+          expect(unref(paginatedItems)).toEqual([1, 2])
+        },
+        { mocks, provide: mocks }
+      )
     })
   })
 })

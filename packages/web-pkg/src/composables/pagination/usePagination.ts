@@ -89,10 +89,17 @@ function createPerPageRef<T>(options: PaginationOptions<T>): ComputedRef<number>
     return computed(() => unref(options.perPage))
   }
 
+  const perPageDefault = options.perPageDefault || PaginationConstants.perPageDefault
   const perPageQuery = useRouteQueryPersisted({
     name: options.perPageQueryName || PaginationConstants.perPageQueryName,
-    defaultValue: options.perPageDefault || PaginationConstants.perPageDefault,
+    defaultValue: perPageDefault,
     storagePrefix: options.perPageStoragePrefix
   })
-  return computed(() => parseInt(queryItemAsString(unref(perPageQuery))))
+  return computed(() => {
+    // the route query is populated asynchronously, so it can still be missing on
+    // the first render. Falling back to the default keeps `items` from returning
+    // the whole (potentially huge) list for one render pass.
+    const perPage = parseInt(queryItemAsString(unref(perPageQuery)))
+    return isNaN(perPage) ? parseInt(perPageDefault) : perPage
+  })
 }
