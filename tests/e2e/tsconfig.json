@@ -1,5 +1,5 @@
 {
-  "extends": "@opencloud-eu/tsconfig",
+  "extends": "../../packages/tsconfig/tsconfig.json",
   "compilerOptions": {
     "rootDir": "..",
     "types": ["playwright-bdd", "node"]

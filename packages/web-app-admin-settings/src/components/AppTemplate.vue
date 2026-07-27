@@ -41,7 +41,7 @@
                 </div>
                 <div
                   v-if="showBatchActions"
-                  class="flex flex-1 has-[_ul:first-child>*]:flex justify-between items-center px-3 h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container-high peer-[:not(:empty)]:absolute peer-[:not(:empty)]:inset-x-0 peer-[:not(:empty)]:top-1/2 peer-[:not(:empty)]:-translate-y-1/2"
+                  class="flex flex-1 has-[_ul:first-child>*]:flex justify-between items-center px-3 h-9 rounded-xl has-[_ul:first-child>*]:bg-role-surface-container peer-[:not(:empty)]:absolute peer-[:not(:empty)]:inset-x-0 peer-[:not(:empty)]:top-1/2 peer-[:not(:empty)]:-translate-y-1/2"
                 >
                   <batch-actions
                     v-if="showBatchActions"
