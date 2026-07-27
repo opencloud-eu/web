@@ -1,4 +1,4 @@
-import { computed, ComputedRef, unref, MaybeRef } from 'vue'
+import { computed, ComputedRef, onBeforeUnmount, unref, MaybeRef } from 'vue'
 import { queryItemAsString } from '../appDefaults'
 import { useRouteQuery, useRouteQueryPersisted } from '../router'
 import { PaginationConstants } from './constants'
@@ -42,7 +42,7 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
     return unref(options.items).slice(start, end)
   })
 
-  eventBus.subscribe(
+  const navigatePageToken = eventBus.subscribe(
     'app.files.navigate.page',
     ({
       resourceId,
@@ -66,6 +66,10 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
       }
     }
   )
+
+  onBeforeUnmount(() => {
+    eventBus.unsubscribe('app.files.navigate.page', navigatePageToken)
+  })
 
   return {
     items,

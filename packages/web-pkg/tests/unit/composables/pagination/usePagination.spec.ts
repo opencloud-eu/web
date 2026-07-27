@@ -1,5 +1,6 @@
 import { ref, unref } from 'vue'
 import { usePagination } from '../../../../src/composables'
+import { eventBus } from '../../../../src/services'
 import { createRouter, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 
 describe('usePagination', () => {
@@ -58,6 +59,27 @@ describe('usePagination', () => {
         },
         { mocks, provide: mocks }
       )
+    })
+  })
+  describe('event bus subscription', () => {
+    it('unsubscribes from the page navigation event on unmount', () => {
+      const subscribeSpy = vi.spyOn(eventBus, 'subscribe')
+      const unsubscribeSpy = vi.spyOn(eventBus, 'unsubscribe')
+
+      const { wrapper } = getWrapper({
+        setup: () => undefined,
+        items: [1, 2, 3],
+        currentPage: 1,
+        itemsPerPage: 2
+      })
+
+      const token = subscribeSpy.mock.results[0].value
+      expect(subscribeSpy).toHaveBeenCalledWith('app.files.navigate.page', expect.anything())
+      expect(unsubscribeSpy).not.toHaveBeenCalled()
+
+      wrapper.unmount()
+
+      expect(unsubscribeSpy).toHaveBeenCalledWith('app.files.navigate.page', token)
     })
   })
 })
