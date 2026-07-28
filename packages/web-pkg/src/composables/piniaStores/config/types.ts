@@ -44,6 +44,12 @@ const ScriptConfigSchema = z.object({
 export type ScriptConfig = z.infer<typeof ScriptConfigSchema>
 
 const OptionsConfigSchema = z.object({
+  announcement: z
+    .object({
+      bannerText: z.string().optional(),
+      infoText: z.string().optional()
+    })
+    .optional(),
   openFilesInNewTab: z.boolean().optional(),
   concurrentRequests: z
     .object({

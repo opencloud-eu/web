@@ -4,6 +4,7 @@
       <oc-spinner size="large" :aria-label="$gettext('Loading')" />
     </div>
     <template v-else>
+      <announcement class="relative z-1" />
       <h1 class="sr-only" v-text="pageTitle" />
       <router-view class="relative z-1" />
       <img
@@ -22,6 +23,7 @@ import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useRouteMeta, useThemeStore } from '@opencloud-eu/web-pkg'
 import { useRoute } from 'vue-router'
+import Announcement from '../components/Announcement.vue'
 
 const { $gettext } = useGettext()
 const themeStore = useThemeStore()

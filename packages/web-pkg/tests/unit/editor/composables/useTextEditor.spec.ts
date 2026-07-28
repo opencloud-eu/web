@@ -274,4 +274,36 @@ describe('useTextEditor', () => {
       expect(onUpdate).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('excludeActions', () => {
+    const collectIds = (groups: { actions: { id: string; childActions?: any[] }[] }[]) => {
+      const ids: string[] = []
+      const walk = (actions: { id: string; childActions?: any[] }[]) => {
+        for (const action of actions) {
+          ids.push(action.id)
+          if (action.childActions) {
+            walk(action.childActions)
+          }
+        }
+      }
+      groups.forEach((group) => walk(group.actions))
+      return ids
+    }
+
+    it('keeps image actions by default', () => {
+      const { result } = createEditor({ contentType: 'markdown' })
+      expect(collectIds(result.actionGroups())).toContain('image')
+    })
+
+    it('removes excluded actions including nested dropdown children', () => {
+      const { result } = createEditor({
+        contentType: 'markdown',
+        excludeActions: ['image', 'image-upload', 'image-url']
+      })
+      const ids = collectIds(result.actionGroups())
+      expect(ids).not.toContain('image')
+      expect(ids).not.toContain('image-upload')
+      expect(ids).not.toContain('image-url')
+    })
+  })
 })

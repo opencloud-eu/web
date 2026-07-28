@@ -11,6 +11,11 @@ export interface TextEditorOptions {
   readonly?: boolean
   slashCommands?: boolean
   placeholder?: string
+  /**
+   * Action ids to exclude from the toolbar and slash commands (e.g. 'image-upload'),
+   * including nested dropdown children.
+   */
+  excludeActions?: string[]
   onUpdate?: (content: string) => void
   onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
 }
@@ -35,6 +40,7 @@ export interface TextEditorInstance {
   readonly: Ref<boolean>
   actionGroups(): EditorActionGroup[]
   getContent(): string
+  setContent(value: string): void
   isEmpty: ComputedRef<boolean>
   isFocused: ComputedRef<boolean>
   focus(): void
