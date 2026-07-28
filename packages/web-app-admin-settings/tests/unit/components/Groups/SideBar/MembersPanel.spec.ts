@@ -1,7 +1,13 @@
 import MembersPanel from '../../../../../src/components/Groups/SideBar/MembersPanel.vue'
-import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  mount,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
+import { flushPromises, VueWrapper } from '@vue/test-utils'
+import { OcPaginationInline } from '@opencloud-eu/design-system/components'
 import { mock } from 'vitest-mock-extended'
-import { flushPromises } from '@vue/test-utils'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import MembersRoleSection from '../../../../../src/components/Groups/SideBar/MembersRoleSection.vue'
 import { useMessages } from '@opencloud-eu/web-pkg'
@@ -12,7 +18,18 @@ const members = [mock<User>({ displayName: 'Albert Einstein' })]
 const selectors = {
   membersRolePanelStub: 'members-role-section-stub',
   groupMembers: '[data-testid="group-members"]',
-  spinnerStub: 'oc-spinner-stub'
+  spinnerStub: 'oc-spinner-stub',
+  paginationStub: 'oc-pagination-inline-stub',
+  nextPageButton: '[data-testid="group-members-pagination"] .oc-pagination-inline-next'
+}
+
+function generateMembers(amount: number): User[] {
+  return Array.from({ length: amount }, (_, index) =>
+    mock<User>({
+      id: `user-${index.toString().padStart(2, '0')}`,
+      displayName: `User ${index.toString().padStart(2, '0')}`
+    })
+  )
 }
 
 describe('MembersPanel', () => {
@@ -83,6 +100,65 @@ describe('MembersPanel', () => {
         .groupMembers[0].displayName
     ).toEqual('Albert Einstein')
   })
+  describe('pagination', () => {
+    it('renders a single page if all members fit on one page', async () => {
+      const { wrapper } = getWrapper({ members: generateMembers(20) })
+      await flushPromises()
+
+      expect(
+        wrapper.findComponent<typeof OcPaginationInline>(selectors.paginationStub).props('pages')
+      ).toBe(1)
+    })
+    it('limits the displayed members to 20 per page', async () => {
+      const { wrapper } = getWrapper({ members: generateMembers(25) })
+      await flushPromises()
+
+      expect(
+        wrapper.findComponent<typeof OcPaginationInline>(selectors.paginationStub).props('pages')
+      ).toBe(2)
+      expect(
+        wrapper.findComponent<typeof MembersRoleSection>(selectors.membersRolePanelStub).props()
+          .groupMembers
+      ).toHaveLength(20)
+    })
+    it('shows the remaining members on the next page', async () => {
+      const { wrapper } = getWrapper({ members: generateMembers(25) })
+      await flushPromises()
+      await goToPage(wrapper, 2)
+
+      const displayedMembers = wrapper
+        .findComponent<typeof MembersRoleSection>(selectors.membersRolePanelStub)
+        .props()
+        .groupMembers.map(({ displayName }) => displayName)
+      expect(displayedMembers).toEqual(['User 20', 'User 21', 'User 22', 'User 23', 'User 24'])
+    })
+    it('resets to the first page when the filter term changes', async () => {
+      const { wrapper } = getWrapper({ members: generateMembers(25) })
+      await flushPromises()
+      await goToPage(wrapper, 2)
+      ;(wrapper.vm as any).filterTerm = 'User'
+      await wrapper.vm.$nextTick()
+
+      expect(
+        wrapper.findComponent<typeof MembersRoleSection>(selectors.membersRolePanelStub).props()
+          .groupMembers
+      ).toHaveLength(20)
+    })
+    it('only loads the avatars of the current page', async () => {
+      const { wrapper, mocks } = getWrapper({ members: generateMembers(50), mountType: mount })
+      await flushPromises()
+
+      const getUserPhoto = mocks.$clientService.graphAuthenticated.photos.getUserPhoto
+      expect(getUserPhoto).toHaveBeenCalledTimes(20)
+
+      vi.mocked(getUserPhoto).mockClear()
+      await wrapper.find(selectors.nextPageButton).trigger('click')
+      await flushPromises()
+
+      expect(getUserPhoto).toHaveBeenCalledTimes(20)
+      expect(getUserPhoto).toHaveBeenCalledWith('user-20', expect.anything())
+    })
+  })
   it('should display an empty result if no matching members found', async () => {
     const { wrapper } = getWrapper()
     await flushPromises()
@@ -94,16 +170,26 @@ describe('MembersPanel', () => {
   })
 })
 
+function goToPage(wrapper: VueWrapper, page: number) {
+  wrapper
+    .findComponent<typeof OcPaginationInline>(selectors.paginationStub)
+    .vm.$emit('update:currentPage', page)
+
+  return wrapper.vm.$nextTick()
+}
+
 function getWrapper({
   group = groupMock,
   members: groupMembers = members,
   rejectGetGroup = false,
-  omitMembers = false
+  omitMembers = false,
+  mountType = shallowMount
 }: {
   group?: Group
   members?: User[]
   rejectGetGroup?: boolean
   omitMembers?: boolean
+  mountType?: typeof mount | typeof shallowMount
 } = {}) {
   const mocks = defaultComponentMocks()
 
@@ -118,7 +204,7 @@ function getWrapper({
 
   return {
     mocks,
-    wrapper: shallowMount(MembersPanel, {
+    wrapper: mountType(MembersPanel, {
       global: {
         plugins: [...defaultPlugins()],
         provide: { group, ...mocks },

@@ -1,8 +1,8 @@
 <template>
   <ul class="oc-list">
     <li
-      v-for="(member, index) in groupMembers"
-      :key="index"
+      v-for="member in groupMembers"
+      :key="member.id"
       class="flex items-center mb-2"
       data-testid="group-members-list"
     >
