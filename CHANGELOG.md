@@ -48,6 +48,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.29.1 [[#2960](https://github.com/opencloud-eu/web/pull/2960)]
 - chore(deps): update devdependencies (non-major) [[#2952](https://github.com/opencloud-eu/web/pull/2952)]
 - chore(deps): update collabora/code docker tag to v26.04.2.4.1 [[#2920](https://github.com/opencloud-eu/web/pull/2920)]
 - fix(deps): update dependency @sentry/vue to v10.68.0 [[#2953](https://github.com/opencloud-eu/web/pull/2953)]
