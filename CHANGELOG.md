@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: retry silent token renewal before logout on auth error [[#2951](https://github.com/opencloud-eu/web/pull/2951)]
 - fix: loading user avatars won't get cancelled when changing route [[#2962](https://github.com/opencloud-eu/web/pull/2962)]
 - fix: resolve hardcoded absolute image paths under a subpath deployment [[#2956](https://github.com/opencloud-eu/web/pull/2956)]
 - fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
