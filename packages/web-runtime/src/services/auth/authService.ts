@@ -174,6 +174,15 @@ export class AuthService implements AuthServiceInterface {
             await this.userManager.updateContext(user.access_token, user.profile.sid, fetchUserData)
           } catch (e) {
             console.error(e)
+
+            if (this.silentRenewRetryPromise) {
+              // This event was raised by a silent renewal that is still in flight. Handling
+              // the error here would wait for that very renewal to finish (see
+              // `renewTokenWithBackoff`) and therefore deadlock. Let the renewal fail
+              // instead, its caller takes care of the error.
+              throw e
+            }
+
             await this.handleAuthError(unref(this.router.currentRoute))
           }
         })

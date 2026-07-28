@@ -288,5 +288,48 @@ describe('AuthService', () => {
       expect(signinSilent).toHaveBeenCalledTimes(1)
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
+
+    it('logs the user out when updating the context fails for the renewed token', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const authService = new AuthService()
+      let onUserLoaded: (user: unknown) => Promise<void>
+      const removeUser = vi.fn()
+      const updateContext = vi.fn().mockRejectedValue(new Error('network error'))
+      const signinSilent = vi
+        .fn()
+        .mockImplementation(() =>
+          onUserLoaded({ access_token: 'renewed-token', profile: { sid: 'session-id' } })
+        )
+
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({
+          getUser: vi.fn().mockResolvedValue({ expired: false }),
+          areEventHandlersRegistered: false,
+          events: mock<UserManager['events']>({
+            addAccessTokenExpired: vi.fn(),
+            addAccessTokenExpiring: vi.fn(),
+            addUserLoaded: vi.fn().mockImplementation((cb) => (onUserLoaded = cb)),
+            addUserUnloaded: vi.fn(),
+            addSilentRenewError: vi.fn()
+          }),
+          updateContext,
+          signinSilent,
+          removeUser
+        })
+      })
+
+      initAuthService({ authService, router: createRouter() })
+      await authService.initializeContext(userContextRoute)
+
+      const promise = authService.handleAuthError(userContextRoute)
+      await vi.runAllTimersAsync()
+      await promise
+
+      // the failing context update must not trigger another renewal, otherwise the
+      // nested call would wait for the renewal it is running in and deadlock
+      expect(signinSilent).toHaveBeenCalledTimes(1)
+      expect(updateContext).toHaveBeenCalledTimes(1)
+      expect(removeUser).toHaveBeenCalledWith('authError')
+    })
   })
 })
