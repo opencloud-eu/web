@@ -24,7 +24,7 @@
         :class="{ 'mb-4': showSpaceMembers, 'mb-2': !showSpaceMembers }"
         :aria-label="$gettext('Share receivers')"
       >
-        <li v-for="collaborator in displayCollaborators" :key="collaborator.id">
+        <li v-for="collaborator in paginatedCollaborators" :key="collaborator.id">
           <collaborator-list-item
             :share="collaborator"
             :modifiable="isShareModifiable(collaborator)"
@@ -38,15 +38,13 @@
           :extension-point="fileSideBarSharesPanelSharedWithBottomExtensionPoint"
         />
       </ul>
-      <div v-if="showShareToggle" class="flex justify-center">
-        <oc-button
-          appearance="raw"
-          class="toggle-shares-list-btn"
-          @click="toggleShareListCollapsed"
-        >
-          {{ collapseButtonTitle }}
-        </oc-button>
-      </div>
+      <oc-pagination-inline
+        v-model:current-page="currentCollaboratorsPage"
+        class="justify-center mb-2"
+        :pages="totalCollaboratorsPages"
+        :label="$gettext('Share receiver list pagination')"
+        data-testid="collaborators-pagination"
+      />
     </template>
     <template v-if="showSpaceMembers">
       <div class="flex items-center justify-between mt-2">
@@ -57,7 +55,7 @@
         class="oc-list oc-list-divider overflow-hidden m-0"
         :aria-label="spaceMemberLabel"
       >
-        <li v-for="(collaborator, i) in displaySpaceMembers" :key="i">
+        <li v-for="collaborator in paginatedSpaceMembers" :key="collaborator.id">
           <collaborator-list-item
             :share="collaborator"
             :modifiable="false"
@@ -65,11 +63,13 @@
           />
         </li>
       </ul>
-      <div v-if="showMemberToggle" class="flex justify-center">
-        <oc-button appearance="raw" @click="toggleMemberListCollapsed">
-          {{ collapseMemberButtonTitle }}
-        </oc-button>
-      </div>
+      <oc-pagination-inline
+        v-model:current-page="currentSpaceMembersPage"
+        class="justify-center mt-2"
+        :pages="totalSpaceMembersPages"
+        :label="$gettext('Space member list pagination')"
+        data-testid="space-members-pagination"
+      />
     </template>
   </div>
 </template>
@@ -88,6 +88,7 @@ import {
   useCanShare,
   CustomComponentTarget,
   useClientService,
+  useLocalPagination,
   useRouter
 } from '@opencloud-eu/web-pkg'
 import { isLocationSharesActive } from '@opencloud-eu/web-pkg'
@@ -96,7 +97,7 @@ import { isShareSpaceResource, ShareTypes } from '@opencloud-eu/web-client'
 import InviteCollaboratorForm from './Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import CollaboratorListItem from './Collaborators/ListItem.vue'
 import { useContextualHelpers } from '../../../composables/contextualHelpers'
-import { computed, inject, ref, Ref, unref } from 'vue'
+import { computed, inject, Ref, unref } from 'vue'
 import {
   isProjectSpaceResource,
   Resource,
@@ -146,15 +147,6 @@ const collaboratorShares = computed(() => {
 
 const spaceMembers = computed(() => getSpaceMembers(unref(space)))
 
-const sharesListCollapsed = ref(true)
-const toggleShareListCollapsed = () => {
-  sharesListCollapsed.value = !unref(sharesListCollapsed)
-}
-const memberListCollapsed = ref(true)
-const toggleMemberListCollapsed = () => {
-  memberListCollapsed.value = !unref(memberListCollapsed)
-}
-
 const matchingSpace = computed(() => {
   return getMatchingSpace(unref(resource))
 })
@@ -192,30 +184,20 @@ const inviteCollaboratorHelp = computed(() =>
 const helpersEnabled = computed(() => unref(configOptions).contextHelpers)
 const sharedWithLabel = computed(() => $gettext('Shared with'))
 const spaceMemberLabel = computed(() => $gettext('Space members'))
-const collapseButtonTitle = computed(() =>
-  unref(sharesListCollapsed) ? $gettext('Show more') : $gettext('Show less')
-)
-const collapseMemberButtonTitle = computed(() =>
-  unref(memberListCollapsed) ? $gettext('Show more') : $gettext('Show less')
-)
 const hasSharees = computed(() => unref(collaborators).length > 0)
-const displayCollaborators = computed(() => {
-  if (unref(collaborators).length > 3 && unref(sharesListCollapsed)) {
-    return unref(collaborators).slice(0, 3)
-  }
 
-  return unref(collaborators)
-})
-const displaySpaceMembers = computed(() => {
-  if (unref(spaceMembers).length > 3 && unref(memberListCollapsed)) {
-    return unref(spaceMembers).slice(0, 3)
-  }
+const {
+  currentPage: currentCollaboratorsPage,
+  totalPages: totalCollaboratorsPages,
+  paginatedItems: paginatedCollaborators
+} = useLocalPagination({ items: collaborators, perPage: 10, resetOn: resource })
 
-  return unref(spaceMembers)
-})
+const {
+  currentPage: currentSpaceMembersPage,
+  totalPages: totalSpaceMembersPages,
+  paginatedItems: paginatedSpaceMembers
+} = useLocalPagination({ items: spaceMembers, perPage: 10, resetOn: resource })
 
-const showShareToggle = computed(() => unref(collaborators).length > 3)
-const showMemberToggle = computed(() => unref(spaceMembers).length > 3)
 const noSharePermsMessage = computed(() => {
   const translatedFile = $gettext("You don't have permission to share this file.")
   const translatedFolder = $gettext("You don't have permission to share this folder.")

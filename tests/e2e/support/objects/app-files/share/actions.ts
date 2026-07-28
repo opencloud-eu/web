@@ -25,7 +25,6 @@ const pendingShareItem =
 const showMoreOptionsButton = '#show-more-share-options-btn'
 const calendarDatePickerId = 'recipient-datepicker-btn'
 const informMessage = '//div[contains(@class,"oc-notification-message-title")]'
-const showMoreBtn = '.toggle-shares-list-btn:has-text("Show more")'
 const userTypeFilter = '.invite-form-share-role-type'
 const userTypeFilterDropdown = '.invite-form-share-role-type ul.oc-list'
 const userTypeSelector = '.invite-form-share-role-type-item'
@@ -64,12 +63,6 @@ export const openSharingPanel = async function (
 
   await page.locator(invitePanel).waitFor()
   await page.locator('div.oc-loader').waitFor({ state: 'detached' })
-
-  // always click on the “Show more” button if it exists
-  const showMore = page.locator(showMoreBtn)
-  if ((await showMore.count()) > 0) {
-    await showMore.click()
-  }
 }
 
 export type ActionViaType = 'SIDEBAR_PANEL' | 'QUICK_ACTION' | 'URL_NAVIGATION'

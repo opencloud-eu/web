@@ -14,11 +14,20 @@ import {
 import CollaboratorListItem from '../../../../../src/components/SideBar/Shares/Collaborators/ListItem.vue'
 import { AncestorMetaData, useCanShare, useModals } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
+import { OcPaginationInline } from '@opencloud-eu/design-system/components'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useCanShare: vi.fn()
 }))
+
+const selectors = {
+  collaboratorsPagination: '[data-testid="collaborators-pagination"]',
+  spaceMembersPagination: '[data-testid="space-members-pagination"]'
+}
+
+const buildCollaborators = (amount: number): CollaboratorShare[] =>
+  Array.from({ length: amount }, () => getCollaborator())
 
 const getCollaborator = (): CollaboratorShare => ({
   id: uuidV4(),
@@ -58,9 +67,8 @@ describe('FileShares', () => {
       collaborators = [getCollaborator(), getCollaborator(), getCollaborator(), getCollaborator()]
     })
 
-    it('renders sharedWithLabel and sharee list', async () => {
+    it('renders sharedWithLabel and sharee list', () => {
       const { wrapper } = getWrapper({ collaborators })
-      await wrapper.find('.toggle-shares-list-btn').trigger('click')
       expect(wrapper.find('#files-collaborators-list').exists()).toBeTruthy()
       expect(wrapper.findAll('#files-collaborators-list li').length).toBe(collaborators.length)
       expect(wrapper.html()).toMatchSnapshot()
@@ -86,11 +94,24 @@ describe('FileShares', () => {
       expect(listItemStub.props('sharedParentRoute')).toBeTruthy()
       expect(listItemStub.props('modifiable')).toBeFalsy()
     })
-    it('toggles the share list', async () => {
-      const { wrapper } = getWrapper({ mountType: mount, collaborators })
-      expect((wrapper.vm as any).sharesListCollapsed).toBe(true)
-      await wrapper.find('.toggle-shares-list-btn').trigger('click')
-      expect((wrapper.vm as any).sharesListCollapsed).toBe(false)
+    it('limits the share list to 10 per page', () => {
+      const { wrapper } = getWrapper({ collaborators: buildCollaborators(12) })
+
+      expect(wrapper.findAll('#files-collaborators-list li').length).toBe(10)
+      expect(
+        wrapper
+          .findComponent<typeof OcPaginationInline>(selectors.collaboratorsPagination)
+          .props('pages')
+      ).toBe(2)
+    })
+    it('shows the remaining shares on the next page', async () => {
+      const { wrapper } = getWrapper({ collaborators: buildCollaborators(12) })
+      wrapper
+        .findComponent<typeof OcPaginationInline>(selectors.collaboratorsPagination)
+        .vm.$emit('update:currentPage', 2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('#files-collaborators-list li').length).toBe(2)
     })
     it('share should be modifiable if its personal space share', () => {
       const space = mock<SpaceResource>({ driveType: 'personal' })
@@ -133,6 +154,23 @@ describe('FileShares', () => {
       expect(wrapper.find('#files-collaborators-list').exists()).toBeTruthy()
       expect(wrapper.findAll('#files-collaborators-list li').length).toBe(1)
       expect(wrapper.html()).toMatchSnapshot()
+    })
+    it('limits the space member list to 10 per page', async () => {
+      const space = mock<SpaceResource>({ driveType: 'project' })
+      const spaceMembers = buildCollaborators(12).map((member) => ({
+        ...member,
+        resourceId: space.id
+      }))
+      const { wrapper } = getWrapper({ space, collaborators: [getCollaborator()], spaceMembers })
+
+      expect(wrapper.findAll('#space-collaborators-list li').length).toBe(10)
+
+      wrapper
+        .findComponent<typeof OcPaginationInline>(selectors.spaceMembersPagination)
+        .vm.$emit('update:currentPage', 2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('#space-collaborators-list li').length).toBe(2)
     })
   })
 

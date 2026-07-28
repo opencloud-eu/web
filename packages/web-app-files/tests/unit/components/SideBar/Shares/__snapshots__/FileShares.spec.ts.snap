@@ -22,10 +22,7 @@ exports[`FileShares > collaborators list > renders sharedWithLabel and sharee li
     </li>
     <custom-component-target-stub data-v-5d17c3fa="" extensionpoint="[object Object]"></custom-component-target-stub>
   </ul>
-  <div data-v-5d17c3fa="" class="flex justify-center"><button data-v-5d17c3fa="" type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default toggle-shares-list-btn">
-      <!--v-if-->
-      <!-- @slot Content of the button --> Show less
-    </button></div>
+  <oc-pagination-inline-stub data-v-5d17c3fa="" currentpage="1" pages="1" label="Share receiver list pagination" class="justify-center mb-2" data-testid="collaborators-pagination"></oc-pagination-inline-stub>
   <!--v-if-->
 </div>"
 `;
@@ -43,7 +40,7 @@ exports[`FileShares > current space > loads space members if a space is given an
     </li>
     <custom-component-target-stub data-v-5d17c3fa="" extensionpoint="[object Object]"></custom-component-target-stub>
   </ul>
-  <!--v-if-->
+  <oc-pagination-inline-stub data-v-5d17c3fa="" currentpage="1" pages="1" label="Share receiver list pagination" class="justify-center mb-2" data-testid="collaborators-pagination"></oc-pagination-inline-stub>
   <div data-v-5d17c3fa="" class="flex items-center justify-between mt-2">
     <h4 data-v-5d17c3fa="" class="font-semibold my-2">Space members</h4>
   </div>
@@ -55,6 +52,6 @@ exports[`FileShares > current space > loads space members if a space is given an
       <collaborator-list-item-stub data-v-5d17c3fa="" share="[object Object]" modifiable="false" removable="false" islocked="false" isspaceshare="true"></collaborator-list-item-stub>
     </li>
   </ul>
-  <!--v-if-->
+  <oc-pagination-inline-stub data-v-5d17c3fa="" currentpage="1" pages="1" label="Space member list pagination" class="justify-center mt-2" data-testid="space-members-pagination"></oc-pagination-inline-stub>
 </div>"
 `;
