@@ -92,6 +92,7 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
 import { injectGeneratorMeta } from '../helpers/meta'
+import { z } from 'zod'
 
 // Snapshot embed query params on first call so they survive Vue Router
 // navigations (the delegated-auth callback redirects to /files/spaces/…,
@@ -369,6 +370,28 @@ export const announceApplicationsReady = async ({
 }
 
 /**
+ * Shape of a theme provided by an app via external_apps[].config.themes:
+ * a reference to a theme.json plus optional stylesheets for structural CSS.
+ */
+const appThemesSchema = z.array(
+  z.object({
+    theme: z.string(),
+    styles: z.array(z.string()).optional()
+  })
+)
+
+const appendStylesheet = (href: string): void => {
+  if (!href) {
+    return
+  }
+  const link = document.createElement('link')
+  link.href = href
+  link.type = 'text/css'
+  link.rel = 'stylesheet'
+  document.head.appendChild(link)
+}
+
+/**
  * announce runtime theme to the runtime, this also takes care that the store
  * and designSystem has all needed information to render the customized ui
  *
@@ -388,9 +411,51 @@ export const announceTheme = async ({
   const themeStore = useThemeStore()
   const { initializeThemes } = themeStore
 
-  const webTheme = await loadTheme(configStore.theme)
+  // Themes provided by (external) apps. Apps declare them in their manifest,
+  // which the server surfaces in external_apps[]. We load them here, parallel to
+  // the base theme and BEFORE the initial apply, so a persisted selection of an
+  // app theme is honored on the first paint without a theme flash.
+  //
+  // INTERIM: we read them from external_apps[].config.themes, piggybacking on
+  // the dynamic per-app `config` bag so this works without any backend change.
+  // The clean shape is a first-class external_apps[].themes field, which needs
+  // coordinated changes in the opencloud backend (web service config/apps
+  // structs) and the extension-sdk (manifest metadata). Switch the read below
+  // to externalApp.themes once that lands.
+  // Resolve a theme's asset path relative to the app's own URL, so a theme.json
+  // or stylesheet is found wherever the app is served (dev or prod), no matter
+  // its deployment location. The app's `path` (its entrypoint) is absolutized
+  // the same way the app loader does: absolute paths as-is, relative ones
+  // against serverUrl - so serverUrl is only touched for a relative entrypoint.
+  const toAppAssetUrl = (appPath: string, asset: string) => {
+    const entrypoint = /^(https?:)?\/\//.test(appPath)
+      ? appPath
+      : urlJoin(configStore.serverUrl, appPath)
+    return new URL(asset, new URL(entrypoint, window.location.href)).href
+  }
 
-  initializeThemes(webTheme)
+  const appThemes = (configStore.externalApps ?? []).flatMap((externalApp) => {
+    const parsed = appThemesSchema.safeParse(externalApp.config?.themes)
+    if (!parsed.success) {
+      return []
+    }
+    return parsed.data.map((theme) => ({
+      theme: toAppAssetUrl(externalApp.path, theme.theme),
+      styles: (theme.styles ?? []).map((href) => toAppAssetUrl(externalApp.path, href))
+    }))
+  })
+
+  const [webTheme, ...additionalThemes] = await Promise.all([
+    loadTheme(configStore.theme),
+    ...appThemes.map((appTheme) => loadTheme(appTheme.theme))
+  ])
+
+  // Inject each app theme's stylesheets early (they are scoped by [data-theme]
+  // and inert until their theme is active), so the structural CSS is present
+  // before a persisted app theme gets applied.
+  appThemes.flatMap((appTheme) => appTheme.styles ?? []).forEach((href) => appendStylesheet(href))
+
+  initializeThemes(webTheme, additionalThemes)
 
   app.use(designSystem)
 }
@@ -807,17 +872,7 @@ export const announceCustomScripts = ({ configStore }: { configStore?: ConfigSto
  * @param configStore
  */
 export const announceCustomStyles = ({ configStore }: { configStore?: ConfigStore }): void => {
-  configStore.styles.forEach(({ href = '' }) => {
-    if (!href) {
-      return
-    }
-
-    const link = document.createElement('link')
-    link.href = href
-    link.type = 'text/css'
-    link.rel = 'stylesheet'
-    document.head.appendChild(link)
-  })
+  configStore.styles.forEach(({ href = '' }) => appendStylesheet(href))
 }
 
 /**

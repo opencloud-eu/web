@@ -26,6 +26,20 @@ describe('useThemeStore', () => {
 
       expect(store.availableThemes.length).toBe(themeConfig.clients.web.themes.length)
     })
+    it('skips app themes that failed to load without crashing', () => {
+      const themeConfig = mockDeep<ThemeConfigType>()
+      themeConfig.clients.web.themes = [{ label: 'base', designTokens: {}, isDark: false }]
+      themeConfig.clients.web.defaults = {}
+
+      const appTheme = mockDeep<ThemeConfigType>()
+      appTheme.clients.web.themes = [{ label: 'app', designTokens: {}, isDark: false }]
+      appTheme.clients.web.defaults = {}
+
+      const store = useThemeStore()
+      expect(() => store.initializeThemes(themeConfig, [undefined, appTheme])).not.toThrow()
+
+      expect(store.availableThemes.map((t) => t.label)).toEqual(['base', 'app'])
+    })
     describe('currentTheme', () => {
       it.each([true, false])('gets set based on the OS setting', (isDark) => {
         vi.mocked(usePreferredDark).mockReturnValue(computed(() => isDark))

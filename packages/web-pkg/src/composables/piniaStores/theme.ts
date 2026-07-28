@@ -84,13 +84,33 @@ export const useThemeStore = defineStore('theme', () => {
 
   const availableThemes = ref<WebThemeType[]>([])
 
-  const initializeThemes = (themeConfig: ThemeConfigType) => {
+  // Custom prop keys (without the `--oc-` prefix) applied by the active theme,
+  // so a following theme can clear the ones it doesn't define instead of
+  // leaking them (applyCustomProp only sets, never clears).
+  const appliedCustomProps = ref<string[]>([])
+
+  const initializeThemes = (
+    themeConfig: ThemeConfigType,
+    additionalThemeConfigs: (ThemeConfigType | undefined)[] = []
+  ) => {
     const commonThemeConfig = themeConfig.common as WebThemeType
     const webThemeConfig = themeConfig.clients.web.defaults as WebThemeType
     const baseTheme = merge(commonThemeConfig, webThemeConfig)
-    availableThemes.value = themeConfig.clients.web.themes.map((theme) => {
-      return merge(baseTheme, theme)
-    })
+
+    const mainThemes = themeConfig.clients.web.themes.map((theme) => merge(baseTheme, theme))
+
+    // Themes provided by (external) apps. Each may bring its own defaults,
+    // merged over the base so app themes stay consistent with the deployment.
+    // Configs that failed to load are undefined and skipped, so a single broken
+    // app theme cannot take down the base theme.
+    const additionalThemes = additionalThemeConfigs
+      .filter((config): config is ThemeConfigType => Boolean(config))
+      .flatMap((config) => {
+        const additionalBaseTheme = merge(baseTheme, config.clients.web.defaults as WebThemeType)
+        return config.clients.web.themes.map((theme) => merge(additionalBaseTheme, theme))
+      })
+
+    availableThemes.value = [...mainThemes, ...additionalThemes]
     setThemeFromStorageOrSystem()
   }
 
@@ -121,30 +141,49 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
+    // Expose the active theme on the DOM so themes can attach structural CSS
+    // (borders, radii, ...) that the design-token system alone cannot express.
+    document.documentElement.dataset.theme = theme.label
+
+    // Collect every custom prop this theme defines (font, color roles, the
+    // deprecated palette). Props the previous theme set but this one omits are
+    // removed afterwards, so nothing leaks across a theme switch (e.g. a pixel
+    // font) - applyCustomProp only sets, never clears.
+    const customProps: Record<string, string> = {}
+    const setProp = (key: string, value: string | undefined) => {
+      if (value !== undefined) {
+        customProps[key] = value
+      }
+    }
+
+    setProp('font-family', theme.designTokens?.fontFamily)
+
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
       { name: 'colorPalette', prefix: 'color' }
     ] as const
-
-    applyCustomProp('font-family', unref(currentTheme).designTokens.fontFamily)
-
     customizableDesignTokens.forEach((token) => {
-      for (const param in unref(currentTheme).designTokens[token.name]) {
-        applyCustomProp(
-          `${token.prefix}-${kebabCase(param)}`,
-          unref(currentTheme).designTokens[token.name][param]
-        )
+      const tokens = theme.designTokens?.[token.name]
+      for (const param in tokens) {
+        setProp(`${token.prefix}-${kebabCase(param)}`, tokens[param])
       }
     })
 
-    if (!unref(currentTheme).designTokens?.roles?.chrome) {
+    if (!theme.designTokens?.roles?.chrome) {
       // fallback to surfaceContainer if chrome is not defined since it may not be set
-      applyCustomProp('role-chrome', unref(currentTheme).designTokens?.roles?.surfaceContainer)
-      applyCustomProp('role-on-chrome', unref(currentTheme).designTokens?.roles?.onSurface)
+      setProp('role-chrome', theme.designTokens?.roles?.surfaceContainer)
+      setProp('role-on-chrome', theme.designTokens?.roles?.onSurface)
     }
 
-    if (unref(currentTheme).favicon) {
-      setFavicon(unref(currentTheme).favicon)
+    const root = document.documentElement
+    unref(appliedCustomProps)
+      .filter((key) => !(key in customProps))
+      .forEach((key) => root.style.removeProperty(`--oc-${key}`))
+    Object.entries(customProps).forEach(([key, value]) => applyCustomProp(key, value))
+    appliedCustomProps.value = Object.keys(customProps)
+
+    if (theme.favicon) {
+      setFavicon(theme.favicon)
     }
   }
 
