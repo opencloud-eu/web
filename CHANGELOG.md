@@ -6,22 +6,9 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @kost, @tammi-23, @v-scharf
 
-### 🐛 Bug Fixes
-
-- fix: retry silent token renewal before logout on auth error [[#2951](https://github.com/opencloud-eu/web/pull/2951)]
-- fix: loading user avatars won't get cancelled when changing route [[#2962](https://github.com/opencloud-eu/web/pull/2962)]
-- fix: resolve hardcoded absolute image paths under a subpath deployment [[#2956](https://github.com/opencloud-eu/web/pull/2956)]
-- fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
-- fix(tiptap): prevent images from stretching while increasing size [[#2927](https://github.com/opencloud-eu/web/pull/2927)]
-- fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
-- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
-- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
-- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
-- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
-- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
-
 ### 📈 Enhancement
 
+- perf: improve render times with lots of paginated items [[#2958](https://github.com/opencloud-eu/web/pull/2958)]
 - feat (tiptap): move blocks [[#2950](https://github.com/opencloud-eu/web/pull/2950)]
 - perf: improve folder loading times in tiles view [[#2945](https://github.com/opencloud-eu/web/pull/2945)]
 - perf: improve file selection in table view [[#2940](https://github.com/opencloud-eu/web/pull/2940)]
@@ -34,9 +21,23 @@
 - feat(admin-settings): enable name sorting for extension overview [[#2907](https://github.com/opencloud-eu/web/pull/2907)]
 - feat(admin-settings): extension overview [[#2889](https://github.com/opencloud-eu/web/pull/2889)]
 - feat(extension-sdk): inject package.json metadata into manifest.json [[#2894](https://github.com/opencloud-eu/web/pull/2894)]
-- fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
-- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
 - feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
+
+### 🐛 Bug Fixes
+
+- fix: retry silent token renewal before logout on auth error [[#2951](https://github.com/opencloud-eu/web/pull/2951)]
+- fix: loading user avatars won't get cancelled when changing route [[#2962](https://github.com/opencloud-eu/web/pull/2962)]
+- fix: resolve hardcoded absolute image paths under a subpath deployment [[#2956](https://github.com/opencloud-eu/web/pull/2956)]
+- fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
+- fix(tiptap): prevent images from stretching while increasing size [[#2927](https://github.com/opencloud-eu/web/pull/2927)]
+- fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
+- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
+- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
+- fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
+- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
+- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
 
 ### 📚 Documentation
 
