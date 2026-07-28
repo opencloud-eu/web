@@ -17,6 +17,7 @@ import {
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { useCanShare, useModals, useSpacesStore } from '@opencloud-eu/web-pkg'
 import ListItem from '../../../../../src/components/SideBar/Shares/Collaborators/ListItem.vue'
+import { OcPaginationInline } from '@opencloud-eu/design-system/components'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -65,6 +66,17 @@ const memberMocks = [
   }
 ] as CollaboratorShare[]
 
+const buildMembers = (amount: number): CollaboratorShare[] =>
+  Array.from(
+    { length: amount },
+    (_, index) =>
+      ({
+        ...memberMocks[1],
+        id: `member-${index}`,
+        sharedWith: { id: `user-${index}`, displayName: `User ${index}` }
+      }) as CollaboratorShare
+  )
+
 describe('SpaceMembers', () => {
   describe('invite collaborator form', () => {
     it('renders the form when the current user can share', () => {
@@ -107,6 +119,42 @@ describe('SpaceMembers', () => {
 
       const { dispatchModal } = useModals()
       expect(dispatchModal).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('pagination', () => {
+    it('limits the member list to 10 per page', () => {
+      const wrapper = getWrapper({ spaceMembers: buildMembers(12) })
+
+      expect(wrapper.findAll('#files-collaborators-list li').length).toBe(10)
+      expect(
+        wrapper
+          .findComponent<typeof OcPaginationInline>('[data-testid="space-members-pagination"]')
+          .props('pages')
+      ).toBe(2)
+    })
+    it('shows the remaining members on the next page', async () => {
+      const wrapper = getWrapper({ spaceMembers: buildMembers(12) })
+      wrapper
+        .findComponent<typeof OcPaginationInline>('[data-testid="space-members-pagination"]')
+        .vm.$emit('update:currentPage', 2)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.findAll('#files-collaborators-list li').length).toBe(2)
+    })
+    it('resets to the first page when the filter term changes', async () => {
+      const wrapper = getWrapper({
+        mountType: mount,
+        spaceMembers: buildMembers(12),
+        space: mock<ProjectSpaceResource>()
+      })
+      wrapper
+        .findComponent<typeof OcPaginationInline>('[data-testid="space-members-pagination"]')
+        .vm.$emit('update:currentPage', 2)
+      await wrapper.vm.$nextTick()
+      await wrapper.find('.space-members-filter input').setValue('User')
+
+      expect(wrapper.findAll('#files-collaborators-list li').length).toBe(10)
     })
   })
 
