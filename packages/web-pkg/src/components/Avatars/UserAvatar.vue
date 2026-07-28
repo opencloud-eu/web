@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, unref } from 'vue'
+import { computed, onMounted, onUnmounted, unref } from 'vue'
 import { useAvatarsStore, useLoadAvatars } from '../../composables'
 import { storeToRefs } from 'pinia'
 
@@ -19,7 +19,7 @@ const {
 
 const avatarsStore = useAvatarsStore()
 const { avatarMap } = storeToRefs(avatarsStore)
-const { enqueueAvatar } = useLoadAvatars()
+const { enqueueAvatar, cancelAvatar } = useLoadAvatars()
 
 const avatarSrc = computed(() => {
   return unref(avatarMap)[userId]
@@ -27,5 +27,9 @@ const avatarSrc = computed(() => {
 
 onMounted(() => {
   enqueueAvatar(userId)
+})
+
+onUnmounted(() => {
+  cancelAvatar(userId)
 })
 </script>
