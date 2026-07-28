@@ -1,4 +1,4 @@
-import { computed, ComputedRef, unref, MaybeRef } from 'vue'
+import { computed, ComputedRef, onBeforeUnmount, unref, MaybeRef } from 'vue'
 import { queryItemAsString } from '../appDefaults'
 import { useRouteQuery, useRouteQueryPersisted } from '../router'
 import { PaginationConstants } from './constants'
@@ -42,7 +42,7 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
     return unref(options.items).slice(start, end)
   })
 
-  eventBus.subscribe(
+  const navigatePageToken = eventBus.subscribe(
     'app.files.navigate.page',
     ({
       resourceId,
@@ -67,6 +67,10 @@ export function usePagination<T>(options: PaginationOptions<T>): PaginationResul
     }
   )
 
+  onBeforeUnmount(() => {
+    eventBus.unsubscribe('app.files.navigate.page', navigatePageToken)
+  })
+
   return {
     items,
     total,
@@ -89,10 +93,17 @@ function createPerPageRef<T>(options: PaginationOptions<T>): ComputedRef<number>
     return computed(() => unref(options.perPage))
   }
 
+  const perPageDefault = options.perPageDefault || PaginationConstants.perPageDefault
   const perPageQuery = useRouteQueryPersisted({
     name: options.perPageQueryName || PaginationConstants.perPageQueryName,
-    defaultValue: options.perPageDefault || PaginationConstants.perPageDefault,
+    defaultValue: perPageDefault,
     storagePrefix: options.perPageStoragePrefix
   })
-  return computed(() => parseInt(queryItemAsString(unref(perPageQuery))))
+  return computed(() => {
+    // the route query is populated asynchronously, so it can still be missing on
+    // the first render. Falling back to the default keeps `items` from returning
+    // the whole (potentially huge) list for one render pass.
+    const perPage = parseInt(queryItemAsString(unref(perPageQuery)))
+    return isNaN(perPage) ? parseInt(perPageDefault) : perPage
+  })
 }

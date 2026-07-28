@@ -1,4 +1,4 @@
-import { computed, unref } from 'vue'
+import { computed, onBeforeUnmount, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { queryItemAsString } from '../appDefaults/useAppNavigation'
 import { eventBus } from '../../services'
@@ -61,7 +61,7 @@ export const useScrollTo = (): ScrollToResult => {
     }
   }
 
-  eventBus.subscribe(
+  const navigateScrollToToken = eventBus.subscribe(
     'app.files.navigate.scrollTo',
     (data: { resourceId: string; forceScroll: boolean; topbarElement: string }) =>
       scrollToResource(data.resourceId, {
@@ -69,6 +69,10 @@ export const useScrollTo = (): ScrollToResult => {
         topbarElement: data.topbarElement
       })
   )
+
+  onBeforeUnmount(() => {
+    eventBus.unsubscribe('app.files.navigate.scrollTo', navigateScrollToToken)
+  })
 
   const scrollToResourceFromRoute = (resources: Resource[], topbarElement: null) => {
     if (!unref(scrollTo) || !resources.length) {
