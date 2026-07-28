@@ -11,6 +11,7 @@ export const useAvatarsStore = defineStore('avatars', () => {
     new PQueue({ concurrency: configStore.options.concurrentRequests.avatars })
   )
   const pendingAvatarsRequests = new Map<string, Promise<any>>()
+  const abortControllers = new Map<string, AbortController>()
 
   const addAvatar = (userId: string, avatar: string) => {
     avatarMap.value[userId] = avatar
@@ -35,7 +36,8 @@ export const useAvatarsStore = defineStore('avatars', () => {
     removeAvatar,
     reset,
     avatarsQueue,
-    pendingAvatarsRequests
+    pendingAvatarsRequests,
+    abortControllers
   }
 })
 
