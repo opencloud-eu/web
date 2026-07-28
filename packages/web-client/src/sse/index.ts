@@ -150,3 +150,15 @@ export const sse = (baseURI: string, fetchOptions: FetchEventSourceInit): SSEAda
 
   return eventSource
 }
+
+/**
+ * Closes the current SSE connection and clears the singleton, so the next `sse()`
+ * call creates a fresh connection. Used on logout to stop the stream from
+ * reconnecting with a stale (removed) access token.
+ */
+export const resetSSE = (): void => {
+  if (eventSource) {
+    eventSource.close()
+    eventSource = null
+  }
+}
