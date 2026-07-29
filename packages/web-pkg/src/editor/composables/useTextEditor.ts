@@ -85,13 +85,18 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editorOptions.contentType = strategy.editorContentType()
   }
 
+  // the editor renders a role="textbox" element, which needs an accessible name
+  const editorAttributes: Record<string, string> = {}
+  if (options.ariaLabel) {
+    editorAttributes['aria-label'] = options.ariaLabel
+  }
+  if (options.placeholder) {
+    editorAttributes['aria-placeholder'] = options.placeholder
+    editorAttributes['aria-multiline'] = 'true'
+  }
+
   editorOptions.editorProps = {
-    attributes: {
-      ...(options.placeholder && {
-        'aria-placeholder': options.placeholder,
-        'aria-multiline': 'true'
-      })
-    },
+    attributes: editorAttributes,
     handleDOMEvents: {
       auxclick(view: Editor['view'], event: Event) {
         const target = event.target

@@ -75,6 +75,7 @@ const stored = ref<StoredAnnouncement>({ enabled: false, bannerText: '', infoTex
 const infoEditor = useTextEditor({
   contentType: 'markdown',
   modelValue: toRef(() => unref(infoText)),
+  ariaLabel: $gettext('Info text'),
   // no image insertion via the UI: base64 uploads would bloat the public config.json,
   // and anyone who really needs an image can add safe Markdown by hand
   excludeActions: ['image', 'image-upload', 'image-url'],

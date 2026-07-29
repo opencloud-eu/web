@@ -11,6 +11,8 @@ export interface TextEditorOptions {
   readonly?: boolean
   slashCommands?: boolean
   placeholder?: string
+  /** Accessible name for the editor's role="textbox" element (aria-label). */
+  ariaLabel?: string
   /**
    * Action ids to exclude from the toolbar and slash commands (e.g. 'image-upload'),
    * including nested dropdown children.

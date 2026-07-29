@@ -306,4 +306,19 @@ describe('useTextEditor', () => {
       expect(ids).not.toContain('image-url')
     })
   })
+
+  describe('ariaLabel', () => {
+    it('sets an aria-label on the editor textbox element', () => {
+      const { result } = createEditor({ ariaLabel: 'Info text' })
+      const attributes = (result.editor.value?.options.editorProps as any)?.attributes
+      expect(attributes?.['aria-label']).toBe('Info text')
+    })
+
+    it('does not add aria attributes when no aria-label or placeholder is given', () => {
+      const { result } = createEditor()
+      const attributes = (result.editor.value?.options.editorProps as any)?.attributes
+      expect(attributes?.['aria-label']).toBeUndefined()
+      expect(attributes?.role).toBeUndefined()
+    })
+  })
 })
