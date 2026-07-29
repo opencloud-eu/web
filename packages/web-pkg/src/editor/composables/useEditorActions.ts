@@ -7,7 +7,7 @@ import { storeToRefs } from 'pinia'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
 import { useModals, useThemeStore } from '../../composables/piniaStores'
 import { TextEditorState } from '../types'
-import { requestLinkPanel } from './useEditorLink'
+import { requestLinkPanel } from '../helpers/link'
 
 export interface EditorAction {
   // Core identification

@@ -6,7 +6,7 @@ import { Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import TextEditorLinkPanel from '../../../../src/editor/components/TextEditorLinkPanel.vue'
 import { createLinkExtension } from '../../../../src/editor/extensions/link'
-import { requestLinkPanel } from '../../../../src/editor/composables/useEditorLink'
+import { requestLinkPanel } from '../../../../src/editor/helpers/link'
 import type {
   TextEditorInstance,
   TextEditorLinkPanelRequest,
@@ -126,6 +126,16 @@ function createEditor(content: string): Editor {
     bottom: 20
   })
   return editor
+}
+
+function expectLinkFollowedByPlainText(editor: Editor, linkText: string, plainText: string): void {
+  const paragraph = editor.state.doc.firstChild!
+  expect(paragraph.textContent).toBe(`${linkText}${plainText}`)
+  expect(paragraph.childCount).toBe(2)
+  expect(paragraph.child(0).text).toBe(linkText)
+  expect(paragraph.child(0).marks.some(({ type }) => type.name === 'link')).toBe(true)
+  expect(paragraph.child(1).text).toBe(plainText)
+  expect(paragraph.child(1).marks.some(({ type }) => type.name === 'link')).toBe(false)
 }
 
 function mountPanel(content: string) {
@@ -360,6 +370,55 @@ describe('TextEditorLinkPanel', () => {
     expect(context.tiptapEditor.getHTML()).toContain(
       '<a target="_blank" rel="noopener noreferrer" href="https://opencloud.eu/">OpenCloud</a>'
     )
+    context.tiptapEditor.destroy()
+  })
+
+  it('exits an applied link with Space', async () => {
+    const context = mountPanel('<p></p>')
+    await openPanel(context, 1)
+    const inputs = context.wrapper.findAll('input')
+
+    await inputs[0].setValue('opencloud.eu')
+    await inputs[1].setValue('OpenCloud')
+    await inputs[1].trigger('keydown', { key: 'Enter' })
+    context.tiptapEditor.commands.keyboardShortcut('Space')
+    context.tiptapEditor.commands.insertContent('after')
+
+    expectLinkFollowedByPlainText(context.tiptapEditor, 'OpenCloud', ' after')
+    context.tiptapEditor.destroy()
+  })
+
+  it('exits an existing link with Space', () => {
+    const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
+
+    context.tiptapEditor.commands.setTextSelection(10)
+    context.tiptapEditor.commands.keyboardShortcut('Space')
+    context.tiptapEditor.commands.insertContent('more')
+
+    expectLinkFollowedByPlainText(context.tiptapEditor, 'OpenCloud', ' more')
+    context.tiptapEditor.destroy()
+  })
+
+  it('exits an applied link with Space after returning to its end', async () => {
+    const context = mountPanel('<p>Before OpenCloud</p>')
+    await openPanel(context, { from: 8, to: 17 })
+    const inputs = context.wrapper.findAll('input')
+
+    await inputs[0].setValue('opencloud.eu')
+    await inputs[0].trigger('keydown', { key: 'Enter' })
+    context.tiptapEditor.commands.setTextSelection(1)
+    context.tiptapEditor.commands.setTextSelection(17)
+    context.tiptapEditor.commands.keyboardShortcut('Space')
+    context.tiptapEditor.commands.insertContent('after')
+
+    const paragraph = context.tiptapEditor.state.doc.firstChild!
+    expect(paragraph.textContent).toBe('Before OpenCloud after')
+    expect(paragraph.childCount).toBe(3)
+    expect(paragraph.child(0).marks.some(({ type }) => type.name === 'link')).toBe(false)
+    expect(paragraph.child(1).text).toBe('OpenCloud')
+    expect(paragraph.child(1).marks.some(({ type }) => type.name === 'link')).toBe(true)
+    expect(paragraph.child(2).text).toBe(' after')
+    expect(paragraph.child(2).marks.some(({ type }) => type.name === 'link')).toBe(false)
     context.tiptapEditor.destroy()
   })
 

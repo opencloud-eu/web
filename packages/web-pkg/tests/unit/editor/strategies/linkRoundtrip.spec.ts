@@ -108,4 +108,38 @@ describe.each(['markdown', 'html', 'tiptap-json'] as const)('%s link roundtrip',
     editedReloaded.destroy()
     unlinkedReloaded.destroy()
   })
+
+  it('preserves fragment links when loading and serializing content', () => {
+    const strategy = createStrategy(contentType)
+    const content =
+      contentType === 'markdown'
+        ? '[Headlines](#headlines)'
+        : contentType === 'html'
+          ? '<p><a href="#headlines">Headlines</a></p>'
+          : JSON.stringify({
+              type: 'doc',
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [
+                    {
+                      type: 'text',
+                      text: 'Headlines',
+                      marks: [{ type: 'link', attrs: { href: '#headlines' } }]
+                    }
+                  ]
+                }
+              ]
+            })
+    const editor = createEditor(strategy, content)
+
+    expect(getLink(editor)).toMatchObject({
+      text: 'Headlines',
+      mark: { attrs: { href: '#headlines' } }
+    })
+    expect(editor.view.dom.querySelector('a')?.getAttribute('href')).toBe('#headlines')
+    expect(strategy.serialize(editor)).toContain('#headlines')
+
+    editor.destroy()
+  })
 })

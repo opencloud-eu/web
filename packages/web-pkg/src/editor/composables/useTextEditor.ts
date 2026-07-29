@@ -11,7 +11,7 @@ import type {
 } from '../types'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
-import { findLinkRange, requestLinkPanel } from './useEditorLink'
+import { findLinkRange, requestLinkPanel } from '../helpers/link'
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
