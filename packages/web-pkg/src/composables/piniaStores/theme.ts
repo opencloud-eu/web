@@ -121,6 +121,10 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
+    // expose the active theme on the DOM so deployment CSS (a global stylesheet or
+    // theme.json) can attach structural styles (borders, radii, ...) that the
+    // design-token system alone cannot express
+    document.documentElement.dataset.theme = theme.label
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
       { name: 'colorPalette', prefix: 'color' }

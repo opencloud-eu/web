@@ -60,4 +60,13 @@ describe('useThemeStore', () => {
       })
     })
   })
+
+  describe('setAndApplyTheme', () => {
+    it('exposes the active theme label on the html element', () => {
+      const store = useThemeStore()
+      store.setAndApplyTheme({ label: 'my-theme', designTokens: {}, isDark: false })
+
+      expect(document.documentElement.dataset.theme).toBe('my-theme')
+    })
+  })
 })
