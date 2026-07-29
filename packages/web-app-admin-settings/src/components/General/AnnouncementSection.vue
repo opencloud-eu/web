@@ -6,7 +6,7 @@
         :checked="enabled"
         :label="$gettext('Enabled')"
         class="inline-flex"
-        :class="{ 'pointer-events-none opacity-60': isBusy }"
+        :disabled="isBusy || !stored.bannerText"
         @update:checked="onToggleEnabled"
       />
     </div>
@@ -193,11 +193,7 @@ const toggleTask = useTask(function* () {
 }).drop()
 
 function onToggleEnabled(value: boolean) {
-  // there is nothing to enable until a banner text has been saved
-  if (value && !stored.value.bannerText) {
-    showMessage({ title: $gettext('Add a banner text and save it first') })
-    return
-  }
+  // the switch is disabled until a banner text has been saved, so there is nothing to guard here
   enabled.value = value
   toggleTask.perform()
 }

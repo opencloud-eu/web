@@ -104,15 +104,12 @@ describe('AnnouncementSection', () => {
     expect(useConfigStore().options.announcement).toEqual({ bannerText: 'Hi', infoText: 'Details' })
   })
 
-  it('does not enable when nothing has been saved yet', async () => {
-    const { vm, clientService } = getWrapper()
+  it('disables the switch until a banner text has been saved', async () => {
+    const { vm, wrapper } = getWrapper()
     await vm.loadTask.last
 
-    vm.bannerText = 'Typed but not saved'
-    vm.onToggleEnabled(true)
-
-    expect(vm.enabled).toBe(false)
-    expect(clientService.httpAuthenticated.put).not.toHaveBeenCalled()
+    // nothing saved yet -> the switch cannot be toggled
+    expect(wrapper.findComponent({ name: 'OcSwitch' }).props('disabled')).toBe(true)
   })
 
   it('reverts the switch when the toggle request fails', async () => {
