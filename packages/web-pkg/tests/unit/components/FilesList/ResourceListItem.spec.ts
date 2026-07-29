@@ -1,6 +1,7 @@
-import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import ResourceListItem from '../../../../src/components/FilesList/ResourceListItem.vue'
 import { Resource } from '@opencloud-eu/web-client'
+import { nextTick, reactive } from 'vue'
 
 const fileResource = {
   name: 'forest.jpg',
@@ -26,69 +27,31 @@ const fileResourceWithoutParentFoldername = {
 
 describe('OcResource', () => {
   it("doesn't emit a click if the resource is not clickable", () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: fileResource,
-        isResourceClickable: false
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
-    })
+    const wrapper = getWrapper({ resource: fileResource, isResourceClickable: false })
 
     wrapper.find('.oc-resource-name').trigger('click')
     expect(wrapper.emitted('click')).toBeFalsy()
   })
 
   it('emits a click for a file', async () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: fileResource
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
-    })
+    const wrapper = getWrapper({ resource: fileResource })
 
     await wrapper.find('.oc-resource-name').trigger('click')
     expect(wrapper.emitted('click')).toHaveLength(1)
   })
 
   it('emits a click for a folder', () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: folderResource,
-        targetRoute: {
-          name: 'tests-route'
-        }
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
-    })
+    const wrapper = getWrapper({ resource: folderResource })
 
     wrapper.find('.oc-resource-name').trigger('click')
     expect(wrapper.emitted('click')).toBeTruthy()
   })
 
   it('parent folder component type is link if parent folder given', () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: fileResource,
-        isPathDisplayed: true,
-        parentFolderLink: {}
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
+    const wrapper = getWrapper({
+      resource: fileResource,
+      isPathDisplayed: true,
+      parentFolderLink: {}
     })
 
     expect(wrapper.find('.parent-folder').exists()).toBeTruthy()
@@ -96,54 +59,57 @@ describe('OcResource', () => {
   })
 
   it('parent folder component type is span if parent folder not given', () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: fileResource,
-        isPathDisplayed: true
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
-    })
+    const wrapper = getWrapper({ resource: fileResource, isPathDisplayed: true })
 
     expect(wrapper.find('.parent-folder').find('a').exists()).toBeFalsy()
     expect(wrapper.find('.parent-folder').attributes('class')).toContain('cursor-default')
   })
 
   it('displays parent folder name default if calculated name is empty', () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: fileResourceWithoutParentFoldername,
-        isPathDisplayed: true,
-        parentFolderName: 'Example parent folder name'
-      },
-      global: {
-        stubs: { RouterLink: true },
-        renderStubDefaultSlot: true,
-        plugins: [...defaultPlugins()]
-      }
+    const wrapper = getWrapper({
+      resource: fileResourceWithoutParentFoldername,
+      isPathDisplayed: true,
+      parentFolderName: 'Example parent folder name'
     })
 
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  it('displays the thumbnail as soon as it gets added to the resource', async () => {
+    const resource = reactive({ ...fileResourceWithoutParentFoldername }) as Resource
+    const wrapper = getWrapper({ resource })
+
+    expect(wrapper.find('[data-test-thumbnail-resource-name]').exists()).toBeFalsy()
+
+    resource.thumbnail = 'blob:thumbnail'
+    await nextTick()
+
+    expect(wrapper.find('[data-test-thumbnail-resource-name]').attributes('src')).toBe(
+      'blob:thumbnail'
+    )
+  })
+
   it('can be used without icon/thumbnail', () => {
-    const wrapper = mount(ResourceListItem, {
-      props: {
-        resource: fileResourceWithoutParentFoldername,
-        isIconDisplayed: false,
-        parentFolderName: 'Example parent folder name'
-      },
+    const wrapper = getWrapper({
+      resource: fileResourceWithoutParentFoldername,
+      isIconDisplayed: false,
+      parentFolderName: 'Example parent folder name'
+    })
+
+    expect(wrapper.find('oc-resource-thumbnail').exists()).toBeFalsy()
+    expect(wrapper.find('oc-resource-icon').exists()).toBeFalsy()
+  })
+
+  function getWrapper(
+    props: PartialComponentProps<typeof ResourceListItem> & { resource: Resource }
+  ) {
+    return mount(ResourceListItem, {
+      props,
       global: {
         stubs: { RouterLink: true },
         renderStubDefaultSlot: true,
         plugins: [...defaultPlugins()]
       }
     })
-
-    expect(wrapper.find('oc-resource-thumbnail').exists()).toBeFalsy()
-    expect(wrapper.find('oc-resource-icon').exists()).toBeFalsy()
-  })
+  }
 })
