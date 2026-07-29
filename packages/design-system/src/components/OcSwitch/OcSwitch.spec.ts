@@ -20,4 +20,17 @@ describe('OcSwitch', () => {
 
     expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
   })
+
+  it('does not toggle when disabled', async () => {
+    const wrapper = shallowMount(Switch, {
+      props: { ...defaultProps, disabled: true }
+    })
+
+    const btn = wrapper.find('[data-testid="oc-switch-btn"]')
+    expect(btn.attributes('disabled')).toBeDefined()
+
+    await btn.trigger('click')
+
+    expect(wrapper.emitted('update:checked')).toBeUndefined()
+  })
 })
