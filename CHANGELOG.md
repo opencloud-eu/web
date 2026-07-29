@@ -53,6 +53,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency postcss to v8.5.24 [[#2968](https://github.com/opencloud-eu/web/pull/2968)]
 - chore(deps): update tiptap monorepo to v3.29.2 [[#2969](https://github.com/opencloud-eu/web/pull/2969)]
 - chore(deps): update tiptap monorepo to v3.29.1 [[#2960](https://github.com/opencloud-eu/web/pull/2960)]
 - chore(deps): update devdependencies (non-major) [[#2952](https://github.com/opencloud-eu/web/pull/2952)]
