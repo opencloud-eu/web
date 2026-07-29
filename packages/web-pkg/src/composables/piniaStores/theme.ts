@@ -85,7 +85,7 @@ export const useThemeStore = defineStore('theme', () => {
   const availableThemes = ref<WebThemeType[]>([])
 
   // `--oc-` prop keys the active theme set, so the next theme can clear the ones it omits
-  const appliedCustomProps = ref<string[]>([])
+  let appliedCustomProps: string[] = []
 
   const initializeThemes = (themeConfig: ThemeConfigType) => {
     const commonThemeConfig = themeConfig.common as WebThemeType
@@ -132,7 +132,7 @@ export const useThemeStore = defineStore('theme', () => {
     // applyCustomProp only sets inline props, never clears them. Remove the previous theme's
     // props first so tokens this theme leaves unset fall back to the design-system defaults.
     const root = document.documentElement
-    unref(appliedCustomProps).forEach((key) => root.style.removeProperty(`--oc-${key}`))
+    appliedCustomProps.forEach((key) => root.style.removeProperty(`--oc-${key}`))
 
     const appliedProps: string[] = []
     const apply = (key: string, value: string | undefined) => {
@@ -162,7 +162,7 @@ export const useThemeStore = defineStore('theme', () => {
       apply('role-on-chrome', theme.designTokens?.roles?.onSurface)
     }
 
-    appliedCustomProps.value = appliedProps
+    appliedCustomProps = appliedProps
 
     if (theme.favicon) {
       setFavicon(theme.favicon)
