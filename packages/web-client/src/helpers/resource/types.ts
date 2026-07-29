@@ -17,6 +17,7 @@ export type AbilityActions =
 
 export type AbilitySubjects =
   | 'Account'
+  | 'Announcement'
   | 'Drive'
   | 'Favorite'
   | 'Group'
