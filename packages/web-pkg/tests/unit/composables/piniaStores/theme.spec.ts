@@ -60,4 +60,20 @@ describe('useThemeStore', () => {
       })
     })
   })
+
+  describe('setAndApplyTheme', () => {
+    it('clears custom props the previous theme set but the next one does not define', () => {
+      const store = useThemeStore()
+
+      store.setAndApplyTheme({
+        label: 'a',
+        isDark: false,
+        designTokens: { fontFamily: 'Comic Sans' }
+      })
+      expect(document.documentElement.style.getPropertyValue('--oc-font-family')).toBe('Comic Sans')
+
+      store.setAndApplyTheme({ label: 'b', isDark: false, designTokens: {} })
+      expect(document.documentElement.style.getPropertyValue('--oc-font-family')).toBe('')
+    })
+  })
 })

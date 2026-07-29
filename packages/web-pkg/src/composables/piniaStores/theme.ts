@@ -84,6 +84,11 @@ export const useThemeStore = defineStore('theme', () => {
 
   const availableThemes = ref<WebThemeType[]>([])
 
+  // Custom prop keys (without the `--oc-` prefix) applied by the active theme, so a
+  // following theme can clear the ones it does not define instead of leaking them
+  // (applyCustomProp only sets, never clears).
+  const appliedCustomProps = ref<string[]>([])
+
   const initializeThemes = (themeConfig: ThemeConfigType) => {
     const commonThemeConfig = themeConfig.common as WebThemeType
     const webThemeConfig = themeConfig.clients.web.defaults as WebThemeType
@@ -121,30 +126,46 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
+
+    // Collect every custom prop this theme defines (font, color roles, the deprecated
+    // palette). Props the previous theme set but this one omits are removed afterwards,
+    // so nothing leaks across a theme switch (e.g. a pixel font).
+    const customProps: Record<string, string> = {}
+    const setProp = (key: string, value: string | undefined) => {
+      if (value !== undefined) {
+        customProps[key] = value
+      }
+    }
+
+    setProp('font-family', theme.designTokens?.fontFamily)
+
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
       { name: 'colorPalette', prefix: 'color' }
     ] as const
-
-    applyCustomProp('font-family', unref(currentTheme).designTokens.fontFamily)
-
     customizableDesignTokens.forEach((token) => {
-      for (const param in unref(currentTheme).designTokens[token.name]) {
-        applyCustomProp(
-          `${token.prefix}-${kebabCase(param)}`,
-          unref(currentTheme).designTokens[token.name][param]
-        )
+      const tokens = theme.designTokens?.[token.name]
+      for (const param in tokens) {
+        setProp(`${token.prefix}-${kebabCase(param)}`, tokens[param])
       }
     })
 
-    if (!unref(currentTheme).designTokens?.roles?.chrome) {
+    if (!theme.designTokens?.roles?.chrome) {
       // fallback to surfaceContainer if chrome is not defined since it may not be set
-      applyCustomProp('role-chrome', unref(currentTheme).designTokens?.roles?.surfaceContainer)
-      applyCustomProp('role-on-chrome', unref(currentTheme).designTokens?.roles?.onSurface)
+      setProp('role-chrome', theme.designTokens?.roles?.surfaceContainer)
+      setProp('role-on-chrome', theme.designTokens?.roles?.onSurface)
     }
 
-    if (unref(currentTheme).favicon) {
-      setFavicon(unref(currentTheme).favicon)
+    // clear props the previous theme set but this one does not define, then apply
+    const root = document.documentElement
+    unref(appliedCustomProps)
+      .filter((key) => !(key in customProps))
+      .forEach((key) => root.style.removeProperty(`--oc-${key}`))
+    Object.entries(customProps).forEach(([key, value]) => applyCustomProp(key, value))
+    appliedCustomProps.value = Object.keys(customProps)
+
+    if (theme.favicon) {
+      setFavicon(theme.favicon)
     }
   }
 
