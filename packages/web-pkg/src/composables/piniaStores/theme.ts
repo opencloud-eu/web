@@ -84,6 +84,9 @@ export const useThemeStore = defineStore('theme', () => {
 
   const availableThemes = ref<WebThemeType[]>([])
 
+  // `--oc-` prop keys the active theme set, so the next theme can clear the ones it omits
+  let appliedCustomProps: string[] = []
+
   const initializeThemes = (themeConfig: ThemeConfigType) => {
     const commonThemeConfig = themeConfig.common as WebThemeType
     const webThemeConfig = themeConfig.clients.web.defaults as WebThemeType
@@ -125,30 +128,44 @@ export const useThemeStore = defineStore('theme', () => {
     // theme.json) can attach structural styles (borders, radii, ...) that the
     // design-token system alone cannot express
     document.documentElement.dataset.theme = theme.label
+
+    // applyCustomProp only sets inline props, never clears them. Remove the previous theme's
+    // props first so tokens this theme leaves unset fall back to the design-system defaults.
+    const root = document.documentElement
+    appliedCustomProps.forEach((key) => root.style.removeProperty(`--oc-${key}`))
+
+    const appliedProps: string[] = []
+    const apply = (key: string, value: string | undefined) => {
+      if (value === undefined) {
+        return
+      }
+      applyCustomProp(key, value)
+      appliedProps.push(key)
+    }
+
+    apply('font-family', theme.designTokens?.fontFamily)
+
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
       { name: 'colorPalette', prefix: 'color' }
     ] as const
-
-    applyCustomProp('font-family', unref(currentTheme).designTokens.fontFamily)
-
-    customizableDesignTokens.forEach((token) => {
-      for (const param in unref(currentTheme).designTokens[token.name]) {
-        applyCustomProp(
-          `${token.prefix}-${kebabCase(param)}`,
-          unref(currentTheme).designTokens[token.name][param]
-        )
+    customizableDesignTokens.forEach(({ name, prefix }) => {
+      const tokens = theme.designTokens?.[name]
+      for (const param in tokens) {
+        apply(`${prefix}-${kebabCase(param)}`, tokens[param])
       }
     })
 
-    if (!unref(currentTheme).designTokens?.roles?.chrome) {
+    if (!theme.designTokens?.roles?.chrome) {
       // fallback to surfaceContainer if chrome is not defined since it may not be set
-      applyCustomProp('role-chrome', unref(currentTheme).designTokens?.roles?.surfaceContainer)
-      applyCustomProp('role-on-chrome', unref(currentTheme).designTokens?.roles?.onSurface)
+      apply('role-chrome', theme.designTokens?.roles?.surfaceContainer)
+      apply('role-on-chrome', theme.designTokens?.roles?.onSurface)
     }
 
-    if (unref(currentTheme).favicon) {
-      setFavicon(unref(currentTheme).favicon)
+    appliedCustomProps = appliedProps
+
+    if (theme.favicon) {
+      setFavicon(theme.favicon)
     }
   }
 
