@@ -4,27 +4,55 @@
       <h2 class="text-lg font-semibold" v-text="$gettext('Announcement banner')" />
       <oc-switch
         :checked="enabled"
-        :label="$gettext('Enabled')"
+        :label="$gettext('Show banner')"
         class="inline-flex"
         :disabled="isBusy || !stored.bannerText"
         @update:checked="onToggleEnabled"
-      />
+      >
+        <oc-contextual-helper
+          :title="$gettext('Show banner')"
+          :text="
+            $gettext(
+              'Show the banner to all users. It can only be enabled once a banner text has been saved.'
+            )
+          "
+        />
+      </oc-switch>
     </div>
     <p class="text-role-on-surface-variant mb-3">
-      {{
-        $gettext(
-          'Shown above the top bar for all users, including on the login page before sign-in. Do not include sensitive information.'
-        )
-      }}
-      <br />
-      {{
-        $gettext(
-          'The banner text is shown in the bar. The info text is shown in a dialog when users click the banner. It is only public while enabled.'
-        )
-      }}
+      {{ $gettext('Shows a banner on top for all users. Do not include sensitive information.') }}
     </p>
-    <oc-text-input v-model="bannerText" :label="$gettext('Banner text')" class="mb-3" />
-    <span class="inline-block mb-0.5" v-text="$gettext('Info text')" />
+    <oc-text-input
+      :id="bannerInputId"
+      v-model="bannerText"
+      :label="$gettext('Banner')"
+      class="mb-3"
+    >
+      <template #label>
+        <span class="mb-0.5 flex items-center gap-1">
+          <label :for="bannerInputId">{{ $gettext('Banner') }}</label>
+          <oc-contextual-helper
+            :title="$gettext('Banner')"
+            :text="
+              $gettext(
+                'Displayed text in the banner. Clicking it opens the details dialog. Visible only when Show banner is enabled. Users can dismiss it until the page is reloaded.'
+              )
+            "
+          />
+        </span>
+      </template>
+    </oc-text-input>
+    <span class="mb-0.5 flex items-center gap-1">
+      {{ $gettext('Banner details') }}
+      <oc-contextual-helper
+        :title="$gettext('Banner details')"
+        :text="
+          $gettext(
+            'The details are shown in a dialog when users click the banner. They can be formatted using Markdown. Leave empty to make the banner non-clickable.'
+          )
+        "
+      />
+    </span>
     <div class="border border-role-outline-variant rounded-lg overflow-hidden">
       <text-editor-provider :editor="infoEditor">
         <text-editor-toolbar />
@@ -72,10 +100,12 @@ const bannerText = ref('')
 const infoText = ref('')
 const stored = ref<StoredAnnouncement>({ enabled: false, bannerText: '', infoText: '' })
 
+const bannerInputId = 'announcement-banner-text'
+
 const infoEditor = useTextEditor({
   contentType: 'markdown',
   modelValue: toRef(() => unref(infoText)),
-  ariaLabel: $gettext('Info text'),
+  ariaLabel: $gettext('Banner details'),
   // no image insertion via the UI: base64 uploads would bloat the public config.json,
   // and anyone who really needs an image can add safe Markdown by hand
   excludeActions: ['image', 'image-upload', 'image-url'],
