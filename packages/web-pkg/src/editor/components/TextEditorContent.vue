@@ -56,7 +56,7 @@ const { $gettext } = useGettext()
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
-const currentNodePos = ref<number | null>(null)
+const currentDragHandleNodePos = ref<number | null>(null)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
@@ -77,7 +77,7 @@ const onSourceInput = (event: Event) => {
 }
 
 const onDragHandleNodeChange = ({ pos }: { pos: number }) => {
-  currentNodePos.value = pos
+  currentDragHandleNodePos.value = pos
 }
 
 const openSlashMenu = () => {
@@ -86,8 +86,8 @@ const openSlashMenu = () => {
   }
 
   // Use the position from the drag handle's current node
-  if (currentNodePos.value !== null) {
-    const pos = currentNodePos.value
+  if (currentDragHandleNodePos.value !== null) {
+    const pos = currentDragHandleNodePos.value
     const node = textEditor.editor.value.state.doc.nodeAt(pos)
 
     if (node) {

@@ -61,6 +61,10 @@ export const SlashCommands = TipTapExtension.create<SlashCommandsOptions>({
         editor: this.editor,
         char: '/',
         startOfLine: false,
+        decorationTag: 'span',
+        decorationClass: 'text-editor-slash-filter',
+        decorationContent: 'Filter...',
+        decorationEmptyClass: 'text-editor-slash-filter--empty',
         items: ({ query, editor }) => {
           return filterSlashCommandItems(this.options.getGroups(), query, editor)
         },
