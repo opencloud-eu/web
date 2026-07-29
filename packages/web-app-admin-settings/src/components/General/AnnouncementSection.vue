@@ -110,9 +110,22 @@ function apply(a: StoredAnnouncement) {
   reflectLiveBanner(a)
 }
 
-function showWriteError(e: unknown, title: string) {
+// map known HTTP statuses to an actionable message, falling back to a generic one
+function writeErrorTitle(e: unknown, fallback: string): string {
+  const status = (e as { response?: { status?: number } })?.response?.status
+  switch (status) {
+    case 413:
+      return $gettext('The announcement is too large. Please shorten the info text.')
+    case 403:
+      return $gettext('You are not allowed to manage the announcement banner.')
+    default:
+      return fallback
+  }
+}
+
+function showWriteError(e: unknown, fallback: string) {
   console.error(e)
-  showErrorMessage({ title, errors: [e as HttpError] })
+  showErrorMessage({ title: writeErrorTitle(e, fallback), errors: [e as HttpError] })
 }
 
 const loadTask = useTask(function* () {

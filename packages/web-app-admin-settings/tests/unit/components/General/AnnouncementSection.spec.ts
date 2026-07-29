@@ -143,6 +143,23 @@ describe('AnnouncementSection', () => {
 
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
   })
+
+  it('shows a size-specific error when the announcement is too large', async () => {
+    const { vm, clientService } = getWrapper()
+    await vm.loadTask.last
+    clientService.httpAuthenticated.put.mockRejectedValue({ response: { status: 413 } })
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+    vm.bannerText = 'Maintenance'
+    vm.saveTask.perform()
+    await vm.saveTask.last
+
+    expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'The announcement is too large. Please shorten the info text.'
+      })
+    )
+  })
 })
 
 function getWrapper(stored?: Partial<StoredAnnouncement>) {
