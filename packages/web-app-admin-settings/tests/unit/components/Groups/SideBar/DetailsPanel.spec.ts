@@ -5,9 +5,9 @@ describe('DetailsPanel', () => {
   describe('computed method "group"', () => {
     it('should be set if only one group is given', () => {
       const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group', members: [] }] }
+        propsData: { groups: [{ displayName: 'group' }] }
       })
-      expect(wrapper.vm.group).toEqual({ displayName: 'group', members: [] })
+      expect(wrapper.vm.group).toEqual({ displayName: 'group' })
     })
     it('should not be set if no groups are given', () => {
       const { wrapper } = getWrapper({
@@ -18,10 +18,7 @@ describe('DetailsPanel', () => {
     it('should not be set if multiple groups are given', () => {
       const { wrapper } = getWrapper({
         propsData: {
-          groups: [
-            { displayName: 'group1', members: [] },
-            { displayName: 'group2', members: [] }
-          ]
+          groups: [{ displayName: 'group1' }, { displayName: 'group2' }]
         }
       })
       expect(wrapper.vm.group).toEqual(null)
@@ -37,7 +34,7 @@ describe('DetailsPanel', () => {
     })
     it('should be false if groups are given', () => {
       const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group', members: [] }] }
+        propsData: { groups: [{ displayName: 'group' }] }
       })
       expect(wrapper.vm.noGroups).toBeFalsy()
     })
@@ -50,13 +47,13 @@ describe('DetailsPanel', () => {
     })
     it('should be false if one group is given', () => {
       const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group', members: [] }] }
+        propsData: { groups: [{ displayName: 'group' }] }
       })
       expect(wrapper.vm.multipleGroups).toBeFalsy()
     })
     it('should be true if multiple groups are given', () => {
       const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group1' }, { displayName: 'group2', members: [] }] }
+        propsData: { groups: [{ displayName: 'group1' }, { displayName: 'group2' }] }
       })
       expect(wrapper.vm.multipleGroups).toBeTruthy()
     })

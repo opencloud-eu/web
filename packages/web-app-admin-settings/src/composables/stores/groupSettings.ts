@@ -16,7 +16,7 @@ export const useGroupSettingsStore = defineStore('groupSettings', () => {
       Object.assign(existing, group)
       return
     }
-    unref(groups).push({ ...group, members: [] })
+    unref(groups).push(group)
   }
 
   const removeGroups = (values: Group[]) => {
