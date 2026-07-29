@@ -71,9 +71,6 @@
         />
       </div>
     </template>
-    <template #members="rowData">
-      {{ rowData.item.members.length }}
-    </template>
     <template #actions="{ item }">
       <oc-button
         v-oc-tooltip="$gettext('Show details')"
@@ -333,12 +330,6 @@ export default defineComponent({
           type: 'slot',
           sortable: true,
           tdClass: 'mark-element'
-        },
-        {
-          name: 'members',
-          title: $gettext('Members'),
-          type: 'slot',
-          sortable: true
         },
         {
           name: 'actions',

@@ -15,12 +15,18 @@ const filterItems = [
   { id: '2', name: 'Marie Curie' }
 ]
 
+const manyFilterItems = Array.from({ length: 25 }, (_, i) => ({
+  id: `${i}`,
+  name: `Item ${i}`
+}))
+
 const selectors = {
   filterInput: '.item-filter-input input',
   checkboxStub: 'oc-checkbox-stub',
   filterListItem: '.item-filter-list-item',
   activeFilterListItem: '.item-filter-list-item-active',
-  clearBtn: '.oc-filter-chip-clear'
+  clearBtn: '.oc-filter-chip-clear',
+  truncationHint: '.item-filter-truncation-hint'
 }
 
 describe('ItemFilter', () => {
@@ -55,6 +61,48 @@ describe('ItemFilter', () => {
       })
       await wrapper.find(selectors.filterInput).setValue(data.filterTerm)
       expect(wrapper.findAll(selectors.filterListItem).length).toBe(data.expectedResult)
+    })
+  })
+  describe('truncation', () => {
+    it('truncates long lists and renders a hint', () => {
+      const { wrapper } = getWrapper({
+        props: { showOptionFilter: true, filterableAttributes: ['name'], items: manyFilterItems }
+      })
+      expect(wrapper.findAll(selectors.filterListItem).length).toBe(20)
+      expect(wrapper.find(selectors.truncationHint).text()).toBe(
+        '5 more items are not shown. Use the filter to narrow down the list.'
+      )
+    })
+    it('does not truncate if the option filter is unavailable', () => {
+      const { wrapper } = getWrapper({ props: { items: manyFilterItems } })
+      expect(wrapper.findAll(selectors.filterListItem).length).toBe(manyFilterItems.length)
+      expect(wrapper.find(selectors.truncationHint).exists()).toBeFalsy()
+    })
+    it('does not truncate short lists', () => {
+      const { wrapper } = getWrapper({
+        props: { showOptionFilter: true, filterableAttributes: ['name'] }
+      })
+      expect(wrapper.findAll(selectors.filterListItem).length).toBe(filterItems.length)
+      expect(wrapper.find(selectors.truncationHint).exists()).toBeFalsy()
+    })
+    it('keeps truncated items displayed while they are selected', async () => {
+      const { wrapper } = getWrapper({
+        props: {
+          showOptionFilter: true,
+          filterableAttributes: ['name'],
+          items: manyFilterItems,
+          allowMultiple: true
+        }
+      })
+      await wrapper.find(selectors.filterInput).setValue('Item 24')
+      await wrapper.find('[data-test-value="Item 24"]').trigger('click')
+      await wrapper.find(selectors.filterInput).setValue('')
+
+      expect(wrapper.findAll(selectors.filterListItem).length).toBe(21)
+      expect(wrapper.find('[data-test-value="Item 24"]').exists()).toBeTruthy()
+      expect(wrapper.find(selectors.truncationHint).text()).toBe(
+        '4 more items are not shown. Use the filter to narrow down the list.'
+      )
     })
   })
   describe('selection', () => {
