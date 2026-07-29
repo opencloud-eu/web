@@ -127,42 +127,44 @@ export const useThemeStore = defineStore('theme', () => {
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
 
-    // Collect every custom prop this theme defines (font, color roles, the deprecated
-    // palette). Props the previous theme set but this one omits are removed afterwards,
-    // so nothing leaks across a theme switch (e.g. a pixel font).
-    const customProps: Record<string, string> = {}
-    const setProp = (key: string, value: string | undefined) => {
-      if (value !== undefined) {
-        customProps[key] = value
+    // A theme only overrides the tokens it defines; the rest fall back to the design-system
+    // defaults (design-system/src/styles/defaults.css). applyCustomProp writes those overrides
+    // as inline styles on :root and only ever sets, never clears - so an override from the
+    // previous theme (e.g. the Windows 95 pixel font) would stick when switching to a theme
+    // that leaves that token at its default. So: remove what the previous theme set, then apply
+    // this theme's tokens and remember them for the next switch.
+    const root = document.documentElement
+    unref(appliedCustomProps).forEach((key) => root.style.removeProperty(`--oc-${key}`))
+
+    const appliedProps: string[] = []
+    const apply = (key: string, value: string | undefined) => {
+      if (value === undefined) {
+        return
       }
+      applyCustomProp(key, value)
+      appliedProps.push(key)
     }
 
-    setProp('font-family', theme.designTokens?.fontFamily)
+    apply('font-family', theme.designTokens?.fontFamily)
 
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
       { name: 'colorPalette', prefix: 'color' }
     ] as const
-    customizableDesignTokens.forEach((token) => {
-      const tokens = theme.designTokens?.[token.name]
+    customizableDesignTokens.forEach(({ name, prefix }) => {
+      const tokens = theme.designTokens?.[name]
       for (const param in tokens) {
-        setProp(`${token.prefix}-${kebabCase(param)}`, tokens[param])
+        apply(`${prefix}-${kebabCase(param)}`, tokens[param])
       }
     })
 
     if (!theme.designTokens?.roles?.chrome) {
       // fallback to surfaceContainer if chrome is not defined since it may not be set
-      setProp('role-chrome', theme.designTokens?.roles?.surfaceContainer)
-      setProp('role-on-chrome', theme.designTokens?.roles?.onSurface)
+      apply('role-chrome', theme.designTokens?.roles?.surfaceContainer)
+      apply('role-on-chrome', theme.designTokens?.roles?.onSurface)
     }
 
-    // clear props the previous theme set but this one does not define, then apply
-    const root = document.documentElement
-    unref(appliedCustomProps)
-      .filter((key) => !(key in customProps))
-      .forEach((key) => root.style.removeProperty(`--oc-${key}`))
-    Object.entries(customProps).forEach(([key, value]) => applyCustomProp(key, value))
-    appliedCustomProps.value = Object.keys(customProps)
+    appliedCustomProps.value = appliedProps
 
     if (theme.favicon) {
       setFavicon(theme.favicon)
