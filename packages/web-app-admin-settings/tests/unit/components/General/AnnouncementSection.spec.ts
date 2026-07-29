@@ -3,9 +3,17 @@ import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-
 import { mockDeep } from 'vitest-mock-extended'
 import { ClientService, useConfigStore, useMessages } from '@opencloud-eu/web-pkg'
 
-// avoid spinning up a real TipTap editor in the unit test
+// avoid spinning up a real TipTap editor; getContent/setContent are backed by a shared value so
+// tests can drive the editor content that the save/preview paths read
+const { editorState } = vi.hoisted(() => ({ editorState: { content: '' } }))
 vi.mock('@opencloud-eu/web-pkg/editor', () => ({
-  useTextEditor: vi.fn(() => ({ editor: { value: null }, setContent: vi.fn() })),
+  useTextEditor: vi.fn(() => ({
+    editor: { value: null },
+    setContent: vi.fn((content: string) => {
+      editorState.content = content
+    }),
+    getContent: vi.fn(() => editorState.content)
+  })),
   TextEditorProvider: { name: 'TextEditorProvider', template: '<div><slot /></div>' },
   TextEditorContent: { name: 'TextEditorContent', template: '<div />' },
   TextEditorToolbar: { name: 'TextEditorToolbar', template: '<div />' }
@@ -26,6 +34,10 @@ type AnnouncementVm = {
 }
 
 describe('AnnouncementSection', () => {
+  beforeEach(() => {
+    editorState.content = ''
+  })
+
   it('loads the stored announcement on mount and mirrors the live banner when enabled', async () => {
     const { vm } = getWrapper({ enabled: true, bannerText: 'Hi', infoText: 'Details' })
     await vm.loadTask.last
@@ -40,7 +52,7 @@ describe('AnnouncementSection', () => {
     await vm.loadTask.last
 
     vm.bannerText = 'Maintenance'
-    vm.infoText = 'Details'
+    editorState.content = 'Details'
     vm.saveTask.perform()
     await vm.saveTask.last
 
@@ -121,7 +133,7 @@ describe('AnnouncementSection', () => {
     await vm.loadTask.last
 
     vm.bannerText = 'Maintenance'
-    vm.infoText = 'Details'
+    editorState.content = 'Details'
     vm.preview()
 
     expect(useConfigStore().options.announcement).toEqual({

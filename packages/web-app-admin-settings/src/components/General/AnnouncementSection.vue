@@ -146,8 +146,14 @@ const loadTask = useTask(function* () {
 const saveTask = useTask(function* () {
   const bannerTextValue = unref(bannerText).trim()
   // an empty banner text removes the announcement entirely (the backend deletes the record)
+  // read the editor directly: onUpdate is debounced, so unref(infoText) can lag a save that
+  // happens within the debounce window
   const payload: StoredAnnouncement = bannerTextValue
-    ? { enabled: unref(enabled), bannerText: bannerTextValue, infoText: unref(infoText).trim() }
+    ? {
+        enabled: unref(enabled),
+        bannerText: bannerTextValue,
+        infoText: infoEditor.getContent().trim()
+      }
     : { enabled: false, bannerText: '', infoText: '' }
   try {
     yield clientService.httpAuthenticated.put('announcement', payload)
@@ -201,7 +207,7 @@ function onToggleEnabled(value: boolean) {
 function preview() {
   configStore.options.announcement = {
     bannerText: unref(bannerText).trim(),
-    infoText: unref(infoText).trim()
+    infoText: infoEditor.getContent().trim()
   }
   showMessage({ title: $gettext('Previewing in this session only, not saved') })
 }
