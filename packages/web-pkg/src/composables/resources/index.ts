@@ -1,6 +1,7 @@
 export * from './useCanBeOpenedWithSecureView'
 export * from './useCanListVersions'
 export * from './useGetResourceContext'
+export * from './useLinkTargetRoute'
 export * from './useLoadPreview'
 export * from './useResourceContents'
 export * from './useResourceIndicators'

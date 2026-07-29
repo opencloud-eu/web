@@ -8,7 +8,7 @@ import { computed, unref } from 'vue'
 import { useClientService } from '../clientService'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useSpacesStore } from '../piniaStores'
-import { DavProperty } from '@opencloud-eu/web-client/webdav'
+import { DavProperty, DavPropertyValue } from '@opencloud-eu/web-client/webdav'
 import { useTask } from 'vue-concurrency'
 
 export const useGetResourceContext = () => {
@@ -26,14 +26,10 @@ export const useGetResourceContext = () => {
     )
   }
 
-  const loadFileInfoById = (fileId: string, signal?: AbortSignal) => {
-    const davProperties = [
-      DavProperty.FileId,
-      DavProperty.FileParent,
-      DavProperty.Name,
-      DavProperty.ResourceType
-    ]
-
+  const loadFileInfoById = (
+    fileId: string,
+    { signal, davProperties }: { signal?: AbortSignal; davProperties?: DavPropertyValue[] } = {}
+  ) => {
     const tmpSpace = buildSpace({ id: fileId, name: '' })
     return clientService.webdav.getFileInfo(tmpSpace, { fileId }, { davProperties, signal })
   }
@@ -55,12 +51,16 @@ export const useGetResourceContext = () => {
     yield spacesStore.loadMountPoints({ graphClient: clientService.graphAuthenticated, signal })
 
     let mountPoint = getMatchingMountPoint(id)
-    resource = yield loadFileInfoById(id, signal)
+    resource = yield loadFileInfoById(id, { signal })
     const sharePathSegments = mountPoint ? [] : [unref(resource).name]
     let tmpResource = unref(resource)
 
     while (!mountPoint) {
-      tmpResource = yield loadFileInfoById(tmpResource.parentFolderId, signal)
+      // only the properties needed to walk up the parent chain
+      tmpResource = yield loadFileInfoById(tmpResource.parentFolderId, {
+        signal,
+        davProperties: [DavProperty.FileId, DavProperty.FileParent, DavProperty.Name]
+      })
       mountPoint = getMatchingMountPoint(tmpResource.id)
       if (!mountPoint) {
         sharePathSegments.unshift(tmpResource.name)
@@ -80,8 +80,8 @@ export const useGetResourceContext = () => {
   }).restartable()
 
   // get context for a resource when only having its id. be careful, this might be very expensive!
-  const getResourceContext = (id: string) => {
-    return resourceContextTask.perform(id)
+  const getResourceContext = async (id: string) => {
+    return await resourceContextTask.perform(id)
   }
 
   return {

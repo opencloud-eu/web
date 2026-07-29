@@ -2,8 +2,13 @@ import { unref, Ref } from 'vue'
 
 import { useGetMatchingSpace } from '../spaces'
 import { createFileRouteOptions } from '../../helpers/router'
-import { createLocationSpaces, createLocationTrash, isLocationTrashActive } from '../../router'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  createLocationPublic,
+  createLocationSpaces,
+  createLocationTrash,
+  isLocationTrashActive
+} from '../../router'
+import { isPublicSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ConfigStore } from '../piniaStores'
 import { useRouter } from '../router'
 
@@ -29,6 +34,12 @@ export const useResourceRouteResolver = (options: ResourceRouteResolverOptions =
     }
     if (isLocationTrashActive(router, 'files-trash-overview')) {
       return createLocationTrash('files-trash-generic', createFileRouteOptions(space))
+    }
+    if (isPublicSpaceResource(space)) {
+      return createLocationPublic(
+        'files-public-link',
+        createFileRouteOptions(space, { path, fileId })
+      )
     }
     return createLocationSpaces(
       'files-spaces-generic',

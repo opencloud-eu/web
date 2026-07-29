@@ -11,7 +11,7 @@ import {
   SpaceActionOptions,
   useClientService,
   useCreateSpace,
-  useOpenWithDefaultApp,
+  useFileActions,
   useSpaceHelpers,
   useSpacesStore,
   useUserStore
@@ -19,7 +19,7 @@ import {
 
 export const useSpaceActionsEditReadmeContent = () => {
   const clientService = useClientService()
-  const { openWithDefaultApp } = useOpenWithDefaultApp()
+  const { triggerDefaultAction } = useFileActions()
   const { createDefaultMetaFolder } = useCreateSpace()
   const userStore = useUserStore()
   const spacesStore = useSpacesStore()
@@ -65,7 +65,7 @@ export const useSpaceActionsEditReadmeContent = () => {
       }
     }
 
-    openWithDefaultApp({ space: resources[0], resource: markdownResource })
+    triggerDefaultAction({ space: resources[0], resources: [markdownResource] })
   }
 
   const actions = computed((): SpaceAction[] => [

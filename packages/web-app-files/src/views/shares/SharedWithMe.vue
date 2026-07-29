@@ -106,13 +106,12 @@ import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { useGettext } from 'vue3-gettext'
-import { useOpenWithDefaultApp, defaultFuseOptions } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
 import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 
-const { openWithDefaultApp } = useOpenWithDefaultApp()
 const appsStore = useAppsStore()
 const resourcesStore = useResourcesStore()
 
@@ -230,16 +229,9 @@ const selectedShareSpace = computed(() => {
   return getMatchingSpace(resource)
 })
 
-const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
 const performLoaderTask = async () => {
   await loadResourcesTask.perform()
   scrollToResourceFromRoute(unref(items), 'files-app-bar')
-  if (queryItemAsString(unref(openWithDefaultAppQuery)) === 'true') {
-    openWithDefaultApp({
-      space: unref(selectedShareSpace),
-      resource: unref(selectedResources)[0]
-    })
-  }
 }
 
 const shareTypes = computed(() => {
