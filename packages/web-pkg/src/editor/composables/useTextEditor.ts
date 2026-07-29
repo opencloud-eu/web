@@ -85,9 +85,12 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editorOptions.contentType = strategy.editorContentType()
   }
 
-  // the editor renders a role="textbox" element, which needs an accessible name
+  // the editor is a bare contenteditable div. When it gets an accessible name, also give it a
+  // textbox role (+ aria-multiline) so the aria-label is valid and it reads as a multiline text field
   const editorAttributes: Record<string, string> = {}
   if (options.ariaLabel) {
+    editorAttributes.role = 'textbox'
+    editorAttributes['aria-multiline'] = 'true'
     editorAttributes['aria-label'] = options.ariaLabel
   }
   if (options.placeholder) {

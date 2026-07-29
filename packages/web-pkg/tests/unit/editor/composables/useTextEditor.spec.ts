@@ -312,6 +312,8 @@ describe('useTextEditor', () => {
       const { result } = createEditor({ ariaLabel: 'Info text' })
       const attributes = (result.editor.value?.options.editorProps as any)?.attributes
       expect(attributes?.['aria-label']).toBe('Info text')
+      expect(attributes?.role).toBe('textbox')
+      expect(attributes?.['aria-multiline']).toBe('true')
     })
 
     it('does not add aria attributes when no aria-label or placeholder is given', () => {
