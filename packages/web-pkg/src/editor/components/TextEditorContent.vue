@@ -6,8 +6,28 @@
       '--text-editor-zoom-factor': zoomFactor
     }"
   >
-    <DragHandle v-if="!isSourceMode" :editor="textEditor.editor.value">
-      <div class="custom-drag-handle" />
+    <DragHandle
+      v-if="!isSourceMode"
+      :editor="textEditor.editor.value"
+      @node-change="onDragHandleNodeChange"
+    >
+      <div class="flex items-center gap-1 mr-1 mt-[0.125rem]">
+        <oc-button
+          appearance="raw"
+          class="drag-handle-plus-button"
+          :aria-label="$gettext('Add content')"
+          @click="openSlashMenu"
+        >
+          <oc-icon name="add" />
+        </oc-button>
+        <oc-button
+          appearance="raw"
+          class="custom-drag-handle cursor-grab!"
+          :aria-label="$gettext('Drag to move')"
+        >
+          <oc-icon name="draggable" fill-type="none" />
+        </oc-button>
+      </div>
     </DragHandle>
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
@@ -25,14 +45,18 @@
 import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
+import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
 
 const { editor = undefined } = defineProps<{
   editor?: TextEditorInstance
 }>()
+
+const { $gettext } = useGettext()
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
+const currentNodePos = ref<number | null>(null)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
@@ -49,6 +73,50 @@ const onSourceInput = (event: Event) => {
     textEditor.editor.value?.commands.setContent(value, { contentType, emitUpdate: true })
   } else {
     textEditor.editor.value?.commands.setContent(value, { emitUpdate: true })
+  }
+}
+
+const onDragHandleNodeChange = ({ pos }: { pos: number }) => {
+  currentNodePos.value = pos
+}
+
+const openSlashMenu = () => {
+  if (!textEditor.editor.value) {
+    return
+  }
+
+  // Use the position from the drag handle's current node
+  if (currentNodePos.value !== null) {
+    const pos = currentNodePos.value
+    const node = textEditor.editor.value.state.doc.nodeAt(pos)
+
+    if (node) {
+      // Check if node has content
+      const hasContent = node.content.size > 0
+
+      if (hasContent) {
+        // Insert new line after the node
+        const afterPos = pos + node.nodeSize
+        textEditor.editor.value
+          .chain()
+          .focus()
+          .insertContentAt(afterPos, { type: 'paragraph' })
+          .setTextSelection(afterPos + 1)
+          .insertContent('/')
+          .run()
+      } else {
+        // Node is empty, insert at the beginning
+        textEditor.editor.value
+          .chain()
+          .focus()
+          .setTextSelection(pos + 1)
+          .insertContent('/')
+          .run()
+      }
+    }
+  } else {
+    // Fallback: insert at current position
+    textEditor.editor.value.commands.insertContent('/')
   }
 }
 

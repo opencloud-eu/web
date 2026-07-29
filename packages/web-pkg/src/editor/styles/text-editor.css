@@ -177,3 +177,10 @@
   border-top: 1px solid var(--oc-role-outline-variant);
   margin: 12px 0;
 }
+
+/* Mobile: Reduce max-width to make room for drag handle + plus button */
+@media (max-width: 840px) {
+  .text-editor-provider .text-editor-content .ProseMirror {
+    max-width: calc(100% - 6rem);
+  }
+}

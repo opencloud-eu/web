@@ -4,6 +4,7 @@ import { defineComponent, nextTick, ref } from 'vue'
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
 import { EditorActionGroup } from '../../../../src/editor/composables'
+import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('@tiptap/vue-3', () => ({
   EditorContent: defineComponent({
@@ -49,9 +50,13 @@ function mountEditorContent({
     destroy: vi.fn()
   } as unknown as TextEditorInstance
 
+  const defaultMocks = defaultComponentMocks()
+
   const wrapper = mount(TextEditorContent, {
     global: {
-      provide: { textEditor }
+      mocks: defaultMocks,
+      provide: { textEditor, defaultMocks },
+      plugins: [...defaultPlugins()]
     }
   })
 
