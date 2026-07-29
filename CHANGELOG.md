@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @kost, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @dschmidt, @kost, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- feat: expose the active theme as html[data-theme] [[#2971](https://github.com/opencloud-eu/web/pull/2971)]
 - perf: improve user and groups list loading in admin-settings [[#2963](https://github.com/opencloud-eu/web/pull/2963)]
 - perf: improve render times with lots of paginated items [[#2958](https://github.com/opencloud-eu/web/pull/2958)]
 - feat (tiptap): move blocks [[#2950](https://github.com/opencloud-eu/web/pull/2950)]
