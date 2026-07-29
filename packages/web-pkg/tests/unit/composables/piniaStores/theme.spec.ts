@@ -75,5 +75,12 @@ describe('useThemeStore', () => {
       store.setAndApplyTheme({ label: 'b', isDark: false, designTokens: {} })
       expect(document.documentElement.style.getPropertyValue('--oc-font-family')).toBe('')
     })
+
+    it('exposes the active theme label on the html element', () => {
+      const store = useThemeStore()
+      store.setAndApplyTheme({ label: 'my-theme', designTokens: {}, isDark: false })
+
+      expect(document.documentElement.dataset.theme).toBe('my-theme')
+    })
   })
 })

@@ -9,7 +9,7 @@
     >
       <template #default>
         <oc-text-input
-          v-if="showOptionFilter && filterableAttributes.length"
+          v-if="canFilterOptions"
           ref="filterInputRef"
           v-model="filterTerm"
           class="item-filter-input mb-4 mt-2"
@@ -56,6 +56,11 @@
             </li>
           </oc-list>
         </div>
+        <p
+          v-if="hiddenItemCount"
+          class="item-filter-truncation-hint text-sm text-role-on-surface-variant mt-2 mb-0"
+          v-text="truncationHint"
+        />
       </template>
     </oc-filter-chip>
   </div>
@@ -64,6 +69,7 @@
 <script setup lang="ts">
 import {
   ComponentPublicInstance,
+  computed,
   nextTick,
   onMounted,
   ref,
@@ -78,8 +84,15 @@ import { useRoute, useRouteQuery, useRouter } from '../composables'
 import { defaultFuseOptions } from '../helpers'
 import { queryItemAsString } from '../composables/appDefaults'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
+import { useGettext } from 'vue3-gettext'
 
 type Item = Record<string, any>
+
+/**
+ * Long lists are truncated because rendering them all is expensive and unusable.
+ * Only applies if the option filter is available, otherwise the hidden items would be unreachable.
+ */
+const maxDisplayedItems = 20
 
 const {
   filterLabel,
@@ -114,11 +127,11 @@ defineSlots<{
   item?: (item: Item) => unknown
 }>()
 
+const { $ngettext } = useGettext()
 const router = useRouter()
 const currentRoute = useRoute()
 const filterInputRef = useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('filterInputRef')
 const selectedItems = ref<Item[]>([])
-const displayedItems = ref(items)
 const itemFilterListRef = useTemplateRef('itemFilterListRef')
 
 const queryParam = `q_${filterName}`
@@ -180,28 +193,57 @@ const clearFilter = () => {
   setRouteQuery()
 }
 
-const setDisplayedItems = (items: Item[]) => {
-  displayedItems.value = items
-}
+const canFilterOptions = computed(() => showOptionFilter && !!filterableAttributes.length)
+const filteredItems = computed(() => filter(items, unref(filterTerm)))
+const displayedItems = computed(() => {
+  const filtered = unref(filteredItems)
+  if (!unref(canFilterOptions) || filtered.length <= maxDisplayedItems) {
+    return filtered
+  }
+
+  // selected items are always displayed, they could not be de-selected otherwise
+  return [
+    ...filtered.slice(0, maxDisplayedItems),
+    ...filtered.slice(maxDisplayedItems).filter(isItemSelected)
+  ]
+})
+const hiddenItemCount = computed(() => unref(filteredItems).length - unref(displayedItems).length)
+const truncationHint = computed(() => {
+  const count = unref(hiddenItemCount)
+  return $ngettext(
+    '%{ count } more item is not shown. Use the filter to narrow down the list.',
+    '%{ count } more items are not shown. Use the filter to narrow down the list.',
+    count,
+    { count: count.toString() }
+  )
+})
 
 const showDrop = async () => {
-  setDisplayedItems(items)
+  filterTerm.value = undefined
   await nextTick()
   unref(filterInputRef)?.focus()
 }
 
-let markInstance: Mark | undefined
-watch(filterTerm, () => {
-  setDisplayedItems(filter(items, unref(filterTerm)))
-  if (unref(itemFilterListRef)) {
-    markInstance = new Mark(unref(itemFilterListRef))
+watch(
+  filterTerm,
+  () => {
+    if (!unref(itemFilterListRef)) {
+      return
+    }
+
+    const markInstance = new Mark(unref(itemFilterListRef))
     markInstance.unmark()
+    if (!unref(filterTerm)) {
+      return
+    }
+
     markInstance.mark(unref(filterTerm), {
       element: 'span',
       className: 'mark-highlight'
     })
-  }
-})
+  },
+  { flush: 'post' }
+)
 
 const setSelectedItemsBasedOnQuery = () => {
   const queryStr = queryItemAsString(unref(currentRouteQuery))

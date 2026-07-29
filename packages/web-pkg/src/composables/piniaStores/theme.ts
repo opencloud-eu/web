@@ -84,9 +84,7 @@ export const useThemeStore = defineStore('theme', () => {
 
   const availableThemes = ref<WebThemeType[]>([])
 
-  // Custom prop keys (without the `--oc-` prefix) applied by the active theme, so a
-  // following theme can clear the ones it does not define instead of leaking them
-  // (applyCustomProp only sets, never clears).
+  // `--oc-` prop keys the active theme set, so the next theme can clear the ones it omits
   const appliedCustomProps = ref<string[]>([])
 
   const initializeThemes = (themeConfig: ThemeConfigType) => {
@@ -126,13 +124,13 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
+    // expose the active theme on the DOM so deployment CSS (a global stylesheet or
+    // theme.json) can attach structural styles (borders, radii, ...) that the
+    // design-token system alone cannot express
+    document.documentElement.dataset.theme = theme.label
 
-    // A theme only overrides the tokens it defines; the rest fall back to the design-system
-    // defaults (design-system/src/styles/defaults.css). applyCustomProp writes those overrides
-    // as inline styles on :root and only ever sets, never clears - so an override from the
-    // previous theme (e.g. the Windows 95 pixel font) would stick when switching to a theme
-    // that leaves that token at its default. So: remove what the previous theme set, then apply
-    // this theme's tokens and remember them for the next switch.
+    // applyCustomProp only sets inline props, never clears them. Remove the previous theme's
+    // props first so tokens this theme leaves unset fall back to the design-system defaults.
     const root = document.documentElement
     unref(appliedCustomProps).forEach((key) => root.style.removeProperty(`--oc-${key}`))
 
