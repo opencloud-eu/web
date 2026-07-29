@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- perf: improve user and groups list loading in admin-settings [[#2963](https://github.com/opencloud-eu/web/pull/2963)]
 - perf: improve render times with lots of paginated items [[#2958](https://github.com/opencloud-eu/web/pull/2958)]
 - feat (tiptap): move blocks [[#2950](https://github.com/opencloud-eu/web/pull/2950)]
 - perf: improve folder loading times in tiles view [[#2945](https://github.com/opencloud-eu/web/pull/2945)]
