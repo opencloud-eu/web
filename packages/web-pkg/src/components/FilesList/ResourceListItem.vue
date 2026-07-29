@@ -73,7 +73,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceLink from './ResourceLink.vue'
@@ -128,11 +128,9 @@ const parentFolderLinkIconAttrs = computed(() => {
   }
 })
 
-const hasThumbnail = computed(() => {
-  return isThumbnailDisplayed && Object.prototype.hasOwnProperty.call(resource, 'thumbnail')
-})
-
 const thumbnail = computed(() => resource.thumbnail)
+
+const hasThumbnail = computed(() => isThumbnailDisplayed && !!unref(thumbnail))
 
 const tooltipLabelIcon = computed(() => {
   if (resource.locked) {
