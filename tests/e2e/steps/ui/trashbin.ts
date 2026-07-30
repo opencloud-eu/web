@@ -23,11 +23,11 @@ Then(
 )
 
 When(
-  '{string} empties the trashbin for space {string} using quick action',
+  '{string} empties the trashbin for space {string} using context menu',
   async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const trashbinObject = new objects.applicationFiles.Trashbin({ page })
-    await trashbinObject.emptyTrashbinUsingQuickAction(space)
+    await trashbinObject.emptyTrashbinUsingContextMenu(space)
   }
 )
 
