@@ -9,6 +9,7 @@ import type {
   TextEditorLinkPanelRequest,
   TextEditorState
 } from '../types'
+import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
 import { findLinkRange, requestLinkPanel } from '../helpers/link'
@@ -25,12 +26,29 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const readonly = ref(options.readonly ?? false)
   const strategy = resolveStrategy(options.contentType, state)
 
+  // Filter out excluded actions (by id) from toolbar and slash commands, including
+  // nested dropdown children (e.g. exclude 'image-upload' but keep 'image-url').
+  const excludeActions = options.excludeActions ?? []
+  const filterActions = (actions: EditorAction[]): EditorAction[] =>
+    actions
+      .filter((action) => !excludeActions.includes(action.id))
+      .map((action) =>
+        action.childActions
+          ? { ...action, childActions: filterActions(action.childActions) }
+          : action
+      )
+  const editorActionGroups = (): EditorActionGroup[] =>
+    strategy.editorActionGroups().map((group) => ({
+      ...group,
+      actions: filterActions(group.actions)
+    }))
+
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const extensions = strategy.extensions()
   if (options.slashCommands !== false) {
-    const resolvedGroups = strategy.editorActionGroups()
+    const resolvedGroups = editorActionGroups()
     const hasSlashCommandItems = resolvedGroups.some((group) =>
       group.actions.some((action) => action.showInSlashCommands !== false)
     )
@@ -67,13 +85,21 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editorOptions.contentType = strategy.editorContentType()
   }
 
+  // the editor is a bare contenteditable div. When it gets an accessible name, also give it a
+  // textbox role (+ aria-multiline) so the aria-label is valid and it reads as a multiline text field
+  const editorAttributes: Record<string, string> = {}
+  if (options.ariaLabel) {
+    editorAttributes.role = 'textbox'
+    editorAttributes['aria-multiline'] = 'true'
+    editorAttributes['aria-label'] = options.ariaLabel
+  }
+  if (options.placeholder) {
+    editorAttributes['aria-placeholder'] = options.placeholder
+    editorAttributes['aria-multiline'] = 'true'
+  }
+
   editorOptions.editorProps = {
-    attributes: {
-      ...(options.placeholder && {
-        'aria-placeholder': options.placeholder,
-        'aria-multiline': 'true'
-      })
-    },
+    attributes: editorAttributes,
     handleDOMEvents: {
       auxclick(view: Editor['view'], event: Event) {
         const target = event.target
@@ -207,8 +233,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor,
     contentType,
     readonly,
-    actionGroups: strategy.editorActionGroups,
+    actionGroups: editorActionGroups,
     getContent,
+    setContent,
     isEmpty,
     isFocused,
     focus,

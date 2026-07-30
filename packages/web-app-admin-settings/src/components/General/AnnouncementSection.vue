@@ -1,0 +1,246 @@
+<template>
+  <div class="max-w-2xl">
+    <div class="flex items-center justify-between gap-4 mb-1">
+      <h2 class="text-lg font-semibold" v-text="$gettext('Announcement banner')" />
+      <oc-switch
+        :checked="enabled"
+        :label="$gettext('Show banner')"
+        class="inline-flex"
+        :disabled="isBusy || !stored.bannerText"
+        @update:checked="onToggleEnabled"
+      >
+        <oc-contextual-helper
+          :title="$gettext('Show banner')"
+          :text="
+            $gettext(
+              'Show the banner to all users. It can only be enabled once a banner text has been saved.'
+            )
+          "
+        />
+      </oc-switch>
+    </div>
+    <p class="text-role-on-surface-variant mb-3">
+      {{ $gettext('Shows a banner on top for all users. Do not include sensitive information.') }}
+    </p>
+    <oc-text-input
+      :id="bannerInputId"
+      v-model="bannerText"
+      :label="$gettext('Banner')"
+      class="mb-3"
+    >
+      <template #label>
+        <span class="mb-0.5 flex items-center gap-1">
+          <label :for="bannerInputId">{{ $gettext('Banner') }}</label>
+          <oc-contextual-helper
+            :title="$gettext('Banner')"
+            :text="
+              $gettext(
+                'Displayed text in the banner. Clicking it opens the details dialog. Visible only when Show banner is enabled. Users can dismiss it until the page is reloaded.'
+              )
+            "
+          />
+        </span>
+      </template>
+    </oc-text-input>
+    <span class="mb-0.5 flex items-center gap-1">
+      {{ $gettext('Banner details') }}
+      <oc-contextual-helper
+        :title="$gettext('Banner details')"
+        :text="
+          $gettext(
+            'The details are shown in a dialog when users click the banner. They can be formatted using Markdown. Leave empty to make the banner non-clickable.'
+          )
+        "
+      />
+    </span>
+    <div class="border border-role-outline-variant rounded-lg overflow-hidden">
+      <text-editor-provider :editor="infoEditor">
+        <text-editor-toolbar />
+        <text-editor-content class="min-h-[32rem] max-h-[48rem] px-3 py-2 overflow-auto" />
+      </text-editor-provider>
+    </div>
+    <div class="flex items-center justify-between gap-2 mt-3">
+      <oc-button appearance="outline" :disabled="!canPreview || isBusy" @click="preview">
+        {{ $gettext('Preview') }}
+      </oc-button>
+      <oc-button
+        appearance="filled"
+        :disabled="!isDirty || isBusy"
+        :show-spinner="saveTask.isRunning"
+        @click="saveTask.perform()"
+      >
+        {{ $gettext('Save') }}
+      </oc-button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref, toRef, unref } from 'vue'
+import { useTask } from 'vue-concurrency'
+import { HttpError } from '@opencloud-eu/web-client'
+import { useClientService, useConfigStore, useMessages } from '@opencloud-eu/web-pkg'
+import {
+  useTextEditor,
+  TextEditorProvider,
+  TextEditorContent,
+  TextEditorToolbar
+} from '@opencloud-eu/web-pkg/editor'
+import { useGettext } from 'vue3-gettext'
+
+type StoredAnnouncement = { enabled: boolean; bannerText: string; infoText: string }
+
+const { $gettext } = useGettext()
+const configStore = useConfigStore()
+const clientService = useClientService()
+const { showMessage, showErrorMessage } = useMessages()
+
+const enabled = ref(false)
+const bannerText = ref('')
+const infoText = ref('')
+const stored = ref<StoredAnnouncement>({ enabled: false, bannerText: '', infoText: '' })
+
+const bannerInputId = 'announcement-banner-text'
+
+const infoEditor = useTextEditor({
+  contentType: 'markdown',
+  modelValue: toRef(() => unref(infoText)),
+  ariaLabel: $gettext('Banner details'),
+  // no image insertion via the UI: base64 uploads would bloat the public config.json,
+  // and anyone who really needs an image can add safe Markdown by hand
+  excludeActions: ['image', 'image-upload', 'image-url'],
+  onUpdate: (content) => {
+    infoText.value = content
+  }
+})
+
+// only the text fields make the form dirty; the enabled switch persists on its own
+const isDirty = computed(
+  () =>
+    unref(bannerText).trim() !== stored.value.bannerText ||
+    unref(infoText).trim() !== stored.value.infoText
+)
+const canPreview = computed(() => !!unref(bannerText).trim())
+
+// update the live banner in the running session (shown only while enabled and a banner text is set)
+function reflectLiveBanner(a: StoredAnnouncement) {
+  configStore.options.announcement =
+    a.enabled && a.bannerText ? { bannerText: a.bannerText, infoText: a.infoText } : undefined
+}
+
+// apply a persisted state to the form, the stored snapshot and the live banner
+function apply(a: StoredAnnouncement) {
+  enabled.value = a.enabled
+  bannerText.value = a.bannerText
+  infoText.value = a.infoText
+  // push into the editor explicitly: the modelValue watch is skipped while the editor is
+  // focused (it auto-focuses on mount), so async-loaded content would otherwise not show
+  infoEditor.setContent(a.infoText)
+  stored.value = { ...a }
+  reflectLiveBanner(a)
+}
+
+// map known HTTP statuses to an actionable message, falling back to a generic one
+function writeErrorTitle(e: unknown, fallback: string): string {
+  const status = (e as { response?: { status?: number } })?.response?.status
+  switch (status) {
+    case 413:
+      return $gettext('The announcement is too large. Please shorten the info text.')
+    case 403:
+      return $gettext('You are not allowed to manage the announcement banner.')
+    default:
+      return fallback
+  }
+}
+
+function showWriteError(e: unknown, fallback: string) {
+  console.error(e)
+  showErrorMessage({ title: writeErrorTitle(e, fallback), errors: [e as HttpError] })
+}
+
+const loadTask = useTask(function* () {
+  try {
+    const { data } = yield clientService.httpAuthenticated.get<StoredAnnouncement>('announcement')
+    apply({
+      enabled: !!data?.enabled,
+      bannerText: data?.bannerText ?? '',
+      infoText: data?.infoText ?? ''
+    })
+  } catch (e) {
+    showWriteError(e, $gettext('Failed to load the announcement banner'))
+  }
+}).drop()
+
+// Save persists the text fields, keeping the current enabled state. An empty banner text
+// removes the announcement entirely. It does not change the enabled state.
+const saveTask = useTask(function* () {
+  const bannerTextValue = unref(bannerText).trim()
+  // an empty banner text removes the announcement entirely (the backend deletes the record)
+  // read the editor directly: onUpdate is debounced, so unref(infoText) can lag a save that
+  // happens within the debounce window
+  const payload: StoredAnnouncement = bannerTextValue
+    ? {
+        enabled: unref(enabled),
+        bannerText: bannerTextValue,
+        infoText: infoEditor.getContent().trim()
+      }
+    : { enabled: false, bannerText: '', infoText: '' }
+  try {
+    yield clientService.httpAuthenticated.put('announcement', payload)
+    apply(payload)
+    showMessage({
+      title: bannerTextValue
+        ? $gettext('Announcement banner updated')
+        : $gettext('Announcement banner removed')
+    })
+  } catch (e) {
+    showWriteError(e, $gettext('Failed to update the announcement banner'))
+  }
+}).drop()
+
+// The switch persists on its own and only flips the enabled state on the saved announcement.
+// Text edits are not published by toggling, use Save for that.
+const toggleTask = useTask(function* () {
+  const value = unref(enabled)
+  const payload: StoredAnnouncement = {
+    enabled: value,
+    bannerText: stored.value.bannerText,
+    infoText: stored.value.infoText
+  }
+  try {
+    yield clientService.httpAuthenticated.put('announcement', payload)
+    stored.value = { ...payload }
+    reflectLiveBanner(payload)
+    showMessage({
+      title: value
+        ? $gettext('Announcement banner enabled')
+        : $gettext('Announcement banner disabled')
+    })
+  } catch (e) {
+    enabled.value = !value
+    showWriteError(e, $gettext('Failed to update the announcement banner'))
+  }
+}).drop()
+
+function onToggleEnabled(value: boolean) {
+  // the switch is disabled until a banner text has been saved, so there is nothing to guard here
+  enabled.value = value
+  toggleTask.perform()
+}
+
+// show the current form in this session only, without persisting or enabling it,
+// so the banner and dialog can be tested before going live
+function preview() {
+  configStore.options.announcement = {
+    bannerText: unref(bannerText).trim(),
+    infoText: infoEditor.getContent().trim()
+  }
+  showMessage({ title: $gettext('Previewing in this session only, not saved') })
+}
+
+const isBusy = computed(() => loadTask.isRunning || saveTask.isRunning || toggleTask.isRunning)
+
+onMounted(() => {
+  loadTask.perform()
+})
+</script>
