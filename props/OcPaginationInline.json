@@ -1,0 +1,23 @@
+[
+  {
+    "name": "currentPage",
+    "required": true,
+    "description": "The current page number.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "pages",
+    "required": true,
+    "description": "The total number of pages. Nothing is rendered if there is only one page.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "label",
+    "required": false,
+    "description": "The accessible label of the navigation.",
+    "default": "Pagination",
+    "type": "string"
+  }
+]

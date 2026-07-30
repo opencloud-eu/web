@@ -1,0 +1,7 @@
+[
+  {
+    "name": "update:currentPage",
+    "description": "Emitted when a different page has been selected.",
+    "type": "(e: 'update:currentPage', value: number): void"
+  }
+]
