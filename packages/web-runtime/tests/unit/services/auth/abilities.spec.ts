@@ -10,6 +10,13 @@ describe('getAbilities', () => {
     const expectedActions = ['create-all', 'delete-all', 'read-all', 'update-all']
     expect(abilities).toEqual(expectedActions.map((action) => ({ action, subject: 'Account' })))
   })
+  it('gets correct abilities for subject "Announcement"', function () {
+    const abilities = getAbilities(['Announcement.ReadWrite.all'])
+    const expectedActions = ['read-all', 'update-all']
+    expect(abilities).toEqual(
+      expectedActions.map((action) => ({ action, subject: 'Announcement' }))
+    )
+  })
   it('gets correct abilities for subject "Group"', function () {
     const abilities = getAbilities(['Groups.ReadWrite.all'])
     const expectedActions = ['create-all', 'delete-all', 'read-all', 'update-all']

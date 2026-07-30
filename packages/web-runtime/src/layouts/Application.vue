@@ -4,6 +4,7 @@
       <custom-component-target :extension-point="progressBarExtensionPoint" />
     </div>
     <div id="web-content-header" class="shrink basis-auto grow-0">
+      <announcement />
       <div v-if="isIE11" class="bg-role-surface-container text-center py-4">
         <p class="m-0" v-text="ieDeprecationWarning" />
       </div>
@@ -56,6 +57,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import TopBar from '../components/Topbar/TopBar.vue'
+import Announcement from '../components/Announcement.vue'
 import MessageBar from '../components/MessageBar.vue'
 import SidebarNav from '../components/SidebarNav/SidebarNav.vue'
 import UploadInfo from '../components/UploadInfo.vue'

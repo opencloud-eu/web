@@ -274,4 +274,53 @@ describe('useTextEditor', () => {
       expect(onUpdate).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('excludeActions', () => {
+    const collectIds = (groups: { actions: { id: string; childActions?: any[] }[] }[]) => {
+      const ids: string[] = []
+      const walk = (actions: { id: string; childActions?: any[] }[]) => {
+        for (const action of actions) {
+          ids.push(action.id)
+          if (action.childActions) {
+            walk(action.childActions)
+          }
+        }
+      }
+      groups.forEach((group) => walk(group.actions))
+      return ids
+    }
+
+    it('keeps image actions by default', () => {
+      const { result } = createEditor({ contentType: 'markdown' })
+      expect(collectIds(result.actionGroups())).toContain('image')
+    })
+
+    it('removes excluded actions including nested dropdown children', () => {
+      const { result } = createEditor({
+        contentType: 'markdown',
+        excludeActions: ['image', 'image-upload', 'image-url']
+      })
+      const ids = collectIds(result.actionGroups())
+      expect(ids).not.toContain('image')
+      expect(ids).not.toContain('image-upload')
+      expect(ids).not.toContain('image-url')
+    })
+  })
+
+  describe('ariaLabel', () => {
+    it('sets an aria-label on the editor textbox element', () => {
+      const { result } = createEditor({ ariaLabel: 'Info text' })
+      const attributes = (result.editor.value?.options.editorProps as any)?.attributes
+      expect(attributes?.['aria-label']).toBe('Info text')
+      expect(attributes?.role).toBe('textbox')
+      expect(attributes?.['aria-multiline']).toBe('true')
+    })
+
+    it('does not add aria attributes when no aria-label or placeholder is given', () => {
+      const { result } = createEditor()
+      const attributes = (result.editor.value?.options.editorProps as any)?.attributes
+      expect(attributes?.['aria-label']).toBeUndefined()
+      expect(attributes?.role).toBeUndefined()
+    })
+  })
 })

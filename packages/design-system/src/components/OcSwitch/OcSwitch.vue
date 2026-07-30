@@ -1,12 +1,20 @@
 <template>
   <span :key="`oc-switch-${checked.toString()}`" class="oc-switch items-center gap-2">
-    <span :id="labelId" v-text="label" />
+    <span class="inline-flex items-center gap-1">
+      <!-- dim only the label + toggle when disabled, not the slot: an opacity on the whole
+           switch would create a stacking context that traps slotted popovers (e.g. a helper) -->
+      <span :id="labelId" v-text="label" :class="{ 'opacity-40': disabled }" />
+      <!-- @slot content rendered next to the label, e.g. a contextual helper -->
+      <slot />
+    </span>
     <button
       data-testid="oc-switch-btn"
-      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 cursor-pointer"
+      class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 disabled:cursor-default disabled:opacity-40"
+      :class="{ 'cursor-pointer': !disabled }"
       role="switch"
       :aria-checked="checked"
       :aria-labelledby="labelId"
+      :disabled="disabled"
       @click="toggle"
     />
   </span>
@@ -28,6 +36,10 @@ export interface Props {
    * @docs The element ID of the label.
    */
   labelId?: string
+  /**
+   * @docs Determines if the switch is disabled.
+   */
+  disabled?: boolean
 }
 
 export interface Emits {
@@ -37,11 +49,19 @@ export interface Emits {
   (e: 'update:checked', value: boolean): void
 }
 
-const { checked = false, label, labelId = uniqueId('oc-switch-label-') } = defineProps<Props>()
+const {
+  checked = false,
+  label,
+  labelId = uniqueId('oc-switch-label-'),
+  disabled = false
+} = defineProps<Props>()
 
 const emit = defineEmits<Emits>()
 
 const toggle = () => {
+  if (disabled) {
+    return
+  }
   emit('update:checked', !checked)
 }
 </script>
