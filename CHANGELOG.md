@@ -54,6 +54,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @vueuse/core to v14.4.0 [[#2974](https://github.com/opencloud-eu/web/pull/2974)]
+- chore(deps): update pnpm to v11.18.0 [[#2978](https://github.com/opencloud-eu/web/pull/2978)]
+- fix(deps): update dependency @sentry/vue to v10.69.0 [[#2979](https://github.com/opencloud-eu/web/pull/2979)]
 - chore(deps): update dependency postcss to v8.5.24 [[#2968](https://github.com/opencloud-eu/web/pull/2968)]
 - chore(deps): update tiptap monorepo to v3.29.2 [[#2969](https://github.com/opencloud-eu/web/pull/2969)]
 - chore(deps): update tiptap monorepo to v3.29.1 [[#2960](https://github.com/opencloud-eu/web/pull/2960)]
