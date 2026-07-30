@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { computed, toRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useGroupwareAccountsStore, useRouteQuery, useModals } from '@opencloud-eu/web-pkg'
+import { useGroupwareAccountsStore, useRouteQuery } from '@opencloud-eu/web-pkg'
 import {
   useTextEditor,
   TextEditorProvider,
@@ -80,7 +80,6 @@ import {
   TextEditorToolbar
 } from '@opencloud-eu/web-pkg/editor'
 import { storeToRefs } from 'pinia'
-import DOMPurify from 'dompurify'
 import MailAttachmentList from './MailAttachmentList.vue'
 
 type FromOption = {
@@ -123,46 +122,11 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 
-const { dispatchModal } = useModals()
-
 const textEditor = useTextEditor({
   contentType: 'html',
   modelValue: toRef(() => modelValue.body),
   onUpdate: (content) => {
     updateField('body', content)
-  },
-  onRequestLinkUrl: (currentUrl?: string) => {
-    return new Promise((resolve) => {
-      dispatchModal({
-        title: $gettext('Add link'),
-        confirmText: $gettext('Apply'),
-        hasInput: true,
-        inputType: 'text',
-        inputLabel: $gettext('URL'),
-        inputValue: currentUrl ?? '',
-        onConfirm: (value: any) => {
-          const raw = typeof value === 'string' ? value : (value ?? '').toString()
-          const cleaned = DOMPurify.sanitize(raw, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim()
-          if (!cleaned) {
-            resolve(null)
-            return
-          }
-          let href = cleaned
-          if (!/^[a-zA-Z][\w+.-]*:/.test(href)) href = `https://${href}`
-          try {
-            const url = new URL(href)
-            if (!['http:', 'https:', 'mailto:'].includes(url.protocol)) {
-              resolve(null)
-              return
-            }
-            resolve(url.href)
-          } catch {
-            resolve(null)
-          }
-        },
-        onCancel: () => resolve(null)
-      })
-    })
   }
 })
 

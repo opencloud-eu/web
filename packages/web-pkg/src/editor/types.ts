@@ -12,7 +12,6 @@ export interface TextEditorOptions {
   slashCommands?: boolean
   placeholder?: string
   onUpdate?: (content: string) => void
-  onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
 }
 
 export interface TextEditorLinkPanelRequest {
