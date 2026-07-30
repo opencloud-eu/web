@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add announcement banner [[#2967](https://github.com/opencloud-eu/web/pull/2967)]
 - perf: use pagination in sidebar user lists [[#2965](https://github.com/opencloud-eu/web/pull/2965)]
 - feat: tiptap - Insert and edit Links [[#2930](https://github.com/opencloud-eu/web/pull/2930)]
 - feat: expose the active theme as html[data-theme] [[#2971](https://github.com/opencloud-eu/web/pull/2971)]
@@ -56,6 +57,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.18.1 [[#2976](https://github.com/opencloud-eu/web/pull/2976)]
+- chore(deps): update dependency postcss to v8.5.25 [[#2980](https://github.com/opencloud-eu/web/pull/2980)]
 - chore(deps): update dependency @vueuse/core to v14.4.0 [[#2974](https://github.com/opencloud-eu/web/pull/2974)]
 - chore(deps): update pnpm to v11.18.0 - autoclosed [[#2978](https://github.com/opencloud-eu/web/pull/2978)]
 - fix(deps): update dependency @sentry/vue to v10.69.0 [[#2979](https://github.com/opencloud-eu/web/pull/2979)]
