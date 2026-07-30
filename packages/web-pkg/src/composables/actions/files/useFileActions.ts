@@ -256,12 +256,14 @@ export const useFileActions = () => {
     return undefined
   }
 
-  const getAllOpenWithActions = (options: GetFileActionsOptions) => {
+  const getAllOpenWithActions = (
+    options: GetFileActionsOptions & { omitEditorActions?: boolean }
+  ) => {
     const filterCallback = (action: FileAction) => action.isVisible(options)
 
     const primaryActions = [
       ...unref(extensionsContextActions),
-      ...unref(editorActions),
+      ...(options.omitEditorActions ? [] : unref(editorActions)),
       ...unref(navigateActions)
     ]
       .filter(filterCallback)

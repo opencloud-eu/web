@@ -13,12 +13,12 @@
 import {
   ActionExtension,
   ActionMenuItem,
-  FileActionOptions,
   useExtensionRegistry,
-  useFileActions
+  useFileActions,
+  useIsAppActive
 } from '@opencloud-eu/web-pkg'
 import { computed, inject, Ref, unref } from 'vue'
-import { IncomingShareResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { fileSideBarActionsExtensionPoint } from '../../../extensionPoints'
 
 const resource = inject<Ref<Resource>>('resource')
@@ -27,6 +27,7 @@ const resources = computed(() => {
   return [unref(resource)]
 })
 const { requestExtensions } = useExtensionRegistry()
+const isAppActive = useIsAppActive()
 const { getAllOpenWithActions } = useFileActions()
 const extensionActions = computed(() =>
   requestExtensions<ActionExtension>(fileSideBarActionsExtensionPoint).map((e) => e.action)
@@ -34,14 +35,16 @@ const extensionActions = computed(() =>
 const actions = computed(() => {
   const options = {
     space: unref(space),
-    resources: unref(resources)
+    resources: unref(resources),
+    // exclude editor actions inside editors
+    omitEditorActions: !!unref(isAppActive)
   }
-  const shareActionOptions = options as FileActionOptions<IncomingShareResource>
 
   return [
-    //FIXME: as soon as all actions are migrated to web-app-files and registered as extension point, omit  ...getAllOpenWithActions(options),
+    // FIXME: as soon as all actions are migrated to web-app-files
+    // and registered as extension point, omit  ...getAllOpenWithActions(options),
     ...getAllOpenWithActions(options),
-    ...unref(extensionActions).filter((action) => action.isVisible(shareActionOptions))
+    ...unref(extensionActions).filter((action) => action.isVisible(options))
   ]
 })
 </script>
