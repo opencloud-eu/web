@@ -81,7 +81,7 @@
   }
 
   [role="tooltip"] {
-    @apply rounded px-2 py-1 max-w-xs absolute top-0 left-0 break-all z-[10000];
+    @apply rounded px-2 py-1 w-max max-w-xs absolute top-0 left-0 break-all z-[10000] pointer-events-none;
     background-color: var(--oc-role-inverse-surface);
     color: var(--oc-role-inverse-on-surface);
     font-size: 0.875rem;

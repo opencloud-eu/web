@@ -19,7 +19,6 @@ export interface TextEditorOptions {
    */
   excludeActions?: string[]
   onUpdate?: (content: string) => void
-  onRequestLinkUrl?: (currentUrl?: string) => Promise<string | null>
 }
 
 export interface TextEditorLinkPanelRequest {

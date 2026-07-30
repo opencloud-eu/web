@@ -1,5 +1,9 @@
 :root {
+  // The web app defaults to Inter, but the docs keep rendering in the
+  // official OpenCloud font. Override both VitePress' base font and the
+  // design-system font variable (which feeds Tailwind's --font-sans).
   --vp-font-family-base: 'OpenCloud', 'Inter', sans-serif;
+  --oc-font-family: 'OpenCloud', 'Inter', sans-serif;
   --vp-c-brand-1: var(--oc-role-secondary);
 }
 
@@ -54,13 +58,13 @@ body {
 
 @font-face {
   font-family: OpenCloud;
-  src: url('./../../../src/assets/fonts/OpenCloud500-Regular.woff2') format('woff2');
+  src: url('./fonts/OpenCloud500-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: OpenCloud;
-  src: url('./../../../src/assets/fonts/OpenCloud750-Bold.woff2') format('woff2');
+  src: url('./fonts/OpenCloud750-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
 }
