@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- perf: use pagination in sidebar user lists [[#2965](https://github.com/opencloud-eu/web/pull/2965)]
 - feat: tiptap - Insert and edit Links [[#2930](https://github.com/opencloud-eu/web/pull/2930)]
 - feat: expose the active theme as html[data-theme] [[#2971](https://github.com/opencloud-eu/web/pull/2971)]
 - perf: improve user and groups list loading in admin-settings [[#2963](https://github.com/opencloud-eu/web/pull/2963)]
