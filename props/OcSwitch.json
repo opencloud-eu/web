@@ -19,5 +19,12 @@
     "description": "The element ID of the label.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the switch is disabled.",
+    "default": "",
+    "type": "boolean"
   }
 ]
