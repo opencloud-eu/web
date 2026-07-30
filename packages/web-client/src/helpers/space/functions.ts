@@ -82,8 +82,8 @@ export function buildPublicSpaceResource(
   const publicLinkShareOwner = data.props?.[DavProperty.PublicLinkShareOwner]
   const publicLinkType = data.publicLinkType
 
-  let driveAlias
-  let webDavPath
+  let driveAlias: string
+  let webDavPath: string
   if (publicLinkType === 'ocm') {
     driveAlias = `ocm/${data.id}`
     webDavPath = buildWebDavOcmPath(data.id)

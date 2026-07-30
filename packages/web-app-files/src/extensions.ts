@@ -10,6 +10,7 @@ import {
   useRouter,
   useSearch,
   useSpaceActionsCreate,
+  useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { computed, markRaw, unref } from 'vue'
@@ -20,7 +21,7 @@ import { useVaultIndicator } from './composables/extensions/useVaultIndicator'
 import { useFileActions } from './composables/extensions/useFileActions'
 import { useSpaceActions } from './composables/extensions/useSpaceActions'
 import { useUploadActions } from './composables/extensions/useUploadActions'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { isPublicSpaceResource, SharePermissionBit, urlJoin } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import CreateOrUploadMenu from './components/CreateOrUploadMenu.vue'
@@ -30,8 +31,8 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const capabilityStore = useCapabilityStore()
   const configStore = useConfigStore()
   const userStore = useUserStore()
-  const resourcesStore = useResourcesStore()
-  const { currentFolder } = storeToRefs(resourcesStore)
+  const { currentFolder } = storeToRefs(useResourcesStore())
+  const { currentSpace } = storeToRefs(useSpacesStore())
   const router = useRouter()
   const { search: searchFunction } = useSearch()
   const { $gettext } = useGettext()
@@ -76,6 +77,19 @@ export const extensions = (appInfo: ApplicationInformation) => {
           unref(createSpaceAction).isVisible()
         ) {
           return false
+        }
+
+        // permission checks on the space are preferred over the current folder,
+        // as the current folder resets on every navigation, causing a button flicker.
+        const space = unref(currentSpace)
+        if (space) {
+          if (!isPublicSpaceResource(space)) {
+            return space.canUpload({ user: userStore.user }) !== true
+          }
+          // public spaces have no graph permissions, check link permission
+          if (space.publicLinkPermission !== undefined) {
+            return !(space.publicLinkPermission & SharePermissionBit.Create)
+          }
         }
 
         return !unref(currentFolder)?.canUpload({ user: userStore.user })
