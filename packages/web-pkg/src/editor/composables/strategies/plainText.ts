@@ -46,6 +46,7 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         heading: false,
         horizontalRule: false,
         italic: false,
+        link: false,
         listItem: false,
         listKeymap: false,
         orderedList: false,

@@ -4,7 +4,6 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
@@ -19,18 +18,12 @@ import {
   FontSize,
   LineHeight
 } from '@tiptap/extension-text-style'
-import {
-  EditorActionGroup,
-  useEditorActions,
-  type UseEditorActionsOptions
-} from '../useEditorActions'
+import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
+import { createLinkExtension } from '../../extensions'
 import { imageFileHandlerExtension } from './imageFileHandler'
 
-export const useStrategyHtml = (
-  editorState: TextEditorState,
-  editorActionOptions: UseEditorActionsOptions = {}
-): ContentTypeStrategy => {
+export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
 
   const editorContentType = () => {
@@ -48,12 +41,7 @@ export const useStrategyHtml = (
   const extensions = (): Extension[] => {
     return [
       StarterKit.configure({ link: false }),
-      Link.configure({
-        openOnClick: true,
-        autolink: true,
-        linkOnPaste: true,
-        HTMLAttributes: { target: '_blank', rel: 'noopener noreferrer' }
-      }),
+      createLinkExtension(),
       Image.configure({
         inline: false,
         allowBase64: true,
@@ -126,12 +114,7 @@ export const useStrategyHtml = (
     addColumnBefore,
     addColumnAfter,
     deleteColumn
-  } = useEditorActions(editorState, editorActionOptions)
-
-  const toolbarLink = () => ({
-    ...link(),
-    showInToolbar: true
-  })
+  } = useEditorActions(editorState)
 
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
@@ -181,6 +164,7 @@ export const useStrategyHtml = (
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          link(),
           image(),
           imageUrl(),
           imageUpload(),
@@ -193,8 +177,7 @@ export const useStrategyHtml = (
           addRowBefore(),
           deleteColumn(),
           deleteRow(),
-          horizontalRule(),
-          toolbarLink()
+          horizontalRule()
         ]
       },
       {
