@@ -24,6 +24,26 @@ describe('UserAvatar', () => {
     expect(wrapper.find('.avatar-initials').exists()).toBe(false)
   })
 
+  it('should load the avatar of a newly set user', async () => {
+    const clientService = mockDeep<ClientService>()
+    clientService.graphAuthenticated.photos.getUserPhoto.mockResolvedValue(mock<File>())
+    const { wrapper } = getWrapper({ clientService })
+
+    await nextTicks(2)
+    expect(clientService.graphAuthenticated.photos.getUserPhoto).toHaveBeenCalledWith(
+      '1',
+      expect.anything()
+    )
+
+    await wrapper.setProps({ userId: '2' })
+    await nextTicks(2)
+
+    expect(clientService.graphAuthenticated.photos.getUserPhoto).toHaveBeenCalledWith(
+      '2',
+      expect.anything()
+    )
+  })
+
   it('should show initials when image not set', async () => {
     const clientService = mockDeep<ClientService>()
     clientService.graphAuthenticated.photos.getUserPhoto.mockRejectedValueOnce(new Error(''))

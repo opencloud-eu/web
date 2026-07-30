@@ -8,13 +8,22 @@
       button-hidden
       :is-rounded="false"
     />
-    <div v-if="!loadMembersTask.isRunning" ref="membersListRef" data-testid="space-members">
+    <div v-if="!loadMembersTask.isRunning" data-testid="space-members">
       <div v-if="!filteredGroupMembers.length">
         <h3 class="font-semibold text-base" v-text="$gettext('No members found')" />
       </div>
       <div v-if="filteredGroupMembers.length" class="mb-4" data-testid="group-members">
         <h3 class="font-semibold text-base" v-text="$gettext('Members')" />
-        <members-role-section :group-members="filteredGroupMembers" />
+        <div ref="membersListRef">
+          <members-role-section :group-members="paginatedMembers" />
+        </div>
+        <oc-pagination-inline
+          v-model:current-page="currentPage"
+          class="justify-center mt-2"
+          :pages="totalPages"
+          :label="$gettext('Member list pagination')"
+          data-testid="group-members-pagination"
+        />
       </div>
     </div>
     <div v-else class="flex justify-center items-center mt-8">
@@ -28,9 +37,14 @@ import { useTask } from 'vue-concurrency'
 import { call } from '@opencloud-eu/web-client'
 import MembersRoleSection from '../../Groups/SideBar/MembersRoleSection.vue'
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
-import { defaultFuseOptions, useClientService, useMessages } from '@opencloud-eu/web-pkg'
+import {
+  defaultFuseOptions,
+  useClientService,
+  useFilterHighlight,
+  useLocalPagination,
+  useMessages
+} from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 
 const { graphAuthenticated } = useClientService()
@@ -55,18 +69,17 @@ const filteredGroupMembers = computed(() => {
   return filterMembers(unref(members), unref(filterTerm))
 })
 
-let markInstance: Mark | undefined
-watch(filterTerm, () => {
-  if (unref(membersListRef)) {
-    markInstance = new Mark(unref(membersListRef))
-    markInstance.unmark()
-    const searchTermRegex = unref(filterTerm)
-    markInstance.mark(searchTermRegex, {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
+const {
+  currentPage,
+  totalPages,
+  paginatedItems: paginatedMembers
+} = useLocalPagination({
+  items: filteredGroupMembers,
+  perPage: 20,
+  resetOn: [filterTerm, group]
 })
+
+useFilterHighlight({ element: membersListRef, term: filterTerm, items: paginatedMembers })
 
 const loadMembersTask = useTask(function* (signal) {
   members.value = []

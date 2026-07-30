@@ -1,8 +1,8 @@
 <template>
   <ul class="oc-list">
     <li
-      v-for="(m, index) in permissions"
-      :key="index"
+      v-for="m in permissions"
+      :key="getId(m)"
       class="flex items-center mb-2"
       data-testid="space-members-list"
     >
@@ -20,7 +20,9 @@
         name="group"
         class="mr-2"
       />
-      {{ getDisplayName(m) }}
+      <span class="truncate" :title="getDisplayName(m)">
+        {{ getDisplayName(m) }}
+      </span>
     </li>
   </ul>
 </template>
@@ -33,5 +35,9 @@ const { permissions } = defineProps<{ permissions: Permission[] }>()
 
 const getDisplayName = (permission: Permission) => {
   return permission.grantedToV2.user?.displayName || permission.grantedToV2.group?.displayName || ''
+}
+
+const getId = (permission: Permission) => {
+  return permission.grantedToV2.user?.id || permission.grantedToV2.group?.id || permission.id
 }
 </script>

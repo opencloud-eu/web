@@ -27,22 +27,33 @@
         <members-role-section :permissions="permissionsWithoutRole" />
       </div>
     </div>
+    <oc-pagination-inline
+      v-model:current-page="currentPage"
+      class="justify-center mt-2"
+      :pages="totalPages"
+      :label="$gettext('Member list pagination')"
+      data-testid="space-members-pagination"
+    />
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, watch, unref, useTemplateRef } from 'vue'
+import { computed, inject, ref, unref, useTemplateRef } from 'vue'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from './MembersRoleSection.vue'
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
-import { defaultFuseOptions, useSharesStore } from '@opencloud-eu/web-pkg'
+import {
+  defaultFuseOptions,
+  useFilterHighlight,
+  useLocalPagination,
+  useSharesStore
+} from '@opencloud-eu/web-pkg'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
 const sharesStore = useSharesStore()
 
 const resource = inject<SpaceResource>('resource')
 const filterTerm = ref('')
-const membersListRef = useTemplateRef('membersListRef')
+const membersListRef = useTemplateRef<HTMLElement>('membersListRef')
 
 const filterMembers = (collection: Permission[], term: string) => {
   if (!(term || '').trim()) {
@@ -78,23 +89,34 @@ const availableRoles = computed<ShareRole[]>(() => {
     })
 })
 
+// group members by role before paginating, so a role section is not scattered across pages
+const sortedPermissions = computed(() => {
+  const roleIds = unref(availableRoles).map(({ id }) => id)
+  const roleIndex = (permission: Permission) => {
+    const index = roleIds.findIndex((id) => permission.roles.includes(id))
+    return index === -1 ? roleIds.length : index
+  }
+
+  return [...unref(filteredPermissions)].sort((a, b) => roleIndex(a) - roleIndex(b))
+})
+
+const {
+  currentPage,
+  totalPages,
+  paginatedItems: paginatedPermissions
+} = useLocalPagination({
+  items: sortedPermissions,
+  perPage: 20,
+  resetOn: [filterTerm, resource]
+})
+
 const permissionsWithoutRole = computed(() => {
-  return unref(filteredPermissions).filter(({ roles }) => !roles.length)
+  return unref(paginatedPermissions).filter(({ roles }) => !roles.length)
 })
 
 const getPermissionsForRole = (role: ShareRole) => {
-  return unref(filteredPermissions).filter(({ roles }) => roles.includes(role.id))
+  return unref(paginatedPermissions).filter(({ roles }) => roles.includes(role.id))
 }
 
-let markInstance: Mark | undefined
-watch(filterTerm, () => {
-  if (unref(membersListRef)) {
-    markInstance = new Mark(unref(membersListRef))
-    markInstance.unmark()
-    markInstance.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
-})
+useFilterHighlight({ element: membersListRef, term: filterTerm, items: paginatedPermissions })
 </script>

@@ -35,6 +35,7 @@ export { default as OcNotificationMessage } from './OcNotificationMessage/OcNoti
 export { default as OcNotifications } from './OcNotifications/OcNotifications.vue'
 export { default as OcPageSize } from './OcPageSize/OcPageSize.vue'
 export { default as OcPagination } from './OcPagination/OcPagination.vue'
+export { default as OcPaginationInline } from './OcPaginationInline/OcPaginationInline.vue'
 export { default as OcProgress } from './OcProgress/OcProgress.vue'
 export { default as OcProgressPie } from './OcProgressPie/OcProgressPie.vue'
 export { default as OcRadio } from './OcRadio/OcRadio.vue'

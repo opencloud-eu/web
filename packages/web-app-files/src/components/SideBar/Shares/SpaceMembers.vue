@@ -59,7 +59,7 @@
         class="oc-list m-0"
         :aria-label="$gettext('Space members')"
       >
-        <li v-for="collaborator in filteredSpaceMembers" :key="collaborator.id">
+        <li v-for="collaborator in paginatedSpaceMembers" :key="collaborator.id">
           <collaborator-list-item
             :share="collaborator"
             :modifiable="isModifiable(collaborator)"
@@ -69,6 +69,13 @@
           />
         </li>
       </ul>
+      <oc-pagination-inline
+        v-model:current-page="currentPage"
+        class="justify-center mt-2"
+        :pages="totalPages"
+        :label="$gettext('Member list pagination')"
+        data-testid="space-members-pagination"
+      />
     </template>
   </div>
 </template>
@@ -95,8 +102,7 @@ import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { ProjectSpaceResource, CollaboratorShare } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
-import { defaultFuseOptions } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, useFilterHighlight, useLocalPagination } from '@opencloud-eu/web-pkg'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 
@@ -166,6 +172,17 @@ const isModifiable = (share: CollaboratorShare) => {
 const filteredSpaceMembers = computed(() => {
   return filter(unref(spaceMembers), unref(filterTerm))
 })
+
+const {
+  currentPage,
+  totalPages,
+  paginatedItems: paginatedSpaceMembers
+} = useLocalPagination({
+  items: filteredSpaceMembers,
+  perPage: 10,
+  resetOn: [filterTerm, resource]
+})
+
 const helpersEnabled = computed(() => {
   return (
     configStore.options.contextHelpers &&
@@ -225,18 +242,10 @@ watch(isFilterOpen, () => {
   filterTerm.value = ''
 })
 
-let markInstance: Mark | undefined
-watch(filterTerm, async () => {
-  await nextTick()
-
-  if (unref(collaboratorList)) {
-    markInstance = new Mark(unref(collaboratorList))
-    markInstance.unmark()
-    markInstance.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
+useFilterHighlight({
+  element: collaboratorList,
+  term: filterTerm,
+  items: paginatedSpaceMembers
 })
 </script>
 <style>
