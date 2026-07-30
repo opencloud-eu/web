@@ -57,6 +57,7 @@
             :view-size="viewSize"
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+            @update:selected-ids="loadGraphPermissions"
           >
             <template #contextMenu="{ resource }">
               <trash-context-actions
@@ -181,13 +182,15 @@ const loadResourcesTask = useTask(function* (signal) {
     spacesStore.upsertSpace(reloadedSpace)
   })
 
-  yield spacesStore.loadGraphPermissions({
-    ids: unref(spaces).map((space) => space.id),
-    graphClient: clientService.graphAuthenticated
-  })
-
   resourcesStore.initResourceList({ currentFolder: null, resources: unref(spaces) })
 })
+
+const loadGraphPermissions = (spaceIds: string[]) => {
+  spacesStore.loadGraphPermissions({
+    ids: spaceIds,
+    graphClient: clientService.graphAuthenticated
+  })
+}
 
 const areResourcesLoading = computed(() => loadResourcesTask.isRunning || !loadResourcesTask.last)
 

@@ -259,6 +259,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   /**
    * Loads permissions for the current user for given space ids and updates
    * the `graphPermissions` field of the space in the store.
+   * This is very expensive, so be careful when calling this function!
    */
   const loadGraphPermissions = async ({
     ids,
