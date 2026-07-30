@@ -13,6 +13,7 @@
     >
       <div class="flex items-center gap-1 mr-1 mt-[0.125rem]">
         <oc-button
+          v-if="hasSlashCommands"
           appearance="raw"
           class="drag-handle-plus-button"
           :aria-label="$gettext('Add content')"
@@ -61,6 +62,14 @@ const currentDragHandleNodePos = ref<number | null>(null)
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
   return `${(unref(textEditor.state.editorZoom) || 100) / 100}`
+})
+
+const hasSlashCommands = computed(() => {
+  const editor = unref(textEditor.editor)
+  if (!editor) {
+    return false
+  }
+  return editor.extensionManager.extensions.some((ext) => ext.name === 'slashCommands')
 })
 
 const onSourceInput = (event: Event) => {
