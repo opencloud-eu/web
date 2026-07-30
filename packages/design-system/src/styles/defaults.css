@@ -1,6 +1,6 @@
 :host,
 :root {
-  --oc-font-family: OpenCloud, Inter, sans-serif;
+  --oc-font-family: Inter, sans-serif;
   --oc-role-background: #FFFFFF;
   --oc-role-chrome: #20434F;
   --oc-role-error: #BA1A1A;
