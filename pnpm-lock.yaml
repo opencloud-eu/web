@@ -160,7 +160,7 @@ importers:
         version: 1.8.0
       '@vueuse/core':
         specifier: ^14.2.1
-        version: 14.3.0(vue@3.5.40(typescript@6.0.3))
+        version: 14.4.0(vue@3.5.40(typescript@6.0.3))
       emoji-mart:
         specifier: ^5.6.0
         version: 5.6.0
@@ -496,7 +496,7 @@ importers:
         version: 5.2.0
       '@vueuse/core':
         specifier: ^14.0.0
-        version: 14.3.0(vue@3.5.40(typescript@6.0.3))
+        version: 14.4.0(vue@3.5.40(typescript@6.0.3))
       axios:
         specifier: ^1.16.1
         version: 1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -642,7 +642,7 @@ importers:
         version: link:../web-pkg
       '@vueuse/core':
         specifier: ^14.0.0
-        version: 14.3.0(vue@3.5.40(typescript@6.0.3))
+        version: 14.4.0(vue@3.5.40(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.40(typescript@6.0.3))
@@ -679,7 +679,7 @@ importers:
         version: 4.6.2
       '@vueuse/core':
         specifier: ^14.0.0
-        version: 14.3.0(vue@3.5.40(typescript@6.0.3))
+        version: 14.4.0(vue@3.5.40(typescript@6.0.3))
       lodash-es:
         specifier: ^4.17.21
         version: 4.18.1
@@ -939,7 +939,7 @@ importers:
         version: 3.5.40
       '@vueuse/core':
         specifier: ^14.2.1
-        version: 14.3.0(vue@3.5.40(typescript@6.0.3))
+        version: 14.4.0(vue@3.5.40(typescript@6.0.3))
       axios:
         specifier: ^1.13.6
         version: 1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -1057,7 +1057,7 @@ importers:
         version: 5.2.0(@uppy/core@5.2.0)
       '@vueuse/core':
         specifier: ^14.2.1
-        version: 14.3.0(vue@3.5.40(typescript@6.0.3))
+        version: 14.4.0(vue@3.5.40(typescript@6.0.3))
       axios:
         specifier: ^1.16.1
         version: 1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -2846,8 +2846,8 @@ packages:
   '@vueuse/core@12.8.2':
     resolution: {integrity: sha512-HbvCmZdzAu3VGi/pWYm5Ut+Kd9mn1ZHnn4L5G8kOQTPs/IwIAmJoBrmYk2ckLArgMXZj0AW3n5CAejLUO+PhdQ==}
 
-  '@vueuse/core@14.3.0':
-    resolution: {integrity: sha512-aHfz47g0ZhMtTVHmIzMVpJy8ePhhOy68GY5bv110+5DVtZ+W7BsOx+m61UNQqfrWyPztIHIanWa3E2tib3NFIw==}
+  '@vueuse/core@14.4.0':
+    resolution: {integrity: sha512-X4WHz1HlCzCBoYXesUkifzzWBAcZgXG8Fi5iNPQg/epdzOB3gu8Fawj3hvuwYR1nGcXGnvxwYYcUC/71++svtQ==}
     peerDependencies:
       vue: ^3.5.0
 
@@ -2895,14 +2895,14 @@ packages:
   '@vueuse/metadata@12.8.2':
     resolution: {integrity: sha512-rAyLGEuoBJ/Il5AmFHiziCPdQzRt88VxR+Y/A/QhJ1EWtWqPBBAxTAFaSkviwEuOEZNtW8pvkPgoCZQ+HxqW1A==}
 
-  '@vueuse/metadata@14.3.0':
-    resolution: {integrity: sha512-BwxmbAzwAVF50+MW57GXOUEV61nFBGnlBvrTqj49PqWJu3uw7hdu72ztXeZ33RdZtDY6kO+bfCAE1PCn88Tktw==}
+  '@vueuse/metadata@14.4.0':
+    resolution: {integrity: sha512-swx/255R6JyHZFJhx845iz5CRWDZdCfvkZOpACWc5+c5WHcG24mv8gUT1WIdFQaHt6dq79rvILd9QnCWiyVm9g==}
 
   '@vueuse/shared@12.8.2':
     resolution: {integrity: sha512-dznP38YzxZoNloI0qpEfpkms8knDtaoQ6Y/sfS0L7Yki4zh40LFHEhur0odJC6xTHG5dxWVPiUWBXn+wCG2s5w==}
 
-  '@vueuse/shared@14.3.0':
-    resolution: {integrity: sha512-bZpge9eSXwa4ToSiqJ7j6KRwhAsneMFoSz3LMWKQDkqimm3D/tbFlrklrs/IOqC8tEcYmXQZJ6N0UrjhBirVCg==}
+  '@vueuse/shared@14.4.0':
+    resolution: {integrity: sha512-JRgY90Sz8DDtPMsaDflvPMp9xYk69JZAmbuDvAquUVXKr2gEjqtzGNTTthLfckH0BzBqvnu31gb4a8TGLRe79g==}
     peerDependencies:
       vue: ^3.5.0
 
@@ -7288,11 +7288,11 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@vueuse/core@14.3.0(vue@3.5.40(typescript@6.0.3))':
+  '@vueuse/core@14.4.0(vue@3.5.40(typescript@6.0.3))':
     dependencies:
       '@types/web-bluetooth': 0.0.21
-      '@vueuse/metadata': 14.3.0
-      '@vueuse/shared': 14.3.0(vue@3.5.40(typescript@6.0.3))
+      '@vueuse/metadata': 14.4.0
+      '@vueuse/shared': 14.4.0(vue@3.5.40(typescript@6.0.3))
       vue: 3.5.40(typescript@6.0.3)
 
   '@vueuse/integrations@12.8.2(axios@1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0))(focus-trap@7.8.0)(fuse.js@7.5.0)(jwt-decode@4.0.0)(typescript@6.0.3)':
@@ -7310,7 +7310,7 @@ snapshots:
 
   '@vueuse/metadata@12.8.2': {}
 
-  '@vueuse/metadata@14.3.0': {}
+  '@vueuse/metadata@14.4.0': {}
 
   '@vueuse/shared@12.8.2(typescript@6.0.3)':
     dependencies:
@@ -7318,7 +7318,7 @@ snapshots:
     transitivePeerDependencies:
       - typescript
 
-  '@vueuse/shared@14.3.0(vue@3.5.40(typescript@6.0.3))':
+  '@vueuse/shared@14.4.0(vue@3.5.40(typescript@6.0.3))':
     dependencies:
       vue: 3.5.40(typescript@6.0.3)
 
