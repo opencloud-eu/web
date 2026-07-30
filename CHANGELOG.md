@@ -6,25 +6,9 @@
 
 @AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @dschmidt, @kost, @tammi-23, @v-scharf
 
-### 🐛 Bug Fixes
-
-- fix: reset custom props not defined by the active theme [[#2972](https://github.com/opencloud-eu/web/pull/2972)]
-- fix: retry silent token renewal before logout on auth error [[#2951](https://github.com/opencloud-eu/web/pull/2951)]
-- fix: loading user avatars won't get cancelled when changing route [[#2962](https://github.com/opencloud-eu/web/pull/2962)]
-- fix: resolve hardcoded absolute image paths under a subpath deployment [[#2956](https://github.com/opencloud-eu/web/pull/2956)]
-- fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
-- fix(tiptap): prevent images from stretching while increasing size [[#2927](https://github.com/opencloud-eu/web/pull/2927)]
-- fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
-- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
-- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
-- fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
-- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
-- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
-- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
-- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
-
 ### 📈 Enhancement
 
+- feat: tiptap - Insert and edit Links [[#2930](https://github.com/opencloud-eu/web/pull/2930)]
 - feat: expose the active theme as html[data-theme] [[#2971](https://github.com/opencloud-eu/web/pull/2971)]
 - perf: improve user and groups list loading in admin-settings [[#2963](https://github.com/opencloud-eu/web/pull/2963)]
 - perf: improve render times with lots of paginated items [[#2958](https://github.com/opencloud-eu/web/pull/2958)]
@@ -42,6 +26,23 @@
 - feat(extension-sdk): inject package.json metadata into manifest.json [[#2894](https://github.com/opencloud-eu/web/pull/2894)]
 - feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
 
+### 🐛 Bug Fixes
+
+- fix: reset custom props not defined by the active theme [[#2972](https://github.com/opencloud-eu/web/pull/2972)]
+- fix: retry silent token renewal before logout on auth error [[#2951](https://github.com/opencloud-eu/web/pull/2951)]
+- fix: loading user avatars won't get cancelled when changing route [[#2962](https://github.com/opencloud-eu/web/pull/2962)]
+- fix: resolve hardcoded absolute image paths under a subpath deployment [[#2956](https://github.com/opencloud-eu/web/pull/2956)]
+- fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
+- fix(tiptap): prevent images from stretching while increasing size [[#2927](https://github.com/opencloud-eu/web/pull/2927)]
+- fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
+- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
+- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
+- fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
+- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
+- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
+
 ### 📚 Documentation
 
 - ci: sync e2e/README.md to docs [[#2938](https://github.com/opencloud-eu/web/pull/2938)]
@@ -55,7 +56,7 @@
 ### 📦️ Dependencies
 
 - chore(deps): update dependency @vueuse/core to v14.4.0 [[#2974](https://github.com/opencloud-eu/web/pull/2974)]
-- chore(deps): update pnpm to v11.18.0 [[#2978](https://github.com/opencloud-eu/web/pull/2978)]
+- chore(deps): update pnpm to v11.18.0 - autoclosed [[#2978](https://github.com/opencloud-eu/web/pull/2978)]
 - fix(deps): update dependency @sentry/vue to v10.69.0 [[#2979](https://github.com/opencloud-eu/web/pull/2979)]
 - chore(deps): update dependency postcss to v8.5.24 [[#2968](https://github.com/opencloud-eu/web/pull/2968)]
 - chore(deps): update tiptap monorepo to v3.29.2 [[#2969](https://github.com/opencloud-eu/web/pull/2969)]
