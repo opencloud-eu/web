@@ -240,6 +240,10 @@ export default defineConfig({
               link: '/OcPagination'
             },
             {
+              text: 'OcPaginationInline',
+              link: '/OcPaginationInline'
+            },
+            {
               text: 'OcProgress',
               link: '/OcProgress'
             },

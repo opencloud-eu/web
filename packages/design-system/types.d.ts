@@ -31,6 +31,7 @@ import OcNotificationMessage from './src/components/OcNotificationMessage/OcNoti
 import OcNotifications from './src/components/OcNotifications/OcNotifications.vue'
 import OcPageSize from './src/components/OcPageSize/OcPageSize.vue'
 import OcPagination from './src/components/OcPagination/OcPagination.vue'
+import OcPaginationInline from './src/components/OcPaginationInline/OcPaginationInline.vue'
 import OcProgress from './src/components/OcProgress/OcProgress.vue'
 import OcProgressPie from './src/components/OcProgressPie/OcProgressPie.vue'
 import OcRadio from './src/components/OcRadio/OcRadio.vue'
@@ -90,6 +91,7 @@ declare module 'vue' {
     OcNotifications: typeof OcNotifications
     OcPageSize: typeof OcPageSize
     OcPagination: typeof OcPagination
+    OcPaginationInline: typeof OcPaginationInline
     OcProgress: typeof OcProgress
     OcProgressPie: typeof OcProgressPie
     OcRadio: typeof OcRadio
