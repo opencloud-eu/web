@@ -269,7 +269,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 @media (max-width: 960px) {
   #wayf .grid {
     grid-template-columns: 1fr !important;

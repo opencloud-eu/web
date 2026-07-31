@@ -79,41 +79,39 @@ const progressValue = computed(() => {
 })
 </script>
 
-<style lang="scss" scoped>
-.oc-progress {
-  &-indeterminate-first {
-    animation-duration: 2s;
-    animation-name: indeterminate-first;
-    animation-iteration-count: infinite;
-  }
+<style scoped>
+.oc-progress-indeterminate-first {
+  animation-duration: 2s;
+  animation-name: indeterminate-first;
+  animation-iteration-count: infinite;
+}
 
-  &-indeterminate-second {
-    animation-duration: 2s;
-    animation-delay: 0.5s;
-    animation-name: indeterminate-second;
-    animation-iteration-count: infinite;
-  }
+.oc-progress-indeterminate-second {
+  animation-duration: 2s;
+  animation-delay: 0.5s;
+  animation-name: indeterminate-second;
+  animation-iteration-count: infinite;
+}
 
-  @keyframes indeterminate-first {
-    from {
-      left: -10%;
-      width: 10%;
-    }
-    to {
-      left: 120%;
-      width: 100%;
-    }
+@keyframes indeterminate-first {
+  from {
+    left: -10%;
+    width: 10%;
   }
+  to {
+    left: 120%;
+    width: 100%;
+  }
+}
 
-  @keyframes indeterminate-second {
-    from {
-      left: -100%;
-      width: 80%;
-    }
-    to {
-      left: 110%;
-      width: 10%;
-    }
+@keyframes indeterminate-second {
+  from {
+    left: -100%;
+    width: 80%;
+  }
+  to {
+    left: 110%;
+    width: 10%;
   }
 }
 </style>

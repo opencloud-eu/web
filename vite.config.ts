@@ -12,13 +12,13 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import tailwindcss from '@tailwindcss/vite'
 import { basename, join } from 'path'
 import { existsSync, readdirSync, readFileSync } from 'fs'
-import packageJson from './package.json'
-import { compilerOptions } from './vite.config.common'
+import packageJson from './package.json' with { type: 'json' }
+import { compilerOptions } from './vite.config.common.ts'
 import { getUserAgentRegex } from 'browserslist-useragent-regexp'
 import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
 import { Agent } from 'https'
-import { federationRegistrationHost } from './dev/vite-plugins/federationRegistrationHost'
+import { federationRegistrationHost } from './dev/vite-plugins/federationRegistrationHost.ts'
 
 const dist = process.env.DIST_DIR || 'dist'
 
@@ -174,18 +174,6 @@ export default defineConfig(({ mode, command }) => {
       server: {
         host: 'host.docker.internal',
         strictPort: true
-      },
-      css: {
-        preprocessorOptions: {
-          scss: {
-            additionalData: `
-                @use "sass:math";
-                @use "sass:string";
-                @use "sass:meta";
-            `,
-            silenceDeprecations: ['legacy-js-api', 'import']
-          }
-        }
       },
       define: {
         'process.env.PACKAGE_VERSION': JSON.stringify(version)

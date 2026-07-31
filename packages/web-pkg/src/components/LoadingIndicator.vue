@@ -49,17 +49,13 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-#oc-loading-indicator {
-  .oc-progress {
-    &-indeterminate-first {
-      animation-duration: 4s;
-    }
+<style>
+#oc-loading-indicator .oc-progress-indeterminate-first {
+  animation-duration: 4s;
+}
 
-    &-indeterminate-second {
-      animation-duration: 4s;
-      animation-delay: 1s;
-    }
-  }
+#oc-loading-indicator .oc-progress-indeterminate-second {
+  animation-duration: 4s;
+  animation-delay: 1s;
 }
 </style>

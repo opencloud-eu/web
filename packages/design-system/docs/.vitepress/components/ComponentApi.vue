@@ -124,19 +124,18 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss">
+<style>
 .emits-table,
 .props-table,
 .slots-table {
   width: 100%;
-  th,
-  td {
-    background-color: #fff;
-    border: 0;
-    border-bottom: 1px solid var(--vp-c-divider);
-  }
-  tr {
-    border: 0;
-  }
+}
+:is(.emits-table, .props-table, .slots-table) :is(th, td) {
+  background-color: #fff;
+  border: 0;
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+:is(.emits-table, .props-table, .slots-table) tr {
+  border: 0;
 }
 </style>

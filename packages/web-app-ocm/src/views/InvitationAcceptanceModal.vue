@@ -9,7 +9,7 @@
     @confirm="acceptInvitation"
   >
     <template #content>
-      <div class="invitation-acceptance-content">
+      <div class="min-h-[200px]">
         <div v-if="loading" class="text-center p-4">
           <app-loading-spinner />
           <p class="mt-2" v-text="$gettext('Processing invitation...')" />
@@ -105,9 +105,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style lang="scss" scoped>
-.invitation-acceptance-content {
-  min-height: 200px;
-}
-</style>
