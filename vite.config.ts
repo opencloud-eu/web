@@ -178,11 +178,6 @@ export default defineConfig(({ mode, command }) => {
       css: {
         preprocessorOptions: {
           scss: {
-            additionalData: `
-                @use "sass:math";
-                @use "sass:string";
-                @use "sass:meta";
-            `,
             silenceDeprecations: ['legacy-js-api', 'import']
           }
         }

@@ -5,7 +5,7 @@ import { createGettext } from 'vue3-gettext'
 import { createPinia } from 'pinia'
 import * as components from './../../../src/components'
 import * as directives from './../../../src/directives'
-import './custom.scss'
+import './custom.css'
 import LiveCodeBlock from '../components/LiveCodeBlock.vue'
 import ComponentApi from '../components/ComponentApi.vue'
 
