@@ -487,48 +487,32 @@ describe('useEditorActions', () => {
     }
 
     describe('deleteRow', () => {
-      it('does not fall back to deleteTable when deleteRow succeeds', () => {
-        const editor = createMockEditor({ runResult: true })
+      it('calls deleteRow command', () => {
+        const editor = createMockEditor()
         actions.deleteRow().toolbarAction!(editor)
         expect(editor._chain.deleteRow).toHaveBeenCalled()
-        expect(editor._chain.deleteTable).not.toHaveBeenCalled()
+        expect(editor._chain.run).toHaveBeenCalled()
       })
 
-      it('falls back to deleteTable when deleteRow fails and cursor is in table', () => {
+      it('falls back to deleteTable when deleteRow fails', () => {
         const editor = createMockEditor({
           runResult: false,
           isActive: (type) => type === 'table'
         })
         actions.deleteRow().toolbarAction!(editor)
-        expect(editor._chain.deleteTable).toHaveBeenCalled()
-      })
-
-      it('does not fall back when deleteRow fails but cursor is not in table', () => {
-        const editor = createMockEditor({ runResult: false })
-        actions.deleteRow().toolbarAction!(editor)
-        expect(editor._chain.deleteTable).not.toHaveBeenCalled()
-      })
-
-      it('slashCommandAction deletes range and falls back correctly', () => {
-        const editor = createMockEditor({
-          runResult: false,
-          isActive: (type) => type === 'table'
-        })
-        actions.deleteRow().slashCommandAction!({ editor, range: mockRange })
-        expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
     })
 
     describe('deleteColumn', () => {
-      it('does not fall back to deleteTable when deleteColumn succeeds', () => {
+      it('calls deleteColumn command', () => {
         const editor = createMockEditor({ runResult: true })
         actions.deleteColumn().toolbarAction!(editor)
         expect(editor._chain.deleteColumn).toHaveBeenCalled()
         expect(editor._chain.deleteTable).not.toHaveBeenCalled()
       })
 
-      it('falls back to deleteTable when deleteColumn fails and cursor is in table', () => {
+      it('falls back to deleteTable when deleteColumn fails', () => {
         const editor = createMockEditor({
           runResult: false,
           isActive: (type) => type === 'table'
@@ -536,15 +520,33 @@ describe('useEditorActions', () => {
         actions.deleteColumn().toolbarAction!(editor)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
+    })
 
-      it('slashCommandAction deletes range and falls back correctly', () => {
-        const editor = createMockEditor({
-          runResult: false,
-          isActive: (type) => type === 'table'
-        })
-        actions.deleteColumn().slashCommandAction!({ editor, range: mockRange })
+    describe('deleteTable', () => {
+      it("isEnabled returns editor.isActive('table')", () => {
+        const inTable = createMockEditor({ isActive: (type) => type === 'table' })
+        const notInTable = createMockEditor()
+        expect(actions.deleteTable().isEnabled!(inTable)).toBe(true)
+        expect(actions.deleteTable().isEnabled!(notInTable)).toBe(false)
+      })
+
+      it('toolbarAction deletes current table', () => {
+        const editor = createMockEditor()
+        actions.deleteTable().toolbarAction!(editor)
+        expect(editor._chain.deleteTable).toHaveBeenCalled()
+        expect(editor._chain.run).toHaveBeenCalled()
+      })
+
+      it('slashCommandAction deletes range and table', () => {
+        const editor = createMockEditor()
+        actions.deleteTable().slashCommandAction!({ editor, range: mockRange })
         expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
+        expect(editor._chain.run).toHaveBeenCalled()
+      })
+
+      it('is hidden from toolbar', () => {
+        expect(actions.deleteTable().showInToolbar).toBe(false)
       })
     })
   })

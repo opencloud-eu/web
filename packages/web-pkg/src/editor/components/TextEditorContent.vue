@@ -30,6 +30,7 @@
         </oc-button>
       </div>
     </DragHandle>
+    <TextEditorTableBubbleMenu v-if="!isSourceMode" />
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea
@@ -47,6 +48,7 @@ import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'v
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import { useGettext } from 'vue3-gettext'
+import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import type { TextEditorInstance } from '../types'
 
 const { editor = undefined } = defineProps<{

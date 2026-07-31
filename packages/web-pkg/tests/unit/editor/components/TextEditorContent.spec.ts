@@ -14,13 +14,19 @@ vi.mock('@tiptap/vue-3', () => ({
   })
 }))
 
+vi.mock('@tiptap/vue-3/menus', () => ({
+  BubbleMenu: {
+    template: '<div class="mock-bubble-menu"><slot /></div>'
+  }
+}))
+
 vi.mock('@tiptap/extension-drag-handle-vue-3', () => ({
   DragHandle: defineComponent({
     name: 'DragHandle',
     props: { editor: { type: Object, required: false } },
     emits: ['node-change'],
     template: '<div class="mock-drag-handle"><slot /></div>'
-  })
+  }
 }))
 
 function mountEditorContent({
@@ -36,9 +42,6 @@ function mountEditorContent({
 } = {}) {
   const setContent = vi.fn()
   const insertContent = vi.fn()
-  const insertContentAt = vi.fn()
-  const setTextSelection = vi.fn()
-  const focus = vi.fn()
   const run = vi.fn()
 
   const chain = vi.fn(() => ({
