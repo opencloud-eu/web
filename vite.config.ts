@@ -175,13 +175,6 @@ export default defineConfig(({ mode, command }) => {
         host: 'host.docker.internal',
         strictPort: true
       },
-      css: {
-        preprocessorOptions: {
-          scss: {
-            silenceDeprecations: ['legacy-js-api', 'import']
-          }
-        }
-      },
       define: {
         'process.env.PACKAGE_VERSION': JSON.stringify(version)
       },

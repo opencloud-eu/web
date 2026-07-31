@@ -75,17 +75,10 @@ if (!lazy) {
 }
 </script>
 
-<style lang="scss" scoped>
-// needs to be scss because of the linear-gradient
+<style scoped>
 @layer components {
   .shimmer::after {
-    background-image: linear-gradient(
-      90deg,
-      rgba(#fff, 0) 0,
-      rgba(#fff, 0.2) 20%,
-      rgba(#fff, 0.5) 60%,
-      rgba(#fff, 0)
-    );
+    background-image: linear-gradient(90deg, #ffffff00 0, #ffffff33 20%, #ffffff80 60%, #ffffff00);
   }
 }
 </style>

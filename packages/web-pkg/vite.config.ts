@@ -14,13 +14,6 @@ export default defineConfig({
       crypto: join(projectRootDir, 'polyfills/crypto.js')
     }
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        silenceDeprecations: ['legacy-js-api', 'import']
-      }
-    }
-  },
   build: {
     lib: {
       entry: {

@@ -232,19 +232,9 @@ if (!lazy) {
   .oc-tile-card-preview:hover img {
     @apply rounded-sm;
   }
-}
-</style>
-<style lang="scss">
-.oc-tile-card {
-  // needs to be scss because of the linear-gradient
-  &-lazy-shimmer::after {
-    background-image: linear-gradient(
-      90deg,
-      rgba(#4c5f79, 0) 0,
-      rgba(#4c5f79, 0.2) 20%,
-      rgba(#4c5f79, 0.5) 60%,
-      rgba(#4c5f79, 0)
-    );
+
+  .oc-tile-card-lazy-shimmer::after {
+    background-image: linear-gradient(90deg, #4c5f7900 0, #4c5f7933 20%, #4c5f7980 60%, #4c5f7900);
   }
 }
 </style>

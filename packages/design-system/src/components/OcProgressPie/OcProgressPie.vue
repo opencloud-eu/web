@@ -1,7 +1,9 @@
 <template>
   <div
     class="oc-progress-pie relative after:block after:size-full after:content-['']"
+    :class="{ 'oc-progress-pie-over-half': fill > 50 }"
     :data-fill="fill"
+    :style="{ '--oc-progress-pie-fill': fill }"
   >
     <div
       class="oc-progress-pie-container absolute left-0 top-0 after:absolute after:left-0 after:top-0 before:block after:block size-full after:size-full after:content-[''] before:content-['']"
@@ -57,52 +59,52 @@ const label = computed(() => {
     @apply m-4;
   }
 }
-</style>
-<style lang="scss" scoped>
-$default-size: 64px;
 
 .oc-progress-pie {
-  height: $default-size;
-  width: $default-size;
+  --oc-progress-pie-size: 64px;
+  --oc-progress-pie-border: calc(var(--oc-progress-pie-size) / 10);
+  --oc-progress-pie-half: calc(var(--oc-progress-pie-size) / 2);
 
-  // Shadow
-  &::after {
-    border: calc($default-size / 10) solid var(--oc-role-surface-container);
-    border-radius: 50%;
-  }
-
-  &-container {
-    clip: rect(0, $default-size, $default-size, calc($default-size / 2));
-
-    &::before,
-    &::after {
-      border: calc($default-size / 10) solid var(--oc-role-secondary);
-      border-color: var(--oc-role-secondary);
-      border-radius: 50%;
-      clip: rect(0, calc($default-size / 2), $default-size, 0);
-    }
-  }
+  height: var(--oc-progress-pie-size);
+  width: var(--oc-progress-pie-size);
 }
 
-@for $i from 0 through 100 {
-  .oc-progress-pie[data-fill='#{$i}'] {
-    .oc-progress-pie-container::before {
-      transform: rotate($i * 3.6deg);
-    }
+/* Shadow */
+.oc-progress-pie::after {
+  border: var(--oc-progress-pie-border) solid var(--oc-role-surface-container);
+  border-radius: 50%;
+}
 
-    @if $i <= 50 {
-      .oc-progress-pie-container::after {
-        display: none;
-      }
-    } @else {
-      .oc-progress-pie-container {
-        clip: rect(auto, auto, auto, auto);
-      }
+.oc-progress-pie-container {
+  clip: rect(
+    0,
+    var(--oc-progress-pie-size),
+    var(--oc-progress-pie-size),
+    var(--oc-progress-pie-half)
+  );
+}
 
-      .oc-progress-pie-container::after {
-        transform: rotate(180deg);
-      }
-    }
-  }
+.oc-progress-pie-container::before,
+.oc-progress-pie-container::after {
+  border: var(--oc-progress-pie-border) solid var(--oc-role-secondary);
+  border-color: var(--oc-role-secondary);
+  border-radius: 50%;
+  clip: rect(0, var(--oc-progress-pie-half), var(--oc-progress-pie-size), 0);
+}
+
+.oc-progress-pie-container::before {
+  transform: rotate(calc(var(--oc-progress-pie-fill) * 3.6deg));
+}
+
+.oc-progress-pie:not(.oc-progress-pie-over-half) .oc-progress-pie-container::after {
+  display: none;
+}
+
+.oc-progress-pie-over-half .oc-progress-pie-container {
+  clip: rect(auto, auto, auto, auto);
+}
+
+.oc-progress-pie-over-half .oc-progress-pie-container::after {
+  transform: rotate(180deg);
 }
 </style>

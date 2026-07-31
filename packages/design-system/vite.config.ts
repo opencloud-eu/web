@@ -7,11 +7,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   css: {
-    preprocessorOptions: {
-      scss: {
-        silenceDeprecations: ['legacy-js-api', 'import']
-      }
-    },
     postcss: {
       plugins: [
         {

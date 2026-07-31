@@ -304,25 +304,22 @@ const updateEmptyTrashesShownModel = (event: boolean) => {
 }
 </script>
 
-<style lang="scss" scoped>
-.oc-range {
-  // needs to be scss to work properly
-  &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    background: var(--oc-role-on-surface);
-    border-radius: 50%;
-    cursor: pointer;
-    height: 1rem;
-    width: 1rem;
-  }
+<style scoped>
+.oc-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--oc-role-on-surface);
+  border-radius: 50%;
+  cursor: pointer;
+  height: 1rem;
+  width: 1rem;
+}
 
-  &::-moz-range-thumb {
-    background: var(--oc-role-on-surface);
-    border-radius: 50%;
-    cursor: pointer;
-    height: 1rem;
-    width: 1rem;
-  }
+.oc-range::-moz-range-thumb {
+  background: var(--oc-role-on-surface);
+  border-radius: 50%;
+  cursor: pointer;
+  height: 1rem;
+  width: 1rem;
 }
 </style>

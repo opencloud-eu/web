@@ -9,13 +9,6 @@ process.env.TZ = 'UTC'
 
 export default defineConfig({
   plugins: [vue({ template: { compilerOptions } })],
-  css: {
-    preprocessorOptions: {
-      scss: {
-        silenceDeprecations: ['legacy-js-api', 'import']
-      }
-    }
-  },
   test: {
     root,
     globals: true,
