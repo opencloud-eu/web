@@ -1,9 +1,9 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
-import { compilerOptions } from '../../../vite.config.common'
+import { compilerOptions } from '../../../vite.config.common.ts'
 
-const root = path.resolve(__dirname, '../../../')
+const root = path.resolve(import.meta.dirname, '../../../')
 
 process.env.TZ = 'UTC'
 
