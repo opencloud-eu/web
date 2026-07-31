@@ -1,35 +1,28 @@
 :root {
-  // The web app defaults to Inter, but the docs keep rendering in the
-  // official OpenCloud font. Override both VitePress' base font and the
-  // design-system font variable (which feeds Tailwind's --font-sans).
+  /* The web app defaults to Inter, but the docs keep rendering in the
+     official OpenCloud font. Override both VitePress' base font and the
+     design-system font variable (which feeds Tailwind's --font-sans). */
   --vp-font-family-base: 'OpenCloud', 'Inter', sans-serif;
   --oc-font-family: 'OpenCloud', 'Inter', sans-serif;
   --vp-c-brand-1: var(--oc-role-secondary);
 }
 
 .vp-doc tr:nth-child(2n) {
-  // disable the color change on table rows
+  /* disable the color change on table rows */
   background-color: var(--vp-c-bg);
 }
 
-.vp-doc .live-code-block {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    // reset vitepress styling inside live code blocks
-    margin: revert-layer;
-    border: revert-layer;
-    padding: revert-layer;
-    font-size: revert-layer;
-    line-height: revert-layer;
-    letter-spacing: revert-layer;
-  }
+/* reset vitepress styling inside live code blocks */
+.vp-doc .live-code-block :is(h1, h2, h3, h4, h5, h6) {
+  margin: revert-layer;
+  border: revert-layer;
+  padding: revert-layer;
+  font-size: revert-layer;
+  line-height: revert-layer;
+  letter-spacing: revert-layer;
 }
 
-// re-apply some basic styling we removed during the build to avoid conflicts with tailwind
+/* re-apply some basic styling we removed during the build to avoid conflicts with tailwind */
 .title span {
   font-size: 14px;
 }

@@ -491,162 +491,142 @@ export default { components: { VueSelect } }
   }
 }
 </style>
-<style lang="scss">
+<style>
 .vs--disabled {
   cursor: not-allowed;
-
-  .vs__clear,
-  .vs__dropdown-toggle,
-  .vs__open-indicator,
-  .vs__search,
-  .vs__selected {
-    background-color: var(--oc-role-surface-container) !important;
-    color: var(--oc-role-on-surface) !important;
-    pointer-events: none;
-  }
-
-  .vs__actions {
-    opacity: 0.3;
-  }
 }
 
-.oc-select {
-  &-no-border {
-    .vs__dropdown-toggle {
-      border: none !important;
-      outline: none !important;
-      background-color: transparent !important;
-    }
-  }
-
-  &-position-fixed {
-    .vs__dropdown-menu {
-      position: fixed;
-      overflow-y: auto;
-    }
-  }
-
-  // overwrite vue-select styles
-  .vs {
-    &__search {
-      color: var(--oc-role-on-surface);
-    }
-
-    &__search::placeholder {
-      color: var(--oc-role-on-surface-variant);
-    }
-
-    &__dropdown-toggle,
-    &__dropdown-menu {
-      min-height: 36px;
-      -webkit-appearance: none;
-      color: var(--oc-role-on-surface);
-      background-color: var(--oc-role-surface);
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--oc-role-outline-variant);
-      box-sizing: border-box;
-      line-height: inherit;
-      max-width: 100%;
-      outline: none;
-      padding: 4px;
-      transition-duration: 0.2s;
-      transition-timing-function: ease-in-out;
-      transition-property: color, background-color;
-      width: 100%;
-      background-color: var(--oc-role-surface);
-      margin-top: -1px;
-    }
-
-    &__selected-readonly {
-      background-color: var(--oc-role-surface-container-low) !important;
-    }
-
-    &__search,
-    &__search:focus {
-      padding: 0 5px;
-    }
-
-    &__clear,
-    &__open-indicator,
-    &__deselect {
-      fill: var(--oc-role-on-surface);
-    }
-
-    &__dropdown-option,
-    &__no-options {
-      color: var(--oc-role-on-surface);
-      white-space: normal;
-      padding: 6px 0.6rem;
-      border-radius: var(--radius-sm);
-
-      &--highlight,
-      &--selected {
-        background-color: var(--oc-role-surface-container);
-        color: var(--oc-role-on-surface);
-      }
-
-      &--selected {
-        background-color: var(--oc-role-secondary-container);
-      }
-    }
-
-    &__actions {
-      flex-flow: row wrap;
-      justify-content: center;
-      gap: var(--spacing);
-      cursor: pointer;
-      padding: 0 4px 0 4px;
-
-      svg {
-        overflow: visible;
-      }
-    }
-
-    &__clear svg {
-      max-width: var(--spacing);
-    }
-
-    &__selected-options {
-      flex: auto;
-      padding: 0;
-
-      > * {
-        margin: 2px 2px 2px 1px;
-        color: var(--oc-role-on-surface);
-      }
-
-      > *:not(input) {
-        padding-left: 3px;
-        background-color: var(--oc-role-surface-container);
-        fill: var(--oc-role-on-surface);
-      }
-    }
-  }
-
-  &.vs--multiple {
-    .vs {
-      &__selected-options > *:not(input) {
-        color: var(--oc-role-on-surface);
-        background-color: var(--oc-role-surface-container);
-      }
-    }
-  }
-
-  &:focus-within {
-    .vs__dropdown-menu,
-    .vs__dropdown-toggle {
-      border: 1px solid var(--oc-role-outline);
-    }
-  }
+.vs--disabled
+  :is(.vs__clear, .vs__dropdown-toggle, .vs__open-indicator, .vs__search, .vs__selected) {
+  background-color: var(--oc-role-surface-container) !important;
+  color: var(--oc-role-on-surface) !important;
+  pointer-events: none;
 }
 
-.vs--single {
-  &.vs--open .vs__selected {
-    opacity: 0.8 !important;
-  }
+.vs--disabled .vs__actions {
+  opacity: 0.3;
+}
 
-  .vs__selected-options > *:not(input) {
-    background-color: transparent !important;
-  }
+.oc-select-no-border .vs__dropdown-toggle {
+  border: none !important;
+  outline: none !important;
+  background-color: transparent !important;
+}
+
+.oc-select-position-fixed .vs__dropdown-menu {
+  position: fixed;
+  overflow-y: auto;
+}
+
+/* overwrite vue-select styles */
+.oc-select .vs__search {
+  color: var(--oc-role-on-surface);
+}
+
+.oc-select .vs__search::placeholder {
+  color: var(--oc-role-on-surface-variant);
+}
+
+.oc-select :is(.vs__dropdown-toggle, .vs__dropdown-menu) {
+  min-height: 36px;
+  -webkit-appearance: none;
+  color: var(--oc-role-on-surface);
+  background-color: var(--oc-role-surface);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--oc-role-outline-variant);
+  box-sizing: border-box;
+  line-height: inherit;
+  max-width: 100%;
+  outline: none;
+  padding: 4px;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+  transition-property: color, background-color;
+  width: 100%;
+  margin-top: -1px;
+}
+
+.oc-select .vs__selected-readonly {
+  background-color: var(--oc-role-surface-container-low) !important;
+}
+
+.oc-select .vs__search,
+.oc-select .vs__search:focus {
+  padding: 0 5px;
+}
+
+.oc-select :is(.vs__clear, .vs__open-indicator, .vs__deselect) {
+  fill: var(--oc-role-on-surface);
+}
+
+.oc-select :is(.vs__dropdown-option, .vs__no-options) {
+  color: var(--oc-role-on-surface);
+  white-space: normal;
+  padding: 6px 0.6rem;
+  border-radius: var(--radius-sm);
+}
+
+.oc-select
+  :is(
+    .vs__dropdown-option--highlight,
+    .vs__dropdown-option--selected,
+    .vs__no-options--highlight,
+    .vs__no-options--selected
+  ) {
+  background-color: var(--oc-role-surface-container);
+  color: var(--oc-role-on-surface);
+}
+
+.oc-select :is(.vs__dropdown-option--selected, .vs__no-options--selected) {
+  background-color: var(--oc-role-secondary-container);
+}
+
+.oc-select .vs__actions {
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: var(--spacing);
+  cursor: pointer;
+  padding: 0 4px 0 4px;
+}
+
+.oc-select .vs__actions svg {
+  overflow: visible;
+}
+
+.oc-select .vs__clear svg {
+  max-width: var(--spacing);
+}
+
+.oc-select .vs__selected-options {
+  flex: auto;
+  padding: 0;
+}
+
+.oc-select .vs__selected-options > * {
+  margin: 2px 2px 2px 1px;
+  color: var(--oc-role-on-surface);
+}
+
+.oc-select .vs__selected-options > *:not(input) {
+  padding-left: 3px;
+  background-color: var(--oc-role-surface-container);
+  fill: var(--oc-role-on-surface);
+}
+
+.oc-select.vs--multiple .vs__selected-options > *:not(input) {
+  color: var(--oc-role-on-surface);
+  background-color: var(--oc-role-surface-container);
+}
+
+.oc-select:focus-within :is(.vs__dropdown-menu, .vs__dropdown-toggle) {
+  border: 1px solid var(--oc-role-outline);
+}
+
+.vs--single.vs--open .vs__selected {
+  opacity: 0.8 !important;
+}
+
+.vs--single .vs__selected-options > *:not(input) {
+  background-color: transparent !important;
 }
 </style>

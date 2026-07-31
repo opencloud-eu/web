@@ -7,16 +7,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `
-          @use "sass:math";
-          @use "sass:string";
-          @use "sass:meta";
-        `,
-        silenceDeprecations: ['legacy-js-api', 'import']
-      }
-    },
     postcss: {
       plugins: [
         {

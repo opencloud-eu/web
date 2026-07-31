@@ -45,16 +45,6 @@ export default defineConfig({
             }
           }
         ]
-      },
-      preprocessorOptions: {
-        scss: {
-          additionalData: `
-                @use "sass:math";
-                @use "sass:string";
-                @use "sass:meta";
-            `,
-          silenceDeprecations: ['legacy-js-api', 'import']
-        }
       }
     },
     plugins: [

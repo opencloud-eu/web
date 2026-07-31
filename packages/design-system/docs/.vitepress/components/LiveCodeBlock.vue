@@ -87,27 +87,25 @@ onMounted(async () => {
 })
 </script>
 
-<style lang="scss">
-.live-code-block {
-  // some vitepress styles need to be overwritten to properly display our components
-  .oc-modal-title > h2 {
-    border: 0 !important;
-  }
-  ol.oc-pagination-list {
-    list-style: none !important;
-  }
-  p.oc-recipient-name {
-    line-height: unset !important;
-  }
+<style>
+/* some vitepress styles need to be overwritten to properly display our components */
+.live-code-block .oc-modal-title > h2 {
+  border: 0 !important;
+}
+.live-code-block ol.oc-pagination-list {
+  list-style: none !important;
+}
+.live-code-block p.oc-recipient-name {
+  line-height: unset !important;
+}
 
-  &-header {
-    border-bottom: 1px solid var(--vp-c-divider);
-    button {
-      border-radius: 0;
-    }
-    button.active {
-      border-bottom: 2px solid var(--vp-c-brand-1);
-    }
-  }
+.live-code-block-header {
+  border-bottom: 1px solid var(--vp-c-divider);
+}
+.live-code-block-header button {
+  border-radius: 0;
+}
+.live-code-block-header button.active {
+  border-bottom: 2px solid var(--vp-c-brand-1);
 }
 </style>
