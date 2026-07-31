@@ -58,6 +58,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#2990](https://github.com/opencloud-eu/web/pull/2990)]
 - chore(deps): update node.js to v24.18.1 [[#2976](https://github.com/opencloud-eu/web/pull/2976)]
 - chore(deps): update dependency postcss to v8.5.25 [[#2980](https://github.com/opencloud-eu/web/pull/2980)]
 - chore(deps): update dependency @vueuse/core to v14.4.0 [[#2974](https://github.com/opencloud-eu/web/pull/2974)]
