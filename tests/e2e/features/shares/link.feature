@@ -5,7 +5,6 @@ Feature: link
       | id    |
       | Alice |
 
-
   Scenario: public link
     Given "Admin" creates following user using API
       | id    |
@@ -74,8 +73,10 @@ Feature: link
       | myfolder       | folder |
       | myfolder/child | folder |
     And "Anonymous" uploads the following resource in public link page
-      | resource | type   |
-      | PARENT   | folder |
+      | resource   | type   | to             |
+      | PARENT     | folder |                |
+      | simple.pdf | file   | myfolder       |
+      | lorem.txt  | file   | myfolder/child |
     And "Anonymous" moves the following resource using drag-drop
       | resource      | to        |
       | new-lorem.txt | SubFolder |
