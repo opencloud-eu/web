@@ -12,7 +12,6 @@ import type {
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
-import { findLinkRange, requestLinkPanel } from '../helpers/link'
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
@@ -119,33 +118,6 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
         event.preventDefault()
         return true
       }
-    },
-    handleClick(view: Editor['view'], position: number, event: MouseEvent) {
-      const target = event.target
-      if (!(target instanceof Element)) {
-        return false
-      }
-
-      const anchor = target.closest<HTMLAnchorElement>('a')
-      if (!anchor || !view.dom.contains(anchor)) {
-        return false
-      }
-
-      if (!view.editable) {
-        return false
-      }
-
-      event.preventDefault()
-      const currentEditor = unref(editor)
-      if (!currentEditor) {
-        return true
-      }
-
-      const linkRange = findLinkRange(currentEditor, position)
-      if (linkRange) {
-        requestLinkPanel(currentEditor, state, { linkRange, view: 'actions' })
-      }
-      return true
     }
   }
 

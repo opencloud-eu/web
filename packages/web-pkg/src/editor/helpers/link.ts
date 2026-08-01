@@ -5,7 +5,6 @@ import type { TextEditorState } from '../types'
 export interface RequestLinkPanelOptions {
   range?: Range
   linkRange?: Range | null
-  view?: 'actions' | 'edit'
 }
 
 export function findLinkRange(
@@ -45,6 +44,6 @@ export function requestLinkPanel(
     range,
     href: linkRange ? getLinkHref(editor, linkRange) : '',
     text: editor.state.doc.textBetween(range.from, range.to),
-    view: options.view || 'edit'
+    view: 'edit'
   }
 }

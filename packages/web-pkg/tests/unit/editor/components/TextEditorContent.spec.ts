@@ -1,10 +1,14 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick, ref } from 'vue'
-import type { TextEditorInstance } from '../../../../src/editor/types'
+import type { TextEditorInstance, TextEditorLinkPanelRequest } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
 import { EditorActionGroup } from '../../../../src/editor/composables'
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
+
+vi.mock('vue3-gettext', () => ({
+  useGettext: () => ({ $gettext: (text: string) => text })
+}))
 
 vi.mock('@tiptap/vue-3', () => ({
   EditorContent: defineComponent({
@@ -42,6 +46,8 @@ function mountEditorContent({
 } = {}) {
   const setContent = vi.fn()
   const insertContent = vi.fn()
+  const registerPlugin = vi.fn()
+  const unregisterPlugin = vi.fn()
   const run = vi.fn()
 
   const chain = vi.fn(() => ({
@@ -60,6 +66,10 @@ function mountEditorContent({
   const textEditor = {
     editor: ref({
       commands: { setContent, insertContent },
+      registerPlugin,
+      unregisterPlugin,
+      getAttributes: vi.fn(() => ({})),
+      isActive: vi.fn(() => false),
       chain,
       state: {
         doc: {
@@ -77,9 +87,11 @@ function mountEditorContent({
     readonly: ref(false),
     state: {
       sourceMode: ref(sourceMode),
+      linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
       editorZoom: ref(100)
     },
     actionGroups: (): EditorActionGroup[] => [],
+    actions: vi.fn(() => ({})),
     getContent: vi.fn(() => content),
     isEmpty: ref(false),
     isFocused: ref(false),

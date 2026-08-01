@@ -71,57 +71,21 @@ describe('useTextEditor', () => {
   })
 
   describe('links', () => {
-    it('opens the panel and prevents navigation when an existing link is clicked', () => {
+    it('prevents middle-click navigation on links while editing', () => {
       const { result } = createEditor({
         modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
       })
       const editor = result.editor.value!
       const anchor = editor.view.dom.querySelector('a')!
-      const event = new MouseEvent('click', { cancelable: true })
+      const event = new PointerEvent('auxclick', { button: 1, cancelable: true })
       Object.defineProperty(event, 'target', { value: anchor })
       const open = vi.spyOn(window, 'open').mockImplementation(() => null)
 
-      const handled = editor.options.editorProps.handleClick!(editor.view, 2, event)
+      const handled = editor.options.editorProps.handleDOMEvents!.auxclick!(editor.view, event)
 
       expect(handled).toBe(true)
       expect(event.defaultPrevented).toBe(true)
       expect(open).not.toHaveBeenCalled()
-      expect(result.state.linkPanel.value).toMatchObject({
-        href: 'https://opencloud.eu',
-        text: 'OpenCloud',
-        view: 'actions'
-      })
-    })
-
-    it('does not open the link panel when normal text is clicked', () => {
-      const { result } = createEditor({ modelValue: toRef('<p>OpenCloud</p>') })
-      const editor = result.editor.value!
-      const paragraph = editor.view.dom.querySelector('p')!
-      const event = new MouseEvent('click', { cancelable: true })
-      Object.defineProperty(event, 'target', { value: paragraph })
-
-      const handled = editor.options.editorProps.handleClick!(editor.view, 2, event)
-
-      expect(handled).toBe(false)
-      expect(event.defaultPrevented).toBe(false)
-      expect(result.state.linkPanel.value).toBeNull()
-    })
-
-    it('allows native link navigation when readonly', () => {
-      const { result } = createEditor({
-        modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>'),
-        readonly: true
-      })
-      const editor = result.editor.value!
-      const anchor = editor.view.dom.querySelector('a')!
-      const event = new MouseEvent('click', { cancelable: true })
-      Object.defineProperty(event, 'target', { value: anchor })
-
-      const handled = editor.options.editorProps.handleClick!(editor.view, 2, event)
-
-      expect(handled).toBe(false)
-      expect(event.defaultPrevented).toBe(false)
-      expect(result.state.linkPanel.value).toBeNull()
     })
 
     it('prevents auxiliary clicks from opening a link', () => {

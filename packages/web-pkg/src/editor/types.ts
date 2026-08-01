@@ -25,7 +25,7 @@ export interface TextEditorLinkPanelRequest {
   range: Range
   href: string
   text: string
-  view: 'actions' | 'edit'
+  view: 'edit'
 }
 
 export interface TextEditorState {
