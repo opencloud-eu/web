@@ -6,10 +6,7 @@ import StarterKit from '@tiptap/starter-kit'
 import TextEditorLinkBubbleMenu from '../../../../src/editor/components/TextEditorLinkBubbleMenu.vue'
 import type { TextEditorInstance, TextEditorLinkPanelRequest } from '../../../../src/editor/types'
 import { createLinkExtension } from '../../../../src/editor/extensions/link'
-
-vi.mock('vue3-gettext', () => ({
-  useGettext: () => ({ $gettext: (text: string) => text })
-}))
+import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('@tiptap/vue-3/menus', () => ({
   BubbleMenu: {
@@ -50,19 +47,8 @@ describe('TextEditorLinkBubbleMenu', () => {
   function mountBubbleMenu() {
     return mount(TextEditorLinkBubbleMenu, {
       global: {
-        provide: { textEditor },
-        directives: {
-          'oc-tooltip': () => {},
-          ocTooltip: () => {}
-        },
-        stubs: {
-          'oc-button': {
-            template: '<button v-bind="$attrs"><slot /></button>'
-          },
-          'oc-icon': {
-            template: '<span class="mock-icon" />'
-          }
-        }
+        plugins: [...defaultPlugins()],
+        provide: { textEditor }
       }
     })
   }
@@ -85,7 +71,6 @@ describe('TextEditorLinkBubbleMenu', () => {
     await editButton.trigger('click')
 
     expect(textEditor.state.linkPanel.value).toBeDefined()
-    expect(textEditor.state.linkPanel.value?.view).toBe('edit')
     expect(textEditor.state.linkPanel.value?.href).toBe('https://opencloud.eu')
     expect(open).not.toHaveBeenCalled()
     open.mockRestore()

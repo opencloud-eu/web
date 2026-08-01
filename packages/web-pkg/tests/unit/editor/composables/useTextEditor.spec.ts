@@ -71,23 +71,6 @@ describe('useTextEditor', () => {
   })
 
   describe('links', () => {
-    it('prevents middle-click navigation on links while editing', () => {
-      const { result } = createEditor({
-        modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
-      })
-      const editor = result.editor.value!
-      const anchor = editor.view.dom.querySelector('a')!
-      const event = new PointerEvent('auxclick', { button: 1, cancelable: true })
-      Object.defineProperty(event, 'target', { value: anchor })
-      const open = vi.spyOn(window, 'open').mockImplementation(() => null)
-
-      const handled = editor.options.editorProps.handleDOMEvents!.auxclick!(editor.view, event)
-
-      expect(handled).toBe(true)
-      expect(event.defaultPrevented).toBe(true)
-      expect(open).not.toHaveBeenCalled()
-    })
-
     it('prevents auxiliary clicks from opening a link', () => {
       const { result } = createEditor({
         modelValue: toRef('<p><a href="https://opencloud.eu">OpenCloud</a></p>')

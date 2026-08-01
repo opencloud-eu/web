@@ -74,7 +74,9 @@ const shouldShow = ({ editor }: { editor: Editor }) => {
 
 const linkHref = computed(() => {
   const editor = unref(textEditor.editor)
-  if (!editor) return ''
+  if (!editor) {
+    return ''
+  }
 
   const { href } = editor.getAttributes('link')
   return normalizeLinkUrl(href || '')
@@ -82,21 +84,27 @@ const linkHref = computed(() => {
 
 function editLink() {
   const editor = unref(textEditor.editor)
-  if (!editor) return
+  if (!editor) {
+    return
+  }
 
   requestLinkPanel(editor, textEditor.state)
 }
 
 function openLink() {
   const href = unref(linkHref)
-  if (!href) return
+  if (!href) {
+    return
+  }
 
   window.open(href, '_blank', 'noopener,noreferrer')
 }
 
 function removeLink() {
   const editor = unref(textEditor.editor)
-  if (!editor) return
+  if (!editor) {
+    return
+  }
 
   editor.chain().focus().extendMarkRange('link').unsetLink().run()
 }

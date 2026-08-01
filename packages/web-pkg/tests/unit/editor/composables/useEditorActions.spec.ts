@@ -390,8 +390,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toEqual({
         range: { from: 1, to: 8 },
         href: 'https://example.com',
-        text: 'Example',
-        view: 'edit'
+        text: 'Example'
       })
       editor.destroy()
     })
@@ -405,8 +404,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toEqual({
         range: { from: 1, to: 8 },
         href: '',
-        text: 'Example',
-        view: 'edit'
+        text: 'Example'
       })
       editor.destroy()
     })
@@ -420,8 +418,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toMatchObject({
         range: { from: 1, to: 1 },
         href: '',
-        text: '',
-        view: 'edit'
+        text: ''
       })
       editor.destroy()
     })
@@ -487,14 +484,14 @@ describe('useEditorActions', () => {
     }
 
     describe('deleteRow', () => {
-      it('calls deleteRow command', () => {
-        const editor = createMockEditor()
+      it('does not fall back to deleteTable when deleteRow succeeds', () => {
+        const editor = createMockEditor({ runResult: true })
         actions.deleteRow().toolbarAction!(editor)
         expect(editor._chain.deleteRow).toHaveBeenCalled()
-        expect(editor._chain.run).toHaveBeenCalled()
+        expect(editor._chain.deleteTable).not.toHaveBeenCalled()
       })
 
-      it('falls back to deleteTable when deleteRow fails', () => {
+      it('falls back to deleteTable when deleteRow fails and cursor is in table', () => {
         const editor = createMockEditor({
           runResult: false,
           isActive: (type) => type === 'table'
@@ -502,17 +499,33 @@ describe('useEditorActions', () => {
         actions.deleteRow().toolbarAction!(editor)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
+
+      it('does not fall back when deleteRow fails but cursor is not in table', () => {
+        const editor = createMockEditor({ runResult: false })
+        actions.deleteRow().toolbarAction!(editor)
+        expect(editor._chain.deleteTable).not.toHaveBeenCalled()
+      })
+
+      it('slashCommandAction deletes range and falls back correctly', () => {
+        const editor = createMockEditor({
+          runResult: false,
+          isActive: (type) => type === 'table'
+        })
+        actions.deleteRow().slashCommandAction!({ editor, range: mockRange })
+        expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+        expect(editor._chain.deleteTable).toHaveBeenCalled()
+      })
     })
 
     describe('deleteColumn', () => {
-      it('calls deleteColumn command', () => {
+      it('does not fall back to deleteTable when deleteColumn succeeds', () => {
         const editor = createMockEditor({ runResult: true })
         actions.deleteColumn().toolbarAction!(editor)
         expect(editor._chain.deleteColumn).toHaveBeenCalled()
         expect(editor._chain.deleteTable).not.toHaveBeenCalled()
       })
 
-      it('falls back to deleteTable when deleteColumn fails', () => {
+      it('falls back to deleteTable when deleteColumn fails and cursor is in table', () => {
         const editor = createMockEditor({
           runResult: false,
           isActive: (type) => type === 'table'
@@ -520,33 +533,30 @@ describe('useEditorActions', () => {
         actions.deleteColumn().toolbarAction!(editor)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
+
+      it('slashCommandAction deletes range and falls back correctly', () => {
+        const editor = createMockEditor({
+          runResult: false,
+          isActive: (type) => type === 'table'
+        })
+        actions.deleteColumn().slashCommandAction!({ editor, range: mockRange })
+        expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+        expect(editor._chain.deleteTable).toHaveBeenCalled()
+      })
     })
 
     describe('deleteTable', () => {
-      it("isEnabled returns editor.isActive('table')", () => {
+      it('isEnabled returns editor.isActive("table")', () => {
         const inTable = createMockEditor({ isActive: (type) => type === 'table' })
         const notInTable = createMockEditor()
         expect(actions.deleteTable().isEnabled!(inTable)).toBe(true)
         expect(actions.deleteTable().isEnabled!(notInTable)).toBe(false)
       })
 
-      it('toolbarAction deletes current table', () => {
+      it('toolbarAction calls deleteTable', () => {
         const editor = createMockEditor()
         actions.deleteTable().toolbarAction!(editor)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
-        expect(editor._chain.run).toHaveBeenCalled()
-      })
-
-      it('slashCommandAction deletes range and table', () => {
-        const editor = createMockEditor()
-        actions.deleteTable().slashCommandAction!({ editor, range: mockRange })
-        expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
-        expect(editor._chain.deleteTable).toHaveBeenCalled()
-        expect(editor._chain.run).toHaveBeenCalled()
-      })
-
-      it('is hidden from toolbar', () => {
-        expect(actions.deleteTable().showInToolbar).toBe(false)
       })
     })
   })

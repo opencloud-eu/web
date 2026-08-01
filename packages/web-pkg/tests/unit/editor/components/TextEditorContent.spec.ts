@@ -4,11 +4,7 @@ import { defineComponent, nextTick, ref } from 'vue'
 import type { TextEditorInstance, TextEditorLinkPanelRequest } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
 import { EditorActionGroup } from '../../../../src/editor/composables'
-import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
-
-vi.mock('vue3-gettext', () => ({
-  useGettext: () => ({ $gettext: (text: string) => text })
-}))
+import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('@tiptap/vue-3', () => ({
   EditorContent: defineComponent({
@@ -30,7 +26,7 @@ vi.mock('@tiptap/extension-drag-handle-vue-3', () => ({
     props: { editor: { type: Object, required: false } },
     emits: ['node-change'],
     template: '<div class="mock-drag-handle"><slot /></div>'
-  }
+  })
 }))
 
 function mountEditorContent({
@@ -100,13 +96,10 @@ function mountEditorContent({
     destroy: vi.fn()
   } as unknown as TextEditorInstance
 
-  const defaultMocks = defaultComponentMocks()
-
   const wrapper = mount(TextEditorContent, {
     global: {
-      mocks: defaultMocks,
-      provide: { textEditor, defaultMocks },
-      plugins: [...defaultPlugins()]
+      plugins: [...defaultPlugins()],
+      provide: { textEditor }
     }
   })
 
