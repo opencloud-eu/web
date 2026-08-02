@@ -104,6 +104,44 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 - **Location:** `tests/e2e/` (outside of `packages/`)
 - **Prerequisites:** Run `pnpm build` before executing e2e tests. A running OpenCloud backend is also required — use `docker-compose up -d` to start one locally.
 - **Run:** `pnpm test:e2e`
+- **Run a single scenario:** from `tests/e2e`, run `npx bddgen && npx playwright test --project=chromium --grep "<scenario name>"` (add `--headed` to watch it run).
+
+### Playwright Test Agents
+
+This project has [Playwright Test Agents](https://playwright.dev/docs/test-agents) (`planner`, `generator`, `healer`)
+set up for VS Code via `npx playwright init-agents --loop=vscode`. Their definitions live in
+`.github/agents/*.agent.md` and the MCP server config is in `.vscode/mcp.json`.
+
+**Important:** this project uses **Playwright BDD**, not plain `test()` files. The `generator` agent has been
+customized (see `.github/agents/playwright-test-generator.agent.md`) to write `.feature` files under
+`tests/e2e/features/` and step definitions under `tests/e2e/steps/ui/*.ts` — matching the project's existing
+Given/When/Then conventions — instead of standalone `*.spec.ts` files. It also searches existing steps first to
+avoid duplicating step definitions.
+
+Typical workflow for writing a new test:
+
+1. **Plan:** Ask `@playwright-test-planner` to explore a flow and write a plan, e.g.:
+   ```
+   Explore the files app and create a test plan for renaming a shared folder.
+   Seed: features/spaces/project.feature (use its Background)
+   ```
+   This produces `specs/<name>.md`. Since there is no plain `seed.spec.ts`, point the planner at an existing
+   `.feature` file whose `Background` sets up the required state (user creation, login, opened app).
+
+2. **Generate:** Ask `@playwright-test-generator` to turn the plan into tests:
+   ```
+   Generate tests for specs/<name>.md
+   ```
+   It drives the app for real via MCP browser tools, then writes/updates the `.feature` and step files.
+
+3. **Compile:** Run `pnpm bddgen` inside `tests/e2e` — required before running, since `.feature` files are compiled
+   into the actual `testDir` (`.features-gen/`).
+
+4. **Heal:** If tests fail, ask `@playwright-test-healer` to run and automatically repair them (fixes locators,
+   timing issues, etc. by replaying failing steps in the browser).
+
+Regenerate the agent definitions with `npx playwright init-agents --loop=vscode` whenever Playwright is upgraded,
+then re-apply the BDD customization to `playwright-test-generator.agent.md` if it gets overwritten.
 
 ## Documentation
 
