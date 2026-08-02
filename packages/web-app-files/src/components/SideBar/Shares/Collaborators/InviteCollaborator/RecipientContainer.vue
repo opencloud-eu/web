@@ -70,9 +70,9 @@ const getRecipientIcon = (): Recipient['icon'] => {
         label: $gettext('Group')
       }
 
-    case ShareTypes.guest.value:
+    case ShareTypes.mail.value:
       return {
-        name: ShareTypes.guest.icon,
+        name: ShareTypes.mail.icon,
         label: $gettext('Guest user')
       }
 

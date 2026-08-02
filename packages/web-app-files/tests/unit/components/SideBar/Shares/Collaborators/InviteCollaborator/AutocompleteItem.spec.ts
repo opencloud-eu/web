@@ -55,7 +55,7 @@ describe('AutocompleteItem component', () => {
       }
     )
     it('shows share type for guests', () => {
-      const { wrapper } = createWrapper({ shareType: ShareTypes.guest.value })
+      const { wrapper } = createWrapper({ shareType: ShareTypes.mail.value })
       expect(wrapper.find('.files-collaborators-autocomplete-share-type').text()).toEqual('(Guest)')
     })
   })
