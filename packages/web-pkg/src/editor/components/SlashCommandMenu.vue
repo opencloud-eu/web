@@ -99,6 +99,11 @@ const runItem = (item: FlatSlashCommandItem) => {
 }
 
 const onKeyDown = (event: KeyboardEvent): boolean => {
+  if (event.key === 'Escape') {
+    event.stopPropagation()
+    return false
+  }
+
   const itemCount = props.items.length
   if (itemCount === 0) {
     return false
