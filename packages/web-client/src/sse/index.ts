@@ -10,6 +10,8 @@ export enum MESSAGE_TYPE {
   ITEM_TRASHED = 'item-trashed',
   ITEM_RESTORED = 'item-restored',
   ITEM_MOVED = 'item-moved',
+  ITEM_FAVORITE_ADDED = 'item-favorite-added',
+  ITEM_FAVORITE_REMOVED = 'item-favorite-removed',
   FOLDER_CREATED = 'folder-created',
   SPACE_CREATED = 'space-created',
   SPACE_DISABLED = 'space-disabled',

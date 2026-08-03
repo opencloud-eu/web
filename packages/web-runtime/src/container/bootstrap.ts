@@ -70,6 +70,8 @@ import {
   onSSEFolderCreatedEvent,
   onSSEFileTouchedEvent,
   onSSEItemMovedEvent,
+  onSSEItemFavoriteAddedEvent,
+  onSSEItemFavoriteRemovedEvent,
   onSSESpaceMemberAddedEvent,
   onSSESpaceMemberRemovedEvent,
   onSSESpaceShareUpdatedEvent,
@@ -961,6 +963,24 @@ export const registerSSEEventListeners = ({
       msg,
       ...sseEventWrapperOptions,
       method: onSSEItemMovedEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.ITEM_FAVORITE_ADDED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.ITEM_FAVORITE_ADDED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSEItemFavoriteAddedEvent
+    })
+  )
+
+  clientService.sseAuthenticated.addEventListener(MESSAGE_TYPE.ITEM_FAVORITE_REMOVED, (msg) =>
+    sseEventWrapper({
+      topic: MESSAGE_TYPE.ITEM_FAVORITE_REMOVED,
+      msg,
+      ...sseEventWrapperOptions,
+      method: onSSEItemFavoriteRemovedEvent
     })
   )
 
