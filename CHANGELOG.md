@@ -2,6 +2,14 @@
 
 ## [7.3.1](https://github.com/opencloud-eu/web/releases/tag/v7.3.1) - 2026-08-03
 
+### ❤️ Thanks to all contributors! ❤️
+
+@tammi-23
+
+### 🐛 Bug Fixes
+
+- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
 ### 📦️ Dependencies
 
 - chore(deps): update devdependencies (non-major) [[#2999](https://github.com/opencloud-eu/web/pull/2999)]
