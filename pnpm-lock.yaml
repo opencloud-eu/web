@@ -1142,7 +1142,7 @@ importers:
         version: 4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3))
       vitest-mock-extended:
         specifier: ^5.0.0
-        version: 5.1.0(typescript@6.0.3)(vitest@4.1.10)
+        version: 5.1.1(typescript@6.0.3)(vitest@4.1.10)
       vue:
         specifier: ^3.5.10
         version: 3.5.40(typescript@6.0.3)
@@ -3288,6 +3288,7 @@ packages:
   cron-parser@4.9.0:
     resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
     engines: {node: '>=12.0.0'}
+    deprecated: v4 is no longer maintained, upgrade to v5
 
   cropperjs@2.1.1:
     resolution: {integrity: sha512-FDJMarkY+/SepYarPZsvkG2LmI2PElecciMFnvBiBIoKnFYua/scprC5qejCLLyuX2jEqJRS2njbAsHxfjtIXA==}
@@ -5431,6 +5432,12 @@ packages:
 
   vitest-mock-extended@5.1.0:
     resolution: {integrity: sha512-xW28qmo6CbEROzwFRKw+fhLQcwoxBbUHdezDtBJXiHinthfyYZ3pwt4ez4r+XPdimTbXJcFetjzKBJqMw1A6Jw==}
+    peerDependencies:
+      typescript: 3.x || 4.x || 5.x || 6.x || 7.x
+      vitest: '>=4.0.0'
+
+  vitest-mock-extended@5.1.1:
+    resolution: {integrity: sha512-k5Ji2+t4+nsdepXeakCkilyKydtgaULtP0HsjwQGIZsYr5hDTqrwCtC0+Sh0YBKUS7cY/Wxplf7SVjcZstTIMQ==}
     peerDependencies:
       typescript: 3.x || 4.x || 5.x || 6.x || 7.x
       vitest: '>=4.0.0'
@@ -10062,6 +10069,12 @@ snapshots:
       - universal-cookie
 
   vitest-mock-extended@5.1.0(typescript@6.0.3)(vitest@4.1.10):
+    dependencies:
+      ts-essentials: 10.2.1(typescript@6.0.3)
+      typescript: 6.0.3
+      vitest: 4.1.10(@types/node@25.9.5)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(vite@8.2.0(@types/node@25.9.5)(jiti@2.7.0)(sass@1.102.0)(yaml@2.9.0))
+
+  vitest-mock-extended@5.1.1(typescript@6.0.3)(vitest@4.1.10):
     dependencies:
       ts-essentials: 10.2.1(typescript@6.0.3)
       typescript: 6.0.3
