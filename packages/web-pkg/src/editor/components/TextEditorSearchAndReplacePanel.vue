@@ -119,12 +119,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/core'
 import { OcButton, OcIcon, OcSwitch, OcTextInput } from '@opencloud-eu/design-system/components'
 
-const props = defineProps<{
+const {
+  editor,
+  closeMenu,
+  searchSearchTerm,
+  searchReplaceTerm,
+  searchCaseSensitive,
+  searchWholeWord
+} = defineProps<{
   editor: Editor
   closeMenu: () => void
   searchSearchTerm: string
@@ -141,22 +148,22 @@ const emit = defineEmits<{
 }>()
 
 const searchTerm = computed({
-  get: () => props.searchSearchTerm,
+  get: () => searchSearchTerm,
   set: (value) => emit('update:searchSearchTerm', value)
 })
 
 const replaceTerm = computed({
-  get: () => props.searchReplaceTerm,
+  get: () => searchReplaceTerm,
   set: (value) => emit('update:searchReplaceTerm', value)
 })
 
 const caseSensitive = computed({
-  get: () => props.searchCaseSensitive,
+  get: () => searchCaseSensitive,
   set: (value) => emit('update:searchCaseSensitive', value)
 })
 
 const wholeWord = computed({
-  get: () => props.searchWholeWord,
+  get: () => searchWholeWord,
   set: (value) => emit('update:searchWholeWord', value)
 })
 
@@ -166,23 +173,59 @@ const resultCount = ref(0)
 const currentResultPosition = ref(0)
 const searchInputRef = ref<InstanceType<typeof OcTextInput>>()
 
-const updateResultState = () => {
-  const storage = props.editor.storage.findAndReplace
-  const results = storage?.results || []
+const scrollToCurrentResult = () => {
+  const storage = editor.storage.findAndReplace
   const currentIndex = storage?.currentIndex
-  resultCount.value = results.length
-  currentResultPosition.value = currentIndex === null || currentIndex < 0 ? 0 : currentIndex + 1
+  const results = storage?.results || []
+
+  if (currentIndex !== null && currentIndex >= 0 && results[currentIndex]) {
+    const result = results[currentIndex]
+    const { view } = editor
+    const { from } = result
+
+    // Get DOM node and scroll it into view
+    if (!view?.domAtPos) return
+
+    const domAtPos = view.domAtPos(from)
+    if (domAtPos.node) {
+      const element =
+        domAtPos.node.nodeType === Node.ELEMENT_NODE
+          ? (domAtPos.node as Element)
+          : domAtPos.node.parentElement
+
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
 }
 
-const hasResults = computed(() => resultCount.value > 0)
-const resultPositionLabel = computed(() => `${currentResultPosition.value} / ${resultCount.value}`)
-const canReplace = computed(() => hasResults.value && searchTerm.value.length > 0)
-const canReplaceAll = computed(() => hasResults.value && searchTerm.value.length > 0)
+const updateResultState = () => {
+  const storage = editor.storage.findAndReplace
+  const results = storage?.results || []
+  const currentIndex = storage?.currentIndex
+  const newCount = results.length
+  const newPosition = currentIndex === null || currentIndex < 0 ? 0 : currentIndex + 1
+
+  // Only scroll if the position actually changed
+  const positionChanged = newPosition !== unref(currentResultPosition)
+
+  resultCount.value = newCount
+  currentResultPosition.value = newPosition
+
+  if (positionChanged && newPosition > 0) {
+    scrollToCurrentResult()
+  }
+}
+
+const hasResults = computed(() => unref(resultCount) > 0)
+const resultPositionLabel = computed(
+  () => `${unref(currentResultPosition)} / ${unref(resultCount)}`
+)
+const canReplace = computed(() => unref(hasResults) && unref(searchTerm).length > 0)
+const canReplaceAll = computed(() => unref(hasResults) && unref(searchTerm).length > 0)
 const showReplace = computed(() => true)
 
 const goToNextResult = () => {
-  props.editor.commands.goToNextResult()
-  updateResultState()
+  editor.commands.goToNextResult()
 }
 
 const setCaseSensitive = (value: boolean) => {
@@ -194,68 +237,60 @@ const setWholeWord = (value: boolean) => {
 }
 
 const goToPreviousResult = () => {
-  props.editor.commands.goToPreviousResult()
-  updateResultState()
+  editor.commands.goToPreviousResult()
 }
 
 const replaceCurrent = () => {
-  props.editor.commands.replace()
-  updateResultState()
+  editor.commands.replace()
 }
 
 const replaceAll = () => {
-  props.editor.commands.replaceAll()
-  updateResultState()
+  editor.commands.replaceAll()
 }
 
 const clearActiveSearch = () => {
-  props.editor.commands.clearSearch()
-  updateResultState()
+  editor.commands.clearSearch()
 }
 
 const closePanel = () => {
   clearActiveSearch()
-  props.closeMenu()
+  closeMenu()
 }
 
 watch(searchTerm, (value) => {
-  props.editor.commands.setSearchTerm(value)
-  updateResultState()
+  editor.commands.setSearchTerm(value)
 })
 
 watch(replaceTerm, (value) => {
-  props.editor.commands.setReplaceTerm(value)
-  updateResultState()
+  editor.commands.setReplaceTerm(value)
 })
 
 watch(caseSensitive, (value) => {
-  props.editor.commands.setCaseSensitive(value)
-  updateResultState()
+  editor.commands.setCaseSensitive(value)
 })
 
 watch(wholeWord, (value) => {
-  props.editor.commands.setWholeWord(value)
-  updateResultState()
+  editor.commands.setWholeWord(value)
 })
 
 onMounted(() => {
   // Re-apply search values and trigger a fresh search each time the panel opens.
-  props.editor.commands.setReplaceTerm(replaceTerm.value)
-  props.editor.commands.setCaseSensitive(caseSensitive.value)
-  props.editor.commands.setWholeWord(wholeWord.value)
-  props.editor.commands.setSearchTerm(searchTerm.value)
+  editor.commands.setReplaceTerm(unref(replaceTerm))
+  editor.commands.setCaseSensitive(unref(caseSensitive))
+  editor.commands.setWholeWord(unref(wholeWord))
+  editor.commands.setSearchTerm(unref(searchTerm))
 
-  props.editor.on('transaction', updateResultState)
+  editor.on('transaction', updateResultState)
   updateResultState()
 
   // Focus search input when panel opens
-  searchInputRef.value?.focus()
+  unref(searchInputRef)?.focus()
 })
 
 onBeforeUnmount(() => {
-  if (props.editor?.isDestroyed === false) {
+  if (editor?.isDestroyed === false) {
     clearActiveSearch()
-    props.editor.off('transaction', updateResultState)
+    editor.off('transaction', updateResultState)
   }
 })
 </script>
