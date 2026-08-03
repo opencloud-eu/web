@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@tammi-23
+@tammi-23, @v-scharf
+
+### ✅ Tests
+
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 🐛 Bug Fixes
 
