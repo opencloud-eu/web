@@ -59,6 +59,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.10 [[#3000](https://github.com/opencloud-eu/web/pull/3000)]
 - chore(deps): update devdependencies (non-major) [[#2990](https://github.com/opencloud-eu/web/pull/2990)]
 - chore(deps): update node.js to v24.18.1 [[#2976](https://github.com/opencloud-eu/web/pull/2976)]
 - chore(deps): update dependency postcss to v8.5.25 [[#2980](https://github.com/opencloud-eu/web/pull/2980)]
