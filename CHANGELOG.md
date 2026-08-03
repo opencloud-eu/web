@@ -1,5 +1,114 @@
 # Changelog
 
+## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-08-03
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @Svanvith, @cheneyveron, @dschmidt, @kost, @tammi-23, @tbsbdr, @v-scharf
+
+### 🐛 Bug Fixes
+
+- Fix pagination and items-per-page behavior in Spaces and Trash overview [[#3007](https://github.com/opencloud-eu/web/pull/3007)]
+- fix: loading trash bin overview with lots of spaces [[#2986](https://github.com/opencloud-eu/web/pull/2986)]
+- fix: use Inter as the default font [[#2988](https://github.com/opencloud-eu/web/pull/2988)]
+- fix: reset custom props not defined by the active theme [[#2972](https://github.com/opencloud-eu/web/pull/2972)]
+- fix: retry silent token renewal before logout on auth error [[#2951](https://github.com/opencloud-eu/web/pull/2951)]
+- fix: loading user avatars won't get cancelled when changing route [[#2962](https://github.com/opencloud-eu/web/pull/2962)]
+- fix: resolve hardcoded absolute image paths under a subpath deployment [[#2956](https://github.com/opencloud-eu/web/pull/2956)]
+- fix(pdf-viewer): harden rendering of PDFs [[#2933](https://github.com/opencloud-eu/web/pull/2933)]
+- fix(tiptap): prevent images from stretching while increasing size [[#2927](https://github.com/opencloud-eu/web/pull/2927)]
+- fix: batch action labels with limited screen size [[#2931](https://github.com/opencloud-eu/web/pull/2931)]
+- fix: admin settings icon color in dark mode [[#2911](https://github.com/opencloud-eu/web/pull/2911)]
+- fix: topbar left extension point placement [[#2901](https://github.com/opencloud-eu/web/pull/2901)]
+- fix: bring back space image submenu grouping [[#2880](https://github.com/opencloud-eu/web/pull/2880)]
+- fix: app top bar resource name colors [[#2886](https://github.com/opencloud-eu/web/pull/2886)]
+- fix: add space after password label when copying [[#2881](https://github.com/opencloud-eu/web/pull/2881)]
+- Vault status indicator icon [[#2873](https://github.com/opencloud-eu/web/pull/2873)]
+- fix (vault): cancel button width [[#2872](https://github.com/opencloud-eu/web/pull/2872)]
+
+### 📈 Enhancement
+
+- feat: rework public and permanent link resolving [[#2981](https://github.com/opencloud-eu/web/pull/2981)]
+- feat (tiptap): plus menu [[#2973](https://github.com/opencloud-eu/web/pull/2973)]
+- feat: add empty extensions state icon [[#2991](https://github.com/opencloud-eu/web/pull/2991)]
+- feat: add announcement banner [[#2967](https://github.com/opencloud-eu/web/pull/2967)]
+- perf: use pagination in sidebar user lists [[#2965](https://github.com/opencloud-eu/web/pull/2965)]
+- feat: tiptap - Insert and edit Links [[#2930](https://github.com/opencloud-eu/web/pull/2930)]
+- feat: expose the active theme as html[data-theme] [[#2971](https://github.com/opencloud-eu/web/pull/2971)]
+- perf: improve user and groups list loading in admin-settings [[#2963](https://github.com/opencloud-eu/web/pull/2963)]
+- perf: improve render times with lots of paginated items [[#2958](https://github.com/opencloud-eu/web/pull/2958)]
+- feat (tiptap): move blocks [[#2950](https://github.com/opencloud-eu/web/pull/2950)]
+- perf: improve folder loading times in tiles view [[#2945](https://github.com/opencloud-eu/web/pull/2945)]
+- perf: improve file selection in table view [[#2940](https://github.com/opencloud-eu/web/pull/2940)]
+- perf: improve file selection in tiles view [[#2939](https://github.com/opencloud-eu/web/pull/2939)]
+- feat(tiptap): add Tiptap toolbar support [[#2793](https://github.com/opencloud-eu/web/pull/2793)]
+- feat(tiptap): add image drag and drop [[#2926](https://github.com/opencloud-eu/web/pull/2926)]
+- feat(tiptap): add image resizing [[#2924](https://github.com/opencloud-eu/web/pull/2924)]
+- feat(tiptap): add zoom feature [[#2922](https://github.com/opencloud-eu/web/pull/2922)]
+- feat(tiptap): add emoji menu [[#2923](https://github.com/opencloud-eu/web/pull/2923)]
+- feat(admin-settings): enable name sorting for extension overview [[#2907](https://github.com/opencloud-eu/web/pull/2907)]
+- feat(admin-settings): extension overview [[#2889](https://github.com/opencloud-eu/web/pull/2889)]
+- feat(extension-sdk): inject package.json metadata into manifest.json [[#2894](https://github.com/opencloud-eu/web/pull/2894)]
+- feat: Support registration for submenus on context menu for plugins [[#2830](https://github.com/opencloud-eu/web/pull/2830)]
+
+### 📚 Documentation
+
+- ci: sync e2e/README.md to docs [[#2938](https://github.com/opencloud-eu/web/pull/2938)]
+- docs(e2e): add README how to run e2e tests [[#2884](https://github.com/opencloud-eu/web/pull/2884)]
+
+### ✅ Tests
+
+- e2e-fix: a11y flaky in webkit [[#2913](https://github.com/opencloud-eu/web/pull/2913)]
+- add settings for e2e tests in vscode [[#2870](https://github.com/opencloud-eu/web/pull/2870)]
+
+### 📦️ Dependencies
+
+- chore(deps): update traefik docker tag to v3.7.10 [[#3000](https://github.com/opencloud-eu/web/pull/3000)]
+- chore(deps): update devdependencies (non-major) [[#2990](https://github.com/opencloud-eu/web/pull/2990)]
+- chore(deps): update node.js to v24.18.1 [[#2976](https://github.com/opencloud-eu/web/pull/2976)]
+- chore(deps): update dependency postcss to v8.5.25 [[#2980](https://github.com/opencloud-eu/web/pull/2980)]
+- chore(deps): update dependency @vueuse/core to v14.4.0 [[#2974](https://github.com/opencloud-eu/web/pull/2974)]
+- chore(deps): update pnpm to v11.18.0 - autoclosed [[#2978](https://github.com/opencloud-eu/web/pull/2978)]
+- fix(deps): update dependency @sentry/vue to v10.69.0 [[#2979](https://github.com/opencloud-eu/web/pull/2979)]
+- chore(deps): update dependency postcss to v8.5.24 [[#2968](https://github.com/opencloud-eu/web/pull/2968)]
+- chore(deps): update tiptap monorepo to v3.29.2 [[#2969](https://github.com/opencloud-eu/web/pull/2969)]
+- chore(deps): update tiptap monorepo to v3.29.1 [[#2960](https://github.com/opencloud-eu/web/pull/2960)]
+- chore(deps): update devdependencies (non-major) [[#2952](https://github.com/opencloud-eu/web/pull/2952)]
+- chore(deps): update collabora/code docker tag to v26.04.2.4.1 [[#2920](https://github.com/opencloud-eu/web/pull/2920)]
+- fix(deps): update dependency @sentry/vue to v10.68.0 [[#2953](https://github.com/opencloud-eu/web/pull/2953)]
+- chore(deps): update tiptap monorepo to v3.29.0 - autoclosed [[#2954](https://github.com/opencloud-eu/web/pull/2954)]
+- chore(deps): update traefik docker tag to v3.7.9 [[#2955](https://github.com/opencloud-eu/web/pull/2955)]
+- chore(deps): update pnpm to v11.17.0 [[#2948](https://github.com/opencloud-eu/web/pull/2948)]
+- chore(deps): update pnpm to v11.17.0 [[#2947](https://github.com/opencloud-eu/web/pull/2947)]
+- chore(deps): update dependency sass to v1.101.6 [[#2946](https://github.com/opencloud-eu/web/pull/2946)]
+- chore(deps): update devdependencies (non-major) [[#2943](https://github.com/opencloud-eu/web/pull/2943)]
+- chore(deps): update dependency p-queue to v9.3.3 [[#2942](https://github.com/opencloud-eu/web/pull/2942)]
+- chore(deps): update dependency postcss to v8.5.22 [[#2941](https://github.com/opencloud-eu/web/pull/2941)]
+- chore(deps): update typescript-eslint monorepo to v8.65.0 [[#2932](https://github.com/opencloud-eu/web/pull/2932)]
+- chore(deps): update dependency eslint-plugin-vue to v10.10.0 [[#2928](https://github.com/opencloud-eu/web/pull/2928)]
+- chore(deps): update devdependencies (non-major) [[#2919](https://github.com/opencloud-eu/web/pull/2919)]
+- chore(deps): update pnpm to v11.15.1 [[#2917](https://github.com/opencloud-eu/web/pull/2917)]
+- fix(deps): update dependency @sentry/vue to v10.67.0 [[#2929](https://github.com/opencloud-eu/web/pull/2929)]
+- chore(deps): update dependency p-queue to v9.3.2 [[#2934](https://github.com/opencloud-eu/web/pull/2934)]
+- fix(deps): update dependency @sentry/vue to v10.66.0 [[#2912](https://github.com/opencloud-eu/web/pull/2912)]
+- chore(deps): update dependency vite to v8.1.5 [[#2905](https://github.com/opencloud-eu/web/pull/2905)]
+- chore(deps): update tiptap monorepo to v3.28.0 [[#2903](https://github.com/opencloud-eu/web/pull/2903)]
+- chore(deps): update dependency @tailwindcss/vite to v4.3.3 [[#2908](https://github.com/opencloud-eu/web/pull/2908)]
+- chore(deps): update vue monorepo to v3.5.40 [[#2910](https://github.com/opencloud-eu/web/pull/2910)]
+- chore(deps): update traefik docker tag to v3.7.8 [[#2899](https://github.com/opencloud-eu/web/pull/2899)]
+- chore(deps): update dependency fast-xml-parser to v5.10.1 - autoclosed [[#2904](https://github.com/opencloud-eu/web/pull/2904)]
+- chore(deps): update pnpm to v11.13.1 [[#2902](https://github.com/opencloud-eu/web/pull/2902)]
+- fix(deps): update dependency @pinia/testing to v2 [[#2890](https://github.com/opencloud-eu/web/pull/2890)]
+- fix(deps): update dependency pinia to v4 [[#2891](https://github.com/opencloud-eu/web/pull/2891)]
+- fix(deps): update dependency vue-router to v5.2.0 [[#2896](https://github.com/opencloud-eu/web/pull/2896)]
+- chore(deps): update devdependencies (non-major) [[#2874](https://github.com/opencloud-eu/web/pull/2874)]
+- chore(deps): update tiptap monorepo to v3.27.4 [[#2876](https://github.com/opencloud-eu/web/pull/2876)]
+- fix(deps): update dependency fuse.js to v7.5.0 [[#2877](https://github.com/opencloud-eu/web/pull/2877)]
+- chore(deps): update typescript-eslint monorepo to v8.64.0 - autoclosed [[#2878](https://github.com/opencloud-eu/web/pull/2878)]
+- fix(deps): update dependency vitest-mock-extended to v5 [[#2879](https://github.com/opencloud-eu/web/pull/2879)]
+- chore(deps): update pnpm to v11.13.0 [[#2883](https://github.com/opencloud-eu/web/pull/2883)]
+- chore(deps): update dependency postcss to v8.5.18 [[#2869](https://github.com/opencloud-eu/web/pull/2869)]
+
 ## [7.2.0](https://github.com/opencloud-eu/web/releases/tag/v7.2.0) - 2026-07-13
 
 ### ❤️ Thanks to all contributors! ❤️
