@@ -1,4 +1,4 @@
-import { markRaw, unref } from 'vue'
+import { markRaw, ref, unref } from 'vue'
 import type { Component } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
 import type {} from '@tiptap/extension-text-align'
@@ -8,6 +8,7 @@ import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
 import { useModals, useThemeStore } from '../../composables'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
+import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
 
 export interface EditorAction {
   // Core identification
@@ -63,6 +64,12 @@ export function useEditorActions(state: TextEditorState) {
   const { dispatchModal } = useModals()
   const themeStore = useThemeStore()
   const { currentTheme } = storeToRefs(themeStore)
+
+  //Search
+  const searchSearchTerm = ref('')
+  const searchReplaceTerm = ref('')
+  const searchCaseSensitive = ref(false)
+  const searchWholeWord = ref(false)
 
   const zoomStep = 10
   const zoomMin = 50
@@ -598,6 +605,32 @@ export function useEditorActions(state: TextEditorState) {
     isActive: () => false
   })
 
+  const menuSearchAndReplace = (): EditorAction => ({
+    id: 'menu-search-and-replace',
+    title: $gettext('Search and replace'),
+    icon: 'seo',
+    iconFillType: 'line',
+    showInSlashCommands: false,
+    menuCloseOnClick: false,
+    menuComponent: markRaw(TextEditorSearchAndReplacePanel),
+    menuComponentAttrs: (editor, closeMenu) => ({
+      editor,
+      closeMenu,
+      searchSearchTerm: searchSearchTerm.value,
+      'onUpdate:searchSearchTerm': (val: string) => (searchSearchTerm.value = val),
+      searchReplaceTerm: searchReplaceTerm.value,
+      'onUpdate:searchReplaceTerm': (val: string) => (searchReplaceTerm.value = val),
+      searchCaseSensitive: searchCaseSensitive.value,
+      'onUpdate:searchCaseSensitive': (val: boolean) => (searchCaseSensitive.value = val),
+      searchWholeWord: searchWholeWord.value,
+      'onUpdate:searchWholeWord': (val: boolean) => (searchWholeWord.value = val)
+    }),
+    isActive: (editor) => {
+      const searchTerm = editor.storage.findAndReplace?.searchTerm || ''
+      return searchTerm.length > 0
+    }
+  })
+
   const maxImageSizeBytes = 5 * 1024 * 1024 // 5 MB
 
   const insertImageFromFile = (editor: Editor) => {
@@ -820,6 +853,7 @@ export function useEditorActions(state: TextEditorState) {
     link,
     image,
     menuEmoji,
+    menuSearchAndReplace,
     imageUrl,
     imageUpload,
     horizontalRule,

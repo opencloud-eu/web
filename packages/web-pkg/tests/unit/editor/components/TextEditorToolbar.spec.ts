@@ -3,47 +3,72 @@ import { defineComponent, ref } from 'vue'
 import { vi } from 'vitest'
 import TextEditorToolbar from '../../../../src/editor/components/TextEditorToolbar.vue'
 import type { TextEditorInstance } from '../../../../src/editor/types'
+import type { EditorAction } from '../../../../src/editor/composables'
 
-function mountToolbar(sourceMode = false, contentType: 'markdown' | 'html' = 'markdown') {
+function mountToolbar(
+  sourceMode = false,
+  contentType: 'markdown' | 'html' = 'markdown',
+  includeSearchAction = false
+) {
+  const showSpy = vi.fn()
+
+  const actions: EditorAction[] = [
+    {
+      id: 'source-mode',
+      title: 'Show source',
+      icon: 'code-s-slash',
+      toolbarAction: vi.fn()
+    },
+    {
+      id: 'bold',
+      title: 'Bold',
+      icon: 'bold',
+      toolbarAction: vi.fn()
+    }
+  ]
+
+  if (includeSearchAction) {
+    actions.push({
+      id: 'menu-search-and-replace',
+      title: 'Search and replace',
+      icon: 'seo',
+      menuComponent: defineComponent({ template: '<div>search</div>' })
+    })
+  }
+
   const textEditor = {
     editor: ref({}),
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
     state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
+    isFocused: ref(true),
     actionGroups: () => [
       {
         id: 'view-options',
         title: 'View options',
-        actions: [
-          {
-            id: 'source-mode',
-            title: 'Show source',
-            icon: 'code-s-slash',
-            toolbarAction: vi.fn()
-          },
-          {
-            id: 'bold',
-            title: 'Bold',
-            icon: 'bold',
-            toolbarAction: vi.fn()
-          }
-        ]
+        actions
       }
     ],
     getContent: vi.fn(() => ''),
     isEmpty: ref(false),
-    isFocused: ref(false),
     focus: vi.fn(),
     blur: vi.fn(),
     destroy: vi.fn()
   } as unknown as TextEditorInstance
 
   const wrapper = mount(TextEditorToolbar, {
+    attachTo: document.body,
     global: {
       provide: { textEditor },
       directives: { 'oc-tooltip': () => {}, ocTooltip: () => {} },
       stubs: {
-        'oc-drop': { template: '<div><slot /></div>' },
+        'oc-drop': defineComponent({
+          setup(_, { expose }) {
+            expose({ show: showSpy, hide: vi.fn() })
+            return {}
+          },
+          template: '<div><slot /></div>'
+        }),
         'oc-button': defineComponent({
           inheritAttrs: false,
           template: '<button v-bind="$attrs"><slot /></button>'
@@ -53,7 +78,7 @@ function mountToolbar(sourceMode = false, contentType: 'markdown' | 'html' = 'ma
     }
   })
 
-  return { wrapper, textEditor }
+  return { wrapper, textEditor, showSpy }
 }
 
 describe('TextEditorToolbar', () => {
@@ -64,6 +89,7 @@ describe('TextEditorToolbar', () => {
     expect(buttons).toHaveLength(2)
     expect(buttons[0].attributes('disabled')).toBeUndefined()
     expect(buttons[1].attributes('disabled')).toBeUndefined()
+    wrapper.unmount()
   })
 
   it('disables all toolbar actions except source toggle in source mode', () => {
@@ -73,6 +99,7 @@ describe('TextEditorToolbar', () => {
     expect(buttons).toHaveLength(2)
     expect(buttons[0].attributes('disabled')).toBeUndefined()
     expect(buttons[1].attributes('disabled')).toBeDefined()
+    wrapper.unmount()
   })
 
   it('disables all toolbar actions except source toggle in html source mode', () => {
@@ -82,5 +109,39 @@ describe('TextEditorToolbar', () => {
     expect(buttons).toHaveLength(2)
     expect(buttons[0].attributes('disabled')).toBeUndefined()
     expect(buttons[1].attributes('disabled')).toBeDefined()
+    wrapper.unmount()
+  })
+
+  it('opens search menu on Ctrl+F and prevents browser find', async () => {
+    const { wrapper, showSpy } = mountToolbar(false, 'markdown', true)
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'f',
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true
+    })
+    document.dispatchEvent(event)
+
+    await wrapper.vm.$nextTick()
+    expect(event.defaultPrevented).toBeTruthy()
+    expect(showSpy).toHaveBeenCalledOnce()
+    wrapper.unmount()
+  })
+
+  it('opens search menu on Cmd+F', async () => {
+    const { wrapper, showSpy } = mountToolbar(false, 'markdown', true)
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'f',
+      metaKey: true,
+      bubbles: true,
+      cancelable: true
+    })
+    document.dispatchEvent(event)
+
+    await wrapper.vm.$nextTick()
+    expect(showSpy).toHaveBeenCalledOnce()
+    wrapper.unmount()
   })
 })

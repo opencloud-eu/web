@@ -33,6 +33,7 @@ describe('useStrategyMarkdown', () => {
       expect(names).toContain('taskList')
       expect(names).toContain('image')
       expect(names).toContain('fileHandler')
+      expect(names).toContain('findAndReplace')
       expect(names).not.toContain('underline')
 
       const imageExtension = extensions.find((e) => e.name === 'image') as any
@@ -117,6 +118,7 @@ describe('useStrategyMarkdown', () => {
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
       const zoomGroupIds = groups.find((g) => g.id === 'zoom')?.actions.map((a) => a.id) || []
 
+      expect(historyIds).toEqual(['undo', 'redo', 'menu-search-and-replace'])
       expect(historyIds).not.toContain('menu-zoom')
       expect(sourceGroupIds).toEqual(['source-mode'])
       expect(zoomGroupIds).toEqual(['menu-zoom'])

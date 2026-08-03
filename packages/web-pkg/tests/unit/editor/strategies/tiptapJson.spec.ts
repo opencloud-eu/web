@@ -69,7 +69,7 @@ describe('useStrategyTiptapJson', () => {
       const viewOptionIds =
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
 
-      expect(historyIds).toEqual(['undo', 'redo'])
+      expect(historyIds).toEqual(['undo', 'redo', 'menu-search-and-replace'])
       expect(viewOptionIds).toContain('menu-zoom')
       expect(groups.at(-1)?.id).toBe('view-options')
     })

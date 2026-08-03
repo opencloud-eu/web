@@ -33,6 +33,7 @@ describe('useStrategyHtml', () => {
       expect(names).toContain('link')
       expect(names).toContain('table')
       expect(names).toContain('taskList')
+      expect(names).toContain('findAndReplace')
     })
 
     it('configures safe automatic links without opening them on click', () => {
@@ -89,6 +90,7 @@ describe('useStrategyHtml', () => {
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
       const zoomGroupIds = groups.find((g) => g.id === 'zoom')?.actions.map((a) => a.id) || []
 
+      expect(historyIds).toEqual(['undo', 'redo', 'menu-search-and-replace'])
       expect(historyIds).not.toContain('menu-zoom')
       expect(sourceGroupIds).toEqual(['source-mode'])
       expect(zoomGroupIds).toEqual(['menu-zoom'])

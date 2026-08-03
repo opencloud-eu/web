@@ -4,6 +4,7 @@ import type { Extension, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
 import Image from '@tiptap/extension-image'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -73,7 +74,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TaskList,
       TaskItem.configure({ nested: true }),
       markdownImage,
-      imageFileHandlerExtension()
+      imageFileHandlerExtension(),
+      FindAndReplace
     ]
   }
 
@@ -100,6 +102,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     link,
     menuEmoji,
     image,
+    menuSearchAndReplace,
     imageUrl,
     imageUpload,
     createTable,
@@ -114,9 +117,9 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'view-options',
@@ -166,9 +169,9 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         ]
       },
       {
-        id: 'zoom',
-        title: $gettext('Zoom'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

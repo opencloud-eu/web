@@ -124,11 +124,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -160,11 +171,33 @@ const toolbarGroups = computed<EditorActionGroup[]>(() => {
 })
 
 const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+const searchAndReplaceActionId = 'menu-search-and-replace'
 
 function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
   if (el) {
     dropRefs.value[itemId] = el
   }
+}
+
+const findActionById = (actionId: string) => {
+  return unref(toolbarGroups)
+    .flatMap((group) => group.actions)
+    .find((action) => action.id === actionId)
+}
+
+const openSearchAndReplaceMenu = async () => {
+  const action = findActionById(searchAndReplaceActionId)
+  if (!action || !isItemEnabled(action) || !unref(textEditor.isFocused)) {
+    return
+  }
+
+  const dropRef = dropRefs.value[searchAndReplaceActionId]
+  if (!dropRef?.show) {
+    return
+  }
+
+  const triggerEl = document.getElementById(`toolbar-dropdown-trigger-${searchAndReplaceActionId}`)
+  await dropRef.show({ anchorElement: triggerEl ?? undefined })
 }
 
 const updateScrollState = () => {
@@ -252,6 +285,17 @@ const getMenuComponentAttrs = (item: EditorAction) => {
 
   return item.menuComponentAttrs(editor, closeMenu)
 }
+
+const { bindKeyAction, removeKeyAction } = useKeyboardActions({
+  skipDisabledKeyBindingsCheck: true
+})
+const shortcutId = bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.F }, () => {
+  openSearchAndReplaceMenu()
+})
+
+onBeforeUnmount(() => {
+  removeKeyAction(shortcutId)
+})
 </script>
 
 <style scoped>
