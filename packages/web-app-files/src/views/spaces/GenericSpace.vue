@@ -131,10 +131,8 @@ import {
   useBreadcrumbsFromPath,
   useClientService,
   useDocumentTitle,
-  useOpenWithDefaultApp,
   useKeyboardActions,
   useRoute,
-  useRouteQuery,
   FolderLoaderOptions,
   useClipboardStore,
   useService,
@@ -173,11 +171,9 @@ const userStore = useUserStore()
 const { $gettext, $ngettext } = useGettext()
 const { showMessage } = useMessages()
 const extensionRegistry = useExtensionRegistry()
-const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
 const clientService = useClientService()
 const { startWorker } = usePasteWorker()
 const { breadcrumbsFromPath, concatBreadcrumbs } = useBreadcrumbsFromPath()
-const { openWithDefaultApp } = useOpenWithDefaultApp()
 const { triggerDefaultAction } = useFileActions()
 const clipboardStore = useClipboardStore()
 const uppyService = useService<UppyService>('$uppyService')
@@ -392,13 +388,6 @@ const performLoaderTask = async (sameRoute: boolean, path?: string, fileId?: str
 
   refreshFileListHeaderPosition()
   focusAndAnnounceBreadcrumb(sameRoute)
-
-  if (unref(openWithDefaultAppQuery) === 'true') {
-    openWithDefaultApp({
-      space: unref(space),
-      resource: unref(selectedResources)[0]
-    })
-  }
 }
 
 const readmeFile = computed(() => {

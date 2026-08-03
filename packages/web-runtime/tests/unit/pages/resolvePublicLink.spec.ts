@@ -2,7 +2,7 @@ import ResolvePublicLink from '../../../src/pages/resolvePublicLink.vue'
 import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mockDeep } from 'vitest-mock-extended'
 import { CapabilityStore, ClientService, useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
-import { DavHttpError, SpaceResource } from '@opencloud-eu/web-client'
+import { DavHttpError, PublicSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { authService } from '../../../src/services/auth'
 import { ref } from 'vue'
 import { DavErrorCode } from '@opencloud-eu/web-client/webdav'
@@ -69,6 +69,47 @@ describe('resolvePublicLink', () => {
       })
     })
   })
+  describe('link target', () => {
+    it('resolves to the file list for a link pointing to a folder', async () => {
+      const { mocks } = getWrapper({ redirectUrl: '' })
+      await flushPromises()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'files-public-link',
+          params: expect.objectContaining({ driveAliasAndItem: 'public/token' })
+        })
+      )
+    })
+    it('resolves the file resource for a link pointing to a single file', async () => {
+      const file = {
+        id: 'file-id',
+        fileId: 'file-id',
+        parentFolderId: 'parent-id',
+        isFolder: false,
+        type: 'file',
+        path: '/file.txt',
+        canDownload: () => false,
+        canBeDeleted: () => false,
+        canRestore: () => false
+      } as Resource
+      // a link to a single file has no file id of its own
+      const { mocks } = getWrapper({
+        redirectUrl: '',
+        spaceFileId: 'token',
+        children: [file]
+      })
+      await flushPromises()
+
+      expect(mocks.$clientService.webdav.listFiles).toHaveBeenCalled()
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'files-public-link',
+          query: expect.objectContaining({ scrollTo: 'file-id' })
+        })
+      )
+    })
+  })
   describe('error message', () => {
     it('should display an error message if the space cannot be resolved', async () => {
       console.error = vi.fn()
@@ -97,13 +138,27 @@ describe('resolvePublicLink', () => {
 
 function getWrapper({
   passwordRequired = false,
-  getFileInfoErrorStatusCode = null
+  getFileInfoErrorStatusCode = null,
+  redirectUrl = 'redirectUrl',
+  spaceFileId = 'folder-id',
+  children = []
 }: {
   passwordRequired?: boolean
   getFileInfoErrorStatusCode?: number
+  redirectUrl?: string
+  spaceFileId?: string
+  children?: Resource[]
 } = {}) {
   const $clientService = mockDeep<ClientService>()
-  const spaceResource = mockDeep<SpaceResource>({ driveType: 'public' })
+  const spaceResource = mockDeep<PublicSpaceResource>({
+    id: 'token',
+    fileId: spaceFileId,
+    driveType: 'public',
+    driveAlias: 'public/token',
+    isFolder: true,
+    getDriveAliasAndItem: ({ path }: Resource) =>
+      urlJoin('public/token', path, { leadingSlash: false })
+  })
 
   // loadPublicSpaceTask response
   if (passwordRequired) {
@@ -120,6 +175,8 @@ function getWrapper({
     $clientService.webdav.getFileInfo.mockResolvedValueOnce(spaceResource)
   }
 
+  $clientService.webdav.listFiles.mockResolvedValue({ resource: spaceResource, children })
+
   const mocks = { ...defaultComponentMocks(), $clientService }
 
   const capabilities = {
@@ -127,7 +184,9 @@ function getWrapper({
   } satisfies Partial<CapabilityStore['capabilities']>
 
   vi.mocked(useRouteParam).mockReturnValue(ref('token'))
-  vi.mocked(useRouteQuery).mockReturnValue(ref('redirectUrl'))
+  vi.mocked(useRouteQuery).mockImplementation((name) =>
+    ref(name === 'redirectUrl' ? redirectUrl : undefined)
+  )
 
   return {
     mocks,

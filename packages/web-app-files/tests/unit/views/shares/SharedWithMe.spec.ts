@@ -4,7 +4,6 @@ import {
   queryItemAsString,
   InlineFilterOption,
   useSort,
-  useOpenWithDefaultApp,
   ItemFilter,
   AppBar
 } from '@opencloud-eu/web-pkg'
@@ -16,15 +15,13 @@ import { mock } from 'vitest-mock-extended'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes, IncomingShareResource, ShareType } from '@opencloud-eu/web-client'
 import SharedWithMeSection from '../../../../src/components/Shares/SharedWithMeSection.vue'
-import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/composables/resourcesViewDefaults')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useSort: vi.fn().mockImplementation(() => useSortMock()),
   queryItemAsString: vi.fn(),
-  useRouteQuery: vi.fn(),
-  useOpenWithDefaultApp: vi.fn()
+  useRouteQuery: vi.fn()
 }))
 
 const AppBarStub = defineComponent({
@@ -51,18 +48,6 @@ describe('SharedWithMe view', () => {
     it('does not show the loading spinner after loading finished', () => {
       const { wrapper } = getMountedWrapper()
       expect(wrapper.find('app-loading-spinner-stub').exists()).toBeFalsy()
-    })
-  })
-  describe('open with default app', () => {
-    it('gets called if given via route query param', async () => {
-      const { mocks } = getMountedWrapper({ openWithDefaultAppQuery: 'true' })
-      await flushPromises()
-      expect(mocks.openWithDefaultApp).toHaveBeenCalled()
-    })
-    it('gets not called if not given via route query param', async () => {
-      const { mocks } = getMountedWrapper()
-      await flushPromises()
-      expect(mocks.openWithDefaultApp).not.toHaveBeenCalled()
     })
   })
   describe('filter', () => {
@@ -172,13 +157,11 @@ describe('SharedWithMe view', () => {
 function getMountedWrapper({
   mocks = {},
   loading = false,
-  files = [],
-  openWithDefaultAppQuery = ''
+  files = []
 }: {
   mocks?: Record<string, unknown>
   files?: IncomingShareResource[]
   loading?: boolean
-  openWithDefaultAppQuery?: string
 } = {}) {
   const plugins = [...defaultPlugins()]
 
@@ -194,18 +177,12 @@ function getMountedWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => undefined)
   // selected shared by
   vi.mocked(queryItemAsString).mockImplementationOnce(() => undefined)
-  // openWithDefaultAppQuery
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => openWithDefaultAppQuery)
-
-  const openWithDefaultApp = vi.fn()
-  vi.mocked(useOpenWithDefaultApp).mockReturnValue({ openWithDefaultApp })
 
   const defaultMocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-shares-with-me' })
     }),
-    ...(mocks && mocks),
-    openWithDefaultApp
+    ...(mocks && mocks)
   }
 
   return {

@@ -21,8 +21,7 @@ import {
   useRouter,
   useActiveLocation,
   isLocationTrashActive,
-  createFileRouteOptions,
-  createLocationSpaces,
+  useLinkTargetRoute,
   locationPublicUpload,
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
@@ -41,6 +40,7 @@ const driveAliasAndItem = useRouteParam('driveAliasAndItem')
 const isTrashRoute = useActiveLocation(isLocationTrashActive, 'files-trash-generic')
 const { item, itemId, space } = useDriveResolver({ driveAliasAndItem })
 const { getInternalSpace } = useGetMatchingSpace()
+const { getLinkTargetRoute } = useLinkTargetRoute()
 
 const loading = ref(true)
 
@@ -61,57 +61,43 @@ const getSpaceResource = async (): Promise<SpaceResource> => {
 const resolveToInternalLocation = async (path: string) => {
   const internalSpace = getInternalSpace(unref(fileId).split('!')[0])
   if (internalSpace) {
+    // the user's token needs to be set explicitly, otherwise the request uses the basic auth
+    // credentials of the public link.
     const resource = await clientService.webdav.getFileInfo(
       internalSpace,
       { path },
       { headers: { Authorization: `Bearer ${authStore.accessToken}` } }
     )
 
-    const resourceId = resource.type !== 'folder' ? resource.parentFolderId : resource.fileId
-    const resourcePath = resource.type !== 'folder' ? dirname(path) : path
     space.value = internalSpace
-    item.value = resourcePath
+    item.value = resource.type !== 'folder' ? dirname(path) : path
 
-    const { params, query } = createFileRouteOptions(internalSpace, {
-      fileId: resourceId,
-      path: resourcePath
-    })
-    return router.push(
-      createLocationSpaces('files-spaces-generic', {
-        params,
-        query: {
-          ...query,
-          scrollTo: unref(resource).fileId,
-          openWithDefaultApp: 'true'
-        }
-      })
-    )
+    return router.push(getLinkTargetRoute({ space: internalSpace, resource, path }))
   }
 
   // no internal space found -> share -> resolve via private link as it holds all the necessary logic
   return router.push({
     name: 'resolvePrivateLink',
-    params: { fileId: unref(fileId) },
-    query: {
-      openWithDefaultApp: 'true'
-    }
+    params: { fileId: unref(fileId) }
   })
 }
 
 onMounted(async () => {
   if (!unref(driveAliasAndItem) && unref(fileId)) {
+    // necessary for urls like `/files/spaces?fileId=<id>`
     return router.push({
       name: 'resolvePrivateLink',
-      params: { fileId: unref(fileId) },
-      query: {
-        openWithDefaultApp: 'true'
-      }
+      params: { fileId: unref(fileId) }
     })
   }
 
-  if (unref(space) && isPublicSpaceResource(unref(space))) {
+  if (isPublicSpaceResource(unref(space))) {
     if (authStore.userContextReady && unref(fileId)) {
+      // if the user is logged in, we can try to resolve the public link to
+      // an internal location in case the user has internal access to the resource.
       try {
+        // the user's token needs to be set explicitly, otherwise the request uses the basic auth
+        // credentials of the public link.
         const path = await clientService.webdav.getPathForFileId(unref(fileId), {
           headers: { Authorization: `Bearer ${authStore.accessToken}` }
         })

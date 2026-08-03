@@ -27,8 +27,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useBreadcrumbsFromPath: vi.fn(),
   useEmbedMode: vi.fn().mockImplementation(() => mockUseEmbedMode()),
-  useFileActions: vi.fn(() => ({})),
-  useOpenWithDefaultApp: vi.fn(() => ({}))
+  useFileActions: vi.fn(() => ({}))
 }))
 
 vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
@@ -37,11 +36,6 @@ vi.mock('../../../../src/composables/actions/files', async (importOriginal) => (
     actions: [{ handler: mockCreateFolder }]
   })
 }))
-
-const selectors = Object.freeze({
-  btnCreateFolder: '[data-testid="btn-new-folder"]',
-  actionsCreateAndUpload: '[data-testid="actions-create-and-upload"]'
-})
 
 describe('GenericSpace view', () => {
   it('appBar always present', () => {

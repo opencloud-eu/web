@@ -1,6 +1,9 @@
 import { useFileActions } from './files'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
+/**
+ * @deprecated use useFileActions().triggerDefaultAction instead.
+ */
 export function useOpenWithDefaultApp() {
   const { triggerDefaultAction } = useFileActions()
 

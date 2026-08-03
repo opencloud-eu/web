@@ -9,13 +9,12 @@
 </template>
 
 <script setup lang="ts">
-import { provide, computed, unref } from 'vue'
+import { provide, computed } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 import FileActions from '../SideBar/Actions/FileActions.vue'
 import FileDetails from '../SideBar/Details/FileDetails.vue'
-import { FileInfo, useOpenWithDefaultApp } from '@opencloud-eu/web-pkg'
-import { useRouteQuery } from '@opencloud-eu/web-pkg'
+import { FileInfo } from '@opencloud-eu/web-pkg'
 
 const { singleResource = null, space = null } = defineProps<{
   singleResource?: Resource | null
@@ -30,10 +29,4 @@ provide(
   'space',
   computed(() => space)
 )
-
-const { openWithDefaultApp } = useOpenWithDefaultApp()
-const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
-if (unref(openWithDefaultAppQuery) === 'true') {
-  openWithDefaultApp({ space, resource: singleResource })
-}
 </script>

@@ -39,6 +39,15 @@ describe('fileActions', () => {
         }
       })
     })
+    it('should omit editors if omitEditorActions is set', () => {
+      getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions({ ...actionOptions, omitEditorActions: true })
+          const editorActions = actions.filter((a) => a.name?.toString().startsWith('editor-'))
+          expect(editorActions.length).toBeFalsy()
+        }
+      })
+    })
     it('should provide an empty list if embed mode is enabled', () => {
       mockUseEmbedMode.mockReturnValueOnce({
         isEnabled: computed(() => true)

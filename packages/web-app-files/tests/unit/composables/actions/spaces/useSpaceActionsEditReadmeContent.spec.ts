@@ -4,12 +4,12 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { ClientService } from '@opencloud-eu/web-pkg'
-import { useOpenWithDefaultApp, useSpaceHelpers } from '@opencloud-eu/web-pkg'
+import { useFileActions, useSpaceHelpers } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsEditReadmeContent } from '../../../../../src/composables/actions/spaces'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useOpenWithDefaultApp: vi.fn(),
+  useFileActions: vi.fn(),
   useSpaceHelpers: vi.fn()
 }))
 
@@ -50,11 +50,11 @@ describe('editReadmeContent', () => {
     })
   })
   describe('method "handler"', () => {
-    it('calls method "openWithDefaultApp"', () => {
+    it('calls method "triggerDefaultAction"', () => {
       getWrapper({
-        setup: async ({ actions }, { openWithDefaultApp }) => {
+        setup: async ({ actions }, { triggerDefaultAction }) => {
           await unref(actions)[0].handler({ resources: [mock<SpaceResource>()] })
-          expect(openWithDefaultApp).toHaveBeenCalled()
+          expect(triggerDefaultAction).toHaveBeenCalled()
         }
       })
     })
@@ -63,17 +63,17 @@ describe('editReadmeContent', () => {
 
 function getWrapper({
   setup,
-  openWithDefaultApp = vi.fn()
+  triggerDefaultAction = vi.fn()
 }: {
   setup: (
     instance: ReturnType<typeof useSpaceActionsEditReadmeContent>,
-    mocks: { openWithDefaultApp: () => void }
+    mocks: { triggerDefaultAction: () => void }
   ) => void
-  openWithDefaultApp?: () => void
+  triggerDefaultAction?: () => void
 }) {
-  vi.mocked(useOpenWithDefaultApp).mockReturnValue(
-    mock<ReturnType<typeof useOpenWithDefaultApp>>({
-      openWithDefaultApp
+  vi.mocked(useFileActions).mockReturnValue(
+    mock<ReturnType<typeof useFileActions>>({
+      triggerDefaultAction
     })
   )
 
@@ -81,7 +81,7 @@ function getWrapper({
     getDefaultMetaFolder: () => new Promise(() => mock<Resource>())
   } as ReturnType<typeof useSpaceHelpers>)
 
-  const mocks = { openWithDefaultApp }
+  const mocks = { triggerDefaultAction }
 
   return {
     wrapper: getComposableWrapper(

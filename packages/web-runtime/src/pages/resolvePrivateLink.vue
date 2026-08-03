@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-link-resolve h-screen flex flex-col justify-center items-center p-4">
+  <div class="oc-link-resolve h-full flex flex-col justify-center items-center p-4">
     <oc-card
       :title="headerTitle"
       body-class="text-center"
@@ -9,16 +9,6 @@
       <oc-spinner v-if="loading" data-testid="loading-spinner" :aria-hidden="true" />
       <p v-else-if="errorMessage" data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
     </oc-card>
-    <oc-button
-      v-if="isUnacceptedShareError"
-      type="router-link"
-      appearance="filled"
-      target="_blank"
-      class="mt-4 text-center w-sm"
-      :to="sharedWithMeRoute"
-    >
-      <span class="text" v-text="openSharedWithMeLabel" />
-    </oc-button>
   </div>
 </template>
 
@@ -28,15 +18,22 @@ import {
   useRouter,
   queryItemAsString,
   useRouteQuery,
-  createLocationSpaces,
   createLocationShares,
-  useClientService
+  useClientService,
+  getSharedDriveItem,
+  useSpacesStore,
+  useGetResourceContext,
+  useLinkTargetRoute
 } from '@opencloud-eu/web-pkg'
-import { unref, computed, onMounted, ref, Ref } from 'vue'
-import { dirname } from 'path'
-import { createFileRouteOptions, useGetResourceContext } from '@opencloud-eu/web-pkg'
+import { unref, computed, onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
-import { call, isShareSpaceResource, Resource, SHARE_JAIL_ID } from '@opencloud-eu/web-client'
+import {
+  call,
+  isShareSpaceResource,
+  Resource,
+  SHARE_JAIL_ID,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 
@@ -44,10 +41,9 @@ const router = useRouter()
 const id = useRouteParam('fileId')
 const { $gettext } = useGettext()
 const clientService = useClientService()
+const spacesStore = useSpacesStore()
 
-const sharedParentResource: Ref<Resource> = ref()
-const isUnacceptedShareError = ref(false)
-
+const { getLinkTargetRoute } = useLinkTargetRoute()
 const { getResourceContext } = useGetResourceContext()
 
 const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
@@ -72,97 +68,79 @@ const resolvePrivateLinkTask = useTask(function* (signal, id) {
     return router.push(createLocationShares('files-shares-with-me'))
   }
 
-  let result: Awaited<ReturnType<typeof getResourceContext>>
   try {
-    result = yield getResourceContext(id)
+    const { space, resource, path } = yield* call(getResourceContext(id))
+    if (!path) {
+      // empty path means the user has no access to the resource or it doesn't exist
+      throw new Error('The file or folder does not exist')
+    }
+
+    const targetRoute = yield* call(getTargetRoute({ resource, space, path }))
+    router.push(targetRoute)
   } catch (e) {
-    // error means the resurce is an unaccepted/unsynced share
-    isUnacceptedShareError.value = true
+    console.error('Error resolving private link', e)
     throw e
   }
+})
 
-  const { space, resource } = result
-  let { path } = result
-
-  if (!path) {
-    // empty path means the user has no access to the resource or it doesn't exist
-    throw new Error('The file or folder does not exist')
-  }
-
-  let resourceIsNestedInShare = false
+const getTargetRoute = async ({
+  resource,
+  space,
+  path
+}: {
+  resource: Resource
+  space: SpaceResource
+  path: string
+}): Promise<RouteLocationNamedRaw> => {
   let isHiddenShare = false
-  if (isShareSpaceResource(space)) {
-    sharedParentResource.value = resource
-    resourceIsNestedInShare = path !== '/'
-    if (!resourceIsNestedInShare) {
-      // FIXME: get drive item by id as soon as server supports it
-      const driveItems = yield* call(clientService.graphAuthenticated.driveItems.listSharedWithMe())
-      const share = driveItems.find(({ remoteItem }) => remoteItem.id === resource.id)
+  if (isShareSpaceResource(space) && path === '/') {
+    // if the resource is a share, we need to check if it is hidden to add the correct
+    // filter query param to the url so the filter gets populated correctly in the file list.
+    try {
+      const driveItem = await getSharedDriveItem({
+        graphClient: clientService.graphAuthenticated,
+        spacesStore,
+        space
+      })
 
-      isHiddenShare = share?.['@UI.Hidden']
+      isHiddenShare = driveItem?.['@UI.Hidden']
+    } catch (e) {
+      // failure to get the drive item is not critical, we can just ignore it and continue.
+      // worst thing that can happen is that the filter query param is not set correctly
+      // and the user needs to apply the filter manually in the UI.
+      console.error(e)
     }
   }
 
-  let fileId: string
-  let targetLocation: RouteLocationNamedRaw
-  if (resource.type === 'folder') {
-    fileId = resource.fileId
-    targetLocation = createLocationSpaces('files-spaces-generic')
-  } else {
-    fileId = resource.parentFolderId
-    path = dirname(path)
-    targetLocation =
-      space.driveType === 'share' && !resourceIsNestedInShare
-        ? createLocationShares('files-shares-with-me')
-        : createLocationSpaces('files-spaces-generic')
-  }
-
-  const { params, query } = createFileRouteOptions(space, { fileId, path })
-  const openWithDefault = unref(openWithDefaultApp) !== 'false' && !unref(details)
-
-  targetLocation.params = params
-  targetLocation.query = {
-    ...query,
-    scrollTo: resource.fileId,
-    ...(unref(details) && { details: unref(details) }),
-    ...(isHiddenShare && { 'q_share-visibility': 'hidden' }),
-    ...(openWithDefault && { openWithDefaultApp: 'true' })
-  }
-
-  router.push(targetLocation)
-})
+  return getLinkTargetRoute({
+    space,
+    resource,
+    path,
+    openWithDefaultApp: unref(openWithDefaultApp) !== 'false',
+    details: unref(details),
+    ...(isHiddenShare && { fileListQuery: { 'q_share-visibility': 'hidden' } })
+  })
+}
 
 const loading = computed(() => {
   return !resolvePrivateLinkTask.last || resolvePrivateLinkTask.isRunning
 })
 
-const sharedWithMeRoute = computed(() => {
-  return { name: 'files-shares-with-me' }
-})
-
-const openSharedWithMeLabel = computed(() => {
-  return $gettext('Open "Shared with me"')
-})
-
 const headerTitle = computed(() => {
   if (unref(loading)) {
-    return $gettext('Resolving private link…')
+    return $gettext('Resolving link…')
   }
   if (unref(errorMessage)) {
-    return $gettext('An error occurred while resolving the private link')
+    return $gettext('An error occurred while resolving the link')
   }
   return ''
 })
 
 const errorMessage = computed(() => {
-  if (unref(isUnacceptedShareError)) {
+  if (resolvePrivateLinkTask.isError) {
     return $gettext(
       'The link you are trying to access is invalid or you do not have permission to view the content. Please check the link for any errors or contact the person who shared it for assistance.'
     )
-  }
-
-  if (resolvePrivateLinkTask.isError) {
-    return resolvePrivateLinkTask.last.error.message
   }
   return null
 })
