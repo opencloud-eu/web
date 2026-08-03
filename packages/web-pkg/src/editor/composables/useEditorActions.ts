@@ -1,11 +1,17 @@
-import { markRaw, ref, unref } from 'vue'
+import { computed, markRaw, ref, unref } from 'vue'
 import type { Component } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
 import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import type { Resource } from '@opencloud-eu/web-client'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
 import { useModals, useThemeStore } from '../../composables'
+import { useClientService } from '../../composables/clientService'
+import { useGetMatchingSpace } from '../../composables/spaces'
+import { useFolderLink } from '../../composables/folderLink'
+import FilePickerModal from '../../components/Modals/FilePickerModal.vue'
+import { arrayBufferToDataUrl } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
@@ -64,6 +70,12 @@ export function useEditorActions(state: TextEditorState) {
   const { dispatchModal } = useModals()
   const themeStore = useThemeStore()
   const { currentTheme } = storeToRefs(themeStore)
+  const clientService = useClientService()
+  const { getMatchingSpace } = useGetMatchingSpace()
+  const { getParentFolderLink } = useFolderLink()
+  const currentResource = computed<Resource | null>(() => {
+    return unref(state.currentResource) ?? null
+  })
 
   //Search
   const searchSearchTerm = ref('')
@@ -544,6 +556,47 @@ export function useEditorActions(state: TextEditorState) {
     })
   }
 
+  const insertImageFromCloudResource = async (editor: Editor, resource: Resource) => {
+    const space = getMatchingSpace(resource)
+    const response = await clientService.webdav.getFileContents(
+      space,
+      { path: resource.path },
+      { responseType: 'arraybuffer' }
+    )
+    const body = response?.body as ArrayBuffer | undefined
+    if (!body) {
+      return
+    }
+    const mimeType = resource.mimeType || 'application/octet-stream'
+    const dataUrl = await arrayBufferToDataUrl(body, mimeType)
+    editor.chain().focus().setImage({ src: dataUrl }).run()
+  }
+
+  const openCloudImagePicker = (editor: Editor) => {
+    const resource = unref(currentResource)
+    if (!resource) {
+      return
+    }
+
+    dispatchModal({
+      elementClass: 'file-picker-modal',
+      title: $gettext('Insert image from cloud'),
+      customComponent: markRaw(FilePickerModal),
+      hideActions: true,
+      customComponentAttrs: () => ({
+        allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
+        parentFolderLink: getParentFolderLink(resource),
+        callbackFn: async ({ resource }: { resource: Resource }) => {
+          if (!resource.mimeType?.startsWith('image/')) {
+            return
+          }
+          await insertImageFromCloudResource(editor, resource)
+        }
+      }),
+      focusTrapInitial: false
+    })
+  }
+
   const imageUrl = (): EditorAction => ({
     id: 'image-url',
     title: $gettext('Image from URL'),
@@ -575,13 +628,28 @@ export function useEditorActions(state: TextEditorState) {
     isActive: () => false
   })
 
+  const imageCloud = (): EditorAction => ({
+    id: 'image-cloud',
+    title: $gettext('Insert from cloud'),
+    description: $gettext('Insert an image from your cloud files'),
+    icon: 'cloud-line',
+    keywords: ['image', 'picture', 'cloud'],
+    showInSlashCommands: false,
+    toolbarAction: (editor) => openCloudImagePicker(editor),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run()
+      openCloudImagePicker(editor)
+    },
+    isActive: () => false
+  })
+
   const image = (): EditorAction => ({
     id: 'image',
     title: $gettext('Insert image'),
     icon: 'image-line',
-    keywords: ['image', 'picture', 'upload', 'url'],
+    keywords: ['image', 'picture', 'upload', 'url', 'cloud'],
     showInSlashCommands: false,
-    childActions: [imageUpload(), imageUrl()],
+    childActions: [imageUpload(), imageUrl(), imageCloud()],
     isActive: () => false
   })
 
