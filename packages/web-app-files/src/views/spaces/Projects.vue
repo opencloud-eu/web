@@ -7,7 +7,7 @@
         :has-bulk-actions="true"
         :has-hidden-files="false"
         :has-file-extensions="false"
-        :has-pagination="false"
+        :has-pagination="true"
         :batch-actions-loading="batchActionsLoading"
         :view-modes="viewModes"
         :view-mode-default="FolderViewModeConstants.defaultModeName"
@@ -294,7 +294,7 @@ const {
 } = usePagination({
   items,
   perPageDefault: '50',
-  perPageStoragePrefix: 'spaces-list'
+  perPageStoragePrefix: 'files'
 })
 
 const batchActionsLoading = computed(() => {

@@ -6,7 +6,7 @@
         :has-view-options="true"
         :has-hidden-files="false"
         :has-file-extensions="false"
-        :has-pagination="false"
+        :has-pagination="true"
         :show-actions-bar="false"
         :view-modes="viewModes"
       />
@@ -43,7 +43,7 @@
             :is="folderView.component"
             v-else
             class="trash-table"
-            :resources="displaySpaces"
+            :resources="paginatedSpaces"
             :fields-displayed="['name']"
             :sort-by="sortBy"
             :sort-dir="sortDir"
@@ -79,6 +79,7 @@
               />
             </template>
             <template #footer>
+              <pagination :pages="totalPages" :current-page="currentPage" />
               <div class="text-center w-full my-2">
                 <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
                   {{ footerTextTotal }}
@@ -108,6 +109,8 @@ import {
   defaultFuseOptions,
   FileSideBar,
   NoContentMessage,
+  Pagination,
+  usePagination,
   useClientService,
   useGetMatchingSpace,
   useLoadPreview,
@@ -271,6 +274,14 @@ const filter = (spaces: SpaceResource[], filterTerm: string) => {
 const displaySpaces = computed(() =>
   sort(filter(unref(spaces), unref(filterTerm)), unref(sortBy), unref(sortDir) === 'desc')
 )
+const {
+  items: paginatedSpaces,
+  page: currentPage,
+  total: totalPages
+} = usePagination({
+  items: displaySpaces,
+  perPageStoragePrefix: 'files'
+})
 
 const handleSort = (event: { sortBy: keyof SpaceResource; sortDir: SortDir }) => {
   sortBy.value = event.sortBy
