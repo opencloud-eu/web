@@ -1,5 +1,14 @@
 <template>
-  <oc-drop ref="dropRef" mode="manual" padding-size="small" class="z-10001" enforce-drop-on-mobile>
+  <oc-drop
+    ref="dropRef"
+    mode="manual"
+    padding-size="small"
+    class="z-10001"
+    :class="{ invisible: !isPositioned }"
+    enforce-drop-on-mobile
+    @show-drop="onDropShow"
+    @hide-drop="closeMenu"
+  >
     <div class="text-editor-slash-menu">
       <template v-if="grouped.length">
         <div v-for="group in grouped" :key="group.id" class="text-editor-slash-menu__group">
@@ -51,18 +60,20 @@ import {
   useTemplateRef,
   watch
 } from 'vue'
-import { SuggestionProps } from '@tiptap/suggestion'
+import { exitSuggestion, SuggestionProps } from '@tiptap/suggestion'
 import { FlatSlashCommandItem } from '../extensions'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
 interface VirtualElement {
   getBoundingClientRect: () => DOMRect
+  contextElement: HTMLElement
 }
 
 const props = defineProps<SuggestionProps<FlatSlashCommandItem>>()
 
 const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
 const selectedIndex = ref(0)
+const isPositioned = ref(false)
 
 watch(
   () => props.items,
@@ -138,8 +149,20 @@ const anchorElement = (): VirtualElement | null => {
     return null
   }
   return {
-    getBoundingClientRect: () => rect
+    getBoundingClientRect: () => rect,
+    contextElement: props.editor.view.dom
   }
+}
+
+const closeMenu = () => {
+  isPositioned.value = false
+  if (!props.editor.isDestroyed) {
+    exitSuggestion(props.editor.view)
+  }
+}
+
+const onDropShow = () => {
+  isPositioned.value = true
 }
 
 onMounted(async () => {

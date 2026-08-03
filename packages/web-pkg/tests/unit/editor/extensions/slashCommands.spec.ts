@@ -1,7 +1,21 @@
-import { describe, it, expect } from 'vitest'
-import { filterSlashCommandItems } from '../../../../src/editor/extensions/slashCommands'
+import { describe, it, expect, vi } from 'vitest'
+import { Editor } from '@tiptap/core'
+import StarterKit from '@tiptap/starter-kit'
+import { exitSuggestion, SuggestionPluginKey } from '@tiptap/suggestion'
+import {
+  filterSlashCommandItems,
+  SlashCommands
+} from '../../../../src/editor/extensions/slashCommands'
 import type { EditorActionGroup } from '../../../../src/editor/composables/useEditorActions'
-import type { Editor } from '@tiptap/vue-3'
+
+vi.mock('@tiptap/vue-3', () => ({
+  VueRenderer: class {
+    el = document.createElement('div')
+    ref = { onUpdate: vi.fn(), onKeyDown: vi.fn() }
+    updateProps = vi.fn()
+    destroy = vi.fn()
+  }
+}))
 
 const groups: EditorActionGroup[] = [
   {
@@ -124,5 +138,66 @@ describe('filterSlashCommandItems', () => {
     ]
     const result = filterSlashCommandItems(minimal, 'bare', mockEditor(false))
     expect(result.map((i) => i.id)).toEqual(['bare'])
+  })
+})
+
+describe('SlashCommands', () => {
+  function createEditor(content: string) {
+    return new Editor({
+      extensions: [StarterKit, SlashCommands.configure({ getGroups: () => groups })],
+      content
+    })
+  }
+
+  const isActive = (editor: Editor) => SuggestionPluginKey.getState(editor.state)?.active
+
+  it('opens for an existing slash when the editor selection returns to it', () => {
+    const editor = createEditor('<p>/</p>')
+
+    editor.commands.setTextSelection(2)
+
+    expect(isActive(editor)).toBe(true)
+    editor.destroy()
+  })
+
+  it('opens when the user inserts a new slash', () => {
+    const editor = createEditor('<p></p>')
+
+    editor.commands.insertContent('/')
+
+    expect(isActive(editor)).toBe(true)
+    editor.destroy()
+  })
+
+  it('stays open when a selection-only transaction follows', () => {
+    const editor = createEditor('<p></p>')
+    editor.commands.insertContent('/hea')
+
+    // the deferred focus() of the drag handle's plus button dispatches such a transaction
+    editor.commands.scrollIntoView()
+
+    expect(isActive(editor)).toBe(true)
+    editor.destroy()
+  })
+
+  it('stays open when the caret moves inside the query', () => {
+    const editor = createEditor('<p></p>')
+    editor.commands.insertContent('/hea')
+
+    editor.commands.setTextSelection(editor.state.selection.from - 1)
+
+    expect(isActive(editor)).toBe(true)
+    editor.destroy()
+  })
+
+  it('reopens a dismissed slash when the selection returns to it', () => {
+    const editor = createEditor('<p></p>')
+    editor.commands.insertContent('/hea')
+
+    exitSuggestion(editor.view)
+    editor.commands.setTextSelection(editor.state.selection.from - 1)
+
+    expect(isActive(editor)).toBe(true)
+    editor.destroy()
   })
 })
