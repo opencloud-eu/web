@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent } from 'vue'
 import { createGettext } from 'vue3-gettext'
 import { exitSuggestion } from '@tiptap/suggestion'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 import SlashCommandMenu from '../../../../src/editor/components/SlashCommandMenu.vue'
 import type { FlatSlashCommandItem } from '../../../../src/editor/extensions'
 
@@ -9,12 +9,6 @@ vi.mock('@tiptap/suggestion', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@tiptap/suggestion')>()),
   exitSuggestion: vi.fn()
 }))
-
-const OcDropStub = defineComponent({
-  name: 'OcDrop',
-  emits: ['hideDrop', 'showDrop'],
-  template: '<div><slot /></div>'
-})
 
 function makeItem(
   id: string,
@@ -65,8 +59,9 @@ function mountMenu(items: FlatSlashCommandItem[], command = vi.fn(), editor = {}
     },
     global: {
       plugins: [createGettext({ translations: {}, silent: true })],
+      renderStubDefaultSlot: true,
       stubs: {
-        'oc-drop': OcDropStub,
+        OcDrop: true,
         'oc-button': { template: '<button v-bind="$attrs"><slot /></button>' },
         'oc-icon': true
       }
@@ -109,7 +104,7 @@ describe('SlashCommandMenu', () => {
 
   it('shows the drop only after it has been positioned', async () => {
     const wrapper = mountMenu([makeItem('a', 'g', 'G')])
-    const drop = wrapper.findComponent(OcDropStub)
+    const drop = wrapper.findComponent<typeof OcDrop>('oc-drop-stub')
 
     expect(drop.classes()).toContain('invisible')
 
@@ -123,7 +118,7 @@ describe('SlashCommandMenu', () => {
     const editor = { isDestroyed: false, view: {} } as any
     const wrapper = mountMenu([makeItem('a', 'g', 'G')], vi.fn(), editor)
 
-    wrapper.findComponent(OcDropStub).vm.$emit('hideDrop')
+    wrapper.findComponent<typeof OcDrop>('oc-drop-stub').vm.$emit('hideDrop')
 
     expect(exitSuggestion).toHaveBeenCalledWith(editor.view)
   })
@@ -132,7 +127,7 @@ describe('SlashCommandMenu', () => {
     const editor = { isDestroyed: true, view: {} } as any
     const wrapper = mountMenu([makeItem('a', 'g', 'G')], vi.fn(), editor)
 
-    wrapper.findComponent(OcDropStub).vm.$emit('hideDrop')
+    wrapper.findComponent<typeof OcDrop>('oc-drop-stub').vm.$emit('hideDrop')
 
     expect(exitSuggestion).not.toHaveBeenCalled()
   })
