@@ -40,7 +40,7 @@ export class ActorsEnvironment extends EventEmitter {
   }
 
   public async close(): Promise<void> {
-    await Promise.all([...actorStore.values()].map((actor) => actor.close()))
+    await Promise.allSettled([...actorStore.values()].map((actor) => actor.close()))
   }
 
   public generateNamespace(user: string): string {
