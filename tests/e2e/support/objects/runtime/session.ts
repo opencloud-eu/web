@@ -49,5 +49,9 @@ export class Session {
   async logout(): Promise<void> {
     await this.#page.locator('#_userMenuButton').click()
     await this.#page.locator('#oc-topbar-account-logout').click()
+    const loginForm = this.#page
+      .locator('#oc-login-username')
+      .or(this.#page.locator('#username'))
+    await loginForm.waitFor({ timeout: 5000 }).catch(() => {})
   }
 }
