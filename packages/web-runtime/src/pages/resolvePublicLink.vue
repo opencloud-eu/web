@@ -45,7 +45,7 @@ import {
   queryItemAsString,
   useAuthStore,
   useClientService,
-  useConfigStore,
+  useLinkTargetRoute,
   useRoute,
   useRouteParam,
   useRouteQuery,
@@ -57,16 +57,14 @@ import { useTask } from 'vue-concurrency'
 import { ref, unref, computed, onMounted } from 'vue'
 import {
   buildPublicSpaceResource,
+  call,
   isPublicSpaceResource,
-  PublicSpaceResource
+  PublicSpaceResource,
+  Resource
 } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { urlJoin } from '@opencloud-eu/web-client'
-import { RouteLocationNamedRaw } from 'vue-router'
-import { dirname } from 'path'
 import { storeToRefs } from 'pinia'
 
-const configStore = useConfigStore()
 const clientService = useClientService()
 const router = useRouter()
 const route = useRoute()
@@ -112,6 +110,11 @@ const detailsQuery = useRouteQuery('details')
 const details = computed(() => {
   return queryItemAsString(unref(detailsQuery))
 })
+
+const openWithDefaultAppQuery = useRouteQuery('openWithDefaultApp')
+const openWithDefaultApp = computed(() => queryItemAsString(unref(openWithDefaultAppQuery)))
+
+const { getLinkTargetRoute } = useLinkTargetRoute()
 
 const loadedSpace = ref<PublicSpaceResource>()
 const isPasswordRequired = ref(false)
@@ -203,37 +206,55 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
     return
   }
 
-  let scrollTo: string
-  let fileId: string
-  let path: string
-
-  if (['folder', 'space'].includes(unref(loadedSpace).type)) {
-    fileId = unref(loadedSpace).fileId
-    path = unref(item)
-  } else {
-    fileId = unref(loadedSpace).parentFolderId
-    scrollTo = unref(loadedSpace).fileId
-    path = dirname(unref(item))
-  }
-
   spacesStore.upsertSpace(unref(loadedSpace))
 
-  const driveAliasAndItem = urlJoin(unref(isOcmLink) ? `ocm/` : `public/`, unref(token), path)
-  const targetLocation: RouteLocationNamedRaw = {
-    name: 'files-public-link',
-    query: {
-      openWithDefaultApp: 'true',
-      ...(!!fileId && { fileId }),
-      ...(!!scrollTo && { scrollTo }),
-      ...(unref(details) && { details: unref(details) })
-    },
-    params: {
-      driveAliasAndItem
-    }
+  const { resource, path } = yield* call(getTargetResource(signal))
+
+  router.push(
+    getLinkTargetRoute({
+      space: unref(loadedSpace),
+      resource,
+      path,
+      openWithDefaultApp: unref(openWithDefaultApp) !== 'false',
+      details: unref(details)
+    })
+  )
+})
+
+/**
+ * A public link to a single file has no file id of its own, while a link to a folder does.
+ * The `public-link-item-type` dav property can't be used here, the server reports "folder"
+ * in both cases.
+ */
+const isSingleFileLink = computed(() => {
+  const space = unref(loadedSpace)
+  return !space.fileId || space.fileId === space.id
+})
+
+/**
+ * For a public link pointing to a single file, the link root is the file itself. Since the root
+ * is built as a space, the actual file resource needs to be fetched to be able to resolve the
+ * app it can be opened with.
+ */
+const getTargetResource = async (
+  signal?: AbortSignal
+): Promise<{ resource: Resource; path: string }> => {
+  const space = unref(loadedSpace)
+  if (unref(item) || !unref(isSingleFileLink)) {
+    return { resource: space, path: unref(item) || '/' }
   }
 
-  router.push(targetLocation)
-})
+  const { children } = await clientService.webdav.listFiles(unref(publicLinkSpace), {}, { signal })
+
+  const resource = children.find(({ isFolder }) => !isFolder)
+  if (!resource) {
+    // fallback, the server always reports the file as a child of the link root,
+    // so this shouldn't ever happen
+    return { resource: space, path: '/' }
+  }
+
+  return { resource, path: resource.path }
+}
 
 const errorMessage = computed<string>(() => {
   if (resolvePublicLinkTask.isError && resolvePublicLinkTask.last.error.statusCode !== 401) {

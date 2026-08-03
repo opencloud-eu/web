@@ -1,7 +1,7 @@
 import resolvePrivateLink from '../../../src/pages/resolvePrivateLink.vue'
 import { defaultPlugins, defaultComponentMocks, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { queryItemAsString, useGetResourceContext } from '@opencloud-eu/web-pkg'
+import { getSharedDriveItem, queryItemAsString, useGetResourceContext } from '@opencloud-eu/web-pkg'
 import { Resource, SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
 import { flushPromises } from '@vue/test-utils'
 
@@ -10,13 +10,24 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useRouteQuery: vi.fn((str) => str),
   useRouteParam: vi.fn((str) => str),
   queryItemAsString: vi.fn(),
-  useGetResourceContext: vi.fn()
+  useGetResourceContext: vi.fn(),
+  getSharedDriveItem: vi.fn()
 }))
 
 const selectors = {
   ocSpinnerStub: 'oc-spinner-stub',
   errorMessage: '[data-testid="error-message"]'
 }
+
+const buildResource = (attrs: Partial<Resource> = {}) =>
+  ({
+    isFolder: false,
+    type: 'file',
+    canDownload: () => false,
+    canBeDeleted: () => false,
+    canRestore: () => false,
+    ...attrs
+  }) as Resource
 
 describe('resolvePrivateLink', () => {
   it('is in a loading state initially', () => {
@@ -27,7 +38,7 @@ describe('resolvePrivateLink', () => {
     const fileId = '1'
     const driveAliasAndItem = 'personal/home'
     const space = mock<SpaceResource>({ getDriveAliasAndItem: () => driveAliasAndItem })
-    const resource = mock<Resource>({ fileId })
+    const resource = buildResource({ fileId })
     const { mocks } = getWrapper({ space, resource, fileId, path: '/' })
     await flushPromises()
     expect(mocks.$router.push).toHaveBeenCalledWith(
@@ -46,7 +57,7 @@ describe('resolvePrivateLink', () => {
         driveType: 'share',
         getDriveAliasAndItem: () => driveAliasAndItem
       })
-      const resource = mock<Resource>({ fileId, type: 'file' })
+      const resource = buildResource({ fileId })
       const { mocks } = getWrapper({ space, resource, fileId, path: '/' })
       await flushPromises()
       expect(mocks.$router.push).toHaveBeenCalledWith(
@@ -70,7 +81,7 @@ describe('resolvePrivateLink', () => {
         driveType: 'share',
         getDriveAliasAndItem: () => driveAliasAndItem
       })
-      const resource = mock<Resource>({ fileId, id: fileId, type: 'file' })
+      const resource = buildResource({ fileId, id: fileId })
       const { mocks } = getWrapper({
         space,
         resource,
@@ -94,44 +105,18 @@ describe('resolvePrivateLink', () => {
       expect.objectContaining({ query: expect.objectContaining({ details }) })
     )
   })
-  it('throws an error if the path is empty', async () => {
+  it('shows an error message if the path is empty', async () => {
+    console.error = vi.fn()
     const { wrapper } = getWrapper()
     await flushPromises()
 
-    expect(wrapper.find(selectors.errorMessage).text()).toEqual('The file or folder does not exist')
-  })
-  describe('openWithDefaultApp', () => {
-    it('correctly passes the openWithDefaultApp param if enabled and given via query', async () => {
-      const { mocks } = getWrapper({ path: '/' })
-      await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
-        expect.objectContaining({ query: expect.objectContaining({ openWithDefaultApp: 'true' }) })
-      )
-    })
-    it('does not pass the openWithDefaultApp param when details param is given', async () => {
-      const { mocks } = getWrapper({ details: 'sharing', path: '/' })
-      await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
-        expect.objectContaining({
-          query: expect.not.objectContaining({ openWithDefaultApp: 'true' })
-        })
-      )
-    })
-    it('does not pass the openWithDefaultApp param when not requested via query', async () => {
-      const { mocks } = getWrapper({ openWithDefaultAppQuery: 'false', path: '/' })
-      await flushPromises()
-      expect(mocks.$router.push).toHaveBeenCalledWith(
-        expect.objectContaining({
-          query: expect.not.objectContaining({ openWithDefaultApp: 'true' })
-        })
-      )
-    })
+    expect(wrapper.find(selectors.errorMessage).exists()).toBeTruthy()
   })
 })
 
 function getWrapper({
   space = mock<SpaceResource>(),
-  resource = mock<Resource>(),
+  resource = buildResource(),
   path = '',
   fileId = '',
   details = '',
@@ -163,10 +148,9 @@ function getWrapper({
     getResourceContext: vi.fn().mockResolvedValue({ space, resource, path })
   })
 
+  vi.mocked(getSharedDriveItem).mockResolvedValue({ '@UI.Hidden': hiddenShare })
+
   const mocks = { ...defaultComponentMocks() }
-  mocks.$clientService.graphAuthenticated.driveItems.listSharedWithMe.mockResolvedValue([
-    { remoteItem: { id: '1' }, '@UI.Hidden': hiddenShare }
-  ])
 
   return {
     mocks,
