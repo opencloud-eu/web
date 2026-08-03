@@ -187,7 +187,7 @@ const findActionById = (actionId: string) => {
 
 const openSearchAndReplaceMenu = async () => {
   const action = findActionById(searchAndReplaceActionId)
-  if (!action || !isItemEnabled(action) || !unref(textEditor.isFocused)) {
+  if (!action || !isItemEnabled(action)) {
     return
   }
 
