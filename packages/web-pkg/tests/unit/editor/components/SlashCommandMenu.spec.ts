@@ -102,18 +102,6 @@ describe('SlashCommandMenu', () => {
     expect(command).toHaveBeenCalledWith(items[0])
   })
 
-  it('shows the drop only after it has been positioned', async () => {
-    const wrapper = mountMenu([makeItem('a', 'g', 'G')])
-    const drop = wrapper.findComponent<typeof OcDrop>('oc-drop-stub')
-
-    expect(drop.classes()).toContain('invisible')
-
-    drop.vm.$emit('showDrop')
-    await wrapper.vm.$nextTick()
-
-    expect(drop.classes()).not.toContain('invisible')
-  })
-
   it('exits the suggestion when the drop closes', () => {
     const editor = { isDestroyed: false, view: {} } as any
     const wrapper = mountMenu([makeItem('a', 'g', 'G')], vi.fn(), editor)

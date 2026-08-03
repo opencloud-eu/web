@@ -4,9 +4,7 @@
     mode="manual"
     padding-size="small"
     class="z-10001"
-    :class="{ invisible: !isVisible }"
     enforce-drop-on-mobile
-    @show-drop="onDropShow"
     @hide-drop="closeMenu"
   >
     <div class="text-editor-slash-menu">
@@ -73,7 +71,6 @@ const props = defineProps<SuggestionProps<FlatSlashCommandItem>>()
 
 const dropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('dropRef')
 const selectedIndex = ref(0)
-const isVisible = ref(false)
 
 watch(
   () => props.items,
@@ -155,14 +152,9 @@ const anchorElement = (): VirtualElement | null => {
 }
 
 const closeMenu = () => {
-  isVisible.value = false
   if (!props.editor.isDestroyed) {
     exitSuggestion(props.editor.view)
   }
-}
-
-const onDropShow = () => {
-  isVisible.value = true
 }
 
 onMounted(async () => {
