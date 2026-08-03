@@ -22,12 +22,21 @@ Then(
   }
 )
 
-When(
-  '{string} empties the trashbin for space {string} using quick action',
+Then(
+  '{string} should see the deleted items indicator for space {string} in the trashbin',
   async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const trashbinObject = new objects.applicationFiles.Trashbin({ page })
-    await trashbinObject.emptyTrashbinUsingQuickAction(space)
+    await expect(trashbinObject.getTrashedItemsIndicatorLocator(space)).toBeVisible()
+  }
+)
+
+When(
+  '{string} empties the trashbin for space {string} using context menu',
+  async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const trashbinObject = new objects.applicationFiles.Trashbin({ page })
+    await trashbinObject.emptyTrashbinUsingContextMenu(space)
   }
 )
 

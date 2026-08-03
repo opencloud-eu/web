@@ -28,8 +28,12 @@ export class Trashbin {
     return await po.getEmptyTrashbinLocator({ page: this.#page, space })
   }
 
-  async emptyTrashbinUsingQuickAction(space: string): Promise<void> {
-    await po.emptyTrashbinUsingQuickAction({ page: this.#page, space })
+  async emptyTrashbinUsingContextMenu(space: string): Promise<void> {
+    await po.emptyTrashbinUsingContextMenu({ page: this.#page, space })
+  }
+
+  getTrashedItemsIndicatorLocator(space: string): Locator {
+    return po.getTrashedItemsIndicatorLocator({ page: this.#page, space })
   }
 
   getTrashbinListFooterText(): Promise<string> {

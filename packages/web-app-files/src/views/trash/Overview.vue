@@ -57,6 +57,7 @@
             :view-size="viewSize"
             @sort="handleSort"
             @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+            @update:selected-ids="loadGraphPermissions"
           >
             <template #contextMenu="{ resource }">
               <trash-context-actions
@@ -69,6 +70,13 @@
             </template>
             <template #quickActions="{ resource }">
               <trash-quick-actions :space="resource" :item="resource" />
+            </template>
+            <template #indicators="{ resource }">
+              <resource-status-indicators
+                :space="resource"
+                :resource="resource"
+                :filter="indicatorFilter"
+              />
             </template>
             <template #footer>
               <div class="text-center w-full my-2">
@@ -106,7 +114,9 @@ import {
   useResourcesStore,
   useRouter,
   useSpacesStore,
-  useUserStore
+  useUserStore,
+  ResourceIndicator,
+  ResourceStatusIndicators
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
@@ -181,13 +191,15 @@ const loadResourcesTask = useTask(function* (signal) {
     spacesStore.upsertSpace(reloadedSpace)
   })
 
-  yield spacesStore.loadGraphPermissions({
-    ids: unref(spaces).map((space) => space.id),
-    graphClient: clientService.graphAuthenticated
-  })
-
   resourcesStore.initResourceList({ currentFolder: null, resources: unref(spaces) })
 })
+
+const loadGraphPermissions = (spaceIds: string[]) => {
+  spacesStore.loadGraphPermissions({
+    ids: spaceIds,
+    graphClient: clientService.graphAuthenticated
+  })
+}
 
 const areResourcesLoading = computed(() => loadResourcesTask.isRunning || !loadResourcesTask.last)
 
@@ -226,6 +238,12 @@ const footerTextFilter = computed(() =>
     }
   )
 )
+
+const hiddenIndicatorTypes = ['resource-space-enabled', 'resource-space-disabled']
+
+function indicatorFilter(indicator: ResourceIndicator) {
+  return !hiddenIndicatorTypes.includes(indicator.type)
+}
 
 const breadcrumbs = computed(() => [
   { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }

@@ -125,6 +125,7 @@ Feature: Trashbin delete
       | Personal |
       | sales    |
       | hr       |
+    And "Brian" should see the deleted items indicator for space "sales" in the trashbin
     And "Brian" should see disabled empty trashbin button for space "Personal"
 
     When "Brian" disables the option to show empty trashbins
@@ -133,7 +134,7 @@ Feature: Trashbin delete
       | Personal |
       | hr       |
     And "Brian" should see the text "3 trash bins in total (including 2 empty)" at the footer of the trashbin page
-    When "Brian" empties the trashbin for space "sales" using quick action
+    When "Brian" empties the trashbin for space "sales" using context menu
     Then following resource should not be displayed in the trashbin for user "Brian"
       | resource |
       | sales    |

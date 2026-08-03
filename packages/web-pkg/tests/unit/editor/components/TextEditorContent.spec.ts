@@ -4,6 +4,7 @@ import { defineComponent, nextTick, ref } from 'vue'
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
 import { EditorActionGroup } from '../../../../src/editor/composables'
+import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('@tiptap/vue-3', () => ({
   EditorContent: defineComponent({
@@ -17,6 +18,7 @@ vi.mock('@tiptap/extension-drag-handle-vue-3', () => ({
   DragHandle: defineComponent({
     name: 'DragHandle',
     props: { editor: { type: Object, required: false } },
+    emits: ['node-change'],
     template: '<div class="mock-drag-handle"><slot /></div>'
   })
 }))
@@ -24,21 +26,55 @@ vi.mock('@tiptap/extension-drag-handle-vue-3', () => ({
 function mountEditorContent({
   contentType = 'markdown',
   sourceMode = false,
-  content = '# Initial'
+  content = '# Initial',
+  hasSlashCommands = false
 }: {
   contentType?: 'markdown' | 'html'
   sourceMode?: boolean
   content?: string
+  hasSlashCommands?: boolean
 } = {}) {
   const setContent = vi.fn()
+  const insertContent = vi.fn()
+  const insertContentAt = vi.fn()
+  const setTextSelection = vi.fn()
+  const focus = vi.fn()
+  const run = vi.fn()
+
+  const chain = vi.fn(() => ({
+    focus: vi.fn(() => ({
+      insertContentAt: vi.fn(() => ({
+        setTextSelection: vi.fn(() => ({
+          insertContent: vi.fn(() => ({ run }))
+        }))
+      })),
+      setTextSelection: vi.fn(() => ({
+        insertContent: vi.fn(() => ({ run }))
+      }))
+    }))
+  }))
+
   const textEditor = {
     editor: ref({
-      commands: { setContent }
+      commands: { setContent, insertContent },
+      chain,
+      state: {
+        doc: {
+          nodeAt: vi.fn((pos: number) => ({
+            content: { size: pos > 0 ? 10 : 0 },
+            nodeSize: 10
+          }))
+        }
+      },
+      extensionManager: {
+        extensions: hasSlashCommands ? [{ name: 'slashCommands' }] : []
+      }
     }),
     contentType: ref(contentType),
     readonly: ref(false),
     state: {
-      sourceMode: ref(sourceMode)
+      sourceMode: ref(sourceMode),
+      editorZoom: ref(100)
     },
     actionGroups: (): EditorActionGroup[] => [],
     getContent: vi.fn(() => content),
@@ -49,13 +85,17 @@ function mountEditorContent({
     destroy: vi.fn()
   } as unknown as TextEditorInstance
 
+  const defaultMocks = defaultComponentMocks()
+
   const wrapper = mount(TextEditorContent, {
     global: {
-      provide: { textEditor }
+      mocks: defaultMocks,
+      provide: { textEditor, defaultMocks },
+      plugins: [...defaultPlugins()]
     }
   })
 
-  return { wrapper, textEditor, setContent }
+  return { wrapper, textEditor, setContent, chain, run }
 }
 
 describe('TextEditorContent', () => {
@@ -111,5 +151,30 @@ describe('TextEditorContent', () => {
       contentType: 'html',
       emitUpdate: true
     })
+  })
+
+  it('shows plus button only when slash commands extension is available', async () => {
+    const { wrapper } = mountEditorContent({ hasSlashCommands: true })
+    expect(wrapper.find('.drag-handle-plus-button').exists()).toBe(true)
+
+    const { wrapper: wrapperWithout } = mountEditorContent({ hasSlashCommands: false })
+    expect(wrapperWithout.find('.drag-handle-plus-button').exists()).toBe(false)
+  })
+
+  it('opens slash menu when plus button is clicked', async () => {
+    const { wrapper, textEditor, chain, run } = mountEditorContent({ hasSlashCommands: true })
+
+    // Simulate the drag handle node change event that sets the current position
+    const dragHandle = wrapper.findComponent({ name: 'DragHandle' })
+    dragHandle.vm.$emit('node-change', { pos: 0 })
+    await nextTick()
+
+    const plusButton = wrapper.find('.drag-handle-plus-button')
+    expect(plusButton.exists()).toBe(true)
+
+    await plusButton.trigger('click')
+
+    expect(chain).toHaveBeenCalled()
+    expect(run).toHaveBeenCalled()
   })
 })
