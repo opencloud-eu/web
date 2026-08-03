@@ -4,6 +4,7 @@ import {
   isIncomingShareResource,
   isPersonalSpaceResource,
   isProjectSpaceResource,
+  isSpaceResource,
   Resource,
   ShareTypes,
   SpaceResource
@@ -206,6 +207,23 @@ export const useResourceIndicators = () => {
     }
   }
 
+  const getSpaceHasTrashedItemsIndicator = ({
+    resource
+  }: {
+    resource: Resource
+  }): ResourceIndicator => {
+    return {
+      id: `resource-space-has-trashed-items-${resource.getDomSelector()}`,
+      kind: 'icon',
+      accessibleDescription: $gettext('Trash bin contains deleted items'),
+      label: $gettext('Contains deleted items'),
+      icon: 'delete-bin-5',
+      category: 'space',
+      type: 'resource-space-has-trashed-items',
+      fillType: 'line'
+    }
+  }
+
   const getIndicators = ({
     space,
     resource
@@ -221,6 +239,10 @@ export const useResourceIndicators = () => {
 
     if (resource.processing) {
       indicators.push(getProcessingIndicator({ resource }))
+    }
+
+    if (isSpaceResource(resource) && resource.hasTrashedItems) {
+      indicators.push(getSpaceHasTrashedItemsIndicator({ resource }))
     }
 
     if (isProjectSpaceResource(resource) && !resource.disabled) {

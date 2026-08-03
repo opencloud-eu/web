@@ -30,6 +30,40 @@ describe('useResourceIndicators', () => {
     })
   })
 
+  describe('has trashed items indicator', () => {
+    it.each([true, false])(
+      'should only be present if the space has trashed items',
+      (hasTrashedItems) => {
+        getWrapper({
+          setup: ({ getIndicators }) => {
+            const space = mock<SpaceResource>({ id: 'space' })
+            const resource = mock<SpaceResource>({
+              id: 'resource',
+              type: 'space',
+              hasTrashedItems
+            })
+            const indicators = getIndicators({ space, resource })
+            expect(indicators.some(({ type }) => type === 'resource-space-has-trashed-items')).toBe(
+              hasTrashedItems
+            )
+          }
+        })
+      }
+    )
+    it('should not be present for non-space resources', () => {
+      getWrapper({
+        setup: ({ getIndicators }) => {
+          const space = mock<SpaceResource>({ id: 'space' })
+          const resource = mock<Resource>({ id: 'resource', type: 'folder' })
+          const indicators = getIndicators({ space, resource })
+          expect(indicators.some(({ type }) => type === 'resource-space-has-trashed-items')).toBe(
+            false
+          )
+        }
+      })
+    })
+  })
+
   describe('sharing indicators', () => {
     it("should not be present in another user's personal space", () => {
       getWrapper({

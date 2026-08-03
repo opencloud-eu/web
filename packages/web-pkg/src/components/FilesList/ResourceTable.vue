@@ -178,11 +178,13 @@
       />
     </template>
     <template #indicators="{ item }">
-      <resource-status-indicators
-        :space="space"
-        :resource="item"
-        :disable-handler="isResourceDisabled(item)"
-      />
+      <slot name="indicators" :resource="item">
+        <resource-status-indicators
+          :space="space"
+          :resource="item"
+          :disable-handler="isResourceDisabled(item)"
+        />
+      </slot>
     </template>
     <template #sdate="{ item }">
       <span
@@ -382,6 +384,7 @@ defineSlots<{
   remainingQuota?: (props: { resource: Resource }) => unknown
   quickActions?: (props: { resource: Resource }) => unknown
   contextMenu?: (props: { resource: Resource }) => unknown
+  indicators?: (props: { resource: Resource }) => unknown
   footer?: () => unknown
 }>()
 

@@ -4,11 +4,15 @@ import util from 'util'
 const spaceIdSelector = '(//*[@data-item-id="%s"]//a[contains(@class, "oc-resource-link")])[1]'
 const showEmptyTrashbinsButton = '//*[@data-testid="files-switch-projects-show-disabled"]//button'
 const filesViewOptionButton = '#files-view-options-btn'
+const contextMenuButton = '//*[@data-test-context-menu-resource-name="%s"]'
+const contextMenuList = '#oc-files-context-menu .oc-list'
 const emptyTrashbinQuickActionBtn =
-  '//*[@data-test-resource-name="%s"]//ancestor::tr//button[@aria-label="Empty trash bin"] | //*[@data-test-resource-name="%s"]//ancestor::li[contains(@class, "oc-tiles-item")]//button[@aria-label="Empty trash bin"]'
+  '#oc-files-context-menu .oc-list .oc-files-actions-empty-trash-bin-trigger'
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const footerTextSelector = '//*[@data-testid="files-list-footer-info"]'
 const personalTrashbinSelector = 'a[href^="/files/trash/personal/"]'
+const trashedItemsIndicatorSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]//span[@data-test-indicator-type="resource-space-has-trashed-items"]'
 
 export interface openTrashBinArgs {
   id: string
@@ -37,17 +41,21 @@ export const getEmptyTrashbinLocator = async ({
   page: Page
   space: string
 }): Promise<Locator> => {
-  return await page.locator(util.format(emptyTrashbinQuickActionBtn, space, space))
+  await page.locator(util.format(contextMenuButton, space)).click()
+  await page.locator(contextMenuList).waitFor()
+  return await page.locator(emptyTrashbinQuickActionBtn)
 }
 
-export const emptyTrashbinUsingQuickAction = async ({
+export const emptyTrashbinUsingContextMenu = async ({
   page,
   space
 }: {
   page: Page
   space: string
 }): Promise<void> => {
-  await page.locator(util.format(emptyTrashbinQuickActionBtn, space, space)).click()
+  await page.locator(util.format(contextMenuButton, space)).click()
+  await page.locator(contextMenuList).waitFor()
+  await page.locator(emptyTrashbinQuickActionBtn).click()
   await Promise.all([
     page.waitForResponse(
       (resp) =>
@@ -57,6 +65,16 @@ export const emptyTrashbinUsingQuickAction = async ({
     ),
     page.locator(actionConfirmButton).click()
   ])
+}
+
+export const getTrashedItemsIndicatorLocator = ({
+  page,
+  space
+}: {
+  page: Page
+  space: string
+}): Locator => {
+  return page.locator(util.format(trashedItemsIndicatorSelector, space))
 }
 
 export const getTrashbinListFooterText = ({ page }: { page: Page }): Promise<string> => {
