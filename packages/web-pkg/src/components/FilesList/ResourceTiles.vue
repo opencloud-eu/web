@@ -92,13 +92,15 @@
             <slot name="image" :resource="resource" />
           </template>
           <template #indicators>
-            <resource-status-indicators
-              :space="space"
-              class="ml-2"
-              :resource="resource"
-              :filter="(indicator) => ['system', 'sharing'].includes(indicator.category)"
-              :disable-handler="isResourceDisabled(resource)"
-            />
+            <slot name="indicators" :resource="resource">
+              <resource-status-indicators
+                :space="space"
+                class="ml-2"
+                :resource="resource"
+                :filter="(indicator) => ['system', 'sharing'].includes(indicator.category)"
+                :disable-handler="isResourceDisabled(resource)"
+              />
+            </slot>
           </template>
           <template #actions>
             <slot name="actions" :resource="resource" />
@@ -214,6 +216,7 @@ defineSlots<{
   image?: (props: { resource: Resource }) => unknown
   actions?: (props: { resource: Resource }) => unknown
   contextMenu?: (props: { resource: Resource }) => unknown
+  indicators?: (props: { resource: Resource }) => unknown
   footer?: () => unknown
   additionalResourceContent?: (props: { resource: Resource }) => unknown
 }>()

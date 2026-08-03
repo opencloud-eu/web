@@ -125,6 +125,7 @@ Feature: Trashbin delete
       | Personal |
       | sales    |
       | hr       |
+    And "Brian" should see the deleted items indicator for space "sales" in the trashbin
     And "Brian" should see disabled empty trashbin button for space "Personal"
 
     When "Brian" disables the option to show empty trashbins

@@ -32,6 +32,10 @@ export class Trashbin {
     await po.emptyTrashbinUsingContextMenu({ page: this.#page, space })
   }
 
+  getTrashedItemsIndicatorLocator(space: string): Locator {
+    return po.getTrashedItemsIndicatorLocator({ page: this.#page, space })
+  }
+
   getTrashbinListFooterText(): Promise<string> {
     return po.getTrashbinListFooterText({ page: this.#page })
   }

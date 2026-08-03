@@ -71,6 +71,13 @@
             <template #quickActions="{ resource }">
               <trash-quick-actions :space="resource" :item="resource" />
             </template>
+            <template #indicators="{ resource }">
+              <resource-status-indicators
+                :space="resource"
+                :resource="resource"
+                :filter="indicatorFilter"
+              />
+            </template>
             <template #footer>
               <div class="text-center w-full my-2">
                 <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">
@@ -107,7 +114,9 @@ import {
   useResourcesStore,
   useRouter,
   useSpacesStore,
-  useUserStore
+  useUserStore,
+  ResourceIndicator,
+  ResourceStatusIndicators
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
@@ -229,6 +238,12 @@ const footerTextFilter = computed(() =>
     }
   )
 )
+
+const hiddenIndicatorTypes = ['resource-space-enabled', 'resource-space-disabled']
+
+function indicatorFilter(indicator: ResourceIndicator) {
+  return !hiddenIndicatorTypes.includes(indicator.type)
+}
 
 const breadcrumbs = computed(() => [
   { text: $gettext('Deleted files'), onClick: () => loadResourcesTask.perform() }

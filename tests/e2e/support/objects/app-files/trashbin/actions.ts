@@ -11,6 +11,8 @@ const emptyTrashbinQuickActionBtn =
 const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const footerTextSelector = '//*[@data-testid="files-list-footer-info"]'
 const personalTrashbinSelector = 'a[href^="/files/trash/personal/"]'
+const trashedItemsIndicatorSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]//span[@data-test-indicator-type="resource-space-has-trashed-items"]'
 
 export interface openTrashBinArgs {
   id: string
@@ -63,6 +65,16 @@ export const emptyTrashbinUsingContextMenu = async ({
     ),
     page.locator(actionConfirmButton).click()
   ])
+}
+
+export const getTrashedItemsIndicatorLocator = ({
+  page,
+  space
+}: {
+  page: Page
+  space: string
+}): Locator => {
+  return page.locator(util.format(trashedItemsIndicatorSelector, space))
 }
 
 export const getTrashbinListFooterText = ({ page }: { page: Page }): Promise<string> => {
