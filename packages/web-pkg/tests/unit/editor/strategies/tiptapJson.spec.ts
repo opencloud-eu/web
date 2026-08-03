@@ -62,16 +62,16 @@ describe('useStrategyTiptapJson', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('keeps zoom menu in view options as the last group', () => {
+    it('keeps zoom in navigation and search as the last group', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
-      const historyIds = groups.find((g) => g.id === 'history')?.actions.map((a) => a.id) || []
-      const viewOptionIds =
-        groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
+      const navigationIds =
+        groups.find((g) => g.id === 'navigation')?.actions.map((a) => a.id) || []
+      const searchIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
 
-      expect(historyIds).toEqual(['undo', 'redo', 'menu-search-and-replace'])
-      expect(viewOptionIds).toContain('menu-zoom')
-      expect(groups.at(-1)?.id).toBe('view-options')
+      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
+      expect(searchIds).toEqual(['menu-search-and-replace'])
+      expect(groups.at(-1)?.id).toBe('search')
     })
   })
 

@@ -76,24 +76,24 @@ describe('useStrategyHtml', () => {
       expect(allIds).toContain('source-mode')
     })
 
-    it('places view options group at the end', () => {
+    it('places search group at the end', () => {
       const strategy = createStrategy()
       const groupIds = strategy.editorActionGroups().map((g) => g.id)
-      expect(groupIds.at(-1)).toBe('zoom')
+      expect(groupIds.at(-1)).toBe('search')
     })
 
-    it('keeps source toggle next to history and zoom in the rightmost group', () => {
+    it('keeps navigation, source toggle and search actions in dedicated groups', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
-      const historyIds = groups.find((g) => g.id === 'history')?.actions.map((a) => a.id) || []
+      const navigationIds =
+        groups.find((g) => g.id === 'navigation')?.actions.map((a) => a.id) || []
       const sourceGroupIds =
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
-      const zoomGroupIds = groups.find((g) => g.id === 'zoom')?.actions.map((a) => a.id) || []
+      const searchGroupIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
 
-      expect(historyIds).toEqual(['undo', 'redo', 'menu-search-and-replace'])
-      expect(historyIds).not.toContain('menu-zoom')
+      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
       expect(sourceGroupIds).toEqual(['source-mode'])
-      expect(zoomGroupIds).toEqual(['menu-zoom'])
+      expect(searchGroupIds).toEqual(['menu-search-and-replace'])
     })
   })
 
