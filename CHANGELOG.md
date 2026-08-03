@@ -1,5 +1,11 @@
 # Changelog
 
+## [7.3.1](https://github.com/opencloud-eu/web/releases/tag/v7.3.1) - 2026-08-03
+
+### 📦️ Dependencies
+
+- chore(deps): update devdependencies (non-major) [[#2999](https://github.com/opencloud-eu/web/pull/2999)]
+
 ## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-08-03
 
 ### ❤️ Thanks to all contributors! ❤️
