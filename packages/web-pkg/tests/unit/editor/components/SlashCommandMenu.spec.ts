@@ -62,7 +62,7 @@ function mountMenu(items: FlatSlashCommandItem[], command = vi.fn()) {
 }
 
 function keyEvent(key: string): KeyboardEvent {
-  return { key, preventDefault: vi.fn() } as unknown as KeyboardEvent
+  return { key, preventDefault: vi.fn(), stopPropagation: vi.fn() } as unknown as KeyboardEvent
 }
 
 describe('SlashCommandMenu', () => {
@@ -133,11 +133,13 @@ describe('SlashCommandMenu', () => {
     expect(command).toHaveBeenCalledWith(items[1])
   })
 
-  it('Escape is not handled so the suggestion plugin can close itself', () => {
+  it('stops Escape from propagating while leaving it to the suggestion plugin', () => {
     const items = [makeItem('a', 'g', 'G')]
     const wrapper = mountMenu(items)
-    const handled = wrapper.vm.onKeyDown(keyEvent('Escape'))
+    const event = keyEvent('Escape')
+    const handled = wrapper.vm.onKeyDown(event)
     expect(handled).toBe(false)
+    expect(event.stopPropagation).toHaveBeenCalled()
   })
 
   it('Enter on an empty list returns false and does not call command', () => {
