@@ -328,7 +328,7 @@ async function applyFavoriteState(
     return
   }
 
-  if (sseData.affecteduserids?.length && !sseData.affecteduserids.includes(userStore.user?.id)) {
+  if (!sseData.affecteduserids?.includes(userStore.user.id)) {
     return
   }
 
