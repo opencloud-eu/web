@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { vi } from 'vitest'
 import TextEditorToolbar from '../../../../src/editor/components/TextEditorToolbar.vue'
 import type { TextEditorInstance } from '../../../../src/editor/types'
@@ -36,12 +36,13 @@ function mountToolbar(
     })
   }
 
+  const isFocusedRef = ref(true)
   const textEditor = {
     editor: ref({}),
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
     state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
-    isFocused: ref(true),
+    isFocused: computed(() => isFocusedRef.value),
     actionGroups: () => [
       {
         id: 'view-options',
@@ -78,7 +79,7 @@ function mountToolbar(
     }
   })
 
-  return { wrapper, textEditor, showSpy }
+  return { wrapper, textEditor, isFocusedRef, showSpy }
 }
 
 describe('TextEditorToolbar', () => {
@@ -113,8 +114,8 @@ describe('TextEditorToolbar', () => {
   })
 
   it('opens search menu on Ctrl+F when editor is focused', async () => {
-    const { wrapper, showSpy, textEditor } = mountToolbar(false, 'markdown', true)
-    textEditor.isFocused.value = true
+    const { wrapper, showSpy, isFocusedRef } = mountToolbar(false, 'markdown', true)
+    isFocusedRef.value = true
 
     await wrapper.vm.$nextTick()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -135,8 +136,8 @@ describe('TextEditorToolbar', () => {
   })
 
   it('opens search menu on Cmd+F when editor is focused', async () => {
-    const { wrapper, showSpy, textEditor } = mountToolbar(false, 'markdown', true)
-    textEditor.isFocused.value = true
+    const { wrapper, showSpy, isFocusedRef } = mountToolbar(false, 'markdown', true)
+    isFocusedRef.value = true
 
     await wrapper.vm.$nextTick()
     await new Promise((resolve) => setTimeout(resolve, 0))
@@ -157,8 +158,8 @@ describe('TextEditorToolbar', () => {
   })
 
   it('does not open search menu on Ctrl+F when editor is not focused', async () => {
-    const { wrapper, showSpy, textEditor } = mountToolbar(false, 'markdown', true)
-    textEditor.isFocused.value = false
+    const { wrapper, showSpy, isFocusedRef } = mountToolbar(false, 'markdown', true)
+    isFocusedRef.value = false
 
     const event = new KeyboardEvent('keydown', {
       key: 'f',
