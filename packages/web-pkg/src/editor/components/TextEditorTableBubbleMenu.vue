@@ -1,6 +1,6 @@
 <template>
   <BubbleMenu
-    v-if="textEditor.editor.value"
+    v-if="textEditor?.editor.value && !textEditor.readonly.value"
     :editor="textEditor.editor.value"
     :should-show="shouldShow"
     :get-referenced-virtual-element="getReferencedVirtualElement"
@@ -48,7 +48,7 @@ import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction } from '../composables'
 
-const textEditor = inject<TextEditorInstance>('textEditor')!
+const textEditor = inject<TextEditorInstance | undefined>('textEditor')
 
 const shouldShow = ({ editor }: { editor: Editor }) => editor.isActive('table')
 
@@ -63,7 +63,7 @@ const bubbleMenuOptions: BubbleMenuPluginProps['options'] = {
 }
 
 const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualElement'] = () => {
-  const editor = unref(textEditor.editor)
+  const editor = unref(textEditor?.editor)
   if (!editor) {
     return null
   }
@@ -93,24 +93,28 @@ const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualEl
   return null
 }
 
+const groupDefinitions = [
+  {
+    id: 'rows',
+    actions: ['add-row-before', 'add-row-after', 'delete-row']
+  },
+  {
+    id: 'columns',
+    actions: ['add-column-before', 'add-column-after', 'delete-column']
+  },
+  {
+    id: 'table',
+    actions: ['delete-table']
+  }
+]
+
 const tableActionGroups = computed(() => {
+  if (!textEditor) {
+    return []
+  }
+
   const allActions = textEditor.actionGroups().flatMap((group) => group.actions)
   const actionMap = new Map(allActions.map((action) => [action.id, action]))
-
-  const groupDefinitions = [
-    {
-      id: 'rows',
-      actions: ['add-row-before', 'add-row-after', 'delete-row']
-    },
-    {
-      id: 'columns',
-      actions: ['add-column-before', 'add-column-after', 'delete-column']
-    },
-    {
-      id: 'table',
-      actions: ['delete-table']
-    }
-  ]
 
   return groupDefinitions
     .map((group) => ({
@@ -123,7 +127,7 @@ const tableActionGroups = computed(() => {
 })
 
 const onActionClick = (action: EditorAction) => {
-  const editor = unref(textEditor.editor)
+  const editor = unref(textEditor?.editor)
   if (!editor) {
     return
   }
@@ -132,7 +136,7 @@ const onActionClick = (action: EditorAction) => {
 }
 
 const isItemEnabled = (item: EditorAction) => {
-  const editor = unref(textEditor.editor)
+  const editor = unref(textEditor?.editor)
   if (!editor) {
     return false
   }

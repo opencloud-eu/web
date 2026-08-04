@@ -1,6 +1,6 @@
 <template>
   <BubbleMenu
-    v-if="textEditor.editor.value"
+    v-if="textEditor?.editor.value && !textEditor.readonly.value"
     :editor="textEditor.editor.value"
     :should-show="shouldShow"
     :update-delay="0"
@@ -65,7 +65,7 @@ import type { TextEditorInstance } from '../types'
 import { normalizeLinkUrl } from '../extensions'
 import { requestLinkPanel } from '../helpers/link'
 
-const textEditor = inject<TextEditorInstance>('textEditor')!
+const textEditor = inject<TextEditorInstance | undefined>('textEditor')
 const { $gettext } = useGettext()
 
 const shouldShow = ({ editor }: { editor: Editor }) => {
@@ -73,7 +73,7 @@ const shouldShow = ({ editor }: { editor: Editor }) => {
 }
 
 const linkHref = computed(() => {
-  const editor = unref(textEditor.editor)
+  const editor = unref(textEditor?.editor)
   if (!editor) {
     return ''
   }
@@ -83,6 +83,10 @@ const linkHref = computed(() => {
 })
 
 function editLink() {
+  if (!textEditor) {
+    return
+  }
+
   const editor = unref(textEditor.editor)
   if (!editor) {
     return
@@ -101,7 +105,7 @@ function openLink() {
 }
 
 function removeLink() {
-  const editor = unref(textEditor.editor)
+  const editor = unref(textEditor?.editor)
   if (!editor) {
     return
   }
