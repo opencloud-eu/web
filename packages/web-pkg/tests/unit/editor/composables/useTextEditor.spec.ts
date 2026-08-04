@@ -70,6 +70,22 @@ describe('useTextEditor', () => {
     })
   })
 
+  describe('find and replace', () => {
+    it.each(['plain-text', 'markdown', 'html', 'tiptap-json'] as const)(
+      'registers the findAndReplace extension for %s',
+      (contentType) => {
+        const modelValue =
+          contentType === 'tiptap-json'
+            ? JSON.stringify({ type: 'doc', content: [{ type: 'paragraph' }] })
+            : ''
+        const { result } = createEditor({ contentType, modelValue: toRef(modelValue) })
+        const pluginNames =
+          result.editor.value?.extensionManager.extensions.map((e) => e.name) ?? []
+        expect(pluginNames).toContain('findAndReplace')
+      }
+    )
+  })
+
   describe('links', () => {
     it('prevents auxiliary clicks from opening a link', () => {
       const { result } = createEditor({

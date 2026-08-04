@@ -5,6 +5,7 @@ import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Image from '@tiptap/extension-image'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -63,7 +64,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       Color,
       BackgroundColor,
       FontSize,
-      LineHeight
+      LineHeight,
+      FindAndReplace
     ]
   }
 
@@ -93,6 +95,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     link,
     menuEmoji,
     image,
+    menuSearchAndReplace,
     imageUrl,
     imageUpload,
     createTable,
@@ -107,9 +110,9 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'formatting',
@@ -160,9 +163,9 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         ]
       },
       {
-        id: 'view-options',
-        title: $gettext('View options'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

@@ -5,6 +5,7 @@ import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Image from '@tiptap/extension-image'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -68,7 +69,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       Color,
       BackgroundColor,
       FontSize,
-      LineHeight
+      LineHeight,
+      FindAndReplace
     ]
   }
 
@@ -113,15 +115,16 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     addColumnBefore,
     addColumnAfter,
     deleteColumn,
-    deleteTable
+    deleteTable,
+    menuSearchAndReplace
   } = useEditorActions(editorState)
 
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'view-options',
@@ -181,9 +184,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         ]
       },
       {
-        id: 'zoom',
-        title: $gettext('Zoom'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

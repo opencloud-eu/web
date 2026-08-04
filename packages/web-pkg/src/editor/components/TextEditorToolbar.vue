@@ -124,11 +124,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -140,6 +151,8 @@ const textEditor = inject<TextEditorInstance>('textEditor')!
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+const keyActionIds: string[] = []
 
 const isToolbarItemVisible = (item: EditorAction) => {
   if (!actionsToDisplay) {
@@ -160,11 +173,41 @@ const toolbarGroups = computed<EditorActionGroup[]>(() => {
 })
 
 const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+const searchAndReplaceActionId = 'menu-search-and-replace'
 
 function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
   if (el) {
     dropRefs.value[itemId] = el
   }
+}
+
+const findActionById = (actionId: string) => {
+  return unref(toolbarGroups)
+    .flatMap((group) => group.actions)
+    .find((action) => action.id === actionId)
+}
+
+const openSearchAndReplaceMenu = async () => {
+  const action = findActionById(searchAndReplaceActionId)
+  if (!action || !isItemEnabled(action)) {
+    return
+  }
+
+  const dropRef = dropRefs.value[searchAndReplaceActionId]
+  if (!dropRef?.show) {
+    return
+  }
+
+  const triggerEl = document.getElementById(`toolbar-dropdown-trigger-${searchAndReplaceActionId}`)
+  await dropRef.show({ anchorElement: triggerEl ?? undefined })
+}
+
+const handleSearchShortcut = (event: KeyboardEvent) => {
+  if (!unref(textEditor.isFocused)) {
+    return
+  }
+  event.preventDefault()
+  openSearchAndReplaceMenu()
 }
 
 const updateScrollState = () => {
@@ -181,6 +224,15 @@ const updateScrollState = () => {
 onMounted(async () => {
   await nextTick()
   updateScrollState()
+
+  if (unref(isSearchAndReplaceAvailable)) {
+    const searchShortcutId = bindKeyAction(
+      { modifier: Modifier.Ctrl, primary: Key.F },
+      handleSearchShortcut,
+      { preventDefault: false }
+    )
+    keyActionIds.push(searchShortcutId)
+  }
 })
 
 watch(toolbarGroups, async () => {
@@ -252,6 +304,20 @@ const getMenuComponentAttrs = (item: EditorAction) => {
 
   return item.menuComponentAttrs(editor, closeMenu)
 }
+
+const { bindKeyAction, removeKeyAction } = useKeyboardActions({
+  skipDisabledKeyBindingsCheck: true
+})
+
+const isSearchAndReplaceAvailable = computed(() => {
+  return unref(toolbarGroups)
+    .flatMap((group) => group.actions)
+    .some((action) => action.id === searchAndReplaceActionId)
+})
+
+onBeforeUnmount(() => {
+  keyActionIds.forEach((id) => removeKeyAction(id))
+})
 </script>
 
 <style scoped>
