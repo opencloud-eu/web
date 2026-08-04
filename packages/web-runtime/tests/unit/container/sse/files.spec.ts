@@ -14,15 +14,18 @@ import {
   onSSEFileLockingEvent,
   onSSEFileTouchedEvent,
   onSSEFolderCreatedEvent,
+  onSSEItemFavoriteAddedEvent,
+  onSSEItemFavoriteRemovedEvent,
   onSSEItemMovedEvent,
   onSSEItemRenamedEvent,
   onSSEItemRestoredEvent,
   onSSEItemTrashedEvent
 } from '../../../../src/container/sse'
-import { Router } from 'vue-router'
+import { RouteLocation } from 'vue-router'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+import { User } from '@opencloud-eu/web-client/graph/generated'
+import { createTestingPinia, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { Language } from 'vue3-gettext'
 import PQueue from 'p-queue'
 
@@ -423,6 +426,105 @@ describe('file events', () => {
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
   })
+
+  describe('onSSEItemFavoriteAddedEvent', () => {
+    it('calls "updateResourceField" when resource has been marked as favorite', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ resources: [favoritedResource] })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith({
+        id: favoritedResource.id,
+        field: 'starred',
+        value: true
+      })
+    })
+    it('calls "setCurrentFolder" when the current folder has been marked as favorite', async () => {
+      const mocks = getMocks()
+      const sseData = mock<EventSchemaType>({
+        itemid: mocks.resourcesStore.currentFolder.id,
+        spaceid: 'space1'
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
+        expect.objectContaining({ id: mocks.resourcesStore.currentFolder.id, starred: true })
+      )
+    })
+    it('calls "upsertResource" when being on the favorites view', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ currentRouteName: 'files-common-favorites' })
+      mocks.clientService.webdav.getFileInfo.mockResolvedValue(favoritedResource)
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
+      expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(favoritedResource)
+    })
+    it('does not trigger any action when initiator ids are identical', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ resources: [favoritedResource] })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId,
+        initiatorid: 'local1'
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('onSSEItemFavoriteRemovedEvent', () => {
+    it('calls "updateResourceField" when resource has been unmarked as favorite', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ resources: [favoritedResource] })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId
+      })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith({
+        id: favoritedResource.id,
+        field: 'starred',
+        value: false
+      })
+    })
+    it('calls "removeResources" when being on the favorites view', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({
+        resources: [favoritedResource],
+        currentRouteName: 'files-common-favorites'
+      })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId
+      })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([favoritedResource])
+      expect(mocks.clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+    })
+    it('does not trigger any action when the resource is not loaded on the favorites view', async () => {
+      const mocks = getMocks({ currentRouteName: 'files-common-favorites' })
+      const sseData = mock<EventSchemaType>({ itemid: 'file1', spaceid: 'space1' })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    it('does not trigger any action when initiator ids are identical', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ resources: [favoritedResource] })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId,
+        initiatorid: 'local1'
+      })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+    })
+  })
 })
 const getMocks = ({
   currentFolder = mockDeep<Resource>({
@@ -431,8 +533,14 @@ const getMocks = ({
     storageId: 'space1'
   }),
   resources = [],
-  spaces = [mockDeep<SpaceResource>({ id: 'space1' })]
-}: { currentFolder?: Resource; resources?: Resource[]; spaces?: SpaceResource[] } = {}) => {
+  spaces = [mockDeep<SpaceResource>({ id: 'space1' })],
+  currentRouteName = 'files-spaces-generic'
+}: {
+  currentFolder?: Resource
+  resources?: Resource[]
+  spaces?: SpaceResource[]
+  currentRouteName?: string
+} = {}) => {
   createTestingPinia()
   const resourcesStore = useResourcesStore()
   resourcesStore.currentFolder = currentFolder
@@ -441,12 +549,15 @@ const getMocks = ({
   spacesStore.spaces = spaces
   const messageStore = useMessages()
   const userStore = useUserStore()
+  userStore.user = mockDeep<User>({ id: '1' })
   const sharesStore = useSharesStore()
   const configStore = useConfigStore()
   const authStore = useAuthStore()
   const clientService = mockDeep<ClientService>({ initiatorId: 'local1' })
   const previewService = mockDeep<PreviewService>()
-  const router = mockDeep<Router>()
+  const { $router: router } = defaultComponentMocks({
+    currentRoute: mock<RouteLocation>({ name: currentRouteName })
+  })
   const language = mockDeep<Language>({
     $gettext: vi.fn((m) => m)
   })

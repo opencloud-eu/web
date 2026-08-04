@@ -1,7 +1,8 @@
 import {
   createFileRouteOptions,
   ImageDimension,
-  isItemInCurrentFolder
+  isItemInCurrentFolder,
+  isLocationCommonActive
 } from '@opencloud-eu/web-pkg'
 import { SSEEventOptions } from './types'
 
@@ -311,4 +312,62 @@ export const onSSEFolderCreatedEvent = async ({
   }
 
   resourcesStore.upsertResource(resource)
+}
+
+/**
+ * Favorites are user specific, hence the favorite state of the resources currently
+ * loaded only ever needs to be updated for the user receiving the event. While on the
+ * favorites view the resource additionally needs to be added to or removed from the list.
+ */
+async function applyFavoriteState(
+  { sseData, resourcesStore, spacesStore, userStore, clientService, router }: SSEEventOptions,
+  starred: boolean
+) {
+  if (sseData.initiatorid === clientService.initiatorId) {
+    // If initiated by current client (browser tab), action unnecessary. Web manages its own logic, return early.
+    return
+  }
+
+  if (isLocationCommonActive(router, 'files-common-favorites')) {
+    if (!starred) {
+      const resource = resourcesStore.resources.find((r) => r.id === sseData.itemid)
+
+      if (!resource) {
+        return
+      }
+
+      return resourcesStore.removeResources([resource])
+    }
+
+    const space = spacesStore.spaces.find((space) => space.id === sseData.spaceid)
+    if (!space) {
+      return
+    }
+
+    const resource = await clientService.webdav.getFileInfo(space, {
+      path: '',
+      fileId: sseData.itemid
+    })
+
+    if (!resource) {
+      return
+    }
+
+    return resourcesStore.upsertResource(resource)
+  }
+
+  const currentFolder = resourcesStore.currentFolder
+  if (currentFolder?.id === sseData.itemid) {
+    resourcesStore.setCurrentFolder({ ...currentFolder, starred })
+  }
+
+  resourcesStore.updateResourceField({ id: sseData.itemid, field: 'starred', value: starred })
+}
+
+export const onSSEItemFavoriteAddedEvent = (options: SSEEventOptions) => {
+  return applyFavoriteState(options, true)
+}
+
+export const onSSEItemFavoriteRemovedEvent = (options: SSEEventOptions) => {
+  return applyFavoriteState(options, false)
 }
