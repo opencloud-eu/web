@@ -16,6 +16,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.66.0 [[#3027](https://github.com/opencloud-eu/web/pull/3027)]
 - chore(deps): update pnpm to v11.20.0 [[#3023](https://github.com/opencloud-eu/web/pull/3023)]
 - chore(deps): update dependency dompurify to v3.4.13 [[#3026](https://github.com/opencloud-eu/web/pull/3026)]
 - chore(deps): update node.js to v24.19.0 [[#3021](https://github.com/opencloud-eu/web/pull/3021)]
