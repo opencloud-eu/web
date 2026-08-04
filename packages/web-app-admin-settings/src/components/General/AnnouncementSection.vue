@@ -56,7 +56,7 @@
     <div class="border border-role-outline-variant rounded-lg overflow-hidden">
       <text-editor-provider :editor="infoEditor">
         <text-editor-toolbar />
-        <text-editor-content class="min-h-[32rem] max-h-[48rem] px-3 py-2 overflow-auto" />
+        <text-editor-content class="min-h-[32rem] max-h-[48rem] py-2 overflow-auto" />
       </text-editor-provider>
     </div>
     <div class="flex items-center justify-between gap-2 mt-3">
