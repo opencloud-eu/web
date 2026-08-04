@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick, ref } from 'vue'
-import type { TextEditorInstance } from '../../../../src/editor/types'
+import type { TextEditorInstance, TextEditorLinkPanelRequest } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
 import { EditorActionGroup } from '../../../../src/editor/composables'
-import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('@tiptap/vue-3', () => ({
   EditorContent: defineComponent({
@@ -12,6 +12,12 @@ vi.mock('@tiptap/vue-3', () => ({
     props: { editor: { type: Object, required: false } },
     template: '<div class="mock-editor-content" />'
   })
+}))
+
+vi.mock('@tiptap/vue-3/menus', () => ({
+  BubbleMenu: {
+    template: '<div class="mock-bubble-menu"><slot /></div>'
+  }
 }))
 
 vi.mock('@tiptap/extension-drag-handle-vue-3', () => ({
@@ -36,9 +42,8 @@ function mountEditorContent({
 } = {}) {
   const setContent = vi.fn()
   const insertContent = vi.fn()
-  const insertContentAt = vi.fn()
-  const setTextSelection = vi.fn()
-  const focus = vi.fn()
+  const registerPlugin = vi.fn()
+  const unregisterPlugin = vi.fn()
   const run = vi.fn()
 
   const chain = vi.fn(() => ({
@@ -57,6 +62,10 @@ function mountEditorContent({
   const textEditor = {
     editor: ref({
       commands: { setContent, insertContent },
+      registerPlugin,
+      unregisterPlugin,
+      getAttributes: vi.fn(() => ({})),
+      isActive: vi.fn(() => false),
       chain,
       state: {
         doc: {
@@ -74,9 +83,11 @@ function mountEditorContent({
     readonly: ref(false),
     state: {
       sourceMode: ref(sourceMode),
+      linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
       editorZoom: ref(100)
     },
     actionGroups: (): EditorActionGroup[] => [],
+    actions: vi.fn(() => ({})),
     getContent: vi.fn(() => content),
     isEmpty: ref(false),
     isFocused: ref(false),
@@ -85,13 +96,10 @@ function mountEditorContent({
     destroy: vi.fn()
   } as unknown as TextEditorInstance
 
-  const defaultMocks = defaultComponentMocks()
-
   const wrapper = mount(TextEditorContent, {
     global: {
-      mocks: defaultMocks,
-      provide: { textEditor, defaultMocks },
-      plugins: [...defaultPlugins()]
+      plugins: [...defaultPlugins()],
+      provide: { textEditor }
     }
   })
 

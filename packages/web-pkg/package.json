@@ -54,6 +54,7 @@
     "@opencloud-eu/web-client": "workspace:^",
     "@sentry/vue": "^10.46.0",
     "@tiptap/core": "^3.28.0",
+    "@tiptap/extension-bubble-menu": "^3.29.2",
     "@tiptap/extension-document": "^3.28.0",
     "@tiptap/extension-drag-handle": "^3.28.0",
     "@tiptap/extension-drag-handle-vue-3": "^3.28.0",

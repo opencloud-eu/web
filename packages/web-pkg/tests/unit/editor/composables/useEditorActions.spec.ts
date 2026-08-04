@@ -390,8 +390,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toEqual({
         range: { from: 1, to: 8 },
         href: 'https://example.com',
-        text: 'Example',
-        view: 'edit'
+        text: 'Example'
       })
       editor.destroy()
     })
@@ -405,8 +404,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toEqual({
         range: { from: 1, to: 8 },
         href: '',
-        text: 'Example',
-        view: 'edit'
+        text: 'Example'
       })
       editor.destroy()
     })
@@ -420,8 +418,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toMatchObject({
         range: { from: 1, to: 1 },
         href: '',
-        text: '',
-        view: 'edit'
+        text: ''
       })
       editor.destroy()
     })
@@ -544,6 +541,21 @@ describe('useEditorActions', () => {
         })
         actions.deleteColumn().slashCommandAction!({ editor, range: mockRange })
         expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+        expect(editor._chain.deleteTable).toHaveBeenCalled()
+      })
+    })
+
+    describe('deleteTable', () => {
+      it('isEnabled returns editor.isActive("table")', () => {
+        const inTable = createMockEditor({ isActive: (type) => type === 'table' })
+        const notInTable = createMockEditor()
+        expect(actions.deleteTable().isEnabled!(inTable)).toBe(true)
+        expect(actions.deleteTable().isEnabled!(notInTable)).toBe(false)
+      })
+
+      it('toolbarAction calls deleteTable', () => {
+        const editor = createMockEditor()
+        actions.deleteTable().toolbarAction!(editor)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
     })

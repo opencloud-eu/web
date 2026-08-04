@@ -170,11 +170,10 @@ function mountPanel(content: string) {
 
 async function openPanel(
   context: ReturnType<typeof mountPanel>,
-  selection: number | { from: number; to: number },
-  view: 'actions' | 'edit' = 'edit'
+  selection: number | { from: number; to: number }
 ) {
   context.tiptapEditor.commands.setTextSelection(selection)
-  requestLinkPanel(context.tiptapEditor, context.state, { view })
+  requestLinkPanel(context.tiptapEditor, context.state)
   await nextTick()
   await flushPromises()
 }
@@ -223,106 +222,6 @@ describe('TextEditorLinkPanel', () => {
     const icons = context.wrapper.findAll('[data-icon]')
     expect(icons.map((icon) => icon.attributes('data-icon'))).toEqual(['link', 'text'])
     expect(icons[1].attributes('data-fill-type')).toBe('none')
-    context.tiptapEditor.destroy()
-  })
-
-  it('renders neutral link actions with a visible Edit Link label', async () => {
-    const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
-    const focus = vi.spyOn(HTMLElement.prototype, 'focus')
-    await openPanel(context, 2, 'actions')
-
-    expect(context.wrapper.findAll('input')).toHaveLength(0)
-    expect(context.wrapper.find('h1, h2, h3, p').exists()).toBe(false)
-    const panel = context.wrapper.get('.text-editor-link-panel')
-    expect(panel.classes()).toEqual(
-      expect.arrayContaining(['w-auto!', 'overflow-hidden!', 'rounded-md!'])
-    )
-    expect(panel.classes()).not.toContain('overflow-auto')
-    expect(panel.classes()).not.toContain('overflow-scroll')
-    expect(panel.attributes('data-padding-size')).toBe('xsmall')
-
-    const actionRow = context.wrapper.get('.text-editor-link-panel-actions')
-    expect(actionRow.classes()).toEqual(
-      expect.arrayContaining(['inline-flex', 'flex-nowrap', 'items-center'])
-    )
-    expect(actionRow.classes()).not.toContain('w-full')
-    expect(actionRow.classes()).not.toContain('overflow-auto')
-    expect(actionRow.classes()).not.toContain('overflow-scroll')
-    expect(actionRow.attributes('tabindex')).toBe('-1')
-    expect(focus.mock.instances.at(-1)).toBe(actionRow.element)
-    expect(focus).toHaveBeenLastCalledWith({ preventScroll: true })
-    focus.mockRestore()
-
-    const buttons = context.wrapper.findAll('button')
-    expect(buttons).toHaveLength(3)
-    buttons.forEach((button) => {
-      expect(button.attributes('appearance')).toBe('raw')
-      expect(button.attributes('aria-pressed')).toBeUndefined()
-      expect(button.classes()).toEqual(
-        expect.arrayContaining(['h-8', 'shrink-0', 'justify-center'])
-      )
-      expect(button.classes()).not.toContain('min-w-[42px]')
-      expect(button.classes()).not.toContain('active')
-      expect(button.classes()).not.toContain('bg-role-secondary-container')
-    })
-    expect(buttons[0].text()).toBe('Edit Link')
-    expect(buttons[0].attributes('aria-label')).toBe('Edit Link')
-    expect(buttons[0].classes()).toEqual(expect.arrayContaining(['px-2', 'py-0']))
-    expect(buttons[1].text()).toBe('')
-    expect(buttons[1].classes()).toEqual(expect.arrayContaining(['w-8', 'p-0']))
-    expect(buttons[1].attributes('aria-label')).toBe('Open link in a new tab')
-    expect(buttons[2].text()).toBe('')
-    expect(buttons[2].classes()).toEqual(expect.arrayContaining(['w-8', 'p-0']))
-    expect(buttons[2].attributes('aria-label')).toBe('Unlink')
-
-    const icons = context.wrapper.findAll('[data-icon]')
-    expect(icons.map((icon) => icon.attributes('data-icon'))).toEqual([
-      'edit-2',
-      'external-link',
-      'link-unlink'
-    ])
-    expect(icons[2].attributes('data-fill-type')).toBe('none')
-
-    const separators = context.wrapper.findAll('[role="separator"]')
-    expect(separators).toHaveLength(2)
-    separators.forEach((separator) => {
-      expect(separator.attributes('aria-orientation')).toBe('vertical')
-      expect(separator.attributes('tabindex')).toBeUndefined()
-      expect(separator.classes()).toEqual(
-        expect.arrayContaining(['h-5', 'w-px', 'shrink-0', 'bg-role-outline-variant'])
-      )
-    })
-
-    await buttons[0].trigger('click')
-    await flushPromises()
-
-    const inputs = context.wrapper.findAll('input')
-    expect(inputs).toHaveLength(2)
-    expect(inputs[0].element.value).toBe('https://opencloud.eu')
-    expect(inputs[1].element.value).toBe('OpenCloud')
-    const labels = context.wrapper.findAll('label')
-    expect(labels).toHaveLength(2)
-    labels.forEach((label, index) => {
-      expect(label.classes()).toContain('sr-only')
-      expect(label.attributes('for')).toBe(inputs[index].attributes('id'))
-    })
-    expect(context.wrapper.findAll('.text-editor-link-panel-input-row')).toHaveLength(2)
-    expect(context.wrapper.findAll('.text-editor-link-panel-input')).toHaveLength(2)
-    const editIcons = context.wrapper.findAll('[data-icon]')
-    expect(editIcons.map((icon) => icon.attributes('data-icon'))).toEqual(['link', 'text'])
-    expect(editIcons[1].attributes('data-fill-type')).toBe('none')
-    expect(context.state.linkPanel.value).toMatchObject({
-      range: { from: 1, to: 10 },
-      view: 'edit'
-    })
-    expect(panel.classes()).toContain('w-[min(20rem,calc(100vw-10px))]!')
-    expect(panel.classes()).not.toContain('w-auto!')
-    expect(panel.attributes('data-padding-size')).toBe('small')
-
-    await inputs[0].trigger('keydown', { key: 'Escape' })
-    await openPanel(context, 2, 'actions')
-    expect(context.wrapper.findAll('input')).toHaveLength(0)
-    expect(context.wrapper.findAll('button')).toHaveLength(3)
     context.tiptapEditor.destroy()
   })
 
@@ -436,37 +335,6 @@ describe('TextEditorLinkPanel', () => {
     context.tiptapEditor.destroy()
   })
 
-  it('removes only the link mark and preserves its text', async () => {
-    const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
-    await openPanel(context, 2, 'actions')
-
-    await context.wrapper.get('button[aria-label="Unlink"]').trigger('click')
-
-    expect(context.tiptapEditor.getHTML()).toBe('<p>OpenCloud</p>')
-    expect(context.state.linkPanel.value).toBeNull()
-    context.tiptapEditor.destroy()
-  })
-
-  it('opens only normalized, safe URLs', async () => {
-    const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
-    const open = vi.spyOn(window, 'open').mockImplementation(() => null)
-    await openPanel(context, 2, 'actions')
-
-    context.state.linkPanel.value!.href = 'javascript:alert(1)'
-    await nextTick()
-    expect(
-      context.wrapper.get('button[aria-label="Open link in a new tab"]').attributes('disabled')
-    ).toBeDefined()
-    await context.wrapper.get('button[aria-label="Open link in a new tab"]').trigger('click')
-    expect(open).not.toHaveBeenCalled()
-
-    context.state.linkPanel.value!.href = 'opencloud.eu'
-    await nextTick()
-    await context.wrapper.get('button[aria-label="Open link in a new tab"]').trigger('click')
-    expect(open).toHaveBeenCalledWith('https://opencloud.eu/', '_blank', 'noopener,noreferrer')
-    context.tiptapEditor.destroy()
-  })
-
   it('discards edits on Escape and exposes accessible field names', async () => {
     const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
     await openPanel(context, 2)
@@ -487,21 +355,6 @@ describe('TextEditorLinkPanel', () => {
     expect(context.tiptapEditor.getHTML()).toContain('href="https://opencloud.eu"')
     expect(context.state.linkPanel.value).toBeNull()
 
-    context.tiptapEditor.destroy()
-  })
-
-  it('closes action view on Escape without changing the link', async () => {
-    const context = mountPanel('<p><a href="https://opencloud.eu">OpenCloud</a></p>')
-    await openPanel(context, 2, 'actions')
-
-    await context.wrapper.get('.text-editor-link-panel-actions').trigger('keydown', {
-      key: 'Escape'
-    })
-
-    expect(context.tiptapEditor.getHTML()).toContain(
-      '<a target="_blank" rel="noopener noreferrer" href="https://opencloud.eu">OpenCloud</a>'
-    )
-    expect(context.state.linkPanel.value).toBeNull()
     context.tiptapEditor.destroy()
   })
 })
