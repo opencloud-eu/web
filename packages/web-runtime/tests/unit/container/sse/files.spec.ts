@@ -433,8 +433,7 @@ describe('file events', () => {
       const mocks = getMocks({ resources: [favoritedResource] })
       const sseData = mock<EventSchemaType>({
         itemid: favoritedResource.id,
-        spaceid: favoritedResource.storageId,
-        affecteduserids: ['1']
+        spaceid: favoritedResource.storageId
       })
       await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith({
@@ -465,17 +464,6 @@ describe('file events', () => {
       await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
       expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).toHaveBeenCalledWith(favoritedResource)
-    })
-    it('does not trigger any action when the current user is not affected', async () => {
-      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
-      const mocks = getMocks({ resources: [favoritedResource] })
-      const sseData = mock<EventSchemaType>({
-        itemid: favoritedResource.id,
-        spaceid: favoritedResource.storageId,
-        affecteduserids: ['2']
-      })
-      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
-      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
     it('does not trigger any action when initiator ids are identical', async () => {
       const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
