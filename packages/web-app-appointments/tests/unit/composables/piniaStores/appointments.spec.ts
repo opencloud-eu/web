@@ -10,9 +10,10 @@ describe('appointments store', () => {
   it('stores appointments and groups them by day', () => {
     const store = useAppointmentsStore()
 
+    store.setCalendars([calendar({ id: 'c' })])
     store.setAppointments([
-      appointment({ id: '1', start: '2026-06-25T08:00:00.000Z' }),
-      appointment({ id: '2', start: '2026-06-25T10:00:00.000Z' })
+      appointment({ id: '1', calendarId: 'c', start: '2026-06-25T08:00:00.000Z' }),
+      appointment({ id: '2', calendarId: 'c', start: '2026-06-25T10:00:00.000Z' })
     ])
 
     expect(store.appointments).toHaveLength(2)
@@ -64,7 +65,7 @@ describe('appointments store', () => {
     expect(store.error).toBeNull()
   })
 
-  it('loads calendars and selects the default calendar', async () => {
+  it('loads calendars and selects all calendars for the combined month view', async () => {
     const store = useAppointmentsStore()
     const loader = vi
       .fn()
@@ -77,8 +78,8 @@ describe('appointments store', () => {
 
     expect(loader).toHaveBeenCalledWith('account-1')
     expect(store.calendars).toHaveLength(2)
-    expect(store.selectedCalendarId).toBe('c')
-    expect(store.selectedCalendarIds).toEqual(['c'])
+    expect(store.selectedCalendarId).toBe('personal')
+    expect(store.selectedCalendarIds).toEqual(['personal', 'c'])
     expect(store.isLoadingCalendars).toBeFalsy()
     expect(store.calendarError).toBeNull()
   })
@@ -98,13 +99,44 @@ describe('appointments store', () => {
 
     store.setCalendars([calendar({ id: 'personal' }), calendar({ id: 'c' })])
     store.toggleSelectedCalendarId('c')
+
+    expect(store.selectedCalendarIds).toEqual(['personal'])
+
     store.toggleSelectedCalendarId('personal')
 
-    expect(store.selectedCalendarIds).toEqual(['c'])
-
-    store.toggleSelectedCalendarId('c')
-
     expect(store.selectedCalendarIds).toEqual([])
+  })
+
+  it('filters visible appointments and occurrences when a calendar is hidden', () => {
+    const store = useAppointmentsStore()
+    store.setCalendars([calendar({ id: 'personal' }), calendar({ id: 'team' })])
+    store.setAppointments([
+      appointment({ id: 'personal-event', calendarId: 'personal' }),
+      appointment({ id: 'team-event', calendarId: 'team' })
+    ])
+    store.setSelectedOccurrence(
+      store.visibleOccurrences.find(({ calendarId }) => calendarId === 'team')?.id || null
+    )
+
+    store.setCalendarSelected('team', false)
+
+    expect(store.visibleAppointments.map(({ id }) => id)).toEqual(['personal-event'])
+    expect(store.visibleOccurrences).toHaveLength(1)
+    expect(store.getAppointmentsForDay('2026-06-25')).toHaveLength(1)
+    expect(store.selectedOccurrence).toBeNull()
+  })
+
+  it('tracks the active account and selected occurrence', () => {
+    const store = useAppointmentsStore()
+    store.setActiveAccountId('account-1')
+    store.setCalendars([calendar({ id: 'personal' })])
+    store.setAppointments([appointment({ id: 'event-1', calendarId: 'personal' })])
+    store.setSelectedOccurrence(store.visibleOccurrences[0].id)
+
+    expect(store.activeAccountId).toBe('account-1')
+    expect(store.selectedOccurrence?.appointmentId).toBe('event-1')
+    expect(store.appointmentsFetchState).toBe('success')
+    expect(store.calendarsFetchState).toBe('success')
   })
 
   it('stores load errors', async () => {
@@ -121,21 +153,30 @@ describe('appointments store', () => {
 
     expect(store.error).toBe(error)
     expect(store.isLoading).toBeFalsy()
+    expect(store.appointmentsFetchState).toBe('error')
   })
 })
 
-const appointment = (overrides: Partial<Appointment>): Appointment => ({
-  id: 'appointment',
-  title: 'Planning',
-  start: '2026-06-25T08:00:00.000Z',
-  end: '2026-06-25T09:00:00.000Z',
-  allDay: false,
-  participants: [],
-  ...overrides
-})
+function appointment(overrides: Partial<Appointment>): Appointment {
+  return {
+    id: 'appointment',
+    title: 'Planning',
+    start: '2026-06-25T08:00:00.000Z',
+    end: '2026-06-25T09:00:00.000Z',
+    allDay: false,
+    participants: [],
+    recurrenceRules: [],
+    hasRecurrence: false,
+    hasReminder: false,
+    excluded: false,
+    ...overrides
+  }
+}
 
-const calendar = (overrides: Partial<Calendar>): Calendar => ({
-  id: 'calendar',
-  name: 'Calendar',
-  ...overrides
-})
+function calendar(overrides: Partial<Calendar>): Calendar {
+  return {
+    id: 'calendar',
+    name: 'Calendar',
+    ...overrides
+  }
+}

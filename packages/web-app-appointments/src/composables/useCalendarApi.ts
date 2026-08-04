@@ -1,14 +1,20 @@
 import { urlJoin } from '@opencloud-eu/web-client'
-import type { HttpClient } from '@opencloud-eu/web-pkg'
-import type { Appointment, AppointmentDateRange, Calendar } from '../types'
-import { parseAppointmentsResponse, parseCalendarsResponse } from '../types'
+import { useClientService, useConfigStore, type HttpClient } from '@opencloud-eu/web-pkg'
+import { isAppointmentInRange } from '../helpers/date'
+import {
+  parseAppointmentsResponse,
+  parseCalendarsResponse,
+  type Appointment,
+  type AppointmentDateRange,
+  type Calendar
+} from '../types'
 
-export type AppointmentServiceOptions = {
+export type CalendarApiOptions = {
   client: HttpClient
   groupwareUrl: string
 }
 
-export type AppointmentService = {
+export type CalendarApi = {
   loadCalendars: (accountId: string, signal?: AbortSignal) => Promise<Calendar[]>
   loadAppointments: (
     accountId: string,
@@ -18,11 +24,18 @@ export type AppointmentService = {
   ) => Promise<Appointment[]>
 }
 
-export const createAppointmentService = ({
-  client,
-  groupwareUrl
-}: AppointmentServiceOptions): AppointmentService => {
-  const get = (url: string, signal?: AbortSignal) => {
+export function useCalendarApi() {
+  const configStore = useConfigStore()
+  const clientService = useClientService()
+
+  return createCalendarApi({
+    client: clientService.httpAuthenticated,
+    groupwareUrl: configStore.groupwareUrl
+  })
+}
+
+export function createCalendarApi({ client, groupwareUrl }: CalendarApiOptions): CalendarApi {
+  function get(url: string, signal?: AbortSignal) {
     if (signal) {
       return client.get(url, { signal })
     }
@@ -30,7 +43,7 @@ export const createAppointmentService = ({
     return client.get(url)
   }
 
-  const loadCalendars = async (accountId: string, signal?: AbortSignal) => {
+  async function loadCalendars(accountId: string, signal?: AbortSignal) {
     const { data } = await get(
       urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars'),
       signal
@@ -39,26 +52,26 @@ export const createAppointmentService = ({
     return parseCalendarsResponse(data)
   }
 
-  const loadAppointmentsFromCollection = async (
+  async function loadAppointmentsFromCollection(
     accountId: string,
     range: AppointmentDateRange,
     calendarId?: string,
     signal?: AbortSignal
-  ): Promise<Appointment[]> => {
+  ): Promise<Appointment[]> {
     const { data } = await get(
       urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars', 'events'),
       signal
     )
 
-    return filterAppointmentsByRange(parseAppointmentsResponse(data), range, calendarId)
+    return filterAppointments(parseAppointmentsResponse(data), range, calendarId)
   }
 
-  const loadAppointments = async (
+  async function loadAppointments(
     accountId: string,
     range: AppointmentDateRange,
     calendarId?: string | string[],
     signal?: AbortSignal
-  ): Promise<Appointment[]> => {
+  ): Promise<Appointment[]> {
     if (Array.isArray(calendarId)) {
       const appointmentLists: Appointment[][] = await Promise.all(
         calendarId.map((id) => loadAppointments(accountId, range, id, signal))
@@ -84,10 +97,14 @@ export const createAppointmentService = ({
         signal
       )
 
-      return filterAppointmentsByRange(parseAppointmentsResponse(data), range, calendarId)
-    } catch (e) {
-      if (!shouldFallbackToCollectionEndpoint(e)) {
-        throw e
+      const appointments = parseAppointmentsResponse(data).map((appointment) => ({
+        ...appointment,
+        calendarId: appointment.calendarId || calendarId
+      }))
+      return filterAppointments(appointments, range, calendarId)
+    } catch (error) {
+      if (!shouldFallbackToCollectionEndpoint(error)) {
+        throw error
       }
 
       return loadAppointmentsFromCollection(accountId, range, calendarId, signal)
@@ -100,7 +117,7 @@ export const createAppointmentService = ({
   }
 }
 
-const shouldFallbackToCollectionEndpoint = (error: unknown) => {
+function shouldFallbackToCollectionEndpoint(error: unknown) {
   if (!error || typeof error !== 'object' || !('response' in error)) {
     return false
   }
@@ -109,35 +126,25 @@ const shouldFallbackToCollectionEndpoint = (error: unknown) => {
   return [400, 404, 405].includes(response?.status || 0)
 }
 
-const filterAppointmentsByRange = (
+function filterAppointments(
   appointments: Appointment[],
   range: AppointmentDateRange,
   calendarId?: string
-) => {
-  const rangeStart = new Date(range.start).getTime()
-  const rangeEnd = new Date(range.end).getTime()
-
+) {
   return appointments.filter((appointment) => {
-    if (calendarId && appointment.calendarId && appointment.calendarId !== calendarId) {
+    if (calendarId && appointment.calendarId !== calendarId) {
       return false
     }
 
-    const appointmentStart = new Date(appointment.start).getTime()
-    const appointmentEnd = new Date(appointment.end).getTime()
-
-    if (Number.isNaN(appointmentStart) || Number.isNaN(appointmentEnd)) {
-      return false
-    }
-
-    return appointmentStart <= rangeEnd && appointmentEnd >= rangeStart
+    return isAppointmentInRange(appointment, range)
   })
 }
 
-const deduplicateAppointments = (appointments: Appointment[]) => {
+function deduplicateAppointments(appointments: Appointment[]) {
   const seen = new Set<string>()
 
   return appointments.filter((appointment) => {
-    const key = `${appointment.calendarId || ''}:${appointment.id}`
+    const key = `${appointment.calendarId || ''}:${appointment.id}:${appointment.recurrenceId || appointment.start}`
     if (seen.has(key)) {
       return false
     }
