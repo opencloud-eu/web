@@ -121,7 +121,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/core'
 import { OcButton, OcIcon, OcSwitch, OcTextInput } from '@opencloud-eu/design-system/components'
@@ -173,8 +182,7 @@ const { $gettext } = useGettext()
 
 const resultCount = ref(0)
 const currentResultPosition = ref(0)
-const searchInputRef = ref<InstanceType<typeof OcTextInput>>()
-
+const searchInputRef = useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('searchInputRef')
 const scrollToCurrentResult = () => {
   const storage = editor.storage.findAndReplace
   const currentIndex = storage?.currentIndex
