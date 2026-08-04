@@ -1,12 +1,17 @@
-import { z } from 'zod'
 import { DateTime, Duration } from 'luxon'
+import { z } from 'zod'
 
-export const AppointmentParticipantSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().optional(),
-  status: z.string().optional(),
-  role: z.string().optional()
-})
+export const AppointmentParticipantSchema = z
+  .object({
+    id: z.string().optional(),
+    name: z.string().optional(),
+    email: z.string().optional(),
+    status: z.string().optional(),
+    participationStatus: z.string().optional(),
+    role: z.string().optional(),
+    roles: z.record(z.string(), z.boolean()).optional()
+  })
+  .passthrough()
 
 const AppointmentLocationSchema = z
   .object({
@@ -14,50 +19,48 @@ const AppointmentLocationSchema = z
   })
   .passthrough()
 
-export const AppointmentSchema = z
-  .object({
-    id: z.string(),
-    calendarId: z.string().optional(),
-    calendarIds: z.record(z.string(), z.boolean()).optional(),
-    accountId: z.string().optional(),
-    title: z.string().optional(),
-    name: z.string().optional(),
-    summary: z.string().optional(),
-    description: z.string().optional(),
-    location: z.string().optional(),
-    locations: z.record(z.string(), AppointmentLocationSchema).optional(),
-    start: z.string(),
-    end: z.string().optional(),
-    duration: z.string().optional(),
-    timeZone: z.string().optional(),
-    showWithoutTime: z.boolean().optional(),
-    allDay: z.boolean().optional(),
-    color: z.string().optional(),
-    organizer: AppointmentParticipantSchema.optional(),
-    participants: z.array(AppointmentParticipantSchema).optional(),
-    recurrenceRule: z.unknown().optional()
-  })
-  .transform((event) => {
-    const calendarId = event.calendarId || Object.keys(event.calendarIds || {})[0]
-    const end = event.end || addDurationToDateString(event.start, event.duration, event.timeZone)
-    const location = event.location || Object.values(event.locations || {})[0]?.name
+const RecurrenceRuleSchema = z.union([z.string(), z.record(z.string(), z.unknown())])
+const AppointmentParticipantsSchema = z.union([
+  z.array(AppointmentParticipantSchema),
+  z.record(z.string(), AppointmentParticipantSchema)
+])
+const AppointmentAlertsSchema = z.union([z.array(z.unknown()), z.record(z.string(), z.unknown())])
 
-    return {
-      id: event.id,
-      calendarId,
-      accountId: event.accountId,
-      title: event.title || event.name || event.summary || '',
-      description: event.description,
-      location,
-      start: event.start,
-      end,
-      allDay: event.allDay || event.showWithoutTime || false,
-      color: event.color,
-      organizer: event.organizer,
-      recurrenceRule: typeof event.recurrenceRule === 'string' ? event.recurrenceRule : undefined,
-      participants: event.participants || []
-    }
-  })
+const AppointmentInputSchema = z.object({
+  id: z.string(),
+  uid: z.string().optional(),
+  calendarId: z.string().optional(),
+  calendarIds: z.record(z.string(), z.boolean()).optional(),
+  accountId: z.string().optional(),
+  title: z.string().optional(),
+  name: z.string().optional(),
+  summary: z.string().optional(),
+  description: z.string().optional(),
+  location: z.string().optional(),
+  locations: z.record(z.string(), AppointmentLocationSchema).optional(),
+  start: z.string(),
+  end: z.string().optional(),
+  duration: z.string().optional(),
+  timeZone: z.string().nullable().optional(),
+  showWithoutTime: z.boolean().optional(),
+  allDay: z.boolean().optional(),
+  color: z.string().optional(),
+  organizer: AppointmentParticipantSchema.optional(),
+  participants: AppointmentParticipantsSchema.optional(),
+  privacy: z.string().optional(),
+  visibility: z.string().optional(),
+  status: z.string().optional(),
+  freeBusyStatus: z.string().optional(),
+  recurrenceRule: z.string().optional(),
+  recurrenceRules: z.array(RecurrenceRuleSchema).optional(),
+  recurrenceId: z.string().optional(),
+  recurrenceOverrides: z.record(z.string(), z.unknown()).optional(),
+  excluded: z.boolean().optional(),
+  alerts: AppointmentAlertsSchema.optional(),
+  useDefaultAlerts: z.boolean().optional()
+})
+
+export const AppointmentSchema = AppointmentInputSchema.transform(normalizeAppointment)
 
 export const AppointmentListResponseSchema = z.object({
   accountId: z.string().optional(),
@@ -119,8 +122,19 @@ export const CalendarObjectResponseSchema = z.object({
 
 export const CalendarsArrayResponseSchema = z.array(CalendarSchema)
 
+export type AppointmentParticipant = {
+  id?: string
+  name?: string
+  email?: string
+  status?: string
+  role?: string
+}
+
+export type AppointmentRecurrenceRule = string | Record<string, unknown>
+
 export type Appointment = {
   id: string
+  uid?: string
   calendarId?: string
   accountId?: string
   title: string
@@ -128,13 +142,32 @@ export type Appointment = {
   location?: string
   start: string
   end: string
+  timeZone?: string
   allDay: boolean
   color?: string
-  organizer?: z.infer<typeof AppointmentParticipantSchema>
-  recurrenceRule?: string
-  participants: z.infer<typeof AppointmentParticipantSchema>[]
+  organizer?: AppointmentParticipant
+  participants: AppointmentParticipant[]
+  privacy?: string
+  status?: string
+  freeBusyStatus?: string
+  recurrenceRules: AppointmentRecurrenceRule[]
+  recurrenceId?: string
+  hasRecurrence: boolean
+  hasReminder: boolean
+  excluded: boolean
 }
+
+export type AppointmentOccurrence = {
+  id: string
+  appointmentId: string
+  calendarId?: string
+  start: string
+  end: string
+  appointment: Appointment
+}
+
 export type AppointmentListResponse = z.infer<typeof AppointmentListResponseSchema>
+
 export type Calendar = {
   id: string
   name: string
@@ -148,7 +181,7 @@ export type AppointmentDateRange = {
   end: string
 }
 
-export const parseAppointmentsResponse = (data: unknown): Appointment[] => {
+export function parseAppointmentsResponse(data: unknown): Appointment[] {
   const arrayResponse = AppointmentsArrayResponseSchema.safeParse(data)
   if (arrayResponse.success) {
     return arrayResponse.data
@@ -172,21 +205,7 @@ export const parseAppointmentsResponse = (data: unknown): Appointment[] => {
   return AppointmentSearchResultsSchema.parse(data).results
 }
 
-const addDurationToDateString = (start: string, duration?: string, timeZone?: string) => {
-  if (!duration) {
-    return start
-  }
-
-  const startDate = DateTime.fromISO(start, timeZone ? { zone: timeZone } : undefined)
-  const parsedDuration = Duration.fromISO(duration)
-  if (!startDate.isValid || !parsedDuration.isValid) {
-    return start
-  }
-
-  return startDate.plus(parsedDuration).toUTC().toISO() || start
-}
-
-export const parseCalendarsResponse = (data: unknown): Calendar[] => {
+export function parseCalendarsResponse(data: unknown): Calendar[] {
   const listResponse = CalendarListResponseSchema.safeParse(data)
   if (listResponse.success) {
     return listResponse.data.list
@@ -208,4 +227,94 @@ export const parseCalendarsResponse = (data: unknown): Calendar[] => {
   }
 
   return CalendarListResponseSchema.parse(data).list
+}
+
+type AppointmentInput = z.infer<typeof AppointmentInputSchema>
+type AppointmentParticipantInput = z.infer<typeof AppointmentParticipantSchema>
+
+function normalizeAppointment(event: AppointmentInput): Appointment {
+  const calendarId =
+    event.calendarId ||
+    Object.entries(event.calendarIds || {}).find(([, isMember]) => isMember)?.[0]
+  const participants = normalizeParticipants(event.participants)
+  const recurrenceRules: AppointmentRecurrenceRule[] = [
+    ...(event.recurrenceRule ? [event.recurrenceRule] : []),
+    ...(event.recurrenceRules || [])
+  ]
+
+  return {
+    id: event.id,
+    uid: event.uid,
+    calendarId,
+    accountId: event.accountId,
+    title: event.title || event.name || event.summary || '',
+    description: event.description,
+    location: event.location || Object.values(event.locations || {})[0]?.name,
+    start: event.start,
+    end: event.end || addDurationToDateString(event.start, event.duration, event.timeZone),
+    timeZone: event.timeZone || undefined,
+    allDay: event.allDay || event.showWithoutTime || false,
+    color: event.color,
+    organizer: event.organizer
+      ? normalizeParticipant(event.organizer)
+      : participants.find(({ role }) => ['chair', 'owner', 'organizer'].includes(role || '')),
+    participants,
+    privacy: event.privacy || event.visibility,
+    status: event.status,
+    freeBusyStatus: event.freeBusyStatus,
+    recurrenceRules,
+    recurrenceId: event.recurrenceId,
+    hasRecurrence: Boolean(
+      recurrenceRules.length ||
+      event.recurrenceId ||
+      Object.keys(event.recurrenceOverrides || {}).length
+    ),
+    hasReminder: Boolean(
+      event.useDefaultAlerts ||
+      (Array.isArray(event.alerts) ? event.alerts.length : Object.keys(event.alerts || {}).length)
+    ),
+    excluded: event.excluded || false
+  }
+}
+
+function normalizeParticipants(
+  participants: AppointmentInput['participants']
+): AppointmentParticipant[] {
+  if (!participants) {
+    return []
+  }
+
+  if (Array.isArray(participants)) {
+    return participants.map(normalizeParticipant)
+  }
+
+  return Object.entries(participants).map(([id, participant]) =>
+    normalizeParticipant({ ...participant, id })
+  )
+}
+
+function normalizeParticipant(participant: AppointmentParticipantInput): AppointmentParticipant {
+  return {
+    id: participant.id,
+    name: participant.name,
+    email: participant.email,
+    status: participant.status || participant.participationStatus,
+    role:
+      participant.role ||
+      Object.entries(participant.roles || {}).find(([, enabled]) => enabled)?.[0]
+  }
+}
+
+function addDurationToDateString(start: string, duration?: string, timeZone?: string | null) {
+  if (!duration) {
+    return start
+  }
+
+  const startDate = DateTime.fromISO(start, timeZone ? { zone: timeZone } : { setZone: true })
+  const parsedDuration = Duration.fromISO(duration)
+  if (!startDate.isValid || !parsedDuration.isValid) {
+    return start
+  }
+
+  return startDate.plus(parsedDuration).toISO() || start
 }

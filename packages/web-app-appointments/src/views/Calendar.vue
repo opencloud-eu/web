@@ -3,14 +3,22 @@
     <MonthView
       :days="monthDays"
       :current-month="currentMonth"
-      :appointments="appointments"
-      :appointments-by-day="appointmentsByDay"
+      :visible-occurrences="visibleOccurrences"
+      :occurrences-by-day="occurrencesByDay"
+      :calendar-color-by-id="calendarColorById"
       :is-loading="isLoading"
       :error="error"
       @previous="onPreviousMonth"
       @next="onNextMonth"
       @today="onToday"
       @select-date="setSelectedDate"
+      @select-appointment="setSelectedOccurrence"
+    />
+    <AppointmentDetailsModal
+      v-if="selectedOccurrence"
+      :occurrence="selectedOccurrence"
+      :calendar="selectedOccurrenceCalendar"
+      @close="setSelectedOccurrence(null)"
     />
   </div>
 </template>
@@ -25,9 +33,9 @@ import {
 import { computed, onMounted, ref, unref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import MonthView from '../components/MonthView.vue'
+import AppointmentDetailsModal from '../components/AppointmentDetailsModal.vue'
 import { useAppointmentsStore } from '../composables/piniaStores/appointments'
 import { useLoadAppointments } from '../composables/useLoadAppointments'
-import { formatDateForApi, getMonthGridDays, getMonthGridRange } from '../helpers/date'
 
 defineOptions({
   name: 'AppointmentsApp'
@@ -40,31 +48,37 @@ const { httpAuthenticated } = useClientService()
 const { loadAppointments, loadCalendars } = useLoadAppointments()
 
 const { currentAccount } = storeToRefs(accountsStore)
-const { appointments, appointmentsByDay, currentMonth, selectedCalendarIds, isLoading, error } =
-  storeToRefs(appointmentsStore)
-const { goToNextMonth, goToPreviousMonth, goToToday, setSelectedDate } = appointmentsStore
+const {
+  calendarColorById,
+  calendarsById,
+  currentMonthRange,
+  currentMonth,
+  error,
+  isLoading,
+  monthDays,
+  occurrencesByDay,
+  selectedCalendarIds,
+  selectedOccurrence,
+  visibleOccurrences
+} = storeToRefs(appointmentsStore)
+const { goToNextMonth, goToPreviousMonth, goToToday, setSelectedDate, setSelectedOccurrence } =
+  appointmentsStore
 
 const currentAccountIdQuery = useRouteQuery('accountId')
 const loadedAccountId = ref<string>()
 
-const monthDays = computed(() => getMonthGridDays(unref(currentMonth)))
-
-const visibleRange = computed(() => {
-  const range = getMonthGridRange(unref(currentMonth))
-  return {
-    start: formatDateForApi(range.start),
-    end: formatDateForApi(range.end)
-  }
-})
-
 const currentAccountId = computed(() => {
   return unref(currentAccount)?.accountId
+})
+const selectedOccurrenceCalendar = computed(() => {
+  const occurrence = unref(selectedOccurrence)
+  return occurrence?.calendarId ? unref(calendarsById)[occurrence.calendarId] : undefined
 })
 
 function ignoreLoadError(): void {}
 
 async function loadVisibleAppointments() {
-  appointmentsStore.setVisibleDateRange(unref(visibleRange))
+  appointmentsStore.setVisibleDateRange(unref(currentMonthRange))
 
   if (!unref(currentAccountId)) {
     appointmentsStore.setError(null)
@@ -78,7 +92,11 @@ async function loadVisibleAppointments() {
     return
   }
 
-  await loadAppointments(unref(currentAccountId), unref(visibleRange), unref(selectedCalendarIds))
+  await loadAppointments(
+    unref(currentAccountId),
+    unref(currentMonthRange),
+    unref(selectedCalendarIds)
+  )
 }
 
 async function loadAccountCalendars() {
@@ -86,8 +104,7 @@ async function loadAccountCalendars() {
   loadedAccountId.value = undefined
 
   if (!accountId) {
-    appointmentsStore.setCalendars([])
-    appointmentsStore.setAppointments([])
+    appointmentsStore.setActiveAccountId(null)
     return
   }
 
@@ -112,7 +129,7 @@ function onToday() {
   goToToday()
 }
 
-watch([visibleRange, selectedCalendarIds], () => {
+watch([currentMonthRange, selectedCalendarIds], () => {
   if (unref(loadedAccountId) !== unref(currentAccountId)) {
     return
   }

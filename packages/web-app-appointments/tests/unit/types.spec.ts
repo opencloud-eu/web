@@ -74,10 +74,43 @@ describe('appointment response parsing', () => {
         calendarId: 'c',
         title: 'Tagesplanung',
         start: '2026-06-25T09:00:00',
-        end: '2026-06-25T07:45:00.000Z',
-        location: 'OpenCloud Office'
+        end: '2026-06-25T09:45:00.000+02:00',
+        location: 'OpenCloud Office',
+        privacy: 'public',
+        status: 'confirmed'
       })
     )
+  })
+
+  it('normalizes JMAP participant, reminder and recurrence metadata for read-only details', () => {
+    const [appointment] = parseAppointmentsResponse({
+      results: [
+        {
+          ...stalwartEvent({ id: 'metadata', title: 'Team sync', start: '2026-06-25T09:00:00' }),
+          participants: {
+            ada: {
+              name: 'Ada',
+              email: 'ada@example.test',
+              participationStatus: 'accepted',
+              roles: { attendee: true }
+            }
+          },
+          recurrenceRules: [{ '@type': 'RecurrenceRule', frequency: 'weekly' }],
+          alerts: { reminder: { action: 'display' } }
+        }
+      ]
+    })
+
+    expect(appointment.participants).toEqual([
+      expect.objectContaining({
+        id: 'ada',
+        name: 'Ada',
+        status: 'accepted',
+        role: 'attendee'
+      })
+    ])
+    expect(appointment.hasRecurrence).toBeTruthy()
+    expect(appointment.hasReminder).toBeTruthy()
   })
 })
 

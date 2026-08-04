@@ -1,20 +1,14 @@
 import { useTask } from 'vue-concurrency'
-import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
-import { createAppointmentService } from '../services/appointmentService'
+import { useCalendarApi } from './useCalendarApi'
 import { useAppointmentsStore } from './piniaStores/appointments'
 import type { AppointmentDateRange } from '../types'
 
 let loadAppointmentsTask: ReturnType<typeof useTask> | null = null
 let loadCalendarsTask: ReturnType<typeof useTask> | null = null
 
-export const useLoadAppointments = () => {
-  const configStore = useConfigStore()
-  const clientService = useClientService()
+export function useLoadAppointments() {
   const appointmentsStore = useAppointmentsStore()
-  const appointmentService = createAppointmentService({
-    client: clientService.httpAuthenticated,
-    groupwareUrl: configStore.groupwareUrl
-  })
+  const calendarApi = useCalendarApi()
 
   if (!loadAppointmentsTask) {
     loadAppointmentsTask = useTask(function* (
@@ -28,7 +22,7 @@ export const useLoadAppointments = () => {
         calendarId,
         range,
         loader: (accountId, range, calendarId) =>
-          appointmentService.loadAppointments(accountId, range, calendarId, signal)
+          calendarApi.loadAppointments(accountId, range, calendarId, signal)
       })
     }).restartable()
   }
@@ -37,20 +31,20 @@ export const useLoadAppointments = () => {
     loadCalendarsTask = useTask(function* (signal, accountId: string) {
       return yield appointmentsStore.loadCalendarsForAccount({
         accountId,
-        loader: (accountId) => appointmentService.loadCalendars(accountId, signal)
+        loader: (accountId) => calendarApi.loadCalendars(accountId, signal)
       })
     }).restartable()
   }
 
-  const loadAppointments = (
+  function loadAppointments(
     accountId: string,
     range: AppointmentDateRange,
     calendarId?: string | string[]
-  ) => {
+  ) {
     return loadAppointmentsTask!.perform(accountId, range, calendarId)
   }
 
-  const loadCalendars = (accountId: string) => {
+  function loadCalendars(accountId: string) {
     return loadCalendarsTask!.perform(accountId)
   }
 

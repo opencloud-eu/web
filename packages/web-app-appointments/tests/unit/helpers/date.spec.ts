@@ -1,8 +1,9 @@
 import {
   addMonths,
+  createAppointmentOccurrences,
   getMonthGridDays,
   getMonthGridRange,
-  groupAppointmentsByDay,
+  groupAppointmentOccurrencesByDay,
   toDateKey
 } from '../../../src/helpers/date'
 import type { Appointment } from '../../../src/types'
@@ -30,8 +31,10 @@ describe('calendar date helpers', () => {
       appointment({ id: '3', start: '2026-06-26T10:00:00.000Z' })
     ]
 
-    expect(groupAppointmentsByDay(appointments)['2026-06-25']).toHaveLength(2)
-    expect(groupAppointmentsByDay(appointments)['2026-06-26']).toHaveLength(1)
+    const grouped = groupAppointmentOccurrencesByDay(createAppointmentOccurrences(appointments))
+
+    expect(grouped['2026-06-25']).toHaveLength(2)
+    expect(grouped['2026-06-26']).toHaveLength(1)
   })
 
   it('groups multi-day appointments on every covered day without including an exclusive end', () => {
@@ -43,7 +46,7 @@ describe('calendar date helpers', () => {
       })
     ]
 
-    const grouped = groupAppointmentsByDay(appointments)
+    const grouped = groupAppointmentOccurrencesByDay(createAppointmentOccurrences(appointments))
 
     expect(grouped['2026-06-25']).toHaveLength(1)
     expect(grouped['2026-06-26']).toHaveLength(1)
@@ -53,14 +56,30 @@ describe('calendar date helpers', () => {
   it('navigates months from the first of the target month', () => {
     expect(toDateKey(addMonths(new Date(2026, 5, 25), 1))).toBe('2026-07-01')
   })
+
+  it('creates stable backend occurrence ids and excludes cancelled recurrence instances', () => {
+    const occurrences = createAppointmentOccurrences([
+      appointment({ id: 'series', recurrenceId: '2026-06-25T08:00:00.000Z' }),
+      appointment({ id: 'excluded', excluded: true })
+    ])
+
+    expect(occurrences).toHaveLength(1)
+    expect(occurrences[0].id).toContain('series:2026-06-25T08:00:00.000Z')
+  })
 })
 
-const appointment = (overrides: Partial<Appointment>): Appointment => ({
-  id: 'appointment',
-  title: 'Planning',
-  start: '2026-06-25T08:00:00.000Z',
-  end: '2026-06-25T09:00:00.000Z',
-  allDay: false,
-  participants: [],
-  ...overrides
-})
+function appointment(overrides: Partial<Appointment>): Appointment {
+  return {
+    id: 'appointment',
+    title: 'Planning',
+    start: '2026-06-25T08:00:00.000Z',
+    end: '2026-06-25T09:00:00.000Z',
+    allDay: false,
+    participants: [],
+    recurrenceRules: [],
+    hasRecurrence: false,
+    hasReminder: false,
+    excluded: false,
+    ...overrides
+  }
+}
