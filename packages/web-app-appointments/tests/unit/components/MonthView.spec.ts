@@ -1,26 +1,23 @@
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import MonthView from '../../../src/components/MonthView.vue'
-import { getMonthGridDays } from '../../../src/helpers/date'
+import { createAppointmentOccurrences, getMonthGridDays } from '../../../src/helpers/date'
 import type { Appointment } from '../../../src/types'
 
 describe('MonthView', () => {
   it('renders month navigation, days and appointments', () => {
+    const visibleOccurrences = createAppointmentOccurrences([
+      appointment({ id: '1', title: 'Planning', start: '2026-06-25T08:00:00.000Z' })
+    ])
     const { wrapper } = getWrapper({
-      appointments: [
-        appointment({ id: '1', title: 'Planning', start: '2026-06-25T08:00:00.000Z' })
-      ],
-      appointmentsByDay: {
-        '2026-06-25': [
-          appointment({ id: '1', title: 'Planning', start: '2026-06-25T08:00:00.000Z' })
-        ]
-      }
+      visibleOccurrences,
+      occurrencesByDay: { '2026-06-25': visibleOccurrences }
     })
 
     expect(wrapper.text()).toContain('June 2026')
     expect(wrapper.text()).toContain('Today')
     expect(wrapper.text()).toContain('Planning')
-    expect(wrapper.get('[data-testid="calendar-day-2026-06-25"]').classes()).toContain(
-      'calendar-month-day-today'
+    expect(wrapper.get('[data-testid="calendar-day-cell-2026-06-25"]').attributes()).toHaveProperty(
+      'data-is-today'
     )
   })
 
@@ -44,6 +41,36 @@ describe('MonthView', () => {
     expect(wrapper.emitted('select-date')?.[0][0]).toEqual(new Date(2026, 5, 15))
   })
 
+  it('emits the selected backend occurrence and renders all-day events explicitly', async () => {
+    const visibleOccurrences = createAppointmentOccurrences([
+      appointment({ id: 'all-day', title: 'Conference', allDay: true })
+    ])
+    const { wrapper } = getWrapper({
+      visibleOccurrences,
+      occurrencesByDay: { '2026-06-25': visibleOccurrences }
+    })
+
+    await wrapper
+      .get(`[data-testid="calendar-appointment-${visibleOccurrences[0].id}"]`)
+      .trigger('click')
+
+    expect(wrapper.text()).toContain('All day')
+    expect(wrapper.emitted('select-appointment')?.[0]).toEqual([visibleOccurrences[0].id])
+  })
+
+  it('renders only occurrences supplied by the selected-calendar store getter', () => {
+    const visibleOccurrences = createAppointmentOccurrences([
+      appointment({ id: 'visible', title: 'Visible appointment' })
+    ])
+    const { wrapper } = getWrapper({
+      visibleOccurrences,
+      occurrencesByDay: { '2026-06-25': visibleOccurrences }
+    })
+
+    expect(wrapper.text()).toContain('Visible appointment')
+    expect(wrapper.text()).not.toContain('Hidden appointment')
+  })
+
   it('renders loading and error states', () => {
     expect(
       getWrapper({ isLoading: true }).wrapper.findComponent({ name: 'AppLoadingSpinner' }).exists()
@@ -59,15 +86,15 @@ describe('MonthView', () => {
 
 const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {}) => {
   const currentMonth = new Date(2026, 5, 1)
-  const appointments = props.appointments || []
 
   return {
     wrapper: mount(MonthView, {
       props: {
         days: getMonthGridDays(currentMonth, new Date(2026, 5, 25)),
         currentMonth,
-        appointments,
-        appointmentsByDay: {},
+        visibleOccurrences: [],
+        occurrencesByDay: {},
+        calendarColorById: {},
         isLoading: false,
         error: null,
         ...props
@@ -97,12 +124,19 @@ const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {
   }
 }
 
-const appointment = (overrides: Partial<Appointment>): Appointment => ({
-  id: 'appointment',
-  title: 'Planning',
-  start: '2026-06-25T08:00:00.000Z',
-  end: '2026-06-25T09:00:00.000Z',
-  allDay: false,
-  participants: [],
-  ...overrides
-})
+function appointment(overrides: Partial<Appointment>): Appointment {
+  return {
+    id: 'appointment',
+    calendarId: 'personal',
+    title: 'Planning',
+    start: '2026-06-25T08:00:00.000Z',
+    end: '2026-06-25T09:00:00.000Z',
+    allDay: false,
+    participants: [],
+    recurrenceRules: [],
+    hasRecurrence: false,
+    hasReminder: false,
+    excluded: false,
+    ...overrides
+  }
+}

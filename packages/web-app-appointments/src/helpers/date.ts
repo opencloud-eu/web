@@ -1,4 +1,6 @@
-import type { Appointment } from '../types'
+import { formatDateFromDateTime } from '@opencloud-eu/web-pkg'
+import { DateTime } from 'luxon'
+import type { Appointment, AppointmentDateRange, AppointmentOccurrence } from '../types'
 
 export type CalendarDay = {
   date: Date
@@ -8,7 +10,7 @@ export type CalendarDay = {
   isToday: boolean
 }
 
-export const toDateKey = (date: Date | string) => {
+export function toDateKey(date: Date | string) {
   const normalized = typeof date === 'string' ? new Date(date) : date
   return [
     normalized.getFullYear(),
@@ -17,19 +19,19 @@ export const toDateKey = (date: Date | string) => {
   ].join('-')
 }
 
-export const getStartOfMonth = (date: Date) => {
+export function getStartOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1)
 }
 
-export const getEndOfMonth = (date: Date) => {
+export function getEndOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0, 23, 59, 59, 999)
 }
 
-export const addMonths = (date: Date, amount: number) => {
+export function addMonths(date: Date, amount: number) {
   return new Date(date.getFullYear(), date.getMonth() + amount, 1)
 }
 
-export const getMonthGridRange = (date: Date) => {
+export function getMonthGridRange(date: Date) {
   const monthStart = getStartOfMonth(date)
   const monthEnd = getEndOfMonth(date)
   const gridStart = new Date(monthStart)
@@ -45,7 +47,7 @@ export const getMonthGridRange = (date: Date) => {
   return { start: gridStart, end: gridEnd }
 }
 
-export const getMonthGridDays = (currentMonth: Date, today = new Date()): CalendarDay[] => {
+export function getMonthGridDays(currentMonth: Date, today = new Date()): CalendarDay[] {
   const { start, end } = getMonthGridRange(currentMonth)
   const days: CalendarDay[] = []
   const cursor = new Date(start)
@@ -64,45 +66,137 @@ export const getMonthGridDays = (currentMonth: Date, today = new Date()): Calend
   return days
 }
 
-export const groupAppointmentsByDay = (appointments: Appointment[]) => {
-  const result: Record<string, Appointment[]> = {}
+export function createAppointmentOccurrences(appointments: Appointment[]): AppointmentOccurrence[] {
+  // Recurrence rules are intentionally not expanded in the browser. Each event or expanded
+  // recurrence instance returned by the Groupware API becomes one display occurrence here.
+  return appointments.filter(({ excluded }) => !excluded).map(createAppointmentOccurrence)
+}
 
-  for (const appointment of appointments) {
-    const start = new Date(appointment.start)
-    const end = new Date(appointment.end)
-    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+export function groupAppointmentOccurrencesByDay(occurrences: AppointmentOccurrence[]) {
+  const result: Record<string, AppointmentOccurrence[]> = {}
+
+  for (const occurrence of occurrences) {
+    const start = getOccurrenceDateTime(occurrence, 'start')
+    const end = getOccurrenceDateTime(occurrence, 'end')
+    if (!start.isValid || !end.isValid) {
       continue
     }
 
-    const lastCoveredInstant = new Date(Math.max(end.getTime() - 1, start.getTime()))
-    const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate())
-    const lastDay = new Date(
-      lastCoveredInstant.getFullYear(),
-      lastCoveredInstant.getMonth(),
-      lastCoveredInstant.getDate()
-    )
+    const lastCoveredInstant = DateTime.fromMillis(Math.max(end.toMillis() - 1, start.toMillis()))
+    let cursor = start.startOf('day')
+    const lastDay = lastCoveredInstant.startOf('day')
 
     while (cursor <= lastDay) {
-      const key = toDateKey(cursor)
+      const key = cursor.toFormat('yyyy-MM-dd')
       result[key] = result[key] || []
-      result[key].push(appointment)
-      cursor.setDate(cursor.getDate() + 1)
+      result[key].push(occurrence)
+      cursor = cursor.plus({ days: 1 })
     }
   }
 
-  for (const appointmentsForDay of Object.values(result)) {
-    appointmentsForDay.sort((left, right) => {
-      if (left.allDay !== right.allDay) {
-        return left.allDay ? -1 : 1
-      }
-
-      return new Date(left.start).getTime() - new Date(right.start).getTime()
-    })
+  for (const occurrencesForDay of Object.values(result)) {
+    occurrencesForDay.sort(compareOccurrences)
   }
 
   return result
 }
 
-export const formatDateForApi = (date: Date) => {
+export function isAppointmentInRange(appointment: Appointment, range: AppointmentDateRange) {
+  const appointmentStart = getAppointmentDateTime(appointment.start, appointment).toMillis()
+  const appointmentEnd = getAppointmentDateTime(appointment.end, appointment).toMillis()
+  const rangeStart = DateTime.fromISO(range.start, { setZone: true }).toMillis()
+  const rangeEnd = DateTime.fromISO(range.end, { setZone: true }).toMillis()
+
+  if ([appointmentStart, appointmentEnd, rangeStart, rangeEnd].some(Number.isNaN)) {
+    return false
+  }
+
+  if (appointmentStart === appointmentEnd) {
+    return appointmentStart >= rangeStart && appointmentStart <= rangeEnd
+  }
+
+  return appointmentStart <= rangeEnd && appointmentEnd >= rangeStart
+}
+
+export function formatOccurrenceDateTime(
+  occurrence: AppointmentOccurrence,
+  currentLanguage: string
+) {
+  const start = getOccurrenceDateTime(occurrence, 'start')
+  const end = getOccurrenceDateTime(occurrence, 'end')
+
+  if (occurrence.appointment.allDay) {
+    const lastCoveredDay = DateTime.fromMillis(Math.max(end.toMillis() - 1, start.toMillis()))
+    const formattedStart = formatDateFromDateTime(start, currentLanguage, DateTime.DATE_FULL)
+
+    if (start.hasSame(lastCoveredDay, 'day')) {
+      return formattedStart
+    }
+
+    return `${formattedStart} – ${formatDateFromDateTime(lastCoveredDay, currentLanguage, DateTime.DATE_FULL)}`
+  }
+
+  if (start.hasSame(end, 'day')) {
+    return `${formatDateFromDateTime(start, currentLanguage, DateTime.DATE_FULL)}, ${formatDateFromDateTime(start, currentLanguage, DateTime.TIME_SIMPLE)} – ${formatDateFromDateTime(end, currentLanguage, DateTime.TIME_SIMPLE)}`
+  }
+
+  return `${formatDateFromDateTime(start, currentLanguage)} – ${formatDateFromDateTime(end, currentLanguage)}`
+}
+
+export function formatOccurrenceTimeRange(
+  occurrence: AppointmentOccurrence,
+  currentLanguage: string
+) {
+  const start = getOccurrenceDateTime(occurrence, 'start')
+  const end = getOccurrenceDateTime(occurrence, 'end')
+
+  return `${formatDateFromDateTime(start, currentLanguage, DateTime.TIME_SIMPLE)} – ${formatDateFromDateTime(end, currentLanguage, DateTime.TIME_SIMPLE)}`
+}
+
+export function formatDateForApi(date: Date) {
   return date.toISOString()
+}
+
+function createAppointmentOccurrence(appointment: Appointment): AppointmentOccurrence {
+  return {
+    id: [
+      appointment.calendarId || '',
+      appointment.id,
+      appointment.recurrenceId || appointment.start
+    ]
+      .filter(Boolean)
+      .join(':'),
+    appointmentId: appointment.id,
+    calendarId: appointment.calendarId,
+    start: appointment.start,
+    end: appointment.end,
+    appointment
+  }
+}
+
+function getOccurrenceDateTime(occurrence: AppointmentOccurrence, property: 'start' | 'end') {
+  return getAppointmentDateTime(occurrence[property], occurrence.appointment)
+}
+
+function getAppointmentDateTime(value: string, appointment: Appointment) {
+  if (appointment.allDay) {
+    return DateTime.fromISO(value.slice(0, 10)).startOf('day')
+  }
+
+  const parsed = DateTime.fromISO(
+    value,
+    appointment.timeZone ? { zone: appointment.timeZone } : { setZone: true }
+  )
+  return parsed.toLocal()
+}
+
+function compareOccurrences(left: AppointmentOccurrence, right: AppointmentOccurrence) {
+  if (left.appointment.allDay !== right.appointment.allDay) {
+    return left.appointment.allDay ? -1 : 1
+  }
+
+  return (
+    getOccurrenceDateTime(left, 'start').toMillis() -
+    getOccurrenceDateTime(right, 'start').toMillis()
+  )
 }

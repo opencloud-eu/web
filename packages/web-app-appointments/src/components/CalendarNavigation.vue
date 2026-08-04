@@ -18,7 +18,12 @@
       </div>
 
       <div class="mb-2 grid grid-cols-7 text-center text-xs text-role-on-surface-variant">
-        <span v-for="weekday in weekdays" :key="weekday" v-text="weekday" />
+        <span
+          v-for="weekday in weekdays"
+          :key="weekday.key"
+          :aria-label="weekday.fullLabel"
+          v-text="weekday.shortLabel"
+        />
       </div>
       <div class="grid grid-cols-7 gap-y-3 text-center text-sm">
         <button
@@ -32,6 +37,7 @@
               ? 'bg-role-secondary-container text-role-on-secondary-container'
               : ''
           ]"
+          :aria-label="formatDayLabel(day.date)"
           @click="selectDate(day.date)"
           v-text="day.dayOfMonth"
         />
@@ -39,13 +45,7 @@
     </section>
 
     <section class="-mt-1">
-      <button
-        type="button"
-        class="mb-4 flex w-full items-center justify-between text-left text-base font-bold"
-      >
-        <span v-text="$gettext('My Calendar')" />
-        <oc-icon name="arrow-down-s" fill-type="line" />
-      </button>
+      <h2 class="mb-4 text-base font-bold" v-text="$gettext('Calendars')" />
       <ul class="ml-0 flex flex-col gap-1">
         <li v-if="isLoadingCalendars" class="flex items-center gap-2 text-sm">
           <oc-spinner :aria-label="$gettext('Loading calendars')" size="small" />
@@ -61,32 +61,22 @@
         </li>
         <template v-else>
           <li v-for="item in calendars" :key="item.id">
-            <button
-              type="button"
-              :class="[
-                'flex w-full items-center gap-3 rounded py-1 text-left text-sm leading-5 text-role-on-surface hover:bg-role-surface-container-highest focus-visible:bg-role-surface-container-highest'
-              ]"
-              :aria-pressed="selectedCalendarIds.includes(item.id)"
+            <div
+              class="flex w-full items-center gap-2 rounded px-1 py-1 text-sm leading-5 text-role-on-surface hover:bg-role-surface-container-highest focus-within:bg-role-surface-container-highest"
               :data-testid="`calendar-navigation-item-${item.id}`"
-              @click="toggleSelectedCalendarId(item.id)"
             >
               <span
-                :class="[
-                  'flex size-4 min-w-4 items-center justify-center rounded border',
-                  selectedCalendarIds.includes(item.id)
-                    ? 'border-role-primary bg-role-primary text-role-on-primary'
-                    : ''
-                ]"
-              >
-                <oc-icon
-                  v-if="selectedCalendarIds.includes(item.id)"
-                  name="check"
-                  fill-type="line"
-                  size="xsmall"
-                />
-              </span>
-              <span class="truncate" v-text="item.name" />
-            </button>
+                class="size-3 shrink-0 rounded-full"
+                :style="{ backgroundColor: resolveCalendarColor(item.color) }"
+                aria-hidden="true"
+              />
+              <oc-checkbox
+                :model-value="selectedCalendarIds.includes(item.id)"
+                :label="item.name"
+                class="min-w-0 flex-1"
+                @update:model-value="setCalendarSelected(item.id, $event)"
+              />
+            </div>
           </li>
         </template>
       </ul>
@@ -98,8 +88,11 @@
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
+import { DateTime } from 'luxon'
+import { formatDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { useAppointmentsStore } from '../composables/piniaStores/appointments'
 import { getMonthGridDays, toDateKey } from '../helpers/date'
+import { resolveCalendarColor } from '../helpers/color'
 
 const appointmentsStore = useAppointmentsStore()
 const {
@@ -110,28 +103,23 @@ const {
   selectedCalendarIds,
   selectedDate
 } = storeToRefs(appointmentsStore)
-const {
-  goToNextMonth,
-  goToPreviousMonth,
-  setCurrentMonth,
-  setSelectedDate,
-  toggleSelectedCalendarId
-} = appointmentsStore
+const { goToNextMonth, goToPreviousMonth, setCalendarSelected, setCurrentMonth, setSelectedDate } =
+  appointmentsStore
 
-const { $gettext } = useGettext()
+const { $gettext, current: currentLanguage } = useGettext()
 const weekdays = computed(() => [
-  $gettext('M'),
-  $gettext('T'),
-  $gettext('W'),
-  $gettext('T'),
-  $gettext('F'),
-  $gettext('S'),
-  $gettext('S')
+  { key: 'monday', shortLabel: $gettext('M'), fullLabel: $gettext('Monday') },
+  { key: 'tuesday', shortLabel: $gettext('T'), fullLabel: $gettext('Tuesday') },
+  { key: 'wednesday', shortLabel: $gettext('W'), fullLabel: $gettext('Wednesday') },
+  { key: 'thursday', shortLabel: $gettext('T'), fullLabel: $gettext('Thursday') },
+  { key: 'friday', shortLabel: $gettext('F'), fullLabel: $gettext('Friday') },
+  { key: 'saturday', shortLabel: $gettext('S'), fullLabel: $gettext('Saturday') },
+  { key: 'sunday', shortLabel: $gettext('S'), fullLabel: $gettext('Sunday') }
 ])
 const miniMonthDays = computed(() => getMonthGridDays(unref(currentMonth)))
 const selectedDateKey = computed(() => toDateKey(unref(selectedDate)))
 const monthLabel = computed(() => {
-  return unref(currentMonth).toLocaleDateString(undefined, {
+  return formatDateFromJSDate(unref(currentMonth), currentLanguage, {
     month: 'long',
     year: 'numeric'
   })
@@ -140,5 +128,9 @@ const monthLabel = computed(() => {
 function selectDate(date: Date) {
   setSelectedDate(date)
   setCurrentMonth(date)
+}
+
+function formatDayLabel(date: Date) {
+  return formatDateFromJSDate(date, currentLanguage, DateTime.DATE_FULL)
 }
 </script>
