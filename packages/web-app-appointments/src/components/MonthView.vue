@@ -40,13 +40,7 @@
         </oc-button>
       </div>
 
-      <div class="flex items-center justify-end gap-3">
-        <oc-button id="calendar-view-toggle" appearance="outline" size="small">
-          <span v-text="viewModeLabel" />
-          <oc-icon name="arrow-down-s" fill-type="line" />
-        </oc-button>
-        <CalendarViewDrop toggle="#calendar-view-toggle" />
-      </div>
+      <div />
     </header>
 
     <div class="grid shrink-0 grid-cols-7 border-b border-role-outline-variant bg-role-surface">
@@ -54,7 +48,7 @@
         v-for="weekday in weekdays"
         :key="weekday"
         class="border-l border-role-outline-variant px-3 py-4 text-center text-sm text-role-on-surface"
-        v-text="$gettext(weekday)"
+        v-text="weekday"
       />
     </div>
 
@@ -68,7 +62,6 @@
       data-testid="calendar-month-error"
     >
       <p class="text-lg font-bold" v-text="$gettext('Appointments could not be loaded')" />
-      <p class="text-role-on-surface-variant" v-text="error.message" />
     </div>
 
     <div v-else class="grid min-h-0 flex-1 grid-cols-7 auto-rows-fr">
@@ -77,7 +70,7 @@
         :key="day.key"
         type="button"
         :class="[
-          'calendar-month-day flex min-h-[8.5rem] flex-col overflow-hidden border-b border-l border-role-outline-variant px-1 py-2 text-left outline-offset-[-2px] transition-colors hover:bg-role-surface-container focus-visible:bg-role-surface-container',
+          'calendar-month-day flex min-h-0 flex-col overflow-hidden border-b border-l border-role-outline-variant px-1 py-2 text-left outline-offset-[-2px] transition-colors hover:bg-role-surface-container focus-visible:bg-role-surface-container',
           day.isCurrentMonth ? 'bg-role-surface' : 'bg-role-surface-container',
           { 'calendar-month-day-today': day.isToday }
         ]"
@@ -98,7 +91,7 @@
         <div class="flex min-h-0 flex-col gap-1">
           <div
             v-for="appointment in appointmentsByDay[day.key]?.slice(0, 3) || []"
-            :key="appointment.id"
+            :key="`${appointment.calendarId || ''}:${appointment.id}`"
             class="grid grid-cols-[1fr_auto] gap-2 truncate rounded border-l-4 border-role-primary bg-role-surface-container px-2 py-1 text-xs text-role-on-surface"
             :title="appointment.title"
           >
@@ -133,20 +126,18 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
-import type { Appointment, CalendarViewMode } from '../types'
+import type { Appointment } from '../types'
 import type { CalendarDay } from '../helpers/date'
-import CalendarViewDrop from './CalendarViewDrop.vue'
 
 const props = defineProps<{
   days: CalendarDay[]
   currentMonth: Date
-  selectedDate: Date
   appointments: Appointment[]
   appointmentsByDay: Record<string, Appointment[]>
   isLoading: boolean
   error: Error | null
-  viewMode: CalendarViewMode
 }>()
 
 defineEmits<{
@@ -156,7 +147,16 @@ defineEmits<{
   'select-date': [date: Date]
 }>()
 
-const weekdays = computed(() => ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'])
+const { $gettext } = useGettext()
+const weekdays = computed(() => [
+  $gettext('Mon'),
+  $gettext('Tue'),
+  $gettext('Wed'),
+  $gettext('Thu'),
+  $gettext('Fri'),
+  $gettext('Sat'),
+  $gettext('Sun')
+])
 
 const monthLabel = computed(() => {
   return props.currentMonth.toLocaleDateString(undefined, {
@@ -165,19 +165,7 @@ const monthLabel = computed(() => {
   })
 })
 
-const viewModeLabel = computed(() => {
-  const labels: Record<CalendarViewMode, string> = {
-    day: 'Day',
-    '3-day': '3-Day',
-    week: 'Week',
-    month: 'Month',
-    agenda: 'Agenda'
-  }
-
-  return labels[props.viewMode]
-})
-
-const formatAppointmentTime = (appointment: Appointment) => {
+function formatAppointmentTime(appointment: Appointment) {
   if (appointment.allDay) {
     return ''
   }

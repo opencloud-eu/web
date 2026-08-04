@@ -1,15 +1,15 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
-import type {
-  Appointment,
-  AppointmentDateRange,
-  Calendar,
-  CalendarViewMode,
-  CreateAppointmentPayload
-} from '../../types'
-import { addMonths, getMonthGridRange, groupAppointmentsByDay } from '../../helpers/date'
+import type { Appointment, AppointmentDateRange, Calendar } from '../../types'
+import {
+  addMonths,
+  formatDateForApi,
+  getMonthGridRange,
+  groupAppointmentsByDay
+} from '../../helpers/date'
 
 export const useAppointmentsStore = defineStore('appointments', () => {
+  const today = new Date()
   const appointments = ref<Appointment[]>([])
   const calendars = ref<Calendar[]>([])
   const isLoading = ref(false)
@@ -18,11 +18,9 @@ export const useAppointmentsStore = defineStore('appointments', () => {
   const calendarError = ref<Error | null>(null)
   const selectedCalendarIds = ref<string[]>([])
   const selectedCalendarId = computed(() => unref(selectedCalendarIds)[0] || null)
-  const selectedDate = ref<Date>(new Date())
-  const currentMonth = ref<Date>(new Date())
+  const selectedDate = ref<Date>(today)
+  const currentMonth = ref<Date>(new Date(today.getFullYear(), today.getMonth(), 1))
   const visibleDateRange = ref<AppointmentDateRange | null>(null)
-  const viewMode = ref<CalendarViewMode>('month')
-  const isCreateModalOpen = ref(false)
 
   const appointmentsByDay = computed(() => groupAppointmentsByDay(unref(appointments)))
 
@@ -65,34 +63,12 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     selectedCalendarIds.value = [...unref(selectedCalendarIds), id]
   }
 
-  const upsertAppointment = (data: Appointment) => {
-    const existing = unref(appointments).find(({ id }) => id === data.id)
-    if (existing) {
-      Object.assign(existing, data)
-      return
-    }
-
-    unref(appointments).push(data)
-  }
-
   const setSelectedDate = (date: Date) => {
     selectedDate.value = date
   }
 
   const setCurrentMonth = (date: Date) => {
     currentMonth.value = new Date(date.getFullYear(), date.getMonth(), 1)
-  }
-
-  const setViewMode = (mode: CalendarViewMode) => {
-    viewMode.value = mode
-  }
-
-  const openCreateModal = () => {
-    isCreateModalOpen.value = true
-  }
-
-  const closeCreateModal = () => {
-    isCreateModalOpen.value = false
   }
 
   const goToPreviousMonth = () => {
@@ -184,39 +160,11 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     }
   }
 
-  const createAppointment = async ({
-    accountId,
-    payload,
-    creator
-  }: {
-    accountId: string
-    payload: CreateAppointmentPayload
-    creator: (accountId: string, payload: CreateAppointmentPayload) => Promise<Appointment | null>
-  }) => {
-    setLoading(true)
-    setError(null)
-
-    try {
-      const appointment = await creator(accountId, payload)
-      if (appointment) {
-        upsertAppointment(appointment)
-      }
-      closeCreateModal()
-      return appointment
-    } catch (e) {
-      const normalizedError = e instanceof Error ? e : new Error(String(e))
-      setError(normalizedError)
-      throw normalizedError
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const prepareVisibleRangeForCurrentMonth = () => {
     const range = getMonthGridRange(unref(currentMonth))
     const apiRange = {
-      start: range.start.toISOString(),
-      end: range.end.toISOString()
+      start: formatDateForApi(range.start),
+      end: formatDateForApi(range.end)
     }
     setVisibleDateRange(apiRange)
     return apiRange
@@ -230,11 +178,10 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     error.value = null
     calendarError.value = null
     selectedCalendarIds.value = []
-    selectedDate.value = new Date()
-    currentMonth.value = new Date()
+    const resetDate = new Date()
+    selectedDate.value = resetDate
+    currentMonth.value = new Date(resetDate.getFullYear(), resetDate.getMonth(), 1)
     visibleDateRange.value = null
-    viewMode.value = 'month'
-    isCreateModalOpen.value = false
   }
 
   return {
@@ -249,19 +196,13 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     selectedDate,
     currentMonth,
     visibleDateRange,
-    viewMode,
-    isCreateModalOpen,
     appointmentsByDay,
     setAppointments,
     setCalendars,
     setSelectedCalendarId,
     toggleSelectedCalendarId,
-    upsertAppointment,
     setSelectedDate,
     setCurrentMonth,
-    setViewMode,
-    openCreateModal,
-    closeCreateModal,
     goToPreviousMonth,
     goToNextMonth,
     goToToday,
@@ -272,7 +213,6 @@ export const useAppointmentsStore = defineStore('appointments', () => {
     setCalendarError,
     loadCalendarsForAccount,
     loadAppointmentsForRange,
-    createAppointment,
     prepareVisibleRangeForCurrentMonth,
     reset
   }

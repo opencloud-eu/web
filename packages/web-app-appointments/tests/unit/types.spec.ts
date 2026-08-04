@@ -35,6 +35,22 @@ describe('appointment response parsing', () => {
     ).toEqual([])
   })
 
+  it('keeps the calendar id when a JMAP event already contains an end date', () => {
+    const [appointment] = parseAppointmentsResponse({
+      results: [
+        {
+          id: 'event-with-end',
+          calendarIds: { personal: true },
+          title: 'Planning',
+          start: '2026-06-25T08:00:00.000Z',
+          end: '2026-06-25T09:00:00.000Z'
+        }
+      ]
+    })
+
+    expect(appointment.calendarId).toBe('personal')
+  })
+
   it('normalizes calendar events created in Stalwart', () => {
     const appointments = parseAppointmentsResponse({
       results: [
@@ -57,7 +73,9 @@ describe('appointment response parsing', () => {
       expect.objectContaining({
         calendarId: 'c',
         title: 'Tagesplanung',
-        start: '2026-06-25T09:00:00'
+        start: '2026-06-25T09:00:00',
+        end: '2026-06-25T07:45:00.000Z',
+        location: 'OpenCloud Office'
       })
     )
   })

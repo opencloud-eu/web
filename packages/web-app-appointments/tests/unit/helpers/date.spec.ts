@@ -34,6 +34,22 @@ describe('calendar date helpers', () => {
     expect(groupAppointmentsByDay(appointments)['2026-06-26']).toHaveLength(1)
   })
 
+  it('groups multi-day appointments on every covered day without including an exclusive end', () => {
+    const appointments = [
+      appointment({
+        id: 'multi-day',
+        start: '2026-06-25T08:00:00.000Z',
+        end: '2026-06-27T00:00:00.000Z'
+      })
+    ]
+
+    const grouped = groupAppointmentsByDay(appointments)
+
+    expect(grouped['2026-06-25']).toHaveLength(1)
+    expect(grouped['2026-06-26']).toHaveLength(1)
+    expect(grouped['2026-06-27']).toBeUndefined()
+  })
+
   it('navigates months from the first of the target month', () => {
     expect(toDateKey(addMonths(new Date(2026, 5, 25), 1))).toBe('2026-07-01')
   })
