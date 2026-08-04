@@ -1,5 +1,9 @@
 import { Extension as TipTapExtension, Editor } from '@tiptap/core'
-import Suggestion, { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/suggestion'
+import Suggestion, {
+  SuggestionProps,
+  SuggestionKeyDownProps,
+  SuggestionPluginKey
+} from '@tiptap/suggestion'
 import { VueRenderer } from '@tiptap/vue-3'
 import SlashCommandMenu from '../components/SlashCommandMenu.vue'
 import { EditorAction, EditorActionGroup } from '../composables'
@@ -61,6 +65,11 @@ export const SlashCommands = TipTapExtension.create<SlashCommandsOptions>({
         editor: this.editor,
         char: '/',
         startOfLine: false,
+        shouldShow: ({ editor, transaction }) =>
+          transaction.docChanged ||
+          transaction.selectionSet ||
+          SuggestionPluginKey.getState(editor.state)?.active === true,
+        shouldResetDismissed: ({ transaction }) => transaction.selectionSet,
         decorationTag: 'span',
         decorationClass: 'text-editor-slash-filter',
         decorationContent: 'Filter...',

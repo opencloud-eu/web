@@ -1,7 +1,14 @@
 import { mount } from '@vue/test-utils'
 import { createGettext } from 'vue3-gettext'
+import { exitSuggestion } from '@tiptap/suggestion'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 import SlashCommandMenu from '../../../../src/editor/components/SlashCommandMenu.vue'
 import type { FlatSlashCommandItem } from '../../../../src/editor/extensions'
+
+vi.mock('@tiptap/suggestion', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@tiptap/suggestion')>()),
+  exitSuggestion: vi.fn()
+}))
 
 function makeItem(
   id: string,
@@ -32,12 +39,12 @@ const defaultClientRect = () =>
     toJSON: () => ({})
   }) as DOMRect
 
-function mountMenu(items: FlatSlashCommandItem[], command = vi.fn()) {
+function mountMenu(items: FlatSlashCommandItem[], command = vi.fn(), editor = {} as any) {
   return mount(SlashCommandMenu, {
     props: {
       items,
       command,
-      editor: {} as any,
+      editor,
       range: { from: 0, to: 0 },
       query: '',
       text: '/',
@@ -52,8 +59,9 @@ function mountMenu(items: FlatSlashCommandItem[], command = vi.fn()) {
     },
     global: {
       plugins: [createGettext({ translations: {}, silent: true })],
+      renderStubDefaultSlot: true,
       stubs: {
-        'oc-drop': { template: '<div><slot /></div>' },
+        OcDrop: true,
         'oc-button': { template: '<button v-bind="$attrs"><slot /></button>' },
         'oc-icon': true
       }
@@ -92,6 +100,24 @@ describe('SlashCommandMenu', () => {
     const wrapper = mountMenu(items, command)
     await wrapper.find('.text-editor-slash-menu__item').trigger('click')
     expect(command).toHaveBeenCalledWith(items[0])
+  })
+
+  it('exits the suggestion when the drop closes', () => {
+    const editor = { isDestroyed: false, view: {} } as any
+    const wrapper = mountMenu([makeItem('a', 'g', 'G')], vi.fn(), editor)
+
+    wrapper.findComponent<typeof OcDrop>('oc-drop-stub').vm.$emit('hideDrop')
+
+    expect(exitSuggestion).toHaveBeenCalledWith(editor.view)
+  })
+
+  it('does not exit the suggestion after the editor has been destroyed', () => {
+    const editor = { isDestroyed: true, view: {} } as any
+    const wrapper = mountMenu([makeItem('a', 'g', 'G')], vi.fn(), editor)
+
+    wrapper.findComponent<typeof OcDrop>('oc-drop-stub').vm.$emit('hideDrop')
+
+    expect(exitSuggestion).not.toHaveBeenCalled()
   })
 
   it('ArrowDown moves selection forward with wrap-around', async () => {
