@@ -112,6 +112,45 @@ describe('OcDrop', () => {
         expect(wrapper.find('.oc-drop').exists()).toBeFalsy()
       })
     })
+
+    it('does not close when clicking the context of a virtual anchor', async () => {
+      vi.useFakeTimers()
+      vi.mocked(computePosition).mockResolvedValue({ x: 0, y: 0 } as ComputePositionReturn)
+      const onHideDrop = vi.fn()
+      const anchorContext = document.createElement('div')
+      const outside = document.createElement('div')
+      document.body.append(anchorContext, outside)
+      const wrapper = mount(Drop, {
+        props: { mode: 'manual', onHideDrop },
+        global: { plugins: defaultPlugins(), stubs: { teleport: false } },
+        attachTo: document.body
+      })
+
+      wrapper.vm.show({
+        anchorElement: {
+          getBoundingClientRect: () => new DOMRect(),
+          contextElement: anchorContext
+        },
+        noFocus: true
+      })
+      vi.runAllTimers()
+      await flushPromises()
+
+      anchorContext.click()
+      vi.runAllTimers()
+      await flushPromises()
+      expect(onHideDrop).not.toHaveBeenCalled()
+
+      outside.click()
+      vi.runAllTimers()
+      await flushPromises()
+      expect(onHideDrop).toHaveBeenCalledTimes(1)
+
+      wrapper.unmount()
+      anchorContext.remove()
+      outside.remove()
+      vi.useRealTimers()
+    })
   })
 
   describe('Component "OcMobileDrop"', () => {
