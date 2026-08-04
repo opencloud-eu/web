@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.3.1](https://github.com/opencloud-eu/web/releases/tag/v7.3.1) - 2026-08-03
+## [7.3.1](https://github.com/opencloud-eu/web/releases/tag/v7.3.1) - 2026-08-04
 
 ### ❤️ Thanks to all contributors! ❤️
 
