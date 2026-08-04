@@ -624,11 +624,7 @@ export function useEditorActions(state: TextEditorState) {
       'onUpdate:searchCaseSensitive': (val: boolean) => (searchCaseSensitive.value = val),
       searchWholeWord: searchWholeWord.value,
       'onUpdate:searchWholeWord': (val: boolean) => (searchWholeWord.value = val)
-    }),
-    isActive: (editor) => {
-      const searchTerm = editor.storage.findAndReplace?.searchTerm || ''
-      return searchTerm.length > 0
-    }
+    })
   })
 
   const maxImageSizeBytes = 5 * 1024 * 1024 // 5 MB

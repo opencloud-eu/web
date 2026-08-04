@@ -41,6 +41,7 @@
 
     <div class="mt-1 flex flex-col gap-2">
       <oc-text-input
+        id="editor-search-input"
         ref="searchInputRef"
         v-model="searchTerm"
         class="w-full"
@@ -51,12 +52,13 @@
         @keydown.shift.enter.prevent="goToPreviousResult"
       >
         <template #label>
-          <label class="sr-only">{{ $gettext('Search') }}</label>
+          <label class="sr-only" for="editor-search-input">{{ $gettext('Search') }}</label>
         </template>
       </oc-text-input>
 
       <oc-text-input
         v-if="showReplace"
+        id="editor-replace-input"
         v-model="replaceTerm"
         class="w-full"
         :label="$gettext('Replace')"
@@ -65,7 +67,7 @@
         @keydown.enter.prevent="replaceCurrent"
       >
         <template #label>
-          <label class="sr-only">{{ $gettext('Replace') }}</label>
+          <label class="sr-only" for="editor-replace-input">{{ $gettext('Replace') }}</label>
         </template>
       </oc-text-input>
     </div>
