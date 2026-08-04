@@ -16,6 +16,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.19.0 [[#3021](https://github.com/opencloud-eu/web/pull/3021)]
 - chore(deps): update devdependencies (non-major) [[#2999](https://github.com/opencloud-eu/web/pull/2999)]
 
 ## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-08-03
