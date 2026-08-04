@@ -10,7 +10,9 @@ function fakeEngine(vaultRoot: string): FolderVaultEngine {
     decryptPath: (relative) => Promise.resolve(`D(${relative})`),
     encryptContent: (s) => s,
     decryptContent: (s) => s,
-    verifyKey: () => Promise.resolve(true)
+    verifySegment: () => Promise.resolve(true),
+    createIntegrityToken: () => Promise.resolve('token'),
+    verifyIntegrityToken: () => Promise.resolve(true)
   }
 }
 

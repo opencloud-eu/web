@@ -1,5 +1,6 @@
 import { encryptVaultPath } from '@opencloud-eu/web-pkg'
 import { createEngine } from '../../../src/crypto/engine'
+import { fromBase64 } from '../../../src/integrity'
 
 async function collect(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   const reader = stream.getReader()
@@ -92,18 +93,64 @@ describe('rclone-crypt engine', () => {
     })
   })
 
-  describe('verifyKey', () => {
+  describe('verifySegment', () => {
     it('accepts a sample segment that decrypts under the engine key', async () => {
-      expect(await engine.verifyKey('unq54c7b9fj4lam8t82q1hofdo')).toBe(true)
+      expect(await engine.verifySegment('unq54c7b9fj4lam8t82q1hofdo')).toBe(true)
     })
 
     it('rejects a sample segment that belongs to a different password', async () => {
       const wrong = createEngine('/my.vault', 'not-the-passphrase')
-      expect(await wrong.verifyKey('unq54c7b9fj4lam8t82q1hofdo')).toBe(false)
+      expect(await wrong.verifySegment('unq54c7b9fj4lam8t82q1hofdo')).toBe(false)
     })
 
     it('rejects a segment that is not valid ciphertext at all', async () => {
-      expect(await engine.verifyKey('!!! not base32 !!!')).toBe(false)
+      expect(await engine.verifySegment('!!! not base32 !!!')).toBe(false)
+    })
+  })
+
+  describe('integrity token', () => {
+    it('verifies a token it minted itself', async () => {
+      expect(await engine.verifyIntegrityToken(await engine.createIntegrityToken())).toBe(true)
+    })
+
+    it('rejects a token minted under a different passphrase', async () => {
+      const wrong = createEngine('/my.vault', 'not-the-passphrase')
+
+      expect(await wrong.verifyIntegrityToken(await engine.createIntegrityToken())).toBe(false)
+      expect(await engine.verifyIntegrityToken(await wrong.createIntegrityToken())).toBe(false)
+    })
+
+    it('rejects garbage, truncated and non-base64 tokens', async () => {
+      const token = await engine.createIntegrityToken()
+
+      expect(await engine.verifyIntegrityToken('')).toBe(false)
+      expect(await engine.verifyIntegrityToken('!!! not base64 !!!')).toBe(false)
+      // A truncated token loses the Poly1305 tag, so authentication has to fail.
+      expect(await engine.verifyIntegrityToken(token.slice(0, 20))).toBe(false)
+    })
+
+    it('mints a different token on every call', async () => {
+      // A fresh random nonce per token, so the property never leaks whether two
+      // vaults share a passphrase.
+      const [first, second] = await Promise.all([
+        engine.createIntegrityToken(),
+        engine.createIntegrityToken()
+      ])
+
+      expect(first).not.toBe(second)
+      expect(await engine.verifyIntegrityToken(first)).toBe(true)
+      expect(await engine.verifyIntegrityToken(second)).toBe(true)
+    })
+
+    it('carries a uuid as its plaintext', async () => {
+      const token = await engine.createIntegrityToken()
+      const plaintext = new TextDecoder().decode(
+        await collect(engine.decryptContent(streamOf(fromBase64(token))))
+      )
+
+      expect(plaintext).toMatch(
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+      )
     })
   })
 })

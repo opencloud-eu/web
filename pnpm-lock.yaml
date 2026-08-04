@@ -705,6 +705,9 @@ importers:
       pinia:
         specifier: 4.0.2
         version: 4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3))
+      uuid:
+        specifier: ^14.0.0
+        version: 14.0.1
       vue:
         specifier: ^3.5.0
         version: 3.5.40(typescript@6.0.3)
@@ -714,6 +717,10 @@ importers:
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.40(typescript@6.0.3))
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
 
   packages/web-app-search:
     dependencies:

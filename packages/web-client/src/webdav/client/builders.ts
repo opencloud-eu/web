@@ -1,10 +1,35 @@
 import { XMLBuilder } from 'fast-xml-parser'
-import { DavProperties, DavPropertyValue } from '../constants'
+import { DavNamespaces, DavProperties, DavPropertyValue } from '../constants'
 
-const getNamespacedDavProps = (
-  obj: Partial<Record<DavPropertyValue, unknown>>,
-  extraProps: string[]
-) => {
+export type DavPropertyRecord = Partial<Record<DavPropertyValue, unknown>> & Record<string, unknown>
+
+/**
+ * The `xmlns:*` attributes for a request body: the two well-known namespaces,
+ * plus one for every prefix appearing in `extraProps`.
+ *
+ * An app's own prefix is declared as its own namespace, so `myapp:my-prop`
+ * is stored and looked up under `myapp/my-prop`. That keeps prefixes
+ * self-describing and lets any app introduce one without touching this package -
+ * at the price of the namespace not being a URI, which nothing here needs.
+ *
+ * `d` and `oc` always keep their real URIs; an extra prop using either prefix
+ * cannot override them.
+ */
+const buildNamespaceDeclarations = (extraProps: string[]) => {
+  const declarations: Record<string, string> = Object.fromEntries(
+    Object.entries(DavNamespaces).map(([prefix, uri]) => [`@@xmlns:${prefix}`, uri])
+  )
+  for (const name of extraProps) {
+    const [prefix] = name.split(':')
+    // Unprefixed extra props need no declaration - they land in the default namespace.
+    if (prefix && prefix !== name && !(`@@xmlns:${prefix}` in declarations)) {
+      declarations[`@@xmlns:${prefix}`] = prefix
+    }
+  }
+  return declarations
+}
+
+const getNamespacedDavProps = (obj: DavPropertyRecord, extraProps: string[]) => {
   return Object.fromEntries(
     Object.entries(obj).map(([name, value]) => {
       if (extraProps.includes(name)) {
@@ -27,7 +52,7 @@ export const buildPropFindBody = (
     extraProps = []
   }: {
     pattern?: string
-    filterRules?: Partial<Record<DavPropertyValue, unknown>>
+    filterRules?: DavPropertyRecord
     limit?: number
     extraProps: string[]
   }
@@ -56,8 +81,7 @@ export const buildPropFindBody = (
   const xmlObj = {
     [bodyType]: {
       'd:prop': props,
-      '@@xmlns:d': 'DAV:',
-      '@@xmlns:oc': 'http://owncloud.org/ns',
+      ...buildNamespaceDeclarations(extraProps),
       ...(pattern && {
         'oc:search': { 'oc:pattern': pattern, 'oc:limit': limit }
       }),
@@ -78,13 +102,13 @@ export const buildPropFindBody = (
 }
 
 export const buildPropPatchBody = (
-  properties: Partial<Record<DavPropertyValue, unknown>>
+  properties: DavPropertyRecord,
+  extraProps: string[] = []
 ): string => {
   const xmlObj = {
     'd:propertyupdate': {
-      'd:set': { 'd:prop': getNamespacedDavProps(properties, []) },
-      '@@xmlns:d': 'DAV:',
-      '@@xmlns:oc': 'http://owncloud.org/ns'
+      'd:set': { 'd:prop': getNamespacedDavProps(properties, extraProps) },
+      ...buildNamespaceDeclarations(extraProps)
     }
   }
 
