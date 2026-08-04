@@ -139,13 +139,36 @@ export interface FolderVaultEngine {
    */
   encryptContent: (plaintext: ReadableStream<Uint8Array>) => ReadableStream<Uint8Array>
   /**
-   * Try to decrypt a sample encrypted segment to verify the key actually
-   * matches the data on the server. Returns true if the decryption looks
-   * like cleartext, false if it errored out or produced garbage.
-   * Empty vaults can't be verified - callers should treat that case as
-   * "trust the key" since there's nothing to disagree with yet.
+   * Mint an integrity token that commits the vault to this engine's key. The
+   * token is opaque to callers - its format is the engine's business - but it
+   * must be a string, since it gets stored as a WebDAV property on the vault
+   * root and read back through `verifyIntegrityToken`.
+   *
+   * Callers write it exactly once, when a vault's passphrase is first set. Its
+   * presence on the server is what makes the passphrase permanent.
    */
-  verifyKey: (sampleEncryptedSegment: string) => Promise<boolean>
+  createIntegrityToken: () => Promise<string>
+  /**
+   * Verify a passphrase against a token from `createIntegrityToken`. This is
+   * the authoritative check: implementations should authenticate the token
+   * cryptographically rather than guessing from the shape of the plaintext.
+   */
+  verifyIntegrityToken: (token: string) => Promise<boolean>
+  /**
+   * Fallback for vaults that carry no integrity token, either because they were
+   * created outside OpenCloud Web (e.g. an rclone-managed vault).
+   * Tries to decrypt a sample encrypted segment and returns true if the result
+   * looks like cleartext, false if it errored out or produced garbage.
+   *
+   * Substantially weaker than `verifyIntegrityToken`: there is no authentication
+   * tag, only a plausibility check on the decrypted bytes, and the segment's
+   * plaintext is an arbitrary name the engine can't predict. A wrong passphrase
+   * passes this check a low but non-negligible fraction of the time. Prefer the
+   * token whenever one is available, and backfill one once this check has passed.
+   *
+   * Empty vaults can't be verified this way because there is no sample to decrypt.
+   */
+  verifySegment: (sampleEncryptedSegment: string) => Promise<boolean>
 }
 
 export interface FolderVaultClaim {

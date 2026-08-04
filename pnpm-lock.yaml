@@ -705,6 +705,9 @@ importers:
       pinia:
         specifier: 4.0.2
         version: 4.0.2(@vue/devtools-api@8.1.5)(typescript@6.0.3)(vue@3.5.40(typescript@6.0.3))
+      uuid:
+        specifier: ^14.0.0
+        version: 14.0.1
       vue:
         specifier: ^3.5.0
         version: 3.5.40(typescript@6.0.3)
@@ -714,6 +717,10 @@ importers:
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.40(typescript@6.0.3))
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
 
   packages/web-app-search:
     dependencies:
@@ -868,6 +875,9 @@ importers:
       '@tiptap/extension-file-handler':
         specifier: ^3.28.0
         version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/extension-text-style@3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2)))(@tiptap/pm@3.29.2)
+      '@tiptap/extension-find-and-replace':
+        specifier: ^3.29.2
+        version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)
       '@tiptap/extension-hard-break':
         specifier: ^3.28.0
         version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))
@@ -2344,6 +2354,12 @@ packages:
     peerDependencies:
       '@tiptap/core': 3.29.2
       '@tiptap/extension-text-style': 3.29.2
+      '@tiptap/pm': 3.29.2
+
+  '@tiptap/extension-find-and-replace@3.29.2':
+    resolution: {integrity: sha512-HiFDlWpHIqVtUYl1la9nVWxAPfdvHyV7ayVO5vkFvCceiNSYPZhjCIg3FFt80ms7K3UWkFUKHHfQ8bX3CYZ/dA==}
+    peerDependencies:
+      '@tiptap/core': 3.29.2
       '@tiptap/pm': 3.29.2
 
   '@tiptap/extension-floating-menu@3.29.2':
@@ -4830,6 +4846,10 @@ packages:
   randomfill@1.0.4:
     resolution: {integrity: sha512-87lcbR8+MhcWcUiQ+9e+Rwx8MyR2P7qnt15ynUlbm3TU/fjbgz4GsvfSUDTemtCCtVCqb4ZcEFlyPNTh9bBTLw==}
 
+  re2js@2.8.6:
+    resolution: {integrity: sha512-xLgQil4kIUCrAzVk9fRSkxkFNwmygLFjVxXrLc65aE1F0+Zsb8rxumFBy4XKyvgMCTL6kilDq3EZ0piE2dP/Dg==}
+    engines: {node: '>=18.0.0'}
+
   read-installed-packages@2.0.1:
     resolution: {integrity: sha512-t+fJOFOYaZIjBpTVxiV8Mkt7yQyy4E6MSrrnt5FmPd4enYvpU/9DYGirDmN1XQwkfeuWIhM/iu0t2rm6iSr0CA==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
@@ -6743,6 +6763,12 @@ snapshots:
       '@tiptap/core': 3.29.2(@tiptap/pm@3.29.2)
       '@tiptap/extension-text-style': 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))
       '@tiptap/pm': 3.29.2
+
+  '@tiptap/extension-find-and-replace@3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)':
+    dependencies:
+      '@tiptap/core': 3.29.2(@tiptap/pm@3.29.2)
+      '@tiptap/pm': 3.29.2
+      re2js: 2.8.6
 
   '@tiptap/extension-floating-menu@3.29.2(@floating-ui/dom@1.8.0)(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)':
     dependencies:
@@ -9408,6 +9434,8 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
       safe-buffer: 5.2.1
+
+  re2js@2.8.6: {}
 
   read-installed-packages@2.0.1(supports-color@7.2.0):
     dependencies:

@@ -9,7 +9,7 @@ import {
 import { v4 as uuidV4 } from 'uuid'
 import { encodePath, urlJoin } from '../../utils'
 import { DavMethod, DavPropertyValue } from '../constants'
-import { buildPropFindBody, buildPropPatchBody } from './builders'
+import { buildPropFindBody, buildPropPatchBody, DavPropertyRecord } from './builders'
 import { parseError, parseMultiStatus, parseTusHeaders } from './parsers'
 import { WebDavResponseResource } from '../../helpers'
 import { DavHttpError } from '../../errors'
@@ -52,14 +52,20 @@ export class DAV {
     {
       depth = 1,
       properties = [],
+      extraProps = [],
       headers = {},
       ...opts
-    }: { depth?: number; properties?: DavPropertyValue[] } & DAVRequestOptions = {}
+    }: {
+      depth?: number
+      properties?: DavPropertyValue[]
+      /** Namespaced props for this request only, on top of the globally registered ones. */
+      extraProps?: string[]
+    } & DAVRequestOptions = {}
   ) {
     const requestHeaders = { ...headers, Depth: depth.toString() }
     const { body, result } = await this.request(path, {
       method: DavMethod.propfind,
-      data: buildPropFindBody(properties, { extraProps: this.extraProps }),
+      data: buildPropFindBody(properties, { extraProps: [...this.extraProps, ...extraProps] }),
       headers: requestHeaders,
       ...opts
     })
@@ -169,10 +175,19 @@ export class DAV {
 
   public propPatch(
     path: string,
-    properties: Partial<Record<DavPropertyValue, unknown>>,
-    opts: DAVRequestOptions = {}
+    properties: DavPropertyRecord,
+    {
+      extraProps = [],
+      ...opts
+    }: {
+      /** Namespaced props for this request only, on top of the globally registered ones. */
+      extraProps?: string[]
+    } & DAVRequestOptions = {}
   ) {
-    const body = buildPropPatchBody(properties)
+    // Extra props keep their own namespace prefix instead of being forced into
+    // `oc:`, same as in PROPFIND. A name that isn't listed here would be written
+    // as `oc:<name>`, which the server stores but no PROPFIND can read back.
+    const body = buildPropPatchBody(properties, [...this.extraProps, ...extraProps])
     return this.request(path, { method: DavMethod.proppatch, data: body, ...opts })
   }
 

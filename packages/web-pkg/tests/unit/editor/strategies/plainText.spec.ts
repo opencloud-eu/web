@@ -27,7 +27,7 @@ describe('useStrategyPlainText', () => {
     it('returns a starter kit extension', () => {
       const strategy = createStrategy()
       const names = strategy.extensions().map((e) => e.name)
-      expect(names).toEqual(['starterKit'])
+      expect(names).toEqual(['starterKit', 'findAndReplace'])
       expect(names).not.toContain('link')
     })
 
@@ -50,19 +50,23 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('returns history, emoji and view options groups with zoom menu action', () => {
+    it('returns navigation group with zoom, emoji group, and search group', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
       expect(groups).toHaveLength(3)
-      const historyGroup = groups.find((group) => group.id === 'history')
+      const navigationGroup = groups.find((group) => group.id === 'navigation')
       const emojiGroup = groups.find((group) => group.id === 'emoji')
-      const viewOptionsGroup = groups.find((group) => group.id === 'view-options')
+      const searchGroup = groups.find((group) => group.id === 'search')
 
-      expect(historyGroup).toMatchObject({
-        id: 'history',
-        title: 'History'
+      expect(navigationGroup).toMatchObject({
+        id: 'navigation',
+        title: 'Navigation'
       })
-      expect(historyGroup?.actions.map((action) => action.id)).toEqual(['undo', 'redo'])
+      expect(navigationGroup?.actions.map((action) => action.id)).toEqual([
+        'undo',
+        'redo',
+        'menu-zoom'
+      ])
 
       expect(emojiGroup).toMatchObject({
         id: 'emoji',
@@ -70,12 +74,12 @@ describe('useStrategyPlainText', () => {
       })
       expect(emojiGroup?.actions.map((action) => action.id)).toEqual(['menu-emoji'])
 
-      expect(viewOptionsGroup).toMatchObject({
-        id: 'view-options',
-        title: 'View options'
+      expect(searchGroup).toMatchObject({
+        id: 'search',
+        title: 'Search'
       })
-      expect(viewOptionsGroup?.actions.map((action) => action.id)).toEqual(['menu-zoom'])
-      expect(groups.at(-1)?.id).toBe('view-options')
+      expect(searchGroup?.actions.map((action) => action.id)).toEqual(['menu-search-and-replace'])
+      expect(groups.at(-1)?.id).toBe('search')
       expect(
         strategy.editorActionGroups().flatMap(({ actions }) => actions.map(({ id }) => id))
       ).not.toContain('link')

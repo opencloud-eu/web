@@ -32,9 +32,9 @@
         <p class="mb-4 text-sm" v-text="vaultDescription" />
       </div>
       <div
-        v-if="isEmpty === true"
+        v-if="needsSetup === true"
         class="mb-4 rounded-xl border border-yellow-300 bg-yellow-100 p-4"
-        data-testid="empty-vault-hint"
+        data-testid="vault-setup-hint"
       >
         <div class="flex items-start gap-2">
           <oc-icon
@@ -71,7 +71,7 @@
           autocomplete="off"
         />
         <oc-text-input
-          v-if="isEmpty === true"
+          v-if="needsSetup === true"
           id="vault-passphrase-confirm"
           v-model="confirmPassword"
           :error-message="confirmErrorMessage"
@@ -122,8 +122,8 @@ import {
   useRouter,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
-import { createEngine } from '../crypto/engine'
-import { isShareSpaceResource } from '@opencloud-eu/web-client'
+import { probeVaultNeedsSetup, unlockVault, VaultTarget } from '../unlock'
+import { isShareSpaceResource, urlJoin } from '@opencloud-eu/web-client'
 
 InlineSvg.name = 'inline-svg'
 
@@ -137,17 +137,16 @@ const resourcesStore = useResourcesStore()
 
 const passwordInput = useTemplateRef<HTMLInputElement>('passwordInput')
 const password = ref('')
-// Only used while setting up a still-empty vault: the passphrase is committed by
-// the first upload and can't be changed from within OpenCloud, so we make the
-// user type it twice to catch typos before it's locked in for good.
+// Only used while setting up a vault: submitting writes the integrity token,
+// which commits the passphrase for good - it can't be changed from within
+// OpenCloud - so we make the user type it twice to catch typos first.
 const confirmPassword = ref('')
 const verifying = ref(false)
 const errorMessage = ref<string | null>(null)
 // `null` = we haven't probed the server yet, `true` = the vault has no
-// encrypted entries we could verify the passphrase against (any passphrase
-// is accepted and effectively committed by the first upload), `false` =
-// there's content to verify against.
-const isEmpty = ref<boolean | null>(null)
+// passphrase committed yet, so the user is choosing one now, `false` = there's
+// an integrity token or content to verify the passphrase against.
+const needsSetup = ref<boolean | null>(null)
 
 const spaceId = computed(() => queryItemAsString(unref(route).query.spaceId))
 const vaultRoot = computed(() => queryItemAsString(unref(route).query.vaultRoot))
@@ -162,7 +161,7 @@ const vaultName = computed(() => {
 })
 
 const vaultDescription = computed(() =>
-  unref(isEmpty) === true
+  unref(needsSetup) === true
     ? $gettext(
         'Files are encrypted on your device before they upload, and only your passphrase can unlock them.'
       )
@@ -170,21 +169,21 @@ const vaultDescription = computed(() =>
 )
 
 const cardTitle = computed(() =>
-  unref(isEmpty) === true ? $gettext('Set Up Encrypted Vault') : $gettext('Unlock vault')
+  unref(needsSetup) === true ? $gettext('Set Up Encrypted Vault') : $gettext('Unlock vault')
 )
 
 const passphraseLabel = computed(() =>
-  unref(isEmpty) === true ? $gettext('Choose a passphrase') : $gettext('Vault passphrase')
+  unref(needsSetup) === true ? $gettext('Choose a passphrase') : $gettext('Vault passphrase')
 )
 
 const submitLabel = computed(() =>
-  unref(isEmpty) === true ? $gettext('Set passphrase') : $gettext('Unlock')
+  unref(needsSetup) === true ? $gettext('Set passphrase') : $gettext('Unlock')
 )
 
 // Surface the mismatch only once the user has started typing the confirmation,
 // so the field doesn't show an error before they've had a chance to fill it.
 const confirmErrorMessage = computed(() =>
-  unref(isEmpty) === true && unref(confirmPassword) && unref(password) !== unref(confirmPassword)
+  unref(needsSetup) === true && unref(confirmPassword) && unref(password) !== unref(confirmPassword)
     ? $gettext('Passphrases do not match')
     : null
 )
@@ -194,45 +193,37 @@ const submitDisabled = computed(() => {
     return true
   }
   // Setting up a vault requires both fields to match before we lock it in.
-  return unref(isEmpty) === true && unref(password) !== unref(confirmPassword)
+  return unref(needsSetup) === true && unref(password) !== unref(confirmPassword)
 })
 
 const space = computed(() => spacesStore.spaces.find((s) => s.id === unref(spaceId)))
 
-const onSubmit = async () => {
+const vaultTarget = computed<VaultTarget>(() => ({
+  webdav: clientService.webdav,
+  space: unref(space),
+  vaultRoot: unref(vaultRoot)
+}))
+
+async function onSubmit() {
   errorMessage.value = null
   // Guard against a programmatic submit slipping past the disabled button.
-  if (unref(isEmpty) === true && unref(password) !== unref(confirmPassword)) {
+  if (unref(needsSetup) === true && unref(password) !== unref(confirmPassword)) {
     errorMessage.value = $gettext('Passphrases do not match.')
     return
   }
   verifying.value = true
   try {
-    // 1. Fetch the vault root listing to grab a sample encrypted name we can
-    //    verify the key against. Doesn't decrypt anything - names stay raw.
-    //    rclone-crypt's filename encryption is deterministic; one valid
-    //    decrypt is a strong signal that the key fits.
-    const { children } = await clientService.webdav.listFiles(unref(space), {
-      path: unref(vaultRoot)
-    })
-    const sample = (children ?? []).find((c) => c?.name)?.name
-
-    // Build the engine with the supplied passphrase and ask it to decrypt our
-    // sample. Empty vault → trust the passphrase (nothing to disagree with).
-    // Otherwise success here means "this is the right key". The very same engine
-    // is what we stash, so it doubles as the session's unlocked engine.
-    const engine = createEngine(unref(vaultRoot), unref(password))
-    const keyOk = sample ? await engine.verifyKey(sample) : true
-    if (!keyOk) {
+    const result = await unlockVault(unref(vaultTarget), unref(password))
+    if (result.status === 'wrong-passphrase') {
       errorMessage.value = $gettext('Incorrect passphrase.')
       return
     }
 
-    vaultStore.setEngine(unref(spaceId), unref(vaultRoot), engine)
+    vaultStore.setEngine(unref(spaceId), unref(vaultRoot), result.engine)
 
     const target = unref(redirectUrl)
     // router.push accepts a full URL string and parses path + query for us.
-    await router.push(target || `/files/spaces${unref(vaultRoot)}`)
+    await router.push(target || urlJoin('/files/spaces', unref(vaultRoot)))
   } catch (e) {
     console.error(e)
     errorMessage.value = $gettext('Unlocking failed. Please try again')
@@ -243,39 +234,36 @@ const onSubmit = async () => {
 
 onMounted(async () => {
   unref(passwordInput)?.focus?.()
-  // Probe the vault root listing once to decide if we should switch to
-  // "empty vault, any passphrase wins" wording. We don't gate the submit
-  // button on this - onSubmit re-checks against the live listing.
+  // Probe once to pick between the "set up" and "unlock" wording. We don't gate
+  // the submit button on this - onSubmit re-reads the live state.
+  if (!unref(space) || !unref(vaultRoot)) {
+    needsSetup.value = false
+    return
+  }
   try {
-    const targetSpace = unref(space)
-    const root = unref(vaultRoot)
-    if (!targetSpace || !root) {
-      isEmpty.value = false
-      return
-    }
-    const { children } = await clientService.webdav.listFiles(targetSpace, { path: root })
-    isEmpty.value = (children ?? []).length === 0
+    needsSetup.value = await probeVaultNeedsSetup(unref(vaultTarget))
   } catch (e) {
     console.warn('[UnlockVault] could not probe vault contents', e)
-    isEmpty.value = false
+    needsSetup.value = false
   }
 })
 
-const onCancel = async () => {
+async function onCancel() {
   // Walk one level above the vault root so the user lands back in the folder
   // they came from instead of inside the locked vault - clicking the vault
   // would otherwise just kick them back to this unlock page.
   const root = unref(vaultRoot) || '/'
-  const parent = root.replace(/\/[^/]+$/, '') || '/'
-  const space = unref(spacesStore.spaces).find((s) => s.id === unref(spaceId))
-  if (isShareSpaceResource(space) && root === '/') {
+  // Empty for a vault sitting directly in the space root - urlJoin drops it.
+  const parent = root.replace(/\/[^/]+$/, '')
+  const targetSpace = unref(space)
+  if (isShareSpaceResource(targetSpace) && root === '/') {
     await router.push(createLocationShares('files-shares-with-me'))
     return
   }
-  if (space) {
+  if (targetSpace) {
     await router.push({
-      path: `/files/spaces/${space.driveAlias}${parent === '/' ? '' : parent}`,
-      ...(isShareSpaceResource(space) && { query: { shareId: space.id } })
+      path: urlJoin('/files/spaces', targetSpace.driveAlias, parent),
+      ...(isShareSpaceResource(targetSpace) && { query: { shareId: targetSpace.id } })
     })
     return
   }

@@ -20,6 +20,15 @@ import { getWebDavPath } from './utils'
 export type ListFilesOptions = {
   depth?: number
   davProperties?: DavPropertyValue[]
+  /**
+   * Namespaced props to request for this call only, e.g. `myapp:my-prop`, on top
+   * of anything registered globally via `registerExtraProp`. Names keep their own
+   * prefix instead of being forced into `oc:`, the prefix is declared for you, and
+   * the value lands on `Resource.extraProps` under the name you passed. Use this
+   * for props only one caller cares about, so every other PROPFIND in the app
+   * doesn't pay for them.
+   */
+  extraProps?: string[]
   isTrash?: boolean
 } & DAVRequestOptions
 
@@ -32,13 +41,17 @@ export const ListFilesFactory = (
     async listFiles(
       space: SpaceResource,
       { path, fileId }: { path?: string; fileId?: string } = {},
-      { depth = 1, davProperties, isTrash = false, ...opts }: ListFilesOptions = {}
+      { depth = 1, davProperties, extraProps = [], isTrash = false, ...opts }: ListFilesOptions = {}
     ): Promise<ListFilesResult> {
+      // Globally registered props plus this call's own, for both the request body
+      // and the resources built from the response.
+      const extraPropNames = [...dav.extraProps, ...extraProps]
       let webDavResources: WebDavResponseResource[]
       if (isPublicSpaceResource(space)) {
         webDavResources = await dav.propfind(urlJoin(space.webDavPath, path), {
           depth,
           properties: davProperties || DavProperties.PublicLink,
+          extraProps,
           ...opts
         })
 
@@ -93,16 +106,16 @@ export const ListFilesFactory = (
               webDavPath: space.webDavPath,
               publicLinkType: publicLinkType
             }),
-            children: children.map((c) => buildResource(c, dav.extraProps))
+            children: children.map((c) => buildResource(c, extraPropNames))
           } as ListFilesResult
         }
-        const resources = webDavResources.map((r) => buildResource(r, dav.extraProps))
+        const resources = webDavResources.map((r) => buildResource(r, extraPropNames))
         return { resource: resources[0], children: resources.slice(1) } as ListFilesResult
       }
 
       const listFilesCorrectedPath = async () => {
         const correctPath = await pathForFileIdFactory.getPathForFileId(fileId)
-        return this.listFiles(space, { path: correctPath }, { depth, davProperties })
+        return this.listFiles(space, { path: correctPath }, { depth, davProperties, extraProps })
       }
 
       try {
@@ -116,16 +129,17 @@ export const ListFilesFactory = (
         webDavResources = await dav.propfind(webDavPath, {
           depth,
           properties: davProperties || DavProperties.Default,
+          extraProps,
           ...opts
         })
         if (isTrash) {
           return {
-            resource: buildResource(webDavResources[0], dav.extraProps),
+            resource: buildResource(webDavResources[0], extraPropNames),
             children: webDavResources.slice(1).map(buildDeletedResource)
           } as ListFilesResult
         }
 
-        const resources = webDavResources.map((r) => buildResource(r, dav.extraProps))
+        const resources = webDavResources.map((r) => buildResource(r, extraPropNames))
 
         const resourceIsSpace = fileId === space.id
         if (fileId && !resourceIsSpace && resources[0].fileId && fileId !== resources[0].fileId) {

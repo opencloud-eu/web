@@ -29,9 +29,9 @@ import { streamToArrayBuffer } from '../../helpers/streams'
  *
  * Scope: every webdav method that carries a path or content - listFiles,
  * getFileInfo, createFolder, deleteFile, moveFiles, copyFiles,
- * restoreFileVersion, and the content methods getFileContents / putFileContents
- * (which add a body transform, decryptContent / encryptContent, on top of the
- * path one).
+ * restoreFileVersion, setProperties, and the content methods getFileContents /
+ * putFileContents (which add a body transform, decryptContent / encryptContent,
+ * on top of the path one).
  *
  * What the decorator genuinely cannot reach is anything that doesn't ride the
  * webdav client at all: signed-URL downloads (getFileUrl returns a URL, not
@@ -201,6 +201,15 @@ export function createVaultWebDav(inner: WebDAV): WebDAV {
         space,
         { ...resource, path: await toServerPathForWrite(space, resource?.path) },
         versionId,
+        opts
+      )
+    },
+
+    async setProperties(space, resource, properties, opts) {
+      return inner.setProperties(
+        space,
+        { ...resource, path: await toServerPathForWrite(space, resource?.path) },
+        properties,
         opts
       )
     },

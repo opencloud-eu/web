@@ -15,6 +15,7 @@ import { ClearTrashBinFactory } from './clearTrashBin'
 import { SearchFactory } from './search'
 import { GetPathForFileIdFactory } from './getPathForFileId'
 import { SetFavoriteFactory } from './setFavorite'
+import { SetPropertiesFactory } from './setProperties'
 
 import { AxiosInstance } from 'axios'
 import { Headers } from 'webdav'
@@ -44,6 +45,7 @@ export interface WebDAV {
   clearTrashBin: ReturnType<typeof ClearTrashBinFactory>['clearTrashBin']
   search: ReturnType<typeof SearchFactory>['search']
   setFavorite: ReturnType<typeof SetFavoriteFactory>['setFavorite']
+  setProperties: ReturnType<typeof SetPropertiesFactory>['setProperties']
 
   // register prop that will be added to resource.extraProps if available in a response
   // because of a limitation in our WebDAV library, we cannot differentiate between
