@@ -447,7 +447,8 @@ describe('file events', () => {
       const mocks = getMocks()
       const sseData = mock<EventSchemaType>({
         itemid: mocks.resourcesStore.currentFolder.id,
-        spaceid: 'space1'
+        spaceid: 'space1',
+        affecteduserids: ['1']
       })
       await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.setCurrentFolder).toHaveBeenCalledWith(
@@ -460,7 +461,8 @@ describe('file events', () => {
       mocks.clientService.webdav.getFileInfo.mockResolvedValue(favoritedResource)
       const sseData = mock<EventSchemaType>({
         itemid: favoritedResource.id,
-        spaceid: favoritedResource.storageId
+        spaceid: favoritedResource.storageId,
+        affecteduserids: ['1']
       })
       await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
       expect(mocks.clientService.webdav.getFileInfo).toHaveBeenCalled()
@@ -477,12 +479,24 @@ describe('file events', () => {
       await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
+    it('does not trigger any action when no affected user ids are given', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ resources: [favoritedResource] })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId,
+        affecteduserids: null
+      })
+      await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
+    })
     it('does not trigger any action when initiator ids are identical', async () => {
       const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
       const mocks = getMocks({ resources: [favoritedResource] })
       const sseData = mock<EventSchemaType>({
         itemid: favoritedResource.id,
         spaceid: favoritedResource.storageId,
+        affecteduserids: ['1'],
         initiatorid: 'local1'
       })
       await onSSEItemFavoriteAddedEvent({ sseData, ...mocks })
@@ -496,7 +510,8 @@ describe('file events', () => {
       const mocks = getMocks({ resources: [favoritedResource] })
       const sseData = mock<EventSchemaType>({
         itemid: favoritedResource.id,
-        spaceid: favoritedResource.storageId
+        spaceid: favoritedResource.storageId,
+        affecteduserids: ['1']
       })
       await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.updateResourceField).toHaveBeenCalledWith({
@@ -513,7 +528,8 @@ describe('file events', () => {
       })
       const sseData = mock<EventSchemaType>({
         itemid: favoritedResource.id,
-        spaceid: favoritedResource.storageId
+        spaceid: favoritedResource.storageId,
+        affecteduserids: ['1']
       })
       await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([favoritedResource])
@@ -521,9 +537,24 @@ describe('file events', () => {
     })
     it('does not trigger any action when the resource is not loaded on the favorites view', async () => {
       const mocks = getMocks({ currentRouteName: 'files-common-favorites' })
-      const sseData = mock<EventSchemaType>({ itemid: 'file1', spaceid: 'space1' })
+      const sseData = mock<EventSchemaType>({
+        itemid: 'file1',
+        spaceid: 'space1',
+        affecteduserids: ['1']
+      })
       await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
       expect(mocks.resourcesStore.removeResources).not.toHaveBeenCalled()
+    })
+    it('does not trigger any action when the current user is not affected', async () => {
+      const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
+      const mocks = getMocks({ resources: [favoritedResource] })
+      const sseData = mock<EventSchemaType>({
+        itemid: favoritedResource.id,
+        spaceid: favoritedResource.storageId,
+        affecteduserids: ['2']
+      })
+      await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
+      expect(mocks.resourcesStore.updateResourceField).not.toHaveBeenCalled()
     })
     it('does not trigger any action when initiator ids are identical', async () => {
       const favoritedResource = mock<Resource>({ id: 'file1', storageId: 'space1' })
@@ -531,6 +562,7 @@ describe('file events', () => {
       const sseData = mock<EventSchemaType>({
         itemid: favoritedResource.id,
         spaceid: favoritedResource.storageId,
+        affecteduserids: ['1'],
         initiatorid: 'local1'
       })
       await onSSEItemFavoriteRemovedEvent({ sseData, ...mocks })
