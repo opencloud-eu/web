@@ -1,5 +1,5 @@
 <template>
-  <div class="oc-vault-unlock flex justify-center h-full overflow-y-auto p-8">
+  <div class="flex justify-center h-full overflow-y-auto p-8">
     <no-content-message v-if="!space" img-src="images/vault.svg" class="my-auto">
       <template #message>
         <span v-text="$gettext('Vault not found')" />
@@ -10,84 +10,58 @@
     </no-content-message>
     <oc-card
       v-else
-      body-class="px-8 py-4"
-      class="rounded-lg bg-role-surface-container w-xl my-auto"
+      body-class="p-8"
+      class="rounded-xl bg-role-surface-container w-xl my-auto border"
     >
-      <oc-tag rounded size="small" color="primary" appearance="filled" class="mb-4">
-        <oc-icon name="lock-password" size-class="size-4" fill-type="line" />
-        <span v-text="$gettext('End-to-end encrypted')" />
-      </oc-tag>
-      <div class="flex flex-col items-center text-center">
-        <inline-svg src="images/vault.svg" class="h-30 w-30" aria-hidden="true" />
-        <p class="mt-0 text-sm break-all" data-testid="vault-name">
-          <resource-name
-            :name="vaultName"
-            extension="vault"
-            type="folder"
-            :full-path="vaultRoot"
-            :is-extension-displayed="resourcesStore.areFileExtensionsShown"
-          />
-        </p>
-        <p class="mb-0 text-lg font-semibold" v-text="cardTitle" />
-        <p class="mb-4 text-sm" v-text="vaultDescription" />
+      <h2 v-if="needsSetup !== null" class="mt-0 mb-6 text-xl font-semibold" v-text="cardTitle" />
+      <div v-if="needsSetup === null" class="flex justify-center py-8">
+        <oc-spinner size="large" :aria-label="$gettext('Loading vault')" />
       </div>
-      <div
-        v-if="needsSetup === true"
-        class="mb-4 rounded-xl border border-yellow-300 bg-yellow-100 p-4"
-        data-testid="vault-setup-hint"
-      >
-        <div class="flex items-start gap-2">
-          <oc-icon
-            name="error-warning"
-            size-class="size-4"
-            fill-type="line"
-            class="text-yellow-800"
-          />
-          <div>
-            <p
-              class="m-0 mb-2 text-sm font-semibold text-yellow-900"
-              v-text="$gettext('Store your passphrase somewhere safe')"
-            />
-            <p
-              class="m-0 text-sm text-yellow-800"
-              v-text="
-                $gettext(
-                  'OpenCloud can’t recover it if you lose it - without it, the vault stays locked permanently.'
-                )
-              "
-            />
-          </div>
-        </div>
-      </div>
-      <form @submit.prevent="onSubmit">
-        <oc-text-input
-          id="vault-passphrase"
-          ref="passwordInput"
+      <form v-else @submit.prevent="onSubmit">
+        <vault-setup
+          v-if="needsSetup"
           v-model="password"
+          :vault-name="vaultName"
           :error-message="errorMessage"
-          :fix-message-line="true"
-          :label="passphraseLabel"
-          type="password"
-          autocomplete="off"
         />
-        <oc-text-input
-          v-if="needsSetup === true"
-          id="vault-passphrase-confirm"
-          v-model="confirmPassword"
-          :error-message="confirmErrorMessage"
-          :label="$gettext('Repeat passphrase')"
-          :fix-message-line="true"
-          type="password"
-          autocomplete="off"
-        />
-        <div class="flex items-center gap-2 mt-4">
-          <oc-button
-            id="vault-unlock-cancel"
-            class="w-1/3"
-            appearance="outline"
-            type="button"
-            @click="onCancel"
-          >
+        <template v-else>
+          <div class="flex items-start gap-3">
+            <oc-icon name="resource-type-vault" fill-type="fill" size-class="size-8" />
+            <div>
+              <p class="mt-0 mb-1 font-semibold break-all" data-testid="vault-name">
+                <resource-name
+                  :name="vaultName"
+                  extension="vault"
+                  type="folder"
+                  :full-path="vaultRoot"
+                  :is-extension-displayed="resourcesStore.areFileExtensionsShown"
+                />
+              </p>
+              <p
+                class="m-0 text-sm"
+                v-text="
+                  $gettext(
+                    'This folder is end-to-end encrypted. Enter its password to decrypt the files on this device.'
+                  )
+                "
+              />
+            </div>
+          </div>
+          <oc-text-input
+            id="vault-passphrase"
+            ref="passwordInput"
+            v-model="password"
+            class="mt-4"
+            :error-message="errorMessage"
+            :fix-message-line="true"
+            :label="$gettext('Password')"
+            required-mark
+            type="password"
+            autocomplete="off"
+          />
+        </template>
+        <div class="flex items-center justify-end gap-2 mt-4">
+          <oc-button id="vault-unlock-cancel" appearance="outline" type="button" @click="onCancel">
             <span v-text="$gettext('Cancel')" />
           </oc-button>
           <oc-button
@@ -95,7 +69,6 @@
             appearance="filled"
             submit="submit"
             :disabled="submitDisabled"
-            class="flex-1"
           >
             <oc-spinner v-if="verifying" :aria-hidden="true" size="small" />
             <span v-else v-text="submitLabel" />
@@ -107,9 +80,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { computed, nextTick, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import InlineSvg from 'vue-inline-svg'
 import {
   createLocationShares,
   NoContentMessage,
@@ -122,10 +94,10 @@ import {
   useRouter,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
-import { probeVaultNeedsSetup, unlockVault, VaultTarget } from '../unlock'
+import { probeVaultNeedsSetup, unlockVault } from '../unlock'
+import { VaultTarget } from '../integrity'
 import { isShareSpaceResource, urlJoin } from '@opencloud-eu/web-client'
-
-InlineSvg.name = 'inline-svg'
+import VaultSetup from '../components/VaultSetup.vue'
 
 const { $gettext } = useGettext()
 const route = useRoute()
@@ -135,12 +107,8 @@ const spacesStore = useSpacesStore()
 const vaultStore = useFolderVaultStore()
 const resourcesStore = useResourcesStore()
 
-const passwordInput = useTemplateRef<HTMLInputElement>('passwordInput')
+const passwordInput = useTemplateRef<{ focus: () => void }>('passwordInput')
 const password = ref('')
-// Only used while setting up a vault: submitting writes the integrity token,
-// which commits the passphrase for good - it can't be changed from within
-// OpenCloud - so we make the user type it twice to catch typos first.
-const confirmPassword = ref('')
 const verifying = ref(false)
 const errorMessage = ref<string | null>(null)
 // `null` = we haven't probed the server yet, `true` = the vault has no
@@ -160,41 +128,15 @@ const vaultName = computed(() => {
   return root.split('/').filter(Boolean).pop() || unref(space)?.name || root
 })
 
-const vaultDescription = computed(() =>
-  unref(needsSetup) === true
-    ? $gettext(
-        'Files are encrypted on your device before they upload, and only your passphrase can unlock them.'
-      )
-    : $gettext('Enter the passphrase to unlock this vault.')
-)
-
 const cardTitle = computed(() =>
-  unref(needsSetup) === true ? $gettext('Set Up Encrypted Vault') : $gettext('Unlock vault')
-)
-
-const passphraseLabel = computed(() =>
-  unref(needsSetup) === true ? $gettext('Choose a passphrase') : $gettext('Vault passphrase')
+  unref(needsSetup) === true ? $gettext('Set up encrypted folder') : $gettext('Unlock folder')
 )
 
 const submitLabel = computed(() =>
-  unref(needsSetup) === true ? $gettext('Set passphrase') : $gettext('Unlock')
+  unref(needsSetup) === true ? $gettext('Set password') : $gettext('Unlock')
 )
 
-// Surface the mismatch only once the user has started typing the confirmation,
-// so the field doesn't show an error before they've had a chance to fill it.
-const confirmErrorMessage = computed(() =>
-  unref(needsSetup) === true && unref(confirmPassword) && unref(password) !== unref(confirmPassword)
-    ? $gettext('Passphrases do not match')
-    : null
-)
-
-const submitDisabled = computed(() => {
-  if (!unref(password) || unref(verifying)) {
-    return true
-  }
-  // Setting up a vault requires both fields to match before we lock it in.
-  return unref(needsSetup) === true && unref(password) !== unref(confirmPassword)
-})
+const submitDisabled = computed(() => !unref(password) || unref(verifying))
 
 const space = computed(() => spacesStore.spaces.find((s) => s.id === unref(spaceId)))
 
@@ -206,16 +148,11 @@ const vaultTarget = computed<VaultTarget>(() => ({
 
 async function onSubmit() {
   errorMessage.value = null
-  // Guard against a programmatic submit slipping past the disabled button.
-  if (unref(needsSetup) === true && unref(password) !== unref(confirmPassword)) {
-    errorMessage.value = $gettext('Passphrases do not match.')
-    return
-  }
   verifying.value = true
   try {
     const result = await unlockVault(unref(vaultTarget), unref(password))
     if (result.status === 'wrong-passphrase') {
-      errorMessage.value = $gettext('Incorrect passphrase.')
+      errorMessage.value = $gettext('Incorrect password.')
       return
     }
 
@@ -233,18 +170,23 @@ async function onSubmit() {
 }
 
 onMounted(async () => {
-  unref(passwordInput)?.focus?.()
-  // Probe once to pick between the "set up" and "unlock" wording. We don't gate
+  // Probe once to pick between the "set up" and the "unlock" UI. We don't gate
   // the submit button on this - onSubmit re-reads the live state.
   if (!unref(space) || !unref(vaultRoot)) {
     needsSetup.value = false
-    return
+  } else {
+    try {
+      needsSetup.value = await probeVaultNeedsSetup(unref(vaultTarget))
+    } catch (e) {
+      console.warn('[UnlockVault] could not probe vault contents', e)
+      needsSetup.value = false
+    }
   }
-  try {
-    needsSetup.value = await probeVaultNeedsSetup(unref(vaultTarget))
-  } catch (e) {
-    console.warn('[UnlockVault] could not probe vault contents', e)
-    needsSetup.value = false
+
+  // The setup step focuses its own field, so only the unlock branch is ours.
+  if (unref(needsSetup) === false) {
+    await nextTick()
+    unref(passwordInput)?.focus?.()
   }
 })
 
@@ -270,9 +212,3 @@ async function onCancel() {
   await router.push('/files/spaces/personal')
 }
 </script>
-
-<style scoped>
-.oc-vault-unlock :deep(.background-splash) {
-  fill: var(--oc-role-surface-container-highest);
-}
-</style>

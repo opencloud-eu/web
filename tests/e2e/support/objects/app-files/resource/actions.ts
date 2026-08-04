@@ -159,7 +159,8 @@ const tilesSlider = '#tiles-size-slider'
 const undoBtn = 'action-handler'
 const previewFavoriteButton = '.preview-controls-favorite'
 const uploadList = '#upload-list'
-const createVaultBtn = '.new-file-btn-vault'
+const encryptFolderSwitch = '[data-testid="create-folder-encrypt"] [data-testid="oc-switch-btn"]'
+const vaultSetupPassphraseInput = '#vault-setup-passphrase'
 const unlockVaultBtn = '#vault-unlock-submit'
 
 export const getResourceLocator = ({
@@ -470,35 +471,37 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       break
     }
     case 'vault': {
-      await page.locator(createVaultBtn).click()
+      // A vault is a folder created with the encryption switch turned on. The
+      // vault naming is idempotent, so passing the full `x.vault` name the
+      // features use works as well as passing `x`.
+      await page.locator(createNewFolderButton).click()
       const resourceInput = page.locator(resourceNameInput)
       await resourceInput.clear()
-      await page.locator(resourceNameInput).fill(name)
+      await resourceInput.fill(name)
+      await page.locator(encryptFolderSwitch).click()
+
+      // Encryption turns the modal into two steps: the scheme asks for the
+      // passphrase before anything is created.
+      await page.locator(util.format(actionConfirmationButton, 'Continue')).click()
+      await page.locator(vaultSetupPassphraseInput).fill(password)
+
       const createBtn = page.locator(util.format(actionConfirmationButton, 'Create'))
       const mkcolPromise = page.waitForResponse(
         (resp) => resp.status() === 201 && resp.request().method() === 'MKCOL'
       )
+      // Committing the passphrase writes the integrity token onto the new folder.
+      const proppatchPromise = page.waitForResponse(
+        (resp) => resp.request().method() === 'PROPPATCH'
+      )
 
       await createBtn.click()
       await mkcolPromise
+      await proppatchPromise
 
-      // const propfindPromise = page.waitForResponse(
-      //   (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND' && resp.url().endsWith(encodeURIComponent(name))
-      // )
-
-      const prom = page.waitForURL((url) => !url.pathname.includes('/rclone-crypt/unlock'), {
-        timeout: 10_000
-      })
-
-      const unlockButton = page.locator(unlockVaultBtn)
-      await expect(unlockButton).toBeDisabled()
-      await page.locator('#vault-passphrase').fill(password)
-      await page.locator('#vault-passphrase-confirm').fill(password)
-      await unlockButton.click()
-      // await propfindPromise
-      await prom
-
-      // create empty folder
+      // A freshly created vault stays locked and the user stays put, so step in
+      // explicitly. The hidden `.empty` folder keeps the vault non-empty, which
+      // the scenarios below rely on.
+      await enterVault({ page, vault: name, passphrase: password })
       await page.locator(addNewResourceButton).click()
       await createNewFolder({ page, resource: '.empty' })
       break

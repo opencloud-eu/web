@@ -194,6 +194,42 @@ export interface FolderVaultClaim {
   unlockRoute?: RouteLocationNamedRaw
 }
 
+/**
+ * Can be exposed by the extension's `setupComponent`. Used to commit whatever
+ * locks a freshly created vault (a passphrase, a hardware token, …) after the
+ * folder has been created on the server.
+ */
+export type FolderVaultFinalize = (space: SpaceResource, vaultRoot: string) => Promise<void>
+
+/**
+ * Everything an extension has to bring to let the UI create vaults with its
+ * scheme. Optional as a whole on the extension: a scheme that can only read
+ * existing vaults leaves it out.
+ */
+export interface FolderVaultCreation {
+  /**
+   * File extension this scheme marks its vault roots with, without the leading
+   * dot, e.g. `vault` for a vault root named `Project archive.vault`. Owned by
+   * the scheme - the generic layer only appends whatever it gets here to the name
+   * the user typed, so another scheme can use a different marker.
+   */
+  folderExtension: string
+  /**
+   * Component that collects and commits whatever this extension needs to lock a
+   * newly created vault - a passphrase, a hardware token, … The generic layer
+   * deliberately knows none of that, so the extension brings its own UI *and* its
+   * own crypto here. Rendered as the second step of the create-folder flow.
+   *
+   * Contract:
+   * - prop `vaultName`: cleartext name of the vault about to be created
+   * - emits `update:valid` with whether its input is complete and usable
+   * - exposes `finalize`, a `FolderVaultFinalize` called once the folder exists
+   *   on the server. Throwing leaves the vault without a committed secret,
+   *   which the extension's unlock UI has to cope with anyway.
+   */
+  setupComponent: Component
+}
+
 export interface FolderVaultExtension extends Extension {
   type: 'folderVault'
   /**
@@ -214,6 +250,12 @@ export interface FolderVaultExtension extends Extension {
    * extension-defined unlock UI even when `resolve` returns null.
    */
   claimsPath: (space: SpaceResource, path: string) => FolderVaultClaim | null
+  /**
+   * What this extension needs to create new vaults. Optional, and its presence is
+   * what tells the UI this extension can *create* vaults, and hence whether to
+   * offer an encryption option when creating a folder.
+   */
+  creation?: FolderVaultCreation
 }
 
 export interface ResourceIndicatorExtension extends Extension {

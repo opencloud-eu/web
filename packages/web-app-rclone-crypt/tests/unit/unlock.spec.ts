@@ -2,9 +2,9 @@ import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { FolderVaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
-import { probeVaultNeedsSetup, unlockVault, VaultTarget } from '../../src/unlock'
+import { probeVaultNeedsSetup, unlockVault } from '../../src/unlock'
 import { createEngine } from '../../src/crypto/engine'
-import { INTEGRITY_ID_PROP } from '../../src/integrity'
+import { INTEGRITY_ID_PROP, VaultTarget } from '../../src/integrity'
 
 // Every unlock derives a real scrypt key (N=2^14), which takes long enough on a
 // loaded CI runner to blow the 5s default.

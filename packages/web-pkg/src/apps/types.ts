@@ -90,9 +90,9 @@ export interface ApplicationFileExtension {
   mimeType?: string
   newFileMenu?: {
     menuTitle: () => string
-    // Optional override for the create-file modal's default name. Without
-    // this, the modal falls back to "New file.<extension>". Folder-typed
-    // entries (e.g. vault) override this to read "New vault.vault" etc.
+    // Optional override for the create-file modal's default name, e.g. to read
+    // "New notebook.ocnb" instead of "New file.ocnb". Without this, the modal
+    // falls back to "New file.<extension>".
     defaultName?: () => string
   }
   routeName?: string

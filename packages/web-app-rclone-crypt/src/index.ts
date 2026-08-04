@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { ApplicationInformation, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
 import translations from '../l10n/translations.json'
 import { folderVaultExtension } from './extensions/folderVault'
+import { VAULT_FOLDER_EXTENSION } from './vaultPath'
 import UnlockVault from './views/UnlockVault.vue'
 
 export default defineWebApplication({
@@ -19,18 +20,10 @@ export default defineWebApplication({
       color: 'var(--oc-role-secondary)',
       extensions: [
         {
-          extension: 'vault',
+          extension: VAULT_FOLDER_EXTENSION,
           type: 'folder',
           icon: 'resource-type-vault',
-          iconFillType: 'fill',
-          newFileMenu: {
-            menuTitle() {
-              return $gettext('Vault')
-            },
-            defaultName() {
-              return $gettext('New vault')
-            }
-          }
+          iconFillType: 'fill'
         }
       ]
     }

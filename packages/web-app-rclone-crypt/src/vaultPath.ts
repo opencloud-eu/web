@@ -1,9 +1,15 @@
 import { SpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
+import { hasExtension } from '@opencloud-eu/web-pkg'
 
-// The single `.vault`-suffix heuristic both detection paths share, so they can't
-// drift. This is the known band-aid until a per-user vault registry replaces it.
-export function looksLikeVaultName(name: string | undefined): boolean {
-  return !!name && name.endsWith('.vault')
+/**
+ * Folder extension this scheme marks its vault roots with. Owned here, not by
+ * web-pkg: another encryption scheme may well pick a different one.
+ */
+export const VAULT_FOLDER_EXTENSION = 'vault'
+
+/** Whether a folder (or space) name marks a vault of this scheme. */
+export function isVaultName(name: string | undefined): boolean {
+  return hasExtension(name, VAULT_FOLDER_EXTENSION)
 }
 
 // Identify the vault root from a clear-text path: the first segment ending
@@ -12,7 +18,7 @@ export function looksLikeVaultName(name: string | undefined): boolean {
 export function findVaultRoot(path: string | undefined): string | null {
   if (!path) return null
   const segments = path.split('/').filter(Boolean)
-  const idx = segments.findIndex((s) => looksLikeVaultName(s))
+  const idx = segments.findIndex((s) => isVaultName(s))
   if (idx === -1) {
     return null
   }
@@ -32,7 +38,7 @@ export function vaultRootForSpace(space: SpaceResource, path: string | undefined
   if (inPath) {
     return inPath
   }
-  if (space && isShareSpaceResource(space) && looksLikeVaultName(space.name)) {
+  if (space && isShareSpaceResource(space) && isVaultName(space.name)) {
     return '/'
   }
   return null
