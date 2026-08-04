@@ -152,6 +152,8 @@ const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 
+const keyActionIds: string[] = []
+
 const isToolbarItemVisible = (item: EditorAction) => {
   if (!actionsToDisplay) {
     return item.showInToolbar !== false
@@ -200,6 +202,14 @@ const openSearchAndReplaceMenu = async () => {
   await dropRef.show({ anchorElement: triggerEl ?? undefined })
 }
 
+const handleSearchShortcut = (event: KeyboardEvent) => {
+  if (!unref(textEditor.isFocused)) {
+    return
+  }
+  event.preventDefault()
+  openSearchAndReplaceMenu()
+}
+
 const updateScrollState = () => {
   const el = scrollContainerRef.value
   if (!el) {
@@ -214,6 +224,15 @@ const updateScrollState = () => {
 onMounted(async () => {
   await nextTick()
   updateScrollState()
+
+  if (unref(isSearchAndReplaceAvailable)) {
+    const searchShortcutId = bindKeyAction(
+      { modifier: Modifier.Ctrl, primary: Key.F },
+      handleSearchShortcut,
+      { preventDefault: false }
+    )
+    keyActionIds.push(searchShortcutId)
+  }
 })
 
 watch(toolbarGroups, async () => {
@@ -289,12 +308,15 @@ const getMenuComponentAttrs = (item: EditorAction) => {
 const { bindKeyAction, removeKeyAction } = useKeyboardActions({
   skipDisabledKeyBindingsCheck: true
 })
-const shortcutId = bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.F }, () => {
-  openSearchAndReplaceMenu()
+
+const isSearchAndReplaceAvailable = computed(() => {
+  return unref(toolbarGroups)
+    .flatMap((group) => group.actions)
+    .some((action) => action.id === searchAndReplaceActionId)
 })
 
 onBeforeUnmount(() => {
-  removeKeyAction(shortcutId)
+  keyActionIds.forEach((id) => removeKeyAction(id))
 })
 </script>
 

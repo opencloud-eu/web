@@ -112,8 +112,12 @@ describe('TextEditorToolbar', () => {
     wrapper.unmount()
   })
 
-  it('opens search menu on Ctrl+F and prevents browser find', async () => {
-    const { wrapper, showSpy } = mountToolbar(false, 'markdown', true)
+  it('opens search menu on Ctrl+F when editor is focused', async () => {
+    const { wrapper, showSpy, textEditor } = mountToolbar(false, 'markdown', true)
+    textEditor.isFocused.value = true
+
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     const event = new KeyboardEvent('keydown', {
       key: 'f',
@@ -124,13 +128,18 @@ describe('TextEditorToolbar', () => {
     document.dispatchEvent(event)
 
     await wrapper.vm.$nextTick()
-    expect(event.defaultPrevented).toBeTruthy()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
     expect(showSpy).toHaveBeenCalledOnce()
     wrapper.unmount()
   })
 
-  it('opens search menu on Cmd+F', async () => {
-    const { wrapper, showSpy } = mountToolbar(false, 'markdown', true)
+  it('opens search menu on Cmd+F when editor is focused', async () => {
+    const { wrapper, showSpy, textEditor } = mountToolbar(false, 'markdown', true)
+    textEditor.isFocused.value = true
+
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
 
     const event = new KeyboardEvent('keydown', {
       key: 'f',
@@ -141,7 +150,26 @@ describe('TextEditorToolbar', () => {
     document.dispatchEvent(event)
 
     await wrapper.vm.$nextTick()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
     expect(showSpy).toHaveBeenCalledOnce()
+    wrapper.unmount()
+  })
+
+  it('does not open search menu on Ctrl+F when editor is not focused', async () => {
+    const { wrapper, showSpy, textEditor } = mountToolbar(false, 'markdown', true)
+    textEditor.isFocused.value = false
+
+    const event = new KeyboardEvent('keydown', {
+      key: 'f',
+      ctrlKey: true,
+      bubbles: true,
+      cancelable: true
+    })
+    document.dispatchEvent(event)
+
+    await wrapper.vm.$nextTick()
+    expect(showSpy).not.toHaveBeenCalled()
     wrapper.unmount()
   })
 })
