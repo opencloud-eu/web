@@ -32,20 +32,6 @@ describe('appointments store', () => {
     expect(store.visibleDateRange).toEqual(range)
   })
 
-  it('tracks view mode and create modal state', () => {
-    const store = useAppointmentsStore()
-
-    store.setViewMode('week')
-    store.openCreateModal()
-
-    expect(store.viewMode).toBe('week')
-    expect(store.isCreateModalOpen).toBeTruthy()
-
-    store.closeCreateModal()
-
-    expect(store.isCreateModalOpen).toBeFalsy()
-  })
-
   it('navigates between months', () => {
     const store = useAppointmentsStore()
 
@@ -76,28 +62,6 @@ describe('appointments store', () => {
     expect(store.appointments).toHaveLength(1)
     expect(store.isLoading).toBeFalsy()
     expect(store.error).toBeNull()
-  })
-
-  it('creates appointments and upserts the returned appointment', async () => {
-    const store = useAppointmentsStore()
-    const creator = vi.fn().mockResolvedValue(appointment({ id: 'created' }))
-
-    store.openCreateModal()
-    await store.createAppointment({
-      accountId: 'account-1',
-      payload: {
-        calendarId: 'c',
-        title: 'Planning',
-        start: '2026-06-25T08:00:00.000Z',
-        duration: 'PT1H',
-        timeZone: 'Europe/Berlin'
-      },
-      creator
-    })
-
-    expect(creator).toHaveBeenCalled()
-    expect(store.appointments.map(({ id }) => id)).toEqual(['created'])
-    expect(store.isCreateModalOpen).toBeFalsy()
   })
 
   it('loads calendars and selects the default calendar', async () => {

@@ -1,11 +1,6 @@
 import { urlJoin } from '@opencloud-eu/web-client'
 import type { HttpClient } from '@opencloud-eu/web-pkg'
-import type {
-  Appointment,
-  AppointmentDateRange,
-  Calendar,
-  CreateAppointmentPayload
-} from '../types'
+import type { Appointment, AppointmentDateRange, Calendar } from '../types'
 import { parseAppointmentsResponse, parseCalendarsResponse } from '../types'
 
 export type AppointmentServiceOptions = {
@@ -14,25 +9,31 @@ export type AppointmentServiceOptions = {
 }
 
 export type AppointmentService = {
-  loadCalendars: (accountId: string) => Promise<Calendar[]>
+  loadCalendars: (accountId: string, signal?: AbortSignal) => Promise<Calendar[]>
   loadAppointments: (
     accountId: string,
     range: AppointmentDateRange,
-    calendarId?: string | string[]
+    calendarId?: string | string[],
+    signal?: AbortSignal
   ) => Promise<Appointment[]>
-  createAppointment: (
-    accountId: string,
-    payload: CreateAppointmentPayload
-  ) => Promise<Appointment | null>
 }
 
 export const createAppointmentService = ({
   client,
   groupwareUrl
 }: AppointmentServiceOptions): AppointmentService => {
-  const loadCalendars = async (accountId: string) => {
-    const { data } = await client.get(
-      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars')
+  const get = (url: string, signal?: AbortSignal) => {
+    if (signal) {
+      return client.get(url, { signal })
+    }
+
+    return client.get(url)
+  }
+
+  const loadCalendars = async (accountId: string, signal?: AbortSignal) => {
+    const { data } = await get(
+      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars'),
+      signal
     )
 
     return parseCalendarsResponse(data)
@@ -41,10 +42,12 @@ export const createAppointmentService = ({
   const loadAppointmentsFromCollection = async (
     accountId: string,
     range: AppointmentDateRange,
-    calendarId?: string
+    calendarId?: string,
+    signal?: AbortSignal
   ): Promise<Appointment[]> => {
-    const { data } = await client.get(
-      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars', 'events')
+    const { data } = await get(
+      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars', 'events'),
+      signal
     )
 
     return filterAppointmentsByRange(parseAppointmentsResponse(data), range, calendarId)
@@ -53,22 +56,23 @@ export const createAppointmentService = ({
   const loadAppointments = async (
     accountId: string,
     range: AppointmentDateRange,
-    calendarId?: string | string[]
+    calendarId?: string | string[],
+    signal?: AbortSignal
   ): Promise<Appointment[]> => {
     if (Array.isArray(calendarId)) {
       const appointmentLists: Appointment[][] = await Promise.all(
-        calendarId.map((id) => loadAppointments(accountId, range, id))
+        calendarId.map((id) => loadAppointments(accountId, range, id, signal))
       )
 
       return deduplicateAppointments(appointmentLists.flat())
     }
 
     if (!calendarId) {
-      return loadAppointmentsFromCollection(accountId, range)
+      return loadAppointmentsFromCollection(accountId, range, undefined, signal)
     }
 
     try {
-      const { data } = await client.get(
+      const { data } = await get(
         urlJoin(
           groupwareUrl,
           'accounts',
@@ -76,7 +80,8 @@ export const createAppointmentService = ({
           'calendars',
           encodeURIComponent(calendarId),
           'events'
-        )
+        ),
+        signal
       )
 
       return filterAppointmentsByRange(parseAppointmentsResponse(data), range, calendarId)
@@ -85,47 +90,13 @@ export const createAppointmentService = ({
         throw e
       }
 
-      return loadAppointmentsFromCollection(accountId, range, calendarId)
+      return loadAppointmentsFromCollection(accountId, range, calendarId, signal)
     }
-  }
-
-  const createAppointment = async (accountId: string, payload: CreateAppointmentPayload) => {
-    const { data } = await client.post(
-      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'events'),
-      {
-        '@type': 'Event',
-        calendarIds: {
-          [payload.calendarId]: true
-        },
-        isDraft: false,
-        title: payload.title,
-        start: payload.start,
-        duration: payload.duration,
-        timeZone: payload.timeZone,
-        showWithoutTime: payload.allDay || false,
-        description: payload.description,
-        descriptionContentType: payload.description ? 'text/plain' : undefined,
-        locations: payload.location
-          ? {
-              main: {
-                '@type': 'Location',
-                name: payload.location
-              }
-            }
-          : undefined,
-        freeBusyStatus: 'busy',
-        privacy: 'public',
-        status: 'confirmed'
-      }
-    )
-
-    return parseAppointmentsResponse(data)[0] || null
   }
 
   return {
     loadCalendars,
-    loadAppointments,
-    createAppointment
+    loadAppointments
   }
 }
 

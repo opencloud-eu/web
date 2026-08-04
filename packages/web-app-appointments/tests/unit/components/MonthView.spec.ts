@@ -1,4 +1,4 @@
-import { defaultComponentMocks, mount } from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import MonthView from '../../../src/components/MonthView.vue'
 import { getMonthGridDays } from '../../../src/helpers/date'
 import type { Appointment } from '../../../src/types'
@@ -53,7 +53,7 @@ describe('MonthView', () => {
     expect(wrapper.get('[data-testid="calendar-month-error"]').text()).toContain(
       'Appointments could not be loaded'
     )
-    expect(wrapper.text()).toContain('No connection')
+    expect(wrapper.text()).not.toContain('No connection')
   })
 })
 
@@ -66,15 +66,14 @@ const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {
       props: {
         days: getMonthGridDays(currentMonth, new Date(2026, 5, 25)),
         currentMonth,
-        selectedDate: new Date(2026, 5, 15),
         appointments,
         appointmentsByDay: {},
         isLoading: false,
         error: null,
-        viewMode: 'month',
         ...props
       },
       global: {
+        plugins: defaultPlugins({ designSystem: false, pinia: false }),
         mocks: {
           ...defaultComponentMocks(),
           $gettext: (message: string, vars?: Record<string, string | number>) => {
@@ -91,9 +90,6 @@ const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {
           AppLoadingSpinner: {
             name: 'AppLoadingSpinner',
             template: '<div data-testid="calendar-loading" />'
-          },
-          CalendarViewDrop: {
-            template: '<div />'
           }
         }
       }
