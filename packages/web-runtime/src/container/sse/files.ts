@@ -328,10 +328,6 @@ async function applyFavoriteState(
     return
   }
 
-  if (sseData.affecteduserids?.length && !sseData.affecteduserids.includes(userStore.user?.id)) {
-    return
-  }
-
   if (isLocationCommonActive(router, 'files-common-favorites')) {
     if (!starred) {
       const resource = resourcesStore.resources.find((r) => r.id === sseData.itemid)
