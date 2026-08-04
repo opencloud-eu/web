@@ -18,7 +18,7 @@
       </div>
 
       <div class="mb-2 grid grid-cols-7 text-center text-xs text-role-on-surface-variant">
-        <span v-for="weekday in weekdays" :key="weekday" v-text="$gettext(weekday)" />
+        <span v-for="weekday in weekdays" :key="weekday" v-text="weekday" />
       </div>
       <div class="grid grid-cols-7 gap-y-3 text-center text-sm">
         <button
@@ -32,7 +32,7 @@
               ? 'bg-role-secondary-container text-role-on-secondary-container'
               : ''
           ]"
-          @click="setSelectedDate(day.date)"
+          @click="selectDate(day.date)"
           v-text="day.dayOfMonth"
         />
       </div>
@@ -54,7 +54,7 @@
         <li
           v-else-if="calendarError"
           class="text-sm text-role-error"
-          v-text="calendarError.message"
+          v-text="$gettext('Calendars could not be loaded')"
         />
         <li v-else-if="!calendars.length" class="text-sm text-role-on-surface-variant">
           <span v-text="$gettext('No calendars found')" />
@@ -77,7 +77,6 @@
                     ? 'border-role-primary bg-role-primary text-role-on-primary'
                     : ''
                 ]"
-                :style="getCalendarColorStyle(item)"
               >
                 <oc-icon
                   v-if="selectedCalendarIds.includes(item.id)"
@@ -98,9 +97,9 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useGettext } from 'vue3-gettext'
 import { useAppointmentsStore } from '../composables/piniaStores/appointments'
 import { getMonthGridDays, toDateKey } from '../helpers/date'
-import type { Calendar } from '../types'
 
 const appointmentsStore = useAppointmentsStore()
 const {
@@ -111,10 +110,24 @@ const {
   selectedCalendarIds,
   selectedDate
 } = storeToRefs(appointmentsStore)
-const { goToNextMonth, goToPreviousMonth, setSelectedDate, toggleSelectedCalendarId } =
-  appointmentsStore
+const {
+  goToNextMonth,
+  goToPreviousMonth,
+  setCurrentMonth,
+  setSelectedDate,
+  toggleSelectedCalendarId
+} = appointmentsStore
 
-const weekdays = computed(() => ['M', 'T', 'W', 'T', 'F', 'S', 'S'])
+const { $gettext } = useGettext()
+const weekdays = computed(() => [
+  $gettext('M'),
+  $gettext('T'),
+  $gettext('W'),
+  $gettext('T'),
+  $gettext('F'),
+  $gettext('S'),
+  $gettext('S')
+])
 const miniMonthDays = computed(() => getMonthGridDays(unref(currentMonth)))
 const selectedDateKey = computed(() => toDateKey(unref(selectedDate)))
 const monthLabel = computed(() => {
@@ -124,13 +137,8 @@ const monthLabel = computed(() => {
   })
 })
 
-const getCalendarColorStyle = (calendar: Calendar) => {
-  if (!calendar.color) {
-    return {}
-  }
-
-  return {
-    borderColor: calendar.color
-  }
+function selectDate(date: Date) {
+  setSelectedDate(date)
+  setCurrentMonth(date)
 }
 </script>

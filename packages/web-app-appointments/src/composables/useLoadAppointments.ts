@@ -1,15 +1,11 @@
-import { computed } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useClientService, useConfigStore } from '@opencloud-eu/web-pkg'
 import { createAppointmentService } from '../services/appointmentService'
 import { useAppointmentsStore } from './piniaStores/appointments'
-import type { AppointmentDateRange, CreateAppointmentPayload } from '../types'
+import type { AppointmentDateRange } from '../types'
 
 let loadAppointmentsTask: ReturnType<typeof useTask> | null = null
 let loadCalendarsTask: ReturnType<typeof useTask> | null = null
-let createAppointmentTask: ReturnType<typeof useTask> | null = null
-const isLoading = computed(() => loadAppointmentsTask?.isRunning ?? false)
-const isLoadingCalendars = computed(() => loadCalendarsTask?.isRunning ?? false)
 
 export const useLoadAppointments = () => {
   const configStore = useConfigStore()
@@ -31,7 +27,8 @@ export const useLoadAppointments = () => {
         accountId,
         calendarId,
         range,
-        loader: appointmentService.loadAppointments
+        loader: (accountId, range, calendarId) =>
+          appointmentService.loadAppointments(accountId, range, calendarId, signal)
       })
     }).restartable()
   }
@@ -40,21 +37,7 @@ export const useLoadAppointments = () => {
     loadCalendarsTask = useTask(function* (signal, accountId: string) {
       return yield appointmentsStore.loadCalendarsForAccount({
         accountId,
-        loader: appointmentService.loadCalendars
-      })
-    }).restartable()
-  }
-
-  if (!createAppointmentTask) {
-    createAppointmentTask = useTask(function* (
-      signal,
-      accountId: string,
-      payload: CreateAppointmentPayload
-    ) {
-      return yield appointmentsStore.createAppointment({
-        accountId,
-        payload,
-        creator: appointmentService.createAppointment
+        loader: (accountId) => appointmentService.loadCalendars(accountId, signal)
       })
     }).restartable()
   }
@@ -71,18 +54,10 @@ export const useLoadAppointments = () => {
     return loadCalendarsTask!.perform(accountId)
   }
 
-  const createAppointment = (accountId: string, payload: CreateAppointmentPayload) => {
-    return createAppointmentTask!.perform(accountId, payload)
-  }
-
   return {
     loadCalendars,
     loadAppointments,
-    createAppointment,
-    createAppointmentTask,
     loadCalendarsTask,
-    loadAppointmentsTask,
-    isLoading,
-    isLoadingCalendars
+    loadAppointmentsTask
   }
 }

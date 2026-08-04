@@ -65,12 +65,42 @@ export const getMonthGridDays = (currentMonth: Date, today = new Date()): Calend
 }
 
 export const groupAppointmentsByDay = (appointments: Appointment[]) => {
-  return appointments.reduce<Record<string, Appointment[]>>((result, appointment) => {
-    const key = toDateKey(appointment.start)
-    result[key] = result[key] || []
-    result[key].push(appointment)
-    return result
-  }, {})
+  const result: Record<string, Appointment[]> = {}
+
+  for (const appointment of appointments) {
+    const start = new Date(appointment.start)
+    const end = new Date(appointment.end)
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      continue
+    }
+
+    const lastCoveredInstant = new Date(Math.max(end.getTime() - 1, start.getTime()))
+    const cursor = new Date(start.getFullYear(), start.getMonth(), start.getDate())
+    const lastDay = new Date(
+      lastCoveredInstant.getFullYear(),
+      lastCoveredInstant.getMonth(),
+      lastCoveredInstant.getDate()
+    )
+
+    while (cursor <= lastDay) {
+      const key = toDateKey(cursor)
+      result[key] = result[key] || []
+      result[key].push(appointment)
+      cursor.setDate(cursor.getDate() + 1)
+    }
+  }
+
+  for (const appointmentsForDay of Object.values(result)) {
+    appointmentsForDay.sort((left, right) => {
+      if (left.allDay !== right.allDay) {
+        return left.allDay ? -1 : 1
+      }
+
+      return new Date(left.start).getTime() - new Date(right.start).getTime()
+    })
+  }
+
+  return result
 }
 
 export const formatDateForApi = (date: Date) => {

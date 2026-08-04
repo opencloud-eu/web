@@ -8,83 +8,73 @@ export const AppointmentParticipantSchema = z.object({
   role: z.string().optional()
 })
 
-export const AppointmentSchema = z.object({
-  id: z.string(),
-  calendarId: z.string().optional(),
-  accountId: z.string().optional(),
-  title: z.string(),
-  description: z.string().optional(),
-  location: z.string().optional(),
-  start: z.string(),
-  end: z.string(),
-  allDay: z.boolean().optional().default(false),
-  color: z.string().optional(),
-  organizer: AppointmentParticipantSchema.optional(),
-  participants: z.array(AppointmentParticipantSchema).optional().default([]),
-  recurrenceRule: z.string().optional()
-})
+const AppointmentLocationSchema = z
+  .object({
+    name: z.string().optional()
+  })
+  .passthrough()
 
-export const JmapCalendarEventSchema = z
+export const AppointmentSchema = z
   .object({
     id: z.string(),
     calendarId: z.string().optional(),
     calendarIds: z.record(z.string(), z.boolean()).optional(),
+    accountId: z.string().optional(),
     title: z.string().optional(),
     name: z.string().optional(),
     summary: z.string().optional(),
     description: z.string().optional(),
     location: z.string().optional(),
+    locations: z.record(z.string(), AppointmentLocationSchema).optional(),
     start: z.string(),
     end: z.string().optional(),
     duration: z.string().optional(),
+    timeZone: z.string().optional(),
     showWithoutTime: z.boolean().optional(),
     allDay: z.boolean().optional(),
     color: z.string().optional(),
+    organizer: AppointmentParticipantSchema.optional(),
+    participants: z.array(AppointmentParticipantSchema).optional(),
     recurrenceRule: z.unknown().optional()
   })
   .transform((event) => {
     const calendarId = event.calendarId || Object.keys(event.calendarIds || {})[0]
-    const end = event.end || addDurationToDateString(event.start, event.duration)
+    const end = event.end || addDurationToDateString(event.start, event.duration, event.timeZone)
+    const location = event.location || Object.values(event.locations || {})[0]?.name
 
     return {
       id: event.id,
       calendarId,
+      accountId: event.accountId,
       title: event.title || event.name || event.summary || '',
       description: event.description,
-      location: event.location,
+      location,
       start: event.start,
       end,
       allDay: event.allDay || event.showWithoutTime || false,
       color: event.color,
+      organizer: event.organizer,
       recurrenceRule: typeof event.recurrenceRule === 'string' ? event.recurrenceRule : undefined,
-      participants: [] as AppointmentParticipant[]
+      participants: event.participants || []
     }
   })
 
 export const AppointmentListResponseSchema = z.object({
   accountId: z.string().optional(),
   state: z.string().optional(),
-  list: z
-    .array(z.union([AppointmentSchema, JmapCalendarEventSchema]))
-    .optional()
-    .default([]),
+  list: z.array(AppointmentSchema).optional().default([]),
   notFound: z.array(z.string()).optional()
 })
 
 export const AppointmentSearchResultsSchema = z.object({
-  results: z
-    .array(z.union([AppointmentSchema, JmapCalendarEventSchema]))
-    .optional()
-    .default([]),
+  results: z.array(AppointmentSchema).optional().default([]),
   canCalculateChanges: z.boolean().optional(),
   position: z.number().optional(),
   limit: z.number().optional(),
   total: z.number().optional()
 })
 
-export const AppointmentsArrayResponseSchema = z.array(
-  z.union([AppointmentSchema, JmapCalendarEventSchema])
-)
+export const AppointmentsArrayResponseSchema = z.array(AppointmentSchema)
 
 export const CalendarSchema = z
   .object({
@@ -129,8 +119,21 @@ export const CalendarObjectResponseSchema = z.object({
 
 export const CalendarsArrayResponseSchema = z.array(CalendarSchema)
 
-export type Appointment = z.infer<typeof AppointmentSchema>
-export type AppointmentParticipant = z.infer<typeof AppointmentParticipantSchema>
+export type Appointment = {
+  id: string
+  calendarId?: string
+  accountId?: string
+  title: string
+  description?: string
+  location?: string
+  start: string
+  end: string
+  allDay: boolean
+  color?: string
+  organizer?: z.infer<typeof AppointmentParticipantSchema>
+  recurrenceRule?: string
+  participants: z.infer<typeof AppointmentParticipantSchema>[]
+}
 export type AppointmentListResponse = z.infer<typeof AppointmentListResponseSchema>
 export type Calendar = {
   id: string
@@ -145,28 +148,15 @@ export type AppointmentDateRange = {
   end: string
 }
 
-export type CalendarViewMode = 'day' | '3-day' | 'week' | 'month' | 'agenda'
-
-export type CreateAppointmentPayload = {
-  calendarId: string
-  title: string
-  start: string
-  duration: string
-  timeZone: string
-  description?: string
-  location?: string
-  allDay?: boolean
-}
-
 export const parseAppointmentsResponse = (data: unknown): Appointment[] => {
   const arrayResponse = AppointmentsArrayResponseSchema.safeParse(data)
   if (arrayResponse.success) {
     return arrayResponse.data
   }
 
-  const singleResponse = z.union([AppointmentSchema, JmapCalendarEventSchema]).safeParse(data)
+  const singleResponse = AppointmentSchema.safeParse(data)
   if (singleResponse.success) {
-    return [singleResponse.data as Appointment]
+    return [singleResponse.data]
   }
 
   const searchResponse = AppointmentSearchResultsSchema.safeParse(data)
@@ -182,40 +172,40 @@ export const parseAppointmentsResponse = (data: unknown): Appointment[] => {
   return AppointmentSearchResultsSchema.parse(data).results
 }
 
-const addDurationToDateString = (start: string, duration?: string) => {
+const addDurationToDateString = (start: string, duration?: string, timeZone?: string) => {
   if (!duration) {
     return start
   }
 
-  const startDate = DateTime.fromISO(start)
+  const startDate = DateTime.fromISO(start, timeZone ? { zone: timeZone } : undefined)
   const parsedDuration = Duration.fromISO(duration)
   if (!startDate.isValid || !parsedDuration.isValid) {
     return start
   }
 
-  return startDate.plus(parsedDuration).toUTC().toISO()
+  return startDate.plus(parsedDuration).toUTC().toISO() || start
 }
 
 export const parseCalendarsResponse = (data: unknown): Calendar[] => {
   const listResponse = CalendarListResponseSchema.safeParse(data)
   if (listResponse.success) {
-    return listResponse.data.list as Calendar[]
+    return listResponse.data.list
   }
 
   const objectResponse = CalendarObjectResponseSchema.safeParse(data)
   if (objectResponse.success) {
-    return Object.values(objectResponse.data.calendars) as Calendar[]
+    return Object.values(objectResponse.data.calendars)
   }
 
   const arrayResponse = CalendarsArrayResponseSchema.safeParse(data)
   if (arrayResponse.success) {
-    return arrayResponse.data as Calendar[]
+    return arrayResponse.data
   }
 
   const singleResponse = CalendarSchema.safeParse(data)
   if (singleResponse.success) {
-    return [singleResponse.data as Calendar]
+    return [singleResponse.data]
   }
 
-  return CalendarListResponseSchema.parse(data).list as Calendar[]
+  return CalendarListResponseSchema.parse(data).list
 }
