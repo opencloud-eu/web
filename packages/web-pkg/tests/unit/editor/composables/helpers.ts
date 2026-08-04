@@ -70,6 +70,7 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'setTextAlign',
       'addRowBefore',
       'addRowAfter',
+      'goToPreviousCell',
       'addColumnBefore',
       'addColumnAfter',
       'setImage',
@@ -86,6 +87,9 @@ export function createMockEditor(options: MockEditorOptions = {}) {
 
   return {
     chain: vi.fn(() => chainInstance),
+    commands: {
+      setTextSelection: vi.fn()
+    },
     isActive: vi.fn(isActive),
     can: vi.fn(() => ({
       undo: vi.fn().mockReturnValue(canUndo),

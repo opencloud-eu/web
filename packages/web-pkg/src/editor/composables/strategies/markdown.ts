@@ -102,14 +102,14 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     image,
     imageUrl,
     imageUpload,
-    tableMenu,
     createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
     addColumnBefore,
     addColumnAfter,
-    deleteColumn
+    deleteColumn,
+    deleteTable
   } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
@@ -153,15 +153,15 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           image(),
           imageUrl(),
           imageUpload(),
-          tableMenu(),
-          menuEmoji(),
           createTable(),
-          addColumnAfter(),
-          addColumnBefore(),
-          addRowAfter(),
           addRowBefore(),
-          deleteColumn(),
+          addRowAfter(),
           deleteRow(),
+          addColumnBefore(),
+          addColumnAfter(),
+          deleteColumn(),
+          deleteTable(),
+          menuEmoji(),
           horizontalRule()
         ]
       },

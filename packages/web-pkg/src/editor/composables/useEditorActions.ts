@@ -5,7 +5,7 @@ import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
-import { useModals, useThemeStore } from '../../composables/piniaStores'
+import { useModals, useThemeStore } from '../../composables'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
 
@@ -645,7 +645,6 @@ export function useEditorActions(state: TextEditorState) {
     description: $gettext('3×3 table with header row'),
     icon: 'table-line',
     keywords: ['grid'],
-    showInToolbar: false,
     toolbarAction: (editor) =>
       editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
     slashCommandAction: ({ editor, range }) => {
@@ -765,20 +764,19 @@ export function useEditorActions(state: TextEditorState) {
     isEnabled: (editor) => editor.isActive('table')
   })
 
-  const tableMenu = (): EditorAction => ({
-    id: 'table-menu',
-    title: $gettext('Table'),
-    icon: 'table-line',
-    showInSlashCommands: false,
-    childActions: [
-      createTable(),
-      addRowBefore(),
-      addRowAfter(),
-      deleteRow(),
-      addColumnBefore(),
-      addColumnAfter(),
-      deleteColumn()
-    ]
+  const deleteTable = (): EditorAction => ({
+    id: 'delete-table',
+    title: $gettext('Delete table'),
+    description: $gettext('Remove current table'),
+    icon: 'delete-bin-2-line',
+    keywords: ['table', 'remove', 'delete'],
+    showInToolbar: false,
+    toolbarAction: (editor) => editor.chain().focus().deleteTable().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).deleteTable().run()
+    },
+    isActive: () => false,
+    isEnabled: (editor) => editor.isActive('table')
   })
 
   return {
@@ -826,13 +824,13 @@ export function useEditorActions(state: TextEditorState) {
     imageUpload,
     horizontalRule,
     // Table
-    tableMenu,
     createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
     addColumnBefore,
     addColumnAfter,
-    deleteColumn
+    deleteColumn,
+    deleteTable
   }
 }
