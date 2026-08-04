@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.3.1](https://github.com/opencloud-eu/web/releases/tag/v7.3.1) - 2026-08-04
+## [7.4.0](https://github.com/opencloud-eu/web/releases/tag/v7.4.0) - 2026-08-04
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@tammi-23, @v-scharf
+@AlexAndBear, @tammi-23, @v-scharf
+
+### 📈 Enhancement
+
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### 🐛 Bug Fixes
 
