@@ -4,10 +4,12 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
 - feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### 🐛 Bug Fixes
