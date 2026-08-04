@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @schweigisito, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
 - feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
 - feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
 - feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
