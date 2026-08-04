@@ -6,13 +6,14 @@
 
 @tammi-23, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
+- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
 ### ✅ Tests
 
 - fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
-
-### 🐛 Bug Fixes
-
-- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
 
 ### 📦️ Dependencies
 
