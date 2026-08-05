@@ -19,7 +19,6 @@ import {
   useMessages,
   useModals,
   useResourcesStore,
-  useRouter,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 
@@ -29,7 +28,6 @@ export const useFileActionsCreateSpaceFromResource = () => {
   const { $gettext, $ngettext } = useGettext()
   const { createSpace } = useCreateSpace()
   const clientService = useClientService()
-  const router = useRouter()
   const hasCreatePermission = computed(() => can('create-all', 'Drive'))
   const { dispatchModal } = useModals()
   const configStore = useConfigStore()

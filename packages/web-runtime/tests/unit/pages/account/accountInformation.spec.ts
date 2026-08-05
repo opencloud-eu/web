@@ -25,7 +25,7 @@ const selectors = {
 
 describe('account information page', () => {
   describe('public link context', () => {
-    it('should render a limited view', async () => {
+    it('should render a limited view', () => {
       const { wrapper } = getWrapper({ isUserContext: false, isPublicLinkContext: true })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -86,18 +86,18 @@ describe('account information page', () => {
     })
 
     describe('Logout from all devices link', () => {
-      it('should render the logout from active devices if logoutUrl is provided', async () => {
+      it('should render the logout from active devices if logoutUrl is provided', () => {
         const { wrapper } = getWrapper()
 
         expect(wrapper.find('[data-testid="logout"]').exists()).toBe(true)
       })
-      it("shouldn't render the logout from active devices if logoutUrl isn't provided", async () => {
+      it("shouldn't render the logout from active devices if logoutUrl isn't provided", () => {
         const { wrapper } = getWrapper()
 
         ;(wrapper.vm as any).logoutUrl = undefined
         expect(wrapper.find('[data-testid="logout"]').exists()).toBe(true)
       })
-      it('should use url from configuration manager', async () => {
+      it('should use url from configuration manager', () => {
         const { wrapper } = getWrapper()
 
         const logoutButton = wrapper.find(selectors.logoutButton)

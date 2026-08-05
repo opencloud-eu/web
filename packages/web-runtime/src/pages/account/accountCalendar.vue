@@ -126,7 +126,7 @@ const copyCalDavUsernameToClipboard = () => {
   setTimeout(() => (copyCalDavUsernameIcon.value = copyIcon), 1500)
 }
 
-const loadCalDavTask = useTask(function* (signal) {
+const loadCalDavTask = useTask(function* () {
   const wellKnownUrl = '.well-known/caldav'
   try {
     const response = yield clientService.httpAuthenticated.get(wellKnownUrl, { method: 'OPTIONS' })

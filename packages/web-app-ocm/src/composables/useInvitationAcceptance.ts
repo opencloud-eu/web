@@ -24,7 +24,7 @@ export function useInvitationAcceptance() {
     error.value = false
 
     try {
-      const response = await clientService.httpAuthenticated.post('/sciencemesh/accept-invite', {
+      await clientService.httpAuthenticated.post('/sciencemesh/accept-invite', {
         token,
         providerDomain
       })

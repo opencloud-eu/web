@@ -32,13 +32,13 @@ describe('AppTokenModal component', () => {
       const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       expect(btn.props('disabled')).toBeTruthy()
     })
-    it('should be disabled when only a note has been entered', async () => {
+    it('should be disabled when only a note has been entered', () => {
       const { wrapper } = getWrapper()
       emitNoteInput(wrapper, 'someNote')
       const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       expect(btn.props('disabled')).toBeTruthy()
     })
-    it('should be disabled when only a date has been entered', async () => {
+    it('should be disabled when only a date has been entered', () => {
       const { wrapper } = getWrapper()
       emitDateInput(wrapper, DateTime.now())
       const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')

@@ -6,8 +6,8 @@ export const folderVaultExtension: FolderVaultExtension = {
   type: 'folderVault',
   // rclone-crypt has no per-vault index to load, so this resolves
   // synchronously and the async wrapper just returns a resolved promise.
-  async resolve(space, path) {
-    return resolveVault(space, path)
+  resolve(space, path) {
+    return Promise.resolve(resolveVault(space, path))
   },
   claimsPath(space, path) {
     return claimsVaultPath(space, path)

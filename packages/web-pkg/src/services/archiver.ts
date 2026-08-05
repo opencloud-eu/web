@@ -83,7 +83,7 @@ export class ArchiverService {
         const blob = await response.blob()
         url = URL.createObjectURL(blob)
         fileName = decodeURI(response.headers.get('content-disposition')?.split('"')[1])
-      } catch (e) {
+      } catch {
         throw new Error('archive could not be fetched')
       }
     }
