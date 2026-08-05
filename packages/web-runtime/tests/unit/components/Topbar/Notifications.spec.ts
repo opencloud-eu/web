@@ -6,6 +6,7 @@ import { SpaceResource } from '@opencloud-eu/web-client'
 import { RouterLink, RouteLocationNamedRaw, RouteLocationNormalizedLoaded } from 'vue-router'
 import { AxiosResponse } from 'axios'
 import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
 
 const selectors = {
   notificationBellStub: 'notification-bell-stub',
@@ -41,7 +42,7 @@ describe('Notification component', () => {
       })
     ]
     const { wrapper } = getWrapper({ notifications })
-    await wrapper.vm.fetchNotificationsTask.last
+    await flushPromises()
     expect(wrapper.find(selectors.noNewNotifications).exists()).toBeFalsy()
     expect(wrapper.findAll(selectors.notificationItem).length).toBe(notifications.length)
   })
@@ -54,7 +55,7 @@ describe('Notification component', () => {
   it('marks all notifications as read', async () => {
     const notifications = [mock<Notification>({ messageRich: undefined })]
     const { wrapper, mocks } = getWrapper({ notifications })
-    await wrapper.vm.fetchNotificationsTask.last
+    await flushPromises()
     await wrapper.find(selectors.markAll).trigger('click')
     await wrapper.vm.$nextTick()
     expect(wrapper.find(selectors.notificationItem).exists()).toBeFalsy()
@@ -67,7 +68,7 @@ describe('Notification component', () => {
         user: 'einstein'
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
-      await wrapper.vm.fetchNotificationsTask.last
+      await flushPromises()
       const avatarImageStub = wrapper.findComponent<typeof UserAvatar>(selectors.userAvatarStub)
       expect(avatarImageStub.attributes('userid')).toEqual(notification.user)
       expect(avatarImageStub.attributes('username')).toEqual(notification.user)
@@ -81,7 +82,7 @@ describe('Notification component', () => {
         messageRichParameters: { user: { displayname, name, id } }
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
-      await wrapper.vm.fetchNotificationsTask.last
+      await flushPromises()
       const avatarImageStub = wrapper.findComponent<typeof UserAvatar>(selectors.userAvatarStub)
       expect(avatarImageStub.attributes('userid')).toEqual(id)
       expect(avatarImageStub.attributes('username')).toEqual(displayname)
@@ -96,7 +97,7 @@ describe('Notification component', () => {
         computedLink: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
-      await wrapper.vm.fetchNotificationsTask.last
+      await flushPromises()
       expect(wrapper.find(selectors.notificationSubject).exists()).toBeTruthy()
     })
   })
@@ -109,8 +110,7 @@ describe('Notification component', () => {
         computedLink: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
-      await wrapper.vm.fetchNotificationsTask.last
-      await wrapper.vm.$nextTick()
+      await flushPromises()
       expect(wrapper.find(selectors.notificationMessage).text()).toEqual(notification.message)
     })
     it('displays rich message and interpolates the text', async () => {
@@ -124,8 +124,7 @@ describe('Notification component', () => {
         computedLink: undefined
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
-      await wrapper.vm.fetchNotificationsTask.last
-      await wrapper.vm.$nextTick()
+      await flushPromises()
       expect(wrapper.find(selectors.notificationMessage).text()).toEqual(
         'Albert Einstein shared someFile.txt with you'
       )
@@ -140,7 +139,7 @@ describe('Notification component', () => {
         link: 'http://some-link.com'
       })
       const { wrapper } = getWrapper({ notifications: [notification] })
-      await wrapper.vm.fetchNotificationsTask.last
+      await flushPromises()
       expect(wrapper.find(selectors.notificationLink).exists()).toBeTruthy()
     })
     describe('if given via messageRichParameters', () => {
@@ -157,8 +156,7 @@ describe('Notification component', () => {
           computedLink: undefined
         })
         const { wrapper } = getWrapper({ notifications: [notification] })
-        await wrapper.vm.fetchNotificationsTask.last
-        await wrapper.vm.$nextTick()
+        await flushPromises()
 
         const routerLink = wrapper.findComponent<typeof RouterLink>(
           `${selectors.notificationItem} router-link-stub`
@@ -187,8 +185,7 @@ describe('Notification component', () => {
           computedLink: undefined
         })
         const { wrapper } = getWrapper({ notifications: [notification], spaces: [spaceMock] })
-        await wrapper.vm.fetchNotificationsTask.last
-        await wrapper.vm.$nextTick()
+        await flushPromises()
         const routerLink = wrapper.findComponent<typeof RouterLink>(
           `${selectors.notificationItem} router-link-stub`
         )

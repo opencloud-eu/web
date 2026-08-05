@@ -40,72 +40,59 @@
   </oc-modal>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, unref } from 'vue'
+<script setup lang="ts">
+import { ref, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useLoadingService, useModals, CustomModalComponentInstance } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  setup() {
-    const loadingService = useLoadingService()
+const loadingService = useLoadingService()
 
-    const modalStore = useModals()
-    const { activeModal: modal } = storeToRefs(modalStore)
-    const { updateModal, removeModal } = modalStore
+const modalStore = useModals()
+const { activeModal: modal } = storeToRefs(modalStore)
+const { updateModal, removeModal } = modalStore
 
-    const customComponentRef = ref<CustomModalComponentInstance>()
+const customComponentRef = ref<CustomModalComponentInstance>()
 
-    const onModalConfirm = async (value?: unknown) => {
-      try {
-        updateModal(unref(modal)?.id, 'isLoading', true)
+const onModalConfirm = async (value?: unknown) => {
+  try {
+    updateModal(unref(modal)?.id, 'isLoading', true)
 
-        if (unref(modal)?.onConfirm) {
-          await loadingService.addTask(async () => {
-            await unref(modal).onConfirm(value)
-          })
-        } else if (unref(customComponentRef)?.onConfirm) {
-          await loadingService.addTask(() => unref(customComponentRef).onConfirm(value))
-        }
-      } catch {
-        updateModal(unref(modal)?.id, 'isLoading', false)
-        return
-      }
-
-      removeModal(unref(modal)?.id)
+    if (unref(modal)?.onConfirm) {
+      await loadingService.addTask(async () => {
+        await unref(modal).onConfirm(value)
+      })
+    } else if (unref(customComponentRef)?.onConfirm) {
+      await loadingService.addTask(() => unref(customComponentRef).onConfirm(value))
     }
-
-    const onModalCancel = () => {
-      if (unref(modal)?.onCancel) {
-        unref(modal).onCancel()
-      } else if (unref(customComponentRef)?.onCancel) {
-        unref(customComponentRef).onCancel()
-      }
-
-      removeModal(unref(modal)?.id)
-    }
-
-    const onModalInput = (value: string) => {
-      if (!unref(modal).onInput) {
-        return
-      }
-
-      // provide onError callback
-      const setError = (error: string) => updateModal(unref(modal).id, 'inputError', error)
-      unref(modal).onInput(value, setError)
-    }
-
-    const onModalConfirmDisabled = (value: boolean) => {
-      updateModal(unref(modal).id, 'confirmDisabled', value)
-    }
-
-    return {
-      customComponentRef,
-      modal,
-      onModalConfirm,
-      onModalCancel,
-      onModalInput,
-      onModalConfirmDisabled
-    }
+  } catch {
+    updateModal(unref(modal)?.id, 'isLoading', false)
+    return
   }
-})
+
+  removeModal(unref(modal)?.id)
+}
+
+const onModalCancel = () => {
+  if (unref(modal)?.onCancel) {
+    unref(modal).onCancel()
+  } else if (unref(customComponentRef)?.onCancel) {
+    unref(customComponentRef).onCancel()
+  }
+
+  removeModal(unref(modal)?.id)
+}
+
+const onModalInput = (value: string) => {
+  if (!unref(modal).onInput) {
+    return
+  }
+
+  // provide onError callback
+  const setError = (error: string) => updateModal(unref(modal).id, 'inputError', error)
+  unref(modal).onInput(value, setError)
+}
+
+const onModalConfirmDisabled = (value: boolean) => {
+  updateModal(unref(modal).id, 'confirmDisabled', value)
+}
 </script>

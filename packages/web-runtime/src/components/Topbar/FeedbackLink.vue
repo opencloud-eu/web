@@ -17,38 +17,23 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'FeedbackLink',
-  props: {
-    href: {
-      type: String,
-      required: false,
-      default: null
-    },
-    ariaLabel: {
-      type: String,
-      required: false,
-      default: null
-    },
-    description: {
-      type: String,
-      required: false,
-      default: null
-    }
-  },
-  computed: {
-    hrefOrFallback() {
-      return this.href || 'https://opencloud.eu/feedback-web'
-    },
-    ariaLabelOrFallback() {
-      return this.ariaLabel || this.$gettext('Share improvement ideas')
-    },
-    descriptionOrFallback() {
-      return this.description || this.$gettext('Share improvement ideas')
-    }
-  }
-})
+const {
+  href = undefined,
+  ariaLabel = undefined,
+  description = undefined
+} = defineProps<{
+  href?: string
+  ariaLabel?: string
+  description?: string
+}>()
+
+const { $gettext } = useGettext()
+
+const hrefOrFallback = computed(() => href || 'https://opencloud.eu/feedback-web')
+const ariaLabelOrFallback = computed(() => ariaLabel || $gettext('Share improvement ideas'))
+const descriptionOrFallback = computed(() => description || $gettext('Share improvement ideas'))
 </script>

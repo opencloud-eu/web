@@ -79,7 +79,7 @@
     </oc-drop>
   </div>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import { computed, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import isEmpty from 'lodash-es/isEmpty'
 import escape from 'lodash-es/escape'
@@ -102,182 +102,163 @@ import { AxiosHeaders } from 'axios'
 
 const POLLING_INTERVAL = 30000
 
-export default {
-  components: {
-    UserAvatar,
-    NotificationBell
-  },
-  setup() {
-    const spacesStore = useSpacesStore()
-    const capabilityStore = useCapabilityStore()
-    const clientService = useClientService()
-    const language = useGettext()
+const spacesStore = useSpacesStore()
+const capabilityStore = useCapabilityStore()
+const clientService = useClientService()
+const language = useGettext()
 
-    const notifications: Ref<Notification[]> = ref([])
-    const notificationsInterval = ref<ReturnType<typeof setInterval>>()
+const notifications: Ref<Notification[]> = ref([])
+const notificationsInterval = ref<ReturnType<typeof setInterval>>()
 
-    const loading = computed(() => {
-      return fetchNotificationsTask.isRunning || deleteNotificationsTask.isRunning
-    })
+const loading = computed(() => {
+  return fetchNotificationsTask.isRunning || deleteNotificationsTask.isRunning
+})
 
-    const formatDate = (date: string) => {
-      return formatDateFromISO(date, language.current)
-    }
-    const formatDateRelative = (date: string) => {
-      return formatRelativeDateFromISO(date, language.current)
-    }
+const formatDate = (date: string) => {
+  return formatDateFromISO(date, language.current)
+}
+const formatDateRelative = (date: string) => {
+  return formatRelativeDateFromISO(date, language.current)
+}
 
-    const messageParameters = [
-      { name: 'user', labelAttribute: 'displayname' },
-      { name: 'resource', labelAttribute: 'name' },
-      { name: 'space', labelAttribute: 'name' },
-      { name: 'virus', labelAttribute: 'name' }
-    ]
-    const getMessage = ({ message, messageRich, messageRichParameters }: Notification): string => {
-      if (messageRich && !isEmpty(messageRichParameters)) {
-        let interpolatedMessage = messageRich
-        for (const param of messageParameters) {
-          if (interpolatedMessage.includes(`{${param.name}}`)) {
-            const richParam = messageRichParameters[param.name] ?? undefined
-            if (!richParam) {
-              return message
-            }
-            const label = richParam[param.labelAttribute] ?? undefined
-            if (!label) {
-              return message
-            }
-            interpolatedMessage = interpolatedMessage.replace(
-              `{${param.name}}`,
-              `<strong>${escape(label)}</strong>`
-            )
-          }
+const messageParameters = [
+  { name: 'user', labelAttribute: 'displayname' },
+  { name: 'resource', labelAttribute: 'name' },
+  { name: 'space', labelAttribute: 'name' },
+  { name: 'virus', labelAttribute: 'name' }
+]
+const getMessage = ({ message, messageRich, messageRichParameters }: Notification): string => {
+  if (messageRich && !isEmpty(messageRichParameters)) {
+    let interpolatedMessage = messageRich
+    for (const param of messageParameters) {
+      if (interpolatedMessage.includes(`{${param.name}}`)) {
+        const richParam = messageRichParameters[param.name] ?? undefined
+        if (!richParam) {
+          return message
         }
-        return interpolatedMessage
-      }
-      return message
-    }
-    const getLink = ({ messageRichParameters, object_type }: Notification) => {
-      if (!messageRichParameters) {
-        return null
-      }
-      if (object_type === 'share') {
-        return {
-          name: 'files-shares-with-me',
-          ...(!!messageRichParameters?.share?.id && {
-            query: { scrollTo: messageRichParameters.share.id }
-          })
+        const label = richParam[param.labelAttribute] ?? undefined
+        if (!label) {
+          return message
         }
-      }
-      if (object_type === 'storagespace' && messageRichParameters?.space?.id) {
-        const space = spacesStore.spaces.find(
-          (s) => s.fileId === messageRichParameters?.space?.id.split('!')[0] && !s.disabled
+        interpolatedMessage = interpolatedMessage.replace(
+          `{${param.name}}`,
+          `<strong>${escape(label)}</strong>`
         )
-        if (space) {
-          return {
-            name: 'files-spaces-generic',
-            ...createFileRouteOptions(space, { path: '', fileId: space.fileId })
-          }
-        }
-      }
-      if (object_type === 'mention' || messageRichParameters.resource?.id) {
-        return {
-          name: 'resolvePrivateLink',
-          params: { fileId: messageRichParameters.resource?.id }
-        }
-      }
-      return null
-    }
-
-    const fetchNotificationsTask = useTask(function* (signal) {
-      try {
-        const response = yield* call(
-          clientService.httpAuthenticated.get<{ ocs: { data: Notification[] } }>(
-            'ocs/v2.php/apps/notifications/api/v1/notifications',
-            { signal }
-          )
-        )
-
-        if ((response.headers as AxiosHeaders).get('Content-Length') === '0') {
-          return
-        }
-
-        const {
-          ocs: { data = [] }
-        } = response.data
-        notifications.value = data?.sort((a, b) => b.datetime.localeCompare(a.datetime)) || []
-        unref(notifications).forEach((notification) => setAdditionalNotificationData(notification))
-      } catch (e) {
-        console.error(e)
-      }
-    }).restartable()
-
-    const deleteNotificationsTask = useTask(function* (signal, ids) {
-      try {
-        yield clientService.httpAuthenticated.delete(
-          'ocs/v2.php/apps/notifications/api/v1/notifications',
-          { data: { ids } },
-          { signal }
-        )
-      } catch (e) {
-        console.error(e)
-      } finally {
-        notifications.value = unref(notifications).filter((n) => !ids.includes(n.notification_id))
-      }
-    }).restartable()
-
-    const setAdditionalNotificationData = (notification: Notification) => {
-      notification.computedMessage = getMessage(notification)
-      notification.computedLink = getLink(notification)
-    }
-
-    const onSSENotificationEvent = (event: MessageEvent) => {
-      try {
-        const notification = JSON.parse(event.data) as Notification
-        if (!notification || !notification.notification_id) {
-          return
-        }
-        setAdditionalNotificationData(notification)
-        notifications.value = [notification, ...unref(notifications)]
-      } catch {
-        console.error('Unable to parse sse notification data')
       }
     }
-
-    onMounted(() => {
-      fetchNotificationsTask.perform()
-      if (unref(capabilityStore.supportSSE)) {
-        clientService.sseAuthenticated.addEventListener(
-          MESSAGE_TYPE.NOTIFICATION,
-          onSSENotificationEvent
-        )
-      } else {
-        notificationsInterval.value = setInterval(() => {
-          fetchNotificationsTask.perform()
-        }, POLLING_INTERVAL)
-      }
-    })
-
-    onUnmounted(() => {
-      if (unref(capabilityStore.supportSSE)) {
-        clientService.sseAuthenticated.removeEventListener(
-          MESSAGE_TYPE.NOTIFICATION,
-          onSSENotificationEvent
-        )
-      } else {
-        clearInterval(unref(notificationsInterval))
-      }
-    })
-
+    return interpolatedMessage
+  }
+  return message
+}
+const getLink = ({ messageRichParameters, object_type }: Notification) => {
+  if (!messageRichParameters) {
+    return null
+  }
+  if (object_type === 'share') {
     return {
-      notifications,
-      fetchNotificationsTask,
-      loading,
-      deleteNotificationsTask,
-      formatDate,
-      formatDateRelative,
-      getMessage,
-      getLink
+      name: 'files-shares-with-me',
+      ...(!!messageRichParameters?.share?.id && {
+        query: { scrollTo: messageRichParameters.share.id }
+      })
     }
   }
+  if (object_type === 'storagespace' && messageRichParameters?.space?.id) {
+    const space = spacesStore.spaces.find(
+      (s) => s.fileId === messageRichParameters?.space?.id.split('!')[0] && !s.disabled
+    )
+    if (space) {
+      return {
+        name: 'files-spaces-generic',
+        ...createFileRouteOptions(space, { path: '', fileId: space.fileId })
+      }
+    }
+  }
+  if (object_type === 'mention' || messageRichParameters.resource?.id) {
+    return {
+      name: 'resolvePrivateLink',
+      params: { fileId: messageRichParameters.resource?.id }
+    }
+  }
+  return null
 }
+
+const fetchNotificationsTask = useTask(function* (signal) {
+  try {
+    const response = yield* call(
+      clientService.httpAuthenticated.get<{ ocs: { data: Notification[] } }>(
+        'ocs/v2.php/apps/notifications/api/v1/notifications',
+        { signal }
+      )
+    )
+
+    if ((response.headers as AxiosHeaders).get('Content-Length') === '0') {
+      return
+    }
+
+    const {
+      ocs: { data = [] }
+    } = response.data
+    notifications.value = data?.sort((a, b) => b.datetime.localeCompare(a.datetime)) || []
+    unref(notifications).forEach((notification) => setAdditionalNotificationData(notification))
+  } catch (e) {
+    console.error(e)
+  }
+}).restartable()
+
+const deleteNotificationsTask = useTask(function* (signal, ids) {
+  try {
+    yield clientService.httpAuthenticated.delete(
+      'ocs/v2.php/apps/notifications/api/v1/notifications',
+      { data: { ids } },
+      { signal }
+    )
+  } catch (e) {
+    console.error(e)
+  } finally {
+    notifications.value = unref(notifications).filter((n) => !ids.includes(n.notification_id))
+  }
+}).restartable()
+
+const setAdditionalNotificationData = (notification: Notification) => {
+  notification.computedMessage = getMessage(notification)
+  notification.computedLink = getLink(notification)
+}
+
+const onSSENotificationEvent = (event: MessageEvent) => {
+  try {
+    const notification = JSON.parse(event.data) as Notification
+    if (!notification || !notification.notification_id) {
+      return
+    }
+    setAdditionalNotificationData(notification)
+    notifications.value = [notification, ...unref(notifications)]
+  } catch {
+    console.error('Unable to parse sse notification data')
+  }
+}
+
+onMounted(() => {
+  fetchNotificationsTask.perform()
+  if (unref(capabilityStore.supportSSE)) {
+    clientService.sseAuthenticated.addEventListener(
+      MESSAGE_TYPE.NOTIFICATION,
+      onSSENotificationEvent
+    )
+  } else {
+    notificationsInterval.value = setInterval(() => {
+      fetchNotificationsTask.perform()
+    }, POLLING_INTERVAL)
+  }
+})
+
+onUnmounted(() => {
+  if (unref(capabilityStore.supportSSE)) {
+    clientService.sseAuthenticated.removeEventListener(
+      MESSAGE_TYPE.NOTIFICATION,
+      onSSENotificationEvent
+    )
+  } else {
+    clearInterval(unref(notificationsInterval))
+  }
+})
 </script>
