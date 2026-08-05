@@ -282,7 +282,7 @@ onMounted(async () => {
       await resolvePublicLinkTask.perform(false)
     }
 
-    unref(passwordInputRef).focus()
+    unref(passwordInputRef)?.focus()
   } catch (e) {
     console.error(e)
   }
