@@ -46,7 +46,7 @@ exports[`Projects view > different files view states > lists all available proje
           <!-- @slot Footer of the table -->
           <!--v-if-->
           <div class="text-center w-full my-2">
-            <p class="text-role-on-surface-variant">3 spaces in total (including 1 disabled)</p>
+            <p data-testid="files-list-footer-info" class="text-role-on-surface-variant">3 spaces in total (including 1 disabled)</p>
             <!--v-if-->
           </div>
         </td>
