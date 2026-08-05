@@ -2214,6 +2214,10 @@ export const expectPageNumberNotToBeVisible = async ({ page }: { page: Page }): 
   await expect(page.locator(filesPaginationNavSelector)).not.toBeVisible()
 }
 
+export const expectPageNumberToBeVisible = async ({ page }: { page: Page }): Promise<void> => {
+  await expect(page.locator(filesPaginationNavSelector)).toBeVisible()
+}
+
 export const createShotcut = async (args: shortcutArgs): Promise<void> => {
   const { page, resource, name, type } = args
   await page.locator(addNewResourceButton).click()
@@ -2435,6 +2439,14 @@ export const checkEmptyActivity = async ({
 
 export const selectAll = async ({ page }: { page: Page }): Promise<void> => {
   await page.locator(selectAllCheckbox).click()
+}
+
+export const deleteAllResources = async ({ page }: { page: Page }): Promise<void> => {
+  await Promise.all([
+    page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'DELETE'),
+    page.locator(deleteButtonBatchAction).click()
+  ])
+  await page.locator('#files-space-empty').waitFor()
 }
 
 export const getDownloadButtonTooltip = async ({ page }: { page: Page }): Promise<string> => {

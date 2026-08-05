@@ -240,6 +240,21 @@ Given(
 )
 
 Given(
+  '{string} creates {int} project space(s) using API',
+  async ({ world }: { world: World }, stepUser: string, numberOfSpaces: number): Promise<void> => {
+    const user =
+      stepUser === 'Admin'
+        ? world.usersEnvironment.getUser({ key: stepUser })
+        : world.usersEnvironment.getCreatedUser({ key: stepUser })
+    for (let i = 1; i <= numberOfSpaces; i++) {
+      const name = `space-${i}`
+      const spaceId = await api.graph.createSpace({ user, space: { name } as unknown as Space })
+      world.spacesEnvironment.createSpace({ key: name, space: { name, id: spaceId } })
+    }
+  }
+)
+
+Given(
   '{string} creates the following file(s) in space {string} using API',
   async (
     { world }: { world: World },
