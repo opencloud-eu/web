@@ -580,3 +580,98 @@ Then(
     await expect(userProfilePicture).toHaveAttribute('src', /.+/)
   }
 )
+
+When(
+  '{string} navigates to the general management page',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.navigate()
+  }
+)
+
+When(
+  '{string} saves an announcement banner with text {string} and details {string}',
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    bannerText: string,
+    details: string
+  ): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.saveAnnouncementBanner({ bannerText, details })
+  }
+)
+
+When(
+  '{string} enables the announcement banner',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.setShowBanner({ enabled: true })
+  }
+)
+
+When(
+  '{string} disables the announcement banner',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.setShowBanner({ enabled: false })
+  }
+)
+
+Then(
+  '{string} should see the announcement banner {string}',
+  async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await expect(generalObject.getAnnouncementBanner()).toContainText(text)
+  }
+)
+
+Then(
+  '{string} should not see the announcement banner',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await expect(generalObject.getAnnouncementBanner()).toBeHidden()
+  }
+)
+
+When(
+  '{string} opens the announcement banner details',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.openAnnouncementBannerDetails()
+  }
+)
+
+Then(
+  '{string} should see {string} in the announcement details',
+  async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.expectAnnouncementBannerDetails({ text })
+  }
+)
+
+When(
+  '{string} closes the announcement banner details',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.closeAnnouncementBannerDetails()
+  }
+)
+
+When(
+  '{string} dismisses the announcement banner',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    await generalObject.dismissAnnouncementBanner()
+  }
+)
