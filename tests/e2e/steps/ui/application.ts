@@ -41,7 +41,7 @@ When(
 
 When(
   '{string} should get {string} SSE event',
-  async ({ world }: { world: World }, user: string, event: string): Promise<void> => {
+  async ({}: { world: World }, user: string, event: string): Promise<void> => {
     await waitForSSEEvent(user, event)
   }
 )

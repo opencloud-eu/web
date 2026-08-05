@@ -870,6 +870,43 @@ Then(
 )
 
 When(
+  '{string} navigates to page {string} of the files list',
+  async ({ world }: { world: World }, stepUser: string, pageNumber: string) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.changePage({ pageNumber })
+  }
+)
+
+Then(
+  '{string} should see {int} resource(s) in the files/spaces list',
+  async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
+    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
+  }
+)
+
+Then(
+  '{string} should see the pagination in the files/spaces list',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.expectPageNumberToBeVisible()
+  }
+)
+
+Then(
+  '{string} should not see the pagination in the files/spaces list',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.expectPageNumberNotToBeVisible()
+  }
+)
+
+When(
   '{string} uploads the following resource(s) via drag-n-drop',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
@@ -1103,6 +1140,13 @@ When('{string} selects all files', async ({ world }: { world: World }, stepUser:
   const { page } = world.actorsEnvironment.getActor({ key: stepUser })
   const resourceObject = new objects.applicationFiles.Resource({ page })
   await resourceObject.selectAllFiles()
+})
+
+When('{string} deletes all files', async ({ world }: { world: World }, stepUser: string) => {
+  const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+  const resourceObject = new objects.applicationFiles.Resource({ page })
+  await resourceObject.selectAllFiles()
+  await resourceObject.deleteAllFiles()
 })
 
 Then(

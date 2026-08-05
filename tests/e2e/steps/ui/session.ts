@@ -105,7 +105,7 @@ When(
   }
 )
 
-Given('using {string} server', function ({ world }: { world: World }, server: string): void {
+Given('using {string} server', function ({}: { world: World }, server: string): void {
   switch (server) {
     case 'LOCAL':
       appConfig.federatedServer = false
