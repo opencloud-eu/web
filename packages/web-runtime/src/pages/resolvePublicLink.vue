@@ -54,7 +54,7 @@ import {
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
-import { ref, unref, computed, onMounted } from 'vue'
+import { ref, unref, computed, onMounted, useTemplateRef } from 'vue'
 import {
   buildPublicSpaceResource,
   call,
@@ -77,6 +77,8 @@ const spacesStore = useSpacesStore()
 
 const { currentTheme } = storeToRefs(themeStore)
 const logoImg = computed(() => unref(currentTheme).logo)
+
+const passwordInputRef = useTemplateRef<HTMLInputElement>('passwordInput')
 const password = ref('')
 
 const isOcmLink = computed(() => {
@@ -279,6 +281,8 @@ onMounted(async () => {
     if (!unref(isPasswordRequired)) {
       await resolvePublicLinkTask.perform(false)
     }
+
+    unref(passwordInputRef)?.focus()
   } catch (e) {
     console.error(e)
   }
