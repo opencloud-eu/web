@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { Range } from '@tiptap/core'
 import { Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import { mock } from 'vitest-mock-extended'
 import { createMockEditor } from './helpers'
 
 vi.mock('vue3-gettext', () => ({
@@ -11,6 +12,7 @@ vi.mock('vue3-gettext', () => ({
 
 import { useEditorActions } from '../../../../src/editor/composables/useEditorActions'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
+import type { Resource } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useModals } from '../../../../src/composables/piniaStores'
 import { createLinkExtension } from '../../../../src/editor/extensions/link'
@@ -19,7 +21,8 @@ function createState(): TextEditorState {
   return {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-    editorZoom: ref(100)
+    editorZoom: ref(100),
+    currentResource: ref<Resource | null>(mock<Resource>({ id: 'resource', path: '/' }))
   }
 }
 
@@ -811,6 +814,23 @@ describe('useEditorActions', () => {
     it('isActive always returns false', () => {
       const editor = createMockEditor()
       expect(actions.imageUpload().isActive!(editor)).toBe(false)
+    })
+  })
+
+  describe('image', () => {
+    it('always shows file, url and cloud actions in the image dropdown', () => {
+      const action = actions.image()
+      const childIds = action.childActions?.map(({ id }) => id) || []
+
+      expect(childIds).toEqual(['image-upload', 'image-url', 'image-cloud'])
+    })
+
+    it('provides "Insert from cloud" action for current resource', () => {
+      const cloudState = createState()
+      const cloudActions = useEditorActions(cloudState)
+      const cloudChild = cloudActions.image().childActions?.find(({ id }) => id === 'image-cloud')
+
+      expect(cloudChild).toBeTruthy()
     })
   })
 
