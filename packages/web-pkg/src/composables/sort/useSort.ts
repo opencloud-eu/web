@@ -2,8 +2,8 @@ import { ref, Ref, computed, unref, isRef, MaybeRef } from 'vue'
 import { ReadOnlyRef } from '../../utils'
 import { useRouteName, useRouter, useRouteQueryPersisted, QueryValue } from '../router'
 import { SortConstants } from './constants'
-import get from 'lodash-es/get'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { sortItemsByField } from './sortInternals'
 
 export interface SortableItem {
   type?: string
@@ -130,65 +130,20 @@ export const sortHelper = <T extends SortableItem>(
   sortBy: string,
   sortDir: SortDir
 ) => {
-  const field = fields.find((f) => {
-    return f.name === sortBy
-  })
+  const field = fields.find((f) => f.name === sortBy)
   if (!field) {
     return items
   }
-  const { sortable } = field
-  const collator = new Intl.Collator(navigator.language, { sensitivity: 'base', numeric: true })
-
-  if (sortBy === 'name') {
-    const isFolder = (item: T) =>
-      item.isFolder || item.type === 'folder' || item.type === 'directory'
-    const folders = [...items.filter((i) => isFolder(i))].sort((a, b) =>
-      compare(a, b, collator, sortBy, sortDir, sortable)
-    )
-    const files = [...items.filter((i) => !isFolder(i))].sort((a, b) =>
-      compare(a, b, collator, sortBy, sortDir, sortable)
-    )
-    if (sortDir === SortDir.Asc) {
-      return folders.concat(files)
-    }
-    return files.concat(folders)
-  }
-  return [...items].sort((a, b) =>
-    compare(a, b, collator, field.prop || field.name, sortDir, sortable)
+  return sortItemsByField(
+    items,
+    {
+      name: field.name,
+      prop: field.prop,
+      sortable: unref(field.sortable)
+    },
+    sortBy,
+    sortDir
   )
-}
-
-const compare = (
-  a: SortableItem,
-  b: SortableItem,
-  collator: Intl.Collator,
-  sortBy: string,
-  sortDir: SortDir,
-  sortable: SortField['sortable']
-) => {
-  let aValue = get(a, sortBy)
-  let bValue = get(b, sortBy)
-  const modifier = sortDir === SortDir.Asc ? 1 : -1
-
-  if (sortable) {
-    if (typeof sortable === 'string') {
-      const genArrComp = (vals: Record<string, unknown>[]) => {
-        return vals.map((val) => val[sortable]).join('')
-      }
-
-      aValue = genArrComp(aValue)
-      bValue = genArrComp(bValue)
-    } else if (typeof sortable === 'function') {
-      aValue = sortable(aValue)
-      bValue = sortable(bValue)
-    }
-  }
-
-  if (!isNaN(aValue) && !isNaN(bValue)) {
-    return (aValue - bValue) * modifier
-  }
-  const c = collator.compare((aValue || '').toString(), (bValue || '').toString())
-  return c * modifier
 }
 
 const firstQueryValue = (value: QueryValue): string => {
