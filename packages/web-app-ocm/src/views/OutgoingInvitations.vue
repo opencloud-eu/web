@@ -124,8 +124,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, onMounted, ref, unref } from 'vue'
+<script setup lang="ts">
+import { computed, onMounted, ref, unref } from 'vue'
 import {
   NoContentMessage,
   AppLoadingSpinner,
@@ -148,247 +148,216 @@ type Token = {
   description?: string
 }
 
-export default defineComponent({
-  components: {
-    NoContentMessage,
-    AppLoadingSpinner
-  },
-  setup() {
-    const { showMessage, showErrorMessage } = useMessages()
-    const clientService = useClientService()
-    const configStore = useConfigStore()
-    const { $gettext, current: currentLanguage } = useGettext()
+const { showMessage, showErrorMessage } = useMessages()
+const clientService = useClientService()
+const configStore = useConfigStore()
+const { $gettext, current: currentLanguage } = useGettext()
 
-    const lastCreatedToken = ref('')
-    const showInviteModal = ref(false)
-    const formInput = ref({
-      description: ''
-    })
-    const tokens = ref<Token[]>([])
-    const loading = ref(true)
-    const descriptionErrorMessage = ref<string>()
-    const fields = computed<FieldType[]>(() => {
-      const haveLinks = unref(sortedTokens)[0]?.link
+const lastCreatedToken = ref('')
+const showInviteModal = ref(false)
+const formInput = ref({
+  description: ''
+})
+const tokens = ref<Token[]>([])
+const loading = ref(true)
+const descriptionErrorMessage = ref<string>()
+const fields = computed<FieldType[]>(() => {
+  const haveLinks = unref(sortedTokens)[0]?.link
 
-      return [
-        haveLinks && {
-          name: 'link',
-          title: $gettext('Invitation link'),
-          alignH: 'left',
-          type: 'slot'
-        },
-        {
-          name: 'token',
-          title: $gettext('Invite token'),
-          alignH: haveLinks ? 'right' : 'left',
-          type: 'slot'
-        },
-        {
-          name: 'description',
-          title: $gettext('Description'),
-          alignH: 'right'
-        },
-        {
-          name: 'expiration',
-          title: $gettext('Expires'),
-          alignH: 'right',
-          type: 'slot'
-        }
-      ].filter(Boolean) as FieldType[]
-    })
-    const sortedTokens = computed(() => {
-      return [...unref(tokens)].sort((a, b) => (a.expirationSeconds < b.expirationSeconds ? 1 : -1))
-    })
-    const helperContent = computed(() => {
-      return {
-        text: $gettext(
-          'Create an invitation link and send it to the person you want to share with.'
-        ),
-        title: $gettext('Invitation link')
-      }
-    })
-
-    const getTokenAtProvider = (token: string) => {
-      const url = new URL(configStore.serverUrl)
-      return `${token}@${url.host}`
+  return [
+    haveLinks && {
+      name: 'link',
+      title: $gettext('Invitation link'),
+      alignH: 'left',
+      type: 'slot'
+    },
+    {
+      name: 'token',
+      title: $gettext('Invite token'),
+      alignH: haveLinks ? 'right' : 'left',
+      type: 'slot'
+    },
+    {
+      name: 'description',
+      title: $gettext('Description'),
+      alignH: 'right'
+    },
+    {
+      name: 'expiration',
+      title: $gettext('Expires'),
+      alignH: 'right',
+      type: 'slot'
     }
-
-    const encodeInviteToken = (token: string) => {
-      return btoa(getTokenAtProvider(token))
-    }
-
-    const generateWayfLink = (token: string) => {
-      const url = new URL(configStore.serverUrl)
-      return `${url.origin}/open-cloud-mesh/wayf?token=${token}`
-    }
-
-    const generateToken = async () => {
-      const { description } = unref(formInput)
-
-      if (unref(descriptionErrorMessage)) {
-        return
-      }
-      try {
-        const { data: tokenInfo } = await clientService.httpAuthenticated.post(
-          '/sciencemesh/generate-invite',
-          {
-            ...(description && { description })
-          },
-          {
-            schema: inviteSchema
-          }
-        )
-
-        if (tokenInfo.token) {
-          tokens.value.push({
-            id: tokenInfo.token,
-            link: tokenInfo.invite_link,
-            token: tokenInfo.token,
-            ...(tokenInfo.expiration && {
-              expiration: toDateTime(tokenInfo.expiration)
-            }),
-            ...(tokenInfo.expiration && {
-              expirationSeconds: tokenInfo.expiration
-            }),
-            ...(tokenInfo.description && { description: tokenInfo.description })
-          })
-          showMessage({
-            title: $gettext('Success'),
-            status: 'success',
-            desc: $gettext(
-              'New token has been created and copied to your clipboard. Send it to the invitee(s).'
-            )
-          })
-
-          const quickToken = encodeInviteToken(tokenInfo.token)
-          lastCreatedToken.value = quickToken
-          await navigator.clipboard.writeText(quickToken)
-        }
-      } catch (error) {
-        lastCreatedToken.value = ''
-        errorPopup(error)
-      } finally {
-        resetGenerateInviteToken()
-      }
-    }
-
-    const listTokens = async () => {
-      const url = '/sciencemesh/list-invite'
-      try {
-        const { data } = await clientService.httpAuthenticated.get(url, {
-          schema: inviteListSchema
-        })
-        data.forEach((t) => {
-          tokens.value.push({
-            id: t.token,
-            token: t.token,
-            ...(t.expiration && {
-              expiration: toDateTime(t.expiration)
-            }),
-            ...(t.expiration && {
-              expirationSeconds: t.expiration
-            }),
-            ...(t.description && { description: t.description })
-          })
-        })
-      } catch (error) {
-        console.log(error)
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const copyLink = (rowData: { item: { link: string; token: string } }) => {
-      navigator.clipboard.writeText(rowData.item.link)
-      showMessage({
-        title: $gettext('Invitation link copied'),
-        desc: $gettext('Invitation link has been copied to your clipboard.')
-      })
-    }
-
-    const copyPlainToken = (rowData: { item: { token: string } }) => {
-      const tokenAtProvider = getTokenAtProvider(rowData.item.token)
-      navigator.clipboard.writeText(tokenAtProvider)
-      showMessage({
-        title: $gettext('Plain token copied'),
-        desc: $gettext('Plain token has been copied to your clipboard.')
-      })
-    }
-
-    const copyToken = (rowData: { item: { link: string; token: string } }) => {
-      navigator.clipboard.writeText(encodeInviteToken(rowData.item.token))
-      showMessage({
-        title: $gettext('Base64 token copied'),
-        desc: $gettext('Base64 token has been copied to your clipboard.')
-      })
-    }
-
-    const copyWayfLink = (rowData: { item: { token: string } }) => {
-      const wayfLink = generateWayfLink(rowData.item.token)
-      navigator.clipboard.writeText(wayfLink)
-      showMessage({
-        title: $gettext('Invite link copied'),
-        desc: $gettext('Invite link has been copied to your clipboard.')
-      })
-    }
-
-    const errorPopup = (error: Error) => {
-      console.error(error)
-      showErrorMessage({
-        title: $gettext('Error'),
-        desc: $gettext('An error occurred when generating the token'),
-        errors: [error]
-      })
-    }
-
-    const openInviteModal = () => {
-      showInviteModal.value = true
-    }
-
-    const resetGenerateInviteToken = () => {
-      showInviteModal.value = false
-      formInput.value = {
-        description: ''
-      }
-    }
-
-    const toDateTime = (secs: number) => {
-      const d = new Date(Date.UTC(1970, 0, 1))
-      d.setUTCSeconds(secs)
-      return d
-    }
-
-    onMounted(() => {
-      listTokens()
-    })
-
-    const formatDate = (date: Date) => {
-      return formatDateFromJSDate(date, currentLanguage)
-    }
-    const formatDateRelative = (date: Date) => {
-      return formatRelativeDateFromJSDate(date, currentLanguage)
-    }
-
-    return {
-      helperContent,
-      openInviteModal,
-      showInviteModal,
-      descriptionErrorMessage,
-      resetGenerateInviteToken,
-      generateToken,
-      formInput,
-      loading,
-      sortedTokens,
-      copyToken,
-      copyLink,
-      copyPlainToken,
-      copyWayfLink,
-      lastCreatedToken,
-      fields,
-      formatDate,
-      formatDateRelative,
-      encodeInviteToken
-    }
+  ].filter(Boolean) as FieldType[]
+})
+const sortedTokens = computed(() => {
+  return [...unref(tokens)].sort((a, b) => (a.expirationSeconds < b.expirationSeconds ? 1 : -1))
+})
+const helperContent = computed(() => {
+  return {
+    text: $gettext('Create an invitation link and send it to the person you want to share with.'),
+    title: $gettext('Invitation link')
   }
 })
+
+const getTokenAtProvider = (token: string) => {
+  const url = new URL(configStore.serverUrl)
+  return `${token}@${url.host}`
+}
+
+const encodeInviteToken = (token: string) => {
+  return btoa(getTokenAtProvider(token))
+}
+
+const generateWayfLink = (token: string) => {
+  const url = new URL(configStore.serverUrl)
+  return `${url.origin}/open-cloud-mesh/wayf?token=${token}`
+}
+
+const generateToken = async () => {
+  const { description } = unref(formInput)
+
+  if (unref(descriptionErrorMessage)) {
+    return
+  }
+  try {
+    const { data: tokenInfo } = await clientService.httpAuthenticated.post(
+      '/sciencemesh/generate-invite',
+      {
+        ...(description && { description })
+      },
+      {
+        schema: inviteSchema
+      }
+    )
+
+    if (tokenInfo.token) {
+      tokens.value.push({
+        id: tokenInfo.token,
+        link: tokenInfo.invite_link,
+        token: tokenInfo.token,
+        ...(tokenInfo.expiration && {
+          expiration: toDateTime(tokenInfo.expiration)
+        }),
+        ...(tokenInfo.expiration && {
+          expirationSeconds: tokenInfo.expiration
+        }),
+        ...(tokenInfo.description && { description: tokenInfo.description })
+      })
+      showMessage({
+        title: $gettext('Success'),
+        status: 'success',
+        desc: $gettext(
+          'New token has been created and copied to your clipboard. Send it to the invitee(s).'
+        )
+      })
+
+      const quickToken = encodeInviteToken(tokenInfo.token)
+      lastCreatedToken.value = quickToken
+      await navigator.clipboard.writeText(quickToken)
+    }
+  } catch (error) {
+    lastCreatedToken.value = ''
+    errorPopup(error)
+  } finally {
+    resetGenerateInviteToken()
+  }
+}
+
+const listTokens = async () => {
+  const url = '/sciencemesh/list-invite'
+  try {
+    const { data } = await clientService.httpAuthenticated.get(url, {
+      schema: inviteListSchema
+    })
+    data.forEach((t) => {
+      tokens.value.push({
+        id: t.token,
+        token: t.token,
+        ...(t.expiration && {
+          expiration: toDateTime(t.expiration)
+        }),
+        ...(t.expiration && {
+          expirationSeconds: t.expiration
+        }),
+        ...(t.description && { description: t.description })
+      })
+    })
+  } catch (error) {
+    console.log(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+const copyLink = (rowData: { item: { link: string; token: string } }) => {
+  navigator.clipboard.writeText(rowData.item.link)
+  showMessage({
+    title: $gettext('Invitation link copied'),
+    desc: $gettext('Invitation link has been copied to your clipboard.')
+  })
+}
+
+const copyPlainToken = (rowData: { item: { token: string } }) => {
+  const tokenAtProvider = getTokenAtProvider(rowData.item.token)
+  navigator.clipboard.writeText(tokenAtProvider)
+  showMessage({
+    title: $gettext('Plain token copied'),
+    desc: $gettext('Plain token has been copied to your clipboard.')
+  })
+}
+
+const copyToken = (rowData: { item: { link: string; token: string } }) => {
+  navigator.clipboard.writeText(encodeInviteToken(rowData.item.token))
+  showMessage({
+    title: $gettext('Base64 token copied'),
+    desc: $gettext('Base64 token has been copied to your clipboard.')
+  })
+}
+
+const copyWayfLink = (rowData: { item: { token: string } }) => {
+  const wayfLink = generateWayfLink(rowData.item.token)
+  navigator.clipboard.writeText(wayfLink)
+  showMessage({
+    title: $gettext('Invite link copied'),
+    desc: $gettext('Invite link has been copied to your clipboard.')
+  })
+}
+
+const errorPopup = (error: Error) => {
+  console.error(error)
+  showErrorMessage({
+    title: $gettext('Error'),
+    desc: $gettext('An error occurred when generating the token'),
+    errors: [error]
+  })
+}
+
+const openInviteModal = () => {
+  showInviteModal.value = true
+}
+
+const resetGenerateInviteToken = () => {
+  showInviteModal.value = false
+  formInput.value = {
+    description: ''
+  }
+}
+
+const toDateTime = (secs: number) => {
+  const d = new Date(Date.UTC(1970, 0, 1))
+  d.setUTCSeconds(secs)
+  return d
+}
+
+onMounted(() => {
+  listTokens()
+})
+
+const formatDate = (date: Date) => {
+  return formatDateFromJSDate(date, currentLanguage)
+}
+const formatDateRelative = (date: Date) => {
+  return formatRelativeDateFromJSDate(date, currentLanguage)
+}
 </script>

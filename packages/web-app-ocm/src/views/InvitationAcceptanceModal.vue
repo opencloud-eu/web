@@ -43,65 +43,47 @@
   </oc-modal>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { useInvitationAcceptance } from '../composables/useInvitationAcceptance'
 
-export default defineComponent({
-  components: {
-    AppLoadingSpinner
-  },
-  props: {
-    showModal: {
-      type: Boolean,
-      required: true
-    },
-    token: {
-      type: String,
-      required: true
-    },
-    provider: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['highlightNewConnections', 'close'],
-  setup(props, { emit }) {
-    const {
-      loading,
-      acceptInvitation: acceptInvitationAPI,
-      validateParameters
-    } = useInvitationAcceptance()
+const { showModal, token, provider } = defineProps<{
+  showModal: boolean
+  token: string
+  provider: string
+}>()
 
-    const acceptButtonDisabled = computed(() => {
-      return loading.value || !props.token || !props.provider
-    })
+const emit = defineEmits<{
+  (e: 'highlightNewConnections'): void
+  (e: 'close'): void
+}>()
 
-    const acceptInvitation = async () => {
-      try {
-        validateParameters(props.token, props.provider)
+const {
+  loading,
+  acceptInvitation: acceptInvitationAPI,
+  validateParameters
+} = useInvitationAcceptance()
 
-        await acceptInvitationAPI(props.token, props.provider)
-
-        emit('highlightNewConnections')
-        emit('close')
-      } catch (err) {
-        console.error('Error accepting invitation:', err)
-        emit('close')
-      }
-    }
-
-    const declineInvitation = () => {
-      emit('close')
-    }
-
-    return {
-      loading,
-      acceptButtonDisabled,
-      acceptInvitation,
-      declineInvitation
-    }
-  }
+const acceptButtonDisabled = computed(() => {
+  return loading.value || !token || !provider
 })
+
+const acceptInvitation = async () => {
+  try {
+    validateParameters(token, provider)
+
+    await acceptInvitationAPI(token, provider)
+
+    emit('highlightNewConnections')
+    emit('close')
+  } catch (err) {
+    console.error('Error accepting invitation:', err)
+    emit('close')
+  }
+}
+
+const declineInvitation = () => {
+  emit('close')
+}
 </script>

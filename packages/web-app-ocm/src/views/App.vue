@@ -35,8 +35,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, onUnmounted, ref, unref, Ref, computed, watch } from 'vue'
+<script setup lang="ts">
+import { onMounted, onUnmounted, ref, unref, Ref, computed, watch } from 'vue'
 import ConnectionsPanel from './ConnectionsPanel.vue'
 import IncomingInvitations from './IncomingInvitations.vue'
 import OutgoingInvitations from './OutgoingInvitations.vue'
@@ -52,130 +52,109 @@ import {
 import { useGettext } from 'vue3-gettext'
 import { buildConnection } from '../functions'
 
-export default defineComponent({
-  components: {
-    IncomingInvitations,
-    OutgoingInvitations,
-    ConnectionsPanel,
-    InvitationAcceptanceModal
+const { showMessage } = useMessages()
+const { scrollToResource } = useScrollTo()
+const clientService = useClientService()
+const { $gettext } = useGettext()
+const route = useRoute()
+const router = useRouter()
+
+const connections: Ref<FederatedConnection[]> = ref([])
+const highlightedConnections: Ref<FederatedConnection[]> = ref([])
+const highlightNewConnectionsInterval = ref<ReturnType<typeof setInterval>>()
+const loadingConnections = ref(true)
+
+// Modal state for invitation acceptance
+const showInvitationModal = ref(false)
+const invitationToken = ref('')
+const invitationProvider = ref('')
+
+// Check if we're on the accept-invite route and show modal
+const isAcceptInviteRoute = computed(() => {
+  return route.value.name === 'open-cloud-mesh-accept-invite'
+})
+
+// Watch for route changes to show modal
+watch(
+  isAcceptInviteRoute,
+  (isAcceptRoute) => {
+    if (isAcceptRoute) {
+      const token = route.value.query.token as string
+      const provider = route.value.query.providerDomain as string
+
+      if (token && provider) {
+        invitationToken.value = token
+        invitationProvider.value = provider
+        showInvitationModal.value = true
+      }
+    }
   },
-  setup() {
-    const { showMessage } = useMessages()
-    const { scrollToResource } = useScrollTo()
-    const clientService = useClientService()
-    const { $gettext } = useGettext()
-    const route = useRoute()
-    const router = useRouter()
+  { immediate: true }
+)
 
-    const connections: Ref<FederatedConnection[]> = ref([])
-    const highlightedConnections: Ref<FederatedConnection[]> = ref([])
-    const highlightNewConnectionsInterval = ref<ReturnType<typeof setInterval>>()
-    const loadingConnections = ref(true)
+const closeInvitationModal = () => {
+  showInvitationModal.value = false
+  invitationToken.value = ''
+  invitationProvider.value = ''
 
-    // Modal state for invitation acceptance
-    const showInvitationModal = ref(false)
-    const invitationToken = ref('')
-    const invitationProvider = ref('')
+  // Clear URL query parameters and navigate to invitations
+  router.replace({ name: 'open-cloud-mesh-invitations' })
+}
 
-    // Check if we're on the accept-invite route and show modal
-    const isAcceptInviteRoute = computed(() => {
-      return route.value.name === 'open-cloud-mesh-accept-invite'
-    })
+const findAcceptedUsers = async () => {
+  try {
+    const { data: acceptedUsers } = await clientService.httpAuthenticated.get<
+      FederatedConnection[]
+    >('/sciencemesh/find-accepted-users')
+    loadingConnections.value = false
+    connections.value = acceptedUsers.map(buildConnection)
+  } catch {
+    connections.value = []
+    loadingConnections.value = false
+  }
+}
 
-    // Watch for route changes to show modal
-    watch(
-      isAcceptInviteRoute,
-      (isAcceptRoute) => {
-        if (isAcceptRoute) {
-          const token = route.value.query.token as string
-          const provider = route.value.query.providerDomain as string
-
-          if (token && provider) {
-            invitationToken.value = token
-            invitationProvider.value = provider
-            showInvitationModal.value = true
-          }
-        }
-      },
-      { immediate: true }
+const highlightNewConnections = async () => {
+  const oldConnections = [...unref(connections)]
+  await findAcceptedUsers()
+  if (oldConnections.length < unref(connections).length) {
+    highlightedConnections.value = unref(connections).filter(
+      (connection) => !oldConnections.map((c) => c.id).includes(connection.id)
     )
+    if (unref(highlightedConnections).length === 1) {
+      scrollToResource(unref(highlightedConnections)[0].id)
+      showMessage({
+        title: $gettext('New federated connection'),
+        status: 'success',
+        desc: $gettext('You can share with and receive shares from %{user} now', {
+          user: unref(highlightedConnections)[0].display_name
+        })
+      })
+    } else if (unref(highlightedConnections).length > 1) {
+      const newConnections = unref(highlightedConnections)
+        .map((c) => c.display_name)
+        .join(', ')
 
-    const closeInvitationModal = () => {
-      showInvitationModal.value = false
-      invitationToken.value = ''
-      invitationProvider.value = ''
-
-      // Clear URL query parameters and navigate to invitations
-      router.replace({ name: 'open-cloud-mesh-invitations' })
-    }
-
-    const findAcceptedUsers = async () => {
-      try {
-        const { data: acceptedUsers } = await clientService.httpAuthenticated.get<
-          FederatedConnection[]
-        >('/sciencemesh/find-accepted-users')
-        loadingConnections.value = false
-        connections.value = acceptedUsers.map(buildConnection)
-      } catch {
-        connections.value = []
-        loadingConnections.value = false
-      }
-    }
-
-    const highlightNewConnections = async () => {
-      const oldConnections = [...unref(connections)]
-      await findAcceptedUsers()
-      if (oldConnections.length < unref(connections).length) {
-        highlightedConnections.value = unref(connections).filter(
-          (connection) => !oldConnections.map((c) => c.id).includes(connection.id)
-        )
-        if (unref(highlightedConnections).length === 1) {
-          scrollToResource(unref(highlightedConnections)[0].id)
-          showMessage({
-            title: $gettext('New federated connection'),
-            status: 'success',
-            desc: $gettext('You can share with and receive shares from %{user} now', {
-              user: unref(highlightedConnections)[0].display_name
-            })
-          })
-        } else if (unref(highlightedConnections).length > 1) {
-          const newConnections = unref(highlightedConnections)
-            .map((c) => c.display_name)
-            .join(', ')
-
-          showMessage({
-            title: $gettext('New federated connections'),
-            status: 'success',
-            desc: $gettext('You can share with and receive shares from %{ connections } now', {
-              connections: newConnections
-            })
-          })
-        }
-      }
-    }
-
-    onMounted(async () => {
-      await findAcceptedUsers()
-      loadingConnections.value = false
-      highlightNewConnectionsInterval.value = setInterval(() => {
-        highlightNewConnections()
-      }, 10 * 1000)
-    })
-
-    onUnmounted(() => {
-      clearInterval(unref(highlightNewConnectionsInterval))
-    })
-
-    return {
-      highlightNewConnections,
-      connections,
-      highlightedConnections,
-      loadingConnections,
-      showInvitationModal,
-      invitationToken,
-      invitationProvider,
-      closeInvitationModal
+      showMessage({
+        title: $gettext('New federated connections'),
+        status: 'success',
+        desc: $gettext('You can share with and receive shares from %{ connections } now', {
+          connections: newConnections
+        })
+      })
     }
   }
+}
+
+onMounted(async () => {
+  await findAcceptedUsers()
+  loadingConnections.value = false
+  highlightNewConnectionsInterval.value = setInterval(() => {
+    highlightNewConnections()
+  }, 10 * 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(unref(highlightNewConnectionsInterval))
 })
 </script>
