@@ -3,6 +3,7 @@ import { useEditor } from '@tiptap/vue-3'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
+import type { Resource } from '@opencloud-eu/web-client'
 import type {
   TextEditorOptions,
   TextEditorInstance,
@@ -18,7 +19,8 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const state: TextEditorState = {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-    editorZoom: ref(100)
+    editorZoom: ref(100),
+    currentResource: options.currentResource ?? ref<Resource | null>(null)
   }
 
   const contentType = ref(options.contentType)
