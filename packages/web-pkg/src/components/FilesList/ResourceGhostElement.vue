@@ -18,36 +18,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import ResourceIcon from './ResourceIcon.vue'
 
-/**
- * Please head to the OpenCloud web ResourceTable component (https://github.com/opencloud-eu/web/blob/main/packages/web-app-files/src/components/FilesList/ResourceTable.vue) for a demo of the Ghost Element.
- */
-export default defineComponent({
-  name: 'ResourceGhostElement',
-  components: { ResourceIcon },
-  props: {
-    previewItems: {
-      type: Array as PropType<Resource[]>,
-      required: true
-    }
-  },
-  computed: {
-    layerCount() {
-      return Math.min(this.previewItems.length, 3)
-    },
-    showSecondLayer() {
-      return this.layerCount > 1
-    },
-    showThirdLayer() {
-      return this.layerCount > 2
-    },
-    itemCount() {
-      return this.previewItems.length
-    }
-  }
-})
+const { previewItems } = defineProps<{
+  previewItems: Resource[]
+}>()
+
+const layerCount = computed(() => Math.min(previewItems.length, 3))
+const showSecondLayer = computed(() => layerCount.value > 1)
+const showThirdLayer = computed(() => layerCount.value > 2)
+const itemCount = computed(() => previewItems.length)
 </script>

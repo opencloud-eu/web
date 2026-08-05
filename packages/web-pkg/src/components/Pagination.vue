@@ -9,26 +9,18 @@
   />
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { watch } from 'vue'
 
-export default defineComponent({
-  props: {
-    pages: {
-      type: Number,
-      required: true
-    },
-    currentPage: {
-      type: Number,
-      required: true
-    }
-  },
-  watch: {
-    currentPage: {
-      handler: function () {
-        document.getElementsByClassName('files-view-wrapper')[0]?.scrollTo(0, 0)
-      }
-    }
+const { pages, currentPage } = defineProps<{
+  pages: number
+  currentPage: number
+}>()
+
+watch(
+  () => currentPage,
+  () => {
+    document.getElementsByClassName('files-view-wrapper')[0]?.scrollTo(0, 0)
   }
-})
+)
 </script>
