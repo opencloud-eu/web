@@ -6,18 +6,19 @@
 
 @AlexAndBear, @JammingBen, @schweigisito, @tammi-23, @v-scharf
 
+### 📈 Enhancement
+
+- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
+
 ### 🐛 Bug Fixes
 
 - fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
 - fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
 - fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
-
-### 📈 Enhancement
-
-- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
-- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
-- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
-- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### ✅ Tests
 
