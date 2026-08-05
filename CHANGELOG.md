@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
 - e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
 - fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
