@@ -1,1 +1,0 @@
-import"./theme.3aPY4uqj.js";import{v as t,C as r,Q as p,a0 as s,z as c}from"./framework.CmM5kUVt.js";const m=t({__name:"default",setup(i){const e=p(1);return(u,n)=>{const a=s("oc-pagination-inline");return c(),r(a,{"current-page":e.value,"onUpdate:currentPage":n[0]||(n[0]=o=>e.value=o),pages:3},null,8,["current-page"])}}});export{m as default};
