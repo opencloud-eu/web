@@ -183,7 +183,6 @@ export const onSSEItemRestoredEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  userStore,
   clientService
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
@@ -216,7 +215,6 @@ export const onSSEItemMovedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  userStore,
   clientService
 }: SSEEventOptions) => {
   if (sseData.initiatorid === clientService.initiatorId) {
@@ -320,7 +318,7 @@ export const onSSEFolderCreatedEvent = async ({
  * favorites view the resource additionally needs to be added to or removed from the list.
  */
 async function applyFavoriteState(
-  { sseData, resourcesStore, spacesStore, userStore, clientService, router }: SSEEventOptions,
+  { sseData, resourcesStore, spacesStore, clientService, router }: SSEEventOptions,
   starred: boolean
 ) {
   if (sseData.initiatorid === clientService.initiatorId) {

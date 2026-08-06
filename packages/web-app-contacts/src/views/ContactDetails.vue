@@ -34,8 +34,8 @@ const { runWithDiscardConfirmation } = useContactEditor()
 const { currentContact } = storeToRefs(contactsStore)
 const { setCurrentContact } = contactsStore
 
-const onNavigateBack = async () => {
-  await runWithDiscardConfirmation(async () => {
+const onNavigateBack = () => {
+  runWithDiscardConfirmation(() => {
     setCurrentContact(null)
   })
 }

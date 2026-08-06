@@ -47,7 +47,6 @@ export default defineComponent({
   props: {
     app: {
       type: Object as PropType<App>,
-      required: true,
       default: (): App => undefined
     }
   },

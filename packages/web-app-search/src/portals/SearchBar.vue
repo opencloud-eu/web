@@ -182,7 +182,6 @@ export default defineComponent({
 
     const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
     const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
-    const searchInputRef = useTemplateRef<ComponentPublicInstance>('searchInputRef')
     const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
     const activePreviewIndex = ref<number | null>(null)
     const term = ref('')
@@ -409,7 +408,7 @@ export default defineComponent({
 
     const { bindKeyAction } = useKeyboardActions()
 
-    const onSearchShortcut = (event: KeyboardEvent) => {
+    const onSearchShortcut = () => {
       const inputElement = unref(searchBarRef)?.querySelector('input') as HTMLElement
       inputElement?.focus()
     }

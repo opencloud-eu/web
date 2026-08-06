@@ -225,7 +225,7 @@ export interface ResourceIndicatorExtension extends Extension {
   getResourceIndicators: (resource: Resource) => ResourceIndicator[] | void
 }
 
-export type ExtensionPoint<T extends Extension> = {
+export type ExtensionPoint<T extends Extension = Extension> = {
   id: string
   extensionType: ExtensionType
   multiple?: boolean

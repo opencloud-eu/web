@@ -61,7 +61,7 @@ export async function resolveFolderVault(
  * a vault (or in a locked one, where the path is already ciphertext) are
  * returned unchanged; the original instances stay untouched for UI state.
  */
-export async function encryptResourcePathsForServer(
+export function encryptResourcePathsForServer(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   resources: Resource[]
@@ -81,7 +81,7 @@ export async function encryptResourcePathsForServer(
  * Same as `encryptResourcePathsForServer` but for bare folder paths (e.g. the
  * parent folders a restore has to recreate before moving the item back).
  */
-export async function encryptFolderPathsForServer(
+export function encryptFolderPathsForServer(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   paths: string[]

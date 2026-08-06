@@ -1,4 +1,3 @@
-/* eslint-disable vue/one-component-per-file */
 import { defineComponent, h, nextTick, ref, shallowRef } from 'vue'
 import { flushPromises, mount } from '@vue/test-utils'
 import { createGettext } from 'vue3-gettext'

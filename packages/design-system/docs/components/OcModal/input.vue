@@ -23,7 +23,7 @@ const hideModal = () => {
   modalActive.value = false
 }
 
-const confirm = (value: string) => {
+const confirm = () => {
   // handle confirm...
 
   modalActive.value = false
