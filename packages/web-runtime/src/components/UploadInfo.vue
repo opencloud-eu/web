@@ -172,22 +172,23 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch, unref } from 'vue'
+<script setup lang="ts">
+import { ref, watch, unref, computed } from 'vue'
 import { isUndefined } from 'lodash-es'
 import { getSpeed } from '@uppy/utils'
-import { HttpError, Resource, urlJoin } from '@opencloud-eu/web-client'
+import { HttpError, Resource, urlJoin, extractParentFolderName } from '@opencloud-eu/web-client'
 import {
   OcUppyFile,
   queryItemAsString,
   UppyService,
-  useConfigStore,
-  useService
+  useService,
+  formatFileSize,
+  ResourceListItem,
+  ResourceIcon,
+  ResourceName
 } from '@opencloud-eu/web-pkg'
-import { formatFileSize, ResourceListItem, ResourceIcon, ResourceName } from '@opencloud-eu/web-pkg'
-import { extractParentFolderName } from '@opencloud-eu/web-client'
-import { storeToRefs } from 'pinia'
 import { RouteLocationNamedRaw } from 'vue-router'
+import { useGettext } from 'vue3-gettext'
 
 type UploadResult = OcUppyFile & {
   path?: string
@@ -198,556 +199,533 @@ type UploadResult = OcUppyFile & {
   errorCount?: number
 }
 
-export default defineComponent({
-  components: { ResourceListItem, ResourceIcon, ResourceName },
-  setup() {
-    const uppyService = useService<UppyService>('$uppyService')
-    const configStore = useConfigStore()
-    const { options: configOptions } = storeToRefs(configStore)
+const uppyService = useService<UppyService>('$uppyService')
+const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 
-    const showInfo = ref(false) // show the overlay?
-    const bodyCollapsed = ref(false)
-    const infoExpanded = ref(false) // show the info including all uploads?
-    const uploads = ref<Record<string, UploadResult>>({}) // uploads that are being displayed via "infoExpanded"
-    const errors = ref<Record<string, HttpError>>({}) // all failed files
-    const successful = ref<string[]>([]) // all successful root level items
-    const itemsInProgressCount = ref(0) // root level files and folders that are being processed currently
-    const totalProgress = ref(0) // current uploads progress (0-100)
-    const uploadsPaused = ref(false) // all uploads paused?
-    const uploadsCancelled = ref(false) // all uploads cancelled?
-    const inFinalization = ref(false) // uploads transferred but still need to be finalized
-    const inPreparation = ref(true) // preparation before upload
-    const runningUploads = ref(0) // all uploads (not files!) that are in progress currently
-    const bytesTotal = ref(0)
-    const bytesUploaded = ref(0)
-    const uploadSpeed = ref(0)
-    const filesInEstimation = ref<Record<string, number>>({})
-    const timeStarted = ref<Date>(null)
-    const remainingTime = ref<string>(undefined)
-    const disableActions = ref(false) // disables the following actions: pause, resume, retry
+const showInfo = ref(false) // show the overlay?
+const bodyCollapsed = ref(false)
+const infoExpanded = ref(false) // show the info including all uploads?
+const uploads = ref<Record<string, UploadResult>>({}) // uploads that are being displayed via "infoExpanded"
+const errors = ref<Record<string, HttpError>>({}) // all failed files
+const successful = ref<string[]>([]) // all successful root level items
+const itemsInProgressCount = ref(0) // root level files and folders that are being processed currently
+const totalProgress = ref(0) // current uploads progress (0-100)
+const uploadsPaused = ref(false) // all uploads paused?
+const uploadsCancelled = ref(false) // all uploads cancelled?
+const inFinalization = ref(false) // uploads transferred but still need to be finalized
+const inPreparation = ref(true) // preparation before upload
+const runningUploads = ref(0) // all uploads (not files!) that are in progress currently
+const bytesTotal = ref(0)
+const bytesUploaded = ref(0)
+const uploadSpeed = ref(0)
+const filesInEstimation = ref<Record<string, number>>({})
+const timeStarted = ref<Date>(null)
+const remainingTime = ref<string>(undefined)
+const disableActions = ref(false) // disables the following actions: pause, resume, retry
 
-    const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (unref(runningUploads)) {
-        e.preventDefault()
-      }
+const onBeforeUnload = (e: BeforeUnloadEvent) => {
+  if (unref(runningUploads)) {
+    e.preventDefault()
+  }
+}
+
+watch(runningUploads, (val) => {
+  if (val === 0) {
+    return window.removeEventListener('beforeunload', onBeforeUnload)
+  }
+  return window.addEventListener('beforeunload', onBeforeUnload)
+})
+
+const uploadDetails = computed(() => {
+  if (!unref(uploadSpeed) || !unref(runningUploads)) {
+    return ''
+  }
+  const uploadedBytes = formatFileSize(unref(bytesUploaded), currentLanguage)
+  const totalBytes = formatFileSize(unref(bytesTotal), currentLanguage)
+  const currentUploadSpeed = formatFileSize(unref(uploadSpeed), currentLanguage)
+
+  return $gettext('%{uploadedBytes} of %{totalBytes} (%{currentUploadSpeed}/s)', {
+    uploadedBytes,
+    totalBytes,
+    currentUploadSpeed
+  })
+})
+
+const uploadInfoTitle = computed(() => {
+  if (unref(inFinalization)) {
+    return $gettext('Finalizing upload...')
+  }
+
+  if (unref(itemsInProgressCount) && !unref(inPreparation)) {
+    return $ngettext(
+      '%{ filesInProgressCount } item uploading...',
+      '%{ filesInProgressCount } items uploading...',
+      unref(itemsInProgressCount),
+      { filesInProgressCount: unref(itemsInProgressCount).toString() }
+    )
+  }
+  if (unref(uploadsCancelled)) {
+    return $gettext('Upload cancelled')
+  }
+  if (Object.keys(unref(errors)).length) {
+    return $gettext('Upload failed')
+  }
+  if (!unref(runningUploads)) {
+    return $gettext('Upload completed')
+  }
+  return $gettext('Preparing upload...')
+})
+
+const uploadingLabel = computed(() => {
+  if (Object.keys(unref(errors)).length) {
+    const count = unref(successful).length + Object.keys(unref(errors)).length
+    return $ngettext(
+      '%{ errors } of %{ uploads } item failed',
+      '%{ errors } of %{ uploads } items failed',
+      count,
+      { uploads: count.toString(), errors: Object.keys(unref(errors)).length.toString() }
+    )
+  }
+
+  const folderCount = unref(successful).filter(
+    (id: string) => unref(uploads)[id]?.meta?.isFolder
+  ).length
+  const fileCount = unref(successful).length - folderCount
+
+  const parts: string[] = []
+  if (fileCount > 0) {
+    parts.push(
+      $ngettext('%{ fileCount } file', '%{ fileCount } files', fileCount, {
+        fileCount: fileCount.toString()
+      })
+    )
+  }
+  if (folderCount > 0) {
+    parts.push(
+      $ngettext('%{ folderCount } folder', '%{ folderCount } folders', folderCount, {
+        folderCount: folderCount.toString()
+      })
+    )
+  }
+
+  if (!parts.length) {
+    return $ngettext(
+      '%{ successfulUploads } item uploaded',
+      '%{ successfulUploads } items uploaded',
+      unref(successful).length,
+      { successfulUploads: unref(successful).length.toString() }
+    )
+  }
+
+  return $gettext('%{ items } uploaded', { items: parts.join(', ') })
+})
+
+const uploadErrorLogContent = computed(() => {
+  const requestIds = Object.values(unref(errors)).reduce<string[]>((acc, error) => {
+    // tus-js-client error
+    const requestId = (error as any).originalRequest?._headers?.['X-Request-ID']
+
+    if (requestId) {
+      acc.push(requestId)
     }
 
-    watch(runningUploads, (val) => {
-      if (val === 0) {
-        return window.removeEventListener('beforeunload', onBeforeUnload)
-      }
-      return window.addEventListener('beforeunload', onBeforeUnload)
-    })
+    return acc
+  }, [])
+
+  return requestIds.map((item) => `X-Request-Id: ${item}`).join('\r\n')
+})
+
+const uploadsPausable = computed(() => uppyService.tusActive())
+const showErrorLog = computed(() => unref(infoExpanded) && unref(uploadErrorLogContent))
+
+function getRemainingTime(remainingMilliseconds: number) {
+  const roundedRemainingMinutes = Math.round(remainingMilliseconds / 1000 / 60)
+  if (roundedRemainingMinutes >= 1 && roundedRemainingMinutes < 60) {
+    return $ngettext(
+      '%{ roundedRemainingMinutes } minute left',
+      '%{ roundedRemainingMinutes } minutes left',
+      roundedRemainingMinutes,
+      { roundedRemainingMinutes: roundedRemainingMinutes.toString() }
+    )
+  }
+
+  const roundedRemainingHours = Math.round(remainingMilliseconds / 1000 / 60 / 60)
+  if (roundedRemainingHours > 0) {
+    return $ngettext(
+      '%{ roundedRemainingHours } hour left',
+      '%{ roundedRemainingHours } hours left',
+      roundedRemainingHours,
+      { roundedRemainingHours: roundedRemainingHours.toString() }
+    )
+  }
+
+  return $gettext('Few seconds left')
+}
+
+function handleTopLevelFolderUpdate(file: OcUppyFile, status: string) {
+  const topLevelFolder = uploads.value[file.meta.topLevelFolderId]
+  if (status === 'success') {
+    topLevelFolder.successCount += 1
+  } else {
+    topLevelFolder.errorCount += 1
+  }
+
+  // all files for this top level folder are finished
+  if (topLevelFolder.successCount + topLevelFolder.errorCount === topLevelFolder.filesCount) {
+    topLevelFolder.status = topLevelFolder.errorCount ? 'error' : 'success'
+    itemsInProgressCount.value -= 1
+  }
+}
+
+function cleanOverlay() {
+  uploadsCancelled.value = false
+  uploads.value = {}
+  errors.value = {}
+  successful.value = []
+  itemsInProgressCount.value = 0
+  runningUploads.value = 0
+  disableActions.value = false
+}
+
+function resetProgress() {
+  bytesTotal.value = 0
+  bytesUploaded.value = 0
+  filesInEstimation.value = {}
+  timeStarted.value = null
+  remainingTime.value = undefined
+  inPreparation.value = true
+  inFinalization.value = false
+  uploadsPaused.value = false
+}
+
+function closeInfo() {
+  showInfo.value = false
+  bodyCollapsed.value = false
+  infoExpanded.value = false
+  cleanOverlay()
+  resetProgress()
+
+  if (!unref(runningUploads)) {
+    // we can safely remove all failed files if no uploads are running and the overlay is closed
+    uppyService.removeFailedFiles()
+  }
+}
+
+function displayFileAsResource(file: UploadResult) {
+  return !!file.targetRoute
+}
+
+function isResourceClickable(file: UploadResult) {
+  return file.meta.isFolder === true
+}
+
+function resourceLink(file: UploadResult) {
+  if (!file.meta.isFolder) {
+    return {}
+  }
+  return {
+    ...file.targetRoute,
+    params: {
+      ...file.targetRoute.params,
+      driveAliasAndItem: urlJoin(
+        queryItemAsString(file.targetRoute.params.driveAliasAndItem),
+        file.name,
+        {
+          leadingSlash: false
+        }
+      )
+    },
+    query: {
+      ...file.targetRoute.query,
+      ...(!isUndefined(file.meta.fileId) && { fileId: file.meta.fileId })
+    }
+  }
+}
+
+function parentFolderLink(file: UploadResult) {
+  return {
+    ...file.targetRoute,
+    query: {
+      ...file.targetRoute.query,
+      ...(!isUndefined(file.meta.currentFolderId) && { fileId: file.meta.currentFolderId })
+    }
+  }
+}
+
+function parentFolderName(file: UploadResult) {
+  const { meta } = file
+  const parentFolder = extractParentFolderName(file as Resource)
+  if (parentFolder) {
+    return parentFolder
+  }
+
+  if (meta.driveType === 'personal') {
+    return $gettext('Personal')
+  }
+
+  if (meta.driveType === 'public') {
+    return $gettext('Public link')
+  }
+
+  return meta.spaceName
+}
+
+function buildRouteFromUppyResource(resource: OcUppyFile): RouteLocationNamedRaw {
+  if (!resource.meta.routeName) {
+    return null
+  }
+  return {
+    name: resource.meta.routeName,
+    params: {
+      driveAliasAndItem: resource.meta.routeDriveAliasAndItem
+    },
+    query: {
+      ...(resource.meta.routeShareId && { shareId: resource.meta.routeShareId })
+    }
+  }
+}
+
+function toggleInfo() {
+  infoExpanded.value = !infoExpanded.value
+}
+
+function toggleBodyCollapsed() {
+  bodyCollapsed.value = !bodyCollapsed.value
+}
+
+function togglePauseUploads() {
+  if (unref(uploadsPaused)) {
+    uppyService.resumeAllUploads()
+    timeStarted.value = null
+  } else {
+    uppyService.pauseAllUploads()
+  }
+
+  uploadsPaused.value = !unref(uploadsPaused)
+}
+
+function cancelAllUploads() {
+  uploadsCancelled.value = true
+  itemsInProgressCount.value = 0
+  runningUploads.value = 0
+  resetProgress()
+  uppyService.cancelAllUploads()
+  const running = Object.values(unref(uploads)).filter(
+    (u) => u.status !== 'success' && u.status !== 'error'
+  )
+
+  for (const item of running) {
+    uploads.value[item.meta.uploadId].status = 'cancelled'
+  }
+}
+
+function retryUploads() {
+  itemsInProgressCount.value += Object.keys(unref(errors)).length
+  runningUploads.value += 1
+  for (const fileID of Object.keys(unref(errors))) {
+    uploads.value[fileID].status = undefined
+
+    const topLevelFolderId = uploads.value[fileID].meta.topLevelFolderId
+    if (topLevelFolderId) {
+      uploads.value[topLevelFolderId].status = undefined
+      uploads.value[topLevelFolderId].errorCount = 0
+    }
+  }
+  errors.value = {}
+  uppyService.retryAllUploads()
+}
+
+function getUploadItemMessage(item: UploadResult) {
+  const error = unref(errors)[item.meta.uploadId]
+
+  if (!error) {
+    return
+  }
+
+  // TODO: Remove extraction code as soon as https://github.com/tus/tus-js-client/issues/448 is solved
+  const formatErrorMessageToObject = (errorMessage: string) => {
+    const responseCode = errorMessage.match(/response code: (\d+)/)?.[1]
+    const errorBody = JSON.parse(
+      errorMessage.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
+    )
 
     return {
-      configOptions,
-      showInfo,
-      bodyCollapsed,
-      infoExpanded,
-      uploads,
-      errors,
-      successful,
-      itemsInProgressCount,
-      totalProgress,
-      uploadsPaused,
-      uploadsCancelled,
-      inFinalization,
-      inPreparation,
-      runningUploads,
-      bytesTotal,
-      bytesUploaded,
-      uploadSpeed,
-      filesInEstimation,
-      timeStarted,
-      remainingTime,
-      disableActions,
-      uppyService
+      responseCode: responseCode ? parseInt(responseCode) : null,
+      errorCode: errorBody?.error?.code,
+      errorMessage: errorBody?.error?.message
     }
-  },
-  computed: {
-    uploadDetails() {
-      if (!this.uploadSpeed || !this.runningUploads) {
-        return ''
-      }
-      const uploadedBytes = formatFileSize(this.bytesUploaded, this.$language.current)
-      const totalBytes = formatFileSize(this.bytesTotal, this.$language.current)
-      const currentUploadSpeed = formatFileSize(this.uploadSpeed, this.$language.current)
+  }
 
-      return this.$gettext('%{uploadedBytes} of %{totalBytes} (%{currentUploadSpeed}/s)', {
-        uploadedBytes,
-        totalBytes,
-        currentUploadSpeed
-      })
-    },
-    uploadInfoTitle() {
-      if (this.inFinalization) {
-        return this.$gettext('Finalizing upload...')
-      }
+  const errorObject = formatErrorMessageToObject(error.message)
+  if (unref(errors)[item.meta.uploadId]?.statusCode === 423) {
+    return $gettext("The folder you're uploading to is locked")
+  }
 
-      if (this.itemsInProgressCount && !this.inPreparation) {
-        return this.$ngettext(
-          '%{ filesInProgressCount } item uploading...',
-          '%{ filesInProgressCount } items uploading...',
-          this.itemsInProgressCount,
-          { filesInProgressCount: this.itemsInProgressCount.toString() }
-        )
-      }
-      if (this.uploadsCancelled) {
-        return this.$gettext('Upload cancelled')
-      }
-      if (Object.keys(this.errors).length) {
-        return this.$gettext('Upload failed')
-      }
-      if (!this.runningUploads) {
-        return this.$gettext('Upload completed')
-      }
-      return this.$gettext('Preparing upload...')
-    },
-    uploadingLabel() {
-      if (Object.keys(this.errors).length) {
-        const count = this.successful.length + Object.keys(this.errors).length
-        return this.$ngettext(
-          '%{ errors } of %{ uploads } item failed',
-          '%{ errors } of %{ uploads } items failed',
-          count,
-          { uploads: count.toString(), errors: Object.keys(this.errors).length.toString() }
-        )
-      }
+  switch (errorObject.responseCode) {
+    case 507:
+      return $gettext('Quota exceeded')
+    default:
+      return errorObject.errorMessage
+        ? $gettext(errorObject.errorMessage)
+        : $gettext('Unknown error')
+  }
+}
 
-      const folderCount = this.successful.filter(
-        (id: string) => this.uploads[id]?.meta?.isFolder
-      ).length
-      const fileCount = this.successful.length - folderCount
+const getUploadItemClass = (item: UploadResult) => {
+  return unref(errors)[item.meta.uploadId]
+    ? 'upload-info-danger text-role-error'
+    : 'upload-info-success'
+}
 
-      const parts: string[] = []
-      if (fileCount > 0) {
-        parts.push(
-          this.$ngettext('%{ fileCount } file', '%{ fileCount } files', fileCount, {
-            fileCount: fileCount.toString()
-          })
-        )
-      }
-      if (folderCount > 0) {
-        parts.push(
-          this.$ngettext('%{ folderCount } folder', '%{ folderCount } folders', folderCount, {
-            folderCount: folderCount.toString()
-          })
-        )
-      }
+uppyService.subscribe('uploadStarted', () => {
+  if (!unref(remainingTime)) {
+    remainingTime.value = $gettext('Calculating estimated time...')
+  }
 
-      if (!parts.length) {
-        return this.$ngettext(
-          '%{ successfulUploads } item uploaded',
-          '%{ successfulUploads } items uploaded',
-          this.successful.length,
-          { successfulUploads: this.successful.length.toString() }
-        )
-      }
+  // No upload in progress -> clean overlay
+  if (!unref(runningUploads) && unref(showInfo)) {
+    cleanOverlay()
+  }
 
-      return this.$gettext('%{ items } uploaded', { items: parts.join(', ') })
-    },
-    uploadsPausable() {
-      return this.uppyService.tusActive()
-    },
-    showErrorLog() {
-      return this.infoExpanded && this.uploadErrorLogContent
-    },
-    uploadErrorLogContent() {
-      const requestIds = Object.values(this.errors).reduce<string[]>((acc, error) => {
-        // tus-js-client error
-        const requestId = (error as any).originalRequest?._headers?.['X-Request-ID']
+  showInfo.value = true
+  runningUploads.value += 1
+  inFinalization.value = false
+})
+uppyService.subscribe('addedForUpload', (files: OcUppyFile[]) => {
+  // only count root level files and folders
+  itemsInProgressCount.value += files.filter((f) => !f.meta.relativeFolder).length
 
-        if (requestId) {
-          acc.push(requestId)
-        }
-
-        return acc
-      }, [])
-
-      return requestIds.map((item) => `X-Request-Id: ${item}`).join('\r\n')
+  for (const file of files) {
+    if (!unref(disableActions) && file.isRemote) {
+      disableActions.value = true
     }
-  },
-  created() {
-    this.uppyService.subscribe('uploadStarted', () => {
-      if (!this.remainingTime) {
-        this.remainingTime = this.$gettext('Calculating estimated time...')
-      }
 
-      // No upload in progress -> clean overlay
-      if (!this.runningUploads && this.showInfo) {
-        this.cleanOverlay()
-      }
-
-      this.showInfo = true
-      this.runningUploads += 1
-      this.inFinalization = false
-    })
-    this.uppyService.subscribe('addedForUpload', (files: OcUppyFile[]) => {
-      // only count root level files and folders
-      this.itemsInProgressCount += files.filter((f) => !f.meta.relativeFolder).length
-
-      for (const file of files) {
-        if (!this.disableActions && file.isRemote) {
-          this.disableActions = true
-        }
-
-        if (file.data?.size) {
-          this.bytesTotal += file.data.size
-        }
-
-        const { relativeFolder, uploadId, topLevelFolderId } = file.meta
-        const isTopLevelItem = !relativeFolder
-        // only add top level items to this.uploads because we only show those
-        if (isTopLevelItem) {
-          this.uploads[uploadId] = file
-          // top level folders get initialized with file counts about their files inside
-          if (file.meta.isFolder && this.uploads[uploadId].filesCount === undefined) {
-            this.uploads[uploadId].filesCount = 0
-            this.uploads[uploadId].errorCount = 0
-            this.uploads[uploadId].successCount = 0
-          }
-        }
-
-        // count all files inside top level folders to mark them as successful or failed later
-        if (!file.meta.isFolder && !isTopLevelItem && this.uploads[topLevelFolderId]) {
-          this.uploads[topLevelFolderId].filesCount += 1
-        }
-      }
-    })
-    this.uppyService.subscribe('uploadCompleted', () => {
-      this.runningUploads -= 1
-
-      if (!this.runningUploads) {
-        this.resetProgress()
-      }
-    })
-    this.uppyService.subscribe('progress', (value: number) => {
-      this.totalProgress = value
-    })
-    this.uppyService.subscribe(
-      'upload-progress',
-      ({ file, progress }: { file: OcUppyFile; progress: { bytesUploaded: number } }) => {
-        if (!this.timeStarted) {
-          this.timeStarted = new Date()
-          this.inPreparation = false
-        }
-
-        if (this.filesInEstimation[file.meta.uploadId] === undefined) {
-          this.filesInEstimation[file.meta.uploadId] = 0
-        }
-
-        const byteIncrease = progress.bytesUploaded - this.filesInEstimation[file.meta.uploadId]
-        this.bytesUploaded += byteIncrease
-        this.filesInEstimation[file.meta.uploadId] = progress.bytesUploaded
-
-        const timeElapsed = +new Date().getTime() - this.timeStarted.getTime()
-
-        this.uploadSpeed = getSpeed({
-          bytesUploaded: this.bytesUploaded,
-          uploadStarted: this.timeStarted.getTime(),
-          bytesTotal: this.bytesTotal
-        })
-
-        const progressPercent = (100 * this.bytesUploaded) / this.bytesTotal
-        if (progressPercent === 0) {
-          return
-        }
-        const totalTimeNeededInMilliseconds = (timeElapsed / progressPercent) * 100
-        const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
-
-        this.remainingTime = this.getRemainingTime(remainingMilliseconds)
-        if (progressPercent === 100) {
-          this.inFinalization = true
-        }
-      }
-    )
-    this.uppyService.subscribe(
-      'uploadError',
-      ({ file, error }: { file: OcUppyFile; error: Error }) => {
-        if (this.errors[file.meta.uploadId]) {
-          return
-        }
-
-        // file inside folder -> was not added to this.uploads, but must be now because of error
-        if (!this.uploads[file.meta.uploadId]) {
-          this.uploads[file.meta.uploadId] = file
-        }
-
-        if (file.meta.relativePath) {
-          this.uploads[file.meta.uploadId].path = file.meta.relativePath
-        } else {
-          this.uploads[file.meta.uploadId].path = urlJoin(file.meta.currentFolder, file.name)
-        }
-
-        this.uploads[file.meta.uploadId].targetRoute = this.buildRouteFromUppyResource(file)
-        this.uploads[file.meta.uploadId].status = 'error'
-        this.errors[file.meta.uploadId] = error as HttpError
-
-        if (!file.meta.isFolder) {
-          if (!file.meta.relativeFolder && this.itemsInProgressCount > 0) {
-            // reduce count for failed root level files. count for folders is handled in handleTopLevelFolderUpdate
-            this.itemsInProgressCount -= 1
-          }
-
-          if (file.meta.topLevelFolderId) {
-            this.handleTopLevelFolderUpdate(file, 'error')
-          }
-        }
-      }
-    )
-    this.uppyService.subscribe('uploadSuccess', (file: OcUppyFile) => {
-      // item inside folder
-      if (!this.uploads[file.meta.uploadId] || file.meta.relativeFolder) {
-        if (!file.meta.isFolder && file.meta.topLevelFolderId) {
-          this.handleTopLevelFolderUpdate(file, 'success')
-        }
-
-        if (this.uploads[file.meta.uploadId]) {
-          // retries end up in this.uploads, even if they're not at the top level.
-          // a succeeded retry can now be removed from this.uploads.
-          delete this.uploads[file.meta.uploadId]
-        }
-
-        return
-      }
-
-      this.uploads[file.meta.uploadId] = file
-      this.uploads[file.meta.uploadId].path = urlJoin(file.meta.currentFolder, file.name)
-      this.uploads[file.meta.uploadId].targetRoute = this.buildRouteFromUppyResource(file)
-      this.uploads[file.meta.uploadId].status = 'success'
-      this.successful.push(file.meta.uploadId)
-
-      if (!file.meta.isFolder && this.itemsInProgressCount > 0) {
-        // reduce count for succeeded root level files. count for folders is handled in handleTopLevelFolderUpdate
-        this.itemsInProgressCount -= 1
-      }
-    })
-  },
-  methods: {
-    getRemainingTime(remainingMilliseconds: number) {
-      const roundedRemainingMinutes = Math.round(remainingMilliseconds / 1000 / 60)
-      if (roundedRemainingMinutes >= 1 && roundedRemainingMinutes < 60) {
-        return this.$ngettext(
-          '%{ roundedRemainingMinutes } minute left',
-          '%{ roundedRemainingMinutes } minutes left',
-          roundedRemainingMinutes,
-          { roundedRemainingMinutes: roundedRemainingMinutes.toString() }
-        )
-      }
-
-      const roundedRemainingHours = Math.round(remainingMilliseconds / 1000 / 60 / 60)
-      if (roundedRemainingHours > 0) {
-        return this.$ngettext(
-          '%{ roundedRemainingHours } hour left',
-          '%{ roundedRemainingHours } hours left',
-          roundedRemainingHours,
-          { roundedRemainingHours: roundedRemainingHours.toString() }
-        )
-      }
-
-      return this.$gettext('Few seconds left')
-    },
-    handleTopLevelFolderUpdate(file: OcUppyFile, status: string) {
-      const topLevelFolder = this.uploads[file.meta.topLevelFolderId]
-      if (status === 'success') {
-        topLevelFolder.successCount += 1
-      } else {
-        topLevelFolder.errorCount += 1
-      }
-
-      // all files for this top level folder are finished
-      if (topLevelFolder.successCount + topLevelFolder.errorCount === topLevelFolder.filesCount) {
-        topLevelFolder.status = topLevelFolder.errorCount ? 'error' : 'success'
-        this.itemsInProgressCount -= 1
-      }
-    },
-    closeInfo() {
-      this.showInfo = false
-      this.bodyCollapsed = false
-      this.infoExpanded = false
-      this.cleanOverlay()
-      this.resetProgress()
-
-      if (!this.runningUploads) {
-        // we can safely remove all failed files if no uploads are running and the overlay is closed
-        this.uppyService.removeFailedFiles()
-      }
-    },
-    cleanOverlay() {
-      this.uploadsCancelled = false
-      this.uploads = {}
-      this.errors = {}
-      this.successful = []
-      this.itemsInProgressCount = 0
-      this.runningUploads = 0
-      this.disableActions = false
-    },
-    resetProgress() {
-      this.bytesTotal = 0
-      this.bytesUploaded = 0
-      this.filesInEstimation = {}
-      this.timeStarted = null
-      this.remainingTime = undefined
-      this.inPreparation = true
-      this.inFinalization = false
-      this.uploadsPaused = false
-    },
-    displayFileAsResource(file: UploadResult) {
-      return !!file.targetRoute
-    },
-    isResourceClickable(file: UploadResult) {
-      return file.meta.isFolder === true
-    },
-    resourceLink(file: UploadResult) {
-      if (!file.meta.isFolder) {
-        return {}
-      }
-      return {
-        ...file.targetRoute,
-        params: {
-          ...file.targetRoute.params,
-          driveAliasAndItem: urlJoin(
-            queryItemAsString(file.targetRoute.params.driveAliasAndItem),
-            file.name,
-            {
-              leadingSlash: false
-            }
-          )
-        },
-        query: {
-          ...file.targetRoute.query,
-          ...(!isUndefined(file.meta.fileId) && { fileId: file.meta.fileId })
-        }
-      }
-    },
-    parentFolderLink(file: UploadResult) {
-      return {
-        ...file.targetRoute,
-        query: {
-          ...file.targetRoute.query,
-          ...(!isUndefined(file.meta.currentFolderId) && { fileId: file.meta.currentFolderId })
-        }
-      }
-    },
-    buildRouteFromUppyResource(resource: OcUppyFile): RouteLocationNamedRaw {
-      if (!resource.meta.routeName) {
-        return null
-      }
-      return {
-        name: resource.meta.routeName,
-        params: {
-          driveAliasAndItem: resource.meta.routeDriveAliasAndItem
-        },
-        query: {
-          ...(resource.meta.routeShareId && { shareId: resource.meta.routeShareId })
-        }
-      }
-    },
-    parentFolderName(file: UploadResult) {
-      const {
-        meta: { spaceName, driveType }
-      } = file
-
-      const parentFolder = extractParentFolderName(file as Resource)
-      if (parentFolder) {
-        return parentFolder
-      }
-
-      if (driveType === 'personal') {
-        return this.$gettext('Personal')
-      }
-
-      if (driveType === 'public') {
-        return this.$gettext('Public link')
-      }
-
-      return spaceName
-    },
-    toggleInfo() {
-      this.infoExpanded = !this.infoExpanded
-    },
-    toggleBodyCollapsed() {
-      this.bodyCollapsed = !this.bodyCollapsed
-    },
-    retryUploads() {
-      this.itemsInProgressCount += Object.keys(this.errors).length
-      this.runningUploads += 1
-      for (const fileID of Object.keys(this.errors)) {
-        this.uploads[fileID].status = undefined
-
-        const topLevelFolderId = this.uploads[fileID].meta.topLevelFolderId
-        if (topLevelFolderId) {
-          this.uploads[topLevelFolderId].status = undefined
-          this.uploads[topLevelFolderId].errorCount = 0
-        }
-      }
-      this.errors = {}
-      this.uppyService.retryAllUploads()
-    },
-    togglePauseUploads() {
-      if (this.uploadsPaused) {
-        this.uppyService.resumeAllUploads()
-        this.timeStarted = null
-      } else {
-        this.uppyService.pauseAllUploads()
-      }
-
-      this.uploadsPaused = !this.uploadsPaused
-    },
-    cancelAllUploads() {
-      this.uploadsCancelled = true
-      this.itemsInProgressCount = 0
-      this.runningUploads = 0
-      this.resetProgress()
-      this.uppyService.cancelAllUploads()
-      const runningUploads = Object.values(this.uploads).filter(
-        (u) => u.status !== 'success' && u.status !== 'error'
-      )
-
-      for (const item of runningUploads) {
-        this.uploads[item.meta.uploadId].status = 'cancelled'
-      }
-    },
-    getUploadItemMessage(item: UploadResult) {
-      const error = this.errors[item.meta.uploadId]
-
-      if (!error) {
-        return
-      }
-
-      //TODO: Remove extraction code as soon as https://github.com/tus/tus-js-client/issues/448 is solved
-      const formatErrorMessageToObject = (errorMessage: string) => {
-        const responseCode = errorMessage.match(/response code: (\d+)/)?.[1]
-        const errorBody = JSON.parse(
-          errorMessage.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
-        )
-
-        return {
-          responseCode: responseCode ? parseInt(responseCode) : null,
-          errorCode: errorBody?.error?.code,
-          errorMessage: errorBody?.error?.message
-        }
-      }
-
-      const errorObject = formatErrorMessageToObject(error.message)
-      if (this.errors[item.meta.uploadId]?.statusCode === 423) {
-        return this.$gettext("The folder you're uploading to is locked")
-      }
-
-      switch (errorObject.responseCode) {
-        case 507:
-          return this.$gettext('Quota exceeded')
-        default:
-          return errorObject.errorMessage
-            ? this.$gettext(errorObject.errorMessage)
-            : this.$gettext('Unknown error')
-      }
-    },
-    getUploadItemClass(item: UploadResult) {
-      return this.errors[item.meta.uploadId]
-        ? 'upload-info-danger text-role-error'
-        : 'upload-info-success'
+    if (file.data?.size) {
+      bytesTotal.value += file.data.size
     }
+
+    const { relativeFolder, uploadId, topLevelFolderId } = file.meta
+    const isTopLevelItem = !relativeFolder
+    // only add top level items to this.uploads because we only show those
+    if (isTopLevelItem) {
+      uploads.value[uploadId] = file
+      // top level folders get initialized with file counts about their files inside
+      if (file.meta.isFolder && uploads.value[uploadId].filesCount === undefined) {
+        uploads.value[uploadId].filesCount = 0
+        uploads.value[uploadId].errorCount = 0
+        uploads.value[uploadId].successCount = 0
+      }
+    }
+
+    // count all files inside top level folders to mark them as successful or failed later
+    if (!file.meta.isFolder && !isTopLevelItem && uploads.value[topLevelFolderId]) {
+      uploads.value[topLevelFolderId].filesCount += 1
+    }
+  }
+})
+uppyService.subscribe('uploadCompleted', () => {
+  runningUploads.value -= 1
+
+  if (!unref(runningUploads)) {
+    resetProgress()
+  }
+})
+uppyService.subscribe('progress', (value: number) => {
+  totalProgress.value = value
+})
+uppyService.subscribe(
+  'upload-progress',
+  ({ file, progress }: { file: OcUppyFile; progress: { bytesUploaded: number } }) => {
+    if (!unref(timeStarted)) {
+      timeStarted.value = new Date()
+      inPreparation.value = false
+    }
+
+    if (filesInEstimation.value[file.meta.uploadId] === undefined) {
+      filesInEstimation.value[file.meta.uploadId] = 0
+    }
+
+    const byteIncrease = progress.bytesUploaded - filesInEstimation.value[file.meta.uploadId]
+    bytesUploaded.value += byteIncrease
+    filesInEstimation.value[file.meta.uploadId] = progress.bytesUploaded
+
+    const timeElapsed = +new Date().getTime() - unref(timeStarted).getTime()
+
+    uploadSpeed.value = getSpeed({
+      bytesUploaded: unref(bytesUploaded),
+      uploadStarted: unref(timeStarted).getTime(),
+      bytesTotal: unref(bytesTotal)
+    })
+
+    const progressPercent = (100 * unref(bytesUploaded)) / unref(bytesTotal)
+    if (progressPercent === 0) {
+      return
+    }
+    const totalTimeNeededInMilliseconds = (timeElapsed / progressPercent) * 100
+    const remainingMilliseconds = totalTimeNeededInMilliseconds - timeElapsed
+
+    remainingTime.value = getRemainingTime(remainingMilliseconds)
+    if (progressPercent === 100) {
+      inFinalization.value = true
+    }
+  }
+)
+uppyService.subscribe('uploadError', ({ file, error }: { file: OcUppyFile; error: Error }) => {
+  if (unref(errors)[file.meta.uploadId]) {
+    return
+  }
+
+  // file inside folder -> was not added to this.uploads, but must be now because of error
+  if (!uploads.value[file.meta.uploadId]) {
+    uploads.value[file.meta.uploadId] = file
+  }
+
+  if (file.meta.relativePath) {
+    uploads.value[file.meta.uploadId].path = file.meta.relativePath
+  } else {
+    uploads.value[file.meta.uploadId].path = urlJoin(file.meta.currentFolder, file.name)
+  }
+
+  uploads.value[file.meta.uploadId].targetRoute = buildRouteFromUppyResource(file)
+  uploads.value[file.meta.uploadId].status = 'error'
+  errors.value[file.meta.uploadId] = error as HttpError
+
+  if (!file.meta.isFolder) {
+    if (!file.meta.relativeFolder && unref(itemsInProgressCount) > 0) {
+      // reduce count for failed root level files. count for folders is handled in handleTopLevelFolderUpdate
+      itemsInProgressCount.value -= 1
+    }
+
+    if (file.meta.topLevelFolderId) {
+      handleTopLevelFolderUpdate(file, 'error')
+    }
+  }
+})
+uppyService.subscribe('uploadSuccess', (file: OcUppyFile) => {
+  // item inside folder
+  if (!uploads.value[file.meta.uploadId] || file.meta.relativeFolder) {
+    if (!file.meta.isFolder && file.meta.topLevelFolderId) {
+      handleTopLevelFolderUpdate(file, 'success')
+    }
+
+    if (uploads.value[file.meta.uploadId]) {
+      // retries end up in uploads, even if they're not at the top level.
+      // a succeeded retry can now be removed from uploads.
+      delete uploads.value[file.meta.uploadId]
+    }
+
+    return
+  }
+
+  uploads.value[file.meta.uploadId] = file
+  uploads.value[file.meta.uploadId].path = urlJoin(file.meta.currentFolder, file.name)
+  uploads.value[file.meta.uploadId].targetRoute = buildRouteFromUppyResource(file)
+  uploads.value[file.meta.uploadId].status = 'success'
+  successful.value.push(file.meta.uploadId)
+
+  if (!file.meta.isFolder && unref(itemsInProgressCount) > 0) {
+    // reduce count for succeeded root level files. count for folders is handled in handleTopLevelFolderUpdate
+    itemsInProgressCount.value -= 1
   }
 })
 </script>
