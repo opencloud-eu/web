@@ -30,6 +30,11 @@ const buildResource = (attrs: Partial<Resource> = {}) =>
   }) as Resource
 
 describe('resolvePrivateLink', () => {
+  beforeEach(() => {
+    // resolving an empty path is an expected failure in several cases below
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+  })
+
   it('is in a loading state initially', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find(selectors.ocSpinnerStub).exists()).toBeTruthy()
@@ -106,7 +111,6 @@ describe('resolvePrivateLink', () => {
     )
   })
   it('shows an error message if the path is empty', async () => {
-    console.error = vi.fn()
     const { wrapper } = getWrapper()
     await flushPromises()
 

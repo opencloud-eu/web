@@ -136,6 +136,7 @@ describe('UnlockVault', () => {
     })
 
     it('offers a retry when unlocking fails for any other reason', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper, mocks, vaultStore } = await mountProbed()
       vi.mocked(unlockVault).mockRejectedValue(new Error('network'))
       await submit(wrapper)

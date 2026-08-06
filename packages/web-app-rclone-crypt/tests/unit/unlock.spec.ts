@@ -1,10 +1,14 @@
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { streamToArrayBuffer } from '@opencloud-eu/web-pkg'
+import { FolderVaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
 import { probeVaultNeedsSetup, unlockVault, VaultTarget } from '../../src/unlock'
 import { createEngine } from '../../src/crypto/engine'
 import { INTEGRITY_ID_PROP } from '../../src/integrity'
+
+// Every unlock derives a real scrypt key (N=2^14), which takes long enough on a
+// loaded CI runner to blow the 5s default.
+vi.setConfig({ testTimeout: 15_000 })
 
 const vaultRoot = '/my.vault'
 const passphrase = 'foobar'
@@ -12,14 +16,31 @@ const passphrase = 'foobar'
 // decrypts when a vault carries no integrity token.
 const encryptedChildName = 'unq54c7b9fj4lam8t82q1hofdo'
 
+// One engine - and therefore one scrypt derivation - per passphrase for the
+// whole file. Engines hold no per-test state, and the derivation is the single
+// most expensive thing these tests do.
+const engines = new Map<string, FolderVaultEngine>()
+function engineFor(password: string): FolderVaultEngine {
+  if (!engines.has(password)) {
+    engines.set(password, createEngine(vaultRoot, password))
+  }
+  return engines.get(password)
+}
+
 function tokenFor(password: string): Promise<string> {
-  return createEngine(vaultRoot, password).createIntegrityToken()
+  return engineFor(password).createIntegrityToken()
 }
 
 /** Real rclone-crypt ciphertext for `content`, as the server would hold it. */
 function encryptedFile(password: string, content: string): Promise<ArrayBuffer> {
-  const engine = createEngine(vaultRoot, password)
-  return streamToArrayBuffer(engine.encryptContent(new Blob([content]).stream()))
+  return streamToArrayBuffer(engineFor(password).encryptContent(new Blob([content]).stream()))
+}
+
+/** The ciphertext a sampled file returns by default, computed once. */
+let sampleFileContent: Promise<ArrayBuffer> | undefined
+function encryptedSampleFile(): Promise<ArrayBuffer> {
+  sampleFileContent ??= encryptedFile(passphrase, 'hello vault')
+  return sampleFileContent
 }
 
 type Child = { name: string; isFolder?: boolean; size?: number }
@@ -61,7 +82,7 @@ async function createTarget({
     )
   })
   webdav.getFileContents.mockResolvedValue({
-    body: fileContent ?? (await encryptedFile(passphrase, 'hello vault'))
+    body: fileContent ?? (await encryptedSampleFile())
   } as never)
   webdav.setProperties.mockResolvedValue(undefined as never)
 
@@ -75,6 +96,12 @@ function writtenToken(webdav: WebDAV): string {
   const [, , properties] = vi.mocked(webdav.setProperties).mock.calls[0]
   return (properties as Record<string, string>)[INTEGRITY_ID_PROP]
 }
+
+// `clearMocks` only clears calls, so a console spy would stay in place for every
+// test that follows it.
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('unlockVault', () => {
   describe('a vault carrying an integrity token', () => {
@@ -113,7 +140,7 @@ describe('unlockVault', () => {
       const result = await unlockVault(target, passphrase)
 
       expect(result.status).toBe('unlocked')
-      const engine = createEngine(vaultRoot, passphrase)
+      const engine = engineFor(passphrase)
       expect(await engine.verifyIntegrityToken(writtenToken(webdav))).toBe(true)
     })
 
@@ -175,7 +202,7 @@ describe('unlockVault', () => {
         { extraProps: [INTEGRITY_ID_PROP] }
       )
       // The backfilled token has to verify under the passphrase we just used.
-      const engine = createEngine(vaultRoot, passphrase)
+      const engine = engineFor(passphrase)
       expect(await engine.verifyIntegrityToken(writtenToken(webdav))).toBe(true)
     })
 
@@ -194,7 +221,7 @@ describe('unlockVault', () => {
       // catches it - without that, we would write a token for the wrong passphrase
       // and lock the real one out permanently.
       const { target, webdav } = await createTarget({ children: [{ name: encryptedChildName }] })
-      const engine = createEngine(vaultRoot, 'definitely-wrong')
+      const engine = engineFor('definitely-wrong')
       expect(await engine.verifySegment(encryptedChildName)).toBe(true)
 
       const result = await unlockVault(target, 'definitely-wrong')
@@ -285,6 +312,7 @@ describe('unlockVault', () => {
     it('still unlocks when the backfill is rejected', async () => {
       // A viewer on a shared vault or a public-link visitor cannot write
       // properties. The passphrase is verified by then, so keep them in.
+      vi.spyOn(console, 'warn').mockImplementation(() => undefined)
       const { target, webdav } = await createTarget({ children: [{ name: encryptedChildName }] })
       webdav.setProperties.mockRejectedValue(new Error('403'))
 
@@ -301,7 +329,7 @@ describe('unlockVault', () => {
       const result = await unlockVault(target, passphrase)
 
       expect(result.status).toBe('unlocked')
-      const engine = createEngine(vaultRoot, passphrase)
+      const engine = engineFor(passphrase)
       expect(await engine.verifyIntegrityToken(writtenToken(webdav))).toBe(true)
     })
 
