@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
+import { defineComponent } from 'vue'
 import Application from '../../../src/layouts/Application.vue'
 
 const mockState = vi.hoisted(() => ({
@@ -52,13 +53,21 @@ vi.mock('../../../src/extensionPoints', () => ({
   snackbarExtensionPoint: { id: 'snackbar', extensionType: 'customComponent' }
 }))
 
+function mountApplication() {
+  return shallowMount(Application, {
+    global: {
+      components: { RouterView: defineComponent({ template: '<div />' }) }
+    }
+  })
+}
+
 describe('Application layout', () => {
   afterEach(() => {
     mockState.embedModeEnabled = false
   })
 
   it('keeps snackbars near the viewport bottom outside embed mode', () => {
-    const wrapper = shallowMount(Application)
+    const wrapper = mountApplication()
 
     expect(wrapper.find('.snackbars').classes()).toContain('bottom-[20px]')
     expect(wrapper.find('.snackbars').classes()).not.toContain('bottom-[70px]')
@@ -67,7 +76,7 @@ describe('Application layout', () => {
   it('moves snackbars above embed actions in embed mode', () => {
     mockState.embedModeEnabled = true
 
-    const wrapper = shallowMount(Application)
+    const wrapper = mountApplication()
 
     expect(wrapper.find('.snackbars').classes()).toContain('bottom-[70px]')
     expect(wrapper.find('.snackbars').classes()).not.toContain('bottom-[20px]')
