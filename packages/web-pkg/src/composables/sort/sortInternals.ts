@@ -538,24 +538,13 @@ const compareStringChunksPrecomputed = (
   const isPureNumberA = chunksA.length === 1 && /^\d+$/.test(chunksA[0])
   const isPureNumberB = chunksB.length === 1 && /^\d+$/.test(chunksB[0])
 
-  // If one is pure number and one is mixed (both starting with same numeric value)
-  // Rule: shorter pure < mixed < longer pure
-  // e.g., "0" < "0a" < "00" < "000"
+  // If one is pure number and one is mixed: pure numbers always come first
+  // e.g., "0" < "00" < "000" < "0a"
   if (isPureNumberA && !isPureNumberB) {
-    // leadingZeroLengthDiff > 0 means A has more leading zeros than B's first chunk
-    // So A is "longer pure", B is mixed → mixed comes first
-    if (leadingZeroLengthDiff > 0) {
-      return 1 // B (mixed) comes before A (longer pure)
-    }
-    // leadingZeroLengthDiff < 0 means A has fewer leading zeros
-    // So A is "shorter pure", B is mixed → pure comes first
-    return -1 // A (shorter pure) comes before B (mixed)
+    return -1 // A (pure) comes before B (mixed)
   }
   if (!isPureNumberA && isPureNumberB) {
-    if (leadingZeroLengthDiff < 0) {
-      return -1 // A (mixed) comes before B (longer pure)
-    }
-    return 1 // B (shorter pure) comes before A (mixed)
+    return 1 // B (pure) comes before A (mixed)
   }
 
   // If both are pure numbers, leading zeros decide
@@ -563,7 +552,7 @@ const compareStringChunksPrecomputed = (
     return leadingZeroLengthDiff
   }
 
-  // Shorter strings (fewer chunks) come first: "0" < "0a" < "000"
+  // Shorter strings (fewer chunks) come first
   if (chunksA.length !== chunksB.length) {
     return chunksA.length - chunksB.length
   }
