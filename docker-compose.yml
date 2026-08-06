@@ -83,6 +83,8 @@ x-opencloud-server: &opencloud-service
     OCM_OCM_SHARE_PROVIDER_INSECURE: 'true'
     OCM_OCM_STORAGE_PROVIDER_INSECURE: 'true'
 
+    # Yjs collaboration
+    WEB_OPTION_YJS_SERVER_URL: 'wss://host.docker.internal:9200/realtime'
   extra_hosts:
     - host.docker.internal:${DOCKER_HOST:-host-gateway}
     - oc.opencloud.test:${DOCKER_HOST:-host-gateway}

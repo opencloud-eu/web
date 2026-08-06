@@ -1,5 +1,5 @@
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
-import { ContentTypeStrategy } from './types'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import type { Extension, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
@@ -29,7 +29,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     return content
   }
 
-  const extensions = (): Extension[] => {
+  const extensions = (options?: ExtensionsOptions): Extension[] => {
     const markdownImage = Image.extend({
       renderMarkdown: (node: JSONContent) => {
         const src = (node.attrs?.src as string | undefined) ?? ''
@@ -64,12 +64,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     })
 
     return [
-      // `undoRedo: false` — when the host wires a Y.Doc through this
-      // editor instance (collab mode), the `Collaboration` extension brings
-      // yUndoPlugin from @tiptap/y-tiptap which is the collab-aware undo
-      // manager. Tiptap warns + double-stacks history if both run together.
-      // Read-only callers don't exercise undo so the flag is harmless there.
-      StarterKit.configure({ link: false, undoRedo: false }),
+      StarterKit.configure({ link: false, undoRedo: options?.collaborative ? false : undefined }),
       Markdown,
       createLinkExtension(),
       Table.configure({ resizable: false }),

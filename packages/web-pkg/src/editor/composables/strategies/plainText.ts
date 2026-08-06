@@ -3,7 +3,7 @@ import { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
-import { ContentTypeStrategy } from './types'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { TextEditorState } from '../../types'
 import { useGettext } from 'vue3-gettext'
 
@@ -35,9 +35,10 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
     }
   }
 
-  const extensions = (): Extension[] => {
+  const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
       StarterKit.configure({
+        undoRedo: options?.collaborative ? false : undefined,
         blockquote: false,
         bold: false,
         bulletList: false,

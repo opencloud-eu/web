@@ -1,4 +1,4 @@
-import { ContentTypeStrategy } from './types'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { useGettext } from 'vue3-gettext'
 import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
@@ -39,9 +39,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     return content
   }
 
-  const extensions = (): Extension[] => {
+  const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
-      StarterKit.configure({ link: false, undoRedo: false }),
+      StarterKit.configure({ link: false, undoRedo: options?.collaborative ? false : undefined }),
       createLinkExtension(),
       Image.configure({
         inline: false,

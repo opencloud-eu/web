@@ -1,6 +1,6 @@
 import { defineComponent, h } from 'vue'
 import AppWrapper from './AppWrapper.vue'
-import { AppWrapperSlotArgs } from './types'
+import { AppWrapperSlotArgs, CollaborativeOptions } from './types'
 import { FileContentOptions, UrlForResourceOptions } from '../../composables'
 import { Resource } from '@opencloud-eu/web-client'
 
@@ -12,6 +12,7 @@ export function AppWrapperRoute(
     fileContentOptions?: FileContentOptions
     importResourceWithExtension?: (resource: Resource) => string
     disableAutoSave?: boolean
+    collaborative?: CollaborativeOptions
   }
 ) {
   return defineComponent({
