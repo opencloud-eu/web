@@ -57,7 +57,14 @@ describe('useSort', () => {
       { id: '13', name: 'New file (2).txt', path: '', webDavPath: '', mdate: '13' },
       { id: '14', name: 'New file (10).txt', path: '', webDavPath: '', mdate: '14' },
       { id: '15', name: 'New folder', path: '', webDavPath: '', mdate: '15', type: 'folder' },
-      { id: '16', name: 'New folder (1)', path: '', webDavPath: '', mdate: '16', type: 'folder' }
+      { id: '16', name: 'New folder (1)', path: '', webDavPath: '', mdate: '16', type: 'folder' },
+      { id: '17', name: 'a.a.txt', path: '', webDavPath: '', mdate: '17' },
+      { id: '18', name: 'a.b.txt', path: '', webDavPath: '', mdate: '18' },
+      { id: '19', name: 'a.b.c.txt', path: '', webDavPath: '', mdate: '19' },
+      { id: '20', name: 'apfel.txt', path: '', webDavPath: '', mdate: '20' },
+      { id: '21', name: 'Apfel.txt', path: '', webDavPath: '', mdate: '21' },
+      { id: '22', name: 'äpfel.txt', path: '', webDavPath: '', mdate: '22' },
+      { id: '23', name: 'Äpfel.txt', path: '', webDavPath: '', mdate: '23' }
     ]
 
     it('sorts resources by name', () => {
@@ -92,6 +99,13 @@ describe('useSort', () => {
           'New folder (1)',
           'a.png',
           'A.png',
+          'a.a.txt',
+          'a.b.txt',
+          'a.b.c.txt',
+          'apfel.txt',
+          'Apfel.txt',
+          'äpfel.txt',
+          'Äpfel.txt',
           'b.png',
           'c.png',
           'New file.txt',
@@ -108,6 +122,13 @@ describe('useSort', () => {
           'New file.txt',
           'c.png',
           'b.png',
+          'äpfel.txt',
+          'Äpfel.txt',
+          'apfel.txt',
+          'Apfel.txt',
+          'a.b.c.txt',
+          'a.b.txt',
+          'a.a.txt',
           'a.png',
           'A.png',
           'New folder (1)',
