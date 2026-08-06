@@ -1,10 +1,10 @@
 import type { ShallowRef, Ref, ComputedRef } from 'vue'
 import type { Range } from '@tiptap/core'
 import type { Resource } from '@opencloud-eu/web-client'
-import { Editor } from '@tiptap/vue-3'
+import type { Editor } from '@tiptap/vue-3'
 import type * as Y from 'yjs'
 import type { Awareness } from 'y-protocols/awareness'
-import { EditorActionGroup } from './composables'
+import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 
@@ -33,8 +33,8 @@ export interface TextEditorOptions {
    */
   ydoc?: Y.Doc
   /**
-   * Y.XmlFragment field name inside the Y.Doc. Matches the
-   * `CollaborativeWrapper` adapter convention. Defaults to `'default'`.
+   * Y.XmlFragment field name inside the Y.Doc. Must match the field the
+   * collaborative adapter binds to. Defaults to `'default'`.
    */
   ydocFragment?: string
   /**

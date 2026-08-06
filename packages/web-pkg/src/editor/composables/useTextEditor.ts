@@ -87,13 +87,11 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-  const extensions = strategy.extensions()
+  const extensions = strategy.extensions({ collaborative: Boolean(options.ydoc) })
   if (options.ydoc) {
     // Bind ProseMirror state to the shared Y.Doc. With Collaboration active,
     // the editor's initial content is read from the Y.Doc (not from the
-    // `content` option), so we skip the `content` assignment below. The
-    // strategies already disable `StarterKit.undoRedo` so yUndoPlugin can
-    // take over without conflict.
+    // `content` option), so we skip the `content` assignment below.
     extensions.push(
       Collaboration.configure({
         document: options.ydoc,
@@ -259,12 +257,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   onMounted(() => {
     editor.value?.on('selectionUpdate', triggerEditorUpdate)
     editor.value?.on('transaction', triggerEditorUpdate)
-    // Auto-focus on mount used to live here — moved to the consumer.
-    // The composable's job is to build an Editor; deciding when (or
-    // whether) to put the cursor in it is UX policy and belongs with the
-    // caller. All current consumers either rely on the user clicking in
-    // (text-editor) or render read-only previews (app-store description,
-    // files list/space headers) and never wanted auto-focus anyway.
+    if (!unref(readonly)) {
+      focus()
+    }
   })
 
   onBeforeUnmount(() => {

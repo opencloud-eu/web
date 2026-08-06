@@ -115,7 +115,7 @@ const server = new Server({
   // wrapper. The persisted SQLite snapshot would get discarded on stale-
   // state recovery anyway (etag drift triggers rehydrate); keeping it
   // here is "mostly ceremony" per the migration plan. Stale detection
-  // moved to the client (see CollaborativeWrapper.onProviderSynced).
+  // moved to the client (see useCollaborativeDocument.onProviderSynced).
 
   async onAuthenticate({ token, documentName, requestParameters }) {
     if (!token) {
@@ -194,7 +194,7 @@ const server = new Server({
   // the doc is always freshly created at load time, `_oc_meta` is empty,
   // and the wrapper's etag mirror runs strictly AFTER this hook — so the
   // comparison can never fire. The equivalent check now lives in
-  // CollaborativeWrapper.onProviderSynced (runs on the client, sees the
+  // useCollaborativeDocument (runs on the client, sees the
   // CRDT-synced `_oc_meta.etag` from whichever peer joined first).
   //
   // Kept commented out as a reference: if persistence is reintroduced

@@ -1,7 +1,7 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
-    <loading-screen v-if="loading" />
+    <loading-screen v-if="isLoading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
     <div v-else class="flex size-full">
       <slot
@@ -68,8 +68,10 @@ import {
   useKeyboardActions,
   useExtensionRegistry,
   ActionExtension,
-  CustomComponentExtension
+  CustomComponentExtension,
+  useCollaborativeDocument
 } from '../../composables'
+import { CollaborativeOptions } from './types'
 import {
   Resource,
   SpaceResource,
@@ -100,7 +102,8 @@ const {
   fileContentOptions = null,
   wrappedComponent = null,
   importResourceWithExtension = () => null,
-  disableAutoSave = false
+  disableAutoSave = false,
+  collaborative = null
 } = defineProps<{
   applicationId: string
   urlForResourceOptions?: UrlForResourceOptions
@@ -108,6 +111,12 @@ const {
   wrappedComponent?: ReturnType<typeof defineComponent>
   importResourceWithExtension?: (resource: Resource) => string
   disableAutoSave?: boolean
+  /**
+   * Opt the app into realtime collaboration. When set, the wrapper owns the
+   * Y.Doc session and hands `ydoc` / `awareness` to the wrapped component via
+   * the slot.
+   */
+  collaborative?: CollaborativeOptions
 }>()
 
 const { $gettext, current: currentLanguage } = useGettext()
@@ -167,7 +176,7 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
       content: markRaw(AppTopBar),
       componentProps: () => ({
         resource: unref(resource),
-        isReadOnly: unref(isReadOnly),
+        isReadOnly: unref(effectiveReadOnly),
         isEditor: unref(isEditor),
         hasAutoSave: !disableAutoSave,
         mainActions: unref(fileActions),
@@ -186,7 +195,11 @@ registerExtensions(appBarExtension)
 const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const isEditor = computed(() => {
-  return Boolean(wrappedComponent.emits?.includes('update:currentContent'))
+  // A collaborative app drives its content through the Y.Doc session rather
+  // than through `update:currentContent`, so opting in makes it an editor.
+  return (
+    Boolean(collaborative) || Boolean(wrappedComponent.emits?.includes('update:currentContent'))
+  )
 })
 
 const hasProp = (name: string) => {
@@ -226,6 +239,59 @@ const {
 } = useAppDefaults({
   applicationId
 })
+
+const collaborativeDocument = collaborative
+  ? useCollaborativeDocument({
+      resource,
+      currentContent: () => (unref(currentContent) as string) ?? '',
+      // Hydration seeds the Y.Doc from `currentContent`, so the session must
+      // not start before `loadFileTask` has fetched it.
+      enabled: () => !unref(loading) && !unref(loadingError),
+      isReadOnly,
+      adapter: collaborative.makeAdapter({ resource }),
+      appVersion: collaborative.appVersion,
+      documentPrefix: collaborative.documentPrefix ?? applicationId,
+      onContentChange: (value) => {
+        currentContent.value = value
+      },
+      // A peer just saved, so the Y.Doc state at that moment is exactly what's
+      // on disk. Flipping `serverContent` here drops `isDirty` back to false
+      // without a WebDAV round-trip.
+      onServerContentChange: (value) => {
+        serverContent.value = value
+      },
+      // The peer save also published its fresh etag, so our next PUT's
+      // `If-Match` is correct and we skip the 412 → refetch → retry path.
+      onEtagChange: (value) => {
+        if (currentETag.value === value) return
+        currentETag.value = value
+      }
+    })
+  : null
+
+// Keep the loading screen up until the collaborative session has synced and
+// hydrated too, so the wrapped component always mounts against a ready Y.Doc
+// and never has to render its own placeholder.
+// A load failure short-circuits it, otherwise the error screen below would
+// never get a turn: a failed load leaves the session disabled, so it can never
+// report itself ready.
+const isLoading = computed(() => {
+  if (unref(loadingError)) return false
+  return unref(loading) || Boolean(collaborativeDocument && !unref(collaborativeDocument.isReady))
+})
+
+// A collaborative session can force read-only on top of the WebDAV
+// permissions, e.g. after locking the room on an app-version mismatch.
+const effectiveReadOnly = computed(
+  () => unref(isReadOnly) || Boolean(unref(collaborativeDocument?.isLockedForReload))
+)
+
+if (collaborativeDocument) {
+  watch(collaborativeDocument.error, (error) => {
+    if (!error) return
+    showErrorMessage({ title: $gettext('Realtime collaboration error'), desc: error.message })
+  })
+}
 
 const { applicationMeta } = useAppMeta({ applicationId, appsStore })
 
@@ -465,9 +531,9 @@ const saveFileTask = useTask(function* () {
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)
     // Keep our local `resource` ref in sync with the fresh etag so any
-    // downstream watcher on `props.resource.etag` (CollaborativeWrapper's
-    // meta-mirror, for one) actually fires. `upsertResource` only touches
-    // the store; the local ref is the one passed down via slotAttrs.
+    // watcher on the resource etag (the collaborative session's meta-mirror,
+    // for one) actually fires. `upsertResource` only touches the store; the
+    // local ref is the one the session and the slot read.
     resource.value = { ...unref(resource), etag: putFileContentsResponse.etag }
   } catch (e) {
     // 409 / 412 — `previousEntityTag` didn't match what the server has.
@@ -497,10 +563,7 @@ const saveFileTask = useTask(function* () {
         // Server has a different content (typical collab case: peer
         // saved, our Y.Doc has peer's edits + our own additions). Retry
         // the PUT with the fresh etag — that publishes our combined
-        // state. Cross-app or external writers will be overwritten
-        // here; collaborating editors of the same file in different
-        // apps remains a known footgun documented in
-        // REALTIME_COLLAB_MIGRATION.md.
+        // state. Cross-app or external writers get overwritten here.
         const retry = yield putFileContents(currentFileContext, {
           content: newContent as string,
           previousEntityTag: freshEtag
@@ -620,7 +683,7 @@ const fileActionsSave = computed<FileAction[]>(() => {
     {
       name: 'save-file',
       disabledTooltip: () => '',
-      isVisible: () => unref(isEditor) && !unref(isReadOnly),
+      isVisible: () => unref(isEditor) && !unref(effectiveReadOnly),
       isDisabled: () => !unref(isDirty),
       icon: 'save',
       id: 'app-save-action',
@@ -776,11 +839,18 @@ const slotAttrs = computed(() => ({
   resource: unref(resource),
   activeFiles: unref(activeFiles),
   isDirty: unref(isDirty),
-  isReadOnly: unref(isReadOnly),
+  isReadOnly: unref(effectiveReadOnly),
   applicationConfig: unref(applicationConfig),
   currentFileContext: unref(currentFileContext),
   currentContent: unref(currentContent),
   isFolderLoading: unref(isFolderLoading),
+
+  // The slot only renders once `isLoading` is false, which for a
+  // collaborative app includes the session being synced and hydrated — so
+  // these are non-null by the time the wrapped component sees them. Always
+  // null for non-collaborative apps.
+  ydoc: unref(collaborativeDocument?.ydoc) ?? null,
+  awareness: unref(collaborativeDocument?.awareness) ?? null,
 
   'onUpdate:resource': (value: Resource) => {
     space.value = unref(unref(currentFileContext).space)
@@ -797,20 +867,6 @@ const slotAttrs = computed(() => ({
   },
   'onUpdate:currentContent': (value: unknown) => {
     currentContent.value = value
-  },
-  // Optional companion to update:currentContent — collab-aware wrappers
-  // emit this when a peer save just landed, so we can sync `serverContent`
-  // to the freshly-on-disk state without a refetch. Non-collab editors
-  // never emit it and the binding is a no-op.
-  'onUpdate:serverContent': (value: unknown) => {
-    serverContent.value = value
-  },
-  // Companion to update:serverContent — collab wrappers also publish the
-  // peer-saved etag so our next PUT's `If-Match` is current and we skip the
-  // 412 → refetch → retry recovery path entirely.
-  'onUpdate:etag': (value: unknown) => {
-    if (typeof value !== 'string' || currentETag.value === value) return
-    currentETag.value = value
   },
 
   'onRegister:onDeleteResourceCallback': (value: () => void) => {
