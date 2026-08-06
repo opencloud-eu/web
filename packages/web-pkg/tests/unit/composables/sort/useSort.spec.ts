@@ -64,7 +64,16 @@ describe('useSort', () => {
       { id: '20', name: 'apfel.txt', path: '', webDavPath: '', mdate: '20' },
       { id: '21', name: 'Apfel.txt', path: '', webDavPath: '', mdate: '21' },
       { id: '22', name: 'äpfel.txt', path: '', webDavPath: '', mdate: '22' },
-      { id: '23', name: 'Äpfel.txt', path: '', webDavPath: '', mdate: '23' }
+      { id: '23', name: 'Äpfel.txt', path: '', webDavPath: '', mdate: '23' },
+      { id: '24', name: 'file1', path: '', webDavPath: '', mdate: '24' },
+      { id: '25', name: 'file2', path: '', webDavPath: '', mdate: '25' },
+      { id: '26', name: 'file3', path: '', webDavPath: '', mdate: '26' },
+      { id: '27', name: 'file01', path: '', webDavPath: '', mdate: '27' },
+      { id: '28', name: 'file02', path: '', webDavPath: '', mdate: '28' },
+      { id: '29', name: 'file03', path: '', webDavPath: '', mdate: '29' },
+      { id: '30', name: 'file001', path: '', webDavPath: '', mdate: '30' },
+      { id: '31', name: 'file002', path: '', webDavPath: '', mdate: '31' },
+      { id: '32', name: 'file003', path: '', webDavPath: '', mdate: '32' }
     ]
 
     it('sorts resources by name', () => {
@@ -108,6 +117,15 @@ describe('useSort', () => {
           'Äpfel.txt',
           'b.png',
           'c.png',
+          'file1',
+          'file01',
+          'file001',
+          'file2',
+          'file02',
+          'file002',
+          'file3',
+          'file03',
+          'file003',
           'New file.txt',
           'New file (1).txt',
           'New file (2).txt',
@@ -120,6 +138,15 @@ describe('useSort', () => {
           'New file (2).txt',
           'New file (1).txt',
           'New file.txt',
+          'file3',
+          'file03',
+          'file003',
+          'file2',
+          'file02',
+          'file002',
+          'file1',
+          'file01',
+          'file001',
           'c.png',
           'b.png',
           'äpfel.txt',
@@ -140,6 +167,154 @@ describe('useSort', () => {
           'Dir1',
           'dir.with.dot'
         ])
+      })
+    })
+
+    const zeroPrefixBaseNames = [
+      '0_NODE_GAMMA',
+      '0000_BLOCK_OMEGA',
+      '00_SET_IOTA',
+      '00000_ITEM_OMEGA',
+      '00000_ITEM_ALPHA',
+      '00_SET_GAMMA',
+      '0_NODE_DELTA',
+      '0000_BLOCK_BETA',
+      '00000_ITEM_DUMMY',
+      '00_SET_BETA',
+      '0_NODE_ALPHA',
+      '00_SET_ZETA',
+      '0000_BLOCK_GAMMA',
+      '00_SET_KAPPA',
+      '0000_BLOCK_ALPHA',
+      '00_SET_DELTA',
+      '00_SET_EPSILON',
+      '0_NODE_OMEGA',
+      '00_SET_OMEGA',
+      '0_NODE_BETA',
+      '00000_ITEM_GAMMA',
+      '00_SET_LAMBDA',
+      '00_SET_ALPHA',
+      '00_SET_LAMBDA2',
+      '00000_ITEM_DELTA2026',
+      '000',
+      '00',
+      '0',
+      '0a'
+    ]
+    const zeroPrefixExpectedAsc = [
+      '00000_ITEM_ALPHA',
+      '00000_ITEM_DELTA2026',
+      '00000_ITEM_DUMMY',
+      '00000_ITEM_GAMMA',
+      '00000_ITEM_OMEGA',
+      '0000_BLOCK_ALPHA',
+      '0000_BLOCK_BETA',
+      '0000_BLOCK_GAMMA',
+      '0000_BLOCK_OMEGA',
+      '000',
+      '00',
+      '00_SET_ALPHA',
+      '00_SET_BETA',
+      '00_SET_DELTA',
+      '00_SET_EPSILON',
+      '00_SET_GAMMA',
+      '00_SET_IOTA',
+      '00_SET_KAPPA',
+      '00_SET_LAMBDA',
+      '00_SET_LAMBDA2',
+      '00_SET_OMEGA',
+      '00_SET_ZETA',
+      '0',
+      '0_NODE_ALPHA',
+      '0_NODE_BETA',
+      '0_NODE_DELTA',
+      '0_NODE_GAMMA',
+      '0_NODE_OMEGA',
+      '0a'
+    ]
+    const zeroPrefixExpectedDesc = [
+      '0a',
+      '0_NODE_OMEGA',
+      '0_NODE_GAMMA',
+      '0_NODE_DELTA',
+      '0_NODE_BETA',
+      '0_NODE_ALPHA',
+      '0',
+      '00_SET_ZETA',
+      '00_SET_OMEGA',
+      '00_SET_LAMBDA2',
+      '00_SET_LAMBDA',
+      '00_SET_KAPPA',
+      '00_SET_IOTA',
+      '00_SET_GAMMA',
+      '00_SET_EPSILON',
+      '00_SET_DELTA',
+      '00_SET_BETA',
+      '00_SET_ALPHA',
+      '00',
+      '000',
+      '0000_BLOCK_OMEGA',
+      '0000_BLOCK_GAMMA',
+      '0000_BLOCK_BETA',
+      '0000_BLOCK_ALPHA',
+      '00000_ITEM_OMEGA',
+      '00000_ITEM_GAMMA',
+      '00000_ITEM_DUMMY',
+      '00000_ITEM_DELTA2026',
+      '00000_ITEM_ALPHA'
+    ]
+
+    function withExtension(names: string[], extension: string): string[] {
+      if (!extension) {
+        return names
+      }
+      return names.map((name) => `${name}${extension}`)
+    }
+
+    function buildZeroPrefixItems(names: string[], asFolders: boolean): Resource[] {
+      return names.map((name, index) => ({
+        id: `${index}`,
+        name,
+        path: '',
+        webDavPath: '',
+        mdate: `${index}`,
+        ...(asFolders ? { type: 'folder' } : {})
+      }))
+    }
+
+    ;[
+      { title: 'folders', extension: '', asFolders: true },
+      { title: 'files', extension: '.txt', asFolders: false }
+    ].forEach(({ title, extension, asFolders }) => {
+      it(`sorts ${title} with pure leading zero prefixes like Windows Explorer`, () => {
+        getComposableWrapper(() => {
+          const sortDir = ref(SortDir.Asc)
+          const names = withExtension(zeroPrefixBaseNames, extension)
+
+          const input = {
+            items: ref<Resource[]>(buildZeroPrefixItems(names, asFolders)),
+            fields: [
+              {
+                name: 'name',
+                sortable: true
+              }
+            ],
+            sortBy: ref('name'),
+            sortDir
+          }
+
+          const { items } = useSort<Resource>(input)
+
+          expect(unref(items).map((i) => i.name)).toEqual(
+            withExtension(zeroPrefixExpectedAsc, extension)
+          )
+
+          sortDir.value = SortDir.Desc
+
+          expect(unref(items).map((i) => i.name)).toEqual(
+            withExtension(zeroPrefixExpectedDesc, extension)
+          )
+        })
       })
     })
   })

@@ -158,6 +158,47 @@ export const sortHelper = <T extends SortableItem>(
   )
 }
 
+const pureLeadingZeroPrefixRegex = /^(0+)(?!\d)(.*)$/
+
+function compareNamesWithLeadingZeroPrefix(
+  aName: string,
+  bName: string,
+  collator: Intl.Collator
+): number | null {
+  const aMatch = pureLeadingZeroPrefixRegex.exec(aName)
+  const bMatch = pureLeadingZeroPrefixRegex.exec(bName)
+
+  if (!aMatch || !bMatch) {
+    return null
+  }
+
+  const aPrefixLength = aMatch[1].length
+  const bPrefixLength = bMatch[1].length
+  const aSuffix = aMatch[2]
+  const bSuffix = bMatch[2]
+  const aIsPureZero = aSuffix.length === 0
+  const bIsPureZero = bSuffix.length === 0
+
+  if (aPrefixLength !== bPrefixLength) {
+    return bPrefixLength - aPrefixLength
+  }
+
+  if (aIsPureZero && bIsPureZero) {
+    return collator.compare(aName, bName)
+  }
+
+  if (aIsPureZero !== bIsPureZero) {
+    return aIsPureZero ? -1 : 1
+  }
+
+  const restComparison = collator.compare(aSuffix, bSuffix)
+  if (restComparison !== 0) {
+    return restComparison
+  }
+
+  return collator.compare(aName, bName)
+}
+
 const compare = (
   a: SortableItem,
   b: SortableItem,
@@ -184,13 +225,13 @@ const compare = (
     }
   }
 
-  if (!isNaN(aValue) && !isNaN(bValue)) {
+  if (sortBy !== 'name' && !isNaN(aValue) && !isNaN(bValue)) {
     return (aValue - bValue) * modifier
   }
 
   // For name sorting, extract basename (without extension) for comparison
-  let aCompare = (aValue || '').toString()
-  let bCompare = (bValue || '').toString()
+  const aCompare = (aValue || '').toString()
+  const bCompare = (bValue || '').toString()
 
   if (sortBy === 'name') {
     const getBasename = (name: string) => {
@@ -207,8 +248,8 @@ const compare = (
     const aExt = getExtension(aCompare)
     const bExt = getExtension(bCompare)
 
-    // Compare basename first
-    const baseComparison = collator.compare(aBase, bBase)
+    const baseComparison =
+      compareNamesWithLeadingZeroPrefix(aBase, bBase, collator) ?? collator.compare(aBase, bBase)
     if (baseComparison !== 0) {
       return baseComparison * modifier
     }
