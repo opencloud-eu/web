@@ -60,5 +60,11 @@ export default [
       'vue/no-v-text-v-html-on-component': 'warn',
       'vue/require-typed-ref': 'error'
     }
+  },
+  {
+    files: ['**/*.spec.ts', '**/*.spec.js', '**/tests/**/*.ts', '**/tests/**/*.js'],
+    rules: {
+      'vue/one-component-per-file': 'off'
+    }
   }
 ]

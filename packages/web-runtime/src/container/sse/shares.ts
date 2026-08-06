@@ -369,7 +369,6 @@ export const onSSELinkRemovedEvent = async ({
   sseData,
   resourcesStore,
   spacesStore,
-  userStore,
   clientService,
   router
 }: SSEEventOptions) => {

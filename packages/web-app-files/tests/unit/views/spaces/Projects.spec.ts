@@ -115,7 +115,7 @@ describe('Projects view', () => {
       expect(wrapper.findAll('tbody tr').length).toEqual(3)
     })
   })
-  it('should not pass selected resource as space to sidebar when driveType is not "project"', async () => {
+  it('should not pass selected resource as space to sidebar when driveType is not "project"', () => {
     const resource = mock<SpaceResource>({ id: 'selected-resource', driveType: 'personal' })
     const { wrapper } = getMountedWrapper({
       store: { resourcesStore: { resources: [resource], selectedIds: ['selected-resource'] } }

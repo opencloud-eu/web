@@ -240,8 +240,10 @@ const breadcrumbs = computed(() => {
   }
 
   let spaceBreadcrumbItem: BreadcrumbItem
-  let { params, query } = createFileRouteOptions(unref(space), { fileId: unref(space).fileId })
-  query = omit({ ...unref(route).query, ...query }, 'page')
+  const { params, query: routeQuery } = createFileRouteOptions(unref(space), {
+    fileId: unref(space).fileId
+  })
+  const query = omit({ ...unref(route).query, ...routeQuery }, 'page')
   if (isPersonalSpaceResource(unref(space))) {
     spaceBreadcrumbItem = {
       id: uuidV4(),

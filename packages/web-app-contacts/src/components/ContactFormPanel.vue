@@ -113,7 +113,6 @@ const { createContact, isSaving } = useCreateContact()
 const currentAccount = computed(() => unref(accountsStore.currentAccount))
 const currentAddressBook = computed(() => unref(addressBooksStore.currentAddressBook))
 
-const isCreateOpen = computed(() => unref(contactEditor.isCreateOpen))
 const createFormState = computed(() => unref(contactEditor.createFormState))
 const hasCreateChanges = computed(() => unref(contactEditor.hasCreateChanges))
 

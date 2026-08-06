@@ -54,7 +54,6 @@ const { currentMail } = storeToRefs(mailsStore)
 const { loadMailboxes } = useLoadMailboxes()
 const { loadMails } = useLoadMails()
 const { loadMail } = useLoadMail()
-const { setCurrentMail } = mailsStore
 
 const { isOpen: showCompose, draftMail, closeCompose } = useMailCompose()
 

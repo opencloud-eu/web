@@ -161,7 +161,7 @@ describe('TextEditorContent', () => {
     })
   })
 
-  it('shows plus button only when slash commands extension is available', async () => {
+  it('shows plus button only when slash commands extension is available', () => {
     const { wrapper } = mountEditorContent({ hasSlashCommands: true })
     expect(wrapper.find('.drag-handle-plus-button').exists()).toBe(true)
 
@@ -170,7 +170,7 @@ describe('TextEditorContent', () => {
   })
 
   it('opens slash menu when plus button is clicked', async () => {
-    const { wrapper, textEditor, chain, run } = mountEditorContent({ hasSlashCommands: true })
+    const { wrapper, chain, run } = mountEditorContent({ hasSlashCommands: true })
 
     // Simulate the drag handle node change event that sets the current position
     const dragHandle = wrapper.findComponent({ name: 'DragHandle' })

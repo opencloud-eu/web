@@ -75,10 +75,6 @@ const spaceMocks = [
   })
 ]
 
-const selectors = {
-  ocTableStub: 'oc-table-stub'
-}
-
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn()

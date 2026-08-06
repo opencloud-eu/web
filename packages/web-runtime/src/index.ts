@@ -288,7 +288,7 @@ export const bootstrapErrorApp = async (err: Error): Promise<void> => {
   const designSystem = await loadDesignSystem()
   try {
     await announceTheme({ app, designSystem, configStore })
-  } catch (e) {}
+  } catch {}
 
   console.error(err)
   const translations = await loadTranslations()

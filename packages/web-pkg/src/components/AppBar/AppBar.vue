@@ -137,7 +137,6 @@ const {
   hasFileExtensions = true,
   hasPagination = true,
   showActionsBar = true,
-  showActionsOnSelection = false,
   batchActionsLoading = false,
   space = undefined
 } = defineProps<{
