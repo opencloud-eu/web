@@ -15,6 +15,13 @@ interface SortableItemLike {
   isFolder?: boolean
 }
 
+interface SortKey {
+  item: SortableItemLike
+  value: unknown
+  stringValue?: string
+  chunks?: string[]
+}
+
 export const sortItemsByField = <T extends SortableItemLike>(
   items: T[],
   field: SortFieldLike,
@@ -43,19 +50,66 @@ export const sortItemsByField = <T extends SortableItemLike>(
     )
   }
 
-  return [...items].sort((a, b) =>
-    compare(
-      a,
-      b,
-      field.prop || field.name,
-      sortDir,
-      field.sortable,
-      collator,
-      nonNumericCollator,
-      finalTiebreakerCollator,
-      'default'
-    )
+  // Precompute sort keys (Schwartzian transform)
+  const sortKeys: SortKey[] = items.map((item) => {
+    let value = get(item, field.prop || field.name)
+
+    if (field.sortable) {
+      if (typeof field.sortable === 'string') {
+        const joinBySortableKey = (values: Record<string, unknown>[]) => {
+          return values.map((val) => val[field.sortable as string]).join('')
+        }
+        value = joinBySortableKey(value as Record<string, unknown>[])
+      } else if (typeof field.sortable === 'function') {
+        value = field.sortable(value)
+      }
+    }
+
+    const stringValue = (value || '').toString()
+    const chunks = stringValue.match(/\d+|\D+/g) || [stringValue]
+
+    return { item, value, stringValue, chunks }
+  })
+
+  // Sort using precomputed keys
+  sortKeys.sort((a, b) =>
+    comparePrecomputedKeys(a, b, sortDir, collator, nonNumericCollator, finalTiebreakerCollator)
   )
+
+  return sortKeys.map((sk) => sk.item as T)
+}
+
+const comparePrecomputedKeys = (
+  a: SortKey,
+  b: SortKey,
+  sortDir: SortDir,
+  collator: Intl.Collator,
+  nonNumericCollator: Intl.Collator,
+  finalTiebreakerCollator: Intl.Collator
+): number => {
+  const modifier = sortDir === SortDir.Asc ? 1 : -1
+
+  if (!isNaN(a.value as number) && !isNaN(b.value as number)) {
+    const numericCompare = ((a.value as number) - (b.value as number)) * modifier
+    if (numericCompare !== 0) {
+      return numericCompare
+    }
+    if (typeof a.value === 'string' && typeof b.value === 'string') {
+      return nonNumericCollator.compare(a.value, b.value) * modifier
+    }
+    return 0
+  }
+
+  const compareResult = compareStringChunksPrecomputed(
+    a.stringValue!,
+    b.stringValue!,
+    a.chunks!,
+    b.chunks!,
+    collator,
+    nonNumericCollator,
+    finalTiebreakerCollator
+  )
+  return compareResult * modifier
 }
 
 const sortItemsByName = <T extends SortableItemLike>(
@@ -279,18 +333,17 @@ const splitNameAndExtension = (value: string) => {
   }
 }
 
-// New unified comparison function that walks chunks once
-const compareStringChunks = (
+// Comparison using precomputed chunks (for performance)
+const compareStringChunksPrecomputed = (
   a: string,
   b: string,
+  chunksA: string[],
+  chunksB: string[],
   collator: Intl.Collator,
   nonNumericCollator: Intl.Collator,
   finalTiebreakerCollator: Intl.Collator
 ): number => {
-  const chunksA = a.match(/\d+|\D+/g) || [a]
-  const chunksB = b.match(/\d+|\D+/g) || [b]
   const maxLength = Math.max(chunksA.length, chunksB.length)
-
   let leadingZeroLengthDiff = 0
 
   for (let i = 0; i < maxLength; i++) {
@@ -306,12 +359,10 @@ const compareStringChunks = (
       if (numA !== numB) {
         return numA - numB
       }
-      // Remember leading-zero difference but don't return yet
       if (leadingZeroLengthDiff === 0 && chunkA.length !== chunkB.length) {
         leadingZeroLengthDiff = chunkA.length - chunkB.length
       }
     } else {
-      // Text chunks: use collator
       const coll = collator.compare(chunkA, chunkB)
       if (coll !== 0) {
         return coll
@@ -319,17 +370,35 @@ const compareStringChunks = (
     }
   }
 
-  // If all chunks match by value/collator, apply leading-zero tiebreak
   if (leadingZeroLengthDiff !== 0) {
     return leadingZeroLengthDiff
   }
 
-  // Non-numeric collator tiebreak
   const nonNumCmp = nonNumericCollator.compare(a, b)
   if (nonNumCmp !== 0) {
     return nonNumCmp
   }
 
-  // Final tiebreaker: case-sensitive comparison
   return finalTiebreakerCollator.compare(a, b)
+}
+
+// Comparison function that computes chunks on-the-fly (for name sorting)
+const compareStringChunks = (
+  a: string,
+  b: string,
+  collator: Intl.Collator,
+  nonNumericCollator: Intl.Collator,
+  finalTiebreakerCollator: Intl.Collator
+): number => {
+  const chunksA = a.match(/\d+|\D+/g) || [a]
+  const chunksB = b.match(/\d+|\D+/g) || [b]
+  return compareStringChunksPrecomputed(
+    a,
+    b,
+    chunksA,
+    chunksB,
+    collator,
+    nonNumericCollator,
+    finalTiebreakerCollator
+  )
 }
