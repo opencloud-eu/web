@@ -51,7 +51,20 @@ describe('useSort', () => {
         webDavPath: '',
         mdate: '10',
         type: 'folder'
-      }
+      },
+      { id: '11', name: 'New file.txt', path: '', webDavPath: '', mdate: '11' },
+      { id: '12', name: 'New file (1).txt', path: '', webDavPath: '', mdate: '12' },
+      { id: '13', name: 'New file (2).txt', path: '', webDavPath: '', mdate: '13' },
+      { id: '14', name: 'New file (10).txt', path: '', webDavPath: '', mdate: '14' },
+      { id: '15', name: 'New folder', path: '', webDavPath: '', mdate: '15', type: 'folder' },
+      { id: '16', name: 'New folder (1)', path: '', webDavPath: '', mdate: '16', type: 'folder' },
+      { id: '17', name: 'a.a.txt', path: '', webDavPath: '', mdate: '17' },
+      { id: '18', name: 'a.b.txt', path: '', webDavPath: '', mdate: '18' },
+      { id: '19', name: 'a.b.c.txt', path: '', webDavPath: '', mdate: '19' },
+      { id: '20', name: 'apfel.txt', path: '', webDavPath: '', mdate: '20' },
+      { id: '21', name: 'Apfel.txt', path: '', webDavPath: '', mdate: '21' },
+      { id: '22', name: 'äpfel.txt', path: '', webDavPath: '', mdate: '22' },
+      { id: '23', name: 'Äpfel.txt', path: '', webDavPath: '', mdate: '23' }
     ]
 
     it('sorts resources by name', () => {
@@ -82,18 +95,44 @@ describe('useSort', () => {
           'dir3',
           'Dir4',
           'dir11',
+          'New folder',
+          'New folder (1)',
           'a.png',
           'A.png',
+          'a.a.txt',
+          'a.b.txt',
+          'a.b.c.txt',
+          'apfel.txt',
+          'Apfel.txt',
+          'äpfel.txt',
+          'Äpfel.txt',
           'b.png',
-          'c.png'
+          'c.png',
+          'New file.txt',
+          'New file (1).txt',
+          'New file (2).txt',
+          'New file (10).txt'
         ])
 
         sortDir.value = SortDir.Desc
         expect(unref(items).map((i) => i.name)).toMatchObject([
+          'New file (10).txt',
+          'New file (2).txt',
+          'New file (1).txt',
+          'New file.txt',
           'c.png',
           'b.png',
+          'äpfel.txt',
+          'Äpfel.txt',
+          'apfel.txt',
+          'Apfel.txt',
+          'a.b.c.txt',
+          'a.b.txt',
+          'a.a.txt',
           'a.png',
           'A.png',
+          'New folder (1)',
+          'New folder',
           'dir11',
           'Dir4',
           'dir3',
