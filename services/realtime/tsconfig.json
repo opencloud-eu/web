@@ -1,0 +1,15 @@
+{
+  "extends": "@opencloud-eu/tsconfig",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    // Node runs the sources directly via type stripping, so only syntax that
+    // can be erased without emitting code is allowed
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "lib": ["ESNext"],
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"]
+}
