@@ -51,7 +51,13 @@ describe('useSort', () => {
         webDavPath: '',
         mdate: '10',
         type: 'folder'
-      }
+      },
+      { id: '11', name: 'New file.txt', path: '', webDavPath: '', mdate: '11' },
+      { id: '12', name: 'New file (1).txt', path: '', webDavPath: '', mdate: '12' },
+      { id: '13', name: 'New file (2).txt', path: '', webDavPath: '', mdate: '13' },
+      { id: '14', name: 'New file (10).txt', path: '', webDavPath: '', mdate: '14' },
+      { id: '15', name: 'New folder', path: '', webDavPath: '', mdate: '15', type: 'folder' },
+      { id: '16', name: 'New folder (1)', path: '', webDavPath: '', mdate: '16', type: 'folder' }
     ]
 
     it('sorts resources by name', () => {
@@ -82,18 +88,30 @@ describe('useSort', () => {
           'dir3',
           'Dir4',
           'dir11',
+          'New folder',
+          'New folder (1)',
           'a.png',
           'A.png',
           'b.png',
-          'c.png'
+          'c.png',
+          'New file.txt',
+          'New file (1).txt',
+          'New file (2).txt',
+          'New file (10).txt'
         ])
 
         sortDir.value = SortDir.Desc
         expect(unref(items).map((i) => i.name)).toMatchObject([
+          'New file (10).txt',
+          'New file (2).txt',
+          'New file (1).txt',
+          'New file.txt',
           'c.png',
           'b.png',
           'a.png',
           'A.png',
+          'New folder (1)',
+          'New folder',
           'dir11',
           'Dir4',
           'dir3',
@@ -103,5 +121,6 @@ describe('useSort', () => {
         ])
       })
     })
+
   })
 })
