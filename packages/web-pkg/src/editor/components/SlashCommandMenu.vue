@@ -191,7 +191,7 @@ defineExpose({ onUpdate, onKeyDown })
 
 .text-editor-slash-menu__item {
   @apply w-full flex items-start justify-start gap-2 px-2 py-1.5 text-left rounded-md;
-  @apply bg-transparent border-0 cursor-pointer;
+  @apply border-0 cursor-pointer;
 }
 
 .text-editor-slash-menu__item-icon {
