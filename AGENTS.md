@@ -19,6 +19,8 @@ OpenCloud Web is a TypeScript/Vue 3 single-page application that serves as the b
 │   ├── tsconfig/      # Shared TypeScript configuration
 │   ├── extension-sdk/ # Utilities for custom extensions
 │   └── web-app-*/     # Standalone apps/extensions (files, search, preview, …)
+├── services/          # Server-side sidecars shipped as their own docker images
+│   └── realtime/      # Hocuspocus/Yjs server for realtime collaboration
 ├── tests/
 │   └── e2e/           # End-to-end tests (Playwright + Playwright BDD)
 ├── dev/               # Docker/infrastructure config for local development

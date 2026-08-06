@@ -1,11 +1,36 @@
 import { Server } from '@hocuspocus/server'
 
 const port = parseInt(process.env.PORT ?? '1234', 10)
-const opencloudUrl = (process.env.OPENCLOUD_URL ?? 'https://host.docker.internal:9200').replace(
-  /\/$/,
-  ''
-)
+const opencloudUrl = (process.env.OPENCLOUD_URL ?? '').replace(/\/$/, '')
+
+if (!opencloudUrl) {
+  console.error('OPENCLOUD_URL is required, e.g. https://cloud.example.com')
+  process.exit(1)
+}
+
+// Dev-only escape hatch for the integration test harness. Refused outright in
+// production so a stray env var can never turn into an auth bypass.
 const devFakeToken = process.env.DEV_FAKE_TOKEN ?? ''
+
+if (devFakeToken) {
+  if (process.env.NODE_ENV === 'production') {
+    console.error('DEV_FAKE_TOKEN must not be set in production')
+    process.exit(1)
+  }
+  console.warn('DEV_FAKE_TOKEN is set, authentication can be bypassed. Never do this in production')
+}
+
+/** The subset of the Graph `/me` response this service relies on. */
+type GraphUser = {
+  id?: string
+  displayName?: string
+  userPrincipalName?: string
+}
+
+type FileAccess = {
+  canWrite: boolean
+  etag: string
+}
 
 // Per-document first-seen app version. Acts as the authoritative gate for
 // "everybody in this room must run the same client version". First connect
@@ -13,15 +38,15 @@ const devFakeToken = process.env.DEV_FAKE_TOKEN ?? ''
 // appVersion are rejected at authenticate-time. In-memory only; on restart
 // the next connecter becomes the new baseline (acceptable for a stateless
 // sidecar). Empty appVersion is tolerated for legacy/test clients.
-const appVersionByDocument = new Map()
+const appVersionByDocument = new Map<string, string>()
 
-function deterministicColor(seed) {
+function deterministicColor(seed: string): string {
   let hash = 0
   for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
   return `hsl(${Math.abs(hash) % 360}, 70%, 50%)`
 }
 
-async function validateTokenAgainstOpenCloud(token) {
+async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> {
   const res = await fetch(`${opencloudUrl}/graph/v1.0/me`, {
     headers: { Authorization: `Bearer ${token}` }
   })
@@ -29,7 +54,7 @@ async function validateTokenAgainstOpenCloud(token) {
     const detail = await res.text().catch(() => '')
     throw new Error(`graph /me returned ${res.status}: ${detail.slice(0, 200)}`)
   }
-  return res.json()
+  return res.json() as Promise<GraphUser>
 }
 
 // Heuristic: a libregraph permission action implies write access when its
@@ -40,12 +65,12 @@ const WRITE_ACTION = /\/(update|create|delete|allTasks)$/
 // the (driveId, itemId) pair the Graph endpoint expects: driveID =
 // `<storageid>$<spaceid>`, itemID = the FULL composite.
 //
-// The wrapper now namespaces room names by app id to avoid schema
-// collisions between different editors opening the same file
-// (e.g. `text-editor::<composite>` vs `codemirror::<composite>`). Strip
-// any `<scope>::` prefix before parsing so the Graph probe targets the
-// raw file id.
-function parseDocumentId(documentName) {
+// The wrapper namespaces room names by app id to avoid schema collisions
+// between different editors opening the same file (e.g.
+// `text-editor::<composite>` vs `codemirror::<composite>`). Strip any
+// `<scope>::` prefix before parsing so the Graph probe targets the raw
+// file id.
+function parseDocumentId(documentName: string): { driveId: string; itemId: string } {
   const scopeSep = documentName.indexOf('::')
   const fileId = scopeSep >= 0 ? documentName.slice(scopeSep + 2) : documentName
   const sep = fileId.indexOf('!')
@@ -65,7 +90,7 @@ function parseDocumentId(documentName) {
 //   PermissionSet that backs WebDAV's oc:permissions).
 // - WebDAV HEAD for the native eTag (Graph's /items endpoint is share-jail-
 //   only and 400s on personal drives; WebDAV works uniformly).
-async function probeFileAccess(token, documentName) {
+async function probeFileAccess(token: string, documentName: string): Promise<FileAccess | null> {
   const { driveId, itemId } = parseDocumentId(documentName)
   const permsUrl =
     `${opencloudUrl}/graph/v1beta1/drives/${encodeURIComponent(driveId)}` +
@@ -90,10 +115,9 @@ async function probeFileAccess(token, documentName) {
     throw new Error(`webdav HEAD returned ${headRes.status}: ${detail.slice(0, 200)}`)
   }
 
-  const permsBody = await permsRes.json()
-  const allowed = Array.isArray(permsBody?.['@libre.graph.permissions.actions.allowedValues'])
-    ? permsBody['@libre.graph.permissions.actions.allowedValues']
-    : []
+  const permsBody = (await permsRes.json()) as Record<string, unknown>
+  const actions = permsBody['@libre.graph.permissions.actions.allowedValues']
+  const allowed = Array.isArray(actions) ? (actions as string[]) : []
   const canWrite = allowed.some((a) => WRITE_ACTION.test(a))
 
   // WebDAV emits the strong validator under `ETag` (and sometimes `OC-ETag`
@@ -104,8 +128,6 @@ async function probeFileAccess(token, documentName) {
 
   return { canWrite, etag }
 }
-
-const META_KEY = '_oc_meta'
 
 const server = new Server({
   port,
@@ -185,50 +207,9 @@ const server = new Server({
     }
   },
 
-  // Stale-state detection — DISABLED.
-  //
-  // This hook fires once when a doc is loaded into memory. It used to do
-  // useful work when we shipped the SQLite extension: at cold load it
-  // compared the persisted `_oc_meta.etag` against the live native etag
-  // and flagged drift so the wrapper would rehydrate. Without persistence
-  // the doc is always freshly created at load time, `_oc_meta` is empty,
-  // and the wrapper's etag mirror runs strictly AFTER this hook — so the
-  // comparison can never fire. The equivalent check now lives in
-  // useCollaborativeDocument (runs on the client, sees the
-  // CRDT-synced `_oc_meta.etag` from whichever peer joined first).
-  //
-  // Kept commented out as a reference: if persistence is reintroduced
-  // (extension-sqlite, redis, etc.), uncomment to get the server-side
-  // cold-load probe back.
-  //
-  // async onLoadDocument({ document, context }) {
-  //   const meta = document.getMap(META_KEY)
-  //   const persistedEtag = meta.get('etag')
-  //   const nativeEtag = context?.nativeEtag
-  //   const persistedAppVersion = meta.get('appVersion')
-  //   const clientAppVersion = context?.clientAppVersion
-  //
-  //   const etagDrift = !!persistedEtag && !!nativeEtag && persistedEtag !== nativeEtag
-  //   const versionDrift =
-  //     !!persistedAppVersion && !!clientAppVersion && persistedAppVersion !== clientAppVersion
-  //
-  //   if (!etagDrift && !versionDrift) return
-  //
-  //   const reasons = []
-  //   if (etagDrift) reasons.push(`etag(${persistedEtag}→${nativeEtag})`)
-  //   if (versionDrift) reasons.push(`appVersion(${persistedAppVersion}→${clientAppVersion})`)
-  //   console.log(
-  //     `[onLoadDocument] stale state document="${document.name}" ` +
-  //       `${reasons.join(' ')} → marked for rehydrate`
-  //   )
-  //   document.transact(() => {
-  //     meta.set('isStale', true)
-  //     if (nativeEtag) meta.set('nativeEtag', nativeEtag)
-  //   })
-  // },
-
   async onConnect({ documentName, requestHeaders }) {
-    console.log(`[onConnect] document="${documentName}" origin=${requestHeaders.origin ?? '-'}`)
+    const origin = requestHeaders.get('origin') ?? '-'
+    console.log(`[onConnect] document="${documentName}" origin=${origin}`)
   },
 
   async onDisconnect({ documentName, clientsCount }) {
@@ -244,7 +225,7 @@ const server = new Server({
   // applied, overwrite the `user` field on every state in the update with
   // the authenticated identity from the connection's context.
   //
-  // Hocuspocus v4 invokes extension hooks with a single payload object — the
+  // Hocuspocus v4 invokes extension hooks with a single payload object. The
   // positional `(document, states, origin)` signature applies only to the
   // document-level callback the lib wires up internally (see
   // hocuspocus-server.cjs ~line 1299). Using positional args here would
@@ -264,5 +245,5 @@ const server = new Server({
 })
 
 server.listen().then(() => {
-  console.log(`hocuspocus v4 listening on :${port}, oc=${opencloudUrl}`)
+  console.log(`realtime server listening on :${port}, oc=${opencloudUrl}`)
 })

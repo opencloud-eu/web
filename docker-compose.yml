@@ -427,27 +427,30 @@ services:
     depends_on:
       - stalwart
 
-  hocuspocus:
-    build: ./dev/docker/hocuspocus
+  realtime:
+    build:
+      # Repository root, the pnpm lockfile is needed for the install
+      context: .
+      dockerfile: services/realtime/Dockerfile
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     environment:
       PORT: '1234'
       OPENCLOUD_URL: https://host.docker.internal:9200
-      # Dev only: self-signed cert from OC's Traefik
+      # Dev only: accept the self-signed cert from OC's Traefik
       NODE_TLS_REJECT_UNAUTHORIZED: '0'
-      # Dev only: allows the integration tests to bypass real OIDC tokens.
-      # Remove for prod.
+      # Dev only: allows the integration tests to bypass real OIDC tokens
+      NODE_ENV: development
       DEV_FAKE_TOKEN: dev-integration-token
     volumes:
-      # Dev override: edit server.js without rebuild; remove for prod
-      - ./dev/docker/hocuspocus/server.js:/app/server.js:ro
+      # Dev only: edit the server without rebuilding the image
+      - ./services/realtime/src:/app/src:ro
     networks:
-      # On the traefik network so OC (which is also on it) can reach
-      # hocuspocus by service name. Browser-facing routing is no longer
-      # done at the Traefik layer — OC's reverse proxy forwards /realtime
-      # via `additional_policies` in opencloud/proxy.yaml. This keeps the
-      # routing model identical to what CI uses (CI has no Traefik).
+      # On the traefik network so OC (which is also on it) can reach the
+      # service by name. Browser-facing routing is not done at the Traefik
+      # layer - OC's reverse proxy forwards /realtime via
+      # `additional_policies` in opencloud/proxy.yaml. This keeps the routing
+      # model identical to what CI uses (CI has no Traefik).
       - traefik
     restart: unless-stopped
 
@@ -457,7 +460,6 @@ volumes:
   opencloud-federated-config:
   stalwart-data:
   collabora-proof-key:
-  hocuspocus-data:
 
 networks:
   traefik:
