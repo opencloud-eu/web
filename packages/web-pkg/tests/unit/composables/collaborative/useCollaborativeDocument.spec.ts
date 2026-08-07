@@ -455,6 +455,149 @@ describe('useCollaborativeDocument — content reporting', () => {
   })
 })
 
+describe('useCollaborativeDocument — stale-state recovery', () => {
+  const yjsServerUrl = 'wss://example.test/realtime'
+  const META_KEY = '_oc_meta'
+
+  /**
+   * Brings a session up in collab mode against a room whose `_oc_meta.etag`
+   * predates the file on disk, which is what makes the joining client detect
+   * drift and claim the recovery.
+   */
+  async function syncIntoStaleRoom({
+    currentContent = 'fresh body',
+    roomEtag = 'etag-old',
+    ourEtag = 'etag-new',
+    adapter = testAdapter as CollaborativeAdapter,
+    roomContent = 'stale room content'
+  } = {}) {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent,
+      adapter,
+      resource: makeResource({ etag: ourEtag })
+    })
+    await flushPromises()
+
+    // What the room already holds when we arrive.
+    const doc = s.ydoc!
+    doc.getText(SHARED_TEXT_KEY).insert(0, roomContent)
+    doc.getMap(META_KEY).set('etag', roomEtag)
+
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    return s
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+  })
+
+  it('flags the room stale and claims the recovery when the etag drifted', async () => {
+    const s = await syncIntoStaleRoom()
+    const meta = s.ydoc!.getMap(META_KEY)
+
+    expect(meta.get('isStale')).toBe(true)
+    expect(meta.get('nativeEtag')).toBe('etag-new')
+    expect(meta.get('recoveryClientId')).toBe(s.ydoc!.clientID)
+  })
+
+  // Regression: recovery used to re-seed from whatever the elected peer held
+  // at that moment. By then the room has synced its own state in and the
+  // debounced serialize has reported it back into `currentContent`, so the
+  // recovery published the *stale* body and stamped the fresh etag on it. The
+  // next save then overwrote the external writer with a matching If-Match.
+  it('re-seeds from the body captured at detection, not from later currentContent', async () => {
+    const s = await syncIntoStaleRoom({ currentContent: 'fresh body' })
+
+    // Stands in for the debounced serialize reporting the room's own content
+    // back to the caller while recovery is still settling.
+    s.contentRef.value = 'stale room content'
+
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(meta.get('isStale')).toBeUndefined()
+    expect(meta.get('nativeEtag')).toBeUndefined()
+    expect(meta.get('recoveryClientId')).toBeUndefined()
+    expect(meta.get('etag')).toBe('etag-new')
+  })
+
+  // Regression: the election was "lowest awareness clientId wins" over every
+  // peer in the room, so a client that never saw the drift - and therefore
+  // holds no fresh body - could win and publish its own older copy.
+  it('does not re-seed on a peer that did not detect the drift', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'my own older copy',
+      resource: makeResource({ etag: 'etag-old' })
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('my own older copy')
+
+    // A peer elsewhere in the room notices the drift and flags it.
+    const meta = s.ydoc!.getMap(META_KEY)
+    s.ydoc!.transact(() => {
+      meta.set('nativeEtag', 'etag-new')
+      meta.set('recoveryClientId', s.ydoc!.clientID + 1)
+      meta.set('isStale', true)
+    })
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    // Untouched: re-seeding here would publish content that predates the
+    // external write and then stamp the fresh etag onto it.
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('my own older copy')
+    expect(meta.get('isStale')).toBe(true)
+  })
+
+  it('does not re-seed on a read-only client', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'viewer copy',
+      isReadOnly: true,
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+    const doc = s.ydoc!
+    doc.getText(SHARED_TEXT_KEY).insert(0, 'stale room content')
+    doc.getMap(META_KEY).set('etag', 'etag-old')
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+  })
+
+  // The reset lands before the hydrate, so a throw in between leaves every peer
+  // looking at an empty document. Locking stops the autosave from writing that
+  // emptiness to disk, and `isStale` stays up so a later joiner retries.
+  it('keeps the room flagged and locks the session when re-seeding throws', async () => {
+    const failingAdapter: CollaborativeAdapter = {
+      ...testAdapter,
+      hydrate(ydoc: Y.Doc, content: string) {
+        if (ydoc.getMap(META_KEY).get('isStale') === true) {
+          throw new Error('adapter blew up')
+        }
+        testAdapter.hydrate(ydoc, content)
+      }
+    }
+    const s = await syncIntoStaleRoom({ adapter: failingAdapter })
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(meta.get('isStale')).toBe(true)
+    expect(unref(s.session.isLockedForReload)).toBe(true)
+    expect(unref(s.session.error)).toBeTruthy()
+  })
+})
+
 describe('useCollaborativeDocument — etag mirror', () => {
   it('writes a new resource etag into _oc_meta.etag', async () => {
     const s = setupSession({ currentContent: 'x', resource: makeResource({ etag: 'a' }) })
