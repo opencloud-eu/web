@@ -58,6 +58,7 @@ function setup({
   status = 'connected' as CollaborativeStatus,
   putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' }))
 } = {}) {
+  const isLockedForReload = ref(false)
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
@@ -80,7 +81,7 @@ function setup({
       status: ref(status) as any,
       // Auto-mocked refs are truthy, which would fold into `effectiveReadOnly`
       // and hard-wire `isDirty` to false.
-      isLockedForReload: ref(false) as any,
+      isLockedForReload: isLockedForReload as any,
       error: ref<Error | null>(null) as any
     })
   })
@@ -129,6 +130,7 @@ function setup({
     wrapper,
     currentFileContext,
     isEnabled: () => sessionOptions?.enabled(),
+    isLockedForReload,
     putFileContents,
     getFileContents,
     async edit(content: string) {
@@ -274,5 +276,40 @@ describe('AppWrapper — save conflict handling', () => {
     expect(s.getFileContents).toHaveBeenCalledTimes(2)
     expect(putFileContents).toHaveBeenCalledTimes(2)
     expect(putFileContents.mock.calls[1][1]).toMatchObject({ previousEntityTag: 'etag' })
+  })
+})
+
+describe('AppWrapper — locked session', () => {
+  // Regression: `isDirty` short-circuited on `effectiveReadOnly`, which folds
+  // in `isLockedForReload`. A session locking mid-edit therefore dropped the
+  // dirty flag, which hides the save action, unregisters `beforeunload` and
+  // lets the route-leave guard through - ten minutes of unsaved work gone with
+  // the tab, silently.
+  it('keeps unsaved work armed when the session locks mid-edit', async () => {
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    s.isLockedForReload.value = true
+    await nextTick()
+
+    // Still dirty, so the guards stay armed and the user can still persist.
+    await s.pressCtrlS()
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  it('never arms them for a genuinely read-only file', async () => {
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(
+      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+    )
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    await s.pressCtrlS()
+    expect(s.putFileContents).not.toHaveBeenCalled()
   })
 })
