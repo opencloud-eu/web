@@ -6,6 +6,15 @@
 
 @AlexAndBear, @JammingBen, @schweigisito, @tammi-23, @v-scharf
 
+### 📈 Enhancement
+
+- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
+- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
+
 ### 🐛 Bug Fixes
 
 - fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
@@ -21,14 +30,6 @@
 - e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
 - e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
 - fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
-
-### 📈 Enhancement
-
-- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
-- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
-- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
-- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
-- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### 📦️ Dependencies
 
