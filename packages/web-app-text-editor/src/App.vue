@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef, unref } from 'vue'
+import { computed, toRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   ContentType,
@@ -17,22 +17,26 @@ import {
   TextEditorContent,
   TextEditorToolbar
 } from '@opencloud-eu/web-pkg/editor'
-import type { Resource } from '@opencloud-eu/web-client'
+import { useMentionUsers } from '@opencloud-eu/web-pkg'
+import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 const {
   currentContent,
   contentType = undefined,
   isReadOnly = false,
-  resource
+  resource,
+  space
 } = defineProps<{
   currentContent: string
   contentType?: ContentType
   isReadOnly?: boolean
   resource: Resource
+  space: SpaceResource
 }>()
 
 const emit = defineEmits<{
   (e: 'update:currentContent', value: string): void
+  (e: 'register:onSaveCallback', value: () => Promise<void>): void
 }>()
 
 const { $gettext } = useGettext()
@@ -57,11 +61,29 @@ const placeholder = computed(() => {
   return $gettext('Write or type / for formatting options...')
 })
 
+const { getMentionUsers, notifyMentionedUsers, resetMentionState, selectMentionUser } =
+  useMentionUsers({
+    space: toRef(() => space),
+    resource: toRef(() => resource)
+  })
+
+function selectMention({ id }: { id: string }): void {
+  selectMentionUser(id)
+}
+
+watch([() => space.id, () => resource.id], resetMentionState)
+
+emit('register:onSaveCallback', notifyMentionedUsers)
+
 const textEditor = useTextEditor({
   contentType: unref(parsedContentType),
   modelValue: toRef(() => currentContent),
   readonly: isReadOnly,
   placeholder: unref(placeholder),
+  mentions: {
+    items: getMentionUsers,
+    onSelect: selectMention
+  },
   onUpdate: (content) => emit('update:currentContent', content)
 })
 </script>

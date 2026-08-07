@@ -5,6 +5,16 @@ import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 
+export interface MentionItem {
+  id: string
+  label: string
+}
+
+export interface TextEditorMentionsOptions {
+  items: (query: string) => MentionItem[] | Promise<MentionItem[]>
+  onSelect: (item: MentionItem) => void
+}
+
 export interface TextEditorOptions {
   contentType: ContentType
   modelValue?: Ref<string>
@@ -18,6 +28,7 @@ export interface TextEditorOptions {
    * including nested dropdown children.
    */
   excludeActions?: string[]
+  mentions?: TextEditorMentionsOptions
   onUpdate?: (content: string) => void
 }
 

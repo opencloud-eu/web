@@ -10,7 +10,7 @@ import type {
   TextEditorState
 } from '../types'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
-import { SlashCommands } from '../extensions'
+import { Mentions, SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
 import { findLinkRange, requestLinkPanel } from '../helpers/link'
 
@@ -58,6 +58,10 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
         SlashCommands.configure({ getGroups: () => resolvedGroups }) as (typeof extensions)[number]
       )
     }
+  }
+
+  if (options.mentions) {
+    extensions.push(Mentions.configure(options.mentions) as (typeof extensions)[number])
   }
 
   if (options.placeholder) {

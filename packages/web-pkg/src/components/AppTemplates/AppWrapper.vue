@@ -151,6 +151,7 @@ const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
+let appOnSaveCallback: (() => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
 const { registerExtensions, unregisterExtensions, requestExtensions } = extensionRegistry
@@ -464,6 +465,7 @@ const saveFileTask = useTask(function* () {
     serverContent.value = newContent
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)
+    return true
   } catch (e) {
     switch (e.statusCode) {
       case 401:
@@ -501,11 +503,15 @@ const saveFileTask = useTask(function* () {
       default:
         errorPopup(new HttpError('', e.response))
     }
+    return false
   }
 }).drop()
 
 const save = async () => {
-  await saveFileTask.perform()
+  const saved = await saveFileTask.perform()
+  if (saved) {
+    await appOnSaveCallback?.()
+  }
 }
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
@@ -753,6 +759,10 @@ const slotAttrs = computed(() => ({
 
   'onRegister:onDeleteResourceCallback': (value: () => void) => {
     appOnDeleteResourceCallback = value
+  },
+
+  'onRegister:onSaveCallback': (value: () => void | Promise<void>) => {
+    appOnSaveCallback = value
   },
 
   'onDelete:resource': () => {
