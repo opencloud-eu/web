@@ -290,7 +290,12 @@ const effectiveReadOnly = computed(
 const isDirty = computed(() => {
   // Peer edits keep flowing into `currentContent` of a read-only client too,
   // but it has nothing to save, so it must never be prompted about it.
-  if (unref(effectiveReadOnly)) {
+  //
+  // Deliberately the WebDAV permission and not `effectiveReadOnly`: a session
+  // that locks mid-edit may be holding real unsaved work. Folding the lock in
+  // here dropped the save action, unregistered `beforeunload` and waved the
+  // route-leave guard through, so that work left with the tab.
+  if (unref(isReadOnly)) {
     return false
   }
   return unref(currentContent) !== unref(serverContent)
@@ -714,7 +719,10 @@ const fileActionsSave = computed<FileAction[]>(() => {
     {
       name: 'save-file',
       disabledTooltip: () => '',
-      isVisible: () => unref(isEditor) && !unref(effectiveReadOnly),
+      // Same reasoning as `isDirty`: a locked session freezes the editor, but
+      // the user must still be able to persist what they had typed before the
+      // lock. Only a genuinely read-only permission hides the action.
+      isVisible: () => unref(isEditor) && !unref(isReadOnly),
       isDisabled: () => !unref(isDirty),
       icon: 'save',
       id: 'app-save-action',

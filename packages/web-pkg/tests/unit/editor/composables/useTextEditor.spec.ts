@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import { withSetup } from './helpers'
-import { toRef } from 'vue'
+import { nextTick, ref, toRef, unref } from 'vue'
 import * as Y from 'yjs'
 import { createMockStore, createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
@@ -28,6 +28,22 @@ describe('useTextEditor', () => {
   it('exposes readonly as ref', () => {
     const { result } = createEditor({ readonly: true })
     expect(result.readonly.value).toBe(true)
+  })
+
+  // Regression: `readonly` was snapshotted during setup, so a collaborative
+  // session turning read-only after mount (locking the room on an app-version
+  // mismatch, for one) hid the toolbar but left ProseMirror editable. The user
+  // kept typing into a document that could never be saved.
+  it('follows a readonly getter that flips after setup', async () => {
+    const locked = ref(false)
+    const { result } = createEditor({ readonly: () => unref(locked) })
+    expect(result.editor.value.isEditable).toBe(true)
+
+    locked.value = true
+    await nextTick()
+
+    expect(result.readonly.value).toBe(true)
+    expect(result.editor.value.isEditable).toBe(false)
   })
 
   it('getContent serializes via strategy', () => {

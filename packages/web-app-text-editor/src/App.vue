@@ -46,7 +46,7 @@ const placeholder = computed(() => {
 const textEditor = useTextEditor({
   contentType: unref(contentType),
   currentResource: toRef(() => resource),
-  readonly: isReadOnly,
+  readonly: () => isReadOnly,
   placeholder: unref(placeholder),
   ydoc,
   awareness

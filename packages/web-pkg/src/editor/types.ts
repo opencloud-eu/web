@@ -1,4 +1,4 @@
-import type { ShallowRef, Ref, ComputedRef } from 'vue'
+import type { ShallowRef, Ref, ComputedRef, MaybeRefOrGetter } from 'vue'
 import type { Range } from '@tiptap/core'
 import type { Resource } from '@opencloud-eu/web-client'
 import type { Editor } from '@tiptap/vue-3'
@@ -18,7 +18,12 @@ export interface TextEditorOptions {
   contentType: ContentType
   modelValue?: Ref<string>
   currentResource?: Ref<Resource>
-  readonly?: boolean
+  /**
+   * Accepts a ref or getter, not just a snapshot: a collaborative session can
+   * flip the editor read-only mid-edit (locking the room on an app-version
+   * mismatch, say), and the ProseMirror view has to follow.
+   */
+  readonly?: MaybeRefOrGetter<boolean>
   slashCommands?: boolean
   placeholder?: string
   /** Accessible name for the editor's role="textbox" element (aria-label). */
@@ -66,7 +71,8 @@ export interface TextEditorInstance {
   state: TextEditorState
   editor: ShallowRef<Editor | null>
   contentType: Ref<ContentType>
-  readonly: Ref<boolean>
+  /** Derived from the caller's `readonly` option; follows it while mounted. */
+  readonly: ComputedRef<boolean>
   actionGroups(): EditorActionGroup[]
   getContent(): string
   setContent(value: string): void

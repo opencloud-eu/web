@@ -1,4 +1,4 @@
-import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
+import { ref, computed, onBeforeUnmount, watch, unref, onMounted, toValue, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import { Extension } from '@tiptap/core'
 import { Placeholder } from '@tiptap/extension-placeholder'
@@ -66,7 +66,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   }
 
   const contentType = ref(options.contentType)
-  const readonly = ref(options.readonly ?? false)
+  const readonly = computed(() => toValue(options.readonly) ?? false)
   const strategy = resolveStrategy(options.contentType, state)
   const collabFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
