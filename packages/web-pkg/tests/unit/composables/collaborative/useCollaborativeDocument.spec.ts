@@ -10,7 +10,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
-import { nextTick, ref, shallowRef, unref } from 'vue'
+import { ref, shallowRef, unref } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Resource } from '@opencloud-eu/web-client'
@@ -280,11 +280,27 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
     const s = setupSession({ yjsServerUrl: 'wss://example.test/realtime' })
     await flushPromises()
     providerInstances[0].triggerAuthFailed('token expired')
-    await nextTick()
+    await flushPromises()
 
     expect(unref(s.session.error)?.message).toBe('token expired')
     expect(unref(s.session.isLockedForReload)).toBe(true)
     expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  // Regression: the gate was released on an empty Y.Doc, so an expired token
+  // rendered the user's document as a blank page next to a toast. They had
+  // just fetched the file over WebDAV, so showing it is neither a leak nor a
+  // guess - and a blank editor reads exactly like data loss.
+  it('still shows the file after an auth failure', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'my important notes'
+    })
+    await flushPromises()
+    providerInstances[0].triggerAuthFailed('token expired')
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('my important notes')
   })
 })
 

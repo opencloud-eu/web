@@ -577,9 +577,10 @@ export function useCollaborativeDocument(
             error.value = new Error(reason || 'authentication failed')
             isLockedForReload.value = true
             if (connectTimer !== undefined) window.clearTimeout(connectTimer)
-            // A failed connect never produces an `onSynced`, so release the
-            // loading gate here or the editor spins forever.
-            if (!doc.isDestroyed && unref(ydoc) === doc) isReady.value = true
+            // A failed connect never produces an `onSynced`, so hand off to the
+            // same entry point to hydrate and release the loading gate - the
+            // editor would spin forever otherwise.
+            void onProviderSynced(doc, null, aw)
           },
           onSynced() {
             if (connectTimer !== undefined) window.clearTimeout(connectTimer)
