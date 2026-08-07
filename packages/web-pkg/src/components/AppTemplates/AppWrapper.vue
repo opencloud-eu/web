@@ -564,11 +564,16 @@ const saveFileTask = useTask(function* () {
     serverContent.value = newContent
     currentETag.value = putFileContentsResponse.etag
     resourcesStore.upsertResource(putFileContentsResponse)
-    // Keep our local `resource` ref in sync with the fresh etag so any
-    // watcher on the resource etag (the collaborative session's meta-mirror,
-    // for one) actually fires. `upsertResource` only touches the store; the
-    // local ref is the one the session and the slot read.
-    resource.value = { ...unref(resource), etag: putFileContentsResponse.etag }
+    // Keep our local `resource` ref in sync with what the write established so
+    // any watcher on it (the collaborative session's etag mirror, for one)
+    // actually fires. `upsertResource` only touches the store; the local ref is
+    // what the session and the slot read.
+    resource.value = {
+      ...unref(resource),
+      etag: putFileContentsResponse.etag,
+      size: putFileContentsResponse.size,
+      mdate: putFileContentsResponse.mdate
+    }
   } catch (e) {
     // 409 / 412 — `previousEntityTag` didn't match what the server has.
     //

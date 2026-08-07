@@ -48,7 +48,11 @@ vi.mock('@hocuspocus/provider', async () => {
     name: string
     document: Y.Doc
     awareness: Awareness
-    destroy = vi.fn()
+    // Mirrors the real provider, which destroys its own awareness. A bare spy
+    // would hide a double-destroy in the session's cleanup.
+    destroy = vi.fn(() => {
+      this.awareness.destroy()
+    })
     disconnect = vi.fn()
     setAwarenessField = vi.fn()
     private _opts: any
@@ -807,10 +811,16 @@ describe('useCollaborativeDocument — cleanup', () => {
     await flushPromises()
     const prov = providerInstances[0]
     const ydoc = s.ydoc
+    const awarenessDestroy = vi.spyOn(prov.awareness, 'destroy')
     expect(ydoc!.isDestroyed).toBe(false)
 
     s.wrapper.unmount()
     expect(prov.destroy).toHaveBeenCalledOnce()
+    // The provider owns the awareness in collab mode and takes it down itself.
+    // Not asserting a call count: `Y.Doc.destroy()` cascades into the awareness
+    // too (y-protocols registers `doc.on('destroy')`), so a count would pin
+    // library behaviour rather than ours.
+    expect(awarenessDestroy).toHaveBeenCalled()
     expect(ydoc!.isDestroyed).toBe(true)
   })
 

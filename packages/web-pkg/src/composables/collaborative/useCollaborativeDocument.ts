@@ -6,6 +6,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import semverCompare from 'semver/functions/compare'
 import semverValid from 'semver/functions/valid'
 import type { Resource } from '@opencloud-eu/web-client'
+import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useConfigStore } from '../piniaStores'
 import type { CollaborativeAdapter } from './types'
 
@@ -126,6 +127,7 @@ export function useCollaborativeDocument(
     onEtagChange
   } = options
 
+  const { $gettext } = useGettext()
   const authStore = useAuthStore()
   const configStore = useConfigStore()
 
@@ -311,8 +313,10 @@ export function useCollaborativeDocument(
       if (Number.isNaN(cmp) || cmp < 0) {
         lockForReload(
           prov,
-          `This file is being edited with app version ${docVersion} ` +
-            `(yours is ${version}). Please reload.`
+          $gettext(
+            'This file is being edited with app version %{docVersion} (yours is %{version}). Please reload.',
+            { docVersion, version }
+          )
         )
         return
       }
@@ -417,7 +421,9 @@ export function useCollaborativeDocument(
     if (typeof current.reset !== 'function') {
       lockForReload(
         prov,
-        'This file was changed externally and your editor cannot recover in-place. Please reload.'
+        $gettext(
+          'This file was changed externally and your editor cannot recover in-place. Please reload.'
+        )
       )
       return
     }
@@ -469,7 +475,7 @@ export function useCollaborativeDocument(
       console.error('[collab] stale-state recovery failed:', e)
       lockForReload(
         prov,
-        'This file was changed externally and recovering it failed. Please reload.'
+        $gettext('This file was changed externally and recovering it failed. Please reload.')
       )
     }
   }
@@ -529,7 +535,7 @@ export function useCollaborativeDocument(
       // out-of-band PUT would write; it diffs that against its own server
       // content to derive a dirty state.
       let serializeTimer: number | undefined
-      const scheduleEmit = () => {
+      function scheduleEmit() {
         if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
         serializeTimer = window.setTimeout(() => {
           serializeTimer = undefined
@@ -544,7 +550,7 @@ export function useCollaborativeDocument(
         }, SERIALIZE_DEBOUNCE_MS)
       }
 
-      const onDocUpdate = () => {
+      function onDocUpdate() {
         if (!canReportContent()) return
         scheduleEmit()
       }
@@ -574,7 +580,7 @@ export function useCollaborativeDocument(
             // Surface as a lifecycle error so the user sees the reason rather
             // than a silent disconnect. The server uses this for app-version
             // rejection too.
-            error.value = new Error(reason || 'authentication failed')
+            error.value = new Error(reason || $gettext('authentication failed'))
             isLockedForReload.value = true
             if (connectTimer !== undefined) window.clearTimeout(connectTimer)
             // A failed connect never produces an `onSynced`, so hand off to the
@@ -603,8 +609,9 @@ export function useCollaborativeDocument(
           console.error(`[collab] realtime server unreachable, continuing without it: ${name}`)
           status.value = 'disconnected'
           error.value = new Error(
-            'The realtime server could not be reached. Editing continues without collaboration; ' +
-              'others will not see your changes until you reload.'
+            $gettext(
+              'The realtime server could not be reached. Editing continues without collaboration; others will not see your changes until you reload.'
+            )
           )
           // Stop retrying. A later connect would merge our locally hydrated
           // copy into a room that may already hold the same content,
@@ -648,7 +655,7 @@ export function useCollaborativeDocument(
       // types. In local mode nobody ever sets isStale / bumps appVersion, so
       // the observer is dormant but harmless.
       const meta = doc.getMap(META_KEY)
-      const metaObserver = (event: Y.YMapEvent<unknown>, transaction: Y.Transaction) => {
+      function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
         // Peer-save fan-out. Another client just saved (its etag-mirror watch
         // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
         // change to us with `transaction.origin === undefined` - remote ops
@@ -694,8 +701,10 @@ export function useCollaborativeDocument(
             if (Number.isNaN(cmp) || cmp !== 0) {
               lockForReload(
                 prov,
-                `This file is now being edited with app version ${docVersion} ` +
-                  `(yours is ${version}). Please reload.`
+                $gettext(
+                  'This file is now being edited with app version %{docVersion} (yours is %{version}). Please reload.',
+                  { docVersion, version }
+                )
               )
             }
           }
@@ -732,8 +741,14 @@ export function useCollaborativeDocument(
         if (connectTimer !== undefined) window.clearTimeout(connectTimer)
         meta.unobserve(metaObserver)
         doc.off('update', onDocUpdate)
-        prov?.destroy()
-        aw.destroy()
+        if (prov) {
+          // Takes `prov.awareness` - which is `aw` in collab mode - down with
+          // it, so destroying `aw` again here would re-run teardown on an
+          // already-cleared observer map.
+          prov.destroy()
+        } else {
+          aw.destroy()
+        }
         doc.destroy()
         if (unref(provider) === prov) provider.value = null
         if (unref(awareness) === aw) awareness.value = null
