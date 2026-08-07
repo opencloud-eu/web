@@ -37,67 +37,44 @@
     </oc-button>
   </li>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import { FillType } from '@opencloud-eu/design-system/helpers'
 import { useRouter } from '@opencloud-eu/web-pkg'
-import { computed, defineComponent, PropType, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 
-export default defineComponent({
-  props: {
-    name: {
-      type: String,
-      required: true
-    },
-    active: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    target: {
-      type: [String, Object] as PropType<RouteLocationRaw>,
-      required: false,
-      default: null
-    },
-    icon: {
-      type: String,
-      required: true
-    },
-    fillType: {
-      type: String as PropType<FillType>,
-      required: false,
-      default: 'fill'
-    },
-    collapsed: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    handler: {
-      type: Function as PropType<() => void>,
-      required: false,
-      default: null
-    }
-  },
-  setup(props) {
-    const router = useRouter()
+const {
+  name,
+  icon,
+  active = false,
+  target = undefined,
+  fillType = 'fill',
+  collapsed = false,
+  handler = undefined
+} = defineProps<{
+  name: string
+  icon: string
+  active?: boolean
+  target?: RouteLocationRaw
+  fillType?: FillType
+  collapsed?: boolean
+  handler?: () => void
+}>()
 
-    const attrs = computed(() => {
-      return {
-        ...(props.handler && { onClick: props.handler }),
-        ...(props.target && { to: props.target })
-      }
-    })
+const router = useRouter()
 
-    const navName = computed(() => {
-      if (props.target) {
-        return router?.resolve(props.target, unref(router.currentRoute))?.name || 'route.name'
-      }
-      return props.name
-    })
-
-    return { attrs, navName }
+const attrs = computed(() => {
+  return {
+    ...(handler && { onClick: handler }),
+    ...(target && { to: target })
   }
+})
+
+const navName = computed(() => {
+  if (target) {
+    return router?.resolve(target, unref(router.currentRoute))?.name || 'route.name'
+  }
+  return name
 })
 </script>
 

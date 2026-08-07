@@ -7,29 +7,20 @@
   </button>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-  props: {
-    /*
-     * The element to focus and to skip to
-     */
-    target: {
-      type: String,
-      required: true
-    }
-  },
-  computed: {
-    targetElement() {
-      return document.getElementById(this.target)
-    }
-  },
-  methods: {
-    skipToTarget() {
-      this.targetElement.setAttribute('tabindex', '-1')
-      this.targetElement.focus()
-      this.targetElement.scrollIntoView()
-    }
+<script setup lang="ts">
+import { computed, unref } from 'vue'
+
+const { target } = defineProps<{
+  target: string
+}>()
+
+const targetElement = computed(() => document.getElementById(target))
+
+function skipToTarget() {
+  if (unref(targetElement)) {
+    targetElement.value.setAttribute('tabindex', '-1')
+    targetElement.value.focus()
+    targetElement.value.scrollIntoView()
   }
-})
+}
 </script>

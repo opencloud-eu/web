@@ -18,8 +18,8 @@
   </oc-select>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType, unref } from 'vue'
+<script setup lang="ts">
+import { computed, unref } from 'vue'
 import {
   Extension,
   ExtensionPoint,
@@ -27,82 +27,69 @@ import {
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  name: 'ExtensionRegistry',
-  props: {
-    extensionPoint: {
-      type: Object as PropType<ExtensionPoint<Extension>>,
-      required: true
+const { extensionPoint } = defineProps<{
+  extensionPoint: ExtensionPoint<Extension>
+}>()
+
+const extensionRegistry = useExtensionRegistry()
+const extensionPreferences = useExtensionPreferencesStore()
+
+const allExtensions = computed(() => extensionRegistry.requestExtensions(extensionPoint))
+const defaultExtensionIds = computed(() => {
+  return extensionPreferences.extractDefaultExtensionIds(extensionPoint, unref(allExtensions))
+})
+const extensions = computed(() => {
+  return unref(allExtensions).sort((extension1, extension2) => {
+    // default extension first
+    if (
+      unref(defaultExtensionIds).length &&
+      (unref(defaultExtensionIds).includes(extension1.id) ||
+        unref(defaultExtensionIds).includes(extension2.id))
+    ) {
+      return extension1.id === extensionPoint.defaultExtensionId ? -1 : 1
     }
+    // all other extension sorted by id
+    return extension1.id.localeCompare(extension2.id)
+  })
+})
+
+const modelSingleSelect = computed({
+  get(): Extension {
+    const preference = extensionPreferences.getExtensionPreference(
+      extensionPoint.id,
+      unref(defaultExtensionIds)
+    )
+    return unref(extensions).find((extension) =>
+      preference.selectedExtensionIds.includes(extension.id)
+    )
   },
-  setup(props) {
-    const extensionRegistry = useExtensionRegistry()
-    const extensionPreferences = useExtensionPreferencesStore()
-
-    const allExtensions = computed(() => extensionRegistry.requestExtensions(props.extensionPoint))
-    const defaultExtensionIds = computed(() => {
-      return extensionPreferences.extractDefaultExtensionIds(
-        props.extensionPoint,
-        unref(allExtensions)
-      )
-    })
-    const extensions = computed(() => {
-      return unref(allExtensions).sort((extension1, extension2) => {
-        // default extension first
-        if (
-          unref(defaultExtensionIds).length &&
-          (unref(defaultExtensionIds).includes(extension1.id) ||
-            unref(defaultExtensionIds).includes(extension2.id))
-        ) {
-          return extension1.id === props.extensionPoint.defaultExtensionId ? -1 : 1
-        }
-        // all other extension sorted by id
-        return extension1.id.localeCompare(extension2.id)
-      })
-    })
-
-    const modelSingleSelect = computed({
-      get(): Extension {
-        const preference = extensionPreferences.getExtensionPreference(
-          props.extensionPoint.id,
-          unref(defaultExtensionIds)
-        )
-        return unref(extensions).find((extension) =>
-          preference.selectedExtensionIds.includes(extension.id)
-        )
-      },
-      set(extension) {
-        extensionPreferences.setSelectedExtensionIds(props.extensionPoint.id, [extension.id])
-      }
-    })
-    const modelMultiSelect = computed({
-      get(): Extension[] {
-        const preference = extensionPreferences.getExtensionPreference(
-          props.extensionPoint.id,
-          unref(defaultExtensionIds)
-        )
-        return unref(extensions).filter((extension) =>
-          preference.selectedExtensionIds.includes(extension.id)
-        )
-      },
-      set(extensions) {
-        extensionPreferences.setSelectedExtensionIds(
-          props.extensionPoint.id,
-          extensions.map((extension) => extension.id)
-        )
-      }
-    })
-
-    const filterOptions = (options: Extension[], search: string) => {
-      return options.filter((option) =>
-        option.userPreference?.optionLabel.toLowerCase().includes(search.toLowerCase().trim())
-      )
-    }
-    return {
-      extensions,
-      filterOptions,
-      model: props.extensionPoint.multiple ? modelMultiSelect : modelSingleSelect
-    }
+  set(extension) {
+    extensionPreferences.setSelectedExtensionIds(extensionPoint.id, [extension.id])
   }
 })
+const modelMultiSelect = computed({
+  get(): Extension[] {
+    const preference = extensionPreferences.getExtensionPreference(
+      extensionPoint.id,
+      unref(defaultExtensionIds)
+    )
+    return unref(extensions).filter((extension) =>
+      preference.selectedExtensionIds.includes(extension.id)
+    )
+  },
+  set(extensions) {
+    extensionPreferences.setSelectedExtensionIds(
+      extensionPoint.id,
+      extensions.map((extension) => extension.id)
+    )
+  }
+})
+
+const filterOptions = (options: Extension[], search: string) => {
+  return options.filter((option) =>
+    option.userPreference?.optionLabel.toLowerCase().includes(search.toLowerCase().trim())
+  )
+}
+
+const model = extensionPoint.multiple ? modelMultiSelect : modelSingleSelect
 </script>
