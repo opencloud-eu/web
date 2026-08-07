@@ -329,6 +329,8 @@ The 300 ms debounce only refreshes `currentContent`, which is what drives `isDir
 
 When `options.yjsServerUrl` is unset the session still creates a `Y.Doc` and a standalone `Awareness`, skips the provider, and hydrates immediately. The Y.Doc binding is the same in both modes, so adapters and editor extensions need no branch. Two things do differ: no peers ever appear, and `useTextEditor` re-reads `yjsServerUrl` itself to decide whether to drop the source-mode action. That is what "collaboration disabled" means here - the editor works as it always did, it just never syncs.
 
+A session configured for collaboration ends up here too when the server does not answer. A provider that cannot reach its server emits neither `onSynced` nor `onAuthenticationFailed` - it just keeps retrying - so nothing would ever release the loading gate. After `CONNECT_TIMEOUT_MS` the session gives up, disconnects the provider, hydrates locally and surfaces an error saying changes will not be shared. The file stays editable and saveable; only syncing is gone, and a reload is what retries. The provider is disconnected rather than destroyed, because the editor binds to its awareness; and it is not left retrying, because a late connect would merge the locally hydrated copy into a room that may already hold the same content and duplicate the document for everyone.
+
 ### File map
 
 | Path                                                                         | Role                                                                          |
@@ -362,7 +364,7 @@ These are open items, not bugs to be surprised by.
 
 **Source mode is disabled in collab.** It swaps the ProseMirror view for a plain textarea, which has no Y.Doc binding, so `useTextEditor` drops the `source-mode` action whenever a realtime session is active. Marked as a `FIXME`.
 
-**Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`). `AppWrapper` reads it to decide whether a save conflict can be reconciled, but never shows it. A dropped websocket produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone.
+**Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`). `AppWrapper` reads it to decide whether a save conflict can be reconciled, but never shows it. A websocket that drops _after_ a successful sync produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone. Only a connect that never succeeds in the first place is caught, by the timeout above.
 
 **A live session resolves save conflicts in favour of the room.** While connected, a 409/412 is retried with the fresh etag on the assumption that it came from a peer. It usually did, but an external writer - a desktop sync client, say - is overwritten without a prompt. Proving which one it was would mean matching the fetched etag against `_oc_meta.etag`, and that race is roughly a coin flip, so it would turn ordinary peer saves into spurious conflict dialogs.
 
