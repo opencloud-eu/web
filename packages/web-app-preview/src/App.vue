@@ -95,11 +95,9 @@ import {
 import omit from 'lodash-es/omit'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
-  AppFileHandlingResult,
-  AppFolderHandlingResult,
   createFileRouteOptions,
   determineResourceTableSortFields,
-  FileContext,
+  FolderViewerSlotProps,
   isLocationSharesActive,
   Key,
   Modifier,
@@ -137,14 +135,7 @@ const {
   getUrlForResource,
   revokeUrl,
   isFolderLoading
-} = defineProps<{
-  activeFiles: Resource[]
-  currentFileContext: FileContext
-  loadFolderForFileContext: AppFolderHandlingResult['loadFolderForFileContext']
-  getUrlForResource: AppFileHandlingResult['getUrlForResource']
-  revokeUrl: AppFileHandlingResult['revokeUrl']
-  isFolderLoading: boolean
-}>()
+} = defineProps<FolderViewerSlotProps>()
 
 const emit = defineEmits<{
   (e: 'update:resource', resource: Resource): void

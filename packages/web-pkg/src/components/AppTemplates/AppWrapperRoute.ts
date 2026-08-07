@@ -1,6 +1,6 @@
 import { defineComponent, h } from 'vue'
 import AppWrapper from './AppWrapper.vue'
-import { AppWrapperSlotArgs, CollaborativeOptions } from './types'
+import { AppWrapperSlotHandlers, AppWrapperSlotProps, CollaborativeOptions } from './types'
 import { FileContentOptions, UrlForResourceOptions } from '../../composables'
 import { Resource } from '@opencloud-eu/web-client'
 
@@ -24,7 +24,7 @@ export function AppWrapperRoute(
           ...options
         },
         {
-          default: (slotArgs: AppWrapperSlotArgs) => {
+          default: (slotArgs: AppWrapperSlotProps & AppWrapperSlotHandlers) => {
             return h(fileEditor, slotArgs)
           }
         }
