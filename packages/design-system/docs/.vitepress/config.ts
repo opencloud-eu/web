@@ -61,7 +61,7 @@ export default defineConfig({
             }
           ]
         })()
-      }) as any // FIXME: remove type cast and the vite-plugin-static-copy patch once vitepress uses vite 6
+      })
     ]
   },
   themeConfig: {
