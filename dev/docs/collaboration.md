@@ -258,18 +258,29 @@ Hydration is the process of taking the file content and seeding it into the Y.Do
 
 Two clients can arrive into an empty room at the same moment, and only one may seed it - otherwise the content lands twice. The elected client is the one with the lowest Yjs `clientID`, after a 150 ms pause to let peers announce themselves. The winner sets `_oc_meta.hydrated` before it seeds, so peers can react to the incoming content rather than merge with it.
 
+### Stale recovery
+
+When a joining client finds that `_oc_meta.etag` no longer matches the etag it just fetched, the file changed outside the room. It stamps `nativeEtag`, claims the job via `recoveryClientId` and raises `isStale`. Every peer's meta observer fires, but only the elected one gets through: recovery wipes the room and re-seeds it, and the only peer holding the body behind `nativeEtag` is the one that just fetched the file. Any other peer would publish the copy it opened with - or its own last serialization - and then stamp the fresh etag onto it, so the next save would overwrite the external writer with a matching `If-Match` and no conflict.
+
+The elected peer captures that body at detection time rather than reading `currentContent` when recovery runs. By then the room has synced its own state into the Y.Doc and the debounced serialize has reported it straight back into `currentContent`.
+
+`recoveryClientId` is last-write-wins, so if several clients detect the same drift at once, exactly one of them survives convergence. A peer that joins while `isStale` is already up offers itself the same way, provided its etag matches `nativeEtag` - the observer only fires on change, so without that the room would stay stuck if the elected peer navigated away mid-recovery.
+
+Reset lands before hydrate, so a throw in between leaves every peer looking at an empty document. That path keeps `isStale` up for the next joiner to retry and locks the session, which is what stops the autosave from writing the emptiness to disk.
+
 ### `_oc_meta`
 
 A `Y.Map` alongside the editor content, used for coordination the editor never sees:
 
-| Key           | Written by          | Meaning                                       |
-| ------------- | ------------------- | --------------------------------------------- |
-| `etag`        | whoever saved last  | the etag the room believes is on disk         |
-| `lastSavedAt` | whoever saved last  | fan-out trigger for a peer save               |
-| `appVersion`  | first peer in       | schema version the room is running            |
-| `isStale`     | any writer          | the file changed outside this room; rehydrate |
-| `nativeEtag`  | writer that noticed | the etag recovery should settle on            |
-| `hydrated`    | the seeding peer    | someone is seeding the room right now         |
+| Key                | Written by          | Meaning                                       |
+| ------------------ | ------------------- | --------------------------------------------- |
+| `etag`             | whoever saved last  | the etag the room believes is on disk         |
+| `lastSavedAt`      | whoever saved last  | fan-out trigger for a peer save               |
+| `appVersion`       | first peer in       | schema version the room is running            |
+| `isStale`          | any writer          | the file changed outside this room; rehydrate |
+| `nativeEtag`       | writer that noticed | the etag recovery should settle on            |
+| `recoveryClientId` | writer that noticed | which peer is elected to re-seed the room     |
+| `hydrated`         | the seeding peer    | someone is seeding the room right now         |
 
 Every key lives in the shared Y.Doc, so a read-only peer's writes to it are
 rejected by the Yjs server along with everything else. Staleness noticed by a
@@ -348,6 +359,8 @@ These are open items, not bugs to be surprised by.
 
 **Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`), but `AppWrapper` ignores it. A dropped websocket produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone.
 
-**`_oc_meta.hydrated` is never cleared.** Stale recovery deletes `isStale` and `nativeEtag` but leaves `hydrated` set. Harmless today, since the recovered room really is seeded, but it means the flag tracks "this room was ever seeded" rather than "a peer is seeding right now".
+**`_oc_meta.hydrated` is never cleared.** Stale recovery deletes `isStale`, `nativeEtag` and `recoveryClientId` but leaves `hydrated` set. Harmless today, since the recovered room really is seeded, but it means the flag tracks "this room was ever seeded" rather than "a peer is seeding right now".
+
+**Stale recovery needs someone who holds the fresh body.** Only a peer whose fetched etag matches `nativeEtag` may re-seed the room. If that peer leaves before finishing, the room stays flagged until another client opens the file and picks the job up. Peers already in the room keep editing a document that no longer matches disk in the meantime.
 
 **Bundle weight.** `AppWrapper` imports the session directly, so `yjs`, `y-protocols` and `@hocuspocus/provider` land in web-pkg's main entry - loaded even by users who never open an editor. Moving the session behind a `defineAsyncComponent` would fix it at the cost of some indirection.

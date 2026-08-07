@@ -167,6 +167,28 @@ export function useCollaborativeDocument(
    */
   let hasLocalOnlyContent = false
 
+  /**
+   * The native file body this client fetched, captured at the moment it
+   * noticed etag drift. Non-null only on a peer that may re-seed the room.
+   *
+   * Recovery has to publish the content behind `_oc_meta.nativeEtag`, and the
+   * only peer holding it is the one that just fetched the file. Reading the
+   * caller's `currentContent` at recovery time would not do: by then the room
+   * has synced its own (older) state into our Y.Doc and the debounced serialize
+   * has reported it straight back into `currentContent`.
+   */
+  let staleRecoveryContent: string | null = null
+
+  /**
+   * Whether the body we hold is the one recovery is supposed to settle on,
+   * i.e. our freshly fetched etag is the room's `nativeEtag`.
+   */
+  function canSupplyRecoveryContent(meta: Y.Map<unknown>): boolean {
+    const target = meta.get('nativeEtag') as string | undefined
+    const ours = toValue(resource)?.etag
+    return Boolean(target && ours && target === ours)
+  }
+
   function lockForReload(prov: HocuspocusProvider | null, message: string) {
     if (unref(isLockedForReload)) return
     isLockedForReload.value = true
@@ -236,7 +258,19 @@ export function useCollaborativeDocument(
     // between persisted state and this connect), let the meta-observer fire
     // `recoverFromStaleState`. Skip the version check below so we don't
     // race-lock the user out of a doc we're about to rehydrate cleanly.
-    if (meta.get('isStale') === true) return
+    //
+    // The observer only fires on change, so a peer that joins while the flag is
+    // already up never hears about it. Offer ourselves instead if we hold the
+    // body recovery needs - the peer that was elected for it may well have
+    // navigated away before finishing.
+    if (meta.get('isStale') === true) {
+      if (!unref(effectiveReadOnly) && canSupplyRecoveryContent(meta)) {
+        staleRecoveryContent = toValue(currentContent)
+        doc.transact(() => meta.set('recoveryClientId', doc.clientID))
+        void recoverFromStaleState(doc, prov)
+      }
+      return
+    }
 
     // App-version handshake.
     // - empty: first client into the room, seed our version
@@ -281,8 +315,15 @@ export function useCollaborativeDocument(
     const docEtag = meta.get('etag') as string | undefined
     const nativeEtag = toValue(resource)?.etag
     if (docEtag && nativeEtag && docEtag !== nativeEtag) {
+      // We are the peer that just fetched the file, so our `currentContent` is
+      // the body behind `nativeEtag`. Capture it before the room syncs its own
+      // state over it, and claim the recovery: `recoveryClientId` is
+      // last-write-wins, so if several peers detect the same drift at once
+      // exactly one of them ends up elected.
+      staleRecoveryContent = toValue(currentContent)
       doc.transact(() => {
         meta.set('nativeEtag', nativeEtag)
+        meta.set('recoveryClientId', doc.clientID)
         meta.set('isStale', true)
       })
       return
@@ -335,20 +376,22 @@ export function useCollaborativeDocument(
   /**
    * Stale-state recovery: fired when `_oc_meta.isStale` goes up because the
    * room's etag no longer matches the native file. The elected client wipes
-   * adapter content, clears the staleness flag, and re-hydrates from
-   * `currentContent` (which the caller re-fetched at app-open time, so it
-   * reflects the new native content). Other peers see the wipe + hydrate as
-   * ordinary CRDT updates. Unreachable in local mode (nobody ever sets
+   * adapter content, clears the staleness flag, and re-hydrates from the body
+   * it captured when it noticed the drift. Other peers see the wipe + hydrate
+   * as ordinary CRDT updates. Unreachable in local mode (nobody ever sets
    * isStale), but coded provider-tolerant so the two modes share one path.
+   *
+   * Only a peer that holds the fresh body may run this. Letting an arbitrary
+   * peer win would re-seed the room from whatever it happens to be holding -
+   * the pre-drift body it opened with, or its own last serialization - and then
+   * stamp the fresh etag onto it. The next save would carry a matching
+   * `If-Match` and overwrite the external writer with no 412 and no warning.
    */
-  async function recoverFromStaleState(
-    doc: Y.Doc,
-    prov: HocuspocusProvider | null,
-    awarenessInstance: Awareness
-  ) {
+  async function recoverFromStaleState(doc: Y.Doc, prov: HocuspocusProvider | null) {
     const current = toValue(adapter)
     const meta = doc.getMap(META_KEY)
     if (unref(effectiveReadOnly)) return
+    if (staleRecoveryContent === null) return
     if (typeof current.reset !== 'function') {
       lockForReload(
         prov,
@@ -357,16 +400,13 @@ export function useCollaborativeDocument(
       return
     }
 
-    // Election: lowest awareness clientId wins, same primitive as initial
-    // hydrate. Peers without a reset-capable adapter never elect themselves.
+    // Let concurrent claims converge, then check whether we are the one that
+    // came out on top.
     await new Promise<void>((resolve) => setTimeout(resolve, 150))
     if (meta.get('isStale') !== true) return // someone else handled it
+    if (meta.get('recoveryClientId') !== doc.clientID) return
 
-    const myId = doc.clientID
-    const peers = Array.from(awarenessInstance.getStates().keys())
-    const lowest = peers.length ? Math.min(myId, ...peers) : myId
-    if (myId !== lowest) return
-
+    const content = staleRecoveryContent
     const freshEtag =
       (meta.get('nativeEtag') as string | undefined) ?? toValue(resource)?.etag ?? ''
 
@@ -378,24 +418,38 @@ export function useCollaborativeDocument(
     // caller's server content still describes the file it fetched; letting the
     // rewrite through would flip its dirty state back and forth between
     // recovery and the next real keystroke.
-    await withoutReportingContent(async () => {
-      doc.transact(() => {
-        current.reset?.(doc)
-      }, 'stale-recovery-reset')
+    try {
+      await withoutReportingContent(async () => {
+        doc.transact(() => {
+          current.reset?.(doc)
+        }, 'stale-recovery-reset')
 
-      await Promise.resolve(current.hydrate(doc, toValue(currentContent)))
+        await Promise.resolve(current.hydrate(doc, content))
 
-      doc.transact(() => {
-        meta.delete('isStale')
-        meta.delete('nativeEtag')
-        if (freshEtag) meta.set('etag', freshEtag)
-        // Bump the version stamp too: the prior state may have been tied to an
-        // older `appVersion`, and the recovered content is now in our current
-        // layout. Late joiners with the same version pass the handshake; older
-        // clients still bounce on their own version check.
-        meta.set('appVersion', toValue(appVersion))
-      }, 'stale-recovery-commit')
-    })
+        doc.transact(() => {
+          meta.delete('isStale')
+          meta.delete('nativeEtag')
+          meta.delete('recoveryClientId')
+          if (freshEtag) meta.set('etag', freshEtag)
+          // Bump the version stamp too: the prior state may have been tied to an
+          // older `appVersion`, and the recovered content is now in our current
+          // layout. Late joiners with the same version pass the handshake; older
+          // clients still bounce on their own version check.
+          meta.set('appVersion', toValue(appVersion))
+        }, 'stale-recovery-commit')
+      })
+      staleRecoveryContent = null
+    } catch (e) {
+      // The reset already emptied the shared doc for every peer. `isStale` is
+      // still set, so a later joiner holding the fresh body retries. Lock this
+      // session so nothing autosaves the empty document over the file in the
+      // meantime.
+      console.error('[collab] stale-state recovery failed:', e)
+      lockForReload(
+        prov,
+        'This file was changed externally and recovering it failed. Please reload.'
+      )
+    }
   }
 
   /**
@@ -413,6 +467,12 @@ export function useCollaborativeDocument(
   ) {
     try {
       await runInitialHydration(doc, prov, awarenessInstance)
+    } catch (e) {
+      // Both call sites fire this without awaiting, so an escaping rejection
+      // would be swallowed and the user would face a half-hydrated document
+      // with no explanation.
+      console.error('[collab] hydration failed:', e)
+      error.value = e instanceof Error ? e : new Error(String(e))
     } finally {
       if (!doc.isDestroyed && unref(ydoc) === doc) isReady.value = true
     }
@@ -583,10 +643,10 @@ export function useCollaborativeDocument(
         }
 
         // Stale-state signal: the room's Y.Doc was tied to an etag that no
-        // longer matches the native file. Run a client-side rehydrate
-        // (election prevents all peers from doing it at once).
+        // longer matches the native file. Every peer runs this, but only the
+        // one elected to supply the fresh body gets past its guards.
         if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
-          void recoverFromStaleState(doc, prov, aw)
+          void recoverFromStaleState(doc, prov)
         }
       }
       meta.observe(metaObserver)
