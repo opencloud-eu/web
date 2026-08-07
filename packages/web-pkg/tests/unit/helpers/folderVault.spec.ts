@@ -4,6 +4,7 @@ import { mock } from 'vitest-mock-extended'
 import {
   decryptResourceInPlace,
   encryptResourcePathsForServer,
+  getVaultCreator,
   markVaultStatus
 } from '../../../src/helpers/folderVault'
 import {
@@ -118,6 +119,31 @@ describe('markVaultStatus', () => {
     markVaultStatus(registry, space, [folder])
 
     expect(folder.isInVault).toBe(true)
+  })
+})
+
+describe('getVaultCreator', () => {
+  function mockRegistry(extensions: unknown[]): ExtensionRegistry {
+    return { extensions } as unknown as ExtensionRegistry
+  }
+
+  it('returns the first scheme that can create vaults', () => {
+    const readOnly = { id: 'read-only', type: 'folderVault' }
+    const creator = {
+      id: 'creator',
+      type: 'folderVault',
+      creation: { folderExtension: 'vault', setupComponent: {} }
+    }
+
+    expect(getVaultCreator(mockRegistry([readOnly, creator]))).toBe(creator)
+  })
+
+  it('returns null when no registered scheme can create vaults', () => {
+    expect(getVaultCreator(mockRegistry([{ id: 'read-only', type: 'folderVault' }]))).toBeNull()
+  })
+
+  it('returns null when no folder-vault scheme is registered at all', () => {
+    expect(getVaultCreator(mockRegistry([{ id: 'other', type: 'resourceIndicator' }]))).toBeNull()
   })
 })
 

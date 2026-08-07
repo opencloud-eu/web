@@ -1,5 +1,8 @@
+import { markRaw } from 'vue'
 import { FolderVaultExtension } from '@opencloud-eu/web-pkg'
 import { claimsVaultPath, resolveVault } from '../resolveVault'
+import { VAULT_FOLDER_EXTENSION } from '../vaultPath'
+import VaultSetup from '../components/VaultSetup.vue'
 
 export const folderVaultExtension: FolderVaultExtension = {
   id: 'app.rclone-crypt.folder-vault',
@@ -11,5 +14,9 @@ export const folderVaultExtension: FolderVaultExtension = {
   },
   claimsPath(space, path) {
     return claimsVaultPath(space, path)
+  },
+  creation: {
+    folderExtension: VAULT_FOLDER_EXTENSION,
+    setupComponent: markRaw(VaultSetup)
   }
 }

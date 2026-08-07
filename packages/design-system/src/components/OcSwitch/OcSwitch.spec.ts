@@ -21,6 +21,14 @@ describe('OcSwitch', () => {
     expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
   })
 
+  it('is not a submit button, so it does not hijack implicit form submission', () => {
+    const wrapper = shallowMount(Switch, {
+      props: defaultProps
+    })
+
+    expect(wrapper.find('[data-testid="oc-switch-btn"]').attributes('type')).toEqual('button')
+  })
+
   it('does not toggle when disabled', async () => {
     const wrapper = shallowMount(Switch, {
       props: { ...defaultProps, disabled: true }
