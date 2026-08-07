@@ -8,7 +8,12 @@ export const RestoreFileVersionFactory = (dav: DAV, options: WebDavOptions) => {
   return {
     restoreFileVersion(
       space: SpaceResource,
-      { id, parentFolderId, name, path }: { id?: string; parentFolderId?: string; name?: string; path?: string },
+      {
+        id,
+        parentFolderId,
+        name,
+        path
+      }: { id?: string; parentFolderId?: string; name?: string; path?: string },
       versionId: string,
       opts: DAVRequestOptions = {}
     ) {
