@@ -23,63 +23,49 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref, unref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, unref } from 'vue'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter, queryItemAsString } from '../../composables'
-import { PropType } from 'vue'
 import { InlineFilterOption } from './types'
 
-export default defineComponent({
-  name: 'ItemFilterInline',
-  props: {
-    filterName: {
-      type: String,
-      required: true
-    },
-    filterOptions: {
-      type: Array as PropType<InlineFilterOption[]>,
-      required: true
+const { filterName, filterOptions } = defineProps<{
+  filterName: string
+  filterOptions: InlineFilterOption[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'toggleFilter', option: InlineFilterOption): void
+}>()
+
+const router = useRouter()
+const currentRoute = useRoute()
+const activeOption = ref<string>(filterOptions[0].name)
+
+const queryParam = `q_${filterName}`
+const currentRouteQuery = useRouteQuery(queryParam)
+const setRouteQuery = (optionName: string) => {
+  return router.push({
+    query: {
+      ...omit(unref(currentRoute).query, [queryParam]),
+      [queryParam]: optionName
     }
-  },
-  emits: ['toggleFilter'],
-  setup: function (props, { emit }) {
-    const router = useRouter()
-    const currentRoute = useRoute()
-    const activeOption = ref<string>(props.filterOptions[0].name)
+  })
+}
 
-    const queryParam = `q_${props.filterName}`
-    const currentRouteQuery = useRouteQuery(queryParam)
-    const setRouteQuery = (optionName: string) => {
-      return router.push({
-        query: {
-          ...omit(unref(currentRoute).query, [queryParam]),
-          [queryParam]: optionName
-        }
-      })
-    }
+const toggleFilter = async (option: InlineFilterOption) => {
+  activeOption.value = option.name
+  await setRouteQuery(option.name)
+  emit('toggleFilter', option)
+}
 
-    const toggleFilter = async (option: InlineFilterOption) => {
-      activeOption.value = option.name
-      await setRouteQuery(option.name)
-      emit('toggleFilter', option)
-    }
-
-    onMounted(() => {
-      const queryStr = queryItemAsString(unref(currentRouteQuery))
-      if (queryStr && props.filterOptions.some(({ name }) => name === queryStr)) {
-        activeOption.value = queryStr
-        emit(
-          'toggleFilter',
-          props.filterOptions.find(({ name }) => name === queryStr)
-        )
-      }
-    })
-
-    return {
-      queryParam,
-      activeOption,
-      toggleFilter
+onMounted(() => {
+  const queryStr = queryItemAsString(unref(currentRouteQuery))
+  if (queryStr) {
+    const selected = filterOptions.find(({ name }) => name === queryStr)
+    if (selected) {
+      activeOption.value = queryStr
+      emit('toggleFilter', selected)
     }
   }
 })

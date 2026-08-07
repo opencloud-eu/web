@@ -37,21 +37,21 @@ describe('CreateShortcutModal', () => {
   describe('method "onKeyEnterDrop"', () => {
     it('handles the event when the drop is open', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.onShowDrop()
+      ;(wrapper.vm as any).onShowDrop()
       // move the active drop item index out of range to not interact with the stubbed drop
-      wrapper.vm.onKeyUpDrop()
+      ;(wrapper.vm as any).onKeyUpDrop()
       const event = new KeyboardEvent('keydown', { key: 'Enter' })
       const stopPropagation = vi.spyOn(event, 'stopPropagation')
-      wrapper.vm.onKeyEnterDrop(event)
+      ;(wrapper.vm as any).onKeyEnterDrop(event)
 
       expect(stopPropagation).toHaveBeenCalled()
     })
     it('ignores the event while an IME composition session is active', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.onShowDrop()
+      ;(wrapper.vm as any).onShowDrop()
       const event = new KeyboardEvent('keydown', { key: 'Enter', isComposing: true })
       const stopPropagation = vi.spyOn(event, 'stopPropagation')
-      wrapper.vm.onKeyEnterDrop(event)
+      ;(wrapper.vm as any).onKeyEnterDrop(event)
 
       expect(stopPropagation).not.toHaveBeenCalled()
     })
@@ -59,14 +59,14 @@ describe('CreateShortcutModal', () => {
   describe('method "searchTask"', () => {
     it('should set "searchResult" correctly', async () => {
       const { wrapper } = getWrapper()
-      await wrapper.vm.searchTask.perform('new file')
-      expect(wrapper.vm.searchResult.values.length).toBe(3)
+      await (wrapper.vm as any).searchTask.perform('new file')
+      expect((wrapper.vm as any).searchResult.values.length).toBe(3)
     })
     it('should reset "searchResult" on error', async () => {
       console.error = vi.fn()
       const { wrapper } = getWrapper({ rejectSearch: true })
-      await wrapper.vm.searchTask.perform('new folder')
-      expect(wrapper.vm.searchResult).toBe(null)
+      await (wrapper.vm as any).searchTask.perform('new folder')
+      expect((wrapper.vm as any).searchResult).toBe(null)
     })
   })
 })

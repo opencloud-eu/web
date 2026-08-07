@@ -40,56 +40,46 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script setup lang="ts">
 import ActionMenuItem from './ActionMenuItem.vue'
 import { Action, ActionOptions } from '../../composables'
 import { AppearanceType } from '@opencloud-eu/design-system/helpers'
 import ActionMenuDropItem from './ActionMenuDropItem.vue'
 import { MenuSection, MenuSectionDrop } from './types'
 
-export default defineComponent({
-  name: 'ContextActionMenu',
-  components: { ActionMenuDropItem, ActionMenuItem },
-  props: {
-    menuSections: {
-      type: Array as PropType<MenuSection[]>,
-      required: true
-    },
-    appearance: {
-      type: String as PropType<AppearanceType>,
-      default: 'raw'
-    },
-    actionOptions: {
-      type: Object as PropType<ActionOptions>,
-      required: true
-    }
-  },
-  methods: {
-    actionToDropItem(action: Action): MenuSectionDrop {
-      return {
-        label: action.label(this.actionOptions),
-        name: action.name,
-        icon: typeof action.icon === 'function' ? action.icon(this.actionOptions) : action.icon,
-        items: (action.children || []).filter((child) => child.isVisible(this.actionOptions))
-      }
-    },
-    getSectionClasses(index: number) {
-      const classes: string[] = []
-      if (!this.menuSections.length) {
-        return classes
-      }
-      if (index < this.menuSections.length - 1) {
-        classes.push('pb-2')
-      }
-      if (index > 0) {
-        classes.push('pt-2')
-      }
-      if (index < this.menuSections.length - 1) {
-        classes.push('border-b')
-      }
-      return classes
-    }
+const {
+  menuSections,
+  actionOptions,
+  appearance = 'raw'
+} = defineProps<{
+  menuSections: MenuSection[]
+  actionOptions: ActionOptions
+  appearance?: AppearanceType
+}>()
+
+function actionToDropItem(action: Action): MenuSectionDrop {
+  return {
+    label: action.label(actionOptions),
+    name: action.name,
+    icon: typeof action.icon === 'function' ? action.icon(actionOptions) : action.icon,
+    items: (action.children || []).filter((child) => child.isVisible(actionOptions))
   }
-})
+}
+
+function getSectionClasses(index: number) {
+  const classes: string[] = []
+  if (!menuSections.length) {
+    return classes
+  }
+  if (index < menuSections.length - 1) {
+    classes.push('pb-2')
+  }
+  if (index > 0) {
+    classes.push('pt-2')
+  }
+  if (index < menuSections.length - 1) {
+    classes.push('border-b')
+  }
+  return classes
+}
 </script>

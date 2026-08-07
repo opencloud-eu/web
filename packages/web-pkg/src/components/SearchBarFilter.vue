@@ -43,8 +43,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, Ref, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, ref, Ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SearchLocationFilterConstants, useRouteQuery } from '../composables'
 
@@ -54,101 +54,87 @@ type LocationOption = {
   enabled: Ref<boolean> | boolean
 }
 
-export default defineComponent({
-  name: 'SearchBarFilter',
-  props: {
-    currentFolderAvailable: {
-      type: Boolean,
-      default: false
-    },
-    // Search inside a vault is currently not supported on the server side
-    // (it'd search ciphertext blobs), so the "Current folder" option makes
-    // no sense when the user is sitting inside a vault - force-route to
-    // "All files" and disable the toggle.
-    currentFolderIsInVault: {
-      type: Boolean,
-      default: false
-    }
+const { currentFolderAvailable = false, currentFolderIsInVault = false } = defineProps<{
+  currentFolderAvailable?: boolean
+  /**
+   * Search inside a vault is currently not supported on the server side,
+   * (it'd search ciphertext blobs), so the "Current folder" option makes
+   * no sense when the user is sitting inside a vault - force-route to
+   * "All files" and disable the toggle.
+   */
+  currentFolderIsInVault?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', payload: { value: LocationOption }): void
+}>()
+
+const { $gettext } = useGettext()
+const useScopeQueryValue = useRouteQuery('useScope')
+
+const currentFolderUsable = computed(() => currentFolderAvailable && !currentFolderIsInVault)
+
+const currentSelection = ref<LocationOption>()
+const userSelection = ref<LocationOption>()
+const currentSelectionTitle = computed(() => $gettext(currentSelection.value?.title))
+const locationOptions = computed<LocationOption[]>(() => [
+  {
+    id: SearchLocationFilterConstants.currentFolder,
+    title: $gettext('Current folder'),
+    enabled: unref(currentFolderUsable)
   },
-  emits: ['update:modelValue'],
-  setup(props, { emit }) {
-    const { $gettext } = useGettext()
-    const useScopeQueryValue = useRouteQuery('useScope')
-
-    const currentFolderUsable = computed(
-      () => props.currentFolderAvailable && !props.currentFolderIsInVault
-    )
-
-    const currentSelection = ref<LocationOption>()
-    const userSelection = ref<LocationOption>()
-    const currentSelectionTitle = computed(() => $gettext(currentSelection.value?.title))
-    const locationOptions = computed<LocationOption[]>(() => [
-      {
-        id: SearchLocationFilterConstants.currentFolder,
-        title: $gettext('Current folder'),
-        enabled: unref(currentFolderUsable)
-      },
-      {
-        id: SearchLocationFilterConstants.allFiles,
-        title: $gettext('All files'),
-        enabled: true
-      }
-    ])
-
-    watch(
-      currentFolderUsable,
-      () => {
-        if (unref(useScopeQueryValue)) {
-          const useScope = unref(useScopeQueryValue).toString() === 'true'
-          // The scope query may force "Current folder" via deeplink even
-          // when `currentFolderAvailable` is false (existing behavior).
-          // The only override is being inside a vault - searching ciphertext
-          // makes no sense.
-          if (useScope && !props.currentFolderIsInVault) {
-            currentSelection.value = unref(locationOptions).find(
-              ({ id }) => id === SearchLocationFilterConstants.currentFolder
-            )
-            return
-          }
-          currentSelection.value = unref(locationOptions).find(
-            ({ id }) => id === SearchLocationFilterConstants.allFiles
-          )
-          return
-        }
-
-        if (!unref(currentFolderUsable)) {
-          currentSelection.value = unref(locationOptions).find(
-            ({ id }) => id === SearchLocationFilterConstants.allFiles
-          )
-          return
-        }
-
-        if (unref(userSelection)) {
-          currentSelection.value = unref(locationOptions).find(
-            ({ id }) => id === unref(userSelection).id
-          )
-          return
-        }
-
-        currentSelection.value = unref(locationOptions).find(
-          ({ id }) => id === SearchLocationFilterConstants.allFiles
-        )
-      },
-      { immediate: true }
-    )
-
-    const onOptionSelected = (option: LocationOption) => {
-      userSelection.value = option
-      currentSelection.value = option
-      emit('update:modelValue', { value: option })
-    }
-
-    return {
-      currentSelection,
-      currentSelectionTitle,
-      onOptionSelected,
-      locationOptions
-    }
+  {
+    id: SearchLocationFilterConstants.allFiles,
+    title: $gettext('All files'),
+    enabled: true
   }
-})
+])
+
+watch(
+  currentFolderUsable,
+  () => {
+    if (unref(useScopeQueryValue)) {
+      const useScope = unref(useScopeQueryValue).toString() === 'true'
+      // The scope query may force "Current folder" via deeplink even
+      // when `currentFolderAvailable` is false (existing behavior).
+      // The only override is being inside a vault - searching ciphertext
+      // makes no sense.
+      if (useScope && !currentFolderIsInVault) {
+        currentSelection.value = unref(locationOptions).find(
+          ({ id }) => id === SearchLocationFilterConstants.currentFolder
+        )
+        return
+      }
+      currentSelection.value = unref(locationOptions).find(
+        ({ id }) => id === SearchLocationFilterConstants.allFiles
+      )
+      return
+    }
+
+    if (!unref(currentFolderUsable)) {
+      currentSelection.value = unref(locationOptions).find(
+        ({ id }) => id === SearchLocationFilterConstants.allFiles
+      )
+      return
+    }
+
+    if (unref(userSelection)) {
+      currentSelection.value = unref(locationOptions).find(
+        ({ id }) => id === unref(userSelection).id
+      )
+      return
+    }
+
+    currentSelection.value = unref(locationOptions).find(
+      ({ id }) => id === SearchLocationFilterConstants.allFiles
+    )
+  },
+  { immediate: true }
+)
+
+const onOptionSelected = (option: LocationOption) => {
+  userSelection.value = option
+  currentSelection.value = option
+  emit('update:modelValue', { value: option })
+}
 </script>
