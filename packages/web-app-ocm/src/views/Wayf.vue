@@ -173,99 +173,73 @@
   </main>
 </template>
 
-<script lang="ts">
-import { ref, computed, onMounted, defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 import { NoContentMessage, AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { useWayf } from '../composables/useWayf'
 import type { WayfProvider } from '../types/wayf'
 
-export default defineComponent({
-  components: {
-    NoContentMessage,
-    AppLoadingSpinner
-  },
-  setup() {
-    const route = useRoute()
-    const { $gettext } = useGettext()
+const route = useRoute()
+const { $gettext } = useGettext()
 
-    const token = computed(() => (route.query.token as string) || '')
-    const hasToken = computed(() => token.value.trim().length > 0)
+const token = computed(() => (route.query.token as string) || '')
+const hasToken = computed(() => token.value.trim().length > 0)
 
-    // providerDomain is always domain, the domain where this WAYF page is hosted
-    const providerDomain = computed(() => {
-      return window.location.hostname
-    })
+// providerDomain is always domain, the domain where this WAYF page is hosted
+const providerDomain = computed(() => {
+  return window.location.hostname
+})
 
-    const query = ref('')
-    const manualProvider = ref('')
+const query = ref('')
+const manualProvider = ref('')
 
-    const {
-      loading,
-      error,
-      federations,
-      navigateToProvider,
-      navigateToManualProvider,
-      loadFederations,
-      filterProviders
-    } = useWayf()
+const {
+  loading,
+  error,
+  federations,
+  navigateToProvider,
+  navigateToManualProvider,
+  loadFederations,
+  filterProviders
+} = useWayf()
 
-    const helperContent = computed(() => {
-      return {
-        text: $gettext(
-          'Select your cloud provider to continue with the invitation process. You can search for providers or enter a domain manually.'
-        ),
-        title: $gettext('Where Are You From?')
-      }
-    })
-
-    const filteredFederations = computed<Record<string, WayfProvider[]>>(() => {
-      const result: Record<string, WayfProvider[]> = {}
-      const currentFederations = federations.value || {}
-      Object.entries(currentFederations).forEach(([name, providers]) => {
-        const filtered = filterProviders(providers as WayfProvider[], query.value)
-        if (filtered.length > 0) {
-          result[name] = filtered
-        }
-      })
-      return result
-    })
-
-    const totalFilteredCount = computed(() => {
-      return Object.values(filteredFederations.value).reduce((sum, arr) => sum + arr.length, 0)
-    })
-
-    const sortedFederationEntries = computed(() => {
-      return Object.entries(filteredFederations.value).sort(([a], [b]) => a.localeCompare(b))
-    })
-
-    const goToManualProvider = async () => {
-      await navigateToManualProvider(manualProvider.value, token.value, providerDomain.value)
-    }
-
-    onMounted(() => {
-      loadFederations()
-    })
-
-    return {
-      token,
-      hasToken,
-      providerDomain,
-      query,
-      manualProvider,
-      loading,
-      error,
-      federations,
-      helperContent,
-      filteredFederations,
-      totalFilteredCount,
-      sortedFederationEntries,
-      navigateToProvider,
-      loadFederations,
-      goToManualProvider
-    }
+const helperContent = computed(() => {
+  return {
+    text: $gettext(
+      'Select your cloud provider to continue with the invitation process. You can search for providers or enter a domain manually.'
+    ),
+    title: $gettext('Where Are You From?')
   }
+})
+
+const filteredFederations = computed<Record<string, WayfProvider[]>>(() => {
+  const result: Record<string, WayfProvider[]> = {}
+  const currentFederations = federations.value || {}
+  Object.entries(currentFederations).forEach(([name, providers]) => {
+    const filtered = filterProviders(providers as WayfProvider[], query.value)
+    if (filtered.length > 0) {
+      result[name] = filtered
+    }
+  })
+  return result
+})
+
+const totalFilteredCount = computed(() => {
+  return Object.values(filteredFederations.value).reduce((sum, arr) => sum + arr.length, 0)
+})
+
+const sortedFederationEntries = computed(() => {
+  return Object.entries(filteredFederations.value).sort(([a], [b]) => a.localeCompare(b))
+})
+
+const goToManualProvider = async () => {
+  await navigateToManualProvider(manualProvider.value, token.value, providerDomain.value)
+}
+
+onMounted(() => {
+  loadFederations()
 })
 </script>
 

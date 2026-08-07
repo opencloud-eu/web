@@ -41,97 +41,86 @@
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, unref } from 'vue'
+<script setup lang="ts">
+import { computed, ref, unref } from 'vue'
 import { useRoute, useRouter } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useInvitationAcceptance } from '../composables/useInvitationAcceptance'
 
-export default defineComponent({
-  emits: ['highlightNewConnections'],
-  setup(props, { emit }) {
-    const router = useRouter()
-    const route = useRoute()
-    const { $gettext } = useGettext()
+const emit = defineEmits<{
+  (e: 'highlightNewConnections'): void
+}>()
 
-    const { acceptInvitation } = useInvitationAcceptance()
+const router = useRouter()
+const route = useRoute()
+const { $gettext } = useGettext()
 
-    const token = ref<string>(undefined)
-    const decodedToken = ref<string>(undefined)
-    const provider = ref<string>(undefined)
-    const providerError = ref(false)
+const { acceptInvitation } = useInvitationAcceptance()
 
-    const helperContent = computed(() => {
-      return {
-        text: $gettext(
-          'Once you accept the invitation, the inviter will be added to your connections.'
-        ),
-        title: $gettext('Accepting invitations')
-      }
-    })
+const token = ref<string>(undefined)
+const decodedToken = ref<string>(undefined)
+const provider = ref<string>(undefined)
+const providerError = ref(false)
 
-    const acceptInvitationButtonDisabled = computed(() => {
-      return !unref(decodedToken) || !unref(provider)
-    })
-
-    const acceptInvite = async () => {
-      try {
-        // Use shared invitation acceptance logic
-        await acceptInvitation(unref(decodedToken), unref(provider))
-
-        token.value = undefined
-        provider.value = undefined
-
-        const { token: currentToken, providerDomain, ...query } = unref(route).query
-        router.replace({
-          name: 'open-cloud-mesh-invitations',
-          query
-        })
-
-        emit('highlightNewConnections')
-      } catch (error) {
-        // Error handling is already done in the shared logic, do not use showErrorMessage here
-      }
-    }
-
-    const decodeInviteToken = (value: string) => {
-      try {
-        let decoded = value.trim()
-
-        // If value doesn't contain '@', assume it's base64 encoded
-        if (!decoded.includes('@')) {
-          decoded = atob(decoded)
-        }
-
-        if (!decoded.includes('@')) {
-          throw new Error('Invalid token format')
-        }
-
-        const [token, serverUrl] = decoded.split('@')
-        if (!token || !serverUrl) {
-          throw new Error('Invalid token format')
-        }
-
-        provider.value = serverUrl
-        decodedToken.value = token
-        providerError.value = false
-      } catch (error) {
-        console.error('Failed to decode invite token:', error)
-        provider.value = ''
-        decodedToken.value = ''
-        providerError.value = true
-      }
-    }
-
-    return {
-      helperContent,
-      token,
-      provider,
-      providerError,
-      acceptInvitationButtonDisabled,
-      acceptInvite,
-      decodeInviteToken
-    }
+const helperContent = computed(() => {
+  return {
+    text: $gettext(
+      'Once you accept the invitation, the inviter will be added to your connections.'
+    ),
+    title: $gettext('Accepting invitations')
   }
 })
+
+const acceptInvitationButtonDisabled = computed(() => {
+  return !unref(decodedToken) || !unref(provider)
+})
+
+const acceptInvite = async () => {
+  try {
+    // Use shared invitation acceptance logic
+    await acceptInvitation(unref(decodedToken), unref(provider))
+
+    token.value = undefined
+    provider.value = undefined
+
+    const { token: currentToken, providerDomain, ...query } = unref(route).query
+    router.replace({
+      name: 'open-cloud-mesh-invitations',
+      query
+    })
+
+    emit('highlightNewConnections')
+  } catch (error) {
+    // Error handling is already done in the shared logic, do not use showErrorMessage here
+  }
+}
+
+const decodeInviteToken = (value: string) => {
+  try {
+    let decoded = value.trim()
+
+    // If value doesn't contain '@', assume it's base64 encoded
+    if (!decoded.includes('@')) {
+      decoded = atob(decoded)
+    }
+
+    if (!decoded.includes('@')) {
+      throw new Error('Invalid token format')
+    }
+
+    const [token, serverUrl] = decoded.split('@')
+    if (!token || !serverUrl) {
+      throw new Error('Invalid token format')
+    }
+
+    provider.value = serverUrl
+    decodedToken.value = token
+    providerError.value = false
+  } catch (error) {
+    console.error('Failed to decode invite token:', error)
+    provider.value = ''
+    decodedToken.value = ''
+    providerError.value = true
+  }
+}
 </script>
