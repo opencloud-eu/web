@@ -22,38 +22,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, ref } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { DateTime } from 'luxon'
 import { Modal, useThemeStore } from '../../composables/piniaStores'
 import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  name: 'DatePickerModal',
-  props: {
-    modal: { type: Object as PropType<Modal>, required: true },
-    currentDate: { type: Object as PropType<DateTime>, required: false, default: null },
-    minDate: { type: Object as PropType<DateTime>, required: false, default: null },
-    isClearable: { type: Boolean, default: true }
-  },
-  emits: ['confirm', 'cancel'],
-  setup() {
-    const themeStore = useThemeStore()
-    const { currentTheme } = storeToRefs(themeStore)
+const {
+  currentDate = undefined,
+  minDate = undefined,
+  isClearable = true
+} = defineProps<{
+  modal: Modal
+  currentDate?: DateTime
+  minDate?: DateTime
+  isClearable?: boolean
+}>()
 
-    const dateTime = ref<DateTime>()
-    const confirmDisabled = ref(true)
-    const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
-      confirmDisabled.value = error || !date
-      dateTime.value = date
-    }
+defineEmits<{
+  (e: 'confirm', dateTime: DateTime): void
+  (e: 'cancel'): void
+}>()
 
-    return {
-      confirmDisabled,
-      onDateChanged,
-      currentTheme,
-      dateTime
-    }
-  }
-})
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
+
+const dateTime = ref<DateTime>()
+const confirmDisabled = ref(true)
+const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
+  confirmDisabled.value = error || !date
+  dateTime.value = date
+}
 </script>
