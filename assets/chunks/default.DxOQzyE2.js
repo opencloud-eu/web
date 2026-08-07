@@ -1,0 +1,1 @@
+import{$t as e,At as t,Et as n,mt as r,ot as i}from"./framework.CQivQhLT.js";var a=r({__name:`default`,setup(r){let a=e(10),o=e=>{a.value=e};return(e,r)=>{let s=t(`oc-page-size`);return n(),i(s,{label:`Items per page`,options:[10,20,50],selected:a.value,onChange:o},null,8,[`selected`])}}});export{a as default};
