@@ -97,7 +97,7 @@ describe('FileSideBar', () => {
       })
 
       const { setLoading } = useSharesStore()
-      await (wrapper.vm as any).loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
       expect(setLoading).toHaveBeenCalledTimes(2)
     })
@@ -114,7 +114,7 @@ describe('FileSideBar', () => {
       })
 
       const { setCollaboratorShares, setLinkShares } = useSharesStore()
-      await (wrapper.vm as any).loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
       expect(setCollaboratorShares).toHaveBeenCalledWith([expect.anything()])
       expect(setLinkShares).toHaveBeenCalledWith([expect.anything()])
@@ -139,7 +139,7 @@ describe('FileSideBar', () => {
       const resourcesStore = useResourcesStore()
       resourcesStore.ancestorMetaData = { '/foo': mock<AncestorMetaDataValue>({ id: '1' }) }
 
-      await (wrapper.vm as any).loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
       expect(
         mocks.$clientService.graphAuthenticated.permissions.listPermissions
@@ -157,7 +157,7 @@ describe('FileSideBar', () => {
 
       const { isAppEnabled } = useAppsStore()
       vi.mocked(isAppEnabled).mockReturnValue(true)
-      await (wrapper.vm as any).loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
       expect(
         mocks.$clientService.graphAuthenticated.permissions.listPermissions
@@ -175,8 +175,38 @@ describe('FileSideBar', () => {
         allowedRoles: []
       })
 
-      await (wrapper.vm as any).loadSharesTask.perform(resource)
+      await (wrapper.vm as any).loadSharesTask.perform({ resource })
       expect(loadAncestorMetaData).toHaveBeenCalled()
+    })
+
+    it('loads inherited shares and project space members when explicitly requested', async () => {
+      const space = mock<SpaceResource>({ id: 'space-id', driveType: 'project' })
+      const resource = mock<Resource>({
+        id: 'resource-id',
+        fileId: 'resource-id',
+        path: '/folder/document.md'
+      })
+      const { wrapper, mocks } = createWrapper({ space })
+      const resourcesStore = useResourcesStore()
+
+      mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({
+        shares: [],
+        allowedActions: [],
+        allowedRoles: []
+      })
+
+      await (wrapper.vm as any).loadSharesTask.perform({
+        space,
+        resource,
+        includeInheritedShares: true
+      })
+
+      expect(resourcesStore.loadAncestorMetaData).toHaveBeenCalledWith(
+        expect.objectContaining({ folder: resource, space })
+      )
+      expect(
+        mocks.$clientService.graphAuthenticated.permissions.listPermissions
+      ).toHaveBeenCalledWith(space.id, space.id, expect.anything(), {}, expect.anything())
     })
 
     describe('cache', () => {
@@ -193,7 +223,7 @@ describe('FileSideBar', () => {
         const sharesStore = useSharesStore()
         sharesStore.collaboratorShares = [mock<CollaboratorShare>()]
 
-        await (wrapper.vm as any).loadSharesTask.perform(resource)
+        await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([expect.anything()])
       })
@@ -210,7 +240,7 @@ describe('FileSideBar', () => {
         const sharesStore = useSharesStore()
         sharesStore.collaboratorShares = [mock<CollaboratorShare>()]
 
-        await (wrapper.vm as any).loadSharesTask.perform(resource)
+        await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([])
       })
@@ -227,7 +257,7 @@ describe('FileSideBar', () => {
         const sharesStore = useSharesStore()
         sharesStore.collaboratorShares = [mock<CollaboratorShare>()]
 
-        await (wrapper.vm as any).loadSharesTask.perform(resource)
+        await (wrapper.vm as any).loadSharesTask.perform({ resource })
 
         expect(sharesStore.setCollaboratorShares).toHaveBeenCalledWith([])
       })

@@ -30,6 +30,13 @@ import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/gra
 import PQueue from 'p-queue'
 import { useIsAppActive } from '../actions'
 
+interface LoadSharesOptions {
+  space: SpaceResource
+  resource: Resource
+  updateStore?: boolean
+  includeInheritedShares?: boolean
+}
+
 export const useLoadShares = () => {
   const clientService = useClientService()
   const configStore = useConfigStore()
@@ -71,11 +78,7 @@ export const useLoadShares = () => {
 
   const loadSharesTask = useTask(function* (
     signal,
-    {
-      space,
-      resource,
-      updateStore = true
-    }: { space: SpaceResource; resource: Resource; updateStore?: boolean }
+    { space, resource, updateStore = true, includeInheritedShares = false }: LoadSharesOptions
   ) {
     sharesStore.setLoading(true)
     sharesStore.removeOrphanedShares()
@@ -139,7 +142,7 @@ export const useLoadShares = () => {
     }
 
     // use cache for indirect shares
-    const useCache = !unref(isFlatFileList) && !unref(isProjectsLocation)
+    const useCache = !includeInheritedShares && !unref(isFlatFileList) && !unref(isProjectsLocation)
     if (useCache) {
       collaboratorCache.forEach((share) => {
         if (loadedCollaboratorShares.some((s) => s.id === share.id)) {
@@ -158,7 +161,7 @@ export const useLoadShares = () => {
       })
     }
 
-    if (isLocationCommonActive(router, 'files-common-search')) {
+    if (includeInheritedShares || isLocationCommonActive(router, 'files-common-search')) {
       yield resourcesStore.loadAncestorMetaData({
         folder: unref(resource),
         space,
@@ -171,7 +174,7 @@ export const useLoadShares = () => {
     const cachedIds = [...collaboratorCache, ...linkCache].map(({ resourceId }) => resourceId)
     const ancestorIds = Object.values(resourcesStore.ancestorMetaData)
       .filter(({ id, path }) => {
-        if (id === resource.id || cachedIds.includes(id)) {
+        if (id === resource.id || (!includeInheritedShares && cachedIds.includes(id))) {
           // share already cached
           return false
         }
@@ -188,12 +191,10 @@ export const useLoadShares = () => {
       .map(({ id }) => id)
 
     if (
-      unref(isFlatFileList) &&
+      (includeInheritedShares || unref(isFlatFileList)) &&
       isProjectSpaceResource(space) &&
       !isProjectSpaceResource(resource)
     ) {
-      // add project space to ancestors in flat file list where we don't have ancestors
-      // to display space members in the sidebar
       ancestorIds.push(space.id)
     }
 

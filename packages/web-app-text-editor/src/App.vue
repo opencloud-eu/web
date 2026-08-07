@@ -8,12 +8,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef, unref } from 'vue'
+import { computed, toRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { Resource } from '@opencloud-eu/web-client'
-import type { YjsStatus } from '@opencloud-eu/web-pkg'
-import type * as Y from 'yjs'
-import type { Awareness } from 'y-protocols/awareness'
+import { useMentionUsers, type YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
   useTextEditor,
   TextEditorProvider,
@@ -23,13 +20,11 @@ import {
 } from '@opencloud-eu/web-pkg/editor'
 import { detectContentType } from './yjs'
 
-const { ydoc, awareness, isReadOnly, resource, yjsStatus } = defineProps<{
-  currentContent: string
-  isReadOnly: boolean
-  resource: Resource
-  ydoc: Y.Doc | null
-  awareness: Awareness | null
-  yjsStatus: YjsStatus | null
+const { ydoc, awareness, isReadOnly, resource, space, yjsStatus } =
+  defineProps<YjsEditorSlotProps>()
+
+const emit = defineEmits<{
+  (e: 'register:onSaveCallback', value: () => Promise<void>): void
 }>()
 
 const { $gettext } = useGettext()
@@ -45,6 +40,20 @@ const placeholder = computed(() => {
   return $gettext('Write or type / for formatting options...')
 })
 
+const { getMentionUsers, notifyMentionedUsers, resetMentionState, selectMentionUser } =
+  useMentionUsers({
+    space: toRef(() => space),
+    resource: toRef(() => resource)
+  })
+
+function selectMention({ id }: { id: string }): void {
+  selectMentionUser(id)
+}
+
+watch([() => space.id, () => resource.id], resetMentionState)
+
+emit('register:onSaveCallback', notifyMentionedUsers)
+
 const textEditor = useTextEditor({
   contentType: unref(contentType),
   currentResource: toRef(() => resource),
@@ -52,6 +61,10 @@ const textEditor = useTextEditor({
   placeholder: unref(placeholder),
   ydoc,
   awareness,
-  yjsStatus: () => yjsStatus
+  yjsStatus: () => yjsStatus,
+  mentions: {
+    items: getMentionUsers,
+    onSelect: selectMention
+  }
 })
 </script>
