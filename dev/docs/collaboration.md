@@ -262,14 +262,18 @@ Two clients can arrive into an empty room at the same moment, and only one may s
 
 A `Y.Map` alongside the editor content, used for coordination the editor never sees:
 
-| Key           | Written by         | Meaning                                       |
-| ------------- | ------------------ | --------------------------------------------- |
-| `etag`        | whoever saved last | the etag the room believes is on disk         |
-| `lastSavedAt` | whoever saved last | fan-out trigger for a peer save               |
-| `appVersion`  | first peer in      | schema version the room is running            |
-| `isStale`     | any peer           | the file changed outside this room; rehydrate |
-| `nativeEtag`  | peer that noticed  | the etag recovery should settle on            |
-| `hydrated`    | the seeding peer   | someone is seeding the room right now         |
+| Key           | Written by          | Meaning                                       |
+| ------------- | ------------------- | --------------------------------------------- |
+| `etag`        | whoever saved last  | the etag the room believes is on disk         |
+| `lastSavedAt` | whoever saved last  | fan-out trigger for a peer save               |
+| `appVersion`  | first peer in       | schema version the room is running            |
+| `isStale`     | any writer          | the file changed outside this room; rehydrate |
+| `nativeEtag`  | writer that noticed | the etag recovery should settle on            |
+| `hydrated`    | the seeding peer    | someone is seeding the room right now         |
+
+Every key lives in the shared Y.Doc, so a read-only peer's writes to it are
+rejected by the Yjs server along with everything else. Staleness noticed by a
+read-only peer alone therefore never reaches the room.
 
 ### Saving
 
@@ -336,7 +340,7 @@ These are open items, not bugs to be surprised by.
 
 **Hydration election can race.** The 150 ms awareness-settle window is heuristic. If awareness has not propagated in time, two peers can both elect themselves and hydrate, duplicating content. Server-side hydration would remove the whole class.
 
-**`_oc_meta` is client-writable.** A buggy or hostile client can set `appVersion` or `isStale` and lock or reset every peer in the room. The room's control plane has no server authority.
+**`_oc_meta` is writable by any client with write access.** A buggy or hostile client can set `appVersion` or `isStale` and lock or reset every peer in the room. The room's control plane has no server authority beyond the read-only gate.
 
 **`appVersion` is `0.0.0`.** `web-app-text-editor` is a private package with a placeholder version, so the version gate never actually fires for it.
 

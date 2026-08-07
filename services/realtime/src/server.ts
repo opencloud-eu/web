@@ -139,7 +139,7 @@ const server = new Server({
   // here is "mostly ceremony" per the migration plan. Stale detection
   // moved to the client (see useCollaborativeDocument.onProviderSynced).
 
-  async onAuthenticate({ token, documentName, requestParameters }) {
+  async onAuthenticate({ token, documentName, requestParameters, connectionConfig }) {
     if (!token) {
       throw new Error('missing token')
     }
@@ -190,6 +190,11 @@ const server = new Server({
       throw new Error(`access denied for document="${documentName}"`)
     }
     const readOnly = !access.canWrite
+
+    // Writes are gated on `connectionConfig.readOnly`, which Hocuspocus reads
+    // when it builds the Connection. The hook's return value only feeds
+    // `context`, so setting it there would leave the connection writable.
+    connectionConfig.readOnly = readOnly
 
     console.log(
       `[onAuthenticate] document="${documentName}" user="${me.displayName ?? id}" ` +
