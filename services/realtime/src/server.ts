@@ -29,7 +29,6 @@ type GraphUser = {
 
 type FileAccess = {
   canWrite: boolean
-  etag: string
 }
 
 // Per-document first-seen app version. Acts as the authoritative gate for
@@ -115,53 +114,34 @@ function parseDocumentId(documentName: string): { driveId: string; itemId: strin
   return { driveId: fileId.slice(0, sep), itemId: fileId }
 }
 
-// Probes OC's Graph API for the user's effective access AND the file's
-// current native etag. Returns `{ canWrite, etag }` on success; `null` when
-// OC denies access entirely (401/403/404).
+// Probes OC's Graph API for the user's effective access to the file. Returns
+// `{ canWrite }` on success; `null` when OC denies access (401/403/404).
 //
-// Two parallel calls:
-// - Graph /permissions for the effective action set (top-level
-//   @libre.graph.permissions.actions.allowedValues, which is the merged
-//   PermissionSet that backs WebDAV's oc:permissions).
-// - WebDAV HEAD for the native eTag (Graph's /items endpoint is share-jail-
-//   only and 400s on personal drives; WebDAV works uniformly).
+// The permissions endpoint reports the effective action set (top-level
+// `@libre.graph.permissions.actions.allowedValues`, the merged PermissionSet
+// that also backs WebDAV's `oc:permissions`) and 404s for a file the user
+// cannot see, which is what makes it the authorization gate.
 async function probeFileAccess(token: string, documentName: string): Promise<FileAccess | null> {
   const { driveId, itemId } = parseDocumentId(documentName)
   const permsUrl =
     `${opencloudUrl}/graph/v1beta1/drives/${encodeURIComponent(driveId)}` +
     `/items/${encodeURIComponent(itemId)}/permissions`
-  const davUrl = `${opencloudUrl}/remote.php/dav/spaces/${encodeURIComponent(itemId)}`
-  const headers = { Authorization: `Bearer ${token}` }
 
-  const [permsRes, headRes] = await Promise.all([
-    fetch(permsUrl, { headers }),
-    fetch(davUrl, { method: 'HEAD', headers })
-  ])
+  const res = await fetch(permsUrl, { headers: { Authorization: `Bearer ${token}` } })
 
-  if ([permsRes.status, headRes.status].some((s) => s === 401 || s === 403 || s === 404)) {
+  if (res.status === 401 || res.status === 403 || res.status === 404) {
     return null
   }
-  if (!permsRes.ok) {
-    const detail = await permsRes.text().catch(() => '')
-    throw new Error(`graph permissions returned ${permsRes.status}: ${detail.slice(0, 200)}`)
-  }
-  if (!headRes.ok) {
-    const detail = await headRes.text().catch(() => '')
-    throw new Error(`webdav HEAD returned ${headRes.status}: ${detail.slice(0, 200)}`)
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`graph permissions returned ${res.status}: ${detail.slice(0, 200)}`)
   }
 
-  const permsBody = (await permsRes.json()) as Record<string, unknown>
-  const actions = permsBody['@libre.graph.permissions.actions.allowedValues']
+  const body = (await res.json()) as Record<string, unknown>
+  const actions = body['@libre.graph.permissions.actions.allowedValues']
   const allowed = Array.isArray(actions) ? (actions as string[]) : []
-  const canWrite = allowed.some((a) => WRITE_ACTION.test(a))
 
-  // WebDAV emits the strong validator under `ETag` (and sometimes `OC-ETag`
-  // for OC-specific extensions). Strip surrounding quotes for consistency
-  // with the etag the wrapper sees from `props.resource.etag`.
-  const rawEtag = headRes.headers.get('etag') || headRes.headers.get('oc-etag') || ''
-  const etag = rawEtag.replace(/^"(.*)"$/, '$1')
-
-  return { canWrite, etag }
+  return { canWrite: allowed.some((a) => WRITE_ACTION.test(a)) }
 }
 
 const server = new Server({
@@ -185,18 +165,15 @@ const server = new Server({
     const clientAppVersion = requestParameters.get('appVersion') ?? ''
 
     // Dev shortcut for integration tests: any token matching DEV_FAKE_TOKEN
-    // returns a synthetic identity. ACL check is skipped (tests use random
+    // returns a synthetic identity. The ACL check is skipped (tests use random
     // documentNames that don't exist in OC). Disabled when DEV_FAKE_TOKEN is
-    // unset. Tests can pass `devEtag` to drive the stale-state detection
-    // path without touching real OC.
+    // unset.
     if (devFakeToken && token === devFakeToken) {
       const id = 'dev-fake-user'
-      const nativeEtag = requestParameters.get('devEtag') ?? ''
       // Gated the same way as a real connection, so the two paths cannot drift.
       enforceAppVersion(documentName, clientAppVersion)
-      console.log(`[onAuthenticate] dev-fake document="${documentName}" nativeEtag="${nativeEtag}"`)
+      console.log(`[onAuthenticate] dev-fake document="${documentName}"`)
       return {
-        nativeEtag,
         user: {
           id,
           displayName: 'Dev Fake User',
@@ -208,9 +185,7 @@ const server = new Server({
     const me = await validateTokenAgainstOpenCloud(token)
     const id = me.id ?? me.userPrincipalName ?? 'unknown'
 
-    // ACL + native etag probe via Graph: enforces access AND captures the
-    // current native etag so onLoadDocument can detect a stale persisted
-    // Y.Doc snapshot (Hocuspocus persistence vs external file write).
+    // Authorization: does this user have the file at all, and may they write it.
     const access = await probeFileAccess(token, documentName)
     if (access === null) {
       throw new Error(`access denied for document="${documentName}"`)
@@ -229,11 +204,10 @@ const server = new Server({
 
     console.log(
       `[onAuthenticate] document="${documentName}" user="${me.displayName ?? id}" ` +
-        `id="${id}" readOnly=${readOnly} nativeEtag="${access.etag}"`
+        `id="${id}" readOnly=${readOnly}`
     )
     return {
       readOnly,
-      nativeEtag: access.etag,
       clientAppVersion,
       user: {
         id,
@@ -280,6 +254,14 @@ const server = new Server({
   }
 })
 
-server.listen().then(() => {
-  console.log(`realtime server listening on :${port}, oc=${opencloudUrl}`)
-})
+server.listen().then(
+  () => {
+    console.log(`realtime server listening on :${port}, oc=${opencloudUrl}`)
+  },
+  (err: unknown) => {
+    // Most often the port is already taken. Without this the process died on an
+    // unhandled rejection and a stack trace instead of saying what went wrong.
+    console.error(`realtime server failed to listen on :${port}:`, err)
+    process.exit(1)
+  }
+)

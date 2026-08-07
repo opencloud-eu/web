@@ -1,7 +1,6 @@
-# This adds four additional routes to the proxy. Forwarding request on
-# 'realtime', '/carddav/', '/caldav/' and the respective '/.well-knwown'
-# endpoints to the radicale and collab containers and setting the required
-# headers.
+# This adds five additional routes to the proxy: '/realtime' to the realtime
+# container, and '/caldav/', '/carddav/' plus their respective '/.well-known'
+# endpoints to radicale. Also sets the headers those backends require.
 additional_policies:
   - name: default
     routes:
