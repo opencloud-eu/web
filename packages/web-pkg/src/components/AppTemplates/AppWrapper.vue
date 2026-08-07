@@ -158,6 +158,13 @@ const loadingError: Ref<Error> = ref()
 const isReadOnly = ref(false)
 const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
+/**
+ * Id of the resource `currentContent` was fetched for. `resource` is swapped
+ * ahead of the body, so comparing the two is what tells a collaborative
+ * session whether the content it would hydrate from belongs to the file it is
+ * about to open.
+ */
+const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
 
@@ -232,8 +239,9 @@ const collaborativeDocument = collaborative
       resource,
       currentContent: () => (unref(currentContent) as string) ?? '',
       // Hydration seeds the Y.Doc from `currentContent`, so the session must
-      // not start before `loadFileTask` has fetched it.
-      enabled: () => !unref(loading) && !unref(loadingError),
+      // not start before `loadFileTask` has fetched it for this very resource.
+      enabled: () =>
+        !unref(loading) && !unref(loadingError) && unref(contentResourceId) === unref(resource)?.id,
       isReadOnly,
       adapter: collaborative.makeAdapter({ resource }),
       appVersion: collaborative.appVersion,
@@ -460,6 +468,7 @@ const loadFileTask = useTask(function* (signal) {
       )
       serverContent.value = currentContent.value = fileContentsResponse.body
       currentETag.value = fileContentsResponse.headers['OC-ETag']
+      contentResourceId.value = unref(resource).id
     }
 
     if (unref(hasProp('url'))) {
@@ -480,6 +489,15 @@ watch(
   currentFileContext,
   async () => {
     if (!unref(noResourceLoading)) {
+      // Back to square one for the new file. `loadResourceTask` swaps
+      // `resource` well before `loadFileTask` has fetched the matching body,
+      // and a collaborative session keys its room off `resource` while it
+      // hydrates from `currentContent`. Without this reset the session for the
+      // new file would seed itself with the previous file's content, and the
+      // next save would write it to the new path.
+      loading.value = true
+      loadingError.value = undefined
+
       await loadResourceTask.perform()
 
       if (unref(fileSizeLimit) && toNumber(unref(resource).size) > unref(fileSizeLimit)) {
