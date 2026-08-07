@@ -40,6 +40,41 @@ type FileAccess = {
 // sidecar). Empty appVersion is tolerated for legacy/test clients.
 const appVersionByDocument = new Map<string, string>()
 
+// A room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>` - a few hundred
+// characters at the very most. Anything longer is not a file we could serve, so
+// refuse it before it becomes a Graph URL.
+const MAX_DOCUMENT_NAME_LENGTH = 512
+
+/**
+ * App-version gate: everybody in a room must run the same client version, or
+ * two incompatible Y.Doc layouts end up in one document. The first connect for
+ * a documentName sets the baseline and later connects with a different version
+ * are rejected. An empty client version is tolerated (back-compat for a raw
+ * provider in a test harness).
+ *
+ * MUST run only after the connection is both authenticated and authorized.
+ * Recording a baseline any earlier let an unauthenticated caller name any room,
+ * claim a version nobody else runs and lock every legitimate client out of that
+ * file until the process restarted - the entry is only cleared by
+ * `onDisconnect`, which never fires for a rejected connection. The same path
+ * grew the map without bound under attacker-chosen keys.
+ */
+function enforceAppVersion(documentName: string, clientAppVersion: string): void {
+  if (!clientAppVersion) return
+
+  const baseline = appVersionByDocument.get(documentName)
+  if (!baseline) {
+    appVersionByDocument.set(documentName, clientAppVersion)
+    return
+  }
+  if (clientAppVersion !== baseline) {
+    throw new Error(
+      `app version mismatch for document="${documentName}": ` +
+        `client=${clientAppVersion} room=${baseline}, please reload`
+    )
+  }
+}
+
 function deterministicColor(seed: string): string {
   let hash = 0
   for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
@@ -143,22 +178,11 @@ const server = new Server({
     if (!token) {
       throw new Error('missing token')
     }
+    if (documentName.length > MAX_DOCUMENT_NAME_LENGTH) {
+      throw new Error(`documentName too long (${documentName.length})`)
+    }
 
-    // App-version gate. First connect to a documentName sets the baseline,
-    // subsequent connects with a different appVersion are rejected so old
-    // clients can't poison the room. Empty client appVersion is permitted
-    // (back-compat for the integration test harness using a raw provider).
     const clientAppVersion = requestParameters.get('appVersion') ?? ''
-    const baselineAppVersion = appVersionByDocument.get(documentName)
-    if (clientAppVersion && baselineAppVersion && clientAppVersion !== baselineAppVersion) {
-      throw new Error(
-        `app version mismatch for document="${documentName}": ` +
-          `client=${clientAppVersion} room=${baselineAppVersion}, please reload`
-      )
-    }
-    if (clientAppVersion && !baselineAppVersion) {
-      appVersionByDocument.set(documentName, clientAppVersion)
-    }
 
     // Dev shortcut for integration tests: any token matching DEV_FAKE_TOKEN
     // returns a synthetic identity. ACL check is skipped (tests use random
@@ -168,6 +192,8 @@ const server = new Server({
     if (devFakeToken && token === devFakeToken) {
       const id = 'dev-fake-user'
       const nativeEtag = requestParameters.get('devEtag') ?? ''
+      // Gated the same way as a real connection, so the two paths cannot drift.
+      enforceAppVersion(documentName, clientAppVersion)
       console.log(`[onAuthenticate] dev-fake document="${documentName}" nativeEtag="${nativeEtag}"`)
       return {
         nativeEtag,
@@ -189,6 +215,11 @@ const server = new Server({
     if (access === null) {
       throw new Error(`access denied for document="${documentName}"`)
     }
+
+    // Identity and access are settled, so this caller is entitled to influence
+    // the room's version baseline.
+    enforceAppVersion(documentName, clientAppVersion)
+
     const readOnly = !access.canWrite
 
     // Writes are gated on `connectionConfig.readOnly`, which Hocuspocus reads
