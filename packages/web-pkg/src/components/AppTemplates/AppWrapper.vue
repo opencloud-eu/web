@@ -566,45 +566,47 @@ const saveFileTask = useTask(function* () {
     resource.value = { ...unref(resource), etag: putFileContentsResponse.etag }
   } catch (e) {
     // 409 / 412 — `previousEntityTag` didn't match what the server has.
-    // Usually means another peer in a collaborative session saved this
-    // file just before us. Our editor's content (Y.Doc-synced) already
-    // includes the peer's edits, so simply refetching the file to grab
-    // the fresh etag and retrying the save lets us keep going without
-    // bothering the user. We only fall through to the conflict popup
-    // when the refetch / retry path itself fails.
+    //
+    // A connected collaborative session can resolve that on its own: the most
+    // likely cause is a peer in the same room saving just before us, and our
+    // Y.Doc already holds that peer's edits, so refetching for the fresh etag
+    // and retrying publishes the merged state rather than either side's half.
     if (e.statusCode === 412 || e.statusCode === 409) {
-      try {
-        const fresh = yield* call(getFileContents(currentFileContext, { ...fileContentOptions }))
-        const freshEtag = fresh.headers['OC-ETag']
+      const canReconcile =
+        Boolean(collaborativeDocument) && unref(collaborativeDocument.status) === 'connected'
 
-        if (fresh.body === newContent) {
-          // No real content divergence — only our etag tracking was
-          // stale. Reconcile silently.
-          serverContent.value = newContent
-          currentETag.value = freshEtag
-          if (unref(resource)) {
-            resourcesStore.upsertResource({ ...unref(resource), etag: freshEtag })
-            resource.value = { ...unref(resource), etag: freshEtag }
+      if (canReconcile) {
+        try {
+          const fresh = yield* call(getFileContents(currentFileContext, { ...fileContentOptions }))
+          const freshEtag = fresh.headers['OC-ETag']
+
+          if (fresh.body === newContent) {
+            // No real content divergence — only our etag tracking was
+            // stale. Reconcile silently.
+            serverContent.value = newContent
+            currentETag.value = freshEtag
+            if (unref(resource)) {
+              resourcesStore.upsertResource({ ...unref(resource), etag: freshEtag })
+              resource.value = { ...unref(resource), etag: freshEtag }
+            }
+            return
           }
-          return
-        }
 
-        // Server has a different content (typical collab case: peer
-        // saved, our Y.Doc has peer's edits + our own additions). Retry
-        // the PUT with the fresh etag — that publishes our combined
-        // state. Cross-app or external writers get overwritten here.
-        const retry = yield putFileContents(currentFileContext, {
-          content: newContent as string,
-          previousEntityTag: freshEtag
-        })
-        serverContent.value = newContent
-        currentETag.value = retry.etag
-        resourcesStore.upsertResource(retry)
-        resource.value = { ...unref(resource), etag: retry.etag }
-        return
-      } catch (retryErr) {
-        // Refetch or retry blew up — drop through to the user-facing
-        // conflict popup so they can still recover by copying out.
+          // Retry the PUT with the fresh etag, publishing our combined state.
+          const retry = yield putFileContents(currentFileContext, {
+            content: newContent as string | ArrayBuffer,
+            previousEntityTag: freshEtag
+          })
+          serverContent.value = newContent
+          currentETag.value = retry.etag
+          resourcesStore.upsertResource(retry)
+          resource.value = { ...unref(resource), etag: retry.etag }
+          return
+        } catch (retryErr) {
+          // Refetch or retry blew up — drop through to the user-facing
+          // conflict popup so they can still recover by copying out.
+          console.error('[collab] conflict reconciliation failed:', retryErr)
+        }
       }
       errorPopup(
         new HttpError(

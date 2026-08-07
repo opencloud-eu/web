@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, nextTick, ref, unref } from 'vue'
+import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
@@ -13,7 +13,10 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 
 import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
-import type { CollaborativeDocument } from '../../../../src/composables/collaborative'
+import type {
+  CollaborativeDocument,
+  CollaborativeStatus
+} from '../../../../src/composables/collaborative'
 import type { FileContext } from '../../../../src/composables/appDefaults'
 
 const { useAppDefaultsSpy, useCollaborativeDocumentSpy } = vi.hoisted(() => ({
@@ -50,7 +53,11 @@ const wrappedComponent = defineComponent({
   template: '<div />'
 })
 
-function setup() {
+function setup({
+  collaborative = true,
+  status = 'connected' as CollaborativeStatus,
+  putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' }))
+} = {}) {
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
@@ -62,13 +69,20 @@ function setup() {
     .mockImplementation(() => new Promise((r) => (resolveContents = r)))
 
   useAppDefaultsSpy.mockReturnValue(
-    useAppDefaultsMock({ currentFileContext, getFileInfo, getFileContents })
+    useAppDefaultsMock({ currentFileContext, getFileInfo, getFileContents, putFileContents })
   )
 
   let sessionOptions: any
   useCollaborativeDocumentSpy.mockImplementation((options: any) => {
     sessionOptions = options
-    return mock<CollaborativeDocument>({ isReady: ref(true) as any })
+    return mock<CollaborativeDocument>({
+      isReady: ref(true) as any,
+      status: ref(status) as any,
+      // Auto-mocked refs are truthy, which would fold into `effectiveReadOnly`
+      // and hard-wire `isDirty` to false.
+      isLockedForReload: ref(false) as any,
+      error: ref<Error | null>(null) as any
+    })
   })
 
   const mocks = defaultComponentMocks({
@@ -78,11 +92,20 @@ function setup() {
     })
   })
 
+  let slotProps: any
   const wrapper = mount(AppWrapper, {
+    slots: {
+      default: (props: any) => {
+        slotProps = props
+        return h('div', { class: 'slot-content' })
+      }
+    },
     props: {
       applicationId: 'test-app',
       wrappedComponent,
-      collaborative: { appVersion: '1.0.0', makeAdapter: () => mock<any>() }
+      ...(collaborative
+        ? { collaborative: { appVersion: '1.0.0', makeAdapter: () => mock<any>() } }
+        : {})
     },
     global: {
       plugins: [
@@ -105,7 +128,17 @@ function setup() {
   return {
     wrapper,
     currentFileContext,
-    isEnabled: () => sessionOptions.enabled(),
+    isEnabled: () => sessionOptions?.enabled(),
+    putFileContents,
+    getFileContents,
+    async edit(content: string) {
+      slotProps['onUpdate:currentContent'](content)
+      await nextTick()
+    },
+    async pressCtrlS() {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 's', ctrlKey: true }))
+      await flushPromises()
+    },
     session: () => sessionOptions,
     async resolveResource(resource: Resource) {
       resolveInfo(resource)
@@ -181,5 +214,65 @@ describe('AppWrapper — peer save fan-out', () => {
     // Same file, so the session must not be torn down and rebuilt over it.
     expect(unref(session.resource).id).toBe(FILE_A.id)
     expect(s.isEnabled()).toBe(true)
+  })
+})
+
+describe('AppWrapper — save conflict handling', () => {
+  function conflict() {
+    return Object.assign(new Error('precondition failed'), { statusCode: 412, response: {} })
+  }
+
+  // Regression: the refetch-and-retry path was unconditional, so it also ran
+  // for plain editors and for deployments with no realtime server. There is
+  // nothing to merge in that case - the divergence is someone else's write,
+  // and retrying over it destroyed their work with no dialog and no toast.
+  it('shows the conflict dialog instead of retrying when there is no session', async () => {
+    const putFileContents = vi.fn().mockRejectedValue(conflict())
+    const s = setup({ collaborative: false, putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    await s.pressCtrlS()
+
+    // One attempt only, and crucially no refetch: the retry path never starts,
+    // so nothing can be written over the other writer.
+    expect(putFileContents).toHaveBeenCalledTimes(1)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
+  })
+
+  it('shows the conflict dialog when the session is not connected', async () => {
+    const putFileContents = vi.fn().mockRejectedValue(conflict())
+    const s = setup({ status: 'local', putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    await s.pressCtrlS()
+
+    expect(putFileContents).toHaveBeenCalledTimes(1)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
+  })
+
+  it('refetches and retries once when a connected session can merge', async () => {
+    const putFileContents = vi
+      .fn()
+      .mockRejectedValueOnce(conflict())
+      .mockResolvedValue(mock<Resource>({ etag: 'etag-retry' }))
+    const s = setup({ status: 'connected', putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    // The retry path refetches the file first.
+    await s.resolveContent('content written by the peer')
+    await pressed
+
+    expect(s.getFileContents).toHaveBeenCalledTimes(2)
+    expect(putFileContents).toHaveBeenCalledTimes(2)
+    expect(putFileContents.mock.calls[1][1]).toMatchObject({ previousEntityTag: 'etag' })
   })
 })
