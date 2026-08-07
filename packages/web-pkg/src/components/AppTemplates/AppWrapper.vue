@@ -71,7 +71,7 @@ import {
   CustomComponentExtension,
   useCollaborativeDocument
 } from '../../composables'
-import { CollaborativeOptions } from './types'
+import { AppWrapperSlotHandlers, AppWrapperSlotProps, CollaborativeOptions } from './types'
 import {
   Resource,
   SpaceResource,
@@ -833,7 +833,7 @@ onBeforeRouteLeave((_to, _from, next) => {
   }
 })
 
-const slotAttrs = computed(() => ({
+const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => ({
   url: unref(url),
   space: unref(unref(currentFileContext).space),
   resource: unref(resource),
@@ -842,7 +842,7 @@ const slotAttrs = computed(() => ({
   isReadOnly: unref(effectiveReadOnly),
   applicationConfig: unref(applicationConfig),
   currentFileContext: unref(currentFileContext),
-  currentContent: unref(currentContent),
+  currentContent: unref(currentContent) as string,
   isFolderLoading: unref(isFolderLoading),
 
   // The slot only renders once `isLoading` is false, which for a

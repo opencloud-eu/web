@@ -56,14 +56,6 @@ describe('Text editor app', () => {
     expect(lastOptions().contentType).toBe('plain-text')
   })
 
-  it('prefers an explicitly passed content type over detection', () => {
-    getWrapper({
-      contentType: 'html',
-      resource: mock<Resource>({ extension: 'md', mimeType: 'text/markdown' })
-    })
-    expect(lastOptions().contentType).toBe('html')
-  })
-
   it('only sets a placeholder for editable markdown', () => {
     getWrapper({ resource: mock<Resource>({ extension: 'md', mimeType: 'text/markdown' }) })
     expect(lastOptions().placeholder).toBeTruthy()

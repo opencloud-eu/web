@@ -1,9 +1,14 @@
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { AppConfigObject } from '../../apps/types'
 import { Ref } from 'vue'
 import type * as Y from 'yjs'
 import type { Awareness } from 'y-protocols/awareness'
-import type { CollaborativeAdapter } from '../../composables'
+import type {
+  AppFileHandlingResult,
+  AppFolderHandlingResult,
+  CollaborativeAdapter,
+  FileContext
+} from '../../composables'
 
 /**
  * Handed to {@link CollaborativeOptions.makeAdapter}. Reactive, because the
@@ -34,15 +39,65 @@ export interface CollaborativeOptions {
   documentPrefix?: string
 }
 
-export interface AppWrapperSlotArgs {
+/**
+ * Every value AppWrapper passes down to the wrapped component.
+ *
+ * A wrapped component must declare only the subset it actually uses: AppWrapper
+ * inspects the component's props to decide what to load. Use one of the presets
+ * below, or `Pick` the keys you need.
+ */
+export interface AppWrapperSlotProps {
   applicationConfig: AppConfigObject
+  space: SpaceResource
   resource: Resource
-  currentContent: Ref<string>
+  currentFileContext: FileContext
+  /** Fetching this costs a WebDAV GET of the whole file. */
+  currentContent: string
+  /** Building this costs a WebDAV GET of the whole file. */
+  url: string
   isDirty: boolean
   isReadOnly: boolean
-  url: string
+  activeFiles: Resource[]
+  isFolderLoading: boolean
   /** Set once the collaborative session is synced and hydrated, else null. */
   ydoc: Y.Doc | null
   /** Set once the collaborative session is synced and hydrated, else null. */
   awareness: Awareness | null
 }
+
+/**
+ * Callbacks AppWrapper passes down alongside {@link AppWrapperSlotProps}. The
+ * `on*` keys arrive as listeners, so a wrapped component declares them via
+ * `defineEmits` rather than `defineProps`.
+ */
+export interface AppWrapperSlotHandlers {
+  loadFolderForFileContext: AppFolderHandlingResult['loadFolderForFileContext']
+  getUrlForResource: AppFileHandlingResult['getUrlForResource']
+  revokeUrl: AppFileHandlingResult['revokeUrl']
+  onSave: () => Promise<void>
+  onClose: () => void
+  'onUpdate:resource': (value: Resource) => void
+  'onUpdate:currentContent': (value: unknown) => void
+  'onRegister:onDeleteResourceCallback': (value: () => void) => void
+  'onDelete:resource': () => void
+}
+
+/** Apps that render the file body and write it back. */
+export type EditorSlotProps = Pick<
+  AppWrapperSlotProps,
+  'resource' | 'currentContent' | 'isReadOnly'
+>
+
+/** Editors opting into realtime collaboration via {@link CollaborativeOptions}. */
+export type CollaborativeEditorSlotProps = EditorSlotProps &
+  Pick<AppWrapperSlotProps, 'ydoc' | 'awareness'>
+
+/** Apps that render the file from a URL instead of its body. */
+export type ViewerSlotProps = Pick<AppWrapperSlotProps, 'resource' | 'url'>
+
+/** Apps that browse the whole folder and build their own URLs per file. */
+export type FolderViewerSlotProps = Pick<
+  AppWrapperSlotProps,
+  'currentFileContext' | 'activeFiles' | 'isFolderLoading'
+> &
+  Pick<AppWrapperSlotHandlers, 'loadFolderForFileContext' | 'getUrlForResource' | 'revokeUrl'>
