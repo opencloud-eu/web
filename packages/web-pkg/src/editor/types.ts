@@ -8,6 +8,12 @@ import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 
+/**
+ * Default Y.XmlFragment field name. Shared by `useTextEditor` and the
+ * collaborative adapter, which must bind to the same field.
+ */
+export const DEFAULT_YDOC_FRAGMENT = 'default'
+
 export interface TextEditorOptions {
   contentType: ContentType
   modelValue?: Ref<string>
@@ -27,20 +33,18 @@ export interface TextEditorOptions {
    * When set, the editor binds its ProseMirror state to this Y.Doc via the
    * `@tiptap/extension-collaboration` extension. Initial content is taken
    * from the Y.Doc state (populated by the host's hydration path) instead
-   * of from `modelValue`. The undo manager comes from `yUndoPlugin` via
-   * `@tiptap/y-tiptap` — `StarterKit`'s built-in `undoRedo` is already
-   * disabled in every strategy to avoid conflict.
+   * of from `modelValue`.
    */
   ydoc?: Y.Doc
   /**
    * Y.XmlFragment field name inside the Y.Doc. Must match the field the
-   * collaborative adapter binds to. Defaults to `'default'`.
+   * collaborative adapter binds to. Defaults to {@link DEFAULT_YDOC_FRAGMENT}.
    */
   ydocFragment?: string
   /**
-   * Awareness instance from the same room as `ydoc`. When set (collab
-   * mode), the editor renders remote peer cursors via `yCursorPlugin`
-   * from `@tiptap/y-tiptap`. Ignored when `ydoc` is not also set.
+   * Awareness instance from the same room as `ydoc`. When set, the editor
+   * renders remote peer cursors via `yCursorPlugin`. Ignored when `ydoc`
+   * is not also set.
    */
   awareness?: Awareness
 }

@@ -27,7 +27,7 @@ export interface CollaborativeDocumentOptions {
   /** Translates between the native file format and the doc's shared types. */
   adapter: MaybeRefOrGetter<CollaborativeAdapter>
   /**
-   * App version owned by the consuming app — typically `pkg.version` from its
+   * App version owned by the consuming app; typically `pkg.version` from its
    * own package.json, baked in at build time by Vite. Used to detect schema
    * mismatch between peers in the same Y.Doc room.
    */
@@ -131,17 +131,13 @@ export function useCollaborativeDocument(
 
   // Single, deployment-wide switch. Leaving `yjsServerUrl` unset runs every
   // session in local mode: a Y.Doc and Awareness still spin up so the editor
-  // binding stays on one codepath, but nothing connects and no peer ever
-  // appears.
+  // binding stays on one codepath, but nothing connects and no peer appears.
   const yjsServerUrl = computed<string | null>(() => configStore.options.yjsServerUrl || null)
 
   const documentName = computed(() => {
     const r = toValue(resource) as Resource & { remoteItemId?: string }
-    // OC's canonical composite id `<storageid>$<spaceid>!<opaqueid>`. The
-    // owner reads it from `r.id`, a share recipient reads the same composite
-    // from `r.remoteItemId` (which points at the owner's drive+item). Both
-    // peers end up with the same value, so it doubles as the Y.Doc match key
-    // and the ACL probe target the sidecar passes to Graph.
+    // OC's canonical composite id, identical for all peers. It serves as the
+    // Y.Doc match key and the ACL probe target the yjs server passes to Graph.
     const fileId = r?.remoteItemId ?? r?.id
     if (!fileId) return null
     const prefix = toValue(documentPrefix)
@@ -150,7 +146,7 @@ export function useCollaborativeDocument(
 
   // Use an explicit session key instead of letting `watchEffect` track every
   // reactive read inside the body. watchEffect re-runs whenever any of its
-  // deps fire — including unrelated `resource` mutations from the caller's
+  // deps fire, including unrelated `resource` mutations from the caller's
   // post-save `upsertResource`, which would tear down the Y.Doc on every save
   // and lose peer edits.
   const sessionKey = computed(() => {
@@ -193,8 +189,8 @@ export function useCollaborativeDocument(
    * Whether a Y.Doc change should be reported to the caller as new content.
    *
    * Only changes that represent a real edit qualify. Everything the session
-   * does to make the doc match the file — the initial sync, hydration, the
-   * meta handshake, stale recovery — must not, because the caller derives its
+   * does to make the doc match the file - the initial sync, hydration, the
+   * meta handshake, stale recovery - must not, because the caller derives its
    * dirty state by string-comparing what we report against the file it
    * fetched. Serialization is not byte-identical to the original (Tiptap
    * normalises markdown, for one), so reporting the post-hydration state would
@@ -209,12 +205,12 @@ export function useCollaborativeDocument(
     return unref(isReady) && suppressionDepth === 0
   }
 
-  // ---------------------------------------------------------------------------
-  // Hydration — elected client seeds the Y.Doc from native content. Lowest
-  // awareness clientId wins to avoid double-hydration when two peers see an
-  // empty doc simultaneously. In local mode there are no peers, so the
-  // election degenerates to "we win unconditionally" — which is what we want.
-  // ---------------------------------------------------------------------------
+  /**
+   * Hydration: elected client seeds the Y.Doc from native content. Lowest
+   * awareness clientId wins to avoid double-hydration when two peers see an
+   * empty doc simultaneously. In local mode there are no peers, so the
+   * election degenerates to "we win unconditionally".
+   */
   async function runInitialHydration(
     doc: Y.Doc,
     prov: HocuspocusProvider | null,
@@ -258,7 +254,7 @@ export function useCollaborativeDocument(
       }
     }
 
-    // Etag drift check. Relay-only backends do not persist Y.Docs, so the
+    // Etag drift check. Relay-only yjs servers do not persist Y.Docs, so the
     // server cannot compare a persisted etag against the native file. Instead,
     // after sync we look at what the synced room thinks the etag is
     // (`_oc_meta.etag`, seeded by whichever peer entered first) and compare it
@@ -291,9 +287,7 @@ export function useCollaborativeDocument(
     // Peer election to avoid double-hydration: let other clients announce
     // themselves via awareness, then the lowest awareness clientId wins. This
     // only matters in collab mode. In local mode there are no peers, and the
-    // 150ms announce wait would just delay first paint — and lose the race
-    // against consumers that read editor content right after the editor mounts
-    // (e.g. e2e steps reading innerText) — so hydrate immediately.
+    // 150ms announce wait would just delay first paint, so hydrate immediately.
     if (prov) {
       await new Promise<void>((resolve) => setTimeout(resolve, 150))
 
@@ -308,15 +302,15 @@ export function useCollaborativeDocument(
     await Promise.resolve(current.hydrate(doc, toValue(currentContent)))
   }
 
-  // ---------------------------------------------------------------------------
-  // Stale-state recovery — fired when `_oc_meta.isStale` goes up because the
-  // room's etag no longer matches the native file. The elected client wipes
-  // adapter content, clears the staleness flag, and re-hydrates from
-  // `currentContent` (which the caller re-fetched at app-open time, so it
-  // reflects the new native content). Other peers see the wipe + hydrate as
-  // ordinary CRDT updates. Unreachable in local mode (nobody ever sets
-  // isStale), but coded provider-tolerant so the two modes share one path.
-  // ---------------------------------------------------------------------------
+  /**
+   * Stale-state recovery: fired when `_oc_meta.isStale` goes up because the
+   * room's etag no longer matches the native file. The elected client wipes
+   * adapter content, clears the staleness flag, and re-hydrates from
+   * `currentContent` (which the caller re-fetched at app-open time, so it
+   * reflects the new native content). Other peers see the wipe + hydrate as
+   * ordinary CRDT updates. Unreachable in local mode (nobody ever sets
+   * isStale), but coded provider-tolerant so the two modes share one path.
+   */
   async function recoverFromStaleState(
     doc: Y.Doc,
     prov: HocuspocusProvider | null,
@@ -374,12 +368,14 @@ export function useCollaborativeDocument(
     })
   }
 
-  // Single entry point for both modes (collab `onSynced` and the immediate
-  // local-mode call). Flips `isReady` once the hydration decision has settled —
-  // however `runInitialHydration` returns — so the editor mount is gated on one
-  // signal and never spins forever. The `ydoc.value === doc` guard keeps a
-  // stale invocation (resolving after navigation tore this session down) from
-  // clearing the loading state of the next session.
+  /**
+   * Single entry point for both modes (collab `onSynced` and the immediate
+   * local-mode call). Flips `isReady` once the hydration decision has settled
+   * so the editor mount is gated on one signal and never spins forever. The
+   * `ydoc.value === doc` guard keeps a stale invocation (resolving after
+   * navigation tore this session down) from clearing the loading state of
+   * the next session.
+   */
   async function onProviderSynced(
     doc: Y.Doc,
     prov: HocuspocusProvider | null,
@@ -392,16 +388,16 @@ export function useCollaborativeDocument(
     }
   }
 
-  // ---------------------------------------------------------------------------
-  // Y.Doc + (optional) provider lifecycle — rebuilt whenever the session key
-  // changes. Two modes, gated by `yjsServerUrl`:
-  //   - collab : Hocuspocus provider connects, awareness comes from the
-  //              provider, hydration waits for onSynced.
-  //   - local  : standalone Awareness instance, no network, hydration runs
-  //              immediately. The downstream editor sees an awareness object
-  //              just like in collab-mode — the only behavioural difference is
-  //              that no peers will ever appear.
-  // ---------------------------------------------------------------------------
+  /**
+   * Y.Doc + (optional) provider lifecycle — rebuilt whenever the session key
+   * changes. Two modes, gated by `yjsServerUrl`:
+   *   - collab : Hocuspocus provider connects, awareness comes from the
+   *              provider, hydration waits for onSynced.
+   *   - local  : standalone Awareness instance, no network, hydration runs
+   *              immediately. The downstream editor sees an awareness object
+   *              just like in collab-mode — the only behavioural difference is
+   *              that no peers will ever appear.
+   */
   watch(
     sessionKey,
     (key, _oldKey, onCleanup) => {
@@ -489,11 +485,10 @@ export function useCollaborativeDocument(
         // awareness instance. Nobody else will ever join, which is the point.
         aw = new Awareness(doc)
         status.value = 'local'
-        // No `onSynced` to wait for — hand off to the same hydration entry
-        // point immediately. Without a sidecar the app-version handshake and
-        // stale-state probe are no-ops (the doc is freshly minted and there's
-        // no persisted state to compare against), but we still run through the
-        // function so future shared-handler additions keep both modes aligned.
+        // No `onSynced` to wait for - hand off to the same hydration entry
+        // point immediately. Without a yjs server, the app-version handshake and
+        // stale-state probe are no-ops, but we still run through the function
+        // so future shared-handler additions keep both modes aligned.
         void onProviderSynced(doc, null, aw)
       }
 
@@ -505,11 +500,10 @@ export function useCollaborativeDocument(
       const metaObserver = (event: Y.YMapEvent<unknown>, transaction: Y.Transaction) => {
         // Peer-save fan-out. Another client just saved (its etag-mirror watch
         // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
-        // change to us with `transaction.origin === undefined` — remote ops
+        // change to us with `transaction.origin === undefined` - remote ops
         // have no string origin). Our Y.Doc already reflects every edit that
         // save covered, so serialize it now and tell the caller "this is what's
-        // on disk": its dirty state falls to false and the unsaved-changes
-        // modal stops firing on navigate.
+        // on disk": its dirty state falls to false.
         if (event.keysChanged.has('etag') && transaction.origin !== LOCAL_SAVE_ORIGIN) {
           const newEtag = meta.get('etag') as string | undefined
           if (newEtag) onEtagChange(newEtag)
@@ -525,7 +519,7 @@ export function useCollaborativeDocument(
 
         // App version mismatch surfaced after the fact (e.g. a newer peer
         // joined and bumped `appVersion`). Any non-zero diff at this point
-        // means the room moved past or ahead of us mid-session — lock and
+        // means the room moved past or ahead of us mid-session - Lock and
         // prompt reload. Stale-recovery is intentionally NOT triggered here;
         // that path only applies when the doc state itself was already older
         // than the current client at first load.

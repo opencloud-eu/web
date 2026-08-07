@@ -14,6 +14,7 @@ import type {
   TextEditorLinkPanelRequest,
   TextEditorState
 } from '../types'
+import { DEFAULT_YDOC_FRAGMENT } from '../types'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
@@ -65,7 +66,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const readonly = ref(options.readonly ?? false)
   const strategy = resolveStrategy(options.contentType, state)
-  const collabFragment = options.ydocFragment ?? 'default'
+  const collabFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
   // Filter out excluded actions (by id) from toolbar and slash commands, including
   // nested dropdown children (e.g. exclude 'image-upload' but keep 'image-url').
