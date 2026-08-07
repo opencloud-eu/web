@@ -18,6 +18,7 @@ import { DEFAULT_YDOC_FRAGMENT } from '../types'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
+import { useConfigStore } from '../../composables'
 
 // Custom Tiptap extension that wires y-tiptap's yCursorPlugin to a given
 // Awareness. We bypass `@tiptap/extension-collaboration-cursor` because
@@ -56,6 +57,7 @@ function makeCollabCursorExtension(awareness: Awareness): Extension {
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
+  const configStore = useConfigStore()
   const state: TextEditorState = {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
@@ -68,9 +70,16 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const strategy = resolveStrategy(options.contentType, state)
   const collabFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
+  // FIXME: Source mode swaps the ProseMirror view for a plain textarea, hence
+  // drop the action while a realtime session is active.
+  const collaborationActive = Boolean(options.ydoc) && Boolean(configStore.options.yjsServerUrl)
+
   // Filter out excluded actions (by id) from toolbar and slash commands, including
   // nested dropdown children (e.g. exclude 'image-upload' but keep 'image-url').
-  const excludeActions = options.excludeActions ?? []
+  const excludeActions = [
+    ...(options.excludeActions ?? []),
+    ...(collaborationActive ? ['source-mode'] : [])
+  ]
   const filterActions = (actions: EditorAction[]): EditorAction[] =>
     actions
       .filter((action) => !excludeActions.includes(action.id))
