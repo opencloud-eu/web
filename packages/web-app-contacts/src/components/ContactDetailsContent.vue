@@ -125,12 +125,10 @@ const sections = computed<DetailSection[]>(() => {
       icon: 'mail',
       title: $gettext('Email addresses'),
       rows: Object.values(props.contact.emails || {})
-        .map(
-          (entry): DetailRow => ({
-            label: $gettext('Email'),
-            value: entry.address
-          })
-        )
+        .map((entry): DetailRow => ({
+          label: $gettext('Email'),
+          value: entry.address
+        }))
         .filter((row) => row.value)
     },
     {
@@ -138,12 +136,10 @@ const sections = computed<DetailSection[]>(() => {
       icon: 'phone',
       title: $gettext('Phone numbers'),
       rows: Object.values(props.contact.phones || {})
-        .map(
-          (entry): DetailRow => ({
-            label: $gettext('Phone'),
-            value: entry.number
-          })
-        )
+        .map((entry): DetailRow => ({
+          label: $gettext('Phone'),
+          value: entry.number
+        }))
         .filter((row) => row.value)
     },
     {
@@ -151,16 +147,14 @@ const sections = computed<DetailSection[]>(() => {
       icon: 'home-2',
       title: $gettext('Addresses'),
       rows: Object.values(props.contact.addresses || {})
-        .map(
-          (entry): DetailRow => ({
-            label: $gettext('Address'),
-            value: (entry.components || [])
-              .map((component) => component.value)
-              .filter(Boolean)
-              .join(', '),
-            secondary: entry.countryCode || ''
-          })
-        )
+        .map((entry): DetailRow => ({
+          label: $gettext('Address'),
+          value: (entry.components || [])
+            .map((component) => component.value)
+            .filter(Boolean)
+            .join(', '),
+          secondary: entry.countryCode || ''
+        }))
         .filter((row) => row.value)
     },
     {

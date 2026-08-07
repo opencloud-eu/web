@@ -267,13 +267,7 @@ export const clickResourceFromBreadcrumb = async ({
 /**/
 
 export type createResourceTypes =
-  | 'folder'
-  | 'txtFile'
-  | 'mdFile'
-  | 'Document'
-  | 'OpenDocument'
-  | 'Microsoft Word'
-  | 'vault'
+  'folder' | 'txtFile' | 'mdFile' | 'Document' | 'OpenDocument' | 'Microsoft Word' | 'vault'
 
 export interface createResourceArgs {
   page: Page
@@ -944,10 +938,7 @@ export interface resourceArgs {
 }
 
 export type ActionViaType =
-  | 'SIDEBAR_PANEL'
-  | 'BATCH_ACTION'
-  | 'SINGLE_SHARE_VIEW'
-  | 'PREVIEW_TOPBAR'
+  'SIDEBAR_PANEL' | 'BATCH_ACTION' | 'SINGLE_SHARE_VIEW' | 'PREVIEW_TOPBAR'
 
 export interface downloadResourcesArgs {
   page: Page
@@ -2011,12 +2002,7 @@ export interface openFileInViewerArgs {
   page: Page
   name: string
   actionType:
-    | 'mediaviewer'
-    | 'audioviewer'
-    | 'pdfviewer'
-    | 'texteditor'
-    | 'Collabora'
-    | 'Euro-Office'
+    'mediaviewer' | 'audioviewer' | 'pdfviewer' | 'texteditor' | 'Collabora' | 'Euro-Office'
 }
 
 export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void> => {

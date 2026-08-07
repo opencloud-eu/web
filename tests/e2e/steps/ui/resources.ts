@@ -639,11 +639,7 @@ When(
       await resourceObject.openFileInViewer({
         name: info.resource,
         actionType: actionType as
-          | 'mediaviewer'
-          | 'pdfviewer'
-          | 'texteditor'
-          | 'Collabora'
-          | 'Euro-Office'
+          'mediaviewer' | 'pdfviewer' | 'texteditor' | 'Collabora' | 'Euro-Office'
       })
     }
   }
