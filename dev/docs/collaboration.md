@@ -88,7 +88,7 @@ sequenceDiagram
     end
 ```
 
-The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `collaborative.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.remoteItemId ?? resource.id`, so a file opened through a share space is keyed by its remote item id and lands in the same room as the owner's copy. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
+The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `collaborative.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.id`, which is already global: a share recipient sees the same composite id as the owner, so both land in the same room. Note that this must not be `resource.remoteItemId` - `AppWrapper` fills that with the share space id, which identifies the mount point rather than the file, so every file inside a shared folder would collapse into one room. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
 
 Awareness is anti-spoofed: `beforeHandleAwareness` overwrites the `user` field on every inbound awareness state with the identity from the authenticated connection, so a client cannot present itself as someone else.
 

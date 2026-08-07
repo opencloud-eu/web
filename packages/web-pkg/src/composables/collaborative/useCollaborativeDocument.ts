@@ -140,10 +140,9 @@ export function useCollaborativeDocument(
   const yjsServerUrl = computed<string | null>(() => configStore.options.yjsServerUrl || null)
 
   const documentName = computed(() => {
-    const r = toValue(resource) as Resource & { remoteItemId?: string }
     // OC's canonical composite id, identical for all peers. It serves as the
     // Y.Doc match key and the ACL probe target the yjs server passes to Graph.
-    const fileId = r?.remoteItemId ?? r?.id
+    const fileId = toValue(resource)?.id
     if (!fileId) return null
     const prefix = toValue(documentPrefix)
     return prefix ? `${prefix}::${fileId}` : `${fileId}`
