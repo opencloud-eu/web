@@ -1,15 +1,15 @@
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import type { Extension, JSONContent } from '@tiptap/core'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
-import { Markdown } from '@tiptap/markdown'
+import { Markdown, MarkdownManager } from '@tiptap/markdown'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
-import type { Editor } from '@tiptap/vue-3'
 import { TextEditorState } from '../../types'
 import { createLinkExtension } from '../../extensions'
 import { imageFileHandlerExtension } from './imageFileHandler'
@@ -21,8 +21,14 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     return 'markdown'
   }
 
-  const serialize = (editor: Editor): string => {
-    return editor.getMarkdown()
+  // `editor.getMarkdown()` is just `MarkdownManager.serialize(editor.getJSON())`.
+  // Holding our own manager lets us render a document with no editor attached.
+  // Built lazily and once: it only reads the extensions' markdown specs, which
+  // never change for a given strategy.
+  let markdownManager: MarkdownManager | null = null
+  const serialize = (doc: ProseMirrorNode): string => {
+    markdownManager ??= new MarkdownManager({ extensions: extensions() })
+    return markdownManager.serialize(doc.toJSON())
   }
 
   const deserialize = (content: string): string => {

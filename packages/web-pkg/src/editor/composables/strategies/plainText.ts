@@ -1,5 +1,5 @@
-import { Editor } from '@tiptap/vue-3'
-import { Extension } from '@tiptap/core'
+import { Extension, getText, getTextSerializersFromSchema } from '@tiptap/core'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
@@ -14,8 +14,11 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
     return 'plainText'
   }
 
-  const serialize = (editor: Editor): string => {
-    return editor.getText({ blockSeparator: '\n' })
+  const serialize = (doc: ProseMirrorNode): string => {
+    return getText(doc, {
+      blockSeparator: '\n',
+      textSerializers: getTextSerializersFromSchema(doc.type.schema)
+    })
   }
 
   const deserialize = (content: string): Record<string, unknown> => {
