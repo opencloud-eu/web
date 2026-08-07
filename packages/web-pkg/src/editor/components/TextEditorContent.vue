@@ -22,6 +22,7 @@
           <oc-icon name="add" />
         </oc-button>
         <oc-button
+          v-if="!isMobile"
           appearance="raw"
           class="custom-drag-handle cursor-grab!"
           :aria-label="$gettext('Drag to move')"
@@ -52,12 +53,15 @@ import { useGettext } from 'vue3-gettext'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
 import type { TextEditorInstance } from '../types'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const { editor = undefined } = defineProps<{
   editor?: TextEditorInstance
 }>()
 
 const { $gettext } = useGettext()
+const { isMobile } = useIsMobile()
+
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
