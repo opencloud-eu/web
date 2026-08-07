@@ -12,7 +12,7 @@ import type {
 
 /**
  * Handed to {@link CollaborativeOptions.makeAdapter}. Reactive, because the
- * adapter is built during the wrapper's setup — before the file is loaded.
+ * adapter is built during the wrapper's setup before the file is loaded.
  */
 export interface CollaborativeAdapterContext {
   /** The file. Undefined until the wrapper has loaded it, so read it lazily. */
@@ -21,7 +21,7 @@ export interface CollaborativeAdapterContext {
 
 export interface CollaborativeOptions {
   /**
-   * App version owned by the consuming app — typically `pkg.version` from its
+   * App version owned by the consuming app, typically `pkg.version` from its
    * own package.json. Peers in the same room must agree on it, otherwise the
    * older client is locked out and asked to reload.
    */

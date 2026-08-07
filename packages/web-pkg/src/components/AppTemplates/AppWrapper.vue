@@ -845,10 +845,10 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   currentContent: unref(currentContent) as string,
   isFolderLoading: unref(isFolderLoading),
 
-  // The slot only renders once `isLoading` is false, which for a
-  // collaborative app includes the session being synced and hydrated — so
-  // these are non-null by the time the wrapped component sees them. Always
-  // null for non-collaborative apps.
+  // The slot (= the wrapper compoonent) only renders once `isLoading` is
+  // false, which for a collaborative app includes the session being synced
+  // and hydrated. So these are non-null by the time the wrapped component
+  // sees them. Always null for non-collaborative apps.
   ydoc: unref(collaborativeDocument?.ydoc) ?? null,
   awareness: unref(collaborativeDocument?.awareness) ?? null,
 

@@ -6,12 +6,7 @@ import type * as Y from 'yjs'
 import type { Editor as TiptapVueEditor } from '@tiptap/vue-3'
 import type { CollaborativeAdapter } from '../composables/collaborative/types'
 import type { ContentTypeStrategy } from './composables/strategies/types'
-
-/**
- * Default Y.XmlFragment field name. Must match `useTextEditor`'s
- * `ydocFragment` option, which defaults to the same value.
- */
-const DEFAULT_FRAGMENT = 'default'
+import { DEFAULT_YDOC_FRAGMENT } from './types'
 
 /**
  * Bridges the `web-pkg/editor` strategy contract to the
@@ -20,22 +15,24 @@ const DEFAULT_FRAGMENT = 'default'
  *
  * Each strategy already knows how to convert between its native string format
  * (markdown / HTML / plain text / tiptap-json) and a Tiptap editor state. The
- * adapter adds the plumbing around it: hydrate and serialize run through a
- * throwaway headless editor bound to the shared Y.Doc, and `hasContent` /
- * `reset` work on the Y.XmlFragment that `Collaboration` writes to.
+ * adapter handles the conversion between that editor state and the Y.Doc state
+ * that `Collaboration` writes to.
  *
- * Building that editor costs a few milliseconds and only happens once per
- * save — the session debounces serialization to one call per pause in typing,
- * not one per keystroke — so it is not worth caching or routing the mounted
- * editor back here.
+ * Hydrate and serialize run through a throwaway headless editor bound to the
+ * shared Y.Doc, and `hasContent` / `reset` work on the Y.XmlFragment that
+ * `Collaboration` writes to.
+ *
+ * Building that editor costs a few milliseconds. The session debounces
+ * serialization to one call per pause in typing, not one per keystroke, so it
+ * is not worth caching or routing the mounted editor back here.
  *
  * `strategy` is a `MaybeRefOrGetter` because the adapter is built before the
- * file is loaded, so the content type isn't known yet. It must be *resolved*
- * from a Vue setup context though: strategies call `useGettext()`.
+ * file is loaded, so the content type isn't known yet. Strategies must be
+ * built in a setup context; resolving the getter later is safe.
  */
 export function makeTiptapCollabAdapter(
   strategy: MaybeRefOrGetter<ContentTypeStrategy>,
-  fragment = DEFAULT_FRAGMENT
+  fragment = DEFAULT_YDOC_FRAGMENT
 ): CollaborativeAdapter {
   function makeHeadlessEditor(ydoc: Y.Doc): Editor {
     const detached = document.createElement('div')
