@@ -1,12 +1,6 @@
-import { onMounted, onBeforeUnmount, ref, unref, type Ref, markRaw } from 'vue'
+import { onMounted, onBeforeUnmount, unref, type Ref, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  CollaboratorShare,
-  Resource,
-  SpaceResource,
-  ShareTypes,
-  urlJoin
-} from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import {
   useRoute,
@@ -14,8 +8,8 @@ import {
   useClientService,
   useModals,
   useFolderLink,
-  useSharesStore,
   useLoadShares,
+  useMentionUsers,
   useConfigStore,
   queryItemAsString,
   FilePickerModal
@@ -39,16 +33,17 @@ export function useCollaboraPostMessages({
   const { $gettext } = useGettext()
   const route = useRoute()
   const router = useRouter()
-  const { httpAuthenticated, webdav } = useClientService()
+  const { webdav } = useClientService()
   const { dispatchModal } = useModals()
   const { getParentFolderLink } = useFolderLink()
-  const sharesStore = useSharesStore()
   const { loadSharesTask } = useLoadShares()
   const configStore = useConfigStore()
-
-  const collaborators = ref<CollaboratorShare[]>([])
-  const collaboratorsFetched = ref(false)
-  const userIdsToMention = ref<string[]>([])
+  const {
+    getMentionUsers,
+    notifyMentionedUsers,
+    resetMentionState,
+    selectMentionUser: handleMentionSelected
+  } = useMentionUsers({ space, resource, loadSharesTask })
 
   function postMessageToCollabora(messageId: string, values?: Record<string, unknown>): void {
     const iframe = unref(appIframeRef)
@@ -244,91 +239,16 @@ export function useCollaboraPostMessages({
   }
 
   async function handleMentionAutocomplete(text: string): Promise<void> {
-    if (loadSharesTask.isRunning) {
-      loadSharesTask.cancelAll()
-    }
-
-    if (!unref(collaboratorsFetched)) {
-      const { collaboratorShares } = await loadSharesTask.perform({
-        space: unref(space),
-        resource: unref(resource),
-        updateStore: false
-      })
-      // dedupe by user id (a user can be space member and share recipient)
-      collaborators.value = collaboratorShares.filter(
-        (share, index, self) =>
-          index === self.findIndex((s) => s.sharedWith.id === share.sharedWith.id)
-      )
-      collaboratorsFetched.value = true
-    }
-
-    if (!unref(collaborators).length) {
-      return
-    }
-
-    const searchText = text.toLowerCase()
-    const individualShareTypeValues = ShareTypes.individuals.map((t) => t.value)
-
-    const list = unref(collaborators)
-      .filter(
-        (m) =>
-          individualShareTypeValues.includes(m.shareType) &&
-          m.sharedWith.id &&
-          m.sharedWith.displayName?.toLowerCase().includes(searchText)
-      )
-      .map((m) => ({
-        username: m.sharedWith.id,
-        // Collabora expects a URL for the profile, which we don't have
-        // hence use the URL for the current document
-        profile: urlJoin(configStore.serverUrl, 'f', unref(resource).id),
-        label: m.sharedWith.displayName || m.sharedWith.id
-      }))
+    const list = (await getMentionUsers(text)).map(({ id, label }) => ({
+      username: id,
+      // Collabora expects a URL for the profile, which we don't have
+      // hence use the URL for the current document
+      profile: urlJoin(configStore.serverUrl, 'f', unref(resource).id),
+      label
+    }))
 
     postMessageToCollabora('Action_Mention', { list })
   }
-
-  function handleMentionSelected(userId: string): void {
-    if (!unref(userIdsToMention).includes(userId)) {
-      userIdsToMention.value.push(userId)
-    }
-  }
-
-  async function notifyMentionedUsers(): Promise<void> {
-    if (unref(userIdsToMention).length === 0) {
-      return
-    }
-
-    const fileID = unref(resource).fileId
-    const userIDs = unref(userIdsToMention)
-    userIdsToMention.value = []
-    try {
-      await httpAuthenticated.post(urlJoin(configStore.serverUrl, 'collaboration/notify'), {
-        fileID,
-        userIDs,
-        type: 'mention'
-      })
-    } catch (e) {
-      console.error('Error notifying mentioned users', e)
-    }
-  }
-
-  function resetMentionState(): void {
-    if (loadSharesTask.isRunning) {
-      loadSharesTask.cancelAll()
-    }
-    collaborators.value = []
-    collaboratorsFetched.value = false
-  }
-
-  sharesStore.$onAction(({ after, name }) => {
-    after(() => {
-      // when shares are added/removed while the app is open (via right sidebar),
-      // we need to update the list of collaborators for mentions in Collabora
-      if (['addShare', 'removeShare'].includes(name)) {
-        collaboratorsFetched.value = false
-      }
-    })
-  })
 
   function handleWindowBeforeUnload(): void {
     notifyMentionedUsers()

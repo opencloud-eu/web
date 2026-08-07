@@ -403,6 +403,9 @@ describe('useCollaboraPostMessages', () => {
         await flushPromises()
 
         expect(mockLoadSharesTask.perform).toHaveBeenCalledOnce()
+        expect(mockLoadSharesTask.perform).toHaveBeenCalledWith(
+          expect.objectContaining({ includeInheritedShares: true })
+        )
       })
 
       it('does not reload collaborators on subsequent autocomplete calls', async () => {

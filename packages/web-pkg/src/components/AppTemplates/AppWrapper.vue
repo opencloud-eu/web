@@ -164,6 +164,7 @@ const currentContent = ref<unknown>()
 const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
+let appOnSaveCallback: (() => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
 const { registerExtensions, unregisterExtensions, requestExtensions } = extensionRegistry
@@ -547,6 +548,7 @@ const saveFileTask = useTask(function* () {
     })
     serverContent.value = newContent
     applySavedResource(putFileContentsResponse.etag, putFileContentsResponse)
+    return true
   } catch (e) {
     // 409 / 412: `previousEntityTag` didn't match what the server has. A
     // connected Yjs session can resolve that itself when the conflicting
@@ -554,7 +556,7 @@ const saveFileTask = useTask(function* () {
     // that peer's edits.
     if (e.statusCode === 412 || e.statusCode === 409) {
       if (yield* reconcileConflict(newContent)) {
-        return
+        return true
       }
       errorPopup(
         new HttpError(
@@ -564,7 +566,7 @@ const saveFileTask = useTask(function* () {
           e.response
         )
       )
-      return
+      return false
     }
     switch (e.statusCode) {
       case 401:
@@ -601,11 +603,17 @@ const saveFileTask = useTask(function* () {
       default:
         errorPopup(new HttpError('', e.response))
     }
+    return false
   }
 }).drop()
 
 const save = async () => {
-  await saveFileTask.perform()
+  const saved = await saveFileTask.perform()
+  if (!saved) {
+    return
+  }
+
+  await appOnSaveCallback?.()
 }
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
@@ -860,6 +868,10 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
 
   'onRegister:onDeleteResourceCallback': (value: () => void) => {
     appOnDeleteResourceCallback = value
+  },
+
+  'onRegister:onSaveCallback': (value: () => void | Promise<void>) => {
+    appOnSaveCallback = value
   },
 
   'onDelete:resource': () => {

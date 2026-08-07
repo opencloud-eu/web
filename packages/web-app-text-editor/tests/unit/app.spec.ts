@@ -4,14 +4,24 @@ import { defineComponent, shallowRef, toRaw } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Editor } from '@tiptap/vue-3'
-import type { Resource } from '@opencloud-eu/web-client'
-import type { TextEditorOptions } from '@opencloud-eu/web-pkg/editor'
+import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useMentionUsers } from '@opencloud-eu/web-pkg'
+import type { MentionItem, TextEditorOptions } from '@opencloud-eu/web-pkg/editor'
 import App from '../../src/App.vue'
 
 // The editor itself is covered by web-pkg. What App.vue owns is the decision
 // of *which* options the editor gets, so we capture those instead of mounting
 // a real ProseMirror stack.
 const useTextEditor = vi.hoisted(() => vi.fn())
+const getMentionUsers = vi.fn<(query: string) => Promise<MentionItem[]>>()
+const notifyMentionedUsers = vi.fn<() => Promise<void>>()
+const resetMentionState = vi.fn()
+const selectMentionUser = vi.fn()
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useMentionUsers: vi.fn()
+}))
 
 vi.mock('@opencloud-eu/web-pkg/editor', async (importOriginal) => {
   const original = await importOriginal<Record<string, unknown>>()
@@ -30,6 +40,14 @@ vi.mock('@opencloud-eu/web-pkg/editor', async (importOriginal) => {
 beforeEach(() => {
   useTextEditor.mockReset()
   useTextEditor.mockReturnValue({ editor: shallowRef<Editor | null>(null) })
+  getMentionUsers.mockResolvedValue([])
+  notifyMentionedUsers.mockResolvedValue()
+  vi.mocked(useMentionUsers).mockReturnValue({
+    getMentionUsers,
+    notifyMentionedUsers,
+    resetMentionState,
+    selectMentionUser
+  })
 })
 
 function lastOptions(): TextEditorOptions {
@@ -76,6 +94,27 @@ describe('Text editor app', () => {
       false
     )
   })
+
+  it('provides mention users to the editor and remembers a selection', async () => {
+    const mentionUsers = [{ id: 'alice', label: 'Alice' }]
+    getMentionUsers.mockResolvedValue(mentionUsers)
+    getWrapper()
+
+    await expect(lastOptions().mentions?.items('ali')).resolves.toEqual(mentionUsers)
+    lastOptions().mentions?.onSelect(mentionUsers[0])
+
+    expect(getMentionUsers).toHaveBeenCalledWith('ali')
+    expect(selectMentionUser).toHaveBeenCalledWith('alice')
+  })
+
+  it('registers mention notifications as a save callback', async () => {
+    const { wrapper } = getWrapper()
+    const [[saveCallback]] = wrapper.emitted('register:onSaveCallback') as [[() => Promise<void>]]
+
+    await saveCallback()
+
+    expect(notifyMentionedUsers).toHaveBeenCalledOnce()
+  })
 })
 
 function getWrapper(props: PartialComponentProps<typeof App> = {}) {
@@ -86,6 +125,7 @@ function getWrapper(props: PartialComponentProps<typeof App> = {}) {
         currentContent: '',
         isReadOnly: false,
         resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' }),
+        space: mock<SpaceResource>(),
         awareness: new Awareness(ydoc),
         ...props,
         ydoc
