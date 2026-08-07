@@ -644,21 +644,82 @@ describe('useCollaborativeDocument — etag mirror', () => {
 })
 
 describe('useCollaborativeDocument — peer save fan-out', () => {
-  it('reports server content and etag when a remote peer stamps _oc_meta', async () => {
-    const s = setupSession({ currentContent: 'seed' })
-    await flushPromises()
-    const meta = s.ydoc!.getMap('_oc_meta')
+  const META_KEY = '_oc_meta'
 
-    // A remote transaction has no string origin, which is how the observer
-    // tells a peer save apart from our own etag mirror.
-    s.ydoc!.transact(() => {
-      meta.set('etag', 'peer-etag')
+  /**
+   * A real second Y.Doc rather than a local transaction on our own: the whole
+   * question here is what the saver had in its state vector, and writing
+   * through our own doc would advance our own clock along with it.
+   */
+  function peerSaves(ourDoc: Y.Doc, etag = 'peer-etag') {
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(ourDoc))
+    peer.transact(() => {
+      const meta = peer.getMap(META_KEY)
+      meta.set('etag', etag)
+      meta.set('savedStateVector', Y.encodeStateVector(peer))
       meta.set('lastSavedAt', 1)
     })
+    Y.applyUpdate(ourDoc, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(ourDoc)))
+  }
+
+  it('reports server content and etag when the save covers our edits', async () => {
+    const s = setupSession({ currentContent: 'seed' })
+    await flushPromises()
+
+    peerSaves(s.ydoc!)
     await flushPromises()
 
     expect(s.onEtagChange).toHaveBeenCalledWith('peer-etag')
     expect(s.onServerContentChange).toHaveBeenCalledWith('seed')
+  })
+
+  // Regression: the fan-out used to serialize our own doc and report it as
+  // "this is on disk" no matter what the peer actually wrote. An edit that had
+  // not reached the peer before its PUT dropped our dirty flag, which also
+  // unregisters `beforeunload` and waves the route-leave guard through, so the
+  // edit was gone with the tab.
+  it('stays dirty when we hold an edit the peer did not have', async () => {
+    const s = setupSession({ currentContent: 'seed' })
+    await flushPromises()
+
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    const svBeforeOurEdit = Y.encodeStateVector(peer)
+
+    // We type after the peer's snapshot but before its PUT lands.
+    s.ydoc!.getText(SHARED_TEXT_KEY).insert(4, ' plus mine')
+
+    peer.transact(() => {
+      const meta = peer.getMap(META_KEY)
+      meta.set('etag', 'peer-etag')
+      meta.set('savedStateVector', svBeforeOurEdit)
+      meta.set('lastSavedAt', 1)
+    })
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+    await flushPromises()
+
+    // The etag is factual and still worth mirroring - it keeps our next
+    // If-Match correct - but our content is not on disk.
+    expect(s.onEtagChange).toHaveBeenCalledWith('peer-etag')
+    expect(s.onServerContentChange).not.toHaveBeenCalled()
+  })
+
+  it('stays dirty when the peer published no state vector', async () => {
+    const s = setupSession({ currentContent: 'seed' })
+    await flushPromises()
+
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.transact(() => {
+      const meta = peer.getMap(META_KEY)
+      meta.set('etag', 'peer-etag')
+      meta.set('lastSavedAt', 1)
+    })
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+    await flushPromises()
+
+    expect(s.onServerContentChange).not.toHaveBeenCalled()
   })
 })
 
