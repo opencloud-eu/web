@@ -6,6 +6,17 @@
 
 @AlexAndBear, @JammingBen, @schweigisito, @tammi-23, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix(tip tap): don't show drag handle on mobile as it's not compatible [[#3052](https://github.com/opencloud-eu/web/pull/3052)]
+- fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
+- fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
+- fix: improve file sorting to handle duplicates with extensions correctly [[#3046](https://github.com/opencloud-eu/web/pull/3046)]
+- fix: autofocus public link pasword input [[#3034](https://github.com/opencloud-eu/web/pull/3034)]
+- fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
+- fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
+- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
 ### 📈 Enhancement
 
 - feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
@@ -14,16 +25,6 @@
 - feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
 - feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
 - feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
-
-### 🐛 Bug Fixes
-
-- fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
-- fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
-- fix: improve file sorting to handle duplicates with extensions correctly [[#3046](https://github.com/opencloud-eu/web/pull/3046)]
-- fix: autofocus public link pasword input [[#3034](https://github.com/opencloud-eu/web/pull/3034)]
-- fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
-- fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
-- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
 
 ### ✅ Tests
 
