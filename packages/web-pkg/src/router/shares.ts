@@ -4,10 +4,7 @@ import { createLocation, isLocationActiveDirector } from './utils'
 import { $gettext } from '../utils/dummyGettext'
 
 export type RouteShareTypes =
-  | 'files-shares'
-  | 'files-shares-with-me'
-  | 'files-shares-with-others'
-  | 'files-shares-via-link'
+  'files-shares' | 'files-shares-with-me' | 'files-shares-with-others' | 'files-shares-via-link'
 
 export const createLocationShares = (name: RouteShareTypes, location = {}): RouteLocationNamedRaw =>
   createLocation(name, location)

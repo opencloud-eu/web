@@ -10,36 +10,20 @@
     />
   </oc-list>
 </template>
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue'
 import { ActionMenuItem } from '@opencloud-eu/web-pkg'
 import { useAppActionsDownload } from '../composables'
-import { computed, defineComponent, PropType } from 'vue'
 import { App, AppVersion } from '../types'
 
-export default defineComponent({
-  name: 'AppActions',
-  components: { ActionMenuItem },
-  props: {
-    app: {
-      type: Object as PropType<App>,
-      default: (): App => undefined
-    },
-    version: {
-      type: Object as PropType<AppVersion>,
-      required: false,
-      default: null
-    }
-  },
-  setup() {
-    const { downloadAppAction } = useAppActionsDownload()
+const { app, version = undefined } = defineProps<{
+  app: App
+  version?: AppVersion
+}>()
 
-    const actions = computed(() => {
-      return [downloadAppAction]
-    })
+const { downloadAppAction } = useAppActionsDownload()
 
-    return {
-      actions
-    }
-  }
+const actions = computed(() => {
+  return [downloadAppAction]
 })
 </script>

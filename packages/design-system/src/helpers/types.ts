@@ -93,12 +93,7 @@ export type ColorRoleType =
 export type FillType = 'fill' | 'line' | 'none'
 export type SizeType = 'xsmall' | 'small' | 'medium' | 'large' | 'xlarge' | 'xxlarge' | 'xxxlarge'
 export type JustifyContentType =
-  | 'left'
-  | 'center'
-  | 'right'
-  | 'space-around'
-  | 'space-between'
-  | 'space-evenly'
+  'left' | 'center' | 'right' | 'space-around' | 'space-between' | 'space-evenly'
 
 export enum SortDir {
   Desc = 'desc',
