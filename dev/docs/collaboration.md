@@ -323,7 +323,7 @@ A peer's save only makes B clean if it actually contains B's work. What A wrote 
 
 Only B's own client id is compared. A third peer's unsaved operations are that peer's dirty state to track.
 
-The 300 ms debounce only refreshes `currentContent`, which is what drives `isDirty`. It never triggers a PUT on its own. The actual write comes from a manual save (Ctrl+S) or the autosave timer (default 120 s), and both go through the same path. If a PUT comes back 409/412, `AppWrapper` refetches, compares, and retries once with the fresh etag before showing a conflict message - the local Y.Doc already contains the peer's edits, so the retry publishes the merged state.
+The 300 ms debounce only refreshes `currentContent`, which is what drives `isDirty`. It never triggers a PUT on its own. The actual write comes from a manual save (Ctrl+S) or the autosave timer (default 120 s), and both go through the same path. If a PUT comes back 409/412, what happens depends on whether a realtime session is actually connected. With one, `AppWrapper` refetches, compares, and retries once with the fresh etag before falling back to a conflict message - the local Y.Doc already contains the peer's edits, so the retry publishes the merged state. Without one - a plain editor, or a deployment with no `yjsServerUrl` - there is nothing to merge, so the conflict dialog comes up straight away, exactly as it did before collaboration existed. Retrying there would silently overwrite whoever else wrote the file.
 
 ### Local mode
 
@@ -362,7 +362,9 @@ These are open items, not bugs to be surprised by.
 
 **Source mode is disabled in collab.** It swaps the ProseMirror view for a plain textarea, which has no Y.Doc binding, so `useTextEditor` drops the `source-mode` action whenever a realtime session is active. Marked as a `FIXME`.
 
-**Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`), but `AppWrapper` ignores it. A dropped websocket produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone.
+**Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`). `AppWrapper` reads it to decide whether a save conflict can be reconciled, but never shows it. A dropped websocket produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone.
+
+**A live session resolves save conflicts in favour of the room.** While connected, a 409/412 is retried with the fresh etag on the assumption that it came from a peer. It usually did, but an external writer - a desktop sync client, say - is overwritten without a prompt. Proving which one it was would mean matching the fetched etag against `_oc_meta.etag`, and that race is roughly a coin flip, so it would turn ordinary peer saves into spurious conflict dialogs.
 
 **`_oc_meta.hydrated` is never cleared.** Stale recovery deletes `isStale`, `nativeEtag` and `recoveryClientId` but leaves `hydrated` set. Harmless today, since the recovered room really is seeded, but it means the flag tracks "this room was ever seeded" rather than "a peer is seeding right now".
 
