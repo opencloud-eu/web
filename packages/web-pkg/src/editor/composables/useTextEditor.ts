@@ -201,7 +201,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
       }
       debounceTimer = setTimeout(() => {
         debounceTimer = null
-        options.onUpdate!(strategy.serialize(e as unknown as Editor))
+        options.onUpdate!(strategy.serialize(e.state.doc))
       }, 250)
     }
   }) as unknown as ShallowRef<Editor | null>
@@ -214,7 +214,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (!editor.value) {
       return ''
     }
-    return strategy.serialize(editor.value)
+    return strategy.serialize(editor.value.state.doc)
   }
 
   const setContent = (value: string): void => {
@@ -244,7 +244,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
       if (options.onUpdate && editor.value) {
-        options.onUpdate(strategy.serialize(editor.value))
+        options.onUpdate(strategy.serialize(editor.value.state.doc))
       }
       debounceTimer = null
     }

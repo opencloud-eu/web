@@ -1,7 +1,8 @@
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { useGettext } from 'vue3-gettext'
-import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
+import { getHTMLFromFragment } from '@tiptap/core'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Image from '@tiptap/extension-image'
@@ -31,8 +32,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     return 'html'
   }
 
-  const serialize = (editor: Editor): string => {
-    return editor.getHTML()
+  const serialize = (doc: ProseMirrorNode): string => {
+    return getHTMLFromFragment(doc.content, doc.type.schema)
   }
 
   const deserialize = (content: string): string => {

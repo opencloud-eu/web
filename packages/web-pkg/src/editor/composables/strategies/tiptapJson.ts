@@ -1,7 +1,7 @@
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { useGettext } from 'vue3-gettext'
-import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Image from '@tiptap/extension-image'
@@ -29,8 +29,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     return 'json'
   }
 
-  const serialize = (editor: Editor): string => {
-    return JSON.stringify(editor.getJSON())
+  const serialize = (doc: ProseMirrorNode): string => {
+    return JSON.stringify(doc.toJSON())
   }
 
   const deserialize = (content: string): string => {

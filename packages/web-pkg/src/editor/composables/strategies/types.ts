@@ -1,6 +1,6 @@
 import type { Extension } from '@tiptap/core'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import type { EditorActionGroup } from '../useEditorActions'
-import type { Editor } from '@tiptap/vue-3'
 
 export interface ExtensionsOptions {
   /**
@@ -14,7 +14,14 @@ export interface ExtensionsOptions {
 
 export interface ContentTypeStrategy {
   editorContentType?(): string
-  serialize(editor: Editor): string
+  /**
+   * Render a ProseMirror document to the native string format.
+   *
+   * Takes the document node rather than an `Editor` so it can also run on a
+   * document that no editor is mounted on (e.g. relevant for the collaborative
+   * adapter). A mounted editor passes `editor.state.doc`.
+   */
+  serialize(doc: ProseMirrorNode): string
   deserialize(content: string): Record<string, unknown> | string
   extensions(options?: ExtensionsOptions): Extension[]
   editorActionGroups(): EditorActionGroup[]

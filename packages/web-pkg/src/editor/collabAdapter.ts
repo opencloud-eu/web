@@ -1,9 +1,10 @@
-import { Editor } from '@tiptap/core'
+import { Editor, getSchema } from '@tiptap/core'
 import { Collaboration } from '@tiptap/extension-collaboration'
+import { yXmlFragmentToProseMirrorRootNode } from '@tiptap/y-tiptap'
 import { toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type * as Y from 'yjs'
-import type { Editor as TiptapVueEditor } from '@tiptap/vue-3'
+import type { Schema } from '@tiptap/pm/model'
 import type { CollaborativeAdapter } from '../composables/collaborative/types'
 import type { ContentTypeStrategy } from './composables/strategies/types'
 import { DEFAULT_YDOC_FRAGMENT } from './types'
@@ -14,17 +15,17 @@ import { DEFAULT_YDOC_FRAGMENT } from './types'
  * expects.
  *
  * Each strategy already knows how to convert between its native string format
- * (markdown / HTML / plain text / tiptap-json) and a Tiptap editor state. The
- * adapter handles the conversion between that editor state and the Y.Doc state
+ * (markdown / HTML / plain text / tiptap-json) and a ProseMirror document. The
+ * adapter handles the conversion between that document and the Y.Doc state
  * that `Collaboration` writes to.
  *
- * Hydrate and serialize run through a throwaway headless editor bound to the
- * shared Y.Doc, and `hasContent` / `reset` work on the Y.XmlFragment that
- * `Collaboration` writes to.
+ * `serialize` converts the Y.XmlFragment directly into a ProseMirror node and
+ * hands that to the strategy. No editor is involved, which matters because the
+ * session serializes on every pause in typing on every peer.
  *
- * Building that editor costs a few milliseconds. The session debounces
- * serialization to one call per pause in typing, not one per keystroke, so it
- * is not worth caching or routing the mounted editor back here.
+ * `hydrate` still needs an editor, because parsing native content back into
+ * the shared types goes through `setContent`. It runs once per session, so its
+ * cost does not matter. It spawns a headless editor for this.
  *
  * `strategy` is a `MaybeRefOrGetter` because the adapter is built before the
  * file is loaded, so the content type isn't known yet. Strategies must be
@@ -34,6 +35,19 @@ export function makeTiptapCollabAdapter(
   strategy: MaybeRefOrGetter<ContentTypeStrategy>,
   fragment = DEFAULT_YDOC_FRAGMENT
 ): CollaborativeAdapter {
+  // Building the schema walks every extension, so keep one per strategy. The
+  // getter can resolve to a different strategy per call (the content type is
+  // detected from the resource), hence a map rather than a single slot.
+  const schemas = new WeakMap<ContentTypeStrategy, Schema>()
+  function schemaFor(current: ContentTypeStrategy): Schema {
+    let schema = schemas.get(current)
+    if (!schema) {
+      schema = getSchema(current.extensions({ collaborative: true }))
+      schemas.set(current, schema)
+    }
+    return schema
+  }
+
   function makeHeadlessEditor(ydoc: Y.Doc): Editor {
     const detached = document.createElement('div')
     return new Editor({
@@ -71,12 +85,12 @@ export function makeTiptapCollabAdapter(
     },
 
     serialize(ydoc) {
-      const editor = makeHeadlessEditor(ydoc)
-      try {
-        return toValue(strategy).serialize(editor as unknown as TiptapVueEditor)
-      } finally {
-        editor.destroy()
-      }
+      const current = toValue(strategy)
+      const doc = yXmlFragmentToProseMirrorRootNode(
+        ydoc.getXmlFragment(fragment),
+        schemaFor(current)
+      )
+      return current.serialize(doc)
     },
 
     hasContent(ydoc) {

@@ -1,6 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest'
 import { ref } from 'vue'
 import { Editor } from '@tiptap/vue-3'
+import { getSchema } from '@tiptap/core'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 import { useStrategyPlainText } from '../../../../src/editor/composables/strategies/plainText'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
@@ -87,11 +88,17 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('serialize', () => {
-    it('calls getText with \\n block separator', () => {
+    it('joins blocks with a single newline', () => {
       const strategy = createStrategy()
-      const mockEditor = { getText: vi.fn().mockReturnValue('hello') } as any
-      expect(strategy.serialize(mockEditor)).toBe('hello')
-      expect(mockEditor.getText).toHaveBeenCalledWith({ blockSeparator: '\n' })
+      const schema = getSchema(strategy.extensions())
+      const doc = schema.nodeFromJSON({
+        type: 'doc',
+        content: [
+          { type: 'paragraph', content: [{ type: 'text', text: 'line1' }] },
+          { type: 'paragraph', content: [{ type: 'text', text: 'line2' }] }
+        ]
+      })
+      expect(strategy.serialize(doc)).toBe('line1\nline2')
     })
   })
 
