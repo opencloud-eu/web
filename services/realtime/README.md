@@ -13,11 +13,12 @@ hydrated from the client. Every connection is authenticated and authorized again
 
 ## Configuration
 
-| Variable         | Default | Description                                                                   |
-| ---------------- | ------- | ----------------------------------------------------------------------------- |
-| `OPENCLOUD_URL`  | -       | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com`  |
-| `PORT`           | `1234`  | Port to listen on                                                             |
-| `DEV_FAKE_TOKEN` | unset   | Dev only. Bypasses auth for a fixed token. Refused when `NODE_ENV=production` |
+| Variable         | Default      | Description                                                                   |
+| ---------------- | ------------ | ----------------------------------------------------------------------------- |
+| `OPENCLOUD_URL`  | -            | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com`  |
+| `PORT`           | `1234`       | Port to listen on                                                             |
+| `NODE_ENV`       | `production` | Set by the image. `DEV_FAKE_TOKEN` is refused while it is `production`        |
+| `DEV_FAKE_TOKEN` | unset        | Dev only. Bypasses auth for a fixed token. Refused when `NODE_ENV=production` |
 
 ## Routing
 
@@ -31,28 +32,30 @@ collaboration is off while that option is unset.
 Whatever sits in front must:
 
 - forward WebSocket upgrades
-- pass the `Authorization` header through unchanged, since the service validates the bearer token
-  itself against OpenCloud
-- not add its own authentication, which would replace or strip that header
+- not require authentication of its own
+
+The second point is easy to get wrong. The bearer token does not travel in an `Authorization`
+header: browsers cannot set headers on a WebSocket handshake, so it arrives in Hocuspocus' own
+first message once the socket is already open. A proxy that demands an `Authorization` header
+therefore rejects every connection before the service ever sees it - and the service validates the
+token itself regardless.
 
 The dev stack is one example: OpenCloud's own proxy forwards `/realtime` to the service, with the
-route marked `unprotected` for the reasons above (see `dev/docker/opencloud/proxy.yaml`).
+route marked `unprotected` for exactly that reason (see `dev/docker/opencloud/proxy.yaml`).
 
 ## Running
 
 The sources are TypeScript and are run directly by Node's type stripping, so there is no build
 step. Node 22.18 or newer is required.
 
-Locally:
-
-```sh
-OPENCLOUD_URL=https://host.docker.internal:9200 pnpm --filter web-realtime-server start
-```
+The dev stack in `docker-compose.yml` builds and runs it as the `realtime` service, and mounts
+`src/` read-only - so editing the server needs a `docker restart web-realtime-1`, not a rebuild.
+Running it on the host instead needs an `OPENCLOUD_URL` whose TLS certificate the host trusts; the
+dev setup's self-signed Traefik certificate does not qualify, which is why the container gets
+`NODE_TLS_REJECT_UNAUTHORIZED=0`.
 
 As a container, built from the repository root:
 
 ```sh
 docker build -f services/realtime/Dockerfile -t web-realtime-server .
 ```
-
-The dev stack in `docker-compose.yml` builds and runs it as the `realtime` service.

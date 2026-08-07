@@ -30,7 +30,6 @@ flowchart TB
     B <-->|"2 . CRDT sync + awareness"| HP
     HP -->|"3 . who are you?"| GRAPH
     HP -->|"4 . may you write this?"| GRAPH
-    HP -->|"5 . current etag"| DAV
 
     classDef client fill:#e8f0fe,stroke:#4285f4,color:#111
     classDef server fill:#e6f4ea,stroke:#34a853,color:#111
@@ -65,28 +64,28 @@ sequenceDiagram
     participant C as Client
     participant HP as Yjs server
     participant G as Graph API
-    participant D as WebDAV
 
     C->>HP: connect(room, token, appVersion)
-    HP->>HP: appVersion matches the room's baseline?
-    Note over HP: first client into a room sets the baseline
     HP->>G: GET /graph/v1.0/me
     G-->>HP: user identity
-    par ACL and etag probed together
-        HP->>G: GET drives/{driveId}/items/{itemId}/permissions
-        G-->>HP: allowed actions
-    and
-        HP->>D: HEAD /remote.php/dav/spaces/{itemId}
-        D-->>HP: ETag
-    end
-    alt 401 / 403 / 404 from either
+    HP->>G: GET drives/{driveId}/items/{itemId}/permissions
+    G-->>HP: allowed actions
+    alt 401 / 403 / 404
         HP-->>C: reject - access denied
-    else write action present
-        HP-->>C: accept (read-write)
-    else read only
-        HP-->>C: accept (readOnly)
+    else
+        HP->>HP: appVersion matches the room's baseline?
+        Note over HP: first client into a room sets the baseline
+        alt mismatch
+            HP-->>C: reject - please reload
+        else write action present
+            HP-->>C: accept (read-write)
+        else read only
+            HP-->>C: accept (readOnly)
+        end
     end
 ```
+
+The version baseline is recorded only once identity and access are settled. Doing it any earlier let an unauthenticated caller name any room, claim a version nobody else runs, and lock every legitimate client out of that file until the process restarted - the entry is cleared by `onDisconnect`, which never fires for a connection that was rejected.
 
 The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `collaborative.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.id`, which is already global: a share recipient sees the same composite id as the owner, so both land in the same room. Note that this must not be `resource.remoteItemId` - `AppWrapper` fills that with the share space id, which identifies the mount point rather than the file, so every file inside a shared folder would collapse into one room. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
 
