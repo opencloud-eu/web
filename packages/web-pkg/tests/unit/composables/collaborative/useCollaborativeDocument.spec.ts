@@ -194,6 +194,29 @@ describe('useCollaborativeDocument — enabled gate', () => {
   })
 })
 
+describe('useCollaborativeDocument — room name', () => {
+  const yjsServerUrl = 'wss://example.test/realtime'
+
+  it('keys the room on the prefix and the resource id', async () => {
+    setupSession({ yjsServerUrl, resource: makeResource({ id: 'storage$space!item-1' }) })
+    await flushPromises()
+    expect(providerInstances[0].name).toBe('test-app::storage$space!item-1')
+  })
+
+  // `resource.id` is global: the recipient of a share resolves the same
+  // composite id as the owner, which is what puts them in one room.
+  it('puts owner and share recipient in the same room', async () => {
+    setupSession({ yjsServerUrl, resource: makeResource({ id: 'storage$space!item-1' }) })
+    setupSession({
+      yjsServerUrl,
+      resource: makeResource({ id: 'storage$space!item-1', remoteItemId: 'storage$space!mount' })
+    })
+    await flushPromises()
+
+    expect(providerInstances[0].name).toBe(providerInstances[1].name)
+  })
+})
+
 describe('useCollaborativeDocument — local mode (no yjsServerUrl)', () => {
   it('reports status "local" and does not construct a HocuspocusProvider', async () => {
     const s = setupSession({ currentContent: 'hello' })
