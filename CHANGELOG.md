@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
 - fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
 - fix: improve file sorting to handle duplicates with extensions correctly [[#3046](https://github.com/opencloud-eu/web/pull/3046)]
 - fix: autofocus public link pasword input [[#3034](https://github.com/opencloud-eu/web/pull/3034)]
