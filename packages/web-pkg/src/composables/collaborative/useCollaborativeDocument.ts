@@ -74,6 +74,12 @@ export interface CollaborativeDocument {
 const META_KEY = '_oc_meta'
 const SERIALIZE_DEBOUNCE_MS = 300
 /**
+ * How long to wait for the realtime server before giving up on it and running
+ * the session locally. Generous enough to ride out a slow connect, short
+ * enough that a misconfigured or down sidecar does not read as a hung editor.
+ */
+const CONNECT_TIMEOUT_MS = 10_000
+/**
  * Tag we put on our own meta-write so the meta observer can tell a local save
  * (the etag mirror firing) apart from a peer save (a CRDT update from another
  * client). Peer saves get the `onServerContentChange` fan-out; local saves
@@ -546,6 +552,7 @@ export function useCollaborativeDocument(
 
       let prov: HocuspocusProvider | null = null
       let aw: Awareness
+      let connectTimer: number | undefined
 
       const resolvedRealtimeUrl = unref(yjsServerUrl)
       if (resolvedRealtimeUrl) {
@@ -569,14 +576,50 @@ export function useCollaborativeDocument(
             // rejection too.
             error.value = new Error(reason || 'authentication failed')
             isLockedForReload.value = true
+            if (connectTimer !== undefined) window.clearTimeout(connectTimer)
             // A failed connect never produces an `onSynced`, so release the
             // loading gate here or the editor spins forever.
             if (!doc.isDestroyed && unref(ydoc) === doc) isReady.value = true
           },
           onSynced() {
+            if (connectTimer !== undefined) window.clearTimeout(connectTimer)
             void onProviderSynced(doc, prov, prov!.awareness!)
           }
         })
+
+        // A server that never answers produces neither `onSynced` nor
+        // `onAuthenticationFailed`: HocuspocusProvider just keeps retrying, and
+        // `onStatus` only moves a ref nobody gates on. The loading screen would
+        // stay up forever, so one typo in `yjsServerUrl` - or a sidecar that is
+        // simply down - would take every editor in the deployment offline.
+        //
+        // Give up after a bounded wait and carry on locally: the file is still
+        // editable and still saveable, it just does not sync.
+        connectTimer = window.setTimeout(() => {
+          connectTimer = undefined
+          if (doc.isDestroyed || unref(ydoc) !== doc || unref(isReady)) return
+
+          console.error(`[collab] realtime server unreachable, continuing without it: ${name}`)
+          status.value = 'disconnected'
+          error.value = new Error(
+            'The realtime server could not be reached. Editing continues without collaboration; ' +
+              'others will not see your changes until you reload.'
+          )
+          // Stop retrying. A later connect would merge our locally hydrated
+          // copy into a room that may already hold the same content,
+          // duplicating the document for every peer. `disconnect` rather than
+          // `destroy` because the editor binds to the provider's awareness and
+          // `destroy` takes that down with it.
+          try {
+            prov?.disconnect()
+          } catch {
+            // already torn down
+          }
+          // `runInitialHydration` returns early if the doc turned out to have
+          // content after all, so a sync that landed just as we gave up cannot
+          // be hydrated on top of.
+          void onProviderSynced(doc, null, aw)
+        }, CONNECT_TIMEOUT_MS)
 
         // Empty-user bootstrap: creates an awareness entry under our
         // Y.Doc.clientID as soon as the provider connects, so peers see us
@@ -685,6 +728,7 @@ export function useCollaborativeDocument(
 
       onCleanup(() => {
         if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
+        if (connectTimer !== undefined) window.clearTimeout(connectTimer)
         meta.unobserve(metaObserver)
         doc.off('update', onDocUpdate)
         prov?.destroy()

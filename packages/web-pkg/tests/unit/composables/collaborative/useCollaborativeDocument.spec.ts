@@ -288,6 +288,68 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   })
 })
 
+describe('useCollaborativeDocument — unreachable realtime server', () => {
+  const yjsServerUrl = 'wss://example.test/realtime'
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+  })
+
+  // Regression: a server that never answers produces neither `onSynced` nor
+  // `onAuthenticationFailed`. The provider just kept retrying, so `isReady`
+  // never flipped and `AppWrapper` sat on its loading screen forever - one
+  // typo in `yjsServerUrl` took every editor in the deployment offline.
+  it('keeps the gate shut while the connect is still in flight', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'the file body' })
+    await flushPromises()
+    vi.advanceTimersByTime(9_000)
+    await flushPromises()
+
+    expect(unref(s.session.isReady)).toBe(false)
+  })
+
+  it('falls back to a local session once the connect times out', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'the file body' })
+    await flushPromises()
+    vi.advanceTimersByTime(11_000)
+    await flushPromises()
+
+    // Editable and hydrated rather than a blank page behind a spinner.
+    expect(unref(s.session.isReady)).toBe(true)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+    expect(unref(s.session.status)).toBe('disconnected')
+    expect(unref(s.session.error)).toBeTruthy()
+    // Read-only would be wrong here: there is nothing stopping the user from
+    // saving, the file just does not sync.
+    expect(unref(s.session.isLockedForReload)).toBe(false)
+    // Stopped retrying, but not destroyed - the editor binds to its awareness.
+    expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    expect(providerInstances[0].destroy).not.toHaveBeenCalled()
+  })
+
+  it('does not fall back once the server answered in time', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'the file body' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(20_000)
+    await flushPromises()
+
+    expect(unref(s.session.error)).toBeNull()
+    expect(providerInstances[0].disconnect).not.toHaveBeenCalled()
+  })
+
+  it('does not fall back once authentication already failed', async () => {
+    const s = setupSession({ yjsServerUrl })
+    await flushPromises()
+    providerInstances[0].triggerAuthFailed('token expired')
+    vi.advanceTimersByTime(20_000)
+    await flushPromises()
+
+    expect(unref(s.session.error)?.message).toBe('token expired')
+    expect(providerInstances[0].disconnect).not.toHaveBeenCalled()
+  })
+})
+
 describe('useCollaborativeDocument — read-only clients', () => {
   // Regression: read-only clients used to skip hydration entirely, so a viewer
   // that opened a file nobody else was editing got a blank document.
