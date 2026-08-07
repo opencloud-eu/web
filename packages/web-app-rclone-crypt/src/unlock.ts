@@ -1,14 +1,7 @@
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { WebDAV } from '@opencloud-eu/web-client/webdav'
+import { Resource } from '@opencloud-eu/web-client'
 import { FolderVaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
 import { createEngine } from './crypto/engine'
-import { INTEGRITY_ID_PROP } from './integrity'
-
-export type VaultTarget = {
-  webdav: WebDAV
-  space: SpaceResource
-  vaultRoot: string
-}
+import { INTEGRITY_ID_PROP, integrityTokenOf, VaultTarget, writeIntegrityToken } from './integrity'
 
 export type UnlockResult =
   /** The passphrase holds up; `engine` is the one to stash for the session. */
@@ -29,10 +22,6 @@ const BLOCK_SIZE = 16 + 64 * 1024
 /** Read the vault root itself, with the integrity token property requested. */
 function readVaultRoot({ webdav, space, vaultRoot }: VaultTarget): Promise<Resource | undefined> {
   return webdav.getFileInfo(space, { path: vaultRoot }, { extraProps: [INTEGRITY_ID_PROP] })
-}
-
-function integrityTokenOf(root: Resource | undefined): string | null {
-  return (root?.extraProps?.[INTEGRITY_ID_PROP] as string) || null
 }
 
 /**
@@ -99,20 +88,6 @@ async function verifyAgainstContent(
     // Failed Poly1305 tag - the passphrase is definitively wrong.
     return false
   }
-}
-
-/** Commit the vault to this engine's passphrase by storing its integrity token. */
-async function writeIntegrityToken(
-  { webdav, space, vaultRoot }: VaultTarget,
-  engine: FolderVaultEngine
-): Promise<void> {
-  const token = await engine.createIntegrityToken()
-  await webdav.setProperties(
-    space,
-    { path: vaultRoot },
-    { [INTEGRITY_ID_PROP]: token },
-    { extraProps: [INTEGRITY_ID_PROP] }
-  )
 }
 
 /** Whether the vault still needs setup and is without a passphrase (= new vault). */

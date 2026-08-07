@@ -39,7 +39,8 @@ function mountUnlockVault({
         })
       ],
       mocks,
-      provide: mocks
+      provide: mocks,
+      stubs: { OcCard: false }
     }
   })
 
@@ -58,7 +59,6 @@ async function mountProbed(options?: Parameters<typeof mountUnlockVault>[0]) {
 async function submit(wrapper: Wrapper['wrapper'], password = passphrase) {
   const vm = wrapper.vm as any
   vm.password = password
-  vm.confirmPassword = password
   await vm.onSubmit()
 }
 
@@ -69,9 +69,8 @@ describe('UnlockVault', () => {
       const vm = wrapper.vm as any
 
       expect(vm.needsSetup).toBe(true)
-      expect(vm.cardTitle).toBe('Set Up Encrypted Vault')
-      expect(vm.passphraseLabel).toBe('Choose a passphrase')
-      expect(vm.submitLabel).toBe('Set passphrase')
+      expect(vm.cardTitle).toBe('Set up encrypted folder')
+      expect(vm.submitLabel).toBe('Set password')
     })
 
     it('asks to unlock a vault whose passphrase is already committed', async () => {
@@ -79,8 +78,7 @@ describe('UnlockVault', () => {
       const vm = wrapper.vm as any
 
       expect(vm.needsSetup).toBe(false)
-      expect(vm.cardTitle).toBe('Unlock vault')
-      expect(vm.passphraseLabel).toBe('Vault passphrase')
+      expect(vm.cardTitle).toBe('Unlock folder')
       expect(vm.submitLabel).toBe('Unlock')
     })
 
@@ -96,6 +94,18 @@ describe('UnlockVault', () => {
 
       expect(probeVaultNeedsSetup).not.toHaveBeenCalled()
       expect(wrapper.find('no-content-message-stub').exists()).toBe(true)
+    })
+
+    it('shows neither panel until the probe answered', async () => {
+      const { wrapper } = mountUnlockVault({ needsSetup: true })
+
+      expect(wrapper.find('oc-spinner-stub').exists()).toBe(true)
+      expect(wrapper.find('form').exists()).toBe(false)
+
+      await flushPromises()
+
+      expect(wrapper.find('oc-spinner-stub').exists()).toBe(false)
+      expect(wrapper.find('vault-setup-stub').exists()).toBe(true)
     })
 
     it('shows the cleartext folder name rather than the whole path', async () => {
@@ -130,7 +140,7 @@ describe('UnlockVault', () => {
       vi.mocked(unlockVault).mockResolvedValue({ status: 'wrong-passphrase' })
       await submit(wrapper)
 
-      expect((wrapper.vm as any).errorMessage).toBe('Incorrect passphrase.')
+      expect((wrapper.vm as any).errorMessage).toBe('Incorrect password.')
       expect(vaultStore.setEngine).not.toHaveBeenCalled()
       expect(mocks.$router.push).not.toHaveBeenCalled()
     })
@@ -146,35 +156,13 @@ describe('UnlockVault', () => {
       expect(mocks.$router.push).not.toHaveBeenCalled()
     })
 
-    it('never commits a passphrase the user only typed once', async () => {
-      // The disabled button covers this in the UI; the guard covers a programmatic
-      // submit slipping past it. Committing a typo would lock the vault for good.
-      const { wrapper } = await mountProbed({ needsSetup: true })
-      const vm = wrapper.vm as any
-      vm.password = passphrase
-      vm.confirmPassword = 'something-else'
-      await vm.onSubmit()
-
-      expect(vm.errorMessage).toBe('Passphrases do not match.')
-      expect(unlockVault).not.toHaveBeenCalled()
-    })
-
-    it('keeps the submit button disabled until both fields match', async () => {
-      const { wrapper } = await mountProbed({ needsSetup: true })
+    it('keeps the submit button disabled until a password is entered', async () => {
+      const { wrapper } = await mountProbed()
       const vm = wrapper.vm as any
 
       expect(vm.submitDisabled).toBe(true)
 
       vm.password = passphrase
-      await flushPromises()
-      expect(vm.submitDisabled).toBe(true)
-      expect(vm.confirmErrorMessage).toBeNull()
-
-      vm.confirmPassword = 'typo'
-      await flushPromises()
-      expect(vm.confirmErrorMessage).toBe('Passphrases do not match')
-
-      vm.confirmPassword = passphrase
       await flushPromises()
       expect(vm.submitDisabled).toBe(false)
     })

@@ -9,6 +9,7 @@
     </span>
     <button
       data-testid="oc-switch-btn"
+      type="button"
       class="oc-switch-btn block relative border border-role-outline rounded-3xl w-8 before:size-3 h-4.5 disabled:cursor-default disabled:opacity-40"
       :class="{ 'cursor-pointer': !disabled }"
       role="switch"

@@ -1327,7 +1327,7 @@ When(
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     await resourceObject.enterVault({ vault, passphrase: passphrase })
-    await expect(page.getByText('Incorrect passphrase.')).toBeVisible()
+    await expect(page.getByText('Incorrect password.')).toBeVisible()
     expect(page.url()).toContain('/rclone-crypt/unlock')
   }
 )

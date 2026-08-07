@@ -1,3 +1,7 @@
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { WebDAV } from '@opencloud-eu/web-client/webdav'
+import { FolderVaultEngine } from '@opencloud-eu/web-pkg'
+
 /**
  * Name of the WebDAV property holding a vault's integrity token.
  *
@@ -12,6 +16,31 @@
  * `404 Not Found`.
  */
 export const INTEGRITY_ID_PROP = 'ocrclone:integrity-id'
+
+/** Where a vault lives, i.e. everything needed to talk to it. */
+export type VaultTarget = {
+  webdav: WebDAV
+  space: SpaceResource
+  vaultRoot: string
+}
+
+export function integrityTokenOf(root: Resource | undefined): string | null {
+  return (root?.extraProps?.[INTEGRITY_ID_PROP] as string) || null
+}
+
+/** Commit the vault to this engine's passphrase by storing its integrity token. */
+export async function writeIntegrityToken(
+  { webdav, space, vaultRoot }: VaultTarget,
+  engine: FolderVaultEngine
+): Promise<void> {
+  const token = await engine.createIntegrityToken()
+  await webdav.setProperties(
+    space,
+    { path: vaultRoot },
+    { [INTEGRITY_ID_PROP]: token },
+    { extraProps: [INTEGRITY_ID_PROP] }
+  )
+}
 
 /** Encode raw ciphertext so it can live in an XML text node. */
 export function toBase64(bytes: Uint8Array): string {
