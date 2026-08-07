@@ -22,7 +22,11 @@ export interface CollaborativeDocumentOptions {
    * publish an empty document to every peer.
    */
   enabled: MaybeRefOrGetter<boolean>
-  /** Read-only clients never hydrate and never recover a stale doc. */
+  /**
+   * Read-only clients never seed the shared room and never recover a stale
+   * doc. They do hydrate a private copy while the room is empty, see
+   * `runInitialHydration`.
+   */
   isReadOnly: MaybeRefOrGetter<boolean>
   /** Translates between the native file format and the doc's shared types. */
   adapter: MaybeRefOrGetter<CollaborativeAdapter>
@@ -119,6 +123,7 @@ export function useCollaborativeDocument(
   const authStore = useAuthStore()
   const configStore = useConfigStore()
 
+  const sessionNonce = ref(0)
   const ydoc = shallowRef<Y.Doc | null>(null)
   const provider = shallowRef<HocuspocusProvider | null>(null)
   const awareness = shallowRef<Awareness | null>(null)
@@ -152,8 +157,16 @@ export function useCollaborativeDocument(
   const sessionKey = computed(() => {
     const name = unref(documentName)
     if (!name || !toValue(enabled)) return null
-    return `${name}::${unref(yjsServerUrl) ?? 'local'}`
+    return `${name}::${unref(yjsServerUrl) ?? 'local'}::${unref(sessionNonce)}`
   })
+
+  /**
+   * True while this client holds content that only exists in its own browser:
+   * a read-only client hydrated an empty room (see `runInitialHydration`).
+   * Merging that private copy with a peer's later seeding would duplicate the
+   * whole document, so the session is rebuilt instead.
+   */
+  let hasLocalOnlyContent = false
 
   function lockForReload(prov: HocuspocusProvider | null, message: string) {
     if (unref(isLockedForReload)) return
@@ -282,7 +295,22 @@ export function useCollaborativeDocument(
     }
 
     if (current.hasContent(doc)) return
-    if (unref(effectiveReadOnly)) return // never seed from a read-only view
+
+    // Read-only client in an empty room: nobody has seeded the doc, so leaving
+    // it empty would show a blank file. Hydrate a private copy instead. The
+    // realtime server rejects writes from read-only connections, so it never
+    // reaches the room, and `hasLocalOnlyContent` marks it so the meta observer
+    // can drop it again the moment a peer starts seeding for real.
+    if (unref(effectiveReadOnly)) {
+      // A peer already announced its seeding; its content is on the way.
+      if (meta.get('hydrated') === true) return
+      // Set before awaiting: a peer announcing mid-hydration must still find
+      // the flag set, otherwise the two copies merge into duplicated content.
+      hasLocalOnlyContent = true
+      await Promise.resolve(current.hydrate(doc, toValue(currentContent)))
+      hasLocalOnlyContent = current.hasContent(doc)
+      return
+    }
 
     // Peer election to avoid double-hydration: let other clients announce
     // themselves via awareness, then the lowest awareness clientId wins. This
@@ -299,6 +327,9 @@ export function useCollaborativeDocument(
       if (myId !== lowest) return
     }
 
+    // Announce before seeding, so read-only peers can drop their private copy
+    // before our content lands rather than merge with it.
+    doc.transact(() => meta.set('hydrated', true))
     await Promise.resolve(current.hydrate(doc, toValue(currentContent)))
   }
 
@@ -409,6 +440,7 @@ export function useCollaborativeDocument(
       error.value = null
       isLockedForReload.value = false
       isReady.value = false
+      hasLocalOnlyContent = false
 
       const doc = new Y.Doc()
 
@@ -536,6 +568,19 @@ export function useCollaborativeDocument(
               )
             }
           }
+        }
+
+        // A peer is seeding the room while we hold a private read-only copy.
+        // Letting the two merge would duplicate the whole document, so throw
+        // our session away and rebuild it from the room's state. Nothing is
+        // lost: a read-only client never has edits of its own.
+        if (
+          event.keysChanged.has('hydrated') &&
+          meta.get('hydrated') === true &&
+          hasLocalOnlyContent
+        ) {
+          sessionNonce.value++
+          return
         }
 
         // Stale-state signal: the room's Y.Doc was tied to an etag that no

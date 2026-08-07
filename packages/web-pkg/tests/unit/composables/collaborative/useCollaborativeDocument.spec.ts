@@ -117,11 +117,13 @@ function setupSession({
   appVersion = '1.2.3',
   resource = makeResource(),
   adapter = testAdapter as CollaborativeAdapter,
-  enabled = true
+  enabled = true,
+  isReadOnly = false
 } = {}) {
   const resourceRef = ref(resource)
   const adapterRef = shallowRef(adapter)
   const enabledRef = ref(enabled)
+  const isReadOnlyRef = ref(isReadOnly)
   const contentRef = ref(currentContent)
   const onContentChange = vi.fn()
   const onServerContentChange = vi.fn()
@@ -134,7 +136,7 @@ function setupSession({
         resource: resourceRef,
         currentContent: contentRef,
         enabled: enabledRef,
-        isReadOnly: false,
+        isReadOnly: isReadOnlyRef,
         adapter: adapterRef,
         appVersion,
         documentPrefix: 'test-app',
@@ -151,6 +153,7 @@ function setupSession({
     resourceRef,
     adapterRef,
     enabledRef,
+    isReadOnlyRef,
     contentRef,
     onContentChange,
     onServerContentChange,
@@ -259,6 +262,92 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
     expect(unref(s.session.error)?.message).toBe('token expired')
     expect(unref(s.session.isLockedForReload)).toBe(true)
     expect(unref(s.session.isReady)).toBe(true)
+  })
+})
+
+describe('useCollaborativeDocument — read-only clients', () => {
+  // Regression: read-only clients used to skip hydration entirely, so a viewer
+  // that opened a file nobody else was editing got a blank document.
+  it('hydrates a private copy in local mode', async () => {
+    const s = setupSession({ currentContent: 'read me', isReadOnly: true })
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('read me')
+  })
+
+  it('hydrates a private copy when the room is empty, without claiming the seeding', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'read me',
+      isReadOnly: true
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('read me')
+    // The seeding announcement is what makes peers drop their private copy.
+    // Only a client that writes to the room may raise it.
+    expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBeUndefined()
+  })
+
+  it('does not hydrate when the room already has content', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'stale local copy',
+      isReadOnly: true
+    })
+    await flushPromises()
+
+    const peer = new Y.Doc()
+    peer.getText(SHARED_TEXT_KEY).insert(0, 'from a peer')
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer))
+
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('from a peer')
+  })
+
+  // A private copy merging with a peer's seeding would duplicate the whole
+  // document, so the session is thrown away and rebuilt from the room instead.
+  it('rebuilds the session when a peer announces its seeding', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'read me',
+      isReadOnly: true
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    const privateDoc = s.ydoc
+    expect(privateDoc!.getText(SHARED_TEXT_KEY).toString()).toBe('read me')
+
+    // A remote transaction has no string origin, which is what tells the
+    // observer this came from a peer.
+    privateDoc!.transact(() => privateDoc!.getMap('_oc_meta').set('hydrated', true))
+    await flushPromises()
+
+    expect(s.ydoc).not.toBe(privateDoc)
+    expect(privateDoc!.isDestroyed).toBe(true)
+    expect(providerInstances).toHaveLength(2)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
+  })
+
+  it('does not rebuild for a writer that seeds the room itself', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'write me'
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBe(true)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('write me')
+    expect(providerInstances).toHaveLength(1)
   })
 })
 

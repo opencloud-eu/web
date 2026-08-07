@@ -206,22 +206,9 @@ const hasProp = (name: string) => {
   return Boolean(Object.keys(wrappedComponent.props).includes(name))
 }
 
-const isDirty = computed(() => {
-  return unref(currentContent) !== unref(serverContent)
-})
-
 const preventUnload = (e: Event) => {
   e.preventDefault()
 }
-
-watch(isDirty, (dirty) => {
-  // Prevent reload if there are changes
-  if (dirty) {
-    window.addEventListener('beforeunload', preventUnload)
-  } else {
-    window.removeEventListener('beforeunload', preventUnload)
-  }
-})
 
 const {
   applicationConfig,
@@ -285,6 +272,24 @@ const isLoading = computed(() => {
 const effectiveReadOnly = computed(
   () => unref(isReadOnly) || Boolean(unref(collaborativeDocument?.isLockedForReload))
 )
+
+const isDirty = computed(() => {
+  // Peer edits keep flowing into `currentContent` of a read-only client too,
+  // but it has nothing to save, so it must never be prompted about it.
+  if (unref(effectiveReadOnly)) {
+    return false
+  }
+  return unref(currentContent) !== unref(serverContent)
+})
+
+watch(isDirty, (dirty) => {
+  // Prevent reload if there are changes
+  if (dirty) {
+    window.addEventListener('beforeunload', preventUnload)
+  } else {
+    window.removeEventListener('beforeunload', preventUnload)
+  }
+})
 
 if (collaborativeDocument) {
   watch(collaborativeDocument.error, (error) => {
