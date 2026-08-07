@@ -276,6 +276,7 @@ A `Y.Map` alongside the editor content, used for coordination the editor never s
 | ------------------ | ------------------- | --------------------------------------------- |
 | `etag`             | whoever saved last  | the etag the room believes is on disk         |
 | `lastSavedAt`      | whoever saved last  | fan-out trigger for a peer save               |
+| `savedStateVector` | whoever saved last  | what that peer's doc held when it wrote       |
 | `appVersion`       | first peer in       | schema version the room is running            |
 | `isStale`          | any writer          | the file changed outside this room; rehydrate |
 | `nativeEtag`       | writer that noticed | the etag recovery should settle on            |
@@ -311,12 +312,16 @@ sequenceDiagram
     AWA->>DAV: PUT If-Match: etag
     DAV-->>AWA: new etag
     AWA->>SA: resource.etag changed
-    SA->>HP: _oc_meta.etag + lastSavedAt
+    SA->>HP: _oc_meta.etag + savedStateVector + lastSavedAt
     HP->>SB: meta update
-    SB->>SB: serialize - this is now what's on disk
+    SB->>SB: did that save cover my edits?
     SB->>AWB: onServerContentChange + onEtagChange
     Note over AWB: isDirty drops to false,<br/>next If-Match is already correct
 ```
+
+A peer's save only makes B clean if it actually contains B's work. What A wrote is what _A's_ doc serialized to, so `savedStateVector` carries A's Yjs state vector at write time and B compares its own client clock against it. Covered means B contributed nothing A was missing, so B has nothing left to save. Not covered means B typed something A's PUT never saw, and B stays dirty - dropping the flag there would also unregister `beforeunload` and wave the route-leave guard through, losing the edit with the tab. The etag is mirrored either way: it is factual, and it keeps B's next `If-Match` correct.
+
+Only B's own client id is compared. A third peer's unsaved operations are that peer's dirty state to track.
 
 The 300 ms debounce only refreshes `currentContent`, which is what drives `isDirty`. It never triggers a PUT on its own. The actual write comes from a manual save (Ctrl+S) or the autosave timer (default 120 s), and both go through the same path. If a PUT comes back 409/412, `AppWrapper` refetches, compares, and retries once with the fresh etag before showing a conflict message - the local Y.Doc already contains the peer's edits, so the retry publishes the merged state.
 

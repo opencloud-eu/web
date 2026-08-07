@@ -260,6 +260,12 @@ const collaborativeDocument = collaborative
       onEtagChange: (value) => {
         if (currentETag.value === value) return
         currentETag.value = value
+        // Keep `resource.etag` on the same value. The session compares it
+        // against the room's etag to detect that the file changed outside the
+        // room, and a peer that never saves itself would otherwise keep the
+        // etag it opened with forever - so the next reconnect would read the
+        // peer's save as an external write and wipe the room to "recover" it.
+        resource.value = { ...unref(resource), etag: value }
       }
     })
   : null

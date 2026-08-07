@@ -180,6 +180,22 @@ export function useCollaborativeDocument(
   let staleRecoveryContent: string | null = null
 
   /**
+   * Whether the peer that published this state vector already held every
+   * operation *we* contributed, so the file it wrote contains our work too.
+   *
+   * Only our own client id is compared. What `serverContent` answers is "is my
+   * work on disk"; operations from a third peer are tracked by that peer's own
+   * dirty state. Comparing every client would also never hold, because the
+   * saver encodes its vector inside the transaction that stamps the rest of
+   * `_oc_meta` and so cannot include its own trailing writes.
+   */
+  function peerSaveCoversUs(doc: Y.Doc, theirs: Uint8Array): boolean {
+    const ourClock = Y.decodeStateVector(Y.encodeStateVector(doc)).get(doc.clientID) ?? 0
+    const theirView = Y.decodeStateVector(theirs).get(doc.clientID) ?? 0
+    return theirView >= ourClock
+  }
+
+  /**
    * Whether the body we hold is the one recovery is supposed to settle on,
    * i.e. our freshly fetched etag is the room's `nativeEtag`.
    */
@@ -601,11 +617,23 @@ export function useCollaborativeDocument(
         }
 
         if (event.keysChanged.has('lastSavedAt') && transaction.origin !== LOCAL_SAVE_ORIGIN) {
-          serializeDoc(doc)
-            .then((value) => {
-              if (value !== null) onServerContentChange(value)
-            })
-            .catch((e) => console.error('[collab] serialize for peer-save sync failed:', e))
+          // The peer PUT what *its* doc serialized to, not what ours does. If
+          // we hold edits that never reached it before the write, reporting our
+          // own serialization as "this is on disk" would drop our dirty flag,
+          // disarm the unsaved-changes guard and lose those edits with the tab.
+          // So only follow the peer clean when its snapshot covers everything
+          // we have. The check is repeated after serializing because a
+          // keystroke can land while that runs.
+          const theirState = meta.get('savedStateVector')
+          if (theirState instanceof Uint8Array) {
+            serializeDoc(doc)
+              .then((value) => {
+                if (value === null || doc.isDestroyed) return
+                if (!peerSaveCoversUs(doc, theirState)) return
+                onServerContentChange(value)
+              })
+              .catch((e) => console.error('[collab] serialize for peer-save sync failed:', e))
+          }
         }
 
         // App version mismatch surfaced after the fact (e.g. a newer peer
@@ -683,6 +711,10 @@ export function useCollaborativeDocument(
       if (meta.get('etag') === newEtag) return
       doc.transact(() => {
         meta.set('etag', newEtag)
+        // Snapshot of what our doc contained when we wrote the file. Peers use
+        // it to tell "this save covers me too" from "this save predates my
+        // edits", instead of assuming the former.
+        meta.set('savedStateVector', Y.encodeStateVector(doc))
         meta.set('lastSavedAt', Date.now())
       }, LOCAL_SAVE_ORIGIN)
     }

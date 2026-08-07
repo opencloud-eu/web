@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, nextTick, ref } from 'vue'
+import { defineComponent, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
@@ -34,7 +34,12 @@ vi.mock('../../../../src/composables/collaborative/useCollaborativeDocument', ()
   useCollaborativeDocument: (...args: unknown[]) => useCollaborativeDocumentSpy(...args)
 }))
 
-const FILE_A = mock<Resource>({ id: 'storage$space!file-a', name: 'a.md', permissions: 'RDNVW' })
+const FILE_A = mock<Resource>({
+  id: 'storage$space!file-a',
+  name: 'a.md',
+  etag: 'etag-a',
+  permissions: 'RDNVW'
+})
 const FILE_B = mock<Resource>({ id: 'storage$space!file-b', name: 'b.md', permissions: 'RDNVW' })
 
 const wrappedComponent = defineComponent({
@@ -60,9 +65,9 @@ function setup() {
     useAppDefaultsMock({ currentFileContext, getFileInfo, getFileContents })
   )
 
-  let enabled: () => boolean
+  let sessionOptions: any
   useCollaborativeDocumentSpy.mockImplementation((options: any) => {
-    enabled = options.enabled
+    sessionOptions = options
     return mock<CollaborativeDocument>({ isReady: ref(true) as any })
   })
 
@@ -100,7 +105,8 @@ function setup() {
   return {
     wrapper,
     currentFileContext,
-    isEnabled: () => enabled(),
+    isEnabled: () => sessionOptions.enabled(),
+    session: () => sessionOptions,
     async resolveResource(resource: Resource) {
       resolveInfo(resource)
       await flushPromises()
@@ -149,6 +155,31 @@ describe('AppWrapper — collaborative session gate', () => {
     expect(s.isEnabled()).toBe(false)
 
     await s.resolveContent('content of b')
+    expect(s.isEnabled()).toBe(true)
+  })
+})
+
+describe('AppWrapper — peer save fan-out', () => {
+  // Regression: a peer save only moved `currentETag`, so `resource.etag` kept
+  // the value this client opened with. The session compares that against the
+  // room's etag to spot an external write, so the next reconnect read an
+  // ordinary peer save as one and wiped the room to "recover" it, destroying
+  // whatever the other peers had typed since.
+  it('moves resource.etag onto the etag a peer published', async () => {
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+
+    const session = s.session()
+    expect(unref(session.resource).etag).toBe(FILE_A.etag)
+
+    session.onEtagChange('etag-from-peer-save')
+    await nextTick()
+
+    expect(unref(session.resource).etag).toBe('etag-from-peer-save')
+    // Same file, so the session must not be torn down and rebuilt over it.
+    expect(unref(session.resource).id).toBe(FILE_A.id)
     expect(s.isEnabled()).toBe(true)
   })
 })
