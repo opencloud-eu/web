@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#3048](https://github.com/opencloud-eu/web/pull/3048)]
 - chore(deps): update devdependencies (non-major) to v3.5.41 [[#3043](https://github.com/opencloud-eu/web/pull/3043)]
 - chore(deps): update typescript-eslint monorepo to v8.66.0 [[#3027](https://github.com/opencloud-eu/web/pull/3027)]
 - chore(deps): update pnpm to v11.20.0 [[#3023](https://github.com/opencloud-eu/web/pull/3023)]
