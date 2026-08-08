@@ -1,0 +1,22 @@
+{
+  "name": "web-realtime-server",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Realtime collaboration sidecar (Hocuspocus/Yjs) for OpenCloud Web",
+  "license": "AGPL-3.0",
+  "type": "module",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "node src/server.ts",
+    "check:types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hocuspocus/server": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

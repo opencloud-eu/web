@@ -10,59 +10,45 @@
 <script setup lang="ts">
 import { computed, toRef, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import type { CollaborativeEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
-  ContentType,
   useTextEditor,
   TextEditorProvider,
   TextEditorContent,
-  TextEditorToolbar
+  TextEditorToolbar,
+  type ContentType
 } from '@opencloud-eu/web-pkg/editor'
-import type { Resource } from '@opencloud-eu/web-client'
+import { detectContentType } from './collab'
 
-const {
-  currentContent,
-  contentType = undefined,
-  isReadOnly = false,
-  resource
-} = defineProps<{
-  currentContent: string
-  contentType?: ContentType
-  isReadOnly?: boolean
-  resource: Resource
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:currentContent', value: string): void
-}>()
+// AppWrapper keeps its loading screen up until the collaborative session has
+// synced and hydrated, so `ydoc` and `awareness` are ready by the time this
+// component mounts. The editor binds to the shared Y.Doc through
+// `@tiptap/extension-collaboration` inside `useTextEditor`.
+// `currentContent` is declared by `CollaborativeEditorSlotProps` but never read
+// here. It makes AppWrapper fetch the file, which the collaborative session
+// uses to seed an empty Y.Doc. Once the session is up the Y.Doc is the source
+// of truth.
+const { ydoc, awareness, isReadOnly, resource } = defineProps<CollaborativeEditorSlotProps>()
 
 const { $gettext } = useGettext()
 
-const parsedContentType = computed<ContentType>(() => {
-  if (contentType !== undefined) {
-    return contentType
-  }
-  const ext = resource?.extension?.toLowerCase()
-  const mimeType = resource?.mimeType?.toLowerCase()
-  if (ext === 'md' || ext === 'markdown' || mimeType === 'text/markdown') {
-    return 'markdown'
-  }
-
-  return 'plain-text'
+const contentType = computed<ContentType>(() => {
+  return detectContentType(resource)
 })
 
 const placeholder = computed(() => {
-  if (isReadOnly || unref(parsedContentType) !== 'markdown') {
+  if (isReadOnly || unref(contentType) !== 'markdown') {
     return undefined
   }
   return $gettext('Write or type / for formatting options...')
 })
 
 const textEditor = useTextEditor({
-  contentType: unref(parsedContentType),
+  contentType: unref(contentType),
   currentResource: toRef(() => resource),
-  modelValue: toRef(() => currentContent),
-  readonly: isReadOnly,
+  readonly: () => isReadOnly,
   placeholder: unref(placeholder),
-  onUpdate: (content) => emit('update:currentContent', content)
+  ydoc,
+  awareness
 })
 </script>

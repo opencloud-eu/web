@@ -63,7 +63,7 @@ describe.each(['markdown', 'html', 'tiptap-json'] as const)('%s link roundtrip',
       marks: [{ type: 'link', attrs: { href: 'https://opencloud.eu' } }]
     })
 
-    const serialized = strategy.serialize(original)
+    const serialized = strategy.serialize(original.state.doc)
     if (contentType === 'markdown') {
       expect(serialized).toContain('[OpenCloud](https://opencloud.eu)')
     } else if (contentType === 'html') {
@@ -87,7 +87,7 @@ describe.each(['markdown', 'html', 'tiptap-json'] as const)('%s link roundtrip',
       text: 'Cloud',
       marks: [{ type: 'link', attrs: { href: 'https://example.com/docs' } }]
     })
-    const edited = strategy.serialize(reloaded)
+    const edited = strategy.serialize(reloaded.state.doc)
     const editedReloaded = createEditor(createStrategy(contentType), edited)
     expect(getLink(editedReloaded)).toMatchObject({
       text: 'Cloud',
@@ -98,7 +98,7 @@ describe.each(['markdown', 'html', 'tiptap-json'] as const)('%s link roundtrip',
     editedReloaded.commands.unsetLink()
     expect(editedReloaded.getText()).toBe('Cloud')
     expect(getLink(editedReloaded).mark).toBeUndefined()
-    const unlinked = strategy.serialize(editedReloaded)
+    const unlinked = strategy.serialize(editedReloaded.state.doc)
     const unlinkedReloaded = createEditor(createStrategy(contentType), unlinked)
     expect(unlinkedReloaded.getText()).toBe('Cloud')
     expect(getLink(unlinkedReloaded).mark).toBeUndefined()
@@ -138,7 +138,7 @@ describe.each(['markdown', 'html', 'tiptap-json'] as const)('%s link roundtrip',
       mark: { attrs: { href: '#headlines' } }
     })
     expect(editor.view.dom.querySelector('a')?.getAttribute('href')).toBe('#headlines')
-    expect(strategy.serialize(editor)).toContain('#headlines')
+    expect(strategy.serialize(editor.state.doc)).toContain('#headlines')
 
     editor.destroy()
   })

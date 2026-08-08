@@ -13,6 +13,8 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { urlJoin } from '@opencloud-eu/web-client'
+import { makeTextEditorAdapter } from './collab'
+import pkg from '../package.json'
 
 export default defineWebApplication({
   setup({ applicationConfig }) {
@@ -200,7 +202,8 @@ export default defineWebApplication({
       {
         path: '/:driveAliasAndItem(.*)?',
         component: AppWrapperRoute(TextEditor, {
-          applicationId: appId
+          applicationId: appId,
+          collaborative: { appVersion: pkg.version, makeAdapter: makeTextEditorAdapter }
         }),
         name: 'text-editor',
         meta: {

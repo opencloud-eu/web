@@ -1,6 +1,7 @@
 prefer-workspace-packages: true
 packages:
   - 'packages/*'
+  - 'services/*'
   - 'tests/*'
 
 autoInstallPeers: true

@@ -19,12 +19,9 @@
 </template>
 
 <script setup lang="ts">
-import { Resource } from '@opencloud-eu/web-client'
+import type { ViewerSlotProps } from '@opencloud-eu/web-pkg'
 
-const { url, resource = undefined } = defineProps<{
-  url: string
-  resource?: Resource
-}>()
+const { url, resource } = defineProps<ViewerSlotProps>()
 
 const userAgent = navigator.userAgent || ''
 

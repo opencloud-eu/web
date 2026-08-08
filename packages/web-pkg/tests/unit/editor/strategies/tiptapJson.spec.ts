@@ -1,5 +1,6 @@
 import { vi, describe, it, expect } from 'vitest'
 import { ref } from 'vue'
+import { getSchema } from '@tiptap/core'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 
 vi.mock('vue3-gettext', () => ({
@@ -53,11 +54,14 @@ describe('useStrategyTiptapJson', () => {
   })
 
   describe('serialize', () => {
-    it('returns JSON string from editor', () => {
+    it('returns the ProseMirror document as a JSON string', () => {
       const strategy = createStrategy()
-      const doc = { type: 'doc', content: [] as unknown[] }
-      const mockEditor = { getJSON: vi.fn().mockReturnValue(doc) } as any
-      expect(strategy.serialize(mockEditor)).toBe(JSON.stringify(doc))
+      const schema = getSchema(strategy.extensions())
+      const json = {
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hi' }] }]
+      }
+      expect(strategy.serialize(schema.nodeFromJSON(json))).toBe(JSON.stringify(json))
     })
   })
 

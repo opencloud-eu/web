@@ -117,7 +117,8 @@ const OptionsConfigSchema = z.object({
       enabled: z.boolean().optional(),
       apiUrl: z.string().optional()
     })
-    .optional()
+    .optional(),
+  yjsServerUrl: z.string().optional()
 })
 
 export type OptionsConfig = z.infer<typeof OptionsConfigSchema>
