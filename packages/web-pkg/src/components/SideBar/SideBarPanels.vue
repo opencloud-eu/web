@@ -7,7 +7,7 @@
       :data-testid="`sidebar-panel-${panel.name}`"
       :tabindex="activePanelName === panel.name ? -1 : null"
       class="sidebar-panel absolute top-0 grid grid-rows-[auto_1fr] bg-role-surface w-full size-full max-w-full max-h-full motion-reduce:transition-none"
-      :inert="activePanelName !== panel.name"
+      :inert="activePanelName !== panel.name || loading"
       :class="{
         'is-root-panel transition-[right] duration-[0.4s,0s]': panel.isRoot?.(panelContext),
         'is-active-sub-panel': hasActiveSubPanel && activeSubPanelName === panel.name, // only one specific sub panel can be active
