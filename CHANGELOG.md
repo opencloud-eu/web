@@ -1,5 +1,48 @@
 # Changelog
 
+## [7.4.0](https://github.com/opencloud-eu/web/releases/tag/v7.4.0) - 2026-08-08
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @schweigisito, @tammi-23, @v-scharf
+
+### 🐛 Bug Fixes
+
+- fix(tip tap): don't show drag handle on mobile as it's not compatible [[#3052](https://github.com/opencloud-eu/web/pull/3052)]
+- fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
+- fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
+- fix: improve file sorting to handle duplicates with extensions correctly [[#3046](https://github.com/opencloud-eu/web/pull/3046)]
+- fix: autofocus public link pasword input [[#3034](https://github.com/opencloud-eu/web/pull/3034)]
+- fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
+- fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
+- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
+### 📈 Enhancement
+
+- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
+- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
+
+### ✅ Tests
+
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
+- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency vite to v8.2.1 [[#3049](https://github.com/opencloud-eu/web/pull/3049)]
+- chore(deps): update devdependencies (non-major) [[#3048](https://github.com/opencloud-eu/web/pull/3048)]
+- chore(deps): update devdependencies (non-major) to v3.5.41 [[#3043](https://github.com/opencloud-eu/web/pull/3043)]
+- chore(deps): update typescript-eslint monorepo to v8.66.0 [[#3027](https://github.com/opencloud-eu/web/pull/3027)]
+- chore(deps): update pnpm to v11.20.0 [[#3023](https://github.com/opencloud-eu/web/pull/3023)]
+- chore(deps): update dependency dompurify to v3.4.13 [[#3026](https://github.com/opencloud-eu/web/pull/3026)]
+- chore(deps): update node.js to v24.19.0 [[#3021](https://github.com/opencloud-eu/web/pull/3021)]
+- chore(deps): update devdependencies (non-major) [[#2999](https://github.com/opencloud-eu/web/pull/2999)]
+
 ## [7.3.0](https://github.com/opencloud-eu/web/releases/tag/v7.3.0) - 2026-08-03
 
 ### ❤️ Thanks to all contributors! ❤️
