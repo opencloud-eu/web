@@ -1,16 +1,11 @@
 <template>
   <div id="oc-file-details-sidebar" class="p-2">
     <div v-if="hasContent">
-      <div class="flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4">
-        <div v-if="preview || isPreviewLoading" data-testid="preview">
-          <oc-spinner v-if="isPreviewLoading" :aria-label="$gettext('Loading preview')" />
-          <img
-            v-else
-            key="file-thumbnail"
-            :src="preview"
-            class="details-preview h-[160px]"
-            alt=""
-          />
+      <div
+        class="relative flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4"
+      >
+        <div v-if="preview" data-testid="preview">
+          <img key="file-thumbnail" :src="preview" class="details-preview h-[160px]" alt="" />
         </div>
         <resource-icon
           v-else
@@ -18,6 +13,13 @@
           :resource="resource"
           size-class="size-22"
         />
+        <div
+          v-if="isPreviewLoading"
+          data-testid="preview-loading"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-role-surface/70"
+        >
+          <oc-spinner :aria-label="$gettext('Loading preview')" />
+        </div>
       </div>
       <div
         v-if="!publicLinkContextReady && shareIndicators.length"
@@ -28,11 +30,23 @@
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
         <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
-      <div v-if="detailsLoading" class="flex justify-center">
-        <oc-spinner :aria-label="$gettext('Loading details')" />
+      <div class="flex justify-end min-h-5">
+        <oc-spinner
+          v-if="versionsLoading"
+          v-oc-tooltip="$gettext('Loading version information')"
+          size="small"
+          :aria-label="$gettext('Loading version information')"
+        />
+        <oc-icon
+          v-else-if="versionsError"
+          v-oc-tooltip="$gettext('Version information could not be loaded')"
+          name="error-warning"
+          fill-type="line"
+          size="small"
+          class="text-role-error"
+        />
       </div>
       <dl
-        v-else
         class="details-list"
         :aria-label="$gettext('Overview of the information about the selected file')"
       >
@@ -89,10 +103,12 @@
           <dd data-testid="sizeInfo">{{ resourceSize }}</dd>
         </template>
         <web-dav-details v-if="showWebDavDetails" :space="space" />
-        <template v-if="showVersions">
+        <template v-if="versionsRowVisible">
           <dt>{{ $gettext('Version') }}</dt>
           <dd data-testid="versionsInfo">
+            <span v-if="versionsPlaceholder" aria-hidden="true">&nbsp;</span>
             <oc-button
+              v-else
               v-oc-tooltip="seeVersionsLabel"
               appearance="raw"
               :aria-label="seeVersionsLabel"
@@ -181,7 +197,8 @@ const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
 const versions = inject<Ref<Resource[]>>('versions')
-const versionsLoading = inject<Ref<boolean>>('versionsLoading')
+const versionsLoading = inject<Ref<boolean>>('versionsLoading', ref(false))
+const versionsError = inject<Ref<boolean>>('versionsError', ref(false))
 const space = inject<Ref<SpaceResource>>('space')
 
 const preview = ref<string>(undefined)
@@ -190,7 +207,6 @@ const authStore = useAuthStore()
 const { publicLinkContextReady } = storeToRefs(authStore)
 
 const isPreviewLoading = computed(() => previewEnabled && unref(previewsLoading))
-const detailsLoading = computed(() => unref(versionsLoading))
 
 const sharedAncestor = computed(() => {
   return Object.values(unref(ancestorMetaData)).find(
@@ -304,6 +320,22 @@ const showVersions = computed(() => {
   }
   return unref(versions).length > 0
 })
+// Reserve the version row as an empty placeholder during load only if the
+// previous resource had one, so the layout does not shift.
+const stickyShowVersions = ref(false)
+watch(
+  versionsLoading,
+  (loading) => {
+    if (!loading) {
+      stickyShowVersions.value = !!unref(showVersions)
+    }
+  },
+  { immediate: true }
+)
+const versionsPlaceholder = computed(() => unref(versionsLoading) && unref(stickyShowVersions))
+const versionsRowVisible = computed(() =>
+  unref(versionsLoading) ? unref(stickyShowVersions) : !!unref(showVersions)
+)
 const seeVersionsLabel = computed(() => {
   return $gettext('See all versions')
 })

@@ -47,6 +47,7 @@ const getResourceMock = ({
 const selectors = {
   ownerDisplayName: '[data-testid="ownerDisplayName"]',
   preview: '[data-testid="preview"]',
+  previewLoading: '[data-testid="preview-loading"]',
   resourceIcon: '.details-icon',
   lockedBy: '[data-testid="locked-by"]',
   sharedBy: '[data-testid="shared-by"]',
@@ -60,19 +61,16 @@ const selectors = {
 
 describe('Details SideBar Panel', () => {
   describe('preview', () => {
-    describe('shows preview area', () => {
-      it('while trying to load a preview', () => {
-        const resource = getResourceMock()
-        const { wrapper } = createWrapper({ resource })
-        expect(wrapper.find(selectors.preview).exists()).toBeTruthy()
-        expect(wrapper.find(selectors.resourceIcon).exists()).toBeFalsy()
-      })
-      it('for allowed mime types', () => {
-        const resource = getResourceMock()
-        const { wrapper } = createWrapper({ resource })
-        expect(wrapper.find(selectors.preview).exists()).toBeTruthy()
-        expect(wrapper.find(selectors.resourceIcon).exists()).toBeFalsy()
-      })
+    it('shows the resource icon while the preview is loading', () => {
+      const resource = getResourceMock()
+      const { wrapper } = createWrapper({ resource })
+      expect(wrapper.find(selectors.resourceIcon).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.preview).exists()).toBeFalsy()
+    })
+    it('shows a loading overlay while the preview is loading', () => {
+      const resource = getResourceMock()
+      const { wrapper } = createWrapper({ resource })
+      expect(wrapper.find(selectors.previewLoading).exists()).toBeTruthy()
     })
   })
   describe('status indicators', () => {
