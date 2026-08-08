@@ -73,6 +73,7 @@ const { loadSharesTask, availableExternalShareRoles, availableInternalShareRoles
 
 const loadedResource = ref<Resource>()
 const versions = ref<Resource[]>([])
+const versionsError = ref(false)
 
 const { selectedResources } = useSelectedResources()
 
@@ -147,7 +148,13 @@ const loadGraphPermissionsTask = useTask(function* (signal) {
 })
 
 const loadVersionsTask = useTask(function* (signal, resource: Resource) {
-  versions.value = yield clientService.webdav.listFileVersions(resource.id, { signal })
+  try {
+    versions.value = yield clientService.webdav.listFileVersions(resource.id, { signal })
+    versionsError.value = false
+  } catch (e) {
+    versionsError.value = true
+    throw e
+  }
 })
 
 const currentResourceMtime = ref<string>() // used to check if we need to load new versions
@@ -163,6 +170,8 @@ function loadVersions(resource: Resource) {
     return
   }
 
+  versions.value = []
+  versionsError.value = false
   loadedVersionsResourceId.value = resource.id
   currentResourceMtime.value = resource.mdate
 
@@ -242,6 +251,7 @@ function resetSidebarResource() {
   loadedSharesResourceId.value = undefined
   loadedVersionsResourceId.value = undefined
   versions.value = []
+  versionsError.value = false
   sharesStore.pruneShares()
   loadedResource.value = null
 }
@@ -318,4 +328,5 @@ provide(
   'versionsLoading',
   computed(() => loadVersionsTask.isRunning)
 )
+provide('versionsError', readonly(versionsError))
 </script>
