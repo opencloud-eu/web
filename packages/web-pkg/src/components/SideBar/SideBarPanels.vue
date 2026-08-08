@@ -1,6 +1,5 @@
 <template>
-  <oc-spinner v-if="loading" :aria-label="$gettext('Loading sidebar content')" />
-  <template v-else>
+  <div class="sidebar-panels relative size-full">
     <div
       v-for="panel in displayPanels"
       :id="`sidebar-panel-${panel.name}`"
@@ -95,7 +94,12 @@
         </div>
       </div>
     </div>
-  </template>
+    <oc-spinner
+      v-if="loading"
+      :aria-label="$gettext('Loading sidebar content')"
+      class="sidebar-panels-loading absolute inset-0 z-10 flex items-center justify-center"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
