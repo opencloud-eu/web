@@ -94,11 +94,12 @@
         </div>
       </div>
     </div>
-    <oc-spinner
+    <div
       v-if="loading"
-      :aria-label="$gettext('Loading sidebar content')"
       class="sidebar-panels-loading absolute inset-0 z-10 flex items-center justify-center"
-    />
+    >
+      <oc-spinner :aria-label="$gettext('Loading sidebar content')" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">

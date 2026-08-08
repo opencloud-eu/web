@@ -88,9 +88,6 @@ const sidebarProps = computed(() => {
     'focus-visible:shadow-none',
     ...(unref(attrs)?.class ? [unref(attrs).class] : [])
   ]
-  if (loading) {
-    classes.push('flex', 'justify-center', 'items-center')
-  }
   return {
     ...unref(attrs),
     class: classes
