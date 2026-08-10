@@ -6,15 +6,15 @@
       ref="iframeRef"
       class="size-full"
       :title="iframeTitle"
-      :src="iframeSrc"
+      :src="iframeUrl.href"
       tabindex="0"
       @load="onLoad"
     ></iframe>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, PropType, ref, unref } from 'vue'
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import {
   Modal,
   useModals,
@@ -22,80 +22,63 @@ import {
   useThemeStore,
   embedModeFilePickMessageData
 } from '../../composables'
-import { RouteLocationRaw } from 'vue-router'
+import { LocationQuery, RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 
-export default defineComponent({
-  name: 'FilePickerModal',
-  components: { AppLoadingSpinner },
-  props: {
-    modal: { type: Object as PropType<Modal>, required: true },
-    allowedFileTypes: { type: Array as PropType<string[]>, required: true },
-    parentFolderLink: { type: Object as PropType<RouteLocationRaw>, required: true },
-    callbackFn: {
-      type: Function as PropType<(resource: any, locationQuery?: Record<string, string>) => void>,
-      required: true
-    }
-  },
-  setup(props) {
-    const iframeRef = ref<HTMLIFrameElement>()
-    const isLoading = ref(true)
-    const router = useRouter()
-    const { removeModal } = useModals()
-    const themeStore = useThemeStore()
-    const parentFolderRoute = router.resolve(props.parentFolderLink)
+const { modal, allowedFileTypes, parentFolderLink, callbackFn } = defineProps<{
+  modal: Modal
+  allowedFileTypes: string[]
+  parentFolderLink: RouteLocationRaw
+  callbackFn: (data: { resource: any; locationQuery?: LocationQuery }) => void
+}>()
 
-    const iframeTitle = themeStore.currentTheme.name
-    const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
-    iframeUrl.searchParams.append('hide-logo', 'true')
-    iframeUrl.searchParams.append('embed', 'true')
-    iframeUrl.searchParams.append('embed-target', 'file')
-    iframeUrl.searchParams.append('embed-delegate-authentication', 'false')
-    iframeUrl.searchParams.append('embed-file-types', props.allowedFileTypes.join(','))
+const iframeRef = ref<HTMLIFrameElement>()
+const isLoading = ref(true)
+const router = useRouter()
+const { removeModal } = useModals()
+const themeStore = useThemeStore()
+const parentFolderRoute = router.resolve(parentFolderLink)
 
-    const onLoad = () => {
-      isLoading.value = false
-      unref(iframeRef).contentWindow.focus()
-    }
+const iframeTitle = themeStore.currentTheme.name
+const iframeUrl = new URL(parentFolderRoute.href, window.location.origin)
+iframeUrl.searchParams.append('hide-logo', 'true')
+iframeUrl.searchParams.append('embed', 'true')
+iframeUrl.searchParams.append('embed-target', 'file')
+iframeUrl.searchParams.append('embed-delegate-authentication', 'false')
+iframeUrl.searchParams.append('embed-file-types', allowedFileTypes.join(','))
 
-    const onFilePick = ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:file-pick') {
-        return
-      }
+const onLoad = () => {
+  isLoading.value = false
+  unref(iframeRef).contentWindow.focus()
+}
 
-      const { resource, locationQuery }: embedModeFilePickMessageData = data.data
-      props.callbackFn({ resource, locationQuery })
-
-      removeModal(props.modal.id)
-    }
-
-    const onCancel = ({ data }: MessageEvent) => {
-      if (data.name !== 'opencloud-embed:cancel') {
-        return
-      }
-
-      removeModal(props.modal.id)
-    }
-
-    onMounted(() => {
-      window.addEventListener('message', onFilePick)
-      window.addEventListener('message', onCancel)
-    })
-
-    onBeforeUnmount(() => {
-      window.removeEventListener('message', onFilePick)
-      window.removeEventListener('message', onCancel)
-    })
-
-    return {
-      isLoading,
-      onLoad,
-      iframeTitle,
-      iframeSrc: iframeUrl.href,
-      iframeRef,
-      onFilePick
-    }
+const onFilePick = ({ data }: MessageEvent) => {
+  if (data.name !== 'opencloud-embed:file-pick') {
+    return
   }
+
+  const { resource, locationQuery }: embedModeFilePickMessageData = data.data
+  callbackFn({ resource, locationQuery })
+
+  removeModal(modal.id)
+}
+
+const onCancel = ({ data }: MessageEvent) => {
+  if (data.name !== 'opencloud-embed:cancel') {
+    return
+  }
+
+  removeModal(modal.id)
+}
+
+onMounted(() => {
+  window.addEventListener('message', onFilePick)
+  window.addEventListener('message', onCancel)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('message', onFilePick)
+  window.removeEventListener('message', onCancel)
 })
 </script>
 <style>

@@ -22,13 +22,13 @@ describe('SaveAsModal', () => {
   describe('iframe', () => {
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.vm.iframeSrc).toEqual(
+      expect((wrapper.vm as any).iframeUrl.href).toEqual(
         'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=location&embed-choose-file-name=true&embed-delegate-authentication=false&embed-choose-file-name-suggestion=test.txt'
       )
     })
     it('sets the iframe title correctly', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.vm.iframeTitle).toEqual('OpenCloud')
+      expect((wrapper.vm as any).iframeTitle).toEqual('OpenCloud')
     })
   })
   describe('method "onLocationPick"', () => {
@@ -45,8 +45,7 @@ describe('SaveAsModal', () => {
       const messageStore = useMessages()
 
       mocks.$clientService.webdav.putFileContents.mockResolvedValue(mock<Resource>())
-
-      wrapper.vm.onLocationPick(
+      ;(wrapper.vm as any).onLocationPick(
         mock<MessageEvent>({
           data: {
             name: 'opencloud-embed:select',
@@ -70,8 +69,7 @@ describe('SaveAsModal', () => {
       const messageStore = useMessages()
 
       mocks.$clientService.webdav.putFileContents.mockRejectedValue(new Error(''))
-
-      wrapper.vm.onLocationPick(
+      ;(wrapper.vm as any).onLocationPick(
         mock<MessageEvent>({
           data: {
             name: 'opencloud-embed:select',
