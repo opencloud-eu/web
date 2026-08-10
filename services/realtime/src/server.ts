@@ -13,8 +13,8 @@ if (!opencloudUrl) {
 const devFakeToken = process.env.DEV_FAKE_TOKEN ?? ''
 
 if (devFakeToken) {
-  if (process.env.NODE_ENV === 'production') {
-    console.error('DEV_FAKE_TOKEN must not be set in production')
+  if (process.env.NODE_ENV !== 'development') {
+    console.error('DEV_FAKE_TOKEN requires NODE_ENV=development')
     process.exit(1)
   }
   console.warn('DEV_FAKE_TOKEN is set, authentication can be bypassed. Never do this in production')
@@ -74,10 +74,24 @@ function enforceAppVersion(documentName: string, clientAppVersion: string): void
   }
 }
 
+function hslToHex(h: number, s: number, l: number): string {
+  const a = s * Math.min(l, 1 - l)
+  function channel(n: number): string {
+    const k = (n + h / 30) % 12
+    const value = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1))
+    return Math.round(value * 255)
+      .toString(16)
+      .padStart(2, '0')
+  }
+  return `#${channel(0)}${channel(8)}${channel(4)}`
+}
+
+// Hex, not hsl(): @tiptap/extension-collaboration-caret rejects any other
+// format and warns on every awareness update.
 function deterministicColor(seed: string): string {
   let hash = 0
   for (let i = 0; i < seed.length; i++) hash = seed.charCodeAt(i) + ((hash << 5) - hash)
-  return `hsl(${Math.abs(hash) % 360}, 70%, 50%)`
+  return hslToHex(Math.abs(hash) % 360, 0.7, 0.5)
 }
 
 async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> {
@@ -91,9 +105,11 @@ async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> 
   return res.json() as Promise<GraphUser>
 }
 
-// Heuristic: a libregraph permission action implies write access when its
-// trailing verb is create/update/delete/allTasks on driveItem properties.
-const WRITE_ACTION = /\/(update|create|delete|allTasks)$/
+// The one action that means "may overwrite this file's content": it maps to
+// CS3's `InitiateFileUpload`, the same grant WebDAV writes go through. Matched
+// exactly, because sibling actions like `permissions/create` or
+// `children/create` say nothing about writing the file itself.
+const WRITE_ACTION = 'libre.graph/driveItem/upload/create'
 
 // Splits OC's canonical composite id `<storageid>$<spaceid>!<opaqueid>` into
 // the (driveId, itemId) pair the Graph endpoint expects: driveID =
@@ -123,9 +139,14 @@ function parseDocumentId(documentName: string): { driveId: string; itemId: strin
 // cannot see, which is what makes it the authorization gate.
 async function probeFileAccess(token: string, documentName: string): Promise<FileAccess | null> {
   const { driveId, itemId } = parseDocumentId(documentName)
+  // `$select` on the action set is what keeps this cheap: the endpoint returns
+  // right after resolving the effective actions instead of also listing user,
+  // OCM and public shares - three gateway round-trips, and three more ways for
+  // the probe to fail, that this service has no use for.
   const permsUrl =
     `${opencloudUrl}/graph/v1beta1/drives/${encodeURIComponent(driveId)}` +
-    `/items/${encodeURIComponent(itemId)}/permissions`
+    `/items/${encodeURIComponent(itemId)}/permissions` +
+    `?$select=${encodeURIComponent('@libre.graph.permissions.actions.allowedValues')}`
 
   const res = await fetch(permsUrl, { headers: { Authorization: `Bearer ${token}` } })
 
@@ -141,7 +162,7 @@ async function probeFileAccess(token: string, documentName: string): Promise<Fil
   const actions = body['@libre.graph.permissions.actions.allowedValues']
   const allowed = Array.isArray(actions) ? (actions as string[]) : []
 
-  return { canWrite: allowed.some((a) => WRITE_ACTION.test(a)) }
+  return { canWrite: allowed.includes(WRITE_ACTION) }
 }
 
 const server = new Server({
