@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @schweigisito, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @dschmidt, @schweigisito, @tammi-23, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- fix(web-pkg): keep sidebar panels mounted while loading [[#3056](https://github.com/opencloud-eu/web/pull/3056)]
 - fix(tip tap): don't show drag handle on mobile as it's not compatible [[#3052](https://github.com/opencloud-eu/web/pull/3052)]
 - fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
 - fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
