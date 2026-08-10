@@ -65,7 +65,7 @@
       </dd>
       <dt>{{ $gettext('Groups') }}</dt>
       <dd>
-        <span v-if="user.memberOf.length" v-text="groupsDisplayValue" />
+        <span v-if="user.memberOf?.length" v-text="groupsDisplayValue" />
         <span v-else>
           <span class="mr-1">-</span>
           <oc-contextual-helper

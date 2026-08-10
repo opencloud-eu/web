@@ -193,6 +193,9 @@ export default defineComponent({
     })
     const groupOptions = computed(() => {
       const { memberOf: selectedGroups } = unref(editUser)
+      if (!selectedGroups) {
+        return []
+      }
       return props.groups.filter(
         (g) => !selectedGroups.some((s) => s.id === g.id) && !g.groupTypes?.includes('ReadOnly')
       )
