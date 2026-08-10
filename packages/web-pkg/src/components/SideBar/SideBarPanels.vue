@@ -1,6 +1,5 @@
 <template>
-  <oc-spinner v-if="loading" :aria-label="$gettext('Loading sidebar content')" />
-  <template v-else>
+  <div class="sidebar-panels relative size-full">
     <div
       v-for="panel in displayPanels"
       :id="`sidebar-panel-${panel.name}`"
@@ -8,7 +7,7 @@
       :data-testid="`sidebar-panel-${panel.name}`"
       :tabindex="activePanelName === panel.name ? -1 : null"
       class="sidebar-panel absolute top-0 grid grid-rows-[auto_1fr] bg-role-surface w-full size-full max-w-full max-h-full motion-reduce:transition-none"
-      :inert="activePanelName !== panel.name"
+      :inert="activePanelName !== panel.name || loading"
       :class="{
         'is-root-panel transition-[right] duration-[0.4s,0s]': panel.isRoot?.(panelContext),
         'is-active-sub-panel': hasActiveSubPanel && activeSubPanelName === panel.name, // only one specific sub panel can be active
@@ -95,7 +94,13 @@
         </div>
       </div>
     </div>
-  </template>
+    <div
+      v-if="loading"
+      class="sidebar-panels-loading absolute inset-0 z-10 flex items-center justify-center"
+    >
+      <oc-spinner :aria-label="$gettext('Loading sidebar content')" />
+    </div>
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
