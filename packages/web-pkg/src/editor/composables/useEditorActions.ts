@@ -755,7 +755,7 @@ export function useEditorActions(state: TextEditorState) {
       },
       {
         id: 'table-custom',
-        title: $gettext('Choose table size'),
+        title: $gettext('Choose rows & columns'),
         description: $gettext('Select custom table size'),
         icon: 'grid',
         iconFillType: 'line',
@@ -885,6 +885,21 @@ export function useEditorActions(state: TextEditorState) {
     isEnabled: (editor) => editor.isActive('table')
   })
 
+  const toggleHeaderRow = (): EditorAction => ({
+    id: 'toggle-header-row',
+    title: $gettext('Toggle header row'),
+    description: $gettext('Toggle header row'),
+    icon: 'layout-row-fill',
+    keywords: ['table', 'header', 'row'],
+    showInToolbar: false,
+    toolbarAction: (editor) => editor.chain().focus().toggleHeaderRow().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleHeaderRow().run()
+    },
+    isActive: () => false,
+    isEnabled: (editor) => editor.isActive('table')
+  })
+
   const deleteTable = (): EditorAction => ({
     id: 'delete-table',
     title: $gettext('Delete table'),
@@ -953,6 +968,7 @@ export function useEditorActions(state: TextEditorState) {
     addColumnBefore,
     addColumnAfter,
     deleteColumn,
+    toggleHeaderRow,
     deleteTable
   }
 }

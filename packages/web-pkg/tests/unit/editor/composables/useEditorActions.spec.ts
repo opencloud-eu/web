@@ -564,6 +564,21 @@ describe('useEditorActions', () => {
       })
     })
 
+    describe('toggleHeaderRow', () => {
+      it('isEnabled returns editor.isActive("table")', () => {
+        const inTable = createMockEditor({ isActive: (type) => type === 'table' })
+        const notInTable = createMockEditor()
+        expect(actions.toggleHeaderRow().isEnabled!(inTable)).toBe(true)
+        expect(actions.toggleHeaderRow().isEnabled!(notInTable)).toBe(false)
+      })
+
+      it('toolbarAction calls toggleHeaderRow', () => {
+        const editor = createMockEditor()
+        actions.toggleHeaderRow().toolbarAction!(editor)
+        expect(editor._chain.toggleHeaderRow).toHaveBeenCalled()
+      })
+    })
+
     describe('deleteTable', () => {
       it('isEnabled returns editor.isActive("table")', () => {
         const inTable = createMockEditor({ isActive: (type) => type === 'table' })

@@ -112,6 +112,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     addColumnBefore,
     addColumnAfter,
     deleteColumn,
+    toggleHeaderRow,
     deleteTable
   } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
@@ -157,6 +158,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           imageUrl(),
           imageUpload(),
           createTable(),
+          toggleHeaderRow(),
           addRowBefore(),
           addRowAfter(),
           deleteRow(),
