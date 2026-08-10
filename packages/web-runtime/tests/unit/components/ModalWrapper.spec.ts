@@ -51,7 +51,7 @@ describe('ModalWrapper', () => {
       writable(modalStore).activeModal = modal
 
       const value = 'value'
-      await wrapper.vm.onModalConfirm(value)
+      await (wrapper.vm as any).onModalConfirm(value)
 
       expect(modal.onConfirm).toHaveBeenCalledWith(value)
       expect(modalStore.updateModal).toHaveBeenCalled()
@@ -63,7 +63,7 @@ describe('ModalWrapper', () => {
       const modalStore = useModals()
       writable(modalStore).activeModal = modal
 
-      await wrapper.vm.onModalConfirm()
+      await (wrapper.vm as any).onModalConfirm()
 
       expect(modalStore.removeModal).not.toHaveBeenCalled()
     })
@@ -73,11 +73,11 @@ describe('ModalWrapper', () => {
       const modalStore = useModals()
       writable(modalStore).activeModal = modal
       await wrapper.vm.$nextTick()
-      wrapper.vm.customComponentRef = { onConfirm: vi.fn() }
+      ;(wrapper.vm as any).customComponentRef = { onConfirm: vi.fn() }
 
-      await wrapper.vm.onModalConfirm()
+      await (wrapper.vm as any).onModalConfirm()
 
-      expect(wrapper.vm.customComponentRef.onConfirm).toHaveBeenCalled()
+      expect((wrapper.vm as any).customComponentRef.onConfirm).toHaveBeenCalled()
     })
   })
   describe('method "onModalCancel"', () => {
@@ -86,8 +86,7 @@ describe('ModalWrapper', () => {
       const { wrapper } = getShallowWrapper({ modals: [modal] })
       const modalStore = useModals()
       writable(modalStore).activeModal = modal
-
-      wrapper.vm.onModalCancel()
+      ;(wrapper.vm as any).onModalCancel()
 
       expect(modal.onCancel).toHaveBeenCalled()
       expect(modalStore.removeModal).toHaveBeenCalled()
@@ -98,11 +97,10 @@ describe('ModalWrapper', () => {
       const modalStore = useModals()
       writable(modalStore).activeModal = modal
       await wrapper.vm.$nextTick()
-      wrapper.vm.customComponentRef = { onCancel: vi.fn() }
+      ;(wrapper.vm as any).customComponentRef = { onCancel: vi.fn() }
+      ;(wrapper.vm as any).onModalCancel()
 
-      wrapper.vm.onModalCancel()
-
-      expect(wrapper.vm.customComponentRef.onCancel).toHaveBeenCalled()
+      expect((wrapper.vm as any).customComponentRef.onCancel).toHaveBeenCalled()
     })
   })
   describe('method "onModalInput"', () => {
@@ -113,7 +111,7 @@ describe('ModalWrapper', () => {
       writable(modalStore).activeModal = modal
 
       const value = 'value'
-      wrapper.vm.onModalInput(value)
+      ;(wrapper.vm as any).onModalInput(value)
 
       expect(modal.onInput).toHaveBeenCalledWith(value, expect.anything())
     })
@@ -126,7 +124,7 @@ describe('ModalWrapper', () => {
       writable(modalStore).activeModal = modal
 
       const value = true
-      wrapper.vm.onModalConfirmDisabled(value)
+      ;(wrapper.vm as any).onModalConfirmDisabled(value)
 
       expect(modalStore.updateModal).toHaveBeenCalled()
     })

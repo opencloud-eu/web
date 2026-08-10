@@ -43,11 +43,11 @@ describe('SharedWithMe view', () => {
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper({ loading: true })
-      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeTruthy()
+      expect(wrapper.find('#app-loading-spinner').exists()).toBeTruthy()
     })
     it('does not show the loading spinner after loading finished', () => {
       const { wrapper } = getMountedWrapper()
-      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeFalsy()
+      expect(wrapper.find('#app-loading-spinner').exists()).toBeFalsy()
     })
   })
   describe('filter', () => {

@@ -5,19 +5,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-export default defineComponent({
-  name: 'ErrorScreen',
-  props: {
-    /**
-     * Error message passed from external app
-     */
-    message: {
-      default: '',
-      type: String,
-      required: false
-    }
-  }
-})
+<script setup lang="ts">
+const { message = '' } = defineProps<{
+  message?: string
+}>()
 </script>
