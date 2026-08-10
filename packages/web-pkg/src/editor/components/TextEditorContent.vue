@@ -7,7 +7,7 @@
     }"
   >
     <DragHandle
-      v-if="!isSourceMode"
+      v-show="!isSourceMode"
       :editor="textEditor.editor.value"
       @node-change="onDragHandleNodeChange"
     >
@@ -31,8 +31,8 @@
         </oc-button>
       </div>
     </DragHandle>
-    <TextEditorTableBubbleMenu v-if="!isSourceMode" />
-    <TextEditorLinkBubbleMenu v-if="!isSourceMode" />
+    <TextEditorTableBubbleMenu v-show="!isSourceMode" />
+    <TextEditorLinkBubbleMenu v-show="!isSourceMode" />
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea

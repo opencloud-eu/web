@@ -24,7 +24,6 @@
             appearance="raw"
             class="text-editor-bubble-menu-btn inline-flex items-center justify-center p-2"
             :aria-label="action.title"
-            :disabled="!isItemEnabled(action)"
             @mousedown.prevent
             @click.stop="onActionClick(action)"
           >
@@ -96,7 +95,7 @@ const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualEl
 const groupDefinitions = [
   {
     id: 'rows',
-    actions: ['add-row-before', 'add-row-after', 'delete-row']
+    actions: ['toggle-header-row', 'add-row-before', 'add-row-after', 'delete-row']
   },
   {
     id: 'columns',
@@ -113,6 +112,11 @@ const tableActionGroups = computed(() => {
     return []
   }
 
+  const editor = unref(textEditor.editor)
+  if (!editor) {
+    return []
+  }
+
   const allActions = textEditor.actionGroups().flatMap((group) => group.actions)
   const actionMap = new Map(allActions.map((action) => [action.id, action]))
 
@@ -122,6 +126,7 @@ const tableActionGroups = computed(() => {
       actions: group.actions
         .map((actionId) => actionMap.get(actionId))
         .filter((a): a is EditorAction => a !== undefined)
+        .filter((action) => !action.isEnabled || action.isEnabled(editor))
     }))
     .filter((group) => group.actions.length > 0)
 })
@@ -133,14 +138,5 @@ const onActionClick = (action: EditorAction) => {
   }
 
   action.toolbarAction?.(editor)
-}
-
-const isItemEnabled = (item: EditorAction) => {
-  const editor = unref(textEditor?.editor)
-  if (!editor) {
-    return false
-  }
-
-  return item.isEnabled ? item.isEnabled(editor) : true
 }
 </script>

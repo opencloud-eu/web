@@ -15,6 +15,7 @@ import { arrayBufferToDataUrl } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
+import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
 export interface EditorAction {
   // Core identification
@@ -739,11 +740,34 @@ export function useEditorActions(state: TextEditorState) {
   const createTable = (): EditorAction => ({
     id: 'table',
     title: $gettext('Create a table'),
-    description: $gettext('3×3 table with header row'),
+    description: $gettext('Insert a table'),
     icon: 'table-line',
     keywords: ['grid'],
-    toolbarAction: (editor) =>
-      editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+    childActions: [
+      {
+        id: 'table-default',
+        title: $gettext('Small table (3×3)'),
+        description: $gettext('3×3 table with header row'),
+        icon: 'table-line',
+        toolbarAction: (editor) =>
+          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+        isActive: () => false
+      },
+      {
+        id: 'table-custom',
+        title: $gettext('Choose rows & columns'),
+        description: $gettext('Select custom table size'),
+        icon: 'grid',
+        iconFillType: 'line',
+        menuComponent: markRaw(TextEditorTableSizeSelector),
+        menuCloseOnClick: false,
+        menuComponentAttrs: (editor, closeMenu) => ({
+          editor,
+          closeMenu
+        }),
+        isActive: () => false
+      }
+    ],
     slashCommandAction: ({ editor, range }) => {
       editor
         .chain()
@@ -861,6 +885,21 @@ export function useEditorActions(state: TextEditorState) {
     isEnabled: (editor) => editor.isActive('table')
   })
 
+  const toggleHeaderRow = (): EditorAction => ({
+    id: 'toggle-header-row',
+    title: $gettext('Toggle header row'),
+    description: $gettext('Toggle header row'),
+    icon: 'layout-row-fill',
+    keywords: ['table', 'header', 'row'],
+    showInToolbar: false,
+    toolbarAction: (editor) => editor.chain().focus().toggleHeaderRow().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleHeaderRow().run()
+    },
+    isActive: () => false,
+    isEnabled: (editor) => editor.isActive('table')
+  })
+
   const deleteTable = (): EditorAction => ({
     id: 'delete-table',
     title: $gettext('Delete table'),
@@ -929,6 +968,7 @@ export function useEditorActions(state: TextEditorState) {
     addColumnBefore,
     addColumnAfter,
     deleteColumn,
+    toggleHeaderRow,
     deleteTable
   }
 }

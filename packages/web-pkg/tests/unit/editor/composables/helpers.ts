@@ -74,7 +74,9 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'addColumnBefore',
       'addColumnAfter',
       'setImage',
-      'insertContent'
+      'insertContent',
+      'command',
+      'toggleHeaderRow'
     ]
     for (const method of methods) {
       chain[method] = vi.fn().mockReturnValue(chain)
@@ -96,6 +98,14 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       redo: vi.fn().mockReturnValue(canRedo)
     })),
     getAttributes: vi.fn((mark: string) => attributes[mark] ?? {}),
+    state: {
+      selection: {
+        $anchor: { before: () => 0 }
+      },
+      doc: {
+        nodeAt: (): any => null
+      }
+    },
     _chain: chainInstance,
     _run: run
   } as unknown as Editor & {

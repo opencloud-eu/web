@@ -105,6 +105,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     addColumnBefore,
     addColumnAfter,
     deleteColumn,
+    toggleHeaderRow,
     deleteTable
   } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
@@ -151,6 +152,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           imageUrl(),
           imageUpload(),
           createTable(),
+          toggleHeaderRow(),
           addRowBefore(),
           addRowAfter(),
           deleteRow(),
