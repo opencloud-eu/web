@@ -50,7 +50,7 @@ describe('TextEditorTableSizeSelector', () => {
     const cells = wrapper.findAll('.grid > div')
     // Hover over first cell
     await cells[0].trigger('mouseenter')
-    let label = wrapper.find('.text-role-on-surface-variant')
+    const label = wrapper.find('.text-role-on-surface-variant')
     expect(label.text()).toMatch(/\d+ × \d+/)
   })
 

@@ -113,21 +113,18 @@
                   <oc-drop
                     v-if="child.menuComponent"
                     :ref="
-                      (el) => setDropRef(child.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+                      (el) =>
+                        setDropRef(child.id, el as ComponentPublicInstance<typeof OcDrop> | null)
                     "
                     :drop-id="`toolbar-dropdown-${child.id}`"
                     :toggle="`#toolbar-dropdown-trigger-${child.id}`"
                     mode="hover"
                     class="text-editor-toolbar-dropdown-nested w-fit"
-                    padding-size="none"
                     :close-on-click="child.menuCloseOnClick ?? true"
                     position="right-start"
                     teleport="body"
                   >
-                    <component
-                      :is="child.menuComponent"
-                      v-bind="getMenuComponentAttrs(child)"
-                    />
+                    <component :is="child.menuComponent" v-bind="getMenuComponentAttrs(child)" />
                   </oc-drop>
                 </li>
               </ul>
