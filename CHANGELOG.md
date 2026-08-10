@@ -6,18 +6,9 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @maki5, @schweigisito, @tammi-23, @v-scharf
 
-### 📈 Enhancement
-
-- feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
-- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
-- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
-- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
-- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
-- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
-- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
-
 ### 🐛 Bug Fixes
 
+- fix: position versions loading spinner without shifting the details layout [[#3065](https://github.com/opencloud-eu/web/pull/3065)]
 - correct resource id in restore file version link [[#3053](https://github.com/opencloud-eu/web/pull/3053)]
 - fix: reset shift selection anchor when deselecting all files [[#3061](https://github.com/opencloud-eu/web/pull/3061)]
 - fix: keep the file details panel stable while loading [[#3057](https://github.com/opencloud-eu/web/pull/3057)]
@@ -31,6 +22,16 @@
 - fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
 - fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
 - fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
+### 📈 Enhancement
+
+- feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
+- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
+- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### ✅ Tests
 
