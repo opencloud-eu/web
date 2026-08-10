@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @schweigisito, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @dschmidt, @maki5, @schweigisito, @tammi-23, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- correct resource id in restore file version link [[#3053](https://github.com/opencloud-eu/web/pull/3053)]
 - fix: reset shift selection anchor when deselecting all files [[#3061](https://github.com/opencloud-eu/web/pull/3061)]
 - fix: keep the file details panel stable while loading [[#3057](https://github.com/opencloud-eu/web/pull/3057)]
 - fix: white flash on page relaod when dark theme is applied [[#3055](https://github.com/opencloud-eu/web/pull/3055)]
