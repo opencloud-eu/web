@@ -15,6 +15,7 @@ import { arrayBufferToDataUrl } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
+import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
 export interface EditorAction {
   // Core identification
@@ -739,11 +740,34 @@ export function useEditorActions(state: TextEditorState) {
   const createTable = (): EditorAction => ({
     id: 'table',
     title: $gettext('Create a table'),
-    description: $gettext('3×3 table with header row'),
+    description: $gettext('Insert a table'),
     icon: 'table-line',
     keywords: ['grid'],
-    toolbarAction: (editor) =>
-      editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+    childActions: [
+      {
+        id: 'table-default',
+        title: $gettext('Default table'),
+        description: $gettext('3×3 table with header row'),
+        icon: 'table-line',
+        toolbarAction: (editor) =>
+          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+        isActive: () => false
+      },
+      {
+        id: 'table-custom',
+        title: $gettext('Custom size'),
+        description: $gettext('Choose table dimensions'),
+        icon: 'grid',
+        iconFillType: 'line',
+        menuComponent: markRaw(TextEditorTableSizeSelector),
+        menuCloseOnClick: false,
+        menuComponentAttrs: (editor, closeMenu) => ({
+          editor,
+          closeMenu
+        }),
+        isActive: () => false
+      }
+    ],
     slashCommandAction: ({ editor, range }) => {
       editor
         .chain()

@@ -441,14 +441,30 @@ describe('useEditorActions', () => {
   })
 
   describe('table', () => {
-    it('toolbarAction inserts 3x3 table with header row', () => {
+    it('has childActions for default and custom table', () => {
+      const tableAction = actions.createTable()
+      expect(tableAction.childActions).toBeDefined()
+      expect(tableAction.childActions).toHaveLength(2)
+      expect(tableAction.childActions![0].id).toBe('table-default')
+      expect(tableAction.childActions![1].id).toBe('table-custom')
+    })
+
+    it('default table action inserts 3x3 table with header row', () => {
       const editor = createMockEditor()
-      actions.createTable().toolbarAction!(editor)
+      const tableAction = actions.createTable()
+      const defaultTableAction = tableAction.childActions![0]
+      defaultTableAction.toolbarAction!(editor)
       expect(editor._chain.insertTable).toHaveBeenCalledWith({
         rows: 3,
         cols: 3,
         withHeaderRow: true
       })
+    })
+
+    it('custom table action has menuComponent', () => {
+      const tableAction = actions.createTable()
+      const customTableAction = tableAction.childActions![1]
+      expect(customTableAction.menuComponent).toBeDefined()
     })
 
     it('slashCommandAction deletes range then inserts table', () => {
