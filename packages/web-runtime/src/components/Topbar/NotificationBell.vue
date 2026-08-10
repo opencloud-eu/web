@@ -18,45 +18,33 @@
     />
   </oc-button>
 </template>
-<script lang="ts">
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { ref } from 'vue'
 import { watch } from 'vue'
 
-export default {
-  props: {
-    notificationCount: {
-      type: Number,
-      default: 0
-    }
-  },
-  setup(props) {
-    const { $gettext } = useGettext()
-    const animate = ref(false)
-    const notificationsLabel = computed(() => $gettext('Notifications'))
-    const notificationCountLabel = computed(() => {
-      if (props.notificationCount > 99) {
-        return '99+'
-      }
-      return `${props.notificationCount}`
-    })
+const { notificationCount } = defineProps<{
+  notificationCount: number
+}>()
 
-    watch(
-      () => props.notificationCount,
-      () => {
-        animate.value = true
-        setTimeout(() => {
-          animate.value = false
-        }, 600)
-      }
-    )
-
-    return {
-      animate,
-      notificationsLabel,
-      notificationCountLabel
-    }
+const { $gettext } = useGettext()
+const animate = ref(false)
+const notificationsLabel = computed(() => $gettext('Notifications'))
+const notificationCountLabel = computed(() => {
+  if (notificationCount > 99) {
+    return '99+'
   }
-}
+  return `${notificationCount}`
+})
+
+watch(
+  () => notificationCount,
+  () => {
+    animate.value = true
+    setTimeout(() => {
+      animate.value = false
+    }, 600)
+  }
+)
 </script>

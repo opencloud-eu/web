@@ -26,105 +26,89 @@
   />
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, ref, PropType, unref, watch } from 'vue'
+<script setup lang="ts">
+import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  name: 'EditPasswordModal',
-  props: { modal: { type: Object as PropType<Modal>, required: true } },
-  emits: ['update:confirmDisabled'],
-  setup(props, { emit, expose }) {
-    const { showMessage, showErrorMessage } = useMessages()
-    const clientService = useClientService()
-    const { $gettext } = useGettext()
+defineProps<{ modal: Modal }>()
 
-    const currentPassword = ref('')
-    const newPassword = ref('')
-    const newPasswordConfirm = ref('')
-    const passwordConfirmErrorMessage = ref('')
-    const newPasswordErrorMessage = ref('')
+const emit = defineEmits<{
+  (e: 'update:confirmDisabled', value: boolean): void
+}>()
 
-    const confirmButtonDisabled = computed(() => {
-      return (
-        !unref(currentPassword).trim().length ||
-        !unref(newPassword).trim().length ||
-        unref(newPassword).trim() !== unref(newPasswordConfirm).trim() ||
-        unref(currentPassword).trim() === unref(newPassword).trim()
-      )
-    })
+const { showMessage, showErrorMessage } = useMessages()
+const clientService = useClientService()
+const { $gettext } = useGettext()
 
-    watch(
-      confirmButtonDisabled,
-      () => {
-        emit('update:confirmDisabled', unref(confirmButtonDisabled))
-      },
-      { immediate: true }
-    )
+const currentPassword = ref('')
+const newPassword = ref('')
+const newPasswordConfirm = ref('')
+const passwordConfirmErrorMessage = ref('')
+const newPasswordErrorMessage = ref('')
 
-    const onConfirm = () => {
-      return clientService.graphAuthenticated.users
-        .changeOwnPassword({
-          currentPassword: unref(currentPassword).trim(),
-          newPassword: unref(newPassword).trim()
-        })
-        .then(() => {
-          showMessage({ title: $gettext('Password was changed successfully') })
-        })
-        .catch((error) => {
-          console.error(error)
-          showErrorMessage({
-            title: $gettext('Failed to change password'),
-            errors: [error]
-          })
-        })
-    }
-
-    expose({ onConfirm })
-
-    watch([currentPassword, newPassword], () => {
-      newPasswordErrorMessage.value = ''
-      if (!unref(currentPassword).trim().length || !unref(newPassword).trim().length) {
-        return
-      }
-      if (unref(currentPassword).trim() != unref(newPassword).trim()) {
-        return
-      }
-      newPasswordErrorMessage.value = $gettext(
-        'New password must be different from current password'
-      )
-    })
-
-    return {
-      currentPassword,
-      newPassword,
-      newPasswordConfirm,
-      passwordConfirmErrorMessage,
-      newPasswordErrorMessage,
-
-      // unit tests
-      confirmButtonDisabled
-    }
-  },
-
-  methods: {
-    validatePasswordConfirm() {
-      this.passwordConfirmErrorMessage = ''
-
-      if (
-        this.newPassword.trim().length &&
-        this.newPasswordConfirm.trim().length &&
-        this.newPassword !== this.newPasswordConfirm
-      ) {
-        this.passwordConfirmErrorMessage = this.$gettext(
-          'Password and password confirmation must be identical'
-        )
-        return false
-      }
-
-      return true
-    }
-  }
+const confirmButtonDisabled = computed(() => {
+  return (
+    !unref(currentPassword).trim().length ||
+    !unref(newPassword).trim().length ||
+    unref(newPassword).trim() !== unref(newPasswordConfirm).trim() ||
+    unref(currentPassword).trim() === unref(newPassword).trim()
+  )
 })
+
+watch(
+  confirmButtonDisabled,
+  () => {
+    emit('update:confirmDisabled', unref(confirmButtonDisabled))
+  },
+  { immediate: true }
+)
+
+const onConfirm = () => {
+  return clientService.graphAuthenticated.users
+    .changeOwnPassword({
+      currentPassword: unref(currentPassword).trim(),
+      newPassword: unref(newPassword).trim()
+    })
+    .then(() => {
+      showMessage({ title: $gettext('Password was changed successfully') })
+    })
+    .catch((error) => {
+      console.error(error)
+      showErrorMessage({
+        title: $gettext('Failed to change password'),
+        errors: [error]
+      })
+    })
+}
+
+defineExpose({ onConfirm })
+
+watch([currentPassword, newPassword], () => {
+  newPasswordErrorMessage.value = ''
+  if (!unref(currentPassword).trim().length || !unref(newPassword).trim().length) {
+    return
+  }
+  if (unref(currentPassword).trim() != unref(newPassword).trim()) {
+    return
+  }
+  newPasswordErrorMessage.value = $gettext('New password must be different from current password')
+})
+
+const validatePasswordConfirm = () => {
+  passwordConfirmErrorMessage.value = ''
+
+  if (
+    unref(newPassword).trim().length &&
+    unref(newPasswordConfirm).trim().length &&
+    unref(newPassword) !== unref(newPasswordConfirm)
+  ) {
+    passwordConfirmErrorMessage.value = $gettext(
+      'Password and password confirmation must be identical'
+    )
+    return false
+  }
+
+  return true
+}
 </script>

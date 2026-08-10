@@ -27,25 +27,17 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
-
+<script setup lang="ts">
 type AccountTableCell = {
   label: string
   alignH?: 'left' | 'center' | 'right'
   hidden?: boolean
 }
 
-export default defineComponent({
-  name: 'AccountTable',
-  props: {
-    fields: {
-      type: Array<string | AccountTableCell>,
-      required: true
-    },
-    showHead: { type: Boolean, required: false, default: false }
-  }
-})
+const { fields, showHead = false } = defineProps<{
+  fields: Array<string | AccountTableCell>
+  showHead?: boolean
+}>()
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
