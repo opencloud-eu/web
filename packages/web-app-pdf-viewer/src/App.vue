@@ -3,14 +3,14 @@
     v-if="isFirefox"
     class="pdf-viewer size-full overflow-hidden"
     :src="url"
-    :title="resource?.name"
+    :title="resource.name"
   />
   <object v-else class="pdf-viewer size-full overflow-hidden" :data="url" :type="objectType">
     <div
       class="pdf-viewer-fallback flex size-full flex-col items-center justify-center gap-4 p-8 text-center"
     >
       <p class="text-lg" v-text="$gettext('This PDF could not be displayed in your browser.')" />
-      <oc-button type="a" appearance="filled" :href="url" :download="resource?.name">
+      <oc-button type="a" appearance="filled" :href="url" :download="resource.name">
         <oc-icon name="download" fill-type="line" />
         {{ $gettext('Download PDF') }}
       </oc-button>

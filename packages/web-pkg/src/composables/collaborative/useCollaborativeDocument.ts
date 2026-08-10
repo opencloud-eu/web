@@ -87,6 +87,16 @@ const CONNECT_TIMEOUT_MS = 10_000
  * don't need it because the caller already knows it saved.
  */
 const LOCAL_SAVE_ORIGIN = 'local-save'
+/**
+ * Awareness field saying whether this client is able to seed an empty room.
+ * Read-only clients set it false: they appear in awareness like anyone else,
+ * but the realtime server rejects their writes, so the hydration election has
+ * to skip them or the room stays empty for everyone.
+ */
+const SEED_CAPABLE_KEY = '_oc_canSeed'
+
+/** The awareness fields this composable sets or reads. */
+type AwarenessState = Record<string, unknown> & { [SEED_CAPABLE_KEY]?: boolean }
 
 /**
  * Semver comparison via the official `semver` package: handles pre-release
@@ -225,15 +235,28 @@ export function useCollaborativeDocument(
     return Boolean(target && ours && target === ours)
   }
 
+  /**
+   * Takes a provider out of service for the rest of the session.
+   *
+   * `disconnect()` alone is not enough: it stops the socket but leaves the
+   * provider attached, and the doc's update handler keeps calling `send()`.
+   */
+  function stopProvider(prov: HocuspocusProvider | null) {
+    status.value = 'disconnected'
+    if (!prov) return
+    try {
+      prov.disconnect()
+      prov.detach()
+    } catch {
+      // can throw if already torn down; ignore.
+    }
+  }
+
   function lockForReload(prov: HocuspocusProvider | null, message: string) {
     if (unref(isLockedForReload)) return
     isLockedForReload.value = true
     error.value = new Error(message)
-    try {
-      prov?.disconnect()
-    } catch {
-      // disconnect can throw if already torn down; ignore.
-    }
+    stopProvider(prov)
   }
 
   async function serializeDoc(doc: Y.Doc): Promise<string | null> {
@@ -399,8 +422,13 @@ export function useCollaborativeDocument(
 
       if (current.hasContent(doc)) return // someone beat us
 
+      // Only clients that can actually seed take part. A read-only peer is in
+      // awareness like anyone else, but the server rejects its writes, so it
+      // never reaches the room. A missing flag counts as capable.
       const myId = doc.clientID
-      const peers = Array.from(awarenessInstance.getStates().keys())
+      const peers = Array.from(awarenessInstance.getStates().entries())
+        .filter(([, state]) => (state as AwarenessState)?.[SEED_CAPABLE_KEY] !== false)
+        .map(([clientId]) => clientId)
       const lowest = peers.length ? Math.min(myId, ...peers) : myId
       if (myId !== lowest) return
     }
@@ -612,11 +640,7 @@ export function useCollaborativeDocument(
             // does authenticate would merge our locally seeded copy into a room
             // already holding the same content. Same reasoning as the
             // connect-timeout path, which disconnects for exactly this reason.
-            try {
-              prov?.disconnect()
-            } catch {
-              // already torn down
-            }
+            stopProvider(prov)
 
             // Only seed and release the gate for a *failed opening* connect. A
             // token expiring mid-session leaves a live, populated document;
@@ -649,7 +673,6 @@ export function useCollaborativeDocument(
           if (doc.isDestroyed || unref(ydoc) !== doc || unref(isReady)) return
 
           console.error(`[collab] realtime server unreachable, continuing without it: ${name}`)
-          status.value = 'disconnected'
           error.value = new Error(
             $gettext(
               'The realtime server could not be reached. Editing continues without collaboration; others will not see your changes until you reload.'
@@ -657,14 +680,8 @@ export function useCollaborativeDocument(
           )
           // Stop retrying. A later connect would merge our locally hydrated
           // copy into a room that may already hold the same content,
-          // duplicating the document for every peer. `disconnect` rather than
-          // `destroy` because the editor binds to the provider's awareness and
-          // `destroy` takes that down with it.
-          try {
-            prov?.disconnect()
-          } catch {
-            // already torn down
-          }
+          // duplicating the document for every peer.
+          stopProvider(prov)
           // `runInitialHydration` returns early if the doc turned out to have
           // content after all, so a sync that landed just as we gave up cannot
           // be hydrated on top of.
@@ -678,6 +695,9 @@ export function useCollaborativeDocument(
         // authenticated identity. Lurkers that never touch `user` stay
         // invisible (matches the hook's "only stamp when present" rule).
         prov.setAwarenessField('user', {})
+        // Announce whether we could seed this room, so peers running the
+        // hydration election can skip us if we could not. Set once, here.
+        prov.setAwarenessField(SEED_CAPABLE_KEY, !unref(effectiveReadOnly))
         aw = prov.awareness!
       } else {
         // ---------- Local mode ----------

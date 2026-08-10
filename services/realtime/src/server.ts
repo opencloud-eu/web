@@ -105,6 +105,11 @@ async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> 
   return res.json() as Promise<GraphUser>
 }
 
+// Awareness field marking a connection as able to seed an empty room. Read by
+// the client's hydration election in `useCollaborativeDocument`; the name has
+// to match `SEED_CAPABLE_KEY` there.
+const SEED_CAPABLE_KEY = '_oc_canSeed'
+
 // The one action that means "may overwrite this file's content": it maps to
 // CS3's `InitiateFileUpload`, the same grant WebDAV writes go through. Matched
 // exactly, because sibling actions like `permissions/create` or
@@ -269,8 +274,15 @@ const server = new Server({
       name: user.displayName,
       color: user.color
     }
+    const readOnly = Boolean(context?.readOnly ?? connection?.context?.readOnly)
     for (const state of states.values()) {
       state.user = canonical
+      // Whether this connection may seed an empty room. The client publishes
+      // its own guess, but it derives read-only from WebDAV permissions while
+      // this service uses Graph actions, and the two can disagree. The peer
+      // election that decides who hydrates has to follow the verdict that
+      // actually gates writes, which is this one.
+      state[SEED_CAPABLE_KEY] = !readOnly
     }
   }
 })

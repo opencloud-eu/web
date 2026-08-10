@@ -18,6 +18,7 @@ import type {
   CollaborativeStatus
 } from '../../../../src/composables/collaborative'
 import type { FileContext } from '../../../../src/composables/appDefaults'
+import { useMessages } from '../../../../src/composables/piniaStores'
 
 const { useAppDefaultsSpy, useCollaborativeDocumentSpy } = vi.hoisted(() => ({
   useAppDefaultsSpy: vi.fn(),
@@ -36,6 +37,21 @@ vi.mock('../../../../src/composables/appDefaults/useAppDefaults', () => ({
 vi.mock('../../../../src/composables/collaborative/useCollaborativeDocument', () => ({
   useCollaborativeDocument: (...args: unknown[]) => useCollaborativeDocumentSpy(...args)
 }))
+
+// Several tests drive the save into its conflict branch on purpose, and
+// `errorPopup` logs every conflict it reports. Keep that out of the test
+// output; the tests that care assert on the spy instead. File-level because
+// the logs land asynchronously and would otherwise surface under whichever
+// test happens to be running.
+let consoleErrorSpy: ReturnType<typeof vi.spyOn>
+
+beforeEach(() => {
+  consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+})
+
+afterEach(() => {
+  consoleErrorSpy.mockRestore()
+})
 
 const FILE_A = mock<Resource>({
   id: 'storage$space!file-a',
@@ -194,6 +210,58 @@ describe('AppWrapper — collaborative session gate', () => {
   })
 })
 
+describe('AppWrapper — resource identity across a save', () => {
+  // Regression: the post-save update spread the whole PUT response over the
+  // local resource. `putFileContents` answers with a PROPFIND result, where
+  // `id === fileId === oc:fileid` - but a directly shared file carries the
+  // share id in `id` and the real file id in `fileId`. Flattening the two moved
+  // `resource.id` off `contentResourceId`, which shut the session's `enabled`
+  // gate for good: the collaborative session ended at the first save and never
+  // came back, with nothing shown to the user.
+  it('keeps id and fileId across a save on a directly shared file', async () => {
+    // What `buildIncomingShareResource` produces for a share-space root.
+    const sharedFile = {
+      id: 'share-mount-id',
+      fileId: 'storage$space!real-file-id',
+      name: 'shared.md',
+      path: '/',
+      etag: 'etag-open',
+      size: 10,
+      permissions: 'RDNVW'
+    } as unknown as Resource
+    // What a PROPFIND after the PUT answers with: one id for both fields.
+    const savedFile = {
+      id: 'storage$space!real-file-id',
+      fileId: 'storage$space!real-file-id',
+      name: 'shared.md',
+      path: '/shared.md',
+      etag: 'etag-saved',
+      size: 42,
+      mdate: 'Tue, 10 Feb 2026 10:00:00 GMT'
+    } as unknown as Resource
+
+    const s = setup({ putFileContents: vi.fn().mockResolvedValue(savedFile) })
+    await nextTick()
+    await s.resolveResource(sharedFile)
+    await s.resolveContent('content of the shared file')
+    await s.edit('edited content')
+    await s.pressCtrlS()
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+
+    const session = s.session()
+    // Identity is load-time and must survive the write: `fileId` keys the
+    // collaborative room, `id` keys the enabled gate.
+    expect(unref(session.resource).id).toBe('share-mount-id')
+    expect(unref(session.resource).fileId).toBe('storage$space!real-file-id')
+    expect(s.isEnabled()).toBe(true)
+
+    // What the write did establish still lands.
+    expect(unref(session.resource).etag).toBe('etag-saved')
+    expect(unref(session.resource).size).toBe(42)
+  })
+})
+
 describe('AppWrapper — peer save fan-out', () => {
   // Regression: a peer save only moved `currentETag`, so `resource.etag` kept
   // the value this client opened with. The session compares that against the
@@ -241,6 +309,7 @@ describe('AppWrapper — save conflict handling', () => {
     // so nothing can be written over the other writer.
     expect(putFileContents).toHaveBeenCalledTimes(1)
     expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
+    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
   })
 
   it('shows the conflict dialog when the session is not connected', async () => {
@@ -254,6 +323,7 @@ describe('AppWrapper — save conflict handling', () => {
 
     expect(putFileContents).toHaveBeenCalledTimes(1)
     expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
+    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
   })
 
   it('refetches and retries once when a connected session can merge', async () => {

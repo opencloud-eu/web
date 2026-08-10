@@ -258,7 +258,7 @@ const collaborativeDocument = collaborative
       // The peer save also published its fresh etag, so our next PUT's
       // `If-Match` is correct and we skip the 412 → refetch → retry path.
       onEtagChange: (value) => {
-        if (currentETag.value === value) return
+        if (unref(currentETag) === value) return
         currentETag.value = value
         // Keep `resource.etag` on the same value. The session compares it
         // against the room's etag to detect that the file changed outside the
@@ -554,6 +554,25 @@ const autosavePopup = () => {
   showMessage({ title: $gettext('File autosaved') })
 }
 
+/**
+ * Single landing point for a successful write: the etag the next `If-Match`
+ * carries, the local `resource` ref and the store. `saved` is the fresh
+ * `Resource` a PUT answers with, or null when only the etag is known (the
+ * silent reconciliation path).
+ */
+const applySavedResource = (etag: string, saved: Resource | null = null) => {
+  currentETag.value = etag
+  const current = unref(resource)
+  if (!current) return
+  const updated: Resource = { ...current, etag }
+  if (saved) {
+    updated.size = saved.size
+    updated.mdate = saved.mdate
+  }
+  resource.value = updated
+  resourcesStore.upsertResource(saved ?? updated)
+}
+
 const saveFileTask = useTask(function* () {
   const newContent = unref(currentContent)
   try {
@@ -562,18 +581,7 @@ const saveFileTask = useTask(function* () {
       previousEntityTag: unref(currentETag)
     })
     serverContent.value = newContent
-    currentETag.value = putFileContentsResponse.etag
-    resourcesStore.upsertResource(putFileContentsResponse)
-    // Keep our local `resource` ref in sync with what the write established so
-    // any watcher on it (the collaborative session's etag mirror, for one)
-    // actually fires. `upsertResource` only touches the store; the local ref is
-    // what the session and the slot read.
-    resource.value = {
-      ...unref(resource),
-      etag: putFileContentsResponse.etag,
-      size: putFileContentsResponse.size,
-      mdate: putFileContentsResponse.mdate
-    }
+    applySavedResource(putFileContentsResponse.etag, putFileContentsResponse)
   } catch (e) {
     // 409 / 412 — `previousEntityTag` didn't match what the server has.
     //
@@ -594,11 +602,7 @@ const saveFileTask = useTask(function* () {
             // No real content divergence — only our etag tracking was
             // stale. Reconcile silently.
             serverContent.value = newContent
-            currentETag.value = freshEtag
-            if (unref(resource)) {
-              resourcesStore.upsertResource({ ...unref(resource), etag: freshEtag })
-              resource.value = { ...unref(resource), etag: freshEtag }
-            }
+            applySavedResource(freshEtag)
             return
           }
 
@@ -608,9 +612,7 @@ const saveFileTask = useTask(function* () {
             previousEntityTag: freshEtag
           })
           serverContent.value = newContent
-          currentETag.value = retry.etag
-          resourcesStore.upsertResource(retry)
-          resource.value = { ...unref(resource), etag: retry.etag }
+          applySavedResource(retry.etag, retry)
           return
         } catch (retryErr) {
           // Refetch or retry blew up — drop through to the user-facing

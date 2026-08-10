@@ -32,6 +32,7 @@ interface MockProvider {
   awareness: Awareness
   destroy: ReturnType<typeof vi.fn>
   disconnect: ReturnType<typeof vi.fn>
+  detach: ReturnType<typeof vi.fn>
   setAwarenessField: ReturnType<typeof vi.fn>
   triggerSynced(): void
   triggerAuthFailed(reason: string): void
@@ -54,6 +55,9 @@ vi.mock('@hocuspocus/provider', async () => {
       this.awareness.destroy()
     })
     disconnect = vi.fn()
+    // Present on the real provider and load-bearing: without it, doc updates
+    // after a disconnect keep queueing in the websocket's `messageQueue`.
+    detach = vi.fn()
     setAwarenessField = vi.fn()
     private _opts: any
     constructor(opts: any) {
@@ -299,6 +303,67 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('user', {})
   })
 
+  // Regression: the election counted every awareness peer, but a read-only
+  // client never seeds - the server rejects its writes, it only hydrates a
+  // private copy. So whenever a viewer happened to hold the lower clientID, the
+  // editor deferred to it and nobody seeded: a blank editor over a file that is
+  // not blank, one keystroke away from being saved over the real content.
+  it('ignores read-only peers in the hydration election', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'the real file body'
+    })
+    await flushPromises()
+
+    // A read-only peer that won the election by holding the lower clientID.
+    const readOnlyPeer = s.ydoc!.clientID - 1
+    providerInstances[0].awareness.states.set(readOnlyPeer, {
+      user: { id: 'viewer', name: 'Margaret Hamilton' },
+      _oc_canSeed: false
+    })
+
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the real file body')
+  })
+
+  // The flip side: a peer that *can* seed still wins on the lower clientID, so
+  // two editors entering together do not both hydrate and duplicate the body.
+  it('still defers to a writable peer holding the lower clientID', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'the real file body'
+    })
+    await flushPromises()
+
+    const writablePeer = s.ydoc!.clientID - 1
+    providerInstances[0].awareness.states.set(writablePeer, {
+      user: { id: 'editor', name: 'Mary Kenneth Keller' },
+      _oc_canSeed: true
+    })
+
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
+  })
+
+  it('announces whether it can seed the room', async () => {
+    setupSession({ yjsServerUrl: 'wss://example.test/realtime', isReadOnly: true })
+    await flushPromises()
+    expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('_oc_canSeed', false)
+
+    providerInstances.length = 0
+    setupSession({ yjsServerUrl: 'wss://example.test/realtime' })
+    await flushPromises()
+    expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('_oc_canSeed', true)
+  })
+
   it('does not hydrate until onSynced fires (collab waits for the server)', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
@@ -361,6 +426,13 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
     await flushPromises()
 
     expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    // Detached as well as disconnected. A disconnected-but-attached provider
+    // still takes every doc update through `send()` into the websocket's
+    // `messageQueue`, where nothing ever drains it.
+    expect(providerInstances[0].detach).toHaveBeenCalled()
+    // The session is dead, so it must not keep claiming to be connected -
+    // callers gate conflict reconciliation on that.
+    expect(unref(s.session.status)).toBe('disconnected')
     expect(unref(s.session.isReady)).toBe(true)
   })
 
@@ -429,6 +501,9 @@ describe('useCollaborativeDocument — unreachable realtime server', () => {
     expect(unref(s.session.isLockedForReload)).toBe(false)
     // Stopped retrying, but not destroyed - the editor binds to its awareness.
     expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    // Detached too, so the updates the user keeps typing are dropped instead of
+    // piling up in the websocket's `messageQueue`.
+    expect(providerInstances[0].detach).toHaveBeenCalled()
     expect(providerInstances[0].destroy).not.toHaveBeenCalled()
   })
 
