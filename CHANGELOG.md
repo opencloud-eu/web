@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: white flash on page relaod when dark theme is applied [[#3055](https://github.com/opencloud-eu/web/pull/3055)]
 - fix(web-pkg): keep sidebar panels mounted while loading [[#3056](https://github.com/opencloud-eu/web/pull/3056)]
 - fix(tip tap): don't show drag handle on mobile as it's not compatible [[#3052](https://github.com/opencloud-eu/web/pull/3052)]
 - fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
