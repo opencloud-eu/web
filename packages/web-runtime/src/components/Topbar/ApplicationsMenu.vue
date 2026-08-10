@@ -49,75 +49,55 @@
   </nav>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType, ref, computed, unref, useTemplateRef } from 'vue'
+<script setup lang="ts">
+import { ref, computed, unref } from 'vue'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 import { v4 as uuidV4 } from 'uuid'
 import { AppMenuItemExtension, useRouter } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  props: {
-    menuItems: {
-      type: Array as PropType<AppMenuItemExtension[]>,
-      required: false,
-      default: (): AppMenuItemExtension[] => []
-    }
-  },
-  setup(props) {
-    const router = useRouter()
-    const { $gettext } = useGettext()
-    const appIconKey = ref('')
+const { menuItems = [] } = defineProps<{
+  menuItems?: AppMenuItemExtension[]
+}>()
 
-    const menu = useTemplateRef<typeof OcDrop>('menu')
+const router = useRouter()
+const { $gettext } = useGettext()
+const appIconKey = ref('')
 
-    const activeRoutePath = computed(() => unref(router.currentRoute).path)
-    const sortedMenuItems = computed(() => {
-      return [...props.menuItems].sort(
-        (a, b) => (a.priority || Number.MAX_SAFE_INTEGER) - (b.priority || Number.MAX_SAFE_INTEGER)
-      )
-    })
-
-    const applicationSwitcherLabel = computed(() => {
-      return $gettext('Application Switcher')
-    })
-    const updateAppIcons = () => {
-      appIconKey.value = uuidV4().replaceAll('-', '')
-    }
-
-    const getAdditionalEventBindings = (item: AppMenuItemExtension) => {
-      return item.handler ? { click: item.handler } : {}
-    }
-    const getAdditionalAttributes = (item: AppMenuItemExtension) => {
-      let type: 'a' | 'button' | 'router-link'
-      if (item.handler) {
-        type = 'button'
-      } else if (item.path) {
-        type = 'router-link'
-      } else {
-        type = 'a'
-      }
-
-      return {
-        type,
-        ...(type === 'router-link' && { to: item.path }),
-        ...(type === 'a' && { href: item.url, target: '_blank' as const })
-      }
-    }
-    const isMenuItemActive = (item: AppMenuItemExtension) => {
-      return unref(activeRoutePath)?.startsWith(item.path)
-    }
-
-    return {
-      menu,
-      sortedMenuItems,
-      appIconKey,
-      updateAppIcons,
-      applicationSwitcherLabel,
-      getAdditionalAttributes,
-      getAdditionalEventBindings,
-      isMenuItemActive
-    }
-  }
+const activeRoutePath = computed(() => unref(router.currentRoute).path)
+const sortedMenuItems = computed(() => {
+  return [...menuItems].sort(
+    (a, b) => (a.priority || Number.MAX_SAFE_INTEGER) - (b.priority || Number.MAX_SAFE_INTEGER)
+  )
 })
+
+const applicationSwitcherLabel = computed(() => {
+  return $gettext('Application Switcher')
+})
+const updateAppIcons = () => {
+  appIconKey.value = uuidV4().replaceAll('-', '')
+}
+
+const getAdditionalEventBindings = (item: AppMenuItemExtension) => {
+  return item.handler ? { click: item.handler } : {}
+}
+const getAdditionalAttributes = (item: AppMenuItemExtension) => {
+  let type: 'a' | 'button' | 'router-link'
+  if (item.handler) {
+    type = 'button'
+  } else if (item.path) {
+    type = 'router-link'
+  } else {
+    type = 'a'
+  }
+
+  return {
+    type,
+    ...(type === 'router-link' && { to: item.path }),
+    ...(type === 'a' && { href: item.url, target: '_blank' as const })
+  }
+}
+const isMenuItemActive = (item: AppMenuItemExtension) => {
+  return unref(activeRoutePath)?.startsWith(item.path)
+}
 </script>

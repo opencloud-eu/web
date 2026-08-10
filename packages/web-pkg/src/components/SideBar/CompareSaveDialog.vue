@@ -25,63 +25,60 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+<script setup lang="ts">
+import { onBeforeUnmount, onMounted, ref, computed, unref, watch } from 'vue'
 import isEqual from 'lodash-es/isEqual'
 import { eventBus } from '../../services/eventBus'
+import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'CompareSaveDialog',
-  props: {
-    originalObject: {
-      type: Object,
-      required: true
-    },
-    compareObject: {
-      type: Object,
-      required: true
-    },
-    confirmButtonDisabled: {
-      type: Boolean,
-      default: () => {
-        return false
-      }
-    }
-  },
-  emits: ['confirm', 'revert'],
-  setup() {
-    const saved = ref(false)
-    let savedEventToken: string
+const {
+  originalObject,
+  compareObject,
+  confirmButtonDisabled = false
+} = defineProps<{
+  originalObject: Record<string, any>
+  compareObject: Record<string, any>
+  confirmButtonDisabled?: boolean
+}>()
 
-    onMounted(() => {
-      savedEventToken = eventBus.subscribe('sidebar.entity.saved', () => {
-        saved.value = true
-      })
-    })
+defineEmits<{
+  (e: 'confirm'): void
+  (e: 'revert'): void
+}>()
 
-    onBeforeUnmount(() => {
-      eventBus.unsubscribe('sidebar.entity.saved', savedEventToken)
-    })
+const { $gettext } = useGettext()
 
-    return { saved }
-  },
-  computed: {
-    unsavedChanges() {
-      return !isEqual(this.originalObject, this.compareObject)
-    },
-    unsavedChangesText() {
-      return this.unsavedChanges ? this.$gettext('Unsaved changes') : this.$gettext('No changes')
-    }
-  },
-  watch: {
-    unsavedChanges() {
-      if (this.unsavedChanges) {
-        this.saved = false
-      }
-    },
-    'originalObject.id': function () {
-      this.saved = false
+const saved = ref(false)
+let savedEventToken: string
+
+const unsavedChanges = computed(() => !isEqual(originalObject, compareObject))
+const unsavedChangesText = computed(() =>
+  unref(unsavedChanges) ? $gettext('Unsaved changes') : $gettext('No changes')
+)
+
+onMounted(() => {
+  savedEventToken = eventBus.subscribe('sidebar.entity.saved', () => {
+    saved.value = true
+  })
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('sidebar.entity.saved', savedEventToken)
+})
+
+watch(
+  () => unref(unsavedChanges),
+  (newVal) => {
+    if (newVal) {
+      saved.value = false
     }
   }
-})
+)
+
+watch(
+  () => originalObject.id,
+  () => {
+    saved.value = false
+  }
+)
 </script>

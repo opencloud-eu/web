@@ -38,11 +38,11 @@ describe('SharedWithOthers view', () => {
   describe('different files view states', () => {
     it('shows the loading spinner during loading', () => {
       const { wrapper } = getMountedWrapper({ loading: true })
-      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeTruthy()
+      expect(wrapper.find('#app-loading-spinner').exists()).toBeTruthy()
     })
     it('shows the no-content-message after loading', () => {
       const { wrapper } = getMountedWrapper()
-      expect(wrapper.find('app-loading-spinner-stub').exists()).toBeFalsy()
+      expect(wrapper.find('#app-loading-spinner').exists()).toBeFalsy()
       expect(wrapper.find('.no-content-message').exists()).toBeTruthy()
     })
     it('shows the files table when files are available', () => {

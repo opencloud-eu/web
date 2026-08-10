@@ -9,25 +9,25 @@ describe('FilePickerModal', () => {
   describe('iframe', () => {
     it('sets the iframe src correctly', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.vm.iframeSrc).toEqual(
+      expect((wrapper.vm as any).iframeUrl.href).toEqual(
         'http://localhost:3000/files-spaces-generic?hide-logo=true&embed=true&embed-target=file&embed-delegate-authentication=false&embed-file-types=text%2Frtf'
       )
     })
     it('sets the iframe title correctly', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.vm.iframeTitle).toEqual('OpenCloud')
+      expect((wrapper.vm as any).iframeTitle).toEqual('OpenCloud')
     })
   })
   describe('method "onFilePick"', () => {
     it('does nothing if the event message does not equal "opencloud-embed:file-pick"', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.onFilePick(mock<MessageEvent>({ data: { name: 'some-other-event' } }))
+      ;(wrapper.vm as any).onFilePick(mock<MessageEvent>({ data: { name: 'some-other-event' } }))
       expect(wrapper.vm.callbackFn).not.toHaveBeenCalled()
     })
     it('calls callback function when message does equal "opencloud-embed:file-pick"', () => {
       const { wrapper } = getWrapper()
       const modalStore = useModals()
-      wrapper.vm.onFilePick(
+      ;(wrapper.vm as any).onFilePick(
         mock<MessageEvent>({
           data: {
             name: 'opencloud-embed:file-pick',

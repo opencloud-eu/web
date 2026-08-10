@@ -22,81 +22,52 @@
   </span>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
 import { useConfigStore } from '../../composables'
 import { storeToRefs } from 'pinia'
-import { computed, PropType, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 
-/**
- * Wraps content in a resource link
- */
-export default {
-  name: 'ResourceLink',
-  props: {
-    /**
-     * The resource folder link
-     */
-    link: {
-      type: Object as PropType<RouteLocationRaw>,
-      required: false,
-      default: null
-    },
-    /**
-     * The resource to be displayed
-     */
-    resource: {
-      type: Object,
-      required: true
-    },
-    /**
-     * Asserts whether clicking on the resource name triggers any action
-     */
-    isResourceClickable: {
-      type: Boolean,
-      required: false,
-      default: true
-    }
-  },
-  emits: ['click'],
-  setup: (props) => {
-    const configStore = useConfigStore()
-    const { options } = storeToRefs(configStore)
+const {
+  resource,
+  link = undefined,
+  isResourceClickable = true
+} = defineProps<{
+  resource: Resource
+  link?: RouteLocationRaw
+  isResourceClickable?: boolean
+}>()
 
-    const linkTarget = computed(() => {
-      return unref(options).openFilesInNewTab && props.link && !props.resource.isFolder
-        ? '_blank'
-        : '_self'
-    })
+const emit = defineEmits<{
+  (e: 'click', event: MouseEvent): void
+}>()
 
-    return {
-      linkTarget
-    }
-  },
-  computed: {
-    isNavigatable() {
-      if (!this.resource) {
-        return false
-      }
-      return this.link && !this.resource.disabled
-    },
-    isClickable() {
-      return this.isResourceClickable && !this.resource?.disabled
-    }
-  },
-  methods: {
-    emitClick(e: MouseEvent) {
-      if (!e || typeof e.stopPropagation !== 'function') {
-        return
-      }
-      if (this.isNavigatable) {
-        return
-      }
-      /**
-       * Triggered when the resource is a file and the name is clicked
-       */
-      this.$emit('click', e)
-    }
+defineSlots<{
+  default?: () => any
+}>()
+
+const configStore = useConfigStore()
+const { options } = storeToRefs(configStore)
+
+const linkTarget = computed(() => {
+  return unref(options).openFilesInNewTab && link && !resource.isFolder ? '_blank' : '_self'
+})
+
+const isNavigatable = computed(() => {
+  if (!resource || (isSpaceResource(resource) && resource.disabled)) {
+    return false
   }
+  return !!link
+})
+
+function emitClick(e: MouseEvent) {
+  if (!e || typeof e.stopPropagation !== 'function') {
+    return
+  }
+  if (unref(isNavigatable)) {
+    return
+  }
+  emit('click', e)
 }
 </script>

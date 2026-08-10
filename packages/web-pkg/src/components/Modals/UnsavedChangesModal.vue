@@ -23,27 +23,22 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script setup lang="ts">
 import { Modal, useModals } from '../../composables'
 
-export default defineComponent({
-  name: 'UnsavedChangesModal',
-  props: {
-    modal: { type: Object as PropType<Modal>, required: true },
-    closeCallback: { type: Function as PropType<() => void>, required: true }
-  },
-  emits: ['cancel', 'confirm'],
-  setup(props) {
-    const { removeModal } = useModals()
-    const onClose = () => {
-      removeModal(props.modal.id)
-      props.closeCallback()
-    }
+const { modal, closeCallback } = defineProps<{
+  modal: Modal
+  closeCallback: () => void
+}>()
 
-    return {
-      onClose
-    }
-  }
-})
+defineEmits<{
+  (e: 'cancel'): void
+  (e: 'confirm'): void
+}>()
+
+const { removeModal } = useModals()
+const onClose = () => {
+  removeModal(modal.id)
+  closeCallback()
+}
 </script>
