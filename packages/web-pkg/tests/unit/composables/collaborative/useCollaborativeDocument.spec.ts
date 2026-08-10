@@ -149,7 +149,16 @@ function setupSession({
         onEtagChange
       })
     },
-    { pluginOptions: { piniaOptions: { configState: { options: { yjsServerUrl } } } } }
+    {
+      pluginOptions: {
+        piniaOptions: {
+          configState: { options: { yjsServerUrl } },
+          // The session only goes to the realtime server for a signed-in user;
+          // without a token it deliberately stays in local mode.
+          authState: { accessToken: 'access-token' }
+        }
+      }
+    }
   )
 
   return {
@@ -207,16 +216,46 @@ describe('useCollaborativeDocument — room name', () => {
     expect(providerInstances[0].name).toBe('test-app::storage$space!item-1')
   })
 
-  // `resource.id` is global: the recipient of a share resolves the same
-  // composite id as the owner, which is what puts them in one room.
+  // `fileId` is the real composite id for everyone: plain WebDAV resources set
+  // it to `id`, and a share recipient gets it from `remoteItem.id`.
   it('puts owner and share recipient in the same room', async () => {
-    setupSession({ yjsServerUrl, resource: makeResource({ id: 'storage$space!item-1' }) })
     setupSession({
       yjsServerUrl,
-      resource: makeResource({ id: 'storage$space!item-1', remoteItemId: 'storage$space!mount' })
+      resource: makeResource({ id: 'storage$space!item-1', fileId: 'storage$space!item-1' })
+    })
+    setupSession({
+      yjsServerUrl,
+      resource: makeResource({ id: 'storage$space!item-1', fileId: 'storage$space!item-1' })
     })
     await flushPromises()
 
+    expect(providerInstances[0].name).toBe(providerInstances[1].name)
+  })
+
+  // Regression: for the recipient of a *directly* shared file the resource is
+  // the share root, so `buildIncomingShareResource` puts the per-recipient
+  // share-jail mount id in `id` and the real file id in `fileId`. Keying on `id`
+  // gave every recipient a private room - and because both sides still reported
+  // `connected`, a 409 was silently retried over the other side's write instead
+  // of raising a conflict.
+  it('keys a directly shared file on the real file id, not the share mount', async () => {
+    // The owner, straight from WebDAV.
+    setupSession({
+      yjsServerUrl,
+      resource: makeResource({ id: 'storage$space!item-1', fileId: 'storage$space!item-1' })
+    })
+    // The recipient: share-jail mount as `id`, real file id as `fileId`.
+    setupSession({
+      yjsServerUrl,
+      resource: makeResource({
+        id: 'sharejail$sharejail!share-abc',
+        fileId: 'storage$space!item-1',
+        remoteItemId: 'storage$space!item-1'
+      })
+    })
+    await flushPromises()
+
+    expect(providerInstances[1].name).toBe('test-app::storage$space!item-1')
     expect(providerInstances[0].name).toBe(providerInstances[1].name)
   })
 })
@@ -306,6 +345,52 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('my important notes')
   })
+
+  // Regression: the local hydration above was added without stopping the
+  // provider. `permissionDeniedHandler` leaves `shouldConnect` true, so the
+  // socket keeps retrying - and an attempt that later succeeded would merge the
+  // locally seeded copy into a room already holding the same content,
+  // duplicating the document for every peer.
+  it('stops retrying after an auth failure, so the local copy cannot merge back', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'my important notes'
+    })
+    await flushPromises()
+    providerInstances[0].triggerAuthFailed('token expired')
+    await flushPromises()
+
+    expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  // A token expiring mid-session leaves a live, populated document. Re-entering
+  // the hydration path there would re-run the etag-drift check and could plant
+  // `isStale` plus a `recoveryClientId` claim this now read-only client will
+  // never act on - leaving the room flagged stale with a dead claim.
+  it('does not re-run hydration when the token expires mid-session', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/realtime',
+      currentContent: 'seeded body',
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    // Past the 150ms hydration-election wait.
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+    expect(unref(s.session.isReady)).toBe(true)
+
+    // The room's etag drifts away from ours, which the drift check would act on.
+    s.ydoc!.getMap('_oc_meta').set('etag', 'etag-old')
+    providerInstances[0].triggerAuthFailed('token expired')
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap('_oc_meta')
+    expect(meta.get('isStale')).toBeUndefined()
+    expect(meta.get('recoveryClientId')).toBeUndefined()
+  })
 })
 
 describe('useCollaborativeDocument — unreachable realtime server', () => {
@@ -365,8 +450,12 @@ describe('useCollaborativeDocument — unreachable realtime server', () => {
     vi.advanceTimersByTime(20_000)
     await flushPromises()
 
+    // The auth reason survives: the timeout must not overwrite it with its own
+    // "server could not be reached" message.
     expect(unref(s.session.error)?.message).toBe('token expired')
-    expect(providerInstances[0].disconnect).not.toHaveBeenCalled()
+    // Auth failure disconnects too (see below), so exactly one disconnect - the
+    // timeout did not add a second.
+    expect(providerInstances[0].disconnect).toHaveBeenCalledOnce()
   })
 })
 

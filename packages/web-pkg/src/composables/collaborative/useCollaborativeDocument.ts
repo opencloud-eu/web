@@ -145,12 +145,24 @@ export function useCollaborativeDocument(
   // Single, deployment-wide switch. Leaving `yjsServerUrl` unset runs every
   // session in local mode: a Y.Doc and Awareness still spin up so the editor
   // binding stays on one codepath, but nothing connects and no peer appears.
-  const yjsServerUrl = computed<string | null>(() => configStore.options.yjsServerUrl || null)
+  //
+  // A session the realtime server cannot authenticate ends up in local mode
+  // too. It authenticates a *user* bearer token against Graph `/me` and knows
+  // nothing about public-link tokens, so an anonymous link visitor has no token
+  // to offer and a signed-in visitor holds one that carries no grant on the
+  // shared file.
+  const yjsServerUrl = computed<string | null>(() => {
+    if (!configStore.options.yjsServerUrl) return null
+    if (!authStore.accessToken) return null
+    if (authStore.publicLinkContextReady) return null
+    return configStore.options.yjsServerUrl
+  })
 
   const documentName = computed(() => {
     // OC's canonical composite id, identical for all peers. It serves as the
     // Y.Doc match key and the ACL probe target the yjs server passes to Graph.
-    const fileId = toValue(resource)?.id
+    const r = toValue(resource)
+    const fileId = r?.fileId ?? r?.id
     if (!fileId) return null
     const prefix = toValue(documentPrefix)
     return prefix ? `${prefix}::${fileId}` : `${fileId}`
@@ -519,15 +531,25 @@ export function useCollaborativeDocument(
   watch(
     sessionKey,
     (key, _oldKey, onCleanup) => {
-      if (!key) return
-      const name = unref(documentName)
-      if (!name) return
-
-      // Reset per-file state.
+      // Reset per-session state up front, before the bail-outs. Leaving
+      // `isReady` true when the session goes away made `AppWrapper` drop its
+      // loading screen while `ydoc` was already null, so the app mounted against
+      // the non-null `ydoc` its props promise - a blank editor bound to nothing.
       error.value = null
       isLockedForReload.value = false
       isReady.value = false
       hasLocalOnlyContent = false
+      staleRecoveryContent = null
+
+      if (!key) {
+        status.value = 'connecting'
+        return
+      }
+      const name = unref(documentName)
+      if (!name) {
+        status.value = 'connecting'
+        return
+      }
 
       const doc = new Y.Doc()
 
@@ -583,6 +605,26 @@ export function useCollaborativeDocument(
             error.value = new Error(reason || $gettext('authentication failed'))
             isLockedForReload.value = true
             if (connectTimer !== undefined) window.clearTimeout(connectTimer)
+
+            // Stop retrying. `permissionDeniedHandler` only flips
+            // `isAuthenticated`; it leaves `shouldConnect` true, so the socket
+            // layer keeps reconnecting. a later hydration attempt that
+            // does authenticate would merge our locally seeded copy into a room
+            // already holding the same content. Same reasoning as the
+            // connect-timeout path, which disconnects for exactly this reason.
+            try {
+              prov?.disconnect()
+            } catch {
+              // already torn down
+            }
+
+            // Only seed and release the gate for a *failed opening* connect. A
+            // token expiring mid-session leaves a live, populated document;
+            // re-entering the hydration path there would re-run the etag-drift
+            // check and could plant `isStale` plus a `recoveryClientId` claim
+            // this now read-only client will never act on, leaving the room
+            // flagged stale with a dead claim for the next joiner to "recover".
+            if (unref(isReady)) return
             // A failed connect never produces an `onSynced`, so hand off to the
             // same entry point to hydrate and release the loading gate - the
             // editor would spin forever otherwise.

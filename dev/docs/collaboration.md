@@ -87,7 +87,7 @@ sequenceDiagram
 
 The version baseline is recorded only once identity and access are settled. Doing it any earlier let an unauthenticated caller name any room, claim a version nobody else runs, and lock every legitimate client out of that file until the process restarted - the entry is cleared by `onDisconnect`, which never fires for a connection that was rejected.
 
-The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `collaborative.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.id`, which is already global: a share recipient sees the same composite id as the owner, so both land in the same room. Note that this must not be `resource.remoteItemId` - `AppWrapper` fills that with the share space id, which identifies the mount point rather than the file, so every file inside a shared folder would collapse into one room. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
+The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `collaborative.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.fileId ?? resource.id`, which is the real composite id for everyone: plain WebDAV resources set `fileId` to `id`, and the recipient of a share gets it from `remoteItem.id`. Neither of the other two candidates works. `resource.remoteItemId` is the _share space_ id, so every file inside a shared folder would collapse into one room. `resource.id` alone breaks the recipient of a _directly_ shared file, where the resource is the share root and `id` is that recipient's private share-jail mount point - each recipient would get their own room, and since both sides still report `connected`, a save conflict would be silently retried over the other side's write rather than raising a dialog. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
 
 Awareness is anti-spoofed: `beforeHandleAwareness` overwrites the `user` field on every inbound awareness state with the identity from the authenticated connection, so a client cannot present itself as someone else.
 
@@ -265,7 +265,7 @@ The elected peer captures that body at detection time rather than reading `curre
 
 `recoveryClientId` is last-write-wins, so if several clients detect the same drift at once, exactly one of them survives convergence. A peer that joins while `isStale` is already up offers itself the same way, provided its etag matches `nativeEtag` - the observer only fires on change, so without that the room would stay stuck if the elected peer navigated away mid-recovery.
 
-Reset lands before hydrate, so a throw in between leaves every peer looking at an empty document. That path keeps `isStale` up for the next joiner to retry and locks the session, which is what stops the autosave from writing the emptiness to disk.
+Reset lands before hydrate, so a throw in between leaves every peer looking at an empty document. That path keeps `isStale` up for the next joiner to retry, and locks the session so the editor freezes. Note that the lock does _not_ block saving - `isDirty` deliberately ignores it so a lock cannot silently discard unsaved work (see Known limits). What actually stops an empty document reaching disk is `serializeDoc` returning `null` when the adapter reports no content.
 
 ### `_oc_meta`
 
@@ -362,6 +362,10 @@ These are open items, not bugs to be surprised by.
 **`appVersion` is `0.0.0`.** `web-app-text-editor` is a private package with a placeholder version, so the version gate never actually fires for it.
 
 **Source mode is disabled in collab.** It swaps the ProseMirror view for a plain textarea, which has no Y.Doc binding, so `useTextEditor` drops the `source-mode` action whenever a realtime session is active. Marked as a `FIXME`.
+
+**A locked session can still be saved.** `isLockedForReload` freezes the editor but deliberately leaves `isDirty` alone, so the user can still persist work they typed before the lock. The gap is an adapter that throws _partway_ through `hydrate`, or a mid-session `appVersion` bump: in both cases a manual save would write content the room considers wrong. Unreachable while `appVersion` is `0.0.0` - whoever makes the version gate real must split the lock into "freeze the editor" and "content is untrustworthy, block autosave" in the same change.
+
+**Realtime needs a user token.** The Yjs server authenticates a bearer token against Graph `/me` and knows nothing about public-link tokens, so any context without a user access token - a public link, OCM - runs in local mode regardless of `yjsServerUrl`. Editing works, it just does not sync. A signed-in visitor opening someone else's public link is treated the same way, since their token carries no grant on the shared file.
 
 **Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`). `AppWrapper` reads it to decide whether a save conflict can be reconciled, but never shows it. A websocket that drops _after_ a successful sync produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone. Only a connect that never succeeds in the first place is caught, by the timeout above.
 
