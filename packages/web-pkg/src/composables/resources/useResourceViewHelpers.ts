@@ -196,8 +196,13 @@ export const useResourceViewHelpers = ({
     event: MouseEvent | KeyboardEvent
   }) => {
     if (interceptModifierClick(event, resource)) {
+      const eventTarget = event.target as HTMLInputElement
+      if (eventTarget?.getAttribute('type') === 'checkbox') {
+        eventTarget.checked = isResourceSelected(resource)
+      }
       return
     }
+    eventBus.publish('app.files.shiftAnchor.reset')
     resourcesStore.toggleSelection(resource.id)
     eventBus.publish('app.files.list.clicked')
     emit('update:selectedIds', [...resourcesStore.selectedIds])

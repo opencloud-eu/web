@@ -47,6 +47,7 @@ export const useResourceViewSelection = ({
 
   const toggleSelectionAll = () => {
     if (unref(areAllResourcesSelected)) {
+      eventBus.publish('app.files.shiftAnchor.reset')
       return emitSelect([])
     }
     emitSelect(
