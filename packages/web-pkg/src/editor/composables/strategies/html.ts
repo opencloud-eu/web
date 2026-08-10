@@ -115,6 +115,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     addColumnBefore,
     addColumnAfter,
     deleteColumn,
+    toggleHeaderRow,
     deleteTable,
     menuSearchAndReplace
   } = useEditorActions(editorState)
@@ -172,6 +173,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           imageUrl(),
           imageUpload(),
           createTable(),
+          toggleHeaderRow(),
           addRowBefore(),
           addRowAfter(),
           deleteRow(),
