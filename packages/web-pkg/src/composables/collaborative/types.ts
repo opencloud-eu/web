@@ -14,8 +14,12 @@ export interface CollaborativeAdapter {
    * sync.
    *
    * Must be a no-op if the Y.Doc already has app data.
+   *
+   * **Must be synchronous.** Stale recovery wipes the shared document and
+   * re-seeds it, and it relies on that running in one go: yielding partway
+   * through lets a remote update move the recovery claim.
    */
-  hydrate(ydoc: Y.Doc, content: string): void | Promise<void>
+  hydrate(ydoc: Y.Doc, content: string): void
 
   /**
    * Render the current Y.Doc state to the native file format for WebDAV PUT

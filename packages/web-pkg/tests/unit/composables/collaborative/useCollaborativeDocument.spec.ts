@@ -842,6 +842,59 @@ describe('useCollaborativeDocument — stale-state recovery', () => {
     expect(unref(s.session.isLockedForReload)).toBe(true)
     expect(unref(s.session.error)).toBeTruthy()
   })
+
+  // The claim is deliberately stealable: whoever was elected may have navigated
+  // away mid-recovery, and then nobody would finish. Safe because `hydrate` is
+  // synchronous by contract - reset, hydrate and commit run in one go, so a
+  // claim cannot move underneath a client that is already working.
+  it('takes the claim over from a peer that has left', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'fresh body',
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+
+    const doc = s.ydoc!
+    const meta = doc.getMap(META_KEY)
+    // Claimed by a client that is no longer in awareness: nobody would finish.
+    doc.transact(() => {
+      meta.set('nativeEtag', 'etag-new')
+      meta.set('recoveryClientId', doc.clientID + 99)
+      meta.set('isStale', true)
+    })
+
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(meta.get('isStale')).toBeUndefined()
+  })
+
+  // Reset, hydrate and commit are one uninterrupted run, so a peer's update
+  // cannot land in between and leave the document half-recovered.
+  it('resets, re-seeds and clears the flags without yielding', async () => {
+    const seen: string[] = []
+    const observingAdapter: CollaborativeAdapter = {
+      ...testAdapter,
+      hydrate(ydoc: Y.Doc, content: string) {
+        const meta = ydoc.getMap(META_KEY)
+        // Mid-recovery: the flags are still up, the doc is already wiped.
+        seen.push(`isStale=${meta.get('isStale')} content="${testAdapter.serialize(ydoc)}"`)
+        testAdapter.hydrate(ydoc, content)
+      }
+    }
+
+    const s = await syncIntoStaleRoom({ adapter: observingAdapter })
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(seen).toEqual(['isStale=true content=""'])
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(meta.get('isStale')).toBeUndefined()
+  })
 })
 
 describe('useCollaborativeDocument — etag mirror', () => {
@@ -886,6 +939,71 @@ describe('useCollaborativeDocument — etag mirror', () => {
     s.resourceRef.value = makeResource({ etag: 'a' })
     await flushPromises()
     expect(meta.get('etag')).toBe(initialMeta)
+  })
+})
+
+describe('useCollaborativeDocument — wasWrittenByRoom', () => {
+  const yjsServerUrl = 'wss://example.test/realtime'
+
+  // Adds a second client to awareness, so the room counts as populated.
+  function addPeer(index = 0) {
+    providerInstances[0].awareness.states.set(9_000 + index, { user: { id: 'peer' } })
+  }
+
+  it('confirms an etag the room has already published', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'x' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    s.ydoc!.getMap('_oc_meta').set('etag', 'etag-from-a-peer')
+
+    await expect(s.session.wasWrittenByRoom('etag-from-a-peer')).resolves.toBe(true)
+  })
+
+  // The case that matters: a desktop client syncs the file while the user has
+  // it open. Nobody in the room wrote it, so republishing over it would destroy
+  // content this document has never seen. Must not be mistaken for a peer save.
+  it('rejects an etag no peer ever published, without waiting', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'x' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    addPeer()
+
+    await expect(s.session.wasWrittenByRoom('etag-from-a-desktop-client', 20)).resolves.toBe(false)
+  })
+
+  it('waits out the hop for a peer stamping its save a moment later', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'x' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    addPeer()
+
+    // The peer's PUT already landed on the server; its `_oc_meta` update is
+    // still in flight when our own save conflicts.
+    const pending = s.session.wasWrittenByRoom('etag-in-flight', 5_000)
+    s.ydoc!.getMap('_oc_meta').set('etag', 'etag-in-flight')
+
+    await expect(pending).resolves.toBe(true)
+  })
+
+  it('does not wait when there is nobody left to hear from', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'x' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    // Alone in the room: the only client that could move the room's etag is us,
+    // so a long timeout must still resolve immediately.
+    await expect(s.session.wasWrittenByRoom('etag-nobody-published', 60_000)).resolves.toBe(false)
+  })
+
+  it('reports false in local mode, where there is no room to speak for', async () => {
+    const s = setupSession({ currentContent: 'x' })
+    await flushPromises()
+
+    await expect(s.session.wasWrittenByRoom('any-etag', 20)).resolves.toBe(false)
   })
 })
 

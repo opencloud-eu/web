@@ -606,16 +606,24 @@ const saveFileTask = useTask(function* () {
             return
           }
 
-          // Retry the PUT with the fresh etag, publishing our combined state.
-          const retry = yield putFileContents(currentFileContext, {
-            content: newContent as string | ArrayBuffer,
-            previousEntityTag: freshEtag
-          })
-          serverContent.value = newContent
-          applySavedResource(retry.etag, retry)
-          return
+          // The content on disk differs from ours, so someone wrote it. Only
+          // this room's own writes may be republished over: our Y.Doc has
+          // already merged whatever a peer saved, so nothing is lost. A write
+          // from outside the room never reached this document, and retrying
+          // would destroy it without the user ever seeing it.
+          const writtenByRoom = yield* call(collaborativeDocument.wasWrittenByRoom(freshEtag))
+          if (writtenByRoom) {
+            // Retry the PUT with the fresh etag, publishing our combined state.
+            const retry = yield putFileContents(currentFileContext, {
+              content: newContent as string | ArrayBuffer,
+              previousEntityTag: freshEtag
+            })
+            serverContent.value = newContent
+            applySavedResource(retry.etag, retry)
+            return
+          }
         } catch (retryErr) {
-          // Refetch or retry blew up — drop through to the user-facing
+          // Refetch or retry blew up, drop through to the user-facing
           // conflict popup so they can still recover by copying out.
           console.error('[collab] conflict reconciliation failed:', retryErr)
         }
@@ -634,6 +642,16 @@ const saveFileTask = useTask(function* () {
       case 401:
       case 403:
         errorPopup(new HttpError($gettext("You're not authorized to save this file"), e.response))
+        break
+      case 423:
+        errorPopup(
+          new HttpError(
+            $gettext(
+              'This file is locked by another application and cannot be saved. Copy your changes, or save the file under a new name (»Save As...«).'
+            ),
+            e.response
+          )
+        )
         break
       case 507:
         const space = spacesStore.spaces.find(

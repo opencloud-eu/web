@@ -72,8 +72,11 @@ const wrappedComponent = defineComponent({
 function setup({
   collaborative = true,
   status = 'connected' as CollaborativeStatus,
+  // Whether the room can account for the write that caused a save conflict.
+  writtenByRoom = true,
   putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' }))
 } = {}) {
+  const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const isLockedForReload = ref(false)
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
@@ -98,7 +101,8 @@ function setup({
       // Auto-mocked refs are truthy, which would fold into `effectiveReadOnly`
       // and hard-wire `isDirty` to false.
       isLockedForReload: isLockedForReload as any,
-      error: ref<Error | null>(null) as any
+      error: ref<Error | null>(null) as any,
+      wasWrittenByRoom
     })
   })
 
@@ -149,6 +153,7 @@ function setup({
     isLockedForReload,
     putFileContents,
     getFileContents,
+    wasWrittenByRoom,
     async edit(content: string) {
       slotProps['onUpdate:currentContent'](content)
       await nextTick()
@@ -324,6 +329,53 @@ describe('AppWrapper — save conflict handling', () => {
     expect(putFileContents).toHaveBeenCalledTimes(1)
     expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
     expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+  })
+
+  // Regression: the retry ran for any conflict inside a connected session, so
+  // an external write — another browser, a desktop client syncing the file —
+  // was refetched, found to differ, and then overwritten with our content. The
+  // room never saw that content, so nothing merged it and nothing warned. Only
+  // a write this room produced may be republished over.
+  it('prompts instead of retrying when the room cannot account for the write', async () => {
+    const putFileContents = vi.fn().mockRejectedValue(conflict())
+    const s = setup({ status: 'connected', writtenByRoom: false, putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    // The conflict path refetches before deciding.
+    await s.resolveContent('content written by a desktop client')
+    await pressed
+
+    expect(s.wasWrittenByRoom).toHaveBeenCalledWith('etag')
+    // One attempt only: no second PUT, so the external content survives.
+    expect(putFileContents).toHaveBeenCalledTimes(1)
+    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+  })
+
+  // A lock is invisible to both authorization paths - WebDAV permissions carry
+  // no lock letter and Graph actions have no lock facet - so the 423 on save is
+  // the first thing that can tell the user. It used to land in the catch-all
+  // branch and surface as an error popup with an empty message.
+  it('explains a 423 instead of showing an empty error', async () => {
+    const locked = Object.assign(new Error('locked'), { statusCode: 423, response: {} })
+    const putFileContents = vi.fn().mockRejectedValue(locked)
+    const s = setup({ collaborative: false, putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    await s.pressCtrlS()
+
+    const { showErrorMessage } = useMessages()
+    expect(showErrorMessage).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(showErrorMessage).mock.calls[0][0].desc).toContain('locked by another')
+    // No refetch and no retry: a lock is not something to reconcile against.
+    expect(putFileContents).toHaveBeenCalledTimes(1)
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
   })
 
   it('refetches and retries once when a connected session can merge', async () => {

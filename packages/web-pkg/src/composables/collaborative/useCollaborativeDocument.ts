@@ -70,6 +70,15 @@ export interface CollaborativeDocument {
   isLockedForReload: Ref<boolean>
   /** Set when the persisted state was stale or realtime auth failed. */
   error: ShallowRef<Error | null>
+  /**
+   * Whether the file now on disk under `etag` was written by this room.
+   *
+   * A peer's save is a serialization of room state our Y.Doc has already
+   * merged, so republishing over it loses nothing. A write from anywhere
+   * else never entered the room, so overwriting it woud destroy content
+   * nobody here has seen.
+   */
+  wasWrittenByRoom: (etag: string, timeoutMs?: number) => Promise<boolean>
 }
 
 const META_KEY = '_oc_meta'
@@ -94,6 +103,20 @@ const LOCAL_SAVE_ORIGIN = 'local-save'
  * to skip them or the room stays empty for everyone.
  */
 const SEED_CAPABLE_KEY = '_oc_canSeed'
+/**
+ * How long `wasWrittenByRoom` waits for a peer to publish the etag of a save it
+ * has already committed.
+ *
+ * The wait exists because at conflict time the two worlds are indistinguishable:
+ * a peer wrote the file and its stamp is still travelling, or someone outside
+ * wrote it and no stamp is ever coming.
+ *
+ * It is far narrower than it looks. Nothing waits on a successful save, on a
+ * conflict whose content already matches, or on a conflict with no other client
+ * in the room; and a stamp that has landed resolves immediately. The full cap is
+ * only ever paid by a genuine external write while peers are present.
+ */
+const ROOM_ETAG_GRACE_MS = 1_000
 
 /** The awareness fields this composable sets or reads. */
 type AwarenessState = Record<string, unknown> & { [SEED_CAPABLE_KEY]?: boolean }
@@ -223,6 +246,42 @@ export function useCollaborativeDocument(
     const ourClock = Y.decodeStateVector(Y.encodeStateVector(doc)).get(doc.clientID) ?? 0
     const theirView = Y.decodeStateVector(theirs).get(doc.clientID) ?? 0
     return theirView >= ourClock
+  }
+
+  /**
+   * See {@link CollaborativeDocument.wasWrittenByRoom}.
+   *
+   * `_oc_meta.etag` is the proof: every peer stamps it with the etag its own
+   * PUT produced, so a match means the bytes on disk came out of this room.
+   * A mismatch is not proof of the opposite though - the peer's stamp may
+   * still be in flight - so when peers are around we give it a moment to
+   * arrive. With nobody else in the room there is nothing to wait for: the
+   * only client that could move the room's etag is us.
+   */
+  function wasWrittenByRoom(etag: string, timeoutMs = ROOM_ETAG_GRACE_MS): Promise<boolean> {
+    const doc = unref(ydoc)
+    if (!etag || !doc || doc.isDestroyed || !unref(provider)) return Promise.resolve(false)
+
+    const meta = doc.getMap(META_KEY)
+    if (meta.get('etag') === etag) return Promise.resolve(true)
+
+    const states = unref(awareness)?.getStates()
+    if (!states || states.size <= 1) return Promise.resolve(false)
+
+    return new Promise<boolean>((resolve) => {
+      let timer: number | undefined
+      function settle(result: boolean) {
+        if (timer !== undefined) window.clearTimeout(timer)
+        meta.unobserve(onMetaChange)
+        resolve(result)
+      }
+      function onMetaChange(event: Y.YMapEvent<unknown>) {
+        if (!event.keysChanged.has('etag')) return
+        if (meta.get('etag') === etag) settle(true)
+      }
+      meta.observe(onMetaChange)
+      timer = window.setTimeout(() => settle(false), timeoutMs)
+    })
   }
 
   /**
@@ -405,10 +464,8 @@ export function useCollaborativeDocument(
     if (unref(effectiveReadOnly)) {
       // A peer already announced its seeding; its content is on the way.
       if (meta.get('hydrated') === true) return
-      // Set before awaiting: a peer announcing mid-hydration must still find
-      // the flag set, otherwise the two copies merge into duplicated content.
       hasLocalOnlyContent = true
-      await Promise.resolve(current.hydrate(doc, toValue(currentContent)))
+      current.hydrate(doc, toValue(currentContent))
       hasLocalOnlyContent = current.hasContent(doc)
       return
     }
@@ -436,7 +493,7 @@ export function useCollaborativeDocument(
     // Announce before seeding, so read-only peers can drop their private copy
     // before our content lands rather than merge with it.
     doc.transact(() => meta.set('hydrated', true))
-    await Promise.resolve(current.hydrate(doc, toValue(currentContent)))
+    current.hydrate(doc, toValue(currentContent))
   }
 
   /**
@@ -487,12 +544,12 @@ export function useCollaborativeDocument(
     // rewrite through would flip its dirty state back and forth between
     // recovery and the next real keystroke.
     try {
-      await withoutReportingContent(async () => {
+      await withoutReportingContent(() => {
         doc.transact(() => {
           current.reset?.(doc)
         }, 'stale-recovery-reset')
 
-        await Promise.resolve(current.hydrate(doc, content))
+        current.hydrate(doc, content)
 
         doc.transact(() => {
           meta.delete('isStale')
@@ -849,6 +906,7 @@ export function useCollaborativeDocument(
     status,
     isReady,
     isLockedForReload,
-    error
+    error,
+    wasWrittenByRoom
   }
 }
