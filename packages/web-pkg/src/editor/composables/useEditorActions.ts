@@ -746,7 +746,7 @@ export function useEditorActions(state: TextEditorState) {
     childActions: [
       {
         id: 'table-default',
-        title: $gettext('Default table'),
+        title: $gettext('Small table (3×3)'),
         description: $gettext('3×3 table with header row'),
         icon: 'table-line',
         toolbarAction: (editor) =>
@@ -755,8 +755,8 @@ export function useEditorActions(state: TextEditorState) {
       },
       {
         id: 'table-custom',
-        title: $gettext('Custom size'),
-        description: $gettext('Choose table dimensions'),
+        title: $gettext('Choose rows & columns'),
+        description: $gettext('Select custom table size'),
         icon: 'grid',
         iconFillType: 'line',
         menuComponent: markRaw(TextEditorTableSizeSelector),
