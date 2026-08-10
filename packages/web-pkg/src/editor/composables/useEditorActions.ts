@@ -755,7 +755,7 @@ export function useEditorActions(state: TextEditorState) {
       },
       {
         id: 'table-custom',
-        title: $gettext('Choose rows & columns'),
+        title: $gettext('Choose table size'),
         description: $gettext('Select custom table size'),
         icon: 'grid',
         iconFillType: 'line',
