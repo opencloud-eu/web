@@ -64,6 +64,7 @@ export type WebThemeType = z.infer<typeof WebTheme>
 export type ThemeConfigType = z.infer<typeof ThemeConfig>
 
 const themeStorageKey = 'oc_currentThemeName'
+const themeIsDarkStorageKey = 'oc_currentThemeIsDark'
 
 const setFavicon = (url: string) => {
   let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement
@@ -77,6 +78,7 @@ const setFavicon = (url: string) => {
 
 export const useThemeStore = defineStore('theme', () => {
   const currentLocalStorageThemeName = useLocalStorage(themeStorageKey, null)
+  const currentLocalStorageThemeIsDark = useLocalStorage(themeIsDarkStorageKey, false)
 
   const isDark = usePreferredDark()
 
@@ -121,6 +123,7 @@ export const useThemeStore = defineStore('theme', () => {
     currentTheme.value = theme
     if (updateStorage) {
       currentLocalStorageThemeName.value = unref(currentTheme).label
+      currentLocalStorageThemeIsDark.value = theme.isDark
     }
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
