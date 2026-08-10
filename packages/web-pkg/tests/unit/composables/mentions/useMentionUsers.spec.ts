@@ -121,20 +121,6 @@ describe('useMentionUsers', () => {
       await expect(reusing).resolves.toEqual([{ id: 'user1', label: 'Alice' }])
     })
 
-    it('uses an incomplete share list without reloading it on every query', async () => {
-      const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
-      const { instance, loadSharesTask } = getWrapper({
-        collaboratorShares: [collaboratorShare('user1', 'Alice')],
-        incomplete: true
-      })
-
-      await expect(instance.getMentionUsers('')).resolves.toEqual([{ id: 'user1', label: 'Alice' }])
-      await instance.getMentionUsers('a')
-
-      expect(loadSharesTask.perform).toHaveBeenCalledOnce()
-      expect(consoleWarn).toHaveBeenCalledOnce()
-    })
-
     it('returns an empty list and logs when loading the shares fails', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { instance } = getWrapper({ rejectLoad: true })
@@ -305,7 +291,6 @@ function getWrapper({
   currentUserId = 'own-id',
   deferred = false,
   rejectLoad = false,
-  incomplete = false,
   space = ref(mock<SpaceResource>({ id: 'space-id' })),
   resource = ref(mock<Resource>({ id: 'resource-id', fileId: 'file-id' })),
   mocks = defaultComponentMocks()
@@ -314,7 +299,6 @@ function getWrapper({
   currentUserId?: string
   deferred?: boolean
   rejectLoad?: boolean
-  incomplete?: boolean
   space?: Ref<SpaceResource>
   resource?: Ref<Resource>
   mocks?: ReturnType<typeof defaultComponentMocks>
@@ -334,7 +318,7 @@ function getWrapper({
         return new Promise((resolve, reject) => {
           deferreds.push({
             resolve: (shares) => {
-              resolve({ collaboratorShares: shares, linkShares: [], incomplete })
+              resolve({ collaboratorShares: shares, linkShares: [] })
               return flushPromises()
             },
             reject: (error) => {
@@ -344,7 +328,7 @@ function getWrapper({
           })
         })
       }
-      return Promise.resolve({ collaboratorShares, linkShares: [], incomplete })
+      return Promise.resolve({ collaboratorShares, linkShares: [] })
     })
   }
 

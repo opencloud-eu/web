@@ -37,6 +37,7 @@ export function useMentionUsers({
   const selectedUserIds = ref<string[]>([])
 
   let pendingCollaborators: Promise<CollaboratorShare[]> | null = null
+  let mentionStateVersion = 0
 
   function loadCollaborators(): Promise<CollaboratorShare[]> {
     if (unref(collaboratorsFetched)) {
@@ -108,6 +109,7 @@ export function useMentionUsers({
     }
 
     const userIDs = [...unref(selectedUserIds)]
+    const stateVersion = mentionStateVersion
     selectedUserIds.value = []
 
     try {
@@ -118,6 +120,18 @@ export function useMentionUsers({
       })
     } catch (error) {
       console.error('Error notifying mentioned users', error)
+
+      if (stateVersion !== mentionStateVersion) {
+        // the mention state has been reset in the meantime, e.g. because another resource
+        // is being edited now. those mentions must not be notified anymore.
+        return
+      }
+
+      // keep the users selected, so they are retried with the next notification
+      selectedUserIds.value = [
+        ...userIDs,
+        ...unref(selectedUserIds).filter((id) => !userIDs.includes(id))
+      ]
     }
   }
 
@@ -132,6 +146,7 @@ export function useMentionUsers({
 
   function resetMentionState(): void {
     invalidateCollaborators()
+    mentionStateVersion++
     selectedUserIds.value = []
   }
 
