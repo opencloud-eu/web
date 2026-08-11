@@ -184,9 +184,7 @@ export const useFileActions = () => {
     if (!routeName || !router.hasRoute(routeName)) {
       return null
     }
-    // Return the raw route options rather than a resolved location. Re-resolving
-    // an already resolved location drops the encoding of special characters like
-    // `#` from the path, which breaks the links built from it.
+
     return getEditorRouteOpts(routeName, space, resource, remoteItemId)
   }
   const getEditorRouteOpts = (
@@ -196,11 +194,10 @@ export const useFileActions = () => {
     remoteItemId: string,
     templateId?: string
   ) => {
-    const driveAliasAndItem = space?.getDriveAliasAndItem(resource)
     return {
       name: routeName,
       params: {
-        driveAliasAndItem: driveAliasAndItem ?? ''
+        driveAliasAndItem: space?.getDriveAliasAndItem(resource)
       },
       query: {
         ...(remoteItemId && { shareId: remoteItemId }),

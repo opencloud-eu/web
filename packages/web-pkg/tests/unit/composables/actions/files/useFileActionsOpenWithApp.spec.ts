@@ -18,8 +18,7 @@ window.open = vi.fn()
 vi.mock('../../../../../src/composables/actions/helpers/useIsFilesAppActive')
 
 const spaceMock = mock<SpaceResource>({
-  id: '1',
-  getDriveAliasAndItem: () => 'personal/admin/test.txt'
+  id: '1'
 })
 describe('openWithApp', () => {
   describe('computed property "actions"', () => {
