@@ -116,14 +116,7 @@ function getWrapper() {
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
-              spacesState: {
-                spaces: [
-                  mock<SpaceResource>({
-                    id: '1',
-                    getDriveAliasAndItem: () => 'personal/admin/test.txt'
-                  })
-                ]
-              },
+              spacesState: { spaces: [mock<SpaceResource>({ id: '1' })] },
               themeState: { currentTheme: { name: 'OpenCloud' } as WebThemeType }
             }
           })

@@ -1,10 +1,9 @@
 import kebabCase from 'lodash-es/kebabCase'
-import { encodePath, isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
 import { useRouter } from '../../router'
-import type { RouteRecordNameGeneric } from 'vue-router'
 import {
   Action,
   FileAction,
@@ -185,8 +184,10 @@ export const useFileActions = () => {
     if (!routeName || !router.hasRoute(routeName)) {
       return null
     }
-    const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
-    return router.resolve(routeOpts)
+    // Return the raw route options rather than a resolved location. Re-resolving
+    // an already resolved location drops the encoding of special characters like
+    // `#` from the path, which breaks the links built from it.
+    return getEditorRouteOpts(routeName, space, resource, remoteItemId)
   }
   const getEditorRouteOpts = (
     routeName: RouteRecordName,
@@ -199,7 +200,7 @@ export const useFileActions = () => {
     return {
       name: routeName,
       params: {
-        driveAliasAndItem: driveAliasAndItem ? encodePath(driveAliasAndItem) : ''
+        driveAliasAndItem: driveAliasAndItem ?? ''
       },
       query: {
         ...(remoteItemId && { shareId: remoteItemId }),
@@ -208,21 +209,6 @@ export const useFileActions = () => {
         ...routeToContextQuery(unref(router.currentRoute))
       }
     }
-  }
-
-  const buildEditorUrl = (routeOpts: {
-    name: RouteRecordNameGeneric
-    params?: { driveAliasAndItem?: string }
-    query?: Record<string, string>
-  }) => {
-    const routeName = routeOpts.name as string
-    const driveAliasAndItem = routeOpts.params?.driveAliasAndItem as string
-    const queryParams = new URLSearchParams()
-    Object.entries(routeOpts.query || {}).forEach(([key, value]) => {
-      queryParams.append(key, value as string)
-    })
-    const queryString = queryParams.toString()
-    return `${window.location.origin}/${routeName}/${driveAliasAndItem}${queryString ? `?${queryString}` : ''}`
   }
 
   const openEditor = (
@@ -297,7 +283,6 @@ export const useFileActions = () => {
     getDefaultAction,
     getAllOpenWithActions,
     getEditorRouteOpts,
-    buildEditorUrl,
     openEditor,
     triggerDefaultAction
   }

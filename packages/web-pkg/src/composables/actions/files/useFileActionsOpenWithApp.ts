@@ -21,7 +21,7 @@ export const useFileActionsOpenWithApp = ({ appId }: { appId: string }) => {
   const router = useRouter()
   const { getParentFolderLink } = useFolderLink()
   const { getMatchingSpace } = useGetMatchingSpace()
-  const { getEditorRouteOpts, buildEditorUrl } = useFileActions()
+  const { getEditorRouteOpts } = useFileActions()
 
   const handler = ({ resources }: FileActionOptions) => {
     const app = unref(apps)[appId]
@@ -75,8 +75,10 @@ export const useFileActionsOpenWithApp = ({ appId }: { appId: string }) => {
     )
     routeOpts.query = { ...routeOpts.query, ...locationQuery }
 
-    const href = buildEditorUrl(routeOpts)
-    window.open(href, '_blank')
+    const editorRoute = router.resolve(routeOpts)
+    const editorRouteUrl = new URL(editorRoute.href, window.location.origin)
+
+    window.open(editorRouteUrl.href, '_blank')
   }
 
   return {

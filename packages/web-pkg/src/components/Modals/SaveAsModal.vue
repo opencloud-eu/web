@@ -49,7 +49,7 @@ const clientService = useClientService()
 const { removeModal } = useModals()
 const { showMessage, showErrorMessage } = useMessages()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { getEditorRouteOpts, buildEditorUrl } = useFileActions()
+const { getEditorRouteOpts } = useFileActions()
 
 const parentFolderRoute = router.resolve(parentFolderLink)
 const iframeTitle = themeStore.currentTheme.name
@@ -141,8 +141,9 @@ const openFile = ({
   )
   routeOpts.query = { ...routeOpts.query, ...locationQuery }
 
-  const href = buildEditorUrl(routeOpts)
-  window.open(href, '_blank')
+  const editorRoute = router.resolve(routeOpts)
+  const editorRouteUrl = new URL(editorRoute.href, window.location.origin)
+  window.open(editorRouteUrl.href, '_blank')
 }
 
 const onCancel = ({ data }: MessageEvent) => {

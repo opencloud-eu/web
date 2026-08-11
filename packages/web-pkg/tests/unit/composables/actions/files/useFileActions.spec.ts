@@ -115,7 +115,7 @@ describe('fileActions', () => {
       expect(result).not.toBeNull()
     })
 
-    it('encodes special characters like hash in driveAliasAndItem', () => {
+    it('returns unresolved route options so the router encodes the path', () => {
       let editorAction: FileAction
       const { mocks } = getWrapper({
         setup: ({ getAllOpenWithActions }) => {
@@ -124,7 +124,6 @@ describe('fileActions', () => {
         }
       })
       mocks.$router.hasRoute.mockReturnValue(true)
-      mocks.$router.resolve.mockReturnValue({ href: '/test' } as any)
 
       const mockSpace = mock<SpaceResource>({
         getDriveAliasAndItem: () => 'personal/admin/ticket#1234/logs.txt'
@@ -134,43 +133,20 @@ describe('fileActions', () => {
         fileId: 'test-file-id'
       })
 
-      editorAction.route({
+      const route = editorAction.route({
         space: mockSpace,
         resources: [mockResource]
       })
 
-      expect(mocks.$router.resolve).toHaveBeenCalledWith(
+      // Resolving is left to the router. Handing it an already resolved location
+      // or a pre-encoded path both break the encoding of characters like `#`.
+      expect(route).toEqual(
         expect.objectContaining({
-          params: {
-            driveAliasAndItem: 'personal/admin/ticket%231234/logs.txt'
-          }
+          name: 'text-editor',
+          params: { driveAliasAndItem: 'personal/admin/ticket#1234/logs.txt' }
         })
       )
-    })
-  })
-
-  describe('buildEditorUrl', () => {
-    it('builds URL without double encoding hash characters', () => {
-      getWrapper({
-        setup: ({ buildEditorUrl }) => {
-          const routeOpts = {
-            name: 'text-editor',
-            params: {
-              driveAliasAndItem: 'personal/admin/ticket%231234.txt'
-            },
-            query: {
-              fileId: 'file-123',
-              foo: 'bar'
-            }
-          }
-
-          const url = buildEditorUrl(routeOpts)
-          const pathname = url.split('?')[0]
-
-          expect(pathname).toContain('ticket%231234.txt')
-          expect(pathname).not.toContain('ticket%2523')
-        }
-      })
+      expect(route).not.toHaveProperty('href')
     })
   })
 
