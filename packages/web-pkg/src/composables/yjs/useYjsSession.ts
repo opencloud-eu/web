@@ -333,6 +333,35 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
+   * Raise the staleness flag and, when we are able to act on it, claim the
+   * recovery: capture the body behind our etag and name ourselves.
+   *
+   * The flag on its own strands the room. Every later joiner takes the
+   * `isStale` early return in `runInitialHydration`, which runs neither the
+   * version handshake nor the drift check nor hydration, so with no claim and
+   * no `nativeEtag` to claim against, nothing ever clears it again.
+   *
+   * A read-only client cannot recover, so it flags without claiming. The
+   * `nativeEtag` it leaves behind is what lets the first writer holding that
+   * same body pick the claim up.
+   */
+  function flagStale(doc: Y.Doc, meta: Y.Map<unknown>) {
+    const nativeEtag = toValue(resource)?.etag
+    const canClaim = !unref(effectiveReadOnly)
+    // Captured before the transaction, because we are the peer that just
+    // fetched the file: once the room's own state syncs in, the debounced
+    // serialize reports it straight back into `currentContent`.
+    if (canClaim) staleRecoveryContent = toValue(currentContent)
+    doc.transact(() => {
+      if (nativeEtag) meta.set('nativeEtag', nativeEtag)
+      // Last write wins, so if several peers detect the same staleness at once
+      // exactly one of them ends up elected.
+      if (canClaim) meta.set('recoveryClientId', doc.clientID)
+      meta.set('isStale', true)
+    })
+  }
+
+  /**
    * Whether the body we hold is the one recovery is supposed to settle on,
    * i.e. our freshly fetched etag is the room's `nativeEtag`.
    */
@@ -482,7 +511,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         return
       }
       if (cmp > 0) {
-        doc.transact(() => meta.set('isStale', true))
+        // The persisted state pre-dates our schema, so it has to be rebuilt
+        // from the native file - the same recovery an etag drift triggers, and
+        // it needs the same claim to ever run.
+        flagStale(doc, meta)
         return
       }
     }
@@ -502,17 +534,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     const docEtag = meta.get('etag') as string | undefined
     const nativeEtag = toValue(resource)?.etag
     if (docEtag && nativeEtag && docEtag !== nativeEtag) {
-      // We are the peer that just fetched the file, so our `currentContent` is
-      // the body behind `nativeEtag`. Capture it before the room syncs its own
-      // state over it, and claim the recovery: `recoveryClientId` is
-      // last-write-wins, so if several peers detect the same drift at once
-      // exactly one of them ends up elected.
-      staleRecoveryContent = toValue(currentContent)
-      doc.transact(() => {
-        meta.set('nativeEtag', nativeEtag)
-        meta.set('recoveryClientId', doc.clientID)
-        meta.set('isStale', true)
-      })
+      flagStale(doc, meta)
       return
     }
     if (!docEtag && nativeEtag) {
@@ -865,9 +887,15 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // the observer is dormant but harmless.
       const meta = doc.getMap(META_KEY)
       function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
-        // Whether a meta change is a peer *saving right now*, as opposed to the
-        // room's existing state arriving.
-        const isPeerSave = unref(isReady) && !OWN_META_ORIGINS.includes(transaction.origin)
+        // Whether this is something happening in the room right now, as opposed
+        // to the room's existing state arriving. The initial sync replays the
+        // whole meta map through this observer, and everything in it belongs to
+        // `runInitialHydration`, which reads the same keys with the context to
+        // act on them.
+        const isMidSession = unref(isReady)
+        // Narrower still: a peer *saving right now*, so not one of our own
+        // writes either.
+        const isPeerSave = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
 
         // Peer-save fan-out. Another client just saved (its etag-mirror watch
         // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
@@ -906,7 +934,12 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         // prompt reload. Stale-recovery is intentionally NOT triggered here;
         // that path only applies when the doc state itself was already older
         // than the current client at first load.
-        if (event.keysChanged.has('appVersion')) {
+        //
+        // Strictly mid-session, or it pre-empts that very handshake: the room's
+        // stored `appVersion` arrives with the initial sync, and locking on it
+        // here would leave a client that is *newer* than the room unable to
+        // rebuild it, which is the one case the handshake exists to handle.
+        if (event.keysChanged.has('appVersion') && isMidSession) {
           const docVersion = meta.get('appVersion') as string | undefined
           const version = toValue(appVersion)
           if (docVersion) {

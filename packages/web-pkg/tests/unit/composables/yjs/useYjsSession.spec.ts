@@ -771,12 +771,14 @@ describe('useYjsSession — stale-state recovery', () => {
     roomEtag = 'etag-old',
     ourEtag = 'etag-new',
     adapter = testAdapter as YjsAdapter,
-    roomContent = 'stale room content'
+    roomContent = 'stale room content',
+    isReadOnly = false
   } = {}) {
     const s = setupSession({
       yjsServerUrl,
       currentContent,
       adapter,
+      isReadOnly,
       resource: makeResource({ etag: ourEtag })
     })
     await flushPromises()
@@ -949,6 +951,107 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(seen).toEqual(['isStale=true content=""'])
     const meta = s.ydoc!.getMap(META_KEY)
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(meta.get('isStale')).toBeUndefined()
+  })
+
+  // A read-only client can spot the drift but cannot act on it. It still flags
+  // the room, and the `nativeEtag` it leaves behind is what lets a writer
+  // holding that same body take the claim.
+  it('flags without claiming on a read-only client', async () => {
+    const s = await syncIntoStaleRoom({ isReadOnly: true })
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(meta.get('isStale')).toBe(true)
+    expect(meta.get('nativeEtag')).toBe('etag-new')
+    expect(meta.get('recoveryClientId')).toBeUndefined()
+  })
+})
+
+// The room's persisted state was written by an older app version, so its shared
+// types may not match the schema this client builds. It has to be rebuilt from
+// the native file, which is the same recovery an etag drift triggers.
+describe('useYjsSession — app version upgrade', () => {
+  const yjsServerUrl = 'wss://example.test/yjs'
+  const META_KEY = '_oc_meta'
+
+  /**
+   * Brings a session up against a room last touched by another version. The
+   * room state arrives as a genuine remote update, the way the initial sync
+   * delivers it - a local write would not reach the observer the same way.
+   */
+  async function syncIntoRoomAtVersion({ isReadOnly = false, docVersion = '1.0.0' } = {}) {
+    const s = setupSession({
+      yjsServerUrl,
+      appVersion: '2.0.0',
+      currentContent: 'fresh body',
+      resource: makeResource({ etag: 'etag-current' }),
+      isReadOnly
+    })
+    await flushPromises()
+
+    const room = new Y.Doc()
+    room.transact(() => {
+      room.getText(SHARED_TEXT_KEY).insert(0, 'body in the old schema')
+      room.getMap(META_KEY).set('appVersion', docVersion)
+      room.getMap(META_KEY).set('etag', 'etag-current')
+    })
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(room))
+
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    return s
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+  })
+
+  // Regression: this path raised `isStale` and nothing else - no `nativeEtag`,
+  // no `recoveryClientId`, no captured body. Recovery bailed on the missing
+  // body, and every later joiner took the `isStale` early return, which runs
+  // neither the handshake nor the drift check nor hydration. The room was
+  // stuck for good, with no way left to clear the flag.
+  it('claims the recovery instead of only raising the flag', async () => {
+    const s = await syncIntoRoomAtVersion()
+    const meta = s.ydoc!.getMap(META_KEY)
+
+    expect(meta.get('nativeEtag')).toBe('etag-current')
+    expect(meta.get('recoveryClientId')).toBe(s.ydoc!.clientID)
+  })
+
+  it('rebuilds the room from the native file and bumps the version stamp', async () => {
+    const s = await syncIntoRoomAtVersion()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(meta.get('isStale')).toBeUndefined()
+    expect(meta.get('appVersion')).toBe('2.0.0')
+  })
+
+  // The flag has to be recoverable by somebody, so a client that cannot run
+  // the recovery must still leave the etag a later writer can claim against.
+  it('leaves a claimable flag behind on a read-only client', async () => {
+    const s = await syncIntoRoomAtVersion({ isReadOnly: true })
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(meta.get('isStale')).toBe(true)
+    expect(meta.get('nativeEtag')).toBe('etag-current')
+    expect(meta.get('recoveryClientId')).toBeUndefined()
+  })
+
+  // The other direction is unchanged: an out-of-date client must not rewrite a
+  // room that newer peers are already using.
+  it('still locks a client older than the room', async () => {
+    const s = await syncIntoRoomAtVersion({ docVersion: '3.0.0' })
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(unref(s.session.isLockedForReload)).toBe(true)
     expect(meta.get('isStale')).toBeUndefined()
   })
 })
