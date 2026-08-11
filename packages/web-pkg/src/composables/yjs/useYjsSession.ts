@@ -79,6 +79,20 @@ export interface YjsSession {
    * nobody here has seen.
    */
   wasWrittenByRoom: (etag: string, timeoutMs?: number) => Promise<boolean>
+  /**
+   * Announce that the content the caller is holding right now is what it is
+   * about to write, so the session can stamp the matching doc state once the
+   * write lands. Without it the stamp describes whatever the doc had grown to
+   * by the time the PUT answered, which is a promise the file does not keep.
+   */
+  beginSave: () => void
+  /**
+   * The merged room state, serialized now, and registered as what the caller
+   * is about to write. For a caller retrying a write after a conflict: the
+   * content it started with predates the peer save that caused the conflict,
+   * so publishing it again would drop that peer's work.
+   */
+  serializeMerged: () => Promise<string | null>
 }
 
 const META_KEY = '_oc_meta'
@@ -260,6 +274,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   let lastReportedStateVector: Uint8Array | null = null
 
   /**
+   * `lastReportedStateVector` frozen at the moment the caller began a save, so
+   * a report landing while the PUT is in flight cannot move it. See
+   * {@link YjsSession.beginSave}.
+   */
+  let pendingSaveStateVector: Uint8Array | null = null
+
+  /**
    * Whether the peer that published this state vector already held every
    * operation *we* contributed, so the file it wrote contains our work too.
    *
@@ -350,6 +371,25 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     if (doc.isDestroyed || !current.hasContent(doc)) return null
     const value = await Promise.resolve(current.serialize(doc))
     if (doc.isDestroyed) return null
+    return value
+  }
+
+  /** See {@link YjsSession.beginSave}. */
+  function beginSave() {
+    const doc = unref(ydoc)
+    if (!doc || doc.isDestroyed) return
+    pendingSaveStateVector = lastReportedStateVector ?? Y.encodeStateVector(doc)
+  }
+
+  /** See {@link YjsSession.serializeMerged}. */
+  async function serializeMerged(): Promise<string | null> {
+    const doc = unref(ydoc)
+    if (!doc || doc.isDestroyed) return null
+    // Taken before serializing, for the same reason as in the debounced emit.
+    const vector = Y.encodeStateVector(doc)
+    const value = await serializeDoc(doc)
+    if (value === null) return null
+    pendingSaveStateVector = vector
     return value
   }
 
@@ -668,6 +708,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       hasLocalOnlyContent = false
       staleRecoveryContent = null
       lastReportedStateVector = null
+      pendingSaveStateVector = null
 
       if (!key) {
         status.value = 'connecting'
@@ -947,9 +988,15 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         // it to tell "this save covers me too" from "this save predates my
         // edits", instead of assuming the former. See
         // `lastReportedStateVector` for why it is not encoded here.
-        meta.set('savedStateVector', lastReportedStateVector ?? Y.encodeStateVector(doc))
+        meta.set(
+          'savedStateVector',
+          pendingSaveStateVector ?? lastReportedStateVector ?? Y.encodeStateVector(doc)
+        )
         meta.set('lastSavedAt', Date.now())
       }, LOCAL_SAVE_ORIGIN)
+      // Consumed. A later etag change the caller did not announce falls back
+      // to the last reported state again.
+      pendingSaveStateVector = null
     }
   )
 
@@ -961,6 +1008,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     isReady,
     isLockedForReload,
     error,
-    wasWrittenByRoom
+    wasWrittenByRoom,
+    beginSave,
+    serializeMerged
   }
 }

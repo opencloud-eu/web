@@ -1042,6 +1042,69 @@ describe('useYjsSession — etag mirror', () => {
     // Our own hydration ops are in it, so it is a real baseline and not empty.
     expect(Y.decodeStateVector(stamped).get(s.ydoc!.clientID) ?? 0).toBeGreaterThan(0)
   })
+
+  // `lastReportedStateVector` alone is not enough: the caller picks the string
+  // it writes when the save starts, and a debounced report landing during the
+  // PUT would move the vector past it.
+  it('pins the state at beginSave against a report landing during the save', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({ currentContent: 'seed', resource: makeResource({ etag: 'a' }) })
+    await flushPromises()
+
+    // The caller reads its content and starts the PUT.
+    s.session.beginSave()
+
+    // A peer edit merges in and the debounce reports it, all while that PUT is
+    // still on the wire.
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.getText(SHARED_TEXT_KEY).insert(0, 'theirs ')
+    const peerClock = Y.decodeStateVector(Y.encodeStateVector(peer)).get(peer.clientID)
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+    vi.advanceTimersByTime(400)
+    await flushPromises()
+    expect(s.onContentChange).toHaveBeenCalled()
+
+    // The PUT answers.
+    s.resourceRef.value = makeResource({ etag: 'b' })
+    await flushPromises()
+
+    const stamped = s.ydoc!.getMap('_oc_meta').get('savedStateVector') as Uint8Array
+    expect(Y.decodeStateVector(stamped).get(peer.clientID) ?? 0).toBeLessThan(peerClock)
+  })
+
+  it('registers the merged state as what is being written', async () => {
+    const s = setupSession({ currentContent: 'seed', resource: makeResource({ etag: 'a' }) })
+    await flushPromises()
+
+    s.session.beginSave()
+
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.getText(SHARED_TEXT_KEY).insert(0, 'theirs ')
+    const peerClock = Y.decodeStateVector(Y.encodeStateVector(peer)).get(peer.clientID)
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+
+    // The conflict retry publishes the merged body, so the stamp has to cover
+    // the peer this time - otherwise it would stay dirty over content that is
+    // demonstrably on disk.
+    await expect(s.session.serializeMerged()).resolves.toBe('theirs seed')
+
+    s.resourceRef.value = makeResource({ etag: 'b' })
+    await flushPromises()
+
+    const stamped = s.ydoc!.getMap('_oc_meta').get('savedStateVector') as Uint8Array
+    expect(Y.decodeStateVector(stamped).get(peer.clientID)).toBe(peerClock)
+  })
+
+  it('has nothing to merge once the session is gone', async () => {
+    const s = setupSession({ currentContent: 'seed' })
+    await flushPromises()
+    s.enabledRef.value = false
+    await flushPromises()
+
+    await expect(s.session.serializeMerged()).resolves.toBeNull()
+  })
 })
 
 describe('useYjsSession — wasWrittenByRoom', () => {

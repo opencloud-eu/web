@@ -573,6 +573,9 @@ const applySavedResource = (etag: string, saved: Resource | null = null) => {
 
 const saveFileTask = useTask(function* () {
   const newContent = unref(currentContent)
+  // Pins the Y.Doc state that `newContent` represents. Peers are told about it
+  // once the write lands, and by then the doc has usually moved on.
+  yjsSession?.beginSave()
   try {
     const putFileContentsResponse = yield putFileContents(currentFileContext, {
       content: newContent as string | ArrayBuffer,
@@ -610,12 +613,23 @@ const saveFileTask = useTask(function* () {
           // would destroy it without the user ever seeing it.
           const writtenByRoom = yield* call(yjsSession.wasWrittenByRoom(freshEtag))
           if (writtenByRoom) {
-            // Retry the PUT with the fresh etag, publishing our combined state.
+            // Re-serialize rather than republish `newContent`. That snapshot
+            // was taken before the peer save that caused this conflict, so
+            // writing it again would drop exactly the edits the peer just
+            // committed. The Y.Doc has merged them; this is the combined state.
+            const mergedContent = yield* call(yjsSession.serializeMerged())
+            const retryContent = mergedContent ?? newContent
             const retry = yield putFileContents(currentFileContext, {
-              content: newContent as string | ArrayBuffer,
+              content: retryContent as string | ArrayBuffer,
               previousEntityTag: freshEtag
             })
-            serverContent.value = newContent
+            // Both sides, not just `serverContent`: `currentContent` still
+            // holds the pre-conflict snapshot until the next debounced
+            // serialize catches up, and leaving it there would read as an
+            // unsaved change and put the older body back on the next autosave.
+            // A serialize that is already pending overwrites this with an
+            // equal or newer value, which is what we want either way.
+            serverContent.value = currentContent.value = retryContent
             applySavedResource(retry.etag, retry)
             return
           }

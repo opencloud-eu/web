@@ -71,9 +71,15 @@ function setup({
   status = 'connected' as YjsStatus,
   // Whether the room can account for the write that caused a save conflict.
   writtenByRoom = true,
+  // What the Y.Doc serializes to at conflict-retry time. Null stands for a
+  // session that cannot produce one, which falls back to the pre-conflict
+  // snapshot.
+  mergedContent = null as string | null,
   putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' }))
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
+  const beginSave = vi.fn()
+  const serializeMerged = vi.fn().mockResolvedValue(mergedContent)
   const isLockedForReload = ref(false)
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
@@ -99,7 +105,9 @@ function setup({
       // and hard-wire `isDirty` to false.
       isLockedForReload: isLockedForReload as any,
       error: ref<Error | null>(null) as any,
-      wasWrittenByRoom
+      wasWrittenByRoom,
+      beginSave,
+      serializeMerged
     })
   })
 
@@ -149,6 +157,9 @@ function setup({
     putFileContents,
     getFileContents,
     wasWrittenByRoom,
+    beginSave,
+    serializeMerged,
+    currentContent: () => slotProps?.currentContent,
     async edit(content: string) {
       slotProps['onUpdate:currentContent'](content)
       await nextTick()
@@ -393,6 +404,71 @@ describe('AppWrapper — save conflict handling', () => {
     expect(s.getFileContents).toHaveBeenCalledTimes(2)
     expect(putFileContents).toHaveBeenCalledTimes(2)
     expect(putFileContents.mock.calls[1][1]).toMatchObject({ previousEntityTag: 'etag' })
+  })
+
+  // Regression: the retry republished the snapshot taken when the save began.
+  // That snapshot predates the peer save that caused the conflict, so the retry
+  // wrote the peer's just-committed edits straight back out of the file - with
+  // a matching If-Match, so no second conflict and no warning.
+  it('retries with the merged room state, not the pre-conflict snapshot', async () => {
+    const putFileContents = vi
+      .fn()
+      .mockRejectedValueOnce(conflict())
+      .mockResolvedValue(mock<Resource>({ etag: 'etag-retry' }))
+    const s = setup({ status: 'connected', mergedContent: 'ours plus theirs', putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    await s.resolveContent('content written by the peer')
+    await pressed
+
+    expect(putFileContents.mock.calls[0][1]).toMatchObject({ content: 'edited content' })
+    expect(putFileContents.mock.calls[1][1]).toMatchObject({ content: 'ours plus theirs' })
+  })
+
+  // The retry's content is now on disk, so it has to be the baseline on both
+  // sides. Leaving `currentContent` on the pre-conflict snapshot reads as an
+  // unsaved change and puts the older body back on the next autosave.
+  it('clears the dirty state against the content the retry actually wrote', async () => {
+    const putFileContents = vi
+      .fn()
+      .mockRejectedValueOnce(conflict())
+      .mockResolvedValue(mock<Resource>({ etag: 'etag-retry' }))
+    const s = setup({ status: 'connected', mergedContent: 'ours plus theirs', putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    await s.resolveContent('content written by the peer')
+    await pressed
+    await nextTick()
+
+    expect(s.currentContent()).toBe('ours plus theirs')
+    // Not dirty: another save attempt does not reach the server.
+    expect(putFileContents).toHaveBeenCalledTimes(2)
+    await s.pressCtrlS()
+    expect(putFileContents).toHaveBeenCalledTimes(2)
+  })
+
+  // The stamp peers read to decide whether a save covered them has to describe
+  // the doc behind the content being written, and by the time the PUT answers
+  // the doc has usually moved on.
+  it('pins the doc state behind the content it is about to write', async () => {
+    const s = setup({ status: 'connected' })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    await s.pressCtrlS()
+
+    expect(s.beginSave).toHaveBeenCalled()
   })
 })
 
