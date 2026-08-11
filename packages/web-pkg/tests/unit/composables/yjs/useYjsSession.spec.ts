@@ -996,6 +996,52 @@ describe('useYjsSession — etag mirror', () => {
     await flushPromises()
     expect(meta.get('etag')).toBe(initialMeta)
   })
+
+  // Regression: the stamp used to encode the doc as it stood when the etag came
+  // back, which is a *newer* doc than the one that was written - the caller
+  // serializes on a debounce and then spends a network round-trip in the PUT.
+  // A peer edit merging into that window was claimed as saved, so the peer
+  // dropped its dirty flag, unregistered its unsaved-changes guard and could
+  // leave with the edit unwritten.
+  it('stamps the state behind the written content, not the doc at save time', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({ currentContent: 'seed', resource: makeResource({ etag: 'a' }) })
+    await flushPromises()
+
+    // We type, and the debounce hands the caller the string its PUT will write.
+    s.ydoc!.getText(SHARED_TEXT_KEY).insert(4, ' ours')
+    vi.advanceTimersByTime(400)
+    await flushPromises()
+
+    // A peer edit merges in while that PUT is still in flight.
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.getText(SHARED_TEXT_KEY).insert(0, 'theirs ')
+    const peerClock = Y.decodeStateVector(Y.encodeStateVector(peer)).get(peer.clientID)
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+
+    // The PUT returns and the caller mirrors the fresh etag back in.
+    s.resourceRef.value = makeResource({ etag: 'b' })
+    await flushPromises()
+
+    const stamped = s.ydoc!.getMap('_oc_meta').get('savedStateVector') as Uint8Array
+    expect(Y.decodeStateVector(stamped).get(peer.clientID) ?? 0).toBeLessThan(peerClock)
+  })
+
+  // A save with no edits behind it still has to stamp something, or peers whose
+  // ops arrived before we became ready would never be told they are covered.
+  it('falls back to the post-hydration baseline when nothing was reported yet', async () => {
+    const s = setupSession({ currentContent: 'seed', resource: makeResource({ etag: 'a' }) })
+    await flushPromises()
+
+    s.resourceRef.value = makeResource({ etag: 'b' })
+    await flushPromises()
+
+    const stamped = s.ydoc!.getMap('_oc_meta').get('savedStateVector') as Uint8Array
+    expect(stamped).toBeInstanceOf(Uint8Array)
+    // Our own hydration ops are in it, so it is a real baseline and not empty.
+    expect(Y.decodeStateVector(stamped).get(s.ydoc!.clientID) ?? 0).toBeGreaterThan(0)
+  })
 })
 
 describe('useYjsSession — wasWrittenByRoom', () => {

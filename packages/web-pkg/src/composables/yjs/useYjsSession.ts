@@ -244,6 +244,22 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   let staleRecoveryContent: string | null = null
 
   /**
+   * The doc state behind the last content we handed the caller, which is the
+   * state its next PUT writes to disk.
+   *
+   * Stamped into `_oc_meta.savedStateVector` after that PUT so peers can tell
+   * whether the save covered them. Encoding the vector at stamping time
+   * instead would describe a *newer* doc: the caller serializes on a debounce
+   * and then spends a network round-trip in the PUT, and every peer edit that
+   * merges in during that window would be claimed as written when it is not.
+   * A peer reading such a stamp drops its dirty flag, unregisters its unsaved
+   * changes guard and can leave with the edit unwritten.
+   *
+   * Erring old is harmless by comparison: peers stay dirty and save again.
+   */
+  let lastReportedStateVector: Uint8Array | null = null
+
+  /**
    * Whether the peer that published this state vector already held every
    * operation *we* contributed, so the file it wrote contains our work too.
    *
@@ -619,7 +635,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         $gettext('Preparing this file for collaborative editing failed. Please reload.')
       )
     } finally {
-      if (!doc.isDestroyed && unref(ydoc) === doc) isReady.value = true
+      if (!doc.isDestroyed && unref(ydoc) === doc) {
+        // Baseline for a save that happens before any edit. The caller still
+        // holds the body it fetched, and the hydrated doc is that same body,
+        // so this vector describes what such a PUT would write.
+        lastReportedStateVector = Y.encodeStateVector(doc)
+        isReady.value = true
+      }
     }
   }
 
@@ -645,6 +667,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       isReady.value = false
       hasLocalOnlyContent = false
       staleRecoveryContent = null
+      lastReportedStateVector = null
 
       if (!key) {
         status.value = 'connecting'
@@ -669,9 +692,15 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           // Re-checked here, not just at schedule time: the debounce window
           // can outlive the change that opened it.
           if (!canReportContent()) return
+          // Taken before serializing, not after: an adapter is allowed to
+          // serialize asynchronously, and a peer update landing in between
+          // would otherwise be counted as part of what we reported.
+          const vectorAtSerialize = Y.encodeStateVector(doc)
           serializeDoc(doc)
             .then((value) => {
-              if (value !== null) onContentChange(value)
+              if (value === null) return
+              lastReportedStateVector = vectorAtSerialize
+              onContentChange(value)
             })
             .catch((e) => console.error('[yjs] serialize for content update failed:', e))
         }, SERIALIZE_DEBOUNCE_MS)
@@ -916,8 +945,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         meta.set('etag', newEtag)
         // Snapshot of what our doc contained when we wrote the file. Peers use
         // it to tell "this save covers me too" from "this save predates my
-        // edits", instead of assuming the former.
-        meta.set('savedStateVector', Y.encodeStateVector(doc))
+        // edits", instead of assuming the former. See
+        // `lastReportedStateVector` for why it is not encoded here.
+        meta.set('savedStateVector', lastReportedStateVector ?? Y.encodeStateVector(doc))
         meta.set('lastSavedAt', Date.now())
       }, LOCAL_SAVE_ORIGIN)
     }
