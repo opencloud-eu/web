@@ -94,11 +94,50 @@ describe('fileActions', () => {
         }
       })
       mocks.$router.hasRoute.mockReturnValue(true)
+
+      const mockSpace = mock<SpaceResource>({
+        getDriveAliasAndItem: () => 'personal/admin/test.txt'
+      })
+
       const result = editorAction.route({
-        space: mock<SpaceResource>(),
+        space: mockSpace,
         resources: actionOptions.resources
       })
       expect(result).not.toBeNull()
+    })
+
+    it('returns unresolved route options so the router encodes the path', () => {
+      let editorAction: FileAction
+      const { mocks } = getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          editorAction = actions.find((a) => a.name === 'editor-text-editor')
+        }
+      })
+      mocks.$router.hasRoute.mockReturnValue(true)
+
+      const mockSpace = mock<SpaceResource>({
+        getDriveAliasAndItem: () => 'personal/admin/ticket#1234/logs.txt'
+      })
+      const mockResource = mock<Resource>({
+        path: '/ticket#1234/logs.txt',
+        fileId: 'test-file-id'
+      })
+
+      const route = editorAction.route({
+        space: mockSpace,
+        resources: [mockResource]
+      })
+
+      // Resolving is left to the router. Handing it an already resolved location
+      // or a pre-encoded path both break the encoding of characters like `#`.
+      expect(route).toEqual(
+        expect.objectContaining({
+          name: 'text-editor',
+          params: { driveAliasAndItem: 'personal/admin/ticket#1234/logs.txt' }
+        })
+      )
+      expect(route).not.toHaveProperty('href')
     })
   })
 
