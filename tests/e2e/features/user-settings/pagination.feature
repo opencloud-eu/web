@@ -11,12 +11,12 @@ Feature: check pagination in files, spaces and trash overviews
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" logs in
     And "Alice" creates 55 folders in personal space using API
     And "Alice" creates 55 files in personal space using API
     And "Alice" creates the following file into personal space using API
        | pathToFile           | content                |
        | .hidden-testFile.txt | This is a hidden file. |
+    And "Alice" logs in
     When "Alice" navigates to page "2" of the personal space files view
     And "Alice" opens the following file in texteditor
       | resource        |
@@ -62,8 +62,8 @@ Feature: check pagination in files, spaces and trash overviews
     Given "Admin" creates following users using API
       | id    |
       | Alice |
-    And "Alice" logs in
     And "Alice" creates 55 files in personal space using API
+    And "Alice" logs in
     And "Alice" deletes all files
     When "Alice" navigates to the trashbin
     Then "Alice" should not see the pagination in the spaces list
