@@ -6,6 +6,13 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @maki5, @schweigisito, @tammi-23, @v-scharf
 
+### ✅ Tests
+
+- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
+- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
+
 ### 🐛 Bug Fixes
 
 - fix: encode hash character in app route URLs to prevent truncation [[#3075](https://github.com/opencloud-eu/web/pull/3075)]
@@ -36,12 +43,6 @@
 - feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
 - feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
 - feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
-
-### ✅ Tests
-
-- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
-- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
-- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 📦️ Dependencies
 
