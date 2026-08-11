@@ -313,6 +313,26 @@ export function useEditorActions(state: TextEditorState) {
     isActive: (editor) => editor.isActive('strike')
   })
 
+  const subscript = (): EditorAction => ({
+    id: 'subscript',
+    title: $gettext('Subscript'),
+    icon: 'subscript',
+    toolbarAction: (editor) => editor.chain().focus().toggleSubscript().run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleSubscript().run(),
+    isActive: (editor) => editor.isActive('subscript')
+  })
+
+  const superscript = (): EditorAction => ({
+    id: 'superscript',
+    title: $gettext('Superscript'),
+    icon: 'superscript',
+    toolbarAction: (editor) => editor.chain().focus().toggleSuperscript().run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleSuperscript().run(),
+    isActive: (editor) => editor.isActive('superscript')
+  })
+
   const codeInline = (): EditorAction => ({
     id: 'code-inline',
     title: $gettext('Inline code'),
@@ -943,6 +963,8 @@ export function useEditorActions(state: TextEditorState) {
     italic,
     underline,
     strikethrough,
+    subscript,
+    superscript,
     codeInline,
     // Blocks
     lineHeight,

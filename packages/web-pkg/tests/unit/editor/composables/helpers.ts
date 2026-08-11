@@ -47,6 +47,8 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'toggleItalic',
       'toggleUnderline',
       'toggleStrike',
+      'toggleSubscript',
+      'toggleSuperscript',
       'toggleCode',
       'setParagraph',
       'setNode',

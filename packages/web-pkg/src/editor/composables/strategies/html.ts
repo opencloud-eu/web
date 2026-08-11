@@ -4,6 +4,8 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
@@ -66,6 +68,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       FontFamily,
       TextStyle,
       Underline,
+      Subscript,
+      Superscript,
       Color,
       BackgroundColor,
       FontSize,
@@ -87,6 +91,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     italic,
     underline,
     strikethrough,
+    subscript,
+    superscript,
     heading,
     paragraph,
     heading1,
@@ -151,7 +157,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           bold(),
           italic(),
           underline(),
-          strikethrough()
+          strikethrough(),
+          subscript(),
+          superscript()
         ]
       },
       {

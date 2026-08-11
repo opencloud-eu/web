@@ -4,6 +4,8 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table'
@@ -61,6 +63,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       FontFamily,
       TextStyle,
       Underline,
+      Subscript,
+      Superscript,
       Color,
       BackgroundColor,
       FontSize,
@@ -81,6 +85,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     italic,
     underline,
     strikethrough,
+    subscript,
+    superscript,
     heading,
     heading1,
     heading2,
@@ -130,7 +136,9 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           bold(),
           italic(),
           underline(),
-          strikethrough()
+          strikethrough(),
+          subscript(),
+          superscript()
         ]
       },
       {

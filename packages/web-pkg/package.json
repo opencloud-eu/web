@@ -66,6 +66,8 @@
     "@tiptap/extension-node-range": "^3.28.0",
     "@tiptap/extension-paragraph": "^3.28.0",
     "@tiptap/extension-placeholder": "^3.28.0",
+    "@tiptap/extension-subscript": "^3.29.2",
+    "@tiptap/extension-superscript": "^3.29.2",
     "@tiptap/extension-table": "^3.28.0",
     "@tiptap/extension-task-item": "^3.28.0",
     "@tiptap/extension-task-list": "^3.28.0",
