@@ -1,10 +1,5 @@
 import kebabCase from 'lodash-es/kebabCase'
-import {
-  encodePath,
-  isShareSpaceResource,
-  Resource,
-  SpaceResource
-} from '@opencloud-eu/web-client'
+import { encodePath, isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
