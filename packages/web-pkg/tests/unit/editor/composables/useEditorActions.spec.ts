@@ -154,6 +154,8 @@ describe('useEditorActions', () => {
       { name: 'italic', toggleMethod: 'toggleItalic', markName: 'italic' },
       { name: 'underline', toggleMethod: 'toggleUnderline', markName: 'underline' },
       { name: 'strikethrough', toggleMethod: 'toggleStrike', markName: 'strike' },
+      { name: 'subscript', toggleMethod: 'toggleSubscript', markName: 'subscript' },
+      { name: 'superscript', toggleMethod: 'toggleSuperscript', markName: 'superscript' },
       { name: 'codeInline', toggleMethod: 'toggleCode', markName: 'code' }
     ] as const
 
