@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: update more resource icons [[#2898](https://github.com/opencloud-eu/web/pull/2898)]
 - feat: add subscript and superscript support to text editor [[#3068](https://github.com/opencloud-eu/web/pull/3068)]
 - feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
 - feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
