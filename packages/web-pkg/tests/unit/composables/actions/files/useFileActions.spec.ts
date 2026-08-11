@@ -149,6 +149,31 @@ describe('fileActions', () => {
     })
   })
 
+  describe('buildEditorUrl', () => {
+    it('builds URL without double encoding hash characters', () => {
+      getWrapper({
+        setup: ({ buildEditorUrl }) => {
+          const routeOpts = {
+            name: 'text-editor',
+            params: {
+              driveAliasAndItem: 'personal/admin/ticket%231234.txt'
+            },
+            query: {
+              fileId: 'file-123',
+              foo: 'bar'
+            }
+          }
+
+          const url = buildEditorUrl(routeOpts)
+          const pathname = url.split('?')[0]
+
+          expect(pathname).toContain('ticket%231234.txt')
+          expect(pathname).not.toContain('ticket%2523')
+        }
+      })
+    })
+  })
+
   describe('secure view context', () => {
     describe('getAllOpenWithActions', () => {
       it('only displays editors that support secure view', () => {

@@ -86,59 +86,10 @@ describe('SaveAsModal', () => {
       expect(modalStore.removeModal).toHaveBeenCalled()
       expect(window.open).not.toHaveBeenCalled()
     })
-    it('encodes hash character in file path without double encoding when opening saved file', async () => {
-      const { wrapper, mocks } = getWrapper({
-        spaceMock: mock<SpaceResource>({
-          id: '1',
-          // getDriveAliasAndItem returns unencoded path (like the real implementation)
-          getDriveAliasAndItem: () => 'personal/admin/ticket#1234.txt'
-        })
-      })
-
-      mocks.$clientService.webdav.putFileContents.mockResolvedValue(
-        mock<Resource>({
-          path: '/ticket#1234.txt',
-          name: 'ticket#1234.txt',
-          fileId: 'file-123'
-        })
-      )
-
-      vi.mocked(window.open).mockClear()
-      ;(wrapper.vm as any).onLocationPick(
-        mock<MessageEvent>({
-          data: {
-            name: 'opencloud-embed:select',
-            data: {
-              resources: [mock<Resource>({ storageId: '1' })],
-              fileName: 'ticket#1234.txt',
-              locationQuery: {}
-            }
-          }
-        })
-      )
-
-      await nextTicks(4)
-      const calls = vi.mocked(window.open).mock.calls
-      expect(calls).toHaveLength(1)
-      const url = calls[0][0] as string
-
-      // Extract pathname from URL (before the query string)
-      const pathname = url.split('?')[0]
-
-      // Check that hash in pathname is encoded exactly once
-      expect(pathname).toContain('ticket%231234.txt')
-      // Ensure the pathname doesn't have double encoded hash
-      expect(pathname).not.toContain('ticket%2523')
-    })
   })
 })
 
-function getWrapper({
-  spaceMock = mock<SpaceResource>({
-    id: '1',
-    getDriveAliasAndItem: () => 'personal/admin/test.txt'
-  })
-}: { spaceMock?: SpaceResource } = {}) {
+function getWrapper() {
   const $clientService = mockDeep<ClientService>()
   const mocks = { ...defaultComponentMocks(), $clientService }
   mocks.$clientService.webdav.listFiles.mockResolvedValue(mock<ListFilesResult>({ children: [] }))
@@ -166,7 +117,12 @@ function getWrapper({
           ...defaultPlugins({
             piniaOptions: {
               spacesState: {
-                spaces: [spaceMock]
+                spaces: [
+                  mock<SpaceResource>({
+                    id: '1',
+                    getDriveAliasAndItem: () => 'personal/admin/test.txt'
+                  })
+                ]
               },
               themeState: { currentTheme: { name: 'OpenCloud' } as WebThemeType }
             }

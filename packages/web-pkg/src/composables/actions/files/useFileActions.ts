@@ -4,6 +4,7 @@ import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
 import { useRouter } from '../../router'
+import type { RouteRecordNameGeneric } from 'vue-router'
 import {
   Action,
   FileAction,
@@ -198,11 +199,7 @@ export const useFileActions = () => {
     return {
       name: routeName,
       params: {
-        // Encode each segment to handle special characters like # in filenames
-        driveAliasAndItem: driveAliasAndItem
-          .split('/')
-          .map((segment) => encodePath(segment))
-          .join('/')
+        driveAliasAndItem: driveAliasAndItem ? encodePath(driveAliasAndItem) : ''
       },
       query: {
         ...(remoteItemId && { shareId: remoteItemId }),
@@ -211,6 +208,21 @@ export const useFileActions = () => {
         ...routeToContextQuery(unref(router.currentRoute))
       }
     }
+  }
+
+  const buildEditorUrl = (routeOpts: {
+    name: RouteRecordNameGeneric
+    params?: { driveAliasAndItem?: string }
+    query?: Record<string, string>
+  }) => {
+    const routeName = routeOpts.name as string
+    const driveAliasAndItem = routeOpts.params?.driveAliasAndItem as string
+    const queryParams = new URLSearchParams()
+    Object.entries(routeOpts.query || {}).forEach(([key, value]) => {
+      queryParams.append(key, value as string)
+    })
+    const queryString = queryParams.toString()
+    return `${window.location.origin}/${routeName}/${driveAliasAndItem}${queryString ? `?${queryString}` : ''}`
   }
 
   const openEditor = (
@@ -285,6 +297,7 @@ export const useFileActions = () => {
     getDefaultAction,
     getAllOpenWithActions,
     getEditorRouteOpts,
+    buildEditorUrl,
     openEditor,
     triggerDefaultAction
   }

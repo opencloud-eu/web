@@ -49,7 +49,7 @@ const clientService = useClientService()
 const { removeModal } = useModals()
 const { showMessage, showErrorMessage } = useMessages()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { getEditorRouteOpts } = useFileActions()
+const { getEditorRouteOpts, buildEditorUrl } = useFileActions()
 
 const parentFolderRoute = router.resolve(parentFolderLink)
 const iframeTitle = themeStore.currentTheme.name
@@ -141,16 +141,7 @@ const openFile = ({
   )
   routeOpts.query = { ...routeOpts.query, ...locationQuery }
 
-  // Build URL manually to avoid double encoding from router.resolve()
-  const routeName = routeOpts.name as string
-  const driveAliasAndItem = routeOpts.params?.driveAliasAndItem as string
-  const queryParams = new URLSearchParams()
-  Object.entries(routeOpts.query || {}).forEach(([key, value]) => {
-    queryParams.append(key, value as string)
-  })
-  const queryString = queryParams.toString()
-  const href = `${window.location.origin}/${routeName}/${driveAliasAndItem}${queryString ? `?${queryString}` : ''}`
-
+  const href = buildEditorUrl(routeOpts)
   window.open(href, '_blank')
 }
 
