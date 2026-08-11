@@ -25,11 +25,6 @@ export function detectContentType(resource: Resource): TextEditorContentType {
 
 /**
  * Builds the Y.Doc bridge the AppWrapper's Yjs session runs on.
- *
- * Called during the wrapper's setup, before the file is loaded, so the
- * content type is resolved lazily, per call, from the resource ref. The
- * strategies themselves must be built eagerly: they call `useGettext()`, which
- * only works while a setup context is active.
  */
 export function makeTextEditorAdapter({ resource }: YjsAdapterContext): YjsAdapter {
   const { resolveStrategy } = useContentStrategy()

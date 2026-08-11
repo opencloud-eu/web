@@ -25,6 +25,7 @@ type GraphUser = {
   id?: string
   displayName?: string
   userPrincipalName?: string
+  mail?: string
 }
 
 type FileAccess = {
@@ -209,7 +210,7 @@ const server = new Server({
     }
 
     const me = await validateTokenAgainstOpenCloud(token)
-    const id = me.id ?? me.userPrincipalName ?? 'unknown'
+    const id = me.id ?? me.userPrincipalName ?? me.mail ?? 'unknown'
 
     // Authorization: does this user have the file at all, and may they write it.
     const access = await probeFileAccess(token, documentName)

@@ -10,8 +10,8 @@ It is all built on [Yjs](https://yjs.dev/), a CRDT framework for building collab
 flowchart TB
     subgraph browsers["Browsers"]
         direction LR
-        A["Client A<br/><i>web + text-editor</i>"]
-        B["Client B<br/><i>web + text-editor</i>"]
+        A["Client A<br/> <i>web + text-editor</i>"]
+        B["Client B<br/> <i>web + text-editor</i>"]
     end
 
     subgraph oc["OpenCloud"]

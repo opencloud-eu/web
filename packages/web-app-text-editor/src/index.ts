@@ -203,7 +203,10 @@ export default defineWebApplication({
         path: '/:driveAliasAndItem(.*)?',
         component: AppWrapperRoute(TextEditor, {
           applicationId: appId,
-          yjs: { appVersion: pkg.version, makeAdapter: makeTextEditorAdapter }
+          yjs: {
+            appVersion: pkg.version,
+            makeAdapter: makeTextEditorAdapter
+          }
         }),
         name: 'text-editor',
         meta: {

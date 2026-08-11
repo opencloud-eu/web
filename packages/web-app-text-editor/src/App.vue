@@ -20,14 +20,6 @@ import {
 } from '@opencloud-eu/web-pkg/editor'
 import { detectContentType } from './yjs'
 
-// AppWrapper keeps its loading screen up until the Yjs session has
-// synced and hydrated, so `ydoc` and `awareness` are ready by the time this
-// component mounts. The editor binds to the shared Y.Doc through
-// `@tiptap/extension-collaboration` inside `useTextEditor`.
-// `currentContent` is declared by `YjsEditorSlotProps` but never read
-// here. It makes AppWrapper fetch the file, which the Yjs session
-// uses to seed an empty Y.Doc. Once the session is up the Y.Doc is the source
-// of truth.
 const { ydoc, awareness, isReadOnly, resource } = defineProps<YjsEditorSlotProps>()
 
 const { $gettext } = useGettext()

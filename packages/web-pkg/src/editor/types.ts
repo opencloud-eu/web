@@ -1,4 +1,4 @@
-import type { ShallowRef, Ref, ComputedRef, MaybeRefOrGetter } from 'vue'
+import type { ShallowRef, Ref, MaybeRefOrGetter } from 'vue'
 import type { Range } from '@tiptap/core'
 import type { Resource } from '@opencloud-eu/web-client'
 import type { Editor } from '@tiptap/vue-3'
@@ -72,12 +72,12 @@ export interface TextEditorInstance {
   editor: ShallowRef<Editor | null>
   contentType: Ref<ContentType>
   /** Derived from the caller's `readonly` option; follows it while mounted. */
-  readonly: ComputedRef<boolean>
+  readonly: Ref<boolean>
   actionGroups(): EditorActionGroup[]
   getContent(): string
   setContent(value: string): void
-  isEmpty: ComputedRef<boolean>
-  isFocused: ComputedRef<boolean>
+  isEmpty: Ref<boolean>
+  isFocused: Ref<boolean>
   focus(): void
   blur(): void
   destroy(): void
