@@ -113,8 +113,7 @@ const {
   disableAutoSave?: boolean
   /**
    * Opt the app into collaborative editing. When set, the wrapper owns the
-   * Y.Doc session and hands `ydoc` / `awareness` to the wrapped component via
-   * the slot.
+   * Yjs session and hands `ydoc` / `awareness` to the wrapped component.
    */
   yjs?: YjsOptions
 }>()
@@ -160,9 +159,7 @@ const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
 /**
  * Id of the resource `currentContent` was fetched for. `resource` is swapped
- * ahead of the body, so comparing the two is what tells a collaborating
- * session whether the content it would hydrate from belongs to the file it is
- * about to open.
+ * ahead of the body; the Yjs session's `enabled` gate compares the two.
  */
 const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
@@ -202,8 +199,8 @@ registerExtensions(appBarExtension)
 const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const isEditor = computed(() => {
-  // A collaborative app drives its content through the Yjs session rather
-  // than through `update:currentContent`, so opting in makes it an editor.
+  // A collaborative app drives its content through the Yjs session instead
+  // of `update:currentContent`, so opting in makes it an editor.
   return Boolean(yjs) || Boolean(wrappedComponent.emits?.includes('update:currentContent'))
 })
 
@@ -236,8 +233,8 @@ const yjsSession = yjs
   ? useYjsSession({
       resource,
       currentContent: () => (unref(currentContent) as string) ?? '',
-      // Hydration seeds the Y.Doc from `currentContent`, so the session must
-      // not start before `loadFileTask` has fetched it for this very resource.
+      // Hydration seeds the Y.Doc from `currentContent`, so hold the session
+      // back until the body was fetched for this very resource.
       enabled: () =>
         !unref(loading) && !unref(loadingError) && unref(contentResourceId) === unref(resource)?.id,
       isReadOnly,
@@ -247,52 +244,45 @@ const yjsSession = yjs
       onContentChange: (value) => {
         currentContent.value = value
       },
-      // A peer just saved, so the Y.Doc state at that moment is exactly what's
-      // on disk. Flipping `serverContent` here drops `isDirty` back to false
-      // without a WebDAV round-trip.
+      // A peer saved: this content is what's on disk now, so `isDirty` drops
+      // back to false without a WebDAV round-trip.
       onServerContentChange: (value) => {
         serverContent.value = value
       },
-      // The peer save also published its fresh etag, so our next PUT's
-      // `If-Match` is correct and we skip the 412 → refetch → retry path.
+      // A peer saved: its fresh etag keeps our next PUT's `If-Match` correct.
       onEtagChange: (value) => {
         if (unref(currentETag) === value) return
         currentETag.value = value
-        // Keep `resource.etag` on the same value. The session compares it
-        // against the room's etag to detect that the file changed outside the
-        // room, and a peer that never saves itself would otherwise keep the
-        // etag it opened with forever - so the next reconnect would read the
-        // peer's save as an external write and wipe the room to "recover" it.
+        // Mirror into `resource.etag` too: the session compares it against
+        // the room's etag to detect external writes, and a peer that never
+        // saves itself would otherwise read the next reconnect as one and
+        // wipe the room to "recover" it.
         resource.value = { ...unref(resource), etag: value }
       }
     })
   : null
 
-// Keep the loading screen up until the Yjs session has synced and
-// hydrated too, so the wrapped component always mounts against a ready Y.Doc
-// and never has to render its own placeholder.
-// A load failure short-circuits it, otherwise the error screen below would
-// never get a turn: a failed load leaves the session disabled, so it can never
-// report itself ready.
+// Keep the loading screen up until the Yjs session is synced and hydrated,
+// so the wrapped component always mounts against a ready Y.Doc. A load
+// failure short-circuits: it leaves the session disabled, so waiting on
+// `isReady` would keep the error screen from ever showing.
 const isLoading = computed(() => {
   if (unref(loadingError)) return false
   return unref(loading) || Boolean(yjsSession && !unref(yjsSession.isReady))
 })
 
-// A Yjs session can force read-only on top of the WebDAV
-// permissions, e.g. after locking the room on an app-version mismatch.
+// A Yjs session can force read-only on top of the WebDAV permissions, e.g.
+// after locking on an app-version mismatch.
 const effectiveReadOnly = computed(
   () => unref(isReadOnly) || Boolean(unref(yjsSession?.isLockedForReload))
 )
 
 const isDirty = computed(() => {
-  // Peer edits keep flowing into `currentContent` of a read-only client too,
-  // but it has nothing to save, so it must never be prompted about it.
-  //
-  // Deliberately the WebDAV permission and not `effectiveReadOnly`: a session
-  // that locks mid-edit may be holding real unsaved work. Folding the lock in
-  // here dropped the save action, unregistered `beforeunload` and waved the
-  // route-leave guard through, so that work left with the tab.
+  // Peer edits flow into `currentContent` of a read-only client too, but it
+  // has nothing to save, so it must never be prompted. Deliberately the
+  // WebDAV permission and not `effectiveReadOnly`: a session locking mid-edit
+  // may hold real unsaved work, which must keep the save action and the
+  // leave guards armed.
   if (unref(isReadOnly)) {
     return false
   }
@@ -498,12 +488,9 @@ watch(
   currentFileContext,
   async () => {
     if (!unref(noResourceLoading)) {
-      // Back to square one for the new file. `loadResourceTask` swaps
-      // `resource` well before `loadFileTask` has fetched the matching body,
-      // and a Yjs session keys its room off `resource` while it
-      // hydrates from `currentContent`. Without this reset the session for the
-      // new file would seed itself with the previous file's content, and the
-      // next save would write it to the new path.
+      // Reset for the new file: `resource` swaps well before the matching
+      // body arrives, and the Yjs session must not hydrate the new room from
+      // the previous file's content.
       loading.value = true
       loadingError.value = undefined
 
@@ -553,10 +540,9 @@ const autosavePopup = () => {
 }
 
 /**
- * Single landing point for a successful write: the etag the next `If-Match`
- * carries, the local `resource` ref and the store. `saved` is the fresh
- * `Resource` a PUT answers with, or null when only the etag is known (the
- * silent reconciliation path).
+ * Single landing point for a successful write: updates the etag for the next
+ * `If-Match`, the local `resource` ref and the store. `saved` is the PUT's
+ * response, or null when only the etag is known.
  */
 const applySavedResource = (etag: string, saved: Resource | null = null) => {
   currentETag.value = etag
@@ -573,8 +559,8 @@ const applySavedResource = (etag: string, saved: Resource | null = null) => {
 
 const saveFileTask = useTask(function* () {
   const newContent = unref(currentContent)
-  // Pins the Y.Doc state that `newContent` represents. Peers are told about it
-  // once the write lands, and by then the doc has usually moved on.
+  // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
+  // the PUT is in flight.
   yjsSession?.beginSave()
   try {
     const putFileContentsResponse = yield putFileContents(currentFileContext, {
@@ -584,12 +570,10 @@ const saveFileTask = useTask(function* () {
     serverContent.value = newContent
     applySavedResource(putFileContentsResponse.etag, putFileContentsResponse)
   } catch (e) {
-    // 409 / 412 — `previousEntityTag` didn't match what the server has.
-    //
-    // A connected Yjs session can resolve that on its own: the most
-    // likely cause is a peer in the same room saving just before us, and our
-    // Y.Doc already holds that peer's edits, so refetching for the fresh etag
-    // and retrying publishes the merged state rather than either side's half.
+    // 409 / 412: `previousEntityTag` didn't match what the server has. A
+    // connected Yjs session can resolve that itself when the conflicting
+    // write came from a peer in the room, because our Y.Doc already holds
+    // that peer's edits.
     if (e.statusCode === 412 || e.statusCode === 409) {
       const canReconcile = Boolean(yjsSession) && unref(yjsSession.status) === 'connected'
 
@@ -599,43 +583,38 @@ const saveFileTask = useTask(function* () {
           const freshEtag = fresh.headers['OC-ETag']
 
           if (fresh.body === newContent) {
-            // No real content divergence — only our etag tracking was
-            // stale. Reconcile silently.
+            // Same content, only our etag tracking was stale: reconcile
+            // silently.
             serverContent.value = newContent
             applySavedResource(freshEtag)
             return
           }
 
-          // The content on disk differs from ours, so someone wrote it. Only
-          // this room's own writes may be republished over: our Y.Doc has
-          // already merged whatever a peer saved, so nothing is lost. A write
-          // from outside the room never reached this document, and retrying
-          // would destroy it without the user ever seeing it.
+          // Someone wrote the file. Only this room's own writes may be
+          // republished over: a write from outside the room never reached
+          // this document, and retrying would destroy it unseen.
           const writtenByRoom = yield* call(yjsSession.wasWrittenByRoom(freshEtag))
           if (writtenByRoom) {
-            // Re-serialize rather than republish `newContent`. That snapshot
-            // was taken before the peer save that caused this conflict, so
-            // writing it again would drop exactly the edits the peer just
-            // committed. The Y.Doc has merged them; this is the combined state.
+            // Retry with the merged state, not `newContent`: that snapshot
+            // predates the peer save that caused this conflict, so writing it
+            // again would drop exactly the edits the peer just committed.
             const mergedContent = yield* call(yjsSession.serializeMerged())
             const retryContent = mergedContent ?? newContent
             const retry = yield putFileContents(currentFileContext, {
               content: retryContent as string | ArrayBuffer,
               previousEntityTag: freshEtag
             })
-            // Both sides, not just `serverContent`: `currentContent` still
-            // holds the pre-conflict snapshot until the next debounced
-            // serialize catches up, and leaving it there would read as an
-            // unsaved change and put the older body back on the next autosave.
-            // A serialize that is already pending overwrites this with an
-            // equal or newer value, which is what we want either way.
+            // Both sides: leaving `currentContent` on the pre-conflict
+            // snapshot would read as an unsaved change and put the older body
+            // back on the next autosave. A pending serialize overwrites this
+            // with an equal or newer value.
             serverContent.value = currentContent.value = retryContent
             applySavedResource(retry.etag, retry)
             return
           }
         } catch (retryErr) {
-          // Refetch or retry blew up, drop through to the user-facing
-          // conflict popup so they can still recover by copying out.
+          // Fall through to the conflict popup so the user can still recover
+          // by copying out.
           console.error('[yjs] conflict reconciliation failed:', retryErr)
         }
       }
@@ -755,9 +734,8 @@ const fileActionsSave = computed<FileAction[]>(() => {
     {
       name: 'save-file',
       disabledTooltip: () => '',
-      // Same reasoning as `isDirty`: a locked session freezes the editor, but
-      // the user must still be able to persist what they had typed before the
-      // lock. Only a genuinely read-only permission hides the action.
+      // Same reasoning as `isDirty`: only a genuinely read-only permission
+      // hides the action; a locked session must still allow persisting.
       isVisible: () => unref(isEditor) && !unref(isReadOnly),
       isDisabled: () => !unref(isDirty),
       icon: 'save',
@@ -920,10 +898,8 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   currentContent: unref(currentContent) as string,
   isFolderLoading: unref(isFolderLoading),
 
-  // The slot (= the wrapper compoonent) only renders once `isLoading` is
-  // false, which for a collaborative app includes the session being synced
-  // and hydrated. So these are non-null by the time the wrapped component
-  // sees them. Always null for non-collaborative apps.
+  // Non-null by the time a collaborative app renders: `isLoading` covers the
+  // session being synced and hydrated. Always null for other apps.
   ydoc: unref(yjsSession?.ydoc) ?? null,
   awareness: unref(yjsSession?.awareness) ?? null,
 
