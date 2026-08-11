@@ -290,6 +290,58 @@ describe('useYjsSession — local mode (no yjsServerUrl)', () => {
   })
 })
 
+describe('useYjsSession — failed hydration', () => {
+  const META_KEY = '_oc_meta'
+  const throwingAdapter: YjsAdapter = {
+    ...testAdapter,
+    hydrate() {
+      throw new Error('adapter blew up')
+    }
+  }
+
+  // The doc stays empty but the file on disk does not, and the etag we hold
+  // still matches it. An editable empty editor would let the first keystroke
+  // autosave over the real content with a valid If-Match and no conflict, so
+  // the session locks instead of only surfacing an error.
+  it('locks the session read-only instead of mounting an editable empty doc', async () => {
+    const s = setupSession({ currentContent: 'the real file body', adapter: throwingAdapter })
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
+    expect(unref(s.session.isLockedForReload)).toBe(true)
+    expect(unref(s.session.error)).toBeTruthy()
+  })
+
+  // Still releases the gate: AppWrapper keeps its loading screen up until
+  // `isReady`, so leaving it false would replace the error with an eternal
+  // spinner.
+  it('still releases the loading gate', async () => {
+    const s = setupSession({ currentContent: 'the real file body', adapter: throwingAdapter })
+    await flushPromises()
+
+    expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  // The seeding announce goes out before the hydrate so read-only peers drop
+  // their private copy in time. Left standing after a throw, it promises
+  // content that never arrives and every viewer stares at a blank room.
+  it('withdraws the seeding announce so another peer can seed', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the real file body',
+      adapter: throwingAdapter
+    })
+    await flushPromises()
+
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(s.ydoc!.getMap(META_KEY).get('hydrated')).toBeUndefined()
+  })
+})
+
 describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   it('constructs a HocuspocusProvider with the appVersion query param appended', async () => {
     setupSession({ yjsServerUrl: 'wss://example.test/yjs', appVersion: '2.3.4' })

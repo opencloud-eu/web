@@ -491,7 +491,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     // Announce before seeding, so read-only peers can drop their private copy
     // before our content lands rather than merge with it.
     doc.transact(() => meta.set('hydrated', true))
-    current.hydrate(doc, toValue(currentContent))
+    try {
+      current.hydrate(doc, toValue(currentContent))
+    } catch (e) {
+      // Clear `hydrated` key so the next joiner can seed for real.
+      doc.transact(() => meta.delete('hydrated'))
+      throw e
+    }
   }
 
   /**
@@ -595,7 +601,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // would be swallowed and the user would face a half-hydrated document
       // with no explanation.
       console.error('[yjs] hydration failed:', e)
-      error.value = e instanceof Error ? e : new Error(String(e))
+      lockForReload(
+        prov,
+        $gettext('Preparing this file for collaborative editing failed. Please reload.')
+      )
     } finally {
       if (!doc.isDestroyed && unref(ydoc) === doc) isReady.value = true
     }
