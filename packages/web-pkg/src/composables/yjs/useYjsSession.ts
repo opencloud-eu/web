@@ -123,6 +123,51 @@ const ROOM_ETAG_GRACE_MS = 1_000
 type AwarenessState = Record<string, unknown> & { [SEED_CAPABLE_KEY]?: boolean }
 
 /**
+ * The coordination fields this session keeps in the doc's `_oc_meta` map,
+ * next to the adapter's shared types.
+ */
+interface SessionMeta {
+  /** Etag of the file on disk, stamped by whichever peer last wrote it. */
+  etag: string
+  /** App version the room's current state was built with. */
+  appVersion: string
+  /** The room's state no longer matches the file on disk; triggers recovery. */
+  isStale: boolean
+  /** Etag of the fresh file body recovery must settle on. */
+  nativeEtag: string
+  /** The client elected to run the stale-state recovery. */
+  recoveryClientId: number
+  /** Doc state behind the last written file, see `lastReportedStateVector`. */
+  savedStateVector: Uint8Array
+  /** A writer announced it is seeding the room. */
+  hydrated: boolean
+  /** Timestamp of the last save; doubles as the peer-save signal. */
+  lastSavedAt: number
+}
+
+/**
+ * Typed accessors for {@link SessionMeta}. Values come from peers, so reads
+ * of remote-controlled data still need runtime checks where it matters.
+ */
+function sessionMeta(doc: Y.Doc) {
+  const map = doc.getMap(META_KEY)
+  return {
+    /** The raw Y.Map, for observers. */
+    map,
+    get<K extends keyof SessionMeta>(key: K) {
+      return map.get(key) as SessionMeta[K] | undefined
+    },
+    set<K extends keyof SessionMeta>(key: K, value: SessionMeta[K]) {
+      map.set(key, value)
+    },
+    delete(key: keyof SessionMeta) {
+      map.delete(key)
+    }
+  }
+}
+type SessionMetaMap = ReturnType<typeof sessionMeta>
+
+/**
  * Semver comparison (negative / zero / positive). Non-semver strings (e.g.
  * raw git SHAs in dev builds) fall back to strict equality: `0` for equal,
  * `NaN` otherwise, which callers treat as "incomparable, force reload".
@@ -258,54 +303,62 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     const doc = unref(ydoc)
     if (!etag || !doc || doc.isDestroyed || !unref(provider)) return Promise.resolve(false)
 
-    const meta = doc.getMap(META_KEY)
+    const meta = sessionMeta(doc)
     if (meta.get('etag') === etag) return Promise.resolve(true)
 
     const states = unref(awareness)?.getStates()
     if (!states || states.size <= 1) return Promise.resolve(false)
 
     return new Promise<boolean>((resolve) => {
-      let timer: number | undefined
+      // `settle` only runs from the observer or the timeout, so `timer` is
+      // always initialized by then.
       function settle(result: boolean) {
-        if (timer !== undefined) window.clearTimeout(timer)
-        meta.unobserve(onMetaChange)
+        window.clearTimeout(timer)
+        meta.map.unobserve(onMetaChange)
         resolve(result)
       }
       function onMetaChange(event: Y.YMapEvent<unknown>) {
         if (!event.keysChanged.has('etag')) return
         if (meta.get('etag') === etag) settle(true)
       }
-      meta.observe(onMetaChange)
-      timer = window.setTimeout(() => settle(false), timeoutMs)
+      meta.map.observe(onMetaChange)
+      const timer = window.setTimeout(() => settle(false), timeoutMs)
     })
   }
 
   /**
-   * Raise the staleness flag and, unless read-only, claim the recovery:
-   * capture the body behind our etag and name ourselves. The flag alone would
-   * strand the room - later joiners take the `isStale` early return in
-   * `runInitialHydration`, and without a claim and a `nativeEtag` to claim
-   * against, nothing ever clears it. A read-only client flags without
-   * claiming; the `nativeEtag` it leaves lets the first writer holding the
-   * same body pick the claim up.
+   * Claim the stale-state recovery: capture the body it must publish (before
+   * the room's own state syncs in and gets reported back into
+   * `currentContent`) and name ourselves. Last write wins, so concurrent
+   * claims elect exactly one client.
    */
-  function flagStale(doc: Y.Doc, meta: Y.Map<unknown>) {
+  function claimRecovery(doc: Y.Doc, meta: SessionMetaMap) {
+    staleRecoveryContent = toValue(currentContent)
+    doc.transact(() => meta.set('recoveryClientId', doc.clientID))
+  }
+
+  /**
+   * Raise the staleness flag and, unless read-only, claim the recovery. The
+   * flag alone would strand the room - later joiners take the `isStale` early
+   * return in `runInitialHydration`, and without a claim and a `nativeEtag`
+   * to claim against, nothing ever clears it. A read-only client flags
+   * without claiming; the `nativeEtag` it leaves lets the first writer
+   * holding the same body pick the claim up.
+   */
+  function flagStale(doc: Y.Doc, meta: SessionMetaMap) {
     const nativeEtag = toValue(resource)?.etag
-    const canClaim = !unref(effectiveReadOnly)
-    // Captured before the room's own state syncs in and gets reported back
-    // into `currentContent`.
-    if (canClaim) staleRecoveryContent = toValue(currentContent)
+    // The claim must be complete before `isStale` goes up: raising the flag
+    // fires our own meta observer, whose recovery run needs the claim.
+    if (!unref(effectiveReadOnly)) claimRecovery(doc, meta)
     doc.transact(() => {
       if (nativeEtag) meta.set('nativeEtag', nativeEtag)
-      // Last write wins: concurrent detections elect exactly one client.
-      if (canClaim) meta.set('recoveryClientId', doc.clientID)
       meta.set('isStale', true)
     })
   }
 
   /** Whether our freshly fetched etag is the one recovery must settle on. */
-  function canSupplyRecoveryContent(meta: Y.Map<unknown>): boolean {
-    const target = meta.get('nativeEtag') as string | undefined
+  function canSupplyRecoveryContent(meta: SessionMetaMap): boolean {
+    const target = meta.get('nativeEtag')
     const ours = toValue(resource)?.etag
     return Boolean(target && ours && target === ours)
   }
@@ -360,30 +413,22 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     return value
   }
 
-  // Depth counter for session-internal mutations. See `canReportContent`.
-  let suppressionDepth = 0
-  async function withoutReportingContent<T>(fn: () => T | Promise<T>): Promise<T> {
-    suppressionDepth++
-    try {
-      return await fn()
-    } finally {
-      suppressionDepth--
-    }
-  }
+  // True while recovery rewrites the doc. See `canReportContent`.
+  let isRewritingDoc = false
 
   /**
    * Whether a Y.Doc change should be reported to the caller as new content.
    *
-   * Only real edits qualify. Everything the session itself does (initial
-   * sync, hydration, meta handshake, stale recovery) must not be reported:
-   * the caller derives its dirty state by comparing reports against the file
-   * it fetched, and serialization is not byte-identical to the original
-   * (Tiptap renormalises markdown), so reporting would mark an untouched file
-   * dirty. Gated on session state rather than transaction origins so adapters
-   * need to know nothing.
+   * Only real edits qualify. Everything the session itself does - initial
+   * sync and hydration (gated via `isReady`), stale recovery (gated via
+   * `isRewritingDoc`) - must not be reported: the caller derives its dirty
+   * state by comparing reports against the file it fetched, and serialization
+   * is not byte-identical to the original (Tiptap renormalises markdown), so
+   * reporting would mark an untouched file dirty. Gated on session state
+   * rather than transaction origins so adapters need to know nothing.
    */
   function canReportContent(): boolean {
-    return unref(isReady) && suppressionDepth === 0
+    return unref(isReady) && !isRewritingDoc
   }
 
   /**
@@ -397,7 +442,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     awarenessInstance: Awareness
   ) {
     const current = toValue(adapter)
-    const meta = doc.getMap(META_KEY)
+    const meta = sessionMeta(doc)
     const version = toValue(appVersion)
 
     // Already flagged stale: let the meta observer run the recovery, and skip
@@ -407,8 +452,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     // have navigated away before finishing.
     if (meta.get('isStale') === true) {
       if (!unref(effectiveReadOnly) && canSupplyRecoveryContent(meta)) {
-        staleRecoveryContent = toValue(currentContent)
-        doc.transact(() => meta.set('recoveryClientId', doc.clientID))
+        claimRecovery(doc, meta)
         void recoverFromStaleState(doc, prov)
       }
       return
@@ -419,7 +463,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     // - equal: no-op
     // - doc OLDER than us: persisted state pre-dates our schema, recover
     // - doc NEWER than us or incomparable: we are out of date, force reload
-    const docVersion = meta.get('appVersion') as string | undefined
+    const docVersion = meta.get('appVersion')
     if (!docVersion) {
       doc.transact(() => {
         if (!meta.get('appVersion')) meta.set('appVersion', version)
@@ -449,7 +493,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     // seeds the baseline, a mismatch means the file on disk moved and flags
     // recovery. `nativeEtag` lets recovery settle the final value without an
     // extra fetch.
-    const docEtag = meta.get('etag') as string | undefined
+    const docEtag = meta.get('etag')
     const nativeEtag = toValue(resource)?.etag
     if (docEtag && nativeEtag && docEtag !== nativeEtag) {
       flagStale(doc, meta)
@@ -519,7 +563,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    */
   async function recoverFromStaleState(doc: Y.Doc, prov: HocuspocusProvider | null) {
     const current = toValue(adapter)
-    const meta = doc.getMap(META_KEY)
+    const meta = sessionMeta(doc)
     if (unref(effectiveReadOnly)) return
     if (staleRecoveryContent === null) return
     if (typeof current.reset !== 'function') {
@@ -538,30 +582,29 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     if (meta.get('recoveryClientId') !== doc.clientID) return
 
     const content = staleRecoveryContent
-    const freshEtag =
-      (meta.get('nativeEtag') as string | undefined) ?? toValue(resource)?.etag ?? ''
+    const freshEtag = meta.get('nativeEtag') ?? toValue(resource)?.etag ?? ''
 
     // Three phases, so a crash between reset and hydrate leaves `isStale` set
     // and the next joiner retries instead of inheriting an empty doc. None of
     // it is a user edit, so none of it is reported as content.
+    isRewritingDoc = true
     try {
-      await withoutReportingContent(() => {
-        doc.transact(() => {
-          current.reset?.(doc)
-        }, STALE_RECOVERY_RESET_ORIGIN)
+      doc.transact(() => {
+        current.reset?.(doc)
+      }, STALE_RECOVERY_RESET_ORIGIN)
 
-        current.hydrate(doc, content)
+      current.hydrate(doc, content)
 
-        doc.transact(() => {
-          meta.delete('isStale')
-          meta.delete('nativeEtag')
-          meta.delete('recoveryClientId')
-          if (freshEtag) meta.set('etag', freshEtag)
-          // The recovered content is in our current layout now; late joiners
-          // with the same version pass the handshake, older clients bounce.
-          meta.set('appVersion', toValue(appVersion))
-        }, STALE_RECOVERY_COMMIT_ORIGIN)
-      })
+      doc.transact(() => {
+        meta.delete('isStale')
+        meta.delete('nativeEtag')
+        meta.delete('recoveryClientId')
+        if (freshEtag) meta.set('etag', freshEtag)
+        // The recovered content is in our current layout now; late joiners
+        // with the same version pass the handshake, older clients bounce.
+        meta.set('appVersion', toValue(appVersion))
+      }, STALE_RECOVERY_COMMIT_ORIGIN)
+
       staleRecoveryContent = null
     } catch (e) {
       // The reset already emptied the shared doc for every peer; `isStale`
@@ -572,6 +615,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         prov,
         $gettext('This file was changed externally and recovering it failed. Please reload.')
       )
+    } finally {
+      isRewritingDoc = false
     }
   }
 
@@ -608,6 +653,199 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
+   * Debounced serialize -> report: the caller diffs the reported string
+   * against its own server content to derive a dirty state.
+   */
+  function createContentReporter(doc: Y.Doc) {
+    let timer: number | undefined
+    function onDocUpdate() {
+      if (!canReportContent()) return
+      if (timer !== undefined) window.clearTimeout(timer)
+      timer = window.setTimeout(() => {
+        timer = undefined
+        // Re-checked: the debounce window can outlive the change that opened it.
+        if (!canReportContent()) return
+        // Vector taken before serializing: adapters may serialize
+        // asynchronously, and a peer update landing in between must not be
+        // counted as part of what we reported.
+        const vectorAtSerialize = Y.encodeStateVector(doc)
+        serializeDoc(doc)
+          .then((value) => {
+            if (value === null) return
+            lastReportedStateVector = vectorAtSerialize
+            onContentChange(value)
+          })
+          .catch((e) => console.error('[yjs] serialize for content update failed:', e))
+      }, SERIALIZE_DEBOUNCE_MS)
+    }
+    function cancel() {
+      if (timer !== undefined) window.clearTimeout(timer)
+    }
+    return { onDocUpdate, cancel }
+  }
+
+  /** Connects a Hocuspocus provider and arms the connect timeout. */
+  function connectRemote(doc: Y.Doc, name: string, serverUrl: string) {
+    let connectTimer: number | undefined
+    function clearConnectTimer() {
+      if (connectTimer !== undefined) window.clearTimeout(connectTimer)
+      connectTimer = undefined
+    }
+
+    // HocuspocusProvider has no `parameters` option, so query params for the
+    // Yjs server go into the URL.
+    const version = toValue(appVersion)
+    const wsUrlWithParams = `${serverUrl}?appVersion=${encodeURIComponent(version)}`
+    const prov: HocuspocusProvider = new HocuspocusProvider({
+      url: wsUrlWithParams,
+      name,
+      document: doc,
+      token: () => authStore.accessToken,
+      onStatus({ status: s }) {
+        status.value = s as YjsStatus
+      },
+      onAuthenticationFailed({ reason }) {
+        console.error('[yjs] auth failed:', reason)
+        // Surfaced as an error so the user sees the reason rather than a
+        // silent disconnect. The server uses this for app-version rejection
+        // too.
+        error.value = new Error(reason || $gettext('authentication failed'))
+        isLockedForReload.value = true
+        clearConnectTimer()
+
+        // Stop retrying: `permissionDeniedHandler` leaves `shouldConnect`
+        // true, so the socket layer keeps reconnecting - and a later attempt
+        // that authenticates would merge our locally seeded copy into a room
+        // already holding the same content.
+        stopProvider(prov)
+
+        // Hydrate and release the loading gate, but only for a failed
+        // *opening* connect. A token expiring mid-session leaves a live,
+        // populated document; re-running the hydration checks there could
+        // plant a stale flag with a claim this now read-only client will
+        // never act on.
+        if (unref(isReady)) return
+        void onProviderSynced(doc, null, prov.awareness!)
+      },
+      onSynced() {
+        clearConnectTimer()
+        void onProviderSynced(doc, prov, prov.awareness!)
+      }
+    })
+
+    // A server that never answers produces neither `onSynced` nor
+    // `onAuthenticationFailed` - the provider just keeps retrying, and the
+    // loading screen would stay up forever. Give up after a bounded wait and
+    // carry on locally: the file stays editable and saveable, it just does
+    // not sync.
+    connectTimer = window.setTimeout(() => {
+      connectTimer = undefined
+      if (doc.isDestroyed || unref(ydoc) !== doc || unref(isReady)) return
+
+      console.error(`[yjs] server unreachable, continuing without it: ${name}`)
+      error.value = new Error(
+        $gettext(
+          'The collaboration server could not be reached. Editing continues without collaboration; others will not see your changes until you reload.'
+        )
+      )
+      // Stop retrying: a later connect would merge our locally hydrated copy
+      // into a room that may already hold the same content.
+      stopProvider(prov)
+      // `runInitialHydration` bails if content synced in after all.
+      void onProviderSynced(doc, null, prov.awareness!)
+    }, CONNECT_TIMEOUT_MS)
+
+    // Announce ourselves before the editor binding emits its first cursor
+    // update. The server's beforeHandleAwareness hook overwrites `user` with
+    // the authenticated identity.
+    prov.setAwarenessField('user', {})
+    prov.setAwarenessField(SEED_CAPABLE_KEY, !unref(effectiveReadOnly))
+
+    return { prov, clearConnectTimer }
+  }
+
+  /**
+   * `_oc_meta` is the side channel for save/stale/version coordination.
+   * Adapters bind to their own shared types and never see it.
+   */
+  function createMetaObserver(doc: Y.Doc, prov: HocuspocusProvider | null) {
+    const meta = sessionMeta(doc)
+    return function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
+      // The initial sync replays the room's whole meta map through this
+      // observer; everything in it belongs to `runInitialHydration`, which
+      // reads the same keys with the context to act on them.
+      const isMidSession = unref(isReady)
+      // Remote ops carry no string origin, so this means "a peer is saving
+      // right now" - not the initial sync, not one of our own writes.
+      const isPeerSave = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
+
+      // Peer-save fan-out. The fresh etag keeps our next If-Match correct.
+      // The content only follows when the peer's snapshot covers everything
+      // we hold; otherwise our dirty flag would drop over edits that never
+      // reached the peer's PUT and they could leave with the tab. Re-checked
+      // after serializing because a keystroke can land while that runs.
+      if (isPeerSave) {
+        if (event.keysChanged.has('etag')) {
+          const newEtag = meta.get('etag')
+          if (newEtag) onEtagChange(newEtag)
+        }
+        if (event.keysChanged.has('lastSavedAt')) {
+          const theirState = meta.get('savedStateVector')
+          if (theirState instanceof Uint8Array) {
+            serializeDoc(doc)
+              .then((value) => {
+                if (value === null || doc.isDestroyed) return
+                if (!peerSaveCoversUs(doc, theirState)) return
+                onServerContentChange(value)
+              })
+              .catch((e) => console.error('[yjs] serialize for peer-save sync failed:', e))
+          }
+        }
+      }
+
+      // Version drift mid-session (e.g. a newer peer joined and bumped the
+      // stamp): lock and prompt reload. Strictly mid-session - the stored
+      // version arriving with the initial sync is `runInitialHydration`'s
+      // job, and locking on it here would keep a newer client from ever
+      // rebuilding the room.
+      if (event.keysChanged.has('appVersion') && isMidSession) {
+        const docVersion = meta.get('appVersion')
+        const version = toValue(appVersion)
+        if (docVersion) {
+          const cmp = compareVersion(version, docVersion)
+          if (Number.isNaN(cmp) || cmp !== 0) {
+            lockForReload(
+              prov,
+              $gettext(
+                'This file is now being edited with app version %{docVersion} (yours is %{version}). Please reload.',
+                { docVersion, version }
+              )
+            )
+          }
+        }
+      }
+
+      // A peer is seeding while we hold a private read-only copy; merging
+      // would duplicate the document, so rebuild the session from the room's
+      // state. Nothing is lost: a read-only client has no edits.
+      if (
+        event.keysChanged.has('hydrated') &&
+        meta.get('hydrated') === true &&
+        hasLocalOnlyContent
+      ) {
+        sessionNonce.value++
+        return
+      }
+
+      // Stale-state signal: every peer sees it, only the claimed one gets
+      // past the guards in `recoverFromStaleState`.
+      if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
+        void recoverFromStaleState(doc, prov)
+      }
+    }
+  }
+
+  /**
    * Y.Doc + (optional) provider lifecycle, rebuilt whenever the session key
    * changes. Remote mode connects a Hocuspocus provider and hydrates on
    * `onSynced`; local mode uses a standalone Awareness, no network, and
@@ -630,215 +868,44 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         status.value = 'connecting'
         return
       }
-      const name = unref(documentName)
-      if (!name) {
-        status.value = 'connecting'
-        return
-      }
+      // Non-null whenever `key` is: the key embeds it.
+      const name = unref(documentName)!
 
       const doc = new Y.Doc()
-
-      // Debounced serialize -> report: the caller diffs this against its own
-      // server content to derive a dirty state.
-      let serializeTimer: number | undefined
-      function scheduleEmit() {
-        if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
-        serializeTimer = window.setTimeout(() => {
-          serializeTimer = undefined
-          // Re-checked: the debounce window can outlive the change that opened it.
-          if (!canReportContent()) return
-          // Vector taken before serializing: adapters may serialize
-          // asynchronously, and a peer update landing in between must not be
-          // counted as part of what we reported.
-          const vectorAtSerialize = Y.encodeStateVector(doc)
-          serializeDoc(doc)
-            .then((value) => {
-              if (value === null) return
-              lastReportedStateVector = vectorAtSerialize
-              onContentChange(value)
-            })
-            .catch((e) => console.error('[yjs] serialize for content update failed:', e))
-        }, SERIALIZE_DEBOUNCE_MS)
-      }
-
-      function onDocUpdate() {
-        if (!canReportContent()) return
-        scheduleEmit()
-      }
-      doc.on('update', onDocUpdate)
+      const reporter = createContentReporter(doc)
+      doc.on('update', reporter.onDocUpdate)
 
       let prov: HocuspocusProvider | null = null
       let aw: Awareness
-      let connectTimer: number | undefined
+      let clearConnectTimer = () => {}
 
       const resolvedYjsUrl = unref(yjsServerUrl)
       if (resolvedYjsUrl) {
-        // ---------- Remote mode ----------
-        // HocuspocusProvider has no `parameters` option, so query params for
-        // the Yjs server go into the URL.
-        const version = toValue(appVersion)
-        const wsUrlWithParams = `${resolvedYjsUrl}?appVersion=${encodeURIComponent(version)}`
-        prov = new HocuspocusProvider({
-          url: wsUrlWithParams,
-          name,
-          document: doc,
-          token: () => authStore.accessToken,
-          onStatus({ status: s }) {
-            status.value = s as YjsStatus
-          },
-          onAuthenticationFailed({ reason }) {
-            console.error('[yjs] auth failed:', reason)
-            // Surfaced as an error so the user sees the reason rather than a
-            // silent disconnect. The server uses this for app-version
-            // rejection too.
-            error.value = new Error(reason || $gettext('authentication failed'))
-            isLockedForReload.value = true
-            if (connectTimer !== undefined) window.clearTimeout(connectTimer)
-
-            // Stop retrying: `permissionDeniedHandler` leaves `shouldConnect`
-            // true, so the socket layer keeps reconnecting - and a later
-            // attempt that authenticates would merge our locally seeded copy
-            // into a room already holding the same content.
-            stopProvider(prov)
-
-            // Hydrate and release the loading gate, but only for a failed
-            // *opening* connect. A token expiring mid-session leaves a live,
-            // populated document; re-running the hydration checks there could
-            // plant a stale flag with a claim this now read-only client will
-            // never act on.
-            if (unref(isReady)) return
-            void onProviderSynced(doc, null, aw)
-          },
-          onSynced() {
-            if (connectTimer !== undefined) window.clearTimeout(connectTimer)
-            void onProviderSynced(doc, prov, prov!.awareness!)
-          }
-        })
-
-        // A server that never answers produces neither `onSynced` nor
-        // `onAuthenticationFailed` - the provider just keeps retrying, and the
-        // loading screen would stay up forever. Give up after a bounded wait
-        // and carry on locally: the file stays editable and saveable, it just
-        // does not sync.
-        connectTimer = window.setTimeout(() => {
-          connectTimer = undefined
-          if (doc.isDestroyed || unref(ydoc) !== doc || unref(isReady)) return
-
-          console.error(`[yjs] server unreachable, continuing without it: ${name}`)
-          error.value = new Error(
-            $gettext(
-              'The collaboration server could not be reached. Editing continues without collaboration; others will not see your changes until you reload.'
-            )
-          )
-          // Stop retrying: a later connect would merge our locally hydrated
-          // copy into a room that may already hold the same content.
-          stopProvider(prov)
-          // `runInitialHydration` bails if content synced in after all.
-          void onProviderSynced(doc, null, aw)
-        }, CONNECT_TIMEOUT_MS)
-
-        // Announce ourselves before the editor binding emits its first cursor
-        // update. The server's beforeHandleAwareness hook overwrites `user`
-        // with the authenticated identity.
-        prov.setAwarenessField('user', {})
-        prov.setAwarenessField(SEED_CAPABLE_KEY, !unref(effectiveReadOnly))
-        aw = prov.awareness!
+        const remote = connectRemote(doc, name, resolvedYjsUrl)
+        prov = remote.prov
+        aw = remote.prov.awareness!
+        clearConnectTimer = remote.clearConnectTimer
       } else {
-        // ---------- Local mode ----------
-        // Standalone Awareness so editor bindings still see a non-null
-        // instance; nobody else will ever join, which is the point.
+        // Local mode: standalone Awareness so editor bindings still see a
+        // non-null instance; nobody else will ever join, which is the point.
         aw = new Awareness(doc)
         status.value = 'local'
         void onProviderSynced(doc, null, aw)
       }
 
-      // `_oc_meta` is the side channel for save/stale/version coordination.
-      // Adapters bind to their own shared types and never see it.
-      const meta = doc.getMap(META_KEY)
-      function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
-        // The initial sync replays the room's whole meta map through this
-        // observer; everything in it belongs to `runInitialHydration`, which
-        // reads the same keys with the context to act on them.
-        const isMidSession = unref(isReady)
-        // Remote ops carry no string origin, so this means "a peer is saving
-        // right now" - not the initial sync, not one of our own writes.
-        const isPeerSave = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
-
-        // Peer-save fan-out: the fresh etag keeps our next If-Match correct.
-        if (event.keysChanged.has('etag') && isPeerSave) {
-          const newEtag = meta.get('etag') as string | undefined
-          if (newEtag) onEtagChange(newEtag)
-        }
-
-        if (event.keysChanged.has('lastSavedAt') && isPeerSave) {
-          // Only follow the peer clean when its snapshot covers everything we
-          // hold; otherwise our dirty flag would drop over edits that never
-          // reached the peer's PUT and they could leave with the tab. The
-          // check runs after serializing because a keystroke can land while
-          // that runs.
-          const theirState = meta.get('savedStateVector')
-          if (theirState instanceof Uint8Array) {
-            serializeDoc(doc)
-              .then((value) => {
-                if (value === null || doc.isDestroyed) return
-                if (!peerSaveCoversUs(doc, theirState)) return
-                onServerContentChange(value)
-              })
-              .catch((e) => console.error('[yjs] serialize for peer-save sync failed:', e))
-          }
-        }
-
-        // Version drift mid-session (e.g. a newer peer joined and bumped the
-        // stamp): lock and prompt reload. Strictly mid-session - the stored
-        // version arriving with the initial sync is `runInitialHydration`'s
-        // job, and locking on it here would keep a newer client from ever
-        // rebuilding the room.
-        if (event.keysChanged.has('appVersion') && isMidSession) {
-          const docVersion = meta.get('appVersion') as string | undefined
-          const version = toValue(appVersion)
-          if (docVersion) {
-            const cmp = compareVersion(version, docVersion)
-            if (Number.isNaN(cmp) || cmp !== 0) {
-              lockForReload(
-                prov,
-                $gettext(
-                  'This file is now being edited with app version %{docVersion} (yours is %{version}). Please reload.',
-                  { docVersion, version }
-                )
-              )
-            }
-          }
-        }
-
-        // A peer is seeding while we hold a private read-only copy; merging
-        // would duplicate the document, so rebuild the session from the
-        // room's state. Nothing is lost: a read-only client has no edits.
-        if (
-          event.keysChanged.has('hydrated') &&
-          meta.get('hydrated') === true &&
-          hasLocalOnlyContent
-        ) {
-          sessionNonce.value++
-          return
-        }
-
-        // Stale-state signal: every peer sees it, only the claimed one gets
-        // past the guards in `recoverFromStaleState`.
-        if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
-          void recoverFromStaleState(doc, prov)
-        }
-      }
-      meta.observe(metaObserver)
+      const meta = sessionMeta(doc)
+      const metaObserver = createMetaObserver(doc, prov)
+      meta.map.observe(metaObserver)
 
       ydoc.value = doc
       provider.value = prov
       awareness.value = aw
 
       onCleanup(() => {
-        if (serializeTimer !== undefined) window.clearTimeout(serializeTimer)
-        if (connectTimer !== undefined) window.clearTimeout(connectTimer)
-        meta.unobserve(metaObserver)
-        doc.off('update', onDocUpdate)
+        reporter.cancel()
+        clearConnectTimer()
+        meta.map.unobserve(metaObserver)
+        doc.off('update', reporter.onDocUpdate)
         if (prov) {
           // Destroys its own awareness (`aw` in remote mode), so no separate
           // aw.destroy() here.
@@ -862,7 +929,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     (newEtag) => {
       const doc = unref(ydoc)
       if (!doc || doc.isDestroyed || !newEtag) return
-      const meta = doc.getMap(META_KEY)
+      const meta = sessionMeta(doc)
       if (meta.get('etag') === newEtag) return
       doc.transact(() => {
         meta.set('etag', newEtag)

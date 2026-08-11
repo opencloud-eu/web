@@ -68,10 +68,10 @@ import {
   useKeyboardActions,
   useExtensionRegistry,
   ActionExtension,
-  CustomComponentExtension,
-  useYjsSession
+  CustomComponentExtension
 } from '../../composables'
 import { AppWrapperSlotHandlers, AppWrapperSlotProps, YjsOptions } from './types'
+import { useAppWrapperYjs } from './useAppWrapperYjs'
 import {
   Resource,
   SpaceResource,
@@ -229,53 +229,37 @@ const {
   applicationId
 })
 
-const yjsSession = yjs
-  ? useYjsSession({
-      resource,
-      currentContent: () => (unref(currentContent) as string) ?? '',
-      // Hydration seeds the Y.Doc from `currentContent`, so hold the session
-      // back until the body was fetched for this very resource.
-      enabled: () =>
-        !unref(loading) && !unref(loadingError) && unref(contentResourceId) === unref(resource)?.id,
-      isReadOnly,
-      adapter: yjs.makeAdapter({ resource }),
-      appVersion: yjs.appVersion,
-      documentPrefix: yjs.documentPrefix ?? applicationId,
-      onContentChange: (value) => {
-        currentContent.value = value
-      },
-      // A peer saved: this content is what's on disk now, so `isDirty` drops
-      // back to false without a WebDAV round-trip.
-      onServerContentChange: (value) => {
-        serverContent.value = value
-      },
-      // A peer saved: its fresh etag keeps our next PUT's `If-Match` correct.
-      onEtagChange: (value) => {
-        if (unref(currentETag) === value) return
-        currentETag.value = value
-        // Mirror into `resource.etag` too: the session compares it against
-        // the room's etag to detect external writes, and a peer that never
-        // saves itself would otherwise read the next reconnect as one and
-        // wipe the room to "recover" it.
-        resource.value = { ...unref(resource), etag: value }
-      }
-    })
-  : null
+const {
+  session: yjsSession,
+  isSessionReady,
+  effectiveReadOnly,
+  reconcileConflict
+} = useAppWrapperYjs({
+  yjs,
+  applicationId,
+  resource,
+  isReadOnly,
+  loading,
+  loadingError,
+  contentResourceId,
+  currentContent,
+  serverContent,
+  currentETag,
+  currentFileContext,
+  fileContentOptions,
+  getFileContents,
+  putFileContents,
+  applySavedResource
+})
 
 // Keep the loading screen up until the Yjs session is synced and hydrated,
 // so the wrapped component always mounts against a ready Y.Doc. A load
-// failure short-circuits: it leaves the session disabled, so waiting on
-// `isReady` would keep the error screen from ever showing.
+// failure short-circuits: it leaves the session disabled, so waiting on it
+// would keep the error screen from ever showing.
 const isLoading = computed(() => {
   if (unref(loadingError)) return false
-  return unref(loading) || Boolean(yjsSession && !unref(yjsSession.isReady))
+  return unref(loading) || !unref(isSessionReady)
 })
-
-// A Yjs session can force read-only on top of the WebDAV permissions, e.g.
-// after locking on an app-version mismatch.
-const effectiveReadOnly = computed(
-  () => unref(isReadOnly) || Boolean(unref(yjsSession?.isLockedForReload))
-)
 
 const isDirty = computed(() => {
   // Peer edits flow into `currentContent` of a read-only client too, but it
@@ -297,13 +281,6 @@ watch(isDirty, (dirty) => {
     window.removeEventListener('beforeunload', preventUnload)
   }
 })
-
-if (yjsSession) {
-  watch(yjsSession.error, (error) => {
-    if (!error) return
-    showErrorMessage({ title: $gettext('Collaboration error'), desc: error.message })
-  })
-}
 
 const { applicationMeta } = useAppMeta({ applicationId, appsStore })
 
@@ -542,9 +519,10 @@ const autosavePopup = () => {
 /**
  * Single landing point for a successful write: updates the etag for the next
  * `If-Match`, the local `resource` ref and the store. `saved` is the PUT's
- * response, or null when only the etag is known.
+ * response, or null when only the etag is known. A function declaration, so
+ * it is hoisted above the `useAppWrapperYjs` call that captures it.
  */
-const applySavedResource = (etag: string, saved: Resource | null = null) => {
+function applySavedResource(etag: string, saved: Resource | null = null) {
   currentETag.value = etag
   const current = unref(resource)
   if (!current) return
@@ -575,48 +553,8 @@ const saveFileTask = useTask(function* () {
     // write came from a peer in the room, because our Y.Doc already holds
     // that peer's edits.
     if (e.statusCode === 412 || e.statusCode === 409) {
-      const canReconcile = Boolean(yjsSession) && unref(yjsSession.status) === 'connected'
-
-      if (canReconcile) {
-        try {
-          const fresh = yield* call(getFileContents(currentFileContext, { ...fileContentOptions }))
-          const freshEtag = fresh.headers['OC-ETag']
-
-          if (fresh.body === newContent) {
-            // Same content, only our etag tracking was stale: reconcile
-            // silently.
-            serverContent.value = newContent
-            applySavedResource(freshEtag)
-            return
-          }
-
-          // Someone wrote the file. Only this room's own writes may be
-          // republished over: a write from outside the room never reached
-          // this document, and retrying would destroy it unseen.
-          const writtenByRoom = yield* call(yjsSession.wasWrittenByRoom(freshEtag))
-          if (writtenByRoom) {
-            // Retry with the merged state, not `newContent`: that snapshot
-            // predates the peer save that caused this conflict, so writing it
-            // again would drop exactly the edits the peer just committed.
-            const mergedContent = yield* call(yjsSession.serializeMerged())
-            const retryContent = mergedContent ?? newContent
-            const retry = yield putFileContents(currentFileContext, {
-              content: retryContent as string | ArrayBuffer,
-              previousEntityTag: freshEtag
-            })
-            // Both sides: leaving `currentContent` on the pre-conflict
-            // snapshot would read as an unsaved change and put the older body
-            // back on the next autosave. A pending serialize overwrites this
-            // with an equal or newer value.
-            serverContent.value = currentContent.value = retryContent
-            applySavedResource(retry.etag, retry)
-            return
-          }
-        } catch (retryErr) {
-          // Fall through to the conflict popup so the user can still recover
-          // by copying out.
-          console.error('[yjs] conflict reconciliation failed:', retryErr)
-        }
+      if (yield* reconcileConflict(newContent)) {
+        return
       }
       errorPopup(
         new HttpError(
