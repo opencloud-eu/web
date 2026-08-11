@@ -122,7 +122,12 @@ function setupSession({
   resource = makeResource(),
   adapter = testAdapter as YjsAdapter,
   enabled = true,
-  isReadOnly = false
+  isReadOnly = false,
+  // Mirrors what AppWrapper does with a reported etag: it writes it back into
+  // the resource it passes in. Off by default so most tests can assert on the
+  // callback alone, on for the ones about what that write-back does to the
+  // staleness checks that read `resource.etag`.
+  mirrorEtagToResource = false
 } = {}) {
   const resourceRef = ref(resource)
   const adapterRef = shallowRef(adapter)
@@ -131,7 +136,10 @@ function setupSession({
   const contentRef = ref(currentContent)
   const onContentChange = vi.fn()
   const onServerContentChange = vi.fn()
-  const onEtagChange = vi.fn()
+  const onEtagChange = vi.fn((etag: string) => {
+    if (!mirrorEtagToResource) return
+    resourceRef.value = { ...unref(resourceRef), etag } as Resource
+  })
   let session: YjsSession
 
   const wrapper = getComposableWrapper(
@@ -1052,6 +1060,118 @@ describe('useYjsSession — wasWrittenByRoom', () => {
     await flushPromises()
 
     await expect(s.session.wasWrittenByRoom('any-etag', 20)).resolves.toBe(false)
+  })
+})
+
+// The initial sync replays the room's whole meta map through the observer with
+// the same signature a live peer save has: remote transaction, no string
+// origin. Reporting it as a save let the room's own etag flow back into the
+// caller's `resource`, so by the time the drift check ran it compared the room
+// etag against itself and no late joiner could ever detect a stale room.
+describe('useYjsSession — initial sync is not a peer save', () => {
+  const yjsServerUrl = 'wss://example.test/yjs'
+  const META_KEY = '_oc_meta'
+
+  /**
+   * The room's existing state arriving as a genuine remote update, which is
+   * what the observer sees on connect. Writing the keys straight onto our own
+   * doc would not do: that is a local transaction, and it would hide the very
+   * signature this describe block is about.
+   */
+  function roomStateArrives(ourDoc: Y.Doc, { etag = 'etag-old', content = 'room body' } = {}) {
+    const room = new Y.Doc()
+    room.transact(() => {
+      room.getText(SHARED_TEXT_KEY).insert(0, content)
+      const meta = room.getMap(META_KEY)
+      meta.set('appVersion', '1.2.3')
+      meta.set('etag', etag)
+      meta.set('savedStateVector', Y.encodeStateVector(room))
+      meta.set('lastSavedAt', 1)
+    })
+    Y.applyUpdate(ourDoc, Y.encodeStateAsUpdate(room))
+  }
+
+  beforeEach(() => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+  })
+
+  it('does not mirror the room etag back to the caller while syncing', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'our body',
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+
+    roomStateArrives(s.ydoc!)
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(s.onEtagChange).not.toHaveBeenCalled()
+  })
+
+  // The caller's `serverContent` describes the file it fetched. Declaring the
+  // room's content to be what is on disk flips it dirty before a key is
+  // pressed. Room and file agree on the etag here, so nothing but the
+  // `lastSavedAt` replay is in play.
+  it('does not report the room content as server content while syncing', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'our body',
+      resource: makeResource({ etag: 'etag-same' })
+    })
+    await flushPromises()
+
+    roomStateArrives(s.ydoc!, { etag: 'etag-same' })
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(s.onServerContentChange).not.toHaveBeenCalled()
+  })
+
+  // The point of the gate. With the write-back wired up as AppWrapper wires it,
+  // the room's etag used to land in `resource.etag` before the drift check ran,
+  // so the check compared the room etag against itself and a late joiner could
+  // never claim the recovery.
+  it('still detects drift on a late joiner whose caller mirrors etags back', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'our body',
+      resource: makeResource({ etag: 'etag-new' }),
+      mirrorEtagToResource: true
+    })
+    await flushPromises()
+
+    roomStateArrives(s.ydoc!)
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBe(true)
+    expect(s.ydoc!.getMap(META_KEY).get('nativeEtag')).toBe('etag-new')
+    expect(s.ydoc!.getMap(META_KEY).get('recoveryClientId')).toBe(s.ydoc!.clientID)
+  })
+
+  // Recovery rewrites `_oc_meta.etag` itself, after the gate has opened. That
+  // is our own write, not a peer telling us the file moved.
+  it('does not report its own stale-recovery commit as a peer save', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'our body',
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+
+    roomStateArrives(s.ydoc!)
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    // Recovery ran and settled the fresh etag into the room.
+    expect(s.ydoc!.getMap(META_KEY).get('etag')).toBe('etag-new')
+    expect(s.onEtagChange).not.toHaveBeenCalled()
+    expect(s.onServerContentChange).not.toHaveBeenCalled()
   })
 })
 

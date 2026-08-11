@@ -96,6 +96,19 @@ const CONNECT_TIMEOUT_MS = 10_000
  * don't need it because the caller already knows it saved.
  */
 const LOCAL_SAVE_ORIGIN = 'local-save'
+const STALE_RECOVERY_RESET_ORIGIN = 'stale-recovery-reset'
+const STALE_RECOVERY_COMMIT_ORIGIN = 'stale-recovery-commit'
+/**
+ * Transaction origins this session puts on its own meta writes. A meta change
+ * carrying one of them was made here, so it is never a peer save - the caller
+ * either already knows about it (its own PUT) or must not be told (recovery
+ * rewriting the room).
+ */
+const OWN_META_ORIGINS: unknown[] = [
+  LOCAL_SAVE_ORIGIN,
+  STALE_RECOVERY_RESET_ORIGIN,
+  STALE_RECOVERY_COMMIT_ORIGIN
+]
 /**
  * Awareness field saying whether this client is able to seed an empty room.
  * Read-only clients set it false: they appear in awareness like anyone else,
@@ -551,7 +564,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       await withoutReportingContent(() => {
         doc.transact(() => {
           current.reset?.(doc)
-        }, 'stale-recovery-reset')
+        }, STALE_RECOVERY_RESET_ORIGIN)
 
         current.hydrate(doc, content)
 
@@ -565,7 +578,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           // layout. Late joiners with the same version pass the handshake; older
           // clients still bounce on their own version check.
           meta.set('appVersion', toValue(appVersion))
-        }, 'stale-recovery-commit')
+        }, STALE_RECOVERY_COMMIT_ORIGIN)
       })
       staleRecoveryContent = null
     } catch (e) {
@@ -782,18 +795,22 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // the observer is dormant but harmless.
       const meta = doc.getMap(META_KEY)
       function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
+        // Whether a meta change is a peer *saving right now*, as opposed to the
+        // room's existing state arriving.
+        const isPeerSave = unref(isReady) && !OWN_META_ORIGINS.includes(transaction.origin)
+
         // Peer-save fan-out. Another client just saved (its etag-mirror watch
         // fired LOCAL_SAVE_ORIGIN on its side, then Yjs synced the meta-map
         // change to us with `transaction.origin === undefined` - remote ops
         // have no string origin). Our Y.Doc already reflects every edit that
         // save covered, so serialize it now and tell the caller "this is what's
         // on disk": its dirty state falls to false.
-        if (event.keysChanged.has('etag') && transaction.origin !== LOCAL_SAVE_ORIGIN) {
+        if (event.keysChanged.has('etag') && isPeerSave) {
           const newEtag = meta.get('etag') as string | undefined
           if (newEtag) onEtagChange(newEtag)
         }
 
-        if (event.keysChanged.has('lastSavedAt') && transaction.origin !== LOCAL_SAVE_ORIGIN) {
+        if (event.keysChanged.has('lastSavedAt') && isPeerSave) {
           // The peer PUT what *its* doc serialized to, not what ours does. If
           // we hold edits that never reached it before the write, reporting our
           // own serialization as "this is on disk" would drop our dirty flag,
