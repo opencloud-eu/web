@@ -153,6 +153,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     readonly,
     actionGroups: strategy.editorActionGroups,
     getContent,
+    setContent,
     isEmpty,
     isFocused,
     focus,
