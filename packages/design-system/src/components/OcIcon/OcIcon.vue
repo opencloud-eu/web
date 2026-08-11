@@ -27,7 +27,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import InlineSvg from 'vue-inline-svg'
-import { FillType, SizeType, uniqueId, getIconUrlPrefix } from '../../helpers'
+import { FillType, SizeType, uniqueId, getIconUrlPrefix, addVersionToAssetUrl } from '../../helpers'
 
 InlineSvg.name = 'inline-svg'
 
@@ -89,12 +89,13 @@ const emit = defineEmits<Emits>()
 const svgTitleId = computed(() => uniqueId('oc-icon-title-'))
 
 const nameWithFillType = computed(() => {
-  const path = `${getIconUrlPrefix()}icons/`
+  const prefix = getIconUrlPrefix()
   const lowerFillType = fillType.toLowerCase()
-  if (lowerFillType === 'none') {
-    return `${path}${name}.svg`
-  }
-  return `${path}${name}-${lowerFillType}.svg`
+
+  const filename = lowerFillType === 'none' ? `${name}.svg` : `${name}-${lowerFillType}.svg`
+
+  const url = `${prefix}icons/${filename}`
+  return addVersionToAssetUrl(url)
 })
 
 const tailwindSize = computed(() => {

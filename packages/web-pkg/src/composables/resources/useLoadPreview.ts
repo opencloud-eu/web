@@ -7,6 +7,7 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
+import { addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
 import { FolderViewModeConstants } from '../viewMode'
 import { usePreviewService } from '../previewService'
 import { ProcessorType } from '../../services'
@@ -113,7 +114,7 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
 
       try {
         const defaultSpaceImageBlobURLResponse: any = await httpAuthenticated.get(
-          `${unref(serverUrl)}images/default-space-icon.png`,
+          addVersionToAssetUrl(`${unref(serverUrl)}images/default-space-icon.png`),
           {
             responseType: 'blob'
           }
