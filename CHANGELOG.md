@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(admin-settings): opening user sidebar panels  [[#3067](https://github.com/opencloud-eu/web/pull/3067)]
 - fix: position versions loading spinner without shifting the details layout [[#3065](https://github.com/opencloud-eu/web/pull/3065)]
 - correct resource id in restore file version link [[#3053](https://github.com/opencloud-eu/web/pull/3053)]
 - fix: reset shift selection anchor when deselecting all files [[#3061](https://github.com/opencloud-eu/web/pull/3061)]
