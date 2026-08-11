@@ -141,9 +141,17 @@ const openFile = ({
   )
   routeOpts.query = { ...routeOpts.query, ...locationQuery }
 
-  const editorRoute = router.resolve(routeOpts)
-  const editorRouteUrl = new URL(editorRoute.href, window.location.origin)
-  window.open(editorRouteUrl.href, '_blank')
+  // Build URL manually to avoid double encoding from router.resolve()
+  const routeName = routeOpts.name as string
+  const driveAliasAndItem = routeOpts.params?.driveAliasAndItem as string
+  const queryParams = new URLSearchParams()
+  Object.entries(routeOpts.query || {}).forEach(([key, value]) => {
+    queryParams.append(key, value as string)
+  })
+  const queryString = queryParams.toString()
+  const href = `${window.location.origin}/${routeName}/${driveAliasAndItem}${queryString ? `?${queryString}` : ''}`
+
+  window.open(href, '_blank')
 }
 
 const onCancel = ({ data }: MessageEvent) => {

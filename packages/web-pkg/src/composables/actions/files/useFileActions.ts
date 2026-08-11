@@ -1,5 +1,10 @@
 import kebabCase from 'lodash-es/kebabCase'
-import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  encodePath,
+  isShareSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../../appDefaults'
 import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
@@ -194,10 +199,15 @@ export const useFileActions = () => {
     remoteItemId: string,
     templateId?: string
   ) => {
+    const driveAliasAndItem = space?.getDriveAliasAndItem(resource)
     return {
       name: routeName,
       params: {
-        driveAliasAndItem: space?.getDriveAliasAndItem(resource)
+        // Encode each segment to handle special characters like # in filenames
+        driveAliasAndItem: driveAliasAndItem
+          .split('/')
+          .map((segment) => encodePath(segment))
+          .join('/')
       },
       query: {
         ...(remoteItemId && { shareId: remoteItemId }),

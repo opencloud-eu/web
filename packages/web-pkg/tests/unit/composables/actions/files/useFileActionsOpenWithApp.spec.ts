@@ -18,7 +18,8 @@ window.open = vi.fn()
 vi.mock('../../../../../src/composables/actions/helpers/useIsFilesAppActive')
 
 const spaceMock = mock<SpaceResource>({
-  id: '1'
+  id: '1',
+  getDriveAliasAndItem: () => 'personal/admin/test.txt'
 })
 describe('openWithApp', () => {
   describe('computed property "actions"', () => {
@@ -67,16 +68,54 @@ describe('openWithApp', () => {
           }
         })
       })
+
+      it('encodes hash character in file path without double encoding', () => {
+        const mockSpace = mock<SpaceResource>({
+          id: '1',
+          // getDriveAliasAndItem returns unencoded path (like the real implementation)
+          getDriveAliasAndItem: () => 'personal/admin/ticket#1234.txt'
+        })
+
+        getWrapper({
+          spaceMock: mockSpace,
+          setup: ({ onFilePicked }) => {
+            vi.mocked(window.open).mockClear()
+
+            onFilePicked({
+              resource: mock<Resource>({
+                storageId: mockSpace.id,
+                path: '/ticket#1234.txt',
+                fileId: 'file-123'
+              }),
+              locationQuery: { foo: 'bar' }
+            })
+
+            const calls = vi.mocked(window.open).mock.calls
+            expect(calls).toHaveLength(1)
+            const url = calls[0][0] as string
+
+            // Extract pathname from URL (before the query string)
+            const pathname = url.split('?')[0]
+
+            // Check that hash in pathname is encoded exactly once
+            expect(pathname).toContain('ticket%231234.txt')
+            // Ensure the pathname doesn't have double encoded hash
+            expect(pathname).not.toContain('ticket%2523')
+          }
+        })
+      })
     })
   })
 })
 
 function getWrapper({
   setup,
-  isFilesAppActive = false
+  isFilesAppActive = false,
+  spaceMock: customSpaceMock
 }: {
   setup: (instance: ReturnType<typeof useFileActionsOpenWithApp>) => void
   isFilesAppActive?: boolean
+  spaceMock?: SpaceResource
 }) {
   vi.mocked(useIsFilesAppActive).mockReturnValueOnce(computed(() => isFilesAppActive))
 
@@ -97,7 +136,7 @@ function getWrapper({
         provide: mocks,
         pluginOptions: {
           piniaOptions: {
-            spacesState: { spaces: [spaceMock] },
+            spacesState: { spaces: [customSpaceMock || spaceMock] },
             appsState: {
               apps: {
                 'text-editor': mock<ApplicationInformation>({

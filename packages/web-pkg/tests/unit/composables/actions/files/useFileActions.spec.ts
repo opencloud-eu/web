@@ -103,11 +103,49 @@ describe('fileActions', () => {
         }
       })
       mocks.$router.hasRoute.mockReturnValue(true)
+
+      const mockSpace = mock<SpaceResource>({
+        getDriveAliasAndItem: () => 'personal/admin/test.txt'
+      })
+
       const result = editorAction.route({
-        space: mock<SpaceResource>(),
+        space: mockSpace,
         resources: actionOptions.resources
       })
       expect(result).not.toBeNull()
+    })
+
+    it('encodes special characters like hash in driveAliasAndItem', () => {
+      let editorAction: FileAction
+      const { mocks } = getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(actionOptions)
+          editorAction = actions.find((a) => a.name === 'editor-text-editor')
+        }
+      })
+      mocks.$router.hasRoute.mockReturnValue(true)
+      mocks.$router.resolve.mockReturnValue({ href: '/test' } as any)
+
+      const mockSpace = mock<SpaceResource>({
+        getDriveAliasAndItem: () => 'personal/admin/ticket#1234/logs.txt'
+      })
+      const mockResource = mock<Resource>({
+        path: '/ticket#1234/logs.txt',
+        fileId: 'test-file-id'
+      })
+
+      editorAction.route({
+        space: mockSpace,
+        resources: [mockResource]
+      })
+
+      expect(mocks.$router.resolve).toHaveBeenCalledWith(
+        expect.objectContaining({
+          params: {
+            driveAliasAndItem: 'personal/admin/ticket%231234/logs.txt'
+          }
+        })
+      )
     })
   })
 
