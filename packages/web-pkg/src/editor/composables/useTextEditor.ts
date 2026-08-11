@@ -145,15 +145,17 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editable: !readonly.value
   }
 
-  watch(options.modelValue, (content) => {
-    if (!unref(editor) || unref(editor)?.isFocused) {
-      return
-    }
-    // In remote mode the Y.Doc is the source of truth — never round-trip
-    // `modelValue` back into the editor (would clobber peer edits).
-    if (options.ydoc) return
-    setContent(content)
-  })
+  if (options.modelValue) {
+    watch(options.modelValue, (content) => {
+      if (!unref(editor) || unref(editor)?.isFocused) {
+        return
+      }
+      // In remote mode the Y.Doc is the source of truth — never round-trip
+      // `modelValue` back into the editor (would clobber peer edits).
+      if (options.ydoc) return
+      setContent(content)
+    })
+  }
 
   if (strategy.editorContentType) {
     editorOptions.contentType = strategy.editorContentType()

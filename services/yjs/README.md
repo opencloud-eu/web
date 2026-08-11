@@ -4,8 +4,12 @@ The Yjs server for OpenCloud. It runs a
 [Hocuspocus](https://tiptap.dev/docs/hocuspocus) server that relays Yjs updates between clients
 editing the same file.
 
-The service is stateless. Documents are not persisted here, they are file-backed via WebDAV and
-hydrated from the client. Every connection is authenticated and authorized against OpenCloud:
+The service persists nothing. Documents are file-backed via WebDAV and hydrated from the client.
+Rooms still live in process memory, so all peers of a document must reach the same instance: run a
+single instance, or shard by document with sticky routing. Peers split across instances silently
+stop seeing each other, and their saves collide instead of merging.
+
+Every connection is authenticated and authorized against OpenCloud:
 
 - the bearer token is validated against `/graph/v1.0/me`
 - write access is derived from the effective permission actions on the file

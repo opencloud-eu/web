@@ -695,7 +695,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     // HocuspocusProvider has no `parameters` option, so query params for the
     // Yjs server go into the URL.
     const version = toValue(appVersion)
-    const wsUrlWithParams = `${serverUrl}?appVersion=${encodeURIComponent(version)}`
+    const separator = serverUrl.includes('?') ? '&' : '?'
+    const wsUrlWithParams = `${serverUrl}${separator}appVersion=${encodeURIComponent(version)}`
     const prov: HocuspocusProvider = new HocuspocusProvider({
       url: wsUrlWithParams,
       name,

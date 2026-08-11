@@ -45,6 +45,10 @@ const appVersionByDocument = new Map<string, string>()
 // refuse it before it becomes a Graph URL.
 const MAX_DOCUMENT_NAME_LENGTH = 512
 
+// Bounds each Graph call so a stalled OpenCloud cannot keep WebSocket
+// handshakes hanging in `onAuthenticate` indefinitely.
+const GRAPH_TIMEOUT_MS = 10_000
+
 /**
  * App-version gate: everybody in a room must run the same client version, or
  * two incompatible Y.Doc layouts end up in one document. The first connect for
@@ -69,7 +73,7 @@ function enforceAppVersion(documentName: string, clientAppVersion: string): void
   }
   if (clientAppVersion !== baseline) {
     throw new Error(
-      `app version mismatch for document="${documentName}": ` +
+      `app version mismatch for document=${JSON.stringify(documentName)}: ` +
         `client=${clientAppVersion} room=${baseline}, please reload`
     )
   }
@@ -97,7 +101,8 @@ function deterministicColor(seed: string): string {
 
 async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> {
   const res = await fetch(`${opencloudUrl}/graph/v1.0/me`, {
-    headers: { Authorization: `Bearer ${token}` }
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(GRAPH_TIMEOUT_MS)
   })
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
@@ -131,7 +136,7 @@ function parseDocumentId(documentName: string): { driveId: string; itemId: strin
   const fileId = scopeSep >= 0 ? documentName.slice(scopeSep + 2) : documentName
   const sep = fileId.indexOf('!')
   if (sep <= 0 || sep === fileId.length - 1) {
-    throw new Error(`malformed documentName="${documentName}"`)
+    throw new Error(`malformed documentName=${JSON.stringify(documentName)}`)
   }
   return { driveId: fileId.slice(0, sep), itemId: fileId }
 }
@@ -154,7 +159,10 @@ async function probeFileAccess(token: string, documentName: string): Promise<Fil
     `/items/${encodeURIComponent(itemId)}/permissions` +
     `?$select=${encodeURIComponent('@libre.graph.permissions.actions.allowedValues')}`
 
-  const res = await fetch(permsUrl, { headers: { Authorization: `Bearer ${token}` } })
+  const res = await fetch(permsUrl, {
+    headers: { Authorization: `Bearer ${token}` },
+    signal: AbortSignal.timeout(GRAPH_TIMEOUT_MS)
+  })
 
   if (res.status === 401 || res.status === 403 || res.status === 404) {
     return null
@@ -199,7 +207,7 @@ const server = new Server({
       const id = 'dev-fake-user'
       // Gated the same way as a real connection, so the two paths cannot drift.
       enforceAppVersion(documentName, clientAppVersion)
-      console.log(`[onAuthenticate] dev-fake document="${documentName}"`)
+      console.log(`[onAuthenticate] dev-fake document=${JSON.stringify(documentName)}`)
       return {
         user: {
           id,
@@ -215,7 +223,7 @@ const server = new Server({
     // Authorization: does this user have the file at all, and may they write it.
     const access = await probeFileAccess(token, documentName)
     if (access === null) {
-      throw new Error(`access denied for document="${documentName}"`)
+      throw new Error(`access denied for document=${JSON.stringify(documentName)}`)
     }
 
     // Identity and access are settled, so this caller is entitled to influence
@@ -230,7 +238,7 @@ const server = new Server({
     connectionConfig.readOnly = readOnly
 
     console.log(
-      `[onAuthenticate] document="${documentName}" user="${me.displayName ?? id}" ` +
+      `[onAuthenticate] document=${JSON.stringify(documentName)} user="${me.displayName ?? id}" ` +
         `id="${id}" readOnly=${readOnly}`
     )
     return {
@@ -246,11 +254,11 @@ const server = new Server({
 
   async onConnect({ documentName, requestHeaders }) {
     const origin = requestHeaders.get('origin') ?? '-'
-    console.log(`[onConnect] document="${documentName}" origin=${origin}`)
+    console.log(`[onConnect] document=${JSON.stringify(documentName)} origin=${origin}`)
   },
 
   async onDisconnect({ documentName, clientsCount }) {
-    console.log(`[onDisconnect] document="${documentName}" remaining=${clientsCount}`)
+    console.log(`[onDisconnect] document=${JSON.stringify(documentName)} remaining=${clientsCount}`)
     if (clientsCount === 0) {
       // Forget the version baseline once the room empties out so a new
       // deploy can start fresh without manual restart.
