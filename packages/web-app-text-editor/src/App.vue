@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef, unref } from 'vue'
+import { computed, toRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   ContentType,
@@ -65,4 +65,15 @@ const textEditor = useTextEditor({
   placeholder: unref(placeholder),
   onUpdate: (content) => emit('update:currentContent', content)
 })
+
+// Update editor when content is loaded after initial mount (e.g., via recovery mechanism).
+// Only triggers when transitioning from undefined to avoid interfering with normal edits.
+watch(
+  () => currentContent,
+  (newContent, oldContent) => {
+    if (oldContent === undefined && newContent && textEditor.editor.value) {
+      textEditor.setContent(newContent)
+    }
+  }
+)
 </script>
