@@ -40,17 +40,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { ref, unref, watch } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 
 type Option = Group & { readonly?: boolean }
 
 const {
-  selectedGroups,
+  selectedGroups = [],
   groupOptions,
   requiredMark = false
 } = defineProps<{
-  selectedGroups: Group[]
+  selectedGroups?: Group[]
   groupOptions: Group[]
   requiredMark?: boolean
 }>()
@@ -65,9 +65,8 @@ const onUpdate = (group: Option[]) => {
   emit('selectedOptionChange', unref(selectedOptions))
 }
 
-const currentGroups = computed(() => selectedGroups)
 watch(
-  currentGroups,
+  () => selectedGroups,
   () => {
     selectedOptions.value = selectedGroups
       .map((g) => ({
