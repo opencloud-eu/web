@@ -1,8 +1,8 @@
 import { ref, unref } from 'vue'
 import type { Resource } from '@opencloud-eu/web-client'
-import type { CollaborativeAdapter, CollaborativeAdapterContext } from '@opencloud-eu/web-pkg'
+import type { YjsAdapter, YjsAdapterContext } from '@opencloud-eu/web-pkg'
 import {
-  makeTiptapCollabAdapter,
+  makeTiptapYjsAdapter,
   useContentStrategy,
   type ContentType,
   type ContentTypeStrategy,
@@ -24,16 +24,14 @@ export function detectContentType(resource: Resource): TextEditorContentType {
 }
 
 /**
- * Builds the Y.Doc bridge the AppWrapper's collaborative session runs on.
+ * Builds the Y.Doc bridge the AppWrapper's Yjs session runs on.
  *
  * Called during the wrapper's setup, before the file is loaded, so the
  * content type is resolved lazily, per call, from the resource ref. The
  * strategies themselves must be built eagerly: they call `useGettext()`, which
  * only works while a setup context is active.
  */
-export function makeTextEditorAdapter({
-  resource
-}: CollaborativeAdapterContext): CollaborativeAdapter {
+export function makeTextEditorAdapter({ resource }: YjsAdapterContext): YjsAdapter {
   const { resolveStrategy } = useContentStrategy()
 
   // The adapter needs its own editor state for the headless fallback path; the
@@ -50,5 +48,5 @@ export function makeTextEditorAdapter({
     markdown: resolveStrategy('markdown', state)
   }
 
-  return makeTiptapCollabAdapter(() => strategies[detectContentType(unref(resource))])
+  return makeTiptapYjsAdapter(() => strategies[detectContentType(unref(resource))])
 }

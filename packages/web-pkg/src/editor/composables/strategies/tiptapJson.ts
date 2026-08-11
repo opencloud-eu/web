@@ -39,7 +39,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
 
   const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
-      StarterKit.configure({ link: false, undoRedo: options?.collaborative ? false : undefined }),
+      StarterKit.configure({ link: false, undoRedo: options?.yjs ? false : undefined }),
       createLinkExtension(),
       Image.configure({
         inline: false,

@@ -69,9 +69,9 @@ import {
   useExtensionRegistry,
   ActionExtension,
   CustomComponentExtension,
-  useCollaborativeDocument
+  useYjsSession
 } from '../../composables'
-import { AppWrapperSlotHandlers, AppWrapperSlotProps, CollaborativeOptions } from './types'
+import { AppWrapperSlotHandlers, AppWrapperSlotProps, YjsOptions } from './types'
 import {
   Resource,
   SpaceResource,
@@ -103,7 +103,7 @@ const {
   wrappedComponent = null,
   importResourceWithExtension = () => null,
   disableAutoSave = false,
-  collaborative = null
+  yjs = null
 } = defineProps<{
   applicationId: string
   urlForResourceOptions?: UrlForResourceOptions
@@ -112,11 +112,11 @@ const {
   importResourceWithExtension?: (resource: Resource) => string
   disableAutoSave?: boolean
   /**
-   * Opt the app into realtime collaboration. When set, the wrapper owns the
+   * Opt the app into collaborative editing. When set, the wrapper owns the
    * Y.Doc session and hands `ydoc` / `awareness` to the wrapped component via
    * the slot.
    */
-  collaborative?: CollaborativeOptions
+  yjs?: YjsOptions
 }>()
 
 const { $gettext, current: currentLanguage } = useGettext()
@@ -160,7 +160,7 @@ const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
 /**
  * Id of the resource `currentContent` was fetched for. `resource` is swapped
- * ahead of the body, so comparing the two is what tells a collaborative
+ * ahead of the body, so comparing the two is what tells a collaborating
  * session whether the content it would hydrate from belongs to the file it is
  * about to open.
  */
@@ -202,11 +202,9 @@ registerExtensions(appBarExtension)
 const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const isEditor = computed(() => {
-  // A collaborative app drives its content through the Y.Doc session rather
+  // A collaborative app drives its content through the Yjs session rather
   // than through `update:currentContent`, so opting in makes it an editor.
-  return (
-    Boolean(collaborative) || Boolean(wrappedComponent.emits?.includes('update:currentContent'))
-  )
+  return Boolean(yjs) || Boolean(wrappedComponent.emits?.includes('update:currentContent'))
 })
 
 const hasProp = (name: string) => {
@@ -234,8 +232,8 @@ const {
   applicationId
 })
 
-const collaborativeDocument = collaborative
-  ? useCollaborativeDocument({
+const yjsSession = yjs
+  ? useYjsSession({
       resource,
       currentContent: () => (unref(currentContent) as string) ?? '',
       // Hydration seeds the Y.Doc from `currentContent`, so the session must
@@ -243,9 +241,9 @@ const collaborativeDocument = collaborative
       enabled: () =>
         !unref(loading) && !unref(loadingError) && unref(contentResourceId) === unref(resource)?.id,
       isReadOnly,
-      adapter: collaborative.makeAdapter({ resource }),
-      appVersion: collaborative.appVersion,
-      documentPrefix: collaborative.documentPrefix ?? applicationId,
+      adapter: yjs.makeAdapter({ resource }),
+      appVersion: yjs.appVersion,
+      documentPrefix: yjs.documentPrefix ?? applicationId,
       onContentChange: (value) => {
         currentContent.value = value
       },
@@ -270,7 +268,7 @@ const collaborativeDocument = collaborative
     })
   : null
 
-// Keep the loading screen up until the collaborative session has synced and
+// Keep the loading screen up until the Yjs session has synced and
 // hydrated too, so the wrapped component always mounts against a ready Y.Doc
 // and never has to render its own placeholder.
 // A load failure short-circuits it, otherwise the error screen below would
@@ -278,13 +276,13 @@ const collaborativeDocument = collaborative
 // report itself ready.
 const isLoading = computed(() => {
   if (unref(loadingError)) return false
-  return unref(loading) || Boolean(collaborativeDocument && !unref(collaborativeDocument.isReady))
+  return unref(loading) || Boolean(yjsSession && !unref(yjsSession.isReady))
 })
 
-// A collaborative session can force read-only on top of the WebDAV
+// A Yjs session can force read-only on top of the WebDAV
 // permissions, e.g. after locking the room on an app-version mismatch.
 const effectiveReadOnly = computed(
-  () => unref(isReadOnly) || Boolean(unref(collaborativeDocument?.isLockedForReload))
+  () => unref(isReadOnly) || Boolean(unref(yjsSession?.isLockedForReload))
 )
 
 const isDirty = computed(() => {
@@ -310,10 +308,10 @@ watch(isDirty, (dirty) => {
   }
 })
 
-if (collaborativeDocument) {
-  watch(collaborativeDocument.error, (error) => {
+if (yjsSession) {
+  watch(yjsSession.error, (error) => {
     if (!error) return
-    showErrorMessage({ title: $gettext('Realtime collaboration error'), desc: error.message })
+    showErrorMessage({ title: $gettext('Collaboration error'), desc: error.message })
   })
 }
 
@@ -502,7 +500,7 @@ watch(
     if (!unref(noResourceLoading)) {
       // Back to square one for the new file. `loadResourceTask` swaps
       // `resource` well before `loadFileTask` has fetched the matching body,
-      // and a collaborative session keys its room off `resource` while it
+      // and a Yjs session keys its room off `resource` while it
       // hydrates from `currentContent`. Without this reset the session for the
       // new file would seed itself with the previous file's content, and the
       // next save would write it to the new path.
@@ -585,13 +583,12 @@ const saveFileTask = useTask(function* () {
   } catch (e) {
     // 409 / 412 — `previousEntityTag` didn't match what the server has.
     //
-    // A connected collaborative session can resolve that on its own: the most
+    // A connected Yjs session can resolve that on its own: the most
     // likely cause is a peer in the same room saving just before us, and our
     // Y.Doc already holds that peer's edits, so refetching for the fresh etag
     // and retrying publishes the merged state rather than either side's half.
     if (e.statusCode === 412 || e.statusCode === 409) {
-      const canReconcile =
-        Boolean(collaborativeDocument) && unref(collaborativeDocument.status) === 'connected'
+      const canReconcile = Boolean(yjsSession) && unref(yjsSession.status) === 'connected'
 
       if (canReconcile) {
         try {
@@ -611,7 +608,7 @@ const saveFileTask = useTask(function* () {
           // already merged whatever a peer saved, so nothing is lost. A write
           // from outside the room never reached this document, and retrying
           // would destroy it without the user ever seeing it.
-          const writtenByRoom = yield* call(collaborativeDocument.wasWrittenByRoom(freshEtag))
+          const writtenByRoom = yield* call(yjsSession.wasWrittenByRoom(freshEtag))
           if (writtenByRoom) {
             // Retry the PUT with the fresh etag, publishing our combined state.
             const retry = yield putFileContents(currentFileContext, {
@@ -625,7 +622,7 @@ const saveFileTask = useTask(function* () {
         } catch (retryErr) {
           // Refetch or retry blew up, drop through to the user-facing
           // conflict popup so they can still recover by copying out.
-          console.error('[collab] conflict reconciliation failed:', retryErr)
+          console.error('[yjs] conflict reconciliation failed:', retryErr)
         }
       }
       errorPopup(
@@ -913,8 +910,8 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   // false, which for a collaborative app includes the session being synced
   // and hydrated. So these are non-null by the time the wrapped component
   // sees them. Always null for non-collaborative apps.
-  ydoc: unref(collaborativeDocument?.ydoc) ?? null,
-  awareness: unref(collaborativeDocument?.awareness) ?? null,
+  ydoc: unref(yjsSession?.ydoc) ?? null,
+  awareness: unref(yjsSession?.awareness) ?? null,
 
   'onUpdate:resource': (value: Resource) => {
     space.value = unref(unref(currentFileContext).space)

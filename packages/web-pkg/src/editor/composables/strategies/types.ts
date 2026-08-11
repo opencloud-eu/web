@@ -6,10 +6,10 @@ export interface ExtensionsOptions {
   /**
    * The editor binds to a shared Y.Doc. Strategies must then drop
    * `StarterKit`'s `undoRedo`, because the `Collaboration` extension brings
-   * the collab-aware undo manager (`yUndoPlugin`) and Tiptap warns and
+   * the Yjs-aware undo manager (`yUndoPlugin`) and Tiptap warns and
    * double-stacks history when both run.
    */
-  collaborative?: boolean
+  yjs?: boolean
 }
 
 export interface ContentTypeStrategy {
@@ -18,7 +18,7 @@ export interface ContentTypeStrategy {
    * Render a ProseMirror document to the native string format.
    *
    * Takes the document node rather than an `Editor` so it can also run on a
-   * document that no editor is mounted on (e.g. relevant for the collaborative
+   * document that no editor is mounted on (e.g. relevant for the Yjs
    * adapter). A mounted editor passes `editor.state.doc`.
    */
   serialize(doc: ProseMirrorNode): string

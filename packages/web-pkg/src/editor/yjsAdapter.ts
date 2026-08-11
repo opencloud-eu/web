@@ -5,13 +5,13 @@ import { toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import type * as Y from 'yjs'
 import type { Schema } from '@tiptap/pm/model'
-import type { CollaborativeAdapter } from '../composables/collaborative/types'
+import type { YjsAdapter } from '../composables/yjs/types'
 import type { ContentTypeStrategy } from './composables/strategies/types'
 import { DEFAULT_YDOC_FRAGMENT } from './types'
 
 /**
  * Bridges the `web-pkg/editor` strategy contract to the
- * {@link CollaborativeAdapter} contract that `useCollaborativeDocument`
+ * {@link YjsAdapter} contract that `useYjsSession`
  * expects.
  *
  * Each strategy already knows how to convert between its native string format
@@ -31,10 +31,10 @@ import { DEFAULT_YDOC_FRAGMENT } from './types'
  * file is loaded, so the content type isn't known yet. Strategies must be
  * built in a setup context; resolving the getter later is safe.
  */
-export function makeTiptapCollabAdapter(
+export function makeTiptapYjsAdapter(
   strategy: MaybeRefOrGetter<ContentTypeStrategy>,
   fragment = DEFAULT_YDOC_FRAGMENT
-): CollaborativeAdapter {
+): YjsAdapter {
   // Building the schema walks every extension, so keep one per strategy. The
   // getter can resolve to a different strategy per call (the content type is
   // detected from the resource), hence a map rather than a single slot.
@@ -42,7 +42,7 @@ export function makeTiptapCollabAdapter(
   function schemaFor(current: ContentTypeStrategy): Schema {
     let schema = schemas.get(current)
     if (!schema) {
-      schema = getSchema(current.extensions({ collaborative: true }))
+      schema = getSchema(current.extensions({ yjs: true }))
       schemas.set(current, schema)
     }
     return schema
@@ -53,7 +53,7 @@ export function makeTiptapCollabAdapter(
     return new Editor({
       element: detached,
       extensions: [
-        ...toValue(strategy).extensions({ collaborative: true }),
+        ...toValue(strategy).extensions({ yjs: true }),
         Collaboration.configure({ document: ydoc, field: fragment })
       ]
     })

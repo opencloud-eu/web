@@ -13,16 +13,13 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 
 import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
-import type {
-  CollaborativeDocument,
-  CollaborativeStatus
-} from '../../../../src/composables/collaborative'
+import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContext } from '../../../../src/composables/appDefaults'
 import { useMessages } from '../../../../src/composables/piniaStores'
 
-const { useAppDefaultsSpy, useCollaborativeDocumentSpy } = vi.hoisted(() => ({
+const { useAppDefaultsSpy, useYjsSessionSpy } = vi.hoisted(() => ({
   useAppDefaultsSpy: vi.fn(),
-  useCollaborativeDocumentSpy: vi.fn()
+  useYjsSessionSpy: vi.fn()
 }))
 
 vi.mock('vue-router', async (importOriginal) => ({
@@ -34,8 +31,8 @@ vi.mock('../../../../src/composables/appDefaults/useAppDefaults', () => ({
   useAppDefaults: (...args: unknown[]) => useAppDefaultsSpy(...args)
 }))
 
-vi.mock('../../../../src/composables/collaborative/useCollaborativeDocument', () => ({
-  useCollaborativeDocument: (...args: unknown[]) => useCollaborativeDocumentSpy(...args)
+vi.mock('../../../../src/composables/yjs/useYjsSession', () => ({
+  useYjsSession: (...args: unknown[]) => useYjsSessionSpy(...args)
 }))
 
 // Several tests drive the save into its conflict branch on purpose, and
@@ -70,8 +67,8 @@ const wrappedComponent = defineComponent({
 })
 
 function setup({
-  collaborative = true,
-  status = 'connected' as CollaborativeStatus,
+  yjsEnabled = true,
+  status = 'connected' as YjsStatus,
   // Whether the room can account for the write that caused a save conflict.
   writtenByRoom = true,
   putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' }))
@@ -93,9 +90,9 @@ function setup({
   )
 
   let sessionOptions: any
-  useCollaborativeDocumentSpy.mockImplementation((options: any) => {
+  useYjsSessionSpy.mockImplementation((options: any) => {
     sessionOptions = options
-    return mock<CollaborativeDocument>({
+    return mock<YjsSession>({
       isReady: ref(true) as any,
       status: ref(status) as any,
       // Auto-mocked refs are truthy, which would fold into `effectiveReadOnly`
@@ -124,9 +121,7 @@ function setup({
     props: {
       applicationId: 'test-app',
       wrappedComponent,
-      ...(collaborative
-        ? { collaborative: { appVersion: '1.0.0', makeAdapter: () => mock<any>() } }
-        : {})
+      ...(yjsEnabled ? { yjs: { appVersion: '1.0.0', makeAdapter: () => mock<any>() } } : {})
     },
     global: {
       plugins: [
@@ -176,7 +171,7 @@ function setup({
   }
 }
 
-describe('AppWrapper — collaborative session gate', () => {
+describe('AppWrapper — Yjs session gate', () => {
   it('stays disabled until the body for the current resource has arrived', async () => {
     const s = setup()
     await nextTick()
@@ -221,7 +216,7 @@ describe('AppWrapper — resource identity across a save', () => {
   // `id === fileId === oc:fileid` - but a directly shared file carries the
   // share id in `id` and the real file id in `fileId`. Flattening the two moved
   // `resource.id` off `contentResourceId`, which shut the session's `enabled`
-  // gate for good: the collaborative session ended at the first save and never
+  // gate for good: the Yjs session ended at the first save and never
   // came back, with nothing shown to the user.
   it('keeps id and fileId across a save on a directly shared file', async () => {
     // What `buildIncomingShareResource` produces for a share-space root.
@@ -256,7 +251,7 @@ describe('AppWrapper — resource identity across a save', () => {
 
     const session = s.session()
     // Identity is load-time and must survive the write: `fileId` keys the
-    // collaborative room, `id` keys the enabled gate.
+    // Yjs room, `id` keys the enabled gate.
     expect(unref(session.resource).id).toBe('share-mount-id')
     expect(unref(session.resource).fileId).toBe('storage$space!real-file-id')
     expect(s.isEnabled()).toBe(true)
@@ -298,12 +293,12 @@ describe('AppWrapper — save conflict handling', () => {
   }
 
   // Regression: the refetch-and-retry path was unconditional, so it also ran
-  // for plain editors and for deployments with no realtime server. There is
+  // for plain editors and for deployments with no Yjs server. There is
   // nothing to merge in that case - the divergence is someone else's write,
   // and retrying over it destroyed their work with no dialog and no toast.
   it('shows the conflict dialog instead of retrying when there is no session', async () => {
     const putFileContents = vi.fn().mockRejectedValue(conflict())
-    const s = setup({ collaborative: false, putFileContents })
+    const s = setup({ yjsEnabled: false, putFileContents })
     await nextTick()
     await s.resolveResource(FILE_A)
     await s.resolveContent('content of a')
@@ -363,7 +358,7 @@ describe('AppWrapper — save conflict handling', () => {
   it('explains a 423 instead of showing an empty error', async () => {
     const locked = Object.assign(new Error('locked'), { statusCode: 423, response: {} })
     const putFileContents = vi.fn().mockRejectedValue(locked)
-    const s = setup({ collaborative: false, putFileContents })
+    const s = setup({ yjsEnabled: false, putFileContents })
     await nextTick()
     await s.resolveResource(FILE_A)
     await s.resolveContent('content of a')

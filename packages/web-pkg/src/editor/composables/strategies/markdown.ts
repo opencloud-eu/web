@@ -70,7 +70,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     })
 
     return [
-      StarterKit.configure({ link: false, undoRedo: options?.collaborative ? false : undefined }),
+      StarterKit.configure({ link: false, undoRedo: options?.yjs ? false : undefined }),
       Markdown,
       createLinkExtension(),
       Table.configure({ resizable: false }),

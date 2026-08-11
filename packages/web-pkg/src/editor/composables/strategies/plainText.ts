@@ -41,7 +41,7 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
   const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
       StarterKit.configure({
-        undoRedo: options?.collaborative ? false : undefined,
+        undoRedo: options?.yjs ? false : undefined,
         blockquote: false,
         bold: false,
         bulletList: false,

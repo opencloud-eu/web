@@ -2,15 +2,15 @@ import type * as Y from 'yjs'
 
 /**
  * App-specific adapter between the native file format and the shared Y.Doc.
- * The collaborative session itself stays generic: it handles realtime sync,
+ * The Yjs session itself stays generic: it handles sync,
  * the etag loop, and lifecycle. Adapters describe how to move bytes in and
  * out of the doc.
  */
-export interface CollaborativeAdapter {
+export interface YjsAdapter {
   /**
    * Populate an empty Y.Doc from the native file content. Called once per
    * document by the elected hydrating client, unless stale recovery re-runs
-   * it. Other clients receive the resulting Y.Doc state through the realtime
+   * it. Other clients receive the resulting Y.Doc state through the Yjs
    * sync.
    *
    * Must be a no-op if the Y.Doc already has app data.

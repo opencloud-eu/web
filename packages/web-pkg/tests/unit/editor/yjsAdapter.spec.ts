@@ -9,7 +9,7 @@ vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
 }))
 
-import { makeTiptapCollabAdapter } from '../../../src/editor/collabAdapter'
+import { makeTiptapYjsAdapter } from '../../../src/editor/yjsAdapter'
 import { useStrategyMarkdown } from '../../../src/editor/composables/strategies/markdown'
 import { useStrategyPlainText } from '../../../src/editor/composables/strategies/plainText'
 import type { ContentTypeStrategy } from '../../../src/editor/composables/strategies/types'
@@ -29,7 +29,7 @@ function boundEditor(strategy: ContentTypeStrategy, ydoc: Y.Doc): Editor {
   return new Editor({
     element: document.createElement('div'),
     extensions: [
-      ...strategy.extensions({ collaborative: true }),
+      ...strategy.extensions({ yjs: true }),
       Collaboration.configure({ document: ydoc, field: DEFAULT_YDOC_FRAGMENT })
     ]
   })
@@ -48,7 +48,7 @@ const MARKDOWN = [
   'Trailing paragraph.'
 ].join('\n')
 
-describe('makeTiptapCollabAdapter', () => {
+describe('makeTiptapYjsAdapter', () => {
   beforeEach(() => {
     createTestingPinia()
   })
@@ -56,7 +56,7 @@ describe('makeTiptapCollabAdapter', () => {
   describe('serialize', () => {
     it('round-trips markdown through the shared doc', () => {
       const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
 
       adapter.hydrate(ydoc, MARKDOWN)
@@ -67,7 +67,7 @@ describe('makeTiptapCollabAdapter', () => {
 
     it('matches what an editor bound to the same doc produces', () => {
       const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
       adapter.hydrate(ydoc, MARKDOWN)
 
@@ -80,7 +80,7 @@ describe('makeTiptapCollabAdapter', () => {
 
     it('picks up edits a bound editor makes', () => {
       const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
       adapter.hydrate(ydoc, MARKDOWN)
 
@@ -98,7 +98,7 @@ describe('makeTiptapCollabAdapter', () => {
 
     it('does not write to the Y.Doc', () => {
       const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
       adapter.hydrate(ydoc, MARKDOWN)
 
@@ -113,7 +113,7 @@ describe('makeTiptapCollabAdapter', () => {
 
     it('serializes plain text with single newlines between blocks', () => {
       const strategy = useStrategyPlainText(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
       const content = 'first line\nsecond line\n\nfourth line'
 
@@ -127,7 +127,7 @@ describe('makeTiptapCollabAdapter', () => {
       // The adapter is built before the file is loaded, so the content type is
       // only known once the resource is there.
       let strategy: ContentTypeStrategy | null = null
-      const adapter = makeTiptapCollabAdapter(() => strategy!)
+      const adapter = makeTiptapYjsAdapter(() => strategy!)
       const ydoc = new Y.Doc()
 
       strategy = useStrategyMarkdown(createState())
@@ -141,7 +141,7 @@ describe('makeTiptapCollabAdapter', () => {
   describe('hasContent', () => {
     it('is false for an untouched doc and true after hydration', () => {
       const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
 
       expect(adapter.hasContent(ydoc)).toBe(false)
@@ -155,7 +155,7 @@ describe('makeTiptapCollabAdapter', () => {
   describe('reset', () => {
     it('empties the fragment so the doc can be hydrated again', () => {
       const strategy = useStrategyMarkdown(createState())
-      const adapter = makeTiptapCollabAdapter(strategy)
+      const adapter = makeTiptapYjsAdapter(strategy)
       const ydoc = new Y.Doc()
       adapter.hydrate(ydoc, MARKDOWN)
 

@@ -1204,7 +1204,7 @@ importers:
         specifier: ^8.0.3
         version: 8.2.1(@types/node@25.9.5)(jiti@2.7.0)(yaml@2.9.0)
 
-  services/realtime:
+  services/yjs:
     dependencies:
       '@hocuspocus/server':
         specifier: ^4.1.0

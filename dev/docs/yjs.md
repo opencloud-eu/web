@@ -1,10 +1,8 @@
-# Realtime collaboration
+# Yjs
 
-This doc explains the architecture and implementation of realtime collaboration in OpenCloud Web. It is intended for developers who want to understand how it works, or who want to implement their own collaborative app on top of the same infrastructure.
+This doc explains the architecture and implementation of collaborative editing in OpenCloud Web. It is intended for developers who want to understand how it works, or who want to implement their own collaborative app on top of the same infrastructure.
 
-## Yjs
-
-Collaboration is built on [Yjs](https://yjs.dev/), a CRDT framework for building collaborative applications. Yjs provides the data structures and algorithms for merging concurrent edits from multiple clients, ensuring that all clients eventually converge to the same state.
+It is all built on [Yjs](https://yjs.dev/), a CRDT framework for building collaborative applications. Yjs provides the data structures and algorithms for merging concurrent edits from multiple clients, ensuring that all clients eventually converge to the same state. `yjs` is the term used throughout the code for everything belonging to it, most of all the external server.
 
 ## System view
 
@@ -41,9 +39,9 @@ flowchart TB
 
 ### The Yjs server
 
-The [OpenCloud Yjs server](https://github.com/opencloud-eu/web/tree/main/services/realtime) runs a [Hocuspocus](https://tiptap.dev/docs/hocuspocus) server that relays Yjs updates between clients editing the same file.
+The [OpenCloud Yjs server](https://github.com/opencloud-eu/web/tree/main/services/yjs) runs a [Hocuspocus](https://tiptap.dev/docs/hocuspocus) server that relays Yjs updates between clients editing the same file.
 
-It is reachable at whatever URL the deployment configures. In the Web dev setup that is `/realtime` on the OpenCloud host, forwarded by OC's own proxy, but it could equally be a separate domain behind its own ingress. The server URL needs to be defined via the `WEB_OPTION_YJS_SERVER_URL` environment variable.
+It is reachable at whatever URL the deployment configures. In the Web dev setup that is `/yjs` on the OpenCloud host, forwarded by OC's own proxy, but it could equally be a separate domain behind its own ingress. The server URL needs to be defined via the `WEB_OPTION_YJS_SERVER_URL` environment variable.
 
 | It does                                           | It does not                                      |
 | ------------------------------------------------- | ------------------------------------------------ |
@@ -87,7 +85,7 @@ sequenceDiagram
 
 The version baseline is recorded only once identity and access are settled. Doing it any earlier let an unauthenticated caller name any room, claim a version nobody else runs, and lock every legitimate client out of that file until the process restarted - the entry is cleared by `onDisconnect`, which never fires for a connection that was rejected.
 
-The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `collaborative.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.fileId ?? resource.id`, which is the real composite id for everyone: plain WebDAV resources set `fileId` to `id`, and the recipient of a share gets it from `remoteItem.id`. Neither of the other two candidates works. `resource.remoteItemId` is the _share space_ id, so every file inside a shared folder would collapse into one room. `resource.id` alone breaks the recipient of a _directly_ shared file, where the resource is the share root and `id` is that recipient's private share-jail mount point - each recipient would get their own room, and since both sides still report `connected`, a save conflict would be silently retried over the other side's write rather than raising a dialog. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
+The room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>`. The prefix is `yjs.documentPrefix`, defaulting to the app's `applicationId`. The file id is `resource.fileId ?? resource.id`, which is the real composite id for everyone: plain WebDAV resources set `fileId` to `id`, and the recipient of a share gets it from `remoteItem.id`. Neither of the other two candidates works. `resource.remoteItemId` is the _share space_ id, so every file inside a shared folder would collapse into one room. `resource.id` alone breaks the recipient of a _directly_ shared file, where the resource is the share root and `id` is that recipient's private share-jail mount point - each recipient would get their own room, and since both sides still report `connected`, a save conflict would be silently retried over the other side's write rather than raising a dialog. The server strips the `<prefix>::` part before parsing, so the ACL probe targets the real file. The prefix exists so two editors with incompatible Y.Doc layouts (Tiptap's `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
 
 Awareness is anti-spoofed: `beforeHandleAwareness` overwrites the `user` field on every inbound awareness state with the identity from the authenticated connection, so a client cannot present itself as someone else.
 
@@ -98,14 +96,14 @@ Ownership in one line: **`AppWrapper` owns the file and the session; the app own
 ```mermaid
 flowchart TB
     subgraph app["Extension - e.g. packages/web-app-text-editor"]
-        IDX["index.ts<br/><i>AppWrapperRoute(App, { collaborative })</i>"]
+        IDX["index.ts<br/><i>AppWrapperRoute(App, { yjs })</i>"]
         ADP["the adapter<br/><i>hydrate · serialize</i><br/><i>hasContent · reset</i>"]
         APP["App.vue<br/><i>useTextEditor(ydoc, awareness)</i>"]
     end
 
     subgraph pkg["web-pkg"]
         AW["AppWrapper.vue<br/><i>load · save · etag · dirty · autosave</i>"]
-        UCD["useCollaborativeDocument<br/><i>Y.Doc · provider · hydration</i>"]
+        UCD["useYjsSession<br/><i>Y.Doc · provider · hydration</i>"]
         UTE["useTextEditor<br/><i>Tiptap + Collaboration</i>"]
     end
 
@@ -113,9 +111,9 @@ flowchart TB
     HP["Yjs server"]
     DAV["WebDAV"]
 
-    IDX -->|"collaborative: { appVersion, makeAdapter }"| AW
+    IDX -->|"yjs: { appVersion, makeAdapter }"| AW
     AW -->|"makeAdapter(), once in setup"| ADP
-    ADP -->|"CollaborativeAdapter"| UCD
+    ADP -->|"YjsAdapter"| UCD
     AW --> UCD
     UCD <-->|"reads + writes through the adapter"| YDOC
     UCD <-->|"sync + awareness"| HP
@@ -142,7 +140,7 @@ An app turns on collaboration with one route option.
 // packages/web-app-text-editor/src/index.ts
 AppWrapperRoute(TextEditor, {
   applicationId: 'text-editor',
-  collaborative: {
+  yjs: {
     appVersion: pkg.version,
     makeAdapter: makeTextEditorAdapter
   }
@@ -152,15 +150,15 @@ AppWrapperRoute(TextEditor, {
 ### What happens when you open a file
 
 1. WebDAV loads the file → gets saved to `currentContent` (`AppWrapper`)
-2. Session creates the Y.Doc (empty, and it exists from here on) (`useCollaborativeDocument`, invoked by `AppWrapper`)
-3. `HocuspocusProvider` gets handed the Y.Doc and connects to the Yjs server and syncs (`useCollaborativeDocument`)
+2. Session creates the Y.Doc (empty, and it exists from here on) (`useYjsSession`, invoked by `AppWrapper`)
+3. `HocuspocusProvider` gets handed the Y.Doc and connects to the Yjs server and syncs (`useYjsSession`)
 
 From there on, first client:
 
-1. `hasContent(ydoc)` is `false` → this client wins the election → `adapter.hydrate` (`collabAdapter.ts`)
-2. `deserialize` (md/html pass through, json `JSON.parse`, plain-text builds the ProseMirror JSON itself) (`collabAdapter.ts`)
-3. Headless editor is constructed with the strategy's extensions + Collaboration bound to the existing Y.Doc - `ySyncPlugin` attaches here (`collabAdapter.ts`)
-4. `setContent` builds the ProseMirror tree, guided by `contentType` and the schema (`collabAdapter.ts`)
+1. `hasContent(ydoc)` is `false` → this client wins the election → `adapter.hydrate` (`yjsAdapter.ts`)
+2. `deserialize` (md/html pass through, json `JSON.parse`, plain-text builds the ProseMirror JSON itself) (`yjsAdapter.ts`)
+3. Headless editor is constructed with the strategy's extensions + Collaboration bound to the existing Y.Doc - `ySyncPlugin` attaches here (`yjsAdapter.ts`)
+4. `setContent` builds the ProseMirror tree, guided by `contentType` and the schema (`yjsAdapter.ts`)
 5. `ySyncPlugin` sees that transaction and writes the tree into the Y.XmlFragment
 6. Y.Doc lives locally, and syncs to the Yjs server if a provider exists
 
@@ -168,7 +166,7 @@ Both lists run _after_ the version handshake and the etag drift check, which can
 
 Client joining afterwards:
 
-1. `hasContent(ydoc)` is `true` → return early, no hydration, no election, no 150 ms wait. (`useCollaborativeDocument.ts`)
+1. `hasContent(ydoc)` is `true` → return early, no hydration, no election, no 150 ms wait. (`useYjsSession.ts`)
 2. Y.Doc lives locally, and syncs to the Yjs server if a provider exists
 
 ### Y.Doc
@@ -205,12 +203,12 @@ It exists for two reasons. It gives a late joiner the room's current state in on
 
 The server's replica is memory-only - no storage extension is wired up. When the last client disconnects, the room empties and that copy is gone. Reconnecting later starts from a blank server doc, which is why hydration runs again. That is a deliberate trade - see [Known limits](#known-limits).
 
-### The CollaborativeAdapter
+### The YjsAdapter
 
-The app provides a `CollaborativeAdapter` to the session, which is how the session reads and writes the Y.Doc. The adapter is responsible for converting between the native file format and the Y.Doc's shared types.
+The app provides a `YjsAdapter` to the session, which is how the session reads and writes the Y.Doc. The adapter is responsible for converting between the native file format and the Y.Doc's shared types.
 
 ```ts
-interface CollaborativeAdapter {
+interface YjsAdapter {
   hydrate(ydoc: Y.Doc, content: string): void | Promise<void>
   serialize(ydoc: Y.Doc): string | Promise<string>
   hasContent(ydoc: Y.Doc): boolean
@@ -227,7 +225,7 @@ sequenceDiagram
     autonumber
     participant AW as AppWrapper
     participant DAV as WebDAV
-    participant S as useCollaborativeDocument
+    participant S as useYjsSession
     participant HP as Yjs server
     participant APP as App.vue
 
@@ -322,7 +320,7 @@ A peer's save only makes B clean if it actually contains B's work. What A wrote 
 
 Only B's own client id is compared. A third peer's unsaved operations are that peer's dirty state to track.
 
-The 300 ms debounce only refreshes `currentContent`, which is what drives `isDirty`. It never triggers a PUT on its own. The actual write comes from a manual save (Ctrl+S) or the autosave timer (default 120 s), and both go through the same path. If a PUT comes back 409/412, what happens depends on whether a realtime session is actually connected. With one, `AppWrapper` refetches, compares, and retries once with the fresh etag before falling back to a conflict message - the local Y.Doc already contains the peer's edits, so the retry publishes the merged state. Without one - a plain editor, or a deployment with no `yjsServerUrl` - there is nothing to merge, so the conflict dialog comes up straight away, exactly as it did before collaboration existed. Retrying there would silently overwrite whoever else wrote the file.
+The 300 ms debounce only refreshes `currentContent`, which is what drives `isDirty`. It never triggers a PUT on its own. The actual write comes from a manual save (Ctrl+S) or the autosave timer (default 120 s), and both go through the same path. If a PUT comes back 409/412, what happens depends on whether a Yjs session is actually connected. With one, `AppWrapper` refetches, compares, and retries once with the fresh etag before falling back to a conflict message - the local Y.Doc already contains the peer's edits, so the retry publishes the merged state. Without one - a plain editor, or a deployment with no `yjsServerUrl` - there is nothing to merge, so the conflict dialog comes up straight away, exactly as it did before collaboration existed. Retrying there would silently overwrite whoever else wrote the file.
 
 ### Local mode
 
@@ -332,16 +330,16 @@ A session configured for collaboration ends up here too when the server does not
 
 ### File map
 
-| Path                                                                         | Role                                                                          |
-| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| `packages/web-pkg/src/composables/collaborative/useCollaborativeDocument.ts` | the session: Y.Doc, provider, hydration, staleness, version gate, etag mirror |
-| `packages/web-pkg/src/composables/collaborative/types.ts`                    | `CollaborativeAdapter`                                                        |
-| `packages/web-pkg/src/components/AppTemplates/AppWrapper.vue`                | owns the session, the save loop and the loading gate                          |
-| `packages/web-pkg/src/components/AppTemplates/types.ts`                      | `CollaborativeOptions`, `CollaborativeAdapterContext`, slot args              |
-| `packages/web-pkg/src/editor/collabAdapter.ts`                               | `makeTiptapCollabAdapter` - any strategy to a Y.Doc                           |
-| `packages/web-pkg/src/editor/composables/useTextEditor.ts`                   | binds Tiptap to a Y.Doc and renders peer carets                               |
-| `packages/web-app-text-editor/src/collab.ts`                                 | the text editor's adapter and content-type detection                          |
-| `services/realtime/src/server.ts`                                            | the Yjs server (Hocuspocus)                                                   |
+| Path                                                          | Role                                                                          |
+| ------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `packages/web-pkg/src/composables/yjs/useYjsSession.ts`       | the session: Y.Doc, provider, hydration, staleness, version gate, etag mirror |
+| `packages/web-pkg/src/composables/yjs/types.ts`               | `YjsAdapter`                                                                  |
+| `packages/web-pkg/src/components/AppTemplates/AppWrapper.vue` | owns the session, the save loop and the loading gate                          |
+| `packages/web-pkg/src/components/AppTemplates/types.ts`       | `YjsOptions`, `YjsAdapterContext`, slot args                                  |
+| `packages/web-pkg/src/editor/yjsAdapter.ts`                   | `makeTiptapYjsAdapter` - any strategy to a Y.Doc                              |
+| `packages/web-pkg/src/editor/composables/useTextEditor.ts`    | binds Tiptap to a Y.Doc and renders peer carets                               |
+| `packages/web-app-text-editor/src/yjs.ts`                     | the text editor's adapter and content-type detection                          |
+| `services/yjs/src/server.ts`                                  | the Yjs server (Hocuspocus)                                                   |
 
 ---
 
@@ -361,11 +359,11 @@ These are open items, not bugs to be surprised by.
 
 **`appVersion` is `0.0.0`.** `web-app-text-editor` is a private package with a placeholder version, so the version gate never actually fires for it.
 
-**Source mode is disabled in collab.** It swaps the ProseMirror view for a plain textarea, which has no Y.Doc binding, so `useTextEditor` drops the `source-mode` action whenever a realtime session is active. Marked as a `FIXME`.
+**Source mode is disabled while collaborating.** It swaps the ProseMirror view for a plain textarea, which has no Y.Doc binding, so `useTextEditor` drops the `source-mode` action whenever a Yjs session is active. Marked as a `FIXME`.
 
 **A locked session can still be saved.** `isLockedForReload` freezes the editor but deliberately leaves `isDirty` alone, so the user can still persist work they typed before the lock. The gap is an adapter that throws _partway_ through `hydrate`, or a mid-session `appVersion` bump: in both cases a manual save would write content the room considers wrong. Unreachable while `appVersion` is `0.0.0` - whoever makes the version gate real must split the lock into "freeze the editor" and "content is untrustworthy, block autosave" in the same change.
 
-**Realtime needs a user token.** The Yjs server authenticates a bearer token against Graph `/me` and knows nothing about public-link tokens, so any context without a user access token - a public link, OCM - runs in local mode regardless of `yjsServerUrl`. Editing works, it just does not sync. A signed-in visitor opening someone else's public link is treated the same way, since their token carries no grant on the shared file.
+**Yjs needs a user token.** The Yjs server authenticates a bearer token against Graph `/me` and knows nothing about public-link tokens, so any context without a user access token - a public link, OCM - runs in local mode regardless of `yjsServerUrl`. Editing works, it just does not sync. A signed-in visitor opening someone else's public link is treated the same way, since their token carries no grant on the shared file.
 
 **Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` / `local`). `AppWrapper` reads it to decide whether a save conflict can be reconciled, but never shows it. A websocket that drops _after_ a successful sync produces no indicator: the user keeps typing into a Y.Doc that no longer reaches anyone. Only a connect that never succeeds in the first place is caught, by the timeout above.
 

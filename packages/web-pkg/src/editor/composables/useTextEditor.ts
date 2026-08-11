@@ -29,9 +29,9 @@ import { useConfigStore } from '../../composables'
 // "Cannot read properties of undefined (reading 'doc')" on first paint.
 // y-tiptap's yCursorPlugin shares ySyncPluginKey with Collaboration so
 // the cursor plugin can find the sync state.
-function makeCollabCursorExtension(awareness: Awareness): Extension {
+function makeYjsCursorExtension(awareness: Awareness): Extension {
   return Extension.create({
-    name: 'yCollaborationCursor',
+    name: 'yjsCursor',
     addProseMirrorPlugins() {
       return [
         yCursorPlugin(awareness, {
@@ -68,18 +68,15 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const readonly = computed(() => toValue(options.readonly) ?? false)
   const strategy = resolveStrategy(options.contentType, state)
-  const collabFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
+  const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
   // FIXME: Source mode swaps the ProseMirror view for a plain textarea, hence
-  // drop the action while a realtime session is active.
-  const collaborationActive = Boolean(options.ydoc) && Boolean(configStore.options.yjsServerUrl)
+  // drop the action while a Yjs session is active.
+  const yjsActive = Boolean(options.ydoc) && Boolean(configStore.options.yjsServerUrl)
 
   // Filter out excluded actions (by id) from toolbar and slash commands, including
   // nested dropdown children (e.g. exclude 'image-upload' but keep 'image-url').
-  const excludeActions = [
-    ...(options.excludeActions ?? []),
-    ...(collaborationActive ? ['source-mode'] : [])
-  ]
+  const excludeActions = [...(options.excludeActions ?? []), ...(yjsActive ? ['source-mode'] : [])]
   const filterActions = (actions: EditorAction[]): EditorAction[] =>
     actions
       .filter((action) => !excludeActions.includes(action.id))
@@ -97,7 +94,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-  const extensions = strategy.extensions({ collaborative: Boolean(options.ydoc) })
+  const extensions = strategy.extensions({ yjs: Boolean(options.ydoc) })
   if (options.ydoc) {
     // Bind ProseMirror state to the shared Y.Doc. With Collaboration active,
     // the editor's initial content is read from the Y.Doc (not from the
@@ -105,13 +102,13 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     extensions.push(
       Collaboration.configure({
         document: options.ydoc,
-        field: collabFragment
+        field: yjsFragment
       }) as (typeof extensions)[number]
     )
     if (options.awareness) {
       // Render remote peers' carets + labels via y-tiptap's yCursorPlugin.
       // Skipped when only ydoc is provided (local mode, no remote peers).
-      extensions.push(makeCollabCursorExtension(options.awareness) as (typeof extensions)[number])
+      extensions.push(makeYjsCursorExtension(options.awareness) as (typeof extensions)[number])
     }
   }
   if (options.slashCommands !== false) {
@@ -137,7 +134,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
     extensions,
-    // In collab mode the wrapper hydrates the Y.Doc — passing `content` here
+    // In remote mode the wrapper hydrates the Y.Doc — passing `content` here
     // would race against the CRDT and produce duplicated state. Leave the
     // editor blank; Collaboration will paint Y.Doc state into it.
     content: options.ydoc
@@ -152,7 +149,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (!unref(editor) || unref(editor)?.isFocused) {
       return
     }
-    // In collab mode the Y.Doc is the source of truth — never round-trip
+    // In remote mode the Y.Doc is the source of truth — never round-trip
     // `modelValue` back into the editor (would clobber peer edits).
     if (options.ydoc) return
     setContent(content)

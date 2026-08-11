@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { computed, toRef, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { CollaborativeEditorSlotProps } from '@opencloud-eu/web-pkg'
+import type { YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
   useTextEditor,
   TextEditorProvider,
@@ -18,17 +18,17 @@ import {
   TextEditorToolbar,
   type ContentType
 } from '@opencloud-eu/web-pkg/editor'
-import { detectContentType } from './collab'
+import { detectContentType } from './yjs'
 
-// AppWrapper keeps its loading screen up until the collaborative session has
+// AppWrapper keeps its loading screen up until the Yjs session has
 // synced and hydrated, so `ydoc` and `awareness` are ready by the time this
 // component mounts. The editor binds to the shared Y.Doc through
 // `@tiptap/extension-collaboration` inside `useTextEditor`.
-// `currentContent` is declared by `CollaborativeEditorSlotProps` but never read
-// here. It makes AppWrapper fetch the file, which the collaborative session
+// `currentContent` is declared by `YjsEditorSlotProps` but never read
+// here. It makes AppWrapper fetch the file, which the Yjs session
 // uses to seed an empty Y.Doc. Once the session is up the Y.Doc is the source
 // of truth.
-const { ydoc, awareness, isReadOnly, resource } = defineProps<CollaborativeEditorSlotProps>()
+const { ydoc, awareness, isReadOnly, resource } = defineProps<YjsEditorSlotProps>()
 
 const { $gettext } = useGettext()
 

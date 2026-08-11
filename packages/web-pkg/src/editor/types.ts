@@ -10,7 +10,7 @@ export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 
 /**
  * Default Y.XmlFragment field name. Shared by `useTextEditor` and the
- * collaborative adapter, which must bind to the same field.
+ * Yjs adapter, which must bind to the same field.
  */
 export const DEFAULT_YDOC_FRAGMENT = 'default'
 
@@ -19,7 +19,7 @@ export interface TextEditorOptions {
   modelValue?: Ref<string>
   currentResource?: Ref<Resource>
   /**
-   * Accepts a ref or getter, not just a snapshot: a collaborative session can
+   * Accepts a ref or getter, not just a snapshot: a Yjs session can
    * flip the editor read-only mid-edit (locking the room on an app-version
    * mismatch, say), and the ProseMirror view has to follow.
    */
@@ -43,7 +43,7 @@ export interface TextEditorOptions {
   ydoc?: Y.Doc
   /**
    * Y.XmlFragment field name inside the Y.Doc. Must match the field the
-   * collaborative adapter binds to. Defaults to {@link DEFAULT_YDOC_FRAGMENT}.
+   * Yjs adapter binds to. Defaults to {@link DEFAULT_YDOC_FRAGMENT}.
    */
   ydocFragment?: string
   /**

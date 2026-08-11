@@ -6,20 +6,20 @@ import type { Awareness } from 'y-protocols/awareness'
 import type {
   AppFileHandlingResult,
   AppFolderHandlingResult,
-  CollaborativeAdapter,
+  YjsAdapter,
   FileContext
 } from '../../composables'
 
 /**
- * Handed to {@link CollaborativeOptions.makeAdapter}. Reactive, because the
+ * Handed to {@link YjsOptions.makeAdapter}. Reactive, because the
  * adapter is built during the wrapper's setup before the file is loaded.
  */
-export interface CollaborativeAdapterContext {
+export interface YjsAdapterContext {
   /** The file. Undefined until the wrapper has loaded it, so read it lazily. */
   resource: Ref<Resource>
 }
 
-export interface CollaborativeOptions {
+export interface YjsOptions {
   /**
    * App version owned by the consuming app, typically `pkg.version` from its
    * own package.json. Peers in the same room must agree on it, otherwise the
@@ -30,9 +30,9 @@ export interface CollaborativeOptions {
    * Builds the bridge between the native file format and the shared Y.Doc.
    * Called once during the wrapper's setup, so it may use composables.
    */
-  makeAdapter: (context: CollaborativeAdapterContext) => CollaborativeAdapter
+  makeAdapter: (context: YjsAdapterContext) => YjsAdapter
   /**
-   * Namespace for the collab room. Defaults to the `applicationId`. Editors
+   * Namespace for the Yjs room. Defaults to the `applicationId`. Editors
    * with incompatible Y.Doc schemas must not share a room, so only override
    * this when two apps deliberately use the same shared-type layout.
    */
@@ -59,9 +59,9 @@ export interface AppWrapperSlotProps {
   isReadOnly: boolean
   activeFiles: Resource[]
   isFolderLoading: boolean
-  /** Set once the collaborative session is synced and hydrated, else null. */
+  /** Set once the Yjs session is synced and hydrated, else null. */
   ydoc: Y.Doc | null
-  /** Set once the collaborative session is synced and hydrated, else null. */
+  /** Set once the Yjs session is synced and hydrated, else null. */
   awareness: Awareness | null
 }
 
@@ -88,9 +88,8 @@ export type EditorSlotProps = Pick<
   'resource' | 'currentContent' | 'isReadOnly'
 >
 
-/** Editors opting into realtime collaboration via {@link CollaborativeOptions}. */
-export type CollaborativeEditorSlotProps = EditorSlotProps &
-  Pick<AppWrapperSlotProps, 'ydoc' | 'awareness'>
+/** Editors opting into collaborative editing via {@link YjsOptions}. */
+export type YjsEditorSlotProps = EditorSlotProps & Pick<AppWrapperSlotProps, 'ydoc' | 'awareness'>
 
 /** Apps that render the file from a URL instead of its body. */
 export type ViewerSlotProps = Pick<AppWrapperSlotProps, 'resource' | 'url'>

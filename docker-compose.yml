@@ -84,7 +84,7 @@ x-opencloud-server: &opencloud-service
     OCM_OCM_STORAGE_PROVIDER_INSECURE: 'true'
 
     # Yjs collaboration
-    WEB_OPTION_YJS_SERVER_URL: 'wss://host.docker.internal:9200/realtime'
+    WEB_OPTION_YJS_SERVER_URL: 'wss://host.docker.internal:9200/yjs'
 
   extra_hosts:
     - host.docker.internal:${DOCKER_HOST:-host-gateway}
@@ -428,11 +428,11 @@ services:
     depends_on:
       - stalwart
 
-  realtime:
+  yjs:
     build:
       # Repository root, the pnpm lockfile is needed for the install
       context: .
-      dockerfile: services/realtime/Dockerfile
+      dockerfile: services/yjs/Dockerfile
     extra_hosts:
       - host.docker.internal:${DOCKER_HOST:-host-gateway}
     environment:
@@ -445,11 +445,11 @@ services:
       DEV_FAKE_TOKEN: dev-integration-token
     volumes:
       # Dev only: edit the server without rebuilding the image
-      - ./services/realtime/src:/app/src:ro
+      - ./services/yjs/src:/app/src:ro
     networks:
       # On the traefik network so OC (which is also on it) can reach the
       # service by name. Browser-facing routing is not done at the Traefik
-      # layer - OC's reverse proxy forwards /realtime via
+      # layer - OC's reverse proxy forwards /yjs via
       # `additional_policies` in opencloud/proxy.yaml. This keeps the routing
       # model identical to what CI uses (CI has no Traefik).
       - traefik

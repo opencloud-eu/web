@@ -36,7 +36,7 @@ type FileAccess = {
 // for a documentName sets the baseline; subsequent connects with a different
 // appVersion are rejected at authenticate-time. In-memory only; on restart
 // the next connecter becomes the new baseline (acceptable for a stateless
-// sidecar). Empty appVersion is tolerated for legacy/test clients.
+// yjs server). Empty appVersion is tolerated for legacy/test clients.
 const appVersionByDocument = new Map<string, string>()
 
 // A room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>` - a few hundred
@@ -106,7 +106,7 @@ async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> 
 }
 
 // Awareness field marking a connection as able to seed an empty room. Read by
-// the client's hydration election in `useCollaborativeDocument`; the name has
+// the client's hydration election in `useYjsSession`; the name has
 // to match `SEED_CAPABLE_KEY` there.
 const SEED_CAPABLE_KEY = '_oc_canSeed'
 
@@ -178,7 +178,7 @@ const server = new Server({
   // wrapper. The persisted SQLite snapshot would get discarded on stale-
   // state recovery anyway (etag drift triggers rehydrate); keeping it
   // here is "mostly ceremony" per the migration plan. Stale detection
-  // moved to the client (see useCollaborativeDocument.onProviderSynced).
+  // moved to the client (see useYjsSession.onProviderSynced).
 
   async onAuthenticate({ token, documentName, requestParameters, connectionConfig }) {
     if (!token) {
@@ -289,12 +289,12 @@ const server = new Server({
 
 server.listen().then(
   () => {
-    console.log(`realtime server listening on :${port}, oc=${opencloudUrl}`)
+    console.log(`yjs server listening on :${port}, oc=${opencloudUrl}`)
   },
   (err: unknown) => {
     // Most often the port is already taken. Without this the process died on an
     // unhandled rejection and a stack trace instead of saying what went wrong.
-    console.error(`realtime server failed to listen on :${port}:`, err)
+    console.error(`yjs server failed to listen on :${port}:`, err)
     process.exit(1)
   }
 )

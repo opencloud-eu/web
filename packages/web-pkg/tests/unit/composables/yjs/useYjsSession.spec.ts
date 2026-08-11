@@ -1,12 +1,12 @@
-// Unit coverage for the collaborative session composable that AppWrapper owns
+// Unit coverage for the Yjs session composable that AppWrapper owns
 // on behalf of collaborative apps. It carries the non-trivial branching
-// (collab vs local) and a handful of side effects (debounced content reports,
+// (remote vs local) and a handful of side effects (debounced content reports,
 // etag mirror, lifecycle teardown) that aren't exercised by the cucumber e2e
-// suites unless we run them through the whole OC + sidecar stack.
+// suites unless we run them through the whole OC + yjs server stack.
 //
 // We mock HocuspocusProvider so the tests stay hermetic (no network). A tiny
 // inline adapter mimics a Y.Text-on-'content' layout; the composable only sees
-// the CollaborativeAdapter interface and doesn't care which app produced it.
+// the YjsAdapter interface and doesn't care which app produced it.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises } from '@vue/test-utils'
@@ -15,11 +15,7 @@ import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Resource } from '@opencloud-eu/web-client'
 
-import {
-  useCollaborativeDocument,
-  type CollaborativeAdapter,
-  type CollaborativeDocument
-} from '../../../../src/composables/collaborative'
+import { useYjsSession, type YjsAdapter, type YjsSession } from '../../../../src/composables/yjs'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 
 // vi.hoisted is required so providerInstances is reachable from the hoisted
@@ -79,7 +75,7 @@ vi.mock('@hocuspocus/provider', async () => {
 })
 
 const SHARED_TEXT_KEY = 'content'
-const testAdapter: CollaborativeAdapter = {
+const testAdapter: YjsAdapter = {
   hydrate(ydoc: Y.Doc, content: string) {
     const yText = ydoc.getText(SHARED_TEXT_KEY)
     if (yText.length > 0) return
@@ -104,7 +100,7 @@ const testAdapter: CollaborativeAdapter = {
 // Mirrors the real Tiptap adapter's defining property: serialize(hydrate(x))
 // is not x. Here a trailing newline stands in for Tiptap's markdown
 // renormalisation (`* a` becoming `- a`, and so on).
-const normalizingAdapter: CollaborativeAdapter = {
+const normalizingAdapter: YjsAdapter = {
   ...testAdapter,
   serialize(ydoc: Y.Doc): string {
     return `${ydoc.getText(SHARED_TEXT_KEY).toString()}\n`
@@ -124,7 +120,7 @@ function setupSession({
   yjsServerUrl = undefined as string | undefined,
   appVersion = '1.2.3',
   resource = makeResource(),
-  adapter = testAdapter as CollaborativeAdapter,
+  adapter = testAdapter as YjsAdapter,
   enabled = true,
   isReadOnly = false
 } = {}) {
@@ -136,11 +132,11 @@ function setupSession({
   const onContentChange = vi.fn()
   const onServerContentChange = vi.fn()
   const onEtagChange = vi.fn()
-  let session: CollaborativeDocument
+  let session: YjsSession
 
   const wrapper = getComposableWrapper(
     () => {
-      session = useCollaborativeDocument({
+      session = useYjsSession({
         resource: resourceRef,
         currentContent: contentRef,
         enabled: enabledRef,
@@ -157,7 +153,7 @@ function setupSession({
       pluginOptions: {
         piniaOptions: {
           configState: { options: { yjsServerUrl } },
-          // The session only goes to the realtime server for a signed-in user;
+          // The session only goes to the Yjs server for a signed-in user;
           // without a token it deliberately stays in local mode.
           authState: { accessToken: 'access-token' }
         }
@@ -192,7 +188,7 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-describe('useCollaborativeDocument — enabled gate', () => {
+describe('useYjsSession — enabled gate', () => {
   // Regression: hydration seeds the Y.Doc from `currentContent`. The caller
   // knows the file id (and therefore the room name) before it has fetched the
   // file body, so starting the session eagerly would hydrate — and publish to
@@ -211,8 +207,8 @@ describe('useCollaborativeDocument — enabled gate', () => {
   })
 })
 
-describe('useCollaborativeDocument — room name', () => {
-  const yjsServerUrl = 'wss://example.test/realtime'
+describe('useYjsSession — room name', () => {
+  const yjsServerUrl = 'wss://example.test/yjs'
 
   it('keys the room on the prefix and the resource id', async () => {
     setupSession({ yjsServerUrl, resource: makeResource({ id: 'storage$space!item-1' }) })
@@ -264,7 +260,7 @@ describe('useCollaborativeDocument — room name', () => {
   })
 })
 
-describe('useCollaborativeDocument — local mode (no yjsServerUrl)', () => {
+describe('useYjsSession — local mode (no yjsServerUrl)', () => {
   it('reports status "local" and does not construct a HocuspocusProvider', async () => {
     const s = setupSession({ currentContent: 'hello' })
     await flushPromises()
@@ -276,7 +272,7 @@ describe('useCollaborativeDocument — local mode (no yjsServerUrl)', () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({ currentContent: 'hello local' })
     await flushPromises()
-    // Local mode skips the collab-only 150ms awareness-settle wait and
+    // Local mode skips the remote-only 150ms awareness-settle wait and
     // hydrates immediately; advancing timers here is just belt-and-braces.
     vi.advanceTimersByTime(200)
     await flushPromises()
@@ -294,12 +290,12 @@ describe('useCollaborativeDocument — local mode (no yjsServerUrl)', () => {
   })
 })
 
-describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
+describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   it('constructs a HocuspocusProvider with the appVersion query param appended', async () => {
-    setupSession({ yjsServerUrl: 'wss://example.test/realtime', appVersion: '2.3.4' })
+    setupSession({ yjsServerUrl: 'wss://example.test/yjs', appVersion: '2.3.4' })
     await flushPromises()
     expect(providerInstances).toHaveLength(1)
-    expect(providerInstances[0].url).toBe('wss://example.test/realtime?appVersion=2.3.4')
+    expect(providerInstances[0].url).toBe('wss://example.test/yjs?appVersion=2.3.4')
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('user', {})
   })
 
@@ -311,7 +307,7 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   it('ignores read-only peers in the hydration election', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'the real file body'
     })
     await flushPromises()
@@ -335,7 +331,7 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   it('still defers to a writable peer holding the lower clientID', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'the real file body'
     })
     await flushPromises()
@@ -354,20 +350,20 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   })
 
   it('announces whether it can seed the room', async () => {
-    setupSession({ yjsServerUrl: 'wss://example.test/realtime', isReadOnly: true })
+    setupSession({ yjsServerUrl: 'wss://example.test/yjs', isReadOnly: true })
     await flushPromises()
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('_oc_canSeed', false)
 
     providerInstances.length = 0
-    setupSession({ yjsServerUrl: 'wss://example.test/realtime' })
+    setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
     await flushPromises()
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('_oc_canSeed', true)
   })
 
-  it('does not hydrate until onSynced fires (collab waits for the server)', async () => {
+  it('does not hydrate until onSynced fires (remote waits for the server)', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'should-only-land-after-sync'
     })
     await flushPromises()
@@ -385,7 +381,7 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   })
 
   it('surfaces an auth failure as an error, locks read-only and releases the loading gate', async () => {
-    const s = setupSession({ yjsServerUrl: 'wss://example.test/realtime' })
+    const s = setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
     await flushPromises()
     providerInstances[0].triggerAuthFailed('token expired')
     await flushPromises()
@@ -401,7 +397,7 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   // guess - and a blank editor reads exactly like data loss.
   it('still shows the file after an auth failure', async () => {
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'my important notes'
     })
     await flushPromises()
@@ -418,7 +414,7 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   // duplicating the document for every peer.
   it('stops retrying after an auth failure, so the local copy cannot merge back', async () => {
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'my important notes'
     })
     await flushPromises()
@@ -443,7 +439,7 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   it('does not re-run hydration when the token expires mid-session', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'seeded body',
       resource: makeResource({ etag: 'etag-new' })
     })
@@ -465,8 +461,8 @@ describe('useCollaborativeDocument — collab mode (yjsServerUrl set)', () => {
   })
 })
 
-describe('useCollaborativeDocument — unreachable realtime server', () => {
-  const yjsServerUrl = 'wss://example.test/realtime'
+describe('useYjsSession — unreachable Yjs server', () => {
+  const yjsServerUrl = 'wss://example.test/yjs'
 
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
@@ -534,7 +530,7 @@ describe('useCollaborativeDocument — unreachable realtime server', () => {
   })
 })
 
-describe('useCollaborativeDocument — read-only clients', () => {
+describe('useYjsSession — read-only clients', () => {
   // Regression: read-only clients used to skip hydration entirely, so a viewer
   // that opened a file nobody else was editing got a blank document.
   it('hydrates a private copy in local mode', async () => {
@@ -546,7 +542,7 @@ describe('useCollaborativeDocument — read-only clients', () => {
 
   it('hydrates a private copy when the room is empty, without claiming the seeding', async () => {
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'read me',
       isReadOnly: true
     })
@@ -562,7 +558,7 @@ describe('useCollaborativeDocument — read-only clients', () => {
 
   it('does not hydrate when the room already has content', async () => {
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'stale local copy',
       isReadOnly: true
     })
@@ -582,7 +578,7 @@ describe('useCollaborativeDocument — read-only clients', () => {
   // document, so the session is thrown away and rebuilt from the room instead.
   it('rebuilds the session when a peer announces its seeding', async () => {
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'read me',
       isReadOnly: true
     })
@@ -606,7 +602,7 @@ describe('useCollaborativeDocument — read-only clients', () => {
   it('does not rebuild for a writer that seeds the room itself', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'write me'
     })
     await flushPromises()
@@ -620,7 +616,7 @@ describe('useCollaborativeDocument — read-only clients', () => {
   })
 })
 
-describe('useCollaborativeDocument — content reporting', () => {
+describe('useYjsSession — content reporting', () => {
   it('reports debounced after a user-origin Y.Doc update', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({ currentContent: 'seed' })
@@ -667,7 +663,7 @@ describe('useCollaborativeDocument — content reporting', () => {
   it('does NOT report content arriving through the initial sync', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
-      yjsServerUrl: 'wss://example.test/realtime',
+      yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'seed',
       adapter: normalizingAdapter
     })
@@ -701,12 +697,12 @@ describe('useCollaborativeDocument — content reporting', () => {
   })
 })
 
-describe('useCollaborativeDocument — stale-state recovery', () => {
-  const yjsServerUrl = 'wss://example.test/realtime'
+describe('useYjsSession — stale-state recovery', () => {
+  const yjsServerUrl = 'wss://example.test/yjs'
   const META_KEY = '_oc_meta'
 
   /**
-   * Brings a session up in collab mode against a room whose `_oc_meta.etag`
+   * Brings a session up in remote mode against a room whose `_oc_meta.etag`
    * predates the file on disk, which is what makes the joining client detect
    * drift and claim the recovery.
    */
@@ -714,7 +710,7 @@ describe('useCollaborativeDocument — stale-state recovery', () => {
     currentContent = 'fresh body',
     roomEtag = 'etag-old',
     ourEtag = 'etag-new',
-    adapter = testAdapter as CollaborativeAdapter,
+    adapter = testAdapter as YjsAdapter,
     roomContent = 'stale room content'
   } = {}) {
     const s = setupSession({
@@ -824,7 +820,7 @@ describe('useCollaborativeDocument — stale-state recovery', () => {
   // looking at an empty document. Locking stops the autosave from writing that
   // emptiness to disk, and `isStale` stays up so a later joiner retries.
   it('keeps the room flagged and locks the session when re-seeding throws', async () => {
-    const failingAdapter: CollaborativeAdapter = {
+    const failingAdapter: YjsAdapter = {
       ...testAdapter,
       hydrate(ydoc: Y.Doc, content: string) {
         if (ydoc.getMap(META_KEY).get('isStale') === true) {
@@ -876,7 +872,7 @@ describe('useCollaborativeDocument — stale-state recovery', () => {
   // cannot land in between and leave the document half-recovered.
   it('resets, re-seeds and clears the flags without yielding', async () => {
     const seen: string[] = []
-    const observingAdapter: CollaborativeAdapter = {
+    const observingAdapter: YjsAdapter = {
       ...testAdapter,
       hydrate(ydoc: Y.Doc, content: string) {
         const meta = ydoc.getMap(META_KEY)
@@ -897,7 +893,7 @@ describe('useCollaborativeDocument — stale-state recovery', () => {
   })
 })
 
-describe('useCollaborativeDocument — etag mirror', () => {
+describe('useYjsSession — etag mirror', () => {
   it('writes a new resource etag into _oc_meta.etag', async () => {
     const s = setupSession({ currentContent: 'x', resource: makeResource({ etag: 'a' }) })
     await flushPromises()
@@ -942,8 +938,8 @@ describe('useCollaborativeDocument — etag mirror', () => {
   })
 })
 
-describe('useCollaborativeDocument — wasWrittenByRoom', () => {
-  const yjsServerUrl = 'wss://example.test/realtime'
+describe('useYjsSession — wasWrittenByRoom', () => {
+  const yjsServerUrl = 'wss://example.test/yjs'
 
   // Adds a second client to awareness, so the room counts as populated.
   function addPeer(index = 0) {
@@ -1007,7 +1003,7 @@ describe('useCollaborativeDocument — wasWrittenByRoom', () => {
   })
 })
 
-describe('useCollaborativeDocument — peer save fan-out', () => {
+describe('useYjsSession — peer save fan-out', () => {
   const META_KEY = '_oc_meta'
 
   /**
@@ -1087,9 +1083,9 @@ describe('useCollaborativeDocument — peer save fan-out', () => {
   })
 })
 
-describe('useCollaborativeDocument — cleanup', () => {
-  it('destroys provider, awareness and doc on unmount (collab mode)', async () => {
-    const s = setupSession({ yjsServerUrl: 'wss://example.test/realtime' })
+describe('useYjsSession — cleanup', () => {
+  it('destroys provider, awareness and doc on unmount (remote mode)', async () => {
+    const s = setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
     await flushPromises()
     const prov = providerInstances[0]
     const ydoc = s.ydoc
@@ -1098,7 +1094,7 @@ describe('useCollaborativeDocument — cleanup', () => {
 
     s.wrapper.unmount()
     expect(prov.destroy).toHaveBeenCalledOnce()
-    // The provider owns the awareness in collab mode and takes it down itself.
+    // The provider owns the awareness in remote mode and takes it down itself.
     // Not asserting a call count: `Y.Doc.destroy()` cascades into the awareness
     // too (y-protocols registers `doc.on('destroy')`), so a count would pin
     // library behaviour rather than ours.

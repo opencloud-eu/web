@@ -42,7 +42,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
 
   const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
-      StarterKit.configure({ link: false, undoRedo: options?.collaborative ? false : undefined }),
+      StarterKit.configure({ link: false, undoRedo: options?.yjs ? false : undefined }),
       createLinkExtension(),
       Image.configure({
         inline: false,

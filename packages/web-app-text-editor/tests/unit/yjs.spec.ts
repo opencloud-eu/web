@@ -3,8 +3,8 @@ import { mock } from 'vitest-mock-extended'
 import { ref } from 'vue'
 import * as Y from 'yjs'
 import type { Resource } from '@opencloud-eu/web-client'
-import type { CollaborativeAdapter } from '@opencloud-eu/web-pkg'
-import { detectContentType, makeTextEditorAdapter } from '../../src/collab'
+import type { YjsAdapter } from '@opencloud-eu/web-pkg'
+import { detectContentType, makeTextEditorAdapter } from '../../src/yjs'
 
 describe('detectContentType', () => {
   it.each([
@@ -20,7 +20,7 @@ describe('detectContentType', () => {
 
 describe('makeTextEditorAdapter', () => {
   function buildAdapter(resource: Resource) {
-    let adapter: CollaborativeAdapter
+    let adapter: YjsAdapter
     const wrapper = getComposableWrapper(() => {
       adapter = makeTextEditorAdapter({ resource: ref(resource) })
     })

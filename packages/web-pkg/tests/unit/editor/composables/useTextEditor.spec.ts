@@ -286,19 +286,19 @@ describe('useTextEditor', () => {
       expect(ids).not.toContain('image-url')
     })
 
-    it('removes the source mode action when a realtime session is active', () => {
-      createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/realtime' } } })
+    it('removes the source mode action when a Yjs session is active', () => {
+      createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/yjs' } } })
       const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
       expect(collectIds(result.actionGroups())).not.toContain('source-mode')
     })
 
-    it('keeps the source mode action without a realtime server', () => {
+    it('keeps the source mode action without a Yjs server', () => {
       const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
       expect(collectIds(result.actionGroups())).toContain('source-mode')
     })
 
     it('keeps the source mode action for non-collaborative editors', () => {
-      createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/realtime' } } })
+      createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/yjs' } } })
       const { result } = createEditor({ contentType: 'markdown' })
       expect(collectIds(result.actionGroups())).toContain('source-mode')
     })

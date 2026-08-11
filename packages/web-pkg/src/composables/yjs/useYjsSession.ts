@@ -8,11 +8,11 @@ import semverValid from 'semver/functions/valid'
 import type { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useConfigStore } from '../piniaStores'
-import type { CollaborativeAdapter } from './types'
+import type { YjsAdapter } from './types'
 
-export type CollaborativeStatus = 'connecting' | 'connected' | 'disconnected' | 'local'
+export type YjsStatus = 'connecting' | 'connected' | 'disconnected' | 'local'
 
-export interface CollaborativeDocumentOptions {
+export interface YjsSessionOptions {
   /** The file the session is bound to. Its id forms the room name, its etag drives staleness detection. */
   resource: MaybeRefOrGetter<Resource>
   /** Native file content, used to seed an empty Y.Doc. */
@@ -30,7 +30,7 @@ export interface CollaborativeDocumentOptions {
    */
   isReadOnly: MaybeRefOrGetter<boolean>
   /** Translates between the native file format and the doc's shared types. */
-  adapter: MaybeRefOrGetter<CollaborativeAdapter>
+  adapter: MaybeRefOrGetter<YjsAdapter>
   /**
    * App version owned by the consuming app; typically `pkg.version` from its
    * own package.json, baked in at build time by Vite. Used to detect schema
@@ -38,7 +38,7 @@ export interface CollaborativeDocumentOptions {
    */
   appVersion: MaybeRefOrGetter<string>
   /**
-   * Namespace for the collab room. Different editor apps that can open the
+   * Namespace for the Yjs room. Different editor apps that can open the
    * same file have incompatible Y.Doc schemas (Y.Text vs Y.XmlFragment with
    * different extensions), so they MUST land in separate rooms.
    */
@@ -51,11 +51,11 @@ export interface CollaborativeDocumentOptions {
   onEtagChange: (etag: string) => void
 }
 
-export interface CollaborativeDocument {
+export interface YjsSession {
   ydoc: ShallowRef<Y.Doc | null>
   awareness: ShallowRef<Awareness | null>
   provider: ShallowRef<HocuspocusProvider | null>
-  status: ShallowRef<CollaborativeStatus>
+  status: ShallowRef<YjsStatus>
   /**
    * False until the Y.Doc is ready to be shown: initial sync completed and
    * the hydration decision has settled. Consumers gate the editor mount on
@@ -68,7 +68,7 @@ export interface CollaborativeDocument {
    * read-only, and the user should be asked to reload.
    */
   isLockedForReload: Ref<boolean>
-  /** Set when the persisted state was stale or realtime auth failed. */
+  /** Set when the persisted state was stale or Yjs auth failed. */
   error: ShallowRef<Error | null>
   /**
    * Whether the file now on disk under `etag` was written by this room.
@@ -84,9 +84,9 @@ export interface CollaborativeDocument {
 const META_KEY = '_oc_meta'
 const SERIALIZE_DEBOUNCE_MS = 300
 /**
- * How long to wait for the realtime server before giving up on it and running
+ * How long to wait for the Yjs server before giving up on it and running
  * the session locally. Generous enough to ride out a slow connect, short
- * enough that a misconfigured or down sidecar does not read as a hung editor.
+ * enough that a misconfigured or down Yjs server does not read as a hung editor.
  */
 const CONNECT_TIMEOUT_MS = 10_000
 /**
@@ -99,7 +99,7 @@ const LOCAL_SAVE_ORIGIN = 'local-save'
 /**
  * Awareness field saying whether this client is able to seed an empty room.
  * Read-only clients set it false: they appear in awareness like anyone else,
- * but the realtime server rejects their writes, so the hydration election has
+ * but the Yjs server rejects their writes, so the hydration election has
  * to skip them or the room stays empty for everyone.
  */
 const SEED_CAPABLE_KEY = '_oc_canSeed'
@@ -135,18 +135,16 @@ function compareVersion(a: string, b: string): number {
 }
 
 /**
- * Owns a realtime collaborative session for a single file: the Y.Doc, the
+ * Owns a Yjs session for a single file: the Y.Doc, the
  * optional Hocuspocus provider, hydration, stale-state recovery and the
  * app-version gate.
  *
  * It knows nothing about editors. The caller mounts whatever editor it likes
  * against the returned `ydoc` / `awareness`, and supplies a
- * {@link CollaborativeAdapter} that translates between the native file format
+ * {@link YjsAdapter} that translates between the native file format
  * and the doc's shared types.
  */
-export function useCollaborativeDocument(
-  options: CollaborativeDocumentOptions
-): CollaborativeDocument {
+export function useYjsSession(options: YjsSessionOptions): YjsSession {
   const {
     resource,
     currentContent,
@@ -168,7 +166,7 @@ export function useCollaborativeDocument(
   const ydoc = shallowRef<Y.Doc | null>(null)
   const provider = shallowRef<HocuspocusProvider | null>(null)
   const awareness = shallowRef<Awareness | null>(null)
-  const status = shallowRef<CollaborativeStatus>('connecting')
+  const status = shallowRef<YjsStatus>('connecting')
   const isReady = shallowRef(false)
   const isLockedForReload = ref(false)
   const error = shallowRef<Error | null>(null)
@@ -179,7 +177,7 @@ export function useCollaborativeDocument(
   // session in local mode: a Y.Doc and Awareness still spin up so the editor
   // binding stays on one codepath, but nothing connects and no peer appears.
   //
-  // A session the realtime server cannot authenticate ends up in local mode
+  // A session the Yjs server cannot authenticate ends up in local mode
   // too. It authenticates a *user* bearer token against Graph `/me` and knows
   // nothing about public-link tokens, so an anonymous link visitor has no token
   // to offer and a signed-in visitor holds one that carries no grant on the
@@ -249,7 +247,7 @@ export function useCollaborativeDocument(
   }
 
   /**
-   * See {@link CollaborativeDocument.wasWrittenByRoom}.
+   * See {@link YjsSession.wasWrittenByRoom}.
    *
    * `_oc_meta.etag` is the proof: every peer stamps it with the etag its own
    * PUT produced, so a match means the bytes on disk came out of this room.
@@ -458,7 +456,7 @@ export function useCollaborativeDocument(
 
     // Read-only client in an empty room: nobody has seeded the doc, so leaving
     // it empty would show a blank file. Hydrate a private copy instead. The
-    // realtime server rejects writes from read-only connections, so it never
+    // Yjs server rejects writes from read-only connections, so it never
     // reaches the room, and `hasLocalOnlyContent` marks it so the meta observer
     // can drop it again the moment a peer starts seeding for real.
     if (unref(effectiveReadOnly)) {
@@ -472,7 +470,7 @@ export function useCollaborativeDocument(
 
     // Peer election to avoid double-hydration: let other clients announce
     // themselves via awareness, then the lowest awareness clientId wins. This
-    // only matters in collab mode. In local mode there are no peers, and the
+    // only matters in remote mode. In local mode there are no peers, and the
     // 150ms announce wait would just delay first paint, so hydrate immediately.
     if (prov) {
       await new Promise<void>((resolve) => setTimeout(resolve, 150))
@@ -569,7 +567,7 @@ export function useCollaborativeDocument(
       // still set, so a later joiner holding the fresh body retries. Lock this
       // session so nothing autosaves the empty document over the file in the
       // meantime.
-      console.error('[collab] stale-state recovery failed:', e)
+      console.error('[yjs] stale-state recovery failed:', e)
       lockForReload(
         prov,
         $gettext('This file was changed externally and recovering it failed. Please reload.')
@@ -578,7 +576,7 @@ export function useCollaborativeDocument(
   }
 
   /**
-   * Single entry point for both modes (collab `onSynced` and the immediate
+   * Single entry point for both modes (remote `onSynced` and the immediate
    * local-mode call). Flips `isReady` once the hydration decision has settled
    * so the editor mount is gated on one signal and never spins forever. The
    * `ydoc.value === doc` guard keeps a stale invocation (resolving after
@@ -596,7 +594,7 @@ export function useCollaborativeDocument(
       // Both call sites fire this without awaiting, so an escaping rejection
       // would be swallowed and the user would face a half-hydrated document
       // with no explanation.
-      console.error('[collab] hydration failed:', e)
+      console.error('[yjs] hydration failed:', e)
       error.value = e instanceof Error ? e : new Error(String(e))
     } finally {
       if (!doc.isDestroyed && unref(ydoc) === doc) isReady.value = true
@@ -606,11 +604,11 @@ export function useCollaborativeDocument(
   /**
    * Y.Doc + (optional) provider lifecycle — rebuilt whenever the session key
    * changes. Two modes, gated by `yjsServerUrl`:
-   *   - collab : Hocuspocus provider connects, awareness comes from the
+   *   - remote : Hocuspocus provider connects, awareness comes from the
    *              provider, hydration waits for onSynced.
    *   - local  : standalone Awareness instance, no network, hydration runs
    *              immediately. The downstream editor sees an awareness object
-   *              just like in collab-mode — the only behavioural difference is
+   *              just like in remote mode — the only behavioural difference is
    *              that no peers will ever appear.
    */
   watch(
@@ -653,7 +651,7 @@ export function useCollaborativeDocument(
             .then((value) => {
               if (value !== null) onContentChange(value)
             })
-            .catch((e) => console.error('[collab] serialize for content update failed:', e))
+            .catch((e) => console.error('[yjs] serialize for content update failed:', e))
         }, SERIALIZE_DEBOUNCE_MS)
       }
 
@@ -667,23 +665,23 @@ export function useCollaborativeDocument(
       let aw: Awareness
       let connectTimer: number | undefined
 
-      const resolvedRealtimeUrl = unref(yjsServerUrl)
-      if (resolvedRealtimeUrl) {
-        // ---------- Collab mode ----------
+      const resolvedYjsUrl = unref(yjsServerUrl)
+      if (resolvedYjsUrl) {
+        // ---------- Remote mode ----------
         // HocuspocusProvider has no `parameters` option; we get query params to
-        // the sidecar's requestParameters by appending them to the URL.
+        // the Yjs server's requestParameters by appending them to the URL.
         const version = toValue(appVersion)
-        const wsUrlWithParams = `${resolvedRealtimeUrl}?appVersion=${encodeURIComponent(version)}`
+        const wsUrlWithParams = `${resolvedYjsUrl}?appVersion=${encodeURIComponent(version)}`
         prov = new HocuspocusProvider({
           url: wsUrlWithParams,
           name,
           document: doc,
           token: () => authStore.accessToken,
           onStatus({ status: s }) {
-            status.value = s as CollaborativeStatus
+            status.value = s as YjsStatus
           },
           onAuthenticationFailed({ reason }) {
-            console.error('[collab] realtime auth failed:', reason)
+            console.error('[yjs] auth failed:', reason)
             // Surface as a lifecycle error so the user sees the reason rather
             // than a silent disconnect. The server uses this for app-version
             // rejection too.
@@ -720,7 +718,7 @@ export function useCollaborativeDocument(
         // A server that never answers produces neither `onSynced` nor
         // `onAuthenticationFailed`: HocuspocusProvider just keeps retrying, and
         // `onStatus` only moves a ref nobody gates on. The loading screen would
-        // stay up forever, so one typo in `yjsServerUrl` - or a sidecar that is
+        // stay up forever, so one typo in `yjsServerUrl` - or a Yjs server that is
         // simply down - would take every editor in the deployment offline.
         //
         // Give up after a bounded wait and carry on locally: the file is still
@@ -729,10 +727,10 @@ export function useCollaborativeDocument(
           connectTimer = undefined
           if (doc.isDestroyed || unref(ydoc) !== doc || unref(isReady)) return
 
-          console.error(`[collab] realtime server unreachable, continuing without it: ${name}`)
+          console.error(`[yjs] server unreachable, continuing without it: ${name}`)
           error.value = new Error(
             $gettext(
-              'The realtime server could not be reached. Editing continues without collaboration; others will not see your changes until you reload.'
+              'The collaboration server could not be reached. Editing continues without collaboration; others will not see your changes until you reload.'
             )
           )
           // Stop retrying. A later connect would merge our locally hydrated
@@ -802,7 +800,7 @@ export function useCollaborativeDocument(
                 if (!peerSaveCoversUs(doc, theirState)) return
                 onServerContentChange(value)
               })
-              .catch((e) => console.error('[collab] serialize for peer-save sync failed:', e))
+              .catch((e) => console.error('[yjs] serialize for peer-save sync failed:', e))
           }
         }
 
@@ -861,7 +859,7 @@ export function useCollaborativeDocument(
         meta.unobserve(metaObserver)
         doc.off('update', onDocUpdate)
         if (prov) {
-          // Takes `prov.awareness` - which is `aw` in collab mode - down with
+          // Takes `prov.awareness` - which is `aw` in remote mode - down with
           // it, so destroying `aw` again here would re-run teardown on an
           // already-cleared observer map.
           prov.destroy()

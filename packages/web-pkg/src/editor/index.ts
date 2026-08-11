@@ -8,7 +8,7 @@ export type {
 export { useTextEditor } from './composables/useTextEditor'
 export { useContentStrategy } from './composables/useContentStrategy'
 export type { ContentTypeStrategy, ExtensionsOptions } from './composables/strategies/types'
-export { makeTiptapCollabAdapter } from './collabAdapter'
+export { makeTiptapYjsAdapter } from './yjsAdapter'
 export { default as TextEditorProvider } from './components/TextEditorProvider.vue'
 export { default as TextEditorContent } from './components/TextEditorContent.vue'
 export { default as TextEditorToolbar } from './components/TextEditorToolbar.vue'
