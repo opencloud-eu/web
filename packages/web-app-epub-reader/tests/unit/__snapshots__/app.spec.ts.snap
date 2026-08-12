@@ -23,11 +23,11 @@ exports[`Epub reader app > renders correctly 1`] = `
       <!--v-if-->
     </div>
     <ul class="oc-list">
-      <li class="epub-reader-chapters-list-item mb-1 rounded-sm bg-role-secondary-container text-role-on-secondary-container"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full justify-start px-2 py-1.5 font-semibold">
+      <li data-chapter-id="1" class="epub-reader-chapters-list-item mb-1 rounded-sm bg-role-secondary-container text-role-on-secondary-container"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full justify-start px-2 py-1.5 font-semibold">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 1</span>
         </button></li>
-      <li class="epub-reader-chapters-list-item mb-1 rounded-sm"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full justify-start px-2 py-1.5">
+      <li data-chapter-id="2" class="epub-reader-chapters-list-item mb-1 rounded-sm"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full justify-start px-2 py-1.5">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 2</span>
         </button></li>
@@ -76,8 +76,7 @@ exports[`Epub reader app > renders correctly 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-        </button>
-        <!--v-if--> <span class="mx-1 h-5 w-px bg-role-outline-variant"></span> <button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease min-w-9">
+        </button> <span class="mx-1 h-5 w-px bg-role-outline-variant"></span> <button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease min-w-9">
           <!--v-if-->
           <!-- @slot Content of the button -->
           A-
@@ -99,8 +98,7 @@ exports[`Epub reader app > renders correctly 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-        </button>
-      </div>
+        </button></div>
     </div>
     <div class="flex min-h-0 flex-1 items-stretch gap-2 px-2 py-2 md:px-4">
       <div class="flex min-w-0 flex-1 items-center justify-center overflow-hidden">
@@ -130,6 +128,9 @@ exports[`Epub reader app > renders correctly 1`] = `
           </button>
         </div>
       </div>
+    </div>
+    <div data-v-71f95c6d="" class="px-3 pb-3 pt-1">
+      <div data-v-71f95c6d="" class="flex items-center gap-2"><input data-v-71f95c6d="" class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none" aria-label="Reading progress" type="range" min="0" max="100" step="0.1" disabled="" value="0"> <span data-v-71f95c6d="" aria-label="Reading progress: --" class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant">--</span></div>
     </div>
   </div>
 </div>"

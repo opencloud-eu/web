@@ -19,6 +19,13 @@ vi.mock('epubjs', () => ({
   __esModule: true,
   default: vi.fn(() => {
     return {
+      ready: Promise.resolve(),
+      locations: {
+        generate: vi.fn(() => Promise.resolve([])),
+        percentageFromCfi: vi.fn(() => 0.046),
+        cfiFromPercentage: vi.fn((value: number) => `cfi-${value}`),
+        length: vi.fn(() => 1000)
+      },
       loaded: {
         navigation: Promise.resolve({
           toc: [
@@ -49,7 +56,8 @@ const selectors = {
   chaptersListItem: '.epub-reader-chapters-list-item',
   chaptersSelect: '.epub-reader-controls-chapters-select',
   navigateLeft: '.epub-reader-navigate-left',
-  navigateRight: '.epub-reader-navigate-right'
+  navigateRight: '.epub-reader-navigate-right',
+  progressSlider: '.epub-reader-progress-slider'
 }
 describe('Epub reader app', () => {
   it('renders correctly', async () => {
@@ -129,6 +137,16 @@ describe('Epub reader app', () => {
       expect((wrapper.vm as any).rendition.display).toHaveBeenCalledWith(
         'epubcfi(/6/4!/4/4/14/2/150/2/1:23)'
       )
+    })
+    it('seeks to a location when progress slider changes', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(3)
+
+      const slider = wrapper.find<HTMLInputElement>(selectors.progressSlider)
+      await slider.setValue('35')
+      await slider.trigger('change')
+
+      expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-0.35')
     })
   })
   describe('chapters', () => {

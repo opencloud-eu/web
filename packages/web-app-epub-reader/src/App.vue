@@ -21,11 +21,8 @@
         :navigate-right-disabled="navigateRightDisabled"
         :decrease-font-size-disabled="decreaseFontSizeDisabled"
         :increase-font-size-disabled="increaseFontSizeDisabled"
-        :reading-progress-label="readingProgressLabel"
         :fullscreen-label="
-          isFullScreenModeActivated
-            ? $gettext('Exit fullscreen')
-            : $gettext('Enter fullscreen')
+          isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
         "
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         @update:selected-chapter="showChapter"
@@ -63,6 +60,12 @@
           </div>
         </div>
       </div>
+      <reader-progress-bar
+        :reading-progress-percent="readingProgressPercent"
+        :reading-progress-label="readingProgressLabel"
+        :enabled="hasGlobalLocations"
+        @seek="onProgressChange"
+      />
     </div>
   </div>
 </template>
@@ -80,6 +83,7 @@ import {
 import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
 import ReaderToolbar from './components/ReaderToolbar.vue'
 import ChapterList from './components/ChapterList.vue'
+import ReaderProgressBar from './components/ReaderProgressBar.vue'
 
 const DARK_THEME_CONFIG = {
   html: {
@@ -114,6 +118,8 @@ const currentChapter = ref<NavItem>()
 const navigateLeftDisabled = ref(false)
 const navigateRightDisabled = ref(false)
 const readingProgressLabel = ref<string | null>(null)
+const readingProgressPercent = ref<number | null>(null)
+const hasGlobalLocations = ref(false)
 const localStorageData = useLocalStorage<{ fontSizePercentage?: number }>(`oc_epubReader`, {})
 const currentFontSizePercentage = ref(unref(localStorageData).fontSizePercentage || 100)
 const themeStore = useThemeStore()
@@ -132,6 +138,27 @@ const navigateRight = () => {
 const showChapter = (chapter: NavItem) => {
   currentChapter.value = chapter
   unref(rendition).display(chapter.href)
+}
+
+const formatProgressPercentLabel = (percent: number) => {
+  const rounded = Number(percent.toFixed(1))
+  return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`
+}
+
+const onProgressChange = async (percentage: number) => {
+  if (!unref(hasGlobalLocations) || !unref(book)?.locations?.cfiFromPercentage) {
+    return
+  }
+
+  if (!Number.isFinite(percentage)) {
+    return
+  }
+
+  const normalized = Math.min(100, Math.max(0, percentage))
+  const cfi = unref(book).locations.cfiFromPercentage(normalized / 100)
+  if (cfi) {
+    await unref(rendition).display(cfi)
+  }
 }
 
 const syncFullscreenState = () => {
@@ -191,6 +218,8 @@ watch(
 
     book.value = ePub(currentContent)
     readingProgressLabel.value = null
+    readingProgressPercent.value = null
+    hasGlobalLocations.value = false
 
     unref(book).loaded.navigation.then(({ toc }) => {
       chapters.value = toc
@@ -200,6 +229,7 @@ watch(
     await unref(book).ready
     if (unref(book).locations) {
       await unref(book).locations.generate(GLOBAL_LOCATION_CHARS)
+      hasGlobalLocations.value = true
     }
 
     rendition.value = unref(book).renderTo(unref(bookContainer), {
@@ -237,14 +267,24 @@ watch(
 
       if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
         const clamped = Math.min(1, Math.max(0, globalPercentage))
-        readingProgressLabel.value = `${(clamped * 100).toFixed(1)}%`
+        const percent = Number((clamped * 100).toFixed(1))
+        readingProgressPercent.value = percent
+        readingProgressLabel.value = formatProgressPercentLabel(percent)
       } else {
         const chapterPage = currentLocation?.start?.displayed?.page
         const chapterTotal = currentLocation?.start?.displayed?.total
-        readingProgressLabel.value =
-          typeof chapterPage === 'number' && typeof chapterTotal === 'number'
-            ? `${chapterPage}/${chapterTotal}`
-            : null
+        if (
+          typeof chapterPage === 'number' &&
+          typeof chapterTotal === 'number' &&
+          chapterTotal > 0
+        ) {
+          const percent = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
+          readingProgressPercent.value = percent
+          readingProgressLabel.value = formatProgressPercentLabel(percent)
+        } else {
+          readingProgressPercent.value = null
+          readingProgressLabel.value = null
+        }
       }
 
       const spineItem = unref(book).spine.get(locationCfi)

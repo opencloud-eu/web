@@ -33,14 +33,6 @@
       >
         <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
       </oc-button>
-      <span
-        v-if="readingProgressLabel"
-        v-oc-tooltip="readingProgressA11yLabel"
-        :aria-label="readingProgressA11yLabel"
-        class="epub-reader-controls-page-indicator hidden min-w-[62px] px-1 text-center text-sm text-role-on-surface-variant sm:inline"
-      >
-        {{ readingProgressLabel }}
-      </span>
       <span class="mx-1 h-5 w-px bg-role-outline-variant" />
       <oc-button
         v-oc-tooltip="decreaseFontSizeTooltip"
@@ -100,7 +92,6 @@
 import { computed } from 'vue'
 import type { NavItem } from 'epubjs'
 import MobileChapterSelect from './MobileChapterSelect.vue'
-import { useGettext } from 'vue3-gettext'
 
 type ChapterOption = NavItem
 
@@ -119,7 +110,6 @@ const props = defineProps<{
   navigateRightDisabled: boolean
   decreaseFontSizeDisabled: boolean
   increaseFontSizeDisabled: boolean
-  readingProgressLabel: string | null
   fullscreenLabel: string
   isFullScreenModeActivated: boolean
 }>()
@@ -139,15 +129,6 @@ const decreaseFontSizeTooltip = computed(() => {
 })
 const increaseFontSizeTooltip = computed(() => {
   return `${props.currentFontSizePercentage + props.fontSizeStep}%`
-})
-const { $gettext } = useGettext()
-const readingProgressA11yLabel = computed(() => {
-  if (!props.readingProgressLabel) {
-    return ''
-  }
-  return $gettext('Reading progress: %{progress}', {
-    progress: props.readingProgressLabel
-  })
 })
 
 function onChapterUpdate(value: ChapterOption) {

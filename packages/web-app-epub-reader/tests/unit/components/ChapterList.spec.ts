@@ -55,4 +55,17 @@ describe('ChapterList component', () => {
     expect(items).toHaveLength(1)
     expect(items[0].text()).toContain('Chapter 2')
   })
+
+  it('scrolls to current chapter when selection changes', async () => {
+    const scrollIntoViewSpy = vi
+      .spyOn(HTMLElement.prototype, 'scrollIntoView')
+      .mockImplementation(() => undefined)
+
+    const wrapper = getWrapper()
+    await wrapper.setProps({ currentChapter: chapters[1] })
+    await nextTick()
+
+    expect(scrollIntoViewSpy).toHaveBeenCalledWith({ block: 'nearest' })
+    scrollIntoViewSpy.mockRestore()
+  })
 })

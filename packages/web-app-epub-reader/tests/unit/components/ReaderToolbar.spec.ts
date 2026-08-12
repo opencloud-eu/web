@@ -24,7 +24,6 @@ function getWrapper() {
       navigateRightDisabled: false,
       decreaseFontSizeDisabled: false,
       increaseFontSizeDisabled: false,
-      readingProgressLabel: '16.7%',
       fullscreenLabel: 'Enter fullscreen',
       isFullScreenModeActivated: false
     },
@@ -72,14 +71,6 @@ describe('ReaderToolbar component', () => {
     expect(wrapper.find('.epub-reader-controls-font-size-reset').text()).toBe('100%')
   })
 
-  it('renders page indicator when page data is available', () => {
-    const wrapper = getWrapper()
-    expect(wrapper.find('.epub-reader-controls-page-indicator').text()).toBe('16.7%')
-    expect(wrapper.find('.epub-reader-controls-page-indicator').attributes('aria-label')).toBe(
-      'Reading progress: 16.7%'
-    )
-  })
-
   it('renders disabled states for control buttons', () => {
     const wrapper = mount(ReaderToolbar, {
       props: {
@@ -97,7 +88,6 @@ describe('ReaderToolbar component', () => {
         navigateRightDisabled: true,
         decreaseFontSizeDisabled: false,
         increaseFontSizeDisabled: true,
-        readingProgressLabel: null,
         fullscreenLabel: 'Enter fullscreen',
         isFullScreenModeActivated: false
       },
