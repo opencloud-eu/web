@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.1.5](https://github.com/opencloud-eu/web/releases/tag/v7.1.5) - 2026-07-16
+## [7.1.5](https://github.com/opencloud-eu/web/releases/tag/v7.1.5) - 2026-08-12
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@v-scharf
+@AlexAndBear, @v-scharf
+
+### 🐛 Bug Fixes
+
+- [stable-7.1] fix: encode hash character in app route URLs to prevent truncation (#3075) [[#3080](https://github.com/opencloud-eu/web/pull/3080)]
 
 ### ✅ Tests
 
