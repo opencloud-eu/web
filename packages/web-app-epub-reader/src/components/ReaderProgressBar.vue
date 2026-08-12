@@ -1,6 +1,6 @@
 <template>
   <div class="px-3 pb-3 pt-1">
-    <div class="flex items-center gap-2">
+    <div v-if="enabled" class="flex items-center gap-2">
       <input
         :value="readingProgressPercent ?? 0"
         class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
@@ -19,6 +19,11 @@
       >
         {{ readingProgressLabel || '--' }}
       </span>
+    </div>
+    <div v-else>
+      <div
+        class="epub-reader-progress-shimmer relative h-[14px] w-full overflow-hidden rounded-sm bg-role-surface-container-high"
+      />
     </div>
   </div>
 </template>
@@ -56,6 +61,27 @@ function onProgressChange(event: Event) {
 </script>
 
 <style scoped>
+.epub-reader-progress-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -40%;
+  width: 40%;
+  opacity: 0.55;
+  animation: shimmer 1.25s linear infinite;
+  background-image: linear-gradient(90deg, #ffffff00 0, #ffffffa8 50%, #ffffff00 100%);
+}
+
+@keyframes shimmer {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
 .epub-reader-progress-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;

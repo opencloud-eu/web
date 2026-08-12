@@ -181,6 +181,21 @@ async function onProgressChange(percentage: number) {
   }
 }
 
+async function generateGlobalLocationsForBook(bookInstance: Book) {
+  if (!bookInstance.locations) {
+    return
+  }
+
+  try {
+    await bookInstance.locations.generate(GLOBAL_LOCATION_CHARS)
+  } catch {
+    hasGlobalLocations.value = false
+    return
+  }
+
+  hasGlobalLocations.value = true
+}
+
 const canGoToPreviousSearchResult = computed(() => {
   return unref(searchResultCfis).length > 0
 })
@@ -422,10 +437,7 @@ watch(
     })
 
     await unref(book).ready
-    if (unref(book).locations) {
-      await unref(book).locations.generate(GLOBAL_LOCATION_CHARS)
-      hasGlobalLocations.value = true
-    }
+    const currentBook = unref(book)
 
     const bookContainer = unref(readerView)?.getBookContainer()
     if (!bookContainer) {
@@ -445,6 +457,7 @@ watch(
     unref(rendition).themes.select(themeStore.currentTheme.isDark ? 'dark' : 'light')
     unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
     unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+    void generateGlobalLocationsForBook(currentBook)
 
     unref(rendition).on('keydown', (event: KeyboardEvent) => {
       if (event.key === Key.Esc) {
