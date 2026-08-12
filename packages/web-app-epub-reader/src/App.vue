@@ -93,13 +93,13 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, unref, watch } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
 import {
-  AppConfigObject,
   Key,
   useKeyboardActions,
   useLocalStorage,
-  useThemeStore
+  useThemeStore,
+  type AppWrapperSlotProps,
+  type EditorSlotProps
 } from '@opencloud-eu/web-pkg'
 import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
 
@@ -120,12 +120,12 @@ const MAX_FONT_SIZE_PERCENTAGE = 150
 const MIN_FONT_SIZE_PERCENTAGE = 50
 const FONT_SIZE_PERCENTAGE_STEP = 10
 
-const { currentContent, resource } = defineProps<{
-  applicationConfig: AppConfigObject
-  currentContent: string
-  resource: Resource
-  isReadOnly?: boolean
-}>()
+// `applicationConfig` is declared but never read here. Without it the wrapper's
+// slot binding has nowhere to land it and Vue falls it through to the root
+// element as `applicationconfig="[object Object]"`.
+const { currentContent, resource } = defineProps<
+  EditorSlotProps & Pick<AppWrapperSlotProps, 'applicationConfig'>
+>()
 
 const keyboardActions = useKeyboardActions()
 const bookContainer = ref<Element>()

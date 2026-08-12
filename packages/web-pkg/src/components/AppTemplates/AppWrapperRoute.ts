@@ -1,6 +1,6 @@
 import { defineComponent, h } from 'vue'
 import AppWrapper from './AppWrapper.vue'
-import { AppWrapperSlotArgs } from './types'
+import { AppWrapperSlotHandlers, AppWrapperSlotProps, YjsOptions } from './types'
 import { FileContentOptions, UrlForResourceOptions } from '../../composables'
 import { Resource } from '@opencloud-eu/web-client'
 
@@ -12,6 +12,7 @@ export function AppWrapperRoute(
     fileContentOptions?: FileContentOptions
     importResourceWithExtension?: (resource: Resource) => string
     disableAutoSave?: boolean
+    yjs?: YjsOptions
   }
 ) {
   return defineComponent({
@@ -23,7 +24,7 @@ export function AppWrapperRoute(
           ...options
         },
         {
-          default: (slotArgs: AppWrapperSlotArgs) => {
+          default: (slotArgs: AppWrapperSlotProps & AppWrapperSlotHandlers) => {
             return h(fileEditor, slotArgs)
           }
         }

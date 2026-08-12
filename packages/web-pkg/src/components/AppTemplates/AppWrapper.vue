@@ -1,7 +1,7 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
-    <loading-screen v-if="loading" />
+    <loading-screen v-if="isLoading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
     <div v-else class="flex size-full">
       <slot
@@ -70,6 +70,8 @@ import {
   ActionExtension,
   CustomComponentExtension
 } from '../../composables'
+import { AppWrapperSlotHandlers, AppWrapperSlotProps, YjsOptions } from './types'
+import { useAppWrapperYjs } from './useAppWrapperYjs'
 import {
   Resource,
   SpaceResource,
@@ -100,7 +102,8 @@ const {
   fileContentOptions = null,
   wrappedComponent = null,
   importResourceWithExtension = () => null,
-  disableAutoSave = false
+  disableAutoSave = false,
+  yjs = null
 } = defineProps<{
   applicationId: string
   urlForResourceOptions?: UrlForResourceOptions
@@ -108,6 +111,11 @@ const {
   wrappedComponent?: ReturnType<typeof defineComponent>
   importResourceWithExtension?: (resource: Resource) => string
   disableAutoSave?: boolean
+  /**
+   * Opt the app into collaborative editing. When set, the wrapper owns the
+   * Yjs session and hands `ydoc` / `awareness` to the wrapped component.
+   */
+  yjs?: YjsOptions
 }>()
 
 const { $gettext, current: currentLanguage } = useGettext()
@@ -149,6 +157,11 @@ const loadingError: Ref<Error> = ref()
 const isReadOnly = ref(false)
 const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
+/**
+ * Id of the resource `currentContent` was fetched for. `resource` is swapped
+ * ahead of the body; the Yjs session's `enabled` gate compares the two.
+ */
+const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
 
@@ -167,7 +180,7 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
       content: markRaw(AppTopBar),
       componentProps: () => ({
         resource: unref(resource),
-        isReadOnly: unref(isReadOnly),
+        isReadOnly: unref(effectiveReadOnly),
         isEditor: unref(isEditor),
         hasAutoSave: !disableAutoSave,
         mainActions: unref(fileActions),
@@ -186,29 +199,18 @@ registerExtensions(appBarExtension)
 const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const isEditor = computed(() => {
-  return Boolean(wrappedComponent.emits?.includes('update:currentContent'))
+  // A collaborative app drives its content through the Yjs session instead
+  // of `update:currentContent`, so opting in makes it an editor.
+  return Boolean(yjs) || Boolean(wrappedComponent.emits?.includes('update:currentContent'))
 })
 
 const hasProp = (name: string) => {
   return Boolean(Object.keys(wrappedComponent.props).includes(name))
 }
 
-const isDirty = computed(() => {
-  return unref(currentContent) !== unref(serverContent)
-})
-
 const preventUnload = (e: Event) => {
   e.preventDefault()
 }
-
-watch(isDirty, (dirty) => {
-  // Prevent reload if there are changes
-  if (dirty) {
-    window.addEventListener('beforeunload', preventUnload)
-  } else {
-    window.removeEventListener('beforeunload', preventUnload)
-  }
-})
 
 const {
   applicationConfig,
@@ -225,6 +227,59 @@ const {
   isFolderLoading
 } = useAppDefaults({
   applicationId
+})
+
+const {
+  session: yjsSession,
+  isSessionReady,
+  effectiveReadOnly,
+  reconcileConflict
+} = useAppWrapperYjs({
+  yjs,
+  applicationId,
+  resource,
+  isReadOnly,
+  loading,
+  loadingError,
+  contentResourceId,
+  currentContent,
+  serverContent,
+  currentETag,
+  currentFileContext,
+  fileContentOptions,
+  getFileContents,
+  putFileContents,
+  applySavedResource
+})
+
+// Keep the loading screen up until the Yjs session is synced and hydrated,
+// so the wrapped component always mounts against a ready Y.Doc. A load
+// failure short-circuits: it leaves the session disabled, so waiting on it
+// would keep the error screen from ever showing.
+const isLoading = computed(() => {
+  if (unref(loadingError)) return false
+  return unref(loading) || !unref(isSessionReady)
+})
+
+const isDirty = computed(() => {
+  // Peer edits flow into `currentContent` of a read-only client too, but it
+  // has nothing to save, so it must never be prompted. Deliberately the
+  // WebDAV permission and not `effectiveReadOnly`: a session locking mid-edit
+  // may hold real unsaved work, which must keep the save action and the
+  // leave guards armed.
+  if (unref(isReadOnly)) {
+    return false
+  }
+  return unref(currentContent) !== unref(serverContent)
+})
+
+watch(isDirty, (dirty) => {
+  // Prevent reload if there are changes
+  if (dirty) {
+    window.addEventListener('beforeunload', preventUnload)
+  } else {
+    window.removeEventListener('beforeunload', preventUnload)
+  }
 })
 
 const { applicationMeta } = useAppMeta({ applicationId, appsStore })
@@ -389,6 +444,7 @@ const loadFileTask = useTask(function* (signal) {
       )
       serverContent.value = currentContent.value = fileContentsResponse.body
       currentETag.value = fileContentsResponse.headers['OC-ETag']
+      contentResourceId.value = unref(resource).id
     }
 
     if (unref(hasProp('url'))) {
@@ -409,6 +465,12 @@ watch(
   currentFileContext,
   async () => {
     if (!unref(noResourceLoading)) {
+      // Reset for the new file: `resource` swaps well before the matching
+      // body arrives, and the Yjs session must not hydrate the new room from
+      // the previous file's content.
+      loading.value = true
+      loadingError.value = undefined
+
       await loadResourceTask.perform()
 
       if (unref(fileSizeLimit) && toNumber(unref(resource).size) > unref(fileSizeLimit)) {
@@ -454,28 +516,66 @@ const autosavePopup = () => {
   showMessage({ title: $gettext('File autosaved') })
 }
 
+/**
+ * Single landing point for a successful write: updates the etag for the next
+ * `If-Match`, the local `resource` ref and the store. `saved` is the PUT's
+ * response, or null when only the etag is known. A function declaration, so
+ * it is hoisted above the `useAppWrapperYjs` call that captures it.
+ */
+function applySavedResource(etag: string, saved: Resource | null = null) {
+  currentETag.value = etag
+  const current = unref(resource)
+  if (!current) return
+  const updated: Resource = { ...current, etag }
+  if (saved) {
+    updated.size = saved.size
+    updated.mdate = saved.mdate
+  }
+  resource.value = updated
+  resourcesStore.upsertResource(saved ?? updated)
+}
+
 const saveFileTask = useTask(function* () {
   const newContent = unref(currentContent)
+  // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
+  // the PUT is in flight.
+  yjsSession?.beginSave()
   try {
     const putFileContentsResponse = yield putFileContents(currentFileContext, {
       content: newContent as string | ArrayBuffer,
       previousEntityTag: unref(currentETag)
     })
     serverContent.value = newContent
-    currentETag.value = putFileContentsResponse.etag
-    resourcesStore.upsertResource(putFileContentsResponse)
+    applySavedResource(putFileContentsResponse.etag, putFileContentsResponse)
   } catch (e) {
+    // 409 / 412: `previousEntityTag` didn't match what the server has. A
+    // connected Yjs session can resolve that itself when the conflicting
+    // write came from a peer in the room, because our Y.Doc already holds
+    // that peer's edits.
+    if (e.statusCode === 412 || e.statusCode === 409) {
+      if (yield* reconcileConflict(newContent)) {
+        return
+      }
+      errorPopup(
+        new HttpError(
+          $gettext(
+            'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
+          ),
+          e.response
+        )
+      )
+      return
+    }
     switch (e.statusCode) {
       case 401:
       case 403:
         errorPopup(new HttpError($gettext("You're not authorized to save this file"), e.response))
         break
-      case 409:
-      case 412:
+      case 423:
         errorPopup(
           new HttpError(
             $gettext(
-              'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
+              'This file is locked by another application and cannot be saved. Copy your changes, or save the file under a new name (»Save As...«).'
             ),
             e.response
           )
@@ -572,6 +672,8 @@ const fileActionsSave = computed<FileAction[]>(() => {
     {
       name: 'save-file',
       disabledTooltip: () => '',
+      // Same reasoning as `isDirty`: only a genuinely read-only permission
+      // hides the action; a locked session must still allow persisting.
       isVisible: () => unref(isEditor) && !unref(isReadOnly),
       isDisabled: () => !unref(isDirty),
       icon: 'save',
@@ -722,17 +824,22 @@ onBeforeRouteLeave((_to, _from, next) => {
   }
 })
 
-const slotAttrs = computed(() => ({
+const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => ({
   url: unref(url),
   space: unref(unref(currentFileContext).space),
   resource: unref(resource),
   activeFiles: unref(activeFiles),
   isDirty: unref(isDirty),
-  isReadOnly: unref(isReadOnly),
+  isReadOnly: unref(effectiveReadOnly),
   applicationConfig: unref(applicationConfig),
   currentFileContext: unref(currentFileContext),
-  currentContent: unref(currentContent),
+  currentContent: unref(currentContent) as string,
   isFolderLoading: unref(isFolderLoading),
+
+  // Non-null by the time a collaborative app renders: `isLoading` covers the
+  // session being synced and hydrated. Always null for other apps.
+  ydoc: unref(yjsSession?.ydoc) ?? null,
+  awareness: unref(yjsSession?.awareness) ?? null,
 
   'onUpdate:resource': (value: Resource) => {
     space.value = unref(unref(currentFileContext).space)

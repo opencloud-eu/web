@@ -1,6 +1,10 @@
-import { ref, computed, onBeforeUnmount, watch, unref, onMounted, triggerRef } from 'vue'
+import { ref, computed, onBeforeUnmount, watch, unref, onMounted, toValue, triggerRef } from 'vue'
 import { useEditor } from '@tiptap/vue-3'
+import { Extension } from '@tiptap/core'
 import { Placeholder } from '@tiptap/extension-placeholder'
+import { Collaboration } from '@tiptap/extension-collaboration'
+import { yCursorPlugin } from '@tiptap/y-tiptap'
+import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { Resource } from '@opencloud-eu/web-client'
@@ -10,12 +14,50 @@ import type {
   TextEditorLinkPanelRequest,
   TextEditorState
 } from '../types'
+import { DEFAULT_YDOC_FRAGMENT } from '../types'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
+import { useConfigStore } from '../../composables'
+
+// Custom Tiptap extension that wires y-tiptap's yCursorPlugin to a given
+// Awareness. We bypass `@tiptap/extension-collaboration-cursor` because
+// its 3.0.0 release still imports `yCursorPlugin` from the upstream
+// `y-prosemirror` package — a different module with a different
+// `ySyncPluginKey` than the `@tiptap/y-tiptap` fork that
+// `@tiptap/extension-collaboration` uses. Mixing them throws
+// "Cannot read properties of undefined (reading 'doc')" on first paint.
+// y-tiptap's yCursorPlugin shares ySyncPluginKey with Collaboration so
+// the cursor plugin can find the sync state.
+function makeYjsCursorExtension(awareness: Awareness): Extension {
+  return Extension.create({
+    name: 'yjsCursor',
+    addProseMirrorPlugins() {
+      return [
+        yCursorPlugin(awareness, {
+          // Emit the same `.collaboration-cursor__caret/__label` DOM the
+          // (broken) upstream extension would have, so consumer CSS keeps
+          // working unchanged.
+          cursorBuilder: (user: { name?: string; color?: string }) => {
+            const cursor = document.createElement('span')
+            cursor.classList.add('collaboration-cursor__caret')
+            cursor.setAttribute('style', `border-color: ${user.color ?? '#ffa500'}`)
+            const label = document.createElement('div')
+            label.classList.add('collaboration-cursor__label')
+            label.setAttribute('style', `background-color: ${user.color ?? '#ffa500'}`)
+            label.insertBefore(document.createTextNode(user.name ?? ''), null)
+            cursor.insertBefore(label, null)
+            return cursor
+          }
+        })
+      ]
+    }
+  })
+}
 
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
+  const configStore = useConfigStore()
   const state: TextEditorState = {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
@@ -24,12 +66,17 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   }
 
   const contentType = ref(options.contentType)
-  const readonly = ref(options.readonly ?? false)
+  const readonly = computed(() => toValue(options.readonly) ?? false)
   const strategy = resolveStrategy(options.contentType, state)
+  const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
+
+  // FIXME: Source mode swaps the ProseMirror view for a plain textarea, hence
+  // drop the action while a Yjs session is active.
+  const yjsActive = Boolean(options.ydoc) && Boolean(configStore.options.yjsServerUrl)
 
   // Filter out excluded actions (by id) from toolbar and slash commands, including
   // nested dropdown children (e.g. exclude 'image-upload' but keep 'image-url').
-  const excludeActions = options.excludeActions ?? []
+  const excludeActions = [...(options.excludeActions ?? []), ...(yjsActive ? ['source-mode'] : [])]
   const filterActions = (actions: EditorAction[]): EditorAction[] =>
     actions
       .filter((action) => !excludeActions.includes(action.id))
@@ -47,7 +94,23 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // Debounce onUpdate to avoid firing on every keystroke while typing.
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
-  const extensions = strategy.extensions()
+  const extensions = strategy.extensions({ yjs: Boolean(options.ydoc) })
+  if (options.ydoc) {
+    // Bind ProseMirror state to the shared Y.Doc. With Collaboration active,
+    // the editor's initial content is read from the Y.Doc (not from the
+    // `content` option), so we skip the `content` assignment below.
+    extensions.push(
+      Collaboration.configure({
+        document: options.ydoc,
+        field: yjsFragment
+      }) as (typeof extensions)[number]
+    )
+    if (options.awareness) {
+      // Render remote peers' carets + labels via y-tiptap's yCursorPlugin.
+      // Skipped when only ydoc is provided (local mode, no remote peers).
+      extensions.push(makeYjsCursorExtension(options.awareness) as (typeof extensions)[number])
+    }
+  }
   if (options.slashCommands !== false) {
     const resolvedGroups = editorActionGroups()
     const hasSlashCommandItems = resolvedGroups.some((group) =>
@@ -71,16 +134,28 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   // to satisfy TextEditorInstance. The destroy() method sets it to null explicitly.
   const editorOptions: Record<string, any> = {
     extensions,
-    content: unref(options.modelValue) ? strategy.deserialize(unref(options.modelValue)) : '',
+    // In remote mode the wrapper hydrates the Y.Doc — passing `content` here
+    // would race against the CRDT and produce duplicated state. Leave the
+    // editor blank; Collaboration will paint Y.Doc state into it.
+    content: options.ydoc
+      ? ''
+      : unref(options.modelValue)
+        ? strategy.deserialize(unref(options.modelValue))
+        : '',
     editable: !readonly.value
   }
 
-  watch(options.modelValue, (content) => {
-    if (!unref(editor) || unref(editor)?.isFocused) {
-      return
-    }
-    setContent(content)
-  })
+  if (options.modelValue) {
+    watch(options.modelValue, (content) => {
+      if (!unref(editor) || unref(editor)?.isFocused) {
+        return
+      }
+      // In remote mode the Y.Doc is the source of truth — never round-trip
+      // `modelValue` back into the editor (would clobber peer edits).
+      if (options.ydoc) return
+      setContent(content)
+    })
+  }
 
   if (strategy.editorContentType) {
     editorOptions.contentType = strategy.editorContentType()
@@ -134,7 +209,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
       }
       debounceTimer = setTimeout(() => {
         debounceTimer = null
-        options.onUpdate!(strategy.serialize(e as unknown as Editor))
+        options.onUpdate!(strategy.serialize(e.state.doc))
       }, 250)
     }
   }) as unknown as ShallowRef<Editor | null>
@@ -147,7 +222,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (!editor.value) {
       return ''
     }
-    return strategy.serialize(editor.value)
+    return strategy.serialize(editor.value.state.doc)
   }
 
   const setContent = (value: string): void => {
@@ -177,7 +252,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     if (debounceTimer) {
       clearTimeout(debounceTimer)
       if (options.onUpdate && editor.value) {
-        options.onUpdate(strategy.serialize(editor.value))
+        options.onUpdate(strategy.serialize(editor.value.state.doc))
       }
       debounceTimer = null
     }
