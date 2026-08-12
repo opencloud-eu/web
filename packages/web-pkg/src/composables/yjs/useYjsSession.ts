@@ -528,6 +528,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
       if (current.hasContent(doc)) return // someone beat us
 
+      // A peer announced its seeding but its content has not landed yet.
+      // `hasContent` is still false at that point.
+      if (meta.get('hydrated') === true) return
+
       // A missing flag counts as seed-capable.
       const myId = doc.clientID
       const peers = Array.from(awarenessInstance.getStates().entries())
