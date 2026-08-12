@@ -9,10 +9,7 @@
       <sidebar-nav-mobile class="flex" />
       <router-link v-if="!hideLogo" :to="homeLink">
         <picture>
-          <source
-            :srcset="logoMobileWithVersion"
-            media="(max-width: 959px)"
-          />
+          <source :srcset="logoMobileWithVersion" media="(max-width: 959px)" />
           <oc-image
             :src="logoWithVersion"
             :alt="sidebarLogoAlt"
