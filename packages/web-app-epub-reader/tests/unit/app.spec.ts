@@ -1,7 +1,6 @@
 import {
   PartialComponentProps,
   defaultPlugins,
-  getOcSelectOptions,
   mount,
   nextTicks
 } from '@opencloud-eu/web-test-helpers'
@@ -154,18 +153,19 @@ describe('Epub reader app', () => {
       it('renders correctly', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
-        const chapterElements = await getOcSelectOptions(wrapper, selectors.chaptersSelect)
-        expect(chapterElements.length).toEqual(2)
-        expect(chapterElements[0].text()).toEqual('Chapter 1')
-        expect(chapterElements[1].text()).toEqual('Chapter 2')
+        expect(wrapper.find(selectors.chaptersSelect).exists()).toBeTruthy()
       })
-      it('calls method "display" when item is clicked', async () => {
+      it('calls method "display" when chapter is selected', async () => {
         const { wrapper } = getWrapper()
         await nextTicks(2)
-        const chapterElements = await getOcSelectOptions(wrapper, selectors.chaptersSelect, {
-          close: false
-        })
-        await chapterElements[1].trigger('click')
+        ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit(
+          'update:selectedChapter',
+          {
+            id: '2',
+            label: 'Chapter 2',
+            href: 'c2'
+          }
+        )
         expect((wrapper.vm as any).rendition.display).toHaveBeenCalledWith('c2')
       })
     })

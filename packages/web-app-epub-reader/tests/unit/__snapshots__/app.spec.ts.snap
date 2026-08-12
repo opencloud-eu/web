@@ -14,15 +14,9 @@ exports[`Epub reader app > renders correctly 1`] = `
   </ul>
   <div class="flex min-w-0 flex-1 flex-col">
     <div class="flex items-center gap-2 px-3 py-2">
-      <div data-v-9521f10d="" class="epub-reader-controls-chapters-select block w-full lg:hidden" options="[object Object],[object Object]" model-value="[object Object]">
-        <!--v-if-->
-        <!--v-if-->
-        <div data-v-9521f10d="" dir="auto" class="v-select vs--single vs--unsearchable oc-select bg-transparent epub-reader-controls-chapters-select block w-full lg:hidden">
-          <div id="vs1__combobox" class="vs__dropdown-toggle" role="combobox" aria-expanded="false" aria-owns="vs1__listbox" aria-label="Chapter - Search for option">
-            <div class="vs__selected-options"><span data-v-9521f10d="" class="vs__selected"><!--v-if--> Chapter 1 <!--v-if--></span><input data-v-9521f10d="" class="vs__search" readonly="" id="oc-select-1" aria-autocomplete="list" aria-labelledby="vs1__combobox" aria-controls="vs1__listbox" type="search" autocomplete="off" value=""></div>
-            <div class="vs__actions"><button type="button" class="vs__clear" title="Clear Selected" aria-label="Clear Selected" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10">
-                  <path d="M6.895455 5l2.842897-2.842898c.348864-.348863.348864-.914488 0-1.263636L9.106534.261648c-.348864-.348864-.914489-.348864-1.263636 0L5 3.104545 2.157102.261648c-.348863-.348864-.914488-.348864-1.263636 0L.261648.893466c-.348864.348864-.348864.914489 0 1.263636L3.104545 5 .261648 7.842898c-.348864.348863-.348864.914488 0 1.263636l.631818.631818c.348864.348864.914773.348864 1.263636 0L5 6.895455l2.842898 2.842897c.348863.348864.914772.348864 1.263636 0l.631818-.631818c.348864-.348864.348864-.914489 0-1.263636L6.895455 5z"></path>
-                </svg></button><span data-v-9521f10d="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-fill.svg" transform-source="(svg) => {
+      <div class="epub-reader-controls-chapters-select block w-72 max-w-[45vw] lg:hidden"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full justify-between px-3 py-2" id="epub_reader_chapter_toggle">
+          <!--v-if-->
+          <!-- @slot Content of the button --> <span class="truncate text-left">Chapter 1</span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-drop-down-fill.svg" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -31,14 +25,12 @@ exports[`Epub reader app > renders correctly 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-              <div class="vs__spinner" style="display: none;">Loading...</div>
-            </div>
-          </div>
-          <transition-stub name="vs__fade" appear="false" persisted="false" css="true">
-            <ul id="vs1__listbox" role="listbox" style="display: none; visibility: hidden;"></ul>
-          </transition-stub>
-        </div>
-        <!--v-if-->
+        </button>
+        <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+          <!--teleport start-->
+          <!--v-if-->
+          <!--teleport end-->
+        </transition-stub>
       </div>
       <div class="ml-auto flex items-center rounded-full bg-role-surface-container-low px-1.5 py-2 shadow-sm"><button type="button" aria-label="Navigate to previous page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-navigate-left min-w-9">
           <!--v-if-->

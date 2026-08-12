@@ -1,13 +1,10 @@
 <template>
   <div class="flex items-center gap-2 px-3 py-2">
-    <oc-select
-      class="epub-reader-controls-chapters-select block w-full lg:hidden"
-      :model-value="selectedChapter"
-      :label="chapterLabel"
-      :label-hidden="true"
-      :options="chapters"
-      :searchable="false"
-      @update:model-value="onChapterUpdate"
+    <mobile-chapter-select
+      :chapters="chapters"
+      :selected-chapter="selectedChapter"
+      :chapter-label="chapterLabel"
+      @update:selected-chapter="onChapterUpdate"
     />
     <div
       class="ml-auto flex items-center rounded-full bg-role-surface-container-low px-1.5 py-2 shadow-sm"
@@ -78,6 +75,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { NavItem } from 'epubjs'
+import MobileChapterSelect from './MobileChapterSelect.vue'
 
 type ChapterOption = NavItem
 
