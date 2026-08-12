@@ -87,7 +87,25 @@ exports[`Epub reader app > renders correctly 1`] = `
           <!--v-if-->
           <!-- @slot Content of the button -->
           A+
-        </button> <span class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:inline"></span> <button type="button" aria-label="Enter fullscreen" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-fullscreen hidden min-w-9 sm:inline-flex">
+        </button> <span class="mx-1 h-5 w-px bg-role-outline-variant"></span> <button type="button" aria-label="Search in book" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-text-search min-w-9" id="epub_reader_text_search_toggle">
+          <!--v-if-->
+          <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/search-line.svg" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+        </button>
+        <div>
+          <transition-stub name="oc-drop" appear="false" persisted="false" css="true">
+            <!--teleport start-->
+            <!--v-if-->
+            <!--teleport end-->
+          </transition-stub>
+        </div> <span class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:inline"></span> <button type="button" aria-label="Enter fullscreen" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-fullscreen hidden min-w-9 sm:inline-flex">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/fullscreen-line.svg" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
@@ -98,7 +116,8 @@ exports[`Epub reader app > renders correctly 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
-        </button></div>
+        </button>
+      </div>
     </div>
     <div class="flex min-h-0 flex-1 items-stretch gap-2 px-2 py-2 md:px-4">
       <div class="flex min-w-0 flex-1 items-center justify-center overflow-hidden">
@@ -130,7 +149,7 @@ exports[`Epub reader app > renders correctly 1`] = `
       </div>
     </div>
     <div data-v-71f95c6d="" class="px-3 pb-3 pt-1">
-      <div data-v-71f95c6d="" class="flex items-center gap-2"><input data-v-71f95c6d="" class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none" aria-label="Reading progress" type="range" min="0" max="100" step="0.1" disabled="" value="0"> <span data-v-71f95c6d="" aria-label="Reading progress: --" class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant">--</span></div>
+      <div data-v-71f95c6d="" class="flex items-center gap-2"><input data-v-71f95c6d="" class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none" aria-label="Reading progress" type="range" min="0" max="100" step="0.1" disabled="" value="0"> <span data-v-71f95c6d="" aria-label="Reading progress --" class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant">--</span></div>
     </div>
   </div>
 </div>"

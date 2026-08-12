@@ -18,13 +18,36 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 vi.mock('epubjs', () => ({
   __esModule: true,
   default: vi.fn(() => {
+    const spineItemOne = {
+      href: 'c1',
+      load: vi.fn(() => Promise.resolve()),
+      find: vi.fn(() =>
+        Promise.resolve([{ cfi: 'cfi-search-1' }, { cfi: 'cfi-search-2' }, { cfi: 'cfi-search-3' }])
+      ),
+      unload: vi.fn()
+    }
+    const spineItemTwo = {
+      href: 'c2',
+      load: vi.fn(() => Promise.resolve()),
+      find: vi.fn(() => Promise.resolve([])),
+      unload: vi.fn()
+    }
+
     return {
       ready: Promise.resolve(),
+      load: vi.fn(),
       locations: {
         generate: vi.fn(() => Promise.resolve([])),
         percentageFromCfi: vi.fn(() => 0.046),
         cfiFromPercentage: vi.fn((value: number) => `cfi-${value}`),
         length: vi.fn(() => 1000)
+      },
+      navigation: {
+        get: vi.fn((href: string) => ({ label: href }))
+      },
+      spine: {
+        spineItems: [spineItemOne, spineItemTwo],
+        get: vi.fn(() => ({ href: 'c1' }))
       },
       loaded: {
         navigation: Promise.resolve({
@@ -40,6 +63,10 @@ vi.mock('epubjs', () => ({
           register: vi.fn(),
           select: vi.fn(),
           fontSize: vi.fn()
+        },
+        annotations: {
+          highlight: vi.fn(),
+          remove: vi.fn()
         },
         display: vi.fn(),
         prev: vi.fn(),
@@ -147,6 +174,67 @@ describe('Epub reader app', () => {
       await slider.trigger('change')
 
       expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-0.35')
+    })
+    it('finds matches and navigates to next search result', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit(
+        'searchTermChanged',
+        'whale'
+      )
+      await nextTicks(6)
+      expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-search-1')
+      expect((wrapper.vm as any).rendition.annotations.highlight).toHaveBeenCalledWith(
+        'cfi-search-1',
+        {},
+        undefined,
+        'epub-reader-search-highlight',
+        {
+          fill: '#facc15',
+          'fill-opacity': '0.35'
+        }
+      )
+
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit('goToNextSearchResult')
+
+      expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-search-2')
+    })
+
+    it('wraps to first/last search result when navigating beyond bounds', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit(
+        'searchTermChanged',
+        'whale'
+      )
+      await nextTicks(6)
+
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit(
+        'goToPreviousSearchResult'
+      )
+      expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-search-3')
+
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit('goToNextSearchResult')
+      expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-search-1')
+    })
+
+    it('clears search highlight when search is closed', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit(
+        'searchTermChanged',
+        'whale'
+      )
+      await nextTicks(6)
+      ;(wrapper.findComponent({ name: 'ReaderToolbar' }).vm as any).$emit('closeSearch')
+
+      expect((wrapper.vm as any).rendition.annotations.remove).toHaveBeenCalledWith(
+        'cfi-search-1',
+        'highlight'
+      )
     })
   })
   describe('chapters', () => {

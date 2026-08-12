@@ -68,6 +68,36 @@
       >
         A+
       </oc-button>
+      <span class="mx-1 h-5 w-px bg-role-outline-variant" />
+      <oc-button
+        id="epub_reader_text_search_toggle"
+        v-oc-tooltip="searchLabel"
+        :aria-label="searchLabel"
+        class="epub-reader-controls-text-search min-w-9"
+        appearance="raw"
+        no-hover
+        size="small"
+      >
+        <oc-icon name="search" fill-type="line" size-class="size-4" />
+      </oc-button>
+      <reader-text-search
+        toggle="#epub_reader_text_search_toggle"
+        :search-label="searchLabel"
+        :search-placeholder="searchPlaceholder"
+        :searching="isSearchLoading"
+        :searching-label="searchingLabel"
+        :result-count="searchResultCount"
+        :current-result-index="currentSearchResultIndex"
+        :can-go-to-previous-result="canGoToPreviousSearchResult"
+        :can-go-to-next-result="canGoToNextSearchResult"
+        :previous-result-label="previousSearchResultLabel"
+        :next-result-label="nextSearchResultLabel"
+        :close-search-label="closeSearchLabel"
+        @search-term-changed="$emit('searchTermChanged', $event)"
+        @go-to-previous-result="$emit('goToPreviousSearchResult')"
+        @go-to-next-result="$emit('goToNextSearchResult')"
+        @close-search="$emit('closeSearch')"
+      />
       <span class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:inline" />
       <oc-button
         v-oc-tooltip="fullscreenLabel"
@@ -92,13 +122,24 @@
 import { computed } from 'vue'
 import type { NavItem } from 'epubjs'
 import MobileChapterSelect from './MobileChapterSelect.vue'
+import ReaderTextSearch from './ReaderTextSearch.vue'
 
 type ChapterOption = NavItem
-
 const props = defineProps<{
   chapters: ChapterOption[]
   selectedChapter?: ChapterOption
   chapterLabel: string
+  searchLabel: string
+  searchPlaceholder: string
+  searchingLabel: string
+  searchResultCount: number
+  currentSearchResultIndex: number
+  canGoToPreviousSearchResult: boolean
+  canGoToNextSearchResult: boolean
+  previousSearchResultLabel: string
+  nextSearchResultLabel: string
+  closeSearchLabel: string
+  isSearchLoading: boolean
   previousPageLabel: string
   nextPageLabel: string
   decreaseFontSizeLabel: string
@@ -116,6 +157,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:selectedChapter', value: ChapterOption): void
+  (e: 'searchTermChanged', value: string): void
+  (e: 'goToPreviousSearchResult'): void
+  (e: 'goToNextSearchResult'): void
+  (e: 'closeSearch'): void
   (e: 'navigateLeft'): void
   (e: 'navigateRight'): void
   (e: 'decreaseFontSize'): void

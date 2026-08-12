@@ -10,6 +10,17 @@
         :chapters="chapters"
         :selected-chapter="currentChapter"
         :chapter-label="$gettext('Chapter')"
+        :search-label="$gettext('Search in book')"
+        :search-placeholder="$gettext('Search in book')"
+        :searching-label="$gettext('Searching...')"
+        :search-result-count="searchResultCfis.length"
+        :current-search-result-index="currentSearchResultIndex"
+        :can-go-to-previous-search-result="canGoToPreviousSearchResult"
+        :can-go-to-next-search-result="canGoToNextSearchResult"
+        :previous-search-result-label="$gettext('Navigate to previous search result')"
+        :next-search-result-label="$gettext('Navigate to next search result')"
+        :close-search-label="$gettext('Close search')"
+        :is-search-loading="textSearchLoading"
         :previous-page-label="$gettext('Navigate to previous page')"
         :next-page-label="$gettext('Navigate to next page')"
         :decrease-font-size-label="$gettext('Decrease font size')"
@@ -26,6 +37,10 @@
         "
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         @update:selected-chapter="showChapter"
+        @search-term-changed="onTextSearchTermChanged"
+        @go-to-previous-search-result="goToPreviousSearchResult"
+        @go-to-next-search-result="goToNextSearchResult"
+        @close-search="closeTextSearch"
         @navigate-left="navigateLeft"
         @navigate-right="navigateRight"
         @decrease-font-size="decreaseFontSize"
@@ -102,6 +117,17 @@ const MAX_FONT_SIZE_PERCENTAGE = 150
 const MIN_FONT_SIZE_PERCENTAGE = 50
 const FONT_SIZE_PERCENTAGE_STEP = 10
 const GLOBAL_LOCATION_CHARS = 1200
+const MAX_TEXT_SEARCH_RESULTS = 300
+const SEARCH_HIGHLIGHT_STYLES = {
+  fill: '#facc15',
+  'fill-opacity': '0.35'
+}
+
+type EpubSpineItem = {
+  load: (loader: unknown) => Promise<unknown>
+  find: (query: string) => Promise<Array<{ cfi?: string }>>
+  unload: () => void
+}
 
 // `applicationConfig` is declared but never read here. Without it the wrapper's
 // slot binding has nowhere to land it and Vue falls it through to the root
@@ -120,6 +146,11 @@ const navigateRightDisabled = ref(false)
 const readingProgressLabel = ref<string | null>(null)
 const readingProgressPercent = ref<number | null>(null)
 const hasGlobalLocations = ref(false)
+const searchResultCfis = ref<string[]>([])
+const currentSearchResultIndex = ref(-1)
+const currentSearchHighlightCfi = ref<string | null>(null)
+const textSearchLoading = ref(false)
+const textSearchRequestId = ref(0)
 const localStorageData = useLocalStorage<{ fontSizePercentage?: number }>(`oc_epubReader`, {})
 const currentFontSizePercentage = ref(unref(localStorageData).fontSizePercentage || 100)
 const themeStore = useThemeStore()
@@ -159,6 +190,161 @@ const onProgressChange = async (percentage: number) => {
   if (cfi) {
     await unref(rendition).display(cfi)
   }
+}
+
+const canGoToPreviousSearchResult = computed(() => {
+  return unref(searchResultCfis).length > 0
+})
+
+const canGoToNextSearchResult = computed(() => {
+  return unref(searchResultCfis).length > 0
+})
+
+const clearSearchHighlight = () => {
+  const highlightCfi = unref(currentSearchHighlightCfi)
+  const annotations = (unref(rendition) as any)?.annotations
+
+  if (!highlightCfi || !annotations?.remove) {
+    currentSearchHighlightCfi.value = null
+    return
+  }
+
+  annotations.remove(highlightCfi, 'highlight')
+  currentSearchHighlightCfi.value = null
+}
+
+const highlightSearchResult = (cfi: string) => {
+  const annotations = (unref(rendition) as any)?.annotations
+  if (!annotations) {
+    return
+  }
+
+  clearSearchHighlight()
+
+  if (annotations.highlight) {
+    annotations.highlight(
+      cfi,
+      {},
+      undefined,
+      'epub-reader-search-highlight',
+      SEARCH_HIGHLIGHT_STYLES
+    )
+  } else if (annotations.add) {
+    annotations.add(
+      'highlight',
+      cfi,
+      {},
+      undefined,
+      'epub-reader-search-highlight',
+      SEARCH_HIGHLIGHT_STYLES
+    )
+  }
+
+  currentSearchHighlightCfi.value = cfi
+}
+
+const closeTextSearch = () => {
+  textSearchRequestId.value = unref(textSearchRequestId) + 1
+  searchResultCfis.value = []
+  currentSearchResultIndex.value = -1
+  textSearchLoading.value = false
+  clearSearchHighlight()
+}
+
+const getSearchableSpineItems = (bookInstance: Book): EpubSpineItem[] => {
+  const spine = bookInstance.spine as unknown as {
+    spineItems?: unknown
+    items?: unknown
+  }
+  const candidates = spine.spineItems ?? spine.items
+  return Array.isArray(candidates) ? (candidates as EpubSpineItem[]) : []
+}
+
+const displaySearchResultByIndex = async (index: number) => {
+  const cfi = unref(searchResultCfis)[index]
+  if (!cfi) {
+    return
+  }
+  currentSearchResultIndex.value = index
+  await unref(rendition)?.display(cfi)
+  highlightSearchResult(cfi)
+}
+
+const onTextSearchTermChanged = async (searchTerm: string) => {
+  const requestId = unref(textSearchRequestId) + 1
+  textSearchRequestId.value = requestId
+
+  const bookInstance = unref(book)
+  const spineItems = bookInstance ? getSearchableSpineItems(bookInstance) : []
+  if (!searchTerm || spineItems.length === 0) {
+    closeTextSearch()
+    return
+  }
+
+  textSearchLoading.value = true
+
+  const searchResults: string[] = []
+  const loadFunction = bookInstance.load.bind(bookInstance)
+
+  try {
+    for (const spineItem of spineItems) {
+      if (
+        requestId !== unref(textSearchRequestId) ||
+        searchResults.length >= MAX_TEXT_SEARCH_RESULTS
+      ) {
+        break
+      }
+
+      try {
+        await spineItem.load(loadFunction)
+        const matches = (await spineItem.find(searchTerm)) as Array<{
+          cfi?: string
+        }>
+
+        for (const match of matches) {
+          if (!match.cfi || searchResults.length >= MAX_TEXT_SEARCH_RESULTS) {
+            break
+          }
+          searchResults.push(match.cfi)
+        }
+      } finally {
+        spineItem.unload()
+      }
+    }
+  } finally {
+    if (requestId === unref(textSearchRequestId)) {
+      searchResultCfis.value = searchResults
+      currentSearchResultIndex.value = searchResults.length > 0 ? 0 : -1
+      textSearchLoading.value = false
+      if (searchResults.length > 0) {
+        await displaySearchResultByIndex(0)
+      } else {
+        clearSearchHighlight()
+      }
+    }
+  }
+}
+
+const goToPreviousSearchResult = async () => {
+  const totalResults = unref(searchResultCfis).length
+  if (totalResults === 0) {
+    return
+  }
+
+  const currentIndex = unref(currentSearchResultIndex)
+  const previousIndex = currentIndex <= 0 ? totalResults - 1 : currentIndex - 1
+  await displaySearchResultByIndex(previousIndex)
+}
+
+const goToNextSearchResult = async () => {
+  const totalResults = unref(searchResultCfis).length
+  if (totalResults === 0) {
+    return
+  }
+
+  const currentIndex = unref(currentSearchResultIndex)
+  const nextIndex = currentIndex < 0 || currentIndex >= totalResults - 1 ? 0 : currentIndex + 1
+  await displaySearchResultByIndex(nextIndex)
 }
 
 const syncFullscreenState = () => {
@@ -220,6 +406,7 @@ watch(
     readingProgressLabel.value = null
     readingProgressPercent.value = null
     hasGlobalLocations.value = false
+    closeTextSearch()
 
     unref(book).loaded.navigation.then(({ toc }) => {
       chapters.value = toc
@@ -314,5 +501,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', syncFullscreenState)
+  clearSearchHighlight()
 })
 </script>

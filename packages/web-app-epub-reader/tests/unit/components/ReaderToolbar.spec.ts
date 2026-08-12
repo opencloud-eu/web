@@ -13,6 +13,17 @@ function getWrapper() {
       chapters,
       selectedChapter: chapters[0],
       chapterLabel: 'Chapter',
+      searchLabel: 'Search in book',
+      searchPlaceholder: 'Search in book',
+      searchingLabel: 'Searching...',
+      searchResultCount: 2,
+      currentSearchResultIndex: 0,
+      canGoToPreviousSearchResult: false,
+      canGoToNextSearchResult: true,
+      previousSearchResultLabel: 'Navigate to previous search result',
+      nextSearchResultLabel: 'Navigate to next search result',
+      closeSearchLabel: 'Close search',
+      isSearchLoading: false,
       previousPageLabel: 'Navigate to previous page',
       nextPageLabel: 'Navigate to next page',
       decreaseFontSizeLabel: 'Decrease font size',
@@ -66,6 +77,20 @@ describe('ReaderToolbar component', () => {
     expect(wrapper.emitted('update:selectedChapter')).toEqual([[chapters[1]]])
   })
 
+  it('forwards text-search events', () => {
+    const wrapper = getWrapper()
+
+    wrapper.findComponent({ name: 'ReaderTextSearch' }).vm.$emit('searchTermChanged', 'whale')
+    wrapper.findComponent({ name: 'ReaderTextSearch' }).vm.$emit('goToPreviousResult')
+    wrapper.findComponent({ name: 'ReaderTextSearch' }).vm.$emit('goToNextResult')
+    wrapper.findComponent({ name: 'ReaderTextSearch' }).vm.$emit('closeSearch')
+
+    expect(wrapper.emitted('searchTermChanged')).toEqual([['whale']])
+    expect(wrapper.emitted('goToPreviousSearchResult')).toHaveLength(1)
+    expect(wrapper.emitted('goToNextSearchResult')).toHaveLength(1)
+    expect(wrapper.emitted('closeSearch')).toHaveLength(1)
+  })
+
   it('renders current font size', () => {
     const wrapper = getWrapper()
     expect(wrapper.find('.epub-reader-controls-font-size-reset').text()).toBe('100%')
@@ -77,6 +102,17 @@ describe('ReaderToolbar component', () => {
         chapters,
         selectedChapter: chapters[0],
         chapterLabel: 'Chapter',
+        searchLabel: 'Search in book',
+        searchPlaceholder: 'Search in book',
+        searchingLabel: 'Searching...',
+        searchResultCount: 0,
+        currentSearchResultIndex: -1,
+        canGoToPreviousSearchResult: false,
+        canGoToNextSearchResult: false,
+        previousSearchResultLabel: 'Navigate to previous search result',
+        nextSearchResultLabel: 'Navigate to next search result',
+        closeSearchLabel: 'Close search',
+        isSearchLoading: false,
         previousPageLabel: 'Navigate to previous page',
         nextPageLabel: 'Navigate to next page',
         decreaseFontSizeLabel: 'Decrease font size',
