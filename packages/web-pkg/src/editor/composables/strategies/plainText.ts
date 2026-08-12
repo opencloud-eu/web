@@ -1,9 +1,9 @@
-import { Editor } from '@tiptap/vue-3'
-import { Extension } from '@tiptap/core'
+import { Extension, getText, getTextSerializersFromSchema } from '@tiptap/core'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
-import { ContentTypeStrategy } from './types'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { TextEditorState } from '../../types'
 import { useGettext } from 'vue3-gettext'
 
@@ -14,8 +14,11 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
     return 'plainText'
   }
 
-  const serialize = (editor: Editor): string => {
-    return editor.getText({ blockSeparator: '\n' })
+  const serialize = (doc: ProseMirrorNode): string => {
+    return getText(doc, {
+      blockSeparator: '\n',
+      textSerializers: getTextSerializersFromSchema(doc.type.schema)
+    })
   }
 
   const deserialize = (content: string): Record<string, unknown> => {
@@ -35,9 +38,10 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
     }
   }
 
-  const extensions = (): Extension[] => {
+  const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
       StarterKit.configure({
+        undoRedo: options?.yjs ? false : undefined,
         blockquote: false,
         bold: false,
         bulletList: false,

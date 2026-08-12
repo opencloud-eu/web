@@ -10,59 +10,37 @@
 <script setup lang="ts">
 import { computed, toRef, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import type { YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
-  ContentType,
   useTextEditor,
   TextEditorProvider,
   TextEditorContent,
-  TextEditorToolbar
+  TextEditorToolbar,
+  type ContentType
 } from '@opencloud-eu/web-pkg/editor'
-import type { Resource } from '@opencloud-eu/web-client'
+import { detectContentType } from './yjs'
 
-const {
-  currentContent,
-  contentType = undefined,
-  isReadOnly = false,
-  resource
-} = defineProps<{
-  currentContent: string
-  contentType?: ContentType
-  isReadOnly?: boolean
-  resource: Resource
-}>()
-
-const emit = defineEmits<{
-  (e: 'update:currentContent', value: string): void
-}>()
+const { ydoc, awareness, isReadOnly, resource } = defineProps<YjsEditorSlotProps>()
 
 const { $gettext } = useGettext()
 
-const parsedContentType = computed<ContentType>(() => {
-  if (contentType !== undefined) {
-    return contentType
-  }
-  const ext = resource?.extension?.toLowerCase()
-  const mimeType = resource?.mimeType?.toLowerCase()
-  if (ext === 'md' || ext === 'markdown' || mimeType === 'text/markdown') {
-    return 'markdown'
-  }
-
-  return 'plain-text'
+const contentType = computed<ContentType>(() => {
+  return detectContentType(resource)
 })
 
 const placeholder = computed(() => {
-  if (isReadOnly || unref(parsedContentType) !== 'markdown') {
+  if (isReadOnly || unref(contentType) !== 'markdown') {
     return undefined
   }
   return $gettext('Write or type / for formatting options...')
 })
 
 const textEditor = useTextEditor({
-  contentType: unref(parsedContentType),
+  contentType: unref(contentType),
   currentResource: toRef(() => resource),
-  modelValue: toRef(() => currentContent),
-  readonly: isReadOnly,
+  readonly: () => isReadOnly,
   placeholder: unref(placeholder),
-  onUpdate: (content) => emit('update:currentContent', content)
+  ydoc,
+  awareness
 })
 </script>

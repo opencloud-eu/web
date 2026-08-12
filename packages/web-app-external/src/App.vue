@@ -52,14 +52,13 @@ import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import {
   GraphSharePermission,
-  Resource,
-  SpaceResource,
   isProjectSpaceResource,
   isPublicSpaceResource,
   isShareSpaceResource
 } from '@opencloud-eu/web-client'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
+  AppWrapperSlotProps,
   isSameResource,
   useCapabilityStore,
   useConfigStore,
@@ -79,11 +78,8 @@ import {
 import { storeToRefs } from 'pinia'
 import { useCollaboraPostMessages } from './composables'
 
-const { space, resource, isReadOnly } = defineProps<{
-  space: SpaceResource
-  resource: Resource
-  isReadOnly: boolean
-}>()
+const { space, resource, isReadOnly } =
+  defineProps<Pick<AppWrapperSlotProps, 'space' | 'resource' | 'isReadOnly'>>()
 
 defineEmits(['save', 'close']) // these are inherited from the AppWrapper.vue
 

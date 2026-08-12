@@ -772,6 +772,15 @@ importers:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
         version: link:../web-test-helpers
+      '@tiptap/vue-3':
+        specifier: ^3.20.4
+        version: 3.29.2(@floating-ui/dom@1.8.0)(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(vue@3.5.41(typescript@6.0.3))
+      y-protocols:
+        specifier: ^1.0.7
+        version: 1.0.7(yjs@13.6.32)
+      yjs:
+        specifier: ^13.6.0
+        version: 13.6.32
 
   packages/web-app-webfinger:
     dependencies:
@@ -843,6 +852,9 @@ importers:
       '@casl/vue':
         specifier: ^3.0.0
         version: 3.0.1(@casl/ability@7.0.1)(vue@3.5.41(typescript@6.0.3))
+      '@hocuspocus/provider':
+        specifier: ^4.0.0
+        version: 4.3.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)
       '@microsoft/fetch-event-source':
         specifier: ^2.0.1
         version: 2.0.1
@@ -861,6 +873,9 @@ importers:
       '@tiptap/extension-bubble-menu':
         specifier: ^3.29.2
         version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)
+      '@tiptap/extension-collaboration':
+        specifier: ^3.28.0
+        version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(@tiptap/y-tiptap@3.0.8(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.2)(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32))(yjs@13.6.32)
       '@tiptap/extension-document':
         specifier: ^3.28.0
         version: 3.29.2(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))
@@ -936,6 +951,9 @@ importers:
       '@tiptap/vue-3':
         specifier: ^3.28.0
         version: 3.29.2(@floating-ui/dom@1.8.0)(@tiptap/core@3.29.2(@tiptap/pm@3.29.2))(@tiptap/pm@3.29.2)(vue@3.5.41(typescript@6.0.3))
+      '@tiptap/y-tiptap':
+        specifier: ^3.0.0
+        version: 3.0.8(prosemirror-model@1.25.11)(prosemirror-state@1.4.4)(prosemirror-view@1.42.2)(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)
       '@uppy/core':
         specifier: ^5.2.0
         version: 5.2.0
@@ -999,6 +1017,9 @@ importers:
       qs:
         specifier: ^6.15.0
         version: 6.15.3
+      semver:
+        specifier: ^7.8.0
+        version: 7.8.5
       uuid:
         specifier: ^14.0.0
         version: 14.0.1
@@ -1014,6 +1035,12 @@ importers:
       vue3-gettext:
         specifier: 4.0.1
         version: 4.0.1(vue@3.5.41(typescript@6.0.3))
+      y-protocols:
+        specifier: ^1.0.7
+        version: 1.0.7(yjs@13.6.32)
+      yjs:
+        specifier: ^13.6.0
+        version: 13.6.32
       zod:
         specifier: ^4.3.6
         version: 4.4.3
@@ -1027,6 +1054,9 @@ importers:
       '@types/node':
         specifier: ^25.5.0
         version: 25.9.5
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.1
       '@vitest/web-worker':
         specifier: ^4.1.2
         version: 4.1.10(vitest@4.1.10)
@@ -1179,6 +1209,16 @@ importers:
       vite:
         specifier: ^8.0.3
         version: 8.2.1(@types/node@25.9.5)(jiti@2.7.0)(yaml@2.9.0)
+
+  services/yjs:
+    dependencies:
+      '@hocuspocus/server':
+        specifier: ^4.1.0
+        version: 4.5.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)
+    devDependencies:
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.9.5
 
   tests/e2e:
     devDependencies:
@@ -1400,6 +1440,22 @@ packages:
   '@fyears/rclone-crypt@0.0.7':
     resolution: {integrity: sha512-WHdoBtiKUdgNoyjJz//2cpldBpp9FjkHv4weUDIGdUZW6oMQq/hDiDjz3ICKuK5i5kXuVdYmaoruVpnRcHtwMw==}
 
+  '@hocuspocus/common@4.5.0':
+    resolution: {integrity: sha512-hz6IBLLNKOWrWf+8r236CFFhpkcjEVXtZH1XRrkY0b5dYoQgR5gmuV5/5dJm1Vvyc8I70D+SHCvOch2AsRXonA==}
+
+  '@hocuspocus/provider@4.3.0':
+    resolution: {integrity: sha512-eS5dECLnJDgELI2AfZNvr5jS0B6IWFoo7eAUgwwOzy1bf7KdPagXAYCtSWqSXmLMwjABlubZJQg8FVrTefU0cA==}
+    peerDependencies:
+      y-protocols: ^1.0.6
+      yjs: ^13.6.8
+
+  '@hocuspocus/server@4.5.0':
+    resolution: {integrity: sha512-obRjLJmBi+EsQgP/Q7nZHC4ZvuBSROQCiLBLmIvib0IG3mu4vJfWiMiAmmrfMKM05denjbfK2BVKMmDVj9AGig==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      y-protocols: ^1.0.6
+      yjs: ^13.6.8
+
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
     engines: {node: '>=18.18.0'}
@@ -1448,6 +1504,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
+
+  '@lifeomic/attempt@3.1.0':
+    resolution: {integrity: sha512-QZqem4QuAnAyzfz+Gj5/+SLxqwCAw2qmt7732ZXodr6VDWGeYLG6w1i/vYLa55JQM9wRuBKLmXmiZ2P0LtE5rw==}
 
   '@microsoft/fetch-event-source@2.0.1':
     resolution: {integrity: sha512-W6CLUJ2eBMw3Rec70qrsEW0jOm/3twwJv21mrmj2yORiaVmVYGS4sSS5yUwvQc1ZlDLYGPnClVWmUUMagKNsfA==}
@@ -2160,6 +2219,9 @@ packages:
   '@types/retry@0.12.2':
     resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==}
 
+  '@types/semver@7.7.1':
+    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
@@ -2555,6 +2617,9 @@ packages:
     resolution: {integrity: sha512-IJdzo2vLiElBxKzwS36VsCue/62d6IdWjnPB2v3nuPKeWGynp6FF/CYoLa5i/3jXH/z97ZDdsXz6abpgM6w07A==}
     engines: {node: '>=20.19.0'}
 
+  async-mutex@0.5.0:
+    resolution: {integrity: sha512-1A94B18jkJ3DYq284ohPxoXbfTA5HsQ7/Mf4DEhcyLx3Bz27Rh59iScbB6EPiP+B+joue6YCxcMXSbFC1tZKwA==}
+
   asynckit@0.4.0:
     resolution: {integrity: sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==}
 
@@ -2844,6 +2909,14 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  crossws@0.4.10:
+    resolution: {integrity: sha512-pz3oubH/dt12KjqsUB0IuXW4nwRDQ583iDsP4555Cpdqx0NoU7pGlWBcayyFI8f/l/idRpgjMEfwuOxSWJYlIA==}
+    peerDependencies:
+      srvx: '>=0.11.5'
+    peerDependenciesMeta:
+      srvx:
+        optional: true
 
   crypt@0.0.2:
     resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
@@ -3573,6 +3646,10 @@ packages:
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
+
+  kleur@4.1.5:
+    resolution: {integrity: sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ==}
+    engines: {node: '>=6'}
 
   layerr@3.0.0:
     resolution: {integrity: sha512-tv754Ki2dXpPVApOrjTyRo4/QegVb9eVFq4mjqp4+NM5NaX7syQvN5BBNfV/ZpAHCEHV24XdUVrBAoka4jt3pA==}
@@ -5401,6 +5478,30 @@ snapshots:
       pkcs7-padding: 0.1.1
       rfc4648: 1.5.4
 
+  '@hocuspocus/common@4.5.0':
+    dependencies:
+      lib0: 0.2.117
+
+  '@hocuspocus/provider@4.3.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)':
+    dependencies:
+      '@hocuspocus/common': 4.5.0
+      '@lifeomic/attempt': 3.1.0
+      lib0: 0.2.117
+      y-protocols: 1.0.7(yjs@13.6.32)
+      yjs: 13.6.32
+
+  '@hocuspocus/server@4.5.0(y-protocols@1.0.7(yjs@13.6.32))(yjs@13.6.32)':
+    dependencies:
+      '@hocuspocus/common': 4.5.0
+      async-mutex: 0.5.0
+      crossws: 0.4.10
+      kleur: 4.1.5
+      lib0: 0.2.117
+      y-protocols: 1.0.7(yjs@13.6.32)
+      yjs: 13.6.32
+    transitivePeerDependencies:
+      - srvx
+
   '@humanfs/core@0.19.2':
     dependencies:
       '@humanfs/types': 0.15.0
@@ -5455,6 +5556,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lifeomic/attempt@3.1.0': {}
 
   '@microsoft/fetch-event-source@2.0.1': {}
 
@@ -6119,6 +6222,8 @@ snapshots:
 
   '@types/retry@0.12.2': {}
 
+  '@types/semver@7.7.1': {}
+
   '@types/trusted-types@2.0.7':
     optional: true
 
@@ -6584,6 +6689,10 @@ snapshots:
       '@babel/types': 7.29.8
       ast-kit: 2.2.0
 
+  async-mutex@0.5.0:
+    dependencies:
+      tslib: 2.8.1
+
   asynckit@0.4.0: {}
 
   at-least-node@1.0.0: {}
@@ -6895,6 +7004,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  crossws@0.4.10: {}
 
   crypt@0.0.2: {}
 
@@ -7655,6 +7766,8 @@ snapshots:
   keyv@4.5.4:
     dependencies:
       json-buffer: 3.0.1
+
+  kleur@4.1.5: {}
 
   layerr@3.0.0: {}
 
