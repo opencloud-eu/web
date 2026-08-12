@@ -6,15 +6,9 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @maki5, @schweigisito, @tammi-23, @v-scharf
 
-### ✅ Tests
-
-- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
-- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
-- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
-- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
-
 ### 🐛 Bug Fixes
 
+- fix:  let the drop flip again after its content grew [[#3077](https://github.com/opencloud-eu/web/pull/3077)]
 - fix: encode hash character in app route URLs to prevent truncation [[#3075](https://github.com/opencloud-eu/web/pull/3075)]
 - fix(admin-settings): opening user sidebar panels  [[#3067](https://github.com/opencloud-eu/web/pull/3067)]
 - fix: position versions loading spinner without shifting the details layout [[#3065](https://github.com/opencloud-eu/web/pull/3065)]
@@ -31,6 +25,13 @@
 - fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
 - fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
 - fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
+### ✅ Tests
+
+- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
+- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 📈 Enhancement
 
