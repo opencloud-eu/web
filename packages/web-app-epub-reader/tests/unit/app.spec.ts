@@ -242,25 +242,38 @@ describe('Epub reader app', () => {
       )
     })
 
-    it('maps nested nav item to top-level chapter on relocate', async () => {
+    it('prefers relocated location href to resolve chapters with same spine file', async () => {
       const { wrapper } = getWrapper()
       await nextTicks(3)
 
       ;(wrapper.vm as any).chapters = [
         {
-          id: 'ch-1',
-          label: 'Chapter 1',
-          href: 'text/chapter-1.xhtml',
-          subitems: [{ id: 'ch-1-1', label: 'Part A', href: 'text/chapter-1.xhtml#part-a' }]
+          id: 'ch-109',
+          label: 'Chapter 109',
+          href: 'text/book.xhtml#ch109'
         },
-        { id: 'ch-2', label: 'Chapter 2', href: 'text/chapter-2.xhtml' }
+        {
+          id: 'ch-130',
+          label: 'Chapter 130',
+          href: 'text/book.xhtml#ch130'
+        }
       ]
 
-      ;(wrapper.vm as any).book.spine.get.mockReturnValue({ href: 'text/chapter-1.xhtml#part-a' })
-      ;(wrapper.vm as any).book.navigation.get.mockReturnValue({
-        id: 'ch-1-1',
-        label: 'Part A',
-        href: 'text/chapter-1.xhtml#part-a'
+      ;(wrapper.vm as any).rendition.currentLocation.mockReturnValue({
+        start: {
+          cfi: 'epubcfi(/6/2)',
+          href: 'text/book.xhtml#ch130',
+          displayed: { page: 1, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+      ;(wrapper.vm as any).book.spine.get.mockReturnValue({ href: 'text/book.xhtml' })
+      ;(wrapper.vm as any).book.navigation.get.mockImplementation((href: string) => {
+        if (href === 'text/book.xhtml#ch130') {
+          return { id: 'ch-130', label: 'Chapter 130', href }
+        }
+        return { id: 'ch-109', label: 'Chapter 109', href: 'text/book.xhtml#ch109' }
       })
 
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
@@ -269,7 +282,7 @@ describe('Epub reader app', () => {
       relocatedHandler()
       await nextTicks(1)
 
-      expect((wrapper.vm as any).currentChapter.id).toBe('ch-1')
+      expect((wrapper.vm as any).currentChapter.id).toBe('ch-130')
     })
   })
   describe('chapters', () => {

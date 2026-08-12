@@ -5,6 +5,7 @@
       :title="searchLabel"
       :toggle="toggle"
       mode="click"
+      :offset="20"
       :close-on-click="false"
       enforce-drop-on-mobile
       padding-size="small"
@@ -127,8 +128,8 @@ function onSearchEnter() {
 
 async function focusSearchInput() {
   await nextTick()
-  const dropElement = (unref(searchDropRef)?.$refs.drop ||
-    unref(searchDropRef)?.$el) as HTMLElement | undefined
+  const dropElement = (unref(searchDropRef)?.$refs.drop || unref(searchDropRef)?.$el) as
+    HTMLElement | undefined
   const searchInput = dropElement?.querySelector<HTMLInputElement>('.oc-search-input')
   searchInput?.focus()
 }

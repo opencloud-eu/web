@@ -128,7 +128,6 @@ type EpubSpineItem = {
   find: (query: string) => Promise<Array<{ cfi?: string }>>
   unload: () => void
 }
-type TocItem = NavItem & { subitems?: TocItem[] }
 
 // `applicationConfig` is declared but never read here. Without it the wrapper's
 // slot binding has nowhere to land it and Vue falls it through to the root
@@ -252,85 +251,17 @@ const closeTextSearch = () => {
   clearSearchHighlight()
 }
 
-const normalizeHref = (href?: string) => {
-  if (!href) {
-    return ''
-  }
-  return href.split('#')[0].replace(/^\.\//, '')
-}
-
-const findTopLevelChapterById = (chapterId?: string) => {
-  if (!chapterId) {
-    return undefined
-  }
-  return unref(chapters).find((chapter) => {
-    return chapter.id === chapterId
-  })
-}
-
-const findTopLevelChapterContainingId = (chapterId?: string) => {
-  if (!chapterId) {
+const resolveCurrentChapterFromNavigation = (navItem?: NavItem) => {
+  if (!navItem) {
     return undefined
   }
 
-  const containsId = (items: TocItem[] | undefined): boolean => {
-    if (!items?.length) {
-      return false
-    }
-    return items.some((item) => {
-      if (item.id === chapterId) {
-        return true
-      }
-      return containsId(item.subitems as TocItem[] | undefined)
-    })
-  }
-
-  return unref(chapters).find((chapter) => {
-    return containsId((chapter as TocItem).subitems as TocItem[] | undefined)
-  })
-}
-
-const findBestTopLevelChapterByHref = (href?: string) => {
-  const normalizedHref = normalizeHref(href)
-  if (!normalizedHref) {
-    return undefined
-  }
-
-  let bestChapter: NavItem | undefined
-  let bestMatchLength = -1
-
-  for (const chapter of unref(chapters)) {
-    const chapterHref = normalizeHref(chapter.href)
-    if (!chapterHref) {
-      continue
-    }
-    const isMatch = normalizedHref === chapterHref || normalizedHref.startsWith(chapterHref)
-    if (isMatch && chapterHref.length > bestMatchLength) {
-      bestChapter = chapter
-      bestMatchLength = chapterHref.length
-    }
-  }
-
-  return bestChapter
-}
-
-const resolveCurrentChapterForLocation = (locationHref?: string, navItem?: NavItem) => {
-  const byId = findTopLevelChapterById(navItem?.id)
+  const byId = unref(chapters).find((chapter) => chapter.id === navItem.id)
   if (byId) {
     return byId
   }
 
-  const byHref = findBestTopLevelChapterByHref(navItem?.href || locationHref)
-  if (byHref) {
-    return byHref
-  }
-
-  const byNestedId = findTopLevelChapterContainingId(navItem?.id)
-  if (byNestedId) {
-    return byNestedId
-  }
-
-  return navItem
+  return unref(chapters).find((chapter) => chapter.href === navItem.href)
 }
 
 const getSearchableSpineItems = (bookInstance: Book): EpubSpineItem[] => {
@@ -557,8 +488,10 @@ watch(
       }
 
       const spineItem = unref(book).spine.get(locationCfi)
-      const navItem = unref(book).navigation.get(spineItem.href)
-      const resolvedCurrentChapter = resolveCurrentChapterForLocation(spineItem?.href, navItem)
+      const locationHref = currentLocation?.start?.href
+      const navLookupHref = locationHref || spineItem?.href
+      const navItem = navLookupHref ? unref(book).navigation.get(navLookupHref) : undefined
+      const resolvedCurrentChapter = resolveCurrentChapterFromNavigation(navItem)
       if (resolvedCurrentChapter) {
         currentChapter.value = resolvedCurrentChapter
       }
