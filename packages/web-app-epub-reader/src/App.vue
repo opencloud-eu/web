@@ -1,5 +1,5 @@
 <template>
-  <div class="epub-reader flex h-full bg-role-surface text-role-on-surface">
+  <div ref="readerRoot" class="epub-reader flex h-full bg-role-surface text-role-on-surface">
     <chapter-list
       :chapters="chapters"
       :current-chapter="currentChapter"
@@ -22,12 +22,19 @@
         :decrease-font-size-disabled="decreaseFontSizeDisabled"
         :increase-font-size-disabled="increaseFontSizeDisabled"
         :reading-progress-label="readingProgressLabel"
+        :fullscreen-label="
+          isFullScreenModeActivated
+            ? $gettext('Exit fullscreen')
+            : $gettext('Enter fullscreen')
+        "
+        :is-full-screen-mode-activated="isFullScreenModeActivated"
         @update:selected-chapter="showChapter"
         @navigate-left="navigateLeft"
         @navigate-right="navigateRight"
         @decrease-font-size="decreaseFontSize"
         @reset-font-size="resetFontSize"
         @increase-font-size="increaseFontSize"
+        @toggle-fullscreen="toggleFullScreenMode"
       />
       <div class="flex min-h-0 flex-1 items-stretch gap-2 px-2 py-2 md:px-4">
         <div class="flex min-w-0 flex-1 items-center justify-center overflow-hidden">
@@ -61,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, unref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import {
   Key,
   useKeyboardActions,
@@ -100,6 +107,7 @@ const { currentContent, resource } = defineProps<
 >()
 
 const keyboardActions = useKeyboardActions()
+const readerRoot = ref<HTMLElement>()
 const bookContainer = ref<Element>()
 const chapters = ref<NavItem[]>([])
 const currentChapter = ref<NavItem>()
@@ -111,6 +119,7 @@ const currentFontSizePercentage = ref(unref(localStorageData).fontSizePercentage
 const themeStore = useThemeStore()
 const book = ref<Book>()
 const rendition = ref<Rendition>()
+const isFullScreenModeActivated = ref(false)
 
 const navigateLeft = () => {
   unref(rendition).prev()
@@ -123,6 +132,18 @@ const navigateRight = () => {
 const showChapter = (chapter: NavItem) => {
   currentChapter.value = chapter
   unref(rendition).display(chapter.href)
+}
+
+const syncFullscreenState = () => {
+  isFullScreenModeActivated.value = Boolean(document.fullscreenElement)
+}
+
+const toggleFullScreenMode = async () => {
+  if (!document.fullscreenElement) {
+    await unref(readerRoot)?.requestFullscreen?.()
+    return
+  }
+  await document.exitFullscreen?.()
 }
 
 const increaseFontSize = () => {
@@ -245,5 +266,13 @@ watch(currentFontSizePercentage, () => {
     ...unref(localStorageData),
     fontSizePercentage: unref(currentFontSizePercentage)
   }
+})
+
+onMounted(() => {
+  document.addEventListener('fullscreenchange', syncFullscreenState)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('fullscreenchange', syncFullscreenState)
 })
 </script>

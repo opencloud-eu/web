@@ -76,6 +76,22 @@
       >
         A+
       </oc-button>
+      <span class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:inline" />
+      <oc-button
+        v-oc-tooltip="fullscreenLabel"
+        :aria-label="fullscreenLabel"
+        class="epub-reader-controls-fullscreen hidden min-w-9 sm:inline-flex"
+        appearance="raw"
+        no-hover
+        size="small"
+        @click="$emit('toggleFullscreen')"
+      >
+        <oc-icon
+          :name="isFullScreenModeActivated ? 'fullscreen-exit' : 'fullscreen'"
+          fill-type="line"
+          size-class="size-4"
+        />
+      </oc-button>
     </div>
   </div>
 </template>
@@ -104,6 +120,8 @@ const props = defineProps<{
   decreaseFontSizeDisabled: boolean
   increaseFontSizeDisabled: boolean
   readingProgressLabel: string | null
+  fullscreenLabel: string
+  isFullScreenModeActivated: boolean
 }>()
 
 const emit = defineEmits<{
@@ -113,6 +131,7 @@ const emit = defineEmits<{
   (e: 'decreaseFontSize'): void
   (e: 'resetFontSize'): void
   (e: 'increaseFontSize'): void
+  (e: 'toggleFullscreen'): void
 }>()
 
 const decreaseFontSizeTooltip = computed(() => {

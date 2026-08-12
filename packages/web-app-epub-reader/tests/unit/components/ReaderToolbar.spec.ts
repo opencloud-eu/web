@@ -24,7 +24,9 @@ function getWrapper() {
       navigateRightDisabled: false,
       decreaseFontSizeDisabled: false,
       increaseFontSizeDisabled: false,
-      readingProgressLabel: '16.7%'
+      readingProgressLabel: '16.7%',
+      fullscreenLabel: 'Enter fullscreen',
+      isFullScreenModeActivated: false
     },
     global: {
       plugins: [...defaultPlugins()],
@@ -45,12 +47,14 @@ describe('ReaderToolbar component', () => {
     await wrapper.find('.epub-reader-controls-font-size-decrease').trigger('click')
     await wrapper.find('.epub-reader-controls-font-size-reset').trigger('click')
     await wrapper.find('.epub-reader-controls-font-size-increase').trigger('click')
+    await wrapper.find('.epub-reader-controls-fullscreen').trigger('click')
 
     expect(wrapper.emitted('navigateLeft')).toHaveLength(1)
     expect(wrapper.emitted('navigateRight')).toHaveLength(1)
     expect(wrapper.emitted('decreaseFontSize')).toHaveLength(1)
     expect(wrapper.emitted('resetFontSize')).toHaveLength(1)
     expect(wrapper.emitted('increaseFontSize')).toHaveLength(1)
+    expect(wrapper.emitted('toggleFullscreen')).toHaveLength(1)
   })
 
   it('forwards chapter updates from mobile chapter select', () => {
@@ -93,7 +97,9 @@ describe('ReaderToolbar component', () => {
         navigateRightDisabled: true,
         decreaseFontSizeDisabled: false,
         increaseFontSizeDisabled: true,
-        readingProgressLabel: null
+        readingProgressLabel: null,
+        fullscreenLabel: 'Enter fullscreen',
+        isFullScreenModeActivated: false
       },
       global: {
         plugins: [...defaultPlugins()],
