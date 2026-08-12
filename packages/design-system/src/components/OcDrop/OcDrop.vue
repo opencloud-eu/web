@@ -180,6 +180,10 @@ const anchor = computed<HTMLElement | null>(() => {
 })
 let activeAnchorElement: HTMLElement | VirtualElement | null = null
 
+const resetDropSize = () => {
+  Object.assign(unref(drop).style, { maxWidth: '', maxHeight: '' })
+}
+
 const show = async ({
   anchorElement = undefined,
   noFocus = false
@@ -224,6 +228,7 @@ const update = async ({
     return
   }
   activeAnchorElement = anchorEl
+  resetDropSize()
   const { x, y } = await computePosition(anchorEl, unref(drop), {
     placement: position,
     middleware: [
@@ -294,6 +299,7 @@ const showDrop = async ({
     })
   }
 
+  resetDropSize()
   const { x, y } = await computePosition(anchorEl, unref(drop), {
     placement: position,
     middleware: [
