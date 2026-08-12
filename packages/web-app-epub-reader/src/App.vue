@@ -1,93 +1,86 @@
 <template>
-  <div ref="readerRoot" class="epub-reader flex h-full bg-role-surface text-role-on-surface">
-    <chapter-list
-      :chapters="chapters"
-      :current-chapter="currentChapter"
-      @chapter-selected="showChapter"
-    />
-    <div class="flex min-w-0 flex-1 flex-col">
-      <reader-toolbar
+  <div class="relative h-full">
+    <div
+      ref="readerRoot"
+      class="epub-reader flex h-full bg-role-surface text-role-on-surface"
+      :class="{ 'invisible pointer-events-none': isReaderLoading }"
+    >
+      <chapter-list
         :chapters="chapters"
-        :selected-chapter="currentChapter"
-        :chapter-label="$gettext('Chapter')"
-        :search-label="$gettext('Search in book')"
-        :search-placeholder="$gettext('Search in book')"
-        :searching-label="$gettext('Searching...')"
-        :search-result-count="searchResultCfis.length"
-        :current-search-result-index="currentSearchResultIndex"
-        :can-go-to-previous-search-result="canGoToPreviousSearchResult"
-        :can-go-to-next-search-result="canGoToNextSearchResult"
-        :previous-search-result-label="$gettext('Navigate to previous search result')"
-        :next-search-result-label="$gettext('Navigate to next search result')"
-        :close-search-label="$gettext('Close search')"
-        :is-search-loading="textSearchLoading"
-        :previous-page-label="$gettext('Navigate to previous page')"
-        :next-page-label="$gettext('Navigate to next page')"
-        :decrease-font-size-label="$gettext('Decrease font size')"
-        :reset-font-size-label="$gettext('Reset font size')"
-        :increase-font-size-label="$gettext('Increase font size')"
-        :current-font-size-percentage="currentFontSizePercentage"
-        :font-size-step="FONT_SIZE_PERCENTAGE_STEP"
-        :navigate-left-disabled="navigateLeftDisabled"
-        :navigate-right-disabled="navigateRightDisabled"
-        :decrease-font-size-disabled="decreaseFontSizeDisabled"
-        :increase-font-size-disabled="increaseFontSizeDisabled"
-        :fullscreen-label="
-          isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
-        "
-        :is-full-screen-mode-activated="isFullScreenModeActivated"
-        @update:selected-chapter="showChapter"
-        @search-term-changed="onTextSearchTermChanged"
-        @go-to-previous-search-result="goToPreviousSearchResult"
-        @go-to-next-search-result="goToNextSearchResult"
-        @close-search="closeTextSearch"
-        @navigate-left="navigateLeft"
-        @navigate-right="navigateRight"
-        @decrease-font-size="decreaseFontSize"
-        @reset-font-size="resetFontSize"
-        @increase-font-size="increaseFontSize"
-        @toggle-fullscreen="toggleFullScreenMode"
+        :current-chapter="currentChapter"
+        @chapter-selected="showChapter"
       />
-      <div class="flex min-h-0 flex-1 items-stretch gap-2 px-2 py-2 md:px-4">
-        <div class="flex min-w-0 flex-1 items-center justify-center overflow-hidden">
-          <div class="relative mx-auto h-full min-h-[420px] w-[650px] max-w-full">
-            <div id="reader" ref="bookContainer" class="h-full w-full" />
-            <oc-button
-              v-oc-tooltip="$gettext('Navigate to previous page')"
-              class="epub-reader-navigate-left absolute left-0 top-1/2 hidden -translate-x-10 -translate-y-1/2 rounded-sm text-role-on-surface-variant md:flex"
-              :aria-label="$gettext('Navigate to previous page')"
-              :disabled="navigateLeftDisabled"
-              appearance="raw"
-              @click="navigateLeft"
-            >
-              <oc-icon name="arrow-left-s" fill-type="line" size-class="size-10" />
-            </oc-button>
-            <oc-button
-              v-oc-tooltip="$gettext('Navigate to next page')"
-              class="epub-reader-navigate-right absolute right-0 top-1/2 hidden translate-x-10 -translate-y-1/2 rounded-sm text-role-on-surface-variant md:flex"
-              :aria-label="$gettext('Navigate to next page')"
-              :disabled="navigateRightDisabled"
-              appearance="raw"
-              @click="navigateRight"
-            >
-              <oc-icon name="arrow-right-s" fill-type="line" size-class="size-10" />
-            </oc-button>
-          </div>
-        </div>
+      <div class="flex min-w-0 flex-1 flex-col">
+        <reader-toolbar
+          :chapters="chapters"
+          :selected-chapter="currentChapter"
+          :chapter-label="$gettext('Chapter')"
+          :search-label="$gettext('Search in book')"
+          :search-placeholder="$gettext('Search in book')"
+          :searching-label="$gettext('Searching...')"
+          :search-result-count="searchResultCfis.length"
+          :current-search-result-index="currentSearchResultIndex"
+          :can-go-to-previous-search-result="canGoToPreviousSearchResult"
+          :can-go-to-next-search-result="canGoToNextSearchResult"
+          :previous-search-result-label="$gettext('Navigate to previous search result')"
+          :next-search-result-label="$gettext('Navigate to next search result')"
+          :close-search-label="$gettext('Close search')"
+          :is-search-loading="textSearchLoading"
+          :previous-page-label="$gettext('Navigate to previous page')"
+          :next-page-label="$gettext('Navigate to next page')"
+          :decrease-font-size-label="$gettext('Decrease font size')"
+          :reset-font-size-label="$gettext('Reset font size')"
+          :increase-font-size-label="$gettext('Increase font size')"
+          :current-font-size-percentage="currentFontSizePercentage"
+          :font-size-step="FONT_SIZE_PERCENTAGE_STEP"
+          :navigate-left-disabled="navigateLeftDisabled"
+          :navigate-right-disabled="navigateRightDisabled"
+          :decrease-font-size-disabled="decreaseFontSizeDisabled"
+          :increase-font-size-disabled="increaseFontSizeDisabled"
+          :fullscreen-label="
+            isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
+          "
+          :is-full-screen-mode-activated="isFullScreenModeActivated"
+          @update:selected-chapter="showChapter"
+          @search-term-changed="onTextSearchTermChanged"
+          @go-to-previous-search-result="goToPreviousSearchResult"
+          @go-to-next-search-result="goToNextSearchResult"
+          @close-search="closeTextSearch"
+          @navigate-left="readerView?.navigateLeft()"
+          @navigate-right="readerView?.navigateRight()"
+          @decrease-font-size="decreaseFontSize"
+          @reset-font-size="resetFontSize"
+          @increase-font-size="increaseFontSize"
+          @toggle-fullscreen="toggleFullScreenMode"
+        />
+        <ReaderView
+          ref="readerView"
+          :previous-page-label="$gettext('Navigate to previous page')"
+          :next-page-label="$gettext('Navigate to next page')"
+          :navigate-left-disabled="navigateLeftDisabled"
+          :navigate-right-disabled="navigateRightDisabled"
+        />
+        <reader-progress-bar
+          :reading-progress-percent="readingProgressPercent"
+          :reading-progress-label="readingProgressLabel"
+          :enabled="hasGlobalLocations"
+          @seek="onProgressChange"
+        />
       </div>
-      <reader-progress-bar
-        :reading-progress-percent="readingProgressPercent"
-        :reading-progress-label="readingProgressLabel"
-        :enabled="hasGlobalLocations"
-        @seek="onProgressChange"
-      />
+    </div>
+    <div
+      v-if="isReaderLoading"
+      class="absolute inset-0 z-20 flex items-center justify-center bg-role-surface"
+    >
+      <AppLoadingSpinner />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import {
+  AppLoadingSpinner,
   Key,
   useKeyboardActions,
   useLocalStorage,
@@ -99,6 +92,7 @@ import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
 import ReaderToolbar from './components/ReaderToolbar.vue'
 import ChapterList from './components/ChapterList.vue'
 import ReaderProgressBar from './components/ReaderProgressBar.vue'
+import ReaderView from './components/ReaderView.vue'
 
 const DARK_THEME_CONFIG = {
   html: {
@@ -128,6 +122,12 @@ type EpubSpineItem = {
   find: (query: string) => Promise<Array<{ cfi?: string }>>
   unload: () => void
 }
+type ReaderViewExpose = {
+  getBookContainer: () => HTMLElement | undefined
+  setRendition: (value?: Rendition) => void
+  navigateLeft: () => void
+  navigateRight: () => void
+}
 
 // `applicationConfig` is declared but never read here. Without it the wrapper's
 // slot binding has nowhere to land it and Vue falls it through to the root
@@ -138,7 +138,7 @@ const { currentContent, resource } = defineProps<
 
 const keyboardActions = useKeyboardActions()
 const readerRoot = ref<HTMLElement>()
-const bookContainer = ref<Element>()
+const readerView = useTemplateRef<ReaderViewExpose>('readerView')
 const chapters = ref<NavItem[]>([])
 const currentChapter = ref<NavItem>()
 const navigateLeftDisabled = ref(false)
@@ -157,14 +157,7 @@ const themeStore = useThemeStore()
 const book = ref<Book>()
 const rendition = ref<Rendition>()
 const isFullScreenModeActivated = ref(false)
-
-const navigateLeft = () => {
-  unref(rendition).prev()
-}
-
-const navigateRight = () => {
-  unref(rendition).next()
-}
+const isReaderLoading = ref(true)
 
 const showChapter = (chapter: NavItem) => {
   currentChapter.value = chapter
@@ -398,8 +391,8 @@ const decreaseFontSizeDisabled = computed(() => {
   return unref(currentFontSizePercentage) <= MIN_FONT_SIZE_PERCENTAGE
 })
 
-keyboardActions.bindKeyAction({ primary: Key.ArrowLeft }, () => navigateLeft())
-keyboardActions.bindKeyAction({ primary: Key.ArrowRight }, () => navigateRight())
+keyboardActions.bindKeyAction({ primary: Key.ArrowLeft }, () => unref(readerView)?.navigateLeft())
+keyboardActions.bindKeyAction({ primary: Key.ArrowRight }, () => unref(readerView)?.navigateRight())
 
 watch(
   () => currentContent,
@@ -416,6 +409,7 @@ watch(
     )
 
     book.value = ePub(currentContent)
+    isReaderLoading.value = true
     readingProgressLabel.value = null
     readingProgressPercent.value = null
     hasGlobalLocations.value = false
@@ -432,12 +426,18 @@ watch(
       hasGlobalLocations.value = true
     }
 
-    rendition.value = unref(book).renderTo(unref(bookContainer), {
+    const bookContainer = unref(readerView)?.getBookContainer()
+    if (!bookContainer) {
+      return
+    }
+
+    rendition.value = unref(book).renderTo(bookContainer, {
       flow: 'paginated',
       spread: 'none',
       width: '100%',
       height: '100%'
     })
+    unref(readerView)?.setRendition(unref(rendition))
 
     unref(rendition).themes.register('dark', DARK_THEME_CONFIG)
     unref(rendition).themes.register('light', LIGHT_THEME_CONFIG)
@@ -447,14 +447,15 @@ watch(
 
     unref(rendition).on('keydown', (event: KeyboardEvent) => {
       if (event.key === Key.ArrowLeft) {
-        navigateLeft()
+        unref(readerView)?.navigateLeft()
       }
       if (event.key === Key.ArrowRight) {
-        navigateRight()
+        unref(readerView)?.navigateRight()
       }
     })
 
     unref(rendition).on('relocated', () => {
+      isReaderLoading.value = false
       const currentLocation = unref(rendition).currentLocation() as any & Location
       localStorageResourceData.value = { currentLocation }
       navigateLeftDisabled.value = currentLocation.atStart === true
