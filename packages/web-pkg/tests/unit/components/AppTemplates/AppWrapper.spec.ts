@@ -90,9 +90,16 @@ function setup({
   const getFileContents = vi
     .fn()
     .mockImplementation(() => new Promise((r) => (resolveContents = r)))
+  const closeApp = vi.fn()
 
   useAppDefaultsSpy.mockReturnValue(
-    useAppDefaultsMock({ currentFileContext, getFileInfo, getFileContents, putFileContents })
+    useAppDefaultsMock({
+      currentFileContext,
+      getFileInfo,
+      getFileContents,
+      putFileContents,
+      closeApp
+    })
   )
 
   let sessionOptions: any
@@ -155,6 +162,7 @@ function setup({
     isEnabled: () => sessionOptions?.enabled(),
     isLockedForReload,
     putFileContents,
+    closeApp,
     getFileContents,
     wasWrittenByRoom,
     beginSave,
@@ -181,6 +189,22 @@ function setup({
     }
   }
 }
+
+describe('AppWrapper — ESC close behavior', () => {
+  it('stops Escape propagation while closing the app', async () => {
+    const s = setup({ yjsEnabled: false })
+    const documentKeydownSpy = vi.fn()
+    document.addEventListener('keydown', documentKeydownSpy)
+    try {
+      await s.wrapper.find('main').trigger('keydown', { key: 'Escape' })
+
+      expect(s.closeApp).toHaveBeenCalledTimes(1)
+      expect(documentKeydownSpy).not.toHaveBeenCalled()
+    } finally {
+      document.removeEventListener('keydown', documentKeydownSpy)
+    }
+  })
+})
 
 describe('AppWrapper — Yjs session gate', () => {
   it('stays disabled until the body for the current resource has arrived', async () => {
