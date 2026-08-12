@@ -2,6 +2,7 @@
   <div class="relative h-full">
     <div
       ref="readerRoot"
+      tabindex="-1"
       class="epub-reader flex h-full bg-role-surface text-role-on-surface"
       :class="{ 'invisible pointer-events-none': isReaderLoading }"
     >
@@ -77,6 +78,7 @@ import {
   useKeyboardActions,
   useLocalStorage,
   useThemeStore,
+  type AppWrapperSlotHandlers,
   type AppWrapperSlotProps,
   type EditorSlotProps
 } from '@opencloud-eu/web-pkg'
@@ -102,7 +104,7 @@ const LIGHT_THEME_CONFIG = {
 const MAX_FONT_SIZE_PERCENTAGE = 150
 const MIN_FONT_SIZE_PERCENTAGE = 50
 const FONT_SIZE_PERCENTAGE_STEP = 10
-const GLOBAL_LOCATION_CHARS = 1200
+const GLOBAL_LOCATION_CHARS = 3000
 const MAX_TEXT_SEARCH_RESULTS = 300
 const SEARCH_HIGHLIGHT_STYLES = {
   fill: '#facc15',
@@ -124,12 +126,14 @@ type ReaderViewExpose = {
 // `applicationConfig` is declared but never read here. Without it the wrapper's
 // slot binding has nowhere to land it and Vue falls it through to the root
 // element as `applicationconfig="[object Object]"`.
-const { currentContent, resource } = defineProps<
-  EditorSlotProps & Pick<AppWrapperSlotProps, 'applicationConfig'>
+const { currentContent, resource, onClose } = defineProps<
+  EditorSlotProps &
+    Pick<AppWrapperSlotProps, 'applicationConfig'> &
+    Pick<AppWrapperSlotHandlers, 'onClose'>
 >()
 
 const keyboardActions = useKeyboardActions()
-const readerRoot = ref<HTMLElement>()
+const readerRoot = useTemplateRef<HTMLElement>('readerRoot')
 const readerView = useTemplateRef<ReaderViewExpose>('readerView')
 const chapters = ref<NavItem[]>([])
 const currentChapter = ref<NavItem>()
@@ -375,6 +379,11 @@ function decreaseFontSize() {
   )
 }
 
+async function focusReaderRoot() {
+  await nextTick()
+  unref(readerRoot)?.focus()
+}
+
 const increaseFontSizeDisabled = computed(() => {
   return unref(currentFontSizePercentage) >= MAX_FONT_SIZE_PERCENTAGE
 })
@@ -438,6 +447,10 @@ watch(
     unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
 
     unref(rendition).on('keydown', (event: KeyboardEvent) => {
+      if (event.key === Key.Esc) {
+        event.preventDefault()
+        onClose()
+      }
       if (event.key === Key.ArrowLeft) {
         unref(readerView)?.navigateLeft()
       }
@@ -494,6 +507,12 @@ watch(
     immediate: true
   }
 )
+
+watch(isReaderLoading, (isLoading, wasLoading) => {
+  if (wasLoading && !isLoading) {
+    focusReaderRoot()
+  }
+})
 
 watch(currentFontSizePercentage, () => {
   unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)

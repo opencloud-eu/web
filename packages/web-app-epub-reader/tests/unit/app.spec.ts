@@ -1,4 +1,5 @@
 import {
+  ComponentProps,
   PartialComponentProps,
   defaultPlugins,
   mount,
@@ -59,6 +60,7 @@ vi.mock('epubjs', () => ({
       },
       renderTo: vi.fn(() => ({
         on: vi.fn(),
+        once: vi.fn(),
         currentLocation: vi.fn(() => ({
           start: { cfi: 'epubcfi(/6/2)', displayed: { page: 1, total: 12 } },
           atStart: false,
@@ -384,18 +386,24 @@ function getWrapper({
 } = {}) {
   vi.mocked(useLocalStorage<unknown>).mockImplementationOnce(() => ref(localStorageGeneral))
   vi.mocked(useLocalStorage<unknown>).mockImplementationOnce(() => ref(localStorageResource))
+  const defaultProps: ComponentProps<typeof App> = {
+    applicationConfig: {},
+    currentContent: '',
+    isReadOnly: false,
+    resource: mock<Resource>({
+      id: '1'
+    }),
+    onClose: vi.fn()
+  }
+  const props: ComponentProps<typeof App> = {
+    ...defaultProps,
+    ...propsData,
+    onClose: propsData.onClose ?? defaultProps.onClose
+  }
 
   return {
     wrapper: mount(App, {
-      props: {
-        applicationConfig: {},
-        currentContent: '',
-        isReadOnly: false,
-        resource: mock<Resource>({
-          id: '1'
-        }),
-        ...propsData
-      },
+      props,
       global: {
         plugins: [...defaultPlugins()]
       }
