@@ -10,8 +10,6 @@ export const addVersionToAssetUrl = (url: string): string => {
     return url
   }
 
-  const urlObj = new URL(url, window.location.origin)
-  urlObj.searchParams.set('v', version)
-
-  return `${urlObj.pathname}${urlObj.search}`
+  const separator = url.includes('?') ? '&' : '?'
+  return `${url}${separator}v=${version}`
 }
