@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(text-editor): update editor content when loaded via recovery [[#3081](https://github.com/opencloud-eu/web/pull/3081)]
 - [stable-7.1] fix: encode hash character in app route URLs to prevent truncation (#3075) [[#3080](https://github.com/opencloud-eu/web/pull/3080)]
 
 ### ✅ Tests
