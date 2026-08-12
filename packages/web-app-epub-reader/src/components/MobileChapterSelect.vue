@@ -1,12 +1,15 @@
 <template>
-  <div class="epub-reader-controls-chapters-select block w-72 max-w-[45vw] lg:hidden">
+  <div class="epub-reader-controls-chapters-select block min-w-0 max-w-[200px] lg:hidden">
     <oc-button
       id="epub_reader_chapter_toggle"
-      class="w-full justify-between px-3 py-2"
+      class="w-full min-w-0 justify-between px-2.5 py-2"
       appearance="raw"
       no-hover
     >
-      <span class="truncate text-left" v-text="selectedChapter?.label || chapterLabel" />
+      <span
+        class="min-w-0 flex-1 truncate text-left"
+        v-text="selectedChapter?.label || chapterLabel"
+      />
       <oc-icon name="arrow-drop-down" size-class="size-4" />
     </oc-button>
     <oc-drop

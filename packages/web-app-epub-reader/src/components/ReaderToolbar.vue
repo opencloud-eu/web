@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-2 px-3 py-2">
+  <div class="flex items-center gap-1 px-2 py-2 sm:gap-2 sm:px-3">
     <mobile-chapter-select
       :chapters="chapters"
       :selected-chapter="selectedChapter"
@@ -7,7 +7,7 @@
       @update:selected-chapter="onChapterUpdate"
     />
     <div
-      class="ml-auto flex items-center rounded-full bg-role-surface-container-low px-1.5 py-2 shadow-sm"
+      class="ml-auto shrink-0 flex items-center rounded-full bg-role-surface-container-low px-1 py-1.5 shadow-sm sm:px-1.5 sm:py-2"
     >
       <oc-button
         v-oc-tooltip="previousPageLabel"
@@ -19,7 +19,7 @@
         size="small"
         @click="$emit('navigateLeft')"
       >
-        &lt;
+        <oc-icon name="arrow-left-s" fill-type="line" size-class="size-4" />
       </oc-button>
       <oc-button
         v-oc-tooltip="nextPageLabel"
@@ -31,8 +31,16 @@
         size="small"
         @click="$emit('navigateRight')"
       >
-        &gt;
+        <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
       </oc-button>
+      <span
+        v-if="readingProgressLabel"
+        v-oc-tooltip="readingProgressA11yLabel"
+        :aria-label="readingProgressA11yLabel"
+        class="epub-reader-controls-page-indicator hidden min-w-[62px] px-1 text-center text-sm text-role-on-surface-variant sm:inline"
+      >
+        {{ readingProgressLabel }}
+      </span>
       <span class="mx-1 h-5 w-px bg-role-outline-variant" />
       <oc-button
         v-oc-tooltip="decreaseFontSizeTooltip"
@@ -76,6 +84,7 @@
 import { computed } from 'vue'
 import type { NavItem } from 'epubjs'
 import MobileChapterSelect from './MobileChapterSelect.vue'
+import { useGettext } from 'vue3-gettext'
 
 type ChapterOption = NavItem
 
@@ -94,6 +103,7 @@ const props = defineProps<{
   navigateRightDisabled: boolean
   decreaseFontSizeDisabled: boolean
   increaseFontSizeDisabled: boolean
+  readingProgressLabel: string | null
 }>()
 
 const emit = defineEmits<{
@@ -110,6 +120,15 @@ const decreaseFontSizeTooltip = computed(() => {
 })
 const increaseFontSizeTooltip = computed(() => {
   return `${props.currentFontSizePercentage + props.fontSizeStep}%`
+})
+const { $gettext } = useGettext()
+const readingProgressA11yLabel = computed(() => {
+  if (!props.readingProgressLabel) {
+    return ''
+  }
+  return $gettext('Reading progress: %{progress}', {
+    progress: props.readingProgressLabel
+  })
 })
 
 function onChapterUpdate(value: ChapterOption) {

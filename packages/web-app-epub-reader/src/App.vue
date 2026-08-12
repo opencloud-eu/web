@@ -1,30 +1,10 @@
 <template>
   <div class="epub-reader flex h-full bg-role-surface text-role-on-surface">
-    <oc-list
-      class="hidden lg:block w-80 shrink-0 overflow-y-auto bg-role-surface-container-low p-2"
-    >
-      <li
-        v-for="chapter in chapters"
-        :key="chapter.id"
-        class="epub-reader-chapters-list-item mb-1 rounded-sm"
-        :class="{
-          'bg-role-secondary-container text-role-on-secondary-container':
-            currentChapter?.id === chapter.id
-        }"
-      >
-        <oc-button
-          class="max-w-full justify-start px-2 py-1.5"
-          :class="{
-            'font-semibold': currentChapter?.id === chapter.id
-          }"
-          appearance="raw"
-          no-hover
-          @click="showChapter(chapter)"
-        >
-          <span v-oc-tooltip="chapter.label" class="truncate mr-2" v-text="chapter.label" />
-        </oc-button>
-      </li>
-    </oc-list>
+    <chapter-list
+      :chapters="chapters"
+      :current-chapter="currentChapter"
+      @chapter-selected="showChapter"
+    />
     <div class="flex min-w-0 flex-1 flex-col">
       <reader-toolbar
         :chapters="chapters"
@@ -41,6 +21,7 @@
         :navigate-right-disabled="navigateRightDisabled"
         :decrease-font-size-disabled="decreaseFontSizeDisabled"
         :increase-font-size-disabled="increaseFontSizeDisabled"
+        :reading-progress-label="readingProgressLabel"
         @update:selected-chapter="showChapter"
         @navigate-left="navigateLeft"
         @navigate-right="navigateRight"
@@ -91,6 +72,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
 import ReaderToolbar from './components/ReaderToolbar.vue'
+import ChapterList from './components/ChapterList.vue'
 
 const DARK_THEME_CONFIG = {
   html: {
@@ -108,6 +90,7 @@ const LIGHT_THEME_CONFIG = {
 const MAX_FONT_SIZE_PERCENTAGE = 150
 const MIN_FONT_SIZE_PERCENTAGE = 50
 const FONT_SIZE_PERCENTAGE_STEP = 10
+const GLOBAL_LOCATION_CHARS = 1200
 
 // `applicationConfig` is declared but never read here. Without it the wrapper's
 // slot binding has nowhere to land it and Vue falls it through to the root
@@ -122,6 +105,7 @@ const chapters = ref<NavItem[]>([])
 const currentChapter = ref<NavItem>()
 const navigateLeftDisabled = ref(false)
 const navigateRightDisabled = ref(false)
+const readingProgressLabel = ref<string | null>(null)
 const localStorageData = useLocalStorage<{ fontSizePercentage?: number }>(`oc_epubReader`, {})
 const currentFontSizePercentage = ref(unref(localStorageData).fontSizePercentage || 100)
 const themeStore = useThemeStore()
@@ -137,6 +121,7 @@ const navigateRight = () => {
 }
 
 const showChapter = (chapter: NavItem) => {
+  currentChapter.value = chapter
   unref(rendition).display(chapter.href)
 }
 
@@ -184,11 +169,17 @@ watch(
     )
 
     book.value = ePub(currentContent)
+    readingProgressLabel.value = null
 
     unref(book).loaded.navigation.then(({ toc }) => {
       chapters.value = toc
       currentChapter.value = toc?.[0]
     })
+
+    await unref(book).ready
+    if (unref(book).locations) {
+      await unref(book).locations.generate(GLOBAL_LOCATION_CHARS)
+    }
 
     rendition.value = unref(book).renderTo(unref(bookContainer), {
       flow: 'paginated',
@@ -217,8 +208,24 @@ watch(
       localStorageResourceData.value = { currentLocation }
       navigateLeftDisabled.value = currentLocation.atStart === true
       navigateRightDisabled.value = currentLocation.atEnd === true
+      const locationCfi = currentLocation?.start?.cfi
+      const globalPercentage =
+        locationCfi && unref(book)?.locations?.percentageFromCfi
+          ? unref(book).locations.percentageFromCfi(locationCfi)
+          : null
 
-      const locationCfi = currentLocation.start.cfi
+      if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
+        const clamped = Math.min(1, Math.max(0, globalPercentage))
+        readingProgressLabel.value = `${(clamped * 100).toFixed(1)}%`
+      } else {
+        const chapterPage = currentLocation?.start?.displayed?.page
+        const chapterTotal = currentLocation?.start?.displayed?.total
+        readingProgressLabel.value =
+          typeof chapterPage === 'number' && typeof chapterTotal === 'number'
+            ? `${chapterPage}/${chapterTotal}`
+            : null
+      }
+
       const spineItem = unref(book).spine.get(locationCfi)
       const navItem = unref(book).navigation.get(spineItem.href)
       // Might be sub nav item and therefore undefined

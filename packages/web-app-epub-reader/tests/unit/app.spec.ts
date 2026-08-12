@@ -148,6 +148,15 @@ describe('Epub reader app', () => {
         await chapterElements[1].find('.oc-button').trigger('click')
         expect((wrapper.vm as any).rendition.display).toHaveBeenCalledWith('c2')
       })
+      it('marks clicked chapter as selected', async () => {
+        const { wrapper } = getWrapper()
+        await nextTicks(2)
+        const chapterElements = wrapper.findAll(selectors.chaptersListItem)
+
+        await chapterElements[1].find('.oc-button').trigger('click')
+
+        expect(chapterElements[1].classes()).toContain('bg-role-secondary-container')
+      })
     })
     describe('chapters select', () => {
       it('renders correctly', async () => {

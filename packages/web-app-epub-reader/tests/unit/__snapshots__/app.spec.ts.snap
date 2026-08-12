@@ -2,7 +2,7 @@
 
 exports[`Epub reader app > renders correctly 1`] = `
 "<div class="epub-reader flex h-full bg-role-surface text-role-on-surface">
-  <ul class="oc-list hidden lg:block w-80 shrink-0 overflow-y-auto bg-role-surface-container-low p-2">
+  <ul class="oc-list hidden lg:block w-80 shrink-0 overflow-y-auto bg-role-surface-container-low p-2 shadow-[8px_0_20px_-14px_rgb(0_0_0_/_0.28)]">
     <li class="epub-reader-chapters-list-item mb-1 rounded-sm bg-role-secondary-container text-role-on-secondary-container"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default max-w-full justify-start px-2 py-1.5 font-semibold">
         <!--v-if-->
         <!-- @slot Content of the button --> <span class="truncate mr-2">Chapter 1</span>
@@ -13,10 +13,10 @@ exports[`Epub reader app > renders correctly 1`] = `
       </button></li>
   </ul>
   <div class="flex min-w-0 flex-1 flex-col">
-    <div class="flex items-center gap-2 px-3 py-2">
-      <div class="epub-reader-controls-chapters-select block w-72 max-w-[45vw] lg:hidden"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full justify-between px-3 py-2" id="epub_reader_chapter_toggle">
+    <div class="flex items-center gap-1 px-2 py-2 sm:gap-2 sm:px-3">
+      <div class="epub-reader-controls-chapters-select block min-w-0 max-w-[200px] lg:hidden"><button type="button" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full min-w-0 justify-between px-2.5 py-2" id="epub_reader_chapter_toggle">
           <!--v-if-->
-          <!-- @slot Content of the button --> <span class="truncate text-left">Chapter 1</span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-drop-down-fill.svg" transform-source="(svg) => {
+          <!-- @slot Content of the button --> <span class="min-w-0 flex-1 truncate text-left">Chapter 1</span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-drop-down-fill.svg" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -32,15 +32,30 @@ exports[`Epub reader app > renders correctly 1`] = `
           <!--teleport end-->
         </transition-stub>
       </div>
-      <div class="ml-auto flex items-center rounded-full bg-role-surface-container-low px-1.5 py-2 shadow-sm"><button type="button" aria-label="Navigate to previous page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-navigate-left min-w-9">
+      <div class="ml-auto shrink-0 flex items-center rounded-full bg-role-surface-container-low px-1 py-1.5 shadow-sm sm:px-1.5 sm:py-2"><button type="button" aria-label="Navigate to previous page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-navigate-left min-w-9">
           <!--v-if-->
-          <!-- @slot Content of the button -->
-          &lt;
+          <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
         </button> <button type="button" aria-label="Navigate to next page" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-navigate-right min-w-9">
           <!--v-if-->
-          <!-- @slot Content of the button -->
-          &gt;
-        </button> <span class="mx-1 h-5 w-px bg-role-outline-variant"></span> <button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease min-w-9">
+          <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span>
+        </button>
+        <!--v-if--> <span class="mx-1 h-5 w-px bg-role-outline-variant"></span> <button type="button" aria-label="Decrease font size" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-sm min-h-3 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default epub-reader-controls-font-size-decrease min-w-9">
           <!--v-if-->
           <!-- @slot Content of the button -->
           A-
@@ -51,7 +66,8 @@ exports[`Epub reader app > renders correctly 1`] = `
           <!--v-if-->
           <!-- @slot Content of the button -->
           A+
-        </button></div>
+        </button>
+      </div>
     </div>
     <div class="flex min-h-0 flex-1 items-stretch gap-2 px-2 py-2 md:px-4">
       <div class="flex min-w-0 flex-1 items-center justify-center overflow-hidden">
