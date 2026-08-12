@@ -12,7 +12,7 @@
       <oc-button
         v-oc-tooltip="previousPageLabel"
         :aria-label="previousPageLabel"
-        class="epub-reader-controls-navigate-left min-w-9"
+        class="epub-reader-controls-navigate-left p-2"
         :disabled="navigateLeftDisabled"
         appearance="raw"
         no-hover
@@ -24,7 +24,7 @@
       <oc-button
         v-oc-tooltip="nextPageLabel"
         :aria-label="nextPageLabel"
-        class="epub-reader-controls-navigate-right min-w-9"
+        class="epub-reader-controls-navigate-right p-2"
         :disabled="navigateRightDisabled"
         appearance="raw"
         no-hover
@@ -37,14 +37,14 @@
       <oc-button
         v-oc-tooltip="decreaseFontSizeTooltip"
         :aria-label="decreaseFontSizeLabel"
-        class="epub-reader-controls-font-size-decrease min-w-9"
+        class="epub-reader-controls-font-size-decrease p-2"
         :disabled="decreaseFontSizeDisabled"
         appearance="raw"
         no-hover
         size="small"
         @click="$emit('decreaseFontSize')"
       >
-        A-
+        <oc-icon name="subtract" fill-type="line" size-class="size-4" />
       </oc-button>
       <oc-button
         v-oc-tooltip="resetFontSizeLabel"
@@ -59,21 +59,21 @@
       <oc-button
         v-oc-tooltip="increaseFontSizeTooltip"
         :aria-label="increaseFontSizeLabel"
-        class="epub-reader-controls-font-size-increase min-w-9"
+        class="epub-reader-controls-font-size-increase p-2"
         :disabled="increaseFontSizeDisabled"
         appearance="raw"
         no-hover
         size="small"
         @click="$emit('increaseFontSize')"
       >
-        A+
+        <oc-icon name="add" fill-type="line" size-class="size-4" />
       </oc-button>
       <span class="mx-1 h-5 w-px bg-role-outline-variant" />
       <oc-button
         id="epub_reader_text_search_toggle"
         v-oc-tooltip="searchLabel"
         :aria-label="searchLabel"
-        class="epub-reader-controls-text-search min-w-9"
+        class="epub-reader-controls-text-search p-2"
         appearance="raw"
         no-hover
         size="small"
@@ -82,17 +82,11 @@
       </oc-button>
       <reader-text-search
         toggle="#epub_reader_text_search_toggle"
-        :search-label="searchLabel"
-        :search-placeholder="searchPlaceholder"
         :searching="isSearchLoading"
-        :searching-label="searchingLabel"
         :result-count="searchResultCount"
         :current-result-index="currentSearchResultIndex"
         :can-go-to-previous-result="canGoToPreviousSearchResult"
         :can-go-to-next-result="canGoToNextSearchResult"
-        :previous-result-label="previousSearchResultLabel"
-        :next-result-label="nextSearchResultLabel"
-        :close-search-label="closeSearchLabel"
         @search-term-changed="$emit('searchTermChanged', $event)"
         @go-to-previous-result="$emit('goToPreviousSearchResult')"
         @go-to-next-result="$emit('goToNextSearchResult')"
@@ -102,7 +96,7 @@
       <oc-button
         v-oc-tooltip="fullscreenLabel"
         :aria-label="fullscreenLabel"
-        class="epub-reader-controls-fullscreen hidden min-w-9 sm:inline-flex"
+        class="epub-reader-controls-fullscreen hidden p-2 sm:inline-flex"
         appearance="raw"
         no-hover
         size="small"
@@ -121,6 +115,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { NavItem } from 'epubjs'
+import { useGettext } from 'vue3-gettext'
 import MobileChapterSelect from './MobileChapterSelect.vue'
 import ReaderTextSearch from './ReaderTextSearch.vue'
 
@@ -128,30 +123,17 @@ type ChapterOption = NavItem
 const props = defineProps<{
   chapters: ChapterOption[]
   selectedChapter?: ChapterOption
-  chapterLabel: string
-  searchLabel: string
-  searchPlaceholder: string
-  searchingLabel: string
   searchResultCount: number
   currentSearchResultIndex: number
   canGoToPreviousSearchResult: boolean
   canGoToNextSearchResult: boolean
-  previousSearchResultLabel: string
-  nextSearchResultLabel: string
-  closeSearchLabel: string
   isSearchLoading: boolean
-  previousPageLabel: string
-  nextPageLabel: string
-  decreaseFontSizeLabel: string
-  resetFontSizeLabel: string
-  increaseFontSizeLabel: string
   currentFontSizePercentage: number
   fontSizeStep: number
   navigateLeftDisabled: boolean
   navigateRightDisabled: boolean
   decreaseFontSizeDisabled: boolean
   increaseFontSizeDisabled: boolean
-  fullscreenLabel: string
   isFullScreenModeActivated: boolean
 }>()
 
@@ -168,6 +150,19 @@ const emit = defineEmits<{
   (e: 'increaseFontSize'): void
   (e: 'toggleFullscreen'): void
 }>()
+const { $gettext } = useGettext()
+const chapterLabel = $gettext('Chapter')
+const searchLabel = $gettext('Search in book')
+const previousPageLabel = $gettext('Navigate to previous page')
+const nextPageLabel = $gettext('Navigate to next page')
+const decreaseFontSizeLabel = $gettext('Decrease font size')
+const resetFontSizeLabel = $gettext('Reset font size')
+const increaseFontSizeLabel = $gettext('Increase font size')
+const fullscreenLabel = computed(() => {
+  return props.isFullScreenModeActivated
+    ? $gettext('Exit fullscreen')
+    : $gettext('Enter fullscreen')
+})
 
 const decreaseFontSizeTooltip = computed(() => {
   return `${props.currentFontSizePercentage - props.fontSizeStep}%`

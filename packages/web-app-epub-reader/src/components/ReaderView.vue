@@ -31,16 +31,18 @@
 <script setup lang="ts">
 import type { Rendition } from 'epubjs'
 import { ref, unref, useTemplateRef } from 'vue'
+import { useGettext } from 'vue3-gettext'
 
 defineProps<{
-  previousPageLabel: string
-  nextPageLabel: string
   navigateLeftDisabled: boolean
   navigateRightDisabled: boolean
 }>()
 
 const bookContainer = useTemplateRef<HTMLElement>('bookContainer')
 const rendition = ref<Rendition>()
+const { $gettext } = useGettext()
+const previousPageLabel = $gettext('Navigate to previous page')
+const nextPageLabel = $gettext('Navigate to next page')
 
 function getBookContainer() {
   return unref(bookContainer)

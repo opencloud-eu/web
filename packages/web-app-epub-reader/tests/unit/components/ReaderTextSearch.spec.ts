@@ -5,17 +5,11 @@ function getWrapper() {
   return mount(ReaderTextSearch, {
     props: {
       toggle: '#epub_reader_text_search_toggle',
-      searchLabel: 'Search in book',
-      searchPlaceholder: 'Search in book',
       searching: false,
-      searchingLabel: 'Searching...',
       resultCount: 3,
       currentResultIndex: 1,
       canGoToPreviousResult: true,
-      canGoToNextResult: true,
-      previousResultLabel: 'Navigate to previous search result',
-      nextResultLabel: 'Navigate to next search result',
-      closeSearchLabel: 'Close search'
+      canGoToNextResult: true
     },
     global: {
       plugins: [...defaultPlugins()],
@@ -57,17 +51,11 @@ describe('ReaderTextSearch component', () => {
     const wrapper = mount(ReaderTextSearch, {
       props: {
         toggle: '#epub_reader_text_search_toggle',
-        searchLabel: 'Search in book',
-        searchPlaceholder: 'Search in book',
         searching: false,
-        searchingLabel: 'Searching...',
         resultCount: 0,
         currentResultIndex: -1,
         canGoToPreviousResult: false,
-        canGoToNextResult: false,
-        previousResultLabel: 'Navigate to previous search result',
-        nextResultLabel: 'Navigate to next search result',
-        closeSearchLabel: 'Close search'
+        canGoToNextResult: false
       },
       global: {
         plugins: [...defaultPlugins()],
@@ -106,17 +94,11 @@ describe('ReaderTextSearch component', () => {
       attachTo: document.body,
       props: {
         toggle: '#epub_reader_text_search_toggle',
-        searchLabel: 'Search in book',
-        searchPlaceholder: 'Search in book',
         searching: false,
-        searchingLabel: 'Searching...',
         resultCount: 3,
         currentResultIndex: 1,
         canGoToPreviousResult: true,
-        canGoToNextResult: true,
-        previousResultLabel: 'Navigate to previous search result',
-        nextResultLabel: 'Navigate to next search result',
-        closeSearchLabel: 'Close search'
+        canGoToNextResult: true
       },
       global: {
         plugins: [...defaultPlugins()],

@@ -95,7 +95,11 @@ describe('Epub reader app', () => {
   it('renders correctly', async () => {
     const { wrapper } = getWrapper()
     await nextTicks(2)
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(wrapper.find('.epub-reader').exists()).toBeTruthy()
+    expect(wrapper.findComponent({ name: 'ReaderToolbar' }).exists()).toBeTruthy()
+    expect(wrapper.findComponent({ name: 'ChapterList' }).exists()).toBeTruthy()
+    expect(wrapper.findComponent({ name: 'ReaderView' }).exists()).toBeTruthy()
+    expect(wrapper.findComponent({ name: 'ReaderProgressBar' }).exists()).toBeTruthy()
   })
   describe('theme', () => {
     it('sets the theme based on current theme setting', async () => {

@@ -14,32 +14,17 @@
         <reader-toolbar
           :chapters="chapters"
           :selected-chapter="currentChapter"
-          :chapter-label="$gettext('Chapter')"
-          :search-label="$gettext('Search in book')"
-          :search-placeholder="$gettext('Search in book')"
-          :searching-label="$gettext('Searching...')"
           :search-result-count="searchResultCfis.length"
           :current-search-result-index="currentSearchResultIndex"
           :can-go-to-previous-search-result="canGoToPreviousSearchResult"
           :can-go-to-next-search-result="canGoToNextSearchResult"
-          :previous-search-result-label="$gettext('Navigate to previous search result')"
-          :next-search-result-label="$gettext('Navigate to next search result')"
-          :close-search-label="$gettext('Close search')"
           :is-search-loading="textSearchLoading"
-          :previous-page-label="$gettext('Navigate to previous page')"
-          :next-page-label="$gettext('Navigate to next page')"
-          :decrease-font-size-label="$gettext('Decrease font size')"
-          :reset-font-size-label="$gettext('Reset font size')"
-          :increase-font-size-label="$gettext('Increase font size')"
           :current-font-size-percentage="currentFontSizePercentage"
           :font-size-step="FONT_SIZE_PERCENTAGE_STEP"
           :navigate-left-disabled="navigateLeftDisabled"
           :navigate-right-disabled="navigateRightDisabled"
           :decrease-font-size-disabled="decreaseFontSizeDisabled"
           :increase-font-size-disabled="increaseFontSizeDisabled"
-          :fullscreen-label="
-            isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
-          "
           :is-full-screen-mode-activated="isFullScreenModeActivated"
           @update:selected-chapter="showChapter"
           @search-term-changed="onTextSearchTermChanged"
@@ -55,8 +40,6 @@
         />
         <ReaderView
           ref="readerView"
-          :previous-page-label="$gettext('Navigate to previous page')"
-          :next-page-label="$gettext('Navigate to next page')"
           :navigate-left-disabled="navigateLeftDisabled"
           :navigate-right-disabled="navigateRightDisabled"
         />
@@ -78,7 +61,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import {
   AppLoadingSpinner,
   Key,
@@ -159,17 +151,17 @@ const rendition = ref<Rendition>()
 const isFullScreenModeActivated = ref(false)
 const isReaderLoading = ref(true)
 
-const showChapter = (chapter: NavItem) => {
+function showChapter(chapter: NavItem) {
   currentChapter.value = chapter
   unref(rendition).display(chapter.href)
 }
 
-const formatProgressPercentLabel = (percent: number) => {
+function formatProgressPercentLabel(percent: number) {
   const rounded = Number(percent.toFixed(1))
   return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`
 }
 
-const onProgressChange = async (percentage: number) => {
+async function onProgressChange(percentage: number) {
   if (!unref(hasGlobalLocations) || !unref(book)?.locations?.cfiFromPercentage) {
     return
   }
@@ -193,7 +185,7 @@ const canGoToNextSearchResult = computed(() => {
   return unref(searchResultCfis).length > 0
 })
 
-const clearSearchHighlight = () => {
+function clearSearchHighlight() {
   const highlightCfi = unref(currentSearchHighlightCfi)
   const annotations = (unref(rendition) as any)?.annotations
 
@@ -206,7 +198,7 @@ const clearSearchHighlight = () => {
   currentSearchHighlightCfi.value = null
 }
 
-const highlightSearchResult = (cfi: string) => {
+function highlightSearchResult(cfi: string) {
   const annotations = (unref(rendition) as any)?.annotations
   if (!annotations) {
     return
@@ -236,7 +228,7 @@ const highlightSearchResult = (cfi: string) => {
   currentSearchHighlightCfi.value = cfi
 }
 
-const closeTextSearch = () => {
+function closeTextSearch() {
   textSearchRequestId.value = unref(textSearchRequestId) + 1
   searchResultCfis.value = []
   currentSearchResultIndex.value = -1
@@ -244,7 +236,7 @@ const closeTextSearch = () => {
   clearSearchHighlight()
 }
 
-const resolveCurrentChapterFromNavigation = (navItem?: NavItem) => {
+function resolveCurrentChapterFromNavigation(navItem?: NavItem) {
   if (!navItem) {
     return undefined
   }
@@ -257,7 +249,7 @@ const resolveCurrentChapterFromNavigation = (navItem?: NavItem) => {
   return unref(chapters).find((chapter) => chapter.href === navItem.href)
 }
 
-const getSearchableSpineItems = (bookInstance: Book): EpubSpineItem[] => {
+function getSearchableSpineItems(bookInstance: Book): EpubSpineItem[] {
   const spine = bookInstance.spine as unknown as {
     spineItems?: unknown
     items?: unknown
@@ -266,7 +258,7 @@ const getSearchableSpineItems = (bookInstance: Book): EpubSpineItem[] => {
   return Array.isArray(candidates) ? (candidates as EpubSpineItem[]) : []
 }
 
-const displaySearchResultByIndex = async (index: number) => {
+async function displaySearchResultByIndex(index: number) {
   const cfi = unref(searchResultCfis)[index]
   if (!cfi) {
     return
@@ -276,7 +268,7 @@ const displaySearchResultByIndex = async (index: number) => {
   highlightSearchResult(cfi)
 }
 
-const onTextSearchTermChanged = async (searchTerm: string) => {
+async function onTextSearchTermChanged(searchTerm: string) {
   const requestId = unref(textSearchRequestId) + 1
   textSearchRequestId.value = requestId
 
@@ -331,7 +323,7 @@ const onTextSearchTermChanged = async (searchTerm: string) => {
   }
 }
 
-const goToPreviousSearchResult = async () => {
+async function goToPreviousSearchResult() {
   const totalResults = unref(searchResultCfis).length
   if (totalResults === 0) {
     return
@@ -342,7 +334,7 @@ const goToPreviousSearchResult = async () => {
   await displaySearchResultByIndex(previousIndex)
 }
 
-const goToNextSearchResult = async () => {
+async function goToNextSearchResult() {
   const totalResults = unref(searchResultCfis).length
   if (totalResults === 0) {
     return
@@ -353,11 +345,11 @@ const goToNextSearchResult = async () => {
   await displaySearchResultByIndex(nextIndex)
 }
 
-const syncFullscreenState = () => {
+function syncFullscreenState() {
   isFullScreenModeActivated.value = Boolean(document.fullscreenElement)
 }
 
-const toggleFullScreenMode = async () => {
+async function toggleFullScreenMode() {
   if (!document.fullscreenElement) {
     await unref(readerRoot)?.requestFullscreen?.()
     return
@@ -365,18 +357,18 @@ const toggleFullScreenMode = async () => {
   await document.exitFullscreen?.()
 }
 
-const increaseFontSize = () => {
+function increaseFontSize() {
   currentFontSizePercentage.value = Math.min(
     unref(currentFontSizePercentage) + FONT_SIZE_PERCENTAGE_STEP,
     MAX_FONT_SIZE_PERCENTAGE
   )
 }
 
-const resetFontSize = () => {
+function resetFontSize() {
   currentFontSizePercentage.value = 100
 }
 
-const decreaseFontSize = () => {
+function decreaseFontSize() {
   currentFontSizePercentage.value = Math.max(
     unref(currentFontSizePercentage) - FONT_SIZE_PERCENTAGE_STEP,
     MIN_FONT_SIZE_PERCENTAGE

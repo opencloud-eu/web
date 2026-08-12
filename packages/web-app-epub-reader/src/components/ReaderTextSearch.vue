@@ -9,21 +9,20 @@
       :close-on-click="false"
       enforce-drop-on-mobile
       padding-size="small"
-      class="w-72 max-w-[calc(100vw-1rem)]"
       @show-drop="focusSearchInput"
     >
       <div @keydown.enter.prevent="onSearchEnter">
         <oc-search-bar
           v-model="searchTerm"
           :label="searchLabel"
-          :placeholder="searchPlaceholder"
+          :placeholder="searchLabel"
           :is-rounded="false"
           button-hidden
         />
       </div>
       <div class="mt-2 flex items-center justify-between gap-2">
         <span
-          class="epub-reader-search-result-count min-w-[3.5rem] text-sm text-role-on-surface-variant"
+          class="epub-reader-search-result-count text-sm text-role-on-surface-variant"
           :aria-live="searching ? 'polite' : 'off'"
           v-text="searchResultStatusLabel"
         />
@@ -31,7 +30,7 @@
           <oc-button
             v-oc-tooltip="previousResultLabel"
             :aria-label="previousResultLabel"
-            class="epub-reader-search-previous-result min-w-9"
+            class="epub-reader-search-previous-result p-2"
             :disabled="!canGoToPreviousResult"
             appearance="raw"
             no-hover
@@ -43,7 +42,7 @@
           <oc-button
             v-oc-tooltip="nextResultLabel"
             :aria-label="nextResultLabel"
-            class="epub-reader-search-next-result min-w-9"
+            class="epub-reader-search-next-result p-2"
             :disabled="!canGoToNextResult"
             appearance="raw"
             no-hover
@@ -55,7 +54,7 @@
           <oc-button
             v-oc-tooltip="closeSearchLabel"
             :aria-label="closeSearchLabel"
-            class="epub-reader-search-close min-w-9"
+            class="epub-reader-search-close p-2"
             appearance="raw"
             no-hover
             size="small"
@@ -72,20 +71,15 @@
 <script setup lang="ts">
 import type { OcDrop } from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
+import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
   toggle: string
-  searchLabel: string
-  searchPlaceholder: string
   searching: boolean
-  searchingLabel: string
   resultCount: number
   currentResultIndex: number
   canGoToPreviousResult: boolean
   canGoToNextResult: boolean
-  previousResultLabel: string
-  nextResultLabel: string
-  closeSearchLabel: string
 }>()
 
 const emit = defineEmits<{
@@ -97,10 +91,16 @@ const emit = defineEmits<{
 
 const searchTerm = ref('')
 const searchDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('searchDropRef')
+const { $gettext } = useGettext()
+const searchLabel = $gettext('Search in book')
+const searchingLabel = $gettext('Searching...')
+const previousResultLabel = $gettext('Navigate to previous search result')
+const nextResultLabel = $gettext('Navigate to next search result')
+const closeSearchLabel = $gettext('Close search')
 
 const searchResultStatusLabel = computed(() => {
   if (props.searching) {
-    return props.searchingLabel
+    return searchingLabel
   }
   if (unref(searchTerm).trim() === '') {
     return ''
@@ -118,8 +118,7 @@ watch(searchTerm, (value) => {
 function onCloseSearch() {
   searchTerm.value = ''
   emit('closeSearch')
-  const toggleElement = document.querySelector<HTMLElement>('#epub_reader_text_search_toggle')
-  toggleElement?.click()
+  unref(searchDropRef)?.hide?.()
 }
 
 function onSearchEnter() {
