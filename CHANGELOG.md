@@ -48,6 +48,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency @sentry/vue to v10.70.0 [[#3071](https://github.com/opencloud-eu/web/pull/3071)]
 - chore(deps): update dependency @axe-core/playwright to v4.13.0 [[#3085](https://github.com/opencloud-eu/web/pull/3085)]
 - chore(deps): update typescript-eslint monorepo to v8.67.0 [[#3072](https://github.com/opencloud-eu/web/pull/3072)]
 - chore(deps): update pnpm to v11.21.0 [[#3059](https://github.com/opencloud-eu/web/pull/3059)]
