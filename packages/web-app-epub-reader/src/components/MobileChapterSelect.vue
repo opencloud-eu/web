@@ -1,5 +1,8 @@
 <template>
-  <div class="epub-reader-controls-chapters-select block min-w-0 max-w-[200px] lg:hidden">
+  <div
+    ref="chapterSelectRoot"
+    class="epub-reader-controls-chapters-select block min-w-0 max-w-[200px] lg:hidden"
+  >
     <oc-button
       id="epub_reader_chapter_toggle"
       class="w-full min-w-0 justify-between px-2.5 py-2"
@@ -19,12 +22,14 @@
       close-on-click
       padding-size="small"
       class="w-full"
+      @show-drop="scrollSelectedChapterIntoView"
     >
       <oc-list>
         <li v-for="chapter in chapters" :key="chapter.id">
           <oc-button
             class="epub-reader-chapter-option w-full justify-start"
             :class="{
+              'epub-reader-chapter-option-selected': selectedChapter?.id === chapter.id,
               'bg-role-secondary-container text-role-on-secondary-container':
                 selectedChapter?.id === chapter.id
             }"
@@ -40,9 +45,11 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, ref, unref } from 'vue'
 import type { NavItem } from 'epubjs'
 
 type ChapterOption = NavItem
+const chapterSelectRoot = ref<HTMLElement>()
 
 defineProps<{
   chapters: ChapterOption[]
@@ -56,5 +63,13 @@ const emit = defineEmits<{
 
 function onChapterClick(chapter: ChapterOption) {
   emit('update:selectedChapter', chapter)
+}
+
+async function scrollSelectedChapterIntoView() {
+  await nextTick()
+  const selectedOptionElement =
+    unref(chapterSelectRoot)?.querySelector<HTMLElement>('.epub-reader-chapter-option-selected') ||
+    document.querySelector<HTMLElement>('.epub-reader-chapter-option-selected')
+  selectedOptionElement?.scrollIntoView({ block: 'nearest' })
 }
 </script>

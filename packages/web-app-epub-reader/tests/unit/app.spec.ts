@@ -59,6 +59,11 @@ vi.mock('epubjs', () => ({
       },
       renderTo: vi.fn(() => ({
         on: vi.fn(),
+        currentLocation: vi.fn(() => ({
+          start: { cfi: 'epubcfi(/6/2)', displayed: { page: 1, total: 12 } },
+          atStart: false,
+          atEnd: false
+        })),
         themes: {
           register: vi.fn(),
           select: vi.fn(),
@@ -235,6 +240,36 @@ describe('Epub reader app', () => {
         'cfi-search-1',
         'highlight'
       )
+    })
+
+    it('maps nested nav item to top-level chapter on relocate', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(3)
+
+      ;(wrapper.vm as any).chapters = [
+        {
+          id: 'ch-1',
+          label: 'Chapter 1',
+          href: 'text/chapter-1.xhtml',
+          subitems: [{ id: 'ch-1-1', label: 'Part A', href: 'text/chapter-1.xhtml#part-a' }]
+        },
+        { id: 'ch-2', label: 'Chapter 2', href: 'text/chapter-2.xhtml' }
+      ]
+
+      ;(wrapper.vm as any).book.spine.get.mockReturnValue({ href: 'text/chapter-1.xhtml#part-a' })
+      ;(wrapper.vm as any).book.navigation.get.mockReturnValue({
+        id: 'ch-1-1',
+        label: 'Part A',
+        href: 'text/chapter-1.xhtml#part-a'
+      })
+
+      const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'relocated'
+      )?.[1]
+      relocatedHandler()
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).currentChapter.id).toBe('ch-1')
     })
   })
   describe('chapters', () => {
