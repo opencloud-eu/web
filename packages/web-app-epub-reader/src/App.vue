@@ -1,15 +1,22 @@
 <template>
-  <div class="epub-reader flex">
-    <oc-list class="bg-role-surface-container pl-2 hidden lg:block border-r w-xs overflow-y-auto">
+  <div class="epub-reader flex h-full bg-role-surface text-role-on-surface">
+    <oc-list
+      class="hidden lg:block w-80 shrink-0 overflow-y-auto bg-role-surface-container-low p-2"
+    >
       <li
         v-for="chapter in chapters"
         :key="chapter.id"
-        class="epub-reader-chapters-list-item py-2 border-b last:border-b-0"
-        :class="{ active: currentChapter.id === chapter.id }"
+        class="epub-reader-chapters-list-item mb-1 rounded-sm"
+        :class="{
+          'bg-role-secondary-container text-role-on-secondary-container':
+            currentChapter?.id === chapter.id
+        }"
       >
         <oc-button
-          class="max-w-full"
-          :class="{ 'font-semibold': currentChapter.id === chapter.id }"
+          class="max-w-full justify-start px-2 py-1.5"
+          :class="{
+            'font-semibold': currentChapter?.id === chapter.id
+          }"
           appearance="raw"
           no-hover
           @click="showChapter(chapter)"
@@ -18,73 +25,54 @@
         </oc-button>
       </li>
     </oc-list>
-    <div class="size-full">
-      <div class="flex items-center m-2">
-        <div class="epub-reader-controls-font-size flex flex-nowrap oc-button-group">
-          <oc-button
-            v-oc-tooltip="`${currentFontSizePercentage - FONT_SIZE_PERCENTAGE_STEP}%`"
-            :aria-label="$gettext('Decrease font size')"
-            class="epub-reader-controls-font-size-decrease"
-            :disabled="decreaseFontSizeDisabled"
-            gap-size="none"
-            @click="decreaseFontSize"
-          >
-            <oc-icon name="font-family" fill-type="none" size-class="size-4" />
-            <oc-icon name="subtract" size-class="size-3" />
-          </oc-button>
-          <oc-button
-            v-oc-tooltip="$gettext('Reset font size')"
-            class="epub-reader-controls-font-size-reset w-[58px]"
-            @click="resetFontSize"
-          >
-            {{ `${currentFontSizePercentage}%` }}
-          </oc-button>
-          <oc-button
-            v-oc-tooltip="`${currentFontSizePercentage + FONT_SIZE_PERCENTAGE_STEP}%`"
-            :aria-label="$gettext('Increase font size')"
-            class="epub-reader-controls-font-size-increase"
-            :disabled="increaseFontSizeDisabled"
-            gap-size="none"
-            @click="increaseFontSize"
-          >
-            <oc-icon name="font-family" fill-type="none" size-class="size-4" />
-            <oc-icon name="add" size-class="size-3" />
-          </oc-button>
-        </div>
-        <oc-select
-          v-model="currentChapter"
-          class="epub-reader-controls-chapters-select w-full px-2 block lg:hidden"
-          :label="$gettext('Chapter')"
-          :label-hidden="true"
-          :options="chapters"
-          :searchable="false"
-          @update:model-value="showChapter"
-        />
-      </div>
-      <div class="flex justify-center size-full">
-        <div class="flex items-center mx-6">
-          <oc-button
-            class="epub-reader-navigate-left"
-            :aria-label="$gettext('Navigate to previous page')"
-            :disabled="navigateLeftDisabled"
-            appearance="raw"
-            @click="navigateLeft"
-          >
-            <oc-icon name="arrow-left-s" fill-type="line" size-class="size-12" />
-          </oc-button>
-        </div>
-        <div id="reader" ref="bookContainer" class="flex justify-center" />
-
-        <div class="flex items-center mx-6">
-          <oc-button
-            class="epub-reader-navigate-right"
-            :aria-label="$gettext('Navigate to next page')"
-            :disabled="navigateRightDisabled"
-            appearance="raw"
-            @click="navigateRight"
-          >
-            <oc-icon name="arrow-right-s" fill-type="line" size-class="size-12" />
-          </oc-button>
+    <div class="flex min-w-0 flex-1 flex-col">
+      <reader-toolbar
+        :chapters="chapters"
+        :selected-chapter="currentChapter"
+        :chapter-label="$gettext('Chapter')"
+        :previous-page-label="$gettext('Navigate to previous page')"
+        :next-page-label="$gettext('Navigate to next page')"
+        :decrease-font-size-label="$gettext('Decrease font size')"
+        :reset-font-size-label="$gettext('Reset font size')"
+        :increase-font-size-label="$gettext('Increase font size')"
+        :current-font-size-percentage="currentFontSizePercentage"
+        :font-size-step="FONT_SIZE_PERCENTAGE_STEP"
+        :navigate-left-disabled="navigateLeftDisabled"
+        :navigate-right-disabled="navigateRightDisabled"
+        :decrease-font-size-disabled="decreaseFontSizeDisabled"
+        :increase-font-size-disabled="increaseFontSizeDisabled"
+        @update:selected-chapter="showChapter"
+        @navigate-left="navigateLeft"
+        @navigate-right="navigateRight"
+        @decrease-font-size="decreaseFontSize"
+        @reset-font-size="resetFontSize"
+        @increase-font-size="increaseFontSize"
+      />
+      <div class="flex min-h-0 flex-1 items-stretch gap-2 px-2 py-2 md:px-4">
+        <div class="flex min-w-0 flex-1 items-center justify-center overflow-hidden">
+          <div class="relative mx-auto h-full min-h-[420px] w-[650px] max-w-full">
+            <div id="reader" ref="bookContainer" class="h-full w-full" />
+            <oc-button
+              v-oc-tooltip="$gettext('Navigate to previous page')"
+              class="epub-reader-navigate-left absolute left-0 top-1/2 hidden -translate-x-10 -translate-y-1/2 rounded-sm text-role-on-surface-variant md:flex"
+              :aria-label="$gettext('Navigate to previous page')"
+              :disabled="navigateLeftDisabled"
+              appearance="raw"
+              @click="navigateLeft"
+            >
+              <oc-icon name="arrow-left-s" fill-type="line" size-class="size-10" />
+            </oc-button>
+            <oc-button
+              v-oc-tooltip="$gettext('Navigate to next page')"
+              class="epub-reader-navigate-right absolute right-0 top-1/2 hidden translate-x-10 -translate-y-1/2 rounded-sm text-role-on-surface-variant md:flex"
+              :aria-label="$gettext('Navigate to next page')"
+              :disabled="navigateRightDisabled"
+              appearance="raw"
+              @click="navigateRight"
+            >
+              <oc-icon name="arrow-right-s" fill-type="line" size-class="size-10" />
+            </oc-button>
+          </div>
         </div>
       </div>
     </div>
@@ -102,6 +90,7 @@ import {
   type EditorSlotProps
 } from '@opencloud-eu/web-pkg'
 import ePub, { Book, NavItem, Rendition, Location } from 'epubjs'
+import ReaderToolbar from './components/ReaderToolbar.vue'
 
 const DARK_THEME_CONFIG = {
   html: {
@@ -203,8 +192,9 @@ watch(
 
     rendition.value = unref(book).renderTo(unref(bookContainer), {
       flow: 'paginated',
-      width: 650,
-      height: '90%' // Don't use full height to avoid cut-off text
+      spread: 'none',
+      width: '100%',
+      height: '100%'
     })
 
     unref(rendition).themes.register('dark', DARK_THEME_CONFIG)
