@@ -124,7 +124,10 @@ import {
   ItemFilter,
   ResourceIcon,
   useCapabilityStore,
-  useRouteQuery
+  useRouteQuery,
+  getLastModifiedFilterOptions,
+  getMediaTypeFilterOptions,
+  SearchMediaTypeFilterOption
 } from '@opencloud-eu/web-pkg'
 import QuickActions from '../components/FilesList/QuickActions.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
@@ -150,48 +153,15 @@ const lastModifiedFilter =
 const lastModifiedParam = useRouteQuery('q_lastModified')
 const mediaTypeParam = useRouteQuery('q_mediaType')
 
-// transifex hack b/c dynamically fetched values from backend will otherwise not be automatically translated
-const lastModifiedTranslations: Record<string, string> = {
-  today: $gettext('today'),
-  yesterday: $gettext('yesterday'),
-  'this week': $gettext('this week'),
-  'last week': $gettext('last week'),
-  'last 7 days': $gettext('last 7 days'),
-  'this month': $gettext('this month'),
-  'last month': $gettext('last month'),
-  'last 30 days': $gettext('last 30 days'),
-  'this year': $gettext('this year'),
-  'last year': $gettext('last year')
-}
-
-const availableLastModifiedValues = computed(
-  () =>
-    capabilityStore.searchLastMofifiedDate.keywords?.map((k: string) => ({
-      id: k,
-      label: lastModifiedTranslations[k]
-    })) || []
+const availableLastModifiedValues = computed(() =>
+  getLastModifiedFilterOptions(capabilityStore.searchLastMofifiedDate.keywords, $gettext)
 )
 
-const mediaTypeMapping: Record<string, { label: string; icon: string }> = {
-  file: { label: $gettext('File'), icon: 'txt' },
-  folder: { label: $gettext('Folder'), icon: 'folder' },
-  document: { label: $gettext('Document'), icon: 'doc' },
-  spreadsheet: { label: $gettext('Spreadsheet'), icon: 'xls' },
-  presentation: { label: $gettext('Presentation'), icon: 'ppt' },
-  pdf: { label: $gettext('PDF'), icon: 'pdf' },
-  image: { label: $gettext('Image'), icon: 'jpg' },
-  video: { label: $gettext('Video'), icon: 'mp4' },
-  audio: { label: $gettext('Audio'), icon: 'mp3' },
-  archive: { label: $gettext('Archive'), icon: 'zip' }
-}
-
 const availableMediaTypeValues = computed(() => {
-  return (
-    capabilityStore.searchMediaType.keywords?.filter((key) => mediaTypeMapping[key]) || []
-  ).map((key) => ({ id: key, ...mediaTypeMapping[key] }))
+  return getMediaTypeFilterOptions(capabilityStore.searchMediaType.keywords, $gettext)
 })
 
-const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
+function getFakeResourceForIcon(item: SearchMediaTypeFilterOption) {
   return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
 }
 
