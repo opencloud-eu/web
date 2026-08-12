@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: add cache-buster for provided images [[#3082](https://github.com/opencloud-eu/web/pull/3082)]
 - fix:  let the drop flip again after its content grew [[#3077](https://github.com/opencloud-eu/web/pull/3077)]
 - fix: encode hash character in app route URLs to prevent truncation [[#3075](https://github.com/opencloud-eu/web/pull/3075)]
 - fix(admin-settings): opening user sidebar panels  [[#3067](https://github.com/opencloud-eu/web/pull/3067)]
