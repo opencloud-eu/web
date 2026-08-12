@@ -1,7 +1,49 @@
 <template>
   <div class="flex">
     <files-view-wrapper>
-      <app-bar :view-modes="viewModes" :has-bulk-actions="true" :breadcrumbs="breadcrumbs" />
+      <app-bar :view-modes="viewModes" :has-bulk-actions="true" :breadcrumbs="breadcrumbs">
+        <template #actions>
+          <div v-if="displayFilter" class="files-favorites-filter flex flex-wrap my-2">
+            <item-filter
+              v-if="availableMediaTypeValues.length"
+              ref="mediaTypeFilter"
+              :allow-multiple="true"
+              :filter-label="$gettext('Type')"
+              :filterable-attributes="['label']"
+              :items="availableMediaTypeValues"
+              class="mr-2"
+              display-name-attribute="label"
+              filter-name="mediaType"
+            >
+              <template #image="{ item }">
+                <div
+                  class="flex items-center"
+                  :data-test-id="`media-type-${item.id.toLowerCase()}`"
+                >
+                  <resource-icon :resource="getFakeResourceForIcon(item)" />
+                  <span class="ml-2">{{ item.label }}</span>
+                </div>
+              </template>
+            </item-filter>
+            <item-filter
+              v-if="availableLastModifiedValues.length"
+              ref="lastModifiedFilter"
+              :filter-label="$gettext('Last Modified')"
+              :filterable-attributes="['label']"
+              :items="availableLastModifiedValues"
+              :show-option-filter="false"
+              :close-on-click="true"
+              class="files-favorites-filter-last-modified mr-2"
+              display-name-attribute="label"
+              filter-name="lastModified"
+            >
+              <template #item="{ item }">
+                <span v-text="item.label" />
+              </template>
+            </item-filter>
+          </div>
+        </template>
+      </app-bar>
       <app-loading-spinner v-if="areResourcesLoading" />
       <template v-else>
         <no-content-message
@@ -13,7 +55,7 @@
             <span v-text="$gettext('Nothing marked as favorite, yet')" />
           </template>
           <template #callToAction>
-            <span v-text="$gettext('All your favorites will show up here')" />
+            <span v-text="emptyStateDescription" />
           </template>
         </no-content-message>
         <component
@@ -54,7 +96,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, unref, watch } from 'vue'
+import {
+  ComponentPublicInstance,
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
 import {
   useClientService,
@@ -70,7 +120,11 @@ import {
   AppBar,
   useGetMatchingSpace,
   ContextActions,
-  useFileActions
+  useFileActions,
+  ItemFilter,
+  ResourceIcon,
+  useCapabilityStore,
+  useRouteQuery
 } from '@opencloud-eu/web-pkg'
 import QuickActions from '../components/FilesList/QuickActions.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
@@ -84,8 +138,75 @@ const { getMatchingSpace } = useGetMatchingSpace()
 const { loadGraphPermissions } = useSpacesStore()
 const clientService = useClientService()
 const { $gettext } = useGettext()
+const capabilityStore = useCapabilityStore()
 
 const resourcesStore = useResourcesStore()
+
+const mediaTypeFilter =
+  useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('mediaTypeFilter')
+const lastModifiedFilter =
+  useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('lastModifiedFilter')
+
+const lastModifiedParam = useRouteQuery('q_lastModified')
+const mediaTypeParam = useRouteQuery('q_mediaType')
+
+// transifex hack b/c dynamically fetched values from backend will otherwise not be automatically translated
+const lastModifiedTranslations: Record<string, string> = {
+  today: $gettext('today'),
+  yesterday: $gettext('yesterday'),
+  'this week': $gettext('this week'),
+  'last week': $gettext('last week'),
+  'last 7 days': $gettext('last 7 days'),
+  'this month': $gettext('this month'),
+  'last month': $gettext('last month'),
+  'last 30 days': $gettext('last 30 days'),
+  'this year': $gettext('this year'),
+  'last year': $gettext('last year')
+}
+
+const availableLastModifiedValues = computed(
+  () =>
+    capabilityStore.searchLastMofifiedDate.keywords?.map((k: string) => ({
+      id: k,
+      label: lastModifiedTranslations[k]
+    })) || []
+)
+
+const mediaTypeMapping: Record<string, { label: string; icon: string }> = {
+  file: { label: $gettext('File'), icon: 'txt' },
+  folder: { label: $gettext('Folder'), icon: 'folder' },
+  document: { label: $gettext('Document'), icon: 'doc' },
+  spreadsheet: { label: $gettext('Spreadsheet'), icon: 'xls' },
+  presentation: { label: $gettext('Presentation'), icon: 'ppt' },
+  pdf: { label: $gettext('PDF'), icon: 'pdf' },
+  image: { label: $gettext('Image'), icon: 'jpg' },
+  video: { label: $gettext('Video'), icon: 'mp4' },
+  audio: { label: $gettext('Audio'), icon: 'mp3' },
+  archive: { label: $gettext('Archive'), icon: 'zip' }
+}
+
+const availableMediaTypeValues = computed(() => {
+  return (
+    capabilityStore.searchMediaType.keywords?.filter((key) => mediaTypeMapping[key]) || []
+  ).map((key) => ({ id: key, ...mediaTypeMapping[key] }))
+})
+
+const getFakeResourceForIcon = (item: { label: string; icon: string }) => {
+  return { type: 'file', extension: item.icon, isFolder: item.icon == 'folder' } as Resource
+}
+
+const displayFilter = computed(() => {
+  return (
+    unref(availableLastModifiedValues).length || capabilityStore.searchMediaType.keywords?.length
+  )
+})
+
+const emptyStateDescription = computed(() => {
+  if (unref(lastModifiedParam) || unref(mediaTypeParam)) {
+    return $gettext('Try refining the search term or filters to get results')
+  }
+  return $gettext('All your favorites will show up here')
+})
 
 const {
   paginatedResources,
@@ -160,6 +281,14 @@ watch(selectedResourcesIds, async (ids) => {
     graphClient: clientService.graphAuthenticated
   })
 })
+
+watch(
+  [lastModifiedParam, mediaTypeParam],
+  async () => {
+    await loadResourcesTask.perform()
+  },
+  { deep: true }
+)
 
 const isEmpty = computed(() => {
   return unref(paginatedResources).length < 1

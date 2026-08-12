@@ -5,6 +5,7 @@ import { isLocationCommonActive } from '../../../router'
 import { unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { getVaultClaim, markVaultStatus } from '../../../helpers/folderVault'
+import { queryItemAsString } from '../../../composables/appDefaults'
 
 export class FolderLoaderFavorites implements FolderLoader {
   public isEnabled(): boolean {
@@ -20,7 +21,7 @@ export class FolderLoaderFavorites implements FolderLoader {
   }
 
   public getTask(context: TaskContext): FolderLoaderTask {
-    const { resourcesStore, clientService, spacesStore, extensionRegistry } = context
+    const { resourcesStore, clientService, spacesStore, extensionRegistry, router } = context
 
     const findSpaceById = (storageId: string) => spacesStore.spaces.find((s) => s.id === storageId)
 
@@ -29,7 +30,25 @@ export class FolderLoaderFavorites implements FolderLoader {
       resourcesStore.clearResourceList()
       resourcesStore.setAncestorMetaData({})
 
-      const { resources } = yield clientService.webdav.search('is:favorite', {
+      const currentRoute = unref(router.currentRoute)
+      const query: string[] = []
+
+      const lastModified = queryItemAsString(currentRoute.query.q_lastModified)
+      if (lastModified) {
+        query.push(`mtime:${lastModified}`)
+      }
+
+      const mediaType = queryItemAsString(currentRoute.query.q_mediaType)
+      if (mediaType) {
+        const mediatypes = mediaType.split('+').map((t) => `"${t}"`)
+        query.push(`mediatype:(${mediatypes.join(' OR ')})`)
+      }
+
+      query.push('is:favorite')
+
+      const searchQuery = query.join(' AND ')
+
+      const { resources } = yield clientService.webdav.search(searchQuery, {
         searchLimit: null,
         signal: signal1
       })
