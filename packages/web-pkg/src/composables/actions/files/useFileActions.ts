@@ -174,8 +174,8 @@ export const useFileActions = () => {
     if (!routeName || !router.hasRoute(routeName)) {
       return null
     }
-    const routeOpts = getEditorRouteOpts(routeName, space, resource, remoteItemId)
-    return router.resolve(routeOpts)
+
+    return getEditorRouteOpts(routeName, space, resource, remoteItemId)
   }
   const getEditorRouteOpts = (
     routeName: RouteRecordName,
