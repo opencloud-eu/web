@@ -157,7 +157,6 @@ import {
   useAuthStore,
   useCapabilityStore,
   useClientService,
-  useConfigStore,
   useMessages,
   useModals,
   useResourcesStore,
@@ -188,7 +187,6 @@ const authStore = useAuthStore()
 const { dispatchModal } = useModals()
 const spacesStore = useSpacesStore()
 const capabilityStore = useCapabilityStore()
-const configStore = useConfigStore()
 
 const { isMobile } = useIsMobile()
 const disableEmailNotificationsValue = ref<boolean>()

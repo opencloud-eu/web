@@ -1,5 +1,7 @@
 import { Cipher } from '@fyears/rclone-crypt'
+import { v4 as uuidV4 } from 'uuid'
 import { FolderVaultEngine } from '@opencloud-eu/web-pkg'
+import { fromBase64, toBase64 } from '../integrity'
 
 export function createEngine(vaultRoot: string, password: string): FolderVaultEngine {
   // Derive the cipher once per engine. rclone-crypt's EME filename encryption
@@ -34,10 +36,36 @@ export function createEngine(vaultRoot: string, password: string): FolderVaultEn
       const cipher = await cipherPromise
       return cipher.decryptFileName(relativePath)
     },
-    async verifyKey(sampleEncryptedSegment: string): Promise<boolean> {
-      // rclone-crypt throws on bad password (PKCS#7 unpad fails, UTF-8 decode
-      // fails, or the decoded segment contains control chars). Treat any
-      // throw as "key doesn't match".
+    async createIntegrityToken(): Promise<string> {
+      const cipher = await cipherPromise
+      // A random uuid encrypted with the vault's own content cipher, in the very
+      // same rclone-crypt file format the vault's files use.
+      const ciphertext = await cipher.encryptData(
+        new TextEncoder().encode(uuidV4()),
+        // nonce omitted → lib generates a fresh random nonce
+        undefined
+      )
+      return toBase64(ciphertext)
+    },
+    async verifyIntegrityToken(token: string): Promise<boolean> {
+      // Each rclone-crypt block carries a Poly1305 tag, so decryptData throws on
+      // a wrong key ("failed to authenticate decrypted block"). That makes this a
+      // real cryptographic check - no need to inspect the recovered plaintext.
+      try {
+        const cipher = await cipherPromise
+        await cipher.decryptData(fromBase64(token))
+        return true
+      } catch {
+        return false
+      }
+    },
+    async verifySegment(sampleEncryptedSegment: string): Promise<boolean> {
+      // EME filename encryption carries no authentication tag, so all we can do
+      // is decrypt and see whether the result is plausible: rclone-crypt throws
+      // when PKCS#7 unpadding fails, UTF-8 decoding fails, or the segment holds
+      // control chars. A wrong passphrase clears all three often enough to
+      // matter (roughly 2% for a short name), which is why the integrity token
+      // exists and why we backfill one as soon as this check passes.
       try {
         const cipher = await cipherPromise
         const decrypted = await cipher.decryptSegment(sampleEncryptedSegment)

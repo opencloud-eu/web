@@ -12,79 +12,65 @@
   </oc-table>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { App } from '../types'
 import { useGettext } from 'vue3-gettext'
 import AppActions from './AppActions.vue'
 import { isEmpty } from 'lodash-es'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 
-export default defineComponent({
-  name: 'AppVersions',
-  components: { AppActions },
-  props: {
-    app: {
-      type: Object as PropType<App>,
-      required: true,
-      default: (): App => undefined
-    }
-  },
-  setup(props) {
-    const { $gettext } = useGettext()
+const { app } = defineProps<{
+  app: App
+}>()
 
-    const data = computed(() => {
-      return (props.app.versions || [])
-        .filter((version) => {
-          if (isEmpty(version.version) || isEmpty(version.url)) {
-            return false
-          }
-          try {
-            new URL(version.url)
-          } catch {
-            return false
-          }
-          return true
-        })
-        .map((version) => {
-          return {
-            ...version,
-            minOpenCloud: version.minOpenCloud ? `v${version.minOpenCloud}` : '-',
-            id: version.version
-          }
-        })
-    })
-    const fields = computed<FieldType[]>(() => {
-      return [
-        {
-          name: 'version',
-          type: 'slot',
-          width: 'expand',
-          wrap: 'truncate',
-          title: $gettext('App Version')
-        },
-        {
-          name: 'minOpenCloud',
-          type: 'raw',
-          width: 'shrink',
-          wrap: 'nowrap',
-          title: $gettext('OpenCloud Version')
-        },
-        {
-          name: 'actions',
-          type: 'slot',
-          alignH: 'right',
-          width: 'shrink',
-          wrap: 'nowrap',
-          title: ''
-        }
-      ]
-    })
+const { $gettext } = useGettext()
 
-    return {
-      data,
-      fields
+const data = computed(() => {
+  return (app.versions || [])
+    .filter((version) => {
+      if (isEmpty(version.version) || isEmpty(version.url)) {
+        return false
+      }
+      try {
+        new URL(version.url)
+      } catch {
+        return false
+      }
+      return true
+    })
+    .map((version) => {
+      return {
+        ...version,
+        minOpenCloud: version.minOpenCloud ? `v${version.minOpenCloud}` : '-',
+        id: version.version
+      }
+    })
+})
+const fields = computed<FieldType[]>(() => {
+  return [
+    {
+      name: 'version',
+      type: 'slot',
+      width: 'expand',
+      wrap: 'truncate',
+      title: $gettext('App Version')
+    },
+    {
+      name: 'minOpenCloud',
+      type: 'raw',
+      width: 'shrink',
+      wrap: 'nowrap',
+      title: $gettext('OpenCloud Version')
+    },
+    {
+      name: 'actions',
+      type: 'slot',
+      alignH: 'right',
+      width: 'shrink',
+      wrap: 'nowrap',
+      title: ''
     }
-  }
+  ]
 })
 </script>

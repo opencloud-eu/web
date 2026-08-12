@@ -139,13 +139,36 @@ export interface FolderVaultEngine {
    */
   encryptContent: (plaintext: ReadableStream<Uint8Array>) => ReadableStream<Uint8Array>
   /**
-   * Try to decrypt a sample encrypted segment to verify the key actually
-   * matches the data on the server. Returns true if the decryption looks
-   * like cleartext, false if it errored out or produced garbage.
-   * Empty vaults can't be verified - callers should treat that case as
-   * "trust the key" since there's nothing to disagree with yet.
+   * Mint an integrity token that commits the vault to this engine's key. The
+   * token is opaque to callers - its format is the engine's business - but it
+   * must be a string, since it gets stored as a WebDAV property on the vault
+   * root and read back through `verifyIntegrityToken`.
+   *
+   * Callers write it exactly once, when a vault's passphrase is first set. Its
+   * presence on the server is what makes the passphrase permanent.
    */
-  verifyKey: (sampleEncryptedSegment: string) => Promise<boolean>
+  createIntegrityToken: () => Promise<string>
+  /**
+   * Verify a passphrase against a token from `createIntegrityToken`. This is
+   * the authoritative check: implementations should authenticate the token
+   * cryptographically rather than guessing from the shape of the plaintext.
+   */
+  verifyIntegrityToken: (token: string) => Promise<boolean>
+  /**
+   * Fallback for vaults that carry no integrity token, either because they were
+   * created outside OpenCloud Web (e.g. an rclone-managed vault).
+   * Tries to decrypt a sample encrypted segment and returns true if the result
+   * looks like cleartext, false if it errored out or produced garbage.
+   *
+   * Substantially weaker than `verifyIntegrityToken`: there is no authentication
+   * tag, only a plausibility check on the decrypted bytes, and the segment's
+   * plaintext is an arbitrary name the engine can't predict. A wrong passphrase
+   * passes this check a low but non-negligible fraction of the time. Prefer the
+   * token whenever one is available, and backfill one once this check has passed.
+   *
+   * Empty vaults can't be verified this way because there is no sample to decrypt.
+   */
+  verifySegment: (sampleEncryptedSegment: string) => Promise<boolean>
 }
 
 export interface FolderVaultClaim {
@@ -171,6 +194,42 @@ export interface FolderVaultClaim {
   unlockRoute?: RouteLocationNamedRaw
 }
 
+/**
+ * Can be exposed by the extension's `setupComponent`. Used to commit whatever
+ * locks a freshly created vault (a passphrase, a hardware token, …) after the
+ * folder has been created on the server.
+ */
+export type FolderVaultFinalize = (space: SpaceResource, vaultRoot: string) => Promise<void>
+
+/**
+ * Everything an extension has to bring to let the UI create vaults with its
+ * scheme. Optional as a whole on the extension: a scheme that can only read
+ * existing vaults leaves it out.
+ */
+export interface FolderVaultCreation {
+  /**
+   * File extension this scheme marks its vault roots with, without the leading
+   * dot, e.g. `vault` for a vault root named `Project archive.vault`. Owned by
+   * the scheme - the generic layer only appends whatever it gets here to the name
+   * the user typed, so another scheme can use a different marker.
+   */
+  folderExtension: string
+  /**
+   * Component that collects and commits whatever this extension needs to lock a
+   * newly created vault - a passphrase, a hardware token, … The generic layer
+   * deliberately knows none of that, so the extension brings its own UI *and* its
+   * own crypto here. Rendered as the second step of the create-folder flow.
+   *
+   * Contract:
+   * - prop `vaultName`: cleartext name of the vault about to be created
+   * - emits `update:valid` with whether its input is complete and usable
+   * - exposes `finalize`, a `FolderVaultFinalize` called once the folder exists
+   *   on the server. Throwing leaves the vault without a committed secret,
+   *   which the extension's unlock UI has to cope with anyway.
+   */
+  setupComponent: Component
+}
+
 export interface FolderVaultExtension extends Extension {
   type: 'folderVault'
   /**
@@ -191,6 +250,12 @@ export interface FolderVaultExtension extends Extension {
    * extension-defined unlock UI even when `resolve` returns null.
    */
   claimsPath: (space: SpaceResource, path: string) => FolderVaultClaim | null
+  /**
+   * What this extension needs to create new vaults. Optional, and its presence is
+   * what tells the UI this extension can *create* vaults, and hence whether to
+   * offer an encryption option when creating a folder.
+   */
+  creation?: FolderVaultCreation
 }
 
 export interface ResourceIndicatorExtension extends Extension {
@@ -202,7 +267,7 @@ export interface ResourceIndicatorExtension extends Extension {
   getResourceIndicators: (resource: Resource) => ResourceIndicator[] | void
 }
 
-export type ExtensionPoint<T extends Extension> = {
+export type ExtensionPoint<T extends Extension = Extension> = {
   id: string
   extensionType: ExtensionType
   multiple?: boolean

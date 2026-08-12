@@ -33,34 +33,22 @@
   </oc-card>
 </template>
 
-<script lang="ts">
-import { defineComponent, type PropType } from 'vue'
+<script setup lang="ts">
 import { App } from '../types'
 import { APPID } from '../appid'
 import AppTags from './AppTags.vue'
 import AppActions from './AppActions.vue'
 import AppImageGallery from './AppImageGallery.vue'
 
-export default defineComponent({
-  name: 'AppTile',
-  components: { AppImageGallery, AppActions, AppTags },
-  props: {
-    app: {
-      type: Object as PropType<App>,
-      required: true,
-      default: (): App => undefined
-    }
-  },
-  emits: ['search'],
-  setup(props, { emit }) {
-    const emitSearchTerm = (term: string) => {
-      emit('search', term)
-    }
+const { app } = defineProps<{
+  app: App
+}>()
 
-    return {
-      emitSearchTerm,
-      APPID
-    }
-  }
-})
+const emit = defineEmits<{
+  (e: 'search', term: string): void
+}>()
+
+const emitSearchTerm = (term: string) => {
+  emit('search', term)
+}
 </script>

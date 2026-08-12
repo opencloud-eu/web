@@ -58,6 +58,28 @@
                   class="oc-rounded oc-menu-item-hover"
                 >
                   <oc-button
+                    v-if="child.menuComponent"
+                    :id="`toolbar-dropdown-trigger-${child.id}`"
+                    appearance="raw-inverse"
+                    color-role="surface"
+                    justify-content="space-between"
+                    class="p-1"
+                    :disabled="!isItemEnabled(child)"
+                    @mousedown.prevent
+                    @click.stop
+                  >
+                    <span class="inline-flex items-center gap-2">
+                      <oc-icon
+                        :name="child.icon"
+                        :fill-type="child.iconFillType || 'none'"
+                        size-class="size-4"
+                      />
+                      <span>{{ child.title }}</span>
+                    </span>
+                    <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
+                  </oc-button>
+                  <oc-button
+                    v-else
                     :appearance="isItemActive(child) ? 'filled' : 'raw-inverse'"
                     :color-role="isItemActive(child) ? 'secondaryContainer' : 'surface'"
                     :no-hover="isItemActive(child)"
@@ -88,6 +110,22 @@
                       size-class="size-4"
                     />
                   </oc-button>
+                  <oc-drop
+                    v-if="child.menuComponent"
+                    :ref="
+                      (el) =>
+                        setDropRef(child.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+                    "
+                    :drop-id="`toolbar-dropdown-${child.id}`"
+                    :toggle="`#toolbar-dropdown-trigger-${child.id}`"
+                    mode="hover"
+                    class="text-editor-toolbar-dropdown-nested w-fit"
+                    :close-on-click="child.menuCloseOnClick ?? true"
+                    position="right-start"
+                    teleport="body"
+                  >
+                    <component :is="child.menuComponent" v-bind="getMenuComponentAttrs(child)" />
+                  </oc-drop>
                 </li>
               </ul>
             </oc-drop>
@@ -124,11 +162,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  inject,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import type { ComponentPublicInstance } from 'vue'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -140,6 +189,8 @@ const textEditor = inject<TextEditorInstance>('textEditor')!
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
+
+const keyActionIds: string[] = []
 
 const isToolbarItemVisible = (item: EditorAction) => {
   if (!actionsToDisplay) {
@@ -160,11 +211,41 @@ const toolbarGroups = computed<EditorActionGroup[]>(() => {
 })
 
 const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+const searchAndReplaceActionId = 'menu-search-and-replace'
 
 function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
   if (el) {
     dropRefs.value[itemId] = el
   }
+}
+
+const findActionById = (actionId: string) => {
+  return unref(toolbarGroups)
+    .flatMap((group) => group.actions)
+    .find((action) => action.id === actionId)
+}
+
+const openSearchAndReplaceMenu = async () => {
+  const action = findActionById(searchAndReplaceActionId)
+  if (!action || !isItemEnabled(action)) {
+    return
+  }
+
+  const dropRef = dropRefs.value[searchAndReplaceActionId]
+  if (!dropRef?.show) {
+    return
+  }
+
+  const triggerEl = document.getElementById(`toolbar-dropdown-trigger-${searchAndReplaceActionId}`)
+  await dropRef.show({ anchorElement: triggerEl ?? undefined })
+}
+
+const handleSearchShortcut = (event: KeyboardEvent) => {
+  if (!unref(textEditor.isFocused)) {
+    return
+  }
+  event.preventDefault()
+  openSearchAndReplaceMenu()
 }
 
 const updateScrollState = () => {
@@ -181,6 +262,15 @@ const updateScrollState = () => {
 onMounted(async () => {
   await nextTick()
   updateScrollState()
+
+  if (unref(isSearchAndReplaceAvailable)) {
+    const searchShortcutId = bindKeyAction(
+      { modifier: Modifier.Ctrl, primary: Key.F },
+      handleSearchShortcut,
+      { preventDefault: false }
+    )
+    keyActionIds.push(searchShortcutId)
+  }
 })
 
 watch(toolbarGroups, async () => {
@@ -252,6 +342,20 @@ const getMenuComponentAttrs = (item: EditorAction) => {
 
   return item.menuComponentAttrs(editor, closeMenu)
 }
+
+const { bindKeyAction, removeKeyAction } = useKeyboardActions({
+  skipDisabledKeyBindingsCheck: true
+})
+
+const isSearchAndReplaceAvailable = computed(() => {
+  return unref(toolbarGroups)
+    .flatMap((group) => group.actions)
+    .some((action) => action.id === searchAndReplaceActionId)
+})
+
+onBeforeUnmount(() => {
+  keyActionIds.forEach((id) => removeKeyAction(id))
+})
 </script>
 
 <style scoped>

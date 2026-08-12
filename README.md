@@ -47,7 +47,6 @@ The backbone of this project is built by the following parts of the `packages`:
 
 The repository's `packages` also contains the following apps, which can be en-/disabled via the `config.json`:
 
-- **activities:** An extension that provides a detailed activity stream, showing recent updates
 - **admin-settings:** An extension that allows administrators to manage users, groups, spaces and generic settings for their OpenCloud efficiently
 - **app-store:** An extension that allows users to browse and download additional apps and extensions directly from the web interface
 - **epub-reader:** An extension for opening ebook files

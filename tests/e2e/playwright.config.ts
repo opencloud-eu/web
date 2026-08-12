@@ -67,8 +67,8 @@ export const appConfig = {
 
   slowMo: process.env.SLOW_MO ? parseInt(process.env.SLOW_MO) : 0,
   acceptDownloads: process.env.DOWNLOADS !== 'false',
-  assetsPath: 'filesForUpload',
-  tempAssetsPath: 'filesForUpload/temp',
+  assetsPath: path.join(__dirname, 'filesForUpload'),
+  tempAssetsPath: path.join(__dirname, 'filesForUpload', 'temp'),
   failOnUncaughtConsoleError: process.env.FAIL_ON_UNCAUGHT_CONSOLE_ERR === 'false' ? false : true
 }
 

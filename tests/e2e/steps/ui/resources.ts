@@ -639,11 +639,7 @@ When(
       await resourceObject.openFileInViewer({
         name: info.resource,
         actionType: actionType as
-          | 'mediaviewer'
-          | 'pdfviewer'
-          | 'texteditor'
-          | 'Collabora'
-          | 'Euro-Office'
+          'mediaviewer' | 'pdfviewer' | 'texteditor' | 'Collabora' | 'Euro-Office'
       })
     }
   }
@@ -862,6 +858,43 @@ Then(
 
 Then(
   '{string} should not see the pagination in the personal/project space files view',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.expectPageNumberNotToBeVisible()
+  }
+)
+
+When(
+  '{string} navigates to page {string} of the files list',
+  async ({ world }: { world: World }, stepUser: string, pageNumber: string) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.changePage({ pageNumber })
+  }
+)
+
+Then(
+  '{string} should see {int} resource(s) in the files/spaces list',
+  async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
+    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
+  }
+)
+
+Then(
+  '{string} should see the pagination in the files/spaces list',
+  async ({ world }: { world: World }, stepUser: string) => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.expectPageNumberToBeVisible()
+  }
+)
+
+Then(
+  '{string} should not see the pagination in the files/spaces list',
   async ({ world }: { world: World }, stepUser: string) => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
@@ -1105,6 +1138,13 @@ When('{string} selects all files', async ({ world }: { world: World }, stepUser:
   await resourceObject.selectAllFiles()
 })
 
+When('{string} deletes all files', async ({ world }: { world: World }, stepUser: string) => {
+  const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+  const resourceObject = new objects.applicationFiles.Resource({ page })
+  await resourceObject.selectAllFiles()
+  await resourceObject.deleteAllFiles()
+})
+
 Then(
   'the download button should be disabled for user {string} with the tooltip:',
   async ({ world }: { world: World }, stepUser: string, tooltip: string): Promise<void> => {
@@ -1287,7 +1327,7 @@ When(
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
     await resourceObject.enterVault({ vault, passphrase: passphrase })
-    await expect(page.getByText('Incorrect passphrase.')).toBeVisible()
+    await expect(page.getByText('Incorrect password.')).toBeVisible()
     expect(page.url()).toContain('/rclone-crypt/unlock')
   }
 )

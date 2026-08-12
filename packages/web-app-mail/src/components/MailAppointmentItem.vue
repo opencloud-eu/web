@@ -175,7 +175,7 @@ const download = async () => {
   }
 }
 
-const loadAppointmentTask = useTask(function* (signal) {
+const loadAppointmentTask = useTask(function* () {
   const url = urlJoin(
     configStore.groupwareUrl,
     `/accounts/${accountId}/blobs/${appointment.blobId}/${encodeURIComponent(appointment.name)}?type=${appointment.type}`

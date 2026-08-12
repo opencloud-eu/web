@@ -4,6 +4,7 @@ import type { Extension, JSONContent } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import { Markdown } from '@tiptap/markdown'
 import Image from '@tiptap/extension-image'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -73,7 +74,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TaskList,
       TaskItem.configure({ nested: true }),
       markdownImage,
-      imageFileHandlerExtension()
+      imageFileHandlerExtension(),
+      FindAndReplace
     ]
   }
 
@@ -100,23 +102,25 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     link,
     menuEmoji,
     image,
+    menuSearchAndReplace,
     imageUrl,
     imageUpload,
-    tableMenu,
     createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
     addColumnBefore,
     addColumnAfter,
-    deleteColumn
+    deleteColumn,
+    toggleHeaderRow,
+    deleteTable
   } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'view-options',
@@ -153,22 +157,23 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           image(),
           imageUrl(),
           imageUpload(),
-          tableMenu(),
-          menuEmoji(),
           createTable(),
-          addColumnAfter(),
-          addColumnBefore(),
-          addRowAfter(),
+          toggleHeaderRow(),
           addRowBefore(),
-          deleteColumn(),
+          addRowAfter(),
           deleteRow(),
+          addColumnBefore(),
+          addColumnAfter(),
+          deleteColumn(),
+          deleteTable(),
+          menuEmoji(),
           horizontalRule()
         ]
       },
       {
-        id: 'zoom',
-        title: $gettext('Zoom'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

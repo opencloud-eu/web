@@ -137,7 +137,7 @@ export const sortHelper = <T extends SortableItem>(
     return items
   }
   const { sortable } = field
-  const collator = new Intl.Collator(navigator.language, { sensitivity: 'base', numeric: true })
+  const collator = new Intl.Collator(navigator.language, { sensitivity: 'accent', numeric: true })
 
   if (sortBy === 'name') {
     const isFolder = (item: T) =>
@@ -156,6 +156,47 @@ export const sortHelper = <T extends SortableItem>(
   return [...items].sort((a, b) =>
     compare(a, b, collator, field.prop || field.name, sortDir, sortable)
   )
+}
+
+const pureLeadingZeroPrefixRegex = /^(0+)(?!\d)(.*)$/
+
+function compareNamesWithLeadingZeroPrefix(
+  aName: string,
+  bName: string,
+  collator: Intl.Collator
+): number | null {
+  const aMatch = pureLeadingZeroPrefixRegex.exec(aName)
+  const bMatch = pureLeadingZeroPrefixRegex.exec(bName)
+
+  if (!aMatch || !bMatch) {
+    return null
+  }
+
+  const aPrefixLength = aMatch[1].length
+  const bPrefixLength = bMatch[1].length
+  const aSuffix = aMatch[2]
+  const bSuffix = bMatch[2]
+  const aIsPureZero = aSuffix.length === 0
+  const bIsPureZero = bSuffix.length === 0
+
+  if (aPrefixLength !== bPrefixLength) {
+    return bPrefixLength - aPrefixLength
+  }
+
+  if (aIsPureZero && bIsPureZero) {
+    return collator.compare(aName, bName)
+  }
+
+  if (aIsPureZero !== bIsPureZero) {
+    return aIsPureZero ? -1 : 1
+  }
+
+  const restComparison = collator.compare(aSuffix, bSuffix)
+  if (restComparison !== 0) {
+    return restComparison
+  }
+
+  return collator.compare(aName, bName)
 }
 
 const compare = (
@@ -184,10 +225,40 @@ const compare = (
     }
   }
 
-  if (!isNaN(aValue) && !isNaN(bValue)) {
+  if (sortBy !== 'name' && !isNaN(aValue) && !isNaN(bValue)) {
     return (aValue - bValue) * modifier
   }
-  const c = collator.compare((aValue || '').toString(), (bValue || '').toString())
+
+  // For name sorting, extract basename (without extension) for comparison
+  const aCompare = (aValue || '').toString()
+  const bCompare = (bValue || '').toString()
+
+  if (sortBy === 'name') {
+    const getBasename = (name: string) => {
+      const lastDot = name.lastIndexOf('.')
+      return lastDot > 0 ? name.substring(0, lastDot) : name
+    }
+    const getExtension = (name: string) => {
+      const lastDot = name.lastIndexOf('.')
+      return lastDot > 0 ? name.substring(lastDot) : ''
+    }
+
+    const aBase = getBasename(aCompare)
+    const bBase = getBasename(bCompare)
+    const aExt = getExtension(aCompare)
+    const bExt = getExtension(bCompare)
+
+    const baseComparison =
+      compareNamesWithLeadingZeroPrefix(aBase, bBase, collator) ?? collator.compare(aBase, bBase)
+    if (baseComparison !== 0) {
+      return baseComparison * modifier
+    }
+
+    // If basenames are equal, compare extensions
+    return collator.compare(aExt, bExt) * modifier
+  }
+
+  const c = collator.compare(aCompare, bCompare)
   return c * modifier
 }
 

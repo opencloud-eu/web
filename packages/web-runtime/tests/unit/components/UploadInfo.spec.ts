@@ -27,14 +27,14 @@ describe('UploadInfo component', () => {
   })
   it('should show the component', async () => {
     const { wrapper } = getShallowWrapper()
-    wrapper.vm.showInfo = true
+    ;(wrapper.vm as any).showInfo = true
     await nextTick()
     const overlay = wrapper.find(selectors.overlay)
     expect(overlay.exists()).toBeTruthy()
   })
   it('should keep title visible and hide body when collapsed', async () => {
     const { wrapper } = getShallowWrapper()
-    wrapper.vm.showInfo = true
+    ;(wrapper.vm as any).showInfo = true
     await nextTick()
 
     expect(wrapper.find(selectors.title).exists()).toBeTruthy()
@@ -48,10 +48,10 @@ describe('UploadInfo component', () => {
   describe('title', () => {
     it('should show that an upload is in progress', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.inPreparation = false
-      wrapper.vm.itemsInProgressCount = 1
-      wrapper.vm.runningUploads = 1
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).inPreparation = false
+      ;(wrapper.vm as any).itemsInProgressCount = 1
+      ;(wrapper.vm as any).runningUploads = 1
       await nextTick()
 
       const uploadTitle = wrapper.find(selectors.title).text()
@@ -59,8 +59,8 @@ describe('UploadInfo component', () => {
     })
     it('should show that an upload was successful', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.successful = ['1']
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).successful = ['1']
       await nextTick()
 
       const uploadTitle = wrapper.find(selectors.title).text()
@@ -68,16 +68,16 @@ describe('UploadInfo component', () => {
     })
     it('should show that an upload failed', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      ;((wrapper.vm.errors = { '1': new HttpError('', undefined) }), await nextTick())
+      ;(wrapper.vm as any).showInfo = true
+      ;(((wrapper.vm as any).errors = { '1': new HttpError('', undefined) }), await nextTick())
 
       const uploadTitle = wrapper.find(selectors.title).text()
       expect(uploadTitle).toBe('Upload failed')
     })
     it('should show that an upload was cancelled', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.uploadsCancelled = true
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).uploadsCancelled = true
       await nextTick()
 
       const uploadTitle = wrapper.find(selectors.title).text()
@@ -85,9 +85,9 @@ describe('UploadInfo component', () => {
     })
     it('should show that an upload is preparing', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.runningUploads = 1
-      wrapper.vm.inPreparation = true
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).runningUploads = 1
+      ;(wrapper.vm as any).inPreparation = true
       await nextTick()
 
       const uploadTitle = wrapper.find(selectors.title).text()
@@ -95,10 +95,10 @@ describe('UploadInfo component', () => {
     })
     it('should show that an upload is being finalized', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.itemsInProgressCount = 1
-      wrapper.vm.runningUploads = 1
-      wrapper.vm.inFinalization = true
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).itemsInProgressCount = 1
+      ;(wrapper.vm as any).runningUploads = 1
+      ;(wrapper.vm as any).inFinalization = true
       await nextTick()
 
       const uploadTitle = wrapper.find(selectors.title).text()
@@ -108,9 +108,9 @@ describe('UploadInfo component', () => {
   describe('progress bar', () => {
     it('should show the progress bar when an upload is in progress', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.itemsInProgressCount = 1
-      wrapper.vm.runningUploads = 1
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).itemsInProgressCount = 1
+      ;(wrapper.vm as any).runningUploads = 1
       await nextTick()
 
       const progressBar = wrapper.find(selectors.progress)
@@ -120,12 +120,12 @@ describe('UploadInfo component', () => {
   describe('info', () => {
     it('should show the number of successful files', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.uploads = {
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).uploads = {
         '1': { meta: { isFolder: false } } as OcUppyFile,
         '2': { meta: { isFolder: false } } as OcUppyFile
       }
-      wrapper.vm.successful = ['1', '2']
+      ;(wrapper.vm as any).successful = ['1', '2']
       await nextTick()
 
       const info = wrapper.find(selectors.success).text()
@@ -133,12 +133,12 @@ describe('UploadInfo component', () => {
     })
     it('should show the number of successful folders', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.uploads = {
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).uploads = {
         '1': { meta: { isFolder: true } } as OcUppyFile,
         '2': { meta: { isFolder: true } } as OcUppyFile
       }
-      wrapper.vm.successful = ['1', '2']
+      ;(wrapper.vm as any).successful = ['1', '2']
       await nextTick()
 
       const info = wrapper.find(selectors.success).text()
@@ -146,12 +146,12 @@ describe('UploadInfo component', () => {
     })
     it('should show both files and folders when mixed', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.uploads = {
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).uploads = {
         '1': { meta: { isFolder: false } } as OcUppyFile,
         '2': { meta: { isFolder: true } } as OcUppyFile
       }
-      wrapper.vm.successful = ['1', '2']
+      ;(wrapper.vm as any).successful = ['1', '2']
       await nextTick()
 
       const info = wrapper.find(selectors.success).text()
@@ -159,9 +159,9 @@ describe('UploadInfo component', () => {
     })
     it('should show the number of failed items', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.errors = { '1': new HttpError('', undefined) }
-      wrapper.vm.successful = ['1']
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).errors = { '1': new HttpError('', undefined) }
+      ;(wrapper.vm as any).successful = ['1']
       await nextTick()
 
       const info = wrapper.find(selectors.error).text()
@@ -171,7 +171,7 @@ describe('UploadInfo component', () => {
   describe('details', () => {
     it('should hide the info by default', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
+      ;(wrapper.vm as any).showInfo = true
       await nextTick()
 
       const info = wrapper.find(selectors.info.items)
@@ -179,9 +179,9 @@ describe('UploadInfo component', () => {
     })
     it('should list all the uploaded files when the info is displayed', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.infoExpanded = true
-      wrapper.vm.uploads = {
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = {
         '1': {
           name: 'file',
           path: '/',
@@ -206,9 +206,9 @@ describe('UploadInfo component', () => {
     })
     it('should show a message on the failed uploaded files', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.infoExpanded = true
-      ;((wrapper.vm.uploads = {
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(((wrapper.vm as any).uploads = {
         '1': {
           name: 'file',
           path: '/',
@@ -228,7 +228,7 @@ describe('UploadInfo component', () => {
           meta: { uploadId: '3' }
         } as unknown as OcUppyFile
       }),
-        (wrapper.vm.errors = {
+        ((wrapper.vm as any).errors = {
           1: new HttpError('', undefined),
           2: new HttpError('', undefined)
         }))
@@ -244,9 +244,9 @@ describe('UploadInfo component', () => {
     })
     it('folder is clickable', async () => {
       const { wrapper } = getShallowWrapper()
-      wrapper.vm.showInfo = true
-      wrapper.vm.infoExpanded = true
-      wrapper.vm.uploads = {
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = {
         '1': {
           name: 'file',
           type: 'folder',
@@ -273,7 +273,7 @@ describe('UploadInfo component', () => {
       { ms: 1000 * 60 * 60 * 2, expected: '2 hours left' }
     ])('should return the proper string', ({ ms, expected }) => {
       const { wrapper } = getShallowWrapper()
-      const estimatedTime = wrapper.vm.getRemainingTime(ms)
+      const estimatedTime = (wrapper.vm as any).getRemainingTime(ms)
       expect(estimatedTime).toBe(expected)
     })
   })

@@ -303,6 +303,10 @@ export class Resource {
     await po.expectPageNumberNotToBeVisible({ page: this.#page })
   }
 
+  async expectPageNumberToBeVisible(): Promise<void> {
+    await po.expectPageNumberToBeVisible({ page: this.#page })
+  }
+
   async createShotcut(args: Omit<po.shortcutArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
     await po.createShotcut({ ...args, page: this.#page })
@@ -383,6 +387,10 @@ export class Resource {
 
   async selectAllFiles(): Promise<void> {
     await po.selectAll({ page: this.#page })
+  }
+
+  async deleteAllFiles(): Promise<void> {
+    await po.deleteAllResources({ page: this.#page })
   }
 
   async getDownloadButtonTooltip(): Promise<string> {

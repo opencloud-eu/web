@@ -33,6 +33,7 @@ describe('useStrategyHtml', () => {
       expect(names).toContain('link')
       expect(names).toContain('table')
       expect(names).toContain('taskList')
+      expect(names).toContain('findAndReplace')
     })
 
     it('configures safe automatic links without opening them on click', () => {
@@ -56,7 +57,8 @@ describe('useStrategyHtml', () => {
       expect(allIds).toContain('image')
       expect(allIds).toContain('image-url')
       expect(allIds).toContain('image-upload')
-      expect(allIds).toContain('table-menu')
+      expect(allIds).toContain('table')
+      expect(allIds).toContain('delete-table')
       expect(allIds).toContain('font-size')
       expect(allIds).toContain('link')
       const link = strategy
@@ -74,23 +76,24 @@ describe('useStrategyHtml', () => {
       expect(allIds).toContain('source-mode')
     })
 
-    it('places view options group at the end', () => {
+    it('places search group at the end', () => {
       const strategy = createStrategy()
       const groupIds = strategy.editorActionGroups().map((g) => g.id)
-      expect(groupIds.at(-1)).toBe('zoom')
+      expect(groupIds.at(-1)).toBe('search')
     })
 
-    it('keeps source toggle next to history and zoom in the rightmost group', () => {
+    it('keeps navigation, source toggle and search actions in dedicated groups', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
-      const historyIds = groups.find((g) => g.id === 'history')?.actions.map((a) => a.id) || []
+      const navigationIds =
+        groups.find((g) => g.id === 'navigation')?.actions.map((a) => a.id) || []
       const sourceGroupIds =
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
-      const zoomGroupIds = groups.find((g) => g.id === 'zoom')?.actions.map((a) => a.id) || []
+      const searchGroupIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
 
-      expect(historyIds).not.toContain('menu-zoom')
+      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
       expect(sourceGroupIds).toEqual(['source-mode'])
-      expect(zoomGroupIds).toEqual(['menu-zoom'])
+      expect(searchGroupIds).toEqual(['menu-search-and-replace'])
     })
   })
 

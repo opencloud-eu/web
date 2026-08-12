@@ -80,6 +80,10 @@ const fileIcon = {
       'wv'
     ]
   },
+  bpmn: {
+    icon: { name: 'resource-type-bpmn' },
+    extensions: ['bpmn']
+  },
   code: {
     icon: { name: 'resource-type-code', hasDarkVariant: true },
     extensions: [
@@ -125,6 +129,10 @@ const fileIcon = {
   default: {
     icon: { name: 'resource-type-file', hasDarkVariant: true },
     extensions: ['accdb', 'rss', 'swf']
+  },
+  dicom: {
+    icon: { name: 'resource-type-dicom' },
+    extensions: ['dcm']
   },
   drawio: {
     icon: { name: 'resource-type-drawio' },

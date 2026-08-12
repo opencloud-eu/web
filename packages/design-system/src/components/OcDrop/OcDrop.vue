@@ -178,6 +178,11 @@ const anchor = computed<HTMLElement | null>(() => {
   }
   return document.querySelector<HTMLButtonElement>(toggle)
 })
+let activeAnchorElement: HTMLElement | VirtualElement | null = null
+
+const resetDropSize = () => {
+  Object.assign(unref(drop).style, { maxWidth: '', maxHeight: '' })
+}
 
 const show = async ({
   anchorElement = undefined,
@@ -222,6 +227,8 @@ const update = async ({
   if (!anchorEl) {
     return
   }
+  activeAnchorElement = anchorEl
+  resetDropSize()
   const { x, y } = await computePosition(anchorEl, unref(drop), {
     placement: position,
     middleware: [
@@ -264,6 +271,7 @@ const showDrop = async ({
   }
 
   const anchorEl: HTMLElement | VirtualElement | null = anchorElement || unref(anchor)
+  activeAnchorElement = anchorEl
   isOpen.value = true
   await nextTick()
   if (!anchorEl) {
@@ -291,6 +299,7 @@ const showDrop = async ({
     })
   }
 
+  resetDropSize()
   const { x, y } = await computePosition(anchorEl, unref(drop), {
     placement: position,
     middleware: [
@@ -333,6 +342,7 @@ const showDrop = async ({
 
 const hideDrop = () => {
   unregisterEventListeners(['drop', 'document'])
+  activeAnchorElement = null
   isOpen.value = false
   unref(anchor)?.setAttribute('aria-expanded', 'false')
   emit('hideDrop')
@@ -355,8 +365,10 @@ const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
   const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
   if (clickedOutsideDrop) {
-    const anchorEl = unref(anchor)
-    const clickedOnAnchor = anchorEl && anchorEl.contains(target)
+    const anchorEl = activeAnchorElement || unref(anchor)
+    const anchorContext =
+      anchorEl instanceof HTMLElement ? anchorEl : anchorEl?.contextElement || null
+    const clickedOnAnchor = anchorContext?.contains(target)
     if (!clickedOnAnchor) {
       await awaitAnimationFrame()
       hideDrop()
@@ -540,6 +552,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearHoverTimeout()
   unregisterEventListeners()
+  activeAnchorElement = null
 
   unref(anchor)?.removeAttribute('aria-expanded')
   unref(anchor)?.removeAttribute('aria-haspopup')

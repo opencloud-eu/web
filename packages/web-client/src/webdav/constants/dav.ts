@@ -118,10 +118,25 @@ export const DavProperty = Object.fromEntries(
 }
 
 export type DavFileInfoResponse = {
-  [K in keyof DavPropertyMappingType as DavPropertyMappingType[K]['value']]: DavPropertyMappingType[K]['type']
+  [
+    K in keyof DavPropertyMappingType as DavPropertyMappingType[K]['value']
+  ]: DavPropertyMappingType[K]['type']
 }
 
 export type DavPropertyValue = (typeof DavProperty)[keyof typeof DavProperty]
+
+/**
+ * The two well-known namespaces, declared on every PROPFIND / PROPPATCH body and
+ * keyed by the prefix used in property names.
+ *
+ * Deliberately just these two. Prefixes belonging to an app's own props are
+ * declared automatically from the names it passes as extra props, so apps can
+ * bring their own namespace without anything being registered here.
+ */
+export const DavNamespaces = {
+  d: 'DAV:',
+  oc: 'http://owncloud.org/ns'
+} as const
 
 export abstract class DavProperties {
   static readonly Default: DavPropertyValue[] = [

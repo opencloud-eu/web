@@ -48,8 +48,8 @@
   </oc-card>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, toRef, unref } from 'vue'
+<script setup lang="ts">
+import { computed, toRef, unref } from 'vue'
 import { App } from '../types'
 import { APPID } from '../appid'
 import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
@@ -62,44 +62,24 @@ import AppAuthors from '../components/AppAuthors.vue'
 import AppImageGallery from '../components/AppImageGallery.vue'
 import AppContextualHelper from '../components/AppContextualHelper.vue'
 
-export default defineComponent({
-  components: {
-    AppContextualHelper,
-    AppImageGallery,
-    AppAuthors,
-    AppResources,
-    AppTags,
-    AppVersions,
-    TextEditorContent
-  },
-  setup() {
-    const appIdRouteParam = useRouteParam('appId')
-    const appId = computed(() => {
-      return decodeURIComponent(unref(appIdRouteParam))
-    })
-    const appsStore = useAppsStore()
-    const router = useRouter()
-
-    const app = computed<App>(() => {
-      return appsStore.getById(unref(appId))
-    })
-
-    const appDescriptionEditor = useTextEditor({
-      contentType: 'markdown',
-      modelValue: toRef(() => unref(app)?.description ?? ''),
-      readonly: true
-    })
-
-    const onTagClicked = (tag: string) => {
-      router.push({ name: `${APPID}-list`, query: { filter: tag } })
-    }
-
-    return {
-      app,
-      APPID,
-      appDescriptionEditor,
-      onTagClicked
-    }
-  }
+const appIdRouteParam = useRouteParam('appId')
+const appId = computed(() => {
+  return decodeURIComponent(unref(appIdRouteParam))
 })
+const appsStore = useAppsStore()
+const router = useRouter()
+
+const app = computed<App>(() => {
+  return appsStore.getById(unref(appId))
+})
+
+const appDescriptionEditor = useTextEditor({
+  contentType: 'markdown',
+  modelValue: toRef(() => unref(app)?.description ?? ''),
+  readonly: true
+})
+
+const onTagClicked = (tag: string) => {
+  router.push({ name: `${APPID}-list`, query: { filter: tag } })
+}
 </script>

@@ -19,7 +19,6 @@ import {
   useMessages,
   useModals,
   useResourcesStore,
-  useRouter,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
@@ -33,7 +32,6 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
 
   const { openEditor } = useFileActions()
   const clientService = useClientService()
-  const router = useRouter()
 
   const resourcesStore = useResourcesStore()
   const { resources, currentFolder, areFileExtensionsShown } = storeToRefs(resourcesStore)
@@ -48,26 +46,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
   const openFile = (resource: Resource, appFileExtension: ApplicationFileExtension) => {
     resourcesStore.upsertResource(resource)
 
-    // Folder-typed new-menu entries (e.g. vault from rclone-crypt, notebooks
-    // from notes) may not register an editor route - when there's nothing to
-    // open we navigate into the freshly-created folder instead so the user
-    // ends up inside it. Anything that *does* have a route (apps like notes)
-    // keeps using openEditor.
-    const targetSpace = unref(space)
-    const routeName = appFileExtension?.routeName || appFileExtension?.app
-    if (appFileExtension?.type === 'folder' && !router.hasRoute(routeName)) {
-      const driveAliasAndItem = targetSpace?.getDriveAliasAndItem(resource)
-      if (driveAliasAndItem) {
-        router.push({
-          name: 'files-spaces-generic',
-          params: { driveAliasAndItem },
-          query: resource.fileId ? { fileId: resource.fileId } : undefined
-        })
-        return
-      }
-    }
-
-    return openEditor(appFileExtension, targetSpace, resource)
+    return openEditor(appFileExtension, unref(space), resource)
   }
 
   const handler = (
@@ -75,9 +54,9 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     extension: string,
     appFileExtension: ApplicationFileExtension
   ) => {
-    // Apps may override the default name shown in the create modal - e.g.
-    // rclone-crypt wants "New vault.vault" instead of "New file.vault".
-    // Fall back to the generic "New file" prefix when no override is set.
+    // Apps may override the default name shown in the create modal, e.g. to
+    // read "New notebook.ocnb" rather than "New file.ocnb". Fall back to the
+    // generic "New file" prefix when no override is set.
     const baseName = appFileExtension.newFileMenu?.defaultName?.() ?? $gettext('New file')
     let defaultName = `${baseName}.${extension}`
 
@@ -188,24 +167,8 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
         icon: 'add',
         handler: (args) => handler(args, appFileExtension.extension, appFileExtension),
         label: () => $gettext(appFileExtension.newFileMenu.menuTitle()),
-        isVisible: () => {
-          if (!unref(currentFolder)?.canUpload({ user: userStore.user })) {
-            return false
-          }
-          // No vault inside a vault: creating a ".vault" folder inside an
-          // (already encrypted) vault just yields a confusingly named folder, not
-          // a real nested vault, so hide that entry there.
-          if (appFileExtension.extension === 'vault' && unref(currentFolder)?.isInVault) {
-            return false
-          }
-          return true
-        },
-        isDisabled: () => {
-          if (isExternalActionInVault) {
-            return true
-          }
-          return false
-        },
+        isVisible: () => unref(currentFolder)?.canUpload({ user: userStore.user }),
+        isDisabled: () => isExternalActionInVault,
         disabledTooltip: () => {
           if (isExternalActionInVault) {
             return $gettext('This file type cannot be created inside vaults')

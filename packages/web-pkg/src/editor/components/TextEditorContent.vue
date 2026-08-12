@@ -7,7 +7,7 @@
     }"
   >
     <DragHandle
-      v-if="!isSourceMode"
+      v-show="!isSourceMode"
       :editor="textEditor.editor.value"
       @node-change="onDragHandleNodeChange"
     >
@@ -22,6 +22,7 @@
           <oc-icon name="add" />
         </oc-button>
         <oc-button
+          v-if="!isMobile"
           appearance="raw"
           class="custom-drag-handle cursor-grab!"
           :aria-label="$gettext('Drag to move')"
@@ -30,6 +31,8 @@
         </oc-button>
       </div>
     </DragHandle>
+    <TextEditorTableBubbleMenu v-show="!isSourceMode" />
+    <TextEditorLinkBubbleMenu v-show="!isSourceMode" />
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <div v-if="isSourceMode" class="flex size-full justify-center">
       <textarea
@@ -47,13 +50,18 @@ import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'v
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import { useGettext } from 'vue3-gettext'
+import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
+import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
 import type { TextEditorInstance } from '../types'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const { editor = undefined } = defineProps<{
   editor?: TextEditorInstance
 }>()
 
 const { $gettext } = useGettext()
+const { isMobile } = useIsMobile()
+
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')

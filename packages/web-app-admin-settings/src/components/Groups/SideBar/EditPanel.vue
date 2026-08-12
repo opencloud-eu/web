@@ -43,7 +43,6 @@ export default defineComponent({
   props: {
     group: {
       type: Object as PropType<Group>,
-      required: true,
       default: null
     }
   },

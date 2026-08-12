@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { Range } from '@tiptap/core'
 import { Editor } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
+import { mock } from 'vitest-mock-extended'
 import { createMockEditor } from './helpers'
 
 vi.mock('vue3-gettext', () => ({
@@ -11,6 +12,7 @@ vi.mock('vue3-gettext', () => ({
 
 import { useEditorActions } from '../../../../src/editor/composables/useEditorActions'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
+import type { Resource } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { useModals } from '../../../../src/composables/piniaStores'
 import { createLinkExtension } from '../../../../src/editor/extensions/link'
@@ -19,7 +21,8 @@ function createState(): TextEditorState {
   return {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-    editorZoom: ref(100)
+    editorZoom: ref(100),
+    currentResource: ref<Resource | null>(mock<Resource>({ id: 'resource', path: '/' }))
   }
 }
 
@@ -151,6 +154,8 @@ describe('useEditorActions', () => {
       { name: 'italic', toggleMethod: 'toggleItalic', markName: 'italic' },
       { name: 'underline', toggleMethod: 'toggleUnderline', markName: 'underline' },
       { name: 'strikethrough', toggleMethod: 'toggleStrike', markName: 'strike' },
+      { name: 'subscript', toggleMethod: 'toggleSubscript', markName: 'subscript' },
+      { name: 'superscript', toggleMethod: 'toggleSuperscript', markName: 'superscript' },
       { name: 'codeInline', toggleMethod: 'toggleCode', markName: 'code' }
     ] as const
 
@@ -390,8 +395,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toEqual({
         range: { from: 1, to: 8 },
         href: 'https://example.com',
-        text: 'Example',
-        view: 'edit'
+        text: 'Example'
       })
       editor.destroy()
     })
@@ -405,8 +409,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toEqual({
         range: { from: 1, to: 8 },
         href: '',
-        text: 'Example',
-        view: 'edit'
+        text: 'Example'
       })
       editor.destroy()
     })
@@ -420,8 +423,7 @@ describe('useEditorActions', () => {
       expect(state.linkPanel.value).toMatchObject({
         range: { from: 1, to: 1 },
         href: '',
-        text: '',
-        view: 'edit'
+        text: ''
       })
       editor.destroy()
     })
@@ -441,14 +443,30 @@ describe('useEditorActions', () => {
   })
 
   describe('table', () => {
-    it('toolbarAction inserts 3x3 table with header row', () => {
+    it('has childActions for default and custom table', () => {
+      const tableAction = actions.createTable()
+      expect(tableAction.childActions).toBeDefined()
+      expect(tableAction.childActions).toHaveLength(2)
+      expect(tableAction.childActions![0].id).toBe('table-default')
+      expect(tableAction.childActions![1].id).toBe('table-custom')
+    })
+
+    it('default table action inserts 3x3 table with header row', () => {
       const editor = createMockEditor()
-      actions.createTable().toolbarAction!(editor)
+      const tableAction = actions.createTable()
+      const defaultTableAction = tableAction.childActions![0]
+      defaultTableAction.toolbarAction!(editor)
       expect(editor._chain.insertTable).toHaveBeenCalledWith({
         rows: 3,
         cols: 3,
         withHeaderRow: true
       })
+    })
+
+    it('custom table action has menuComponent', () => {
+      const tableAction = actions.createTable()
+      const customTableAction = tableAction.childActions![1]
+      expect(customTableAction.menuComponent).toBeDefined()
     })
 
     it('slashCommandAction deletes range then inserts table', () => {
@@ -544,6 +562,36 @@ describe('useEditorActions', () => {
         })
         actions.deleteColumn().slashCommandAction!({ editor, range: mockRange })
         expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+        expect(editor._chain.deleteTable).toHaveBeenCalled()
+      })
+    })
+
+    describe('toggleHeaderRow', () => {
+      it('isEnabled returns editor.isActive("table")', () => {
+        const inTable = createMockEditor({ isActive: (type) => type === 'table' })
+        const notInTable = createMockEditor()
+        expect(actions.toggleHeaderRow().isEnabled!(inTable)).toBe(true)
+        expect(actions.toggleHeaderRow().isEnabled!(notInTable)).toBe(false)
+      })
+
+      it('toolbarAction calls toggleHeaderRow', () => {
+        const editor = createMockEditor()
+        actions.toggleHeaderRow().toolbarAction!(editor)
+        expect(editor._chain.toggleHeaderRow).toHaveBeenCalled()
+      })
+    })
+
+    describe('deleteTable', () => {
+      it('isEnabled returns editor.isActive("table")', () => {
+        const inTable = createMockEditor({ isActive: (type) => type === 'table' })
+        const notInTable = createMockEditor()
+        expect(actions.deleteTable().isEnabled!(inTable)).toBe(true)
+        expect(actions.deleteTable().isEnabled!(notInTable)).toBe(false)
+      })
+
+      it('toolbarAction calls deleteTable', () => {
+        const editor = createMockEditor()
+        actions.deleteTable().toolbarAction!(editor)
         expect(editor._chain.deleteTable).toHaveBeenCalled()
       })
     })
@@ -799,6 +847,23 @@ describe('useEditorActions', () => {
     it('isActive always returns false', () => {
       const editor = createMockEditor()
       expect(actions.imageUpload().isActive!(editor)).toBe(false)
+    })
+  })
+
+  describe('image', () => {
+    it('always shows file, url and cloud actions in the image dropdown', () => {
+      const action = actions.image()
+      const childIds = action.childActions?.map(({ id }) => id) || []
+
+      expect(childIds).toEqual(['image-upload', 'image-url', 'image-cloud'])
+    })
+
+    it('provides "Insert from cloud" action for current resource', () => {
+      const cloudState = createState()
+      const cloudActions = useEditorActions(cloudState)
+      const cloudChild = cloudActions.image().childActions?.find(({ id }) => id === 'image-cloud')
+
+      expect(cloudChild).toBeTruthy()
     })
   })
 

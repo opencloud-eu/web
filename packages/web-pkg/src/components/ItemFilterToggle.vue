@@ -10,58 +10,45 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref, unref } from 'vue'
+<script setup lang="ts">
+import { onMounted, ref, unref } from 'vue'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter, queryItemAsString } from '../composables'
 
-export default defineComponent({
-  name: 'ItemFilterToggle',
-  props: {
-    filterLabel: {
-      type: String,
-      required: true
-    },
-    filterName: {
-      type: String,
-      required: true
-    }
-  },
-  emits: ['toggleFilter'],
-  setup: function (props, { emit }) {
-    const router = useRouter()
-    const currentRoute = useRoute()
-    const filterActive = ref<boolean>(false)
+const { filterLabel, filterName } = defineProps<{
+  filterLabel: string
+  filterName: string
+}>()
 
-    const queryParam = `q_${props.filterName}`
-    const currentRouteQuery = useRouteQuery(queryParam)
-    const setRouteQuery = () => {
-      return router.push({
-        query: {
-          ...omit(unref(currentRoute).query, [queryParam]),
-          ...(unref(filterActive) && { [queryParam]: 'true' })
-        }
-      })
-    }
+const emit = defineEmits<{
+  (e: 'toggleFilter', filterActive: boolean): void
+}>()
 
-    const toggleFilter = async () => {
-      filterActive.value = !unref(filterActive)
-      await setRouteQuery()
-      emit('toggleFilter', unref(filterActive))
-    }
+const router = useRouter()
+const currentRoute = useRoute()
+const filterActive = ref<boolean>(false)
 
-    onMounted(() => {
-      const queryStr = queryItemAsString(unref(currentRouteQuery))
-      if (queryStr === 'true') {
-        filterActive.value = true
-      }
-    })
-
-    return {
-      queryParam,
-      filterActive,
-      toggleFilter
+const queryParam = `q_${filterName}`
+const currentRouteQuery = useRouteQuery(queryParam)
+const setRouteQuery = () => {
+  return router.push({
+    query: {
+      ...omit(unref(currentRoute).query, [queryParam]),
+      ...(unref(filterActive) && { [queryParam]: 'true' })
     }
+  })
+}
+
+const toggleFilter = async () => {
+  filterActive.value = !unref(filterActive)
+  await setRouteQuery()
+  emit('toggleFilter', unref(filterActive))
+}
+
+onMounted(() => {
+  const queryStr = queryItemAsString(unref(currentRouteQuery))
+  if (queryStr === 'true') {
+    filterActive.value = true
   }
 })
 </script>

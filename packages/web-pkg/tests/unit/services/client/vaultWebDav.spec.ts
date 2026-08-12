@@ -53,6 +53,7 @@ function makeInner(overrides: Partial<WebDAV> = {}): WebDAV {
     moveFiles: vi.fn().mockResolvedValue(undefined),
     copyFiles: vi.fn().mockResolvedValue(undefined),
     restoreFileVersion: vi.fn().mockResolvedValue(undefined),
+    setProperties: vi.fn().mockResolvedValue(undefined),
     getFileContents: vi.fn(),
     search: vi.fn(),
     registerExtraProp: vi.fn(),
@@ -184,6 +185,21 @@ describe('createVaultWebDav', () => {
       )
     })
 
+    it('encrypts the path when setting a property on vault content', async () => {
+      vi.mocked(resolveFolderVault).mockResolvedValue(fakeEngine('/my.vault') as any)
+      const inner = makeInner()
+      const dav = createVaultWebDav(inner)
+
+      await dav.setProperties(space, { path: '/my.vault/f.txt' }, { 'x:p': '1' })
+
+      expect(inner.setProperties).toHaveBeenCalledWith(
+        space,
+        { path: '/my.vault/ENC(f.txt)' },
+        { 'x:p': '1' },
+        undefined
+      )
+    })
+
     it('resolves each vault engine once for a listing spanning multiple vaults', async () => {
       vi.mocked(resolveFolderVault).mockImplementation((_r, _s, path) =>
         Promise.resolve(fakeEngine(path as string) as any)
@@ -246,6 +262,23 @@ describe('createVaultWebDav', () => {
       expect(inner.createFolder).toHaveBeenCalledWith(space, { path: '/my.vault' })
     })
 
+    it('leaves the vault root untranslated for setProperties', async () => {
+      // Where the integrity token goes: the root's name is clear text on the
+      // server, so it must reach the wire exactly as given.
+      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      const inner = makeInner()
+      const dav = createVaultWebDav(inner)
+
+      await dav.setProperties(space, { path: '/my.vault' }, { 'x:p': '1' }, { extraProps: ['x:p'] })
+
+      expect(inner.setProperties).toHaveBeenCalledWith(
+        space,
+        { path: '/my.vault' },
+        { 'x:p': '1' },
+        { extraProps: ['x:p'] }
+      )
+    })
+
     it('refuses to create a folder in a locked vault (fail closed)', async () => {
       vi.mocked(resolveFolderVault).mockResolvedValue(null)
       const inner = makeInner()
@@ -255,6 +288,18 @@ describe('createVaultWebDav', () => {
         /locked vault/
       )
       expect(inner.createFolder).not.toHaveBeenCalled()
+    })
+
+    it('refuses to set a property on content in a locked vault (fail closed)', async () => {
+      // The vault root is still fine while locked - see the pass-through test.
+      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      const inner = makeInner()
+      const dav = createVaultWebDav(inner)
+
+      await expect(
+        dav.setProperties(space, { path: '/my.vault/f.txt' }, { 'x:p': '1' })
+      ).rejects.toThrow(/locked vault/)
+      expect(inner.setProperties).not.toHaveBeenCalled()
     })
 
     it('refuses to move a path into/out of a locked vault (fail closed)', async () => {

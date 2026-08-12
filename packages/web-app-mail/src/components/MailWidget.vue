@@ -303,44 +303,43 @@ const hasMeaningfulChanges = computed(() => {
   )
 })
 
-const { draftId, isDirty, isSaving, markDirty, resetDraft, saveAsDraft, discardDraft } =
-  useSaveAsDraft({
-    accountId: currentAccountId,
-    draftMailboxId: draftsMailboxId,
-    api: connector,
-    getDraftPayload: () => {
-      const state = unref(composeState)
+const { draftId, isDirty, isSaving, markDirty, resetDraft, saveAsDraft } = useSaveAsDraft({
+  accountId: currentAccountId,
+  draftMailboxId: draftsMailboxId,
+  api: connector,
+  getDraftPayload: () => {
+    const state = unref(composeState)
 
-      const bodyHtml = state.body ?? ''
-      const bodyPlain = plainTextFromHtml(bodyHtml)
+    const bodyHtml = state.body ?? ''
+    const bodyPlain = plainTextFromHtml(bodyHtml)
 
-      const hasText = bodyPlain.length > 0
-      const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
+    const hasText = bodyPlain.length > 0
+    const hasHtml = bodyHtml.trim().length > 0 && bodyPlain.length > 0
 
-      return {
-        from: state.from ? [{ email: state.from.email, name: state.from.name }] : [],
-        to: parseRecipients(state.to),
-        cc: parseRecipients(state.cc),
-        bcc: parseRecipients(state.bcc),
-        subject: state.subject ?? '',
+    return {
+      from: state.from ? [{ email: state.from.email, name: state.from.name }] : [],
+      to: parseRecipients(state.to),
+      cc: parseRecipients(state.cc),
+      bcc: parseRecipients(state.bcc),
+      subject: state.subject ?? '',
 
-        textBody: hasText ? [{ partId: 't', type: 'text/plain' }] : [],
-        htmlBody: hasHtml ? [{ partId: 'h', type: 'text/html' }] : [],
+      textBody: hasText ? [{ partId: 't', type: 'text/plain' }] : [],
+      htmlBody: hasHtml ? [{ partId: 'h', type: 'text/html' }] : [],
 
-        bodyValues: {
-          ...(hasText ? { t: { value: bodyPlain } } : {}),
-          ...(hasHtml ? { h: { value: bodyHtml } } : {})
-        },
+      bodyValues: {
+        ...(hasText ? { t: { value: bodyPlain } } : {}),
+        ...(hasHtml ? { h: { value: bodyHtml } } : {})
+      },
 
-        attachments: (state.attachments || []).map((attachment: ComposeAttachment) => ({
-          blobId: attachment.blobId,
-          name: attachment.name,
-          type: attachment.type,
-          disposition: 'attachment' as const
-        }))
-      }
+      attachments: (state.attachments || []).map((attachment: ComposeAttachment) => ({
+        blobId: attachment.blobId,
+        name: attachment.name,
+        type: attachment.type,
+        disposition: 'attachment' as const
+      }))
     }
-  })
+  }
+})
 
 const hasUnsavedChanges = computed(() => {
   return unref(hasMeaningfulChanges) && unref(isDirty)

@@ -60,46 +60,36 @@
   </oc-drop>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { v4 as uuidV4 } from 'uuid'
-import { defineComponent, PropType } from 'vue'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 import { useLinkTypes } from '../composables/links'
 
-export default defineComponent({
-  name: 'LinkRoleDropdown',
-  props: {
-    modelValue: { type: Object as PropType<SharingLinkType>, required: true },
-    availableLinkTypeOptions: { type: Array as PropType<SharingLinkType[]>, required: true }
-  },
-  emits: ['update:modelValue'],
-  setup(props, { emit }) {
-    const { $gettext } = useGettext()
-    const { getLinkRoleByType } = useLinkTypes()
+const { modelValue, availableLinkTypeOptions } = defineProps<{
+  modelValue: SharingLinkType
+  availableLinkTypeOptions: SharingLinkType[]
+}>()
 
-    const isSelectedType = (type: SharingLinkType) => {
-      return props.modelValue === type
-    }
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: SharingLinkType): void
+}>()
 
-    const updateSelectedType = (type: SharingLinkType) => {
-      emit('update:modelValue', type)
-    }
+const { $gettext } = useGettext()
+const { getLinkRoleByType } = useLinkTypes()
 
-    const currentLinkRoleLabel = computed(() => {
-      return $gettext(getLinkRoleByType(props.modelValue)?.displayName)
-    })
+const isSelectedType = (type: SharingLinkType) => {
+  return modelValue === type
+}
 
-    const dropUuid = uuidV4()
+const updateSelectedType = (type: SharingLinkType) => {
+  emit('update:modelValue', type)
+}
 
-    return {
-      isSelectedType,
-      updateSelectedType,
-      currentLinkRoleLabel,
-      dropUuid,
-      getLinkRoleByType
-    }
-  }
+const currentLinkRoleLabel = computed(() => {
+  return $gettext(getLinkRoleByType(modelValue)?.displayName)
 })
+
+const dropUuid = uuidV4()
 </script>

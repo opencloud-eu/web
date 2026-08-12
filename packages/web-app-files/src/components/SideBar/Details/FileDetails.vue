@@ -1,16 +1,11 @@
 <template>
   <div id="oc-file-details-sidebar" class="p-2">
     <div v-if="hasContent">
-      <div class="flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4">
-        <div v-if="preview || isPreviewLoading" data-testid="preview">
-          <oc-spinner v-if="isPreviewLoading" :aria-label="$gettext('Loading preview')" />
-          <img
-            v-else
-            key="file-thumbnail"
-            :src="preview"
-            class="details-preview h-[160px]"
-            alt=""
-          />
+      <div
+        class="relative flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4"
+      >
+        <div v-if="preview" data-testid="preview">
+          <img key="file-thumbnail" :src="preview" class="details-preview h-[160px]" alt="" />
         </div>
         <resource-icon
           v-else
@@ -18,6 +13,13 @@
           :resource="resource"
           size-class="size-22"
         />
+        <div
+          v-if="isPreviewLoading"
+          data-testid="preview-loading"
+          class="absolute inset-0 z-10 flex items-center justify-center bg-role-surface/70"
+        >
+          <oc-spinner :aria-label="$gettext('Loading preview')" />
+        </div>
       </div>
       <div
         v-if="!publicLinkContextReady && shareIndicators.length"
@@ -28,83 +30,102 @@
         <oc-status-indicators :resource="resource" :indicators="shareIndicators" />
         <p class="my-0 mx-2" v-text="detailSharingInformation" />
       </div>
-      <div v-if="detailsLoading" class="flex justify-center">
-        <oc-spinner :aria-label="$gettext('Loading details')" />
+      <div class="relative">
+        <div
+          v-if="versionsLoading || versionsError"
+          class="absolute top-0 right-0 z-20 flex items-center"
+        >
+          <oc-spinner
+            v-if="versionsLoading"
+            v-oc-tooltip="$gettext('Loading version information')"
+            size="small"
+            :aria-label="$gettext('Loading version information')"
+          />
+          <oc-icon
+            v-else
+            v-oc-tooltip="$gettext('Version information could not be loaded')"
+            name="error-warning"
+            fill-type="line"
+            size="small"
+            class="text-role-error"
+          />
+        </div>
+        <dl
+          class="details-list"
+          :aria-label="$gettext('Overview of the information about the selected file')"
+        >
+          <template v-if="hasDeletionDate">
+            <dt>{{ $gettext('Deleted at') }}</dt>
+            <dd data-testid="delete-timestamp">{{ capitalizedTimestamp }}</dd>
+          </template>
+          <template v-if="hasTimestamp">
+            <dt>{{ $gettext('Last modified') }}</dt>
+            <dd data-testid="timestamp">
+              <oc-button
+                v-if="showVersions"
+                v-oc-tooltip="seeVersionsLabel"
+                appearance="raw"
+                :aria-label="seeVersionsLabel"
+                no-hover
+                @click="openSideBarPanel('versions')"
+              >
+                {{ capitalizedTimestamp }}
+              </oc-button>
+              <span v-else v-text="capitalizedTimestamp" />
+            </dd>
+          </template>
+          <template v-if="resource.locked">
+            <dt>{{ $gettext('Locked via') }}</dt>
+            <dd data-testid="locked-by">
+              <span>{{ resource.lockOwner }}</span>
+              <span v-if="resource.lockTime">({{ formatDateRelative(resource.lockTime) }})</span>
+            </dd>
+          </template>
+          <template v-if="showSharedVia">
+            <dt>{{ $gettext('Shared via') }}</dt>
+            <dd data-testid="shared-via">
+              <router-link :to="sharedAncestorRoute">
+                <span v-oc-tooltip="sharedViaTooltip" v-text="sharedAncestor.path" />
+              </router-link>
+            </dd>
+          </template>
+          <template v-if="showSharedBy">
+            <dt>{{ $gettext('Shared by') }}</dt>
+            <dd data-testid="shared-by">{{ sharedByDisplayNames }}</dd>
+          </template>
+          <template v-if="ownerDisplayName && ownerDisplayName !== sharedByDisplayNames">
+            <dt>{{ $gettext('Owner') }}</dt>
+            <dd data-testid="ownerDisplayName">
+              <p class="m-0">
+                {{ ownerDisplayName }}
+                <span v-if="ownedByCurrentUser" v-text="$gettext('(me)')" />
+              </p>
+            </dd>
+          </template>
+          <template v-if="showSize">
+            <dt>{{ $gettext('Size') }}</dt>
+            <dd data-testid="sizeInfo">{{ resourceSize }}</dd>
+          </template>
+          <web-dav-details v-if="showWebDavDetails" :space="space" />
+          <template v-if="versionsRowVisible">
+            <dt>{{ $gettext('Version') }}</dt>
+            <dd data-testid="versionsInfo">
+              <span v-if="versionsPlaceholder" aria-hidden="true">&nbsp;</span>
+              <oc-button
+                v-else
+                v-oc-tooltip="seeVersionsLabel"
+                appearance="raw"
+                :aria-label="seeVersionsLabel"
+                no-hover
+                @click="openSideBarPanel('versions')"
+              >
+                {{ versions.length }}
+              </oc-button>
+            </dd>
+          </template>
+          <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
+        </dl>
       </div>
-      <dl
-        v-else
-        class="details-list"
-        :aria-label="$gettext('Overview of the information about the selected file')"
-      >
-        <template v-if="hasDeletionDate">
-          <dt>{{ $gettext('Deleted at') }}</dt>
-          <dd data-testid="delete-timestamp">{{ capitalizedTimestamp }}</dd>
-        </template>
-        <template v-if="hasTimestamp">
-          <dt>{{ $gettext('Last modified') }}</dt>
-          <dd data-testid="timestamp">
-            <oc-button
-              v-if="showVersions"
-              v-oc-tooltip="seeVersionsLabel"
-              appearance="raw"
-              :aria-label="seeVersionsLabel"
-              no-hover
-              @click="openSideBarPanel('versions')"
-            >
-              {{ capitalizedTimestamp }}
-            </oc-button>
-            <span v-else v-text="capitalizedTimestamp" />
-          </dd>
-        </template>
-        <template v-if="resource.locked">
-          <dt>{{ $gettext('Locked via') }}</dt>
-          <dd data-testid="locked-by">
-            <span>{{ resource.lockOwner }}</span>
-            <span v-if="resource.lockTime">({{ formatDateRelative(resource.lockTime) }})</span>
-          </dd>
-        </template>
-        <template v-if="showSharedVia">
-          <dt>{{ $gettext('Shared via') }}</dt>
-          <dd data-testid="shared-via">
-            <router-link :to="sharedAncestorRoute">
-              <span v-oc-tooltip="sharedViaTooltip" v-text="sharedAncestor.path" />
-            </router-link>
-          </dd>
-        </template>
-        <template v-if="showSharedBy">
-          <dt>{{ $gettext('Shared by') }}</dt>
-          <dd data-testid="shared-by">{{ sharedByDisplayNames }}</dd>
-        </template>
-        <template v-if="ownerDisplayName && ownerDisplayName !== sharedByDisplayNames">
-          <dt>{{ $gettext('Owner') }}</dt>
-          <dd data-testid="ownerDisplayName">
-            <p class="m-0">
-              {{ ownerDisplayName }}
-              <span v-if="ownedByCurrentUser" v-text="$gettext('(me)')" />
-            </p>
-          </dd>
-        </template>
-        <template v-if="showSize">
-          <dt>{{ $gettext('Size') }}</dt>
-          <dd data-testid="sizeInfo">{{ resourceSize }}</dd>
-        </template>
-        <web-dav-details v-if="showWebDavDetails" :space="space" />
-        <template v-if="showVersions">
-          <dt>{{ $gettext('Version') }}</dt>
-          <dd data-testid="versionsInfo">
-            <oc-button
-              v-oc-tooltip="seeVersionsLabel"
-              appearance="raw"
-              :aria-label="seeVersionsLabel"
-              no-hover
-              @click="openSideBarPanel('versions')"
-            >
-              {{ versions.length }}
-            </oc-button>
-          </dd>
-        </template>
-        <custom-component-target :extension-point="fileSideBarFileDetailsTableExtensionPoint" />
-      </dl>
       <div v-if="hasTags" class="mt-2">
         <div class="inline-flex items-center text-sm mb-0.5">
           {{ $gettext('Tags') }}
@@ -181,7 +202,8 @@ const { user } = storeToRefs(userStore)
 
 const resource = inject<Ref<Resource>>('resource')
 const versions = inject<Ref<Resource[]>>('versions')
-const versionsLoading = inject<Ref<boolean>>('versionsLoading')
+const versionsLoading = inject<Ref<boolean>>('versionsLoading', ref(false))
+const versionsError = inject<Ref<boolean>>('versionsError', ref(false))
 const space = inject<Ref<SpaceResource>>('space')
 
 const preview = ref<string>(undefined)
@@ -190,7 +212,6 @@ const authStore = useAuthStore()
 const { publicLinkContextReady } = storeToRefs(authStore)
 
 const isPreviewLoading = computed(() => previewEnabled && unref(previewsLoading))
-const detailsLoading = computed(() => unref(versionsLoading))
 
 const sharedAncestor = computed(() => {
   return Object.values(unref(ancestorMetaData)).find(
@@ -304,6 +325,22 @@ const showVersions = computed(() => {
   }
   return unref(versions).length > 0
 })
+// Reserve the version row as an empty placeholder during load only if the
+// previous resource had one, so the layout does not shift.
+const stickyShowVersions = ref(false)
+watch(
+  versionsLoading,
+  (loading) => {
+    if (!loading) {
+      stickyShowVersions.value = !!unref(showVersions)
+    }
+  },
+  { immediate: true }
+)
+const versionsPlaceholder = computed(() => unref(versionsLoading) && unref(stickyShowVersions))
+const versionsRowVisible = computed(() =>
+  unref(versionsLoading) ? unref(stickyShowVersions) : !!unref(showVersions)
+)
 const seeVersionsLabel = computed(() => {
   return $gettext('See all versions')
 })

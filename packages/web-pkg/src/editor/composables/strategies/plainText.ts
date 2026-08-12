@@ -1,6 +1,7 @@
 import { Editor } from '@tiptap/vue-3'
 import { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { ContentTypeStrategy } from './types'
 import { TextEditorState } from '../../types'
@@ -51,17 +52,18 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         listKeymap: false,
         orderedList: false,
         strike: false
-      })
+      }),
+      FindAndReplace
     ]
   }
 
-  const { undo, redo, zoomMenu, menuEmoji } = useEditorActions(editorState)
+  const { undo, redo, zoomMenu, menuEmoji, menuSearchAndReplace } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'emoji',
@@ -69,9 +71,9 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         actions: [menuEmoji()]
       },
       {
-        id: 'view-options',
-        title: $gettext('View options'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

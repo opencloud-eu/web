@@ -10,6 +10,12 @@ import {
   FolderVaultExtension
 } from '../composables/piniaStores/extensionRegistry'
 
+function folderVaultExtensions(extensionRegistry: ExtensionRegistry): FolderVaultExtension[] {
+  return unref(extensionRegistry.extensions)
+    .flatMap((ref) => unref(ref))
+    .filter((e): e is FolderVaultExtension => e.type === 'folderVault')
+}
+
 /**
  * Walks the registered folder-vault extensions and returns the first engine
  * that can decrypt the given (space, path), or `null` if there is none. There
@@ -41,10 +47,7 @@ export async function resolveFolderVault(
   if (!space || !path) {
     return null
   }
-  const extensions = unref(extensionRegistry.extensions)
-    .flatMap((ref) => unref(ref))
-    .filter((e): e is FolderVaultExtension => e.type === 'folderVault')
-  for (const ext of extensions) {
+  for (const ext of folderVaultExtensions(extensionRegistry)) {
     const engine = await ext.resolve(space, path)
     if (engine) {
       return engine
@@ -61,7 +64,7 @@ export async function resolveFolderVault(
  * a vault (or in a locked one, where the path is already ciphertext) are
  * returned unchanged; the original instances stay untouched for UI state.
  */
-export async function encryptResourcePathsForServer(
+export function encryptResourcePathsForServer(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   resources: Resource[]
@@ -81,7 +84,7 @@ export async function encryptResourcePathsForServer(
  * Same as `encryptResourcePathsForServer` but for bare folder paths (e.g. the
  * parent folders a restore has to recreate before moving the item back).
  */
-export async function encryptFolderPathsForServer(
+export function encryptFolderPathsForServer(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   paths: string[]
@@ -112,16 +115,22 @@ export function getVaultClaim(
   if (!space || !path) {
     return null
   }
-  const extensions = unref(extensionRegistry.extensions)
-    .flatMap((ref) => unref(ref))
-    .filter((e): e is FolderVaultExtension => e.type === 'folderVault')
-  for (const ext of extensions) {
+  for (const ext of folderVaultExtensions(extensionRegistry)) {
     const claim = ext.claimsPath(space, path)
     if (claim) {
       return claim
     }
   }
   return null
+}
+
+/**
+ * First registered folder-vault extension that can create vaults, i.e. one that
+ * brings the `creation` bits needed to name and lock a fresh vault. Returns null
+ * when no extension is registered or none supports creation.
+ */
+export function getVaultCreator(extensionRegistry: ExtensionRegistry): FolderVaultExtension | null {
+  return folderVaultExtensions(extensionRegistry).find((e) => !!e.creation) ?? null
 }
 
 /**

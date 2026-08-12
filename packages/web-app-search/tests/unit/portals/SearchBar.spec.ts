@@ -225,9 +225,8 @@ describe('Search Bar portal component', () => {
     const nonEditableTarget = document.createElement('div')
     document.body.appendChild(nonEditableTarget)
     nonEditableTarget.focus()
-    const keyEvent = new KeyboardEvent('keydown', { key: 's', cancelable: true })
 
-    wrapper.vm.onSearchShortcut(keyEvent)
+    wrapper.vm.onSearchShortcut()
     nonEditableTarget.remove()
   })
   test('focuses search input when pressing "/"', () => {
@@ -235,9 +234,8 @@ describe('Search Bar portal component', () => {
     const nonEditableTarget = document.createElement('button')
     document.body.appendChild(nonEditableTarget)
     nonEditableTarget.focus()
-    const keyEvent = new KeyboardEvent('keydown', { key: '/', cancelable: true })
 
-    wrapper.vm.onSearchShortcut(keyEvent)
+    wrapper.vm.onSearchShortcut()
     nonEditableTarget.remove()
   })
   test('does not focus search input when editable element is already focused', () => {
@@ -246,8 +244,7 @@ describe('Search Bar portal component', () => {
     document.body.appendChild(textInput)
     textInput.focus()
 
-    const keyEvent = new KeyboardEvent('keydown', { key: 's', cancelable: true })
-    wrapper.vm.onSearchShortcut(keyEvent)
+    wrapper.vm.onSearchShortcut()
     textInput.remove()
   })
   test('clears search term on key press esc while input has focus', async () => {

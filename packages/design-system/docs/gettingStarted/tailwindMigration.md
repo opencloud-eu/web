@@ -238,7 +238,7 @@ Please refer to https://tailwindcss.com/docs/adding-custom-styles#using-custom-c
 </oc-card> // [!code ++]
 ```
 
-Please refer to the [OcCard docs](../components/OcCard/OcCard.md) for more details on how to use this component.
+Please refer to the [OcCard docs](../components/OcCard) for more details on how to use this component.
 
 ## OcGrid
 

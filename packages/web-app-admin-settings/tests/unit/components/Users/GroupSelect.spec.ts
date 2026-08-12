@@ -17,6 +17,11 @@ describe('GroupSelect', () => {
     const vueSelect = wrapper.findComponent('vue-select-stub') as any
     expect(vueSelect.props('modelValue')[0].readonly).toBeTruthy()
   })
+  it('selects nothing if the groups have not been loaded yet', () => {
+    const { wrapper } = getWrapper(groupMock, { selectedGroups: undefined })
+    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    expect(vueSelect.props('modelValue')).toEqual([])
+  })
   it('emits "selectedOptionChange" on update', async () => {
     const group = mock<Group>({ id: '2', groupTypes: [] })
     const { wrapper } = getWrapper()
@@ -29,12 +34,13 @@ describe('GroupSelect', () => {
   })
 })
 
-function getWrapper(group = groupMock) {
+function getWrapper(group = groupMock, propsOverride: { selectedGroups?: Group[] } = {}) {
   return {
     wrapper: shallowMount(GroupSelect, {
       props: {
         selectedGroups: [group],
-        groupOptions: [group]
+        groupOptions: [group],
+        ...propsOverride
       },
       global: {
         plugins: [...defaultPlugins()],

@@ -4,7 +4,7 @@ import { mockDeep } from 'vitest-mock-extended'
 import { CapabilityStore, ClientService, useRouteParam, useRouteQuery } from '@opencloud-eu/web-pkg'
 import { DavHttpError, PublicSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
 import { authService } from '../../../src/services/auth'
-import { ref } from 'vue'
+import { defineComponent, ref, unref, useTemplateRef } from 'vue'
 import { DavErrorCode } from '@opencloud-eu/web-client/webdav'
 import { flushPromises } from '@vue/test-utils'
 
@@ -15,6 +15,17 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useRouteParam: vi.fn(),
   useRouteQuery: vi.fn()
 }))
+
+// the auto generated stub would drop the focus() the page calls on mount
+const OcTextInputStub = defineComponent({
+  name: 'OcTextInput',
+  setup(_, { expose }) {
+    const input = useTemplateRef<HTMLInputElement>('input')
+    expose({ focus: () => unref(input).focus() })
+    return {}
+  },
+  template: '<input ref="input" />'
+})
 
 const selectors = {
   cardFooter: '.oc-card-footer',
@@ -112,7 +123,7 @@ describe('resolvePublicLink', () => {
   })
   describe('error message', () => {
     it('should display an error message if the space cannot be resolved', async () => {
-      console.error = vi.fn()
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = getWrapper({ getFileInfoErrorStatusCode: 404 })
       await flushPromises()
 
@@ -121,7 +132,7 @@ describe('resolvePublicLink', () => {
       )
     })
     it('should display an error message if the space cannot be resolved after entering password', async () => {
-      console.error = vi.fn()
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper } = getWrapper({
         passwordRequired: true,
         getFileInfoErrorStatusCode: 404
@@ -196,7 +207,8 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          OcCard: false
+          OcCard: false,
+          OcTextInput: OcTextInputStub
         }
       }
     })

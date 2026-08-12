@@ -37,12 +37,12 @@ import { ref } from 'vue'
 const cloudIndicatorClicked = ref(false)
 const shareIndicatorClicked = ref(false)
 
-const cloudHandler = (resource: Record<string, unknown>) => {
+const cloudHandler = () => {
   cloudIndicatorClicked.value = true
   // handle indicator click...
 }
 
-const shareHandler = (resource: Record<string, unknown>) => {
+const shareHandler = () => {
   shareIndicatorClicked.value = true
   // handle indicator click...
 }

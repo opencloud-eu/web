@@ -8,7 +8,6 @@ import {
   isLocationCommonActive,
   isLocationSpacesActive,
   useAbility,
-  useCapabilityStore,
   useClientService,
   useEventBus,
   useIsFilesAppActive,
@@ -19,14 +18,13 @@ import {
 
 export const useFileActionsFavorite = () => {
   const { showErrorMessage } = useMessages()
-  const capabilityStore = useCapabilityStore()
-  const router = useRouter()
   const { $gettext } = useGettext()
   const clientService = useClientService()
   const isFilesAppActive = useIsFilesAppActive()
   const ability = useAbility()
   const resourcesStore = useResourcesStore()
   const eventBus = useEventBus()
+  const router = useRouter()
 
   const handler = async ({ resources }: FileActionOptions) => {
     const errors: { resource: string; error: unknown }[] = []

@@ -2,7 +2,8 @@ import { SpaceResource } from '@opencloud-eu/web-client'
 import { claimsVaultPath, resolveVault } from '../../src/resolveVault'
 
 const getEngine = vi.fn()
-vi.mock('@opencloud-eu/web-pkg', () => ({
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
   useFolderVaultStore: () => ({ getEngine })
 }))
 

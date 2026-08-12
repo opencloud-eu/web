@@ -4,7 +4,10 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import Image from '@tiptap/extension-image'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -60,10 +63,13 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       FontFamily,
       TextStyle,
       Underline,
+      Subscript,
+      Superscript,
       Color,
       BackgroundColor,
       FontSize,
-      LineHeight
+      LineHeight,
+      FindAndReplace
     ]
   }
 
@@ -79,6 +85,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     italic,
     underline,
     strikethrough,
+    subscript,
+    superscript,
     heading,
     heading1,
     heading2,
@@ -93,23 +101,25 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     link,
     menuEmoji,
     image,
+    menuSearchAndReplace,
     imageUrl,
     imageUpload,
-    tableMenu,
     createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
     addColumnBefore,
     addColumnAfter,
-    deleteColumn
+    deleteColumn,
+    toggleHeaderRow,
+    deleteTable
   } = useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'formatting',
@@ -126,7 +136,9 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           bold(),
           italic(),
           underline(),
-          strikethrough()
+          strikethrough(),
+          subscript(),
+          superscript()
         ]
       },
       {
@@ -147,22 +159,23 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           image(),
           imageUrl(),
           imageUpload(),
-          tableMenu(),
-          menuEmoji(),
           createTable(),
-          addColumnAfter(),
-          addColumnBefore(),
-          addRowAfter(),
+          toggleHeaderRow(),
           addRowBefore(),
-          deleteColumn(),
+          addRowAfter(),
           deleteRow(),
+          addColumnBefore(),
+          addColumnAfter(),
+          deleteColumn(),
+          deleteTable(),
+          menuEmoji(),
           horizontalRule()
         ]
       },
       {
-        id: 'view-options',
-        title: $gettext('View options'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

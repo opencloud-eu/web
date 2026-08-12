@@ -134,8 +134,8 @@ const sortedContacts = computed(() => {
 
 const { searchTerm, filteredContacts } = useContactSearch(sortedContacts)
 
-const onSelectContact = async (contact: Contact) => {
-  await runWithDiscardConfirmation(async () => {
+const onSelectContact = (contact: Contact) => {
+  runWithDiscardConfirmation(() => {
     setCurrentContact(contact)
   })
 }

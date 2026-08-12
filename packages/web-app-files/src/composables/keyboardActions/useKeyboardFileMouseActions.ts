@@ -11,7 +11,7 @@ export const useKeyboardFileMouseActions = (
   viewMode: Ref<string | QueryValue>
 ) => {
   const resourcesStore = useResourcesStore()
-  const { latestSelectedId } = storeToRefs(resourcesStore)
+  const { latestSelectedId, selectedIds } = storeToRefs(resourcesStore)
 
   let fileListClickedEvent: string
   let shiftAnchorResetEvent: string
@@ -23,6 +23,20 @@ export const useKeyboardFileMouseActions = (
     resourcesStore.toggleSelection(resource.id)
   }
 
+  const getShiftSelectionAnchorId = (resource: Resource) => {
+    if (shiftSelectionAnchorId) {
+      return shiftSelectionAnchorId
+    }
+
+    // only fall back to the latest selected resource if it's still selected. otherwise
+    // (e.g. after deselecting all) the clicked resource becomes the new anchor.
+    if (unref(selectedIds).includes(unref(latestSelectedId))) {
+      return unref(latestSelectedId)
+    }
+
+    return resource.id
+  }
+
   const handleShiftClickAction = ({
     resource,
     skipTargetSelection
@@ -30,9 +44,7 @@ export const useKeyboardFileMouseActions = (
     resource: Resource
     skipTargetSelection: boolean
   }) => {
-    if (!shiftSelectionAnchorId) {
-      shiftSelectionAnchorId = unref(latestSelectedId) || resource.id
-    }
+    shiftSelectionAnchorId = getShiftSelectionAnchorId(resource)
     resourcesStore.setSelection([])
 
     const parent = document.querySelectorAll(`[data-item-id='${resource.id}']`)[0]
@@ -68,9 +80,7 @@ export const useKeyboardFileMouseActions = (
     resource: Resource
     skipTargetSelection: boolean
   }) => {
-    if (!shiftSelectionAnchorId) {
-      shiftSelectionAnchorId = unref(latestSelectedId) || resource.id
-    }
+    shiftSelectionAnchorId = getShiftSelectionAnchorId(resource)
     resourcesStore.setSelection([])
 
     const tilesListCard = document.querySelectorAll('#tiles-view > ul > li > div')

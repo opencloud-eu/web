@@ -5,6 +5,7 @@
   flex-direction: column;
   min-height: 0;
   overflow: auto;
+  container-type: inline-size;
 }
 
 .text-editor-provider .text-editor-content .ProseMirror {
@@ -198,8 +199,8 @@
   margin: 12px 0;
 }
 
-/* Mobile: Reduce max-width to make room for drag handle + plus button */
-@media (max-width: 840px) {
+/* Reduce max-width to make room for drag handle + plus button when container is narrow */
+@container (max-width: 840px) {
   .text-editor-provider .text-editor-content .ProseMirror {
     max-width: calc(100% - 6rem);
   }

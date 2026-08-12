@@ -9,6 +9,31 @@
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
     <link rel="icon" href="img/favicon.svg" />
     <link rel="stylesheet" href="./packages/design-system/src/styles/tailwind.css" />
+    <script>
+      // Apply background color early to prevent a white flash on dark theme before theme loading finishes.
+      function applyInitialThemeBackground() {
+        var themeIsDarkStorageKey = 'oc_currentThemeIsDark'
+        var storedThemeIsDark = null
+
+        try {
+          storedThemeIsDark = localStorage.getItem(themeIsDarkStorageKey)
+        } catch (error) {
+          // Ignore storage access errors and fall back to system preference.
+        }
+
+        var isDark = storedThemeIsDark === 'true'
+        var prefersDark =
+          window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        var shouldUseDark = storedThemeIsDark !== null ? isDark : prefersDark
+        var themeName = shouldUseDark ? 'dark' : 'light'
+        var backgroundColor = shouldUseDark ? '#191c1d' : '#ffffff'
+
+        document.documentElement.style.colorScheme = themeName
+        document.documentElement.style.backgroundColor = backgroundColor
+      }
+
+      applyInitialThemeBackground()
+    </script>
     <script type="module" src="./packages/web-runtime/src/index.ts"></script>
     <script type="module">
       // Fix Buffer usage in production (!)

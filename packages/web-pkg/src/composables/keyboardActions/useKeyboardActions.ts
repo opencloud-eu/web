@@ -8,6 +8,7 @@ interface KeyboardActionsOptions {
 
 export enum Key {
   C = 'c',
+  F = 'f',
   V = 'v',
   X = 'x',
   A = 'a',

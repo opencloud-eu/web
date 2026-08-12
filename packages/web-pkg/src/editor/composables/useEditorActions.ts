@@ -1,13 +1,21 @@
-import { markRaw, unref } from 'vue'
+import { computed, markRaw, ref, unref } from 'vue'
 import type { Component } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
 import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import type { Resource } from '@opencloud-eu/web-client'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
-import { useModals, useThemeStore } from '../../composables/piniaStores'
+import { useModals, useThemeStore } from '../../composables'
+import { useClientService } from '../../composables/clientService'
+import { useGetMatchingSpace } from '../../composables/spaces'
+import { useFolderLink } from '../../composables/folderLink'
+import FilePickerModal from '../../components/Modals/FilePickerModal.vue'
+import { arrayBufferToDataUrl } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
+import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
+import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
 export interface EditorAction {
   // Core identification
@@ -63,6 +71,18 @@ export function useEditorActions(state: TextEditorState) {
   const { dispatchModal } = useModals()
   const themeStore = useThemeStore()
   const { currentTheme } = storeToRefs(themeStore)
+  const clientService = useClientService()
+  const { getMatchingSpace } = useGetMatchingSpace()
+  const { getParentFolderLink } = useFolderLink()
+  const currentResource = computed<Resource | null>(() => {
+    return unref(state.currentResource) ?? null
+  })
+
+  //Search
+  const searchSearchTerm = ref('')
+  const searchReplaceTerm = ref('')
+  const searchCaseSensitive = ref(false)
+  const searchWholeWord = ref(false)
 
   const zoomStep = 10
   const zoomMin = 50
@@ -291,6 +311,26 @@ export function useEditorActions(state: TextEditorState) {
     slashCommandAction: ({ editor, range }) =>
       editor.chain().focus().deleteRange(range).toggleStrike().run(),
     isActive: (editor) => editor.isActive('strike')
+  })
+
+  const subscript = (): EditorAction => ({
+    id: 'subscript',
+    title: $gettext('Subscript'),
+    icon: 'subscript',
+    toolbarAction: (editor) => editor.chain().focus().toggleSubscript().run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleSubscript().run(),
+    isActive: (editor) => editor.isActive('subscript')
+  })
+
+  const superscript = (): EditorAction => ({
+    id: 'superscript',
+    title: $gettext('Superscript'),
+    icon: 'superscript',
+    toolbarAction: (editor) => editor.chain().focus().toggleSuperscript().run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).toggleSuperscript().run(),
+    isActive: (editor) => editor.isActive('superscript')
   })
 
   const codeInline = (): EditorAction => ({
@@ -537,6 +577,47 @@ export function useEditorActions(state: TextEditorState) {
     })
   }
 
+  const insertImageFromCloudResource = async (editor: Editor, resource: Resource) => {
+    const space = getMatchingSpace(resource)
+    const response = await clientService.webdav.getFileContents(
+      space,
+      { path: resource.path },
+      { responseType: 'arraybuffer' }
+    )
+    const body = response?.body as ArrayBuffer | undefined
+    if (!body) {
+      return
+    }
+    const mimeType = resource.mimeType || 'application/octet-stream'
+    const dataUrl = await arrayBufferToDataUrl(body, mimeType)
+    editor.chain().focus().setImage({ src: dataUrl }).run()
+  }
+
+  const openCloudImagePicker = (editor: Editor) => {
+    const resource = unref(currentResource)
+    if (!resource) {
+      return
+    }
+
+    dispatchModal({
+      elementClass: 'file-picker-modal',
+      title: $gettext('Insert image from cloud'),
+      customComponent: markRaw(FilePickerModal),
+      hideActions: true,
+      customComponentAttrs: () => ({
+        allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
+        parentFolderLink: getParentFolderLink(resource),
+        callbackFn: async ({ resource }: { resource: Resource }) => {
+          if (!resource.mimeType?.startsWith('image/')) {
+            return
+          }
+          await insertImageFromCloudResource(editor, resource)
+        }
+      }),
+      focusTrapInitial: false
+    })
+  }
+
   const imageUrl = (): EditorAction => ({
     id: 'image-url',
     title: $gettext('Image from URL'),
@@ -568,13 +649,28 @@ export function useEditorActions(state: TextEditorState) {
     isActive: () => false
   })
 
+  const imageCloud = (): EditorAction => ({
+    id: 'image-cloud',
+    title: $gettext('Insert from cloud'),
+    description: $gettext('Insert an image from your cloud files'),
+    icon: 'cloud-line',
+    keywords: ['image', 'picture', 'cloud'],
+    showInSlashCommands: false,
+    toolbarAction: (editor) => openCloudImagePicker(editor),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run()
+      openCloudImagePicker(editor)
+    },
+    isActive: () => false
+  })
+
   const image = (): EditorAction => ({
     id: 'image',
     title: $gettext('Insert image'),
     icon: 'image-line',
-    keywords: ['image', 'picture', 'upload', 'url'],
+    keywords: ['image', 'picture', 'upload', 'url', 'cloud'],
     showInSlashCommands: false,
-    childActions: [imageUpload(), imageUrl()],
+    childActions: [imageUpload(), imageUrl(), imageCloud()],
     isActive: () => false
   })
 
@@ -596,6 +692,28 @@ export function useEditorActions(state: TextEditorState) {
       }
     }),
     isActive: () => false
+  })
+
+  const menuSearchAndReplace = (): EditorAction => ({
+    id: 'menu-search-and-replace',
+    title: $gettext('Search and replace'),
+    icon: 'seo',
+    iconFillType: 'line',
+    showInSlashCommands: false,
+    menuCloseOnClick: false,
+    menuComponent: markRaw(TextEditorSearchAndReplacePanel),
+    menuComponentAttrs: (editor, closeMenu) => ({
+      editor,
+      closeMenu,
+      searchSearchTerm: searchSearchTerm.value,
+      'onUpdate:searchSearchTerm': (val: string) => (searchSearchTerm.value = val),
+      searchReplaceTerm: searchReplaceTerm.value,
+      'onUpdate:searchReplaceTerm': (val: string) => (searchReplaceTerm.value = val),
+      searchCaseSensitive: searchCaseSensitive.value,
+      'onUpdate:searchCaseSensitive': (val: boolean) => (searchCaseSensitive.value = val),
+      searchWholeWord: searchWholeWord.value,
+      'onUpdate:searchWholeWord': (val: boolean) => (searchWholeWord.value = val)
+    })
   })
 
   const maxImageSizeBytes = 5 * 1024 * 1024 // 5 MB
@@ -642,12 +760,34 @@ export function useEditorActions(state: TextEditorState) {
   const createTable = (): EditorAction => ({
     id: 'table',
     title: $gettext('Create a table'),
-    description: $gettext('3×3 table with header row'),
+    description: $gettext('Insert a table'),
     icon: 'table-line',
     keywords: ['grid'],
-    showInToolbar: false,
-    toolbarAction: (editor) =>
-      editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+    childActions: [
+      {
+        id: 'table-default',
+        title: $gettext('Small table (3×3)'),
+        description: $gettext('3×3 table with header row'),
+        icon: 'table-line',
+        toolbarAction: (editor) =>
+          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
+        isActive: () => false
+      },
+      {
+        id: 'table-custom',
+        title: $gettext('Choose rows & columns'),
+        description: $gettext('Select custom table size'),
+        icon: 'grid',
+        iconFillType: 'line',
+        menuComponent: markRaw(TextEditorTableSizeSelector),
+        menuCloseOnClick: false,
+        menuComponentAttrs: (editor, closeMenu) => ({
+          editor,
+          closeMenu
+        }),
+        isActive: () => false
+      }
+    ],
     slashCommandAction: ({ editor, range }) => {
       editor
         .chain()
@@ -765,20 +905,34 @@ export function useEditorActions(state: TextEditorState) {
     isEnabled: (editor) => editor.isActive('table')
   })
 
-  const tableMenu = (): EditorAction => ({
-    id: 'table-menu',
-    title: $gettext('Table'),
-    icon: 'table-line',
-    showInSlashCommands: false,
-    childActions: [
-      createTable(),
-      addRowBefore(),
-      addRowAfter(),
-      deleteRow(),
-      addColumnBefore(),
-      addColumnAfter(),
-      deleteColumn()
-    ]
+  const toggleHeaderRow = (): EditorAction => ({
+    id: 'toggle-header-row',
+    title: $gettext('Toggle header row'),
+    description: $gettext('Toggle header row'),
+    icon: 'layout-row-fill',
+    keywords: ['table', 'header', 'row'],
+    showInToolbar: false,
+    toolbarAction: (editor) => editor.chain().focus().toggleHeaderRow().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).toggleHeaderRow().run()
+    },
+    isActive: () => false,
+    isEnabled: (editor) => editor.isActive('table')
+  })
+
+  const deleteTable = (): EditorAction => ({
+    id: 'delete-table',
+    title: $gettext('Delete table'),
+    description: $gettext('Remove current table'),
+    icon: 'delete-bin-2-line',
+    keywords: ['table', 'remove', 'delete'],
+    showInToolbar: false,
+    toolbarAction: (editor) => editor.chain().focus().deleteTable().run(),
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).deleteTable().run()
+    },
+    isActive: () => false,
+    isEnabled: (editor) => editor.isActive('table')
   })
 
   return {
@@ -809,6 +963,8 @@ export function useEditorActions(state: TextEditorState) {
     italic,
     underline,
     strikethrough,
+    subscript,
+    superscript,
     codeInline,
     // Blocks
     lineHeight,
@@ -822,17 +978,19 @@ export function useEditorActions(state: TextEditorState) {
     link,
     image,
     menuEmoji,
+    menuSearchAndReplace,
     imageUrl,
     imageUpload,
     horizontalRule,
     // Table
-    tableMenu,
     createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
     addColumnBefore,
     addColumnAfter,
-    deleteColumn
+    deleteColumn,
+    toggleHeaderRow,
+    deleteTable
   }
 }

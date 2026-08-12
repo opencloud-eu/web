@@ -4,7 +4,10 @@ import type { Editor } from '@tiptap/vue-3'
 import type { Extension } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
+import Subscript from '@tiptap/extension-subscript'
+import Superscript from '@tiptap/extension-superscript'
 import Image from '@tiptap/extension-image'
+import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
@@ -65,10 +68,13 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       FontFamily,
       TextStyle,
       Underline,
+      Subscript,
+      Superscript,
       Color,
       BackgroundColor,
       FontSize,
-      LineHeight
+      LineHeight,
+      FindAndReplace
     ]
   }
 
@@ -85,6 +91,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     italic,
     underline,
     strikethrough,
+    subscript,
+    superscript,
     heading,
     paragraph,
     heading1,
@@ -106,22 +114,24 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     imageUrl,
     imageUpload,
     menuEmoji,
-    tableMenu,
     createTable,
     addRowBefore,
     addRowAfter,
     deleteRow,
     addColumnBefore,
     addColumnAfter,
-    deleteColumn
+    deleteColumn,
+    toggleHeaderRow,
+    deleteTable,
+    menuSearchAndReplace
   } = useEditorActions(editorState)
 
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
-        id: 'history',
-        title: $gettext('History'),
-        actions: [undo(), redo()]
+        id: 'navigation',
+        title: $gettext('Navigation'),
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'view-options',
@@ -147,7 +157,9 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           bold(),
           italic(),
           underline(),
-          strikethrough()
+          strikethrough(),
+          subscript(),
+          superscript()
         ]
       },
       {
@@ -168,22 +180,23 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           image(),
           imageUrl(),
           imageUpload(),
-          tableMenu(),
-          menuEmoji(),
           createTable(),
-          addColumnAfter(),
-          addColumnBefore(),
-          addRowAfter(),
+          toggleHeaderRow(),
           addRowBefore(),
-          deleteColumn(),
+          addRowAfter(),
           deleteRow(),
+          addColumnBefore(),
+          addColumnAfter(),
+          deleteColumn(),
+          deleteTable(),
+          menuEmoji(),
           horizontalRule()
         ]
       },
       {
-        id: 'zoom',
-        title: $gettext('Zoom'),
-        actions: [zoomMenu()]
+        id: 'search',
+        title: $gettext('Search'),
+        actions: [menuSearchAndReplace()]
       }
     ]
   }

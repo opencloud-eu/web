@@ -1,6 +1,7 @@
 import type { ShallowRef, Ref, ComputedRef } from 'vue'
 import type { Range } from '@tiptap/core'
 import type { Editor } from '@tiptap/vue-3'
+import type { Resource } from '@opencloud-eu/web-client'
 import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
@@ -8,6 +9,7 @@ export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
 export interface TextEditorOptions {
   contentType: ContentType
   modelValue?: Ref<string>
+  currentResource?: Ref<Resource>
   readonly?: boolean
   slashCommands?: boolean
   placeholder?: string
@@ -25,13 +27,13 @@ export interface TextEditorLinkPanelRequest {
   range: Range
   href: string
   text: string
-  view: 'actions' | 'edit'
 }
 
 export interface TextEditorState {
   sourceMode: Ref<boolean>
   linkPanel: Ref<TextEditorLinkPanelRequest | null>
   editorZoom: Ref<number>
+  currentResource?: Ref<Resource | null>
 }
 
 export interface TextEditorInstance {

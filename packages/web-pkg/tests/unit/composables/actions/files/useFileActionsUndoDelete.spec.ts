@@ -5,7 +5,7 @@ import {
 } from '../../../../../src/composables/actions'
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore, Message } from '../../../../../src/composables/piniaStores'
+import { CapabilityStore } from '../../../../../src/composables/piniaStores'
 import { computed, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { SpaceResource } from '@opencloud-eu/web-client'
@@ -70,11 +70,9 @@ describe('undoDelete', () => {
 })
 
 function getWrapper({
-  deleteMessage = undefined,
   trashBinEnabled = true,
   setup
 }: {
-  deleteMessage?: Message
   trashBinEnabled?: boolean
   setup: (
     instance: ReturnType<typeof useFileActionsUndoDelete>,
