@@ -23,6 +23,7 @@ import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useRouteMeta, useThemeStore } from '@opencloud-eu/web-pkg'
 import { useRoute } from 'vue-router'
+import { addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
 import Announcement from '../components/Announcement.vue'
 
 const { $gettext } = useGettext()
@@ -40,7 +41,8 @@ const backgroundImgStyle = computed(() => {
   return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
 })
 const emblemSrc = computed(() => {
-  return unref(currentTheme).isDark ? 'images/icon-lilac.svg' : 'images/icon-petrol.svg'
+  const url = unref(currentTheme).isDark ? 'images/icon-lilac.svg' : 'images/icon-petrol.svg'
+  return addVersionToAssetUrl(url)
 })
 
 const pathIsRoot = computed(() => {

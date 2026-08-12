@@ -9,12 +9,9 @@
       <sidebar-nav-mobile class="flex" />
       <router-link v-if="!hideLogo" :to="homeLink">
         <picture>
-          <source
-            :srcset="currentTheme.logoMobile || currentTheme.logo"
-            media="(max-width: 959px)"
-          />
+          <source :srcset="logoMobileWithVersion" media="(max-width: 959px)" />
           <oc-image
-            :src="currentTheme.logo"
+            :src="logoWithVersion"
             :alt="sidebarLogoAlt"
             class="oc-logo-image align-middle ml-1 h-[28px] md:h-[36px] w-auto select-none"
           />
@@ -47,6 +44,7 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
+import { addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
 import UserMenu from './UserMenu.vue'
 import Notifications from './Notifications.vue'
 import FeedbackLink from './FeedbackLink.vue'
@@ -137,6 +135,15 @@ const feedbackLinkOptions = computed(() => {
     ...(feedback.ariaLabel && { ariaLabel: feedback.ariaLabel }),
     ...(feedback.description && { description: feedback.description })
   }
+})
+
+const logoWithVersion = computed(() => {
+  return addVersionToAssetUrl(unref(currentTheme).logo)
+})
+
+const logoMobileWithVersion = computed(() => {
+  const logo = unref(currentTheme).logoMobile || unref(currentTheme).logo
+  return addVersionToAssetUrl(logo)
 })
 </script>
 <style scoped>
