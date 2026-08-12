@@ -26,6 +26,7 @@ export interface TextEditorInstance {
   readonly: Ref<boolean>
   actionGroups(): EditorActionGroup[]
   getContent(): string
+  setContent(value: string): void
   isEmpty: ComputedRef<boolean>
   isFocused: ComputedRef<boolean>
   focus(): void
