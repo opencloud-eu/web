@@ -1,6 +1,7 @@
 <template>
   <div>
     <oc-drop
+      ref="searchDropRef"
       :title="searchLabel"
       :toggle="toggle"
       mode="click"
@@ -8,6 +9,7 @@
       enforce-drop-on-mobile
       padding-size="small"
       class="w-72 max-w-[calc(100vw-1rem)]"
+      @show-drop="focusSearchInput"
     >
       <div @keydown.enter.prevent="onSearchEnter">
         <oc-search-bar
@@ -67,7 +69,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import type { OcDrop } from '@opencloud-eu/design-system/components'
+import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 
 const props = defineProps<{
   toggle: string
@@ -92,6 +95,7 @@ const emit = defineEmits<{
 }>()
 
 const searchTerm = ref('')
+const searchDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('searchDropRef')
 
 const searchResultStatusLabel = computed(() => {
   if (props.searching) {
@@ -119,5 +123,13 @@ function onCloseSearch() {
 
 function onSearchEnter() {
   emit('goToNextResult')
+}
+
+async function focusSearchInput() {
+  await nextTick()
+  const dropElement = (unref(searchDropRef)?.$refs.drop ||
+    unref(searchDropRef)?.$el) as HTMLElement | undefined
+  const searchInput = dropElement?.querySelector<HTMLInputElement>('.oc-search-input')
+  searchInput?.focus()
 }
 </script>

@@ -100,4 +100,38 @@ describe('ReaderTextSearch component', () => {
 
     expect(wrapper.emitted('goToNextResult')).toHaveLength(1)
   })
+
+  it('focuses the search input when the drop is opened', async () => {
+    const wrapper = mount(ReaderTextSearch, {
+      attachTo: document.body,
+      props: {
+        toggle: '#epub_reader_text_search_toggle',
+        searchLabel: 'Search in book',
+        searchPlaceholder: 'Search in book',
+        searching: false,
+        searchingLabel: 'Searching...',
+        resultCount: 3,
+        currentResultIndex: 1,
+        canGoToPreviousResult: true,
+        canGoToNextResult: true,
+        previousResultLabel: 'Navigate to previous search result',
+        nextResultLabel: 'Navigate to next search result',
+        closeSearchLabel: 'Close search'
+      },
+      global: {
+        plugins: [...defaultPlugins()],
+        stubs: {
+          'oc-drop': true
+        },
+        renderStubDefaultSlot: true
+      }
+    })
+    const searchInput = wrapper.find('.oc-search-input').element as HTMLInputElement
+
+    await wrapper.find('oc-drop-stub').trigger('show-drop')
+    await wrapper.vm.$nextTick()
+
+    expect(document.activeElement).toBe(searchInput)
+    wrapper.unmount()
+  })
 })

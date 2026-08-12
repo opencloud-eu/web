@@ -45,11 +45,11 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref, unref } from 'vue'
+import { nextTick, unref, useTemplateRef } from 'vue'
 import type { NavItem } from 'epubjs'
 
 type ChapterOption = NavItem
-const chapterSelectRoot = ref<HTMLElement>()
+const chapterSelectRoot = useTemplateRef<HTMLElement>('chapterSelectRoot')
 
 defineProps<{
   chapters: ChapterOption[]
@@ -65,11 +65,15 @@ function onChapterClick(chapter: ChapterOption) {
   emit('update:selectedChapter', chapter)
 }
 
-async function scrollSelectedChapterIntoView() {
-  await nextTick()
-  const selectedOptionElement =
+function findSelectedChapterOption() {
+  return (
     unref(chapterSelectRoot)?.querySelector<HTMLElement>('.epub-reader-chapter-option-selected') ||
     document.querySelector<HTMLElement>('.epub-reader-chapter-option-selected')
-  selectedOptionElement?.scrollIntoView({ block: 'nearest' })
+  )
+}
+
+async function scrollSelectedChapterIntoView() {
+  await nextTick()
+  findSelectedChapterOption()?.scrollIntoView({ block: 'nearest' })
 }
 </script>
