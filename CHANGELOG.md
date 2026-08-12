@@ -6,6 +6,19 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @maki5, @schweigisito, @tammi-23, @v-scharf
 
+### 📈 Enhancement
+
+- feat(yjs): collaborative editing framework [[#2785](https://github.com/opencloud-eu/web/pull/2785)]
+- feat: update more resource icons [[#2898](https://github.com/opencloud-eu/web/pull/2898)]
+- feat: add subscript and superscript support to text editor [[#3068](https://github.com/opencloud-eu/web/pull/3068)]
+- feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
+- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
+- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
+
 ### 🐛 Bug Fixes
 
 - fix: add cache-buster for provided images [[#3082](https://github.com/opencloud-eu/web/pull/3082)]
@@ -33,18 +46,6 @@
 - e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
 - e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
 - fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
-
-### 📈 Enhancement
-
-- feat: update more resource icons [[#2898](https://github.com/opencloud-eu/web/pull/2898)]
-- feat: add subscript and superscript support to text editor [[#3068](https://github.com/opencloud-eu/web/pull/3068)]
-- feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
-- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
-- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
-- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
-- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
-- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
-- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### 📦️ Dependencies
 
