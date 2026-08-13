@@ -86,8 +86,7 @@
         :result-count="searchResultCount"
         :has-more-results="hasMoreSearchResults"
         :current-result-index="currentSearchResultIndex"
-        :can-go-to-previous-result="canGoToPreviousSearchResult"
-        :can-go-to-next-result="canGoToNextSearchResult"
+        :can-navigate-through-results="canNavigateThroughSearchResults"
         @search-term-changed="$emit('searchTermChanged', $event)"
         @go-to-previous-result="$emit('goToPreviousSearchResult')"
         @go-to-next-result="$emit('goToNextSearchResult')"
@@ -127,8 +126,7 @@ const props = defineProps<{
   searchResultCount: number
   hasMoreSearchResults: boolean
   currentSearchResultIndex: number
-  canGoToPreviousSearchResult: boolean
-  canGoToNextSearchResult: boolean
+  canNavigateThroughSearchResults: boolean
   isSearchLoading: boolean
   currentFontSizePercentage: number
   fontSizeStep: number

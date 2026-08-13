@@ -31,7 +31,7 @@
             v-oc-tooltip="previousResultLabel"
             :aria-label="previousResultLabel"
             class="epub-reader-search-previous-result p-2"
-            :disabled="!canGoToPreviousResult"
+            :disabled="!canNavigateThroughResults"
             appearance="raw"
             no-hover
             size="small"
@@ -43,7 +43,7 @@
             v-oc-tooltip="nextResultLabel"
             :aria-label="nextResultLabel"
             class="epub-reader-search-next-result p-2"
-            :disabled="!canGoToNextResult"
+            :disabled="!canNavigateThroughResults"
             appearance="raw"
             no-hover
             size="small"
@@ -89,8 +89,7 @@ const props = defineProps<{
   resultCount: number
   hasMoreResults: boolean
   currentResultIndex: number
-  canGoToPreviousResult: boolean
-  canGoToNextResult: boolean
+  canNavigateThroughResults: boolean
 }>()
 
 const emit = defineEmits<{

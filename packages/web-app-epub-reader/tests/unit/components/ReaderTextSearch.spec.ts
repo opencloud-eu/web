@@ -10,8 +10,7 @@ function getWrapper() {
       resultCount: 3,
       hasMoreResults: false,
       currentResultIndex: 1,
-      canGoToPreviousResult: true,
-      canGoToNextResult: true
+      canNavigateThroughResults: true
     },
     global: {
       plugins: [...defaultPlugins()],
@@ -67,8 +66,7 @@ describe('ReaderTextSearch component', () => {
         resultCount: 0,
         hasMoreResults: false,
         currentResultIndex: -1,
-        canGoToPreviousResult: false,
-        canGoToNextResult: false
+        canNavigateThroughResults: false
       },
       global: {
         plugins: [...defaultPlugins()],
@@ -111,8 +109,7 @@ describe('ReaderTextSearch component', () => {
         resultCount: 3,
         hasMoreResults: false,
         currentResultIndex: 1,
-        canGoToPreviousResult: true,
-        canGoToNextResult: true
+        canNavigateThroughResults: true
       },
       global: {
         plugins: [...defaultPlugins()],
@@ -139,8 +136,7 @@ describe('ReaderTextSearch component', () => {
         resultCount: 300,
         hasMoreResults: true,
         currentResultIndex: 0,
-        canGoToPreviousResult: true,
-        canGoToNextResult: true
+        canNavigateThroughResults: true
       },
       global: {
         plugins: [...defaultPlugins()],
