@@ -48,6 +48,7 @@ directives:
   style-src:
     - '''self'''
     - '''unsafe-inline'''
+    - 'blob:'
     - 'https://host.docker.internal:*'
   worker-src:
     - "'self'"
