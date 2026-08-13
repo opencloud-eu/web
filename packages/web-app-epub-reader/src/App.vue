@@ -196,6 +196,34 @@ async function generateGlobalLocationsForBook(bookInstance: Book) {
   hasGlobalLocations.value = true
 }
 
+function updateReadingProgress(currentLocation: Location) {
+  const locationCfi = currentLocation?.start?.cfi
+  const globalPercentage =
+    locationCfi && unref(book)?.locations?.percentageFromCfi
+      ? unref(book).locations.percentageFromCfi(locationCfi)
+      : null
+
+  if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
+    const clamped = Math.min(1, Math.max(0, globalPercentage))
+    const percent = Number((clamped * 100).toFixed(1))
+    readingProgressPercent.value = percent
+    readingProgressLabel.value = formatProgressPercentLabel(percent)
+    return
+  }
+
+  const chapterPage = currentLocation?.start?.displayed?.page
+  const chapterTotal = currentLocation?.start?.displayed?.total
+  if (typeof chapterPage === 'number' && typeof chapterTotal === 'number' && chapterTotal > 0) {
+    const percent = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
+    readingProgressPercent.value = percent
+    readingProgressLabel.value = formatProgressPercentLabel(percent)
+    return
+  }
+
+  readingProgressPercent.value = null
+  readingProgressLabel.value = null
+}
+
 const canNavigateThroughSearchResults = computed(() => {
   return unref(searchResultCfis).length > 0
 })
@@ -486,34 +514,9 @@ watch(
       localStorageResourceData.value = { currentLocation }
       navigateLeftDisabled.value = currentLocation.atStart === true
       navigateRightDisabled.value = currentLocation.atEnd === true
+      updateReadingProgress(currentLocation)
+
       const locationCfi = currentLocation?.start?.cfi
-      const globalPercentage =
-        locationCfi && unref(book)?.locations?.percentageFromCfi
-          ? unref(book).locations.percentageFromCfi(locationCfi)
-          : null
-
-      if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
-        const clamped = Math.min(1, Math.max(0, globalPercentage))
-        const percent = Number((clamped * 100).toFixed(1))
-        readingProgressPercent.value = percent
-        readingProgressLabel.value = formatProgressPercentLabel(percent)
-      } else {
-        const chapterPage = currentLocation?.start?.displayed?.page
-        const chapterTotal = currentLocation?.start?.displayed?.total
-        if (
-          typeof chapterPage === 'number' &&
-          typeof chapterTotal === 'number' &&
-          chapterTotal > 0
-        ) {
-          const percent = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
-          readingProgressPercent.value = percent
-          readingProgressLabel.value = formatProgressPercentLabel(percent)
-        } else {
-          readingProgressPercent.value = null
-          readingProgressLabel.value = null
-        }
-      }
-
       const spineItem = unref(book).spine.get(locationCfi)
       const locationHref = currentLocation?.start?.href
       const navLookupHref = locationHref || spineItem?.href
@@ -533,6 +536,19 @@ watch(isReaderLoading, (isLoading, wasLoading) => {
   if (wasLoading && !isLoading) {
     focusReaderRoot()
   }
+})
+
+watch(hasGlobalLocations, (enabled, wasEnabled) => {
+  if (!enabled || wasEnabled) {
+    return
+  }
+
+  const currentLocation = unref(rendition)?.currentLocation() as any & Location
+  if (!currentLocation) {
+    return
+  }
+
+  updateReadingProgress(currentLocation)
 })
 
 watch(currentFontSizePercentage, () => {

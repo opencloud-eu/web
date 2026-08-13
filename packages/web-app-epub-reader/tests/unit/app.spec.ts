@@ -11,6 +11,10 @@ import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { ref } from 'vue'
 
+let areGlobalLocationsGenerated = false
+let deferGlobalLocationsGeneration = false
+let resolveGlobalLocationsGenerationPromise: (() => void) | null = null
+
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useLocalStorage: vi.fn()
@@ -38,8 +42,20 @@ vi.mock('epubjs', () => ({
       ready: Promise.resolve(),
       load: vi.fn(),
       locations: {
-        generate: vi.fn(() => Promise.resolve([])),
-        percentageFromCfi: vi.fn(() => 0.046),
+        generate: vi.fn(() => {
+          if (!deferGlobalLocationsGeneration) {
+            areGlobalLocationsGenerated = true
+            return Promise.resolve([])
+          }
+
+          return new Promise((resolve) => {
+            resolveGlobalLocationsGenerationPromise = () => {
+              areGlobalLocationsGenerated = true
+              resolve([])
+            }
+          })
+        }),
+        percentageFromCfi: vi.fn(() => (areGlobalLocationsGenerated ? 0.046 : Number.NaN)),
         cfiFromPercentage: vi.fn((value: number) => `cfi-${value}`),
         length: vi.fn(() => 1000)
       },
@@ -184,7 +200,7 @@ describe('Epub reader app', () => {
       await slider.setValue('35')
       await slider.trigger('change')
 
-      expect((wrapper.vm as any).rendition.display).toHaveBeenLastCalledWith('cfi-0.35')
+      expect((wrapper.vm as any).rendition.display).toHaveBeenCalledWith('cfi-0.35')
     })
     it('finds matches and navigates to next search result', async () => {
       const { wrapper } = getWrapper()
@@ -290,6 +306,36 @@ describe('Epub reader app', () => {
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-130')
     })
+
+    it('recomputes progress after global locations are generated', async () => {
+      const { wrapper, resolveGlobalLocationsGeneration } = getWrapper({
+        deferGlobalLocationsGeneration: true
+      })
+      await nextTicks(3)
+
+      ;(wrapper.vm as any).rendition.currentLocation.mockReturnValue({
+        start: {
+          cfi: 'epubcfi(/6/2)',
+          displayed: { page: 0, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+
+      const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'relocated'
+      )?.[1]
+      relocatedHandler()
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).readingProgressPercent).toBe(0)
+
+      await resolveGlobalLocationsGeneration()
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).readingProgressPercent).toBe(4.6)
+      expect((wrapper.vm as any).readingProgressLabel).toBe('4.6%')
+    })
   })
   describe('chapters', () => {
     describe('chapters list', () => {
@@ -378,12 +424,18 @@ describe('Epub reader app', () => {
 function getWrapper({
   propsData = {},
   localStorageGeneral = {},
-  localStorageResource = {}
+  localStorageResource = {},
+  deferGlobalLocationsGeneration: shouldDeferGlobalLocationsGeneration = false
 }: {
   propsData?: PartialComponentProps<typeof App>
   localStorageGeneral?: Record<string, unknown>
   localStorageResource?: Record<string, unknown>
+  deferGlobalLocationsGeneration?: boolean
 } = {}) {
+  areGlobalLocationsGenerated = false
+  deferGlobalLocationsGeneration = shouldDeferGlobalLocationsGeneration
+  resolveGlobalLocationsGenerationPromise = null
+
   vi.mocked(useLocalStorage<unknown>).mockImplementationOnce(() => ref(localStorageGeneral))
   vi.mocked(useLocalStorage<unknown>).mockImplementationOnce(() => ref(localStorageResource))
   const defaultProps: ComponentProps<typeof App> = {
@@ -407,6 +459,15 @@ function getWrapper({
       global: {
         plugins: [...defaultPlugins()]
       }
-    })
+    }),
+    resolveGlobalLocationsGeneration: async () => {
+      for (let attempt = 0; attempt < 10; attempt++) {
+        if (resolveGlobalLocationsGenerationPromise) {
+          resolveGlobalLocationsGenerationPromise()
+          return
+        }
+        await Promise.resolve()
+      }
+    }
   }
 }
