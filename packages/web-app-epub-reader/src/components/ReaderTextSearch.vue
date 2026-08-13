@@ -70,13 +70,24 @@
 
 <script setup lang="ts">
 import type { OcDrop } from '@opencloud-eu/design-system/components'
-import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
+import { debounce } from 'lodash-es'
+import {
+  ComponentPublicInstance,
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
   toggle: string
   searching: boolean
   resultCount: number
+  hasMoreResults: boolean
   currentResultIndex: number
   canGoToPreviousResult: boolean
   canGoToNextResult: boolean
@@ -89,6 +100,7 @@ const emit = defineEmits<{
   (e: 'closeSearch'): void
 }>()
 
+const SEARCH_TERM_DEBOUNCE_MS = 250
 const searchTerm = ref('')
 const searchDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('searchDropRef')
 const { $gettext } = useGettext()
@@ -97,6 +109,10 @@ const searchingLabel = $gettext('Searching...')
 const previousResultLabel = $gettext('Navigate to previous search result')
 const nextResultLabel = $gettext('Navigate to next search result')
 const closeSearchLabel = $gettext('Close search')
+const skipNextSearchTermEmit = ref(false)
+const emitSearchTermChangedDebounced = debounce((value: string) => {
+  emit('searchTermChanged', value.trim())
+}, SEARCH_TERM_DEBOUNCE_MS)
 
 const searchResultStatusLabel = computed(() => {
   if (props.searching) {
@@ -108,15 +124,23 @@ const searchResultStatusLabel = computed(() => {
   if (props.resultCount <= 0 || props.currentResultIndex < 0) {
     return '0/0'
   }
-  return `${props.currentResultIndex + 1}/${props.resultCount}`
+  const countLabel = props.hasMoreResults ? `${props.resultCount}+` : `${props.resultCount}`
+  return `${props.currentResultIndex + 1}/${countLabel}`
 })
 
 watch(searchTerm, (value) => {
-  emit('searchTermChanged', value.trim())
+  if (unref(skipNextSearchTermEmit)) {
+    skipNextSearchTermEmit.value = false
+    return
+  }
+  emitSearchTermChangedDebounced(value)
 })
 
 function onCloseSearch() {
+  emitSearchTermChangedDebounced.cancel()
+  skipNextSearchTermEmit.value = true
   searchTerm.value = ''
+  emit('searchTermChanged', '')
   emit('closeSearch')
   unref(searchDropRef)?.hide?.()
 }
@@ -132,4 +156,8 @@ async function focusSearchInput() {
   const searchInput = dropElement?.querySelector<HTMLInputElement>('.oc-search-input')
   searchInput?.focus()
 }
+
+onBeforeUnmount(() => {
+  emitSearchTermChangedDebounced.cancel()
+})
 </script>

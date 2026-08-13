@@ -84,6 +84,7 @@
         toggle="#epub_reader_text_search_toggle"
         :searching="isSearchLoading"
         :result-count="searchResultCount"
+        :has-more-results="hasMoreSearchResults"
         :current-result-index="currentSearchResultIndex"
         :can-go-to-previous-result="canGoToPreviousSearchResult"
         :can-go-to-next-result="canGoToNextSearchResult"
@@ -124,6 +125,7 @@ const props = defineProps<{
   chapters: ChapterOption[]
   selectedChapter?: ChapterOption
   searchResultCount: number
+  hasMoreSearchResults: boolean
   currentSearchResultIndex: number
   canGoToPreviousSearchResult: boolean
   canGoToNextSearchResult: boolean

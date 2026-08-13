@@ -1,4 +1,5 @@
 import { mount, defaultPlugins } from '@opencloud-eu/web-test-helpers'
+import { vi } from 'vitest'
 import ReaderTextSearch from '../../../src/components/ReaderTextSearch.vue'
 
 function getWrapper() {
@@ -7,6 +8,7 @@ function getWrapper() {
       toggle: '#epub_reader_text_search_toggle',
       searching: false,
       resultCount: 3,
+      hasMoreResults: false,
       currentResultIndex: 1,
       canGoToPreviousResult: true,
       canGoToNextResult: true
@@ -22,6 +24,15 @@ function getWrapper() {
 }
 
 describe('ReaderTextSearch component', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.runOnlyPendingTimers()
+    vi.useRealTimers()
+  })
+
   it('shows empty status when query is empty', () => {
     const wrapper = getWrapper()
     expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('')
@@ -30,6 +41,7 @@ describe('ReaderTextSearch component', () => {
   it('emits search term updates', async () => {
     const wrapper = getWrapper()
     await wrapper.find('.oc-search-input').setValue('whale')
+    await vi.advanceTimersByTimeAsync(250)
 
     expect(wrapper.emitted('searchTermChanged')).toEqual([['whale']])
   })
@@ -53,6 +65,7 @@ describe('ReaderTextSearch component', () => {
         toggle: '#epub_reader_text_search_toggle',
         searching: false,
         resultCount: 0,
+        hasMoreResults: false,
         currentResultIndex: -1,
         canGoToPreviousResult: false,
         canGoToNextResult: false
@@ -96,6 +109,7 @@ describe('ReaderTextSearch component', () => {
         toggle: '#epub_reader_text_search_toggle',
         searching: false,
         resultCount: 3,
+        hasMoreResults: false,
         currentResultIndex: 1,
         canGoToPreviousResult: true,
         canGoToNextResult: true
@@ -115,5 +129,31 @@ describe('ReaderTextSearch component', () => {
 
     expect(document.activeElement).toBe(searchInput)
     wrapper.unmount()
+  })
+
+  it('shows a plus when there are more results than displayed', async () => {
+    const wrapper = mount(ReaderTextSearch, {
+      props: {
+        toggle: '#epub_reader_text_search_toggle',
+        searching: false,
+        resultCount: 300,
+        hasMoreResults: true,
+        currentResultIndex: 0,
+        canGoToPreviousResult: true,
+        canGoToNextResult: true
+      },
+      global: {
+        plugins: [...defaultPlugins()],
+        stubs: {
+          'oc-drop': true
+        },
+        renderStubDefaultSlot: true
+      }
+    })
+
+    await wrapper.find('.oc-search-input').setValue('whale')
+    await vi.advanceTimersByTimeAsync(250)
+
+    expect(wrapper.find('.epub-reader-search-result-count').text()).toBe('1/300+')
   })
 })

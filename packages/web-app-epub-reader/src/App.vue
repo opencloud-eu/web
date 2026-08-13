@@ -16,9 +16,10 @@
           :chapters="chapters"
           :selected-chapter="currentChapter"
           :search-result-count="searchResultCfis.length"
+          :has-more-search-results="hasMoreSearchResults"
           :current-search-result-index="currentSearchResultIndex"
-          :can-go-to-previous-search-result="canGoToPreviousSearchResult"
-          :can-go-to-next-search-result="canGoToNextSearchResult"
+          :can-go-to-previous-search-result="canNavigateThroughSearchResults"
+          :can-go-to-next-search-result="canNavigateThroughSearchResults"
           :is-search-loading="textSearchLoading"
           :current-font-size-percentage="currentFontSizePercentage"
           :font-size-step="FONT_SIZE_PERCENTAGE_STEP"
@@ -143,6 +144,7 @@ const readingProgressLabel = ref<string | null>(null)
 const readingProgressPercent = ref<number | null>(null)
 const hasGlobalLocations = ref(false)
 const searchResultCfis = ref<string[]>([])
+const hasMoreSearchResults = ref(false)
 const currentSearchResultIndex = ref(-1)
 const currentSearchHighlightCfi = ref<string | null>(null)
 const textSearchLoading = ref(false)
@@ -196,11 +198,7 @@ async function generateGlobalLocationsForBook(bookInstance: Book) {
   hasGlobalLocations.value = true
 }
 
-const canGoToPreviousSearchResult = computed(() => {
-  return unref(searchResultCfis).length > 0
-})
-
-const canGoToNextSearchResult = computed(() => {
+const canNavigateThroughSearchResults = computed(() => {
   return unref(searchResultCfis).length > 0
 })
 
@@ -250,6 +248,7 @@ function highlightSearchResult(cfi: string) {
 function closeTextSearch() {
   textSearchRequestId.value = unref(textSearchRequestId) + 1
   searchResultCfis.value = []
+  hasMoreSearchResults.value = false
   currentSearchResultIndex.value = -1
   textSearchLoading.value = false
   clearSearchHighlight()
@@ -301,14 +300,12 @@ async function onTextSearchTermChanged(searchTerm: string) {
   textSearchLoading.value = true
 
   const searchResults: string[] = []
+  let searchResultsLimitExceeded = false
   const loadFunction = bookInstance.load.bind(bookInstance)
 
   try {
     for (const spineItem of spineItems) {
-      if (
-        requestId !== unref(textSearchRequestId) ||
-        searchResults.length >= MAX_TEXT_SEARCH_RESULTS
-      ) {
+      if (requestId !== unref(textSearchRequestId) || searchResultsLimitExceeded) {
         break
       }
 
@@ -319,10 +316,15 @@ async function onTextSearchTermChanged(searchTerm: string) {
         }>
 
         for (const match of matches) {
-          if (!match.cfi || searchResults.length >= MAX_TEXT_SEARCH_RESULTS) {
+          if (!match.cfi) {
             break
           }
           searchResults.push(match.cfi)
+          if (searchResults.length > MAX_TEXT_SEARCH_RESULTS) {
+            searchResults.length = MAX_TEXT_SEARCH_RESULTS
+            searchResultsLimitExceeded = true
+            break
+          }
         }
       } finally {
         spineItem.unload()
@@ -331,6 +333,7 @@ async function onTextSearchTermChanged(searchTerm: string) {
   } finally {
     if (requestId === unref(textSearchRequestId)) {
       searchResultCfis.value = searchResults
+      hasMoreSearchResults.value = searchResultsLimitExceeded
       currentSearchResultIndex.value = searchResults.length > 0 ? 0 : -1
       textSearchLoading.value = false
       if (searchResults.length > 0) {
