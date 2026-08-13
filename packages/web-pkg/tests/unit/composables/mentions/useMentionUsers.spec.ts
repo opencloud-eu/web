@@ -11,6 +11,9 @@ import {
 import type { User } from '@opencloud-eu/web-client/graph/generated'
 import { useMentionUsers } from '../../../../src/composables/mentions/useMentionUsers'
 import { useSharesStore } from '../../../../src/composables/piniaStores'
+import { useLoadShares } from '../../../../src/composables/shares/useLoadShares'
+
+vi.mock('../../../../src/composables/shares/useLoadShares')
 
 function collaboratorShare(
   id: string,
@@ -256,7 +259,7 @@ describe('useMentionUsers', () => {
   })
 
   describe('shares store', () => {
-    it.each(['addShare', 'removeShare'])('reloads the collaborators after %s', async (action) => {
+    it.each(['addShare', 'deleteShare'])('reloads the collaborators after %s', async (action) => {
       const { instance, loadSharesTask, emitStoreAction } = getWrapper()
 
       await instance.getMentionUsers('')
@@ -331,6 +334,11 @@ function getWrapper({
       return Promise.resolve({ collaboratorShares, linkShares: [] })
     })
   }
+  vi.mocked(useLoadShares).mockReturnValue({
+    loadSharesTask: loadSharesTask as never,
+    availableInternalShareRoles: ref([]),
+    availableExternalShareRoles: ref([])
+  })
 
   let instance!: ReturnType<typeof useMentionUsers>
   // `stubActions` replaces the store actions, so they no longer notify `$onAction`
@@ -349,11 +357,7 @@ function getWrapper({
         return unsubscribe
       })
 
-      instance = useMentionUsers({
-        space,
-        resource,
-        loadSharesTask: loadSharesTask as never
-      })
+      instance = useMentionUsers({ space, resource })
     },
     {
       mocks,

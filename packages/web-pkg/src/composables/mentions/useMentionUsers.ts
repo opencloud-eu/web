@@ -11,26 +11,22 @@ import { useClientService } from '../clientService'
 import { useConfigStore, useSharesStore, useUserStore } from '../piniaStores'
 import { useLoadShares } from '../shares'
 
-type LoadSharesTask = ReturnType<typeof useLoadShares>['loadSharesTask']
-
 function mentionLabel({ displayName, id }: CollaboratorShare['sharedWith']): string {
   return displayName || id
 }
 
 export function useMentionUsers({
   space,
-  resource,
-  loadSharesTask: providedLoadSharesTask
+  resource
 }: {
   space: Ref<SpaceResource>
   resource: Ref<Resource>
-  loadSharesTask?: LoadSharesTask
 }) {
   const { httpAuthenticated } = useClientService()
   const configStore = useConfigStore()
   const sharesStore = useSharesStore()
   const userStore = useUserStore()
-  const loadSharesTask = providedLoadSharesTask || useLoadShares().loadSharesTask
+  const { loadSharesTask } = useLoadShares()
 
   const collaborators = ref<CollaboratorShare[]>([])
   const collaboratorsFetched = ref(false)
@@ -152,7 +148,7 @@ export function useMentionUsers({
 
   const unsubscribeShareActions = sharesStore.$onAction(({ after, name }) => {
     after(() => {
-      if (['addShare', 'removeShare'].includes(name)) {
+      if (['addShare', 'deleteShare'].includes(name)) {
         invalidateCollaborators()
       }
     })

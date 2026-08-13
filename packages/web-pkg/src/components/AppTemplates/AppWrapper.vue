@@ -613,7 +613,11 @@ const save = async () => {
     return
   }
 
-  await appOnSaveCallback?.()
+  try {
+    await appOnSaveCallback?.()
+  } catch (e) {
+    console.error('Error running the app save callback', e)
+  }
 }
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null

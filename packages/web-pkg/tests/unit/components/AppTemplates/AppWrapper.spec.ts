@@ -240,6 +240,20 @@ describe('AppWrapper — save callback', () => {
 
     expect(callback).not.toHaveBeenCalled()
   })
+
+  it('logs an error when the registered save callback fails', async () => {
+    const callback = vi.fn().mockRejectedValue(new Error('nope'))
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    s.registerSaveCallback(callback)
+
+    await expect(s.pressCtrlS()).resolves.toBeUndefined()
+
+    expect(consoleErrorSpy).toHaveBeenCalled()
+  })
 })
 
 describe('AppWrapper — Yjs session gate', () => {
