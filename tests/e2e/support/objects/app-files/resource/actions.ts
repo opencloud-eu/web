@@ -2086,7 +2086,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
           break
         default:
           // in case of error <img> doesn't contain src="blob:https://url"
-          expect(await page.locator(previewImage).getAttribute('src')).toContain('blob')
+          expect(await page.locator(previewImage).getAttribute('src')).toContain('blob:https://')
       }
       break
     }

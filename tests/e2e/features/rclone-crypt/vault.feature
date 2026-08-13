@@ -21,12 +21,13 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" uploads the following resource
       | resource          | to           | password |
       | PARENT/parent.txt | my.vault/sub | foobar   |
+      | testavatar.png    | my.vault/sub | foobar   |
     And "Alice" enters the vault "my.vault" with passphrase "foobar"
-    And following resources should be displayed in the files list for user "Alice"
+    Then following resources should be displayed in the files list for user "Alice"
       | resource  |
       | hello.txt |
       | sub       |
-    And "Alice" opens folder "sub"
+    When "Alice" opens folder "sub"
     And following resources should be displayed in the files list for user "Alice"
       | resource   |
       | nested.txt |
@@ -34,15 +35,18 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" opens the following file in texteditor
       | resource   |
       | nested.txt |
-    And "Alice" should see the content "nested file content" in editor "TextEditor"
+    Then "Alice" should see the content "nested file content" in editor "TextEditor"
     And "Alice" closes the file viewer
-    And "Alice" opens the following file in texteditor
+    When "Alice" opens the following file in texteditor
       | resource   |
       | parent.txt |
-    And "Alice" should see the content "OpenCloud test text file parent" in editor "TextEditor"
+    Then "Alice" should see the content "OpenCloud test text file parent" in editor "TextEditor"
     And "Alice" closes the file viewer
+    When "Alice" opens the following file in mediaviewer
+      | resource       |
+      | testavatar.png |
+    Then "Alice" is in a media-viewer
     And "Alice" logs out
-
 
   
   @rclone-crypt
