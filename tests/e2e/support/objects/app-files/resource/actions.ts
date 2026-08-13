@@ -1268,13 +1268,13 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
     case 'dropdown-menu': {
       await page.locator(util.format(resourceNameSelector, resourceBase)).click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
-      await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
+      await pasteResource({ page, resource: resourceBase, newLocation, action, option })
       break
     }
     case 'batch-action': {
       await page.locator(util.format(checkBox, resourceBase)).click()
       await selectBatchAction(page, action)
-      await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
+      await pasteResource({ page, resource: resourceBase, newLocation, action, option })
       break
     }
     case 'sidebar-panel': {
@@ -1283,7 +1283,7 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
 
       const actionButtonType = action === 'copy' ? 'Copy to' : 'Move to'
       await page.locator(util.format(sideBarActionButton, actionButtonType)).click()
-      await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
+      await pasteResource({ page, resource: resourceBase, newLocation, action, option })
       break
     }
     case 'keyboard': {

@@ -182,10 +182,10 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    When "Alice" logs in
     And "Alice" creates the following project spaces using API
       | name     |
       | ourspace |
+    When "Alice" logs in
     And "Alice" navigates to the project space "ourspace"
     And "Alice" creates the following resources
       | resource                | type    | content             | password |
