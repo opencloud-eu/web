@@ -29,17 +29,19 @@
 </template>
 
 <script setup lang="ts">
-import type { Rendition } from 'epubjs'
-import { ref, unref, useTemplateRef } from 'vue'
+import { unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 defineProps<{
   navigateLeftDisabled: boolean
   navigateRightDisabled: boolean
 }>()
+const emit = defineEmits<{
+  (e: 'navigateLeft'): void
+  (e: 'navigateRight'): void
+}>()
 
 const bookContainer = useTemplateRef<HTMLElement>('bookContainer')
-const rendition = ref<Rendition>()
 const { $gettext } = useGettext()
 const previousPageLabel = $gettext('Navigate to previous page')
 const nextPageLabel = $gettext('Navigate to next page')
@@ -48,21 +50,16 @@ function getBookContainer() {
   return unref(bookContainer)
 }
 
-function setRendition(value?: Rendition) {
-  rendition.value = value
-}
-
 function navigateLeft() {
-  unref(rendition)?.prev()
+  emit('navigateLeft')
 }
 
 function navigateRight() {
-  unref(rendition)?.next()
+  emit('navigateRight')
 }
 
 defineExpose({
   getBookContainer,
-  setRendition,
   navigateLeft,
   navigateRight
 })

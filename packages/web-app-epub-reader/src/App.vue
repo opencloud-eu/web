@@ -32,8 +32,8 @@
           @go-to-previous-search-result="goToPreviousSearchResult"
           @go-to-next-search-result="goToNextSearchResult"
           @close-search="closeTextSearch"
-          @navigate-left="readerView?.navigateLeft()"
-          @navigate-right="readerView?.navigateRight()"
+          @navigate-left="navigateLeft"
+          @navigate-right="navigateRight"
           @decrease-font-size="decreaseFontSize"
           @reset-font-size="resetFontSize"
           @increase-font-size="increaseFontSize"
@@ -43,6 +43,8 @@
           ref="readerView"
           :navigate-left-disabled="navigateLeftDisabled"
           :navigate-right-disabled="navigateRightDisabled"
+          @navigate-left="navigateLeft"
+          @navigate-right="navigateRight"
         />
         <reader-progress-bar
           :reading-progress-percent="readingProgressPercent"
@@ -118,9 +120,6 @@ type EpubSpineItem = {
 }
 type ReaderViewExpose = {
   getBookContainer: () => HTMLElement | undefined
-  setRendition: (value?: Rendition) => void
-  navigateLeft: () => void
-  navigateRight: () => void
 }
 
 // `applicationConfig` is declared but never read here. Without it the wrapper's
@@ -396,6 +395,14 @@ function decreaseFontSize() {
   )
 }
 
+function navigateLeft() {
+  unref(rendition)?.prev()
+}
+
+function navigateRight() {
+  unref(rendition)?.next()
+}
+
 async function focusReaderRoot() {
   await nextTick()
   unref(readerRoot)?.focus()
@@ -409,8 +416,8 @@ const decreaseFontSizeDisabled = computed(() => {
   return unref(currentFontSizePercentage) <= MIN_FONT_SIZE_PERCENTAGE
 })
 
-keyboardActions.bindKeyAction({ primary: Key.ArrowLeft }, () => unref(readerView)?.navigateLeft())
-keyboardActions.bindKeyAction({ primary: Key.ArrowRight }, () => unref(readerView)?.navigateRight())
+keyboardActions.bindKeyAction({ primary: Key.ArrowLeft }, () => navigateLeft())
+keyboardActions.bindKeyAction({ primary: Key.ArrowRight }, () => navigateRight())
 
 watch(
   () => currentContent,
@@ -452,7 +459,6 @@ watch(
       width: '100%',
       height: '100%'
     })
-    unref(readerView)?.setRendition(unref(rendition))
 
     unref(rendition).themes.register('dark', DARK_THEME_CONFIG)
     unref(rendition).themes.register('light', LIGHT_THEME_CONFIG)
@@ -467,10 +473,10 @@ watch(
         onClose()
       }
       if (event.key === Key.ArrowLeft) {
-        unref(readerView)?.navigateLeft()
+        navigateLeft()
       }
       if (event.key === Key.ArrowRight) {
-        unref(readerView)?.navigateRight()
+        navigateRight()
       }
     })
 
