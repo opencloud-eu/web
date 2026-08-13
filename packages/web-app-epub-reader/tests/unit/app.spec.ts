@@ -202,7 +202,7 @@ describe('Epub reader app', () => {
         undefined,
         'epub-reader-search-highlight',
         {
-          fill: '#facc15',
+          fill: 'var(--color-yellow-500)',
           'fill-opacity': '0.35'
         }
       )

@@ -109,7 +109,7 @@ const FONT_SIZE_PERCENTAGE_STEP = 10
 const GLOBAL_LOCATION_CHARS = 3000
 const MAX_TEXT_SEARCH_RESULTS = 300
 const SEARCH_HIGHLIGHT_STYLES = {
-  fill: '#facc15',
+  fill: 'var(--color-yellow-500)',
   'fill-opacity': '0.35'
 }
 
