@@ -126,6 +126,22 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" logs out
 
   @rclone-crypt
+  Scenario: Create normal folder with .vault suffix which will be treated as a vault
+    When "Alice" logs in
+    And "Alice" creates the following resources
+      | resource | type   |
+      | my.vault | folder |
+    And "Alice" opens folder "my.vault"
+    And "Alice" sets the vault password "foobar"
+    And "Alice" navigates to the personal space page
+    And "Alice" locks the vault "my.vault"
+    And "Alice" enters the vault "my.vault" with passphrase "foobar"
+    And "Alice" creates the following resources
+      | resource | type   |
+      | lorem    | folder |
+    And "Alice" logs out
+
+  @rclone-crypt
   Scenario: Create a vault inside a project space
     Given "Admin" creates following user using API
       | id    |

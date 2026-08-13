@@ -1332,3 +1332,23 @@ When(
     expect(page.url()).toContain('/rclone-crypt/unlock')
   }
 )
+
+When(
+  '{string} sets the vault password {string}',
+  async ({ world }: { world: World }, stepUser: string, password: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+
+    await resourceObject.setupVaultPassword(password)
+  }
+)
+
+When(
+  '{string} locks the vault {string}',
+  async ({ world }: { world: World }, stepUser: string, vault: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+
+    await resourceObject.lockVault(vault)
+  }
+)

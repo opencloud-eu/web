@@ -479,4 +479,12 @@ export class Resource {
   async enterVault({ vault, passphrase }: { vault: string; passphrase: string }): Promise<void> {
     await po.enterVault({ page: this.#page, vault, passphrase })
   }
+
+  async setupVaultPassword(password: string): Promise<void> {
+    await po.setupVaultPassword({ page: this.#page, password })
+  }
+
+  async lockVault(vault: string): Promise<void> {
+    await po.lockVault({ page: this.#page, vault })
+  }
 }
