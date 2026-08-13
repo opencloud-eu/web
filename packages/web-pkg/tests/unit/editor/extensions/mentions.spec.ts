@@ -1,7 +1,12 @@
 import { flushPromises } from '@vue/test-utils'
 import { Editor } from '@tiptap/core'
 import StarterKit from '@tiptap/starter-kit'
-import { Mentions, MentionSuggestionPluginKey } from '../../../../src/editor/extensions/mentions'
+import {
+  Mentions,
+  MentionHighlightPluginKey,
+  mentionHighlightClass,
+  MentionSuggestionPluginKey
+} from '../../../../src/editor/extensions/mentions'
 import type { MentionItem } from '../../../../src/editor/types'
 
 let latestSuggestionProps: { command: (item: MentionItem) => void } | undefined
@@ -31,6 +36,12 @@ function createEditor(content: string, options = {}) {
     ],
     content
   })
+}
+
+function mentionHighlights(editor: Editor): string[] {
+  return Array.from(editor.view.dom.querySelectorAll(`.${mentionHighlightClass}`)).map(
+    ({ textContent }) => textContent
+  )
 }
 
 function suggestionIsActive(editor: Editor): boolean {
@@ -88,6 +99,78 @@ describe('Mentions', () => {
 
     expect(editor.getText()).toBe('@Alice Smith ')
     expect(onSelect).toHaveBeenCalledWith(selected)
+    editor.destroy()
+  })
+
+  it('highlights the inserted mention but not the trailing blank', async () => {
+    const selected = { id: 'alice', label: 'Alice Smith' }
+    const editor = createEditor('<p></p>', { items: vi.fn().mockResolvedValue([selected]) })
+    editor.commands.insertContent('@a')
+    await flushPromises()
+
+    latestSuggestionProps?.command(selected)
+
+    const decorations = MentionHighlightPluginKey.getState(editor.state)
+    expect(decorations.find().map(({ from, to }) => ({ from, to }))).toEqual([
+      { from: 1, to: 1 + '@Alice Smith'.length }
+    ])
+    expect(mentionHighlights(editor)).toEqual(['@Alice Smith'])
+    editor.destroy()
+  })
+
+  it('highlights the mentions of the loaded content', async () => {
+    const editor = createEditor('<p>Hello @Alice Smith, foo@Alice Smith</p>', {
+      items: vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice Smith' }])
+    })
+
+    await flushPromises()
+
+    // the second one is no mention, because it doesn't start after a blank
+    expect(mentionHighlights(editor)).toEqual(['@Alice Smith'])
+    editor.destroy()
+  })
+
+  it('highlights the mentions of replaced content', async () => {
+    const editor = createEditor('<p>@Alice Smith </p>', {
+      items: vi.fn().mockResolvedValue([
+        { id: 'alice', label: 'Alice Smith' },
+        { id: 'bob', label: 'Bob Jones' }
+      ])
+    })
+    await flushPromises()
+
+    editor.commands.setContent('<p>@Bob Jones and @Unknown User</p>')
+    await flushPromises()
+
+    expect(mentionHighlights(editor)).toEqual(['@Bob Jones'])
+    editor.destroy()
+  })
+
+  it('highlights a mention of a user who was not loaded yet', async () => {
+    const selected = { id: 'bob', label: 'Bob Jones' }
+    const items = vi.fn().mockResolvedValueOnce([]).mockResolvedValue([selected])
+    const editor = createEditor('<p></p>', { items })
+    await flushPromises()
+
+    editor.commands.insertContent('@b')
+    await flushPromises()
+    latestSuggestionProps?.command(selected)
+
+    expect(mentionHighlights(editor)).toEqual(['@Bob Jones'])
+    editor.destroy()
+  })
+
+  it('restores a mention highlight after undo and redo', async () => {
+    const selected = { id: 'alice', label: 'Alice Smith' }
+    const editor = createEditor('<p></p>', { items: vi.fn().mockResolvedValue([selected]) })
+    editor.commands.insertContent('@a')
+    await flushPromises()
+
+    latestSuggestionProps?.command(selected)
+    editor.commands.undo()
+    editor.commands.redo()
+
+    expect(mentionHighlights(editor)).toEqual(['@Alice Smith'])
     editor.destroy()
   })
 })

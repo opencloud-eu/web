@@ -5,7 +5,7 @@ import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Editor } from '@tiptap/vue-3'
 import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useMentionUsers, type YjsStatus } from '@opencloud-eu/web-pkg'
+import { useAuthStore, useMentionUsers, type YjsStatus } from '@opencloud-eu/web-pkg'
 import type { MentionItem, TextEditorOptions } from '@opencloud-eu/web-pkg/editor'
 import App from '../../src/App.vue'
 
@@ -20,6 +20,7 @@ const selectMentionUser = vi.fn()
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<Record<string, unknown>>()),
+  useAuthStore: vi.fn(),
   useMentionUsers: vi.fn()
 }))
 
@@ -48,6 +49,9 @@ beforeEach(() => {
     resetMentionState,
     selectMentionUser
   })
+  vi.mocked(useAuthStore).mockReturnValue(
+    mock<ReturnType<typeof useAuthStore>>({ userContextReady: true })
+  )
 })
 
 function lastOptions(): TextEditorOptions {
@@ -133,6 +137,16 @@ describe('Text editor app', () => {
     await saveCallback()
 
     expect(notifyMentionedUsers).toHaveBeenCalledOnce()
+  })
+
+  it('disables mentions without a user context, e.g. on public links', () => {
+    vi.mocked(useAuthStore).mockReturnValue(
+      mock<ReturnType<typeof useAuthStore>>({ userContextReady: false })
+    )
+    const { wrapper } = getWrapper()
+
+    expect(lastOptions().mentions).toBeUndefined()
+    expect(wrapper.emitted('register:onSaveCallback')).toBeUndefined()
   })
 })
 

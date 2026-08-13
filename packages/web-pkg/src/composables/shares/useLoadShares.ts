@@ -80,8 +80,10 @@ export const useLoadShares = () => {
     signal,
     { space, resource, updateStore = true, includeInheritedShares = false }: LoadSharesOptions
   ) {
-    sharesStore.setLoading(true)
-    sharesStore.removeOrphanedShares()
+    if (updateStore) {
+      sharesStore.setLoading(true)
+      sharesStore.removeOrphanedShares()
+    }
 
     const { collaboratorShares: collaboratorCache, linkShares: linkCache } = sharesStore
     const client = clientService.graphAuthenticated.permissions
@@ -218,8 +220,8 @@ export const useLoadShares = () => {
     if (updateStore) {
       sharesStore.setCollaboratorShares(loadedCollaboratorShares)
       sharesStore.setLinkShares(loadedLinkShares)
+      sharesStore.setLoading(false)
     }
-    sharesStore.setLoading(false)
     return { collaboratorShares: loadedCollaboratorShares, linkShares: loadedLinkShares }
   }).restartable()
 

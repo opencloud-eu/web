@@ -8,7 +8,6 @@ import {
   useClientService,
   useModals,
   useFolderLink,
-  useLoadShares,
   useMentionUsers,
   useConfigStore,
   queryItemAsString,
@@ -36,14 +35,13 @@ export function useCollaboraPostMessages({
   const { webdav } = useClientService()
   const { dispatchModal } = useModals()
   const { getParentFolderLink } = useFolderLink()
-  const { loadSharesTask } = useLoadShares()
   const configStore = useConfigStore()
   const {
     getMentionUsers,
     notifyMentionedUsers,
     resetMentionState,
     selectMentionUser: handleMentionSelected
-  } = useMentionUsers({ space, resource, loadSharesTask })
+  } = useMentionUsers({ space, resource })
 
   function postMessageToCollabora(messageId: string, values?: Record<string, unknown>): void {
     const iframe = unref(appIframeRef)

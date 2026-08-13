@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { computed, toRef, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useMentionUsers, type YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
+import { useAuthStore, useMentionUsers, type YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
 import {
   useTextEditor,
   TextEditorProvider,
@@ -28,6 +28,9 @@ const emit = defineEmits<{
 }>()
 
 const { $gettext } = useGettext()
+const authStore = useAuthStore()
+
+const mentionsEnabled = authStore.userContextReady
 
 const contentType = computed<ContentType>(() => {
   return detectContentType(resource)
@@ -52,7 +55,9 @@ function selectMention({ id }: { id: string }): void {
 
 watch([() => space.id, () => resource.id], resetMentionState)
 
-emit('register:onSaveCallback', notifyMentionedUsers)
+if (mentionsEnabled) {
+  emit('register:onSaveCallback', notifyMentionedUsers)
+}
 
 const textEditor = useTextEditor({
   contentType: unref(contentType),
@@ -62,9 +67,11 @@ const textEditor = useTextEditor({
   ydoc,
   awareness,
   yjsStatus: () => yjsStatus,
-  mentions: {
-    items: getMentionUsers,
-    onSelect: selectMention
-  }
+  mentions: mentionsEnabled
+    ? {
+        items: getMentionUsers,
+        onSelect: selectMention
+      }
+    : undefined
 })
 </script>
