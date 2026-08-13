@@ -9,6 +9,7 @@ import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
 import { state } from '../../../../environment/shared'
 import { lstatSync, readFileSync } from 'fs'
+import { encodeWebDavPath } from '../../../utils'
 
 const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -2006,10 +2007,11 @@ export interface openFileInViewerArgs {
   name: string
   actionType:
     'mediaviewer' | 'audioviewer' | 'pdfviewer' | 'texteditor' | 'Collabora' | 'Euro-Office'
+  verifyPropfindPath?: boolean
 }
 
 export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void> => {
-  const { page, name, actionType } = args
+  const { page, name, actionType, verifyPropfindPath = false } = args
   await waitProcessingToFinish(page, name)
 
   switch (actionType) {
@@ -2057,7 +2059,21 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
       ])
       break
     case 'mediaviewer': {
-      await page.locator(util.format(resourceNameSelector, name)).click()
+      if (verifyPropfindPath) {
+        // shared files opened via "shared with me" don't trigger a PROPFIND at all,
+        // so only wait for (and assert) it when explicitly requested
+        await Promise.all([
+          page.waitForResponse(
+            (resp) =>
+              resp.status() === 207 &&
+              resp.request().method() === 'PROPFIND' &&
+              resp.url().includes(encodeWebDavPath(name))
+          ),
+          page.locator(util.format(resourceNameSelector, name)).click()
+        ])
+      } else {
+        await page.locator(util.format(resourceNameSelector, name)).click()
+      }
       const extension = name.split('.').pop()
       switch (extension) {
         case 'mp3':
@@ -2087,7 +2103,10 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
     case 'texteditor': {
       await Promise.all([
         page.waitForResponse(
-          (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+          (resp) =>
+            resp.status() === 207 &&
+            resp.request().method() === 'PROPFIND' &&
+            (!verifyPropfindPath || resp.url().includes(encodeWebDavPath(name)))
         ),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])

@@ -1,6 +1,6 @@
 import { checkResponseStatus, request } from '../http'
 import { User } from '../../types'
-import { urlJoin } from '../../utils/urlJoin'
+import { urlJoin, encodeWebDavPath } from '../../utils/urlJoin'
 import { XMLParser } from 'fast-xml-parser'
 import { getSpaceIdBySpaceName } from '../graph'
 import _ from 'lodash-es/object.js'
@@ -35,7 +35,8 @@ const createFolder = async ({
 
   let parentFolder = ''
   for (const resource of paths) {
-    const path = urlJoin('remote.php', 'dav', webDavEndPathToRoot, parentFolder, resource)
+    const encodedResource = encodeWebDavPath(resource)
+    const path = urlJoin('remote.php', 'dav', webDavEndPathToRoot, parentFolder, encodedResource)
     // check if the folder exists already or not
     const folderExist = await folderExists({ user, path })
     if (folderExist === false) {
@@ -46,7 +47,7 @@ const createFolder = async ({
       })
       checkResponseStatus(response, 'Failed while creating folder')
     }
-    parentFolder = urlJoin(parentFolder, resource)
+    parentFolder = urlJoin(parentFolder, encodedResource)
   }
 }
 const createFile = async ({
@@ -65,7 +66,7 @@ const createFile = async ({
   const today = new Date()
   const response = await request({
     method: 'PUT',
-    path: urlJoin('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
+    path: urlJoin('remote.php', 'dav', webDavEndPathToRoot, encodeWebDavPath(pathToFile)),
     body: content,
     user: user,
     header: mtimeDeltaDays
@@ -87,7 +88,7 @@ const deleteFile = async ({
 }): Promise<void> => {
   const response = await request({
     method: 'DELETE',
-    path: urlJoin('remote.php', 'dav', webDavEndPathToRoot, pathToFile),
+    path: urlJoin('remote.php', 'dav', webDavEndPathToRoot, encodeWebDavPath(pathToFile)),
     user: user,
     header: {}
   })
@@ -195,7 +196,7 @@ export const getDataOfFileInsideSpace = async ({
       'dav',
       'spaces',
       await getSpaceIdBySpaceName({ user, spaceType, spaceName }),
-      pathToFileName
+      encodeWebDavPath(pathToFileName)
     ),
     body: body,
     user: user
