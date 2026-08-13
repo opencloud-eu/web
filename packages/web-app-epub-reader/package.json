@@ -5,12 +5,14 @@
   "description": "OpenCloud Web epub-reader",
   "license": "AGPL-3.0",
   "dependencies": {
-    "epubjs": "^0.3.93"
+    "epubjs": "^0.3.93",
+    "lodash-es": "4.18.1"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"
   },
   "peerDependencies": {
+    "@opencloud-eu/design-system": "workspace:*",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "vue3-gettext": "^4.0.0-beta.1"
