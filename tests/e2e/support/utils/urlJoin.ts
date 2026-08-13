@@ -66,6 +66,15 @@ const buildUrl = (parsedParts: ReturnType<typeof parseParts>, options: UrlJoinOp
   return url
 }
 
+/**
+ * Encode a WebDAV resource path
+ */
+export const encodeWebDavPath = (path: string) =>
+  path
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/')
+
 export const urlJoin = (...parts: Array<string | UrlJoinOptions>) => {
   const lastArg = parts[parts.length - 1]
   let options: UrlJoinOptions
