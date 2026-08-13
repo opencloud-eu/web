@@ -161,7 +161,7 @@ export class ClientService {
 
       return headers
     })
-    // Wrap the raw client so folder-vault path/name translation happens
+    // Wrap the raw client so vault path/name translation happens
     // transparently for every caller (clear-text in, clear-text out). It's a
     // strict pass-through for any path that isn't inside a vault.
     this.webDavClient = createVaultWebDav(client)

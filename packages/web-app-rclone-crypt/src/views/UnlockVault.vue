@@ -1,6 +1,9 @@
 <template>
   <div class="flex justify-center h-full overflow-y-auto p-8">
-    <no-content-message v-if="!space" img-src="images/vault.svg" class="my-auto">
+    <div v-if="areSpacesLoading" class="my-auto flex justify-center">
+      <oc-spinner size="large" :aria-label="$gettext('Loading vault')" />
+    </div>
+    <no-content-message v-else-if="!space" img-src="images/vault.svg" class="my-auto">
       <template #message>
         <span v-text="$gettext('Vault not found')" />
       </template>
@@ -23,28 +26,26 @@
           v-model="password"
           :vault-name="vaultName"
           :error-message="errorMessage"
+          :is-space="isSpaceVault"
         />
         <template v-else>
           <div class="flex items-start gap-3">
-            <oc-icon name="resource-type-vault" fill-type="fill" size-class="size-8" />
-            <div>
+            <resource-icon
+              :resource="iconResource"
+              size-class="size-8"
+              class="rounded-sm shrink-0"
+            />
+            <div class="min-w-0">
               <p class="mt-0 mb-1 font-semibold break-all" data-testid="vault-name">
                 <resource-name
                   :name="vaultName"
-                  extension="vault"
-                  type="folder"
+                  :extension="isSpaceVault ? '' : 'vault'"
+                  :type="isSpaceVault ? 'space' : 'folder'"
                   :full-path="vaultRoot"
                   :is-extension-displayed="resourcesStore.areFileExtensionsShown"
                 />
               </p>
-              <p
-                class="m-0 text-sm"
-                v-text="
-                  $gettext(
-                    'This folder is end-to-end encrypted. Enter its password to decrypt the files on this device.'
-                  )
-                "
-              />
+              <p class="m-0 text-sm" v-text="unlockHint" />
             </div>
           </div>
           <oc-text-input
@@ -87,25 +88,29 @@ import {
   createLocationShares,
   NoContentMessage,
   queryItemAsString,
+  ResourceIcon,
   ResourceName,
   useClientService,
-  useFolderVaultStore,
+  useVaultStore,
   useResourcesStore,
   useRoute,
   useRouter,
+  useSpacesLoading,
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import { probeVaultNeedsSetup, unlockVault } from '../unlock'
 import { VaultTarget } from '../integrity'
-import { isShareSpaceResource, urlJoin } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, Resource, urlJoin } from '@opencloud-eu/web-client'
 import VaultSetup from '../components/VaultSetup.vue'
+import { isVaultDrive, VAULT_EXTENSION } from '../vaultLocation'
 
 const { $gettext } = useGettext()
 const route = useRoute()
 const router = useRouter()
 const clientService = useClientService()
 const spacesStore = useSpacesStore()
-const vaultStore = useFolderVaultStore()
+const { areSpacesLoading, waitForSpaces } = useSpacesLoading()
+const vaultStore = useVaultStore()
 const resourcesStore = useResourcesStore()
 
 const passwordInput = useTemplateRef<{ focus: () => void }>('passwordInput')
@@ -120,6 +125,7 @@ const needsSetup = ref<boolean | null>(null)
 const spaceId = computed(() => queryItemAsString(unref(route).query.spaceId))
 const vaultRoot = computed(() => queryItemAsString(unref(route).query.vaultRoot))
 const redirectUrl = computed(() => queryItemAsString(unref(route).query.redirectUrl))
+const cancelUrl = computed(() => queryItemAsString(unref(route).query.cancelUrl))
 
 const vaultName = computed(() => {
   const root = unref(vaultRoot) || ''
@@ -129,8 +135,31 @@ const vaultName = computed(() => {
   return root.split('/').filter(Boolean).pop() || unref(space)?.name || root
 })
 
-const cardTitle = computed(() =>
-  unref(needsSetup) === true ? $gettext('Set up encrypted folder') : $gettext('Unlock folder')
+const isSpaceVault = computed(() => isVaultDrive(unref(space)))
+
+const iconResource = computed<Resource>(() =>
+  unref(isSpaceVault)
+    ? unref(space)
+    : ({ type: 'folder', isFolder: true, extension: VAULT_EXTENSION } as Resource)
+)
+
+const cardTitle = computed(() => {
+  if (unref(needsSetup) === true) {
+    return unref(isSpaceVault)
+      ? $gettext('Set up encrypted space')
+      : $gettext('Set up encrypted folder')
+  }
+  return unref(isSpaceVault) ? $gettext('Unlock space') : $gettext('Unlock folder')
+})
+
+const unlockHint = computed(() =>
+  unref(isSpaceVault)
+    ? $gettext(
+        'This space is end-to-end encrypted. Enter its password to decrypt the files on this device.'
+      )
+    : $gettext(
+        'This folder is end-to-end encrypted. Enter its password to decrypt the files on this device.'
+      )
 )
 
 const submitLabel = computed(() =>
@@ -161,7 +190,12 @@ async function onSubmit() {
 
     const target = unref(redirectUrl)
     // router.push accepts a full URL string and parses path + query for us.
-    await router.push(target || urlJoin('/files/spaces', unref(vaultRoot)))
+    // Without a redirect the vault root is the destination - which for a vault
+    // space is the space itself, addressed by its drive alias.
+    const fallback = unref(isSpaceVault)
+      ? urlJoin('/files/spaces', unref(space).driveAlias)
+      : urlJoin('/files/spaces', unref(vaultRoot))
+    await router.push(target || fallback)
   } catch (e) {
     console.error(e)
     errorMessage.value = $gettext('Unlocking failed. Please try again')
@@ -171,6 +205,8 @@ async function onSubmit() {
 }
 
 onMounted(async () => {
+  await waitForSpaces()
+
   // Probe once to pick between the "set up" and the "unlock" UI. We don't gate
   // the submit button on this - onSubmit re-reads the live state.
   if (!unref(space) || !unref(vaultRoot)) {
@@ -192,15 +228,24 @@ onMounted(async () => {
 })
 
 async function onCancel() {
-  // Walk one level above the vault root so the user lands back in the folder
-  // they came from instead of inside the locked vault - clicking the vault
-  // would otherwise just kick them back to this unlock page.
+  // Whoever sent the user here knows where they set off from. Missing on a
+  // cold start, then the fallbacks below apply.
+  if (unref(cancelUrl)) {
+    await router.push(unref(cancelUrl))
+    return
+  }
+  // Walk one level above the vault root so the user lands next to the vault
+  // instead of inside the locked one.
   const root = unref(vaultRoot) || '/'
   // Empty for a vault sitting directly in the space root - urlJoin drops it.
   const parent = root.replace(/\/[^/]+$/, '')
   const targetSpace = unref(space)
   if (isShareSpaceResource(targetSpace) && root === '/') {
     await router.push(createLocationShares('files-shares-with-me'))
+    return
+  }
+  if (unref(isSpaceVault)) {
+    await router.push({ name: 'files-spaces-projects' })
     return
   }
   if (targetSpace) {

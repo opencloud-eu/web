@@ -4,22 +4,22 @@ import {
   ResourceIndicator,
   ResourceIndicatorExtension,
   useExtensionRegistry,
-  useFolderVaultStore,
+  useVaultStore,
   useGetMatchingSpace
 } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
+import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
 
 // Scheme-agnostic vault status indicator: the padlock and its locked/unlocked
-// state come entirely from the folder-vault store + the claim a folder-vault
-// extension reports, so this works for any scheme, not just rclone-crypt.
-export const useFolderVaultIndicator = (): ResourceIndicatorExtension => {
+// state come entirely from the vault store + the claim a vault extension
+// reports, so this works for any scheme, not just rclone-crypt.
+export const useVaultIndicator = (): ResourceIndicatorExtension => {
   const { $gettext } = useGettext()
-  const vaultStore = useFolderVaultStore()
+  const vaultStore = useVaultStore()
   const extensionRegistry = useExtensionRegistry()
   const { getMatchingSpace } = useGetMatchingSpace()
 
   return {
-    id: 'com.github.opencloud-eu.web.files.folder-vault-indicator',
+    id: 'com.github.opencloud-eu.web.files.vault-indicator',
     type: 'resourceIndicator',
     extensionPointIds: ['global.files.resource-indicator'],
     getResourceIndicators(resource: Resource): ResourceIndicator[] | void {
@@ -28,7 +28,7 @@ export const useFolderVaultIndicator = (): ResourceIndicatorExtension => {
       if (!resource.isInVault || !resource.storageId) {
         return
       }
-      const space = getMatchingSpace(resource)
+      const space = isSpaceResource(resource) ? resource : getMatchingSpace(resource)
       const claim = space ? getVaultClaim(extensionRegistry, space, resource.path) : null
       if (!claim) {
         return

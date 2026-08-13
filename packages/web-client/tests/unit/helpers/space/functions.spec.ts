@@ -223,6 +223,30 @@ describe('buildSpace', () => {
     )
   })
 
+  describe('contentType', () => {
+    it('carries the drive\'s "@libre.graph.contentType" verbatim', () => {
+      expect(
+        buildSpace({ '@libre.graph.contentType': 'application/vnd.opencloud.vault' } as Drive)
+          .contentType
+      ).toBe('application/vnd.opencloud.vault')
+    })
+    it('is undefined when the drive has none', () => {
+      expect(buildSpace({} as Drive).contentType).toBeUndefined()
+    })
+  })
+
+  describe('inside a vault space', () => {
+    it.each(['canEditImage', 'canEditReadme', 'canEditDescription'] as const)(
+      '%s is false',
+      (method) => {
+        const space = getSpace({ permissions: [GraphSharePermission.deletePermissions] })
+        space.isInVault = true
+        const ability = mock<Ability>({ can: () => true })
+        expect(space[method]({ user: mock<User>({ id, memberOf: [] }), ability })).toBe(false)
+      }
+    )
+  })
+
   describe('canEditImage', () => {
     it.each([
       {

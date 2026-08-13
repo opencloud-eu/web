@@ -1,16 +1,16 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { mock } from 'vitest-mock-extended'
-import { useFolderVaultStore } from '../../../../src/composables/piniaStores/folderVault'
-import { FolderVaultEngine } from '../../../../src/composables/piniaStores/extensionRegistry'
+import { useVaultStore } from '../../../../src/composables/piniaStores/vault'
+import { VaultEngine } from '../../../../src/composables/piniaStores/extensionRegistry'
 
-describe('useFolderVaultStore', () => {
+describe('useVaultStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
   })
 
   it('stores, reads and clears an engine per (space, vault root)', () => {
-    const store = useFolderVaultStore()
-    const engine = mock<FolderVaultEngine>()
+    const store = useVaultStore()
+    const engine = mock<VaultEngine>()
     store.setEngine('space-1', '/my.vault', engine)
 
     expect(store.isUnlocked('space-1', '/my.vault')).toBe(true)
@@ -24,11 +24,11 @@ describe('useFolderVaultStore', () => {
 
   it('keys strictly by the vault root, not by paths inside the vault', () => {
     // The store has no notion of vault boundaries - only the extension knows
-    // where a vault starts (findVaultRoot). Callers therefore always resolve
+    // where a vault starts (findExtensionRoot). Callers therefore always resolve
     // the root *before* hitting the store, so an inner path is never a key:
     // looking one up returns "not unlocked" rather than walking up to the root.
-    const store = useFolderVaultStore()
-    const engine = mock<FolderVaultEngine>()
+    const store = useVaultStore()
+    const engine = mock<VaultEngine>()
     store.setEngine('space-1', '/my.vault', engine)
 
     expect(store.isUnlocked('space-1', '/my.vault/sub/file.txt')).toBe(false)
@@ -40,8 +40,8 @@ describe('useFolderVaultStore', () => {
 
   describe('method "moveEngine"', () => {
     it('re-files an engine from the old vault root to the new one', () => {
-      const store = useFolderVaultStore()
-      const engine = mock<FolderVaultEngine>()
+      const store = useVaultStore()
+      const engine = mock<VaultEngine>()
       store.setEngine('space-1', '/my.vault', engine)
 
       store.moveEngine('space-1', '/my.vault', '/archive.vault')
@@ -52,7 +52,7 @@ describe('useFolderVaultStore', () => {
     })
 
     it('is a no-op when nothing is stored under the old root', () => {
-      const store = useFolderVaultStore()
+      const store = useVaultStore()
       store.moveEngine('space-1', '/my.vault', '/archive.vault')
       expect(store.isUnlocked('space-1', '/archive.vault')).toBe(false)
     })
@@ -60,11 +60,11 @@ describe('useFolderVaultStore', () => {
 
   describe('method "clearEnginesUnder"', () => {
     it('evicts engines at or below the prefix but spares siblings', () => {
-      const store = useFolderVaultStore()
-      store.setEngine('space-1', '/docs.vault', mock<FolderVaultEngine>())
-      store.setEngine('space-1', '/docs.vault/nested.vault', mock<FolderVaultEngine>())
-      store.setEngine('space-1', '/docs.vault-notes', mock<FolderVaultEngine>())
-      store.setEngine('space-2', '/docs.vault', mock<FolderVaultEngine>())
+      const store = useVaultStore()
+      store.setEngine('space-1', '/docs.vault', mock<VaultEngine>())
+      store.setEngine('space-1', '/docs.vault/nested.vault', mock<VaultEngine>())
+      store.setEngine('space-1', '/docs.vault-notes', mock<VaultEngine>())
+      store.setEngine('space-2', '/docs.vault', mock<VaultEngine>())
 
       store.clearEnginesUnder('space-1', '/docs.vault')
 

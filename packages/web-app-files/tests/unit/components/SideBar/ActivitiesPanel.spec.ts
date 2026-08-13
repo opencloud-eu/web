@@ -4,11 +4,11 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { Activity } from '@opencloud-eu/web-client/graph/generated'
-import { getVaultClaim, resolveFolderVault } from '@opencloud-eu/web-pkg'
+import { getVaultClaim, resolveVaultEngine } from '@opencloud-eu/web-pkg'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  resolveFolderVault: vi.fn(),
+  resolveVaultEngine: vi.fn(),
   getVaultClaim: vi.fn(),
   useGetMatchingSpace: () => ({ getMatchingSpace: () => mock<SpaceResource>() })
 }))
@@ -112,7 +112,7 @@ describe('ActivitiesPanel', () => {
       decryptPath: vi.fn((segment: string) => Promise.resolve(`DEC(${segment})`))
     }
     vi.mocked(getVaultClaim).mockReturnValue({ vaultRoot: '/v', encryptsNames: true } as any)
-    vi.mocked(resolveFolderVault).mockResolvedValueOnce(engine as any)
+    vi.mocked(resolveVaultEngine).mockResolvedValueOnce(engine as any)
 
     const activities = [
       {
@@ -139,7 +139,7 @@ describe('ActivitiesPanel', () => {
 
   it('does not resolve the engine or decrypt for a content-only scheme', async () => {
     // encryptsNames=false -> names are clear text on the server, nothing to do.
-    vi.mocked(resolveFolderVault).mockClear()
+    vi.mocked(resolveVaultEngine).mockClear()
     vi.mocked(getVaultClaim).mockReturnValue({ vaultRoot: '/v', encryptsNames: false } as any)
 
     const activities = [
@@ -159,7 +159,7 @@ describe('ActivitiesPanel', () => {
     const { wrapper } = getMountedWrapper({ activities })
     await flushPromises()
 
-    expect(resolveFolderVault).not.toHaveBeenCalled()
+    expect(resolveVaultEngine).not.toHaveBeenCalled()
     expect(wrapper.html()).toContain('cleartext-name.txt')
   })
 })

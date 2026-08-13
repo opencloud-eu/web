@@ -79,11 +79,45 @@ describe('restore', () => {
           expect(
             unref(actions)[0].isVisible({
               resources: [
-                mock<SpaceResource>({ name: 'Moon', disabled: false, driveType: 'project' }),
-                mock<SpaceResource>({ name: 'Sun', disabled: false, driveType: 'project' })
+                mock<SpaceResource>({
+                  name: 'Moon',
+                  disabled: false,
+                  driveType: 'project',
+                  isInVault: false
+                }),
+                mock<SpaceResource>({
+                  name: 'Sun',
+                  disabled: false,
+                  driveType: 'project',
+                  isInVault: false
+                })
               ]
             })
           ).toBe(true)
+        }
+      })
+    })
+    it('should be false when one of the spaces is a vault', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [
+                mock<SpaceResource>({
+                  name: 'Moon',
+                  disabled: false,
+                  driveType: 'project',
+                  isInVault: false
+                }),
+                mock<SpaceResource>({
+                  name: 'Vault',
+                  disabled: false,
+                  driveType: 'project',
+                  isInVault: true
+                })
+              ]
+            })
+          ).toBe(false)
         }
       })
     })

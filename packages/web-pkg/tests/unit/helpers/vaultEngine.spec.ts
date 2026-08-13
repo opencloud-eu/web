@@ -1,9 +1,9 @@
-import { FolderVaultEngine } from '../../../src/composables/piniaStores/extensionRegistry'
+import { VaultEngine } from '../../../src/composables/piniaStores/extensionRegistry'
 import { decryptVaultPath, encryptVaultPath } from '../../../src/helpers/vaultEngine'
 
 // A fake engine that just wraps the relative path it receives, so the tests
 // assert the generic vault-root <-> full-path conversion, not any real crypto.
-function fakeEngine(vaultRoot: string): FolderVaultEngine {
+function fakeEngine(vaultRoot: string): VaultEngine {
   return {
     vaultRoot,
     encryptPath: (relative) => Promise.resolve(`E(${relative})`),

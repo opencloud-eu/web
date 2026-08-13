@@ -5,18 +5,20 @@ import {
   decryptResourceInPlace,
   encryptResourcePathsForServer,
   getVaultCreator,
+  isVaultSpaceResource,
+  markSpaceVaultStatus,
   markVaultStatus
-} from '../../../src/helpers/folderVault'
+} from '../../../src/helpers/vault'
 import {
   ExtensionRegistry,
-  FolderVaultEngine
+  VaultEngine
 } from '../../../src/composables/piniaStores/extensionRegistry'
 
 function mockExtensionRegistry(
   claimsPath: (space: SpaceResource, path: string) => unknown
 ): ExtensionRegistry {
   return {
-    extensions: [{ type: 'folderVault', claimsPath, resolve: (): unknown => null }]
+    extensions: [{ type: 'vault', claimsPath, resolve: (): unknown => null }]
   } as unknown as ExtensionRegistry
 }
 
@@ -122,27 +124,88 @@ describe('markVaultStatus', () => {
   })
 })
 
+describe('markSpaceVaultStatus', () => {
+  it('flags a space that is a vault and keeps it shareable', () => {
+    // An encrypted space claims vaultRoot "/", which is the space's own path.
+    const registry = mockExtensionRegistry(() => ({ vaultRoot: '/', encryptsNames: true }))
+    const space = {
+      id: 'space-1',
+      path: '/',
+      isFolder: true,
+      permissions: 'RDNVWZP'
+    } as SpaceResource
+
+    markSpaceVaultStatus(registry, [space])
+
+    expect(space.isInVault).toBe(true)
+    expect(space.permissions).toContain(DavPermission.Shareable)
+  })
+
+  it('leaves a space that no scheme claims untouched', () => {
+    const registry = mockExtensionRegistry(() => null)
+    const space = { id: 'space-1', path: '/', isFolder: true } as SpaceResource
+
+    markSpaceVaultStatus(registry, [space])
+
+    expect(space.isInVault).toBeFalsy()
+  })
+
+  it('ignores empty input', () => {
+    const registry = mockExtensionRegistry(() => ({ vaultRoot: '/' }))
+
+    expect(() => markSpaceVaultStatus(registry, [undefined, null])).not.toThrow()
+    expect(() => markSpaceVaultStatus(registry, undefined)).not.toThrow()
+  })
+})
+
+describe('isVaultSpaceResource', () => {
+  it('is true only for a project space that is flagged as vault', () => {
+    expect(
+      isVaultSpaceResource({
+        type: 'space',
+        driveType: 'project',
+        isInVault: true
+      } as SpaceResource)
+    ).toBe(true)
+    expect(isVaultSpaceResource({ type: 'space', driveType: 'project' } as SpaceResource)).toBe(
+      false
+    )
+    expect(isVaultSpaceResource({ type: 'folder', isInVault: true } as Resource)).toBe(false)
+    expect(isVaultSpaceResource(undefined)).toBe(false)
+  })
+
+  it('is false for a shared vault folder, which is a folder rather than a space', () => {
+    expect(
+      isVaultSpaceResource({ type: 'space', driveType: 'share', isInVault: true } as SpaceResource)
+    ).toBe(false)
+  })
+})
+
 describe('getVaultCreator', () => {
   function mockRegistry(extensions: unknown[]): ExtensionRegistry {
     return { extensions } as unknown as ExtensionRegistry
   }
 
   it('returns the first scheme that can create vaults', () => {
-    const readOnly = { id: 'read-only', type: 'folderVault' }
+    const readOnly = { id: 'read-only', type: 'vault' }
     const creator = {
       id: 'creator',
-      type: 'folderVault',
-      creation: { folderExtension: 'vault', setupComponent: {} }
+      type: 'vault',
+      creation: {
+        vaultExtension: 'vault',
+        vaultContentType: 'application/vnd.opencloud.vault',
+        setupComponent: {}
+      }
     }
 
     expect(getVaultCreator(mockRegistry([readOnly, creator]))).toBe(creator)
   })
 
   it('returns null when no registered scheme can create vaults', () => {
-    expect(getVaultCreator(mockRegistry([{ id: 'read-only', type: 'folderVault' }]))).toBeNull()
+    expect(getVaultCreator(mockRegistry([{ id: 'read-only', type: 'vault' }]))).toBeNull()
   })
 
-  it('returns null when no folder-vault scheme is registered at all', () => {
+  it('returns null when no vault scheme is registered at all', () => {
     expect(getVaultCreator(mockRegistry([{ id: 'other', type: 'resourceIndicator' }]))).toBeNull()
   })
 })
@@ -150,13 +213,13 @@ describe('getVaultCreator', () => {
 describe('encryptResourcePathsForServer', () => {
   const space = { id: 'space-1' } as SpaceResource
 
-  function registryResolving(engine: FolderVaultEngine | null): ExtensionRegistry {
+  function registryResolving(engine: VaultEngine | null): ExtensionRegistry {
     return {
       extensions: [
         {
-          type: 'folderVault',
+          type: 'vault',
           claimsPath: (): unknown => null,
-          resolve: (_s: SpaceResource, path: string): Promise<FolderVaultEngine | null> =>
+          resolve: (_s: SpaceResource, path: string): Promise<VaultEngine | null> =>
             Promise.resolve(path.startsWith('/v.vault') ? engine : null)
         }
       ]
@@ -164,7 +227,7 @@ describe('encryptResourcePathsForServer', () => {
   }
 
   it('encrypts in-vault resource paths and leaves the originals + non-vault paths untouched', async () => {
-    const engine = mock<FolderVaultEngine>({ vaultRoot: '/v.vault' })
+    const engine = mock<VaultEngine>({ vaultRoot: '/v.vault' })
     // the engine sees the vault-RELATIVE path; encryptVaultPath re-roots it
     engine.encryptPath.mockImplementation((rel: string) => Promise.resolve(`ENC(${rel})`))
     const registry = registryResolving(engine)
@@ -193,7 +256,7 @@ describe('encryptResourcePathsForServer', () => {
 describe('decryptResourceInPlace', () => {
   it('isolates a decryption failure so one bad blob does not break the listing', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
-    const engine = mock<FolderVaultEngine>({ vaultRoot: '/my.vault' })
+    const engine = mock<VaultEngine>({ vaultRoot: '/my.vault' })
     engine.decryptPath.mockRejectedValue(new Error('not a valid rclone-crypt name'))
     const resource = {
       path: '/my.vault/CIPHERTEXTBLOB',
@@ -213,7 +276,7 @@ describe('decryptResourceInPlace', () => {
   })
 
   it('rewrites path / name / extension to the cleartext form on success', async () => {
-    const engine = mock<FolderVaultEngine>({ vaultRoot: '/my.vault' })
+    const engine = mock<VaultEngine>({ vaultRoot: '/my.vault' })
     // the engine returns the vault-RELATIVE clear path; decryptVaultPath re-roots it
     engine.decryptPath.mockResolvedValue('secret.txt')
     const resource = {

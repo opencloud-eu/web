@@ -1,16 +1,56 @@
-import { Router } from 'vue-router'
-import { watch } from 'vue'
+import { RouteLocationNormalized, Router } from 'vue-router'
 import {
   ClientService,
   getVaultClaim,
-  resolveFolderVault,
+  resolveVaultEngine,
   useExtensionRegistry,
-  useSpacesStore
+  useSpacesLoading,
+  useSpacesStore,
+  VaultClaim
 } from '@opencloud-eu/web-pkg'
+import { SpaceResource } from '@opencloud-eu/web-client'
+
+/** Space-relative, absolute path a `driveAliasAndItem` points at within `space`. */
+function spaceRelativePath(driveAliasAndItem: string, space: SpaceResource): string {
+  return '/' + driveAliasAndItem.slice(space.driveAlias.length).replace(/^\/+/, '')
+}
+
+/** Whether a space-relative path is the vault root or below it. */
+function isInsideVaultRoot(path: string, vaultRoot: string): boolean {
+  if (vaultRoot === '/') {
+    return true
+  }
+  return path === vaultRoot || path.startsWith(`${vaultRoot}/`)
+}
+
+/**
+ * Where cancelling the unlock should return the user to. `from` only qualifies
+ * if it's somewhere they can actually stay: not the unlock route itself, and
+ * not inside the very vault we're locking them out of.
+ */
+function getCancelUrl(
+  from: RouteLocationNormalized,
+  space: SpaceResource,
+  claim: VaultClaim
+): string | undefined {
+  if (!from.name || from.name === claim.unlockRoute?.name) {
+    return undefined
+  }
+  const fromDriveAliasAndItem = from.params?.driveAliasAndItem as string | undefined
+  if (
+    fromDriveAliasAndItem &&
+    (fromDriveAliasAndItem === space.driveAlias ||
+      fromDriveAliasAndItem.startsWith(`${space.driveAlias}/`)) &&
+    isInsideVaultRoot(spaceRelativePath(fromDriveAliasAndItem, space), claim.vaultRoot)
+  ) {
+    return undefined
+  }
+  return from.fullPath
+}
 
 /**
  * Global navigation guard that intercepts any navigation aimed at a path
- * inside a folder-vault that's been claimed by a plugin but is not unlocked
+ * inside a vault that's been claimed by a plugin but is not unlocked
  * yet. The plugin-defined unlock route gets the user's intended URL via
  * `redirectUrl` and pushes back there once unlocking succeeds.
  *
@@ -25,32 +65,17 @@ import {
  * needed to lazy-load mount-point (share) spaces, see below.
  */
 export const setupVaultUnlockGuard = (router: Router, clientService: ClientService) => {
-  router.beforeEach(async (to) => {
+  router.beforeEach(async (to, from) => {
     const driveAliasAndItem = to.params?.driveAliasAndItem as string | undefined
     if (!driveAliasAndItem) return true
     if (to.name === 'rclone-crypt-unlock') return true
 
     const spacesStore = useSpacesStore()
     const extensionRegistry = useExtensionRegistry()
+    const { waitForSpaces } = useSpacesLoading()
 
-    // On a hard reload this guard fires while the spaces store is still
-    // initialising; without waiting we'd see an empty spaces list, fail to
-    // match the target drive, and let the user into a vault path without an
-    // unlock prompt. Wait until `spacesInitialized` flips before deciding.
-    if (!spacesStore.spacesInitialized) {
-      await new Promise<void>((resolve) => {
-        const stop = watch(
-          () => spacesStore.spacesInitialized,
-          (initialised) => {
-            if (initialised) {
-              stop()
-              resolve()
-            }
-          },
-          { immediate: true }
-        )
-      })
-    }
+    // Spaces need to be loaded for vaults to be claimed.
+    await waitForSpaces()
 
     let space = spacesStore.spaces.find(
       (s) => driveAliasAndItem === s.driveAlias || driveAliasAndItem.startsWith(`${s.driveAlias}/`)
@@ -83,7 +108,7 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     }
 
     if (!space) return true
-    const path = '/' + driveAliasAndItem.slice(space.driveAlias.length).replace(/^\/+/, '')
+    const path = spaceRelativePath(driveAliasAndItem, space)
 
     // Cheap, sync gate first: is this path even inside a claimed vault that
     // has an unlock route? Every non-vault navigation (the vast majority)
@@ -94,12 +119,20 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
 
     // It's a claimed vault with an unlock route - let it through only if it's
     // already unlocked (an engine resolves), otherwise redirect to unlock.
-    const engine = await resolveFolderVault(extensionRegistry, space, path)
+    const engine = await resolveVaultEngine(extensionRegistry, space, path)
     if (engine) return true
+
+    // Where the user set off from, so cancelling the unlock returns them there
+    // instead of somewhere merely adjacent to the vault.
+    const cancelUrl = getCancelUrl(from, space, claim)
 
     return {
       ...claim.unlockRoute,
-      query: { ...(claim.unlockRoute.query || {}), redirectUrl: to.fullPath }
+      query: {
+        ...(claim.unlockRoute.query || {}),
+        redirectUrl: to.fullPath,
+        ...(cancelUrl && { cancelUrl })
+      }
     }
   })
 }

@@ -24,6 +24,12 @@ export interface SpaceResource extends Resource {
   spaceReadmeData: DriveItem
   hasTrashedItems: boolean
   webDavTrashPath: string
+  /**
+   * Value of the drive's `@libre.graph.contentType` property. Web apps can use this to
+   * determine how to handle the space (e.g. `application/vnd.opencloud.vault` for an
+   * end-to-end encrypted space).
+   */
+  contentType?: string
 
   // permissions for the current user. need to be loaded manually at some point via the space store.
   graphPermissions?: string[]

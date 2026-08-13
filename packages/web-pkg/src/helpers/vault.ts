@@ -1,24 +1,29 @@
 import { unref } from 'vue'
-import { extractExtensionFromFile, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  extractExtensionFromFile,
+  isProjectSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { mimeTypeForExtension } from './vaultMimeType'
 import { decryptVaultPath, encryptVaultPath } from './vaultEngine'
 import {
   ExtensionRegistry,
-  FolderVaultClaim,
-  FolderVaultEngine,
-  FolderVaultExtension
+  VaultClaim,
+  VaultEngine,
+  VaultExtension
 } from '../composables/piniaStores/extensionRegistry'
 
-function folderVaultExtensions(extensionRegistry: ExtensionRegistry): FolderVaultExtension[] {
+function vaultExtensions(extensionRegistry: ExtensionRegistry): VaultExtension[] {
   return unref(extensionRegistry.extensions)
     .flatMap((ref) => unref(ref))
-    .filter((e): e is FolderVaultExtension => e.type === 'folderVault')
+    .filter((e): e is VaultExtension => e.type === 'vault')
 }
 
 /**
- * Walks the registered folder-vault extensions and returns the first engine
- * that can decrypt the given (space, path), or `null` if there is none. There
+ * Walks the registered vault extensions and returns the first engine that can
+ * decrypt the given (space, path), or `null` if there is none. There
  * is no separate locked/unlocked vault state: an engine exists for a path
  * exactly when one was resolved and stashed in the store this session, and its
  * absence is all "locked" means. `null` therefore covers two cases that
@@ -39,15 +44,15 @@ function folderVaultExtensions(extensionRegistry: ExtensionRegistry): FolderVaul
  * the activity feed. The route guard also calls in, but for unlock state to
  * drive a redirect, not for translation.
  */
-export async function resolveFolderVault(
+export async function resolveVaultEngine(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   path: string | undefined
-): Promise<FolderVaultEngine | null> {
+): Promise<VaultEngine | null> {
   if (!space || !path) {
     return null
   }
-  for (const ext of folderVaultExtensions(extensionRegistry)) {
+  for (const ext of vaultExtensions(extensionRegistry)) {
     const engine = await ext.resolve(space, path)
     if (engine) {
       return engine
@@ -71,7 +76,7 @@ export function encryptResourcePathsForServer(
 ): Promise<Resource[]> {
   return Promise.all(
     resources.map(async (r) => {
-      const engine = await resolveFolderVault(extensionRegistry, space, r.path)
+      const engine = await resolveVaultEngine(extensionRegistry, space, r.path)
       if (!engine) return r
       const encryptedPath = await encryptVaultPath(engine, r.path)
       if (encryptedPath === r.path) return r
@@ -91,15 +96,15 @@ export function encryptFolderPathsForServer(
 ): Promise<string[]> {
   return Promise.all(
     paths.map(async (p) => {
-      const engine = await resolveFolderVault(extensionRegistry, space, p)
+      const engine = await resolveVaultEngine(extensionRegistry, space, p)
       return engine ? encryptVaultPath(engine, p) : p
     })
   )
 }
 
 /**
- * Walks the registered folder-vault extensions and returns the first one
- * that claims the given (space, path) - independent of unlock state. Callers
+ * Walks the registered vault extensions and returns the first one that claims
+ * the given (space, path) - independent of unlock state. Callers
  * use this to decide whether to render an "unlock first" redirect for a
  * vault whose `resolve()` returned null (i.e. the extension owns the path
  * but currently can't produce an engine).
@@ -111,11 +116,11 @@ export function getVaultClaim(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource,
   path: string | undefined
-): FolderVaultClaim | null {
+): VaultClaim | null {
   if (!space || !path) {
     return null
   }
-  for (const ext of folderVaultExtensions(extensionRegistry)) {
+  for (const ext of vaultExtensions(extensionRegistry)) {
     const claim = ext.claimsPath(space, path)
     if (claim) {
       return claim
@@ -125,12 +130,12 @@ export function getVaultClaim(
 }
 
 /**
- * First registered folder-vault extension that can create vaults, i.e. one that
- * brings the `creation` bits needed to name and lock a fresh vault. Returns null
+ * First registered vault extension that can create vaults, i.e. one that brings
+ * the `creation` bits needed to name and lock a fresh vault. Returns null
  * when no extension is registered or none supports creation.
  */
-export function getVaultCreator(extensionRegistry: ExtensionRegistry): FolderVaultExtension | null {
-  return folderVaultExtensions(extensionRegistry).find((e) => !!e.creation) ?? null
+export function getVaultCreator(extensionRegistry: ExtensionRegistry): VaultExtension | null {
+  return vaultExtensions(extensionRegistry).find((e) => !!e.creation) ?? null
 }
 
 /**
@@ -140,7 +145,7 @@ export function getVaultCreator(extensionRegistry: ExtensionRegistry): FolderVau
  * tab title) needs this to read like the user expects.
  */
 export async function decryptResourceInPlace(
-  engine: FolderVaultEngine,
+  engine: VaultEngine,
   r: Resource | undefined | null
 ): Promise<Resource | undefined | null> {
   if (!r?.path) {
@@ -155,7 +160,7 @@ export async function decryptResourceInPlace(
     // Promise.all. Keep its encrypted name but still flag it as in-vault so the
     // folder still loads. Share-gating (stripping Shareable) is applied by the
     // `markVaultStatus` pass that always follows this decrypt.
-    console.error('[folder-vault] failed to decrypt resource path', r.path, e)
+    console.error('[vault] failed to decrypt resource path', r.path, e)
     r.isInVault = true
     return r
   }
@@ -195,6 +200,27 @@ export async function decryptResourceInPlace(
   return r
 }
 
+/** Whether a resource is a space that *is* a vault. */
+export function isVaultSpaceResource(
+  resource: Resource | SpaceResource | undefined | null
+): boolean {
+  return isProjectSpaceResource(resource) && !!resource.isInVault
+}
+
+/**
+ * `markVaultStatus` for spaces: flags a space that *is* a vault. Spaces never pass
+ * through the listing-level marking like resources, so call this wherever spaces
+ * enter a store. This ensures the `isInVault` guard works.
+ */
+export function markSpaceVaultStatus(
+  extensionRegistry: ExtensionRegistry,
+  spaces: Array<SpaceResource | undefined | null>
+): void {
+  for (const space of spaces ?? []) {
+    markVaultStatus(extensionRegistry, space, [space])
+  }
+}
+
 /**
  * Mark resources whose path sits inside (or *is*) a registered vault by
  * setting `Resource.isInVault = true`. Cheap path-based lookup via
@@ -226,9 +252,10 @@ export function markVaultStatus(
     // root) is never shareable: its ciphertext name can't be claimed once a
     // share or public link rebases the path, so strip Shareable and canShare()
     // returns false at every share entry point. The vault *root* keeps Shareable
-    // on purpose - it stays collaborator-shareable (the recipient unlocks it out
-    // of band, where the cleartext `.vault` name still anchors detection); only
-    // public links are blocked, gated on `isInVault` in the link UI.
+    // on purpose - it stays collaborator-shareable, with the recipient unlocking
+    // it out of band (a folder vault keeps its cleartext `.vault` name to anchor
+    // detection, a vault space its drive marker); only public links are blocked,
+    // gated on `isInVault` in the link UI.
     if (claim.vaultRoot !== r.path && r.permissions) {
       r.permissions = r.permissions.replace(DavPermission.Shareable, '')
     }

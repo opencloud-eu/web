@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="flex items-start gap-3">
-      <oc-icon name="resource-type-vault" fill-type="fill" size-class="size-8" />
-      <div>
+      <resource-icon :resource="iconResource" size-class="size-8" class="rounded-sm shrink-0" />
+      <div class="min-w-0">
         <p
           class="mt-0 mb-1 font-semibold"
           v-text="$gettext('%{vaultName} is end-to-end encrypted', { vaultName: displayName })"
@@ -37,21 +37,28 @@
 <script setup lang="ts">
 import { computed, onMounted, unref, useTemplateRef, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
+  ResourceIcon,
   useClientService,
   useResourcesStore,
   withoutExtension,
-  type FolderVaultFinalize
+  type VaultFinalize
 } from '@opencloud-eu/web-pkg'
 import { createEngine } from '../crypto/engine'
 import { writeIntegrityToken } from '../integrity'
-import { VAULT_FOLDER_EXTENSION } from '../vaultPath'
+import { VAULT_EXTENSION } from '../vaultLocation'
 
-const { vaultName, errorMessage = undefined } = defineProps<{
+const {
+  vaultName,
+  errorMessage = undefined,
+  isSpace = false
+} = defineProps<{
   /** Cleartext name of the vault about to be created, e.g. `Project archive.vault`. */
   vaultName: string
   /** Error to surface on the password field, e.g. a password the vault rejected. */
   errorMessage?: string
+  isSpace?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -62,11 +69,15 @@ const { $gettext } = useGettext()
 const clientService = useClientService()
 const resourcesStore = useResourcesStore()
 
+const iconResource = computed<Resource>(() =>
+  isSpace
+    ? ({ type: 'space', driveType: 'project', isInVault: true } as SpaceResource)
+    : ({ type: 'folder', isFolder: true, extension: VAULT_EXTENSION } as Resource)
+)
+
 // Match what the file list shows: hide the vault marker while extensions are hidden.
 const displayName = computed(() =>
-  resourcesStore.areFileExtensionsShown
-    ? vaultName
-    : withoutExtension(vaultName, VAULT_FOLDER_EXTENSION)
+  resourcesStore.areFileExtensionsShown ? vaultName : withoutExtension(vaultName, VAULT_EXTENSION)
 )
 
 const passphraseInput = useTemplateRef<{ focus: () => void }>('passphraseInput')
@@ -107,11 +118,11 @@ onMounted(() => {
 })
 
 /**
- * Called by the create-folder flow once the vault folder exists on the server.
+ * Called after an encrypted vault folder or space has been created on the server.
  * Create the integrity token and write it to the vault root, so the vault can be
  * unlocked later.
  */
-const finalize: FolderVaultFinalize = async (space, vaultRoot) => {
+const finalize: VaultFinalize = async (space, vaultRoot) => {
   await writeIntegrityToken(
     { webdav: clientService.webdav, space, vaultRoot },
     createEngine(vaultRoot, unref(passphrase))

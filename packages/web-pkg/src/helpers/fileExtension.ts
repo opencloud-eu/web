@@ -1,8 +1,3 @@
-/**
- * Helpers for the trailing `.<extension>` part of a resource name. Nothing here
- * knows any concrete extension - callers pass in the one they care about.
- */
-
 /** Whether a name carries the given extension. */
 export function hasExtension(name: string | undefined, extension: string): boolean {
   return !!name && name.endsWith(`.${extension}`)

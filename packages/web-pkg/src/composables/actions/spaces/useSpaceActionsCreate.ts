@@ -1,11 +1,12 @@
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SpaceAction } from '../types'
 import { useCreateSpace } from '../../spaces'
-import { useIsResourceNameValid } from '../helpers'
-import { useModals } from '../../piniaStores'
+import { useModals, useExtensionRegistry, VaultFinalize } from '../../piniaStores'
 import { useAbility } from '@casl/vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
+import { getVaultCreator } from '../../../helpers'
+import CreateSpaceModal from '../../../components/Spaces/CreateSpaceModal.vue'
 
 export const useSpaceActionsCreate = ({
   onSpaceCreated
@@ -15,8 +16,8 @@ export const useSpaceActionsCreate = ({
   const { dispatchModal } = useModals()
   const { $gettext } = useGettext()
   const { can } = useAbility()
-  const { isSpaceNameValid } = useIsResourceNameValid()
   const { addNewSpace } = useCreateSpace()
+  const extensionRegistry = useExtensionRegistry()
 
   const actions = computed((): SpaceAction[] => [
     {
@@ -30,19 +31,19 @@ export const useSpaceActionsCreate = ({
       handler: () => {
         dispatchModal({
           title: $gettext('Create a new space'),
-          confirmText: $gettext('Create'),
-          hasInput: true,
-          inputLabel: $gettext('Space name'),
-          inputValue: $gettext('New space'),
-          inputRequiredMark: true,
-          onConfirm: async (name: string) => {
-            const createdSpace = await addNewSpace(name)
-            onSpaceCreated?.(createdSpace)
-          },
-          onInput: (name: string, setError: (error: string) => void) => {
-            const { isValid, error } = isSpaceNameValid(name)
-            setError(isValid ? null : error)
-          }
+          focusTrapInitial: '#create-space-input',
+          customComponent: markRaw(CreateSpaceModal),
+          hideActions: true,
+          customComponentAttrs: () => ({
+            vaultCreation: getVaultCreator(extensionRegistry)?.creation,
+            callbackFn: async (
+              name: string,
+              options: { encrypt: boolean; finalizeVault?: VaultFinalize }
+            ) => {
+              const createdSpace = await addNewSpace(name, options)
+              onSpaceCreated?.(createdSpace)
+            }
+          })
         })
       }
     }

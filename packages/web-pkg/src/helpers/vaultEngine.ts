@@ -1,5 +1,5 @@
 import { urlJoin } from '@opencloud-eu/web-client'
-import { FolderVaultEngine } from '../composables/piniaStores/extensionRegistry'
+import { VaultEngine } from '../composables/piniaStores/extensionRegistry'
 
 // A vault path comes in two forms:
 //   full      `/my.vault/notes/q1.txt`  - what callers pass around
@@ -24,10 +24,7 @@ function stripVaultRoot(vaultRoot: string, fullPath: string): string {
  * The vault root itself is clear text on the server, so it is returned unchanged
  * (the engine isn't called).
  */
-export async function encryptVaultPath(
-  engine: FolderVaultEngine,
-  fullPath: string
-): Promise<string> {
+export async function encryptVaultPath(engine: VaultEngine, fullPath: string): Promise<string> {
   const relative = stripVaultRoot(engine.vaultRoot, fullPath)
   if (!relative) {
     return engine.vaultRoot
@@ -39,10 +36,7 @@ export async function encryptVaultPath(
  * The exact inverse of encryptVaultPath -
  *   `/my.vault/<enc notes>/<enc q1.txt>` -> `/my.vault/notes/q1.txt`.
  */
-export async function decryptVaultPath(
-  engine: FolderVaultEngine,
-  fullPath: string
-): Promise<string> {
+export async function decryptVaultPath(engine: VaultEngine, fullPath: string): Promise<string> {
   const relative = stripVaultRoot(engine.vaultRoot, fullPath)
   if (!relative) {
     return engine.vaultRoot

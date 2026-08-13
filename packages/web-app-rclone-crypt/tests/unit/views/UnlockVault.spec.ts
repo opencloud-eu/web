@@ -1,9 +1,10 @@
 import { flushPromises } from '@vue/test-utils'
 import { mock } from 'vitest-mock-extended'
-import { FolderVaultEngine, useFolderVaultStore } from '@opencloud-eu/web-pkg'
+import { VaultEngine, useSpacesStore, useVaultStore } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import UnlockVault from '../../../src/views/UnlockVault.vue'
 import { probeVaultNeedsSetup, unlockVault } from '../../../src/unlock'
+import { VAULT_CONTENT_TYPE } from '../../../src/vaultLocation'
 
 vi.mock('../../../src/unlock', () => ({
   probeVaultNeedsSetup: vi.fn(),
@@ -14,17 +15,29 @@ const spaceId = 'space-1'
 const vaultRoot = '/my.vault'
 const passphrase = 'foobar'
 
-type Space = { id: string; driveType?: string; driveAlias?: string; name?: string }
+type Space = {
+  id: string
+  driveType?: string
+  driveAlias?: string
+  name?: string
+  contentType?: string
+}
 
 function mountUnlockVault({
   needsSetup = false,
   spaces = [{ id: spaceId, driveType: 'personal', driveAlias: 'personal/admin', name: 'Admin' }],
+  spacesInitialized = true,
   query = { spaceId, vaultRoot }
-}: { needsSetup?: boolean; spaces?: Space[]; query?: Record<string, string> } = {}) {
+}: {
+  needsSetup?: boolean
+  spaces?: Space[]
+  spacesInitialized?: boolean
+  query?: Record<string, string>
+} = {}) {
   vi.mocked(probeVaultNeedsSetup).mockResolvedValue(needsSetup)
   vi.mocked(unlockVault).mockResolvedValue({
     status: 'unlocked',
-    engine: mock<FolderVaultEngine>()
+    engine: mock<VaultEngine>()
   })
 
   const mocks = defaultComponentMocks({
@@ -35,7 +48,7 @@ function mountUnlockVault({
     global: {
       plugins: [
         ...defaultPlugins({
-          piniaOptions: { spacesState: { spaces: spaces as never } }
+          piniaOptions: { spacesState: { spaces: spaces as never, spacesInitialized } }
         })
       ],
       mocks,
@@ -44,7 +57,7 @@ function mountUnlockVault({
     }
   })
 
-  return { wrapper, mocks, vaultStore: useFolderVaultStore() }
+  return { wrapper, mocks, vaultStore: useVaultStore() }
 }
 
 type Wrapper = ReturnType<typeof mountUnlockVault>
@@ -169,6 +182,17 @@ describe('UnlockVault', () => {
   })
 
   describe('cancelling', () => {
+    it('returns to where the user came from', async () => {
+      // The vault may well have been opened from somewhere other than its parent
+      // folder - the search results, a favorites listing, …
+      const { wrapper, mocks } = await mountProbed({
+        query: { spaceId, vaultRoot, cancelUrl: '/files/search?term=secret' }
+      })
+      await (wrapper.vm as any).onCancel()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith('/files/search?term=secret')
+    })
+
     it('lands the user in the folder above the vault', async () => {
       // Not inside the vault itself - clicking it would just kick them back here.
       const { wrapper, mocks } = await mountProbed({
@@ -212,6 +236,100 @@ describe('UnlockVault', () => {
       await (wrapper.vm as any).onCancel()
 
       expect(mocks.$router.push).toHaveBeenCalledWith('/files/spaces/personal')
+    })
+  })
+
+  describe('a vault space', () => {
+    const vaultSpace = (options: Parameters<typeof mountUnlockVault>[0] = {}) =>
+      mountProbed({
+        spaces: [
+          {
+            id: spaceId,
+            driveType: 'project',
+            driveAlias: 'project/secrets',
+            name: 'Secrets',
+            contentType: VAULT_CONTENT_TYPE
+          }
+        ],
+        query: { spaceId, vaultRoot: '/' },
+        ...options
+      })
+
+    it('talks about a space rather than a folder', async () => {
+      const { wrapper } = await vaultSpace()
+      const vm = wrapper.vm as any
+
+      expect(vm.cardTitle).toBe('Unlock space')
+      expect(vm.unlockHint).toContain('This space is end-to-end encrypted')
+      // no name marker to strip, the marker lives on the drive
+      expect(vm.vaultName).toBe('Secrets')
+    })
+
+    it('talks about a space while setting one up', async () => {
+      const { wrapper } = await vaultSpace({ needsSetup: true })
+
+      expect((wrapper.vm as any).cardTitle).toBe('Set up encrypted space')
+    })
+
+    it('opens the space itself once unlocked', async () => {
+      const { wrapper, mocks } = await vaultSpace()
+      await submit(wrapper)
+
+      expect(mocks.$router.push).toHaveBeenCalledWith('/files/spaces/project/secrets')
+    })
+
+    it('leaves for the spaces overview on cancel, never back into the space', async () => {
+      const { wrapper, mocks } = await vaultSpace()
+      await (wrapper.vm as any).onCancel()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith({ name: 'files-spaces-projects' })
+    })
+
+    it('prefers where the user came from over the spaces overview', async () => {
+      const { wrapper, mocks } = await vaultSpace({
+        query: { spaceId, vaultRoot: '/', cancelUrl: '/files/search?term=secret' }
+      })
+      await (wrapper.vm as any).onCancel()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith('/files/search?term=secret')
+    })
+  })
+
+  describe('spaces not loaded yet', () => {
+    const loading = (options: Parameters<typeof mountUnlockVault>[0] = {}) =>
+      mountProbed({
+        spacesInitialized: false,
+        spaces: [
+          {
+            id: spaceId,
+            driveType: 'project',
+            driveAlias: 'project/secrets',
+            name: 'Secrets',
+            contentType: VAULT_CONTENT_TYPE
+          }
+        ],
+        query: { spaceId, vaultRoot: '/' },
+        ...options
+      })
+
+    it('waits instead of claiming the vault does not exist', async () => {
+      const { wrapper } = await loading()
+
+      expect(wrapper.find('oc-spinner-stub').exists()).toBe(true)
+      expect(wrapper.find('no-content-message-stub').exists()).toBe(false)
+      expect(wrapper.find('form').exists()).toBe(false)
+      expect(probeVaultNeedsSetup).not.toHaveBeenCalled()
+    })
+
+    it('probes and picks the space wording once the spaces arrived', async () => {
+      const { wrapper } = await loading({ needsSetup: true })
+
+      useSpacesStore().spacesInitialized = true
+      await flushPromises()
+
+      expect(probeVaultNeedsSetup).toHaveBeenCalled()
+      expect((wrapper.vm as any).cardTitle).toBe('Set up encrypted space')
+      expect(wrapper.find('vault-setup-stub').exists()).toBe(true)
     })
   })
 })

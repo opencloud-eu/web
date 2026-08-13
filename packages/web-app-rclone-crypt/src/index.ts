@@ -2,8 +2,8 @@ import { useGettext } from 'vue3-gettext'
 import { ref } from 'vue'
 import { ApplicationInformation, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
 import translations from '../l10n/translations.json'
-import { folderVaultExtension } from './extensions/folderVault'
-import { VAULT_FOLDER_EXTENSION } from './vaultPath'
+import { vaultSchemeExtension } from './extensions/vault'
+import { VAULT_EXTENSION } from './vaultLocation'
 import UnlockVault from './views/UnlockVault.vue'
 
 export default defineWebApplication({
@@ -20,7 +20,7 @@ export default defineWebApplication({
       color: 'var(--oc-role-secondary)',
       extensions: [
         {
-          extension: VAULT_FOLDER_EXTENSION,
+          extension: VAULT_EXTENSION,
           type: 'folder',
           icon: 'resource-type-vault',
           iconFillType: 'fill'
@@ -28,7 +28,7 @@ export default defineWebApplication({
       ]
     }
 
-    const extensions = ref<Extension[]>([folderVaultExtension])
+    const extensions = ref<Extension[]>([vaultSchemeExtension])
 
     const routes = [
       {

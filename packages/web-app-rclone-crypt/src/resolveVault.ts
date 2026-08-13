@@ -1,6 +1,6 @@
-import { FolderVaultClaim, FolderVaultEngine, useFolderVaultStore } from '@opencloud-eu/web-pkg'
+import { VaultClaim, VaultEngine, useVaultStore } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { vaultRootForSpace } from './vaultPath'
+import { vaultRootForSpace } from './vaultLocation'
 
 /**
  * Returns the vault root + the route the runtime should push to in order
@@ -8,7 +8,7 @@ import { vaultRootForSpace } from './vaultPath'
  * route the user to the plugin's unlock page" - even when `resolveVault`
  * itself returns null because no engine is in the store yet.
  */
-export function claimsVaultPath(space: SpaceResource, path: string): FolderVaultClaim | null {
+export function claimsVaultPath(space: SpaceResource, path: string): VaultClaim | null {
   if (!path) {
     return null
   }
@@ -33,9 +33,9 @@ export function claimsVaultPath(space: SpaceResource, path: string): FolderVault
 /**
  * Look up the unlocked engine for (space, path) - or return null when the
  * vault isn't unlocked yet. The plugin's unlock page builds the engine and
- * writes it into the folder-vault store; this function just reads it back.
+ * writes it into the vault store; this function just reads it back.
  */
-export function resolveVault(space: SpaceResource, path: string): FolderVaultEngine | null {
+export function resolveVault(space: SpaceResource, path: string): VaultEngine | null {
   if (!path) {
     return null
   }
@@ -43,5 +43,5 @@ export function resolveVault(space: SpaceResource, path: string): FolderVaultEng
   if (!vaultRoot) {
     return null
   }
-  return useFolderVaultStore().getEngine(space.id, vaultRoot) ?? null
+  return useVaultStore().getEngine(space.id, vaultRoot) ?? null
 }

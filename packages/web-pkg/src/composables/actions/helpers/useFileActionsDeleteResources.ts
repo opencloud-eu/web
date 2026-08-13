@@ -18,10 +18,10 @@ import {
   useSpacesStore,
   useConfigStore,
   useExtensionRegistry,
-  useFolderVaultStore,
+  useVaultStore,
   useResourcesStore
 } from '../../piniaStores'
-import { encryptResourcePathsForServer } from '../../../helpers/folderVault'
+import { encryptResourcePathsForServer } from '../../../helpers/vault'
 import { storeToRefs } from 'pinia'
 import { useDeleteWorker } from '../../webWorkers'
 import { useEventBus } from '../../eventBus'
@@ -49,7 +49,7 @@ export const useFileActionsDeleteResources = () => {
   const resourcesStore = useResourcesStore()
   const { currentFolder } = storeToRefs(resourcesStore)
   const extensionRegistry = useExtensionRegistry()
-  const folderVaultStore = useFolderVaultStore()
+  const vaultStore = useVaultStore()
 
   const resourcesToDelete = ref<Resource[]>([])
 
@@ -262,7 +262,7 @@ export const useFileActionsDeleteResources = () => {
             const deletedIds = new Set(successful.map(({ id }) => id))
             resourcesForDeletion
               .filter((r) => deletedIds.has(r.id))
-              .forEach((r) => folderVaultStore.clearEnginesUnder(spaceForDeletion.id, r.path))
+              .forEach((r) => vaultStore.clearEnginesUnder(spaceForDeletion.id, r.path))
           }
 
           resourcesStore.removeResourcesFromDeleteQueue(failed.map(({ resource }) => resource.id))

@@ -16,7 +16,7 @@ import { computed, markRaw, unref } from 'vue'
 import { SDKSearch } from './search'
 import { useSideBarPanels } from './composables/extensions/useFileSideBars'
 import { useFolderViews } from './composables/extensions/useFolderViews'
-import { useFolderVaultIndicator } from './composables/extensions/useFolderVaultIndicator'
+import { useVaultIndicator } from './composables/extensions/useVaultIndicator'
 import { useFileActions } from './composables/extensions/useFileActions'
 import { useSpaceActions } from './composables/extensions/useSpaceActions'
 import { useUploadActions } from './composables/extensions/useUploadActions'
@@ -44,7 +44,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const uploadActionExtensions = useUploadActions()
   const folderViewExtensions = useFolderViews()
   const sideBarPanelExtensions = useSideBarPanels()
-  const folderVaultIndicator = useFolderVaultIndicator()
+  const vaultIndicator = useVaultIndicator()
 
   return computed<Extension[]>(() => [
     ...fileActionExtensions,
@@ -52,7 +52,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
     ...uploadActionExtensions,
     ...folderViewExtensions,
     ...sideBarPanelExtensions,
-    folderVaultIndicator,
+    vaultIndicator,
     {
       id: 'com.github.opencloud-eu.web.files.search',
       extensionPointIds: ['app.search.provider'],
