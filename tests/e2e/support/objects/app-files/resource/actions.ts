@@ -1072,7 +1072,9 @@ export interface moveOrCopyMultipleResourceArgs extends Omit<moveOrCopyResourceA
   resources: string[]
 }
 
-export const pasteResource = async (args: moveOrCopyResourceArgs): Promise<void> => {
+export const pasteResource = async (
+  args: Omit<moveOrCopyResourceArgs, 'method'>
+): Promise<void> => {
   const { page, resource, newLocation, action, option } = args
   const newLocationPath = newLocation.split('/')
   const frame = page.frameLocator('iframe[title="OpenCloud"]')
@@ -2763,4 +2765,25 @@ const unlockVault = async ({
 export const lockVault = async ({ page, vault }: { page: Page; vault: string }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, vault)).click({ button: 'right' })
   await page.locator(filesContextLockVaultAction).click()
+}
+
+export const copyAllTo = async ({
+  page,
+  source,
+  destination
+}: {
+  page: Page
+  source: string
+  destination: string
+}): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, source)).click()
+  await selectAll({ page })
+  await selectBatchAction(page, 'copy')
+
+  await pasteResource({
+    page,
+    resource: source,
+    newLocation: destination,
+    action: 'copy'
+  })
 }

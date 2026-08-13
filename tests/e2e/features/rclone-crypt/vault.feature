@@ -114,7 +114,7 @@ Feature: Work with an rclone-crypt encrypted vault
       | my.vault/hello.txt | txtFile | hello world | foobar   |
     And "Alice" navigates to the personal space page
     When "Alice" renames the following resource
-      | resource | as                 |
+      | resource | as            |
       | my.vault | renamed.vault |
     And "Alice" enters the vault "renamed.vault" with passphrase "foobar"
     Then following resource should be displayed in the files list for user "Alice"
@@ -139,6 +139,39 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" creates the following resources
       | resource | type   |
       | lorem    | folder |
+    And "Alice" logs out
+
+  @rclone-crypt
+  Scenario: Vault with content but no integrity token
+    When "Alice" logs in
+    And "Alice" creates the following resources
+      | resource       | type   | password |
+      | vaultOne.vault | vault  | foobar   |
+      | vaultTwo       | folder |          |
+    And "Alice" enters the vault "vaultOne.vault" with passphrase "foobar"
+    And "Alice" creates the following resources
+      | resource  | type    | content       |
+      | lorem.txt | txtFile | hello content |
+    And "Alice" opens the "files" app
+    And "Alice" renames the following resource
+      | resource       | as       |
+      | vaultOne.vault | vaultOne |
+    And "Alice" copies all resource from folder "vaultOne" to folder "Personal/vaultTwo"
+    And "Alice" navigates to the personal space page
+    And "Alice" opens folder "vaultTwo"
+    Then following resource should not be displayed in the files list for user "Alice"
+      | resource  |
+      | lorem.txt |
+    When "Alice" navigates to the personal space page
+    And "Alice" renames the following resource
+      | resource | as             |
+      | vaultTwo | vaultTwo.vault |
+    And "Alice" enters the vault "vaultTwo.vault" with passphrase "foobar"
+    And "Alice" opens the following file in texteditor
+      | resource  |
+      | lorem.txt |
+    Then "Alice" should see the content "hello content" in editor "TextEditor"
+    And "Alice" closes the file viewer
     And "Alice" logs out
 
   @rclone-crypt

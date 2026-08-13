@@ -487,4 +487,8 @@ export class Resource {
   async lockVault(vault: string): Promise<void> {
     await po.lockVault({ page: this.#page, vault })
   }
+
+  async copyAllTo(source: string, destination: string): Promise<void> {
+    await po.copyAllTo({ page: this.#page, source, destination })
+  }
 }

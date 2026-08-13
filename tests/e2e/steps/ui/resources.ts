@@ -1352,3 +1352,18 @@ When(
     await resourceObject.lockVault(vault)
   }
 )
+
+When(
+  '{string} copies all resource from folder {string} to folder {string}',
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    source: string,
+    destination: string
+  ): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+
+    await resourceObject.copyAllTo(source, destination)
+  }
+)
