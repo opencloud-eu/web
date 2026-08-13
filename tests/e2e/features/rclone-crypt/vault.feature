@@ -46,6 +46,7 @@ Feature: Work with an rclone-crypt encrypted vault
       | resource       |
       | testavatar.png |
     Then "Alice" is in a media-viewer
+    And "Alice" closes the file viewer
     And "Alice" logs out
 
   
@@ -123,3 +124,79 @@ Feature: Work with an rclone-crypt encrypted vault
       | resource  | type |
       | hello.txt | file |
     And "Alice" logs out
+
+  @rclone-crypt
+  Scenario: Create a vault inside a project space
+    Given "Admin" creates following user using API
+      | id    |
+      | Brian |
+    And "Admin" assigns following role to the users using API
+      | id    | role        |
+      | Alice | Space Admin |
+    When "Alice" logs in
+    And "Alice" creates the following project spaces using API
+      | name     |
+      | ourspace |
+    And "Alice" navigates to the project space "ourspace"
+    And "Alice" creates the following resources
+      | resource                | type    | content             | password |
+      | my.vault                | vault   |                     | foobar   |
+      | my.vault/sub            | folder  |                     | foobar   |
+      | my.vault/hello.txt      | txtFile | hello world         | foobar   |
+    And "Alice" uploads the following resource
+      | resource          | to           | password |
+      | PARENT/parent.txt | my.vault/sub | foobar   |
+      | testavatar.png    | my.vault/sub | foobar   |
+    And "Alice" enters the vault "my.vault" with passphrase "foobar"
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource  |
+      | hello.txt |
+      | sub       |
+    When "Alice" opens the following file in texteditor
+      | resource  |
+      | hello.txt |
+    Then "Alice" should see the content "hello world" in editor "TextEditor"
+    And "Alice" closes the file viewer
+    When "Alice" opens folder "sub"
+    Then following resources should be displayed in the files list for user "Alice"
+      | resource       |
+      | testavatar.png |
+      | parent.txt     |
+    When "Alice" opens the following file in texteditor
+      | resource   |
+      | parent.txt |
+    Then "Alice" should see the content "OpenCloud test text file parent" in editor "TextEditor"
+    And "Alice" closes the file viewer
+    When "Alice" opens the following file in mediaviewer
+      | resource       |
+      | testavatar.png |
+    Then "Alice" is in a media-viewer
+    And "Alice" closes the file viewer
+    When "Alice" navigates to the project space "ourspace"
+    And "Alice" adds following user to the project space
+      | user     | role     | kind  |
+      | Brian    | Can edit | user  |
+    Then "Alice" logs out
+
+    # check vault by space member
+    When "Brian" logs in
+    And "Brian" navigates to the project space "ourspace"
+    And "Brian" enters the vault "my.vault" with passphrase "foobar"
+    And "Brian" opens the following file in texteditor
+      | resource  |
+      | hello.txt |
+    Then "Brian" should see the content "hello world" in editor "TextEditor"
+    And "Brian" closes the file viewer
+    When "Brian" opens folder "sub"
+    And "Brian" opens the following file in texteditor
+      | resource   |
+      | parent.txt |
+    Then "Brian" should see the content "OpenCloud test text file parent" in editor "TextEditor"
+    And "Brian" closes the file viewer
+    When "Brian" opens the following file in mediaviewer
+      | resource       |
+      | testavatar.png |
+    Then "Brian" is in a media-viewer
+    And "Brian" closes the file viewer
+    And "Brian" logs out
+
