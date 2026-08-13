@@ -3,7 +3,8 @@ import {
   MeUserApiFactory,
   UserApiFactory,
   UserAppRoleAssignmentApiFactory,
-  UsersApiFactory
+  UsersApiFactory,
+  UserTeamworkApiFactory
 } from './../generated'
 import type { GraphFactoryOptions } from './../types'
 import type { GraphUsers } from './types'
@@ -22,6 +23,7 @@ export const UsersFactory = ({ axiosClient, config }: GraphFactoryOptions): Grap
     config.basePath,
     axiosClient
   )
+  const userTeamworkApiFactory = UserTeamworkApiFactory(config, config.basePath, axiosClient)
 
   return {
     async getUser(id, options, requestOptions) {
@@ -92,6 +94,10 @@ export const UsersFactory = ({ axiosClient, config }: GraphFactoryOptions): Grap
         requestOptions
       )
       return data
+    },
+
+    async sendActivityNotification(id, notification, requestOptions) {
+      await userTeamworkApiFactory.sendActivityNotification(id, notification, requestOptions)
     }
   }
 }
