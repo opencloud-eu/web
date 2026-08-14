@@ -121,6 +121,11 @@ When creating GitHub issues, use the appropriate issue template from `.github/IS
 
 Use templates exactly as provided. Fill in all required fields without removing any sections or options. Issue titles MUST be descriptive, human-readable, and without any prefix. Do not use prefixes like "feat:", "fix:", "User story:", "Bug:", "Type:Story", or similar in issue titles. Prefix-based conventions are only for commit messages.
 
+### Commits
+
+- **Commit messages** – use conventional commit format: `type: description` or `type(scope): description`. Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`. Example: `feat: add filters to favorites view`.
+- **AI attributions** – do not add co-authorship attributions for AI tools in commit messages.
+
 ### Creating Pull Requests
 
 Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly as provided. Do not omit or modify any sections.
@@ -130,8 +135,6 @@ Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly a
 - **How Has This Been Tested** – specify test environment and list all test cases.
 - **Types of changes** – check all applicable boxes. Do not remove unchecked options (Bugfix, Enhancement, Breaking change, Technical debt, Tests, Documentation, Maintenance).
 - **Labels** – set at least one appropriate label from `.github/workflows/labels.yml` (`Type:Bug`, `Type:Regression`, `Type:Enhancement`, `Type:Feature`, `Type:Breaking-Change`, `Type:Test`, `Type:Documentation`, `Type:Maintenance`, `Type:Security`, `Type:Dependencies`, `Type:DevOps`).
-- **Commit messages** – use conventional commit format: `type: description` or `type(scope): description`. Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`. Example: `feat: add filters to favorites view`.
-- **AI attributions** – do not add co-authorship attributions for AI tools in commit messages.
 
 ---
 
