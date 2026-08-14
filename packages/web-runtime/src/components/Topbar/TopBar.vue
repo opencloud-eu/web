@@ -13,7 +13,7 @@
           <oc-image
             :src="logoWithVersion"
             :alt="sidebarLogoAlt"
-            class="oc-logo-image align-middle ml-1 h-[28px] md:h-[36px] w-auto select-none"
+            class="oc-logo-image oc-logo-pulsate align-middle ml-1 h-[28px] md:h-[36px] w-auto select-none"
           />
         </picture>
       </router-link>
@@ -155,6 +155,22 @@ const logoMobileWithVersion = computed(() => {
     image-rendering: crisp-edges;
     image-rendering: pixelated;
     image-rendering: -webkit-optimize-contrast;
+  }
+
+  .oc-logo-pulsate {
+    animation: pulsate 2s infinite ease-in-out;
+  }
+
+  @keyframes pulsate {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 }
 </style>
