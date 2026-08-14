@@ -428,6 +428,10 @@ export class Resource {
     await po.openRightSidebar({ page: this.#page, resource })
   }
 
+  async checkFileDetailsSidebar(): Promise<void> {
+    await po.checkFileDetailsSidebar({ page: this.#page })
+  }
+
   async openResourcePanel(panel: PanelType, resource: string): Promise<void> {
     await po.openResourcePanel({ page: this.#page, resource, panel })
   }

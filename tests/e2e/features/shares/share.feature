@@ -146,6 +146,9 @@ Feature: share
       | simple.pdf       | Brian     | user | Can edit | file         |
       | sharedFile.txt   | Brian     | user | Can edit | file         |
     And "Alice" navigates to the shared with others page
+    # regression check for https://github.com/opencloud-eu/web/pull/3098:
+    And "Alice" opens the right sidebar of the resource "testavatar.jpeg"
+    Then "Alice" should see the file details in the sidebar
     And "Alice" opens the following file in mediaviewer
       | resource        |
       | testavatar.jpeg |
@@ -154,6 +157,9 @@ Feature: share
 
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
+    # regression check for https://github.com/opencloud-eu/web/pull/3098:
+    And "Brian" opens the right sidebar of the resource "sharedFile.txt"
+    Then "Brian" should see the file details in the sidebar
     And "Brian" disables the sync for the following share
       | name           |
       | sharedFile.txt |

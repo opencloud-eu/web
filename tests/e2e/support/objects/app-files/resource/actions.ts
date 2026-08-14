@@ -153,6 +153,8 @@ const euroOfficeInfoDialogConfirm = `.alert button[result="ok"]`
 const fileThumbnail = `//img[@data-test-thumbnail-resource-name="%s"]`
 const fileIcon = '#oc-file-details-sidebar .details-icon'
 const fileIconPreview = '#oc-file-details-sidebar .details-preview'
+const fileDetailsSidebar = '#oc-file-details-sidebar'
+const fileDetailsTimestamp = '#oc-file-details-sidebar [data-testid="timestamp"]'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 const subContextMenuAction = '//*[@id="app-runtime-drop"]//span[text()="%s"]'
@@ -2572,6 +2574,12 @@ export const openRightSidebar = async ({
   resource: string
 }): Promise<void> => {
   await sidebar.open({ page, resource })
+}
+
+// Regression guard for https://github.com/opencloud-eu/web/pull/3098:
+export const checkFileDetailsSidebar = async ({ page }: { page: Page }): Promise<void> => {
+  await expect(page.locator(fileDetailsSidebar)).toBeVisible()
+  await expect(page.locator(fileDetailsTimestamp)).toBeVisible()
 }
 
 export type PanelType = 'actions' | 'sharing' | 'versions' | 'activities'

@@ -1236,6 +1236,15 @@ When(
   }
 )
 
+Then(
+  '{string} should see the file details in the sidebar',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.checkFileDetailsSidebar()
+  }
+)
+
 When(
   '{string} opens a {string} panel of the resource {string}',
   async (
