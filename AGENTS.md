@@ -119,7 +119,7 @@ When creating GitHub issues, use the appropriate issue template from `.github/IS
 - **Feature requests** (`2-feature-request.yml`) – for proposing new features. Add label `Type:Feature-Request`.
 - **User stories** (`3-user-story.yml`) – for describing features with clear user value. Add label `Type:Story`.
 
-Use templates exactly as provided. Fill in all required fields without removing any sections or options. Use descriptive, human-readable titles without any prefixes (no "feat:", "fix:", "User story:", "Bug:", etc.).
+Use templates exactly as provided. Fill in all required fields without removing any sections or options. Issue titles MUST be descriptive, human-readable, and without any prefix. Do not use prefixes like "feat:", "fix:", "User story:", "Bug:", "Type:Story", or similar in issue titles. Prefix-based conventions are only for commit messages.
 
 ### Creating Pull Requests
 
