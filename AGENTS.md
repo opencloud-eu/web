@@ -129,6 +129,7 @@ Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly a
 
 - **Description** – provide detailed description of changes (add screenshots if appropriate).
 - **Related Issue** – link related issues using `Fixes #issue_number`.
+- **Assignee** – assign the responsible person to the pull request.
 - **How Has This Been Tested** – specify test environment and list all test cases.
 - **Types of changes** – check all applicable boxes. Do not remove unchecked options (Bugfix, Enhancement, Breaking change, Technical debt, Tests, Documentation, Maintenance).
 - **Labels** – set at least one appropriate label from `.github/workflows/labels.yml` (`Type:Bug`, `Type:Regression`, `Type:Enhancement`, `Type:Feature`, `Type:Breaking-Change`, `Type:Test`, `Type:Documentation`, `Type:Maintenance`, `Type:Security`, `Type:Dependencies`, `Type:DevOps`).
