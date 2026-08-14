@@ -4,7 +4,16 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @maki5, @schweigisito, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @dschmidt, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
+
+### ✅ Tests
+
+- test(e2e): extend e2e coverage for rclone-crypt vault [[#3102](https://github.com/opencloud-eu/web/pull/3102)]
+- test(e2e): add coverage for opening files with special characters [[#3099](https://github.com/opencloud-eu/web/pull/3099)]
+- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
+- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 🐛 Bug Fixes
 
@@ -28,14 +37,6 @@
 - fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
 - fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
 - fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
-
-### ✅ Tests
-
-- test(e2e): add coverage for opening files with special characters [[#3099](https://github.com/opencloud-eu/web/pull/3099)]
-- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
-- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
-- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
-- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 📈 Enhancement
 
