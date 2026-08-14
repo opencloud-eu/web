@@ -115,9 +115,9 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 
 When creating GitHub issues, use the appropriate issue template from `.github/ISSUE_TEMPLATE/`:
 
-- **Bug reports** (`1-bug-report.yml`) – for reporting bugs
-- **Feature requests** (`2-feature-request.yml`) – for proposing new features
-- **User stories** (`3-user-story.yml`) – for describing features with clear user value
+- **Bug reports** (`1-bug-report.yml`) – for reporting bugs. Add label `Type:Bug`.
+- **Feature requests** (`2-feature-request.yml`) – for proposing new features. Add label `Type:Feature-Request`.
+- **User stories** (`3-user-story.yml`) – for describing features with clear user value. Add label `Type:Story`.
 
 Use templates exactly as provided. Fill in all required fields without removing any sections or options.
 
