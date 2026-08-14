@@ -107,6 +107,40 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 - **Prerequisites:** Run `pnpm build` before executing e2e tests. A running OpenCloud backend is also required — use `docker-compose up -d` to start one locally.
 - **Run:** `pnpm test:e2e`
 
+---
+
+## GitHub Issues and Pull Requests
+
+### Creating Issues
+
+When creating GitHub issues, use the appropriate issue template from `.github/ISSUE_TEMPLATE/`:
+
+- **Bug reports** (`1-bug-report.yml`) – for reporting bugs
+- **Feature requests** (`2-feature-request.yml`) – for proposing new features
+- **User stories** (`3-user-story.yml`) – for describing features with clear user value
+
+Follow the structure and required fields in each template.
+
+### Creating Pull Requests
+
+When creating pull requests:
+
+- Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md`
+- Provide a clear description of changes
+- Link related issues using `Fixes #issue_number`
+- Describe how changes were tested
+- Check appropriate boxes for types of changes
+- Set at least one appropriate label from `.github/workflows/labels.yml`:
+  - `Type:Bug`, `Type:Regression`, `Type:Enhancement`, `Type:Feature`, `Type:Breaking-Change`, `Type:Test`, `Type:Documentation`, `Type:Maintenance`, `Type:Security`, `Type:Dependencies`, `Type:DevOps`
+- Assign reviewers
+- Follow commit message conventions:
+  - Use conventional commit format: `type: description` or `type(scope): description`
+  - Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`
+  - Example: `feat: add filters to favorites view` or `fix: encode hash character in app route URLs`
+- Do not add co-authorship attributions for AI tools in commit messages
+
+---
+
 ## Documentation
 
 Full developer documentation is available at https://docs.opencloud.eu/docs/dev/web/.
