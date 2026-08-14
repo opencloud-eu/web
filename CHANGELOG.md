@@ -6,6 +6,16 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
 
+### ✅ Tests
+
+- test(e2e): add sidebar details check for shared resources [[#3116](https://github.com/opencloud-eu/web/pull/3116)]
+- test(e2e): extend e2e coverage for rclone-crypt vault [[#3102](https://github.com/opencloud-eu/web/pull/3102)]
+- test(e2e): add coverage for opening files with special characters [[#3099](https://github.com/opencloud-eu/web/pull/3099)]
+- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
+- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
+
 ### 📚 Documentation
 
 - docs: add GitHub workflow guidelines to AGENTS.md [[#3121](https://github.com/opencloud-eu/web/pull/3121)]
@@ -24,15 +34,6 @@
 - feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
 - feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
 - feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
-
-### ✅ Tests
-
-- test(e2e): extend e2e coverage for rclone-crypt vault [[#3102](https://github.com/opencloud-eu/web/pull/3102)]
-- test(e2e): add coverage for opening files with special characters [[#3099](https://github.com/opencloud-eu/web/pull/3099)]
-- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
-- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
-- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
-- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 🐛 Bug Fixes
 
