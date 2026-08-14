@@ -109,7 +109,7 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 
 ---
 
-## GitHub Issues and Pull Requests
+## GitHub Issues, Pull Requests and Commits
 
 ### Creating Issues
 
