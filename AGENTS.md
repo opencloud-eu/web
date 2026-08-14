@@ -119,24 +119,34 @@ When creating GitHub issues, use the appropriate issue template from `.github/IS
 - **Feature requests** (`2-feature-request.yml`) – for proposing new features
 - **User stories** (`3-user-story.yml`) – for describing features with clear user value
 
-Follow the structure and required fields in each template.
+**IMPORTANT:** Use the templates exactly as provided. Fill in all required fields completely without removing any sections or options.
 
 ### Creating Pull Requests
 
-When creating pull requests:
+When creating pull requests, follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` **exactly as provided**. Do not omit or modify any sections.
 
-- Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md`
-- Provide a clear description of changes
-- Link related issues using `Fixes #issue_number`
-- Describe how changes were tested
-- Check appropriate boxes for types of changes
-- Set at least one appropriate label from `.github/workflows/labels.yml`:
+Key requirements:
+
+- **Description:** Provide a detailed description of changes (add screenshots if appropriate)
+- **Related Issue:** Link related issues using `Fixes #issue_number`
+- **How Has This Been Tested:**
+  - Specify test environment
+  - List all test cases (test case 1, test case 2, etc.)
+- **Types of changes:** Check **all** applicable boxes (do not remove unchecked options):
+  - `[ ] Bugfix`
+  - `[ ] Enhancement (a change that doesn't break existing code or deployments)`
+  - `[ ] Breaking change (a modification that affects current functionality)`
+  - `[ ] Technical debt (addressing code that needs refactoring or improvements)`
+  - `[ ] Tests (adding or improving tests)`
+  - `[ ] Documentation (updates or additions to documentation)`
+  - `[ ] Maintenance (like dependency updates or tooling adjustments)`
+- **Labels:** Set at least one appropriate label from `.github/workflows/labels.yml`:
   - `Type:Bug`, `Type:Regression`, `Type:Enhancement`, `Type:Feature`, `Type:Breaking-Change`, `Type:Test`, `Type:Documentation`, `Type:Maintenance`, `Type:Security`, `Type:Dependencies`, `Type:DevOps`
-- Follow commit message conventions:
-  - Use conventional commit format: `type: description` or `type(scope): description`
+- **Commit messages:** Follow conventional commit format:
+  - Format: `type: description` or `type(scope): description`
   - Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`
   - Example: `feat: add filters to favorites view` or `fix: encode hash character in app route URLs`
-- Do not add co-authorship attributions for AI tools in commit messages
+- **No AI attributions:** Do not add co-authorship attributions for AI tools in commit messages
 
 ---
 
