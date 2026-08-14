@@ -111,7 +111,7 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 
 ## GitHub Issues, Pull Requests and Commits
 
-- **Language requirement** – all GitHub communication must be in English.
+- **Language requirement** – GitHub content MUST be written in English only.
 
 ### Creating Issues
 
