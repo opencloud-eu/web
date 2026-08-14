@@ -111,6 +111,8 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 
 ## GitHub Issues, Pull Requests and Commits
 
+- **Language requirement** – all GitHub communication must be in English.
+
 ### Creating Issues
 
 When creating GitHub issues, use the appropriate issue template from `.github/ISSUE_TEMPLATE/`:
