@@ -72,6 +72,10 @@ describe('Top Bar component', () => {
       expect(wrapper.find(`${componentName}-stub`).exists()).toBeTruthy()
     }
   )
+  it('has a pulsating logo', () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.find('.oc-logo-wrapper').html()).toContain('oc-logo-pulsate')
+  })
 })
 
 const getWrapper = ({
