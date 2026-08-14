@@ -155,6 +155,27 @@ const logoMobileWithVersion = computed(() => {
     image-rendering: crisp-edges;
     image-rendering: pixelated;
     image-rendering: -webkit-optimize-contrast;
+    transform-origin: center;
+    will-change: transform;
+    animation: oc-topbar-logo-attention 3.6s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #oc-topbar .oc-logo-image {
+      animation: none;
+    }
+  }
+
+  @keyframes oc-topbar-logo-attention {
+    0% {
+      transform: rotate(0deg) scale(1);
+    }
+    50% {
+      transform: rotate(180deg) scale(1.12);
+    }
+    100% {
+      transform: rotate(360deg) scale(1);
+    }
   }
 }
 </style>
