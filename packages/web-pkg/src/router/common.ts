@@ -54,7 +54,8 @@ export const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
         component: components.Favorites,
         meta: {
           authContext: 'user',
-          title: $gettext('Favorite files')
+          title: $gettext('Favorite files'),
+          contextQueryItems: ['q_lastModified', 'q_mediaType', 'sort-by', 'sort-dir']
         }
       }
     ]
