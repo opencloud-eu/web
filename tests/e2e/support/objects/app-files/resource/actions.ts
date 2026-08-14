@@ -109,6 +109,8 @@ const pauseUploadButton = '#pause-upload-info-btn[aria-label="Pause upload"]'
 const resumeUploadButton = '#pause-upload-info-btn[aria-label="Resume upload"]'
 const cancelUploadButton = '#cancel-upload-info-btn'
 const filesContextMenuAction = 'div[id^="context-menu-drop"] button.oc-files-actions-%s-trigger'
+const filesContextLockVaultAction =
+  'div[id^="context-menu-drop"] button.oc-files-actions-lock-vault'
 const highlightedTileCardSelector = '.oc-tile-card-selected'
 const emptyTrashbinButtonSelector = '.oc-files-actions-empty-trash-bin-trigger'
 const resourceLockIcon =
@@ -502,6 +504,14 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       break
     }
   }
+}
+
+export const setupVaultPassword = async ({ page, password }: { page: Page; password: string }) => {
+  await page.locator(vaultSetupPassphraseInput).fill(password)
+  // Committing the passphrase writes the integrity token onto the new folder.
+  const proppatchPromise = page.waitForResponse((resp) => resp.request().method() === 'PROPPATCH')
+  await page.locator(unlockVaultBtn).click()
+  await proppatchPromise
 }
 
 const createDocumentFile = async (
@@ -1062,7 +1072,9 @@ export interface moveOrCopyMultipleResourceArgs extends Omit<moveOrCopyResourceA
   resources: string[]
 }
 
-export const pasteResource = async (args: moveOrCopyResourceArgs): Promise<void> => {
+export const pasteResource = async (
+  args: Omit<moveOrCopyResourceArgs, 'method'>
+): Promise<void> => {
   const { page, resource, newLocation, action, option } = args
   const newLocationPath = newLocation.split('/')
   const frame = page.frameLocator('iframe[title="OpenCloud"]')
@@ -1256,13 +1268,13 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
     case 'dropdown-menu': {
       await page.locator(util.format(resourceNameSelector, resourceBase)).click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
-      await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
+      await pasteResource({ page, resource: resourceBase, newLocation, action, option })
       break
     }
     case 'batch-action': {
       await page.locator(util.format(checkBox, resourceBase)).click()
       await selectBatchAction(page, action)
-      await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
+      await pasteResource({ page, resource: resourceBase, newLocation, action, option })
       break
     }
     case 'sidebar-panel': {
@@ -1271,7 +1283,7 @@ export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<
 
       const actionButtonType = action === 'copy' ? 'Copy to' : 'Move to'
       await page.locator(util.format(sideBarActionButton, actionButtonType)).click()
-      await pasteResource({ page, resource: resourceBase, newLocation, action, method, option })
+      await pasteResource({ page, resource: resourceBase, newLocation, action, option })
       break
     }
     case 'keyboard': {
@@ -2086,7 +2098,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
           break
         default:
           // in case of error <img> doesn't contain src="blob:https://url"
-          expect(await page.locator(previewImage).getAttribute('src')).toContain('blob')
+          expect(await page.locator(previewImage).getAttribute('src')).toContain('blob:https://')
       }
       break
     }
@@ -2748,4 +2760,30 @@ const unlockVault = async ({
   await expect(unlockButton).toBeDisabled()
   await page.locator('#vault-passphrase').fill(passphrase)
   await unlockButton.click()
+}
+
+export const lockVault = async ({ page, vault }: { page: Page; vault: string }): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, vault)).click({ button: 'right' })
+  await page.locator(filesContextLockVaultAction).click()
+}
+
+export const copyAllTo = async ({
+  page,
+  source,
+  destination
+}: {
+  page: Page
+  source: string
+  destination: string
+}): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, source)).click()
+  await selectAll({ page })
+  await selectBatchAction(page, 'copy')
+
+  await pasteResource({
+    page,
+    resource: source,
+    newLocation: destination,
+    action: 'copy'
+  })
 }
