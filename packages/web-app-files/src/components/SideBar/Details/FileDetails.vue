@@ -1,6 +1,6 @@
 <template>
   <div id="oc-file-details-sidebar" class="p-2">
-    <div v-if="hasContent">
+    <div v-if="resource && hasContent">
       <div
         class="relative flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4"
       >
@@ -331,7 +331,7 @@ const stickyShowVersions = ref(false)
 watch(
   versionsLoading,
   (loading) => {
-    if (!loading) {
+    if (unref(resource) && !loading) {
       stickyShowVersions.value = !!unref(showVersions)
     }
   },
@@ -352,7 +352,7 @@ const capitalizedTimestamp = computed(() => {
 })
 
 watch(
-  () => unref(resource).mdate,
+  () => unref(resource)?.mdate,
   async () => {
     if (unref(resource)) {
       preview.value = await loadPreview({
