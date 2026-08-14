@@ -119,7 +119,7 @@ When creating GitHub issues, use the appropriate issue template from `.github/IS
 - **Feature requests** (`2-feature-request.yml`) – for proposing new features. Add label `Type:Feature-Request`.
 - **User stories** (`3-user-story.yml`) – for describing features with clear user value. Add label `Type:Story`.
 
-Use templates exactly as provided. Fill in all required fields without removing any sections or options. Use descriptive, human-readable titles without prefixes like `feat:` or `fix:` (e.g., "Add resizable table columns to text editor" instead of "feat: add resizable table columns to text editor").
+Use templates exactly as provided. Fill in all required fields without removing any sections or options. Use descriptive, human-readable titles.
 
 ### Creating Pull Requests
 
