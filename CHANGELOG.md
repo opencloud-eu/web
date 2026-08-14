@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
 
+### 📚 Documentation
+
+- docs: add GitHub workflow guidelines to AGENTS.md [[#3121](https://github.com/opencloud-eu/web/pull/3121)]
+
 ### 📈 Enhancement
 
 - feat: add filters to favorites view [[#3087](https://github.com/opencloud-eu/web/pull/3087)]
