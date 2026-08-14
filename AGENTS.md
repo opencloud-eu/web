@@ -132,7 +132,6 @@ When creating pull requests:
 - Check appropriate boxes for types of changes
 - Set at least one appropriate label from `.github/workflows/labels.yml`:
   - `Type:Bug`, `Type:Regression`, `Type:Enhancement`, `Type:Feature`, `Type:Breaking-Change`, `Type:Test`, `Type:Documentation`, `Type:Maintenance`, `Type:Security`, `Type:Dependencies`, `Type:DevOps`
-- Assign reviewers
 - Follow commit message conventions:
   - Use conventional commit format: `type: description` or `type(scope): description`
   - Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`
