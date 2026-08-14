@@ -119,11 +119,11 @@ When creating GitHub issues, use the appropriate issue template from `.github/IS
 - **Feature requests** (`2-feature-request.yml`) – for proposing new features
 - **User stories** (`3-user-story.yml`) – for describing features with clear user value
 
-**IMPORTANT:** Use the templates exactly as provided. Fill in all required fields completely without removing any sections or options.
+Use templates exactly as provided. Fill in all required fields without removing any sections or options.
 
 ### Creating Pull Requests
 
-When creating pull requests, follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` **exactly as provided**. Do not omit or modify any sections.
+Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly as provided. Do not omit or modify any sections.
 
 Key requirements:
 
