@@ -107,6 +107,40 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 - **Prerequisites:** Run `pnpm build` before executing e2e tests. A running OpenCloud backend is also required — use `docker-compose up -d` to start one locally.
 - **Run:** `pnpm test:e2e`
 
+---
+
+## GitHub Issues, Pull Requests and Commits
+
+- **Language requirement** – GitHub content MUST be written in English only.
+
+### Creating Issues
+
+When creating GitHub issues, use the appropriate issue template from `.github/ISSUE_TEMPLATE/`:
+
+- **Bug reports** (`1-bug-report.yml`) – for reporting bugs. Add label `Type:Bug`.
+- **Feature requests** (`2-feature-request.yml`) – for proposing new features. Add label `Type:Feature-Request`.
+- **User stories** (`3-user-story.yml`) – for describing features with clear user value. Add label `Type:Story`.
+
+Use templates exactly as provided. Fill in all required fields without removing any sections or options. Issue titles MUST be descriptive, human-readable, and without any prefix. Do not use prefixes like "feat:", "fix:", "User story:", "Bug:", "Type:Story", or similar in issue titles. Prefix-based conventions are only for commit messages.
+
+### Creating Pull Requests
+
+Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly as provided. Do not omit or modify any sections.
+
+- **Description** – provide detailed description of changes (add screenshots if appropriate).
+- **Related Issue** – link related issues using `Fixes #issue_number`.
+- **Assignee** – assign the responsible person to the pull request.
+- **How Has This Been Tested** – specify test environment and list all test cases.
+- **Types of changes** – check all applicable boxes. Do not remove unchecked options (Bugfix, Enhancement, Breaking change, Technical debt, Tests, Documentation, Maintenance).
+- **Labels** – set at least one appropriate label from `.github/workflows/labels.yml` (`Type:Bug`, `Type:Regression`, `Type:Enhancement`, `Type:Feature`, `Type:Breaking-Change`, `Type:Test`, `Type:Documentation`, `Type:Maintenance`, `Type:Security`, `Type:Dependencies`, `Type:DevOps`).
+
+### Commits
+
+- **Commit messages** – use conventional commit format: `type: description` or `type(scope): description`. Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`. Example: `feat: add filters to favorites view`.
+- **AI attributions** – do not add co-authorship attributions for AI tools in commit messages.
+
+---
+
 ## Documentation
 
 Full developer documentation is available at https://docs.opencloud.eu/docs/dev/web/.
