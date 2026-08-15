@@ -17,6 +17,7 @@ export interface LoadingTask {
   id: string
   active: boolean
   state?: LoadingTaskState
+  warnBeforeUnload?: boolean
 }
 
 export interface LoadingTaskCallbackArguments {
@@ -59,17 +60,18 @@ export class LoadingService {
     callback: ({ setProgress }: LoadingTaskCallbackArguments) => Promise<T>,
     {
       debounceTime = DEFAULT_DEBOUNCE_TIME,
-      indeterminate = true
-    }: { debounceTime?: number; indeterminate?: boolean } = {}
+      indeterminate = true,
+      warnBeforeUnload = true
+    }: { debounceTime?: number; indeterminate?: boolean; warnBeforeUnload?: boolean } = {}
   ): Promise<T> {
     const task = {
       id: uuidV4(),
       active: false,
+      warnBeforeUnload,
       ...(!indeterminate && { state: { total: 0, current: 0 } })
     }
 
-    // If no tasks are in progress, attach an event listener for 'beforeunload'.
-    if (!this.tasks.length) {
+    if (warnBeforeUnload && !this.tasks.some((e) => e.warnBeforeUnload)) {
       window.addEventListener('beforeunload', this.onBeforeUnload)
     }
 
@@ -95,7 +97,7 @@ export class LoadingService {
   private removeTask(id: string): void {
     this.tasks = this.tasks.filter((e) => e.id !== id)
 
-    if (!this.tasks.length) {
+    if (!this.tasks.some((e) => e.warnBeforeUnload)) {
       window.removeEventListener('beforeunload', this.onBeforeUnload)
     }
 
