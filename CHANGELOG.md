@@ -62,6 +62,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.11.0 [[#3139](https://github.com/opencloud-eu/web/pull/3139)]
+- chore(deps): update pnpm to v11.22.0 [[#3137](https://github.com/opencloud-eu/web/pull/3137)]
 - fix(deps): update dependency pinia to v4.0.3 [[#3096](https://github.com/opencloud-eu/web/pull/3096)]
 - fix(deps): update dependency @sentry/vue to v10.70.0 [[#3071](https://github.com/opencloud-eu/web/pull/3071)]
 - chore(deps): update dependency @axe-core/playwright to v4.13.0 [[#3085](https://github.com/opencloud-eu/web/pull/3085)]
