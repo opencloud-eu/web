@@ -147,6 +147,11 @@ export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
           host: 'host.docker.internal',
           port,
           cors: true,
+          // the module federation plugin keeps rewriting .__mf__temp/* during
+          // dev; watching it turns every rewrite into a full page reload
+          watch: {
+            ignored: ['**/.__mf__temp/**']
+          },
           ...(customHttps && { https: customHttps })
         },
         test: {
