@@ -112,6 +112,7 @@ Enforced via ESLint (`packages/eslint-config`). Run `pnpm lint` to check.
 ## GitHub Issues, Pull Requests and Commits
 
 - **Language requirement** – GitHub content MUST be written in English only.
+- **AI attributions** – NEVER add AI tool attributions or co-authorship credits in any GitHub content (issues, pull requests, commit messages, comments).
 
 ### Creating Issues
 
@@ -137,7 +138,6 @@ Follow the pull request template in `.github/PULL_REQUEST_TEMPLATE.md` exactly a
 ### Commits
 
 - **Commit messages** – use conventional commit format: `type: description` or `type(scope): description`. Common types: `feat`, `fix`, `chore`, `refactor`, `docs`, `test`. Example: `feat: add filters to favorites view`.
-- **AI attributions** – do not add co-authorship attributions for AI tools in commit messages.
 
 ---
 
