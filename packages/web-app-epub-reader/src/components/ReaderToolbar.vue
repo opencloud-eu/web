@@ -6,9 +6,7 @@
       :chapter-label="chapterLabel"
       @update:selected-chapter="onChapterUpdate"
     />
-    <div
-      class="ml-auto shrink-0 flex items-center rounded-full border border-role-surface-container-highest bg-role-surface-container-low px-1 py-1.5 shadow-md sm:px-1.5 sm:py-2"
-    >
+    <oc-bubble-menu class="ml-auto shrink-0">
       <oc-button
         v-oc-tooltip="previousPageLabel"
         :aria-label="previousPageLabel"
@@ -108,7 +106,7 @@
           size-class="size-4"
         />
       </oc-button>
-    </div>
+    </oc-bubble-menu>
   </div>
 </template>
 
