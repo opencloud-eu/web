@@ -111,7 +111,10 @@
       </div>
 
       <template v-if="showFavoriteButton || showDeleteButton">
-        <span class="hidden h-5 w-px bg-role-outline-variant sm:block" />
+        <span
+          class="h-5 w-px bg-role-outline-variant"
+          :class="{ 'hidden sm:block': !showImageControls }"
+        />
         <div class="preview-controls-resource-group flex items-center gap-1">
           <oc-button
             v-if="showFavoriteButton"
