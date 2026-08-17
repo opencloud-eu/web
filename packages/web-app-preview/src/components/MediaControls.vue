@@ -7,9 +7,7 @@
     <oc-bubble-menu
       class="w-lg max-w-[80vw] flex flex-wrap items-center justify-center gap-x-1 gap-y-1"
     >
-      <div
-        class="preview-controls-navigation flex w-full items-center justify-between px-4 sm:w-auto sm:px-0"
-      >
+      <div class="preview-controls-navigation flex w-full items-center justify-center sm:w-auto">
         <oc-button
           v-oc-tooltip="previousDescription"
           class="preview-controls-previous raw-hover-surface"
@@ -19,10 +17,7 @@
         >
           <oc-icon name="arrow-left-s" fill-type="line" />
         </oc-button>
-        <p
-          v-if="!isFolderLoading"
-          class="preview-controls-action-count m-0 flex-1 px-2 text-center"
-        >
+        <p v-if="!isFolderLoading" class="preview-controls-action-count m-0 px-2 text-center">
           <span aria-hidden="true" v-text="ariaHiddenFileCount" />
           <span class="sr-only" v-text="screenreaderFileCount" />
         </p>
