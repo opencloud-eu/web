@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: remove delay for vault password error message [[#3140](https://github.com/opencloud-eu/web/pull/3140)]
 - fix(extension-sdk): ignore module federation temp files in the dev watcher [[#3136](https://github.com/opencloud-eu/web/pull/3136)]
 - fix(files): guard FileDetails against transient null resource [[#3098](https://github.com/opencloud-eu/web/pull/3098)]
 - fix: make ESC app close behave like top-bar close [[#3094](https://github.com/opencloud-eu/web/pull/3094)]
