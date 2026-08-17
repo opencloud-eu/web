@@ -8,7 +8,7 @@
       class="w-lg max-w-[80vw] flex flex-wrap items-center justify-center gap-x-1 gap-y-1"
     >
       <div
-        class="preview-controls-navigation flex w-full items-center justify-between px-2 sm:w-auto sm:px-0"
+        class="preview-controls-navigation flex w-full items-center justify-between px-4 sm:w-auto sm:px-0"
       >
         <oc-button
           v-oc-tooltip="previousDescription"
