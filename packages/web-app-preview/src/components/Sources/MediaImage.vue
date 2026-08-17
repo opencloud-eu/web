@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isSvgImage" ref="imageContainer" :data-id="file.id">
+  <div v-if="isSvgImage" ref="img" :data-id="file.id">
     <inline-svg
       :key="`media-svg-${file.id}`"
       :src="file.url"
@@ -12,7 +12,7 @@
   </div>
   <img
     v-else
-    ref="imageContainer"
+    ref="img"
     :key="`media-image-${file.id}`"
     :src="file.url"
     :alt="file.name"
@@ -47,7 +47,7 @@ const { file, currentImageRotation } = defineProps<{
 
 const eventBus = useEventBus()
 
-const imageContainer = useTemplateRef<HTMLElement>('imageContainer')
+const img = useTemplateRef<HTMLElement>('img')
 const panzoom = ref<PanzoomObject>()
 const isSvgImage = computed(() => file.mimeType.toLowerCase() === 'image/svg+xml')
 
@@ -105,7 +105,7 @@ const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) 
 }
 
 const destroyPanzoom = () => {
-  unref(imageContainer)?.removeEventListener('wheel', onWheelEvent)
+  unref(img)?.removeEventListener('wheel', onWheelEvent)
   unref(panzoom)?.destroy()
   panzoom.value = undefined
 }
@@ -116,7 +116,7 @@ const initPanzoom = async () => {
   // wait for next tick until image is rendered
   await nextTick()
 
-  panzoom.value = Panzoom(unref(imageContainer), {
+  panzoom.value = Panzoom(unref(img), {
     animate: false,
     duration: 300,
     overflow: 'auto',
@@ -124,7 +124,7 @@ const initPanzoom = async () => {
     maxScale: 10,
     setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
   } as PanzoomOptions)
-  unref(imageContainer).addEventListener('wheel', onWheelEvent, { passive: false })
+  unref(img).addEventListener('wheel', onWheelEvent, { passive: false })
 }
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
