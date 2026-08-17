@@ -126,6 +126,7 @@ describe('Preview app', () => {
 
       const mediaFile = {
         isImage: true,
+        mimeType: 'image/png',
         resource: mock<Resource>({ isInVault: false, hasPreview: () => false })
       }
       await (wrapper.vm as any).loadPreviewImage(mediaFile)
@@ -143,6 +144,7 @@ describe('Preview app', () => {
 
       const mediaFile = {
         isImage: true,
+        mimeType: 'image/png',
         resource: mock<Resource>({ isInVault: true, hasPreview: () => false })
       }
       await (wrapper.vm as any).loadPreviewImage(mediaFile)
