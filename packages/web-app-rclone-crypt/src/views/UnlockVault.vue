@@ -53,6 +53,7 @@
             v-model="password"
             class="mt-4"
             :error-message="errorMessage"
+            :error-message-debounced-time="0"
             :fix-message-line="true"
             :label="$gettext('Password')"
             required-mark
