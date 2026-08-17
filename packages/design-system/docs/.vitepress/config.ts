@@ -130,6 +130,10 @@ export default defineConfig({
               link: '/OcBreadcrumb'
             },
             {
+              text: 'OcBubbleMenu',
+              link: '/OcBubbleMenu'
+            },
+            {
               text: 'OcButton',
               link: '/OcButton'
             },
