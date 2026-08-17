@@ -4,10 +4,12 @@
     class="preview-details"
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
-    <div
-      class="bg-role-surface-container p-2 w-lg max-w-[80vw] flex flex-wrap items-center justify-center gap-x-1 gap-y-1 rounded-sm"
+    <oc-bubble-menu
+      class="w-lg max-w-[80vw] flex flex-wrap items-center justify-center gap-x-1 gap-y-1"
     >
-      <div class="preview-controls-navigation flex w-full items-center justify-between sm:w-auto">
+      <div
+        class="preview-controls-navigation flex w-full items-center justify-between px-2 sm:w-auto sm:px-0"
+      >
         <oc-button
           v-oc-tooltip="previousDescription"
           class="preview-controls-previous raw-hover-surface"
@@ -138,7 +140,7 @@
           </oc-button>
         </div>
       </template>
-    </div>
+    </oc-bubble-menu>
   </div>
 </template>
 <script setup lang="ts">
