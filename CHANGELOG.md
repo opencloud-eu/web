@@ -64,6 +64,7 @@
 
 ### 📦️ Dependencies
 
+- chore(client): bump libre-graph-sdk [[#3143](https://github.com/opencloud-eu/web/pull/3143)]
 - chore(deps): update dependency fast-xml-parser to v5.11.0 [[#3139](https://github.com/opencloud-eu/web/pull/3139)]
 - chore(deps): update pnpm to v11.22.0 [[#3137](https://github.com/opencloud-eu/web/pull/3137)]
 - fix(deps): update dependency pinia to v4.0.3 [[#3096](https://github.com/opencloud-eu/web/pull/3096)]
