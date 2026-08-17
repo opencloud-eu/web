@@ -150,6 +150,23 @@ describe('Preview app', () => {
       expect(getUrlForResource).toHaveBeenCalled()
       expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
     })
+
+    it('fetches SVG files via getUrlForResource instead of the preview service', async () => {
+      const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
+      await nextTick()
+      mocks.$previewService.loadPreview.mockClear()
+      getUrlForResource.mockClear()
+
+      const mediaFile = {
+        isImage: true,
+        mimeType: 'image/svg+xml',
+        resource: mock<Resource>({ isInVault: false, hasPreview: () => true })
+      }
+      await (wrapper.vm as any).loadPreviewImage(mediaFile)
+
+      expect(getUrlForResource).toHaveBeenCalled()
+      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+    })
   })
 
   describe('Generated "mediaFiles"', () => {

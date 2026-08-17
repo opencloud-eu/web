@@ -5,7 +5,9 @@
   "description": "OpenCloud Web Preview",
   "license": "AGPL-3.0",
   "dependencies": {
-    "@panzoom/panzoom": "^4.6.1"
+    "@panzoom/panzoom": "^4.6.1",
+    "dompurify": "^3.3.3",
+    "vue-inline-svg": "^4.0.1"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"

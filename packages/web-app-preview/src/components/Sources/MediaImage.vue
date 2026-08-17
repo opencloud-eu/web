@@ -1,19 +1,34 @@
 <template>
-  <img
-    ref="img"
-    :key="`media-image-${file.id}`"
-    :src="file.url"
-    :alt="file.name"
-    :data-id="file.id"
-    class="max-w-full max-h-full pt-4"
-  />
+  <div ref="imageContainer" :data-id="file.id" class="max-w-full max-h-full pt-4 [&_svg]:size-full">
+    <inline-svg
+      v-if="isSvgImage"
+      :key="`media-svg-${file.id}`"
+      :src="file.url"
+      :transform-source="sanitizeSvgElement"
+      role="img"
+      :aria-label="file.name"
+      class="max-w-full max-h-full"
+      @loaded="initPanzoom"
+    />
+    <img
+      v-else
+      :key="`media-image-${file.id}`"
+      :src="file.url"
+      :alt="file.name"
+      class="max-w-full max-h-full"
+    />
+  </div>
 </template>
 <script setup lang="ts">
 import { MediaFile } from '../../helpers/types'
-import { ref, watch, unref, nextTick, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
+import { computed, ref, watch, unref, nextTick, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
+import DOMPurify from 'dompurify'
 import { useEventBus } from '@opencloud-eu/web-pkg'
+import InlineSvg from 'vue-inline-svg'
+
+InlineSvg.name = 'inline-svg'
 
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
@@ -22,8 +37,22 @@ const { file, currentImageRotation } = defineProps<{
 
 const eventBus = useEventBus()
 
-const img = useTemplateRef('img')
+const imageContainer = useTemplateRef<HTMLElement>('imageContainer')
 const panzoom = ref<PanzoomObject>()
+const isSvgImage = computed(() => file.mimeType.toLowerCase() === 'image/svg+xml')
+
+function getMediaElement() {
+  return unref(imageContainer)?.querySelector('img,svg') as HTMLElement | null
+}
+
+function sanitizeSvgElement(svg: SVGElement) {
+  DOMPurify.sanitize(svg, {
+    IN_PLACE: true,
+    USE_PROFILES: { svg: true, svgFilters: true }
+  })
+
+  return svg
+}
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
@@ -70,7 +99,7 @@ const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) 
 }
 
 const destroyPanzoom = () => {
-  unref(img)?.removeEventListener('wheel', onWheelEvent)
+  getMediaElement()?.removeEventListener('wheel', onWheelEvent)
   unref(panzoom)?.destroy()
   panzoom.value = undefined
 }
@@ -81,7 +110,12 @@ const initPanzoom = async () => {
   // wait for next tick until image is rendered
   await nextTick()
 
-  panzoom.value = Panzoom(unref(img), {
+  const mediaElement = getMediaElement()
+  if (!mediaElement) {
+    return
+  }
+
+  panzoom.value = Panzoom(mediaElement, {
     animate: false,
     duration: 300,
     overflow: 'auto',
@@ -89,7 +123,7 @@ const initPanzoom = async () => {
     maxScale: 10,
     setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
   } as PanzoomOptions)
-  unref(img).addEventListener('wheel', onWheelEvent, { passive: false })
+  mediaElement.addEventListener('wheel', onWheelEvent, { passive: false })
 }
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
