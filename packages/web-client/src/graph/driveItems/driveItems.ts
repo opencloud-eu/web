@@ -24,6 +24,8 @@ export const DriveItemsFactory = ({
     async createDriveItem(driveId, data, requestOptions) {
       const { data: driveItem } = await drivesRootApiFactory.createDriveItem(
         driveId,
+        null,
+        null,
         data,
         requestOptions
       )
