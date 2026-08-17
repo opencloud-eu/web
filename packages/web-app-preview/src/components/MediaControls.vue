@@ -5,30 +5,32 @@
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
     <div
-      class="bg-role-surface-container p-2 w-lg max-w-[80vw] flex flex-wrap items-center justify-around rounded-sm"
+      class="bg-role-surface-container p-2 w-lg max-w-[80vw] flex flex-wrap items-center justify-center gap-x-1 gap-y-1 rounded-sm"
     >
-      <oc-button
-        v-oc-tooltip="previousDescription"
-        class="preview-controls-previous raw-hover-surface"
-        appearance="raw"
-        :aria-label="previousDescription"
-        @click="emit('togglePrevious')"
-      >
-        <oc-icon size-class="size-8" name="arrow-drop-left" />
-      </oc-button>
-      <p v-if="!isFolderLoading" class="m-0 preview-controls-action-count">
-        <span aria-hidden="true" v-text="ariaHiddenFileCount" />
-        <span class="sr-only" v-text="screenreaderFileCount" />
-      </p>
-      <oc-button
-        v-oc-tooltip="nextDescription"
-        class="preview-controls-next raw-hover-surface"
-        appearance="raw"
-        :aria-label="nextDescription"
-        @click="emit('toggleNext')"
-      >
-        <oc-icon size-class="size-8" name="arrow-drop-right" />
-      </oc-button>
+      <div class="preview-controls-navigation flex w-full items-center justify-between sm:w-auto">
+        <oc-button
+          v-oc-tooltip="previousDescription"
+          class="preview-controls-previous raw-hover-surface"
+          appearance="raw"
+          :aria-label="previousDescription"
+          @click="emit('togglePrevious')"
+        >
+          <oc-icon size-class="size-8" name="arrow-drop-left" />
+        </oc-button>
+        <p v-if="!isFolderLoading" class="m-0 flex-1 text-center preview-controls-action-count">
+          <span aria-hidden="true" v-text="ariaHiddenFileCount" />
+          <span class="sr-only" v-text="screenreaderFileCount" />
+        </p>
+        <oc-button
+          v-oc-tooltip="nextDescription"
+          class="preview-controls-next raw-hover-surface"
+          appearance="raw"
+          :aria-label="nextDescription"
+          @click="emit('toggleNext')"
+        >
+          <oc-icon size-class="size-8" name="arrow-drop-right" />
+        </oc-button>
+      </div>
       <oc-button
         v-oc-tooltip="togglePhotoRollDescription"
         class="raw-hover-surface p-1 hidden md:flex"
@@ -44,7 +46,7 @@
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          class="preview-controls-fullscreen raw-hover-surface p-1"
+          class="preview-controls-fullscreen raw-hover-surface p-1 hidden md:flex"
           appearance="raw"
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
