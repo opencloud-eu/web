@@ -51,18 +51,6 @@ const imageContainer = useTemplateRef<HTMLElement>('imageContainer')
 const panzoom = ref<PanzoomObject>()
 const isSvgImage = computed(() => file.mimeType.toLowerCase() === 'image/svg+xml')
 
-function getMediaElement() {
-  const container = unref(imageContainer)
-  if (!container) {
-    return null
-  }
-  // For SVG, container is a div wrapping the inline-svg component, so we query for the svg element
-  // For regular images, container is the img element itself
-  return container.tagName === 'DIV'
-    ? (container.querySelector('svg') as HTMLElement | null)
-    : container
-}
-
 function sanitizeSvgElement(svg: SVGElement) {
   DOMPurify.sanitize(svg, {
     IN_PLACE: true,
@@ -117,7 +105,7 @@ const setTransform = ({ scale, x, y }: { scale: number; x: number; y: number }) 
 }
 
 const destroyPanzoom = () => {
-  getMediaElement()?.removeEventListener('wheel', onWheelEvent)
+  unref(imageContainer)?.removeEventListener('wheel', onWheelEvent)
   unref(panzoom)?.destroy()
   panzoom.value = undefined
 }
@@ -128,12 +116,12 @@ const initPanzoom = async () => {
   // wait for next tick until image is rendered
   await nextTick()
 
-  const mediaElement = getMediaElement()
-  if (!mediaElement) {
+  const container = unref(imageContainer)
+  if (!container) {
     return
   }
 
-  panzoom.value = Panzoom(mediaElement, {
+  panzoom.value = Panzoom(container, {
     animate: false,
     duration: 300,
     overflow: 'auto',
@@ -141,7 +129,7 @@ const initPanzoom = async () => {
     maxScale: 10,
     setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
   } as PanzoomOptions)
-  mediaElement.addEventListener('wheel', onWheelEvent, { passive: false })
+  container.addEventListener('wheel', onWheelEvent, { passive: false })
 }
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
