@@ -1,7 +1,6 @@
 <template>
-  <div ref="imageContainer" :data-id="file.id" class="max-w-full max-h-full pt-4 [&_svg]:size-full">
+  <div v-if="isSvgImage" ref="imageContainer" :data-id="file.id">
     <inline-svg
-      v-if="isSvgImage"
       :key="`media-svg-${file.id}`"
       :src="file.url"
       :transform-source="sanitizeSvgElement"
@@ -10,18 +9,29 @@
       class="max-w-full max-h-full"
       @loaded="initPanzoom"
     />
-    <img
-      v-else
-      :key="`media-image-${file.id}`"
-      :src="file.url"
-      :alt="file.name"
-      class="max-w-full max-h-full"
-    />
   </div>
+  <img
+    v-else
+    ref="imageContainer"
+    :key="`media-image-${file.id}`"
+    :src="file.url"
+    :alt="file.name"
+    :data-id="file.id"
+    class="max-w-full max-h-full pt-4"
+  />
 </template>
 <script setup lang="ts">
 import { MediaFile } from '../../helpers/types'
-import { computed, ref, watch, unref, nextTick, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
+import {
+  computed,
+  ref,
+  watch,
+  unref,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+  useTemplateRef
+} from 'vue'
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
 import DOMPurify from 'dompurify'
@@ -42,7 +52,15 @@ const panzoom = ref<PanzoomObject>()
 const isSvgImage = computed(() => file.mimeType.toLowerCase() === 'image/svg+xml')
 
 function getMediaElement() {
-  return unref(imageContainer)?.querySelector('img,svg') as HTMLElement | null
+  const container = unref(imageContainer)
+  if (!container) {
+    return null
+  }
+  // For SVG, container is a div wrapping the inline-svg component, so we query for the svg element
+  // For regular images, container is the img element itself
+  return container.tagName === 'DIV'
+    ? (container.querySelector('svg') as HTMLElement | null)
+    : container
 }
 
 function sanitizeSvgElement(svg: SVGElement) {
