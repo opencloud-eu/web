@@ -116,12 +116,7 @@ const initPanzoom = async () => {
   // wait for next tick until image is rendered
   await nextTick()
 
-  const container = unref(imageContainer)
-  if (!container) {
-    return
-  }
-
-  panzoom.value = Panzoom(container, {
+  panzoom.value = Panzoom(unref(imageContainer), {
     animate: false,
     duration: 300,
     overflow: 'auto',
@@ -129,7 +124,7 @@ const initPanzoom = async () => {
     maxScale: 10,
     setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
   } as PanzoomOptions)
-  container.addEventListener('wheel', onWheelEvent, { passive: false })
+  unref(imageContainer).addEventListener('wheel', onWheelEvent, { passive: false })
 }
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
