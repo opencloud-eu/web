@@ -49,7 +49,7 @@ const eventBus = useEventBus()
 
 const img = useTemplateRef<HTMLElement>('img')
 const panzoom = ref<PanzoomObject>()
-const isSvgImage = computed(() => file.mimeType.toLowerCase() === 'image/svg+xml')
+const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')
 
 function sanitizeSvgElement(svg: SVGElement) {
   DOMPurify.sanitize(svg, {

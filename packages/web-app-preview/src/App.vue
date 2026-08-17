@@ -277,7 +277,7 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
     // original on every open).
     const useFullImage =
       mediaFile.isImage &&
-      (mediaFile.resource.isInVault || mediaFile.mimeType.toLowerCase() === 'image/svg+xml')
+      (mediaFile.resource.isInVault || mediaFile.mimeType === 'image/svg+xml')
 
     if (mediaFile.isImage && !useFullImage) {
       mediaFile.url = await previewService.loadPreview(
