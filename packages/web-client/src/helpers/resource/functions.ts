@@ -173,6 +173,7 @@ export function buildResource(
     location: convertObjectToCamelCaseKeys(resource.props[DavProperty.Location]),
     image: convertObjectToCamelCaseKeys(resource.props[DavProperty.Image]),
     photo: convertObjectToCamelCaseKeys(resource.props[DavProperty.Photo]),
+    motionPhoto: convertObjectToCamelCaseKeys(resource.props[DavProperty.MotionPhoto]),
     extraProps,
     hasPreview: () => resource.props[DavProperty.HasPreview] === 1,
     canUpload: function () {
