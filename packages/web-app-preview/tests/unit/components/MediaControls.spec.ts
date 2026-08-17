@@ -3,7 +3,7 @@ import {
   defaultComponentMocks,
   defaultPlugins,
   PartialComponentProps,
-  shallowMount
+  mount
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { MediaFile } from '../../../src/helpers/types'
@@ -142,7 +142,7 @@ function getWrapper(props: PartialComponentProps<typeof MediaControls> = {}) {
   ]
 
   return {
-    wrapper: shallowMount(MediaControls, {
+    wrapper: mount(MediaControls, {
       props: {
         files: [
           mock<MediaFile>({
