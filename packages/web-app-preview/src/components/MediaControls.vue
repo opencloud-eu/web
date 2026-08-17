@@ -4,42 +4,97 @@
     class="preview-details"
     :class="[{ 'lightbox opacity-90 z-1000': isFullScreenModeActivated }]"
   >
-    <div
-      class="bg-role-surface-container p-2 w-lg max-w-[80vw] flex flex-wrap items-center justify-around rounded-sm"
+    <oc-bubble-menu
+      class="w-lg max-w-[80vw] flex flex-wrap items-center justify-center gap-x-1 gap-y-1"
     >
-      <oc-button
-        v-oc-tooltip="previousDescription"
-        class="preview-controls-previous raw-hover-surface"
-        appearance="raw"
-        :aria-label="previousDescription"
-        @click="emit('togglePrevious')"
-      >
-        <oc-icon size-class="size-8" name="arrow-drop-left" />
-      </oc-button>
-      <p v-if="!isFolderLoading" class="m-0 preview-controls-action-count">
-        <span aria-hidden="true" v-text="ariaHiddenFileCount" />
-        <span class="sr-only" v-text="screenreaderFileCount" />
-      </p>
-      <oc-button
-        v-oc-tooltip="nextDescription"
-        class="preview-controls-next raw-hover-surface"
-        appearance="raw"
-        :aria-label="nextDescription"
-        @click="emit('toggleNext')"
-      >
-        <oc-icon size-class="size-8" name="arrow-drop-right" />
-      </oc-button>
-      <oc-button
-        v-oc-tooltip="togglePhotoRollDescription"
-        class="raw-hover-surface p-1 hidden md:flex"
-        data-testid="toggle-photo-roll"
-        appearance="raw"
-        :aria-label="togglePhotoRollDescription"
-        @click="emit('togglePhotoRoll')"
-      >
-        <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
-      </oc-button>
-      <div class="flex">
+      <div class="preview-controls-navigation flex w-full items-center justify-center sm:w-auto">
+        <oc-button
+          v-oc-tooltip="previousDescription"
+          class="preview-controls-previous raw-hover-surface"
+          appearance="raw"
+          :aria-label="previousDescription"
+          @click="emit('togglePrevious')"
+        >
+          <oc-icon name="arrow-left-s" fill-type="line" />
+        </oc-button>
+        <p v-if="!isFolderLoading" class="preview-controls-action-count m-0 px-2 text-center">
+          <span aria-hidden="true" v-text="ariaHiddenFileCount" />
+          <span class="sr-only" v-text="screenreaderFileCount" />
+        </p>
+        <oc-button
+          v-oc-tooltip="nextDescription"
+          class="preview-controls-next raw-hover-surface"
+          appearance="raw"
+          :aria-label="nextDescription"
+          @click="emit('toggleNext')"
+        >
+          <oc-icon name="arrow-right-s" fill-type="line" />
+        </oc-button>
+      </div>
+      <span
+        v-if="showImageControls"
+        class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:block"
+      />
+      <div v-if="showImageControls" class="preview-controls-image-group flex items-center gap-1">
+        <oc-button
+          v-oc-tooltip="imageShrinkDescription"
+          class="preview-controls-image-shrink raw-hover-surface p-1"
+          appearance="raw"
+          :aria-label="imageShrinkDescription"
+          @click="emit('setShrink')"
+        >
+          <oc-icon fill-type="line" name="zoom-out" />
+        </oc-button>
+        <oc-button
+          v-oc-tooltip="imageZoomDescription"
+          class="preview-controls-image-zoom raw-hover-surface p-1"
+          appearance="raw"
+          :aria-label="imageZoomDescription"
+          @click="emit('setZoom')"
+        >
+          <oc-icon fill-type="line" name="zoom-in" />
+        </oc-button>
+        <oc-button
+          v-oc-tooltip="imageRotateLeftDescription"
+          class="preview-controls-rotate-left raw-hover-surface p-1"
+          appearance="raw"
+          :aria-label="imageRotateLeftDescription"
+          @click="emit('setRotationLeft')"
+        >
+          <oc-icon fill-type="line" name="anticlockwise" />
+        </oc-button>
+        <oc-button
+          v-oc-tooltip="imageRotateRightDescription"
+          class="preview-controls-rotate-right raw-hover-surface p-1"
+          appearance="raw"
+          :aria-label="imageRotateRightDescription"
+          @click="emit('setRotationRight')"
+        >
+          <oc-icon fill-type="line" name="clockwise" />
+        </oc-button>
+        <oc-button
+          v-oc-tooltip="imageResetDescription"
+          class="preview-controls-image-reset raw-hover-surface p-1"
+          appearance="raw"
+          :aria-label="imageResetDescription"
+          @click="emit('resetImage')"
+        >
+          <oc-icon fill-type="line" name="reset-left" />
+        </oc-button>
+      </div>
+
+      <span class="mx-1 hidden h-5 w-px bg-role-outline-variant sm:block" />
+      <div class="preview-controls-view-group hidden items-center gap-1 sm:flex">
+        <oc-button
+          v-oc-tooltip="togglePhotoRollDescription"
+          class="raw-hover-surface p-1 hidden md:flex"
+          data-testid="toggle-photo-roll"
+          appearance="raw"
+          :aria-label="togglePhotoRollDescription"
+          @click="emit('togglePhotoRoll')"
+        >
+          <oc-icon name="side-bar" :fill-type="photoRollEnabled ? 'fill' : 'line'" />
+        </oc-button>
         <oc-button
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
@@ -57,80 +112,36 @@
           />
         </oc-button>
       </div>
-      <div v-if="showImageControls" class="flex items-center">
-        <div class="flex">
+
+      <template v-if="showFavoriteButton || showDeleteButton">
+        <span
+          class="mx-1 h-5 w-px bg-role-outline-variant"
+          :class="{ 'hidden sm:block': !showImageControls }"
+        />
+        <div class="preview-controls-resource-group flex items-center gap-1">
           <oc-button
-            v-oc-tooltip="imageShrinkDescription"
-            class="preview-controls-image-shrink raw-hover-surface p-1"
+            v-if="showFavoriteButton"
+            v-oc-tooltip="resourceFavoriteIconDescription"
+            class="preview-controls-favorite raw-hover-surface p-1"
             appearance="raw"
-            :aria-label="imageShrinkDescription"
-            @click="emit('setShrink')"
+            :aria-label="resourceFavoriteIconDescription"
+            @click="favoriteAction?.handler(actionOptions)"
           >
-            <oc-icon fill-type="line" name="zoom-out" />
+            <oc-icon fill-type="line" :name="resourceFavoriteIcon" />
           </oc-button>
           <oc-button
-            v-oc-tooltip="imageZoomDescription"
-            class="preview-controls-image-zoom raw-hover-surface p-1"
+            v-if="showDeleteButton"
+            v-oc-tooltip="resourceDeleteDescription"
+            class="preview-controls-delete raw-hover-surface p-1"
             appearance="raw"
-            :aria-label="imageZoomDescription"
-            @click="emit('setZoom')"
+            :aria-label="resourceDeleteDescription"
+            @click="emit('deleteResource')"
           >
-            <oc-icon fill-type="line" name="zoom-in" />
-          </oc-button>
-        </div>
-        <div class="ml-4">
-          <oc-button
-            v-oc-tooltip="imageRotateLeftDescription"
-            class="preview-controls-rotate-left raw-hover-surface p-1"
-            appearance="raw"
-            :aria-label="imageRotateLeftDescription"
-            @click="emit('setRotationLeft')"
-          >
-            <oc-icon fill-type="line" name="anticlockwise" />
-          </oc-button>
-          <oc-button
-            v-oc-tooltip="imageRotateRightDescription"
-            class="preview-controls-rotate-right raw-hover-surface p-1"
-            appearance="raw"
-            :aria-label="imageRotateRightDescription"
-            @click="emit('setRotationRight')"
-          >
-            <oc-icon fill-type="line" name="clockwise" />
+            <oc-icon fill-type="line" :name="resourceDeleteIcon" />
           </oc-button>
         </div>
-        <div class="ml-4">
-          <oc-button
-            v-oc-tooltip="imageResetDescription"
-            class="preview-controls-image-reset raw-hover-surface p-1"
-            appearance="raw"
-            :aria-label="imageResetDescription"
-            @click="emit('resetImage')"
-          >
-            <oc-icon fill-type="line" name="reset-left" />
-          </oc-button>
-        </div>
-      </div>
-      <oc-button
-        v-if="showFavoriteButton"
-        v-oc-tooltip="resourceFavoriteIconDescription"
-        class="preview-controls-favorite raw-hover-surface p-1"
-        appearance="raw"
-        :aria-label="resourceFavoriteIconDescription"
-        @click="favoriteAction?.handler(actionOptions)"
-      >
-        <oc-icon fill-type="line" :name="resourceFavoriteIcon" />
-      </oc-button>
-      <oc-button
-        v-if="showDeleteButton"
-        v-oc-tooltip="resourceDeleteDescription"
-        class="preview-controls-delete raw-hover-surface p-1"
-        appearance="raw"
-        :aria-label="resourceDeleteDescription"
-        @click="emit('deleteResource')"
-      >
-        <oc-icon fill-type="line" :name="resourceDeleteIcon" />
-      </oc-button>
-    </div>
+      </template>
+    </oc-bubble-menu>
   </div>
 </template>
 <script setup lang="ts">
