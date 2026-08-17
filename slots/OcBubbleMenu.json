@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "Content of the bubble menu.",
+    "type": "() => unknown"
+  }
+]
