@@ -46,7 +46,7 @@
           v-oc-tooltip="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
           "
-          class="preview-controls-fullscreen raw-hover-surface p-1 hidden md:flex"
+          class="preview-controls-fullscreen raw-hover-surface p-1 hidden sm:flex"
           appearance="raw"
           :aria-label="
             isFullScreenModeActivated ? exitFullScreenDescription : enterFullScreenDescription
