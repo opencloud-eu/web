@@ -11,14 +11,7 @@
     />
 
     <div class="flex items-center ml-auto">
-      <oc-button
-        class="mr-4"
-        data-testid="button-cancel"
-        color-role="chrome"
-        appearance="raw-inverse"
-        no-hover
-        @click="emitCancel"
-      >
+      <oc-button class="mr-4" data-testid="button-cancel" appearance="outline" @click="emitCancel">
         {{ $gettext('Cancel') }}
       </oc-button>
       <oc-button
@@ -26,7 +19,6 @@
         key="btn-share"
         class="mr-4"
         data-testid="button-share"
-        color-role="chrome"
         appearance="filled"
         :disabled="isShareLinksButtonDisabled"
         @click="createLinkAction.handler({ resources: selectedFiles, space })"
@@ -38,7 +30,6 @@
           v-if="isLocationPicker"
           data-testid="button-select"
           appearance="filled"
-          color-role="chrome"
           :disabled="isChooseButtonDisabled"
           @click="emitSelect"
         >
@@ -48,7 +39,6 @@
           v-else
           data-testid="button-select"
           appearance="filled"
-          color-role="chrome"
           :disabled="isAttachAsCopyButtonDisabled"
           @click="emitSelect"
         >

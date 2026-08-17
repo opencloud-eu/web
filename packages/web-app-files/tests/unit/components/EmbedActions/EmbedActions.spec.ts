@@ -160,6 +160,34 @@ describe('EmbedActions', () => {
       expect(mocks.createLinkHandlerMock).toHaveBeenCalledTimes(1)
     })
   })
+
+  describe('button appearance', () => {
+    // the actions are rendered on top of the chrome colored area, hence the buttons must not use
+    // the chrome color role themselves. Otherwise they'd be invisible on their own background.
+    it('should render the cancel action as outlined button', () => {
+      const { wrapper } = getWrapper({ isLocationPicker: true })
+      const classes = wrapper.find(selectors.btnCancel).classes()
+
+      expect(classes).toContain('oc-button-secondary-outline')
+      expect(classes).not.toContain('oc-button-chrome')
+    })
+
+    it('should render the select action as filled button', () => {
+      const { wrapper } = getWrapper({ isLocationPicker: true })
+      const classes = wrapper.find(selectors.btnSelect).classes()
+
+      expect(classes).toContain('oc-button-secondary-filled')
+      expect(classes).not.toContain('oc-button-chrome')
+    })
+
+    it('should render the share action as filled button', () => {
+      const { wrapper } = getWrapper({ selectedIds: ['1'] })
+      const classes = wrapper.find(selectors.btnShare).classes()
+
+      expect(classes).toContain('oc-button-secondary-filled')
+      expect(classes).not.toContain('oc-button-chrome')
+    })
+  })
 })
 
 function getWrapper(
