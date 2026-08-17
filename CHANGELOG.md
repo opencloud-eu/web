@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: enhance preview media controls layout and migrate to bubble menu [[#3138](https://github.com/opencloud-eu/web/pull/3138)]
 - feat: move bubble menu styling to design system [[#3134](https://github.com/opencloud-eu/web/pull/3134)]
 - feat(web-pkg): optional unload warning for loading tasks [[#3135](https://github.com/opencloud-eu/web/pull/3135)]
 - feat: add filters to favorites view [[#3087](https://github.com/opencloud-eu/web/pull/3087)]
