@@ -71,7 +71,13 @@
           :view-size="viewSize"
           v-bind="folderView.componentAttrs?.()"
           @file-click="triggerDefaultAction"
-          @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+          @item-visible="
+            loadPreview({
+              space: getMatchingSpace($event),
+              resource: $event,
+              ...(isProjectSpaceResource($event) && { processor: ProcessorType.enum.fit })
+            })
+          "
           @sort="handleSort"
           @update:selected-ids="selectedResourcesIds = $event"
         >
@@ -123,6 +129,7 @@ import {
   useFileActions,
   ItemFilter,
   ResourceIcon,
+  ProcessorType,
   useCapabilityStore,
   useRouteQuery,
   getLastModifiedFilterOptions,

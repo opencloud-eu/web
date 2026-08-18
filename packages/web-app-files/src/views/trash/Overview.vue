@@ -56,7 +56,13 @@
             :view-mode="viewMode"
             :view-size="viewSize"
             @sort="handleSort"
-            @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+            @item-visible="
+              loadPreview({
+                space: getMatchingSpace($event),
+                resource: $event,
+                processor: ProcessorType.enum.fit
+              })
+            "
             @update:selected-ids="loadGraphPermissions"
           >
             <template #contextMenu="{ resource }">
@@ -110,6 +116,7 @@ import {
   FileSideBar,
   NoContentMessage,
   Pagination,
+  ProcessorType,
   usePagination,
   useClientService,
   useGetMatchingSpace,

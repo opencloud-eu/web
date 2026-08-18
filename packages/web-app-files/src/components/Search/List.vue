@@ -109,7 +109,13 @@
           :view-mode="viewMode"
           :view-size="viewSize"
           @file-click="triggerDefaultAction"
-          @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+          @item-visible="
+            loadPreview({
+              space: getMatchingSpace($event),
+              resource: $event,
+              ...(isProjectSpaceResource($event) && { processor: ProcessorType.enum.fit })
+            })
+          "
           @sort="handleSort"
           @update:selected-ids="selectedResourcesIds = $event"
         >
@@ -178,6 +184,7 @@ import FilesViewWrapper from '../FilesViewWrapper.vue'
 import {
   queryItemAsString,
   useClientService,
+  ProcessorType,
   useFileListHeaderPosition,
   useGetMatchingSpace,
   getLastModifiedFilterOptions,
