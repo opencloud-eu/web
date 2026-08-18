@@ -5,7 +5,7 @@ import {
   ResourceIconMapping,
   resourceIconMappingInjectionKey
 } from '../../../../src/helpers/resource'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 const resourceIconMapping: ResourceIconMapping = {
   extension: {
@@ -21,11 +21,14 @@ const resourceIconMapping: ResourceIconMapping = {
 }
 
 describe('OcResourceIcon', () => {
-  ;['file', 'folder', 'space'].forEach((type) => {
+  ;['file', 'folder'].forEach((type) => {
     match({
       type
     })
   })
+
+  match({ type: 'space' })
+  match({ type: 'space', driveType: 'project' }, 'with drive type "project"')
 
   match(
     {
@@ -44,7 +47,7 @@ describe('OcResourceIcon', () => {
   )
 })
 
-function match(resource: Partial<Resource>, additionalText?: string) {
+function match(resource: Partial<Resource | SpaceResource>, additionalText?: string) {
   AVAILABLE_SIZES.forEach((size) => {
     it(`renders OcIcon for resource type ${resource.type}${
       additionalText ? ` ${additionalText}` : ''
@@ -55,7 +58,13 @@ function match(resource: Partial<Resource>, additionalText?: string) {
   })
 }
 
-function getWrapper({ resource, size }: { resource: Partial<Resource>; size: SizeType }) {
+function getWrapper({
+  resource,
+  size
+}: {
+  resource: Partial<Resource | SpaceResource>
+  size: SizeType
+}) {
   return {
     wrapper: shallowMount(ResourceIcon, {
       global: {

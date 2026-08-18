@@ -7,6 +7,8 @@ export type IconType = {
   /** @deprecated this property is not supported anymore */
   fillType?: IconFillType
   hasDarkVariant?: boolean
+  /** artwork fills its box entirely and therefore needs clipping */
+  fillsBox?: boolean
 }
 
 export type ResourceIconMapping = Record<'mimeType' | 'extension', Record<string, IconType>>

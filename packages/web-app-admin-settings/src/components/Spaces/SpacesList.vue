@@ -54,8 +54,10 @@
         @click.stop="fileClicked([item, $event])"
       />
     </template>
-    <template #icon>
-      <oc-icon name="layout-grid" />
+    <template #icon="{ item }">
+      <div class="flex items-center justify-center">
+        <resource-icon :resource="item" size-class="size-6" class="rounded-sm" />
+      </div>
     </template>
     <template #name="{ item }">
       <span :data-test-space-name="item.name" v-text="item.name" />
@@ -127,7 +129,8 @@ import {
   useSharesStore,
   useSideBar,
   NoContentMessage,
-  createVirtualCursorElement
+  createVirtualCursorElement,
+  ResourceIcon
 } from '@opencloud-eu/web-pkg'
 import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'

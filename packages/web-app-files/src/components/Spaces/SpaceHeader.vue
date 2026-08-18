@@ -21,6 +21,7 @@
         :src="imageContent"
         @click="toggleImageExpanded"
       />
+      <resource-icon v-else :resource="space" size-class="size-full" class="rounded-lg" />
     </div>
     <div class="flex-1">
       <div class="flex items-center justify-between max-w-full">
@@ -112,6 +113,7 @@ import {
   ContextActions,
   ImageDimension,
   ProcessorType,
+  ResourceIcon,
   useClientService,
   useLoadPreview,
   useResourcesStore,
