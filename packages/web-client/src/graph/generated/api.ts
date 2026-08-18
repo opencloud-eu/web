@@ -34,6 +34,20 @@ export interface Activity {
     'times': ActivityTimes;
     'template': ActivityTemplate;
 }
+/**
+ * An activity someone is notified about. 
+ */
+export interface ActivityNotification {
+    'topic': ActivityTopic;
+    /**
+     * What happened. Only `mentioned` is supported at the time of writing. 
+     */
+    'activityType': string;
+    /**
+     * The app the activity happened in, as an id the server knows. 
+     */
+    'teamsAppId': string;
+}
 export interface ActivityTemplate {
     /**
      * Activity description.
@@ -49,6 +63,19 @@ export interface ActivityTimes {
      * Timestamp of the activity.
      */
     'recordedTime': string;
+}
+/**
+ * What an activity happened on.
+ */
+export interface ActivityTopic {
+    /**
+     * How to read the value. Only `text` is supported at the time of writing. built from it. 
+     */
+    'source': string;
+    /**
+     * With the source `text`, the id of the resource the activity happened on.
+     */
+    'value': string;
 }
 export interface AppRole {
     /**
@@ -334,9 +361,9 @@ export interface Drive {
      */
     '@libre.graph.hasTrashedItems'?: boolean;
     /**
-     * Specifier for the web client that a drive has an associated extension that could potentially be opened by a specific web app (like a file extension). 
+     * Specifier for the web client that a drive is of a certain content type that could potentially be opened by a specific web app. Example: `application/vnd.opencloud.vault`, indicating the drive can be opened by the rclone-crypt web app. 
      */
-    '@UI.extension'?: string;
+    '@libre.graph.contentType'?: string;
 }
 /**
  * Represents a resource inside a drive. Read-only.
@@ -555,9 +582,9 @@ export interface DriveUpdate {
      */
     '@libre.graph.hasTrashedItems'?: boolean;
     /**
-     * Specifier for the web client that a drive has an associated extension that could potentially be opened by a specific web app (like a file extension). 
+     * Specifier for the web client that a drive is of a certain content type that could potentially be opened by a specific web app. Example: `application/vnd.opencloud.vault`, indicating the drive can be opened by the rclone-crypt web app. 
      */
-    '@UI.extension'?: string;
+    '@libre.graph.contentType'?: string;
 }
 /**
  * And extension of group representing a class or course
@@ -10461,6 +10488,121 @@ export class UserPhotoApi extends BaseAPI {
      */
     public getUserPhoto(userId: string, options?: RawAxiosRequestConfig) {
         return UserPhotoApiFp(this.configuration).getUserPhoto(userId, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
+ * UserTeamworkApi - axios parameter creator
+ */
+export const UserTeamworkApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Sends a notification about an activity to a user. The sender is the caller, the recipient is the user in the path, `activityType` says what happened and `topic` says what it happened on. 
+         * @summary Send an activity notification to a user
+         * @param {string} userId key: id or name of user
+         * @param {ActivityNotification} activityNotification The activity the user is notified about.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendActivityNotification: async (userId: string, activityNotification: ActivityNotification, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'userId' is not null or undefined
+            assertParamExists('sendActivityNotification', 'userId', userId)
+            // verify required parameter 'activityNotification' is not null or undefined
+            assertParamExists('sendActivityNotification', 'activityNotification', activityNotification)
+            const localVarPath = `/v1.0/users/{user-id}/teamwork/sendActivityNotification`
+                .replace('{user-id}', encodeURIComponent(String(userId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication openId required
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(activityNotification, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * UserTeamworkApi - functional programming interface
+ */
+export const UserTeamworkApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = UserTeamworkApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Sends a notification about an activity to a user. The sender is the caller, the recipient is the user in the path, `activityType` says what happened and `topic` says what it happened on. 
+         * @summary Send an activity notification to a user
+         * @param {string} userId key: id or name of user
+         * @param {ActivityNotification} activityNotification The activity the user is notified about.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async sendActivityNotification(userId: string, activityNotification: ActivityNotification, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.sendActivityNotification(userId, activityNotification, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserTeamworkApi.sendActivityNotification']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * UserTeamworkApi - factory interface
+ */
+export const UserTeamworkApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = UserTeamworkApiFp(configuration)
+    return {
+        /**
+         * Sends a notification about an activity to a user. The sender is the caller, the recipient is the user in the path, `activityType` says what happened and `topic` says what it happened on. 
+         * @summary Send an activity notification to a user
+         * @param {string} userId key: id or name of user
+         * @param {ActivityNotification} activityNotification The activity the user is notified about.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendActivityNotification(userId: string, activityNotification: ActivityNotification, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.sendActivityNotification(userId, activityNotification, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * UserTeamworkApi - object-oriented interface
+ */
+export class UserTeamworkApi extends BaseAPI {
+    /**
+     * Sends a notification about an activity to a user. The sender is the caller, the recipient is the user in the path, `activityType` says what happened and `topic` says what it happened on. 
+     * @summary Send an activity notification to a user
+     * @param {string} userId key: id or name of user
+     * @param {ActivityNotification} activityNotification The activity the user is notified about.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public sendActivityNotification(userId: string, activityNotification: ActivityNotification, options?: RawAxiosRequestConfig) {
+        return UserTeamworkApiFp(this.configuration).sendActivityNotification(userId, activityNotification, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
