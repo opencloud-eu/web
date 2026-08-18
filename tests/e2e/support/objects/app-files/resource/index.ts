@@ -495,4 +495,12 @@ export class Resource {
   async copyAllTo(source: string, destination: string): Promise<void> {
     await po.copyAllTo({ page: this.#page, source, destination })
   }
+
+  saveAs(newPath: string): Promise<Page> {
+    return po.saveAs({ page: this.#page, newPath })
+  }
+
+  getTopBarFilename(): Promise<string> {
+    return po.getTopBarFilename(this.#page)
+  }
 }
