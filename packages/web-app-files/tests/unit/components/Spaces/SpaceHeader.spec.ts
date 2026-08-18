@@ -53,6 +53,8 @@ const getSpaceMock = (spaceImageData: DriveItem = undefined) =>
   mock<SpaceResource>({
     id: '1',
     name: 'space',
+    type: 'space',
+    driveType: 'project',
     description: '',
     spaceReadmeData: undefined,
     canEditReadme: () => true,

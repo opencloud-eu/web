@@ -7,14 +7,11 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
 import { FolderViewModeConstants } from '../viewMode'
 import { usePreviewService } from '../previewService'
 import { ProcessorType } from '../../services'
-import { useConfigStore, useResourcesStore, useSpacesStore } from '../piniaStores'
+import { useResourcesStore, useSpacesStore } from '../piniaStores'
 import { ImageDimension } from '../../constants'
-import { useClientService } from '../clientService'
-import { storeToRefs } from 'pinia'
 
 type LoadPreviewOptions = {
   space: SpaceResource
@@ -40,11 +37,7 @@ type LoadPreviewOptions = {
 export const useLoadPreview = (viewMode?: Ref<string>) => {
   const previewService = usePreviewService()
   const { updateResourceField } = useResourcesStore()
-  const { httpAuthenticated } = useClientService()
   const spacesStore = useSpacesStore()
-  const { defaultSpaceImageBlobURL } = storeToRefs(spacesStore)
-  const configStore = useConfigStore()
-  const { serverUrl } = storeToRefs(configStore)
   const previewQueue = new PQueue({ concurrency: 4 })
 
   const isTilesView = computed(() => unref(viewMode) === FolderViewModeConstants.name.tiles)
@@ -96,42 +89,13 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       cancelTasks()
     }
 
-    // Vault files are ciphertext blobs server-side, so there is no thumbnail
-    // to fetch - skip the request (it would only 404) and fall back to the
-    // file-type icon.
+    // Vault files are ciphertext blobs server-side, so no thumbnail to fetch
     if (resource?.isInVault) {
       return
     }
 
     if (isProjectSpaceResource(resource) && (!resource.spaceImageData || resource.disabled)) {
-      if (unref(defaultSpaceImageBlobURL)) {
-        spacesStore.updateSpaceField({
-          id: resource.id,
-          field: 'thumbnail',
-          value: unref(defaultSpaceImageBlobURL)
-        })
-      }
-
-      try {
-        const defaultSpaceImageBlobURLResponse: any = await httpAuthenticated.get(
-          addVersionToAssetUrl(`${unref(serverUrl)}images/default-space-icon.png`),
-          {
-            responseType: 'blob'
-          }
-        )
-
-        spacesStore.setDefaultSpaceImageBlobURL(
-          URL.createObjectURL(defaultSpaceImageBlobURLResponse.data)
-        )
-        spacesStore.updateSpaceField({
-          id: resource.id,
-          field: 'thumbnail',
-          value: unref(defaultSpaceImageBlobURL)
-        })
-        return unref(defaultSpaceImageBlobURL)
-      } catch {
-        return null
-      }
+      return null
     }
 
     try {

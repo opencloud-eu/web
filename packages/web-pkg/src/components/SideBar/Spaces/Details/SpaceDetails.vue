@@ -9,10 +9,14 @@
       class="bg-role-surface-container rounded-xl flex items-center justify-center p-4 mb-4"
     >
       <div v-if="spaceImage">
-        <img :src="spaceImage" alt="" class="h-[160px]" />
+        <img :src="spaceImage" alt="" class="h-[160px] rounded-lg" />
       </div>
-      <div v-else>
-        <oc-icon name="layout-grid" size-class="size-42" class="space-default-image px-4 py-4" />
+      <div v-else class="w-full aspect-[16/9] h-[160px]">
+        <resource-icon
+          :resource="resource"
+          size-class="size-full"
+          class="space-default-image rounded-lg"
+        />
       </div>
     </div>
     <div
@@ -96,6 +100,7 @@ import {
   useSpacesStore,
   useUserStore
 } from '../../../../composables'
+import ResourceIcon from '../../../FilesList/ResourceIcon.vue'
 import SpaceQuota from '../../../SpaceQuota.vue'
 import WebDavDetails from '../../WebDavDetails.vue'
 import { formatDateFromISO, formatFileSize } from '../../../../helpers'

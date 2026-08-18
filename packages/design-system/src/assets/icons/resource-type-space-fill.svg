@@ -1,0 +1,13 @@
+<svg width="1920" height="1080" viewBox="0 0 1920 1080" fill="none" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="resource_type_space_gradient" x1="0" y1="0" x2="1920" y2="1080" gradientUnits="userSpaceOnUse">
+<stop stop-color="#F0EEFB"/>
+<stop offset="1" stop-color="#DCD7F3"/>
+</linearGradient>
+</defs>
+<rect width="1920" height="1080" fill="url(#resource_type_space_gradient)"/>
+<rect x="632" y="210" width="300" height="300" rx="56" fill="#8B7FC8"/>
+<rect x="992" y="210" width="300" height="300" rx="56" fill="#BAB1DF"/>
+<rect x="632" y="570" width="300" height="300" rx="56" fill="#6455AE"/>
+<rect x="992" y="570" width="300" height="300" rx="56" fill="#A99ED6"/>
+</svg>

@@ -100,6 +100,13 @@
                   :src="resource.thumbnail"
                   alt=""
                 />
+                <resource-icon
+                  v-else
+                  :resource="resource"
+                  size-class="size-full"
+                  class="rounded-t-sm"
+                  :class="{ 'rounded-sm': isResourceInSelection(resource) }"
+                />
               </template>
               <template v-else>
                 <oc-spinner
@@ -109,12 +116,17 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="table-preview mr-2 rounded-sm object-cover w-[24px] h-[24px]"
+                  class="table-preview mr-2 rounded-xs object-cover w-[24px] h-[24px]"
                   :class="{ 'opacity-80 grayscale': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
                 />
-                <resource-icon v-else class="mr-2" :resource="resource" />
+                <resource-icon
+                  v-else
+                  class="mr-2 rounded-xs"
+                  :resource="resource"
+                  size-class="size-6"
+                />
               </template>
             </template>
             <template #actions="{ resource }">

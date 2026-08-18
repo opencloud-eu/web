@@ -33,6 +33,7 @@
         aria-hidden="true"
         :resource="resource"
         size-class="size-6"
+        class="rounded-xs"
       />
     </resource-link>
     <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">

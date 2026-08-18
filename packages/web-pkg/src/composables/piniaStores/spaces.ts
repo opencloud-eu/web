@@ -52,7 +52,6 @@ export const useSpacesStore = defineStore('spaces', () => {
   const spacesInitialized = ref(false)
   const mountPointsInitialized = ref(false)
   const spacesLoading = ref(false)
-  const defaultSpaceImageBlobURL = ref<string>(null)
   const imagesLoading = ref<string[]>([])
   const readmesLoading = ref<string[]>([])
 
@@ -74,10 +73,6 @@ export const useSpacesStore = defineStore('spaces', () => {
 
   const setCurrentSpace = (space: SpaceResource) => {
     currentSpace.value = space
-  }
-
-  const setDefaultSpaceImageBlobURL = (blobURL: string) => {
-    defaultSpaceImageBlobURL.value = blobURL
   }
 
   const getSpaceMembers = (space: SpaceResource) => {
@@ -310,7 +305,6 @@ export const useSpacesStore = defineStore('spaces', () => {
     spacesLoading,
     currentSpace,
     personalSpace,
-    defaultSpaceImageBlobURL,
     imagesLoading,
     readmesLoading,
 
@@ -320,7 +314,6 @@ export const useSpacesStore = defineStore('spaces', () => {
     setMountPointsInitialized,
     setSpacesLoading,
     setCurrentSpace,
-    setDefaultSpaceImageBlobURL,
     getSpaceMembers,
     getMountPointForSpace,
 

@@ -1,5 +1,4 @@
-import { storeToRefs } from 'pinia'
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -19,7 +18,6 @@ export const useSpaceActionsDeleteImage = () => {
   const { graphAuthenticated, webdav } = useClientService()
   const spacesStore = useSpacesStore()
   const { showMessage, showErrorMessage } = useMessages()
-  const { defaultSpaceImageBlobURL } = storeToRefs(spacesStore)
 
   const deleteSpaceImage = async ({ space }: { space: SpaceResource }) => {
     try {
@@ -41,7 +39,7 @@ export const useSpaceActionsDeleteImage = () => {
       spacesStore.updateSpaceField({
         id: space.id,
         field: 'thumbnail',
-        value: unref(defaultSpaceImageBlobURL)
+        value: null
       })
 
       showMessage({ title: $gettext('Space image deleted successfully') })
