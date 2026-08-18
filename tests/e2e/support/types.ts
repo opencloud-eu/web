@@ -18,6 +18,7 @@ export interface Actor {
   close(): Promise<void>
   savePage(page: Page): void
   newTab(): Promise<Page>
+  switchTab(index: number): Promise<Page>
   closeCurrentTab(): Promise<void>
 }
 
