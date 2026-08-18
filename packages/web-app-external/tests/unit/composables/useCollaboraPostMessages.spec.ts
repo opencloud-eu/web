@@ -6,14 +6,14 @@ import {
   getComposableWrapper,
   type RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { CollaboratorShare, Resource, ShareTypes, SpaceResource } from '@opencloud-eu/web-client'
-import { useLoadShares, useFolderLink, useModals } from '@opencloud-eu/web-pkg'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useMentionUsers, useFolderLink, useModals } from '@opencloud-eu/web-pkg'
 import { useCollaboraPostMessages } from '../../../src/composables/useCollaboraPostMessages'
 import { Mock } from 'vitest'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  useLoadShares: vi.fn(),
+  useMentionUsers: vi.fn(),
   useFolderLink: vi.fn()
 }))
 
@@ -30,23 +30,21 @@ const getParsedPostMessageCalls = (postMessage: ReturnType<typeof vi.fn>) =>
   )
 
 describe('useCollaboraPostMessages', () => {
-  let mockLoadSharesTask: {
-    isRunning: boolean
-    cancelAll: ReturnType<typeof vi.fn>
-    perform: ReturnType<typeof vi.fn>
+  let mockMentionUsers: {
+    getMentionUsers: Mock
+    notifyMentionedUsers: Mock
+    resetMentionState: Mock
+    selectMentionUser: Mock
   }
 
   beforeEach(() => {
-    mockLoadSharesTask = {
-      isRunning: false,
-      cancelAll: vi.fn(),
-      perform: vi.fn().mockResolvedValue({ collaboratorShares: [], linkShares: [] })
+    mockMentionUsers = {
+      getMentionUsers: vi.fn().mockResolvedValue([]),
+      notifyMentionedUsers: vi.fn().mockResolvedValue(undefined),
+      resetMentionState: vi.fn(),
+      selectMentionUser: vi.fn()
     }
-    vi.mocked(useLoadShares).mockReturnValue({
-      loadSharesTask: mockLoadSharesTask as any,
-      availableInternalShareRoles: ref([]),
-      availableExternalShareRoles: ref([])
-    })
+    vi.mocked(useMentionUsers).mockReturnValue(mockMentionUsers)
     vi.mocked(useFolderLink).mockReturnValue({
       getParentFolderLink: vi.fn().mockReturnValue({}),
       getFolderLink: vi.fn(),
@@ -125,115 +123,61 @@ describe('useCollaboraPostMessages', () => {
 
   describe('Doc_ModifiedStatus message', () => {
     it('notifies mentioned users when Modified is false', async () => {
-      const { instance, mocks } = getWrapper()
+      const { instance } = getWrapper()
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({
-          MessageId: 'UI_Mention',
-          Values: { type: 'selected', username: 'user1' }
-        })
-      )
       await instance.handlePostMessagesCollabora(
         createMessageEvent({ MessageId: 'Doc_ModifiedStatus', Values: { Modified: false } })
       )
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(mockMentionUsers.notifyMentionedUsers).toHaveBeenCalledOnce()
     })
 
     it('does not notify when Modified is true', async () => {
-      const { instance, mocks } = getWrapper()
+      const { instance } = getWrapper()
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({
-          MessageId: 'UI_Mention',
-          Values: { type: 'selected', username: 'user1' }
-        })
-      )
       await instance.handlePostMessagesCollabora(
         createMessageEvent({ MessageId: 'Doc_ModifiedStatus', Values: { Modified: true } })
       )
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(mockMentionUsers.notifyMentionedUsers).not.toHaveBeenCalled()
     })
   })
 
   describe('UI_Close message', () => {
     it('notifies mentioned users on close', async () => {
-      const { instance, mocks } = getWrapper()
-
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({
-          MessageId: 'UI_Mention',
-          Values: { type: 'selected', username: 'user1' }
-        })
-      )
-      await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
-      await flushPromises()
-
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
-    })
-
-    it('does not notify if no users were mentioned', async () => {
-      const { instance, mocks } = getWrapper()
+      const { instance } = getWrapper()
 
       await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(mockMentionUsers.notifyMentionedUsers).toHaveBeenCalledOnce()
     })
   })
 
   describe('page leave / refresh', () => {
     it('notifies mentioned users on beforeunload', async () => {
-      const { instance, mocks } = getWrapper()
-
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({
-          MessageId: 'UI_Mention',
-          Values: { type: 'selected', username: 'user1' }
-        })
-      )
-      window.dispatchEvent(new Event('beforeunload'))
-      await flushPromises()
-
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
-    })
-
-    it('does not notify on beforeunload if no users were mentioned', async () => {
-      const { mocks } = getWrapper()
+      getWrapper()
 
       window.dispatchEvent(new Event('beforeunload'))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(mockMentionUsers.notifyMentionedUsers).toHaveBeenCalledOnce()
     })
 
     it('notifies mentioned users on component unmount', async () => {
-      const { wrapper, instance, mocks } = getWrapper()
+      const { wrapper } = getWrapper()
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({
-          MessageId: 'UI_Mention',
-          Values: { type: 'selected', username: 'user1' }
-        })
-      )
       wrapper.unmount()
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(mockMentionUsers.notifyMentionedUsers).toHaveBeenCalledOnce()
     })
 
     it('does not fire beforeunload listener after component unmount', async () => {
-      const { wrapper, instance, mocks } = getWrapper()
+      const { wrapper } = getWrapper()
 
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({
-          MessageId: 'UI_Mention',
-          Values: { type: 'selected', username: 'user1' }
-        })
-      )
       wrapper.unmount()
       await flushPromises()
 
@@ -241,7 +185,7 @@ describe('useCollaboraPostMessages', () => {
       window.dispatchEvent(new Event('beforeunload'))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(mockMentionUsers.notifyMentionedUsers).toHaveBeenCalledOnce()
     })
   })
 
@@ -391,54 +335,23 @@ describe('useCollaboraPostMessages', () => {
 
   describe('UI_Mention message', () => {
     describe('type: autocomplete', () => {
-      it('loads collaborators when not yet fetched', async () => {
+      it.each([
+        ['the given search text', { type: 'autocomplete', text: 'alice' }, 'alice'],
+        ['an empty search text when no text is given', { type: 'autocomplete' }, '']
+      ])('requests the mention users for %s', async (_description, values, query) => {
         const { instance } = getWrapper()
 
         await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'autocomplete', text: '' }
-          })
+          createMessageEvent({ MessageId: 'UI_Mention', Values: values })
         )
         await flushPromises()
 
-        expect(mockLoadSharesTask.perform).toHaveBeenCalledOnce()
+        expect(mockMentionUsers.getMentionUsers).toHaveBeenCalledWith(query)
       })
 
-      it('does not reload collaborators on subsequent autocomplete calls', async () => {
-        const { instance } = getWrapper()
-
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'autocomplete', text: '' }
-          })
-        )
-        await flushPromises()
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'autocomplete', text: '' }
-          })
-        )
-        await flushPromises()
-
-        expect(mockLoadSharesTask.perform).toHaveBeenCalledOnce()
-      })
-
-      it('posts Action_Mention with collaborators matching the search text', async () => {
+      it('posts Action_Mention with the mention users', async () => {
         const postMessage = vi.fn()
-        const collaborators: CollaboratorShare[] = [
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user1', displayName: 'Alice Smith' }
-          }),
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user2', displayName: 'Bob Jones' }
-          })
-        ]
-        mockLoadSharesTask.perform.mockResolvedValue({ collaboratorShares: collaborators })
+        mockMentionUsers.getMentionUsers.mockResolvedValue([{ id: 'user1', label: 'Alice Smith' }])
 
         const { instance } = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
 
@@ -452,107 +365,15 @@ describe('useCollaboraPostMessages', () => {
 
         const calls = getParsedPostMessageCalls(postMessage)
         const mentionCall = calls.find((m) => m.MessageId === 'Action_Mention')
-        expect(mentionCall).toBeDefined()
-        const list = mentionCall!.Values!.list as Array<{ username: string }>
-        expect(list).toHaveLength(1)
-        expect(list[0].username).toBe('user1')
-      })
-
-      it('posts Action_Mention with all collaborators when search text is empty', async () => {
-        const postMessage = vi.fn()
-        const collaborators: CollaboratorShare[] = [
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user1', displayName: 'Alice Smith' }
-          }),
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user2', displayName: 'Bob Jones' }
-          })
-        ]
-        mockLoadSharesTask.perform.mockResolvedValue({ collaboratorShares: collaborators })
-
-        const { instance } = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
-
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'autocomplete', text: '' }
-          })
-        )
-        await flushPromises()
-
-        const calls = getParsedPostMessageCalls(postMessage)
-        const mentionCall = calls.find((m) => m.MessageId === 'Action_Mention')
-        const list = mentionCall!.Values!.list as Array<{ username: string }>
-        expect(list).toHaveLength(2)
-      })
-
-      it('excludes collaborators with non-individual share types', async () => {
-        const postMessage = vi.fn()
-        const collaborators: CollaboratorShare[] = [
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user1', displayName: 'Alice' }
-          }),
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.group.value,
-            sharedWith: { id: 'group1', displayName: 'Devs' }
-          })
-        ]
-        mockLoadSharesTask.perform.mockResolvedValue({ collaboratorShares: collaborators })
-
-        const { instance } = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
-
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'autocomplete', text: '' }
-          })
-        )
-        await flushPromises()
-
-        const calls = getParsedPostMessageCalls(postMessage)
-        const mentionCall = calls.find((m) => m.MessageId === 'Action_Mention')
-        const list = mentionCall!.Values!.list as Array<{ username: string }>
-        expect(list).toHaveLength(1)
-        expect(list[0].username).toBe('user1')
-      })
-
-      it('deduplicates collaborators with the same user id', async () => {
-        const postMessage = vi.fn()
-        const collaborators: CollaboratorShare[] = [
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user1', displayName: 'Alice' }
-          }),
-          mock<CollaboratorShare>({
-            shareType: ShareTypes.user.value,
-            sharedWith: { id: 'user1', displayName: 'Alice' }
-          })
-        ]
-        mockLoadSharesTask.perform.mockResolvedValue({ collaboratorShares: collaborators })
-
-        const { instance } = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
-
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'autocomplete', text: '' }
-          })
-        )
-        await flushPromises()
-
-        const calls = getParsedPostMessageCalls(postMessage)
-        const mentionCall = calls.find((m) => m.MessageId === 'Action_Mention')
-        const list = mentionCall!.Values!.list as Array<{ username: string }>
-        expect(list).toHaveLength(1)
+        expect(mentionCall!.Values!.list).toEqual([
+          expect.objectContaining({ username: 'user1', label: 'Alice Smith' })
+        ])
       })
     })
 
     describe('type: selected', () => {
-      it('sends userIDs of all unique selected users when notifying', async () => {
-        const { instance, mocks } = getWrapper()
+      it('remembers the selected user', async () => {
+        const { instance } = getWrapper()
 
         await instance.handlePostMessagesCollabora(
           createMessageEvent({
@@ -560,75 +381,29 @@ describe('useCollaboraPostMessages', () => {
             Values: { type: 'selected', username: 'user1' }
           })
         )
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'selected', username: 'user2' }
-          })
-        )
-        await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
-        await flushPromises()
 
-        const [, body] = mocks.$clientService.httpAuthenticated.post.mock.calls[0] as [
-          string,
-          { userIDs: string[] }
-        ]
-        expect(body.userIDs).toEqual(['user1', 'user2'])
+        expect(mockMentionUsers.selectMentionUser).toHaveBeenCalledWith('user1')
       })
 
-      it('does not add duplicate user ids to the mention list', async () => {
-        const { instance, mocks } = getWrapper()
+      it('ignores a selection without a username', async () => {
+        const { instance } = getWrapper()
 
         await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'selected', username: 'user1' }
-          })
+          createMessageEvent({ MessageId: 'UI_Mention', Values: { type: 'selected' } })
         )
-        await instance.handlePostMessagesCollabora(
-          createMessageEvent({
-            MessageId: 'UI_Mention',
-            Values: { type: 'selected', username: 'user1' }
-          })
-        )
-        await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
-        await flushPromises()
 
-        const [, body] = mocks.$clientService.httpAuthenticated.post.mock.calls[0] as [
-          string,
-          { userIDs: string[] }
-        ]
-        expect(body.userIDs).toEqual(['user1'])
+        expect(mockMentionUsers.selectMentionUser).not.toHaveBeenCalled()
       })
     })
   })
 
   describe('resetMentionState', () => {
-    it('triggers a fresh collaborator load on the next autocomplete call', async () => {
-      mockLoadSharesTask.perform.mockResolvedValue({ collaboratorShares: [] })
-      const { instance } = getWrapper()
-
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'UI_Mention', Values: { type: 'autocomplete', text: '' } })
-      )
-      await flushPromises()
-      instance.resetMentionState()
-
-      await instance.handlePostMessagesCollabora(
-        createMessageEvent({ MessageId: 'UI_Mention', Values: { type: 'autocomplete', text: '' } })
-      )
-      await flushPromises()
-
-      expect(mockLoadSharesTask.perform).toHaveBeenCalledTimes(2)
-    })
-
-    it('cancels a running loadSharesTask', () => {
-      mockLoadSharesTask.isRunning = true
+    it('resets the mention state of the current resource', () => {
       const { instance } = getWrapper()
 
       instance.resetMentionState()
 
-      expect(mockLoadSharesTask.cancelAll).toHaveBeenCalledOnce()
+      expect(mockMentionUsers.resetMentionState).toHaveBeenCalledOnce()
     })
   })
 

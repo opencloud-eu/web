@@ -16,7 +16,7 @@ import type {
 } from '../types'
 import { DEFAULT_YDOC_FRAGMENT } from '../types'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
-import { SlashCommands } from '../extensions'
+import { Mentions, SlashCommands } from '../extensions'
 import { useContentStrategy } from './useContentStrategy'
 import { useConfigStore } from '../../composables'
 
@@ -122,6 +122,10 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
         SlashCommands.configure({ getGroups: () => resolvedGroups }) as (typeof extensions)[number]
       )
     }
+  }
+
+  if (options.mentions) {
+    extensions.push(Mentions.configure(options.mentions) as (typeof extensions)[number])
   }
 
   if (options.placeholder) {

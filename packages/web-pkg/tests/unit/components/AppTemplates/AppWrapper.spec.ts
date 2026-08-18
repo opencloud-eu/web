@@ -168,6 +168,9 @@ function setup({
     beginSave,
     serializeMerged,
     currentContent: () => slotProps?.currentContent,
+    registerSaveCallback(callback: () => void | Promise<void>) {
+      slotProps['onRegister:onSaveCallback'](callback)
+    },
     async edit(content: string) {
       slotProps['onUpdate:currentContent'](content)
       await nextTick()
@@ -203,6 +206,53 @@ describe('AppWrapper — ESC close behavior', () => {
     } finally {
       document.removeEventListener('keydown', documentKeydownSpy)
     }
+  })
+})
+
+describe('AppWrapper — save callback', () => {
+  it('runs the registered callback after the file was saved', async () => {
+    const callback = vi.fn()
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    s.registerSaveCallback(callback)
+
+    await s.pressCtrlS()
+
+    expect(callback).toHaveBeenCalledOnce()
+  })
+
+  it('does not run the registered callback when saving failed', async () => {
+    const callback = vi.fn()
+    const s = setup({
+      yjsEnabled: false,
+      putFileContents: vi.fn().mockRejectedValue({ statusCode: 500, response: {} })
+    })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    s.registerSaveCallback(callback)
+
+    await s.pressCtrlS()
+
+    expect(callback).not.toHaveBeenCalled()
+  })
+
+  it('logs an error when the registered save callback fails', async () => {
+    const callback = vi.fn().mockRejectedValue(new Error('nope'))
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    s.registerSaveCallback(callback)
+
+    await expect(s.pressCtrlS()).resolves.toBeUndefined()
+
+    expect(consoleErrorSpy).toHaveBeenCalled()
   })
 })
 

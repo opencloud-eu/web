@@ -79,6 +79,7 @@ export interface AppWrapperSlotHandlers {
   'onUpdate:resource': (value: Resource) => void
   'onUpdate:currentContent': (value: unknown) => void
   'onRegister:onDeleteResourceCallback': (value: () => void) => void
+  'onRegister:onSaveCallback': (value: () => void | Promise<void>) => void
   'onDelete:resource': () => void
 }
 
@@ -89,7 +90,8 @@ export type EditorSlotProps = Pick<
 >
 
 /** Editors opting into collaborative editing via {@link YjsOptions}. */
-export type YjsEditorSlotProps = EditorSlotProps & Pick<AppWrapperSlotProps, 'ydoc' | 'awareness'>
+export type YjsEditorSlotProps = EditorSlotProps &
+  Pick<AppWrapperSlotProps, 'space' | 'ydoc' | 'awareness'>
 
 /** Apps that render the file from a URL instead of its body. */
 export type ViewerSlotProps = Pick<AppWrapperSlotProps, 'resource' | 'url'>
