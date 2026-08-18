@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- add sanitized SVG rendering in preview app [[#3144](https://github.com/opencloud-eu/web/pull/3144)]
 - feat: update default space icon [[#3146](https://github.com/opencloud-eu/web/pull/3146)]
 - feat: enhance preview media controls layout and migrate to bubble menu [[#3138](https://github.com/opencloud-eu/web/pull/3138)]
 - feat: move bubble menu styling to design system [[#3134](https://github.com/opencloud-eu/web/pull/3134)]
@@ -27,6 +28,7 @@
 
 ### 🐛 Bug Fixes
 
+- Fix empty right sidebar when opening space context menu [[#3153](https://github.com/opencloud-eu/web/pull/3153)]
 - fix: improve media controls layout stability [[#3145](https://github.com/opencloud-eu/web/pull/3145)]
 - fix: only mark shares nav item active on shares routes [[#3148](https://github.com/opencloud-eu/web/pull/3148)]
 - fix: render action buttons in move/copy dialogs [[#3147](https://github.com/opencloud-eu/web/pull/3147)]
