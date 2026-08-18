@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: improve media controls layout stability [[#3145](https://github.com/opencloud-eu/web/pull/3145)]
 - fix: only mark shares nav item active on shares routes [[#3148](https://github.com/opencloud-eu/web/pull/3148)]
 - fix: render action buttons in move/copy dialogs [[#3147](https://github.com/opencloud-eu/web/pull/3147)]
 - fix: remove delay for vault password error message [[#3140](https://github.com/opencloud-eu/web/pull/3140)]
