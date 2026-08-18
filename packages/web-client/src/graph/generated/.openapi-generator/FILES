@@ -7,8 +7,10 @@ common.ts
 configuration.ts
 docs/ActivitiesApi.md
 docs/Activity.md
+docs/ActivityNotification.md
 docs/ActivityTemplate.md
 docs/ActivityTimes.md
+docs/ActivityTopic.md
 docs/AppRole.md
 docs/AppRoleAssignment.md
 docs/Application.md
@@ -114,6 +116,7 @@ docs/User.md
 docs/UserApi.md
 docs/UserAppRoleAssignmentApi.md
 docs/UserPhotoApi.md
+docs/UserTeamworkApi.md
 docs/UserUpdate.md
 docs/UsersApi.md
 docs/Video.md
