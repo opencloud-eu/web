@@ -1,5 +1,17 @@
 <template>
+  <div v-if="isSvgImage" ref="img" :data-id="file.id">
+    <inline-svg
+      :key="`media-svg-${file.id}`"
+      :src="file.url"
+      :transform-source="sanitizeSvgElement"
+      role="img"
+      :aria-label="file.name"
+      class="max-w-full max-h-full"
+      @loaded="initPanzoom"
+    />
+  </div>
   <img
+    v-else
     ref="img"
     :key="`media-image-${file.id}`"
     :src="file.url"
@@ -10,10 +22,23 @@
 </template>
 <script setup lang="ts">
 import { MediaFile } from '../../helpers/types'
-import { ref, watch, unref, nextTick, onMounted, onBeforeUnmount, useTemplateRef } from 'vue'
+import {
+  computed,
+  ref,
+  watch,
+  unref,
+  nextTick,
+  onMounted,
+  onBeforeUnmount,
+  useTemplateRef
+} from 'vue'
 import type { PanzoomObject, PanzoomOptions } from '@panzoom/panzoom'
 import Panzoom from '@panzoom/panzoom'
+import DOMPurify from 'dompurify'
 import { useEventBus } from '@opencloud-eu/web-pkg'
+import InlineSvg from 'vue-inline-svg'
+
+InlineSvg.name = 'inline-svg'
 
 const { file, currentImageRotation } = defineProps<{
   file: MediaFile
@@ -22,8 +47,18 @@ const { file, currentImageRotation } = defineProps<{
 
 const eventBus = useEventBus()
 
-const img = useTemplateRef('img')
+const img = useTemplateRef<HTMLElement>('img')
 const panzoom = ref<PanzoomObject>()
+const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')
+
+function sanitizeSvgElement(svg: SVGElement) {
+  DOMPurify.sanitize(svg, {
+    IN_PLACE: true,
+    USE_PROFILES: { svg: true, svgFilters: true }
+  })
+
+  return svg
+}
 
 const onWheelEvent = (e: WheelEvent) => {
   e.preventDefault()
