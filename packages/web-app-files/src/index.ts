@@ -22,7 +22,7 @@ import { buildRoutes } from '@opencloud-eu/web-pkg'
 
 // dirty: importing view from other extension within project
 import SearchResults from '../../web-app-search/src/views/List.vue'
-import { isPersonalSpaceResource, isShareSpaceResource } from '@opencloud-eu/web-client'
+import { isPersonalSpaceResource } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
 import { extensionPoints } from './extensionPoints'
 import { useGettext } from 'vue3-gettext'
@@ -81,14 +81,9 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
       route: {
         path: `/${appInfo.id}/shares`
       },
-      isActive: () => {
-        const space = spacesStores.currentSpace
-        return !space || isShareSpaceResource(space)
-      },
       activeFor: [
         { path: `/${appInfo.id}/spaces/share` },
-        { path: `/${appInfo.id}/spaces/ocm-share` },
-        { path: `/${appInfo.id}/spaces/personal` }
+        { path: `/${appInfo.id}/spaces/ocm-share` }
       ],
       isVisible() {
         return capabilityStore.sharingApiEnabled !== false
