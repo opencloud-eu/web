@@ -17,6 +17,7 @@ const spaceMocks = [
     id: '1',
     name: '1 Some space',
     disabled: false,
+    extension: '',
     root: {
       permissions: [
         mock<Permission>({
@@ -42,6 +43,7 @@ const spaceMocks = [
   mock<SpaceResource>({
     id: '2',
     name: '2 Another space',
+    extension: '',
     disabled: true,
     root: {
       permissions: [

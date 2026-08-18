@@ -100,7 +100,8 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
         <oc-checkbox-stub option="undefined" label="Select 1 Some space" disabled="false" id="oc-checkbox-2" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
       </td>
-      <td data-v-27e13406="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
+      <td data-v-27e13406="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon">
+        <div class="flex items-center justify-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-6 oc-resource-icon inline-flex items-center rounded-sm"><svg data-testid="inline-svg-stub" src="icons/resource-type-folder-fill.svg" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -108,7 +109,8 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
 				svg.insertBefore(title, svg.firstChild);
 			};
 			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span></td>
+		}" aria-hidden="true" focusable="false" class="size-6"></svg></span></div>
+      </td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span data-test-space-name="1 Some space">1 Some space</span></td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">3</td>
@@ -155,7 +157,8 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-select pl-4">
         <oc-checkbox-stub option="undefined" label="Select 2 Another space" disabled="false" id="oc-checkbox-3" labelhidden="true" size="large" modelvalue="false"></oc-checkbox-stub>
       </td>
-      <td data-v-27e13406="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/layout-grid-fill.svg" transform-source="(svg) => {
+      <td data-v-27e13406="" class="oc-table-cell text-left align-middle w-px oc-td oc-table-data-cell oc-table-data-cell-icon">
+        <div class="flex items-center justify-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-6 oc-resource-icon inline-flex items-center rounded-sm"><svg data-testid="inline-svg-stub" src="icons/resource-type-folder-fill.svg" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -163,7 +166,8 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
 				svg.insertBefore(title, svg.firstChild);
 			};
 			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span></td>
+		}" aria-hidden="true" focusable="false" class="size-6"></svg></span></div>
+      </td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span data-test-space-name="2 Another space">2 Another space</span></td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">5</td>
