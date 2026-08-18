@@ -58,6 +58,16 @@ export class ActorEnvironment extends EventEmitter implements Actor {
     return page
   }
 
+  public async switchTab(index: number): Promise<Page> {
+    const page = this.tabs[index]
+    if (!page) {
+      throw new Error(`No tab found at index ${index}. Open tabs: ${this.tabs.length}`)
+    }
+    this.page = page
+    await page.bringToFront()
+    return page
+  }
+
   public async closeCurrentTab(): Promise<void> {
     await this.page.close()
     this.tabs.pop()
