@@ -275,7 +275,8 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
     // no-thumbnail behaviour (do NOT key this off hasPreview(), or plain
     // images the server has no thumbnail for would download the full
     // original on every open).
-    const useFullImage = mediaFile.isImage && mediaFile.resource.isInVault
+    const useFullImage =
+      mediaFile.isImage && (mediaFile.resource.isInVault || mediaFile.mimeType === 'image/svg+xml')
 
     if (mediaFile.isImage && !useFullImage) {
       mediaFile.url = await previewService.loadPreview(
