@@ -329,6 +329,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       panel: {
         name: 'space-share',
         icon: 'group',
+        iconFillType: 'line',
         title: () => $gettext('Members'),
         component: markRaw(SharesPanel),
         componentAttrs: () => ({

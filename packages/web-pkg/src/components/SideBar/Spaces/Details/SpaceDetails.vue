@@ -1,5 +1,5 @@
 <template>
-  <div id="oc-space-details-sidebar" class="p-2">
+  <div v-if="resource" id="oc-space-details-sidebar" class="p-2">
     <oc-spinner
       v-if="imagesLoading.includes(resource.id)"
       :aria-label="$gettext('Space image is loading')"
@@ -141,8 +141,12 @@ const size = computed(() => {
 })
 
 watch(
-  () => unref(resource).spaceImageData,
+  () => unref(resource)?.spaceImageData,
   async () => {
+    if (!unref(resource)) {
+      return
+    }
+
     spaceImage.value = await loadPreview({
       space: unref(resource),
       resource: unref(resource).spaceImageData
