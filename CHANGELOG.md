@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: only mark shares nav item active on shares routes [[#3148](https://github.com/opencloud-eu/web/pull/3148)]
 - fix: render action buttons in move/copy dialogs [[#3147](https://github.com/opencloud-eu/web/pull/3147)]
 - fix: remove delay for vault password error message [[#3140](https://github.com/opencloud-eu/web/pull/3140)]
 - fix(extension-sdk): ignore module federation temp files in the dev watcher [[#3136](https://github.com/opencloud-eu/web/pull/3136)]
