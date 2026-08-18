@@ -76,7 +76,13 @@
             :view-mode="viewMode"
             v-bind="folderView.componentAttrs?.()"
             @sort="handleSort"
-            @item-visible="loadPreview({ space: $event, resource: $event })"
+            @item-visible="
+              loadPreview({
+                space: $event,
+                resource: $event,
+                processor: ProcessorType.enum.fit
+              })
+            "
             @update:selected-ids="selectedResourcesIds = $event"
           >
             <template #image="{ resource }">
@@ -103,12 +109,10 @@
                 />
                 <img
                   v-else-if="resource.thumbnail"
-                  class="table-preview mr-2 rounded-sm object-cover"
+                  class="table-preview mr-2 rounded-sm object-cover w-[24px] h-[24px]"
                   :class="{ 'opacity-80 grayscale': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
-                  width="33"
-                  height="33"
                 />
                 <resource-icon v-else class="mr-2" :resource="resource" />
               </template>
@@ -172,6 +176,7 @@ import {
   useClientService,
   ContextActions,
   FolderViewModeConstants,
+  ProcessorType,
   useSort,
   usePagination,
   useRouter,
