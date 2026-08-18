@@ -98,6 +98,24 @@ When(
 )
 
 When(
+  '{string} opens a new tab',
+  async function ({ world }: { world: World }, stepUser: string): Promise<void> {
+    const actor = world.actorsEnvironment.getActor({ key: stepUser })
+    await actor.newTab()
+    await actor.page.goto(appConfig.baseUrl)
+    await actor.page.locator('#web-content').waitFor()
+  }
+)
+
+When(
+  '{string} switches to tab {int}',
+  async function ({ world }: { world: World }, stepUser: string, tab: number): Promise<void> {
+    const actor = world.actorsEnvironment.getActor({ key: stepUser })
+    await actor.switchTab(tab - 1)
+  }
+)
+
+When(
   '{string} closes the current tab',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
     const actor = world.actorsEnvironment.getActor({ key: stepUser })

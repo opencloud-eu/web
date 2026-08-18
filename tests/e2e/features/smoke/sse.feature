@@ -10,7 +10,10 @@ Feature: server sent events
       | item-trashed            | x |
       | item-restored           | x |
       | item-moved              | x |
+      | item-favorite-added     | x |
+      | item-favorite-removed   | x |
       | folder-created          | x |
+      | space-created           | x |
       | space-member-added      | x |
       | space-member-removed    | x |
       | space-share-updated     | x |
@@ -44,6 +47,9 @@ Feature: server sent events
     And "Alice" creates the following project space using API
       | name      | id        |
       | Marketing | marketing |
+
+    # space-created
+    Then "Alice" should get "space-created" SSE event
 
     # space-member-added
     When "Alice" adds the following member to the space "Marketing" using API
@@ -284,4 +290,45 @@ Feature: server sent events
       | simple-renamed.pdf |
 
     And "Brian" logs out
+    And "Alice" logs out
+
+  @webkit-skip
+  Scenario: favorite sse events update the favorites view across tabs
+    Given "Alice" creates the following file into personal space using API
+      | pathToFile  | content     |
+      | example.txt | lorem ipsum |
+    And "Alice" logs in
+
+    # tab 2. open the favorites page in the second tab
+    And "Alice" opens a new tab
+    And "Alice" navigates to the favorites page
+    And following resource should not be displayed in the files list for user "Alice"
+      | resource    |
+      | example.txt |
+
+    # tab 1. item-favorite-added - mark as favorite
+    When "Alice" switches to tab 1
+    And "Alice" marks the following resource as favorite using "context menu"
+      | resource    |
+      | example.txt |
+    Then "Alice" should get "item-favorite-added" SSE event
+    
+    # tab 2 check that the resource is displayed without a reload
+    When "Alice" switches to tab 2
+    Then following resource should be displayed in the files list for user "Alice"
+      | resource    |
+      | example.txt |
+
+    # tab 1. item-favorite-removed - unmark as favorite
+    When "Alice" switches to tab 1
+    And "Alice" removes the following resource from favorites using "context menu"
+      | resource    |
+      | example.txt |
+    Then "Alice" should get "item-favorite-removed" SSE event
+
+    # tab 2 check that the resource is not displayed without a reload
+    When "Alice" switches to tab 2
+    Then following resource should not be displayed in the files list for user "Alice"
+      | resource    |
+      | example.txt |
     And "Alice" logs out
