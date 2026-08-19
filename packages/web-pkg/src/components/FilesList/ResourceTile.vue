@@ -68,8 +68,12 @@
             <resource-icon
               v-else
               :resource="resource"
-              :size-class="resourceIconSize"
-              class="tile-default-image pt-1 relative"
+              :size-class="isProjectSpaceResource(resource) ? 'size-full' : resourceIconSize"
+              class="tile-default-image relative"
+              :class="[
+                isProjectSpaceResource(resource) ? 'rounded-t-sm' : 'pt-1',
+                { 'rounded-sm': isProjectSpaceResource(resource) && isResourceSelected }
+              ]"
             >
               <template v-if="showStatusIcon" #status>
                 <oc-icon v-bind="statusIconAttrs" size-class="size-3" />
@@ -229,7 +233,8 @@ if (!lazy) {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .oc-tile-card-preview:hover img {
+  .oc-tile-card-preview:hover img,
+  .oc-tile-card-preview:hover .oc-icon {
     @apply rounded-sm;
   }
 

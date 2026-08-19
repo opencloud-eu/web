@@ -56,16 +56,30 @@ exports[`OcResourceIcon > renders OcIcon for resource type folder in size xxlarg
 
 exports[`OcResourceIcon > renders OcIcon for resource type folder in size xxxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="xxxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size large 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="large" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size large 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="large" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size medium 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="medium" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size medium 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="medium" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size small 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="small" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size small 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="small" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="xlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xsmall 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xsmall" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xsmall 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="xsmall" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="xxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
 
-exports[`OcResourceIcon > renders OcIcon for resource type space in size xxxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="layout-grid" size="xxxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+exports[`OcResourceIcon > renders OcIcon for resource type space in size xxxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-folder" size="xxxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size large 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="large" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size medium 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="medium" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size small 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="small" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size xlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="xlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size xsmall 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="xsmall" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size xxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="xxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;
+
+exports[`OcResourceIcon > renders OcIcon for resource type space with drive type "project" in size xxxlarge 1`] = `"<oc-icon-stub accessiblelabel="" color="" filltype="fill" name="resource-type-space" size="xxxlarge" sizeclass="size-5" type="span" class="oc-resource-icon inline-flex items-center overflow-hidden"></oc-icon-stub>"`;

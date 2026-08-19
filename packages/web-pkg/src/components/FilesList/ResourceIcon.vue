@@ -10,7 +10,8 @@
       'inline-flex',
       'items-center',
       {
-        'opacity-80 grayscale': hasDisabledSpaceIcon
+        'opacity-80 grayscale': hasDisabledSpaceIcon,
+        'overflow-hidden': fillsBox
       }
     ]"
   />
@@ -19,12 +20,7 @@
 <script setup lang="ts">
 import { computed, inject, unref } from 'vue'
 import { storeToRefs } from 'pinia'
-import {
-  isPersonalSpaceResource,
-  isProjectSpaceResource,
-  Resource,
-  SpaceResource
-} from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import {
   createDefaultFileIconMapping,
@@ -39,12 +35,9 @@ const defaultFolderIcon: IconType = {
   name: 'resource-type-folder'
 }
 
-const defaultPersonalSpaceIcon: IconType = {
-  name: 'resource-type-folder'
-}
-
 const defaultSpaceIcon: IconType = {
-  name: 'layout-grid'
+  name: 'resource-type-space',
+  fillsBox: true
 }
 
 const defaultFileIcon: IconType = {
@@ -73,6 +66,10 @@ const hasSpaceIcon = computed(() => {
   return resource.type === 'space'
 })
 
+const hasProjectSpaceIcon = computed(() => {
+  return isProjectSpaceResource(resource)
+})
+
 const hasDisabledSpaceIcon = computed(() => {
   return isProjectSpaceResource(resource) && resource.disabled === true
 })
@@ -84,9 +81,6 @@ const fallbackIcon = computed(() => {
   return defaultFileIcon
 })
 
-const hasPersonalSpaceIcon = computed(() => {
-  return isPersonalSpaceResource(resource)
-})
 const extension = computed(() => {
   return resource.extension?.toLowerCase()
 })
@@ -95,11 +89,11 @@ const mimeType = computed(() => {
 })
 
 const icon = computed((): IconType => {
-  if (unref(hasPersonalSpaceIcon)) {
-    return defaultPersonalSpaceIcon
+  if (unref(hasProjectSpaceIcon)) {
+    return defaultSpaceIcon
   }
   if (unref(hasSpaceIcon)) {
-    return defaultSpaceIcon
+    return defaultFolderIcon
   }
 
   const typeIconOrUndefined =
@@ -113,4 +107,6 @@ const icon = computed((): IconType => {
 const iconName = computed(() => {
   return getResourceIconName(unref(icon), !!unref(currentTheme)?.isDark)
 })
+
+const fillsBox = computed(() => unref(icon).fillsBox === true)
 </script>
