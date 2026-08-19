@@ -7,13 +7,21 @@ import {
   useSpacesStore
 } from '@opencloud-eu/web-pkg'
 
-vi.mock('@opencloud-eu/web-pkg', () => ({
-  getVaultClaim: vi.fn(),
-  resolveVaultEngine: vi.fn(),
-  useExtensionRegistry: vi.fn(() => ({})),
-  useSpacesLoading: vi.fn(),
-  useSpacesStore: vi.fn()
-}))
+vi.mock('@opencloud-eu/web-pkg', async () => {
+  const { getSpaceForDriveAliasAndItem } =
+    await import('../../../../web-pkg/src/helpers/spaces/driveAlias')
+  const { queryItemAsString } =
+    await import('../../../../web-pkg/src/composables/appDefaults/useAppNavigation')
+  return {
+    getSpaceForDriveAliasAndItem,
+    queryItemAsString,
+    getVaultClaim: vi.fn(),
+    resolveVaultEngine: vi.fn(),
+    useExtensionRegistry: vi.fn(() => ({})),
+    useSpacesLoading: vi.fn(),
+    useSpacesStore: vi.fn()
+  }
+})
 
 const space = { id: 'space-1', driveAlias: 'personal/admin' }
 const unlockRoute = {
@@ -265,6 +273,79 @@ describe('setupVaultUnlockGuard', () => {
     )
 
     expect(result).toMatchObject({ query: { cancelUrl: '/files/spaces/personal/admin' } })
+  })
+
+  describe('two spaces of the same name', () => {
+    // The server derives a drive alias from the space name, so two spaces called
+    // "test" both live under `project/test`. Matching on the alias alone hands
+    // back an arbitrary one of them - and with it an arbitrary unlock state.
+    const unlockedVault = { id: 'space-a', fileId: 'space-a', driveAlias: 'project/test' }
+    const lockedVault = { id: 'space-b', fileId: 'space-b', driveAlias: 'project/test' }
+    const vaultClaim = {
+      vaultRoot: '/',
+      unlockRoute: { name: 'rclone-crypt-unlock', query: { vaultRoot: '/' } }
+    }
+
+    it('gates the space the fileId points at, not the first of that name', async () => {
+      const guard = installGuard({
+        spaces: [unlockedVault, lockedVault],
+        claim: vaultClaim,
+        // The engine only resolves for the unlocked space, which is what the
+        // scheme extension keys on internally.
+        engine: null
+      })
+
+      const result = await guard(
+        {
+          params: { driveAliasAndItem: 'project/test' },
+          query: { fileId: 'space-b' },
+          fullPath: '/files/spaces/project/test?fileId=space-b'
+        },
+        coldStart
+      )
+
+      expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), lockedVault, '/')
+      expect(resolveVaultEngine).toHaveBeenCalledWith(expect.anything(), lockedVault, '/')
+      expect(result).toMatchObject({ name: 'rclone-crypt-unlock' })
+    })
+
+    it('resolves a nested item to its own space', async () => {
+      const guard = installGuard({
+        spaces: [unlockedVault, lockedVault],
+        claim: vaultClaim,
+        engine: {}
+      })
+
+      const result = await guard(
+        {
+          params: { driveAliasAndItem: 'project/test/sub' },
+          query: { fileId: 'space-b!item-1' },
+          fullPath: '/files/spaces/project/test/sub?fileId=space-b%21item-1'
+        },
+        coldStart
+      )
+
+      expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), lockedVault, '/sub')
+      expect(result).toBe(true)
+    })
+
+    it('falls back to the drive alias when the URL carries no fileId', async () => {
+      const guard = installGuard({
+        spaces: [unlockedVault, lockedVault],
+        claim: vaultClaim,
+        engine: null
+      })
+
+      await guard(
+        {
+          params: { driveAliasAndItem: 'project/test' },
+          fullPath: '/files/spaces/project/test'
+        },
+        coldStart
+      )
+
+      expect(getVaultClaim).toHaveBeenCalledWith(expect.anything(), unlockedVault, '/')
+    })
   })
 
   it('does not match a sibling drive alias (prefix guard)', async () => {

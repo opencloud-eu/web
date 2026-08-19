@@ -2,7 +2,7 @@
 
 exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opened 1`] = `
 "<div class="space-header p-4 flex space-header-squashed">
-  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40 hidden lg:block"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" transform-source="(svg) => {
+  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40 hidden lg:block"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -53,7 +53,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 
 exports[`SpaceHeader > space description > should show the description 1`] = `
 "<div class="space-header p-4 flex">
-  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" transform-source="(svg) => {
+  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);

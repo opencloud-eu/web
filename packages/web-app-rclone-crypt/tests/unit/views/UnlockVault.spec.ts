@@ -17,6 +17,7 @@ const passphrase = 'foobar'
 
 type Space = {
   id: string
+  fileId?: string
   driveType?: string
   driveAlias?: string
   name?: string
@@ -137,7 +138,9 @@ describe('UnlockVault', () => {
 
       expect((wrapper.vm as any).errorMessage).toBeNull()
       expect(vaultStore.setEngine).toHaveBeenCalledWith(spaceId, vaultRoot, expect.anything())
-      expect(mocks.$router.push).toHaveBeenCalledWith(`/files/spaces${vaultRoot}`)
+      expect(mocks.$router.push).toHaveBeenCalledWith({
+        path: `/files/spaces/personal/admin${vaultRoot}`
+      })
     })
 
     it('returns to where the user was sent from', async () => {
@@ -245,6 +248,7 @@ describe('UnlockVault', () => {
         spaces: [
           {
             id: spaceId,
+            fileId: spaceId,
             driveType: 'project',
             driveAlias: 'project/secrets',
             name: 'Secrets',
@@ -275,7 +279,10 @@ describe('UnlockVault', () => {
       const { wrapper, mocks } = await vaultSpace()
       await submit(wrapper)
 
-      expect(mocks.$router.push).toHaveBeenCalledWith('/files/spaces/project/secrets')
+      expect(mocks.$router.push).toHaveBeenCalledWith({
+        path: '/files/spaces/project/secrets',
+        query: { fileId: spaceId }
+      })
     })
 
     it('leaves for the spaces overview on cancel, never back into the space', async () => {
@@ -302,6 +309,7 @@ describe('UnlockVault', () => {
         spaces: [
           {
             id: spaceId,
+            fileId: spaceId,
             driveType: 'project',
             driveAlias: 'project/secrets',
             name: 'Secrets',

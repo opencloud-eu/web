@@ -1,7 +1,9 @@
 import { RouteLocationNormalized, Router } from 'vue-router'
 import {
   ClientService,
+  getSpaceForDriveAliasAndItem,
   getVaultClaim,
+  queryItemAsString,
   resolveVaultEngine,
   useExtensionRegistry,
   useSpacesLoading,
@@ -77,8 +79,10 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     // Spaces need to be loaded for vaults to be claimed.
     await waitForSpaces()
 
-    let space = spacesStore.spaces.find(
-      (s) => driveAliasAndItem === s.driveAlias || driveAliasAndItem.startsWith(`${s.driveAlias}/`)
+    let space = getSpaceForDriveAliasAndItem(
+      spacesStore.spaces,
+      driveAliasAndItem,
+      queryItemAsString(to.query?.fileId)
     )
 
     const isShareSpace =

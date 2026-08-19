@@ -170,6 +170,17 @@ const submitDisabled = computed(() => !unref(password) || unref(verifying))
 
 const space = computed(() => spacesStore.spaces.find((s) => s.id === unref(spaceId)))
 
+function spaceLocation(path: string) {
+  const targetSpace = unref(space)
+  const query = isShareSpaceResource(targetSpace)
+    ? { shareId: targetSpace.id }
+    : { ...(targetSpace.fileId && { fileId: targetSpace.fileId }) }
+  return {
+    path: urlJoin('/files/spaces', targetSpace.driveAlias, path),
+    ...(Object.keys(query).length && { query })
+  }
+}
+
 const vaultTarget = computed<VaultTarget>(() => ({
   webdav: clientService.webdav,
   space: unref(space),
@@ -188,14 +199,13 @@ async function onSubmit() {
 
     vaultStore.setEngine(unref(spaceId), unref(vaultRoot), result.engine)
 
-    const target = unref(redirectUrl)
-    // router.push accepts a full URL string and parses path + query for us.
+    if (unref(redirectUrl)) {
+      await router.push(unref(redirectUrl))
+      return
+    }
     // Without a redirect the vault root is the destination - which for a vault
-    // space is the space itself, addressed by its drive alias.
-    const fallback = unref(isSpaceVault)
-      ? urlJoin('/files/spaces', unref(space).driveAlias)
-      : urlJoin('/files/spaces', unref(vaultRoot))
-    await router.push(target || fallback)
+    // space is the space itself.
+    await router.push(spaceLocation(unref(isSpaceVault) ? '/' : unref(vaultRoot)))
   } catch (e) {
     console.error(e)
     errorMessage.value = $gettext('Unlocking failed. Please try again')
@@ -249,10 +259,7 @@ async function onCancel() {
     return
   }
   if (targetSpace) {
-    await router.push({
-      path: urlJoin('/files/spaces', targetSpace.driveAlias, parent),
-      ...(isShareSpaceResource(targetSpace) && { query: { shareId: targetSpace.id } })
-    })
+    await router.push(spaceLocation(parent))
     return
   }
   await router.push('/files/spaces/personal')
