@@ -47,5 +47,12 @@
     "description": "HTML element to be used for the icon.",
     "default": "span",
     "type": "string"
+  },
+  {
+    "name": "uniqueIds",
+    "required": false,
+    "description": "Rewrites all IDs inside the SVG to be unique per instance. Only needed for icons that\nreference IDs internally, e.g. via gradients or clip paths.",
+    "default": "false",
+    "type": "boolean"
   }
 ]
