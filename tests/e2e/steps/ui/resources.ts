@@ -1376,3 +1376,11 @@ When(
     await resourceObject.copyAllTo(source, destination)
   }
 )
+
+Then(
+  '{string} should see the text {string} in the text-editor',
+  async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    await expect(page.locator('.tiptap.ProseMirror')).toContainText(text)
+  }
+)
