@@ -5,6 +5,7 @@
     :color="icon.color"
     :size="size ? size : sizeClass ? undefined : 'medium'"
     :size-class="sizeClass"
+    :unique-ids="uniqueIds"
     :class="[
       'oc-resource-icon',
       'inline-flex',
@@ -37,7 +38,8 @@ const defaultFolderIcon: IconType = {
 
 const defaultSpaceIcon: IconType = {
   name: 'resource-type-space',
-  fillsBox: true
+  fillsBox: true,
+  uniqueIds: true
 }
 
 const defaultFileIcon: IconType = {
@@ -109,4 +111,6 @@ const iconName = computed(() => {
 })
 
 const fillsBox = computed(() => unref(icon).fillsBox === true)
+
+const uniqueIds = computed(() => unref(icon).uniqueIds === true)
 </script>

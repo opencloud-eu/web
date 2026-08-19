@@ -4,7 +4,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 "<div data-v-e73bd97a="" class="date-filter flex overflow-hidden [&amp;_label]:text-sm date-filter-users">
   <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap] px-3" id="oc-filter-chip-4">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -13,7 +13,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -59,7 +59,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
       <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
         <div data-v-e73bd97a="" class="flex items-center justify-between mb-4"><button data-v-e73bd97a="" type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -70,7 +70,7 @@ exports[`DateFilter > can use a custom attribute as display name 1`] = `
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button> <span data-v-e73bd97a="">Custom date range</span> <button data-v-e73bd97a="" type="button" aria-label="Close filter" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-close">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -121,7 +121,7 @@ exports[`DateFilter > renders all items 1`] = `
 "<div data-v-e73bd97a="" class="date-filter flex overflow-hidden [&amp;_label]:text-sm date-filter-users">
   <div data-v-e73bd97a="" class="oc-filter-chip flex"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-0 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap] px-3" id="oc-filter-chip-1">
       <!--v-if-->
-      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" transform-source="(svg) => {
+      <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 transform-[scale(0)] ease-out w-0 transition-all duration-250"><svg data-testid="inline-svg-stub" src="icons/check-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -130,7 +130,7 @@ exports[`DateFilter > renders all items 1`] = `
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> <span class="truncate oc-filter-chip-label">Users</span>
-      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" transform-source="(svg) => {
+      <!--v-if--> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 ml-1"><svg data-testid="inline-svg-stub" src="icons/arrow-down-s-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -176,7 +176,7 @@ exports[`DateFilter > renders all items 1`] = `
       <div data-v-e73bd97a="" class="date-filter-range-panel absolute top-0 p-2 bg-role-surface transform-[translateX(100%)] invisible">
         <div data-v-e73bd97a="" class="flex items-center justify-between mb-4"><button data-v-e73bd97a="" type="button" aria-label="Go back to filter options" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-back">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/arrow-left-s-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -187,7 +187,7 @@ exports[`DateFilter > renders all items 1`] = `
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button> <span data-v-e73bd97a="">Custom date range</span> <button data-v-e73bd97a="" type="button" aria-label="Close filter" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default date-filter-range-panel-close">
             <!--v-if-->
-            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" transform-source="(svg) => {
+            <!-- @slot Content of the button --> <span data-v-e73bd97a="" class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/close-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
