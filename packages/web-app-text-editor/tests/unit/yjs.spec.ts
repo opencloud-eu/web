@@ -10,6 +10,7 @@ describe('detectContentType', () => {
   it.each([
     ['md', 'text/plain', 'markdown'],
     ['markdown', 'text/plain', 'markdown'],
+    ['ocnote', 'application/json', 'tiptap-json'],
     ['txt', 'text/markdown', 'markdown'],
     ['txt', 'text/plain', 'plain-text'],
     ['ts', 'text/plain', 'plain-text']
