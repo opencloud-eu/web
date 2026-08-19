@@ -7,6 +7,7 @@ import {
   SpaceResource,
   isPersonalSpaceResource,
   isProjectSpaceResource,
+  isPublicSpaceResource,
   isShareSpaceResource
 } from '@opencloud-eu/web-client'
 import {
@@ -15,7 +16,6 @@ import {
   FileActionOptions,
   ResourceTransfer,
   TransferType,
-  isLocationPublicActive,
   isMacOs,
   useClientService,
   useClipboardStore,
@@ -23,12 +23,10 @@ import {
   useMessages,
   usePasteWorker,
   useResourcesStore,
-  useRouter,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsPaste = () => {
-  const router = useRouter()
   const clientService = useClientService()
   const { getMatchingSpace } = useGetMatchingSpace()
   const { $gettext, $ngettext } = useGettext()
@@ -197,7 +195,7 @@ export const useFileActionsPaste = () => {
           return false
         }
 
-        if (isLocationPublicActive(router, 'files-public-link') && unref(currentFolder)) {
+        if (isPublicSpaceResource(space) && unref(currentFolder)) {
           return unref(currentFolder)?.canCreate()
         }
 

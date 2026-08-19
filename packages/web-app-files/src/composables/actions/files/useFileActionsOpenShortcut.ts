@@ -1,25 +1,11 @@
-import {
-  FileAction,
-  FileActionOptions,
-  isLocationCommonActive,
-  isLocationPublicActive,
-  isLocationSharesActive,
-  isLocationSpacesActive,
-  useClientService,
-  useIsFilesAppActive,
-  useIsSearchActive,
-  useMessages,
-  useRouter
-} from '@opencloud-eu/web-pkg'
-import { computed, unref } from 'vue'
+import { isTrashResource } from '@opencloud-eu/web-client'
+import { FileAction, FileActionOptions, useClientService, useMessages } from '@opencloud-eu/web-pkg'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 export const useFileActionsOpenShortcut = () => {
   const { showErrorMessage } = useMessages()
-  const router = useRouter()
   const { $gettext } = useGettext()
-  const isFilesAppActive = useIsFilesAppActive()
-  const isSearchActive = useIsSearchActive()
   const clientService = useClientService()
 
   const extractUrl = (fileContents: string) => {
@@ -67,23 +53,13 @@ export const useFileActionsOpenShortcut = () => {
         return $gettext('Open shortcut')
       },
       isVisible: ({ resources }) => {
-        if (
-          unref(isFilesAppActive) &&
-          !unref(isSearchActive) &&
-          !isLocationSpacesActive(router, 'files-spaces-generic') &&
-          !isLocationPublicActive(router, 'files-public-link') &&
-          !isLocationCommonActive(router, 'files-common-favorites') &&
-          !isLocationCommonActive(router, 'files-common-search') &&
-          !isLocationSharesActive(router, 'files-shares-with-me') &&
-          !isLocationSharesActive(router, 'files-shares-with-others') &&
-          !isLocationSharesActive(router, 'files-shares-via-link')
-        ) {
-          return false
-        }
         if (resources.length !== 1) {
           return false
         }
         if (resources[0].extension !== 'url') {
+          return false
+        }
+        if (isTrashResource(resources[0])) {
           return false
         }
         return resources[0].canDownload()

@@ -1,5 +1,4 @@
 import { dirname } from 'path'
-import { isLocationTrashActive } from '../../../router'
 
 import {
   Resource,
@@ -249,9 +248,6 @@ export const useFileActionsRestore = ({
       label: () => $gettext('Restore'),
       handler,
       isVisible: ({ space, resources }) => {
-        if (!isLocationTrashActive(router, 'files-trash-generic')) {
-          return false
-        }
         if (!resources.every((r) => isTrashResource(r) && r.canBeRestored())) {
           return false
         }

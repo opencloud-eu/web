@@ -1,5 +1,4 @@
 export * from './useFileActionsCopyPermanentLink'
-export * from './useFileActionsClearClipboard'
 export * from './useFileActionsCopy'
 export * from './useFileActionsCreateLink'
 export * from './useFileActionsCreateNewFile'

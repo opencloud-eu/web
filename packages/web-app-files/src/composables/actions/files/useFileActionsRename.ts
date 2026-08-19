@@ -2,8 +2,10 @@ import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   extractNameWithoutExtension,
+  isIncomingShareResource,
   isProjectSpaceResource,
   isShareSpaceResource,
+  isTrashResource,
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
@@ -14,8 +16,6 @@ import {
   FileActionOptions,
   createFileRouteOptions,
   getVaultClaim,
-  isLocationSharesActive,
-  isLocationTrashActive,
   isSameResource,
   renameResource as renameResourceHelper,
   useAbility,
@@ -180,16 +180,13 @@ export const useFileActionsRename = () => {
       },
       handler,
       isVisible: ({ resources }) => {
-        if (isLocationTrashActive(router, 'files-trash-generic')) {
-          return false
-        }
-        if (
-          isLocationSharesActive(router, 'files-shares-with-me') &&
-          !capabilityStore.sharingCanRename
-        ) {
-          return false
-        }
         if (resources.length !== 1) {
+          return false
+        }
+        if (isTrashResource(resources[0])) {
+          return false
+        }
+        if (!capabilityStore.sharingCanRename && isIncomingShareResource(resources[0])) {
           return false
         }
 
