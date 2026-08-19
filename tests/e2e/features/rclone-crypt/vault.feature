@@ -13,28 +13,28 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: create and upload a file into a vault encrypts it on the server
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource                | type    | content             | password |
-      | my.vault                | vault   |                     | foobar   |
-      | my.vault/sub            | folder  |                     | foobar   |
-      | my.vault/sub/nested.txt | txtFile | nested file content | foobar   |
-      | my.vault/hello.txt      | txtFile | hello world         | foobar   |
+      | resource                   | type     | content             | password |
+      | my.vault                   | vault    |                     | foobar   |
+      | my.vault/sub               | folder   |                     | foobar   |
+      | my.vault/sub/nested.ocnote | noteFile | nested file content | foobar   |
+      | my.vault/hello.ocnote      | noteFile | hello world         | foobar   |
     And "Alice" uploads the following resource
       | resource          | to           | password |
       | PARENT/parent.txt | my.vault/sub | foobar   |
       | testavatar.png    | my.vault/sub | foobar   |
     And "Alice" enters the vault "my.vault" with passphrase "foobar"
     Then following resources should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
-      | sub       |
+      | resource     |
+      | hello.ocnote |
+      | sub          |
     When "Alice" opens folder "sub"
     And following resources should be displayed in the files list for user "Alice"
-      | resource   |
-      | nested.txt |
-      | parent.txt |
+      | resource      |
+      | nested.ocnote |
+      | parent.txt    |
     And "Alice" opens the following file in texteditor
-      | resource   |
-      | nested.txt |
+      | resource      |
+      | nested.ocnote |
     Then "Alice" should see the content "nested file content" in editor "TextEditor"
     And "Alice" closes the file viewer
     When "Alice" opens the following file in texteditor
@@ -49,13 +49,13 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" closes the file viewer
     And "Alice" logs out
 
-  
+
   @rclone-crypt
   Scenario: Drag-drop a directory tree into a vault
     When "Alice" logs in
     And "Alice" creates the following resource
-      | resource | type    | password       |
-      | my.vault | vault   | myStrongPass#1 |
+      | resource | type  | password       |
+      | my.vault | vault | myStrongPass#1 |
     And "Alice" enters the vault "my.vault" with passphrase "myStrongPass#1"
     And "Alice" uploads the following resources via drag-n-drop
       | resource   | password       |
@@ -73,22 +73,22 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: A wrong passphrase is rejected
     When "Alice" logs in
     And "Alice" creates the following resource
-      | resource | type    | password |
-      | my.vault | vault   | 123      |
+      | resource | type  | password |
+      | my.vault | vault | 123      |
     And "Alice" navigates to the personal space page
     And "Alice" fails to enter the vault "my.vault" with the wrong passphrase "definitely-wrong"
     And "Alice" logs out
 
   @rclone-crypt
   Scenario: A vault root is collaborator-shareable but not public-linkable, its content stays private
-   Given "Admin" creates following user using API
+    Given "Admin" creates following user using API
       | id    |
       | Brian |
-   When "Alice" logs in
-   And "Alice" creates the following resources
-      | resource              | type    | content     | password |
-      | share.vault           | vault   |             | foobar   |
-      | share.vault/hello.txt | txtFile | hello world | foobar   |
+    When "Alice" logs in
+    And "Alice" creates the following resources
+      | resource                 | type     | content     | password |
+      | share.vault              | vault    |             | foobar   |
+      | share.vault/hello.ocnote | noteFile | hello world | foobar   |
     And "Alice" shares the following resource using the sidebar panel
       | resource    | recipient | type | role     | resourceType |
       | share.vault | Brian     | user | Can edit | folder       |
@@ -97,32 +97,32 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Brian" navigates to the shared with me page
     And "Brian" enters the vault "share.vault" with passphrase "foobar"
     And following resource should be displayed in the files list for user "Brian"
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Brian" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Brian" should see the content "hello world" in editor "TextEditor"
     And "Brian" logs out
 
   @rclone-crypt
   Scenario: Rename and download a vault file
     When "Alice" logs in
-   And "Alice" creates the following resources
-      | resource           | type    | content     | password |
-      | my.vault           | vault   |             | foobar   |
-      | my.vault/hello.txt | txtFile | hello world | foobar   |
+    And "Alice" creates the following resources
+      | resource              | type     | content     | password |
+      | my.vault              | vault    |             | foobar   |
+      | my.vault/hello.ocnote | noteFile | hello world | foobar   |
     And "Alice" navigates to the personal space page
     When "Alice" renames the following resource
       | resource | as            |
       | my.vault | renamed.vault |
     And "Alice" enters the vault "renamed.vault" with passphrase "foobar"
     Then following resource should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     And "Alice" downloads the following resource using the sidebar panel
-      | resource  | type |
-      | hello.txt | file |
+      | resource     | type |
+      | hello.ocnote | file |
     And "Alice" logs out
 
   @rclone-crypt
@@ -150,8 +150,8 @@ Feature: Work with an rclone-crypt encrypted vault
       | vaultTwo       | folder |          |
     And "Alice" enters the vault "vaultOne.vault" with passphrase "foobar"
     And "Alice" creates the following resources
-      | resource  | type    | content       |
-      | lorem.txt | txtFile | hello content |
+      | resource     | type     | content       |
+      | lorem.ocnote | noteFile | hello content |
     And "Alice" opens the "files" app
     And "Alice" renames the following resource
       | resource       | as       |
@@ -160,16 +160,16 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" navigates to the personal space page
     And "Alice" opens folder "vaultTwo"
     Then following resource should not be displayed in the files list for user "Alice"
-      | resource  |
-      | lorem.txt |
+      | resource     |
+      | lorem.ocnote |
     When "Alice" navigates to the personal space page
     And "Alice" renames the following resource
       | resource | as             |
       | vaultTwo | vaultTwo.vault |
     And "Alice" enters the vault "vaultTwo.vault" with passphrase "foobar"
     And "Alice" opens the following file in texteditor
-      | resource  |
-      | lorem.txt |
+      | resource     |
+      | lorem.ocnote |
     Then "Alice" should see the content "hello content" in editor "TextEditor"
     And "Alice" closes the file viewer
     And "Alice" logs out
@@ -188,22 +188,22 @@ Feature: Work with an rclone-crypt encrypted vault
     When "Alice" logs in
     And "Alice" navigates to the project space "ourspace"
     And "Alice" creates the following resources
-      | resource                | type    | content             | password |
-      | my.vault                | vault   |                     | foobar   |
-      | my.vault/sub            | folder  |                     | foobar   |
-      | my.vault/hello.txt      | txtFile | hello world         | foobar   |
+      | resource              | type     | content     | password |
+      | my.vault              | vault    |             | foobar   |
+      | my.vault/sub          | folder   |             | foobar   |
+      | my.vault/hello.ocnote | noteFile | hello world | foobar   |
     And "Alice" uploads the following resource
       | resource          | to           | password |
       | PARENT/parent.txt | my.vault/sub | foobar   |
       | testavatar.png    | my.vault/sub | foobar   |
     And "Alice" enters the vault "my.vault" with passphrase "foobar"
     Then following resources should be displayed in the files list for user "Alice"
-      | resource  |
-      | hello.txt |
-      | sub       |
+      | resource     |
+      | hello.ocnote |
+      | sub          |
     When "Alice" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     Then "Alice" should see the content "hello world" in editor "TextEditor"
     And "Alice" closes the file viewer
     When "Alice" opens folder "sub"
@@ -223,8 +223,8 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" closes the file viewer
     When "Alice" navigates to the project space "ourspace"
     And "Alice" adds following user to the project space
-      | user     | role     | kind  |
-      | Brian    | Can edit | user  |
+      | user  | role     | kind |
+      | Brian | Can edit | user |
     Then "Alice" logs out
 
     # check vault by space member
@@ -232,8 +232,8 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Brian" navigates to the project space "ourspace"
     And "Brian" enters the vault "my.vault" with passphrase "foobar"
     And "Brian" opens the following file in texteditor
-      | resource  |
-      | hello.txt |
+      | resource     |
+      | hello.ocnote |
     Then "Brian" should see the content "hello world" in editor "TextEditor"
     And "Brian" closes the file viewer
     When "Brian" opens folder "sub"
@@ -248,4 +248,3 @@ Feature: Work with an rclone-crypt encrypted vault
     Then "Brian" is in a media-viewer
     And "Brian" closes the file viewer
     And "Brian" logs out
-

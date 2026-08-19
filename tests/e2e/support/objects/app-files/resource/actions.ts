@@ -40,7 +40,7 @@ const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
 const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
 const addNewResourceButton = `.oc-app-floating-action-button`
 const createNewFolderButton = '#new-folder-btn'
-const createNewTxtFileButton = '.new-file-btn-txt'
+const createNewNoteFileButton = '.new-file-btn-ocnote'
 const createNewMdFileButton = '.new-file-btn-md'
 const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//span[text()="%s"]'
 const createNewShortcutButton = '#new-shortcut-btn'
@@ -273,7 +273,7 @@ export const clickResourceFromBreadcrumb = async ({
 /**/
 
 export type createResourceTypes =
-  'folder' | 'txtFile' | 'mdFile' | 'Document' | 'OpenDocument' | 'Microsoft Word' | 'vault'
+  'folder' | 'noteFile' | 'mdFile' | 'Document' | 'OpenDocument' | 'Microsoft Word' | 'vault'
 
 export interface createResourceArgs {
   page: Page
@@ -434,8 +434,8 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       await createNewFolder({ page, resource: name })
       break
     }
-    case 'txtFile': {
-      await page.locator(createNewTxtFileButton).click()
+    case 'noteFile': {
+      await page.locator(createNewNoteFileButton).click()
       const resourceInput = page.locator(resourceNameInput)
       // Clear the field and fill in the name without the extension.
       await resourceInput.clear()
