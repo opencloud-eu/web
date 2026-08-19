@@ -13,6 +13,7 @@
   >
     <inline-svg
       :src="nameWithFillType"
+      :unique-ids="uniqueIds"
       :transform-source="transformSvgElement"
       :aria-hidden="accessibleLabel === '' ? 'true' : null"
       :aria-labelledby="accessibleLabel === '' ? null : svgTitleId"
@@ -65,6 +66,12 @@ export interface Props {
    * @default span
    */
   type?: string
+  /**
+   * @docs Rewrites all IDs inside the SVG to be unique per instance. Only needed for icons that
+   * reference IDs internally, e.g. via gradients or clip paths.
+   * @default false
+   */
+  uniqueIds?: boolean
 }
 
 export interface Emits {
@@ -81,7 +88,8 @@ const {
   name = 'info',
   size = undefined,
   sizeClass = 'size-5',
-  type = 'span'
+  type = 'span',
+  uniqueIds = false
 } = defineProps<Props>()
 
 const emit = defineEmits<Emits>()

@@ -9,6 +9,8 @@ export type IconType = {
   hasDarkVariant?: boolean
   /** artwork fills its box entirely and therefore needs clipping */
   fillsBox?: boolean
+  /** artwork references IDs internally (e.g. gradients) and therefore needs unique IDs per instance */
+  uniqueIds?: boolean
 }
 
 export type ResourceIconMapping = Record<'mimeType' | 'extension', Record<string, IconType>>
