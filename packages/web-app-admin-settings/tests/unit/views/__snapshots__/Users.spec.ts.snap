@@ -111,7 +111,7 @@ exports[`Users view > list view > renders list initially 1`] = `
               <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-displayName mark-element">Admin</td>
               <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-mail">admin@example.org</td>
               <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-role">Admin</td>
-              <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="flex items-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5 mr-2"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" transform-source="(svg) => {
+              <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-accountEnabled"><span class="flex items-center"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5 mr-2"><svg data-testid="inline-svg-stub" src="icons/play-circle-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
