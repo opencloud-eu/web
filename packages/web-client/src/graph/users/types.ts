@@ -1,4 +1,5 @@
 import type {
+  ActivityNotification,
   AppRoleAssignment,
   ExportPersonalDataRequest,
   PasswordChange,
@@ -64,4 +65,9 @@ export interface GraphUsers {
     roleAssignment: AppRoleAssignment,
     requestOptions?: GraphRequestOptions
   ) => Promise<AppRoleAssignment>
+  sendActivityNotification: (
+    id: string,
+    notification: ActivityNotification,
+    requestOptions?: GraphRequestOptions
+  ) => Promise<void>
 }

@@ -8,7 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { CollaboratorShare, Resource, ShareTypes, SpaceResource } from '@opencloud-eu/web-client'
 import { useLoadShares, useFolderLink, useModals } from '@opencloud-eu/web-pkg'
-import { useCollaboraPostMessages } from '../../../src/composables/useCollaboraPostMessages'
+import { useCollaboraPostMessages } from '../../../src/composables'
 import { Mock } from 'vitest'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -138,7 +138,65 @@ describe('useCollaboraPostMessages', () => {
       )
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledOnce()
+    })
+
+    it('mentions the users on the drive item', async () => {
+      const { instance, mocks } = getWrapper({
+        space: ref(mock<SpaceResource>({ id: 'storage$space' })),
+        resource: ref(mock<Resource>({ id: 'storage$space!item' }))
+      })
+
+      for (const username of ['user1', 'user2']) {
+        await instance.handlePostMessagesCollabora(
+          createMessageEvent({ MessageId: 'UI_Mention', Values: { type: 'selected', username } })
+        )
+      }
+      await instance.handlePostMessagesCollabora(
+        createMessageEvent({ MessageId: 'Doc_ModifiedStatus', Values: { Modified: false } })
+      )
+      await flushPromises()
+
+      // the endpoint takes one recipient, so every mentioned user gets a request
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledTimes(2)
+      for (const username of ['user1', 'user2']) {
+        expect(
+          mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+        ).toHaveBeenCalledWith(username, {
+          topic: { source: 'text', value: 'storage$space!item' },
+          activityType: 'mentioned',
+          teamsAppId: '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
+        })
+      }
+    })
+
+    it('still notifies the other users when one recipient fails', async () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.graphAuthenticated.users.sendActivityNotification.mockImplementation(
+        (userId: string) =>
+          userId === 'user1' ? Promise.reject(new Error('nope')) : Promise.resolve()
+      )
+
+      for (const username of ['user1', 'user2']) {
+        await instance.handlePostMessagesCollabora(
+          createMessageEvent({ MessageId: 'UI_Mention', Values: { type: 'selected', username } })
+        )
+      }
+      await instance.handlePostMessagesCollabora(
+        createMessageEvent({ MessageId: 'Doc_ModifiedStatus', Values: { Modified: false } })
+      )
+      await flushPromises()
+
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledWith('user2', expect.anything())
+      expect(consoleError).toHaveBeenCalledOnce()
+      consoleError.mockRestore()
     })
 
     it('does not notify when Modified is true', async () => {
@@ -155,7 +213,9 @@ describe('useCollaboraPostMessages', () => {
       )
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).not.toHaveBeenCalled()
     })
   })
 
@@ -172,7 +232,9 @@ describe('useCollaboraPostMessages', () => {
       await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledOnce()
     })
 
     it('does not notify if no users were mentioned', async () => {
@@ -181,7 +243,9 @@ describe('useCollaboraPostMessages', () => {
       await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).not.toHaveBeenCalled()
     })
   })
 
@@ -198,7 +262,9 @@ describe('useCollaboraPostMessages', () => {
       window.dispatchEvent(new Event('beforeunload'))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledOnce()
     })
 
     it('does not notify on beforeunload if no users were mentioned', async () => {
@@ -207,7 +273,9 @@ describe('useCollaboraPostMessages', () => {
       window.dispatchEvent(new Event('beforeunload'))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).not.toHaveBeenCalled()
     })
 
     it('notifies mentioned users on component unmount', async () => {
@@ -222,7 +290,9 @@ describe('useCollaboraPostMessages', () => {
       wrapper.unmount()
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledOnce()
     })
 
     it('does not fire beforeunload listener after component unmount', async () => {
@@ -241,7 +311,9 @@ describe('useCollaboraPostMessages', () => {
       window.dispatchEvent(new Event('beforeunload'))
       await flushPromises()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(
+        mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+      ).toHaveBeenCalledOnce()
     })
   })
 
@@ -551,7 +623,7 @@ describe('useCollaboraPostMessages', () => {
     })
 
     describe('type: selected', () => {
-      it('sends userIDs of all unique selected users when notifying', async () => {
+      it('notifies every unique selected user', async () => {
         const { instance, mocks } = getWrapper()
 
         await instance.handlePostMessagesCollabora(
@@ -569,11 +641,11 @@ describe('useCollaboraPostMessages', () => {
         await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
         await flushPromises()
 
-        const [, body] = mocks.$clientService.httpAuthenticated.post.mock.calls[0] as [
-          string,
-          { userIDs: string[] }
-        ]
-        expect(body.userIDs).toEqual(['user1', 'user2'])
+        const recipients =
+          mocks.$clientService.graphAuthenticated.users.sendActivityNotification.mock.calls.map(
+            ([userId]) => userId
+          )
+        expect(recipients).toEqual(['user1', 'user2'])
       })
 
       it('does not add duplicate user ids to the mention list', async () => {
@@ -594,11 +666,12 @@ describe('useCollaboraPostMessages', () => {
         await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
         await flushPromises()
 
-        const [, body] = mocks.$clientService.httpAuthenticated.post.mock.calls[0] as [
-          string,
-          { userIDs: string[] }
-        ]
-        expect(body.userIDs).toEqual(['user1'])
+        expect(
+          mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+        ).toHaveBeenCalledOnce()
+        const [userId] =
+          mocks.$clientService.graphAuthenticated.users.sendActivityNotification.mock.calls[0]
+        expect(userId).toEqual('user1')
       })
     })
   })
