@@ -27,6 +27,9 @@ interface CollaboraMessage {
   Values?: Record<string, unknown>
 }
 
+// the app an activity notification comes from, the server only accepts ids it knows
+const WEBOFFICE_APP_ID = '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
+
 export function useCollaboraPostMessages({
   space,
   resource,
@@ -39,7 +42,7 @@ export function useCollaboraPostMessages({
   const { $gettext } = useGettext()
   const route = useRoute()
   const router = useRouter()
-  const { httpAuthenticated, webdav } = useClientService()
+  const { graphAuthenticated, webdav } = useClientService()
   const { dispatchModal } = useModals()
   const { getParentFolderLink } = useFolderLink()
   const sharesStore = useSharesStore()
@@ -294,22 +297,26 @@ export function useCollaboraPostMessages({
   }
 
   async function notifyMentionedUsers(): Promise<void> {
-    if (unref(userIdsToMention).length === 0) {
+    const userIds = unref(userIdsToMention)
+    if (userIds.length === 0) {
       return
     }
 
-    const fileID = unref(resource).fileId
-    const userIDs = unref(userIdsToMention)
     userIdsToMention.value = []
-    try {
-      await httpAuthenticated.post(urlJoin(configStore.serverUrl, 'collaboration/notify'), {
-        fileID,
-        userIDs,
-        type: 'mention'
+
+    await Promise.all(
+      userIds.map(async (userId) => {
+        try {
+          await graphAuthenticated.users.sendActivityNotification(userId, {
+            topic: { source: 'text', value: unref(resource).id },
+            activityType: 'mentioned',
+            teamsAppId: WEBOFFICE_APP_ID
+          })
+        } catch (e) {
+          console.error('Error notifying mentioned user', e)
+        }
       })
-    } catch (e) {
-      console.error('Error notifying mentioned users', e)
-    }
+    )
   }
 
   function resetMentionState(): void {
