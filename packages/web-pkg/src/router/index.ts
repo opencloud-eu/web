@@ -5,7 +5,6 @@ import {
   isLocationCommonActive,
   createLocationCommon
 } from './common'
-import { buildRoutes as buildDeprecatedRoutes, isLocationActive } from './deprecated'
 import {
   buildRoutes as buildPublicRoutes,
   createLocationPublic,
@@ -34,7 +33,7 @@ import {
   isLocationTrashActive,
   createLocationTrash
 } from './trash'
-import { isLocationActiveDirector, createLocation } from './utils'
+import { isLocationActive, isLocationActiveDirector, createLocation } from './utils'
 import { $gettext } from '../utils/dummyGettext'
 import type { ActiveRouteDirectorFunc } from './utils'
 
@@ -50,8 +49,7 @@ const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
   ...buildSharesRoutes(components),
   ...buildPublicRoutes(components),
   ...buildSpacesRoutes(components),
-  ...buildTrashRoutes(components),
-  ...buildDeprecatedRoutes()
+  ...buildTrashRoutes(components)
 ]
 
 export {
