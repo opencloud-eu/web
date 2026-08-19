@@ -145,15 +145,15 @@ Feature: spaces.personal
       | team | team.1 |
     And "Alice" navigates to the project space "team.1"
     And "Alice" creates the following resources
-      | resource               | type     | content             |
-      | parent                 | folder   |                     |
-      | parent/textfile.ocnote | noteFile | some random content |
+      | resource           | type   | content             |
+      | parent             | folder |                     |
+      | parent/markdown.md | mdFile | some random content |
     And "Alice" creates the following file into personal space using API
-      | pathToFile          | content             |
-      | parent/textfile.txt | some random content |
+      | pathToFile         | content             |
+      | parent/markdown.md | some random content |
     When "Alice" uploads the following resource
-      | resource     | to     | option  |
-      | textfile.txt | parent | replace |
+      | resource    | to     | option  |
+      | markdown.md | parent | replace |
     And "Alice" adds following users to the project space
       | user  | role     | kind |
       | Carol | Can view | user |
@@ -163,16 +163,16 @@ Feature: spaces.personal
     When "Carol" logs in
     And "Carol" navigates to the project space "team.1"
     And "Carol" should not see the version panel for the file
-      | resource     | to     |
-      | textfile.txt | parent |
+      | resource    | to     |
+      | markdown.md | parent |
     And "Carol" logs out
 
     When "Brian" logs in
     And "Brian" navigates to the project space "team.1"
     And "Brian" downloads old version of the following resource
-      | resource     | to     |
-      | textfile.txt | parent |
+      | resource    | to     |
+      | markdown.md | parent |
     And "Brian" restores following resource version
-      | resource     | to     | version | openDetailsPanel |
-      | textfile.txt | parent | 1       | true             |
+      | resource    | to     | version | openDetailsPanel |
+      | markdown.md | parent | 1       | true             |
     And "Brian" logs out
