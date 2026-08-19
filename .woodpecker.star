@@ -168,6 +168,16 @@ config = {
                 "COLLABORATION_APP_PROOF_DISABLE": True,
             },
         },
+        "yjs": {
+            "skip": False,
+            "suites": [
+                "yjs/",
+            ],
+            "extraServerEnvironment": {
+                "WEB_UI_CONFIG_FILE": None,
+                "WEB_OPTION_YJS_SERVER_URL": "wss://opencloud:9200/yjs",
+            },
+        },
         "oidc-refresh-token": {
             "skip": False,
             "suites": [
@@ -644,6 +654,11 @@ def e2eTests(ctx):
                          waitForWebOffice("https://collabora:9980") + \
                          openCloudService(params["extraServerEnvironment"])
 
+            elif "yjs" in suite:
+                environment["FAIL_ON_UNCAUGHT_CONSOLE_ERR"] = False
+                steps += yjsService() + \
+                         openCloudService(params["extraServerEnvironment"])
+
             elif "ocm" in suite:
                 steps += openCloudService(params["extraServerEnvironment"]) + \
                          (openCloudService(params["extraServerEnvironment"], "federation") if params["federationServer"] else [])
@@ -996,19 +1011,26 @@ def openCloudService(extra_env_config = {}, deploy_type = "opencloud"):
             },
         ]
 
+    commands = [
+        "mkdir -p %s" % dir["openCloudRevaDataRoot"],
+        "mkdir -p /srv/app/tmp/opencloud/storage/users/",
+        "./opencloud init",
+        "cp %s/tests/woodpecker/app-registry.yaml /root/.opencloud/config/app-registry.yaml" % dir["web"],
+    ]
+
+    # The yjs suite routes /yjs through OpenCloud's own proxy, which needs the extra route config.
+    if "WEB_OPTION_YJS_SERVER_URL" in environment:
+        commands.append("cp %s/tests/woodpecker/proxy.yaml /root/.opencloud/config/proxy.yaml" % dir["web"])
+
+    commands.append("./opencloud server")
+
     return [
         {
             "name": container_name,
             "image": OC_CI_GOLANG,
             "detach": True,
             "environment": environment,
-            "commands": [
-                "mkdir -p %s" % dir["openCloudRevaDataRoot"],
-                "mkdir -p /srv/app/tmp/opencloud/storage/users/",
-                "./opencloud init",
-                "cp %s/tests/woodpecker/app-registry.yaml /root/.opencloud/config/app-registry.yaml" % dir["web"],
-                "./opencloud server",
-            ],
+            "commands": commands,
         },
     ] + wait_for_service
 
@@ -1532,6 +1554,27 @@ def collaboraService():
             },
         },
     ]
+
+def yjsService():
+    # The yjs collaboration server (Hocuspocus)
+    return [
+        {
+            "name": "yjs",
+            "image": OC_CI_NODEJS,
+            "detach": True,
+            "environment": {
+                "PORT": "1234",
+                "OPENCLOUD_URL": "https://opencloud:9200",
+                "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+                "NODE_ENV": "development",
+                "DEV_FAKE_TOKEN": "dev-integration-token",
+            },
+            "commands": [
+                "cd services/yjs",
+                "node src/server.ts",
+            ],
+        },
+    ] + waitForService("yjs", "1234")
 
 def euroOfficeService():
     return [

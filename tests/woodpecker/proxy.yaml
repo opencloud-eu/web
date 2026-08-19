@@ -1,0 +1,7 @@
+# This adds additional routes to the proxy: '/yjs' to the yjs
+additional_policies:
+  - name: default
+    routes:
+      - endpoint: /yjs
+        backend: http://yjs:1234
+        unprotected: true
