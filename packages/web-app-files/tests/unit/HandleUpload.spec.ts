@@ -13,8 +13,8 @@ import {
   useSpacesStore,
   useExtensionRegistry,
   useResourcesStore,
-  resolveFolderVault,
-  FolderVaultEngine,
+  resolveVaultEngine,
+  VaultEngine,
   OcUppyFile,
   OcUppyMeta,
   OcUppyBody
@@ -37,7 +37,7 @@ vi.mock('../../src/helpers/resource/actions', () => {
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  resolveFolderVault: vi.fn()
+  resolveVaultEngine: vi.fn()
 }))
 
 type UppyPlugin = UnknownPlugin<OcUppyMeta, OcUppyBody, Record<string, unknown>>
@@ -324,7 +324,7 @@ describe('HandleUpload', () => {
         // ciphertext. Otherwise every real collision is missed and the
         // existing file is silently overwritten.
         const { instance } = getWrapper()
-        vi.mocked(resolveFolderVault).mockResolvedValueOnce(mock<FolderVaultEngine>())
+        vi.mocked(resolveVaultEngine).mockResolvedValueOnce(mock<VaultEngine>())
         const encryptSpy = vi
           .spyOn(instance as any, 'applyVaultEncryption')
           .mockImplementation((...args: unknown[]) => Promise.resolve(args[0]))

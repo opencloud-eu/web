@@ -41,10 +41,10 @@
 import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
-  FolderVaultEngine,
+  VaultEngine,
   formatDateFromDateTime,
   getVaultClaim,
-  resolveFolderVault,
+  resolveVaultEngine,
   useClientService,
   useExtensionRegistry,
   useGetMatchingSpace,
@@ -69,7 +69,7 @@ const activitiesLimit = 200
 // feed reads like the user's cleartext file names. user/sharee are people and
 // never encrypted; cleartext segments (the vault root, a parent folder) make
 // decryptPath throw on the base32 decode, so we keep them as-is.
-const decryptActivityNames = async (items: Activity[], engine: FolderVaultEngine) => {
+const decryptActivityNames = async (items: Activity[], engine: VaultEngine) => {
   for (const activity of items) {
     const variables = activity.template?.variables as Record<string, any> | undefined
     if (!variables) {
@@ -121,7 +121,7 @@ const loadActivitiesTask = useTask(function* (signal) {
   const space = res ? getMatchingSpace(res) : null
   const claim = space ? getVaultClaim(extensionRegistry, space, res.path) : null
   if (claim?.encryptsNames) {
-    const vaultEngine = yield* call(resolveFolderVault(extensionRegistry, space, res.path))
+    const vaultEngine = yield* call(resolveVaultEngine(extensionRegistry, space, res.path))
     if (vaultEngine) {
       yield* call(decryptActivityNames(loaded, vaultEngine))
     }

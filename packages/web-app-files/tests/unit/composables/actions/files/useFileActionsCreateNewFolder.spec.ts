@@ -29,7 +29,11 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 const setupComponent = { name: 'VaultSetupStub' }
-const vaultCreation = { folderExtension: 'vault', setupComponent }
+const vaultCreation = {
+  vaultExtension: 'vault',
+  vaultContentType: 'application/vnd.opencloud.vault',
+  setupComponent
+}
 
 describe('useFileActionsCreateNewFolder', () => {
   describe('addNewFolder', () => {
@@ -114,7 +118,13 @@ describe('useFileActionsCreateNewFolder', () => {
       const space = mock<SpaceResource>({ id: '1' })
       getWrapper({
         space,
-        vaultCreator: { creation: { folderExtension: 'crypt', setupComponent } },
+        vaultCreator: {
+          creation: {
+            vaultExtension: 'crypt',
+            vaultContentType: 'application/vnd.opencloud.crypt',
+            setupComponent
+          }
+        },
         setup: async ({ addNewFolder }, mocks) => {
           await addNewFolder('myfolder', { encrypt: true, finalizeVault: vi.fn() })
           await nextTick()
@@ -262,7 +272,9 @@ function getWrapper({
   resolveCreateFolder?: boolean
   space?: SpaceResource
   currentFolder?: Resource
-  vaultCreator?: { creation?: { folderExtension: string; setupComponent: unknown } } | null
+  vaultCreator?: {
+    creation?: { vaultExtension: string; vaultContentType: string; setupComponent: unknown }
+  } | null
   areFileExtensionsShown?: boolean
   setup: (
     instance: ReturnType<typeof useFileActionsCreateNewFolder>,

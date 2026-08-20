@@ -5,15 +5,15 @@ import {
   decryptResourceInPlace,
   getVaultClaim,
   markVaultStatus,
-  resolveFolderVault
-} from '../../../../src/helpers/folderVault'
+  resolveVaultEngine
+} from '../../../../src/helpers/vault'
 
 vi.mock('../../../../src/composables/piniaStores/extensionRegistry', () => ({
   useExtensionRegistry: vi.fn(() => ({}))
 }))
-vi.mock('../../../../src/helpers/folderVault', () => ({
+vi.mock('../../../../src/helpers/vault', () => ({
   getVaultClaim: vi.fn(),
-  resolveFolderVault: vi.fn(),
+  resolveVaultEngine: vi.fn(),
   decryptResourceInPlace: vi.fn((_engine, r) => Promise.resolve(r)),
   markVaultStatus: vi.fn()
 }))
@@ -21,7 +21,7 @@ vi.mock('../../../../src/helpers/folderVault', () => ({
 const space = { id: 'space-1' } as SpaceResource
 
 // A claim exists for any path that sits inside a "*.vault" segment; the root is
-// the path up to and including that segment (mirrors the real findVaultRoot).
+// the path up to and including that segment (mirrors the real findExtensionRoot).
 function vaultRootOf(path: string): string | null {
   const segments = path.split('/').filter(Boolean)
   const idx = segments.findIndex((s) => s.endsWith('.vault'))
@@ -64,7 +64,7 @@ function makeInner(overrides: Partial<WebDAV> = {}): WebDAV {
 describe('createVaultWebDav', () => {
   describe('non-vault paths (pass-through)', () => {
     it('does not encrypt the path or resolve an engine for listFiles', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner({
         listFiles: vi
           .fn()
@@ -75,7 +75,7 @@ describe('createVaultWebDav', () => {
       await dav.listFiles(space, { path: '/regular' })
 
       expect(inner.listFiles).toHaveBeenCalledWith(space, { path: '/regular' }, undefined)
-      expect(resolveFolderVault).not.toHaveBeenCalled()
+      expect(resolveVaultEngine).not.toHaveBeenCalled()
       expect(decryptResourceInPlace).not.toHaveBeenCalled()
     })
 
@@ -91,7 +91,7 @@ describe('createVaultWebDav', () => {
   describe('vault paths (unlocked)', () => {
     it('encrypts the listFiles path and decrypts the returned resources', async () => {
       const engine = fakeEngine('/my.vault')
-      vi.mocked(resolveFolderVault).mockResolvedValue(engine as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(engine as any)
       const inner = makeInner({
         listFiles: vi.fn().mockResolvedValue({
           resource: { path: '/my.vault' },
@@ -111,7 +111,7 @@ describe('createVaultWebDav', () => {
 
     it('encrypts the getFileInfo path and decrypts the single result', async () => {
       const engine = fakeEngine('/my.vault')
-      vi.mocked(resolveFolderVault).mockResolvedValue(engine as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(engine as any)
       const inner = makeInner({
         getFileInfo: vi.fn().mockResolvedValue({ path: '/my.vault/enc1' })
       } as Partial<WebDAV>)
@@ -129,7 +129,7 @@ describe('createVaultWebDav', () => {
 
     it('encrypts the createFolder path and decrypts the result', async () => {
       const engine = fakeEngine('/my.vault')
-      vi.mocked(resolveFolderVault).mockResolvedValue(engine as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(engine as any)
       const inner = makeInner({
         createFolder: vi.fn().mockResolvedValue({ path: '/my.vault/enc1' })
       } as Partial<WebDAV>)
@@ -143,7 +143,7 @@ describe('createVaultWebDav', () => {
 
     it('encrypts both source and target paths for moveFiles', async () => {
       const engine = fakeEngine('/my.vault')
-      vi.mocked(resolveFolderVault).mockResolvedValue(engine as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(engine as any)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -160,7 +160,7 @@ describe('createVaultWebDav', () => {
 
     it('encrypts the deleteFile path', async () => {
       const engine = fakeEngine('/my.vault')
-      vi.mocked(resolveFolderVault).mockResolvedValue(engine as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(engine as any)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -171,7 +171,7 @@ describe('createVaultWebDav', () => {
 
     it('encrypts the restoreFileVersion target path', async () => {
       const engine = fakeEngine('/my.vault')
-      vi.mocked(resolveFolderVault).mockResolvedValue(engine as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(engine as any)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -186,7 +186,7 @@ describe('createVaultWebDav', () => {
     })
 
     it('encrypts the path when setting a property on vault content', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(fakeEngine('/my.vault') as any)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(fakeEngine('/my.vault') as any)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -201,7 +201,7 @@ describe('createVaultWebDav', () => {
     })
 
     it('resolves each vault engine once for a listing spanning multiple vaults', async () => {
-      vi.mocked(resolveFolderVault).mockImplementation((_r, _s, path) =>
+      vi.mocked(resolveVaultEngine).mockImplementation((_r, _s, path) =>
         Promise.resolve(fakeEngine(path as string) as any)
       )
       const inner = makeInner({
@@ -220,9 +220,9 @@ describe('createVaultWebDav', () => {
       await dav.listFiles(space, {})
 
       // two distinct vault roots -> two resolves, each by its clear-text root
-      expect(resolveFolderVault).toHaveBeenCalledTimes(2)
-      expect(resolveFolderVault).toHaveBeenCalledWith(expect.anything(), space, '/a.vault')
-      expect(resolveFolderVault).toHaveBeenCalledWith(expect.anything(), space, '/b.vault')
+      expect(resolveVaultEngine).toHaveBeenCalledTimes(2)
+      expect(resolveVaultEngine).toHaveBeenCalledWith(expect.anything(), space, '/a.vault')
+      expect(resolveVaultEngine).toHaveBeenCalledWith(expect.anything(), space, '/b.vault')
       // the three in-vault resources get decrypted, the plain one does not
       expect(decryptResourceInPlace).toHaveBeenCalledTimes(3)
     })
@@ -230,7 +230,7 @@ describe('createVaultWebDav', () => {
 
   describe('vault paths (locked)', () => {
     it('leaves the path unencrypted and only flags vault status when no engine resolves', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner({
         listFiles: vi.fn().mockResolvedValue({
           resource: { path: '/my.vault' },
@@ -251,7 +251,7 @@ describe('createVaultWebDav', () => {
     it('still lets the vault root itself be created without an engine', async () => {
       // Creating the vault folder is how a vault comes into existence - its
       // clear-text root name needs no key, so this must NOT fail closed.
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner({
         createFolder: vi.fn().mockResolvedValue({ path: '/my.vault' })
       } as Partial<WebDAV>)
@@ -265,7 +265,7 @@ describe('createVaultWebDav', () => {
     it('leaves the vault root untranslated for setProperties', async () => {
       // Where the integrity token goes: the root's name is clear text on the
       // server, so it must reach the wire exactly as given.
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -280,7 +280,7 @@ describe('createVaultWebDav', () => {
     })
 
     it('refuses to create a folder in a locked vault (fail closed)', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -292,7 +292,7 @@ describe('createVaultWebDav', () => {
 
     it('refuses to set a property on content in a locked vault (fail closed)', async () => {
       // The vault root is still fine while locked - see the pass-through test.
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -303,7 +303,7 @@ describe('createVaultWebDav', () => {
     })
 
     it('refuses to move a path into/out of a locked vault (fail closed)', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -314,7 +314,7 @@ describe('createVaultWebDav', () => {
     })
 
     it('refuses to delete a path in a locked vault (fail closed)', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner()
       const dav = createVaultWebDav(inner)
 
@@ -325,7 +325,7 @@ describe('createVaultWebDav', () => {
     })
 
     it('refuses to write content into a locked vault (fail closed)', async () => {
-      vi.mocked(resolveFolderVault).mockResolvedValue(null)
+      vi.mocked(resolveVaultEngine).mockResolvedValue(null)
       const inner = makeInner({ putFileContents: vi.fn() } as Partial<WebDAV>)
       const dav = createVaultWebDav(inner)
 

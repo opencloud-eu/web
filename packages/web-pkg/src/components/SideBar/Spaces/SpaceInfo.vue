@@ -1,6 +1,6 @@
 <template>
   <div v-if="currentSpace" class="flex items-center min-w-0 ml-2">
-    <oc-icon name="layout-grid" size-class="size-4" class="mr-2 shrink-0" />
+    <resource-icon :resource="currentSpace" size-class="size-4" class="mr-2 shrink-0 rounded-xs" />
     <h2
       data-testid="space-info-name"
       class="font-semibold m-0 text-base min-w-0 flex-1 truncate"
@@ -12,6 +12,7 @@
 <script setup lang="ts">
 import { computed, inject, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
+import ResourceIcon from '../../FilesList/ResourceIcon.vue'
 
 const { spaceResource = null } = defineProps<{
   spaceResource?: SpaceResource | null

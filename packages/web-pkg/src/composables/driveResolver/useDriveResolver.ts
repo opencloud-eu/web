@@ -1,11 +1,12 @@
 import { computed, Ref, ref, unref, watch } from 'vue'
-import { SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, SHARE_JAIL_ID, SpaceResource } from '@opencloud-eu/web-client'
 import { useRouteQuery } from '../router'
 import { useSpacesLoading } from './useSpacesLoading'
 import { queryItemAsString } from '../appDefaults'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useSpacesStore } from '../piniaStores'
 import { onUnmounted } from 'vue'
+import { getSpaceForDriveAliasAndItem } from '../../helpers/spaces'
 
 interface DriveResolverOptions {
   driveAliasAndItem?: Ref<string>
@@ -29,26 +30,6 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
   const spaces = computed(() => spacesStore.spaces)
   const space = ref<SpaceResource>(null)
   const item: Ref<string> = ref(null)
-
-  const getSpaceByDriveAliasAndItem = (driveAliasAndItem: string) => {
-    const driveAliasAndItemSegments = driveAliasAndItem.split('/')
-
-    return unref(spaces).find((s) => {
-      if (!driveAliasAndItem.startsWith(s.driveAlias)) {
-        return false
-      }
-
-      const driveAliasSegments = s.driveAlias.split('/')
-      if (
-        driveAliasAndItemSegments.length < driveAliasSegments.length ||
-        driveAliasAndItemSegments.slice(0, driveAliasSegments.length).join('/') !== s.driveAlias
-      ) {
-        return false
-      }
-
-      return s
-    })
-  }
 
   // clean up global state as the watchers aren't triggered anymore when navigating away
   onUnmounted(() => {
@@ -75,8 +56,15 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
         return
       }
 
+      // A project space's drive alias is derived from its name, so same-named
+      // spaces share one - a matching alias alone doesn't prove we stayed in the
+      // current space.
+      const staysInCurrentSpace =
+        !isProjectSpaceResource(unref(space)) ||
+        !unref(fileId) ||
+        unref(fileId).startsWith(`${unref(space).fileId}`)
       const isOnlyItemPathChanged =
-        unref(space) && driveAliasAndItem.startsWith(unref(space).driveAlias)
+        unref(space) && driveAliasAndItem.startsWith(unref(space).driveAlias) && staysInCurrentSpace
       if (isOnlyItemPathChanged) {
         item.value = urlJoin(driveAliasAndItem.slice(unref(space).driveAlias.length), {
           leadingSlash: true
@@ -113,17 +101,11 @@ export const useDriveResolver = (options: DriveResolverOptions = {}): DriveResol
 
         path = item.join('/')
       } else {
-        if (unref(fileId)) {
-          matchingSpace = unref(spaces).find((s) => {
-            return unref(fileId).startsWith(`${s.fileId}`)
-          })
-        } else {
-          matchingSpace = getSpaceByDriveAliasAndItem(driveAliasAndItem)
-        }
-
-        if (!matchingSpace) {
-          matchingSpace = getSpaceByDriveAliasAndItem(driveAliasAndItem)
-        }
+        matchingSpace = getSpaceForDriveAliasAndItem(
+          unref(spaces),
+          driveAliasAndItem,
+          unref(fileId)
+        )
 
         if (matchingSpace) {
           path = driveAliasAndItem.slice(matchingSpace.driveAlias.length)

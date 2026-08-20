@@ -1,12 +1,12 @@
 import { markRaw } from 'vue'
-import { FolderVaultExtension } from '@opencloud-eu/web-pkg'
+import { VaultExtension } from '@opencloud-eu/web-pkg'
 import { claimsVaultPath, resolveVault } from '../resolveVault'
-import { VAULT_FOLDER_EXTENSION } from '../vaultPath'
+import { VAULT_CONTENT_TYPE, VAULT_EXTENSION } from '../vaultLocation'
 import VaultSetup from '../components/VaultSetup.vue'
 
-export const folderVaultExtension: FolderVaultExtension = {
-  id: 'app.rclone-crypt.folder-vault',
-  type: 'folderVault',
+export const vaultSchemeExtension: VaultExtension = {
+  id: 'app.rclone-crypt.vault',
+  type: 'vault',
   // rclone-crypt has no per-vault index to load, so this resolves
   // synchronously and the async wrapper just returns a resolved promise.
   resolve(space, path) {
@@ -16,7 +16,8 @@ export const folderVaultExtension: FolderVaultExtension = {
     return claimsVaultPath(space, path)
   },
   creation: {
-    folderExtension: VAULT_FOLDER_EXTENSION,
+    vaultExtension: VAULT_EXTENSION,
+    vaultContentType: VAULT_CONTENT_TYPE,
     setupComponent: markRaw(VaultSetup)
   }
 }

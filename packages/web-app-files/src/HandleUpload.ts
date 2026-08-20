@@ -9,7 +9,7 @@ import { urlJoin } from '@opencloud-eu/web-client'
 import { UploadResourceConflict } from './helpers/resource'
 import {
   ExtensionRegistry,
-  FolderVaultEngine,
+  VaultEngine,
   MessageStore,
   ResourcesStore,
   SpacesStore,
@@ -19,7 +19,7 @@ import {
   OcUppyFile,
   OcUppyMeta,
   OcUppyBody,
-  resolveFolderVault,
+  resolveVaultEngine,
   encryptVaultPath,
   streamToBlob
 } from '@opencloud-eu/web-pkg'
@@ -499,7 +499,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     // names against the (cleartext) resource store, so encrypting names any
     // earlier would hide every real name collision and silently overwrite.
     // It also encrypts the cleartext names produced by a "keep both" choice.
-    const vaultEngine = await resolveFolderVault(
+    const vaultEngine = await resolveVaultEngine(
       this.extensionRegistry,
       unref(this.space),
       uploadFolder?.path
@@ -543,7 +543,7 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
   private async applyVaultEncryption(
     filesToUpload: OcUppyFile[],
     uploadFolder: Resource,
-    vaultEngine: FolderVaultEngine
+    vaultEngine: VaultEngine
   ): Promise<OcUppyFile[]> {
     const space = unref(this.space)
     const encryptedFolderPath = await encryptVaultPath(vaultEngine, uploadFolder.path)

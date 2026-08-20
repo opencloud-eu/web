@@ -28,10 +28,7 @@ import {
   useExtensionRegistry
 } from '../../piniaStores'
 import { useRestoreWorker } from '../../webWorkers/restoreWorker'
-import {
-  encryptFolderPathsForServer,
-  encryptResourcePathsForServer
-} from '../../../helpers/folderVault'
+import { encryptFolderPathsForServer, encryptResourcePathsForServer } from '../../../helpers/vault'
 
 export const useFileActionsRestore = ({
   showSuccessMessage = true,

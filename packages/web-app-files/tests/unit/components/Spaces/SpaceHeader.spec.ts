@@ -6,7 +6,7 @@ import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-
 import { mock } from 'vitest-mock-extended'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { flushPromises } from '@vue/test-utils'
-import { useSideBar } from '@opencloud-eu/web-pkg'
+import { useLoadPreview, useSideBar } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -14,9 +14,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useFileActions: vi.fn().mockReturnValue({
     getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() })
   }),
-  useLoadPreview: vi.fn().mockReturnValue({
-    loadPreview: vi.fn(() => 'blob:image')
-  })
+  useLoadPreview: vi.fn()
 }))
 
 vi.mock('@opencloud-eu/web-pkg/editor', () => ({
@@ -70,7 +68,7 @@ describe('SpaceHeader', () => {
   })
   describe('space image', () => {
     it('should show the set image', async () => {
-      const wrapper = getWrapper({ space: getSpaceMock({ webDavUrl: '/' }) })
+      const wrapper = getWrapper({ space: getSpaceMock({ webDavUrl: '/' }), imgBlob: 'blob:image' })
       await flushPromises()
       expect(wrapper.find('.space-header-image img').exists()).toBeTruthy()
       expect(wrapper.html()).toMatchSnapshot()
@@ -89,6 +87,27 @@ describe('SpaceHeader', () => {
       const space = getSpaceMock()
       const wrapper = getWrapper({ space, imagesLoading: [space.id] })
       expect(wrapper.find('.space-header-image .oc-spinner').exists()).toBeTruthy()
+    })
+  })
+  describe('vault space', () => {
+    it('shows the vault icon for a vault space', async () => {
+      const space = getSpaceMock()
+      space.type = 'space'
+      space.driveType = 'project'
+      space.isInVault = true
+      const wrapper = getWrapper({ space, imgBlob: null })
+      await flushPromises()
+      expect(
+        wrapper.find('svg[src="icons/resource-type-space-vault-fill.svg"]').exists()
+      ).toBeTruthy()
+    })
+    it('does not show the vault icon for a regular space', async () => {
+      const space = getSpaceMock()
+      space.type = 'space'
+      space.isInVault = false
+      const wrapper = getWrapper({ space })
+      await flushPromises()
+      expect(wrapper.find('[data-testid="space-vault-icon"]').exists()).toBeFalsy()
     })
   })
   describe('space description', () => {
@@ -124,7 +143,8 @@ function getWrapper({
   isMobile = false,
   imagesLoading = [],
   readmesLoading = [],
-  memberCount = 0
+  memberCount = 0,
+  imgBlob
 }: {
   space?: SpaceResource
   isSideBarOpen?: boolean
@@ -132,9 +152,14 @@ function getWrapper({
   imagesLoading?: string[]
   readmesLoading?: string[]
   memberCount?: number
+  imgBlob?: string
 }) {
   const mocks = defaultComponentMocks()
-  mocks.$previewService.loadPreview.mockResolvedValue('blob:image')
+  vi.mocked(useLoadPreview).mockReturnValue(
+    mock<ReturnType<typeof useLoadPreview>>({
+      loadPreview: vi.fn().mockResolvedValue(imgBlob)
+    })
+  )
   vi.mocked(buildSpaceImageResource).mockReturnValue(mock<Resource>())
 
   mocks.$clientService.webdav.getFileContents.mockResolvedValue(

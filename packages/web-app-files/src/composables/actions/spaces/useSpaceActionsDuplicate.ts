@@ -146,6 +146,10 @@ export const useSpaceActionsDuplicate = () => {
           return false
         }
 
+        if (resources.some((resource) => resource.isInVault)) {
+          return false
+        }
+
         return ability.can('create-all', 'Drive')
       },
       class: 'oc-files-actions-duplicate-trigger'

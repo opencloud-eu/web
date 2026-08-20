@@ -1,33 +1,32 @@
 import { computed, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { dirname } from 'path'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { isSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
   ExtensionRegistry,
   FileAction,
   FileActionOptions,
-  FolderVaultClaim,
+  VaultClaim,
   getVaultClaim,
   useExtensionRegistry,
-  useFolderVaultStore,
+  useVaultStore,
   useGetMatchingSpace,
   useMessages,
   useResourcesStore,
   useRouter
 } from '@opencloud-eu/web-pkg'
 
-// Lock and unlock are scheme-agnostic: a vault counts as unlocked exactly when
-// an engine sits in the folder-vault store, and the per-scheme bits (which
-// resource is a vault root, where the unlock UI lives) come straight from the
-// claim a folder-vault extension reports via `getVaultClaim`. So these actions
-// live with the generic file actions and work for any folder-vault scheme, not
-// just rclone-crypt.
+// Lock and unlock are scheme-agnostic: a vault counts as unlocked exactly when an
+// engine sits in the vault store, and the per-scheme bits (which resource is a
+// vault root, where the unlock UI lives) come straight from the claim a vault
+// extension reports via `getVaultClaim`. So these actions live with the generic
+// file actions and work for any vault scheme, not just rclone-crypt.
 function claimForRoot(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource | undefined,
   resource: Resource | undefined
-): FolderVaultClaim | null {
+): VaultClaim | null {
   if (!space || !resource?.path) {
     return null
   }
@@ -39,7 +38,7 @@ function claimForRoot(
 
 export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
   const { $gettext } = useGettext()
-  const vaultStore = useFolderVaultStore()
+  const vaultStore = useVaultStore()
   const extensionRegistry = useExtensionRegistry()
   const { showMessage } = useMessages()
   const { getMatchingSpace } = useGetMatchingSpace()
@@ -87,6 +86,9 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
       },
       isVisible: ({ resources }: FileActionOptions) => {
         const resource = resources?.[0]
+        if (isSpaceResource(resource)) {
+          return false
+        }
         const space = getMatchingSpace(resource)
         if (!claimForRoot(extensionRegistry, space, resource)) {
           return false
@@ -102,7 +104,7 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
 
 export const useFileActionsUnlockVault = (): { actions: Ref<FileAction[]> } => {
   const { $gettext } = useGettext()
-  const vaultStore = useFolderVaultStore()
+  const vaultStore = useVaultStore()
   const extensionRegistry = useExtensionRegistry()
   const { getMatchingSpace } = useGetMatchingSpace()
   const router = useRouter()
@@ -124,16 +126,20 @@ export const useFileActionsUnlockVault = (): { actions: Ref<FileAction[]> } => {
         // Send the user through the scheme's unlock UI but bring them back to
         // the current (parent) location, not into the vault. That keeps the
         // surrounding listing in view - the vault entry just flips from locked
-        // to unlocked. The claim already carries the route + its query (space,
-        // vault root); we only add where to return to.
-        const redirectUrl = unref(router.currentRoute).fullPath
+        // to unlocked. Cancelling returns to the same place. The claim already
+        // carries the route + its query (space, vault root); we only add where
+        // to return to.
+        const currentUrl = unref(router.currentRoute).fullPath
         router.push({
           ...claim.unlockRoute,
-          query: { ...claim.unlockRoute.query, redirectUrl }
+          query: { ...claim.unlockRoute.query, redirectUrl: currentUrl, cancelUrl: currentUrl }
         })
       },
       isVisible: ({ resources }: FileActionOptions) => {
         const resource = resources?.[0]
+        if (isSpaceResource(resource)) {
+          return false
+        }
         const space = getMatchingSpace(resource)
         const claim = claimForRoot(extensionRegistry, space, resource)
         if (!claim?.unlockRoute) {

@@ -1,11 +1,11 @@
 import { Resource } from '@opencloud-eu/web-client'
-import { FolderVaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
+import { VaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
 import { createEngine } from './crypto/engine'
 import { INTEGRITY_ID_PROP, integrityTokenOf, VaultTarget, writeIntegrityToken } from './integrity'
 
 export type UnlockResult =
   /** The passphrase holds up; `engine` is the one to stash for the session. */
-  | { status: 'unlocked'; engine: FolderVaultEngine }
+  | { status: 'unlocked'; engine: VaultEngine }
   /** Cryptographically ruled out, as opposed to a request that simply failed. */
   | { status: 'wrong-passphrase' }
 
@@ -61,7 +61,7 @@ export async function readVaultSamples(
  */
 async function verifyAgainstContent(
   { webdav, space }: VaultTarget,
-  engine: FolderVaultEngine,
+  engine: VaultEngine,
   file: Resource
 ): Promise<boolean> {
   // Fetch outside the try: a transport error is not a wrong passphrase, so let it

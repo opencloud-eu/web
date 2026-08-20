@@ -1,4 +1,4 @@
-import { useFolderVaultIndicator } from '../../../../src/composables/extensions/useFolderVaultIndicator'
+import { useVaultIndicator } from '../../../../src/composables/extensions/useVaultIndicator'
 
 let unlocked = false
 let claim: any = null
@@ -7,7 +7,7 @@ let matchedSpace: any = { id: 'space-1' }
 vi.mock('@opencloud-eu/web-pkg', () => ({
   getVaultClaim: vi.fn(() => claim),
   useExtensionRegistry: () => ({}),
-  useFolderVaultStore: () => ({ isUnlocked: () => unlocked }),
+  useVaultStore: () => ({ isUnlocked: () => unlocked }),
   useGetMatchingSpace: () => ({ getMatchingSpace: () => matchedSpace })
 }))
 
@@ -24,8 +24,8 @@ beforeEach(() => {
   matchedSpace = { id: 'space-1' }
 })
 
-describe('folder-vault resource indicator', () => {
-  const getIndicators = (res: any) => useFolderVaultIndicator().getResourceIndicators(res)
+describe('vault resource indicator', () => {
+  const getIndicators = (res: any) => useVaultIndicator().getResourceIndicators(res)
 
   it('returns nothing for a resource outside any vault', () => {
     expect(getIndicators(resource({ isInVault: false }))).toBeUndefined()
@@ -62,5 +62,33 @@ describe('folder-vault resource indicator', () => {
   it('does not annotate content while the vault is locked', () => {
     unlocked = false
     expect(getIndicators(resource({ path: '/my.vault/sub/file.txt' }))).toBeUndefined()
+  })
+
+  describe('vault spaces', () => {
+    // A space is its own space context, so the store lookup must not be needed.
+    const vaultSpace = () => resource({ id: 'space-1', type: 'space', path: '/', isFolder: true })
+
+    beforeEach(() => {
+      claim = { vaultRoot: '/' }
+      matchedSpace = null
+    })
+
+    it('shows a closed padlock for a locked vault space', () => {
+      const indicators = getIndicators(vaultSpace()) as any[]
+      expect(indicators).toHaveLength(1)
+      expect(indicators[0].type).toBe('vault-locked')
+    })
+
+    it('shows an open padlock for an unlocked vault space', () => {
+      unlocked = true
+      const indicators = getIndicators(vaultSpace()) as any[]
+      expect(indicators).toHaveLength(1)
+      expect(indicators[0].type).toBe('vault-unlocked')
+    })
+
+    it('returns nothing for a space that is no vault', () => {
+      claim = null
+      expect(getIndicators(vaultSpace())).toBeUndefined()
+    })
   })
 })

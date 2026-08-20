@@ -10,13 +10,13 @@ import {
   decryptResourceInPlace,
   getVaultClaim,
   markVaultStatus,
-  resolveFolderVault
-} from '../../helpers/folderVault'
+  resolveVaultEngine
+} from '../../helpers/vault'
 import { encryptVaultPath } from '../../helpers/vaultEngine'
 import { streamToArrayBuffer } from '../../helpers/streams'
 
 /**
- * Wrap a WebDAV client so folder-vault translation happens transparently on
+ * Wrap a WebDAV client so vault translation happens transparently on
  * every call: clear-text paths are encrypted on the way to the server, and the
  * encrypted names that come back are decrypted (and flagged) before any caller
  * sees them. Callers keep using `clientService.webdav` with clear-text paths and
@@ -63,7 +63,7 @@ export function createVaultWebDav(inner: WebDAV): WebDAV {
     if (!getVaultClaim(registry, space, path)) {
       return path
     }
-    const engine = await resolveFolderVault(registry, space, path)
+    const engine = await resolveVaultEngine(registry, space, path)
     return engine ? await encryptVaultPath(engine, path) : path
   }
 
@@ -94,7 +94,7 @@ export function createVaultWebDav(inner: WebDAV): WebDAV {
     if (claim.vaultRoot === path) {
       return path
     }
-    const engine = await resolveFolderVault(registry, space, path)
+    const engine = await resolveVaultEngine(registry, space, path)
     if (!engine) {
       throw new Error(
         `Refusing to write a clear-text path into the locked vault "${claim.vaultRoot}"`
@@ -133,7 +133,7 @@ export function createVaultWebDav(inner: WebDAV): WebDAV {
     }
 
     for (const [vaultRoot, group] of byRoot) {
-      const engine = await resolveFolderVault(registry, space, vaultRoot)
+      const engine = await resolveVaultEngine(registry, space, vaultRoot)
       if (engine) {
         await Promise.all(group.map((r) => decryptResourceInPlace(engine, r)))
       }
@@ -219,7 +219,7 @@ export function createVaultWebDav(inner: WebDAV): WebDAV {
       if (!path || !getVaultClaim(useExtensionRegistry(), space, path)) {
         return inner.getFileContents(space, resource, options)
       }
-      const engine = await resolveFolderVault(useExtensionRegistry(), space, path)
+      const engine = await resolveVaultEngine(useExtensionRegistry(), space, path)
       if (!engine) {
         return inner.getFileContents(space, resource, options)
       }
@@ -254,7 +254,7 @@ export function createVaultWebDav(inner: WebDAV): WebDAV {
       if (!claim) {
         return inner.putFileContents(space, options)
       }
-      const engine = await resolveFolderVault(useExtensionRegistry(), space, path)
+      const engine = await resolveVaultEngine(useExtensionRegistry(), space, path)
       if (!engine) {
         // Fail closed: writing clear-text content/name into a locked vault would
         // corrupt it. Unreachable through the UI (the unlock gate runs first).

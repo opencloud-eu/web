@@ -1,12 +1,12 @@
 import { Cipher } from '@fyears/rclone-crypt'
 import { v4 as uuidV4 } from 'uuid'
-import { FolderVaultEngine } from '@opencloud-eu/web-pkg'
+import { VaultEngine } from '@opencloud-eu/web-pkg'
 import { fromBase64, toBase64 } from '../integrity'
 
-export function createEngine(vaultRoot: string, password: string): FolderVaultEngine {
+export function createEngine(vaultRoot: string, password: string): VaultEngine {
   // Derive the cipher once per engine. rclone-crypt's EME filename encryption
   // is deterministic and scrypt key derivation is expensive, but the engine
-  // instance is held for the session by the folder-vault store, so a single
+  // instance is held for the session by the vault store, so a single
   // derivation per unlock is enough - no separate cipher cache needed.
   const cipherPromise = (async () => {
     const cipher = new Cipher('base32')

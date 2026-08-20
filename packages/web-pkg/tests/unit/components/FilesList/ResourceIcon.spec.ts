@@ -45,6 +45,14 @@ describe('OcResourceIcon', () => {
     },
     'with mimetype "not-a-real-mimetype"'
   )
+
+  it('renders the vault icon for a space that is a vault', () => {
+    const { wrapper } = getWrapper({
+      resource: { type: 'space', driveType: 'project', isInVault: true } as Partial<Resource>,
+      size: 'medium'
+    })
+    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-space-vault')
+  })
 })
 
 function match(resource: Partial<Resource | SpaceResource>, additionalText?: string) {

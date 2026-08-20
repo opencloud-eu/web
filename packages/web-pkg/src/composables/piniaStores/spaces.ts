@@ -15,6 +15,8 @@ import type {
 import { useUserStore } from './user'
 import { useConfigStore } from './config'
 import { useSharesStore } from './shares'
+import { useExtensionRegistry } from './extensionRegistry'
+import { markSpaceVaultStatus } from '../../helpers/vault'
 import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/graph/generated'
 
 // sort space members with higher permissions (managers) at the top
@@ -46,6 +48,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   const userStore = useUserStore()
   const configStore = useConfigStore()
   const sharesStore = useSharesStore()
+  const extensionRegistry = useExtensionRegistry()
 
   const spaces = ref<SpaceResource[]>([])
   const currentSpace = ref<SpaceResource>()
@@ -85,6 +88,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   }
 
   const addSpaces = (s: SpaceResource[]) => {
+    markSpaceVaultStatus(extensionRegistry, s)
     unref(spaces).push(...s)
   }
 
@@ -140,6 +144,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     const existingSpace = unref(spaces).find(({ id }) => id === space.id)
     if (existingSpace) {
       Object.assign(existingSpace, space)
+      markSpaceVaultStatus(extensionRegistry, [existingSpace])
       return
     }
     addSpaces([space])

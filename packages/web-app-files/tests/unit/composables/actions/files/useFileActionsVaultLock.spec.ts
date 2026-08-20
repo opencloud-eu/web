@@ -19,7 +19,7 @@ vi.mock('@opencloud-eu/web-pkg', () => ({
   createFileRouteOptions: vi.fn(() => ({ name: 'files-spaces-generic' })),
   getVaultClaim: vi.fn(() => claim),
   useExtensionRegistry: () => ({}),
-  useFolderVaultStore: () => ({ clearEngine, isUnlocked: () => unlocked }),
+  useVaultStore: () => ({ clearEngine, isUnlocked: () => unlocked }),
   useGetMatchingSpace: () => ({ getMatchingSpace: () => matchedSpace }),
   useMessages: () => ({ showMessage }),
   useResourcesStore: () => ({ currentFolder }),
@@ -129,12 +129,12 @@ describe('unlock-vault action', () => {
     expect(unref(actions)[0].isVisible({ resources: [rootResource()] } as any)).toBe(false)
   })
 
-  it('pushes the claim unlock route with the current location as redirect', () => {
+  it('pushes the claim unlock route with the current location for both redirect and cancel', () => {
     const { actions } = useFileActionsUnlockVault()
     unref(actions)[0].handler({ resources: [rootResource()] } as any)
     expect(push).toHaveBeenCalledWith({
       name: 'unlock',
-      query: { spaceId: 'space-1', vaultRoot, redirectUrl: '/back' }
+      query: { spaceId: 'space-1', vaultRoot, redirectUrl: '/back', cancelUrl: '/back' }
     })
   })
 })
