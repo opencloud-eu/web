@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- test(e2e): add test for saving file as different [[#3176](https://github.com/opencloud-eu/web/pull/3176)]
 - e2e-test: yjs collaboration tests [[#3179](https://github.com/opencloud-eu/web/pull/3179)]
 - e2e-test: cover favorite SSE events across tabs [[#3154](https://github.com/opencloud-eu/web/pull/3154)]
 - test(e2e): add sidebar details check for shared resources [[#3116](https://github.com/opencloud-eu/web/pull/3116)]
@@ -74,6 +75,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency uuid to v14.0.2 [[#3160](https://github.com/opencloud-eu/web/pull/3160)]
+- chore(deps): update dependency dompurify to v3.4.14 [[#3180](https://github.com/opencloud-eu/web/pull/3180)]
 - chore(client): bump libre-graph-sdk [[#3149](https://github.com/opencloud-eu/web/pull/3149)]
 - chore(client): bump libre-graph-sdk [[#3143](https://github.com/opencloud-eu/web/pull/3143)]
 - chore(deps): update dependency fast-xml-parser to v5.11.0 [[#3139](https://github.com/opencloud-eu/web/pull/3139)]
