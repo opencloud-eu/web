@@ -1,5 +1,5 @@
 export abstract class ImageDimension {
-  static readonly Thumbnail: [number, number] = [36, 36]
+  static readonly Thumbnail: [number, number] = [32, 32]
   static readonly Small: [number, number] = [320, 320]
   static readonly Medium: [number, number] = [448, 448]
   /** @deprecated use `previewDimensions` of `useTileSize` instead */
