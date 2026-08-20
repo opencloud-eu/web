@@ -6,6 +6,27 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @fschade, @junkerderprovinz, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
 
+### 📈 Enhancement
+
+- feat: e2ee vault spaces [[#3115](https://github.com/opencloud-eu/web/pull/3115)]
+- add sanitized SVG rendering in preview app [[#3144](https://github.com/opencloud-eu/web/pull/3144)]
+- feat: update default space icon [[#3146](https://github.com/opencloud-eu/web/pull/3146)]
+- feat: enhance preview media controls layout and migrate to bubble menu [[#3138](https://github.com/opencloud-eu/web/pull/3138)]
+- feat: move bubble menu styling to design system [[#3134](https://github.com/opencloud-eu/web/pull/3134)]
+- feat(web-pkg): optional unload warning for loading tasks [[#3135](https://github.com/opencloud-eu/web/pull/3135)]
+- feat: add filters to favorites view [[#3087](https://github.com/opencloud-eu/web/pull/3087)]
+- feat: modernize ebup reader [[#3088](https://github.com/opencloud-eu/web/pull/3088)]
+- feat(yjs): collaborative editing framework [[#2785](https://github.com/opencloud-eu/web/pull/2785)]
+- feat: update more resource icons [[#2898](https://github.com/opencloud-eu/web/pull/2898)]
+- feat: add subscript and superscript support to text editor [[#3068](https://github.com/opencloud-eu/web/pull/3068)]
+- feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
+- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
+- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
+- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
+- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
+- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
+- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
+
 ### ✅ Tests
 
 - test(e2e): add test for saving file as different [[#3176](https://github.com/opencloud-eu/web/pull/3176)]
@@ -48,26 +69,6 @@
 - fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
 - fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
 - fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
-
-### 📈 Enhancement
-
-- add sanitized SVG rendering in preview app [[#3144](https://github.com/opencloud-eu/web/pull/3144)]
-- feat: update default space icon [[#3146](https://github.com/opencloud-eu/web/pull/3146)]
-- feat: enhance preview media controls layout and migrate to bubble menu [[#3138](https://github.com/opencloud-eu/web/pull/3138)]
-- feat: move bubble menu styling to design system [[#3134](https://github.com/opencloud-eu/web/pull/3134)]
-- feat(web-pkg): optional unload warning for loading tasks [[#3135](https://github.com/opencloud-eu/web/pull/3135)]
-- feat: add filters to favorites view [[#3087](https://github.com/opencloud-eu/web/pull/3087)]
-- feat: modernize ebup reader [[#3088](https://github.com/opencloud-eu/web/pull/3088)]
-- feat(yjs): collaborative editing framework [[#2785](https://github.com/opencloud-eu/web/pull/2785)]
-- feat: update more resource icons [[#2898](https://github.com/opencloud-eu/web/pull/2898)]
-- feat: add subscript and superscript support to text editor [[#3068](https://github.com/opencloud-eu/web/pull/3068)]
-- feat: enhance text editor table functionality with custom size picker and toggle header action [[#3063](https://github.com/opencloud-eu/web/pull/3063)]
-- feat: rework vault setup process [[#3031](https://github.com/opencloud-eu/web/pull/3031)]
-- feat(tiptap): add insert image from cloud [[#3024](https://github.com/opencloud-eu/web/pull/3024)]
-- enhance: listen on favourite events [[#3019](https://github.com/opencloud-eu/web/pull/3019)]
-- feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
-- feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
-- feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
 
 ### 📚 Documentation
 
