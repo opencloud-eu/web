@@ -23,6 +23,7 @@ const downloadFolderButtonSideBar =
 const downloadButtonBatchAction = '.oc-files-actions-download-archive-trigger'
 const appBarContextMenu = '#oc-openfile-contextmenu-trigger'
 const appBarDownloadFileButton = '#oc-openfile-contextmenu .oc-files-actions-download-file-trigger'
+const appBarSaveAsButton = '#oc-openfile-contextmenu .oc-files-actions-save-as-trigger'
 const deleteButtonBatchAction = '.oc-files-actions-delete-trigger'
 const createSpaceFromResourceAction =
   '[role="menuitem"].oc-files-actions-create-space-from-resource-trigger'
@@ -136,6 +137,9 @@ const mobileViewmodeSwitchDropdown = '#viewmode-switch-drop'
 const pdfViewerContainer = '#pdf-viewer .pdf-viewer'
 const textEditorContainer = '.text-editor-provider .ProseMirror'
 
+// OpenCloud iframe
+const opencloudFrame = 'iframe[title="OpenCloud"]'
+
 // online office locators
 // Collabora
 const collaboraDocPermissionModeSelector = '#permissionmode-container'
@@ -196,7 +200,7 @@ export const clickResourceInFrame = async ({
   path: string
 }): Promise<void> => {
   const paths = path.split('/')
-  const frame = page.frameLocator('iframe[title="OpenCloud"]')
+  const frame = page.frameLocator(opencloudFrame)
   await expect(frame.locator('body')).toBeVisible()
 
   for (const name of paths) {
@@ -1079,7 +1083,7 @@ export const pasteResource = async (
 ): Promise<void> => {
   const { page, resource, newLocation, action, option } = args
   const newLocationPath = newLocation.split('/')
-  const frame = page.frameLocator('iframe[title="OpenCloud"]')
+  const frame = page.frameLocator(opencloudFrame)
 
   for (const path of newLocationPath) {
     switch (path) {
@@ -1172,7 +1176,7 @@ export const moveOrCopyMultipleResources = async (
       // after selecting multiple resources, resources can be copied or moved by clicking on any of the selected resources
       await page.locator(highlightedTileCardSelector).first().click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
-      const frame = page.frameLocator('iframe[title="OpenCloud"]')
+      const frame = page.frameLocator(opencloudFrame)
 
       const newLocationPath = newLocation.split('/')
       for (const path of newLocationPath) {
@@ -1197,7 +1201,7 @@ export const moveOrCopyMultipleResources = async (
     case 'batch-action': {
       await selectBatchAction(page, action)
 
-      const frame = page.frameLocator('iframe[title="OpenCloud"]')
+      const frame = page.frameLocator(opencloudFrame)
 
       const newLocationPath = newLocation.split('/')
       for (const path of newLocationPath) {
@@ -2794,4 +2798,66 @@ export const copyAllTo = async ({
     newLocation: destination,
     action: 'copy'
   })
+}
+
+export const saveAs = async ({ page, newPath }: { page: Page; newPath: string }): Promise<Page> => {
+  await page.locator(appBarContextMenu).click()
+  await page.locator(appBarSaveAsButton).click()
+
+  const frame = page.frameLocator(opencloudFrame)
+  const parentPath = path.dirname(newPath)
+  let filename = path.basename(newPath)
+  if (parentPath !== '.') {
+    for (const path of parentPath.split('/')) {
+      switch (path) {
+        case 'Personal': {
+          await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
+          break
+        }
+
+        case 'Project': {
+          await frame.locator('a[data-nav-name="files-spaces-projects"]').click()
+          break
+        }
+
+        case 'Shares': {
+          await frame.locator('a[data-nav-name="files-shares"]').click()
+          break
+        }
+
+        default: {
+          await clickResourceInFrame({ page, path })
+        }
+      }
+    }
+  }
+
+  const newFilenameInput = frame.locator('#app-runtime-footer input.oc-text-input')
+  await newFilenameInput.clear()
+  await newFilenameInput.fill(filename)
+
+  const currentFilename = await getTopBarFilename(page)
+  if (currentFilename === newPath) {
+    const filenameExt = path.extname(newPath)
+    const newFilename = path.basename(newPath, filenameExt)
+    // new file will be: <filename> (1).<ext>
+    filename = `${newFilename} (1)${filenameExt}`
+  }
+
+  const [newPage] = await Promise.all([
+    page.context().waitForEvent('page'),
+    page.waitForResponse(
+      (resp) =>
+        resp.url().endsWith(encodeURIComponent(filename)) &&
+        resp.status() === 201 &&
+        resp.request().method() === 'PUT'
+    ),
+    frame.getByTestId('button-select').click()
+  ])
+
+  return newPage
+}
+
+export const getTopBarFilename = (page: Page): Promise<string> => {
+  return page.locator(topbarFilenameSelector).getAttribute('data-test-resource-name')
 }
