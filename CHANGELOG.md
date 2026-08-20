@@ -8,6 +8,8 @@
 
 ### 📈 Enhancement
 
+- feat: make space header more compact [[#3173](https://github.com/opencloud-eu/web/pull/3173)]
+- perf: remove location checks from resource actions [[#3177](https://github.com/opencloud-eu/web/pull/3177)]
 - Wire ocnote to tiptap-json and add Note new-file entry [[#3175](https://github.com/opencloud-eu/web/pull/3175)]
 - feat: e2ee vault spaces [[#3115](https://github.com/opencloud-eu/web/pull/3115)]
 - add sanitized SVG rendering in preview app [[#3144](https://github.com/opencloud-eu/web/pull/3144)]
