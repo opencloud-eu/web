@@ -11,7 +11,7 @@ Feature: Mobile device test
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    
+
     When "Alice" logs in
     And "Alice" opens the "files" app
     And "Alice" uploads the following resources
@@ -20,9 +20,9 @@ Feature: Mobile device test
       | simple.pdf     | file   |
       | testavatar.png | file   |
     And "Alice" creates the following resources
-      | resource     | type         | content     |
-      | my-folder    | folder       |             |
-      | textFile.txt | txtFile      | some text   |
+      | resource        | type     | content   |
+      | my-folder       | folder   |           |
+      | textFile.ocnote | noteFile | some text |
     When "Alice" opens the following file in pdfviewer
       | resource   |
       | simple.pdf |

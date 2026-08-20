@@ -52,12 +52,18 @@ describe('Text editor app', () => {
     getWrapper({ resource: mock<Resource>({ extension: 'md', mimeType: 'text/markdown' }) })
     expect(lastOptions().contentType).toBe('markdown')
 
+    getWrapper({ resource: mock<Resource>({ extension: 'ocnote', mimeType: 'application/json' }) })
+    expect(lastOptions().contentType).toBe('tiptap-json')
+
     getWrapper({ resource: mock<Resource>({ extension: 'ts', mimeType: 'text/plain' }) })
     expect(lastOptions().contentType).toBe('plain-text')
   })
 
-  it('only sets a placeholder for editable markdown', () => {
+  it('only sets a placeholder for editable rich text content', () => {
     getWrapper({ resource: mock<Resource>({ extension: 'md', mimeType: 'text/markdown' }) })
+    expect(lastOptions().placeholder).toBeTruthy()
+
+    getWrapper({ resource: mock<Resource>({ extension: 'ocnote', mimeType: 'application/json' }) })
     expect(lastOptions().placeholder).toBeTruthy()
 
     getWrapper({ resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' }) })

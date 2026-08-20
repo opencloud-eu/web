@@ -1,20 +1,20 @@
 Feature: spaces.personal
 
   Scenario: unstructured collection of testable space interactions,
-    once all needed features are there, split this into independent tests.
-    contains following features:
-    - ✓ assign role to user
-    - ✓ create space & internal alias to differentiate multiple spaces with the same name
-    - ✓ open space
-    - ✓ rename space
-    - ✓ change/set space subtitle
-    - ✓ change/set space description
-    - ✓ change/set space quota
-    - ✓ resources & existing resource actions
-    - ✓ change/set space image
-    - ✗ trash bin
-    - ✗ share
-    - ✗ link
+  once all needed features are there, split this into independent tests.
+  contains following features:
+  - ✓ assign role to user
+  - ✓ create space & internal alias to differentiate multiple spaces with the same name
+  - ✓ open space
+  - ✓ rename space
+  - ✓ change/set space subtitle
+  - ✓ change/set space description
+  - ✓ change/set space quota
+  - ✓ resources & existing resource actions
+  - ✓ change/set space image
+  - ✗ trash bin
+  - ✗ share
+  - ✗ link
     Given "Admin" creates following users using API
       | id    |
       | Alice |
@@ -145,12 +145,12 @@ Feature: spaces.personal
       | team | team.1 |
     And "Alice" navigates to the project space "team.1"
     And "Alice" creates the following resources
-      | resource            | type    | content             |
-      | parent              | folder  |                      |
-      | parent/textfile.txt | txtFile | some random content  |
+      | resource               | type     | content             |
+      | parent                 | folder   |                     |
+      | parent/textfile.ocnote | noteFile | some random content |
     When "Alice" uploads the following resource
-      | resource     | to     | option  |
-      | textfile.txt | parent | replace |
+      | resource        | to     | option  |
+      | textfile.ocnote | parent | replace |
     And "Alice" adds following users to the project space
       | user  | role     | kind |
       | Carol | Can view | user |
@@ -160,16 +160,16 @@ Feature: spaces.personal
     When "Carol" logs in
     And "Carol" navigates to the project space "team.1"
     And "Carol" should not see the version panel for the file
-      | resource     | to     |
-      | textfile.txt | parent |
+      | resource        | to     |
+      | textfile.ocnote | parent |
     And "Carol" logs out
 
     When "Brian" logs in
     And "Brian" navigates to the project space "team.1"
     And "Brian" downloads old version of the following resource
-      | resource     | to     |
-      | textfile.txt | parent |
+      | resource        | to     |
+      | textfile.ocnote | parent |
     And "Brian" restores following resource version
-      | resource     | to     | version | openDetailsPanel |
-      | textfile.txt | parent | 1       | true             |
+      | resource        | to     | version | openDetailsPanel |
+      | textfile.ocnote | parent | 1       | true             |
     And "Brian" logs out

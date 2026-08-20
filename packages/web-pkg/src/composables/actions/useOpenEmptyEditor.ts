@@ -9,6 +9,9 @@ import { resolveFileNameDuplicate } from '../../helpers'
 import { urlJoin } from '@opencloud-eu/web-client'
 
 // open an editor with an empty file within the current folder
+/**
+ * @deprecated This composable is no longer needed and will be removed.
+ */
 export const useOpenEmptyEditor = () => {
   const { getMatchingSpace } = useGetMatchingSpace()
   const spacesStore = useSpacesStore()
