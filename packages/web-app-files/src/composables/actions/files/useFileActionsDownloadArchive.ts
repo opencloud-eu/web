@@ -1,4 +1,9 @@
-import { isProjectSpaceResource, isPublicSpaceResource, Resource } from '@opencloud-eu/web-client'
+import {
+  isProjectSpaceResource,
+  isPublicSpaceResource,
+  isTrashResource,
+  Resource
+} from '@opencloud-eu/web-client'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -6,25 +11,17 @@ import {
   FileActionOptions,
   formatFileSize,
   getVaultClaim,
-  isLocationCommonActive,
-  isLocationPublicActive,
-  isLocationSharesActive,
-  isLocationSpacesActive,
   useArchiverService,
   useAuthStore,
   useExtensionRegistry,
-  useIsFilesAppActive,
-  useMessages,
-  useRouter
+  useMessages
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsDownloadArchive = () => {
   const { showErrorMessage } = useMessages()
-  const router = useRouter()
   const archiverService = useArchiverService()
   const { $ngettext, $gettext, current } = useGettext()
   const authStore = useAuthStore()
-  const isFilesAppActive = useIsFilesAppActive()
   const extensionRegistry = useExtensionRegistry()
 
   const handler = ({ space, resources }: FileActionOptions) => {
@@ -88,24 +85,14 @@ export const useFileActionsDownloadArchive = () => {
         },
         isDisabled: ({ resources }) => areArchiverLimitsExceeded(resources),
         isVisible: ({ space, resources }) => {
-          if (
-            unref(isFilesAppActive) &&
-            !isLocationSpacesActive(router, 'files-spaces-generic') &&
-            !isLocationPublicActive(router, 'files-public-link') &&
-            !isLocationCommonActive(router, 'files-common-favorites') &&
-            !isLocationCommonActive(router, 'files-common-search') &&
-            !isLocationSharesActive(router, 'files-shares-with-me') &&
-            !isLocationSharesActive(router, 'files-shares-with-others') &&
-            !isLocationSharesActive(router, 'files-shares-via-link') &&
-            !isLocationCommonActive(router, 'files-common-search')
-          ) {
-            return false
-          }
           if (!unref(archiverService.available)) {
             return false
           }
 
           if (resources.length === 0) {
+            return false
+          }
+          if (resources.some(isTrashResource)) {
             return false
           }
           // The archive is zipped server-side from the raw (ciphertext) blobs

@@ -4,18 +4,17 @@ import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
   FileActionOptions,
-  isLocationSpacesActive,
+  useResourcesStore,
   SpaceImageModal,
   useClientService,
   useLoadingService,
   useModals,
-  useRouter,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
 export const useSpaceActionsSetImage = () => {
   const userStore = useUserStore()
-  const router = useRouter()
+  const resourcesStore = useResourcesStore()
   const { $gettext } = useGettext()
   const clientService = useClientService()
   const loadingService = useLoadingService()
@@ -55,14 +54,11 @@ export const useSpaceActionsSetImage = () => {
           return false
         }
 
-        if (!isLocationSpacesActive(router, 'files-spaces-generic')) {
-          return false
-        }
-
         if (!space) {
           return false
         }
-        if (!isProjectSpaceResource(space)) {
+        if (!isProjectSpaceResource(space) || !resourcesStore.currentFolder) {
+          // Only visible inside project spaces.
           return false
         }
         return space.canEditImage({ user: userStore.user })

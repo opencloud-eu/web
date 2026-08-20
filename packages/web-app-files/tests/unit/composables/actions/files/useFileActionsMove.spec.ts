@@ -79,12 +79,44 @@ describe('useFileActionsMove', () => {
           }
         })
       })
+      it('returns false for trashed resources', () => {
+        getWrapper({
+          setup: ({ actions }) => {
+            const resource = { ...getResource({ id: '1' }), ddate: '2026-01-01' } as Resource
+            expect(
+              unref(actions)[0].isVisible({ space: mock<SpaceResource>(), resources: [resource] })
+            ).toBeFalsy()
+          }
+        })
+      })
+      it('returns false for share list entries', () => {
+        getWrapper({
+          currentFolder: null,
+          setup: ({ actions }) => {
+            const resource = { ...getResource({ id: '1' }), sharedWith: [] } as Resource
+            expect(
+              unref(actions)[0].isVisible({ space: mock<SpaceResource>(), resources: [resource] })
+            ).toBeFalsy()
+          }
+        })
+      })
+      it('returns true for a share root browsed inside its space', () => {
+        getWrapper({
+          setup: ({ actions }) => {
+            const resource = { ...getResource({ id: '1' }), sharedWith: [] } as Resource
+            expect(
+              unref(actions)[0].isVisible({ space: mock<SpaceResource>(), resources: [resource] })
+            ).toBeTruthy()
+          }
+        })
+      })
       it('returns false in search context when resources contain a project space', () => {
         getWrapper({
           searchLocation: true,
           setup: ({ actions }) => {
             const projectSpace = {
               ...getResource({ id: '1', storageId: 'space-1' }),
+              type: 'space',
               driveType: 'project'
             } as Resource
             expect(

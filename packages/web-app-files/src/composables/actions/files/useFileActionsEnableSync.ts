@@ -1,11 +1,10 @@
 import PQueue from 'p-queue'
-import { IncomingShareResource } from '@opencloud-eu/web-client'
-import { computed, unref } from 'vue'
+import { IncomingShareResource, isIncomingShareResource } from '@opencloud-eu/web-client'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
   FileActionOptions,
-  isLocationSharesActive,
   isLocationSpacesActive,
   useClientService,
   useConfigStore,
@@ -89,21 +88,12 @@ export const useFileActionsEnableSync = () => {
       icon: 'check',
       handler: (args) => loadingService.addTask(() => handler(args)),
       label: () => $gettext('Enable sync'),
-      isVisible: ({ space, resources }) => {
-        if (
-          !isLocationSharesActive(router, 'files-shares-with-me') &&
-          !isLocationSpacesActive(router, 'files-spaces-generic')
-        ) {
-          return false
-        }
+      isVisible: ({ resources }) => {
         if (resources.length === 0) {
           return false
         }
 
-        if (
-          isLocationSpacesActive(router, 'files-spaces-generic') &&
-          (unref(space)?.driveType !== 'share' || resources.length > 1 || resources[0].path !== '/')
-        ) {
+        if (resources.some((r) => !isIncomingShareResource(r))) {
           return false
         }
 
