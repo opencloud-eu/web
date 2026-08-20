@@ -188,12 +188,17 @@ function setupSession({
   }
 }
 
+function silenceConsoleError() {
+  vi.spyOn(console, 'error').mockImplementation(() => undefined)
+}
+
 beforeEach(() => {
   providerInstances.length = 0
 })
 
 afterEach(() => {
   vi.useRealTimers()
+  vi.restoreAllMocks()
 })
 
 describe('useYjsSession — enabled gate', () => {
@@ -306,6 +311,8 @@ describe('useYjsSession — failed hydration', () => {
       throw new Error('adapter blew up')
     }
   }
+
+  beforeEach(silenceConsoleError)
 
   // The doc stays empty but the file on disk does not, and the etag we hold
   // still matches it. An editable empty editor would let the first keystroke
@@ -441,6 +448,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   })
 
   it('surfaces an auth failure as an error, locks read-only and releases the loading gate', async () => {
+    silenceConsoleError()
     const s = setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
     await flushPromises()
     providerInstances[0].triggerAuthFailed('token expired')
@@ -456,6 +464,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   // just fetched the file over WebDAV, so showing it is neither a leak nor a
   // guess - and a blank editor reads exactly like data loss.
   it('still shows the file after an auth failure', async () => {
+    silenceConsoleError()
     const s = setupSession({
       yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'my important notes'
@@ -473,6 +482,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   // locally seeded copy into a room already holding the same content,
   // duplicating the document for every peer.
   it('stops retrying after an auth failure, so the local copy cannot merge back', async () => {
+    silenceConsoleError()
     const s = setupSession({
       yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'my important notes'
@@ -497,6 +507,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   // `isStale` plus a `recoveryClientId` claim this now read-only client will
   // never act on - leaving the room flagged stale with a dead claim.
   it('does not re-run hydration when the token expires mid-session', async () => {
+    silenceConsoleError()
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
       yjsServerUrl: 'wss://example.test/yjs',
@@ -542,6 +553,7 @@ describe('useYjsSession — unreachable Yjs server', () => {
   })
 
   it('falls back to a local session once the connect times out', async () => {
+    silenceConsoleError()
     const s = setupSession({ yjsServerUrl, currentContent: 'the file body' })
     await flushPromises()
     vi.advanceTimersByTime(11_000)
@@ -575,6 +587,7 @@ describe('useYjsSession — unreachable Yjs server', () => {
   })
 
   it('does not fall back once authentication already failed', async () => {
+    silenceConsoleError()
     const s = setupSession({ yjsServerUrl })
     await flushPromises()
     providerInstances[0].triggerAuthFailed('token expired')
@@ -882,6 +895,7 @@ describe('useYjsSession — stale-state recovery', () => {
   // looking at an empty document. Locking stops the autosave from writing that
   // emptiness to disk, and `isStale` stays up so a later joiner retries.
   it('keeps the room flagged and locks the session when re-seeding throws', async () => {
+    silenceConsoleError()
     const failingAdapter: YjsAdapter = {
       ...testAdapter,
       hydrate(ydoc: Y.Doc, content: string) {
