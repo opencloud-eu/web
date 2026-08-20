@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(web-runtime): add sponsor emoji transition on hover [[#3191](https://github.com/opencloud-eu/web/pull/3191)]
 - Rename extensions to apps in admin and account settings [[#3190](https://github.com/opencloud-eu/web/pull/3190)]
 - perf: introduce cache for active location checks [[#3182](https://github.com/opencloud-eu/web/pull/3182)]
 - feat: make space header more compact [[#3173](https://github.com/opencloud-eu/web/pull/3173)]
