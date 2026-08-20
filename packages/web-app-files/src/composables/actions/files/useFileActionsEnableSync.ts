@@ -93,7 +93,7 @@ export const useFileActionsEnableSync = () => {
           return false
         }
 
-        if (!resources.every(isIncomingShareResource)) {
+        if (resources.some((r) => !isIncomingShareResource(r))) {
           return false
         }
 

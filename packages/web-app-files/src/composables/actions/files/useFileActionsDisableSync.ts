@@ -91,7 +91,7 @@ export const useFileActionsDisableSync = () => {
           return false
         }
 
-        if (!resources.every(isIncomingShareResource)) {
+        if (resources.some((r) => !isIncomingShareResource(r))) {
           return false
         }
 
