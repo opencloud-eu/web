@@ -1,5 +1,20 @@
 # Changelog
 
+## [7.1.5](https://github.com/opencloud-eu/web/releases/tag/v7.1.5) - 2026-08-12
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @v-scharf
+
+### 🐛 Bug Fixes
+
+- fix(text-editor): update editor content when loaded via recovery [[#3081](https://github.com/opencloud-eu/web/pull/3081)]
+- [stable-7.1] fix: encode hash character in app route URLs to prevent truncation (#3075) [[#3080](https://github.com/opencloud-eu/web/pull/3080)]
+
+### ✅ Tests
+
+- split keycloak test [[#2897](https://github.com/opencloud-eu/web/pull/2897)]
+
 ## [7.1.4](https://github.com/opencloud-eu/web/releases/tag/v7.1.4) - 2026-07-13
 
 ### ❤️ Thanks to all contributors! ❤️
