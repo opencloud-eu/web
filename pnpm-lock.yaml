@@ -320,8 +320,8 @@ importers:
         specifier: 4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.41(typescript@6.0.3))
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -465,8 +465,8 @@ importers:
         specifier: ^6.13.0
         version: 6.15.3
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -529,8 +529,8 @@ importers:
         specifier: 6.15.3
         version: 6.15.3
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -624,8 +624,8 @@ importers:
         specifier: 4.18.1
         version: 4.18.1
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -720,7 +720,7 @@ importers:
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.41(typescript@6.0.3))
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
       vue:
         specifier: ^3.5.0
         version: 3.5.41(typescript@6.0.3)
@@ -835,7 +835,7 @@ importers:
         version: 3.7.2
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
       webdav:
         specifier: 5.9.0
         version: 5.9.0
@@ -1034,7 +1034,7 @@ importers:
         version: 7.8.5
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
       vue-concurrency:
         specifier: ^5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -1148,8 +1148,8 @@ importers:
         specifier: 6.15.3
         version: 6.15.3
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue:
         specifier: ^3.5.31
         version: 3.5.41(typescript@6.0.3)
@@ -1251,7 +1251,7 @@ importers:
         version: 3.7.2
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
 
 packages:
 
@@ -4916,8 +4916,8 @@ packages:
   util@0.12.5:
     resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
 
-  uuid@14.0.1:
-    resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
+  uuid@14.0.2:
+    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -9066,7 +9066,7 @@ snapshots:
       is-typed-array: 1.1.15
       which-typed-array: 1.1.22
 
-  uuid@14.0.1: {}
+  uuid@14.0.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
