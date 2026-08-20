@@ -37,6 +37,25 @@ export class Spaces {
     await po.openSpace({ page: this.#page, id })
   }
 
+  async openVault({ key, passphrase }: { key: string; passphrase: string }): Promise<void> {
+    const { id } = this.#spacesEnvironment.getSpace({ key })
+    await po.openVaultSpace({ page: this.#page, id, passphrase })
+  }
+
+  async unlockVault({ passphrase }: { passphrase: string }): Promise<void> {
+    await po.unlockVaultSpace({ page: this.#page, passphrase })
+  }
+
+  async expectOpen({ key }: { key: string }): Promise<void> {
+    const { name } = this.#spacesEnvironment.getSpace({ key })
+    await po.expectSpaceOpen({ page: this.#page, name })
+  }
+
+  async expectVaultLocked({ key }: { key: string }): Promise<void> {
+    const { name } = this.#spacesEnvironment.getSpace({ key })
+    await po.expectVaultSpaceLocked({ page: this.#page, name })
+  }
+
   async changeName({
     key,
     value,

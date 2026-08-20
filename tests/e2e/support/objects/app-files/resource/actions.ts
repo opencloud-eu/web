@@ -171,6 +171,13 @@ const uploadList = '#upload-list'
 const encryptFolderSwitch = '[data-testid="create-folder-encrypt"] [data-testid="oc-switch-btn"]'
 const vaultSetupPassphraseInput = '#vault-setup-passphrase'
 const unlockVaultBtn = '#vault-unlock-submit'
+const vaultPassphraseInput = '#vault-passphrase'
+const filesContextMenu = 'div[id^="context-menu-drop"]'
+const showSharesActionSelector = 'button.oc-files-actions-show-shares-trigger'
+const quickActionShareButton =
+  '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "files-quick-action-show-shares")]'
+const inviteCollaboratorForm = '#new-collaborators-form'
+const addPublicLinkButton = '#files-file-link-add'
 
 export const getResourceLocator = ({
   page,
@@ -2770,8 +2777,63 @@ const unlockVault = async ({
 }): Promise<void> => {
   const unlockButton = page.locator(unlockVaultBtn)
   await expect(unlockButton).toBeDisabled()
-  await page.locator('#vault-passphrase').fill(passphrase)
+  await page.locator(vaultPassphraseInput).fill(passphrase)
   await unlockButton.click()
+}
+
+/**
+ * Navigate back to where a step started. If the start is a vault, it needs
+ * to be unlocked because the vault gets locked initially after a reload.
+ */
+export const returnToStartUrl = async ({
+  page,
+  startUrl,
+  password
+}: {
+  page: Page
+  startUrl: string
+  password?: string
+}): Promise<void> => {
+  await page.goto(startUrl)
+  if (!password) {
+    return
+  }
+  const passphraseInput = page.locator(vaultPassphraseInput)
+  try {
+    // Whichever of the two renders first says where the load landed: the
+    // unlock page for a locked vault, the file list for anything else.
+    await expect(passphraseInput.or(page.locator(filesView))).toBeVisible()
+  } catch {
+    return
+  }
+  if (!(await passphraseInput.isVisible())) {
+    return
+  }
+  await unlockVault({ page, passphrase: password })
+  await expect(page.locator(appLoadingSpinner)).toBeHidden()
+}
+
+export const expectResourceNotShareable = async ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Promise<void> => {
+  await expect(page.locator(util.format(quickActionShareButton, resource))).toBeHidden()
+
+  await sidebar.open({ page, resource })
+  await sidebar.openPanel({ page, name: 'sharing' })
+  await expect(page.locator(inviteCollaboratorForm)).toBeHidden()
+  await expect(page.locator(addPublicLinkButton)).toBeHidden()
+  await sidebar.close({ page })
+
+  await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+  const contextMenu = page.locator(filesContextMenu)
+  await expect(contextMenu).toBeVisible()
+  await expect(contextMenu.locator(showSharesActionSelector)).toBeHidden()
+  await page.keyboard.press('Escape')
+  await expect(contextMenu).toBeHidden()
 }
 
 export const lockVault = async ({ page, vault }: { page: Page; vault: string }): Promise<void> => {
