@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Rename extensions to apps in admin and account settings [[#3190](https://github.com/opencloud-eu/web/pull/3190)]
 - perf: introduce cache for active location checks [[#3182](https://github.com/opencloud-eu/web/pull/3182)]
 - feat: make space header more compact [[#3173](https://github.com/opencloud-eu/web/pull/3173)]
 - perf: remove location checks from resource actions [[#3177](https://github.com/opencloud-eu/web/pull/3177)]
@@ -81,6 +82,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @tiptap/y-tiptap to v3.0.9 [[#3158](https://github.com/opencloud-eu/web/pull/3158)]
 - chore(deps): update traefik docker tag to v3.7.11 [[#3186](https://github.com/opencloud-eu/web/pull/3186)]
 - fix(deps): update dependency uuid to v14.0.2 [[#3160](https://github.com/opencloud-eu/web/pull/3160)]
 - chore(deps): update dependency dompurify to v3.4.14 [[#3180](https://github.com/opencloud-eu/web/pull/3180)]
