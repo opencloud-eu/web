@@ -27,6 +27,11 @@ const editSpacesDescription = '.oc-files-actions-edit-readme-content-trigger:vis
 const spacesDescriptionInputArea = '.text-editor-provider .ProseMirror'
 const spacesDescriptionSaveTextFileInEditorButton = '#app-save-action:visible'
 const spaceHeaderSelector = '.space-header'
+const encryptSpaceSwitch = '[data-testid="create-space-encrypt"] [data-testid="oc-switch-btn"]'
+const vaultSetupPassphraseInput = '#vault-setup-passphrase'
+const vaultPassphraseInput = '#vault-passphrase'
+const vaultUnlockButton = '#vault-unlock-submit'
+const vaultNameSelector = '[data-testid="vault-name"]'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
 
@@ -50,28 +55,75 @@ export const openActivitiesPanel = async (page: Page): Promise<void> => {
 export interface createSpaceArgs {
   name: string
   page: Page
+  password?: string
 }
 
 export const createSpace = async (args: createSpaceArgs): Promise<string> => {
-  const { page, name } = args
+  const { page, name, password } = args
 
   await page.locator(newSpaceMenuButton).click()
   await page.locator(spaceNameInputField).fill(name)
 
+  // An encrypted space skips the default template, so the server never creates
+  // a `.space` folder for it.
+  const template = password ? 'none' : 'default'
   const postResponsePromise = page.waitForResponse(
     (postResp) =>
       postResp.status() === 201 &&
       postResp.request().method() === 'POST' &&
-      postResp.url().endsWith('drives?template=default')
+      postResp.url().endsWith(`drives?template=${template}`)
   )
 
+  if (!password) {
+    const [responses] = await Promise.all([
+      postResponsePromise,
+      page.locator(actionConfirmButton).click()
+    ])
+    const { id } = await responses.json()
+    return id
+  }
+
+  await page.locator(encryptSpaceSwitch).click()
+  await page.locator(actionConfirmButton).click()
+  await page.locator(vaultSetupPassphraseInput).fill(password)
+
+  // Committing the password writes the integrity token onto the new space root.
+  const proppatchPromise = page.waitForResponse((resp) => resp.request().method() === 'PROPPATCH')
   const [responses] = await Promise.all([
     postResponsePromise,
     page.locator(actionConfirmButton).click()
   ])
+  await proppatchPromise
 
   const { id } = await responses.json()
   return id
+}
+
+/**/
+
+export const unlockVaultSpace = async (args: { page: Page; passphrase: string }): Promise<void> => {
+  const { page, passphrase } = args
+  const unlockButton = page.locator(vaultUnlockButton)
+  await expect(unlockButton).toBeDisabled()
+  await page.locator(vaultPassphraseInput).fill(passphrase)
+  await unlockButton.click()
+}
+
+export const openVaultSpace = async (args: {
+  page: Page
+  id: string
+  passphrase: string
+}): Promise<void> => {
+  const { page, id, passphrase } = args
+  await page.locator(util.format(spaceIdSelector, id)).click()
+  await unlockVaultSpace({ page, passphrase })
+  await page.locator(spaceHeaderSelector).waitFor()
+}
+
+export const expectVaultSpaceLocked = async (args: { page: Page; name: string }): Promise<void> => {
+  const { page, name } = args
+  await expect(page.locator(vaultPassphraseInput)).toBeVisible()
+  await expect(page.locator(vaultNameSelector)).toHaveText(name)
 }
 
 /**/

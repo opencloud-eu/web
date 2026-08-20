@@ -3,7 +3,6 @@ import { DataTable } from 'playwright-bdd'
 import { expect } from '@playwright/test'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
-import { Space } from '../../support/types'
 
 When(
   '{string} navigates to the personal space page',
@@ -34,7 +33,10 @@ When(
     const spacesObject = new objects.applicationFiles.Spaces({ page })
 
     for (const space of stepTable.hashes()) {
-      await spacesObject.create({ key: space.id || space.name, space: space as unknown as Space })
+      await spacesObject.create({
+        key: space.id || space.name,
+        space: { name: space.name, password: space.password }
+      })
     }
   }
 )
@@ -47,6 +49,44 @@ When(
     const pageObject = new objects.applicationFiles.page.spaces.Projects({ page })
     await pageObject.navigate()
     await spacesObject.open({ key })
+  }
+)
+
+When(
+  '{string} enters the vault space {string} with passphrase {string}',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    key: string,
+    passphrase: string
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const pageObject = new objects.applicationFiles.page.spaces.Projects({ page })
+    await pageObject.navigate()
+    await spacesObject.openVault({ key, passphrase })
+  }
+)
+
+When(
+  '{string} unlocks the vault space with passphrase {string}',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    passphrase: string
+  ): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    await spacesObject.unlockVault({ passphrase })
+  }
+)
+
+Then(
+  '{string} should see the unlock page of the vault space {string}',
+  async function ({ world }: { world: World }, stepUser: string, key: string): Promise<void> {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    await spacesObject.expectVaultLocked({ key })
   }
 )
 

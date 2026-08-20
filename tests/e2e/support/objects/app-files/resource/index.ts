@@ -14,13 +14,13 @@ export class Resource {
   async create(args: Omit<po.createResourceArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
     await po.createResources({ ...args, page: this.#page })
-    await this.#page.goto(startUrl)
+    await po.returnToStartUrl({ page: this.#page, startUrl, password: args.password })
   }
 
   async upload(args: Omit<po.uploadResourceArgs, 'page'>): Promise<void> {
     const startUrl = this.#page.url()
     await po.uploadResource({ ...args, page: this.#page })
-    await this.#page.goto(startUrl)
+    await po.returnToStartUrl({ page: this.#page, startUrl, password: args.password })
   }
 
   async tryToUpload(args: Omit<po.uploadResourceArgs, 'page'>): Promise<void> {
