@@ -1,13 +1,13 @@
 <template>
   <div
-    class="space-header p-4"
+    class="space-header py-4"
     :class="{ flex: !imageExpanded && !isMobile, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image mr-6 min-w-xs aspect-[16/9]"
+      class="space-header-image mr-6 aspect-[16/9]"
       :class="{
         'space-header-image-expanded w-full max-w-full max-h-full mb-4': imageExpanded || isMobile,
-        'w-xs max-h-40': !imageExpanded,
+        'w-[180px] max-h-[100px] shrink-0': !imageExpanded,
         'hidden lg:block': isSideBarOpen
       }"
     >
@@ -26,7 +26,7 @@
     <div class="flex-1">
       <div class="flex items-center justify-between max-w-full">
         <div class="flex items-center max-w-full">
-          <h2 class="break-all my-0">{{ space.name }}</h2>
+          <h2 class="break-all my-1">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"
@@ -61,7 +61,7 @@
           <oc-icon name="group" fill-type="line" size-class="size-4" />
           <span
             v-if="memberCount"
-            class="space-header-people-count text-sm whitespace-nowrap"
+            class="space-header-people-count whitespace-nowrap"
             v-text="memberCountString"
           />
           <oc-spinner v-else size="small" :aria-label="$gettext('Loading members')" />
@@ -77,7 +77,7 @@
       <div
         v-else-if="markdownResource && markdownContent"
         ref="markdownContainerRef"
-        class="markdown-container flex min-h-0 [&.collapsed]:max-h-[150px] [&.collapsed]:overflow-hidden"
+        class="markdown-container flex min-h-0 [&.collapsed]:max-h-15 [&.collapsed]:overflow-hidden"
         :class="{
           collapsed: markdownCollapsed,
           'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse && markdownCollapsed
@@ -175,7 +175,7 @@ const onMarkdownResize = () => {
 
   unref(markdownContainerRef).classList.remove(markdownContainerCollapsedClass)
   const markdownContainerHeight = unref(markdownContainerRef).offsetHeight
-  if (markdownContainerHeight < 150) {
+  if (markdownContainerHeight < 60) {
     showMarkdownCollapse.value = false
     return
   }

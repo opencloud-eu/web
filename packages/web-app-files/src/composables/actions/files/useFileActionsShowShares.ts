@@ -1,18 +1,15 @@
-import { isProjectSpaceResource, ShareResource } from '@opencloud-eu/web-client'
+import { isProjectSpaceResource, isTrashResource, ShareResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
   FileActionOptionsWithEvent,
-  isLocationTrashActive,
   useCanShare,
   useInterceptModifierClick,
-  useRouter,
   useSideBar
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsShowShares = () => {
-  const router = useRouter()
   const { $gettext } = useGettext()
   const { canShare } = useCanShare()
   const { openSideBarPanel } = useSideBar()
@@ -35,10 +32,10 @@ export const useFileActionsShowShares = () => {
       label: () => $gettext('Share'),
       handler,
       isVisible: ({ space, resources }) => {
-        if (isLocationTrashActive(router, 'files-trash-generic')) {
+        if (resources.length !== 1) {
           return false
         }
-        if (resources.length !== 1) {
+        if (isTrashResource(resources[0])) {
           return false
         }
 

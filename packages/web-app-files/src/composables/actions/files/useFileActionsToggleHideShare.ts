@@ -1,22 +1,19 @@
-import { IncomingShareResource } from '@opencloud-eu/web-client'
+import { IncomingShareResource, isIncomingShareResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import PQueue from 'p-queue'
 import {
   FileAction,
   FileActionOptions,
-  isLocationSharesActive,
   useClientService,
   useConfigStore,
   useLoadingService,
   useMessages,
-  useResourcesStore,
-  useRouter
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsToggleHideShare = () => {
   const { showMessage, showErrorMessage } = useMessages()
-  const router = useRouter()
   const { $gettext } = useGettext()
 
   const clientService = useClientService()
@@ -85,7 +82,7 @@ export const useFileActionsToggleHideShare = () => {
           return false
         }
 
-        return isLocationSharesActive(router, 'files-shares-with-me')
+        return resources.every(isIncomingShareResource)
       },
       class: 'oc-files-actions-hide-share-trigger'
     }

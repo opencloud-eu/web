@@ -1,8 +1,11 @@
 import {
   Resource,
   SpaceResource,
+  isShareResource,
   isShareSpaceResource,
-  isProjectSpaceResource
+  isProjectSpaceResource,
+  isSpaceResource,
+  isTrashResource
 } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { dirname } from 'path'
@@ -16,8 +19,6 @@ import {
   ResourceTransfer,
   TransferType,
   isLocationCommonActive,
-  isLocationPublicActive,
-  isLocationSpacesActive,
   useClientService,
   useFolderLink,
   useGetMatchingSpace,
@@ -212,23 +213,18 @@ export const useFileActionsMove = () => {
       handler,
       label: () => $gettext('Move to'),
       isVisible: ({ resources }) => {
-        if (
-          !isLocationSpacesActive(router, 'files-spaces-generic') &&
-          !isLocationPublicActive(router, 'files-public-link') &&
-          !isLocationCommonActive(router, 'files-common-favorites') &&
-          !isLocationCommonActive(router, 'files-common-search')
-        ) {
+        if (resources.length === 0) {
           return false
         }
-        if (resources.length === 0) {
+        if (resources.some((r) => isSpaceResource(r) || isTrashResource(r))) {
+          return false
+        }
+
+        if (!unref(currentFolder) && resources.some(isShareResource)) {
           return false
         }
 
         if (resources.length === 1 && resources[0].locked) {
-          return false
-        }
-
-        if (resources.some((r) => isProjectSpaceResource(r))) {
           return false
         }
 

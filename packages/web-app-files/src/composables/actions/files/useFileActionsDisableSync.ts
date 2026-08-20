@@ -2,7 +2,6 @@ import {
   createLocationShares,
   FileAction,
   FileActionOptions,
-  isLocationSharesActive,
   isLocationSpacesActive,
   useClientService,
   useConfigStore,
@@ -12,7 +11,7 @@ import {
   useRouter
 } from '@opencloud-eu/web-pkg'
 import PQueue from 'p-queue'
-import { IncomingShareResource } from '@opencloud-eu/web-client'
+import { IncomingShareResource, isIncomingShareResource } from '@opencloud-eu/web-client'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
@@ -87,21 +86,12 @@ export const useFileActionsDisableSync = () => {
       icon: 'spam-3',
       handler: (args) => loadingService.addTask(() => handler(args)),
       label: () => $gettext('Disable sync'),
-      isVisible: ({ space, resources }) => {
-        if (
-          !isLocationSharesActive(router, 'files-shares-with-me') &&
-          !isLocationSpacesActive(router, 'files-spaces-generic')
-        ) {
-          return false
-        }
+      isVisible: ({ resources }) => {
         if (resources.length === 0) {
           return false
         }
 
-        if (
-          isLocationSpacesActive(router, 'files-spaces-generic') &&
-          (space?.driveType !== 'share' || resources.length > 1 || resources[0].path !== '/')
-        ) {
+        if (resources.some((r) => !isIncomingShareResource(r))) {
           return false
         }
 

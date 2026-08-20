@@ -2,7 +2,11 @@ import {
   Resource,
   SpaceResource,
   isProjectSpaceResource,
-  isShareSpaceResource
+  isPublicSpaceResource,
+  isShareResource,
+  isShareSpaceResource,
+  isSpaceResource,
+  isTrashResource
 } from '@opencloud-eu/web-client'
 import { computed, markRaw, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
@@ -13,20 +17,15 @@ import {
   LocationPickerModal,
   ResourceTransfer,
   TransferType,
-  isLocationCommonActive,
-  isLocationPublicActive,
-  isLocationSpacesActive,
   useClientService,
   useFolderLink,
   useGetMatchingSpace,
   useModals,
   usePasteWorker,
-  useResourcesStore,
-  useRouter
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsCopy = () => {
-  const router = useRouter()
   const clientService = useClientService()
   const { getMatchingSpace } = useGetMatchingSpace()
   const { getParentFolderLink } = useFolderLink()
@@ -147,14 +146,6 @@ export const useFileActionsCopy = () => {
   }
 
   const handler = ({ resources }: FileActionOptions) => {
-    if (isLocationCommonActive(router, 'files-common-search')) {
-      resources = resources.filter((r) => !isProjectSpaceResource(r))
-    }
-
-    if (!resources.length) {
-      return
-    }
-
     resourcesStore.setSelection(resources.map(({ id }) => id))
     const parentFolderLink = getParentFolderLink(resources[0])
 
@@ -179,35 +170,21 @@ export const useFileActionsCopy = () => {
         icon: 'file-copy-2',
         handler,
         label: () => $gettext('Copy to'),
-        isVisible: ({ resources }) => {
-          if (
-            !isLocationSpacesActive(router, 'files-spaces-generic') &&
-            !isLocationPublicActive(router, 'files-public-link') &&
-            !isLocationCommonActive(router, 'files-common-favorites') &&
-            !isLocationCommonActive(router, 'files-common-search')
-          ) {
-            return false
-          }
-          if (isLocationSpacesActive(router, 'files-spaces-projects')) {
-            return false
-          }
+        isVisible: ({ space, resources }) => {
           if (resources.length === 0) {
             return false
           }
 
-          if (isLocationPublicActive(router, 'files-public-link')) {
+          if (resources.some((r) => isSpaceResource(r) || isTrashResource(r))) {
+            return false
+          }
+
+          if (!unref(currentFolder) && resources.some(isShareResource)) {
+            return false
+          }
+
+          if (isPublicSpaceResource(space)) {
             return unref(currentFolder)?.canCreate()
-          }
-
-          if (
-            isLocationCommonActive(router, 'files-common-search') &&
-            resources.some((r) => isProjectSpaceResource(r))
-          ) {
-            return false
-          }
-
-          if (resources.some((r) => isProjectSpaceResource(r))) {
-            return false
           }
 
           // Copying a vault entry would either drop the ciphertext into
@@ -218,7 +195,7 @@ export const useFileActionsCopy = () => {
             return false
           }
 
-          if (!unref(resources)[0].canDownload()) {
+          if (!resources[0].canDownload()) {
             return false
           }
           // copy can't be restricted in authenticated context, because

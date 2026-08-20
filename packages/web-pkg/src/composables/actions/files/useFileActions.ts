@@ -1,7 +1,11 @@
 import kebabCase from 'lodash-es/kebabCase'
-import { isShareSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  isShareSpaceResource,
+  isTrashResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { routeToContextQuery } from '../../appDefaults'
-import { isLocationTrashActive } from '../../../router'
 import { computed, unref } from 'vue'
 import { useRouter } from '../../router'
 import {
@@ -9,7 +13,6 @@ import {
   FileAction,
   FileActionOptions,
   useFileActionFallbackToDownload,
-  useIsSearchActive,
   useWindowOpen
 } from '../../actions'
 
@@ -41,7 +44,6 @@ export interface FileActionOptionsWithEvent extends FileActionOptions<Resource> 
 export const useFileActions = () => {
   const appsStore = useAppsStore()
   const router = useRouter()
-  const isSearchActive = useIsSearchActive()
   const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
   const { requestExtensions } = useExtensionRegistry()
 
@@ -109,11 +111,31 @@ export const useFileActions = () => {
               return false
             }
 
-            if (!resources[0].canDownload() && !fileExtension.secureView) {
+            const resource = resources[0]
+
+            // Cheap extension/mimeType matching runs first.
+            if (resource.extension && fileExtension.extension) {
+              if (resource.extension.toLowerCase() !== fileExtension.extension.toLowerCase()) {
+                return false
+              }
+            } else if (resource.mimeType && fileExtension.mimeType) {
+              const resourceMimeType = resource.mimeType.toLowerCase()
+              const extensionMimeType = fileExtension.mimeType.toLowerCase()
+              if (
+                resourceMimeType !== extensionMimeType &&
+                resourceMimeType.split('/')[0] !== extensionMimeType
+              ) {
+                return false
+              }
+            } else {
               return false
             }
 
-            if (!unref(isSearchActive) && isLocationTrashActive(router, 'files-trash-generic')) {
+            if (isTrashResource(resource)) {
+              return false
+            }
+
+            if (!resource.canDownload() && !fileExtension.secureView) {
               return false
             }
 
@@ -121,7 +143,7 @@ export const useFileActions = () => {
             // file server-side via the WOPI bridge - they'd see the
             // encrypted blob, not the cleartext the user expects.
             // Restrict vault resources to in-browser editors only.
-            if (resources[0].isInVault && fileExtension.app?.startsWith('external-')) {
+            if (resource.isInVault && fileExtension.app?.startsWith('external-')) {
               return false
             }
 
@@ -135,19 +157,7 @@ export const useFileActions = () => {
               return false
             }
 
-            if (resources[0].extension && fileExtension.extension) {
-              return resources[0].extension.toLowerCase() === fileExtension.extension.toLowerCase()
-            }
-
-            if (resources[0].mimeType && fileExtension.mimeType) {
-              return (
-                resources[0].mimeType.toLowerCase() === fileExtension.mimeType.toLowerCase() ||
-                resources[0].mimeType.split('/')[0].toLowerCase() ===
-                  fileExtension.mimeType.toLowerCase()
-              )
-            }
-
-            return false
+            return true
           },
           hasPriority: fileExtension.hasPriority,
           class: `oc-files-actions-${kebabCase(appInfo.name).toLowerCase()}-trigger`

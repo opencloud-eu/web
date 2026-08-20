@@ -1,30 +1,31 @@
 import { computed, unref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import {
+  isPublicSpaceResource,
+  isShareResource,
+  isSpaceResource,
+  isTrashResource
+} from '@opencloud-eu/web-client'
 import {
   FileAction,
   FileActionOptions,
   SpaceActionOptions,
-  isLocationCommonActive,
-  isLocationSpacesActive,
   useAbility,
   useClientService,
   useEventBus,
-  useIsFilesAppActive,
   useMessages,
-  useResourcesStore,
-  useRouter
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 
 export const useFileActionsFavorite = () => {
   const { showErrorMessage } = useMessages()
   const { $gettext } = useGettext()
   const clientService = useClientService()
-  const isFilesAppActive = useIsFilesAppActive()
   const ability = useAbility()
   const resourcesStore = useResourcesStore()
+  const { currentFolder } = storeToRefs(resourcesStore)
   const eventBus = useEventBus()
-  const router = useRouter()
 
   const handler = async ({ resources }: FileActionOptions) => {
     const errors: { resource: string; error: unknown }[] = []
@@ -81,22 +82,25 @@ export const useFileActionsFavorite = () => {
         }
         return $gettext('Add to favorites')
       },
-      isVisible: ({ resources }) => {
-        // FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
-        if (resources.find((r) => isProjectSpaceResource(r))) {
+      isVisible: ({ space, resources }) => {
+        if (resources.length === 0) {
           return false
         }
 
-        if (
-          unref(isFilesAppActive) &&
-          !isLocationSpacesActive(router, 'files-spaces-projects') &&
-          !isLocationSpacesActive(router, 'files-spaces-generic') &&
-          !isLocationCommonActive(router, 'files-common-favorites') &&
-          !isLocationCommonActive(router, 'files-common-search')
-        ) {
+        // FIXME: remove this check once the backend exposes the favorite property via graph api for spaces
+        if (resources.some(isSpaceResource)) {
           return false
         }
-        if (resources.length === 0) {
+
+        if (resources.some(isTrashResource)) {
+          return false
+        }
+
+        if (isPublicSpaceResource(space)) {
+          return false
+        }
+
+        if (!unref(currentFolder) && resources.some(isShareResource)) {
           return false
         }
 
