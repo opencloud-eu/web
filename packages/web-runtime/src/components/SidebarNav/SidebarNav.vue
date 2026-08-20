@@ -52,9 +52,11 @@
           href="https://github.com/sponsors/opencloud-eu"
           target="_blank"
           rel="noopener noreferrer"
-          class="oc-sidebar-nav-sponsor-link mb-2"
+          class="oc-sidebar-nav-sponsor-link group mb-2 inline-flex self-start items-center gap-1"
         >
-          {{ $gettext('Sponsor us ❤️') }}
+          <span v-text="$gettext('Sponsor us')" />
+          <span aria-hidden="true" class="group-hover:hidden">💜</span>
+          <span aria-hidden="true" class="hidden group-hover:inline">🤗</span>
         </a>
         <span v-text="backendVersion" />
         <version-check />
