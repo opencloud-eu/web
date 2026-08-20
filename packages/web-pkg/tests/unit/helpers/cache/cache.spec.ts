@@ -132,6 +132,46 @@ describe('Cache', () => {
     expect(cache.entries().length).toBe(0)
   })
 
+  it('calls onEvict when entries leave the cache', () => {
+    const onEvict = vi.fn()
+    const cache = new Cache<number, string>({ capacity: 2, onEvict })
+
+    cache.set(1, 'one')
+    cache.set(2, 'two')
+    expect(onEvict).not.toHaveBeenCalled()
+
+    // exceeding the capacity drops the oldest entry right away
+    cache.set(3, 'three')
+    expect(onEvict).toHaveBeenCalledWith({ key: 1, replacedValue: 'one' })
+    expect(cache.keys()).toEqual([2, 3])
+
+    // replacing a key evicts the previous value and passes on the new one
+    cache.set(3, 'three-updated')
+    expect(onEvict).toHaveBeenCalledWith({ key: 3, replacedValue: 'three', value: 'three-updated' })
+
+    cache.delete(3)
+    expect(onEvict).toHaveBeenCalledWith({ key: 3, replacedValue: 'three-updated' })
+
+    // deleting an unknown key does nothing
+    onEvict.mockClear()
+    cache.delete(3)
+    expect(onEvict).not.toHaveBeenCalled()
+
+    cache.clear()
+    expect(onEvict).toHaveBeenCalledWith({ key: 2, replacedValue: 'two' })
+  })
+
+  it('calls onEvict for expired entries', () => {
+    const onEvict = vi.fn()
+    const cache = new Cache<number, string>({ ttl: 50, onEvict })
+
+    cache.set(1, 'one')
+    vi.setSystemTime(new Date().getTime() + 51)
+
+    expect(cache.get(1)).toBeFalsy()
+    expect(onEvict).toHaveBeenCalledWith({ key: 1, replacedValue: 'one' })
+  })
+
   it('can check if a cache contains a entry for given key', () => {
     const values = [1, 2, 3, 4, 5]
     const cache = newCache(values)
@@ -143,7 +183,7 @@ describe('Cache', () => {
 
 describe('cache', () => {
   describe('CacheElement', () => {
-    let cache: Cache<string, unknown>
+    let cache: Cache<string, string>
     let key: string, value: string, key2: string, value2: string
     let evictSpy: MockInstance
     beforeEach(() => {
@@ -159,7 +199,7 @@ describe('cache', () => {
       expect(cache.set(key, value)).toBe(value)
       expect(cache.get(key)).toBe(value)
     })
-    it('should evict before any access', () => {
+    it('should evict on any access', () => {
       cache.set(key, value)
       cache.get(key)
       cache.entries()

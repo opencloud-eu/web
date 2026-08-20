@@ -12,26 +12,40 @@ class CacheElement<T> {
   }
 }
 
-interface CacheOptions {
+interface CacheOptions<K, V> {
   ttl?: number
   capacity?: number
+
+  /**
+   * Called whenever an entry leaves the cache. `replacedValue` is the value that
+   * left, `value` the new one for that key, set only on replacement.
+   */
+  onEvict?: (event: { key: K; replacedValue: V; value?: V }) => void
 }
 
 export default class Cache<K, V> {
   private map: Map<K, CacheElement<V>>
   private readonly ttl: number
   private readonly capacity: number
+  private readonly onEvict?: (event: { key: K; replacedValue: V; value?: V }) => void
 
-  constructor(options: CacheOptions) {
+  constructor(options: CacheOptions<K, V>) {
     this.ttl = options.ttl || 0
     this.capacity = options.capacity || 0
+    this.onEvict = options.onEvict
 
     this.map = new Map<K, CacheElement<V>>()
   }
 
   public set(key: K, value: V, ttl?: number): V {
-    this.evict()
+    const existing = this.map.get(key)
     this.map.set(key, new CacheElement<V>(value, isNaN(ttl) ? this.ttl : ttl))
+
+    if (existing) {
+      this.onEvict?.({ key, replacedValue: existing.value, value })
+    }
+
+    this.evict()
 
     return value
   }
@@ -46,10 +60,21 @@ export default class Cache<K, V> {
   }
 
   public delete(key: K): boolean {
-    return this.map.delete(key)
+    const entry = this.map.get(key)
+    const deleted = this.map.delete(key)
+
+    if (deleted) {
+      this.onEvict?.({ key, replacedValue: entry.value })
+    }
+
+    return deleted
   }
 
   public clear(): void {
+    if (this.onEvict) {
+      this.map.forEach((entry, key) => this.onEvict({ key, replacedValue: entry.value }))
+    }
+
     return this.map.clear()
   }
 
