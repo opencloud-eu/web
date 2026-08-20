@@ -139,6 +139,10 @@ export class Resource {
     await this.#page.goto(startUrl)
   }
 
+  async expectNotShareable({ resource }: { resource: string }): Promise<void> {
+    return await po.expectResourceNotShareable({ page: this.#page, resource })
+  }
+
   async expectThatDeleteTrashBinButtonIsNotVisible(
     args: Omit<po.deleteResourceTrashbinArgs, 'page'>
   ): Promise<void> {

@@ -46,6 +46,11 @@ export class Spaces {
     await po.unlockVaultSpace({ page: this.#page, passphrase })
   }
 
+  async expectOpen({ key }: { key: string }): Promise<void> {
+    const { name } = this.#spacesEnvironment.getSpace({ key })
+    await po.expectSpaceOpen({ page: this.#page, name })
+  }
+
   async expectVaultLocked({ key }: { key: string }): Promise<void> {
     const { name } = this.#spacesEnvironment.getSpace({ key })
     await po.expectVaultSpaceLocked({ page: this.#page, name })

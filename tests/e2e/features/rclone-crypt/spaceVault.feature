@@ -31,6 +31,10 @@ Feature: Work with an rclone-crypt encrypted vault space
       | resource       |
       | hello.txt      |
       | testavatar.png |
+    And "Alice" should not be able to share following resources from the space "vaultspace"
+      | resource       |
+      | hello.txt      |
+      | testavatar.png |
     When "Alice" opens the following file in texteditor
       | resource  |
       | hello.txt |
@@ -50,6 +54,10 @@ Feature: Work with an rclone-crypt encrypted vault space
     When "Brian" logs in
     And "Brian" enters the vault space "vaultspace" with passphrase "foobar"
     Then following resources should be displayed in the files list for user "Brian"
+      | resource       |
+      | hello.txt      |
+      | testavatar.png |
+    And "Brian" should not be able to share following resources from the space "vaultspace"
       | resource       |
       | hello.txt      |
       | testavatar.png |

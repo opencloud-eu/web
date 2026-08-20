@@ -27,6 +27,7 @@ const editSpacesDescription = '.oc-files-actions-edit-readme-content-trigger:vis
 const spacesDescriptionInputArea = '.text-editor-provider .ProseMirror'
 const spacesDescriptionSaveTextFileInEditorButton = '#app-save-action:visible'
 const spaceHeaderSelector = '.space-header'
+const spaceHeaderNameSelector = '.space-header h2'
 const encryptSpaceSwitch = '[data-testid="create-space-encrypt"] [data-testid="oc-switch-btn"]'
 const vaultSetupPassphraseInput = '#vault-setup-passphrase'
 const vaultPassphraseInput = '#vault-passphrase'
@@ -118,6 +119,11 @@ export const openVaultSpace = async (args: {
   await page.locator(util.format(spaceIdSelector, id)).click()
   await unlockVaultSpace({ page, passphrase })
   await page.locator(spaceHeaderSelector).waitFor()
+}
+
+export const expectSpaceOpen = async (args: { page: Page; name: string }): Promise<void> => {
+  const { page, name } = args
+  await expect(page.locator(spaceHeaderNameSelector)).toHaveText(name)
 }
 
 export const expectVaultSpaceLocked = async (args: { page: Page; name: string }): Promise<void> => {

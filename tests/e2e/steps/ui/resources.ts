@@ -419,6 +419,25 @@ Then(
 )
 
 Then(
+  '{string} should not be able to share following resource(s) from the space {string}',
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    space: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+
+    await spacesObject.expectOpen({ key: space })
+    for (const info of stepTable.hashes()) {
+      await resourceObject.expectNotShareable({ resource: info.resource })
+    }
+  }
+)
+
+Then(
   /^following resources? (should|should not) be displayed in the search list for user "([^"]*)"$/,
   async (
     { world }: { world: World },
