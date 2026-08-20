@@ -320,8 +320,8 @@ importers:
         specifier: 4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.41(typescript@6.0.3))
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -465,8 +465,8 @@ importers:
         specifier: ^6.13.0
         version: 6.15.3
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -529,8 +529,8 @@ importers:
         specifier: 6.15.3
         version: 6.15.3
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -564,7 +564,7 @@ importers:
         version: 1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
       dompurify:
         specifier: ^3.2.3
-        version: 3.4.13
+        version: 3.4.14
       fuse.js:
         specifier: 7.5.0
         version: 7.5.0
@@ -624,8 +624,8 @@ importers:
         specifier: 4.18.1
         version: 4.18.1
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue-concurrency:
         specifier: 5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -686,7 +686,7 @@ importers:
         version: 14.4.0(vue@3.5.41(typescript@6.0.3))
       dompurify:
         specifier: ^3.3.3
-        version: 3.4.13
+        version: 3.4.14
       lodash-es:
         specifier: ^4.17.21
         version: 4.18.1
@@ -720,7 +720,7 @@ importers:
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.41(typescript@6.0.3))
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
       vue:
         specifier: ^3.5.0
         version: 3.5.41(typescript@6.0.3)
@@ -835,7 +835,7 @@ importers:
         version: 3.7.2
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
       webdav:
         specifier: 5.9.0
         version: 5.9.0
@@ -995,7 +995,7 @@ importers:
         version: 4.3.1
       dompurify:
         specifier: ^3.3.3
-        version: 3.4.13
+        version: 3.4.14
       filesize:
         specifier: ^11.0.14
         version: 11.0.22
@@ -1034,7 +1034,7 @@ importers:
         version: 7.8.5
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
       vue-concurrency:
         specifier: ^5.0.3
         version: 5.0.3(vue@3.5.41(typescript@6.0.3))
@@ -1148,8 +1148,8 @@ importers:
         specifier: 6.15.3
         version: 6.15.3
       uuid:
-        specifier: 14.0.1
-        version: 14.0.1
+        specifier: 14.0.2
+        version: 14.0.2
       vue:
         specifier: ^3.5.31
         version: 3.5.41(typescript@6.0.3)
@@ -1251,7 +1251,7 @@ importers:
         version: 3.7.2
       uuid:
         specifier: ^14.0.0
-        version: 14.0.1
+        version: 14.0.2
 
 packages:
 
@@ -3022,8 +3022,8 @@ packages:
     resolution: {integrity: sha512-IGBwjF7tNk3cwypFNH/7bfzBcgSCbaMOD3GsaY1AU/JRrnHnYgEM0+9kQt52iZxjNsjBtJYtao146V+f8jFZNw==}
     engines: {node: '>=10'}
 
-  dompurify@3.4.13:
-    resolution: {integrity: sha512-2vmYIoqjze2d+kakP8S/nS5shfsl587kzwEjcGlTdiksUVgFHnFCsLYDVj/JNqJVOQZGSYBTmuycv0PodwmnMQ==}
+  dompurify@3.4.14:
+    resolution: {integrity: sha512-dVoH9z+MY+C9IilgGCk3YfFqjLi3fChm2OiKJMzh6axrJ5qwxqWaZamgmHrpv22CN/KdbZJuGEGgfQoL00LTdg==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -4916,8 +4916,8 @@ packages:
   util@0.12.5:
     resolution: {integrity: sha512-kZf/K6hEIrWHI6XqOFUiiMa+79wE/D8Q+NCNAWclkyg3b4d2k7s0QGepNjiABc+aR3N1PAyHL7p6UcLY6LmrnA==}
 
-  uuid@14.0.1:
-    resolution: {integrity: sha512-6ZxzVpzDXDa3bJWaHilVayA+BH/1zmxCJoVgvmqJnid/gPoKHxUrS/aC/T6LGQtNHT+XHG9fXPJB4d+IrU30Ew==}
+  uuid@14.0.2:
+    resolution: {integrity: sha512-xZe/16rV4aa+HGSOCiY2YeLT1OybRLrrkL/Rqaq7p7GMVXjFh+6wN4oMYgjFmnSnhY8t6Xpdl2l9qmnHYuMHwQ==}
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -7108,7 +7108,7 @@ snapshots:
 
   domain-browser@4.22.0: {}
 
-  dompurify@3.4.13:
+  dompurify@3.4.14:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
@@ -9066,7 +9066,7 @@ snapshots:
       is-typed-array: 1.1.15
       which-typed-array: 1.1.22
 
-  uuid@14.0.1: {}
+  uuid@14.0.2: {}
 
   v8-compile-cache-lib@3.0.1: {}
 

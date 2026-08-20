@@ -1384,3 +1384,25 @@ Then(
     await expect(page.locator('.tiptap.ProseMirror')).toContainText(text)
   }
 )
+
+When(
+  '{string} saves the current file as {string}',
+  async ({ world }: { world: World }, stepUser: string, newPath: string): Promise<void> => {
+    const actor = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page: actor.page })
+
+    const newPage = await resourceObject.saveAs(newPath)
+    // change current active page
+    actor.savePage(newPage)
+  }
+)
+
+Then(
+  'file {string} should be opened in texteditor for user {string}',
+  async ({ world }: { world: World }, filename: string, stepUser: string): Promise<void> => {
+    const actor = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page: actor.page })
+    const actualFilename = await resourceObject.getTopBarFilename()
+    expect(actualFilename).toBe(filename)
+  }
+)

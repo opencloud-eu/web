@@ -5,6 +5,7 @@ import { ActorOptions } from './shared'
 
 export class ActorEnvironment extends EventEmitter implements Actor {
   private readonly options: ActorOptions
+  private currentTabIndex: number
   public context: BrowserContext
   public page: Page
   public tabs: Page[] = []
@@ -12,6 +13,7 @@ export class ActorEnvironment extends EventEmitter implements Actor {
   constructor(options: ActorOptions) {
     super()
     this.options = options
+    this.currentTabIndex = 0
   }
 
   async setup(): Promise<void> {
@@ -46,36 +48,41 @@ export class ActorEnvironment extends EventEmitter implements Actor {
   }
 
   public savePage(newPage: Page) {
-    this.tabs.push(newPage)
+    const tabsLength = this.tabs.push(newPage)
     // set the new page
     this.page = newPage
+    this.currentTabIndex = tabsLength - 1
   }
 
   public async newTab(): Promise<Page> {
     const page: Page = await this.context.newPage()
-    this.tabs.push(page)
+    const tabsLength = this.tabs.push(page)
     this.page = page
+    this.currentTabIndex = tabsLength - 1
     return page
   }
 
   public async switchTab(index: number): Promise<Page> {
+    index = index - 1
     const page = this.tabs[index]
     if (!page) {
       throw new Error(`No tab found at index ${index}. Open tabs: ${this.tabs.length}`)
     }
     this.page = page
     await page.bringToFront()
+    this.currentTabIndex = index
     return page
   }
 
   public async closeCurrentTab(): Promise<void> {
     await this.page.close()
-    this.tabs.pop()
+    this.tabs.splice(this.currentTabIndex, 1)
+
     if (this.tabs.length === 0) {
       this.page = null
       return
     }
-    this.page = this.tabs[this.tabs.length - 1]
+    this.page = this.tabs.at(-1)
   }
 
   async close(): Promise<void> {

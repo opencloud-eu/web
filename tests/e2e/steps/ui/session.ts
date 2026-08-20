@@ -111,7 +111,7 @@ When(
   '{string} switches to tab {int}',
   async function ({ world }: { world: World }, stepUser: string, tab: number): Promise<void> {
     const actor = world.actorsEnvironment.getActor({ key: stepUser })
-    await actor.switchTab(tab - 1)
+    await actor.switchTab(tab)
   }
 )
 
