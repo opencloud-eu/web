@@ -157,7 +157,7 @@ watch(
       resource: unref(resource).spaceImageData
         ? buildSpaceImageResource(unref(resource))
         : unref(resource),
-      dimensions: ImageDimension.Tile,
+      dimensions: ImageDimension.Medium,
       processor: ProcessorType.enum.fit,
       cancelRunning: true,
       updateStore: false
