@@ -122,7 +122,7 @@ const routes: readonly RouteRecordRaw[] = [
         meta: { authContext: 'hybrid' }
       },
       {
-        path: 'extensions',
+        path: 'apps',
         name: locationAccountExtensions.name,
         component: AccountExtensions,
         meta: { authContext: 'user' }

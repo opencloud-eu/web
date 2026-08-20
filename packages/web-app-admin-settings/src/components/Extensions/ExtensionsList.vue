@@ -5,7 +5,7 @@
     img-src="images/empty-states/empty-extensions.svg"
   >
     <template #message>
-      <span v-text="$gettext('No extensions found')" />
+      <span v-text="$gettext('No apps found')" />
     </template>
     <template #callToAction>
       <span v-text="$gettext('Try refining the search term or filters to get results')" />
@@ -25,7 +25,7 @@
   >
     <template #name="{ item }">
       <div class="flex items-center gap-2">
-        <oc-icon :name="item.icon || 'puzzle'" size-class="size-5" fill-type="line" />
+        <oc-icon :name="item.icon || 'store'" size-class="size-5" fill-type="line" />
         <span v-text="item.name" />
       </div>
     </template>

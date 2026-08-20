@@ -108,7 +108,7 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
     }
   },
   {
-    path: '/extensions',
+    path: '/apps',
     name: 'admin-settings-extensions',
     component: Extensions,
     beforeEnter: (to, from, next) => {
@@ -119,7 +119,7 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
     },
     meta: {
       authContext: 'user',
-      title: $gettext('Extensions')
+      title: $gettext('Apps')
     }
   }
 ]
@@ -170,11 +170,11 @@ export const navItems: ClassicApplicationScript['navItems'] = ({ $ability, $gett
     priority: 40
   },
   {
-    name: $gettext('Extensions'),
-    icon: 'puzzle',
+    name: $gettext('Apps'),
+    icon: 'store',
     fillType: 'line',
     route: {
-      path: `/${APPID}/extensions?`
+      path: `/${APPID}/apps?`
     },
     isVisible: () => {
       return $ability.can('read-all', 'Setting')
