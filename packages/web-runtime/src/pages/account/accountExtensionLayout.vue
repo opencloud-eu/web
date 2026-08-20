@@ -2,7 +2,7 @@
   <div id="account-extension">
     <no-content-message v-if="!extension" id="account-extensions-empty" icon="emotion-unhappy">
       <template #message>
-        <span v-text="$gettext('Extension not found')" />
+        <span v-text="$gettext('App not found')" />
       </template>
     </no-content-message>
     <component :is="extension.content" v-else />

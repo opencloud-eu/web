@@ -1,22 +1,18 @@
 <template>
   <div id="account-extensions">
-    <h1 class="text-lg mt-2" v-text="$gettext('Extensions')" />
+    <h1 class="text-lg mt-2" v-text="$gettext('Apps')" />
     <no-content-message
       v-if="!extensionPointsWithUserPreferences.length"
       id="account-extensions-empty"
-      icon="puzzle-2"
+      icon="store"
     >
       <template #message>
-        <span v-text="$gettext('No extensions available')" />
+        <span v-text="$gettext('No apps available')" />
       </template>
     </no-content-message>
     <account-table
       v-else
-      :fields="[
-        $gettext('Extension name'),
-        $gettext('Extension description'),
-        $gettext('Extension value')
-      ]"
+      :fields="[$gettext('App name'), $gettext('App description'), $gettext('App value')]"
       class="account-page-extensions"
     >
       <oc-table-tr

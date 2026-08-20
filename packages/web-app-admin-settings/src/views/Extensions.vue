@@ -12,7 +12,7 @@
           v-model="filterTerm"
           class="w-3xs"
           :label="$gettext('Search')"
-          :placeholder="$gettext('Search for extensions')"
+          :placeholder="$gettext('Search for apps')"
           button-hidden
           :is-rounded="false"
         />
@@ -27,10 +27,10 @@
         img-src="images/empty-states/empty-extensions.svg"
       >
         <template #message>
-          <span v-text="$gettext('No extensions found')" />
+          <span v-text="$gettext('No apps found')" />
         </template>
         <template #callToAction>
-          <span v-text="$gettext('Install an extension and it will show up here')" />
+          <span v-text="$gettext('Install an app and it will show up here')" />
         </template>
       </no-content-message>
       <extensions-list v-else :extensions="extensions" :filter-term="filterTerm" />
@@ -82,8 +82,8 @@ const extensions = computed<ExtensionInfo[]>(() => {
 
 const breadcrumbs = computed(() => [
   {
-    text: $gettext('Extensions'),
-    to: { path: '/admin-settings/extensions' }
+    text: $gettext('Apps'),
+    to: { path: '/admin-settings/apps' }
   }
 ])
 </script>

@@ -53,9 +53,9 @@ const navItems = computed(() => {
       priority: 20
     },
     {
-      name: $gettext('Extensions'),
+      name: $gettext('Apps'),
       route: { name: 'account-extensions' },
-      icon: 'puzzle-2',
+      icon: 'store',
       active: unref(isAccountExtensionsActive),
       priority: 30
     },
