@@ -1,31 +1,31 @@
 @sse
 Feature: server sent events
-      events:
-      | userlog-notification    | x |
-      | postprocessing-finished | x |
-      | file-locked             | x | checked in the app-provider/lock.feature
-      | file-unlocked           | x | checked in the app-provider/lock.feature
-      | file-touched            | x |
-      | item-renamed            | x |
-      | item-trashed            | x |
-      | item-restored           | x |
-      | item-moved              | x |
-      | item-favorite-added     | x |
-      | item-favorite-removed   | x |
-      | folder-created          | x |
-      | space-created           | x |
-      | space-member-added      | x |
-      | space-member-removed    | x |
-      | space-share-updated     | x |
-      | share-created           | x |
-      | share-removed           | x |
-      | share-updated           | x |
-      | link-created            | x |
-      | link-removed            | x |
-      | link-updated            | x |
-      | space-disabled          | x |
-      | space-enabled           | x |
-      | space-deleted           | x |
+  events:
+  | userlog-notification    | x |
+  | postprocessing-finished | x |
+  | file-locked             | x | checked in the app-provider/lock.feature
+  | file-unlocked           | x | checked in the app-provider/lock.feature
+  | file-touched            | x |
+  | item-renamed            | x |
+  | item-trashed            | x |
+  | item-restored           | x |
+  | item-moved              | x |
+  | item-favorite-added     | x |
+  | item-favorite-removed   | x |
+  | folder-created          | x |
+  | space-created           | x |
+  | space-member-added      | x |
+  | space-member-removed    | x |
+  | space-share-updated     | x |
+  | share-created           | x |
+  | share-removed           | x |
+  | share-updated           | x |
+  | link-created            | x |
+  | link-removed            | x |
+  | link-updated            | x |
+  | space-disabled          | x |
+  | space-enabled           | x |
+  | space-deleted           | x |
 
 
   Background:
@@ -34,7 +34,7 @@ Feature: server sent events
       | Alice |
       | Brian |
       | Carol |
-  
+
   @webkit-skip
   Scenario: space sse events
     Given "Admin" assigns following role to the users using API
@@ -141,24 +141,24 @@ Feature: server sent events
       | Brian | Can view | user      |
     And "Alice" navigates to the projects space page
     And "Alice" disables the following space using the batch-actions
-      | id     |
+      | id        |
       | marketing |
     Then "Alice" should get "space-disabled" SSE event
     And "Brian" should get "space-disabled" SSE event
 
     # space-enabled
     When "Alice" enables the following space using the batch-actions
-      | id     |
+      | id        |
       | marketing |
     Then "Alice" should get "space-enabled" SSE event
     And "Brian" should get "space-enabled" SSE event
 
     # space-deleted
-    And "Alice" disables the following space using the batch-actions 
-      | id     |
+    And "Alice" disables the following space using the batch-actions
+      | id        |
       | marketing |
     And "Alice" deletes the following space using the batch-actions
-      | id     |
+      | id        |
       | marketing |
     Then "Alice" should get "space-deleted" SSE event
     And "Brian" should get "space-deleted" SSE event
@@ -235,15 +235,15 @@ Feature: server sent events
     # postprocessing-finished - create file
     # file-touched -create file
     When "Alice" creates the following resource
-      | resource    | type    | content   |
-      | example.txt | txtFile | some text |
+      | resource       | type     | content   |
+      | example.ocnote | noteFile | some text |
     Then "Alice" should get "postprocessing-finished" SSE event
     And "Alice" should get "file-touched" SSE event
     And "Brian" should get "postprocessing-finished" SSE event
     And "Brian" should get "file-touched" SSE event
     And following resource should be displayed in the files list for user "Brian"
-      | resource    |
-      | example.txt |
+      | resource       |
+      | example.ocnote |
 
     # item-renamed
     When "Brian" renames the following resource
@@ -257,25 +257,25 @@ Feature: server sent events
 
     # item-trashed
     When "Alice" deletes the following resource using the sidebar panel
-      | resource    |
-      | example.txt |
+      | resource       |
+      | example.ocnote |
     Then "Alice" should get "item-trashed" SSE event
     And "Brian" should get "item-trashed" SSE event
     And following resource should not be displayed in the files list for user "Brian"
-      | resource    |
-      | example.txt |
+      | resource       |
+      | example.ocnote |
 
     # item-restored
     When "Brian" navigates to the trashbin
     When "Brian" opens trashbin of the project space "marketing"
     And "Brian" restores the following resource from trashbin
-      | resource    |
-      | example.txt |
+      | resource       |
+      | example.ocnote |
     Then "Brian" should get "item-restored" SSE event
     And "Alice" should get "item-restored" SSE event
     And following resource should be displayed in the files list for user "Alice"
-      | resource    |
-      | example.txt |
+      | resource       |
+      | example.ocnote |
 
     # item-moved
     When "Brian" navigates to the project space "marketing"

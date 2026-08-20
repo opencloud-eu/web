@@ -218,29 +218,39 @@ export function useEditorActions(state: TextEditorState) {
     id: 'text-color',
     title: $gettext('Text color'),
     icon: 'font-color',
+    isActive: (editor) => !!editor.getAttributes('textStyle').color,
     showInSlashCommands: false,
     childActions: [
-      { value: '#000000', label: $gettext('Black') },
-      { value: '#e60000', label: $gettext('Red') },
-      { value: '#ff9900', label: $gettext('Orange') },
-      { value: '#ffff00', label: $gettext('Yellow') },
-      { value: '#008a00', label: $gettext('Green') },
-      { value: '#0066cc', label: $gettext('Blue') },
-      { value: '#9933ff', label: $gettext('Purple') },
-      { value: '#ffffff', label: $gettext('White') },
-      { value: '#facccc', label: $gettext('Light red') },
-      { value: '#ffebcc', label: $gettext('Light orange') },
-      { value: '#ffffcc', label: $gettext('Light yellow') },
-      { value: '#cce8cc', label: $gettext('Light green') },
-      { value: '#cce0f5', label: $gettext('Light blue') },
-      { value: '#ebd6ff', label: $gettext('Light purple') }
-    ].map(({ value, label }) => ({
-      id: `text-color-${value.replace('#', '')}`,
-      title: label,
-      swatchColor: value,
-      toolbarAction: (editor) => editor.chain().focus().setColor(value).run(),
-      isActive: (editor) => editor.getAttributes('textStyle').color === value
-    }))
+      {
+        id: 'text-color-default',
+        title: $gettext('Default'),
+        swatchColor: 'transparent',
+        toolbarAction: (editor: Editor) => editor.chain().focus().unsetColor().run(),
+        isActive: (editor: Editor) => !editor.getAttributes('textStyle').color
+      },
+      ...[
+        { value: '#000000', label: $gettext('Black') },
+        { value: '#e60000', label: $gettext('Red') },
+        { value: '#ff9900', label: $gettext('Orange') },
+        { value: '#ffff00', label: $gettext('Yellow') },
+        { value: '#008a00', label: $gettext('Green') },
+        { value: '#0066cc', label: $gettext('Blue') },
+        { value: '#9933ff', label: $gettext('Purple') },
+        { value: '#ffffff', label: $gettext('White') },
+        { value: '#facccc', label: $gettext('Light red') },
+        { value: '#ffebcc', label: $gettext('Light orange') },
+        { value: '#ffffcc', label: $gettext('Light yellow') },
+        { value: '#cce8cc', label: $gettext('Light green') },
+        { value: '#cce0f5', label: $gettext('Light blue') },
+        { value: '#ebd6ff', label: $gettext('Light purple') }
+      ].map(({ value, label }) => ({
+        id: `text-color-${value.replace('#', '')}`,
+        title: label,
+        swatchColor: value,
+        toolbarAction: (editor: Editor) => editor.chain().focus().setColor(value).run(),
+        isActive: (editor: Editor) => editor.getAttributes('textStyle').color === value
+      }))
+    ]
   })
 
   const backgroundColor = (): EditorAction => ({
@@ -248,29 +258,44 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Background color'),
     icon: 'mark-pen',
     iconFillType: 'line',
+    isActive: (editor) => {
+      const backgroundColor = editor.getAttributes('textStyle').backgroundColor
+      return !!backgroundColor
+    },
     showInSlashCommands: false,
     childActions: [
-      { value: 'transparent', label: $gettext('None') },
-      { value: '#facccc', label: $gettext('Light red') },
-      { value: '#ffebcc', label: $gettext('Light orange') },
-      { value: '#ffffcc', label: $gettext('Light yellow') },
-      { value: '#cce8cc', label: $gettext('Light green') },
-      { value: '#cce0f5', label: $gettext('Light blue') },
-      { value: '#ebd6ff', label: $gettext('Light purple') },
-      { value: '#e60000', label: $gettext('Red') },
-      { value: '#ff9900', label: $gettext('Orange') },
-      { value: '#ffff00', label: $gettext('Yellow') },
-      { value: '#008a00', label: $gettext('Green') },
-      { value: '#0066cc', label: $gettext('Blue') },
-      { value: '#9933ff', label: $gettext('Purple') },
-      { value: '#000000', label: $gettext('Black') }
-    ].map(({ value, label }) => ({
-      id: `background-color-${value.replace('#', '')}`,
-      title: label,
-      swatchColor: value,
-      toolbarAction: (editor) => editor.chain().focus().setBackgroundColor(value).run(),
-      isActive: (editor) => editor.getAttributes('textStyle').backgroundColor === value
-    }))
+      {
+        id: 'background-color-transparent',
+        title: $gettext('None'),
+        swatchColor: 'transparent',
+        toolbarAction: (editor: Editor) => editor.chain().focus().unsetBackgroundColor().run(),
+        isActive: (editor: Editor) => {
+          const backgroundColor = editor.getAttributes('textStyle').backgroundColor
+          return !backgroundColor
+        }
+      },
+      ...[
+        { value: '#facccc', label: $gettext('Light red') },
+        { value: '#ffebcc', label: $gettext('Light orange') },
+        { value: '#ffffcc', label: $gettext('Light yellow') },
+        { value: '#cce8cc', label: $gettext('Light green') },
+        { value: '#cce0f5', label: $gettext('Light blue') },
+        { value: '#ebd6ff', label: $gettext('Light purple') },
+        { value: '#e60000', label: $gettext('Red') },
+        { value: '#ff9900', label: $gettext('Orange') },
+        { value: '#ffff00', label: $gettext('Yellow') },
+        { value: '#008a00', label: $gettext('Green') },
+        { value: '#0066cc', label: $gettext('Blue') },
+        { value: '#9933ff', label: $gettext('Purple') },
+        { value: '#000000', label: $gettext('Black') }
+      ].map(({ value, label }) => ({
+        id: `background-color-${value.replace('#', '')}`,
+        title: label,
+        swatchColor: value,
+        toolbarAction: (editor: Editor) => editor.chain().focus().setBackgroundColor(value).run(),
+        isActive: (editor: Editor) => editor.getAttributes('textStyle').backgroundColor === value
+      }))
+    ]
   })
 
   const bold = (): EditorAction => ({

@@ -213,7 +213,15 @@ describe('useEditorActions', () => {
 
         it('child toolbarAction passes value to the set command', () => {
           const editor = createMockEditor()
-          actions[name]().childActions![0].toolbarAction!(editor)
+          const childAction =
+            name === 'textColor'
+              ? actions[name]().childActions!.find(({ id }) => id !== 'text-color-default')!
+              : name === 'backgroundColor'
+                ? actions[name]().childActions!.find(
+                    ({ id }) => id !== 'background-color-transparent'
+                  )!
+                : actions[name]().childActions![0]
+          childAction.toolbarAction!(editor)
           expect(editor._chain[setMethod]).toHaveBeenCalled()
         })
 
@@ -222,6 +230,41 @@ describe('useEditorActions', () => {
         })
       })
     }
+
+    it('textColor has a default entry that resets color', () => {
+      const editor = createMockEditor()
+      const action = actions.textColor()
+      const defaultAction = action.childActions!.find(({ id }) => id === 'text-color-default')
+
+      expect(defaultAction).toBeDefined()
+      defaultAction!.toolbarAction!(editor)
+      expect(editor._chain.unsetColor).toHaveBeenCalled()
+      expect(defaultAction!.isActive!(createMockEditor({ attributes: { textStyle: {} } }))).toBe(
+        true
+      )
+      expect(
+        defaultAction!.isActive!(
+          createMockEditor({ attributes: { textStyle: { color: '#e60000' } } })
+        )
+      ).toBe(false)
+    })
+
+    it('backgroundColor none entry resets background color', () => {
+      const editor = createMockEditor()
+      const noneAction = actions
+        .backgroundColor()
+        .childActions!.find(({ id }) => id === 'background-color-transparent')
+
+      expect(noneAction).toBeDefined()
+      noneAction!.toolbarAction!(editor)
+      expect(editor._chain.unsetBackgroundColor).toHaveBeenCalled()
+      expect(noneAction!.isActive!(createMockEditor({ attributes: { textStyle: {} } }))).toBe(true)
+      expect(
+        noneAction!.isActive!(
+          createMockEditor({ attributes: { textStyle: { backgroundColor: '#e60000' } } })
+        )
+      ).toBe(false)
+    })
   })
 
   describe('heading', () => {

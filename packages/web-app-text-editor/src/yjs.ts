@@ -11,11 +11,15 @@ import {
 } from '@opencloud-eu/web-pkg/editor'
 
 /** The content types this app can produce. A subset of {@link ContentType}. */
-export type TextEditorContentType = Extract<ContentType, 'markdown' | 'plain-text'>
+export type TextEditorContentType = Extract<ContentType, 'markdown' | 'plain-text' | 'tiptap-json'>
 
 export function detectContentType(resource: Resource): TextEditorContentType {
   const extension = resource?.extension?.toLowerCase()
   const mimeType = resource?.mimeType?.toLowerCase()
+  if (extension === 'ocnote') {
+    return 'tiptap-json'
+  }
+
   if (extension === 'md' || extension === 'markdown' || mimeType === 'text/markdown') {
     return 'markdown'
   }
@@ -40,7 +44,8 @@ export function makeTextEditorAdapter({ resource }: YjsAdapterContext): YjsAdapt
 
   const strategies: Record<TextEditorContentType, ContentTypeStrategy> = {
     'plain-text': resolveStrategy('plain-text', state),
-    markdown: resolveStrategy('markdown', state)
+    markdown: resolveStrategy('markdown', state),
+    'tiptap-json': resolveStrategy('tiptap-json', state)
   }
 
   return makeTiptapYjsAdapter(() => strategies[detectContentType(unref(resource))])

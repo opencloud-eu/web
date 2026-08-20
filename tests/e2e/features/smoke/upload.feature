@@ -13,23 +13,30 @@ Feature: Upload
 
   Scenario: Upload files in personal space
     Given "Alice" creates the following resources
-      | resource          | type    | content             |
-      | new-lorem-big.txt | txtFile | new lorem big file  |
-      | lorem.txt         | txtFile | lorem file          |
-      | textfile.txt      | txtFile | some random content |
-      | comma,.txt        | txtFile | comma               |
-      | test#file.txt     | txtFile | some content        |
-      | test#folder       | folder  |                     |
+      | resource             | type     | content             |
+      | new-lorem-big.ocnote | noteFile | new lorem big file  |
+      | lorem.ocnote         | noteFile | lorem file          |
+      | textfile.ocnote      | noteFile | some random content |
+      | comma,.ocnote        | noteFile | comma               |
+      | test#file.ocnote     | noteFile | some content        |
+      | test#folder          | folder   |                     |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile        | content             |
+      | new-lorem-big.txt | new lorem big file  |
+      | lorem.txt         | lorem file          |
+      | textfile.txt      | some random content |
+      | comma,.txt        | comma               |
+      | test#file.txt     | some content        |
     When "Alice" uploads the following resources
       | resource          | option    |
       | new-lorem-big.txt | replace   |
       | lorem.txt         | skip      |
       | textfile.txt      | keep both |
     And "Alice" creates the following resources
-      | resource           | type    | content      |
-      | PARENT             | folder  |              |
-      | PARENT/parent.txt  | txtFile | some text    |
-      | PARENT/example.txt | txtFile | example text |
+      | resource              | type     | content      |
+      | PARENT                | folder   |              |
+      | PARENT/parent.ocnote  | noteFile | some text    |
+      | PARENT/example.ocnote | noteFile | example text |
     And "Alice" uploads the following resources via drag-n-drop
       | resource       |
       | simple.pdf     |
@@ -59,7 +66,7 @@ Feature: Upload
       | resource   |
       | simple.pdf |
     And "Alice" closes the file viewer
-    
+
     # folder upload via drag-n-drop
     When "Alice" uploads the following resource via drag-n-drop
       | resource |
@@ -80,8 +87,11 @@ Feature: Upload
 
     And "Alice" opens the "files" app
     And "Alice" creates the following resource
-      | resource          | type    | content             |
-      | new-lorem-big.txt | txtFile | new lorem big file  |
+      | resource             | type     | content            |
+      | new-lorem-big.ocnote | noteFile | new lorem big file |
+    And "Alice" creates the following file into personal space using API
+      | pathToFile        | content            |
+      | new-lorem-big.txt | new lorem big file |
     When "Alice" tries to upload the following resource
       | resource      | error              |
       | lorem-big.txt | Insufficient quota |
@@ -104,28 +114,28 @@ Feature: Upload
 
 
   Scenario: upload folder using different options
-     Given "Alice" creates the following folder in personal space using API
-      | name   |
-      | CHILD  |
+    Given "Alice" creates the following folder in personal space using API
+      | name  |
+      | CHILD |
     Given "Alice" creates the following folder in personal space using API
       | name   |
       | PARENT |
     And "Alice" creates the following file into personal space using API
       | pathToFile      | content      |
       | PARENT/test.txt | some content |
-    
+
     # keep both option
     And "Alice" uploads the following resource
-      | resource  | type   | option    |
-      | PARENT    | folder | keep both |
+      | resource | type   | option    |
+      | PARENT   | folder | keep both |
     Then following resources should be displayed in the files list for user "Alice"
       | resource   |
       | PARENT     |
       | PARENT (1) |
     And "Alice" opens folder "PARENT"
     And following resource should be displayed in the files list for user "Alice"
-      | resource  |
-      | test.txt  |
+      | resource |
+      | test.txt |
     And "Alice" opens the "files" app
     And "Alice" opens folder "PARENT (1)"
     And following resource should be displayed in the files list for user "Alice"
@@ -135,15 +145,15 @@ Feature: Upload
     And following resource should be displayed in the files list for user "Alice"
       | resource  |
       | child.txt |
-    
+
     # replace option
     Given "Alice" creates the following file into personal space using API
       | pathToFile        | content      |
       | PARENT/parent.txt | some content |
     When "Alice" opens the "files" app
     And "Alice" uploads the following resource
-      | resource  | type   | option |
-      | PARENT    | folder | merge  |
+      | resource | type   | option |
+      | PARENT   | folder | merge  |
     And "Alice" opens folder "PARENT"
     Then following resources should be displayed in the files list for user "Alice"
       | resource   |

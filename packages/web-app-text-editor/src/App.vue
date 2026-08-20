@@ -29,7 +29,7 @@ const contentType = computed<ContentType>(() => {
 })
 
 const placeholder = computed(() => {
-  if (isReadOnly || unref(contentType) !== 'markdown') {
+  if (isReadOnly || !['markdown', 'tiptap-json'].includes(unref(contentType))) {
     return undefined
   }
   return $gettext('Write or type / for formatting options...')
