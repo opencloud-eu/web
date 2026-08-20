@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Wire ocnote to tiptap-json and add Note new-file entry [[#3175](https://github.com/opencloud-eu/web/pull/3175)]
 - feat: e2ee vault spaces [[#3115](https://github.com/opencloud-eu/web/pull/3115)]
 - add sanitized SVG rendering in preview app [[#3144](https://github.com/opencloud-eu/web/pull/3144)]
 - feat: update default space icon [[#3146](https://github.com/opencloud-eu/web/pull/3146)]
@@ -76,6 +77,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.11 [[#3186](https://github.com/opencloud-eu/web/pull/3186)]
 - fix(deps): update dependency uuid to v14.0.2 [[#3160](https://github.com/opencloud-eu/web/pull/3160)]
 - chore(deps): update dependency dompurify to v3.4.14 [[#3180](https://github.com/opencloud-eu/web/pull/3180)]
 - chore(client): bump libre-graph-sdk [[#3149](https://github.com/opencloud-eu/web/pull/3149)]
