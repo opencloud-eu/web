@@ -1,6 +1,6 @@
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { FolderVaultEngine } from '@opencloud-eu/web-pkg'
+import { VaultEngine } from '@opencloud-eu/web-pkg'
 
 /**
  * Name of the WebDAV property holding a vault's integrity token.
@@ -31,7 +31,7 @@ export function integrityTokenOf(root: Resource | undefined): string | null {
 /** Commit the vault to this engine's passphrase by storing its integrity token. */
 export async function writeIntegrityToken(
   { webdav, space, vaultRoot }: VaultTarget,
-  engine: FolderVaultEngine
+  engine: VaultEngine
 ): Promise<void> {
   const token = await engine.createIntegrityToken()
   await webdav.setProperties(

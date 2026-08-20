@@ -172,7 +172,7 @@ export class UppyService {
       headers,
       // Allowlist which meta fields go into the `Upload-Metadata` header.
       // Without this, @uppy/tus defaults to sending *all* of file.meta, which
-      // for a folder-vault upload would leak the cleartext directory structure
+      // for a vault upload would leak the cleartext directory structure
       // (currentFolder / relativeFolder / relativePath / routeDriveAliasAndItem)
       // to the server even though the endpoint path itself is ciphertext. The
       // server gets everything it needs from the endpoint (path) and headers

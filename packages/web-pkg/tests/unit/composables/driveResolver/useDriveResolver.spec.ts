@@ -93,6 +93,33 @@ describe('useDriveResolver', () => {
       }
     )
   })
+  it('returns the space the fileId points at when two spaces share a driveAlias', () => {
+    const driveAlias = 'project/test'
+    const first = mockDeep<SpaceResource>({ id: 'space-a', fileId: 'space-a', driveAlias })
+    const second = mockDeep<SpaceResource>({ id: 'space-b', fileId: 'space-b', driveAlias })
+    const mocks = defaultComponentMocks({
+      currentRoute: mock<RouteLocation>({
+        name: 'files-spaces-generic',
+        path: '/',
+        query: { fileId: 'space-b!someFolder' }
+      })
+    })
+
+    getComposableWrapper(
+      () => {
+        const { space, item } = useDriveResolver({
+          driveAliasAndItem: ref(`${driveAlias}/someFolder`)
+        })
+        expect(unref(space)).toEqual(second)
+        expect(unref(item)).toEqual('/someFolder')
+      },
+      {
+        mocks,
+        provide: mocks,
+        pluginOptions: { piniaOptions: { spacesState: { spaces: [first, second] } } }
+      }
+    )
+  })
   it('returns a space by driveAlias if no fileId given', () => {
     const driveAlias = '/personal'
     const resourcePath = '/someFolder'

@@ -75,7 +75,7 @@ import {
   withExtension,
   withoutExtension
 } from '@opencloud-eu/web-pkg'
-import type { FolderVaultCreation, FolderVaultFinalize, Modal } from '@opencloud-eu/web-pkg'
+import type { VaultCreation, VaultFinalize, Modal } from '@opencloud-eu/web-pkg'
 
 const {
   modal,
@@ -84,14 +84,14 @@ const {
 } = defineProps<{
   modal: Modal
   /**
-   * Creation bits of the folder-vault extension that would claim the new folder:
+   * Creation bits of the vault extension that would claim the new folder:
    * its setup UI and the folder extension it marks vault roots with. Absent when
    * no extension can create vaults, hence hide the encryption switch.
    */
-  vaultCreation?: FolderVaultCreation
+  vaultCreation?: VaultCreation
   callbackFn: (
     folderName: string,
-    options: { encrypt: boolean; finalizeVault?: FolderVaultFinalize }
+    options: { encrypt: boolean; finalizeVault?: VaultFinalize }
   ) => Promise<void>
 }>()
 
@@ -103,7 +103,7 @@ const { $gettext } = useGettext()
 const { isFileNameValid } = useIsResourceNameValid()
 const { resources, currentFolder, areFileExtensionsShown } = storeToRefs(useResourcesStore())
 
-const setupComponent = ref<{ finalize: FolderVaultFinalize }>()
+const setupComponent = ref<{ finalize: VaultFinalize }>()
 const step = ref<'name' | 'setup'>('name')
 const encrypt = ref(false)
 const setupValid = ref(false)
@@ -116,11 +116,11 @@ const baseName = $gettext('New folder')
 // The vault marker is the scheme's, never ours - without a scheme there is
 // nothing to encrypt with and these are no-ops.
 function vaultName(name: string): string {
-  return vaultCreation ? withExtension(name, vaultCreation.folderExtension) : name
+  return vaultCreation ? withExtension(name, vaultCreation.vaultExtension) : name
 }
 
 function plainName(name: string): string {
-  return vaultCreation ? withoutExtension(name, vaultCreation.folderExtension) : name
+  return vaultCreation ? withoutExtension(name, vaultCreation.vaultExtension) : name
 }
 
 /**
@@ -135,7 +135,7 @@ function suggestName(encrypting: boolean): string {
     return baseName
   }
   return plainName(
-    resolveFileNameDuplicate(wanted, encrypting ? vaultCreation.folderExtension : '', siblings)
+    resolveFileNameDuplicate(wanted, encrypting ? vaultCreation.vaultExtension : '', siblings)
   )
 }
 

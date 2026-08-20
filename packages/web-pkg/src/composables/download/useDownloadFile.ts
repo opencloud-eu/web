@@ -1,5 +1,5 @@
 import { useClientService } from '../clientService'
-import { resolveFolderVault, streamToBlob, triggerDownloadWithFilename } from '../../../src/helpers'
+import { resolveVaultEngine, streamToBlob, triggerDownloadWithFilename } from '../../../src/helpers'
 import { useGettext } from 'vue3-gettext'
 import { ClientService } from '../../services'
 import { useExtensionRegistry, useMessages, useUserStore } from '../piniaStores'
@@ -35,7 +35,7 @@ export const useDownloadFile = (options?: DownloadFileOptions) => {
       // carried by a file's versions too) so non-vault downloads skip the
       // async engine resolution entirely.
       const vaultEngine = file.isInVault
-        ? await resolveFolderVault(extensionRegistry, space, file.path)
+        ? await resolveVaultEngine(extensionRegistry, space, file.path)
         : null
       if (vaultEngine) {
         let blob: Blob

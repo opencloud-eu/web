@@ -206,6 +206,7 @@ export function buildSpace(
     spaceImageData,
     spaceReadmeData,
     hasTrashedItems: data['@libre.graph.hasTrashedItems'] || false,
+    contentType: data['@libre.graph.contentType'],
     graphPermissions: undefined as string[],
     canUpload: function ({ user }: { user?: User } = {}): boolean {
       if (isPersonalSpaceResource(this) && this.isOwner(user)) {
@@ -234,6 +235,9 @@ export function buildSpace(
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
     canEditDescription: function ({ ability }: { user?: User; ability?: Ability } = {}) {
+      if (this.isInVault) {
+        return false
+      }
       if (ability?.can('update-all', 'Drive')) {
         return true
       }
@@ -267,11 +271,17 @@ export function buildSpace(
       if (this.disabled) {
         return false
       }
+      if (this.isInVault) {
+        return false
+      }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
     canEditReadme: function () {
       if (this.disabled) {
+        return false
+      }
+      if (this.isInVault) {
         return false
       }
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10

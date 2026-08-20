@@ -2,7 +2,15 @@
 
 exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opened 1`] = `
 "<div class="space-header p-4 flex space-header-squashed">
-  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40 hidden lg:block"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40 hidden lg:block"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-full"></svg></span></div>
   <div class="flex-1">
     <div class="flex items-center justify-between max-w-full">
       <div class="flex items-center max-w-full">
@@ -45,7 +53,15 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 
 exports[`SpaceHeader > space description > should show the description 1`] = `
 "<div class="space-header p-4 flex">
-  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6 min-w-xs aspect-[16/9] w-xs max-h-40"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-full"></svg></span></div>
   <div class="flex-1">
     <div class="flex items-center justify-between max-w-full">
       <div class="flex items-center max-w-full">

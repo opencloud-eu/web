@@ -4,7 +4,7 @@ import { useTask } from 'vue-concurrency'
 import { isLocationCommonActive } from '../../../router'
 import { unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
-import { getVaultClaim, markVaultStatus } from '../../../helpers/folderVault'
+import { getVaultClaim, markVaultStatus } from '../../../helpers/vault'
 import { queryItemAsString } from '../../../composables/appDefaults'
 
 export class FolderLoaderFavorites implements FolderLoader {

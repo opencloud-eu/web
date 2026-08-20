@@ -12,7 +12,7 @@ import {
 } from '../piniaStores'
 import { SearchResource } from '@opencloud-eu/web-client'
 import { useTask } from 'vue-concurrency'
-import { getVaultClaim, markVaultStatus } from '../../helpers/folderVault'
+import { getVaultClaim, markVaultStatus } from '../../helpers/vault'
 
 export const useSearch = () => {
   const clientService = useClientService()

@@ -18,7 +18,7 @@ export type ExtensionType = StringUnionOrAnyString<
   | 'sidebarPanel'
   | 'accountExtension'
   | 'floatingActionButton'
-  | 'folderVault'
+  | 'vault'
   | 'resourceIndicator'
 >
 
@@ -118,8 +118,8 @@ export interface AppMenuItemExtension extends Extension {
  * (rclone-crypt does it per segment), it just can't make a name's ciphertext
  * depend on where the name sits.
  */
-export interface FolderVaultEngine {
-  /** Where this vault is rooted, for identity only (e.g. `/myvault.vault`, or `/` for a share-rooted vault). */
+export interface VaultEngine {
+  /** Where this vault is rooted, for identity only (e.g. `/myvault.vault`, or `/` for a vault space or a share-rooted vault). */
   vaultRoot: string
   /** Encrypt a vault-root-RELATIVE clear-text path, e.g. `"sub/x"` or a bare name `"q1.txt"`. Full paths: use `encryptVaultPath`. */
   encryptPath: (relativePath: string) => Promise<string>
@@ -171,7 +171,7 @@ export interface FolderVaultEngine {
   verifySegment: (sampleEncryptedSegment: string) => Promise<boolean>
 }
 
-export interface FolderVaultClaim {
+export interface VaultClaim {
   /** Clear-text root of the claimed vault (e.g. `/myvault.vault`). */
   vaultRoot: string
   /**
@@ -187,7 +187,7 @@ export interface FolderVaultClaim {
   /**
    * Optional route the UI should navigate to in order to unlock the vault
    * (passphrase prompt, hardware-token flow, …). The route handler is
-   * expected to populate the folder-vault store and redirect back to
+   * expected to populate the vault store and redirect back to
    * `query.redirectUrl` once it's done. If omitted, the vault is treated as
    * permanently locked from this layer's point of view.
    */
@@ -197,41 +197,45 @@ export interface FolderVaultClaim {
 /**
  * Can be exposed by the extension's `setupComponent`. Used to commit whatever
  * locks a freshly created vault (a passphrase, a hardware token, …) after the
- * folder has been created on the server.
+ * folder or space has been created on the server. For a vault space the
+ * `vaultRoot` handed over is the space root.
  */
-export type FolderVaultFinalize = (space: SpaceResource, vaultRoot: string) => Promise<void>
+export type VaultFinalize = (space: SpaceResource, vaultRoot: string) => Promise<void>
 
 /**
  * Everything an extension has to bring to let the UI create vaults with its
  * scheme. Optional as a whole on the extension: a scheme that can only read
  * existing vaults leaves it out.
  */
-export interface FolderVaultCreation {
+export interface VaultCreation {
   /**
-   * File extension this scheme marks its vault roots with, without the leading
-   * dot, e.g. `vault` for a vault root named `Project archive.vault`. Owned by
-   * the scheme - the generic layer only appends whatever it gets here to the name
-   * the user typed, so another scheme can use a different marker.
+   * Name extension a vault *folder* carries, without the leading dot, e.g.
+   * `vault` for `Project archive.vault`.
    */
-  folderExtension: string
+  vaultExtension: string
+  /**
+   * Content type a vault *space* carries in its `@libre.graph.contentType` drive
+   * property, e.g. `application/vnd.opencloud.vault`.
+   */
+  vaultContentType: string
   /**
    * Component that collects and commits whatever this extension needs to lock a
    * newly created vault - a passphrase, a hardware token, … The generic layer
    * deliberately knows none of that, so the extension brings its own UI *and* its
-   * own crypto here. Rendered as the second step of the create-folder flow.
+   * own crypto here. Rendered as the second step of the create-folder/space flow.
    *
    * Contract:
    * - prop `vaultName`: cleartext name of the vault about to be created
    * - emits `update:valid` with whether its input is complete and usable
-   * - exposes `finalize`, a `FolderVaultFinalize` called once the folder exists
-   *   on the server. Throwing leaves the vault without a committed secret,
+   * - exposes `finalize`, a `VaultFinalize` called once the folder or space
+   *   exists on the server. Throwing leaves the vault without a committed secret,
    *   which the extension's unlock UI has to cope with anyway.
    */
   setupComponent: Component
 }
 
-export interface FolderVaultExtension extends Extension {
-  type: 'folderVault'
+export interface VaultExtension extends Extension {
+  type: 'vault'
   /**
    * Resolve a vault engine for (space, path). Return null if this extension is
    * not responsible for the given location, or if it is but no usable
@@ -243,19 +247,19 @@ export interface FolderVaultExtension extends Extension {
    * resolved promise. The cheap "is this a vault?" question stays synchronous
    * via `claimsPath`.
    */
-  resolve: (space: SpaceResource, path: string) => Promise<FolderVaultEngine | null>
+  resolve: (space: SpaceResource, path: string) => Promise<VaultEngine | null>
   /**
    * Indicate whether this extension manages the given (space, path) at all,
    * regardless of unlock state. Lets the UI redirect a locked vault to the
    * extension-defined unlock UI even when `resolve` returns null.
    */
-  claimsPath: (space: SpaceResource, path: string) => FolderVaultClaim | null
+  claimsPath: (space: SpaceResource, path: string) => VaultClaim | null
   /**
    * What this extension needs to create new vaults. Optional, and its presence is
    * what tells the UI this extension can *create* vaults, and hence whether to
-   * offer an encryption option when creating a folder.
+   * offer an encryption option when creating a folder or a space.
    */
-  creation?: FolderVaultCreation
+  creation?: VaultCreation
 }
 
 export interface ResourceIndicatorExtension extends Extension {

@@ -5,7 +5,7 @@ import { computed, markRaw, nextTick, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
-  FolderVaultFinalize,
+  VaultFinalize,
   getVaultCreator,
   markVaultStatus,
   useClientService,
@@ -31,7 +31,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
   const clientService = useClientService()
   const extensionRegistry = useExtensionRegistry()
 
-  // The registered folder-vault extension, or undefined when there is none - which
+  // The registered vault extension, or undefined when there is none - which
   // is what hides the encryption switch.
   const vaultCreator = computed(() => {
     if (unref(currentFolder)?.isInVault) {
@@ -43,10 +43,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
 
   const addNewFolder = async (
     folderName: string,
-    {
-      encrypt = false,
-      finalizeVault
-    }: { encrypt?: boolean; finalizeVault?: FolderVaultFinalize } = {}
+    { encrypt = false, finalizeVault }: { encrypt?: boolean; finalizeVault?: VaultFinalize } = {}
   ) => {
     folderName = folderName.trimEnd()
 
@@ -55,13 +52,13 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       if (encrypt && !creation) {
         // Better to fail loudly than to hand back an unencrypted folder to
         // someone who asked for an encrypted one.
-        throw new Error('no folder-vault scheme available to create an encrypted folder')
+        throw new Error('no vault scheme available to create an encrypted folder')
       }
       // The scheme decides how a vault root is named, we only apply it.
-      const serverName = encrypt ? withExtension(folderName, creation.folderExtension) : folderName
+      const serverName = encrypt ? withExtension(folderName, creation.vaultExtension) : folderName
       const displayName =
         encrypt && !unref(areFileExtensionsShown)
-          ? withoutExtension(serverName, creation.folderExtension)
+          ? withoutExtension(serverName, creation.vaultExtension)
           : serverName
       const path = join(unref(currentFolder).path, serverName)
       const resource = await clientService.webdav.createFolder(unref(space), { path })

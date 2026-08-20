@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
-import { FolderVaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
+import { VaultEngine, streamToArrayBuffer } from '@opencloud-eu/web-pkg'
 import { probeVaultNeedsSetup, unlockVault } from '../../src/unlock'
 import { createEngine } from '../../src/crypto/engine'
 import { INTEGRITY_ID_PROP, VaultTarget } from '../../src/integrity'
@@ -19,8 +19,8 @@ const encryptedChildName = 'unq54c7b9fj4lam8t82q1hofdo'
 // One engine - and therefore one scrypt derivation - per passphrase for the
 // whole file. Engines hold no per-test state, and the derivation is the single
 // most expensive thing these tests do.
-const engines = new Map<string, FolderVaultEngine>()
-function engineFor(password: string): FolderVaultEngine {
+const engines = new Map<string, VaultEngine>()
+function engineFor(password: string): VaultEngine {
   if (!engines.has(password)) {
     engines.set(password, createEngine(vaultRoot, password))
   }

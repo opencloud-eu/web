@@ -177,7 +177,7 @@ describe('CreateFolderModal', () => {
     })
 
     it('uses the marker of the scheme, not a hardcoded one', async () => {
-      const { wrapper } = getWrapper({ folderExtension: 'crypt' })
+      const { wrapper } = getWrapper({ vaultExtension: 'crypt' })
       await setName(wrapper, 'myfolder')
       await toggleEncrypt(wrapper)
 
@@ -354,7 +354,7 @@ function toggleEncrypt(wrapper: Wrapper) {
 
 function getWrapper({
   canEncrypt = true,
-  folderExtension = 'vault',
+  vaultExtension = 'vault',
   areFileExtensionsShown = true,
   isLoading = false,
   callbackFn = vi.fn(),
@@ -367,7 +367,13 @@ function getWrapper({
     wrapper: mount(CreateFolderModal, {
       props: {
         modal: mock<Modal>({ isLoading }),
-        vaultCreation: canEncrypt ? { folderExtension, setupComponent: SetupStub } : undefined,
+        vaultCreation: canEncrypt
+          ? {
+              vaultExtension,
+              vaultContentType: 'application/vnd.opencloud.vault',
+              setupComponent: SetupStub
+            }
+          : undefined,
         callbackFn
       },
       global: {

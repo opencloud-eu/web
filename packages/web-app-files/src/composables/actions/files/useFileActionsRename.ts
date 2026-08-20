@@ -22,7 +22,7 @@ import {
   useCapabilityStore,
   useClientService,
   useExtensionRegistry,
-  useFolderVaultStore,
+  useVaultStore,
   useIsResourceNameValid,
   useMessages,
   useModals,
@@ -45,7 +45,7 @@ export const useFileActionsRename = () => {
   const { setCurrentFolder, upsertResource } = resourcesStore
   const { isFileNameValid } = useIsResourceNameValid()
   const extensionRegistry = useExtensionRegistry()
-  const folderVaultStore = useFolderVaultStore()
+  const vaultStore = useVaultStore()
 
   const renameResource = async (space: SpaceResource, resource: Resource, newName: string) => {
     let currentFolder = resourcesStore.currentFolder
@@ -62,7 +62,7 @@ export const useFileActionsRename = () => {
       // under the new name (no-op when the vault was never unlocked).
       const claim = getVaultClaim(extensionRegistry, space, resource.path)
       if (claim?.vaultRoot === resource.path) {
-        folderVaultStore.moveEngine(space.id, resource.path, newPath)
+        vaultStore.moveEngine(space.id, resource.path, newPath)
       }
 
       const isCurrentFolder = isSameResource(resource, currentFolder)

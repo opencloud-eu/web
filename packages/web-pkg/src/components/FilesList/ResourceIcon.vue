@@ -27,6 +27,7 @@ import {
   createDefaultFileIconMapping,
   getResourceIconName,
   IconType,
+  isVaultSpaceResource,
   ResourceIconMapping,
   resourceIconMappingInjectionKey
 } from '../../helpers'
@@ -40,6 +41,11 @@ const defaultSpaceIcon: IconType = {
   name: 'resource-type-space',
   fillsBox: true,
   uniqueIds: true
+}
+
+const vaultSpaceIcon: IconType = {
+  name: 'resource-type-space-vault',
+  fillsBox: true
 }
 
 const defaultFileIcon: IconType = {
@@ -72,6 +78,10 @@ const hasProjectSpaceIcon = computed(() => {
   return isProjectSpaceResource(resource)
 })
 
+const hasVaultSpaceIcon = computed(() => {
+  return isVaultSpaceResource(resource)
+})
+
 const hasDisabledSpaceIcon = computed(() => {
   return isProjectSpaceResource(resource) && resource.disabled === true
 })
@@ -92,6 +102,9 @@ const mimeType = computed(() => {
 
 const icon = computed((): IconType => {
   if (unref(hasProjectSpaceIcon)) {
+    if (unref(hasVaultSpaceIcon)) {
+      return vaultSpaceIcon
+    }
     return defaultSpaceIcon
   }
   if (unref(hasSpaceIcon)) {

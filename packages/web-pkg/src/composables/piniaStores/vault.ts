@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { shallowRef, unref } from 'vue'
-import type { FolderVaultEngine } from './extensionRegistry'
+import type { VaultEngine } from './extensionRegistry'
 
 /**
  * Holds the unlocked engines for vaults across the running session. Lives in
@@ -10,7 +10,7 @@ import type { FolderVaultEngine } from './extensionRegistry'
  * here; `resolveVault()` inside the same plugin then reads it back. A vault
  * counts as unlocked exactly when an engine is stored for it.
  *
- * The store is mechanism-agnostic: it only knows about `FolderVaultEngine`, the
+ * The store is mechanism-agnostic: it only knows about `VaultEngine`, the
  * common encrypt/decrypt interface. How an extension obtains one - a passphrase,
  * a derived key, a hardware token, an OAuth flow - is entirely the extension's
  * business and never reaches this store.
@@ -23,20 +23,20 @@ import type { FolderVaultEngine } from './extensionRegistry'
  * only this store has to be re-keyed, which `moveEngine` does from the rename
  * handler.
  */
-export const useFolderVaultStore = defineStore('folder-vault', () => {
+export const useVaultStore = defineStore('vault', () => {
   // shallowRef, not ref: only the Map *reference* is reactive (every mutator
   // re-assigns it so isUnlocked re-evaluates). The engines themselves stay raw
   // - a deep-reactive proxy would change their identity and needlessly wrap a
   // cipher/closure that has no business being reactive.
-  const engines = shallowRef<Map<string, FolderVaultEngine>>(new Map())
+  const engines = shallowRef<Map<string, VaultEngine>>(new Map())
 
   const buildKey = (spaceId: string, vaultRoot: string) => `${spaceId}::${vaultRoot}`
 
-  const getEngine = (spaceId: string, vaultRoot: string): FolderVaultEngine | undefined => {
+  const getEngine = (spaceId: string, vaultRoot: string): VaultEngine | undefined => {
     return unref(engines).get(buildKey(spaceId, vaultRoot))
   }
 
-  const setEngine = (spaceId: string, vaultRoot: string, engine: FolderVaultEngine) => {
+  const setEngine = (spaceId: string, vaultRoot: string, engine: VaultEngine) => {
     unref(engines).set(buildKey(spaceId, vaultRoot), engine)
     // re-assign so Vue tracks the change
     engines.value = new Map(unref(engines))
@@ -96,4 +96,4 @@ export const useFolderVaultStore = defineStore('folder-vault', () => {
   return { getEngine, setEngine, clearEngine, moveEngine, clearEnginesUnder, isUnlocked }
 })
 
-export type FolderVaultStore = ReturnType<typeof useFolderVaultStore>
+export type VaultStore = ReturnType<typeof useVaultStore>
