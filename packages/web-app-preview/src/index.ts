@@ -6,7 +6,7 @@ import {
 import translations from '../l10n/translations.json'
 import * as app from './App.vue'
 import { useGettext } from 'vue3-gettext'
-import { mimeTypes } from './mimeTypes'
+import { mimeTypes, serverRenderedMimeTypes } from './mimeTypes'
 import { appId } from './utils'
 import { extensionPoints } from './extensionPoints'
 
@@ -43,7 +43,8 @@ export default defineWebApplication({
       extensions: mimeTypes.map((mimeType) => ({
         mimeType,
         routeName,
-        label: () => $gettext('Preview')
+        label: () => $gettext('Preview'),
+        requiresServerPreview: serverRenderedMimeTypes.includes(mimeType)
       }))
     }
 

@@ -95,6 +95,15 @@ export interface ApplicationFileExtension {
     // falls back to "New file.<extension>".
     defaultName?: () => string
   }
+  /**
+   * Set for file types the browser cannot render on its own, so that the app is
+   * only offered when the server reports a preview for the resource.
+   *
+   * Which formats the thumbnailer handles depends on how it was built and on
+   * decoders that may or may not be installed next to it. Without the flag the
+   * app would claim such files on every server and open into an error.
+   */
+  requiresServerPreview?: boolean
   routeName?: string
   secureView?: boolean
 }

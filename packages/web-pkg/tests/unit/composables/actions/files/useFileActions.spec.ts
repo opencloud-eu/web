@@ -150,6 +150,41 @@ describe('fileActions', () => {
     })
   })
 
+  describe('extensions that need a server rendered preview', () => {
+    const heicResource = (hasPreview: boolean) => ({
+      ...actionOptions,
+      resources: [
+        mock<Resource>({
+          id: '1',
+          canDownload: () => true,
+          mimeType: 'image/heic',
+          extension: 'heic',
+          hasPreview: () => hasPreview
+        })
+      ]
+    })
+
+    it('offers the editor when the server reports a preview', () => {
+      getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          const actions = getAllOpenWithActions(heicResource(true))
+          expect(actions.map((a) => a.name)).toContain('editor-preview')
+        }
+      })
+    })
+
+    it('hides the editor when the server has no preview to offer', () => {
+      getWrapper({
+        setup: ({ getAllOpenWithActions }) => {
+          // the download action has to take over instead, opening the editor
+          // would only show an error
+          const actions = getAllOpenWithActions(heicResource(false))
+          expect(actions.map((a) => a.name)).not.toContain('editor-preview')
+        }
+      })
+    })
+  })
+
   describe('secure view context', () => {
     describe('getAllOpenWithActions', () => {
       it('only displays editors that support secure view', () => {
@@ -213,6 +248,12 @@ function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useFileActi
                   icon: 'puzzle',
                   name: 'External',
                   id: 'external'
+                },
+                preview: {
+                  defaultExtension: '',
+                  icon: 'eye',
+                  name: 'Preview',
+                  id: 'preview'
                 }
               },
               fileExtensions: [
@@ -230,6 +271,13 @@ function getWrapper({ setup }: { setup: (instance: ReturnType<typeof useFileActi
                   name: 'Collabora',
                   hasPriority: false,
                   secureView: true
+                },
+                {
+                  app: 'preview',
+                  mimeType: 'image/heic',
+                  routeName: 'preview-media',
+                  hasPriority: false,
+                  requiresServerPreview: true
                 }
               ]
             }

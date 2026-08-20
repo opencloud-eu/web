@@ -125,6 +125,15 @@ export const useFileActions = () => {
               return false
             }
 
+            // Formats the browser cannot decode itself are only viewable if the
+            // server renders a preview for them, which depends on the thumbnailer
+            // build and on optional decoders. Skip the editor action when there is
+            // none, so the default action (download) can take over instead of
+            // opening into an error.
+            if (fileExtension.requiresServerPreview && !resources[0].hasPreview?.()) {
+              return false
+            }
+
             // An app may register a file/folder extension purely to
             // contribute icon mapping or a new-file menu entry without
             // owning a route (rclone-crypt's vault folder is one such case).
