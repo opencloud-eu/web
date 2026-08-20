@@ -31,7 +31,7 @@ const getHrefCache = (router: Router): ResolvedHrefCache => {
   }
 
   // FIXME: router.resolve cleans the path. we don't need it, if we can rely on
-  // router.currentRoute to not have slashs encoded for paths
+  // router.currentRoute to not have slashes encoded for paths
   const nextCache: ResolvedHrefCache = {
     path: currentRoute.path,
     currentHref: stripQuery(router.resolve(currentRoute).href),
