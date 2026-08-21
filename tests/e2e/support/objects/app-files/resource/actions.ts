@@ -516,6 +516,8 @@ export const createNewFileOrFolder = async (args: createResourceArgs): Promise<v
       await createNewFolder({ page, resource: '.empty' })
       break
     }
+    default:
+      throw new Error(`Unknown resource type: ${type}`)
   }
 }
 
