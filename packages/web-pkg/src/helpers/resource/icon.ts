@@ -158,10 +158,13 @@ const fileIcon = {
     icon: { name: 'resource-type-image' },
     extensions: [
       'ai',
+      'avif',
       'cdr',
       'eot',
       'eps',
       'gif',
+      'heic',
+      'heif',
       'jpeg',
       'jpg',
       'otf',

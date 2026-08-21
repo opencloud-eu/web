@@ -124,7 +124,7 @@ import {
   useImageControls,
   usePreviewDimensions
 } from './composables'
-import { mimeTypes } from './mimeTypes'
+import { mimeTypes, serverRenderedMimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 
@@ -218,7 +218,14 @@ const buildMediaFiles = () => {
       return false
     }
 
-    return mimeTypes.includes(file.mimeType?.toLowerCase()) && file.canDownload()
+    const mimeType = file.mimeType?.toLowerCase()
+    if (!mimeTypes.includes(mimeType) || !file.canDownload()) {
+      return false
+    }
+
+    // Keep formats we cannot decode ourselves out of the carousel unless the
+    // server has a preview for them.
+    return !serverRenderedMimeTypes.includes(mimeType) || !!file.hasPreview?.()
   })
 
   const sortFields = determineResourceTableSortFields(filteredFiles[0])
@@ -296,6 +303,11 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
       })
     }
 
+    // `loadPreview` resolves to undefined when the server reports no preview
+    // for the resource. Formats the browser cannot render on its own (e.g.
+    // HEIC) then have nothing left to show. Say so instead of leaving an empty
+    // error frame behind.
+    mediaFile.isError = !mediaFile.url
     mediaFile.isLoading = false
   } catch (e) {
     if (e.name === 'CanceledError') {
