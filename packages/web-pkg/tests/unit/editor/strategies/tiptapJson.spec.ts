@@ -45,9 +45,7 @@ describe('useStrategyTiptapJson', () => {
   describe('editorActionGroups', () => {
     it('puts text align menu at the beginning of the lists group', () => {
       const strategy = createStrategy()
-      const listsGroup = strategy
-        .editorActionGroups()
-        .find((group) => group.id === 'lists')
+      const listsGroup = strategy.editorActionGroups().find((group) => group.id === 'lists')
       const textAlignGroup = strategy
         .editorActionGroups()
         .find((group) => group.id === 'text-align')
