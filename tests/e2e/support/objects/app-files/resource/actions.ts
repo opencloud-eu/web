@@ -199,12 +199,14 @@ export const getResourceSearchItemLocator = ({
   return page.locator(util.format(searchListItem, resource))
 }
 
-export const clickResourceInFrame = async ({
+const clickResourceInEmbedMode = async ({
   page,
-  path
+  path,
+  createIfNotExist = false
 }: {
   page: Page
   path: string
+  createIfNotExist?: boolean
 }): Promise<void> => {
   const paths = path.split('/')
   const frame = page.frameLocator(opencloudFrame)
@@ -214,15 +216,19 @@ export const clickResourceInFrame = async ({
     const folder = name.replace(/'/g, "\\'").replace(/"/g, '\\"')
 
     const resource = frame.locator(util.format(resourceNameSelector, folder))
+    const resourceExists = await resource.count()
+
+    // let waitResponse
+    if (!resourceExists && createIfNotExist) {
+      await createNewFolderInEmbedMode({ page, resource: name })
+    }
 
     await expect(resource).toBeVisible()
-
-    const propfindPromise = page.waitForResponse(
+    const waitResponse = page.waitForResponse(
       (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
     )
-
     await resource.click()
-    await propfindPromise
+    await waitResponse
 
     await expect(frame.locator('#app-loading-spinner')).toBeHidden()
   }
@@ -426,6 +432,27 @@ export const createNewFolder = async ({
   await page.locator(createNewFolderButton).click()
   await page.locator(resourceNameInput).fill(resource)
   const createBtn = page.locator(util.format(actionConfirmationButton, 'Create'))
+  await expect(createBtn).toBeEnabled()
+
+  const mkcolPromise = page.waitForResponse(
+    (resp) => resp.status() === 201 && resp.request().method() === 'MKCOL'
+  )
+  await createBtn.click()
+  await mkcolPromise
+}
+
+export const createNewFolderInEmbedMode = async ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Promise<void> => {
+  const frame = page.frameLocator(opencloudFrame)
+  await frame.locator(addNewResourceButton).click()
+  await frame.locator(createNewFolderButton).click()
+  await frame.locator(resourceNameInput).fill(resource)
+  const createBtn = frame.locator(util.format(actionConfirmationButton, 'Create'))
   await expect(createBtn).toBeEnabled()
 
   const mkcolPromise = page.waitForResponse(
@@ -1091,31 +1118,9 @@ export const pasteResource = async (
   args: Omit<moveOrCopyResourceArgs, 'method'>
 ): Promise<void> => {
   const { page, resource, newLocation, action, option } = args
-  const newLocationPath = newLocation.split('/')
   const frame = page.frameLocator(opencloudFrame)
 
-  for (const path of newLocationPath) {
-    switch (path) {
-      case 'Personal': {
-        await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
-        break
-      }
-
-      case 'Project': {
-        await frame.locator('a[data-nav-name="files-spaces-projects"]').click()
-        break
-      }
-
-      case 'Shares': {
-        await frame.locator('a[data-nav-name="files-shares"]').click()
-        break
-      }
-
-      default: {
-        await clickResourceInFrame({ page, path })
-      }
-    }
-  }
+  await navigateFolderInEmbedMode({ page, parentPath: newLocation })
   const expectedMethod = option === 'copy instead' ? 'COPY' : action.toUpperCase()
 
   const respPromise = page.waitForResponse(
@@ -1157,6 +1162,64 @@ const selectBatchAction = async (page: Page, action: string): Promise<void> => {
   await page.mouse.move(0, 0)
 }
 
+const navigateFolderInEmbedMode = async ({
+  page,
+  parentPath,
+  sidebarOnly = false
+}: {
+  page: Page
+  parentPath: string
+  sidebarOnly?: boolean
+}): Promise<void> => {
+  const frame = page.frameLocator(opencloudFrame)
+  const parentPathArr = parentPath.split('/')
+  const sidebarItem = parentPathArr.shift()
+
+  switch (sidebarItem) {
+    case 'Personal': {
+      await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
+      break
+    }
+    case 'Project': {
+      await frame.locator('a[data-nav-name="files-spaces-projects"]').click()
+      break
+    }
+    case 'Shares': {
+      await frame.locator('a[data-nav-name="files-shares"]').click()
+      break
+    }
+    default: {
+      // try to open actual resource if the sidebar item is not one of the above
+      await clickResourceInEmbedMode({ page, path: sidebarItem })
+    }
+  }
+
+  if (!sidebarOnly) {
+    // navigate the remaining paths
+    await clickResourceInEmbedMode({ page, path: parentPathArr.join('/') })
+  }
+}
+
+const perFormEmbedModeAction = async ({
+  page,
+  newLocation,
+  waitConditions,
+  navigate = true
+}: {
+  page: Page
+  newLocation: string
+  waitConditions: Promise<any>[]
+  navigate?: boolean
+}): Promise<void> => {
+  const frame = page.frameLocator(opencloudFrame)
+
+  if (navigate) {
+    await navigateFolderInEmbedMode({ page, parentPath: newLocation })
+  }
+
+  await Promise.all([...waitConditions, frame.getByTestId('button-select').click()])
+}
+
 export const moveOrCopyMultipleResources = async (
   args: moveOrCopyMultipleResourceArgs
 ): Promise<void> => {
@@ -1166,10 +1229,10 @@ export const moveOrCopyMultipleResources = async (
     await page.locator(util.format(checkBox, resource)).click()
   }
 
-  const waitForMoveResponses = []
+  const waitResponses = []
   if (['drag-drop-breadcrumb', 'drag-drop'].includes(method)) {
     for (const resource of resources) {
-      waitForMoveResponses.push(
+      waitResponses.push(
         page.waitForResponse(
           (resp) =>
             resp.url().endsWith(resource) &&
@@ -1185,17 +1248,9 @@ export const moveOrCopyMultipleResources = async (
       // after selecting multiple resources, resources can be copied or moved by clicking on any of the selected resources
       await page.locator(highlightedTileCardSelector).first().click({ button: 'right' })
       await page.locator(util.format(filesContextMenuAction, action)).click()
-      const frame = page.frameLocator(opencloudFrame)
-
-      const newLocationPath = newLocation.split('/')
-      for (const path of newLocationPath) {
-        if (path == 'Personal') {
-          await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
-        } else {
-          await clickResourceInFrame({ page, path: path })
-        }
-      }
-      const responses = resources.map((resource) =>
+      // NOTE: check response after opening embed mode.
+      // waitForResponse won't work if it is checked before the embed mode is opened.
+      const waitResponses = resources.map((resource) =>
         page.waitForResponse(
           (resp) =>
             resp.url().includes(resource) &&
@@ -1203,24 +1258,14 @@ export const moveOrCopyMultipleResources = async (
             resp.request().method() === action.toUpperCase()
         )
       )
-      await frame.getByTestId('button-select').click()
-      await Promise.all(responses)
+      await perFormEmbedModeAction({ page, newLocation, waitConditions: waitResponses })
       break
     }
     case 'batch-action': {
       await selectBatchAction(page, action)
-
-      const frame = page.frameLocator(opencloudFrame)
-
-      const newLocationPath = newLocation.split('/')
-      for (const path of newLocationPath) {
-        if (path == 'Personal') {
-          await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
-        } else {
-          await clickResourceInFrame({ page, path: path })
-        }
-      }
-      const responses = resources.map((resource) =>
+      // NOTE: check response after opening embed mode.
+      // waitForResponse won't work if it is checked before the embed mode is opened.
+      const waitResponses = resources.map((resource) =>
         page.waitForResponse(
           (resp) =>
             resp.url().includes(resource) &&
@@ -1228,8 +1273,7 @@ export const moveOrCopyMultipleResources = async (
             resp.request().method() === action.toUpperCase()
         )
       )
-      await frame.getByTestId('button-select').click()
-      await Promise.all(responses)
+      await perFormEmbedModeAction({ page, newLocation, waitConditions: waitResponses })
       break
     }
     case 'keyboard': {
@@ -1249,7 +1293,7 @@ export const moveOrCopyMultipleResources = async (
       const source = page.locator(highlightedTileCardSelector).first()
       const target = page.locator(util.format(resourceNameSelector, newLocation))
 
-      await Promise.all([...waitForMoveResponses, source.dragTo(target)])
+      await Promise.all([...waitResponses, source.dragTo(target)])
 
       await target.click()
       break
@@ -1263,12 +1307,50 @@ export const moveOrCopyMultipleResources = async (
         )
       )
 
-      await Promise.all([...waitForMoveResponses, source.dragTo(target)])
+      await Promise.all([...waitResponses, source.dragTo(target)])
 
       await target.click()
       break
     }
   }
+}
+
+export const copyMoveResourcesWithCreateDestination = async ({
+  page,
+  action,
+  resourcePath,
+  newLocation
+}: {
+  page: Page
+  action: 'copy' | 'move'
+  resourcePath: string
+  newLocation: string
+}): Promise<void> => {
+  const { dir: resourceDir, base: resourceName } = path.parse(resourcePath)
+
+  if (resourceDir) {
+    await clickResource({ page, path: resourceDir })
+  }
+  await page.locator(util.format(checkBox, resourceName)).click()
+  await selectBatchAction(page, action)
+
+  const destinationPath = newLocation.split('/')
+  const sidebarItem = destinationPath.shift()
+  await navigateFolderInEmbedMode({ page, parentPath: sidebarItem, sidebarOnly: true })
+  for (const folder of destinationPath) {
+    await clickResourceInEmbedMode({ page, path: folder, createIfNotExist: true })
+  }
+  // NOTE: check response after opening embed mode.
+  // waitForResponse won't work if it is checked before the embed mode is opened.
+  const waitConditions = [
+    page.waitForResponse(
+      (resp) =>
+        resp.url().includes(resourceName) &&
+        [201, 204].includes(resp.status()) &&
+        resp.request().method() === action.toUpperCase()
+    )
+  ]
+  await perFormEmbedModeAction({ page, newLocation, waitConditions, navigate: false })
 }
 
 export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<void> => {
@@ -2872,28 +2954,7 @@ export const saveAs = async ({ page, newPath }: { page: Page; newPath: string })
   const parentPath = path.dirname(newPath)
   let filename = path.basename(newPath)
   if (parentPath !== '.') {
-    for (const path of parentPath.split('/')) {
-      switch (path) {
-        case 'Personal': {
-          await frame.locator('a[data-nav-name="files-spaces-generic"]').click()
-          break
-        }
-
-        case 'Project': {
-          await frame.locator('a[data-nav-name="files-spaces-projects"]').click()
-          break
-        }
-
-        case 'Shares': {
-          await frame.locator('a[data-nav-name="files-shares"]').click()
-          break
-        }
-
-        default: {
-          await clickResourceInFrame({ page, path })
-        }
-      }
-    }
+    await navigateFolderInEmbedMode({ page, parentPath: parentPath })
   }
 
   const newFilenameInput = frame.locator('#app-runtime-footer input.oc-text-input')

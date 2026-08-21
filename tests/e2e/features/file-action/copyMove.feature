@@ -20,6 +20,7 @@ Feature: Copy
       | PARENT/Sub3           |
       | PARENT/Sub4           |
       | PARENT/Sub5           |
+      | PARENT/my-docs        |
     And "Alice" creates the following files into personal space using API
       | pathToFile               | content                             |
       | PARENTCopy3/example1.txt | example text                        |
@@ -32,13 +33,14 @@ Feature: Copy
       | PARENT/fileToCopy3.txt   | some content                        |
       | PARENT/fileToCopy4.txt   | some content                        |
       | PARENT/fileToCopy5.txt   | some content                        |
+      | PARENT/my-docs/lorem.txt | lorem epsum                         |
     And "Alice" logs in
     And "Alice" reduces the tile size
 
     When "Alice" copies the following resource using sidebar-panel
       | resource    | to          |
       | sidebar.txt | Personal/PARENTCopy2 |
-    And "Alice" copies the following resource using dropdown-menu
+    And "Alice" copies the following resource using batch-action
       | resource                 | to          |
       | PARENTCopy3/example1.txt | Personal/PARENTCopy1 |
     And "Alice" copies the following resource using batch-action
@@ -47,6 +49,10 @@ Feature: Copy
     And "Alice" copies the following resource using keyboard
       | resource            | to          |
       | KeyboardExample.txt | Personal/PARENTCopy3 |
+    And "Alice" copies the following resource to a new folder "Personal/new-folder"
+      | resource                 |
+      | PARENTCopy3/example1.txt |
+
     And "Alice" moves the following resource using drag-drop
       | resource     | to          |
       | dragDrop.txt | PARENTCopy2 |
@@ -67,6 +73,10 @@ Feature: Copy
     And "Alice" moves the following resource using drag-drop-breadcrumb
       | resource | to          |
       | Sub2     | PARENTCopy4 |
+    And "Alice" navigates to the personal space page
+    And "Alice" moves the following resource to a new folder "Personal/another-folder"
+      | resource       |
+      | PARENT/my-docs |
 
     And "Alice" opens the "files" app
     And "Alice" opens folder "PARENT"
