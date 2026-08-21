@@ -1,5 +1,4 @@
-import isEqual from 'lodash-es/isEqual'
-import { cacheService } from '../cache'
+import { buildFilePreviewCacheKey, cacheService } from '../cache'
 import { ClientService } from '../client'
 import { encodePath } from '../../utils'
 import { isPublicSpaceResource } from '@opencloud-eu/web-client'
@@ -76,18 +75,15 @@ export class PreviewService {
     signal?: AbortSignal
   ): Promise<string> {
     const { resource, dimensions } = options
-    const hit = cacheService.filePreview.get(resource.id)
+    const key = buildFilePreviewCacheKey(resource.id, dimensions)
+    const hit = cacheService.filePreview.get(key)
 
-    if (hit && hit.etag === resource.etag && isEqual(dimensions, hit.dimensions)) {
+    if (hit && hit.etag === resource.etag) {
       return hit.src
     }
     try {
       const { src, size } = await this.fetchPreviewBlob(options, signal)
-      return cacheService.filePreview.set(
-        resource.id,
-        { src, size, etag: resource.etag, dimensions },
-        0
-      ).src
+      return cacheService.filePreview.set(key, { src, size, etag: resource.etag }, 0).src
     } catch (e) {
       if (silenceErrors) {
         return
