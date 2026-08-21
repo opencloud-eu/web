@@ -29,6 +29,7 @@ tests/testing-app
 playwright-report
 test-results
 playwright-report.zip
+.playwright-mcp/
 
 /webpack.json
 /webpack-build-log.json
