@@ -186,12 +186,12 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       {
         id: 'insert',
         title: $gettext('Insert'),
+        actions: [link(), image(), imageUrl(), imageUpload(), createTable(), menuEmoji(), horizontalRule()]
+      },
+      {
+        id: 'table-tools',
+        title: $gettext('Table tools'),
         actions: [
-          link(),
-          image(),
-          imageUrl(),
-          imageUpload(),
-          createTable(),
           toggleHeaderRow(),
           addRowBefore(),
           addRowAfter(),
@@ -199,9 +199,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           addColumnBefore(),
           addColumnAfter(),
           deleteColumn(),
-          deleteTable(),
-          menuEmoji(),
-          horizontalRule()
+          deleteTable()
         ]
       },
       {
