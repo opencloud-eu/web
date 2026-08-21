@@ -3,7 +3,6 @@ import { Cache } from '../helpers/cache'
 type FilePreviewCacheValue = {
   etag?: string
   src?: string
-  dimensions?: [number, number]
   size?: number
 }
 
@@ -32,11 +31,29 @@ const revokePreview = ({
   }
 }
 
+/** Build a cache key for a file, including its dimensions if provided. */
+export function buildFilePreviewCacheKey(
+  resourceId: string,
+  dimensions?: [number, number]
+): string {
+  return `${resourceId}@${dimensions?.join('x') ?? ''}`
+}
+
 const filePreviewCache = new Cache<string, FilePreviewCacheValue>({
   maxBytes: previewBudget,
   sizeOf: ({ size }) => size || fallbackPreviewSize,
   onEvict: revokePreview
 })
+
+/** Releases all cached previews of a resource. */
+export function releaseFilePreviews(resourceId: string): void {
+  const prefix = buildFilePreviewCacheKey(resourceId)
+  for (const key of filePreviewCache.keys()) {
+    if (key.startsWith(prefix)) {
+      filePreviewCache.delete(key)
+    }
+  }
+}
 
 class CacheService {
   public get filePreview() {
