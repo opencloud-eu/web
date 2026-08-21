@@ -71,7 +71,14 @@ describe('useStrategyTiptapJson', () => {
     it('returns the ProseMirror document as a JSON string', () => {
       const strategy = createStrategy()
       const schema = getSchema(strategy.extensions())
-      const json = {
+      const json: {
+        type: 'doc'
+        content: Array<{
+          type: 'paragraph'
+          attrs: { textAlign: string | null }
+          content: Array<{ type: 'text'; text: string }>
+        }>
+      } = {
         type: 'doc',
         content: [
           {
