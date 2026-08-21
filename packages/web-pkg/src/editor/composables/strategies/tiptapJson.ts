@@ -11,6 +11,7 @@ import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import TextAlign from '@tiptap/extension-text-align'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import {
   BackgroundColor,
@@ -60,6 +61,9 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       TableHeader,
       TaskList,
       TaskItem.configure({ nested: true }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph']
+      }),
       FontFamily,
       TextStyle,
       Underline,
@@ -97,6 +101,10 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     taskList,
     blockquote,
     codeBlock,
+    alignLeft,
+    alignCenter,
+    alignRight,
+    alignJustify,
     horizontalRule,
     link,
     menuEmoji,
@@ -140,6 +148,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           subscript(),
           superscript()
         ]
+      },
+      {
+        id: 'text-align',
+        title: $gettext('Text align'),
+        actions: [alignLeft(), alignCenter(), alignRight(), alignJustify()]
       },
       {
         id: 'lists',

@@ -32,6 +32,7 @@ describe('useStrategyTiptapJson', () => {
       expect(names).toContain('image')
       expect(names).toContain('link')
       expect(names).toContain('fileHandler')
+      expect(names).toContain('textAlign')
       const link = strategy.extensions().find(({ name }) => name === 'link')!
       expect(link.options).toMatchObject({
         openOnClick: false,
@@ -42,6 +43,19 @@ describe('useStrategyTiptapJson', () => {
   })
 
   describe('editorActionGroups', () => {
+    it('includes text align actions', () => {
+      const strategy = createStrategy()
+      const textAlignGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'text-align')
+      expect(textAlignGroup?.actions.map((action) => action.id)).toEqual([
+        'align-left',
+        'align-center',
+        'align-right',
+        'align-justify'
+      ])
+    })
+
     it('shows link in both toolbar and slash commands', () => {
       const action = createStrategy()
         .editorActionGroups()
@@ -57,9 +71,22 @@ describe('useStrategyTiptapJson', () => {
     it('returns the ProseMirror document as a JSON string', () => {
       const strategy = createStrategy()
       const schema = getSchema(strategy.extensions())
-      const json = {
+      const json: {
+        type: 'doc'
+        content: Array<{
+          type: 'paragraph'
+          attrs: { textAlign: string | null }
+          content: Array<{ type: 'text'; text: string }>
+        }>
+      } = {
         type: 'doc',
-        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'hi' }] }]
+        content: [
+          {
+            type: 'paragraph',
+            attrs: { textAlign: null },
+            content: [{ type: 'text', text: 'hi' }]
+          }
+        ]
       }
       expect(strategy.serialize(schema.nodeFromJSON(json))).toBe(JSON.stringify(json))
     })
