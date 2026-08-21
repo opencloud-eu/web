@@ -133,6 +133,12 @@
   opacity: 0.9;
 }
 
+.text-editor-content textarea {
+  font-size: calc(15px * var(--text-editor-zoom-factor));
+  line-height: 1.6;
+}
+
+/* Codeblock styles */
 .text-editor-content .ProseMirror pre {
   font-family:
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
@@ -172,11 +178,6 @@
   display: inline;
   margin: 0;
   padding: 0;
-}
-
-.text-editor-content textarea {
-  font-size: calc(15px * var(--text-editor-zoom-factor));
-  line-height: 1.6;
 }
 
 /* Table styles */

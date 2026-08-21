@@ -50,14 +50,10 @@ import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'v
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import { useGettext } from 'vue3-gettext'
-import { storeToRefs } from 'pinia'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
 import type { TextEditorInstance } from '../types'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
-import { useThemeStore } from '../../composables'
-import atomOneDarkThemeUrl from 'highlight.js/styles/atom-one-dark.css?url'
-import atomOneLightThemeUrl from 'highlight.js/styles/atom-one-light.css?url'
 
 const { editor = undefined } = defineProps<{
   editor?: TextEditorInstance
@@ -65,8 +61,6 @@ const { editor = undefined } = defineProps<{
 
 const { $gettext } = useGettext()
 const { isMobile } = useIsMobile()
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
@@ -77,10 +71,6 @@ const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
   return `${(unref(textEditor.state.editorZoom) || 100) / 100}`
 })
-const isDarkTheme = computed(() => {
-  return Boolean(unref(currentTheme)?.isDark)
-})
-const hljsThemeStylesheetId = 'oc-text-editor-hljs-theme'
 
 const hasSlashCommands = computed(() => {
   const editor = unref(textEditor.editor)
@@ -157,26 +147,6 @@ watch(isSourceMode, async () => {
     return
   }
 })
-
-watch(
-  isDarkTheme,
-  (isDark) => {
-    if (typeof document === 'undefined') {
-      return
-    }
-
-    let stylesheet = document.getElementById(hljsThemeStylesheetId) as HTMLLinkElement | null
-    if (!stylesheet) {
-      stylesheet = document.createElement('link')
-      stylesheet.id = hljsThemeStylesheetId
-      stylesheet.rel = 'stylesheet'
-      document.head.appendChild(stylesheet)
-    }
-
-    stylesheet.href = isDark ? atomOneDarkThemeUrl : atomOneLightThemeUrl
-  },
-  { immediate: true }
-)
 </script>
 
 <style>
