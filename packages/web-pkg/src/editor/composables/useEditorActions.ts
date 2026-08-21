@@ -187,6 +187,8 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Align left'),
     icon: 'align-left',
     toolbarAction: (editor) => editor.chain().focus().setTextAlign('left').run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setTextAlign('left').run(),
     isActive: (editor) => editor.isActive({ textAlign: 'left' })
   })
 
@@ -195,6 +197,8 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Align center'),
     icon: 'align-center',
     toolbarAction: (editor) => editor.chain().focus().setTextAlign('center').run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setTextAlign('center').run(),
     isActive: (editor) => editor.isActive({ textAlign: 'center' })
   })
 
@@ -203,6 +207,8 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Align right'),
     icon: 'align-right',
     toolbarAction: (editor) => editor.chain().focus().setTextAlign('right').run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setTextAlign('right').run(),
     isActive: (editor) => editor.isActive({ textAlign: 'right' })
   })
 
@@ -211,7 +217,26 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Align justify'),
     icon: 'align-justify',
     toolbarAction: (editor) => editor.chain().focus().setTextAlign('justify').run(),
+    slashCommandAction: ({ editor, range }) =>
+      editor.chain().focus().deleteRange(range).setTextAlign('justify').run(),
     isActive: (editor) => editor.isActive({ textAlign: 'justify' })
+  })
+
+  const textAlign = (): EditorAction => ({
+    id: 'text-align',
+    title: $gettext('Text align'),
+    icon: 'align-left',
+    showInSlashCommands: false,
+    childActions: [alignLeft(), alignCenter(), alignRight(), alignJustify()],
+    activeIcon: (editor) => {
+      const action = [alignJustify(), alignRight(), alignCenter(), alignLeft()].find((candidate) =>
+        candidate.isActive?.(editor)
+      )
+      if (!action?.icon) {
+        return undefined
+      }
+      return { icon: action.icon }
+    }
   })
 
   const textColor = (): EditorAction => ({
@@ -979,6 +1004,7 @@ export function useEditorActions(state: TextEditorState) {
     heading4,
     fontSize,
     textColor,
+    textAlign,
     alignLeft,
     alignCenter,
     alignRight,

@@ -388,6 +388,14 @@ describe('useEditorActions', () => {
           expect(editor._chain.run).toHaveBeenCalled()
         })
 
+        it('slashCommandAction deletes range then sets the correct text alignment', () => {
+          const editor = createMockEditor()
+          actions[name]().slashCommandAction!({ editor, range: mockRange })
+          expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+          expect(editor._chain.setTextAlign).toHaveBeenCalledWith(alignment)
+          expect(editor._chain.run).toHaveBeenCalled()
+        })
+
         it('isActive checks the correct alignment', () => {
           const editor = createMockEditor({
             isActive: (attrs) => (attrs as { textAlign?: string } | null)?.textAlign === alignment
@@ -396,6 +404,26 @@ describe('useEditorActions', () => {
         })
       })
     }
+  })
+
+  describe('textAlign menu action', () => {
+    it('contains all text alignment actions as child actions', () => {
+      const action = actions.textAlign()
+      expect(action.showInSlashCommands).toBe(false)
+      expect(action.childActions?.map((child) => child.id)).toEqual([
+        'align-left',
+        'align-center',
+        'align-right',
+        'align-justify'
+      ])
+    })
+
+    it('activeIcon reflects the current active alignment', () => {
+      const editor = createMockEditor({
+        isActive: (attrs) => (attrs as { textAlign?: string } | null)?.textAlign === 'right'
+      })
+      expect(actions.textAlign().activeIcon?.(editor)).toEqual({ icon: 'align-right' })
+    })
   })
 
   describe('list actions', () => {
