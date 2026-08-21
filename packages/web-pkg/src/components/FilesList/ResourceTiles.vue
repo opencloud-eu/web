@@ -294,7 +294,7 @@ const updateViewWidth = () => {
 const gapSizePixels = computed(() => {
   return parseFloat(getComputedStyle(document.documentElement).fontSize)
 })
-const { calculateTileSizePixels } = useTileSize()
+const { calculateTileSizePixels, setRenderedTileSize } = useTileSize()
 const maxTilesAll = computed<number[]>(() => {
   const viewSizes = [...Array(FolderViewModeConstants.tilesSizeMax).keys()].map((i) => i + 1)
   return [
@@ -328,6 +328,7 @@ watch(
   tileSizePixels,
   (px: number | undefined) => {
     if (px && !isNaN(px)) {
+      setRenderedTileSize(px)
       document.documentElement.style.setProperty(`--oc-size-tiles-actual`, `${px}px`)
     }
   },

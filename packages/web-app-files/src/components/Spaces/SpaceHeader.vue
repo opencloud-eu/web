@@ -284,7 +284,7 @@ watch(
     imageContent.value = await loadPreview({
       space,
       resource: space.spaceImageData ? buildSpaceImageResource(space) : space,
-      dimensions: ImageDimension.Tile,
+      dimensions: ImageDimension.Preview, // request full preview because image can be expanded
       processor: ProcessorType.enum.fit,
       cancelRunning: true,
       updateStore: false
