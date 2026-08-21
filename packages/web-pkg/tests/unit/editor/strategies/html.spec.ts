@@ -71,6 +71,40 @@ describe('useStrategyHtml', () => {
       expect(link.showInSlashCommands).not.toBe(false)
     })
 
+    it('puts text align menu in the text layout group with line height', () => {
+      const strategy = createStrategy()
+      const textLayoutGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'text-layout')
+      const textAlignGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'text-align')
+      expect(textLayoutGroup?.actions.map((action) => action.id)).toEqual([
+        'text-align',
+        'line-height'
+      ])
+      expect(textLayoutGroup?.actions[0].childActions?.map((action) => action.id)).toEqual([
+        'align-left',
+        'align-center',
+        'align-right',
+        'align-justify'
+      ])
+      expect(
+        textAlignGroup?.actions
+          .filter((action) => action.id.startsWith('align-'))
+          .every((action) => action.showInToolbar === false)
+      ).toBe(true)
+      const listsGroup = strategy.editorActionGroups().find((group) => group.id === 'lists')
+      expect(listsGroup?.actions.map((action) => action.id)).toEqual([
+        'bullet-list',
+        'ordered-list',
+        'task-list'
+      ])
+      const groupIds = strategy.editorActionGroups().map((group) => group.id)
+      expect(groupIds.indexOf('text-layout')).toBeGreaterThan(groupIds.indexOf('lists'))
+      expect(groupIds.indexOf('text-align')).toBeGreaterThan(groupIds.indexOf('lists'))
+    })
+
     it('includes source mode toggle', () => {
       const strategy = createStrategy()
       const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))
