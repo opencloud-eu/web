@@ -87,6 +87,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24 [[#3092](https://github.com/opencloud-eu/web/pull/3092)]
 - chore(deps): update dependency @tiptap/y-tiptap to v3.0.9 [[#3158](https://github.com/opencloud-eu/web/pull/3158)]
 - chore(deps): update traefik docker tag to v3.7.11 [[#3186](https://github.com/opencloud-eu/web/pull/3186)]
 - fix(deps): update dependency uuid to v14.0.2 [[#3160](https://github.com/opencloud-eu/web/pull/3160)]
