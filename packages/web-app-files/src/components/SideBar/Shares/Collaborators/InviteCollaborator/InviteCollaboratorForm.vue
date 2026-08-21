@@ -157,6 +157,7 @@
 import { debounce } from 'lodash-es'
 import PQueue from 'p-queue'
 import Mark from 'mark.js'
+import * as EmailValidator from 'email-validator'
 import { storeToRefs } from 'pinia'
 import AutocompleteItem from './AutocompleteItem.vue'
 import RoleDropdown from '../RoleDropdown.vue'
@@ -357,14 +358,27 @@ const fetchRecipientsTask = useTask(function* (signal, query: string) {
   })) as CollaboratorAutoCompleteItem[]
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const guests = isSpace
+  const contacts = isSpace
     ? []
     : ((yield* call(searchOpenXchangeContacts(query, signal))) as CollaboratorAutoCompleteItem[])
 
-  autocompleteResults.value = [...users, ...groups, ...guests].filter(
+  const trimmedQuery = (query || '').trim()
+  // offer the entered value as a guest recipient once it is a valid email address, unless it already
+  // belongs to a known account (which is suggested as a regular user instead)
+  const emailBelongsToAccount = users.some((u) =>
+    [u.mail?.toLowerCase(), u.onPremisesSamAccountName?.toLowerCase()].includes(
+      trimmedQuery.toLowerCase()
+    )
+  )
+  const guests: CollaboratorAutoCompleteItem[] =
+    !emailBelongsToAccount && EmailValidator.validate(trimmedQuery)
+      ? [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.mail.value }]
+      : []
+
+  autocompleteResults.value = [...users, ...groups, ...contacts, ...guests].filter(
     (collaborator: CollaboratorAutoCompleteItem) => {
       if (collaborator.id === userStore.user.id) {
-        // filter current user
+        // exclude logged-in user
         return false
       }
 
@@ -423,7 +437,20 @@ const share = async () => {
       return
     }
 
-    const type = shareType === ShareTypes.group.value ? 'group' : 'user'
+    // the group/mail share type keys map 1:1 to the graph recipient type; everything else
+    // (regular users, federated/remote recipients, unknown types) is invited as a user
+    const recipientType = [ShareTypes.group.value, ShareTypes.mail.value].includes(shareType)
+      ? ShareTypes.getByValue(shareType).key
+      : ShareTypes.user.key
+
+    // guests are internal-style shares and must never receive a federated role, so fall back to
+    // the first internal role when a guest is invited from the external share mode
+    // FIXME: clean up internal vs external shares :-(
+    let roleId = unref(selectedRole).id
+    if (shareType === ShareTypes.mail.value && unref(isExternalShareRoleType)) {
+      roleId = unref(availableInternalRoles)[0]?.id
+    }
+
     savePromises.push(
       saveQueue.add(async () => {
         try {
@@ -432,12 +459,12 @@ const share = async () => {
             space: unref(space),
             resource: unref(resource),
             options: {
-              roles: [unref(selectedRole).id],
+              roles: [roleId],
               expirationDateTime: unref(expirationDate),
               recipients: [
                 {
                   objectId: id,
-                  '@libre.graph.recipient.type': type
+                  '@libre.graph.recipient.type': recipientType
                 }
               ]
             }

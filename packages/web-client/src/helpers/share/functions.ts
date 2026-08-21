@@ -305,6 +305,9 @@ function getShareTypeFromPermission({ link, grantedToV2 }: Permission) {
   if (grantedToV2?.group) {
     return ShareTypes.group.value
   }
+  if (grantedToV2?.user?.['@libre.graph.userType'] === 'mail') {
+    return ShareTypes.mail.value
+  }
   if (grantedToV2?.user?.['@libre.graph.userType'] === 'Federated') {
     return ShareTypes.remote.value
   }

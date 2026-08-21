@@ -55,7 +55,7 @@ import { getTailwindGapClass } from '../../helpers/tailwind'
 type Item = {
   displayName?: string
   name?: string
-  avatarType?: 'user' | 'link' | 'remote' | 'group' | 'guest' | string
+  avatarType?: 'user' | 'link' | 'remote' | 'group' | 'mail' | string
   userName?: string
   avatar?: string
   userId?: string
@@ -187,7 +187,7 @@ const getAvatarComponentForItem = (item: Item) => {
       return OcAvatarFederated
     case 'group':
       return OcAvatarGroup
-    case 'guest':
+    case 'mail':
       return OcAvatarGuest
   }
 }
