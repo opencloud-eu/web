@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(web-pkg): move text align into toolbar submenu [[#3196](https://github.com/opencloud-eu/web/pull/3196)]
 - feat(web-pkg): add text align support to tiptap-json strategy [[#3195](https://github.com/opencloud-eu/web/pull/3195)]
 - feat(web-runtime): add sponsor emoji transition on hover [[#3191](https://github.com/opencloud-eu/web/pull/3191)]
 - Rename extensions to apps in admin and account settings [[#3190](https://github.com/opencloud-eu/web/pull/3190)]
