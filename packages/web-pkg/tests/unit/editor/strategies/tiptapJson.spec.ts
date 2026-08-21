@@ -43,17 +43,26 @@ describe('useStrategyTiptapJson', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('includes text align actions', () => {
+    it('puts text align menu at the beginning of the lists group', () => {
       const strategy = createStrategy()
+      const listsGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'lists')
       const textAlignGroup = strategy
         .editorActionGroups()
         .find((group) => group.id === 'text-align')
-      expect(textAlignGroup?.actions.map((action) => action.id)).toEqual([
+      expect(listsGroup?.actions[0].id).toBe('text-align')
+      expect(listsGroup?.actions[0].childActions?.map((action) => action.id)).toEqual([
         'align-left',
         'align-center',
         'align-right',
         'align-justify'
       ])
+      expect(
+        textAlignGroup?.actions
+          .filter((action) => action.id.startsWith('align-'))
+          .every((action) => action.showInToolbar === false)
+      ).toBe(true)
     })
 
     it('shows link in both toolbar and slash commands', () => {

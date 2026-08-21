@@ -71,6 +71,26 @@ describe('useStrategyHtml', () => {
       expect(link.showInSlashCommands).not.toBe(false)
     })
 
+    it('puts text align menu at the beginning of the lists group', () => {
+      const strategy = createStrategy()
+      const listsGroup = strategy.editorActionGroups().find((group) => group.id === 'lists')
+      const textAlignGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'text-align')
+      expect(listsGroup?.actions[0].id).toBe('text-align')
+      expect(listsGroup?.actions[0].childActions?.map((action) => action.id)).toEqual([
+        'align-left',
+        'align-center',
+        'align-right',
+        'align-justify'
+      ])
+      expect(
+        textAlignGroup?.actions
+          .filter((action) => action.id.startsWith('align-'))
+          .every((action) => action.showInToolbar === false)
+      ).toBe(true)
+    })
+
     it('includes source mode toggle', () => {
       const strategy = createStrategy()
       const allIds = strategy.editorActionGroups().flatMap((g) => g.actions.map((a) => a.id))

@@ -102,6 +102,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     heading4,
     blockquote,
     codeBlock,
+    textAlign,
     alignLeft,
     alignCenter,
     alignRight,
@@ -166,12 +167,17 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       {
         id: 'text-align',
         title: $gettext('Text align'),
-        actions: [alignLeft(), alignCenter(), alignRight(), alignJustify()]
+        actions: [
+          { ...alignLeft(), showInToolbar: false },
+          { ...alignCenter(), showInToolbar: false },
+          { ...alignRight(), showInToolbar: false },
+          { ...alignJustify(), showInToolbar: false }
+        ]
       },
       {
         id: 'lists',
         title: $gettext('Lists'),
-        actions: [bulletList(), orderedList(), taskList()]
+        actions: [textAlign(), bulletList(), orderedList(), taskList()]
       },
       {
         id: 'insert',

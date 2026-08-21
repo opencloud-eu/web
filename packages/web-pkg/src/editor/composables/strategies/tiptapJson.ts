@@ -101,6 +101,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     taskList,
     blockquote,
     codeBlock,
+    textAlign,
     alignLeft,
     alignCenter,
     alignRight,
@@ -152,12 +153,17 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       {
         id: 'text-align',
         title: $gettext('Text align'),
-        actions: [alignLeft(), alignCenter(), alignRight(), alignJustify()]
+        actions: [
+          { ...alignLeft(), showInToolbar: false },
+          { ...alignCenter(), showInToolbar: false },
+          { ...alignRight(), showInToolbar: false },
+          { ...alignJustify(), showInToolbar: false }
+        ]
       },
       {
         id: 'lists',
         title: $gettext('Lists'),
-        actions: [bulletList(), orderedList(), taskList()]
+        actions: [textAlign(), bulletList(), orderedList(), taskList()]
       },
       {
         id: 'blocks',
