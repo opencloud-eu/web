@@ -186,7 +186,15 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       {
         id: 'insert',
         title: $gettext('Insert'),
-        actions: [link(), image(), imageUrl(), imageUpload(), createTable(), menuEmoji(), horizontalRule()]
+        actions: [
+          link(),
+          image(),
+          imageUrl(),
+          imageUpload(),
+          createTable(),
+          menuEmoji(),
+          horizontalRule()
+        ]
       },
       {
         id: 'table-tools',

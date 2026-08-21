@@ -74,7 +74,9 @@ describe('useStrategyHtml', () => {
     it('puts table editing actions into a dedicated table tools group', () => {
       const strategy = createStrategy()
       const insertGroup = strategy.editorActionGroups().find((group) => group.id === 'insert')
-      const tableToolsGroup = strategy.editorActionGroups().find((group) => group.id === 'table-tools')
+      const tableToolsGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'table-tools')
 
       expect(insertGroup?.actions.map((action) => action.id)).toContain('table')
       expect(insertGroup?.actions.map((action) => action.id)).not.toContain('add-row-before')

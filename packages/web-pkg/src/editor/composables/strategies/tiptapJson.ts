@@ -175,7 +175,15 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       {
         id: 'insert',
         title: $gettext('Insert'),
-        actions: [link(), image(), imageUrl(), imageUpload(), createTable(), menuEmoji(), horizontalRule()]
+        actions: [
+          link(),
+          image(),
+          imageUrl(),
+          imageUpload(),
+          createTable(),
+          menuEmoji(),
+          horizontalRule()
+        ]
       },
       {
         id: 'table-tools',
