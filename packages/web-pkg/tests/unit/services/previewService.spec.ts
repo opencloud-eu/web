@@ -1,4 +1,4 @@
-import { ClientService, PreviewService } from '../../../src/services'
+import { cacheService, ClientService, PreviewService } from '../../../src/services'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -153,6 +153,37 @@ describe('PreviewService', () => {
         )
         expect(preview).toEqual(cachedPreview)
         expect(clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+      })
+      it('stores the blob size so cached previews count towards the budget', async () => {
+        const supportedMimeTypes = ['image/png']
+        const { previewService, clientService } = getWrapper({
+          supportedMimeTypes,
+          version: '1'
+        })
+        clientService.httpAuthenticated.get.mockResolvedValue({
+          data: mock<Blob>({ size: 4096 }),
+          status: 200
+        } as AxiosResponse)
+        window.URL.createObjectURL = vi.fn().mockImplementation(() => 'objectUrl')
+
+        await previewService.loadPreview(
+          {
+            space: mock<SpaceResource>(),
+            resource: mock<Resource>({
+              id: '2',
+              mimeType: supportedMimeTypes[0],
+              webDavPath: '/',
+              etag: '',
+              hasPreview: () => true,
+              canDownload: () => true
+            })
+          },
+          true
+        )
+
+        expect(cacheService.filePreview.get('2')).toEqual(
+          expect.objectContaining({ src: 'objectUrl', size: 4096 })
+        )
       })
     })
     describe('public files', () => {

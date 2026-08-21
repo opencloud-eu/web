@@ -4,7 +4,20 @@ type FilePreviewCacheValue = {
   etag?: string
   src?: string
   dimensions?: [number, number]
+  size?: number
 }
+
+/**
+ * Budget for cached previews. Sized to hold several folders worth of tile previews
+ * so navigating back does not re-fetch; table thumbnails are nearly free.
+ */
+const previewBudget = 150 * 1024 * 1024 // 150 MB
+
+/**
+ * Entries without a known blob size still need to count towards the budget,
+ * otherwise they could grow it without bound.
+ */
+const fallbackPreviewSize = 100 * 1024 // 100 KB
 
 const revokePreview = ({
   replacedValue,
@@ -20,8 +33,8 @@ const revokePreview = ({
 }
 
 const filePreviewCache = new Cache<string, FilePreviewCacheValue>({
-  ttl: 10 * 1000,
-  capacity: 250,
+  maxBytes: previewBudget,
+  sizeOf: ({ size }) => size || fallbackPreviewSize,
   onEvict: revokePreview
 })
 
