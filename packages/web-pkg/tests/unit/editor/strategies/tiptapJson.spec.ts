@@ -45,7 +45,9 @@ describe('useStrategyTiptapJson', () => {
   describe('editorActionGroups', () => {
     it('includes text align actions', () => {
       const strategy = createStrategy()
-      const textAlignGroup = strategy.editorActionGroups().find((group) => group.id === 'text-align')
+      const textAlignGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'text-align')
       expect(textAlignGroup?.actions.map((action) => action.id)).toEqual([
         'align-left',
         'align-center',
