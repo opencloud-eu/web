@@ -28,6 +28,7 @@ import { useGettext } from 'vue3-gettext'
 import { markRaw, unref } from 'vue'
 import { fileSideBarExtensionPoint } from '../../extensionPoints'
 import AudioMetaPanel from '../../components/SideBar/Audio/AudioMetaPanel.vue'
+import MetadataPanel from '../../components/SideBar/Metadata/MetadataPanel.vue'
 import { isEmpty } from 'lodash-es'
 
 export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resource, Resource>[] => {
@@ -174,6 +175,23 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
             return false
           }
           return !isEmpty(item.audio)
+        }
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.sidebar-panel.metadata',
+      type: 'sidebarPanel',
+      extensionPointIds: ['global.files.sidebar'],
+      panel: {
+        name: 'metadata',
+        icon: 'price-tag-3',
+        title: () => $gettext('Metadata'),
+        component: MetadataPanel,
+        isVisible: ({ items }) => {
+          if (items?.length !== 1) {
+            return false
+          }
+          return !isProjectSpaceResource(items[0])
         }
       }
     },
