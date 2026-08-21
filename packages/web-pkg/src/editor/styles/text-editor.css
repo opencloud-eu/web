@@ -138,18 +138,40 @@
     ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
   font-size: calc(14px * var(--text-editor-zoom-factor));
+  background: var(--oc-role-surface-container);
   padding: 8px 12px;
   border-radius: 6px;
-  background: rgba(148, 163, 184, 0.12);
   overflow-x: auto;
 }
 
-.text-editor-content .ProseMirror code {
-  font-family: inherit;
-  font-size: 0.875em;
-  padding: 2px 4px;
-  border-radius: 4px;
-  background: rgba(148, 163, 184, 0.18);
+.text-editor-content .ProseMirror .code-block {
+  position: relative;
+  margin: 8px 0;
+}
+
+.text-editor-content .ProseMirror .code-block .text-editor-code-block-language {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  z-index: 1;
+  min-width: 130px;
+  max-width: calc(100% - 24px);
+}
+
+.text-editor-content .ProseMirror .code-block .text-editor-code-block-select .vs__dropdown-menu {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.text-editor-content .ProseMirror .code-block .text-editor-code-block-select .vs__dropdown-option {
+  margin: 0;
+}
+
+.text-editor-content .ProseMirror .code-block pre code > [data-node-view-content] {
+  display: inline;
+  margin: 0;
+  padding: 0;
 }
 
 .text-editor-content textarea {
