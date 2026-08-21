@@ -7,7 +7,7 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { FolderViewModeConstants } from '../viewMode'
+import { FolderViewModeConstants, useTileSize } from '../viewMode'
 import { usePreviewService } from '../previewService'
 import { ProcessorType } from '../../services'
 import { useResourcesStore, useSpacesStore } from '../piniaStores'
@@ -44,8 +44,9 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
   const defaultProcessor = computed(() =>
     unref(isTilesView) ? ProcessorType.enum.fit : ProcessorType.enum.thumbnail
   )
-  const defaultDimensions = computed(() =>
-    unref(isTilesView) ? ImageDimension.Tile : ImageDimension.Thumbnail
+  const { previewDimensions } = useTileSize()
+  const defaultDimensions = computed<[number, number]>(() =>
+    unref(isTilesView) ? unref(previewDimensions) : ImageDimension.Thumbnail
   )
 
   const loadPreviewTask = useTask<string, LoadPreviewOptions[]>(function* (

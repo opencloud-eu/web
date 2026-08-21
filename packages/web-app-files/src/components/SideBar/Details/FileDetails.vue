@@ -358,7 +358,7 @@ watch(
       preview.value = await loadPreview({
         space: unref(space),
         resource: unref(resource),
-        dimensions: ImageDimension.Preview,
+        dimensions: ImageDimension.Medium,
         cancelRunning: true,
         updateStore: false
       })

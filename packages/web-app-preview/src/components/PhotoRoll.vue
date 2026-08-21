@@ -38,7 +38,7 @@ const onItemVisible = (item: MediaFile) => {
     resource: item.resource,
     space: getMatchingSpace(item.resource),
     processor: ProcessorType.enum.fit,
-    dimensions: ImageDimension.Tile
+    dimensions: ImageDimension.Small
   })
 }
 

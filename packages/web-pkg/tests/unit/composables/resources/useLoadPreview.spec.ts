@@ -5,7 +5,7 @@ import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/
 import { useLoadPreview } from '../../../../src/composables/resources'
 import { usePreviewService } from '../../../../src/composables/previewService'
 import { PreviewService, ProcessorType } from '../../../../src/services'
-import { FolderViewModeConstants, ImageDimension } from '../../../../src'
+import { FolderViewModeConstants, ImageDimension, useTileSize } from '../../../../src'
 import { useSpacesStore } from '../../../../src/composables/piniaStores'
 
 vi.mock('../../../../src/composables/previewService/usePreviewService')
@@ -15,6 +15,11 @@ vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
 }))
 
 describe('useLoadPreview', () => {
+  afterEach(() => {
+    window.devicePixelRatio = 1
+    useTileSize().setRenderedTileSize(0)
+  })
+
   describe('loadPreview', () => {
     it('returns a loaded preview for a given file', () => {
       const loadedPreview = 'blob:image'
@@ -107,14 +112,86 @@ describe('useLoadPreview', () => {
           }
         })
       })
-      it('uses tile default dimensions in tiles view', () => {
+      it('uses the maximum tile dimensions in tiles view while no tile has been rendered', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
             const resource = mock<Resource>({ isInVault: false })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
-              expect.objectContaining({ dimensions: ImageDimension.Tile }),
+              expect.objectContaining({ dimensions: [768, 768] }),
+              expect.anything(),
+              expect.anything(),
+              expect.anything()
+            )
+          },
+          viewMode: FolderViewModeConstants.name.tiles
+        })
+      })
+      it('derives the tile dimensions from the rendered tile size', () => {
+        window.devicePixelRatio = 1
+        useTileSize().setRenderedTileSize(400)
+        getWrapper({
+          setup: async ({ loadPreview }, { previewService }) => {
+            const space = mock<SpaceResource>()
+            const resource = mock<Resource>({ isInVault: false })
+            await loadPreview({ space, resource })
+            expect(previewService.loadPreview).toHaveBeenCalledWith(
+              expect.objectContaining({ dimensions: [448, 448] }),
+              expect.anything(),
+              expect.anything(),
+              expect.anything()
+            )
+          },
+          viewMode: FolderViewModeConstants.name.tiles
+        })
+      })
+      it('does not go below the minimum tile dimensions', () => {
+        window.devicePixelRatio = 1
+        useTileSize().setRenderedTileSize(150)
+        getWrapper({
+          setup: async ({ loadPreview }, { previewService }) => {
+            const space = mock<SpaceResource>()
+            const resource = mock<Resource>({ isInVault: false })
+            await loadPreview({ space, resource })
+            expect(previewService.loadPreview).toHaveBeenCalledWith(
+              expect.objectContaining({ dimensions: [320, 320] }),
+              expect.anything(),
+              expect.anything(),
+              expect.anything()
+            )
+          },
+          viewMode: FolderViewModeConstants.name.tiles
+        })
+      })
+      it('caps the device pixel ratio the tile dimensions are scaled with', () => {
+        window.devicePixelRatio = 3
+        useTileSize().setRenderedTileSize(300)
+        getWrapper({
+          setup: async ({ loadPreview }, { previewService }) => {
+            const space = mock<SpaceResource>()
+            const resource = mock<Resource>({ isInVault: false })
+            await loadPreview({ space, resource })
+            expect(previewService.loadPreview).toHaveBeenCalledWith(
+              expect.objectContaining({ dimensions: [512, 512] }),
+              expect.anything(),
+              expect.anything(),
+              expect.anything()
+            )
+          },
+          viewMode: FolderViewModeConstants.name.tiles
+        })
+      })
+      it('caps the tile dimensions for large tiles', () => {
+        window.devicePixelRatio = 2
+        useTileSize().setRenderedTileSize(600)
+        getWrapper({
+          setup: async ({ loadPreview }, { previewService }) => {
+            const space = mock<SpaceResource>()
+            const resource = mock<Resource>({ isInVault: false })
+            await loadPreview({ space, resource })
+            expect(previewService.loadPreview).toHaveBeenCalledWith(
+              expect.objectContaining({ dimensions: [768, 768] }),
               expect.anything(),
               expect.anything(),
               expect.anything()

@@ -11,12 +11,16 @@ import { OcFilterChip } from '@opencloud-eu/design-system/components'
 import { useResourcesStore } from '../../../../src'
 
 vi.mock('../../../../src/helpers/contextMenuDropdown')
-vi.mock('../../../../src/composables/viewMode', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  useTileSize: vi.fn().mockReturnValue({
-    calculateTileSizePixels: vi.fn().mockImplementation((viewSize: number) => 100 * viewSize)
-  })
-}))
+vi.mock('../../../../src/composables/viewMode', async (importOriginal) => {
+  const original = await importOriginal<any>()
+  return {
+    ...original,
+    useTileSize: vi.fn().mockImplementation(() => ({
+      ...original.useTileSize(),
+      calculateTileSizePixels: vi.fn().mockImplementation((viewSize: number) => 100 * viewSize)
+    }))
+  }
+})
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
 vi.mock('../../../../src/composables/embedMode', () => ({
