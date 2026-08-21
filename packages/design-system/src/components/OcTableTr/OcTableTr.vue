@@ -39,7 +39,8 @@ const emit = defineEmits([
   'dragleave',
   'dragover',
   'mouseleave',
-  'itemVisible'
+  'itemVisible',
+  'itemHidden'
 ])
 
 const observerTarget = customRef((track, trigger) => {
@@ -64,7 +65,8 @@ const { isVisible } = lazy
   ? useIsVisible({
       ...lazy,
       target: observerTarget as Ref<HTMLElement>,
-      onVisibleCallback: () => emit('itemVisible')
+      onVisibleCallback: () => emit('itemVisible'),
+      onHiddenCallback: () => emit('itemHidden')
     })
   : { isVisible: ref(true) }
 

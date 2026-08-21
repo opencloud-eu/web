@@ -80,6 +80,7 @@
         @dragenter="dropRowStyling(item, false, $event)"
         @dragleave="dropRowStyling(item, true, $event)"
         @item-visible="$emit('itemVisible', item)"
+        @item-hidden="$emit('itemHidden', item)"
       >
         <template v-for="(_, name) in $slots" #[name]="slotProps">
           <slot :name="name" v-bind="slotProps" />
@@ -256,6 +257,11 @@ export interface Emits {
    * @docs Emitted when an item has been scrolled into the view.
    */
   (e: 'itemVisible', item: Item): void
+
+  /**
+   * @docs Emitted when an item has been scrolled out of the view.
+   */
+  (e: 'itemHidden', item: Item): void
 }
 
 export interface Slots {

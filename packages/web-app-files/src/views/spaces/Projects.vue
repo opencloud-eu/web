@@ -83,6 +83,7 @@
                 processor: ProcessorType.enum.fit
               })
             "
+            @item-hidden="dropPreview($event)"
             @update:selected-ids="selectedResourcesIds = $event"
           >
             <template #image="{ resource }">
@@ -341,7 +342,7 @@ watch(selectedResourcesIds, async (ids) => {
     graphClient: clientService.graphAuthenticated
   })
 })
-const { loadPreview } = useLoadPreview(viewMode)
+const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, items, viewMode)

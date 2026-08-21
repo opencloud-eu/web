@@ -13,6 +13,7 @@
     @dragleave.prevent="$emit('dragleave', $event)"
     @dragover.prevent
     @item-visible="$emit('itemVisible')"
+    @item-hidden="$emit('itemHidden')"
   >
     <oc-td
       v-for="(field, tdIndex) in fields"
@@ -114,6 +115,7 @@ defineEmits<{
   (e: 'dragenter', event: DragEvent): void
   (e: 'dragleave', event: DragEvent): void
   (e: 'itemVisible'): void
+  (e: 'itemHidden'): void
 }>()
 
 defineSlots<{

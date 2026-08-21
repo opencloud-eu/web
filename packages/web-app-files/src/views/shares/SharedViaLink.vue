@@ -46,6 +46,7 @@
           :view-size="viewSize"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+          @item-hidden="dropPreview($event)"
           @sort="handleSort"
           @update:selected-ids="selectedResourcesIds = $event"
         >
@@ -125,7 +126,7 @@ const {
 
 const { triggerDefaultAction } = useFileActions()
 
-const { loadPreview } = useLoadPreview(viewMode)
+const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const filterTerm = ref('')
 const filteredItems = computed(() => {

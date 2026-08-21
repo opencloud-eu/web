@@ -34,11 +34,17 @@ type LoadPreviewOptions = {
   updateStore?: boolean
 }
 
+type QueuedPreview = {
+  controller: AbortController
+  isRunning: boolean
+}
+
 export const useLoadPreview = (viewMode?: Ref<string>) => {
   const previewService = usePreviewService()
   const { updateResourceField } = useResourcesStore()
   const spacesStore = useSpacesStore()
   const previewQueue = new PQueue({ concurrency: 4 })
+  const queuedPreviews = new Map<string, QueuedPreview>()
 
   const isTilesView = computed(() => unref(viewMode) === FolderViewModeConstants.name.tiles)
   const defaultProcessor = computed(() =>
@@ -60,32 +66,44 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       spacesStore.addToImagesLoading(space.id)
     }
 
-    const preview = yield previewQueue.add(() =>
-      previewService.loadPreview(
-        {
-          space,
-          resource: item,
-          processor: processor || unref(defaultProcessor),
-          dimensions: dimensions || unref(defaultDimensions)
+    const queued: QueuedPreview = { controller: new AbortController(), isRunning: false }
+    queuedPreviews.set(resource.id, queued)
+
+    try {
+      const preview = yield previewQueue.add(
+        () => {
+          queued.isRunning = true
+          return previewService.loadPreview(
+            {
+              space,
+              resource: item,
+              processor: processor || unref(defaultProcessor),
+              dimensions: dimensions || unref(defaultDimensions)
+            },
+            true,
+            true,
+            signal
+          )
         },
-        true,
-        true,
-        signal
+        { signal: queued.controller.signal }
       )
-    )
 
-    if (preview && updateStore) {
-      updateResourceField({ id: resource.id, field: 'thumbnail', value: preview })
-    }
+      if (preview && updateStore) {
+        updateResourceField({ id: resource.id, field: 'thumbnail', value: preview })
+      }
 
-    if (isSpaceImage) {
-      spacesStore.removeFromImagesLoading(space.id)
+      return preview
+    } finally {
+      queuedPreviews.delete(resource.id)
+
+      if (isSpaceImage) {
+        spacesStore.removeFromImagesLoading(space.id)
+      }
     }
-    return preview
   })
 
   const loadPreview = async (options: LoadPreviewOptions) => {
-    const { resource, cancelRunning } = options
+    const { resource, cancelRunning, updateStore = true } = options
     if (cancelRunning) {
       cancelTasks()
     }
@@ -99,14 +117,37 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       return null
     }
 
+    // already queued or running, no need to load it twice
+    if (queuedPreviews.has(resource.id)) {
+      return
+    }
+
+    // store-backed previews are loaded once, direct callers may want other dimensions
+    if (updateStore && resource.thumbnail) {
+      return resource.thumbnail
+    }
+
     try {
       return await loadPreviewTask.perform(options)
     } catch (e) {
-      // ignore errors on cancel
-      if (e !== 'cancel') {
+      // ignore errors on cancel or when the preview was dropped while queued
+      if (e !== 'cancel' && (e as Error)?.name !== 'AbortError') {
         console.error(e)
       }
     }
+  }
+
+  /**
+   * Remove a still queued preview from the queue, e.g. because the resource left the viewport.
+   * Running requests are left alone, their bytes are already paid for.
+   */
+  const dropPreview = (resource: Resource) => {
+    const queued = queuedPreviews.get(resource.id)
+    if (!queued || queued.isRunning) {
+      return
+    }
+
+    queued.controller.abort()
   }
 
   const previewsLoading = computed(() => loadPreviewTask.isRunning)
@@ -114,10 +155,11 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
   const cancelTasks = () => {
     loadPreviewTask.cancelAll()
     previewQueue.clear()
+    queuedPreviews.clear()
     spacesStore.purgeImagesLoading()
   }
 
   onUnmounted(cancelTasks)
 
-  return { loadPreview, previewsLoading }
+  return { loadPreview, dropPreview, previewsLoading }
 }

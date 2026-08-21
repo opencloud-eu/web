@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { mock } from 'vitest-mock-extended'
+import { mock, MockProxy } from 'vitest-mock-extended'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useLoadPreview } from '../../../../src/composables/resources'
 import { usePreviewService } from '../../../../src/composables/previewService'
@@ -26,7 +26,7 @@ describe('useLoadPreview', () => {
       getWrapper({
         setup: async ({ loadPreview }) => {
           const space = mock<SpaceResource>()
-          const resource = mock<Resource>({ isInVault: false })
+          const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
           const preview = await loadPreview({ space, resource })
           expect(preview).toEqual(loadedPreview)
         },
@@ -69,7 +69,8 @@ describe('useLoadPreview', () => {
             const space = mock<SpaceResource>({
               driveType: 'project',
               isInVault: false,
-              disabled: false
+              disabled: false,
+              thumbnail: undefined
             })
             const resource = space
             const preview = await loadPreview({ space, resource })
@@ -85,7 +86,8 @@ describe('useLoadPreview', () => {
               driveType: 'project',
               isInVault: false,
               disabled: false,
-              spaceImageData: { id: '1' }
+              spaceImageData: { id: '1' },
+              thumbnail: undefined
             })
             const resource = space
             const spacesStore = useSpacesStore()
@@ -101,7 +103,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: ImageDimension.Thumbnail }),
@@ -116,7 +118,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: [768, 768] }),
@@ -134,7 +136,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: [448, 448] }),
@@ -152,7 +154,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: [320, 320] }),
@@ -170,7 +172,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: [512, 512] }),
@@ -188,7 +190,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: [768, 768] }),
@@ -204,7 +206,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource, dimensions: ImageDimension.Preview })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ dimensions: ImageDimension.Preview }),
@@ -221,7 +223,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ processor: ProcessorType.enum.thumbnail }),
@@ -236,7 +238,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ processor: ProcessorType.enum.fit }),
@@ -252,7 +254,7 @@ describe('useLoadPreview', () => {
         getWrapper({
           setup: async ({ loadPreview }, { previewService }) => {
             const space = mock<SpaceResource>()
-            const resource = mock<Resource>({ isInVault: false })
+            const resource = mock<Resource>({ isInVault: false, thumbnail: undefined })
             await loadPreview({ space, resource, processor: ProcessorType.enum.resize })
             expect(previewService.loadPreview).toHaveBeenCalledWith(
               expect.objectContaining({ processor: ProcessorType.enum.resize }),
@@ -265,7 +267,66 @@ describe('useLoadPreview', () => {
       })
     })
   })
+
+  describe('dropPreview', () => {
+    it('drops a preview that is still queued', async () => {
+      let assertions: Promise<void>
+      getWrapper({
+        setup: ({ loadPreview, dropPreview }, { previewService }) => {
+          assertions = (async () => {
+            previewService.loadPreview.mockReturnValue(new Promise(() => {}))
+            const space = mock<SpaceResource>()
+            const running = Array.from({ length: 4 }, (_, i) =>
+              mock<Resource>({ id: `running-${i}`, isInVault: false, thumbnail: undefined })
+            )
+            const queued = mock<Resource>({ id: 'queued', isInVault: false, thumbnail: undefined })
+
+            running.forEach((resource) => loadPreview({ space, resource }))
+            const queuedPreview = loadPreview({ space, resource: queued })
+            await flushQueue()
+            dropPreview(queued)
+
+            expect(await queuedPreview).toBeUndefined()
+            // only the four running previews made it to the preview service
+            expect(previewService.loadPreview).toHaveBeenCalledTimes(4)
+          })()
+        }
+      })
+      await assertions
+    })
+    it('keeps a preview that is already running', async () => {
+      let assertions: Promise<void>
+      getWrapper({
+        setup: ({ loadPreview, dropPreview }, { previewService }) => {
+          assertions = (async () => {
+            let resolvePreview: (preview: string) => void
+            previewService.loadPreview.mockReturnValue(
+              new Promise((resolve) => (resolvePreview = resolve))
+            )
+            const space = mock<SpaceResource>()
+            const resource = mock<Resource>({
+              id: 'running',
+              isInVault: false,
+              thumbnail: undefined
+            })
+
+            const preview = loadPreview({ space, resource })
+            await flushQueue()
+            dropPreview(resource)
+            resolvePreview('blob:image')
+
+            expect(await preview).toEqual('blob:image')
+          })()
+        }
+      })
+      await assertions
+    })
+  })
 })
+
+function flushQueue() {
+  return new Promise((resolve) => setTimeout(resolve))
+}
 
 function getWrapper({
   setup,
@@ -274,7 +335,7 @@ function getWrapper({
 }: {
   setup: (
     instance: ReturnType<typeof useLoadPreview>,
-    mocks: { previewService: PreviewService }
+    mocks: { previewService: MockProxy<PreviewService> }
   ) => void
   loadedPreview?: string
   viewMode?: string
