@@ -178,7 +178,7 @@ services:
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
 
   collabora:
-    image: collabora/code:26.04.2.4.1
+    image: collabora/code:26.04.3.1.1
     environment:
       aliasgroup1: ${OC_URL:-https://host.docker.internal:9200}
       extra_params: --o:ssl.enable=false --o:ssl.ssl_verification=false --o:welcome.enable=false --o:home_mode.enable=true --o:ssl.termination=true --o:net.frame_ancestors=${OC_URL:-https://host.docker.internal:9200} --o:net.lok_allow.host[14]=${OC_URL:-https://host.docker.internal:9200}
