@@ -76,16 +76,16 @@ export class PreviewService {
     signal?: AbortSignal
   ): Promise<string> {
     const { resource, dimensions } = options
-    const hit = cacheService.filePreview.get(resource.id.toString())
+    const hit = cacheService.filePreview.get(resource.id)
 
     if (hit && hit.etag === resource.etag && isEqual(dimensions, hit.dimensions)) {
       return hit.src
     }
     try {
-      const src = await this.privatePreviewBlob(options, false, true, signal)
+      const { src, size } = await this.fetchPreviewBlob(options, signal)
       return cacheService.filePreview.set(
-        resource.id.toString(),
-        { src, etag: resource.etag, dimensions },
+        resource.id,
+        { src, size, etag: resource.etag, dimensions },
         0
       ).src
     } catch (e) {
@@ -114,10 +114,19 @@ export class PreviewService {
     silenceErrors = true,
     signal?: AbortSignal
   ): Promise<string> {
-    const { resource, dimensions, processor } = options
     if (cached) {
       return this.cacheFactory(options, silenceErrors, signal)
     }
+
+    const { src } = await this.fetchPreviewBlob(options, signal)
+    return src
+  }
+
+  private async fetchPreviewBlob(
+    options: LoadPreviewOptions,
+    signal?: AbortSignal
+  ): Promise<{ src: string; size: number }> {
+    const { resource, dimensions, processor } = options
 
     const url = [
       this.configStore.serverUrl,
@@ -132,12 +141,12 @@ export class PreviewService {
         responseType: 'blob',
         signal
       })
-      return window.URL.createObjectURL(data)
+      return { src: window.URL.createObjectURL(data), size: data.size }
     } catch (e) {
       if ([425, 429].includes(e.status)) {
         const retryAfter = e.response?.headers?.['retry-after'] || 5
         await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000))
-        return this.privatePreviewBlob(options, cached, silenceErrors, signal)
+        return this.fetchPreviewBlob(options, signal)
       }
 
       throw e
