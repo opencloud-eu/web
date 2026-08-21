@@ -35,6 +35,7 @@ describe('useStrategyMarkdown', () => {
       expect(names).toContain('image')
       expect(names).toContain('fileHandler')
       expect(names).toContain('findAndReplace')
+      expect(names).toContain('codeBlock')
       expect(names).not.toContain('underline')
 
       const imageExtension = extensions.find((e) => e.name === 'image') as any
@@ -45,6 +46,13 @@ describe('useStrategyMarkdown', () => {
         minHeight: 50,
         alwaysPreserveAspectRatio: true
       })
+    })
+
+    it('configures code block lowlight', () => {
+      const codeBlock = createStrategy()
+        .extensions()
+        .find(({ name }) => name === 'codeBlock') as any
+      expect(codeBlock.options.lowlight).toBeDefined()
     })
 
     it('renders resized images as html img to persist width and height in markdown', () => {
