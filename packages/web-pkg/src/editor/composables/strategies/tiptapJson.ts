@@ -22,9 +22,11 @@ import {
   TextStyle
 } from '@tiptap/extension-text-style'
 import { TextEditorState } from '../../types'
-import { createLinkExtension } from '../../extensions'
-import { imageFileHandlerExtension } from './imageFileHandler'
-import { createCodeBlockLowlight } from './codeBlockLowlight'
+import {
+  createCodeBlockLowlight,
+  createLinkExtension,
+  imageFileHandlerExtension
+} from '../../extensions'
 
 export const useStrategyTiptapJson = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()

@@ -6,13 +6,18 @@ import TextEditorContent from '../../../../src/editor/components/TextEditorConte
 import { EditorActionGroup } from '../../../../src/editor/composables'
 import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
 
-vi.mock('@tiptap/vue-3', () => ({
-  EditorContent: defineComponent({
-    name: 'EditorContent',
-    props: { editor: { type: Object, required: false } },
-    template: '<div class="mock-editor-content" />'
-  })
-}))
+vi.mock('@tiptap/vue-3', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@tiptap/vue-3')>()
+
+  return {
+    ...actual,
+    EditorContent: defineComponent({
+      name: 'EditorContent',
+      props: { editor: { type: Object, required: false } },
+      template: '<div class="mock-editor-content" />'
+    })
+  }
+})
 
 vi.mock('@tiptap/vue-3/menus', () => ({
   BubbleMenu: {
