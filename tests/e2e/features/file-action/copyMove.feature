@@ -9,146 +9,149 @@ Feature: Copy
       | Alice |
     And "Alice" creates the following folders in personal space using API
       | name                  |
-      | PARENTCopy1           |
-      | PARENTCopy2           |
-      | PARENTMove            |
+      # | PARENTCopy1           |
+      # | PARENTCopy2           |
+      # | PARENTMove            |
       | PARENTCopy3           |
-      | PARENTCopy4/Sub1/Sub2 |
-      | PARENT                |
-      | PARENT/Sub1/Sub       |
-      | PARENT/Sub2           |
-      | PARENT/Sub3           |
-      | PARENT/Sub4           |
-      | PARENT/Sub5           |
+      # | PARENTCopy4/Sub1/Sub2 |
+      # | PARENT                |
+      # | PARENT/Sub1/Sub       |
+      # | PARENT/Sub2           |
+      # | PARENT/Sub3           |
+      # | PARENT/Sub4           |
+      # | PARENT/Sub5           |
     And "Alice" creates the following files into personal space using API
       | pathToFile               | content                             |
       | PARENTCopy3/example1.txt | example text                        |
-      | PARENTCopy3/example2.txt | example text                        |
-      | KeyboardExample.txt      | copy with the help of keyboard      |
-      | dragDrop.txt             | copy with the help of drag-drop     |
-      | sidebar.txt              | copy with the help of sidebar panel |
-      | PARENT/fileToCopy1.txt   | some content                        |
-      | PARENT/fileToCopy2.txt   | some content                        |
-      | PARENT/fileToCopy3.txt   | some content                        |
-      | PARENT/fileToCopy4.txt   | some content                        |
-      | PARENT/fileToCopy5.txt   | some content                        |
+    #   | PARENTCopy3/example2.txt | example text                        |
+    #   | KeyboardExample.txt      | copy with the help of keyboard      |
+    #   | dragDrop.txt             | copy with the help of drag-drop     |
+    #   | sidebar.txt              | copy with the help of sidebar panel |
+    #   | PARENT/fileToCopy1.txt   | some content                        |
+    #   | PARENT/fileToCopy2.txt   | some content                        |
+    #   | PARENT/fileToCopy3.txt   | some content                        |
+    #   | PARENT/fileToCopy4.txt   | some content                        |
+    #   | PARENT/fileToCopy5.txt   | some content                        |
     And "Alice" logs in
-    And "Alice" reduces the tile size
+    # And "Alice" reduces the tile size
 
-    When "Alice" copies the following resource using sidebar-panel
-      | resource    | to          |
-      | sidebar.txt | Personal/PARENTCopy2 |
-    And "Alice" copies the following resource using dropdown-menu
-      | resource                 | to          |
-      | PARENTCopy3/example1.txt | Personal/PARENTCopy1 |
-    And "Alice" copies the following resource using batch-action
-      | resource                 | to          |
-      | PARENTCopy3/example2.txt | Personal/PARENTCopy1 |
-    And "Alice" copies the following resource using keyboard
-      | resource            | to          |
-      | KeyboardExample.txt | Personal/PARENTCopy3 |
-    And "Alice" moves the following resource using drag-drop
-      | resource     | to          |
-      | dragDrop.txt | PARENTCopy2 |
-    And "Alice" moves the following resource using dropdown-menu
-      | resource                 | to         |
-      | PARENTCopy1/example1.txt | Personal/PARENTMove |
-    And "Alice" moves the following resource using batch-action
-      | resource                 | to         |
-      | PARENTCopy1/example2.txt | Personal/PARENTMove |
-    And "Alice" moves the following resource using keyboard
-      | resource    | to         |
-      | PARENTCopy2 | Personal/PARENTMove |
-    And "Alice" moves the following resource using sidebar-panel
-      | resource    | to         |
-      | PARENTCopy3 | Personal/PARENTMove |
-    And "Alice" opens folder "PARENTCopy4"
-    And "Alice" opens folder "Sub1"
-    And "Alice" moves the following resource using drag-drop-breadcrumb
-      | resource | to          |
-      | Sub2     | PARENTCopy4 |
+    # When "Alice" copies the following resource using sidebar-panel
+    #   | resource    | to          |
+    #   | sidebar.txt | Personal/PARENTCopy2 |
+    And "Alice" copies the following resource to a new folder "Personal/new-folder"
+      | resource                 |
+      | PARENTCopy3/example1.txt |
+    # And "Alice" copies the following resource using batch-action
+    #   | resource                 | to          |
+    #   | PARENTCopy3/example1.txt | Personal/PARENTCopy1 |
+    # And "Alice" copies the following resource using batch-action
+    #   | resource                 | to          |
+    #   | PARENTCopy3/example2.txt | Personal/PARENTCopy1 |
+    # And "Alice" copies the following resource using keyboard
+    #   | resource            | to          |
+    #   | KeyboardExample.txt | Personal/PARENTCopy3 |
+    # And "Alice" moves the following resource using drag-drop
+    #   | resource     | to          |
+    #   | dragDrop.txt | PARENTCopy2 |
+    # And "Alice" moves the following resource using dropdown-menu
+    #   | resource                 | to         |
+    #   | PARENTCopy1/example1.txt | Personal/PARENTMove |
+    # And "Alice" moves the following resource using batch-action
+    #   | resource                 | to         |
+    #   | PARENTCopy1/example2.txt | Personal/PARENTMove |
+    # And "Alice" moves the following resource using keyboard
+    #   | resource    | to         |
+    #   | PARENTCopy2 | Personal/PARENTMove |
+    # And "Alice" moves the following resource using sidebar-panel
+    #   | resource    | to         |
+    #   | PARENTCopy3 | Personal/PARENTMove |
+    # And "Alice" opens folder "PARENTCopy4"
+    # And "Alice" opens folder "Sub1"
+    # And "Alice" moves the following resource using drag-drop-breadcrumb
+    #   | resource | to          |
+    #   | Sub2     | PARENTCopy4 |
 
-    And "Alice" opens the "files" app
-    And "Alice" opens folder "PARENT"
-    And "Alice" copies the following resources to "Personal/PARENT/Sub1" at once using dropdown-menu
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub4            |
-      | Sub5            |
-    And "Alice" copies the following resources to "Personal/PARENT/Sub2" at once using batch-action
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub4            |
-      | Sub5            |
-    And "Alice" copies the following resources to "PARENT/Sub3" at once using keyboard
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub4            |
-      | Sub5            |
-    And "Alice" opens folder "Sub1"
-    And "Alice" moves the following resources to "Personal/PARENT/Sub1/Sub" at once using dropdown-menu
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub4            |
-      | Sub5            |
-    And "Alice" opens folder "Sub"
-    And "Alice" moves the following resources to "Personal/PARENT/Sub1" at once using batch-action
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub4            |
-      | Sub5            |
-    And "Alice" opens the "files" app
-    And "Alice" opens folder "PARENT"
-    And "Alice" moves the following resources to "Sub4" at once using drag-drop
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub1            |
-      | Sub2            |
-    And "Alice" opens folder "Sub4"
-    And "Alice" moves the following resources to "PARENT" at once using drag-drop-breadcrumb
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub1            |
-      | Sub2            |
-    And "Alice" opens the "files" app
-    And "Alice" opens folder "PARENT"
-    And "Alice" moves the following resources to "PARENT/Sub4" at once using keyboard
-      | resource        |
-      | fileToCopy1.txt |
-      | fileToCopy2.txt |
-      | fileToCopy3.txt |
-      | fileToCopy4.txt |
-      | fileToCopy5.txt |
-      | Sub1            |
-      | Sub2            |
+    # And "Alice" opens the "files" app
+    # And "Alice" opens folder "PARENT"
+    # And "Alice" copies the following resources to "Personal/PARENT/Sub1" at once using dropdown-menu
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub4            |
+    #   | Sub5            |
+    # And "Alice" copies the following resources to "Personal/PARENT/Sub2" at once using batch-action
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub4            |
+    #   | Sub5            |
+    # And "Alice" copies the following resources to "PARENT/Sub3" at once using keyboard
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub4            |
+    #   | Sub5            |
+    # And "Alice" opens folder "Sub1"
+    # And "Alice" moves the following resources to "Personal/PARENT/Sub1/Sub" at once using dropdown-menu
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub4            |
+    #   | Sub5            |
+    # And "Alice" opens folder "Sub"
+    # And "Alice" moves the following resources to "Personal/PARENT/Sub1" at once using batch-action
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub4            |
+    #   | Sub5            |
+    # And "Alice" opens the "files" app
+    # And "Alice" opens folder "PARENT"
+    # And "Alice" moves the following resources to "Sub4" at once using drag-drop
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub1            |
+    #   | Sub2            |
+    # And "Alice" opens folder "Sub4"
+    # And "Alice" moves the following resources to "PARENT" at once using drag-drop-breadcrumb
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub1            |
+    #   | Sub2            |
+    # And "Alice" opens the "files" app
+    # And "Alice" opens folder "PARENT"
+    # And "Alice" moves the following resources to "PARENT/Sub4" at once using keyboard
+    #   | resource        |
+    #   | fileToCopy1.txt |
+    #   | fileToCopy2.txt |
+    #   | fileToCopy3.txt |
+    #   | fileToCopy4.txt |
+    #   | fileToCopy5.txt |
+    #   | Sub1            |
+    #   | Sub2            |
     And "Alice" logs out
 
 

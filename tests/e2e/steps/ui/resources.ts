@@ -215,6 +215,25 @@ When(
 )
 
 When(
+  '{string} copies the following resource to a new folder {string}',
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    newLocation: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourcePath = stepTable.rows().flat().pop()
+
+    await resourceObject.copyResourcesWithCreateDestination({
+      resourcePath,
+      newLocation
+    })
+  }
+)
+
+When(
   '{string} restores following resource(s) version',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })

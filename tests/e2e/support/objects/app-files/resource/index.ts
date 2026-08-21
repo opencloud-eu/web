@@ -92,6 +92,18 @@ export class Resource {
     await this.#page.goto(startUrl)
   }
 
+  async copyResourcesWithCreateDestination({
+    resourcePath,
+    newLocation
+  }: {
+    resourcePath: string
+    newLocation: string
+  }) {
+    // const startUrl = this.#page.url()
+    await po.copyResourcesWithCreateDestination({ page: this.#page, resourcePath, newLocation })
+    // await this.#page.goto(startUrl)
+  }
+
   async moveMultipleResources(args: Omit<po.moveOrCopyMultipleResourceArgs, 'page' | 'action'>) {
     const startUrl = this.#page.url()
     await po.moveOrCopyMultipleResources({ ...args, page: this.#page, action: 'move' })
