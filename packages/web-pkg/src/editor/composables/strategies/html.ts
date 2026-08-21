@@ -153,7 +153,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           blockquote(),
           codeBlock(),
           fontSize(),
-          lineHeight(),
           textColor(),
           backgroundColor(),
           bold(),
@@ -165,6 +164,16 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         ]
       },
       {
+        id: 'lists',
+        title: $gettext('Lists'),
+        actions: [bulletList(), orderedList(), taskList()]
+      },
+      {
+        id: 'text-layout',
+        title: $gettext('Text layout'),
+        actions: [textAlign(), lineHeight()]
+      },
+      {
         id: 'text-align',
         title: $gettext('Text align'),
         actions: [
@@ -173,11 +182,6 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           { ...alignRight(), showInToolbar: false },
           { ...alignJustify(), showInToolbar: false }
         ]
-      },
-      {
-        id: 'lists',
-        title: $gettext('Lists'),
-        actions: [textAlign(), bulletList(), orderedList(), taskList()]
       },
       {
         id: 'insert',
