@@ -62,6 +62,7 @@
               @file-dropped="fileDropped"
               @file-click="triggerDefaultAction"
               @item-visible="loadPreview({ space, resource: $event })"
+              @item-hidden="dropPreview($event)"
               @sort="handleSort"
               @update:selected-ids="selectedResourcesIds = $event"
             >
@@ -357,7 +358,7 @@ const {
   folderViewExtensionPoint: folderViewsFolderExtensionPoint
 })
 
-const { loadPreview } = useLoadPreview(viewMode)
+const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)

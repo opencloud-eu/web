@@ -78,6 +78,7 @@
               ...(isProjectSpaceResource($event) && { processor: ProcessorType.enum.fit })
             })
           "
+          @item-hidden="dropPreview($event)"
           @sort="handleSort"
           @update:selected-ids="selectedResourcesIds = $event"
         >
@@ -211,7 +212,7 @@ const {
 
 const { triggerDefaultAction } = useFileActions()
 
-const { loadPreview } = useLoadPreview(viewMode)
+const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const breadcrumbs = computed(() => {
   return [
