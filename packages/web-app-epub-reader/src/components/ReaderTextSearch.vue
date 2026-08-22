@@ -2,7 +2,7 @@
   <div>
     <oc-drop
       ref="searchDropRef"
-      :title="searchLabel"
+      :title="$gettext('Search in book')"
       :toggle="toggle"
       mode="click"
       :offset="20"
@@ -14,8 +14,8 @@
       <div @keydown.enter.prevent="onSearchEnter">
         <oc-search-bar
           v-model="searchTerm"
-          :label="searchLabel"
-          :placeholder="searchLabel"
+          :label="$gettext('Search in book')"
+          :placeholder="$gettext('Search in book')"
           :is-rounded="false"
           button-hidden
         />
@@ -28,8 +28,8 @@
         />
         <div class="flex items-center gap-1">
           <oc-button
-            v-oc-tooltip="previousResultLabel"
-            :aria-label="previousResultLabel"
+            v-oc-tooltip="$gettext('Navigate to previous search result')"
+            :aria-label="$gettext('Navigate to previous search result')"
             class="epub-reader-search-previous-result p-2"
             :disabled="!canNavigateThroughResults"
             appearance="raw"
@@ -40,8 +40,8 @@
             <oc-icon name="arrow-up-s" fill-type="line" size-class="size-4" />
           </oc-button>
           <oc-button
-            v-oc-tooltip="nextResultLabel"
-            :aria-label="nextResultLabel"
+            v-oc-tooltip="$gettext('Navigate to next search result')"
+            :aria-label="$gettext('Navigate to next search result')"
             class="epub-reader-search-next-result p-2"
             :disabled="!canNavigateThroughResults"
             appearance="raw"
@@ -52,8 +52,8 @@
             <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
           </oc-button>
           <oc-button
-            v-oc-tooltip="closeSearchLabel"
-            :aria-label="closeSearchLabel"
+            v-oc-tooltip="$gettext('Close search')"
+            :aria-label="$gettext('Close search')"
             class="epub-reader-search-close p-2"
             appearance="raw"
             no-hover
@@ -103,11 +103,6 @@ const SEARCH_TERM_DEBOUNCE_MS = 250
 const searchTerm = ref('')
 const searchDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('searchDropRef')
 const { $gettext } = useGettext()
-const searchLabel = $gettext('Search in book')
-const searchingLabel = $gettext('Searching...')
-const previousResultLabel = $gettext('Navigate to previous search result')
-const nextResultLabel = $gettext('Navigate to next search result')
-const closeSearchLabel = $gettext('Close search')
 const skipNextSearchTermEmit = ref(false)
 const emitSearchTermChangedDebounced = debounce((value: string) => {
   emit('searchTermChanged', value.trim())
@@ -115,7 +110,7 @@ const emitSearchTermChangedDebounced = debounce((value: string) => {
 
 const searchResultStatusLabel = computed(() => {
   if (props.searching) {
-    return searchingLabel
+    return $gettext('Searching...')
   }
   if (unref(searchTerm).trim() === '') {
     return ''

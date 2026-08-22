@@ -5,7 +5,6 @@ function getWrapper() {
   return mount(ReaderProgressBar, {
     props: {
       readingProgressPercent: 12.3,
-      readingProgressLabel: '12.3%',
       enabled: true
     },
     global: {

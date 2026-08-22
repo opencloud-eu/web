@@ -3,13 +3,12 @@
     <mobile-chapter-select
       :chapters="chapters"
       :selected-chapter="selectedChapter"
-      :chapter-label="chapterLabel"
       @update:selected-chapter="onChapterUpdate"
     />
     <oc-bubble-menu class="ml-auto shrink-0">
       <oc-button
-        v-oc-tooltip="previousPageLabel"
-        :aria-label="previousPageLabel"
+        v-oc-tooltip="$gettext('Navigate to previous page')"
+        :aria-label="$gettext('Navigate to previous page')"
         class="epub-reader-controls-navigate-left p-2"
         :disabled="navigateLeftDisabled"
         appearance="raw"
@@ -20,8 +19,8 @@
         <oc-icon name="arrow-left-s" fill-type="line" size-class="size-4" />
       </oc-button>
       <oc-button
-        v-oc-tooltip="nextPageLabel"
-        :aria-label="nextPageLabel"
+        v-oc-tooltip="$gettext('Navigate to next page')"
+        :aria-label="$gettext('Navigate to next page')"
         class="epub-reader-controls-navigate-right p-2"
         :disabled="navigateRightDisabled"
         appearance="raw"
@@ -34,7 +33,7 @@
       <span class="mx-1 h-5 w-px bg-role-outline-variant" />
       <oc-button
         v-oc-tooltip="decreaseFontSizeTooltip"
-        :aria-label="decreaseFontSizeLabel"
+        :aria-label="$gettext('Decrease font size')"
         class="epub-reader-controls-font-size-decrease p-2"
         :disabled="decreaseFontSizeDisabled"
         appearance="raw"
@@ -45,7 +44,7 @@
         <oc-icon name="subtract" fill-type="line" size-class="size-4" />
       </oc-button>
       <oc-button
-        v-oc-tooltip="resetFontSizeLabel"
+        v-oc-tooltip="$gettext('Reset font size')"
         class="epub-reader-controls-font-size-reset min-w-[64px] px-2 text-sm font-medium"
         appearance="raw"
         no-hover
@@ -56,7 +55,7 @@
       </oc-button>
       <oc-button
         v-oc-tooltip="increaseFontSizeTooltip"
-        :aria-label="increaseFontSizeLabel"
+        :aria-label="$gettext('Increase font size')"
         class="epub-reader-controls-font-size-increase p-2"
         :disabled="increaseFontSizeDisabled"
         appearance="raw"
@@ -69,8 +68,8 @@
       <span class="mx-1 h-5 w-px bg-role-outline-variant" />
       <oc-button
         id="epub_reader_text_search_toggle"
-        v-oc-tooltip="searchLabel"
-        :aria-label="searchLabel"
+        v-oc-tooltip="$gettext('Search in book')"
+        :aria-label="$gettext('Search in book')"
         class="epub-reader-controls-text-search p-2"
         appearance="raw"
         no-hover
@@ -149,18 +148,10 @@ const emit = defineEmits<{
   (e: 'toggleFullscreen'): void
 }>()
 const { $gettext } = useGettext()
-const chapterLabel = $gettext('Chapter')
-const searchLabel = $gettext('Search in book')
-const previousPageLabel = $gettext('Navigate to previous page')
-const nextPageLabel = $gettext('Navigate to next page')
-const decreaseFontSizeLabel = $gettext('Decrease font size')
-const resetFontSizeLabel = $gettext('Reset font size')
-const increaseFontSizeLabel = $gettext('Increase font size')
-const fullscreenLabel = computed(() => {
-  return props.isFullScreenModeActivated
-    ? $gettext('Exit fullscreen')
-    : $gettext('Enter fullscreen')
-})
+
+const fullscreenLabel = computed(() =>
+  props.isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
+)
 
 const decreaseFontSizeTooltip = computed(() => {
   return `${props.currentFontSizePercentage - props.fontSizeStep}%`

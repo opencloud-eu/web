@@ -11,12 +11,12 @@
     >
       <span
         class="min-w-0 flex-1 truncate text-left"
-        v-text="selectedChapter?.label || chapterLabel"
+        v-text="selectedChapter?.label || $gettext('Chapter')"
       />
       <oc-icon name="arrow-drop-down" size-class="size-4" />
     </oc-button>
     <oc-drop
-      :title="chapterLabel"
+      :title="$gettext('Chapter')"
       toggle="#epub_reader_chapter_toggle"
       mode="click"
       close-on-click
@@ -46,6 +46,7 @@
 
 <script setup lang="ts">
 import { nextTick, unref, useTemplateRef } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import type { NavItem } from 'epubjs'
 
 type ChapterOption = NavItem
@@ -54,8 +55,9 @@ const chapterSelectRoot = useTemplateRef<HTMLElement>('chapterSelectRoot')
 defineProps<{
   chapters: ChapterOption[]
   selectedChapter?: ChapterOption
-  chapterLabel: string
 }>()
+
+const { $gettext } = useGettext()
 
 const emit = defineEmits<{
   (e: 'update:selectedChapter', value: ChapterOption): void

@@ -15,11 +15,11 @@
           @change="onProgressChange"
         />
         <span
-          v-if="isPreviewVisible && typeof previewPercent === 'number'"
-          class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-[10px] text-role-on-surface-variant"
+          v-if="previewPercent !== null"
+          class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-xs text-role-on-surface-variant"
           :style="{ left: `${previewPercent}%` }"
         >
-          {{ formatProgressPercentLabel(previewPercent) }}
+          {{ previewPercent.toFixed(1) }}%
         </span>
       </div>
       <span
@@ -27,7 +27,7 @@
         :aria-label="progressTooltip"
         class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant"
       >
-        {{ readingProgressLabel || '--' }}
+        {{ progressLabel }}
       </span>
     </div>
     <div v-else>
@@ -44,7 +44,6 @@ import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
   readingProgressPercent: number | null
-  readingProgressLabel: string | null
   enabled: boolean
 }>()
 
@@ -54,62 +53,38 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const previewPercent = ref<number | null>(null)
-const isPreviewVisible = ref(false)
 
-const sliderValue = computed(() => {
-  return previewPercent.value ?? props.readingProgressPercent ?? 0
+const sliderValue = computed(() => previewPercent.value ?? props.readingProgressPercent ?? 0)
+
+const progressLabel = computed(() => {
+  const percent = props.readingProgressPercent
+  return percent !== null ? `${percent.toFixed(1)}%` : '--'
 })
 
-const progressTooltip = computed(() => {
-  return $gettext('Reading progress %{progress}', {
-    progress: props.readingProgressLabel || '--'
-  })
-})
+const progressTooltip = computed(() =>
+  $gettext('Reading progress %{progress}', { progress: progressLabel.value })
+)
 
-function parseProgressValue(event: Event): number | null {
-  const input = event.target as HTMLInputElement
-  const value = Number(input.value)
-  if (!Number.isFinite(value)) {
-    return null
-  }
-  return Math.min(100, Math.max(0, value))
-}
-
-function formatProgressPercentLabel(percent: number) {
-  const rounded = Number(percent.toFixed(1))
-  return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`
+function parseSliderValue(event: Event) {
+  const value = Number((event.target as HTMLInputElement).value)
+  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null
 }
 
 function onProgressInput(event: Event) {
-  const value = parseProgressValue(event)
-  if (value === null) {
-    return
-  }
-  isPreviewVisible.value = true
-  previewPercent.value = value
+  previewPercent.value = parseSliderValue(event)
 }
 
 function onProgressChange(event: Event) {
-  const value = parseProgressValue(event)
-  if (value === null) {
-    return
+  const value = parseSliderValue(event)
+  if (value !== null) {
+    emit('seek', value)
   }
-  emit('seek', value)
-  clearPreview()
-}
-
-function clearPreview() {
   previewPercent.value = null
-  isPreviewVisible.value = false
 }
 
 watch(
   () => props.enabled,
-  (enabled) => {
-    if (!enabled) {
-      clearPreview()
-    }
-  }
+  (enabled) => !enabled && (previewPercent.value = null)
 )
 </script>
 

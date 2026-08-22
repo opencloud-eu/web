@@ -48,7 +48,6 @@
         />
         <reader-progress-bar
           :reading-progress-percent="readingProgressPercent"
-          :reading-progress-label="readingProgressLabel"
           :enabled="hasGlobalLocations"
           @seek="onProgressChange"
         />
@@ -138,7 +137,6 @@ const chapters = ref<NavItem[]>([])
 const currentChapter = ref<NavItem>()
 const navigateLeftDisabled = ref(false)
 const navigateRightDisabled = ref(false)
-const readingProgressLabel = ref<string | null>(null)
 const readingProgressPercent = ref<number | null>(null)
 const hasGlobalLocations = ref(false)
 const searchResultCfis = ref<string[]>([])
@@ -158,11 +156,6 @@ const isReaderLoading = ref(true)
 function showChapter(chapter: NavItem) {
   currentChapter.value = chapter
   unref(rendition).display(chapter.href)
-}
-
-function formatProgressPercentLabel(percent: number) {
-  const rounded = Number(percent.toFixed(1))
-  return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`
 }
 
 async function onProgressChange(percentage: number) {
@@ -205,23 +198,18 @@ function updateReadingProgress(currentLocation: Location) {
 
   if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
     const clamped = Math.min(1, Math.max(0, globalPercentage))
-    const percent = Number((clamped * 100).toFixed(1))
-    readingProgressPercent.value = percent
-    readingProgressLabel.value = formatProgressPercentLabel(percent)
+    readingProgressPercent.value = Number((clamped * 100).toFixed(1))
     return
   }
 
   const chapterPage = currentLocation?.start?.displayed?.page
   const chapterTotal = currentLocation?.start?.displayed?.total
   if (typeof chapterPage === 'number' && typeof chapterTotal === 'number' && chapterTotal > 0) {
-    const percent = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
-    readingProgressPercent.value = percent
-    readingProgressLabel.value = formatProgressPercentLabel(percent)
+    readingProgressPercent.value = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
     return
   }
 
   readingProgressPercent.value = null
-  readingProgressLabel.value = null
 }
 
 const canNavigateThroughSearchResults = computed(() => {
@@ -463,7 +451,6 @@ watch(
 
     book.value = ePub(currentContent)
     isReaderLoading.value = true
-    readingProgressLabel.value = null
     readingProgressPercent.value = null
     hasGlobalLocations.value = false
     closeTextSearch()
