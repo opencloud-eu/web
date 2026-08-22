@@ -198,14 +198,14 @@ function updateReadingProgress(currentLocation: Location) {
 
   if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
     const clamped = Math.min(1, Math.max(0, globalPercentage))
-    readingProgressPercent.value = Number((clamped * 100).toFixed(1))
+    readingProgressPercent.value = clamped * 100
     return
   }
 
   const chapterPage = currentLocation?.start?.displayed?.page
   const chapterTotal = currentLocation?.start?.displayed?.total
   if (typeof chapterPage === 'number' && typeof chapterTotal === 'number' && chapterTotal > 0) {
-    readingProgressPercent.value = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
+    readingProgressPercent.value = (chapterPage / chapterTotal) * 100
     return
   }
 

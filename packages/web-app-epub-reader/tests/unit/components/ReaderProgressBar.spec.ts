@@ -36,4 +36,23 @@ describe('ReaderProgressBar component', () => {
     expect(wrapper.find('.epub-reader-progress-preview').exists()).toBe(false)
     expect(wrapper.find('.epub-reader-progress-label').text()).toBe('12.3%')
   })
+
+  it('omits trailing decimal zeros in the displayed values', async () => {
+    const wrapper = mount(ReaderProgressBar, {
+      props: {
+        readingProgressPercent: 12,
+        enabled: true
+      },
+      global: {
+        plugins: [...defaultPlugins()]
+      }
+    })
+    const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
+
+    slider.element.value = '42.0'
+    await slider.trigger('input')
+
+    expect(wrapper.find('.epub-reader-progress-preview').text()).toBe('42%')
+    expect(wrapper.find('.epub-reader-progress-label').text()).toBe('12%')
+  })
 })

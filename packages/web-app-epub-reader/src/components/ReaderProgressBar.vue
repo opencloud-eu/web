@@ -19,7 +19,7 @@
           class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-xs text-role-on-surface-variant"
           :style="{ left: `${previewPercent}%` }"
         >
-          {{ previewPercent.toFixed(1) }}%
+          {{ formatPercent(previewPercent) }}%
         </span>
       </div>
       <span
@@ -58,7 +58,7 @@ const sliderValue = computed(() => previewPercent.value ?? props.readingProgress
 
 const progressLabel = computed(() => {
   const percent = props.readingProgressPercent
-  return percent !== null ? `${percent.toFixed(1)}%` : '--'
+  return percent !== null ? `${formatPercent(percent)}%` : '--'
 })
 
 const progressTooltip = computed(() =>
@@ -68,6 +68,10 @@ const progressTooltip = computed(() =>
 function parseSliderValue(event: Event) {
   const value = Number((event.target as HTMLInputElement).value)
   return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null
+}
+
+function formatPercent(value: number) {
+  return Number(value.toFixed(2)).toString()
 }
 
 function onProgressInput(event: Event) {
