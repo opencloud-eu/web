@@ -1,17 +1,27 @@
 <template>
   <div class="px-3 pb-3 pt-1">
     <div v-if="enabled" class="flex items-center gap-2">
-      <input
-        :value="readingProgressPercent ?? 0"
-        class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
-        :aria-label="$gettext('Reading progress')"
-        type="range"
-        min="0"
-        max="100"
-        step="0.1"
-        :disabled="!enabled"
-        @change="onProgressChange"
-      />
+      <div class="relative flex-1">
+        <input
+          :value="sliderValue"
+          class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
+          :aria-label="$gettext('Reading progress')"
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          :disabled="!enabled"
+          @input="onProgressInput"
+          @change="onProgressChange"
+        />
+        <span
+          v-if="isPreviewVisible && typeof previewPercent === 'number'"
+          class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-[10px] text-role-on-surface-variant"
+          :style="{ left: `${previewPercent}%` }"
+        >
+          {{ formatProgressPercentLabel(previewPercent) }}
+        </span>
+      </div>
       <span
         v-oc-tooltip="progressTooltip"
         :aria-label="progressTooltip"
@@ -29,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
@@ -43,6 +53,12 @@ const emit = defineEmits<{
 }>()
 
 const { $gettext } = useGettext()
+const previewPercent = ref<number | null>(null)
+const isPreviewVisible = ref(false)
+
+const sliderValue = computed(() => {
+  return previewPercent.value ?? props.readingProgressPercent ?? 0
+})
 
 const progressTooltip = computed(() => {
   return $gettext('Reading progress %{progress}', {
@@ -50,14 +66,51 @@ const progressTooltip = computed(() => {
   })
 })
 
-function onProgressChange(event: Event) {
+function parseProgressValue(event: Event): number | null {
   const input = event.target as HTMLInputElement
   const value = Number(input.value)
   if (!Number.isFinite(value)) {
+    return null
+  }
+  return Math.min(100, Math.max(0, value))
+}
+
+function formatProgressPercentLabel(percent: number) {
+  const rounded = Number(percent.toFixed(1))
+  return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`
+}
+
+function onProgressInput(event: Event) {
+  const value = parseProgressValue(event)
+  if (value === null) {
+    return
+  }
+  isPreviewVisible.value = true
+  previewPercent.value = value
+}
+
+function onProgressChange(event: Event) {
+  const value = parseProgressValue(event)
+  if (value === null) {
     return
   }
   emit('seek', value)
+  clearPreview()
 }
+
+function clearPreview() {
+  previewPercent.value = null
+  isPreviewVisible.value = false
+}
+
+watch(
+  () => props.enabled,
+  (enabled) => {
+    if (!enabled) {
+      clearPreview()
+    }
+  }
+)
 </script>
 
 <style scoped>
