@@ -1,4 +1,9 @@
-import { ClientService, PreviewService } from '../../../src/services'
+import {
+  buildFilePreviewCacheKey,
+  cacheService,
+  ClientService,
+  PreviewService
+} from '../../../src/services'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -153,6 +158,76 @@ describe('PreviewService', () => {
         )
         expect(preview).toEqual(cachedPreview)
         expect(clientService.httpAuthenticated.get).toHaveBeenCalledTimes(1)
+      })
+      it('stores the blob size so cached previews count towards the budget', async () => {
+        const supportedMimeTypes = ['image/png']
+        const { previewService, clientService } = getWrapper({
+          supportedMimeTypes,
+          version: '1'
+        })
+        clientService.httpAuthenticated.get.mockResolvedValue({
+          data: mock<Blob>({ size: 4096 }),
+          status: 200
+        } as AxiosResponse)
+        window.URL.createObjectURL = vi.fn().mockImplementation(() => 'objectUrl')
+
+        await previewService.loadPreview(
+          {
+            space: mock<SpaceResource>(),
+            resource: mock<Resource>({
+              id: '2',
+              mimeType: supportedMimeTypes[0],
+              webDavPath: '/',
+              etag: '',
+              hasPreview: () => true,
+              canDownload: () => true
+            })
+          },
+          true
+        )
+
+        expect(cacheService.filePreview.get(buildFilePreviewCacheKey('2'))).toEqual(
+          expect.objectContaining({ src: 'objectUrl', size: 4096 })
+        )
+      })
+      it('caches previews of the same resource per dimensions', async () => {
+        const supportedMimeTypes = ['image/png']
+        const { previewService, clientService } = getWrapper({
+          supportedMimeTypes,
+          version: '1'
+        })
+        const resourceMock = mock<Resource>({
+          id: '3',
+          mimeType: supportedMimeTypes[0],
+          webDavPath: '/',
+          etag: '',
+          hasPreview: () => true,
+          canDownload: () => true
+        })
+        let objectUrlCount = 0
+        window.URL.createObjectURL = vi
+          .fn()
+          .mockImplementation(() => `blob:objectUrl-${++objectUrlCount}`)
+        window.URL.revokeObjectURL = vi.fn()
+
+        const thumbnail = await previewService.loadPreview(
+          { space: mock<SpaceResource>(), resource: resourceMock, dimensions: [36, 36] },
+          true
+        )
+        const preview = await previewService.loadPreview(
+          { space: mock<SpaceResource>(), resource: resourceMock, dimensions: [1200, 1200] },
+          true
+        )
+
+        expect(thumbnail).not.toEqual(preview)
+        expect(clientService.httpAuthenticated.get).toHaveBeenCalledTimes(2)
+        expect(window.URL.revokeObjectURL).not.toHaveBeenCalled()
+        expect(cacheService.filePreview.get(buildFilePreviewCacheKey('3', [36, 36]))?.src).toEqual(
+          thumbnail
+        )
+        expect(
+          cacheService.filePreview.get(buildFilePreviewCacheKey('3', [1200, 1200]))?.src
+        ).toEqual(preview)
       })
     })
     describe('public files', () => {

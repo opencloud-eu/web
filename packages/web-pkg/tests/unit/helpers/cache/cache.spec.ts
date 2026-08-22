@@ -132,6 +132,94 @@ describe('Cache', () => {
     expect(cache.entries().length).toBe(0)
   })
 
+  it('calls onEvict when entries leave the cache', () => {
+    const onEvict = vi.fn()
+    const cache = new Cache<number, string>({ capacity: 2, onEvict })
+
+    cache.set(1, 'one')
+    cache.set(2, 'two')
+    expect(onEvict).not.toHaveBeenCalled()
+
+    // exceeding the capacity drops the least recently used entry right away
+    cache.set(3, 'three')
+    expect(onEvict).toHaveBeenCalledWith({ key: 1, replacedValue: 'one' })
+    expect(cache.keys()).toEqual([2, 3])
+
+    // replacing a key evicts the previous value and passes on the new one
+    cache.set(3, 'three-updated')
+    expect(onEvict).toHaveBeenCalledWith({ key: 3, replacedValue: 'three', value: 'three-updated' })
+
+    cache.delete(3)
+    expect(onEvict).toHaveBeenCalledWith({ key: 3, replacedValue: 'three-updated' })
+
+    // deleting an unknown key does nothing
+    onEvict.mockClear()
+    cache.delete(3)
+    expect(onEvict).not.toHaveBeenCalled()
+
+    cache.clear()
+    expect(onEvict).toHaveBeenCalledWith({ key: 2, replacedValue: 'two' })
+  })
+
+  it('evicts the least recently used entry when over capacity', () => {
+    const cache = new Cache<number, string>({ capacity: 3 })
+
+    cache.set(1, 'one')
+    cache.set(2, 'two')
+    cache.set(3, 'three')
+
+    // touching 1 makes 2 the least recently used one
+    expect(cache.get(1)).toBe('one')
+    cache.set(4, 'four')
+
+    expect(cache.keys()).toEqual([3, 1, 4])
+  })
+
+  it('evicts until the byte budget is met', () => {
+    const cache = new Cache<number, { size: number }>({
+      maxBytes: 100,
+      sizeOf: ({ size }) => size
+    })
+
+    cache.set(1, { size: 40 })
+    cache.set(2, { size: 40 })
+    expect(cache.bytes).toBe(80)
+
+    cache.set(3, { size: 50 })
+
+    expect(cache.keys()).toEqual([2, 3])
+    expect(cache.bytes).toBe(90)
+  })
+
+  it('keeps track of the byte cost on replace, delete and clear', () => {
+    const cache = new Cache<number, { size: number }>({
+      maxBytes: 100,
+      sizeOf: ({ size }) => size
+    })
+
+    cache.set(1, { size: 40 })
+    cache.set(1, { size: 10 })
+    expect(cache.bytes).toBe(10)
+
+    cache.set(2, { size: 20 })
+    cache.delete(2)
+    expect(cache.bytes).toBe(10)
+
+    cache.clear()
+    expect(cache.bytes).toBe(0)
+  })
+
+  it('calls onEvict for expired entries', () => {
+    const onEvict = vi.fn()
+    const cache = new Cache<number, string>({ ttl: 50, onEvict })
+
+    cache.set(1, 'one')
+    vi.setSystemTime(new Date().getTime() + 51)
+
+    expect(cache.get(1)).toBeFalsy()
+    expect(onEvict).toHaveBeenCalledWith({ key: 1, replacedValue: 'one' })
+  })
+
   it('can check if a cache contains a entry for given key', () => {
     const values = [1, 2, 3, 4, 5]
     const cache = newCache(values)
@@ -143,7 +231,7 @@ describe('Cache', () => {
 
 describe('cache', () => {
   describe('CacheElement', () => {
-    let cache: Cache<string, unknown>
+    let cache: Cache<string, string>
     let key: string, value: string, key2: string, value2: string
     let evictSpy: MockInstance
     beforeEach(() => {
@@ -159,14 +247,17 @@ describe('cache', () => {
       expect(cache.set(key, value)).toBe(value)
       expect(cache.get(key)).toBe(value)
     })
-    it('should evict before any access', () => {
-      cache.set(key, value)
-      cache.get(key)
+    it('should evict before handing out all entries', () => {
       cache.entries()
       cache.keys()
       cache.values()
+      expect(evictSpy).toHaveBeenCalledTimes(3)
+    })
+    it('should not walk the whole cache on single lookups', () => {
+      cache.set(key, value)
+      cache.get(key)
       cache.has(key)
-      expect(evictSpy).toHaveBeenCalledTimes(6)
+      expect(evictSpy).not.toHaveBeenCalled()
     })
     it('should delete key', () => {
       cache.set(key, value)

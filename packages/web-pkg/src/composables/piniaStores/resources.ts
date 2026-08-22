@@ -5,7 +5,7 @@ import { getParentPaths } from '../../helpers'
 import { AncestorMetaData, AncestorMetaDataValue } from '../../types'
 import { DavProperty, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useSpacesStore } from './spaces'
-import { eventBus } from '../../services'
+import { eventBus, releaseFilePreviews } from '../../services'
 
 export const useResourcesStore = defineStore('resources', () => {
   const spacesStore = useSpacesStore()
@@ -49,7 +49,15 @@ export const useResourcesStore = defineStore('resources', () => {
     resources.value = file
   }
 
+  /** Drops cached previews of resources that are gone, so their object URLs get revoked. */
+  const releasePreviews = (values: Resource[]) => {
+    for (const resource of values) {
+      releaseFilePreviews(resource.id)
+    }
+  }
+
   const removeResources = (values: Resource[]) => {
+    releasePreviews(values)
     resources.value = unref(resources).filter((file) => !values.find(({ id }) => id === file.id))
   }
 
