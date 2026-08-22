@@ -12,8 +12,7 @@ function getWrapper() {
   return mount(MobileChapterSelect, {
     props: {
       chapters,
-      selectedChapter: chapters[0],
-      chapterLabel: 'Chapter'
+      selectedChapter: chapters[0]
     },
     global: {
       plugins: [...defaultPlugins()],

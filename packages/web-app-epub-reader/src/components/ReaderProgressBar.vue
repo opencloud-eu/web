@@ -1,23 +1,33 @@
 <template>
   <div class="px-3 pb-3 pt-1">
     <div v-if="enabled" class="flex items-center gap-2">
-      <input
-        :value="readingProgressPercent ?? 0"
-        class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
-        :aria-label="$gettext('Reading progress')"
-        type="range"
-        min="0"
-        max="100"
-        step="0.1"
-        :disabled="!enabled"
-        @change="onProgressChange"
-      />
+      <div class="relative flex-1">
+        <input
+          :value="sliderValue"
+          class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
+          :aria-label="$gettext('Reading progress')"
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          :disabled="!enabled"
+          @input="onProgressInput"
+          @change="onProgressChange"
+        />
+        <span
+          v-if="previewPercent !== null"
+          class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-xs text-role-on-surface-variant"
+          :style="{ left: `${previewPercent}%` }"
+        >
+          {{ formatPercent(previewPercent) }}%
+        </span>
+      </div>
       <span
         v-oc-tooltip="progressTooltip"
         :aria-label="progressTooltip"
         class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant"
       >
-        {{ readingProgressLabel || '--' }}
+        {{ progressLabel }}
       </span>
     </div>
     <div v-else>
@@ -29,12 +39,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 const props = defineProps<{
   readingProgressPercent: number | null
-  readingProgressLabel: string | null
   enabled: boolean
 }>()
 
@@ -43,21 +52,44 @@ const emit = defineEmits<{
 }>()
 
 const { $gettext } = useGettext()
+const previewPercent = ref<number | null>(null)
 
-const progressTooltip = computed(() => {
-  return $gettext('Reading progress %{progress}', {
-    progress: props.readingProgressLabel || '--'
-  })
+const sliderValue = computed(() => previewPercent.value ?? props.readingProgressPercent ?? 0)
+
+const progressLabel = computed(() => {
+  const percent = props.readingProgressPercent
+  return percent !== null ? `${formatPercent(percent)}%` : '--'
 })
 
-function onProgressChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  const value = Number(input.value)
-  if (!Number.isFinite(value)) {
-    return
-  }
-  emit('seek', value)
+const progressTooltip = computed(() =>
+  $gettext('Reading progress %{progress}', { progress: progressLabel.value })
+)
+
+function parseSliderValue(event: Event) {
+  const value = Number((event.target as HTMLInputElement).value)
+  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null
 }
+
+function formatPercent(value: number) {
+  return Number(value.toFixed(2)).toString()
+}
+
+function onProgressInput(event: Event) {
+  previewPercent.value = parseSliderValue(event)
+}
+
+function onProgressChange(event: Event) {
+  const value = parseSliderValue(event)
+  if (value !== null) {
+    emit('seek', value)
+  }
+  previewPercent.value = null
+}
+
+watch(
+  () => props.enabled,
+  (enabled) => !enabled && (previewPercent.value = null)
+)
 </script>
 
 <style scoped>

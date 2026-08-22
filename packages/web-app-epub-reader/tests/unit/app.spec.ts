@@ -334,7 +334,6 @@ describe('Epub reader app', () => {
       await nextTicks(1)
 
       expect((wrapper.vm as any).readingProgressPercent).toBe(4.6)
-      expect((wrapper.vm as any).readingProgressLabel).toBe('4.6%')
     })
   })
   describe('chapters', () => {
