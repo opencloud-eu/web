@@ -194,7 +194,7 @@ describe('Epub reader app', () => {
     })
     it('seeks to a location when progress slider changes', async () => {
       const { wrapper } = getWrapper()
-      await nextTicks(3)
+      await nextTicks(6)
 
       const slider = wrapper.find<HTMLInputElement>(selectors.progressSlider)
       await slider.setValue('35')

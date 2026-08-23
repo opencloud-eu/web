@@ -153,9 +153,14 @@ const rendition = ref<Rendition>()
 const isFullScreenModeActivated = ref(false)
 const isReaderLoading = ref(true)
 
-function showChapter(chapter: NavItem) {
+async function showChapter(chapter: NavItem) {
+  const currentRendition = unref(rendition)
+  if (!currentRendition) {
+    return
+  }
+
   currentChapter.value = chapter
-  unref(rendition).display(chapter.href)
+  await currentRendition.display(chapter.href)
 }
 
 async function onProgressChange(percentage: number) {
@@ -218,7 +223,7 @@ const canNavigateThroughSearchResults = computed(() => {
 
 function clearSearchHighlight() {
   const highlightCfi = unref(currentSearchHighlightCfi)
-  const annotations = (unref(rendition) as any)?.annotations
+  const annotations = unref(rendition)?.annotations
 
   if (!highlightCfi || !annotations?.remove) {
     currentSearchHighlightCfi.value = null
@@ -230,7 +235,7 @@ function clearSearchHighlight() {
 }
 
 function highlightSearchResult(cfi: string) {
-  const annotations = (unref(rendition) as any)?.annotations
+  const annotations = unref(rendition)?.annotations
   if (!annotations) {
     return
   }
@@ -268,17 +273,114 @@ function closeTextSearch() {
   clearSearchHighlight()
 }
 
-function resolveCurrentChapterFromNavigation(navItem?: NavItem) {
-  if (!navItem) {
+function findChapterByDomPosition(chapters: NavItem[], cfi: string): NavItem | undefined {
+  try {
+    const contents = unref(rendition)?.getContents?.() as unknown as
+      Array<{ document: Document }> | undefined
+    const doc = contents?.[0]?.document
+    if (!doc) return undefined
+
+    const currentRange = unref(rendition)?.getRange?.(cfi)
+    let element = currentRange?.startContainer as Element | null
+    if (!element) return undefined
+
+    if (element.nodeType === Node.TEXT_NODE) {
+      element = element.parentElement
+    }
+
+    // Find last chapter anchor that comes before current position
+    for (let i = chapters.length - 1; i >= 0; i--) {
+      const hash = chapters[i].href.split('#')[1]
+      if (!hash) continue
+
+      const chapterElement = doc.getElementById(hash)
+      if (!chapterElement || !element) continue
+
+      const position = chapterElement.compareDocumentPosition(element)
+      if (
+        position === 0 ||
+        position & Node.DOCUMENT_POSITION_FOLLOWING ||
+        position & Node.DOCUMENT_POSITION_CONTAINED_BY
+      ) {
+        return chapters[i]
+      }
+    }
+  } catch {
+    // Silent fail
+  }
+  return undefined
+}
+
+function resolveCurrentChapter(currentLocation: Location) {
+  const locationHref = currentLocation?.start?.href
+  const navigation = unref(book)?.navigation
+  if (!navigation) {
     return undefined
   }
 
-  const byId = unref(chapters).find((chapter) => chapter.id === navItem.id)
-  if (byId) {
-    return byId
+  // Strategy 1: Exact match via navigation.get() using location href
+  if (locationHref) {
+    const byLocationHref = navigation.get(locationHref)
+    if (byLocationHref) {
+      return byLocationHref
+    }
   }
 
-  return unref(chapters).find((chapter) => chapter.href === navItem.href)
+  const locationCfi = currentLocation?.start?.cfi
+  const locationIndex = currentLocation?.start?.index
+  const spineTarget =
+    locationCfi || (typeof locationIndex === 'number' ? locationIndex : undefined) || locationHref
+  const spineItem = spineTarget ? unref(book)?.spine.get(spineTarget) : undefined
+  const spineHref = spineItem?.href
+  if (!spineHref) {
+    return undefined
+  }
+
+  // Strategy 2: Exact match via navigation.get() using spine href
+  const bySpineHref = navigation.get(spineHref)
+  if (bySpineHref) {
+    return bySpineHref
+  }
+
+  // Strategy 3: Match by normalized href (without hash fragment)
+  const normalizedSpineHref = spineHref.split('#')[0]
+  const matchingChapters = unref(chapters).filter(
+    (chapter) => chapter.href.split('#')[0] === normalizedSpineHref
+  )
+
+  if (matchingChapters.length === 1) {
+    return matchingChapters[0]
+  }
+
+  // Strategy 3b: Multiple chapters in same file - find by DOM element position
+  if (matchingChapters.length > 1 && locationCfi) {
+    const resolved = findChapterByDomPosition(matchingChapters, locationCfi)
+    if (resolved) {
+      return resolved
+    }
+    return matchingChapters[0]
+  }
+
+  // Strategy 4: Find containing chapter by spine index (for chapters spanning multiple files)
+  const currentSpineIndex = spineItem?.index
+  if (typeof currentSpineIndex === 'number') {
+    const chaptersWithSpineIndex = unref(chapters)
+      .map((chapter) => {
+        const chapterSpineItem = unref(book)?.spine.get(chapter.href.split('#')[0])
+        return {
+          chapter,
+          spineIndex: chapterSpineItem?.index ?? -1
+        }
+      })
+      .filter((item) => item.spineIndex >= 0 && item.spineIndex <= currentSpineIndex)
+      .sort((a, b) => b.spineIndex - a.spineIndex)
+
+    if (chaptersWithSpineIndex.length > 0) {
+      return chaptersWithSpineIndex[0].chapter
+    }
+  }
+
+  return undefined
 }
 
 function getSearchableSpineItems(bookInstance: Book): EpubSpineItem[] {
@@ -440,8 +542,18 @@ watch(
   async () => {
     await nextTick()
 
+    // Cancel ongoing searches before destroying
+    textSearchRequestId.value = unref(textSearchRequestId) + 1
+    clearSearchHighlight()
+
+    if (unref(rendition)) {
+      unref(rendition).destroy()
+      rendition.value = undefined
+    }
+
     if (unref(book)) {
       unref(book).destroy()
+      book.value = undefined
     }
 
     const localStorageResourceData = useLocalStorage<{ currentLocation?: Location }>(
@@ -457,7 +569,6 @@ watch(
 
     unref(book).loaded.navigation.then(({ toc }) => {
       chapters.value = toc
-      currentChapter.value = toc?.[0]
     })
 
     await unref(book).ready
@@ -465,6 +576,10 @@ watch(
 
     const bookContainer = unref(readerView)?.getBookContainer()
     if (!bookContainer) {
+      if (currentBook) {
+        currentBook.destroy()
+        book.value = undefined
+      }
       return
     }
 
@@ -477,9 +592,12 @@ watch(
 
     unref(rendition).themes.register('dark', DARK_THEME_CONFIG)
     unref(rendition).themes.register('light', LIGHT_THEME_CONFIG)
+
+    await unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+
     unref(rendition).themes.select(themeStore.currentTheme.isDark ? 'dark' : 'light')
     unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
-    unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+
     void generateGlobalLocationsForBook(currentBook)
 
     unref(rendition).on('keydown', (event: KeyboardEvent) => {
@@ -497,20 +615,22 @@ watch(
 
     unref(rendition).on('relocated', () => {
       isReaderLoading.value = false
-      const currentLocation = unref(rendition).currentLocation() as any & Location
+      const currentLocation = unref(rendition).currentLocation() as unknown as Location
+      if (!currentLocation) {
+        return
+      }
+
       localStorageResourceData.value = { currentLocation }
       navigateLeftDisabled.value = currentLocation.atStart === true
       navigateRightDisabled.value = currentLocation.atEnd === true
       updateReadingProgress(currentLocation)
 
-      const locationCfi = currentLocation?.start?.cfi
-      const spineItem = unref(book).spine.get(locationCfi)
-      const locationHref = currentLocation?.start?.href
-      const navLookupHref = locationHref || spineItem?.href
-      const navItem = navLookupHref ? unref(book).navigation.get(navLookupHref) : undefined
-      const resolvedCurrentChapter = resolveCurrentChapterFromNavigation(navItem)
+      const resolvedCurrentChapter = resolveCurrentChapter(currentLocation)
       if (resolvedCurrentChapter) {
         currentChapter.value = resolvedCurrentChapter
+      } else if (!unref(currentChapter) && unref(chapters).length > 0) {
+        // Fallback: set first chapter if no chapter is set yet
+        currentChapter.value = unref(chapters)[0]
       }
     })
   },
@@ -530,7 +650,12 @@ watch(hasGlobalLocations, (enabled, wasEnabled) => {
     return
   }
 
-  const currentLocation = unref(rendition)?.currentLocation() as any & Location
+  const currentRendition = unref(rendition)
+  if (!currentRendition) {
+    return
+  }
+
+  const currentLocation = currentRendition.currentLocation() as unknown as Location
   if (!currentLocation) {
     return
   }
@@ -539,7 +664,12 @@ watch(hasGlobalLocations, (enabled, wasEnabled) => {
 })
 
 watch(currentFontSizePercentage, () => {
-  unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
+  const currentRendition = unref(rendition)
+  if (!currentRendition) {
+    return
+  }
+
+  currentRendition.themes.fontSize(`${unref(currentFontSizePercentage)}%`)
   localStorageData.value = {
     ...unref(localStorageData),
     fontSizePercentage: unref(currentFontSizePercentage)
@@ -552,6 +682,19 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', syncFullscreenState)
+
+  // Cancel ongoing searches before destroying
+  textSearchRequestId.value = unref(textSearchRequestId) + 1
   clearSearchHighlight()
+
+  if (unref(rendition)) {
+    unref(rendition).destroy()
+    rendition.value = undefined
+  }
+
+  if (unref(book)) {
+    unref(book).destroy()
+    book.value = undefined
+  }
 })
 </script>
