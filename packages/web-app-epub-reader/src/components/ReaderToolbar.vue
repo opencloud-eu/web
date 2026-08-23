@@ -117,7 +117,22 @@ import MobileChapterSelect from './MobileChapterSelect.vue'
 import ReaderTextSearch from './ReaderTextSearch.vue'
 
 type ChapterOption = NavItem
-const props = defineProps<{
+const {
+  chapters,
+  selectedChapter,
+  searchResultCount,
+  hasMoreSearchResults,
+  currentSearchResultIndex,
+  canNavigateThroughSearchResults,
+  isSearchLoading,
+  currentFontSizePercentage,
+  fontSizeStep,
+  navigateLeftDisabled,
+  navigateRightDisabled,
+  decreaseFontSizeDisabled,
+  increaseFontSizeDisabled,
+  isFullScreenModeActivated
+} = defineProps<{
   chapters: ChapterOption[]
   selectedChapter?: ChapterOption
   searchResultCount: number
@@ -150,14 +165,14 @@ const emit = defineEmits<{
 const { $gettext } = useGettext()
 
 const fullscreenLabel = computed(() =>
-  props.isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
+  isFullScreenModeActivated ? $gettext('Exit fullscreen') : $gettext('Enter fullscreen')
 )
 
 const decreaseFontSizeTooltip = computed(() => {
-  return `${props.currentFontSizePercentage - props.fontSizeStep}%`
+  return `${currentFontSizePercentage - fontSizeStep}%`
 })
 const increaseFontSizeTooltip = computed(() => {
-  return `${props.currentFontSizePercentage + props.fontSizeStep}%`
+  return `${currentFontSizePercentage + fontSizeStep}%`
 })
 
 function onChapterUpdate(value: ChapterOption) {

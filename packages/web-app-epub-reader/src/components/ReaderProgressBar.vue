@@ -42,7 +42,7 @@
 import { computed, ref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
-const props = defineProps<{
+const { readingProgressPercent, enabled } = defineProps<{
   readingProgressPercent: number | null
   enabled: boolean
 }>()
@@ -54,10 +54,10 @@ const emit = defineEmits<{
 const { $gettext } = useGettext()
 const previewPercent = ref<number | null>(null)
 
-const sliderValue = computed(() => previewPercent.value ?? props.readingProgressPercent ?? 0)
+const sliderValue = computed(() => previewPercent.value ?? readingProgressPercent ?? 0)
 
 const progressLabel = computed(() => {
-  const percent = props.readingProgressPercent
+  const percent = readingProgressPercent
   return percent !== null ? `${formatPercent(percent)}%` : '--'
 })
 
@@ -87,8 +87,8 @@ function onProgressChange(event: Event) {
 }
 
 watch(
-  () => props.enabled,
-  (enabled) => !enabled && (previewPercent.value = null)
+  () => enabled,
+  (isEnabled) => !isEnabled && (previewPercent.value = null)
 )
 </script>
 

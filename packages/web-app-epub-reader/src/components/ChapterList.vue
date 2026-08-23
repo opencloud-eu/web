@@ -49,7 +49,7 @@ import { computed, nextTick, ref, unref, watch } from 'vue'
 import type { NavItem } from 'epubjs'
 import { useGettext } from 'vue3-gettext'
 
-const props = defineProps<{
+const { chapters, currentChapter } = defineProps<{
   chapters: NavItem[]
   currentChapter?: NavItem
 }>()
@@ -60,9 +60,9 @@ const chapterListRoot = ref<HTMLElement>()
 const filteredChapters = computed(() => {
   const term = unref(filterTerm).trim().toLowerCase()
   if (!term) {
-    return props.chapters
+    return chapters
   }
-  return props.chapters.filter((chapter) => chapter.label.toLowerCase().includes(term))
+  return chapters.filter((chapter) => chapter.label.toLowerCase().includes(term))
 })
 
 const emit = defineEmits<{
@@ -74,7 +74,7 @@ function onChapterClick(chapter: NavItem) {
 }
 
 function scrollCurrentChapterIntoView() {
-  const currentChapterId = props.currentChapter?.id
+  const currentChapterId = currentChapter?.id
   if (!currentChapterId) {
     return
   }
@@ -89,7 +89,7 @@ function scrollCurrentChapterIntoView() {
 }
 
 watch(
-  () => [props.currentChapter?.id, unref(filteredChapters).length],
+  () => [currentChapter?.id, unref(filteredChapters).length],
   async () => {
     await nextTick()
     scrollCurrentChapterIntoView()

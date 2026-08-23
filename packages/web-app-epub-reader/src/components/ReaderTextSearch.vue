@@ -83,7 +83,14 @@ import {
 } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
-const props = defineProps<{
+const {
+  toggle,
+  searching,
+  resultCount,
+  hasMoreResults,
+  currentResultIndex,
+  canNavigateThroughResults
+} = defineProps<{
   toggle: string
   searching: boolean
   resultCount: number
@@ -109,17 +116,17 @@ const emitSearchTermChangedDebounced = debounce((value: string) => {
 }, SEARCH_TERM_DEBOUNCE_MS)
 
 const searchResultStatusLabel = computed(() => {
-  if (props.searching) {
+  if (searching) {
     return $gettext('Searching...')
   }
   if (unref(searchTerm).trim() === '') {
     return ''
   }
-  if (props.resultCount <= 0 || props.currentResultIndex < 0) {
+  if (resultCount <= 0 || currentResultIndex < 0) {
     return '0/0'
   }
-  const countLabel = props.hasMoreResults ? `${props.resultCount}+` : `${props.resultCount}`
-  return `${props.currentResultIndex + 1}/${countLabel}`
+  const countLabel = hasMoreResults ? `${resultCount}+` : `${resultCount}`
+  return `${currentResultIndex + 1}/${countLabel}`
 })
 
 watch(searchTerm, (value) => {
