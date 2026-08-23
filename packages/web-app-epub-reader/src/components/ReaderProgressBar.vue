@@ -15,7 +15,7 @@
           @change="onProgressChange"
         />
         <span
-          v-if="previewPercent !== null"
+          v-if="showPreview && previewPercent !== null"
           class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-xs text-role-on-surface-variant"
           :style="{ left: `${previewPercent}%` }"
         >
@@ -53,6 +53,7 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const previewPercent = ref<number | null>(null)
+const showPreview = ref(false)
 
 const sliderValue = computed(() => previewPercent.value ?? readingProgressPercent ?? 0)
 
@@ -76,19 +77,33 @@ function formatPercent(value: number) {
 
 function onProgressInput(event: Event) {
   previewPercent.value = parseSliderValue(event)
+  showPreview.value = true
 }
 
 function onProgressChange(event: Event) {
   const value = parseSliderValue(event)
   if (value !== null) {
+    previewPercent.value = value
     emit('seek', value)
   }
-  previewPercent.value = null
+  showPreview.value = false
 }
 
 watch(
+  () => readingProgressPercent,
+  () => {
+    previewPercent.value = null
+  }
+)
+
+watch(
   () => enabled,
-  (isEnabled) => !isEnabled && (previewPercent.value = null)
+  (isEnabled) => {
+    if (!isEnabled) {
+      previewPercent.value = null
+      showPreview.value = false
+    }
+  }
 )
 </script>
 
