@@ -14,43 +14,39 @@ function getWrapper() {
 }
 
 describe('ReaderProgressBar component', () => {
-  it('shows dragged percent in a bubble while the slider is being moved', async () => {
+  it('emits seek on input (live dragging)', async () => {
     const wrapper = getWrapper()
     const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
 
     slider.element.value = '42.4'
     await slider.trigger('input')
 
-    expect(wrapper.find('.epub-reader-progress-preview').text()).toBe('42.4%')
+    expect(wrapper.emitted('seek')).toEqual([[42.4]])
     expect(wrapper.find('.epub-reader-progress-label').text()).toBe('12.3%')
-    expect(wrapper.emitted('seek')).toBeUndefined()
   })
 
-  it('emits seek on change and hides the bubble afterwards', async () => {
+  it('emits seek on change', async () => {
     const wrapper = getWrapper()
     const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
 
     await slider.setValue('35')
 
-    expect(wrapper.emitted('seek')).toEqual([[35]])
-    expect(wrapper.find('.epub-reader-progress-preview').exists()).toBe(false)
+    expect(wrapper.emitted('seek')).toEqual([[35], [35]])
     expect(wrapper.find('.epub-reader-progress-label').text()).toBe('12.3%')
   })
 
-  it('keeps the dragged slider value until parent progress updates', async () => {
+  it('updates slider value when parent progress updates', async () => {
     const wrapper = getWrapper()
     const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
 
-    await slider.setValue('35')
-
-    expect(slider.element.value).toBe('35')
+    expect(slider.element.value).toBe('12.3')
 
     await wrapper.setProps({ readingProgressPercent: 36 })
 
     expect(slider.element.value).toBe('36')
   })
 
-  it('omits trailing decimal zeros in the displayed values', async () => {
+  it('omits trailing decimal zeros in the displayed label', async () => {
     const wrapper = mount(ReaderProgressBar, {
       props: {
         readingProgressPercent: 12,
@@ -60,12 +56,7 @@ describe('ReaderProgressBar component', () => {
         plugins: [...defaultPlugins()]
       }
     })
-    const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
 
-    slider.element.value = '42.0'
-    await slider.trigger('input')
-
-    expect(wrapper.find('.epub-reader-progress-preview').text()).toBe('42%')
     expect(wrapper.find('.epub-reader-progress-label').text()).toBe('12%')
   })
 })

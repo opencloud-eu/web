@@ -14,13 +14,6 @@
           @input="onProgressInput"
           @change="onProgressChange"
         />
-        <span
-          v-if="showPreview && previewPercent !== null"
-          class="epub-reader-progress-preview pointer-events-none absolute -top-6 -translate-x-1/2 rounded-xs bg-role-surface-container-high px-1.5 py-0.5 text-xs text-role-on-surface-variant"
-          :style="{ left: `${previewPercent}%` }"
-        >
-          {{ formatPercent(previewPercent) }}%
-        </span>
       </div>
       <span
         v-oc-tooltip="progressTooltip"
@@ -39,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 const { readingProgressPercent, enabled } = defineProps<{
@@ -52,10 +45,8 @@ const emit = defineEmits<{
 }>()
 
 const { $gettext } = useGettext()
-const previewPercent = ref<number | null>(null)
-const showPreview = ref(false)
 
-const sliderValue = computed(() => previewPercent.value ?? readingProgressPercent ?? 0)
+const sliderValue = computed(() => readingProgressPercent ?? 0)
 
 const progressLabel = computed(() => {
   const percent = readingProgressPercent
@@ -76,35 +67,18 @@ function formatPercent(value: number) {
 }
 
 function onProgressInput(event: Event) {
-  previewPercent.value = parseSliderValue(event)
-  showPreview.value = true
+  const value = parseSliderValue(event)
+  if (value !== null) {
+    emit('seek', value)
+  }
 }
 
 function onProgressChange(event: Event) {
   const value = parseSliderValue(event)
   if (value !== null) {
-    previewPercent.value = value
     emit('seek', value)
   }
-  showPreview.value = false
 }
-
-watch(
-  () => readingProgressPercent,
-  () => {
-    previewPercent.value = null
-  }
-)
-
-watch(
-  () => enabled,
-  (isEnabled) => {
-    if (!isEnabled) {
-      previewPercent.value = null
-      showPreview.value = false
-    }
-  }
-)
 </script>
 
 <style scoped>
