@@ -12,7 +12,6 @@
           step="0.1"
           :disabled="!enabled"
           @input="onProgressInput"
-          @change="onProgressChange"
         />
       </div>
       <span
@@ -34,6 +33,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { throttle } from 'lodash-es'
 
 const { readingProgressPercent, enabled } = defineProps<{
   readingProgressPercent: number | null
@@ -66,17 +66,18 @@ function formatPercent(value: number) {
   return Number(value.toFixed(2)).toString()
 }
 
+const throttledSeek = throttle(
+  (value: number) => {
+    emit('seek', value)
+  },
+  150,
+  { leading: true, trailing: true }
+)
+
 function onProgressInput(event: Event) {
   const value = parseSliderValue(event)
   if (value !== null) {
-    emit('seek', value)
-  }
-}
-
-function onProgressChange(event: Event) {
-  const value = parseSliderValue(event)
-  if (value !== null) {
-    emit('seek', value)
+    throttledSeek(value)
   }
 }
 </script>
