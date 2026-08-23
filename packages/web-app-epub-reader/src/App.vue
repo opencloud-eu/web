@@ -280,17 +280,40 @@ function closeTextSearch() {
   clearSearchHighlight()
 }
 
-function resolveCurrentChapterFromNavigation(navItem?: NavItem) {
-  if (!navItem) {
+function resolveCurrentChapter(currentLocation: Location) {
+  const locationHref = currentLocation?.start?.href
+  const navigation = unref(book)?.navigation
+  if (!navigation) {
     return undefined
   }
 
-  const byId = unref(chapters).find((chapter) => chapter.id === navItem.id)
-  if (byId) {
-    return byId
+  if (locationHref) {
+    const byLocationHref = navigation.get(locationHref)
+    if (byLocationHref) {
+      return byLocationHref
+    }
   }
 
-  return unref(chapters).find((chapter) => chapter.href === navItem.href)
+  const locationCfi = currentLocation?.start?.cfi
+  const locationIndex = currentLocation?.start?.index
+  const spineTarget =
+    locationCfi || (typeof locationIndex === 'number' ? locationIndex : undefined) || locationHref
+  const spineHref = spineTarget ? unref(book)?.spine.get(spineTarget)?.href : undefined
+  if (!spineHref) {
+    return undefined
+  }
+
+  const bySpineHref = navigation.get(spineHref)
+  if (bySpineHref) {
+    return bySpineHref
+  }
+
+  const bySpinePath = unref(chapters).find((chapter) => chapter.href.split('#')[0] === spineHref)
+  if (bySpinePath) {
+    return bySpinePath
+  }
+
+  return undefined
 }
 
 function getSearchableSpineItems(bookInstance: Book): EpubSpineItem[] {
@@ -492,9 +515,6 @@ watch(
     unref(rendition).themes.register('light', LIGHT_THEME_CONFIG)
     unref(rendition).themes.select(themeStore.currentTheme.isDark ? 'dark' : 'light')
     unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
-    unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
-    void generateGlobalLocationsForBook(currentBook)
-
     unref(rendition).on('keydown', (event: KeyboardEvent) => {
       if (event.key === Key.Esc) {
         event.preventDefault()
@@ -511,21 +531,20 @@ watch(
     unref(rendition).on('relocated', () => {
       isReaderLoading.value = false
       const currentLocation = unref(rendition).currentLocation() as any & Location
-      localStorageResourceData.value = { currentLocation }
       navigateLeftDisabled.value = currentLocation.atStart === true
       navigateRightDisabled.value = currentLocation.atEnd === true
       updateReadingProgress(currentLocation)
 
-      const locationCfi = currentLocation?.start?.cfi
-      const spineItem = unref(book).spine.get(locationCfi)
-      const locationHref = currentLocation?.start?.href
-      const navLookupHref = locationHref || spineItem?.href
-      const navItem = navLookupHref ? unref(book).navigation.get(navLookupHref) : undefined
-      const resolvedCurrentChapter = resolveCurrentChapterFromNavigation(navItem)
+      const resolvedCurrentChapter = resolveCurrentChapter(currentLocation)
       if (resolvedCurrentChapter) {
         currentChapter.value = resolvedCurrentChapter
       }
+
+      localStorageResourceData.value = { currentLocation }
     })
+
+    unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+    void generateGlobalLocationsForBook(currentBook)
   },
   {
     immediate: true
