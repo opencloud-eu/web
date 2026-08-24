@@ -114,3 +114,33 @@ Feature: yjs collaborative editing
     And "Alice" logs out
     And "Brian" logs out
     And "Carol" logs out
+
+  Scenario: collaborative editing across two tabs of the same user
+    Given "Admin" creates following users using API
+      | id    |
+      | Alice |
+    And "Alice" creates the following file into personal space using API
+      | pathToFile | content     |
+      | example.md | lorem ipsum |
+
+    And "Alice" logs in
+    And "Alice" opens the "files" app
+    And "Alice" opens file "example.md" via "text-editor" using the context menu
+    And "Alice" is in a text-editor
+
+    When "Alice" opens a new tab
+    And "Alice" opens the "files" app
+    And "Alice" opens file "example.md" via "text-editor" using the context menu
+    And "Alice" is in a text-editor
+    And "Alice" enters the text "Alice says hello" in editor "TextEditor"
+
+    Then "Alice" switches to tab 1
+    And "Alice" should see the text "Alice says hello" in the text-editor
+    And "Alice" sees the current file as dirty
+
+    When "Alice" saves the file viewer
+    Then "Alice" sees the current file as clean
+    And "Alice" switches to tab 2
+    And "Alice" sees the current file as clean
+
+    And "Alice" logs out
