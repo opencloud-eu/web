@@ -1,5 +1,12 @@
 <template>
-  <img :src="src" :alt="alt" :aria-hidden="`${ariaHidden}`" :title="title" :loading="loadingType" />
+  <img
+    :src="src"
+    :alt="alt"
+    :aria-hidden="`${ariaHidden}`"
+    :title="title"
+    :loading="loadingType"
+    :decoding="decoding"
+  />
 </template>
 
 <script setup lang="ts">
@@ -23,9 +30,19 @@ export interface Props {
    * @docs The image title attribute.
    */
   title?: string
+  /**
+   * @docs The decoding hint of the image. Falls back to the browser default.
+   */
+  decoding?: 'sync' | 'async' | 'auto'
 }
 
-const { src, alt = '', title, loadingType = 'eager' } = defineProps<Props>()
+const {
+  src,
+  alt = '',
+  title = undefined,
+  loadingType = 'eager',
+  decoding = undefined
+} = defineProps<Props>()
 
 const ariaHidden = computed(() => alt.length === 0)
 </script>

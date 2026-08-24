@@ -63,6 +63,7 @@
               }"
               :src="resource.thumbnail"
               :data-test-thumbnail-resource-name="resource.name"
+              decoding="async"
               @click.stop="$emit('tileClicked', [resource, $event])"
             />
             <resource-icon

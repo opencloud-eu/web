@@ -25,6 +25,7 @@
         class="rounded-xs size-6 object-cover max-w-fit"
         :aria-label="tooltipLabelIcon"
         alt=""
+        decoding="async"
       />
       <resource-icon
         v-else
