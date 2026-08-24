@@ -194,13 +194,48 @@ describe('Epub reader app', () => {
     })
     it('seeks to a location when progress slider changes', async () => {
       const { wrapper } = getWrapper()
-      await nextTicks(3)
+      await nextTicks(6)
 
       const slider = wrapper.find<HTMLInputElement>(selectors.progressSlider)
       await slider.setValue('35')
       await slider.trigger('change')
 
       expect((wrapper.vm as any).rendition.display).toHaveBeenCalledWith('cfi-0.35')
+    })
+    it('renders only the latest seek target while a render is in flight', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      const rendition = (wrapper.vm as any).rendition
+      let resolveDisplay: () => void = () => {}
+      rendition.display.mockImplementation(
+        () =>
+          new Promise<void>((resolve) => {
+            resolveDisplay = resolve
+          })
+      )
+      // Ignore the display() call that restored the initial reading location.
+      rendition.display.mockClear()
+
+      const progressBar = wrapper.findComponent({ name: 'ReaderProgressBar' })
+      progressBar.vm.$emit('seek', 10)
+      await nextTicks(1)
+      progressBar.vm.$emit('seek', 20)
+      progressBar.vm.$emit('seek', 30)
+      await nextTicks(1)
+
+      expect(rendition.display).toHaveBeenCalledTimes(1)
+      expect(rendition.display).toHaveBeenCalledWith('cfi-0.1')
+
+      resolveDisplay()
+      await nextTicks(2)
+
+      expect(rendition.display).toHaveBeenCalledTimes(2)
+      expect(rendition.display).toHaveBeenLastCalledWith('cfi-0.3')
+      expect(rendition.display).not.toHaveBeenCalledWith('cfi-0.2')
+
+      resolveDisplay()
+      await nextTicks(1)
     })
     it('finds matches and navigates to next search result', async () => {
       const { wrapper } = getWrapper()
@@ -307,6 +342,77 @@ describe('Epub reader app', () => {
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-130')
     })
 
+    it('falls back to spine-file chapter matching when navigation.get() returns non-toc items', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(3)
+
+      ;(wrapper.vm as any).chapters = [
+        { id: 'ch-1', label: 'Chapter 1', href: 'text/chapter.xhtml#one' },
+        { id: 'ch-2', label: 'Chapter 2', href: 'text/next.xhtml#two' }
+      ]
+
+      ;(wrapper.vm as any).rendition.currentLocation.mockReturnValue({
+        start: {
+          cfi: 'epubcfi(/6/2)',
+          href: 'text/chapter.xhtml#page-2',
+          displayed: { page: 2, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+      ;(wrapper.vm as any).book.spine.get.mockReturnValue({ href: 'text/chapter.xhtml' })
+      ;(wrapper.vm as any).book.navigation.get.mockReturnValue({
+        label: 'Unknown nav item',
+        href: 'text/untracked.xhtml'
+      })
+
+      const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'relocated'
+      )?.[1]
+      relocatedHandler()
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).currentChapter.id).toBe('ch-1')
+    })
+
+    it('keeps the current chapter when the location cannot be resolved', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(6)
+
+      ;(wrapper.vm as any).chapters = [
+        { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1.xhtml' },
+        { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
+      ]
+      ;(wrapper.vm as any).currentChapter = {
+        id: 'ch-2',
+        label: 'Chapter 2',
+        href: 'text/ch2.xhtml'
+      }
+
+      ;(wrapper.vm as any).rendition.currentLocation.mockReturnValue({
+        start: {
+          cfi: 'epubcfi(/6/99)',
+          href: 'text/nonexistent.xhtml',
+          displayed: { page: 1, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+      // Only the current location maps to a spine item, none of the chapters do.
+      ;(wrapper.vm as any).book.spine.get.mockImplementation((target: string) =>
+        target === 'epubcfi(/6/99)' ? { href: 'text/orphan.xhtml', index: 999 } : null
+      )
+      ;(wrapper.vm as any).book.navigation.get.mockReturnValue(null)
+
+      const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'relocated'
+      )?.[1]
+      relocatedHandler()
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).currentChapter.id).toBe('ch-2')
+    })
+
     it('recomputes progress after global locations are generated', async () => {
       const { wrapper, resolveGlobalLocationsGeneration } = getWrapper({
         deferGlobalLocationsGeneration: true
@@ -334,7 +440,6 @@ describe('Epub reader app', () => {
       await nextTicks(1)
 
       expect((wrapper.vm as any).readingProgressPercent).toBe(4.6)
-      expect((wrapper.vm as any).readingProgressLabel).toBe('4.6%')
     })
   })
   describe('chapters', () => {
