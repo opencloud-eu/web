@@ -218,12 +218,11 @@ const clickResourceInEmbedMode = async ({
     const resource = frame.locator(util.format(resourceNameSelector, folder))
     const resourceExists = await resource.count()
 
-    // let waitResponse
     if (!resourceExists && createIfNotExist) {
       await createNewFolderInEmbedMode({ page, resource: name })
     }
 
-    await expect(resource).toBeVisible()
+    await resource.waitFor()
     const waitResponse = page.waitForResponse(
       (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
     )
@@ -1194,7 +1193,7 @@ const navigateFolderInEmbedMode = async ({
     }
   }
 
-  if (!sidebarOnly) {
+  if (!sidebarOnly && parentPathArr.length) {
     // navigate the remaining paths
     await clickResourceInEmbedMode({ page, path: parentPathArr.join('/') })
   }
@@ -1204,12 +1203,14 @@ const perFormEmbedModeAction = async ({
   page,
   newLocation,
   waitConditions,
-  navigate = true
+  navigate = true,
+  copyInstead = false
 }: {
   page: Page
   newLocation: string
   waitConditions: Promise<any>[]
   navigate?: boolean
+  copyInstead?: boolean
 }): Promise<void> => {
   const frame = page.frameLocator(opencloudFrame)
 
@@ -1217,7 +1218,13 @@ const perFormEmbedModeAction = async ({
     await navigateFolderInEmbedMode({ page, parentPath: newLocation })
   }
 
-  await Promise.all([...waitConditions, frame.getByTestId('button-select').click()])
+  let submitAction = frame.getByTestId('button-select')
+  if (copyInstead) {
+    await submitAction.click()
+    submitAction = page.locator(util.format(actionConfirmationButton, 'Copy here'))
+  }
+
+  await Promise.all([...waitConditions, submitAction.click()])
 }
 
 export const moveOrCopyMultipleResources = async (
@@ -1319,12 +1326,14 @@ export const copyMoveResourcesWithCreateDestination = async ({
   page,
   action,
   resourcePath,
-  newLocation
+  newLocation,
+  copyInstead
 }: {
   page: Page
   action: 'copy' | 'move'
   resourcePath: string
   newLocation: string
+  copyInstead: boolean
 }): Promise<void> => {
   const { dir: resourceDir, base: resourceName } = path.parse(resourcePath)
 
@@ -1340,6 +1349,10 @@ export const copyMoveResourcesWithCreateDestination = async ({
   for (const folder of destinationPath) {
     await clickResourceInEmbedMode({ page, path: folder, createIfNotExist: true })
   }
+  let actionMethod = action.toUpperCase()
+  if (copyInstead) {
+    actionMethod = 'COPY'
+  }
   // NOTE: check response after opening embed mode.
   // waitForResponse won't work if it is checked before the embed mode is opened.
   const waitConditions = [
@@ -1347,10 +1360,10 @@ export const copyMoveResourcesWithCreateDestination = async ({
       (resp) =>
         resp.url().includes(resourceName) &&
         [201, 204].includes(resp.status()) &&
-        resp.request().method() === action.toUpperCase()
+        resp.request().method() === actionMethod
     )
   ]
-  await perFormEmbedModeAction({ page, newLocation, waitConditions, navigate: false })
+  await perFormEmbedModeAction({ page, newLocation, waitConditions, navigate: false, copyInstead })
 }
 
 export const moveOrCopyResource = async (args: moveOrCopyResourceArgs): Promise<void> => {

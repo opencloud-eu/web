@@ -94,34 +94,40 @@ export class Resource {
 
   async copyResourcesWithCreateDestination({
     resourcePath,
-    newLocation
+    newLocation,
+    copyInstead
   }: {
     resourcePath: string
     newLocation: string
+    copyInstead: boolean
   }) {
     const startUrl = this.#page.url()
     await po.copyMoveResourcesWithCreateDestination({
       page: this.#page,
       action: 'copy',
       resourcePath,
-      newLocation
+      newLocation,
+      copyInstead
     })
     await this.#page.goto(startUrl)
   }
 
   async moveResourcesWithCreateDestination({
     resourcePath,
-    newLocation
+    newLocation,
+    copyInstead
   }: {
     resourcePath: string
     newLocation: string
+    copyInstead: boolean
   }) {
     const startUrl = this.#page.url()
     await po.copyMoveResourcesWithCreateDestination({
       page: this.#page,
       action: 'move',
       resourcePath,
-      newLocation
+      newLocation,
+      copyInstead
     })
     await this.#page.goto(startUrl)
   }

@@ -215,12 +215,13 @@ When(
 )
 
 When(
-  /^"([^"]*)" (copies|moves) the following resource to a new folder "([^"]*)"$/,
+  /^"([^"]*)" (copies|moves) the following resource to a new folder "([^"]*)"( with copy instead)?$/,
   async (
     { world }: { world: World },
     stepUser: string,
     action: string,
     newLocation: string,
+    copyInstead: string,
     stepTable: DataTable
   ): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
@@ -233,7 +234,8 @@ When(
 
     await resourceObject[actionFn]({
       resourcePath,
-      newLocation
+      newLocation,
+      copyInstead: !!copyInstead
     })
   }
 )

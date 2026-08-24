@@ -40,7 +40,7 @@ Feature: Copy
     When "Alice" copies the following resource using sidebar-panel
       | resource    | to          |
       | sidebar.txt | Personal/PARENTCopy2 |
-    And "Alice" copies the following resource using batch-action
+    And "Alice" copies the following resource using dropdown-menu
       | resource                 | to          |
       | PARENTCopy3/example1.txt | Personal/PARENTCopy1 |
     And "Alice" copies the following resource using batch-action
@@ -222,6 +222,7 @@ Feature: Copy
     And "Brian" creates the following file into personal space using API
       | pathToFile     | content     |
       | share/file.txt | lorem ipsum |
+      | share/test.txt | lorem ipsum |
     And "Brian" shares the following resource using API
       | resource | recipient | type  | role     |
       | share    | Alice     | user  | Can edit |
@@ -232,6 +233,9 @@ Feature: Copy
     And "Alice" copies the following resource using sidebar-panel
       | resource | to              |
       | file.txt | Project/mySpace |
+    And "Alice" copies the following resource to a new folder "Project/mySpace/new-folder"
+      | resource |
+      | test.txt |
     And "Alice" navigates to the project space "mySpace"
     And "Alice" copies the following resource using sidebar-panel
       | resource | to                   |
@@ -246,5 +250,9 @@ Feature: Copy
     And "Alice" moves the following resource using sidebar-panel
       | resource | to              | option       |
       | f3       | Project/mySpace | copy instead |
+    And "Alice" navigates to the project space "mySpace"
+    And "Alice" moves the following resource to a new folder "Personal/another-folder" with copy instead
+      | resource            |
+      | new-folder/test.txt |
     And "Alice" logs out
     
