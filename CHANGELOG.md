@@ -6,24 +6,9 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @fschade, @junkerderprovinz, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
 
-### ✅ Tests
-
-- test(e2e): add test to copy and move file to a new folder [[#3206](https://github.com/opencloud-eu/web/pull/3206)]
-- test(e2e): fix e2ee space tests by creating ocnote instead of txt [[#3193](https://github.com/opencloud-eu/web/pull/3193)]
-- test(e2e): add e2ee space tests [[#3189](https://github.com/opencloud-eu/web/pull/3189)]
-- test(e2e): add test for saving file as different [[#3176](https://github.com/opencloud-eu/web/pull/3176)]
-- e2e-test: yjs collaboration tests [[#3179](https://github.com/opencloud-eu/web/pull/3179)]
-- e2e-test: cover favorite SSE events across tabs [[#3154](https://github.com/opencloud-eu/web/pull/3154)]
-- test(e2e): add sidebar details check for shared resources [[#3116](https://github.com/opencloud-eu/web/pull/3116)]
-- test(e2e): extend e2e coverage for rclone-crypt vault [[#3102](https://github.com/opencloud-eu/web/pull/3102)]
-- test(e2e): add coverage for opening files with special characters [[#3099](https://github.com/opencloud-eu/web/pull/3099)]
-- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
-- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
-- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
-- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
-
 ### 📈 Enhancement
 
+- feat(epub-reader): improve chapter resolution and progress slider UX [[#3201](https://github.com/opencloud-eu/web/pull/3201)]
 - Tip tap code block tab indetation [[#3208](https://github.com/opencloud-eu/web/pull/3208)]
 - feat(editor): add lowlight code blocks [[#3199](https://github.com/opencloud-eu/web/pull/3199)]
 - feat: add notebook assets [[#3200](https://github.com/opencloud-eu/web/pull/3200)]
@@ -55,6 +40,22 @@
 - feat(vault): use integrity id as passphrase verifier [[#3018](https://github.com/opencloud-eu/web/pull/3018)]
 - feat(tiptap): add find and replace [[#3015](https://github.com/opencloud-eu/web/pull/3015)]
 - feat(tiptap): add inline table actions toolbar [[#2997](https://github.com/opencloud-eu/web/pull/2997)]
+
+### ✅ Tests
+
+- test(e2e): add test to copy and move file to a new folder [[#3206](https://github.com/opencloud-eu/web/pull/3206)]
+- test(e2e): fix e2ee space tests by creating ocnote instead of txt [[#3193](https://github.com/opencloud-eu/web/pull/3193)]
+- test(e2e): add e2ee space tests [[#3189](https://github.com/opencloud-eu/web/pull/3189)]
+- test(e2e): add test for saving file as different [[#3176](https://github.com/opencloud-eu/web/pull/3176)]
+- e2e-test: yjs collaboration tests [[#3179](https://github.com/opencloud-eu/web/pull/3179)]
+- e2e-test: cover favorite SSE events across tabs [[#3154](https://github.com/opencloud-eu/web/pull/3154)]
+- test(e2e): add sidebar details check for shared resources [[#3116](https://github.com/opencloud-eu/web/pull/3116)]
+- test(e2e): extend e2e coverage for rclone-crypt vault [[#3102](https://github.com/opencloud-eu/web/pull/3102)]
+- test(e2e): add coverage for opening files with special characters [[#3099](https://github.com/opencloud-eu/web/pull/3099)]
+- e2e-test/fix pagination test flaky [[#3078](https://github.com/opencloud-eu/web/pull/3078)]
+- e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
+- e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
+- fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
 
 ### 🐛 Bug Fixes
 
