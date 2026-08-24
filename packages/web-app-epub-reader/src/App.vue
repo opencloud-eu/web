@@ -48,7 +48,6 @@
         />
         <reader-progress-bar
           :reading-progress-percent="readingProgressPercent"
-          :reading-progress-label="readingProgressLabel"
           :enabled="hasGlobalLocations"
           @seek="onProgressChange"
         />
@@ -89,6 +88,7 @@ import ReaderToolbar from './components/ReaderToolbar.vue'
 import ChapterList from './components/ChapterList.vue'
 import ReaderProgressBar from './components/ReaderProgressBar.vue'
 import ReaderView from './components/ReaderView.vue'
+import { resolveCurrentChapter } from './helpers/chapterResolving'
 
 const DARK_THEME_CONFIG = {
   html: {
@@ -138,9 +138,10 @@ const chapters = ref<NavItem[]>([])
 const currentChapter = ref<NavItem>()
 const navigateLeftDisabled = ref(false)
 const navigateRightDisabled = ref(false)
-const readingProgressLabel = ref<string | null>(null)
 const readingProgressPercent = ref<number | null>(null)
 const hasGlobalLocations = ref(false)
+const pendingSeekCfi = ref<string | null>(null)
+const isSeeking = ref(false)
 const searchResultCfis = ref<string[]>([])
 const hasMoreSearchResults = ref(false)
 const currentSearchResultIndex = ref(-1)
@@ -155,14 +156,14 @@ const rendition = ref<Rendition>()
 const isFullScreenModeActivated = ref(false)
 const isReaderLoading = ref(true)
 
-function showChapter(chapter: NavItem) {
-  currentChapter.value = chapter
-  unref(rendition).display(chapter.href)
-}
+async function showChapter(chapter: NavItem) {
+  const currentRendition = unref(rendition)
+  if (!currentRendition) {
+    return
+  }
 
-function formatProgressPercentLabel(percent: number) {
-  const rounded = Number(percent.toFixed(1))
-  return Number.isInteger(rounded) ? `${rounded}%` : `${rounded.toFixed(1)}%`
+  currentChapter.value = chapter
+  await currentRendition.display(chapter.href)
 }
 
 async function onProgressChange(percentage: number) {
@@ -176,8 +177,27 @@ async function onProgressChange(percentage: number) {
 
   const normalized = Math.min(100, Math.max(0, percentage))
   const cfi = unref(book).locations.cfiFromPercentage(normalized / 100)
-  if (cfi) {
-    await unref(rendition).display(cfi)
+  if (!cfi) {
+    return
+  }
+
+  // Rendition.display() queues internally, so seeks arriving while a render is in flight would
+  // all be rendered one after another. Render the latest requested target only.
+  pendingSeekCfi.value = cfi
+  if (unref(isSeeking)) {
+    return
+  }
+
+  isSeeking.value = true
+  try {
+    let target = unref(pendingSeekCfi)
+    while (target) {
+      pendingSeekCfi.value = null
+      await unref(rendition)?.display(target)
+      target = unref(pendingSeekCfi)
+    }
+  } finally {
+    isSeeking.value = false
   }
 }
 
@@ -205,23 +225,18 @@ function updateReadingProgress(currentLocation: Location) {
 
   if (typeof globalPercentage === 'number' && Number.isFinite(globalPercentage)) {
     const clamped = Math.min(1, Math.max(0, globalPercentage))
-    const percent = Number((clamped * 100).toFixed(1))
-    readingProgressPercent.value = percent
-    readingProgressLabel.value = formatProgressPercentLabel(percent)
+    readingProgressPercent.value = clamped * 100
     return
   }
 
   const chapterPage = currentLocation?.start?.displayed?.page
   const chapterTotal = currentLocation?.start?.displayed?.total
   if (typeof chapterPage === 'number' && typeof chapterTotal === 'number' && chapterTotal > 0) {
-    const percent = Number(((chapterPage / chapterTotal) * 100).toFixed(1))
-    readingProgressPercent.value = percent
-    readingProgressLabel.value = formatProgressPercentLabel(percent)
+    readingProgressPercent.value = (chapterPage / chapterTotal) * 100
     return
   }
 
   readingProgressPercent.value = null
-  readingProgressLabel.value = null
 }
 
 const canNavigateThroughSearchResults = computed(() => {
@@ -230,7 +245,7 @@ const canNavigateThroughSearchResults = computed(() => {
 
 function clearSearchHighlight() {
   const highlightCfi = unref(currentSearchHighlightCfi)
-  const annotations = (unref(rendition) as any)?.annotations
+  const annotations = unref(rendition)?.annotations
 
   if (!highlightCfi || !annotations?.remove) {
     currentSearchHighlightCfi.value = null
@@ -242,7 +257,7 @@ function clearSearchHighlight() {
 }
 
 function highlightSearchResult(cfi: string) {
-  const annotations = (unref(rendition) as any)?.annotations
+  const annotations = unref(rendition)?.annotations
   if (!annotations) {
     return
   }
@@ -278,19 +293,6 @@ function closeTextSearch() {
   currentSearchResultIndex.value = -1
   textSearchLoading.value = false
   clearSearchHighlight()
-}
-
-function resolveCurrentChapterFromNavigation(navItem?: NavItem) {
-  if (!navItem) {
-    return undefined
-  }
-
-  const byId = unref(chapters).find((chapter) => chapter.id === navItem.id)
-  if (byId) {
-    return byId
-  }
-
-  return unref(chapters).find((chapter) => chapter.href === navItem.href)
 }
 
 function getSearchableSpineItems(bookInstance: Book): EpubSpineItem[] {
@@ -452,8 +454,18 @@ watch(
   async () => {
     await nextTick()
 
+    // Cancel ongoing searches before destroying
+    textSearchRequestId.value = unref(textSearchRequestId) + 1
+    clearSearchHighlight()
+
+    if (unref(rendition)) {
+      unref(rendition).destroy()
+      rendition.value = undefined
+    }
+
     if (unref(book)) {
       unref(book).destroy()
+      book.value = undefined
     }
 
     const localStorageResourceData = useLocalStorage<{ currentLocation?: Location }>(
@@ -463,14 +475,13 @@ watch(
 
     book.value = ePub(currentContent)
     isReaderLoading.value = true
-    readingProgressLabel.value = null
     readingProgressPercent.value = null
     hasGlobalLocations.value = false
+    pendingSeekCfi.value = null
     closeTextSearch()
 
     unref(book).loaded.navigation.then(({ toc }) => {
       chapters.value = toc
-      currentChapter.value = toc?.[0]
     })
 
     await unref(book).ready
@@ -478,6 +489,10 @@ watch(
 
     const bookContainer = unref(readerView)?.getBookContainer()
     if (!bookContainer) {
+      if (currentBook) {
+        currentBook.destroy()
+        book.value = undefined
+      }
       return
     }
 
@@ -490,9 +505,12 @@ watch(
 
     unref(rendition).themes.register('dark', DARK_THEME_CONFIG)
     unref(rendition).themes.register('light', LIGHT_THEME_CONFIG)
+
+    await unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+
     unref(rendition).themes.select(themeStore.currentTheme.isDark ? 'dark' : 'light')
     unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
-    unref(rendition).display(unref(localStorageResourceData)?.currentLocation?.start?.cfi)
+
     void generateGlobalLocationsForBook(currentBook)
 
     unref(rendition).on('keydown', (event: KeyboardEvent) => {
@@ -510,18 +528,22 @@ watch(
 
     unref(rendition).on('relocated', () => {
       isReaderLoading.value = false
-      const currentLocation = unref(rendition).currentLocation() as any & Location
+      const currentLocation = unref(rendition).currentLocation() as unknown as Location
+      if (!currentLocation) {
+        return
+      }
+
       localStorageResourceData.value = { currentLocation }
       navigateLeftDisabled.value = currentLocation.atStart === true
       navigateRightDisabled.value = currentLocation.atEnd === true
       updateReadingProgress(currentLocation)
 
-      const locationCfi = currentLocation?.start?.cfi
-      const spineItem = unref(book).spine.get(locationCfi)
-      const locationHref = currentLocation?.start?.href
-      const navLookupHref = locationHref || spineItem?.href
-      const navItem = navLookupHref ? unref(book).navigation.get(navLookupHref) : undefined
-      const resolvedCurrentChapter = resolveCurrentChapterFromNavigation(navItem)
+      const resolvedCurrentChapter = resolveCurrentChapter(
+        currentLocation,
+        unref(book),
+        unref(chapters),
+        unref(rendition)
+      )
       if (resolvedCurrentChapter) {
         currentChapter.value = resolvedCurrentChapter
       }
@@ -543,7 +565,12 @@ watch(hasGlobalLocations, (enabled, wasEnabled) => {
     return
   }
 
-  const currentLocation = unref(rendition)?.currentLocation() as any & Location
+  const currentRendition = unref(rendition)
+  if (!currentRendition) {
+    return
+  }
+
+  const currentLocation = currentRendition.currentLocation() as unknown as Location
   if (!currentLocation) {
     return
   }
@@ -552,7 +579,12 @@ watch(hasGlobalLocations, (enabled, wasEnabled) => {
 })
 
 watch(currentFontSizePercentage, () => {
-  unref(rendition).themes.fontSize(`${unref(currentFontSizePercentage)}%`)
+  const currentRendition = unref(rendition)
+  if (!currentRendition) {
+    return
+  }
+
+  currentRendition.themes.fontSize(`${unref(currentFontSizePercentage)}%`)
   localStorageData.value = {
     ...unref(localStorageData),
     fontSizePercentage: unref(currentFontSizePercentage)
@@ -565,6 +597,19 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   document.removeEventListener('fullscreenchange', syncFullscreenState)
+
+  // Cancel ongoing searches before destroying
+  textSearchRequestId.value = unref(textSearchRequestId) + 1
   clearSearchHighlight()
+
+  if (unref(rendition)) {
+    unref(rendition).destroy()
+    rendition.value = undefined
+  }
+
+  if (unref(book)) {
+    unref(book).destroy()
+    book.value = undefined
+  }
 })
 </script>

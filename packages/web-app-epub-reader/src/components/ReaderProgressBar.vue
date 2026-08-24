@@ -1,23 +1,26 @@
 <template>
   <div class="px-3 pb-3 pt-1">
     <div v-if="enabled" class="flex items-center gap-2">
-      <input
-        :value="readingProgressPercent ?? 0"
-        class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
-        :aria-label="$gettext('Reading progress')"
-        type="range"
-        min="0"
-        max="100"
-        step="0.1"
-        :disabled="!enabled"
-        @change="onProgressChange"
-      />
+      <div class="relative flex-1">
+        <input
+          :value="sliderValue"
+          class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
+          :aria-label="$gettext('Reading progress')"
+          type="range"
+          min="0"
+          max="100"
+          step="0.1"
+          :disabled="!enabled"
+          @input="onProgressInput"
+          @change="onProgressChange"
+        />
+      </div>
       <span
         v-oc-tooltip="progressTooltip"
         :aria-label="progressTooltip"
         class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant"
       >
-        {{ readingProgressLabel || '--' }}
+        {{ progressLabel }}
       </span>
     </div>
     <div v-else>
@@ -29,12 +32,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { throttle } from 'lodash-es'
 
-const props = defineProps<{
+const { readingProgressPercent, enabled } = defineProps<{
   readingProgressPercent: number | null
-  readingProgressLabel: string | null
   enabled: boolean
 }>()
 
@@ -44,20 +47,85 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 
-const progressTooltip = computed(() => {
-  return $gettext('Reading progress %{progress}', {
-    progress: props.readingProgressLabel || '--'
-  })
+/**
+ * While dragging, the slider position is owned locally. Seeking is live, so the parent keeps
+ * reporting the position it already rendered, which would otherwise drag the thumb away from
+ * the pointer on every relocation.
+ */
+const dragValue = ref<number | null>(null)
+const isDragging = ref(false)
+
+const sliderValue = computed(() => unref(dragValue) ?? readingProgressPercent ?? 0)
+
+const progressLabel = computed(() => {
+  const percent = readingProgressPercent
+  return percent !== null ? `${formatPercent(percent)}%` : '--'
 })
 
-function onProgressChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  const value = Number(input.value)
-  if (!Number.isFinite(value)) {
+const progressTooltip = computed(() =>
+  $gettext('Reading progress %{progress}', { progress: progressLabel.value })
+)
+
+function parseSliderValue(event: Event) {
+  const value = Number((event.target as HTMLInputElement).value)
+  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null
+}
+
+function formatPercent(value: number) {
+  return Number(value.toFixed(2)).toString()
+}
+
+const throttledSeek = throttle(
+  (value: number) => {
+    emit('seek', value)
+  },
+  150,
+  { leading: true, trailing: true }
+)
+
+function onProgressInput(event: Event) {
+  const value = parseSliderValue(event)
+  if (value === null) {
     return
   }
+
+  isDragging.value = true
+  dragValue.value = value
+  throttledSeek(value)
+}
+
+function onProgressChange(event: Event) {
+  isDragging.value = false
+
+  const value = parseSliderValue(event)
+  if (value === null) {
+    return
+  }
+
+  dragValue.value = value
+  throttledSeek.cancel()
   emit('seek', value)
 }
+
+// Hand the slider position back to the parent once it reports the sought location.
+watch(
+  () => readingProgressPercent,
+  () => {
+    if (!unref(isDragging)) {
+      dragValue.value = null
+    }
+  }
+)
+
+watch(
+  () => enabled,
+  (isEnabled) => {
+    if (!isEnabled) {
+      isDragging.value = false
+      dragValue.value = null
+    }
+  }
+)
 </script>
 
 <style scoped>
