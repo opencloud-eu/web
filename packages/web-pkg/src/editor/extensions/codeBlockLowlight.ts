@@ -1,14 +1,25 @@
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { VueNodeViewRenderer } from '@tiptap/vue-3'
+import { mergeAttributes } from '@tiptap/core'
 import { common, createLowlight } from 'lowlight'
-import CodeBlockComponent from '../components/CodeBlockComponent.vue'
 
 const lowlight = createLowlight(common)
 
 export function createCodeBlockLowlight() {
   return CodeBlockLowlight.extend({
-    addNodeView() {
-      return VueNodeViewRenderer(CodeBlockComponent)
+    renderHTML({ node, HTMLAttributes }) {
+      const language = (node.attrs.language as string | null) ?? null
+
+      return [
+        'pre',
+        mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, language ? { 'data-language': language } : {}),
+        [
+          'code',
+          {
+            class: language ? this.options.languageClassPrefix + language : null
+          },
+          0
+        ]
+      ]
     }
   }).configure({
     lowlight,

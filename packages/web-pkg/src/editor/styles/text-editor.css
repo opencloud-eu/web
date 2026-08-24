@@ -150,6 +150,22 @@
   overflow-x: auto;
 }
 
+.text-editor-content .ProseMirror pre[data-language] {
+  position: relative;
+  padding-top: 24px;
+}
+
+.text-editor-content .ProseMirror pre[data-language]::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 7px;
+  right: 12px;
+  color: var(--oc-role-on-surface-variant);
+  font-size: calc(11px * var(--text-editor-zoom-factor));
+  line-height: 1;
+  pointer-events: none;
+}
+
 /* Inline code styles */
 .text-editor-content .ProseMirror :not(pre) > code {
   font-family:
