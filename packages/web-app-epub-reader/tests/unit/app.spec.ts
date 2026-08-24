@@ -307,6 +307,39 @@ describe('Epub reader app', () => {
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-130')
     })
 
+    it('falls back to spine-file chapter matching when navigation.get() returns non-toc items', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(3)
+
+      ;(wrapper.vm as any).chapters = [
+        { id: 'ch-1', label: 'Chapter 1', href: 'text/chapter.xhtml#one' },
+        { id: 'ch-2', label: 'Chapter 2', href: 'text/next.xhtml#two' }
+      ]
+
+      ;(wrapper.vm as any).rendition.currentLocation.mockReturnValue({
+        start: {
+          cfi: 'epubcfi(/6/2)',
+          href: 'text/chapter.xhtml#page-2',
+          displayed: { page: 2, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+      ;(wrapper.vm as any).book.spine.get.mockReturnValue({ href: 'text/chapter.xhtml' })
+      ;(wrapper.vm as any).book.navigation.get.mockReturnValue({
+        label: 'Unknown nav item',
+        href: 'text/untracked.xhtml'
+      })
+
+      const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'relocated'
+      )?.[1]
+      relocatedHandler()
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).currentChapter.id).toBe('ch-1')
+    })
+
     it('recomputes progress after global locations are generated', async () => {
       const { wrapper, resolveGlobalLocationsGeneration } = getWrapper({
         deferGlobalLocationsGeneration: true

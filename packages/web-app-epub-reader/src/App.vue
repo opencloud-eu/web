@@ -311,18 +311,49 @@ function findChapterByDomPosition(chapters: NavItem[], cfi: string): NavItem | u
   return undefined
 }
 
+function findChapterByHref(chapterList: NavItem[], href?: string): NavItem | undefined {
+  if (!href) {
+    return undefined
+  }
+
+  const exactMatch = chapterList.find((chapter) => chapter.href === href)
+  if (exactMatch) {
+    return exactMatch
+  }
+
+  const normalizedHref = href.split('#')[0]
+  const matchesBySpineHref = chapterList.filter(
+    (chapter) => chapter.href.split('#')[0] === normalizedHref
+  )
+  if (matchesBySpineHref.length === 1) {
+    return matchesBySpineHref[0]
+  }
+
+  return undefined
+}
+
 function resolveCurrentChapter(currentLocation: Location) {
   const locationHref = currentLocation?.start?.href
   const navigation = unref(book)?.navigation
   if (!navigation) {
     return undefined
   }
+  const chapterList = unref(chapters)
 
-  // Strategy 1: Exact match via navigation.get() using location href
+  // Strategy 1: Exact/normalized match directly against loaded TOC using relocated href
+  if (locationHref) {
+    const byLocationHrefFromToc = findChapterByHref(chapterList, locationHref)
+    if (byLocationHrefFromToc) {
+      return byLocationHrefFromToc
+    }
+  }
+
+  // Strategy 2: Resolve via navigation.get(locationHref) but only if it maps to loaded TOC
   if (locationHref) {
     const byLocationHref = navigation.get(locationHref)
-    if (byLocationHref) {
-      return byLocationHref
+    const byNavigationLocationHrefFromToc = findChapterByHref(chapterList, byLocationHref?.href)
+    if (byNavigationLocationHrefFromToc) {
+      return byNavigationLocationHrefFromToc
     }
   }
 
@@ -336,15 +367,16 @@ function resolveCurrentChapter(currentLocation: Location) {
     return undefined
   }
 
-  // Strategy 2: Exact match via navigation.get() using spine href
+  // Strategy 3: Match via navigation.get(spineHref), but only if it maps to loaded TOC
   const bySpineHref = navigation.get(spineHref)
-  if (bySpineHref) {
-    return bySpineHref
+  const bySpineHrefFromToc = findChapterByHref(chapterList, bySpineHref?.href)
+  if (bySpineHrefFromToc) {
+    return bySpineHrefFromToc
   }
 
-  // Strategy 3: Match by normalized href (without hash fragment)
+  // Strategy 4: Match by normalized spine href (without hash fragment)
   const normalizedSpineHref = spineHref.split('#')[0]
-  const matchingChapters = unref(chapters).filter(
+  const matchingChapters = chapterList.filter(
     (chapter) => chapter.href.split('#')[0] === normalizedSpineHref
   )
 
@@ -352,7 +384,7 @@ function resolveCurrentChapter(currentLocation: Location) {
     return matchingChapters[0]
   }
 
-  // Strategy 3b: Multiple chapters in same file - find by DOM element position
+  // Strategy 4b: Multiple chapters in same file - find by DOM element position
   if (matchingChapters.length > 1 && locationCfi) {
     const resolved = findChapterByDomPosition(matchingChapters, locationCfi)
     if (resolved) {
@@ -361,10 +393,10 @@ function resolveCurrentChapter(currentLocation: Location) {
     return matchingChapters[0]
   }
 
-  // Strategy 4: Find containing chapter by spine index (for chapters spanning multiple files)
+  // Strategy 5: Find containing chapter by spine index (for chapters spanning multiple files)
   const currentSpineIndex = spineItem?.index
   if (typeof currentSpineIndex === 'number') {
-    const chaptersWithSpineIndex = unref(chapters)
+    const chaptersWithSpineIndex = chapterList
       .map((chapter) => {
         const chapterSpineItem = unref(book)?.spine.get(chapter.href.split('#')[0])
         return {
