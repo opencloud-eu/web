@@ -13,6 +13,9 @@ export class PreviewService {
   userStore: UserStore
   authStore: AuthStore
 
+  /** Ongoing preview requests, so concurrent loads of the same key share one fetch. */
+  private inFlightPreviews = new Map<string, Promise<string>>()
+
   constructor({
     clientService,
     userStore,
@@ -81,14 +84,33 @@ export class PreviewService {
     if (hit && hit.etag === resource.etag) {
       return hit.src
     }
+
     try {
-      const { src, size } = await this.fetchPreviewBlob(options, signal)
-      return cacheService.filePreview.set(key, { src, size, etag: resource.etag }, 0).src
+      let request = this.inFlightPreviews.get(key)
+      if (!request) {
+        request = this.fetchAndCachePreview(options, key, signal)
+        this.inFlightPreviews.set(key, request)
+      }
+
+      return await request
     } catch (e) {
       if (silenceErrors) {
         return
       }
       throw e
+    }
+  }
+
+  private async fetchAndCachePreview(
+    options: LoadPreviewOptions,
+    key: string,
+    signal?: AbortSignal
+  ): Promise<string> {
+    try {
+      const { src, size } = await this.fetchPreviewBlob(options, signal)
+      return cacheService.filePreview.set(key, { src, size, etag: options.resource.etag }, 0).src
+    } finally {
+      this.inFlightPreviews.delete(key)
     }
   }
 
