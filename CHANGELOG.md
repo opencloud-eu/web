@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: add accessibility hint for code block exit [[#3209](https://github.com/opencloud-eu/web/pull/3209)]
 - feat(epub-reader): improve chapter resolution and progress slider UX [[#3201](https://github.com/opencloud-eu/web/pull/3201)]
 - Tip tap code block tab indetation [[#3208](https://github.com/opencloud-eu/web/pull/3208)]
 - feat(editor): add lowlight code blocks [[#3199](https://github.com/opencloud-eu/web/pull/3199)]
