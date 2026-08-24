@@ -1,214 +1,216 @@
 .text-editor-content {
-    --text-editor-zoom-factor: 1;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-    overflow: auto;
-    container-type: inline-size;
+  --text-editor-zoom-factor: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  container-type: inline-size;
 }
 
 .text-editor-provider .text-editor-content .ProseMirror {
-    max-width: 800px;
-    padding: 1rem;
+  max-width: 800px;
+  padding: 1rem;
 }
 
 .text-editor-content .ProseMirror {
-    flex: 1;
-    min-height: 100%;
-    height: 100%;
-    width: 100%;
-    box-sizing: border-box;
-    outline: none;
-    border: none;
-    margin: 0 auto;
-    padding: 0;
-    font-size: calc(15px * var(--text-editor-zoom-factor));
-    line-height: 1.6;
+  flex: 1;
+  min-height: 100%;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  border: none;
+  margin: 0 auto;
+  padding: 0;
+  font-size: calc(15px * var(--text-editor-zoom-factor));
+  line-height: 1.6;
 }
 
 .text-editor-content .ProseMirror:focus,
 .text-editor-content .ProseMirror:focus-visible {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+  box-shadow: none;
 }
 
 .text-editor-content .ProseMirror p.is-editor-empty:first-child::before {
-    content: attr(data-placeholder);
-    float: left;
-    color: var(--oc-role-outline-variant, rgba(0, 0, 0, 0.4));
-    pointer-events: none;
-    user-select: none;
-    height: 0;
+  content: attr(data-placeholder);
+  float: left;
+  color: var(--oc-role-outline-variant, rgba(0, 0, 0, 0.4));
+  pointer-events: none;
+  user-select: none;
+  height: 0;
 }
 
 .text-editor-content .ProseMirror .text-editor-slash-filter {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.125rem;
-    background: var(--oc-role-surface-container);
-    color: var(--oc-role-on-surface-variant);
-    border-radius: 0.25rem;
-    padding: 0.125rem 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.125rem;
+  background: var(--oc-role-surface-container);
+  color: var(--oc-role-on-surface-variant);
+  border-radius: 0.25rem;
+  padding: 0.125rem 0.25rem;
 }
 
 .text-editor-content .ProseMirror .text-editor-slash-filter::first-letter {
-    color: var(--oc-role-secondary);
+  color: var(--oc-role-secondary);
 }
 
 .text-editor-content .ProseMirror .text-editor-slash-filter--empty::after {
-    content: attr(data-decoration-content);
-    color: var(--oc-role-on-surface-variant);
-    opacity: 0.9;
+  content: attr(data-decoration-content);
+  color: var(--oc-role-on-surface-variant);
+  opacity: 0.9;
 }
 
 .text-editor-content .ProseMirror p {
-    margin: 0 0 8px;
+  margin: 0 0 8px;
 }
 
 .text-editor-content .ProseMirror h1,
 .text-editor-content .ProseMirror h2,
 .text-editor-content .ProseMirror h3,
 .text-editor-content .ProseMirror h4 {
-    margin: 0 0 8px;
-    line-height: 1.25;
-    font-weight: 600;
+  margin: 0 0 8px;
+  line-height: 1.25;
+  font-weight: 600;
 }
 
 .text-editor-content .ProseMirror h1 {
-    font-size: calc(30px * var(--text-editor-zoom-factor));
+  font-size: calc(30px * var(--text-editor-zoom-factor));
 }
 
 .text-editor-content .ProseMirror h2 {
-    font-size: calc(24px * var(--text-editor-zoom-factor));
+  font-size: calc(24px * var(--text-editor-zoom-factor));
 }
 
 .text-editor-content .ProseMirror h3 {
-    font-size: calc(20px * var(--text-editor-zoom-factor));
+  font-size: calc(20px * var(--text-editor-zoom-factor));
 }
 
 .text-editor-content .ProseMirror h4 {
-    font-size: calc(17px * var(--text-editor-zoom-factor));
+  font-size: calc(17px * var(--text-editor-zoom-factor));
 }
 
 .text-editor-content .ProseMirror a {
-    color: var(--oc-role-primary);
-    text-decoration: underline;
-    cursor: pointer;
+  color: var(--oc-role-primary);
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .text-editor-content .ProseMirror ul:not(.vs__dropdown-menu) {
-    list-style-type: disc;
-    padding-left: 20px;
-    margin: 4px 0 8px;
+  list-style-type: disc;
+  padding-left: 20px;
+  margin: 4px 0 8px;
 }
 
 .text-editor-content .ProseMirror ol {
-    list-style-type: decimal;
-    padding-left: 20px;
-    margin: 4px 0 8px;
+  list-style-type: decimal;
+  padding-left: 20px;
+  margin: 4px 0 8px;
 }
 
 .text-editor-content .ProseMirror li:not(.vs__dropdown-option):not(.vs__no-options) {
-    margin: 2px 0;
+  margin: 2px 0;
 }
 
 .text-editor-content .ProseMirror strong {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .text-editor-content .ProseMirror em {
-    font-style: italic;
+  font-style: italic;
 }
 
 .text-editor-content .ProseMirror u {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 .text-editor-content .ProseMirror blockquote {
-    border-left: 2px solid var(--oc-role-outline-variant);
-    padding-left: 12px;
-    margin: 4px 0 8px;
-    font-style: italic;
-    opacity: 0.9;
+  border-left: 2px solid var(--oc-role-outline-variant);
+  padding-left: 12px;
+  margin: 4px 0 8px;
+  font-style: italic;
+  opacity: 0.9;
 }
 
 .text-editor-content textarea {
-    font-size: calc(15px * var(--text-editor-zoom-factor));
-    line-height: 1.6;
+  font-size: calc(15px * var(--text-editor-zoom-factor));
+  line-height: 1.6;
 }
 
 /* Codeblock styles */
 .text-editor-content .ProseMirror pre {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
-    font-size: calc(14px * var(--text-editor-zoom-factor));
-    background: var(--oc-role-surface-container);
-    padding: 8px 12px;
-    border-radius: 6px;
-    margin: 1.5rem 0;
-    overflow-x: auto;
+  font-size: calc(14px * var(--text-editor-zoom-factor));
+  background: var(--oc-role-surface-container);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 1.5rem 0;
+  overflow-x: auto;
 }
 
 /* Inline code styles */
 .text-editor-content .ProseMirror :not(pre) > code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
     monospace;
-    font-size: calc(13px * var(--text-editor-zoom-factor));
-    padding: 2px 4px;
-    border-radius: 6px;
-    background: var(--oc-role-surface-container);
+  font-size: calc(13px * var(--text-editor-zoom-factor));
+  padding: 2px 4px;
+  border-radius: 6px;
+  background: var(--oc-role-surface-container);
 }
 
 .text-editor-content .ProseMirror .code-block {
-    position: relative;
+  position: relative;
 }
 
 /* Table styles */
 .text-editor-content .ProseMirror table {
-    border-collapse: collapse;
-    margin: 8px 0;
-    width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0;
+  width: 100%;
 }
 
 .text-editor-content .ProseMirror th,
 .text-editor-content .ProseMirror td {
-    border: 1px solid var(--oc-role-outline-variant);
-    padding: 6px 10px;
-    text-align: left;
+  border: 1px solid var(--oc-role-outline-variant);
+  padding: 6px 10px;
+  text-align: left;
 }
 
 .text-editor-content .ProseMirror th {
-    font-weight: 600;
-    background: rgba(148, 163, 184, 0.08);
+  font-weight: 600;
+  background: rgba(148, 163, 184, 0.08);
 }
 
 /* Task list styles */
 .text-editor-content .ProseMirror ul[data-type='taskList'] {
-    list-style-type: none;
-    padding-left: 4px;
+  list-style-type: none;
+  padding-left: 4px;
 }
 
 .text-editor-content .ProseMirror ul[data-type='taskList'] li {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .text-editor-content .ProseMirror ul[data-type='taskList'] li label {
-    margin-top: 2px;
+  margin-top: 2px;
 }
 
 /* Horizontal rule */
 .text-editor-content .ProseMirror hr {
-    border: none;
-    border-top: 1px solid var(--oc-role-outline-variant);
-    margin: 12px 0;
+  border: none;
+  border-top: 1px solid var(--oc-role-outline-variant);
+  margin: 12px 0;
 }
 
 /* Reduce max-width to make room for drag handle + plus button when container is narrow */
 @container (max-width: 840px) {
-    .text-editor-provider .text-editor-content .ProseMirror {
-        max-width: calc(100% - 6rem);
-    }
+  .text-editor-provider .text-editor-content .ProseMirror {
+    max-width: calc(100% - 6rem);
+  }
 }
