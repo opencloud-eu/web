@@ -167,7 +167,7 @@
 }
 
 .text-editor-content .ProseMirror .code-block pre code > [data-node-view-content] {
-  display: inline;
+  display: block;
   margin: 0;
   padding: 0;
 }
