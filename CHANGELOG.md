@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- perf: drop queued previews leaving the viewport [[#3198](https://github.com/opencloud-eu/web/pull/3198)]
 - perf: dynamic tile preview dimensions [[#3192](https://github.com/opencloud-eu/web/pull/3192)]
 - feat(web-pkg): move text align into toolbar submenu [[#3196](https://github.com/opencloud-eu/web/pull/3196)]
 - feat(web-pkg): add text align support to tiptap-json strategy [[#3195](https://github.com/opencloud-eu/web/pull/3195)]
