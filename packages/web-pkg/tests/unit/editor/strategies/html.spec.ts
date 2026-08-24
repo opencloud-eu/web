@@ -35,6 +35,14 @@ describe('useStrategyHtml', () => {
       expect(names).toContain('table')
       expect(names).toContain('taskList')
       expect(names).toContain('findAndReplace')
+      expect(names).toContain('codeBlock')
+    })
+
+    it('configures code block lowlight', () => {
+      const codeBlock = createStrategy()
+        .extensions()
+        .find(({ name }) => name === 'codeBlock') as any
+      expect(codeBlock.options.lowlight).toBeDefined()
     })
 
     it('configures safe automatic links without opening them on click', () => {
