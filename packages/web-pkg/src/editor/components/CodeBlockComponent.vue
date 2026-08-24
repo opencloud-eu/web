@@ -13,7 +13,7 @@
       </select>
     </div>
     <span :id="hintId" class="sr-only">
-      {{ $gettext('Press Shift+Enter to exit the code block.') }}
+      {{ $gettext('Press Shift+Enter or press Enter three times in a row to exit the code block.') }}
     </span>
     <pre
       role="textbox"
