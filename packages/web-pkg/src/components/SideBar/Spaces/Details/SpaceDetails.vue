@@ -9,7 +9,7 @@
       class="bg-role-surface-container rounded-xl flex items-center justify-center p-4 mb-4"
     >
       <div v-if="spaceImage">
-        <img :src="spaceImage" alt="" class="h-[160px] rounded-lg" />
+        <img :src="spaceImage" alt="" class="h-[160px] rounded-lg" decoding="async" />
       </div>
       <div v-else class="w-full aspect-[16/9] h-[160px]">
         <resource-icon

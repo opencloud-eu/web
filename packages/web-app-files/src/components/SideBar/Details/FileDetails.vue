@@ -5,7 +5,13 @@
         class="relative flex items-center justify-center bg-role-surface-container rounded-xl p-4 mb-4"
       >
         <div v-if="preview" data-testid="preview">
-          <img key="file-thumbnail" :src="preview" class="details-preview h-[160px]" alt="" />
+          <img
+            key="file-thumbnail"
+            :src="preview"
+            class="details-preview h-[160px]"
+            alt=""
+            decoding="async"
+          />
         </div>
         <resource-icon
           v-else

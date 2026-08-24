@@ -106,7 +106,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header py-4 flex">
-  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image"></div>
+  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image" decoding="async"></div>
   <div class="flex-1">
     <div class="flex items-center justify-between max-w-full">
       <div class="flex items-center max-w-full">

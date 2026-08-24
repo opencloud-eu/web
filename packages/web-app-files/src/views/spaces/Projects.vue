@@ -100,6 +100,7 @@
                   }"
                   :src="resource.thumbnail"
                   alt=""
+                  decoding="async"
                 />
                 <resource-icon
                   v-else
@@ -121,6 +122,7 @@
                   :class="{ 'opacity-80 grayscale': resource.disabled }"
                   :src="resource.thumbnail"
                   alt=""
+                  decoding="async"
                 />
                 <resource-icon
                   v-else

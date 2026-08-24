@@ -18,6 +18,7 @@
         class="object-cover h-25 rounded-md aspect-video"
         :alt="item.name"
         referrerpolicy="no-referrer"
+        decoding="async"
       />
       <div v-else class="aspect-video h-25 flex items-center justify-center">
         <resource-icon class="aspect-video" :resource="iconResource" size-class="size-12" />
