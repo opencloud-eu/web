@@ -19,6 +19,7 @@
         class="cursor-pointer rounded-lg size-full max-h-full object-cover"
         alt=""
         :src="imageContent"
+        decoding="async"
         @click="toggleImageExpanded"
       />
       <resource-icon v-else :resource="space" size-class="size-full" class="rounded-lg" />
