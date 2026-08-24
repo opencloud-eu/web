@@ -140,9 +140,6 @@
 
 /* Codeblock styles */
 .text-editor-content .ProseMirror pre {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
   font-size: calc(14px * var(--text-editor-zoom-factor));
   background: var(--oc-role-surface-container);
   padding: 8px 12px;
@@ -153,9 +150,6 @@
 
 /* Inline code styles */
 .text-editor-content .ProseMirror :not(pre) > code {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
   font-size: calc(13px * var(--text-editor-zoom-factor));
   padding: 2px 4px;
   border-radius: 6px;
