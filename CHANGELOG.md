@@ -6,8 +6,40 @@
 
 @AlexAndBear, @JammingBen, @dschmidt, @fschade, @junkerderprovinz, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix(web-pkg): improve text editor action-group consistency [[#3197](https://github.com/opencloud-eu/web/pull/3197)]
+- fix(design-system): avoid duplicated SVG ids [[#3157](https://github.com/opencloud-eu/web/pull/3157)]
+- Fix empty right sidebar when opening space context menu [[#3153](https://github.com/opencloud-eu/web/pull/3153)]
+- fix: improve media controls layout stability [[#3145](https://github.com/opencloud-eu/web/pull/3145)]
+- fix: only mark shares nav item active on shares routes [[#3148](https://github.com/opencloud-eu/web/pull/3148)]
+- fix: render action buttons in move/copy dialogs [[#3147](https://github.com/opencloud-eu/web/pull/3147)]
+- fix: remove delay for vault password error message [[#3140](https://github.com/opencloud-eu/web/pull/3140)]
+- fix(extension-sdk): ignore module federation temp files in the dev watcher [[#3136](https://github.com/opencloud-eu/web/pull/3136)]
+- fix(files): guard FileDetails against transient null resource [[#3098](https://github.com/opencloud-eu/web/pull/3098)]
+- fix: make ESC app close behave like top-bar close [[#3094](https://github.com/opencloud-eu/web/pull/3094)]
+- fix: add cache-buster for provided images [[#3082](https://github.com/opencloud-eu/web/pull/3082)]
+- fix:  let the drop flip again after its content grew [[#3077](https://github.com/opencloud-eu/web/pull/3077)]
+- fix: encode hash character in app route URLs to prevent truncation [[#3075](https://github.com/opencloud-eu/web/pull/3075)]
+- fix(admin-settings): opening user sidebar panels  [[#3067](https://github.com/opencloud-eu/web/pull/3067)]
+- fix: position versions loading spinner without shifting the details layout [[#3065](https://github.com/opencloud-eu/web/pull/3065)]
+- correct resource id in restore file version link [[#3053](https://github.com/opencloud-eu/web/pull/3053)]
+- fix: reset shift selection anchor when deselecting all files [[#3061](https://github.com/opencloud-eu/web/pull/3061)]
+- fix: keep the file details panel stable while loading [[#3057](https://github.com/opencloud-eu/web/pull/3057)]
+- fix: white flash on page relaod when dark theme is applied [[#3055](https://github.com/opencloud-eu/web/pull/3055)]
+- fix(web-pkg): keep sidebar panels mounted while loading [[#3056](https://github.com/opencloud-eu/web/pull/3056)]
+- fix(tip tap): don't show drag handle on mobile as it's not compatible [[#3052](https://github.com/opencloud-eu/web/pull/3052)]
+- fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
+- fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
+- fix: improve file sorting to handle duplicates with extensions correctly [[#3046](https://github.com/opencloud-eu/web/pull/3046)]
+- fix: autofocus public link pasword input [[#3034](https://github.com/opencloud-eu/web/pull/3034)]
+- fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
+- fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
+- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
+
 ### 📈 Enhancement
 
+- feat: add notebook assets [[#3200](https://github.com/opencloud-eu/web/pull/3200)]
 - perf: drop queued previews leaving the viewport [[#3198](https://github.com/opencloud-eu/web/pull/3198)]
 - perf: dynamic tile preview dimensions [[#3192](https://github.com/opencloud-eu/web/pull/3192)]
 - feat(web-pkg): move text align into toolbar submenu [[#3196](https://github.com/opencloud-eu/web/pull/3196)]
@@ -51,36 +83,6 @@
 - e2e-test: pagination in spaces/trashbin [[#3037](https://github.com/opencloud-eu/web/pull/3037)]
 - e2e-test: announcement banner [[#2998](https://github.com/opencloud-eu/web/pull/2998)]
 - fix(e2e): wait for login form after logout to avoid teardown hang [[#3022](https://github.com/opencloud-eu/web/pull/3022)]
-
-### 🐛 Bug Fixes
-
-- fix(design-system): avoid duplicated SVG ids [[#3157](https://github.com/opencloud-eu/web/pull/3157)]
-- Fix empty right sidebar when opening space context menu [[#3153](https://github.com/opencloud-eu/web/pull/3153)]
-- fix: improve media controls layout stability [[#3145](https://github.com/opencloud-eu/web/pull/3145)]
-- fix: only mark shares nav item active on shares routes [[#3148](https://github.com/opencloud-eu/web/pull/3148)]
-- fix: render action buttons in move/copy dialogs [[#3147](https://github.com/opencloud-eu/web/pull/3147)]
-- fix: remove delay for vault password error message [[#3140](https://github.com/opencloud-eu/web/pull/3140)]
-- fix(extension-sdk): ignore module federation temp files in the dev watcher [[#3136](https://github.com/opencloud-eu/web/pull/3136)]
-- fix(files): guard FileDetails against transient null resource [[#3098](https://github.com/opencloud-eu/web/pull/3098)]
-- fix: make ESC app close behave like top-bar close [[#3094](https://github.com/opencloud-eu/web/pull/3094)]
-- fix: add cache-buster for provided images [[#3082](https://github.com/opencloud-eu/web/pull/3082)]
-- fix:  let the drop flip again after its content grew [[#3077](https://github.com/opencloud-eu/web/pull/3077)]
-- fix: encode hash character in app route URLs to prevent truncation [[#3075](https://github.com/opencloud-eu/web/pull/3075)]
-- fix(admin-settings): opening user sidebar panels  [[#3067](https://github.com/opencloud-eu/web/pull/3067)]
-- fix: position versions loading spinner without shifting the details layout [[#3065](https://github.com/opencloud-eu/web/pull/3065)]
-- correct resource id in restore file version link [[#3053](https://github.com/opencloud-eu/web/pull/3053)]
-- fix: reset shift selection anchor when deselecting all files [[#3061](https://github.com/opencloud-eu/web/pull/3061)]
-- fix: keep the file details panel stable while loading [[#3057](https://github.com/opencloud-eu/web/pull/3057)]
-- fix: white flash on page relaod when dark theme is applied [[#3055](https://github.com/opencloud-eu/web/pull/3055)]
-- fix(web-pkg): keep sidebar panels mounted while loading [[#3056](https://github.com/opencloud-eu/web/pull/3056)]
-- fix(tip tap): don't show drag handle on mobile as it's not compatible [[#3052](https://github.com/opencloud-eu/web/pull/3052)]
-- fix(sort): explorer-like ordering for leading-zero prefixes [[#3047](https://github.com/opencloud-eu/web/pull/3047)]
-- fix (tiptap): slash menu is lacking hover state [[#3035](https://github.com/opencloud-eu/web/pull/3035)]
-- fix: improve file sorting to handle duplicates with extensions correctly [[#3046](https://github.com/opencloud-eu/web/pull/3046)]
-- fix: autofocus public link pasword input [[#3034](https://github.com/opencloud-eu/web/pull/3034)]
-- fix(tip tap): drag handle overflows narrow editors (e.G announcement banner) [[#3030](https://github.com/opencloud-eu/web/pull/3030)]
-- fix: keep slash menu open when returning to command [[#3017](https://github.com/opencloud-eu/web/pull/3017)]
-- fix: prevent closing editor from slash menu [[#3020](https://github.com/opencloud-eu/web/pull/3020)]
 
 ### 📚 Documentation
 
