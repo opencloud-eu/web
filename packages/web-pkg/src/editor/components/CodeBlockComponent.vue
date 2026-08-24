@@ -19,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 import { useGettext } from 'vue3-gettext'
 
@@ -59,10 +59,6 @@ const selectedLanguageOption = computed<LanguageOption>(() => {
 const isReadonly = computed(() => props.editor.isEditable === false)
 
 function updateSelectedLanguage(option: LanguageOption | null) {
-  if (unref(isReadonly)) {
-    return
-  }
-
   selectedLanguage.value = option?.value ?? null
 }
 </script>

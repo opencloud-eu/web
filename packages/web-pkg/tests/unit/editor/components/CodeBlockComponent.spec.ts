@@ -31,16 +31,23 @@ function mountCodeBlock(isEditable: boolean) {
 
   const wrapper = mount(CodeBlockComponent, {
     props: {
-      editor: { isEditable },
-      node: { attrs: { language: null } },
+      view: {} as any,
+      selected: false,
+      editor: { isEditable } as any,
+      node: { attrs: { language: null } } as any,
+      decorations: [],
+      innerDecorations: {} as any,
       extension: {
         options: {
           lowlight: {
             listLanguages: () => ['javascript', 'typescript']
           }
         }
-      },
-      updateAttributes
+      } as any,
+      getPos: () => 0,
+      deleteNode: vi.fn(),
+      updateAttributes,
+      HTMLAttributes: {}
     },
     global: {
       plugins: [...defaultPlugins()],
