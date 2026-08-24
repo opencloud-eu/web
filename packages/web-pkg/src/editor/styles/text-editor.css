@@ -141,7 +141,7 @@
 /* Codeblock styles */
 .text-editor-content .ProseMirror pre {
   font-size: calc(14px * var(--text-editor-zoom-factor));
-  background: var(--oc-role-surface-container);
+  background: var(--oc-role-surface-container-high);
   padding: 8px 12px;
   border-radius: 6px;
   margin: 1.5rem 0;
@@ -153,7 +153,7 @@
   font-size: calc(13px * var(--text-editor-zoom-factor));
   padding: 2px 4px;
   border-radius: 6px;
-  background: var(--oc-role-surface-container);
+  background: var(--oc-role-surface-container-high);
 }
 
 .text-editor-content .ProseMirror .code-block {
