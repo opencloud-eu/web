@@ -546,6 +546,9 @@ watch(
       )
       if (resolvedCurrentChapter) {
         currentChapter.value = resolvedCurrentChapter
+      } else if (!unref(currentChapter) && unref(chapters).length > 0) {
+        // If no chapter could be resolved and none is set yet, default to first chapter
+        currentChapter.value = unref(chapters)[0]
       }
     })
   },
