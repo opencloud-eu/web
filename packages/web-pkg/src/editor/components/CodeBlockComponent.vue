@@ -14,7 +14,14 @@
         @update:model-value="updateSelectedLanguage"
       />
     </div>
-    <pre><code><node-view-content /></code></pre>
+    <span :id="hintId" class="sr-only">
+      {{ $gettext('Press Shift+Enter to exit the code block.') }}
+    </span>
+    <pre
+      role="textbox"
+      :aria-describedby="hintId"
+      aria-multiline="true"
+    ><code><node-view-content /></code></pre>
   </node-view-wrapper>
 </template>
 
@@ -22,9 +29,12 @@
 import { computed } from 'vue'
 import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 import { useGettext } from 'vue3-gettext'
+import { v4 as uuidV4 } from 'uuid'
 
 const props = defineProps(nodeViewProps)
 const { $gettext } = useGettext()
+
+const hintId = `code-block-hint-${uuidV4()}`
 
 type LanguageOption = {
   label: string

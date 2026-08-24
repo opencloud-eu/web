@@ -140,36 +140,24 @@
 
 /* Codeblock styles */
 .text-editor-content .ProseMirror pre {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
   font-size: calc(14px * var(--text-editor-zoom-factor));
   background: var(--oc-role-surface-container);
   padding: 8px 12px;
   border-radius: 6px;
+  margin: 1.5rem 0;
   overflow-x: auto;
 }
 
 /* Inline code styles */
 .text-editor-content .ProseMirror :not(pre) > code {
-  font-family:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
-    monospace;
   font-size: calc(13px * var(--text-editor-zoom-factor));
   padding: 2px 4px;
-  border-radius: 4px;
+  border-radius: 6px;
   background: var(--oc-role-surface-container);
 }
 
 .text-editor-content .ProseMirror .code-block {
   position: relative;
-  margin: 8px 0;
-}
-
-.text-editor-content .ProseMirror .code-block pre code > [data-node-view-content] {
-  display: inline;
-  margin: 0;
-  padding: 0;
 }
 
 /* Table styles */
