@@ -31,6 +31,7 @@
       :view-size="viewSize"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
+      @item-hidden="dropPreview($event)"
       @sort="sortHandler"
       @update:selected-ids="selectedResourcesIds = $event"
     >
@@ -121,7 +122,7 @@ const {
 const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
 
-const { loadPreview } = useLoadPreview(computed(() => viewMode))
+const { loadPreview, dropPreview } = useLoadPreview(computed(() => viewMode))
 
 const { triggerDefaultAction } = useFileActions()
 const { actions: hideShareActions } = useFileActionsToggleHideShare()

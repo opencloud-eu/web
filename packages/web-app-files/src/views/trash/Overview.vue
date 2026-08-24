@@ -63,6 +63,7 @@
                 processor: ProcessorType.enum.fit
               })
             "
+            @item-hidden="dropPreview($event)"
             @update:selected-ids="loadGraphPermissions"
           >
             <template #contextMenu="{ resource }">
@@ -157,7 +158,7 @@ const resourcesViewDefaults = useResourcesViewDefaults<SpaceResource, any, any>(
 const { fileListHeaderY, viewMode, viewModes, viewSize, sortFields, folderView } =
   resourcesViewDefaults
 
-const { loadPreview } = useLoadPreview(viewMode)
+const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
 const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
 
