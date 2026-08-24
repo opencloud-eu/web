@@ -5,6 +5,7 @@
         class="text-editor-code-block-select"
         :model-value="selectedLanguageOption"
         :options="languageOptions"
+        :disabled="isReadonly"
         option-label="label"
         :clearable="false"
         :searchable="true"
@@ -64,7 +65,13 @@ const selectedLanguageOption = computed<LanguageOption>(() => {
   return languageOptions.value.find(({ value }) => value === current) ?? languageOptions.value[0]
 })
 
+const isReadonly = computed(() => props.editor.isEditable === false)
+
 function updateSelectedLanguage(option: LanguageOption | null) {
+  if (unref(isReadonly)) {
+    return
+  }
+
   selectedLanguage.value = option?.value ?? null
 }
 
