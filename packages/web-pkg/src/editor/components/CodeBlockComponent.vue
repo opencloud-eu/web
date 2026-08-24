@@ -66,3 +66,19 @@ function updateSelectedLanguage(option: LanguageOption | null) {
   selectedLanguage.value = option?.value ?? null
 }
 </script>
+
+<style scoped>
+.text-editor-code-block-language {
+  position: absolute;
+  right: 12px;
+  top: 4px;
+  min-width: 130px;
+  max-width: calc(100% - 24px);
+}
+
+.text-editor-code-block-select :deep(.vs__dropdown-toggle) {
+  min-height: 30px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+</style>

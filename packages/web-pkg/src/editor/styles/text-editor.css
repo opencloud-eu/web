@@ -97,7 +97,7 @@
   cursor: pointer;
 }
 
-.text-editor-content .ProseMirror ul {
+.text-editor-content .ProseMirror ul:not(.vs__dropdown-menu) {
   list-style-type: disc;
   padding-left: 20px;
   margin: 4px 0 8px;
@@ -109,7 +109,7 @@
   margin: 4px 0 8px;
 }
 
-.text-editor-content .ProseMirror li {
+.text-editor-content .ProseMirror li:not(.vs__dropdown-option):not(.vs__no-options) {
   margin: 2px 0;
 }
 
@@ -153,25 +153,6 @@
 .text-editor-content .ProseMirror .code-block {
   position: relative;
   margin: 8px 0;
-}
-
-.text-editor-content .ProseMirror .code-block .text-editor-code-block-language {
-  position: absolute;
-  right: 12px;
-  top: 8px;
-  z-index: 1;
-  min-width: 130px;
-  max-width: calc(100% - 24px);
-}
-
-.text-editor-content .ProseMirror .code-block .text-editor-code-block-select .vs__dropdown-menu {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.text-editor-content .ProseMirror .code-block .text-editor-code-block-select .vs__dropdown-option {
-  margin: 0;
 }
 
 .text-editor-content .ProseMirror .code-block pre code > [data-node-view-content] {
