@@ -83,8 +83,7 @@ const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 const currentDragHandleNodePos = ref<number | null>(null)
 const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
-const hljsThemeStylesheetId = 'oc-text-editor-hljs-theme'
-const hljsThemeStylesheetRefCountAttribute = 'data-oc-text-editor-ref-count'
+const hljsThemeStyleElement = ref<HTMLLinkElement | null>(null)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
@@ -156,81 +155,32 @@ const openSlashMenu = () => {
   }
 }
 
-function getHljsThemeStylesheet() {
-  if (typeof document === 'undefined') {
-    return null
-  }
-
-  return document.getElementById(hljsThemeStylesheetId) as HTMLLinkElement | null
-}
-
-function ensureHljsThemeStylesheet() {
-  if (typeof document === 'undefined') {
-    return null
-  }
-
-  let stylesheet = getHljsThemeStylesheet()
-  if (!stylesheet) {
-    stylesheet = document.createElement('link')
-    stylesheet.id = hljsThemeStylesheetId
-    stylesheet.rel = 'stylesheet'
-    stylesheet.setAttribute(hljsThemeStylesheetRefCountAttribute, '0')
-    document.head.appendChild(stylesheet)
-  }
-
-  return stylesheet
-}
-
-function claimHljsThemeStylesheet() {
-  const stylesheet = ensureHljsThemeStylesheet()
-  if (!stylesheet) {
+function applyHljsThemeCss() {
+  if (!hljsThemeStyleElement.value) {
     return
   }
 
-  const currentRefCount = Number(
-    stylesheet.getAttribute(hljsThemeStylesheetRefCountAttribute) || '0'
-  )
-  stylesheet.setAttribute(hljsThemeStylesheetRefCountAttribute, `${currentRefCount + 1}`)
+  hljsThemeStyleElement.value.href = unref(isDarkTheme) ? atomOneDarkThemeUrl : atomOneLightThemeUrl
 }
 
-function releaseHljsThemeStylesheet() {
-  const stylesheet = getHljsThemeStylesheet()
-  if (!stylesheet) {
-    return
-  }
-
-  const currentRefCount = Number(
-    stylesheet.getAttribute(hljsThemeStylesheetRefCountAttribute) || '0'
-  )
-  const nextRefCount = currentRefCount - 1
-
-  if (nextRefCount > 0) {
-    stylesheet.setAttribute(hljsThemeStylesheetRefCountAttribute, `${nextRefCount}`)
-    return
-  }
-
-  stylesheet.remove()
-}
-
-watch(
-  isDarkTheme,
-  (isDark) => {
-    const stylesheet = ensureHljsThemeStylesheet()
-    if (!stylesheet) {
-      return
-    }
-
-    stylesheet.href = isDark ? atomOneDarkThemeUrl : atomOneLightThemeUrl
-  },
-  { immediate: true }
-)
+watch(isDarkTheme, applyHljsThemeCss)
 
 onMounted(() => {
-  claimHljsThemeStylesheet()
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  const styleElement = document.createElement('link')
+  styleElement.rel = 'stylesheet'
+  styleElement.setAttribute('data-oc-text-editor-hljs-theme', 'true')
+  document.head.appendChild(styleElement)
+  hljsThemeStyleElement.value = styleElement
+  applyHljsThemeCss()
 })
 
 onUnmounted(() => {
-  releaseHljsThemeStylesheet()
+  hljsThemeStyleElement.value?.remove()
+  hljsThemeStyleElement.value = null
 })
 
 watch(isSourceMode, async () => {

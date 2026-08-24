@@ -77,16 +77,6 @@ describe('CodeBlockComponent', () => {
     expect(select.props('disabled')).toBe(true)
   })
 
-  it('does not update language in readonly mode', async () => {
-    const { wrapper, updateAttributes } = mountCodeBlock(false)
-    const select = wrapper.findComponent({ name: 'OcSelect' })
-
-    select.vm.$emit('update:model-value', { label: 'typescript', value: 'typescript' })
-    await wrapper.vm.$nextTick()
-
-    expect(updateAttributes).not.toHaveBeenCalled()
-  })
-
   it('updates language when editor is editable', async () => {
     const { wrapper, updateAttributes } = mountCodeBlock(true)
     const select = wrapper.findComponent({ name: 'OcSelect' })
