@@ -5,6 +5,8 @@ const saveTextEditorOrViewerButton = '#app-save-action'
 const texEditor = '.text-editor-provider'
 const pdfViewer = '#pdf-viewer'
 const imageViewer = '.stage'
+const textEditorContent = '.tiptap.ProseMirror'
+const collaborationCursorLabel = '.collaboration-cursor__label'
 
 export const close = async (page: Page) => {
   const navigationPromise = page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/)
@@ -37,3 +39,10 @@ export const fileViewerLocator = ({
       throw new Error(`${fileViewerType} not implemented`)
   }
 }
+
+export const saveButtonLocator = (page: Page): Locator => page.locator(saveTextEditorOrViewerButton)
+
+export const textEditorContentLocator = (page: Page): Locator => page.locator(textEditorContent)
+
+export const collaborationCaretLocator = (page: Page, displayName: string): Locator =>
+  page.locator(collaborationCursorLabel, { hasText: displayName })

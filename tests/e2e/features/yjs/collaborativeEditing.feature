@@ -28,6 +28,7 @@ Feature: yjs collaborative editing
     And "Carol" opens file "example.md" via "text-editor" using the context menu
     And "Carol" is in a text-editor
     And "Carol" should see the text "Brian says hello" in the text-editor
+    And "Carol" should not be able to edit the current file
 
     And "Alice" logs in
     And "Alice" opens the "files" app
@@ -38,6 +39,13 @@ Feature: yjs collaborative editing
     When "Alice" enters the text "Alice says hello" in editor "TextEditor"
     Then "Brian" should see the text "Alice says hello" in the text-editor
     And "Carol" should see the text "Alice says hello" in the text-editor
+
+    And "Alice" sees the current file as dirty
+    And "Brian" sees the current file as dirty
+
+    When "Alice" saves the file viewer
+    Then "Alice" sees the current file as clean
+    And "Brian" sees the current file as clean
 
     And "Alice" logs out
     And "Brian" logs out
@@ -77,14 +85,31 @@ Feature: yjs collaborative editing
     And "Carol" opens file "example.md" via "text-editor" using the context menu
     And "Carol" is in a text-editor
     And "Carol" should see the text "Brian says hello" in the text-editor
+    And "Carol" should not be able to edit the current file
+    And "Carol" should see the collaboration carets of the following users
+      | id    |
+      | Brian |
 
     And "Alice" opens file "example.md" via "text-editor" using the context menu
     And "Alice" is in a text-editor
     Then "Alice" should see the text "Brian says hello" in the text-editor
+    And "Alice" should see the collaboration carets of the following users
+      | id    |
+      | Brian |
+    And "Brian" should see the collaboration carets of the following users
+      | id    |
+      | Alice |
 
     When "Alice" enters the text "Alice says hello" in editor "TextEditor"
     Then "Brian" should see the text "Alice says hello" in the text-editor
     And "Carol" should see the text "Alice says hello" in the text-editor
+
+    And "Alice" sees the current file as dirty
+    And "Brian" sees the current file as dirty
+
+    When "Alice" saves the file viewer
+    Then "Alice" sees the current file as clean
+    And "Brian" sees the current file as clean
 
     And "Alice" logs out
     And "Brian" logs out
