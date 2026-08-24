@@ -38,5 +38,10 @@
     "name": "itemVisible",
     "description": "Emitted when an item has been scrolled into the view.",
     "type": "(e: 'itemVisible', item: Item): void"
+  },
+  {
+    "name": "itemHidden",
+    "description": "Emitted when an item has been scrolled out of the view.",
+    "type": "(e: 'itemHidden', item: Item): void"
   }
 ]
