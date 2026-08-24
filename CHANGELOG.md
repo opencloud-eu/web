@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Tip tap code block tab indetation [[#3208](https://github.com/opencloud-eu/web/pull/3208)]
 - feat(editor): add lowlight code blocks [[#3199](https://github.com/opencloud-eu/web/pull/3199)]
 - feat: add notebook assets [[#3200](https://github.com/opencloud-eu/web/pull/3200)]
 - perf: drop queued previews leaving the viewport [[#3198](https://github.com/opencloud-eu/web/pull/3198)]
@@ -91,6 +92,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency highlight.js to v11.12.0 [[#3207](https://github.com/opencloud-eu/web/pull/3207)]
 - chore(deps): update pnpm to v11.23.0 [[#3203](https://github.com/opencloud-eu/web/pull/3203)]
 - chore(deps): update node.js to v24 [[#3092](https://github.com/opencloud-eu/web/pull/3092)]
 - chore(deps): update dependency @tiptap/y-tiptap to v3.0.9 [[#3158](https://github.com/opencloud-eu/web/pull/3158)]
