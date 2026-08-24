@@ -150,6 +150,17 @@
   overflow-x: auto;
 }
 
+/* Inline code styles */
+.text-editor-content .ProseMirror :not(pre) > code {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+    monospace;
+  font-size: calc(13px * var(--text-editor-zoom-factor));
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: var(--oc-role-surface-container);
+}
+
 .text-editor-content .ProseMirror .code-block {
   position: relative;
   margin: 8px 0;
