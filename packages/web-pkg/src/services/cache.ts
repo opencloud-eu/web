@@ -46,10 +46,10 @@ const filePreviewCache = new Cache<string, FilePreviewCacheValue>({
 })
 
 /** Releases all cached previews of a resource. */
-export function releaseFilePreviews(resourceId: string): void {
-  const prefix = buildFilePreviewCacheKey(resourceId)
+export function releaseFilePreviews(resourceIds: string[]): void {
+  const ids = new Set(resourceIds)
   for (const key of filePreviewCache.keys()) {
-    if (key.startsWith(prefix)) {
+    if (ids.has(key.slice(0, key.indexOf('@')))) {
       filePreviewCache.delete(key)
     }
   }

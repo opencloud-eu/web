@@ -49,15 +49,8 @@ export const useResourcesStore = defineStore('resources', () => {
     resources.value = file
   }
 
-  /** Drops cached previews of resources that are gone, so their object URLs get revoked. */
-  const releasePreviews = (values: Resource[]) => {
-    for (const resource of values) {
-      releaseFilePreviews(resource.id)
-    }
-  }
-
   const removeResources = (values: Resource[]) => {
-    releasePreviews(values)
+    releaseFilePreviews(values.map(({ id }) => id))
     resources.value = unref(resources).filter((file) => !values.find(({ id }) => id === file.id))
   }
 
