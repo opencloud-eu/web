@@ -46,14 +46,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref, unref, useTemplateRef, watch } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
 import type { TextEditorInstance } from '../types'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
+import { useThemeStore } from '../../composables'
+import atomOneDarkThemeUrl from 'highlight.js/styles/atom-one-dark.css?url'
+import atomOneLightThemeUrl from 'highlight.js/styles/atom-one-light.css?url'
 
 const { editor = undefined } = defineProps<{
   editor?: TextEditorInstance
@@ -61,11 +65,16 @@ const { editor = undefined } = defineProps<{
 
 const { $gettext } = useGettext()
 const { isMobile } = useIsMobile()
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 const currentDragHandleNodePos = ref<number | null>(null)
+const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
+const hljsThemeStylesheetId = 'oc-text-editor-hljs-theme'
+const hljsThemeStylesheetRefCountAttribute = 'data-oc-text-editor-ref-count'
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
@@ -136,6 +145,83 @@ const openSlashMenu = () => {
     textEditor.editor.value.commands.insertContent('/')
   }
 }
+
+function getHljsThemeStylesheet() {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  return document.getElementById(hljsThemeStylesheetId) as HTMLLinkElement | null
+}
+
+function ensureHljsThemeStylesheet() {
+  if (typeof document === 'undefined') {
+    return null
+  }
+
+  let stylesheet = getHljsThemeStylesheet()
+  if (!stylesheet) {
+    stylesheet = document.createElement('link')
+    stylesheet.id = hljsThemeStylesheetId
+    stylesheet.rel = 'stylesheet'
+    stylesheet.setAttribute(hljsThemeStylesheetRefCountAttribute, '0')
+    document.head.appendChild(stylesheet)
+  }
+
+  return stylesheet
+}
+
+function claimHljsThemeStylesheet() {
+  const stylesheet = ensureHljsThemeStylesheet()
+  if (!stylesheet) {
+    return
+  }
+
+  const currentRefCount = Number(
+    stylesheet.getAttribute(hljsThemeStylesheetRefCountAttribute) || '0'
+  )
+  stylesheet.setAttribute(hljsThemeStylesheetRefCountAttribute, `${currentRefCount + 1}`)
+}
+
+function releaseHljsThemeStylesheet() {
+  const stylesheet = getHljsThemeStylesheet()
+  if (!stylesheet) {
+    return
+  }
+
+  const currentRefCount = Number(
+    stylesheet.getAttribute(hljsThemeStylesheetRefCountAttribute) || '0'
+  )
+  const nextRefCount = currentRefCount - 1
+
+  if (nextRefCount > 0) {
+    stylesheet.setAttribute(hljsThemeStylesheetRefCountAttribute, `${nextRefCount}`)
+    return
+  }
+
+  stylesheet.remove()
+}
+
+watch(
+  isDarkTheme,
+  (isDark) => {
+    const stylesheet = ensureHljsThemeStylesheet()
+    if (!stylesheet) {
+      return
+    }
+
+    stylesheet.href = isDark ? atomOneDarkThemeUrl : atomOneLightThemeUrl
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  claimHljsThemeStylesheet()
+})
+
+onUnmounted(() => {
+  releaseHljsThemeStylesheet()
+})
 
 watch(isSourceMode, async () => {
   if (unref(isSourceMode)) {

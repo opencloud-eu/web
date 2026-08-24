@@ -112,6 +112,27 @@ function mountEditorContent({
 }
 
 describe('TextEditorContent', () => {
+  it('registers and cleans up the hljs stylesheet per mounted editor instance', () => {
+    document.getElementById('oc-text-editor-hljs-theme')?.remove()
+
+    const { wrapper: firstWrapper } = mountEditorContent()
+    const { wrapper: secondWrapper } = mountEditorContent()
+
+    const stylesheet = document.getElementById('oc-text-editor-hljs-theme')
+    expect(stylesheet).toBeTruthy()
+    expect(stylesheet?.getAttribute('data-oc-text-editor-ref-count')).toBe('2')
+
+    firstWrapper.unmount()
+
+    const stylesheetAfterFirstUnmount = document.getElementById('oc-text-editor-hljs-theme')
+    expect(stylesheetAfterFirstUnmount).toBeTruthy()
+    expect(stylesheetAfterFirstUnmount?.getAttribute('data-oc-text-editor-ref-count')).toBe('1')
+
+    secondWrapper.unmount()
+
+    expect(document.getElementById('oc-text-editor-hljs-theme')).toBeNull()
+  })
+
   it('shows raw markdown in source mode and updates editor content while typing', async () => {
     const { wrapper, textEditor, setContent } = mountEditorContent()
 
