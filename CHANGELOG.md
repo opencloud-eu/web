@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: improve code block visibility in dark mode [[#3213](https://github.com/opencloud-eu/web/pull/3213)]
 - fix(epub-reader): select first chapter when opening EPUB for the first time [[#3212](https://github.com/opencloud-eu/web/pull/3212)]
 - fix(web-pkg): improve text editor action-group consistency [[#3197](https://github.com/opencloud-eu/web/pull/3197)]
 - fix(design-system): avoid duplicated SVG ids [[#3157](https://github.com/opencloud-eu/web/pull/3157)]
