@@ -140,6 +140,8 @@ const navigateLeftDisabled = ref(false)
 const navigateRightDisabled = ref(false)
 const readingProgressPercent = ref<number | null>(null)
 const hasGlobalLocations = ref(false)
+const pendingSeekCfi = ref<string | null>(null)
+const isSeeking = ref(false)
 const searchResultCfis = ref<string[]>([])
 const hasMoreSearchResults = ref(false)
 const currentSearchResultIndex = ref(-1)
@@ -175,8 +177,27 @@ async function onProgressChange(percentage: number) {
 
   const normalized = Math.min(100, Math.max(0, percentage))
   const cfi = unref(book).locations.cfiFromPercentage(normalized / 100)
-  if (cfi) {
-    await unref(rendition).display(cfi)
+  if (!cfi) {
+    return
+  }
+
+  // Rendition.display() queues internally, so seeks arriving while a render is in flight would
+  // all be rendered one after another. Render the latest requested target only.
+  pendingSeekCfi.value = cfi
+  if (unref(isSeeking)) {
+    return
+  }
+
+  isSeeking.value = true
+  try {
+    let target = unref(pendingSeekCfi)
+    while (target) {
+      pendingSeekCfi.value = null
+      await unref(rendition)?.display(target)
+      target = unref(pendingSeekCfi)
+    }
+  } finally {
+    isSeeking.value = false
   }
 }
 
@@ -456,6 +477,7 @@ watch(
     isReaderLoading.value = true
     readingProgressPercent.value = null
     hasGlobalLocations.value = false
+    pendingSeekCfi.value = null
     closeTextSearch()
 
     unref(book).loaded.navigation.then(({ toc }) => {

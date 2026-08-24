@@ -1,4 +1,16 @@
-import { Book, NavItem, Location } from 'epubjs'
+import { Book, NavItem, Location, Rendition } from 'epubjs'
+
+/**
+ * The rendition members used for DOM based chapter resolution.
+ *
+ * epub.js declares `getContents(): Contents`, but at runtime the method returns one
+ * `Contents` per live view. Its typings cannot be augmented either, because `Rendition`
+ * is re-exported as the default export of an inner module, so we model the real shape here.
+ */
+type RenditionDom = {
+  getContents?: () => Array<{ document?: Document }>
+  getRange?: (cfi: string) => Range | null
+}
 
 /**
  * Finds a chapter by href from the chapter list.
@@ -33,15 +45,14 @@ export function findChapterByHref(chapterList: NavItem[], href?: string): NavIte
 export function findChapterByDomPosition(
   chapters: NavItem[],
   cfi: string,
-  rendition: any
+  rendition: Rendition
 ): NavItem | undefined {
   try {
-    const contents = rendition?.getContents?.() as unknown as
-      Array<{ document: Document }> | undefined
-    const doc = contents?.[0]?.document
+    const renditionDom = rendition as unknown as RenditionDom
+    const doc = renditionDom?.getContents?.()?.[0]?.document
     if (!doc) return undefined
 
-    const currentRange = rendition?.getRange?.(cfi)
+    const currentRange = renditionDom?.getRange?.(cfi)
     let element = currentRange?.startContainer as Element | null
     if (!element) return undefined
 
@@ -82,20 +93,22 @@ export function findChapterByDomPosition(
  * Strategy 4: Match by normalized spine href (without hash fragment)
  * Strategy 4b: Multiple chapters in same file - find by DOM element position
  * Strategy 5: Find containing chapter by spine index (for chapters spanning multiple files)
- * Final fallback: Return first chapter if available
+ *
+ * Returns undefined when no strategy resolves a chapter, so that callers can keep the
+ * previously resolved chapter instead of highlighting an unrelated one.
  */
 export function resolveCurrentChapter(
   currentLocation: Location,
   book: Book,
   chapters: NavItem[],
-  rendition: any
+  rendition: Rendition
 ): NavItem | undefined {
   const locationHref = currentLocation?.start?.href
   const navigation = book?.navigation
   const chapterList = chapters
 
   if (!navigation) {
-    return chapterList[0]
+    return undefined
   }
 
   // Strategy 1: Exact/normalized match directly against loaded TOC using relocated href
@@ -122,7 +135,7 @@ export function resolveCurrentChapter(
   const spineItem = spineTarget ? book?.spine.get(spineTarget) : undefined
   const spineHref = spineItem?.href
   if (!spineHref) {
-    return chapterList[0]
+    return undefined
   }
 
   // Strategy 3: Match via navigation.get(spineHref), but only if it maps to loaded TOC
@@ -149,25 +162,8 @@ export function resolveCurrentChapter(
       return resolved
     }
 
-    // Fallback: Use spine index to find closest chapter instead of blindly using first
-    const spineItem = book?.spine.get(locationCfi)
-    const fallbackSpineIndex = spineItem?.index
-    if (typeof fallbackSpineIndex === 'number') {
-      const closestBySpineIndex = matchingChapters
-        .map((ch) => ({
-          chapter: ch,
-          idx: book?.spine.get(ch.href.split('#')[0])?.index ?? -1
-        }))
-        .filter((item) => item.idx >= 0)
-        .sort(
-          (a, b) => Math.abs(a.idx - fallbackSpineIndex) - Math.abs(b.idx - fallbackSpineIndex)
-        )[0]
-
-      if (closestBySpineIndex) {
-        return closestBySpineIndex.chapter
-      }
-    }
-
+    // All candidates share the same spine item, so the first one in TOC order is the
+    // closest available guess.
     return matchingChapters[0]
   }
 
@@ -190,6 +186,5 @@ export function resolveCurrentChapter(
     }
   }
 
-  // Final fallback: return first chapter if available
-  return chapterList[0]
+  return undefined
 }

@@ -12,6 +12,7 @@
           step="0.1"
           :disabled="!enabled"
           @input="onProgressInput"
+          @change="onProgressChange"
         />
       </div>
       <span
@@ -31,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { throttle } from 'lodash-es'
 
@@ -46,7 +47,15 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 
-const sliderValue = computed(() => readingProgressPercent ?? 0)
+/**
+ * While dragging, the slider position is owned locally. Seeking is live, so the parent keeps
+ * reporting the position it already rendered, which would otherwise drag the thumb away from
+ * the pointer on every relocation.
+ */
+const dragValue = ref<number | null>(null)
+const isDragging = ref(false)
+
+const sliderValue = computed(() => unref(dragValue) ?? readingProgressPercent ?? 0)
 
 const progressLabel = computed(() => {
   const percent = readingProgressPercent
@@ -76,10 +85,47 @@ const throttledSeek = throttle(
 
 function onProgressInput(event: Event) {
   const value = parseSliderValue(event)
-  if (value !== null) {
-    throttledSeek(value)
+  if (value === null) {
+    return
   }
+
+  isDragging.value = true
+  dragValue.value = value
+  throttledSeek(value)
 }
+
+function onProgressChange(event: Event) {
+  isDragging.value = false
+
+  const value = parseSliderValue(event)
+  if (value === null) {
+    return
+  }
+
+  dragValue.value = value
+  throttledSeek.cancel()
+  emit('seek', value)
+}
+
+// Hand the slider position back to the parent once it reports the sought location.
+watch(
+  () => readingProgressPercent,
+  () => {
+    if (!unref(isDragging)) {
+      dragValue.value = null
+    }
+  }
+)
+
+watch(
+  () => enabled,
+  (isEnabled) => {
+    if (!isEnabled) {
+      isDragging.value = false
+      dragValue.value = null
+    }
+  }
+)
 </script>
 
 <style scoped>

@@ -47,6 +47,35 @@ describe('ReaderProgressBar component', () => {
     expect(slider.element.value).toBe('36')
   })
 
+  it('keeps the dragged slider position while the parent reports live seek results', async () => {
+    const wrapper = getWrapper()
+    const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
+
+    slider.element.value = '80'
+    await slider.trigger('input')
+
+    // Live seeking makes the parent report the position it already rendered. The thumb has to
+    // stay where the pointer left it instead of snapping back.
+    await wrapper.setProps({ readingProgressPercent: 42.4 })
+
+    expect(slider.element.value).toBe('80')
+  })
+
+  it('hands the slider position back to the parent after the drag ended', async () => {
+    const wrapper = getWrapper()
+    const slider = wrapper.find<HTMLInputElement>('.epub-reader-progress-slider')
+
+    slider.element.value = '80'
+    await slider.trigger('input')
+    await slider.trigger('change')
+
+    expect(slider.element.value).toBe('80')
+
+    await wrapper.setProps({ readingProgressPercent: 79.8 })
+
+    expect(slider.element.value).toBe('79.8')
+  })
+
   it('omits trailing decimal zeros in the displayed label', async () => {
     const wrapper = mount(ReaderProgressBar, {
       props: {

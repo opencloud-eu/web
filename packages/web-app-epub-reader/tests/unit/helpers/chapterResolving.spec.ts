@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mock } from 'vitest-mock-extended'
-import type { NavItem, Location } from 'epubjs'
+import type { NavItem, Location, Rendition } from 'epubjs'
 import {
   findChapterByHref,
   findChapterByDomPosition,
@@ -46,6 +46,11 @@ describe('chapterResolving', () => {
   })
 
   describe('findChapterByDomPosition', () => {
+    // Only the members findChapterByDomPosition actually touches are mocked.
+    function mockRenditionDom(members: object) {
+      return members as unknown as Rendition
+    }
+
     it('finds chapter by DOM element position', () => {
       const chapters: NavItem[] = [
         { id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' },
@@ -61,10 +66,10 @@ describe('chapterResolving', () => {
         })
       }
 
-      const rendition = {
+      const rendition = mockRenditionDom({
         getContents: vi.fn(() => [{ document: mockDocument }]),
         getRange: vi.fn(() => ({ startContainer: mockCh2Element }))
-      }
+      })
 
       const result = findChapterByDomPosition(chapters, 'epubcfi(/6/2)', rendition)
       expect(result?.id).toBe('ch-2')
@@ -73,10 +78,10 @@ describe('chapterResolving', () => {
     it('returns undefined when document is not available', () => {
       const chapters: NavItem[] = [{ id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' }]
 
-      const rendition = {
+      const rendition = mockRenditionDom({
         getContents: vi.fn(() => null),
         getRange: vi.fn(() => null)
-      }
+      })
 
       const result = findChapterByDomPosition(chapters, 'epubcfi(/6/2)', rendition)
       expect(result).toBeUndefined()
@@ -86,10 +91,10 @@ describe('chapterResolving', () => {
       const chapters: NavItem[] = [{ id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' }]
 
       const mockDocument = { getElementById: vi.fn(() => null) }
-      const rendition = {
+      const rendition = mockRenditionDom({
         getContents: vi.fn(() => [{ document: mockDocument }]),
         getRange: vi.fn(() => null)
-      }
+      })
 
       const result = findChapterByDomPosition(chapters, 'epubcfi(/6/2)', rendition)
       expect(result).toBeUndefined()
@@ -109,10 +114,10 @@ describe('chapterResolving', () => {
         getElementById: vi.fn(() => mockChapterElement)
       }
 
-      const rendition = {
+      const rendition = mockRenditionDom({
         getContents: vi.fn(() => [{ document: mockDocument }]),
         getRange: vi.fn(() => ({ startContainer: mockTextNode }))
-      }
+      })
 
       const result = findChapterByDomPosition(chapters, 'epubcfi(/6/2)', rendition)
       expect(result?.id).toBe('ch-1')
@@ -121,11 +126,11 @@ describe('chapterResolving', () => {
     it('returns undefined when an error occurs', () => {
       const chapters: NavItem[] = [{ id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' }]
 
-      const rendition = {
+      const rendition = mockRenditionDom({
         getContents: vi.fn(() => {
           throw new Error('Mock error')
         })
-      }
+      })
 
       const result = findChapterByDomPosition(chapters, 'epubcfi(/6/2)', rendition)
       expect(result).toBeUndefined()
@@ -302,7 +307,7 @@ describe('chapterResolving', () => {
         expect(result?.id).toBe('ch-2')
       })
 
-      it('falls back to spine-index when DOM position matching fails', () => {
+      it('falls back to the first chapter in the file when DOM position matching fails', () => {
         const chapters: NavItem[] = [
           { id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' },
           { id: 'ch-2', label: 'Chapter 2', href: 'text/book.xhtml#ch2' },
@@ -321,34 +326,6 @@ describe('chapterResolving', () => {
           if (target === 'epubcfi(/6/2)' || target === 'text/book.xhtml') {
             return { href: 'text/book.xhtml', index: 5 }
           }
-          return null
-        })
-        mockBook.navigation.get.mockReturnValue(null)
-        mockRendition.getContents = vi.fn(() => null)
-        mockRendition.getRange = vi.fn(() => null)
-
-        const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
-        expect(result?.id).toBe('ch-1')
-      })
-
-      it('falls back to first chapter when chapters in same file have identical spine index', () => {
-        const chapters: NavItem[] = [
-          { id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' },
-          { id: 'ch-2', label: 'Chapter 2', href: 'text/book.xhtml#ch2' },
-          { id: 'ch-3', label: 'Chapter 3', href: 'text/book.xhtml#ch3' }
-        ]
-
-        const location = mock<Location>({
-          start: {
-            href: 'text/book.xhtml',
-            cfi: 'epubcfi(/6/8)',
-            displayed: { page: 1, total: 12 }
-          }
-        })
-
-        mockBook.spine.get.mockImplementation((target: string) => {
-          if (target === 'epubcfi(/6/8)') return { href: 'text/book.xhtml', index: 8 }
-          if (target === 'text/book.xhtml') return { href: 'text/book.xhtml', index: 8 }
           return null
         })
         mockBook.navigation.get.mockReturnValue(null)
@@ -393,7 +370,7 @@ describe('chapterResolving', () => {
     })
 
     describe('edge cases and fallbacks', () => {
-      it('returns first chapter when no navigation is available', () => {
+      it('returns undefined when no navigation is available', () => {
         const chapters: NavItem[] = [
           { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1.xhtml' },
           { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
@@ -405,10 +382,10 @@ describe('chapterResolving', () => {
         })
 
         const result = resolveCurrentChapter(location, bookWithoutNav, chapters, mockRendition)
-        expect(result?.id).toBe('ch-1')
+        expect(result).toBeUndefined()
       })
 
-      it('returns first chapter when spine href cannot be determined', () => {
+      it('returns undefined when spine href cannot be determined', () => {
         const chapters: NavItem[] = [
           { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1.xhtml' },
           { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
@@ -426,10 +403,10 @@ describe('chapterResolving', () => {
         mockBook.spine.get.mockReturnValue(null)
 
         const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
-        expect(result?.id).toBe('ch-1')
+        expect(result).toBeUndefined()
       })
 
-      it('returns first chapter when all strategies fail', () => {
+      it('returns undefined when all strategies fail', () => {
         const chapters: NavItem[] = [
           { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1.xhtml' },
           { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
@@ -443,11 +420,14 @@ describe('chapterResolving', () => {
           }
         })
 
-        mockBook.spine.get.mockReturnValue({ href: 'text/orphan.xhtml', index: 999 })
+        // Only the current location maps to a spine item, none of the chapters do.
+        mockBook.spine.get.mockImplementation((target: string) =>
+          target === 'epubcfi(/6/99)' ? { href: 'text/orphan.xhtml', index: 999 } : null
+        )
         mockBook.navigation.get.mockReturnValue(null)
 
         const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
-        expect(result?.id).toBe('ch-1')
+        expect(result).toBeUndefined()
       })
 
       it('returns undefined when chapter list is empty', () => {
