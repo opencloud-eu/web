@@ -20,6 +20,7 @@ Feature: Copy
       | PARENT/Sub3           |
       | PARENT/Sub4           |
       | PARENT/Sub5           |
+      | PARENT/my-docs        |
     And "Alice" creates the following files into personal space using API
       | pathToFile               | content                             |
       | PARENTCopy3/example1.txt | example text                        |
@@ -32,6 +33,7 @@ Feature: Copy
       | PARENT/fileToCopy3.txt   | some content                        |
       | PARENT/fileToCopy4.txt   | some content                        |
       | PARENT/fileToCopy5.txt   | some content                        |
+      | PARENT/my-docs/lorem.txt | lorem epsum                         |
     And "Alice" logs in
     And "Alice" reduces the tile size
 
@@ -47,6 +49,10 @@ Feature: Copy
     And "Alice" copies the following resource using keyboard
       | resource            | to          |
       | KeyboardExample.txt | Personal/PARENTCopy3 |
+    And "Alice" copies the following resource to a new folder "Personal/new-folder"
+      | resource                 |
+      | PARENTCopy3/example1.txt |
+
     And "Alice" moves the following resource using drag-drop
       | resource     | to          |
       | dragDrop.txt | PARENTCopy2 |
@@ -67,6 +73,10 @@ Feature: Copy
     And "Alice" moves the following resource using drag-drop-breadcrumb
       | resource | to          |
       | Sub2     | PARENTCopy4 |
+    And "Alice" navigates to the personal space page
+    And "Alice" moves the following resource to a new folder "Personal/another-folder"
+      | resource       |
+      | PARENT/my-docs |
 
     And "Alice" opens the "files" app
     And "Alice" opens folder "PARENT"
@@ -212,6 +222,7 @@ Feature: Copy
     And "Brian" creates the following file into personal space using API
       | pathToFile     | content     |
       | share/file.txt | lorem ipsum |
+      | share/test.txt | lorem ipsum |
     And "Brian" shares the following resource using API
       | resource | recipient | type  | role     |
       | share    | Alice     | user  | Can edit |
@@ -222,6 +233,9 @@ Feature: Copy
     And "Alice" copies the following resource using sidebar-panel
       | resource | to              |
       | file.txt | Project/mySpace |
+    And "Alice" copies the following resource to a new folder "Project/mySpace/new-folder"
+      | resource |
+      | test.txt |
     And "Alice" navigates to the project space "mySpace"
     And "Alice" copies the following resource using sidebar-panel
       | resource | to                   |
@@ -236,5 +250,9 @@ Feature: Copy
     And "Alice" moves the following resource using sidebar-panel
       | resource | to              | option       |
       | f3       | Project/mySpace | copy instead |
+    And "Alice" navigates to the project space "mySpace"
+    And "Alice" moves the following resource to a new folder "Personal/another-folder" with copy instead
+      | resource            |
+      | new-folder/test.txt |
     And "Alice" logs out
     

@@ -215,6 +215,32 @@ When(
 )
 
 When(
+  /^"([^"]*)" (copies|moves) the following resource to a new folder "([^"]*)"( with copy instead)?$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    action: string,
+    newLocation: string,
+    copyInstead: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resources = stepTable.rows().flat()
+    const actionFn =
+      action === 'copies'
+        ? 'copyResourcesWithCreateDestination'
+        : 'moveResourcesWithCreateDestination'
+
+    await resourceObject[actionFn]({
+      resources,
+      newLocation,
+      copyInstead: !!copyInstead
+    })
+  }
+)
+
+When(
   '{string} restores following resource(s) version',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
