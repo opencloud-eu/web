@@ -43,6 +43,37 @@ describe('useStrategyTiptapJson', () => {
   })
 
   describe('editorActionGroups', () => {
+    it('puts table editing actions into a dedicated table tools group', () => {
+      const strategy = createStrategy()
+      const insertGroup = strategy.editorActionGroups().find((group) => group.id === 'insert')
+      const tableToolsGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'table-tools')
+
+      expect(insertGroup?.actions.map((action) => action.id)).toContain('table')
+      expect(insertGroup?.actions.map((action) => action.id)).not.toContain('add-row-before')
+      expect(tableToolsGroup?.actions.map((action) => action.id)).toEqual([
+        'toggle-header-row',
+        'add-row-before',
+        'add-row-after',
+        'delete-row',
+        'add-column-before',
+        'add-column-after',
+        'delete-column',
+        'delete-table'
+      ])
+    })
+
+    it('keeps blockquote and code block in the formatting group', () => {
+      const strategy = createStrategy()
+      const formattingGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'formatting')
+      expect(formattingGroup?.actions.map((action) => action.id)).toContain('blockquote')
+      expect(formattingGroup?.actions.map((action) => action.id)).toContain('code-block')
+      expect(strategy.editorActionGroups().some((group) => group.id === 'blocks')).toBe(false)
+    })
+
     it('puts text align menu in the text layout group with line height', () => {
       const strategy = createStrategy()
       const textLayoutGroup = strategy

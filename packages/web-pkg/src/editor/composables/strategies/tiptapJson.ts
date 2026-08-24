@@ -139,6 +139,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           heading2(),
           heading3(),
           heading4(),
+          blockquote(),
+          codeBlock(),
           fontSize(),
           textColor(),
           backgroundColor(),
@@ -171,11 +173,6 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         ]
       },
       {
-        id: 'blocks',
-        title: $gettext('Blocks'),
-        actions: [blockquote(), codeBlock()]
-      },
-      {
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
@@ -184,6 +181,14 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           imageUrl(),
           imageUpload(),
           createTable(),
+          menuEmoji(),
+          horizontalRule()
+        ]
+      },
+      {
+        id: 'table-tools',
+        title: $gettext('Table tools'),
+        actions: [
           toggleHeaderRow(),
           addRowBefore(),
           addRowAfter(),
@@ -191,9 +196,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           addColumnBefore(),
           addColumnAfter(),
           deleteColumn(),
-          deleteTable(),
-          menuEmoji(),
-          horizontalRule()
+          deleteTable()
         ]
       },
       {

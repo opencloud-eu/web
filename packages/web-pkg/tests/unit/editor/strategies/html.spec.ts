@@ -71,6 +71,27 @@ describe('useStrategyHtml', () => {
       expect(link.showInSlashCommands).not.toBe(false)
     })
 
+    it('puts table editing actions into a dedicated table tools group', () => {
+      const strategy = createStrategy()
+      const insertGroup = strategy.editorActionGroups().find((group) => group.id === 'insert')
+      const tableToolsGroup = strategy
+        .editorActionGroups()
+        .find((group) => group.id === 'table-tools')
+
+      expect(insertGroup?.actions.map((action) => action.id)).toContain('table')
+      expect(insertGroup?.actions.map((action) => action.id)).not.toContain('add-row-before')
+      expect(tableToolsGroup?.actions.map((action) => action.id)).toEqual([
+        'toggle-header-row',
+        'add-row-before',
+        'add-row-after',
+        'delete-row',
+        'add-column-before',
+        'add-column-after',
+        'delete-column',
+        'delete-table'
+      ])
+    })
+
     it('puts text align menu in the text layout group with line height', () => {
       const strategy = createStrategy()
       const textLayoutGroup = strategy

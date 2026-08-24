@@ -243,6 +243,14 @@ const fileIcon = {
     icon: { name: 'resource-type-board' },
     extensions: ['ggs']
   },
+  note: {
+    icon: { name: 'resource-type-note' },
+    extensions: ['note', 'ocnote']
+  },
+  notebook: {
+    icon: { name: 'resource-type-notebook' },
+    extensions: ['notebook', 'ocnotebook']
+  },
   notes: {
     icon: { name: 'resource-type-sticky-note', hasDarkVariant: true },
     extensions: ['ocnb']
