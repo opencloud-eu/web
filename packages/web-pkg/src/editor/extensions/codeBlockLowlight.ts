@@ -10,5 +10,8 @@ export function createCodeBlockLowlight() {
     addNodeView() {
       return VueNodeViewRenderer(CodeBlockComponent)
     }
-  }).configure({ lowlight })
+  }).configure({
+    lowlight,
+    enableTabIndentation: true
+  })
 }
