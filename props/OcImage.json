@@ -26,5 +26,12 @@
     "description": "The image title attribute.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "decoding",
+    "required": false,
+    "description": "The decoding hint of the image. Falls back to the browser default.",
+    "default": "",
+    "type": "'sync' | 'async' | 'auto'"
   }
 ]
