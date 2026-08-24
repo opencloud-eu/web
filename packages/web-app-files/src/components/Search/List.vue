@@ -116,6 +116,7 @@
               ...(isProjectSpaceResource($event) && { processor: ProcessorType.enum.fit })
             })
           "
+          @item-hidden="dropPreview($event)"
           @sort="handleSort"
           @update:selected-ids="selectedResourcesIds = $event"
         >
@@ -265,7 +266,7 @@ const {
   folderViewExtensionPoint: folderViewsSearchExtensionPoint
 })
 
-const { loadPreview } = useLoadPreview(viewMode)
+const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)

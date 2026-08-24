@@ -72,6 +72,7 @@
           @drop="fileDropped(resource, $event)"
           @dragover="$event.preventDefault()"
           @item-visible="$emit('itemVisible', resource)"
+          @item-hidden="$emit('itemHidden', resource)"
           @tile-clicked="fileContainerClicked({ resource, event: $event[1] })"
         >
           <template #selection="{ selected }">
@@ -209,6 +210,7 @@ const emit = defineEmits<{
   (e: 'fileDropped', id: string): void
   (e: 'sort', value: { sortBy: string; sortDir: SortDir }): void
   (e: 'itemVisible', resource: Resource): void
+  (e: 'itemHidden', resource: Resource): void
   (e: 'update:selectedIds', ids: string[]): void
 }>()
 

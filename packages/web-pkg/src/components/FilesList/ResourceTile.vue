@@ -155,6 +155,7 @@ const emit = defineEmits<{
   (e: 'fileNameClicked', event: MouseEvent | KeyboardEvent): void
   (e: 'contextmenu', event: MouseEvent | KeyboardEvent): void
   (e: 'itemVisible'): void
+  (e: 'itemHidden'): void
   (e: 'tileClicked', event: [Resource, MouseEvent | KeyboardEvent]): void
 }>()
 
@@ -219,7 +220,8 @@ const resourceDescription = computed(() => {
 const { isVisible } = lazy
   ? useIsVisible({
       target: observerTargetElement,
-      onVisibleCallback: () => emit('itemVisible')
+      onVisibleCallback: () => emit('itemVisible'),
+      onHiddenCallback: () => emit('itemHidden')
     })
   : { isVisible: ref(true) }
 
