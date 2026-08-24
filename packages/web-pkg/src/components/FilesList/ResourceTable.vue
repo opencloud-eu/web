@@ -24,6 +24,7 @@
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :lazy="lazy"
+    :scroll-container="scrollContainer"
     padding-x="medium"
     @highlight="fileContainerClicked({ resource: $event[0], event: $event[1] })"
     @contextmenu-clicked="
@@ -298,6 +299,7 @@ import {
   useCapabilityStore,
   useEmbedMode,
   useExtensionRegistry,
+  useFilesViewScrollContainer,
   useFolderLink,
   useGetMatchingSpace,
   useIsTopBarSticky,
@@ -440,6 +442,8 @@ const { userContextReady } = storeToRefs(authStore)
 
 const resourcesStore = useResourcesStore()
 const { areFileExtensionsShown } = storeToRefs(resourcesStore)
+
+const scrollContainer = useFilesViewScrollContainer()
 
 // Stable resolvers passed to OcTable. Reading the store happens inside each row's
 // render (not here), so a selection change re-renders only the affected rows -
