@@ -1325,44 +1325,68 @@ export const moveOrCopyMultipleResources = async (
 export const copyMoveResourcesWithCreateDestination = async ({
   page,
   action,
-  resourcePath,
+  resources,
   newLocation,
   copyInstead
 }: {
   page: Page
   action: 'copy' | 'move'
-  resourcePath: string
+  resources: string[]
   newLocation: string
   copyInstead: boolean
 }): Promise<void> => {
-  const { dir: resourceDir, base: resourceName } = path.parse(resourcePath)
+  // get the parent
+  const { dir: resourceDir } = path.parse(resources[0])
+  const resourceList: string[] = []
 
+  for (const resource of resources) {
+    const { dir: parentDir, base: resourceName } = path.parse(resource)
+    if (parentDir !== resourceDir) {
+      throw new Error(
+        'All resources must be within the same parent.' +
+          ` Expected: ${resourceDir}, but got: ${parentDir}`
+      )
+    }
+    resourceList.push(resourceName)
+  }
+
+  // open the parent directory
   if (resourceDir) {
     await clickResource({ page, path: resourceDir })
   }
-  await page.locator(util.format(checkBox, resourceName)).click()
+
+  // select the resources
+  for (const resourceName of resourceList) {
+    await page.locator(util.format(checkBox, resourceName)).click()
+  }
   await selectBatchAction(page, action)
 
   const destinationPath = newLocation.split('/')
   const sidebarItem = destinationPath.shift()
   await navigateFolderInEmbedMode({ page, parentPath: sidebarItem, sidebarOnly: true })
-  for (const folder of destinationPath) {
-    await clickResourceInEmbedMode({ page, path: folder, createIfNotExist: true })
-  }
+  await clickResourceInEmbedMode({
+    page,
+    path: destinationPath.join('/'),
+    createIfNotExist: true
+  })
+
   let actionMethod = action.toUpperCase()
   if (copyInstead) {
     actionMethod = 'COPY'
   }
   // NOTE: check response after opening embed mode.
   // waitForResponse won't work if it is checked before the embed mode is opened.
-  const waitConditions = [
-    page.waitForResponse(
-      (resp) =>
-        resp.url().includes(resourceName) &&
-        [201, 204].includes(resp.status()) &&
-        resp.request().method() === actionMethod
+  const waitConditions: Promise<Response>[] = []
+  for (const resourceName of resourceList) {
+    waitConditions.push(
+      page.waitForResponse(
+        (resp) =>
+          resp.url().includes(resourceName) &&
+          [201, 204].includes(resp.status()) &&
+          resp.request().method() === actionMethod
+      )
     )
-  ]
+  }
   await perFormEmbedModeAction({ page, newLocation, waitConditions, navigate: false, copyInstead })
 }
 

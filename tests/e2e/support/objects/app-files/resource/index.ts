@@ -93,11 +93,11 @@ export class Resource {
   }
 
   async copyResourcesWithCreateDestination({
-    resourcePath,
+    resources,
     newLocation,
     copyInstead
   }: {
-    resourcePath: string
+    resources: string[]
     newLocation: string
     copyInstead: boolean
   }) {
@@ -105,7 +105,7 @@ export class Resource {
     await po.copyMoveResourcesWithCreateDestination({
       page: this.#page,
       action: 'copy',
-      resourcePath,
+      resources,
       newLocation,
       copyInstead
     })
@@ -113,11 +113,11 @@ export class Resource {
   }
 
   async moveResourcesWithCreateDestination({
-    resourcePath,
+    resources,
     newLocation,
     copyInstead
   }: {
-    resourcePath: string
+    resources: string[]
     newLocation: string
     copyInstead: boolean
   }) {
@@ -125,7 +125,7 @@ export class Resource {
     await po.copyMoveResourcesWithCreateDestination({
       page: this.#page,
       action: 'move',
-      resourcePath,
+      resources,
       newLocation,
       copyInstead
     })

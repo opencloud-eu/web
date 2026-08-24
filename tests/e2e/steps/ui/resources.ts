@@ -226,14 +226,14 @@ When(
   ): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
-    const resourcePath = stepTable.rows().flat().pop()
+    const resources = stepTable.rows().flat()
     const actionFn =
       action === 'copies'
         ? 'copyResourcesWithCreateDestination'
         : 'moveResourcesWithCreateDestination'
 
     await resourceObject[actionFn]({
-      resourcePath,
+      resources,
       newLocation,
       copyInstead: !!copyInstead
     })
