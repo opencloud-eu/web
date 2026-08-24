@@ -33,12 +33,20 @@ describe('useStrategyTiptapJson', () => {
       expect(names).toContain('link')
       expect(names).toContain('fileHandler')
       expect(names).toContain('textAlign')
+      expect(names).toContain('codeBlock')
       const link = strategy.extensions().find(({ name }) => name === 'link')!
       expect(link.options).toMatchObject({
         openOnClick: false,
         autolink: true,
         linkOnPaste: true
       })
+    })
+
+    it('configures code block lowlight', () => {
+      const codeBlock = createStrategy()
+        .extensions()
+        .find(({ name }) => name === 'codeBlock') as any
+      expect(codeBlock.options.lowlight).toBeDefined()
     })
   })
 

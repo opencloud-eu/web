@@ -11,8 +11,11 @@ import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import { TextEditorState } from '../../types'
-import { createLinkExtension } from '../../extensions'
-import { imageFileHandlerExtension } from './imageFileHandler'
+import {
+  createCodeBlockLowlight,
+  createLinkExtension,
+  imageFileHandlerExtension
+} from '../../extensions'
 
 export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -70,7 +73,12 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     })
 
     return [
-      StarterKit.configure({ link: false, undoRedo: options?.yjs ? false : undefined }),
+      StarterKit.configure({
+        link: false,
+        codeBlock: false,
+        undoRedo: options?.yjs ? false : undefined
+      }),
+      createCodeBlockLowlight(),
       Markdown,
       createLinkExtension(),
       Table.configure({ resizable: false }),

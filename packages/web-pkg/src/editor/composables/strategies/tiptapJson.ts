@@ -22,8 +22,11 @@ import {
   TextStyle
 } from '@tiptap/extension-text-style'
 import { TextEditorState } from '../../types'
-import { createLinkExtension } from '../../extensions'
-import { imageFileHandlerExtension } from './imageFileHandler'
+import {
+  createCodeBlockLowlight,
+  createLinkExtension,
+  imageFileHandlerExtension
+} from '../../extensions'
 
 export const useStrategyTiptapJson = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -42,7 +45,12 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
 
   const extensions = (options?: ExtensionsOptions): Extension[] => {
     return [
-      StarterKit.configure({ link: false, undoRedo: options?.yjs ? false : undefined }),
+      StarterKit.configure({
+        link: false,
+        codeBlock: false,
+        undoRedo: options?.yjs ? false : undefined
+      }),
+      createCodeBlockLowlight(),
       createLinkExtension(),
       Image.configure({
         inline: false,

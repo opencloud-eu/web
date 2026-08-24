@@ -46,14 +46,28 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
+import {
+  computed,
+  inject,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  unref,
+  useTemplateRef,
+  watch
+} from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
 import type { TextEditorInstance } from '../types'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
+import { useThemeStore } from '../../composables'
+import atomOneDarkThemeUrl from 'highlight.js/styles/atom-one-dark.css?url'
+import atomOneLightThemeUrl from 'highlight.js/styles/atom-one-light.css?url'
 
 const { editor = undefined } = defineProps<{
   editor?: TextEditorInstance
@@ -61,11 +75,15 @@ const { editor = undefined } = defineProps<{
 
 const { $gettext } = useGettext()
 const { isMobile } = useIsMobile()
+const themeStore = useThemeStore()
+const { currentTheme } = storeToRefs(themeStore)
 
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 const currentDragHandleNodePos = ref<number | null>(null)
+const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
+const hljsThemeStyleElement = ref<HTMLLinkElement | null>(null)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const zoomFactor = computed(() => {
@@ -136,6 +154,34 @@ const openSlashMenu = () => {
     textEditor.editor.value.commands.insertContent('/')
   }
 }
+
+function applyHljsThemeCss() {
+  if (!hljsThemeStyleElement.value) {
+    return
+  }
+
+  hljsThemeStyleElement.value.href = unref(isDarkTheme) ? atomOneDarkThemeUrl : atomOneLightThemeUrl
+}
+
+watch(isDarkTheme, applyHljsThemeCss)
+
+onMounted(() => {
+  if (typeof document === 'undefined') {
+    return
+  }
+
+  const styleElement = document.createElement('link')
+  styleElement.rel = 'stylesheet'
+  styleElement.setAttribute('data-oc-text-editor-hljs-theme', 'true')
+  document.head.appendChild(styleElement)
+  hljsThemeStyleElement.value = styleElement
+  applyHljsThemeCss()
+})
+
+onUnmounted(() => {
+  hljsThemeStyleElement.value?.remove()
+  hljsThemeStyleElement.value = null
+})
 
 watch(isSourceMode, async () => {
   if (unref(isSourceMode)) {
