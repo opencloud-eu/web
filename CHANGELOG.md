@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @fschade, @junkerderprovinz, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @dschmidt, @fschade, @junkerderprovinz, @kulmann, @maki5, @saw-jan, @schweigisito, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- enhance code block language picker [[#3214](https://github.com/opencloud-eu/web/pull/3214)]
 - perf: preview cache optimizations [[#3194](https://github.com/opencloud-eu/web/pull/3194)]
 - perf: decode thumbnails asynchronously [[#3204](https://github.com/opencloud-eu/web/pull/3204)]
 - feat: add accessibility hint for code block exit [[#3209](https://github.com/opencloud-eu/web/pull/3209)]
