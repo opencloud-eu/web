@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.4.1](https://github.com/opencloud-eu/web/releases/tag/v7.4.1) - 2026-08-25
+
+### ❤️ Thanks to all contributors! ❤️
+
+@JammingBen
+
+### ✅ Tests
+
+- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
+
 ## [7.4.0](https://github.com/opencloud-eu/web/releases/tag/v7.4.0) - 2026-08-25
 
 ### ❤️ Thanks to all contributors! ❤️
