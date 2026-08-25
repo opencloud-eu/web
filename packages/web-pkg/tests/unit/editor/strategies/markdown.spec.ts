@@ -97,6 +97,7 @@ describe('useStrategyMarkdown', () => {
       expect(allIds).toContain('image')
       expect(allIds).toContain('image-url')
       expect(allIds).toContain('image-upload')
+      expect(allIds).toContain('image-cloud')
       expect(allIds).toContain('link')
       const link = strategy
         .editorActionGroups()

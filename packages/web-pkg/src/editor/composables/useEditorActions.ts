@@ -705,7 +705,7 @@ export function useEditorActions(state: TextEditorState) {
     description: $gettext('Insert an image from your cloud files'),
     icon: 'cloud-line',
     keywords: ['image', 'picture', 'cloud'],
-    showInSlashCommands: false,
+    showInSlashCommands: true,
     toolbarAction: (editor) => openCloudImagePicker(editor),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
@@ -1032,6 +1032,7 @@ export function useEditorActions(state: TextEditorState) {
     menuSearchAndReplace,
     imageUrl,
     imageUpload,
+    imageCloud,
     horizontalRule,
     // Table
     createTable,

@@ -121,6 +121,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     menuSearchAndReplace,
     imageUrl,
     imageUpload,
+    imageCloud,
     createTable,
     addRowBefore,
     addRowAfter,
@@ -188,6 +189,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           image(),
           imageUrl(),
           imageUpload(),
+          imageCloud(),
           createTable(),
           menuEmoji(),
           horizontalRule()
