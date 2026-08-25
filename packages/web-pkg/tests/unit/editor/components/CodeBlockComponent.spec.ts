@@ -50,19 +50,7 @@ function mountCodeBlock(isEditable: boolean) {
       HTMLAttributes: {}
     },
     global: {
-      plugins: [...defaultPlugins()],
-      stubs: {
-        'oc-select': defineComponent({
-          name: 'OcSelect',
-          props: {
-            disabled: { type: Boolean, default: false },
-            modelValue: { type: Object, required: false },
-            options: { type: Array, required: false }
-          },
-          emits: ['update:model-value'],
-          template: '<div class="oc-select-stub" />'
-        })
-      }
+      plugins: [...defaultPlugins()]
     }
   })
 
@@ -72,17 +60,16 @@ function mountCodeBlock(isEditable: boolean) {
 describe('CodeBlockComponent', () => {
   it('disables language select in readonly mode', () => {
     const { wrapper } = mountCodeBlock(false)
-    const select = wrapper.findComponent({ name: 'OcSelect' })
+    const select = wrapper.find('.text-editor-code-block-select')
 
-    expect(select.props('disabled')).toBe(true)
+    expect(select.attributes('disabled')).toBeDefined()
   })
 
   it('updates language when editor is editable', async () => {
     const { wrapper, updateAttributes } = mountCodeBlock(true)
-    const select = wrapper.findComponent({ name: 'OcSelect' })
+    const select = wrapper.find('.text-editor-code-block-select')
 
-    select.vm.$emit('update:model-value', { label: 'typescript', value: 'typescript' })
-    await wrapper.vm.$nextTick()
+    await select.setValue('typescript')
 
     expect(updateAttributes).toHaveBeenCalledWith({ language: 'typescript' })
   })

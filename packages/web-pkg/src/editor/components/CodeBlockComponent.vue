@@ -1,21 +1,21 @@
 <template>
   <node-view-wrapper class="code-block">
     <div class="text-editor-code-block-language" contenteditable="false">
-      <oc-select
-        class="text-editor-code-block-select"
-        :model-value="selectedLanguageOption"
-        :options="languageOptions"
+      <select
+        v-model="selectedLanguageValue"
+        class="text-editor-code-block-select font-mono"
+        :aria-label="$gettext('Code language')"
         :disabled="isReadonly"
-        option-label="label"
-        :clearable="false"
-        :searchable="true"
-        :label="$gettext('Code language')"
-        :label-hidden="true"
-        @update:model-value="updateSelectedLanguage"
-      />
+      >
+        <option v-for="option in languageOptions" :key="option.label" :value="option.value">
+          {{ option.label }}
+        </option>
+      </select>
     </div>
     <span :id="hintId" class="sr-only">
-      {{ $gettext('Press Shift+Enter to exit the code block.') }}
+      {{
+        $gettext('Press Shift+Enter or press Enter three times in a row to exit the code block.')
+      }}
     </span>
     <pre
       role="textbox"
@@ -38,7 +38,7 @@ const hintId = `code-block-hint-${uuidV4()}`
 
 type LanguageOption = {
   label: string
-  value: string | null
+  value: string
 }
 
 const languages = computed<string[]>(() => {
@@ -56,21 +56,21 @@ const selectedLanguage = computed<string | null>({
 
 const languageOptions = computed<LanguageOption[]>(() => {
   return [
-    { label: 'auto', value: null },
+    { label: 'auto', value: '' },
     ...languages.value.map((language) => ({ label: language, value: language }))
   ]
 })
 
-const selectedLanguageOption = computed<LanguageOption>(() => {
-  const current = selectedLanguage.value
-  return languageOptions.value.find(({ value }) => value === current) ?? languageOptions.value[0]
+const selectedLanguageValue = computed<string>({
+  get() {
+    return selectedLanguage.value ?? ''
+  },
+  set(value) {
+    selectedLanguage.value = value === '' ? null : value
+  }
 })
 
 const isReadonly = computed(() => props.editor.isEditable === false)
-
-function updateSelectedLanguage(option: LanguageOption | null) {
-  selectedLanguage.value = option?.value ?? null
-}
 </script>
 
 <style scoped>
@@ -78,13 +78,24 @@ function updateSelectedLanguage(option: LanguageOption | null) {
   position: absolute;
   right: 12px;
   top: 4px;
-  min-width: 130px;
-  max-width: calc(100% - 24px);
 }
 
-.text-editor-code-block-select :deep(.vs__dropdown-toggle) {
-  min-height: 30px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+.text-editor-code-block-select:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.text-editor-code-block-select {
+  text-align: right;
+  font-size: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--oc-role-on-surface);
+}
+
+.text-editor-code-block-select:disabled {
+  color: var(--oc-role-on-surface-variant);
+  opacity: 0.75;
+  cursor: not-allowed;
 }
 </style>
