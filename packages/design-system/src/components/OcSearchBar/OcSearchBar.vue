@@ -203,6 +203,7 @@ const inputClass = computed(() => {
   const classes = [
     'oc-search-input',
     'oc-input',
+    'placeholder:text-role-outline',
     'disabled:cursor-not-allowed',
     'focus:bg-none',
     'focus:outline focus:outline-offset-2 focus:outline-white'

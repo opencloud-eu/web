@@ -59,13 +59,13 @@
       toggle="#files-global-search-bar"
       mode="manual"
       target="#files-global-search-bar"
-      class="w-[93vw] sm:w-2xs md:w-lg overflow-y-auto"
+      class="w-[93vw] sm:w-2xs md:w-lg overflow-y-auto !max-w-none"
       padding-size="remove"
       close-on-click
       enforce-drop-on-mobile
       :is-menu="false"
     >
-      <oc-list class="oc-list-divider">
+      <oc-list class="oc-list-divider p-2">
         <li
           v-if="loading"
           class="flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"

@@ -12,7 +12,7 @@
         'align-middle',
         'm-0.5',
         'border-2',
-        'border-role-outline',
+        'border-role-outline/80',
         'outline-0',
         'outline-role-secondary',
         'focus-visible:outline',

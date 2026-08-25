@@ -524,7 +524,7 @@ export default { components: { VueSelect } }
 }
 
 .oc-select .vs__search::placeholder {
-  color: var(--oc-role-on-surface-variant);
+  color: var(--oc-role-outline);
 }
 
 .oc-select :is(.vs__dropdown-toggle, .vs__dropdown-menu) {
