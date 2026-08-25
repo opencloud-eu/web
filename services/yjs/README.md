@@ -17,12 +17,10 @@ Every connection is authenticated and authorized against OpenCloud:
 
 ## Configuration
 
-| Variable         | Default      | Description                                                                  |
-| ---------------- | ------------ | ---------------------------------------------------------------------------- |
-| `OPENCLOUD_URL`  | -            | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
-| `PORT`           | `1234`       | Port to listen on                                                            |
-| `NODE_ENV`       | `production` | Set by the image. Must be `development` to allow `DEV_FAKE_TOKEN`            |
-| `DEV_FAKE_TOKEN` | unset        | Dev only. Bypasses auth for a fixed token. Requires `NODE_ENV=development`   |
+| Variable        | Default | Description                                                                  |
+| --------------- | ------- | ---------------------------------------------------------------------------- |
+| `OPENCLOUD_URL` | -       | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
+| `PORT`          | `1234`  | Port to listen on                                                            |
 
 ## Routing
 

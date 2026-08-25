@@ -189,3 +189,12 @@ When(
     await processDelete(stepTable, pageObject, actionType)
   }
 )
+
+When(
+  '{string} sees the save conflict dialog and chooses the following action',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const [{ action }] = stepTable.hashes()
+    await editor.resolveSaveConflict(page, action)
+  }
+)

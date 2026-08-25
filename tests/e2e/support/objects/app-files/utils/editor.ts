@@ -1,4 +1,4 @@
-import { Locator, Page } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 
 const closeTextEditorOrViewerButton = '#app-top-bar-close'
 const saveTextEditorOrViewerButton = '#app-save-action'
@@ -7,11 +7,19 @@ const pdfViewer = '#pdf-viewer'
 const imageViewer = '.stage'
 const textEditorContent = '.tiptap.ProseMirror'
 const collaborationCursorLabel = '.collaboration-cursor__label'
+const saveConflictDialog = '.oc-modal'
+const filesListUrl = /.*\/files\/(spaces|shares|link|search)\/.*/
+const saveConflictDialogButtons: Record<string, string> = {
+  Save: '.oc-modal-body-actions-confirm',
+  "Don't Save": '.oc-modal-body-actions-secondary',
+  Cancel: '.oc-modal-body-actions-cancel'
+}
 
 export const close = async (page: Page) => {
-  const navigationPromise = page.waitForURL(/.*\/files\/(spaces|shares|link|search)\/.*/)
+  const navigationPromise = page.waitForURL(filesListUrl)
   await page.locator(closeTextEditorOrViewerButton).click()
-  await navigationPromise
+  // unsaved changes block the navigation until the save conflict dialog is resolved
+  await Promise.race([navigationPromise, page.locator(saveConflictDialog).waitFor()])
 }
 
 export const save = async (page: Page): Promise<unknown> => {
@@ -46,3 +54,24 @@ export const textEditorContentLocator = (page: Page): Locator => page.locator(te
 
 export const collaborationCaretLocator = (page: Page, displayName: string): Locator =>
   page.locator(collaborationCursorLabel, { hasText: displayName })
+
+export const resolveSaveConflict = async (page: Page, action: string): Promise<void> => {
+  const button = saveConflictDialogButtons[action]
+  if (!button) {
+    throw new Error(`save conflict dialog action "${action}" not implemented`)
+  }
+
+  const dialog = page.locator(saveConflictDialog)
+  await expect(dialog).toBeVisible()
+
+  if (action === 'Cancel') {
+    await dialog.locator(button).click()
+    await expect(dialog).not.toBeVisible()
+    return
+  }
+
+  const navigationPromise = page.waitForURL(filesListUrl)
+  await dialog.locator(button).click()
+  await navigationPromise
+  await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
+}

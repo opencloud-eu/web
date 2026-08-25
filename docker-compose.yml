@@ -440,9 +440,6 @@ services:
       OPENCLOUD_URL: https://host.docker.internal:9200
       # Dev only: accept the self-signed cert from OC's Traefik
       NODE_TLS_REJECT_UNAUTHORIZED: '0'
-      # Dev only: allows the integration tests to bypass real OIDC tokens
-      NODE_ENV: development
-      DEV_FAKE_TOKEN: dev-integration-token
     volumes:
       # Dev only: edit the server without rebuilding the image
       - ./services/yjs/src:/app/src:ro
