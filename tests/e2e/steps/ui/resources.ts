@@ -17,6 +17,7 @@ import * as runtimeFs from '../../support/utils/runtimeFs'
 import { searchFilter } from '../../support/objects/app-files/resource/actions'
 import { File } from '../../support/types'
 import { waitProcessingToFinish } from '../../support/objects/app-files/fileEvents'
+import { editor } from '../../support/objects/app-files/utils'
 
 When(
   '{string} creates the following resource(s)',
@@ -1427,6 +1428,41 @@ Then(
   async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     await expect(page.locator('.tiptap.ProseMirror')).toContainText(text)
+  }
+)
+
+Then(
+  '{string} should not be able to edit the current file',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    await expect(editor.textEditorContentLocator(page)).toHaveAttribute('contenteditable', 'false')
+    await expect(editor.saveButtonLocator(page)).not.toBeVisible()
+  }
+)
+
+Then(
+  '{string} should see the collaboration carets of the following users',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+
+    for (const { id } of stepTable.hashes()) {
+      const { displayName } = world.usersEnvironment.getUser({ key: id })
+      await expect(editor.collaborationCaretLocator(page, displayName)).toBeVisible()
+    }
+  }
+)
+
+Then(
+  /^"([^"]*)" sees the current file as (dirty|clean)$/,
+  async ({ world }: { world: World }, stepUser: string, state: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const saveButton = editor.saveButtonLocator(page)
+
+    if (state === 'dirty') {
+      await expect(saveButton).toBeEnabled()
+      return
+    }
+    await expect(saveButton).toBeDisabled()
   }
 )
 
