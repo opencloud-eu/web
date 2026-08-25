@@ -8,6 +8,7 @@
 
 ### ✅ Tests
 
+- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
 - test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ## [7.4.0](https://github.com/opencloud-eu/web/releases/tag/v7.4.0) - 2026-08-25
