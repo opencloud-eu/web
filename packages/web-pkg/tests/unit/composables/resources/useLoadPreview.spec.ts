@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, Ref } from 'vue'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { mock, MockProxy } from 'vitest-mock-extended'
 import { buildSpaceImageResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -266,6 +266,100 @@ describe('useLoadPreview', () => {
         })
       })
     })
+
+    it('reuses an existing thumbnail only for the same preview profile', () => {
+      getWrapper({
+        setup: async ({ loadPreview }, { previewService }) => {
+          const space = mock<SpaceResource>()
+          const resource = mock<Resource>({
+            id: 'resource-1',
+            isInVault: false,
+            thumbnail: undefined
+          })
+
+          await loadPreview({ space, resource })
+          resource.thumbnail = 'blob:image'
+
+          await loadPreview({ space, resource })
+
+          expect(previewService.loadPreview).toHaveBeenCalledTimes(1)
+        }
+      })
+    })
+
+    it('reuses an existing thumbnail for smaller dimensions with the same processor', () => {
+      getWrapper({
+        setup: async ({ loadPreview }, { previewService }) => {
+          const space = mock<SpaceResource>()
+          const resource = mock<Resource>({
+            id: 'resource-1',
+            isInVault: false,
+            thumbnail: undefined
+          })
+
+          await loadPreview({
+            space,
+            resource,
+            processor: ProcessorType.enum.resize,
+            dimensions: [512, 512]
+          })
+          resource.thumbnail = 'blob:image'
+
+          await loadPreview({
+            space,
+            resource,
+            processor: ProcessorType.enum.resize,
+            dimensions: [320, 320]
+          })
+
+          expect(previewService.loadPreview).toHaveBeenCalledTimes(1)
+        }
+      })
+    })
+
+    it('reloads preview when view mode changes and requires a different profile', () => {
+      const viewMode = ref<string>(FolderViewModeConstants.name.table)
+
+      getWrapper({
+        viewMode,
+        setup: async ({ loadPreview }, { previewService }) => {
+          const space = mock<SpaceResource>()
+          const resource = mock<Resource>({
+            id: 'resource-2',
+            isInVault: false,
+            thumbnail: undefined
+          })
+
+          await loadPreview({ space, resource })
+          resource.thumbnail = 'blob:table'
+
+          viewMode.value = FolderViewModeConstants.name.tiles
+          await loadPreview({ space, resource })
+
+          expect(previewService.loadPreview).toHaveBeenCalledTimes(2)
+          expect(previewService.loadPreview).toHaveBeenNthCalledWith(
+            1,
+            expect.objectContaining({
+              dimensions: ImageDimension.Thumbnail,
+              processor: ProcessorType.enum.thumbnail
+            }),
+            expect.anything(),
+            expect.anything(),
+            expect.anything()
+          )
+          expect(previewService.loadPreview).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({
+              dimensions: [768, 768],
+              processor: ProcessorType.enum.fit
+            }),
+            expect.anything(),
+            expect.anything(),
+            expect.anything()
+          )
+        }
+      })
+    })
   })
 
   describe('dropPreview', () => {
@@ -338,7 +432,7 @@ function getWrapper({
     mocks: { previewService: MockProxy<PreviewService> }
   ) => void
   loadedPreview?: string
-  viewMode?: string
+  viewMode?: string | Ref<string>
 }) {
   const mocks = defaultComponentMocks()
   const previewService = mock<PreviewService>()
@@ -348,7 +442,8 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useLoadPreview(viewMode ? ref(viewMode) : undefined)
+        const modeRef = typeof viewMode === 'string' ? ref(viewMode) : viewMode
+        const instance = useLoadPreview(modeRef)
         setup(instance, { previewService })
       },
       {

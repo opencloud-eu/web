@@ -34,9 +34,15 @@ type LoadPreviewOptions = {
   updateStore?: boolean
 }
 
+type PreviewProfile = {
+  dimensions: [number, number]
+  processor: ProcessorType
+}
+
 type QueuedPreview = {
   controller: AbortController
   isRunning: boolean
+  profile: PreviewProfile
 }
 
 export const useLoadPreview = (viewMode?: Ref<string>) => {
@@ -45,6 +51,7 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
   const spacesStore = useSpacesStore()
   const previewQueue = new PQueue({ concurrency: 4 })
   const queuedPreviews = new Map<string, QueuedPreview>()
+  const loadedPreviewProfiles = new Map<string, PreviewProfile>()
 
   const isTilesView = computed(() => unref(viewMode) === FolderViewModeConstants.name.tiles)
   const defaultProcessor = computed(() =>
@@ -55,18 +62,34 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
     unref(isTilesView) ? unref(previewDimensions) : ImageDimension.Thumbnail
   )
 
+  const isProfileCompatible = (loaded: PreviewProfile, requested: PreviewProfile) => {
+    return (
+      loaded.processor === requested.processor &&
+      loaded.dimensions[0] >= requested.dimensions[0] &&
+      loaded.dimensions[1] >= requested.dimensions[1]
+    )
+  }
+
   const loadPreviewTask = useTask<string, LoadPreviewOptions[]>(function* (
     signal,
     { space, resource, dimensions, processor, updateStore = true }
   ) {
     const item = isProjectSpaceResource(resource) ? buildSpaceImageResource(resource) : resource
     const isSpaceImage = item.id === space.spaceImageData?.id
+    const profile: PreviewProfile = {
+      dimensions: dimensions || unref(defaultDimensions),
+      processor: processor || unref(defaultProcessor)
+    }
 
     if (isSpaceImage) {
       spacesStore.addToImagesLoading(space.id)
     }
 
-    const queued: QueuedPreview = { controller: new AbortController(), isRunning: false }
+    const queued: QueuedPreview = {
+      controller: new AbortController(),
+      isRunning: false,
+      profile
+    }
     queuedPreviews.set(resource.id, queued)
 
     try {
@@ -90,6 +113,7 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
 
       if (preview && updateStore) {
         updateResourceField({ id: resource.id, field: 'thumbnail', value: preview })
+        loadedPreviewProfiles.set(resource.id, profile)
       }
 
       return preview
@@ -117,18 +141,38 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       return null
     }
 
+    const dimensions = options.dimensions || unref(defaultDimensions)
+    const processor = options.processor || unref(defaultProcessor)
+    const profile: PreviewProfile = { dimensions, processor }
+
     // already queued or running, no need to load it twice
-    if (queuedPreviews.has(resource.id)) {
-      return
+    const queued = queuedPreviews.get(resource.id)
+    if (queued) {
+      if (isProfileCompatible(queued.profile, profile)) {
+        return
+      }
+      if (!queued.isRunning) {
+        queued.controller.abort()
+      }
     }
 
-    // store-backed previews are loaded once, direct callers may want other dimensions
-    if (updateStore && resource.thumbnail) {
+    // store-backed previews can be reused if they were loaded with a compatible profile
+    const loadedProfile = loadedPreviewProfiles.get(resource.id)
+    if (
+      updateStore &&
+      resource.thumbnail &&
+      loadedProfile &&
+      isProfileCompatible(loadedProfile, profile)
+    ) {
       return resource.thumbnail
     }
 
     try {
-      return await loadPreviewTask.perform(options)
+      return await loadPreviewTask.perform({
+        ...options,
+        dimensions,
+        processor
+      })
     } catch (e) {
       // ignore errors on cancel or when the preview was dropped while queued
       if (e !== 'cancel' && (e as Error)?.name !== 'AbortError') {
@@ -148,6 +192,7 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
     }
 
     queued.controller.abort()
+    loadedPreviewProfiles.delete(resource.id)
   }
 
   const previewsLoading = computed(() => loadPreviewTask.isRunning)
@@ -156,6 +201,7 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
     loadPreviewTask.cancelAll()
     previewQueue.clear()
     queuedPreviews.clear()
+    loadedPreviewProfiles.clear()
     spacesStore.purgeImagesLoading()
   }
 
