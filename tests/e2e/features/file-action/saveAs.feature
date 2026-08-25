@@ -24,9 +24,11 @@ Feature: rename
       | resource     |
       | textfile.txt |
     Then "Alice" should see the content "lorem ipsum" in editor "TextEditor"
+    And "Alice" enters the text "lorem ipsum update" in editor "TextEditor"
+    And "Alice" saves the file viewer
     When "Alice" saves the current file as "textfile.txt"
     Then file "textfile (1).txt" should be opened in texteditor for user "Alice"
-    And "Alice" should see the content "lorem ipsum" in editor "TextEditor"
+    And "Alice" should see the content "lorem ipsum update" in editor "TextEditor"
     When "Alice" switches to tab 1
     And "Alice" closes the file viewer
     Then following resources should be displayed in the files list for user "Alice"
@@ -40,7 +42,7 @@ Feature: rename
       | textfile.txt |
     When "Alice" saves the current file as "top-folder/newfile.txt"
     Then file "newfile.txt" should be opened in texteditor for user "Alice"
-    And "Alice" should see the content "lorem ipsum" in editor "TextEditor"
+    And "Alice" should see the content "lorem ipsum update" in editor "TextEditor"
     When "Alice" closes the file viewer
     Then following resources should be displayed in the files list for user "Alice"
       | resource    |
