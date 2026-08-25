@@ -4,7 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@AlexAndBear, @JammingBen
+
+### 🐛 Bug Fixes
+
+- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
 ### ✅ Tests
 
