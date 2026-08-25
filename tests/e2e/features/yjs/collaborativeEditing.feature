@@ -144,3 +144,34 @@ Feature: yjs collaborative editing
     And "Alice" sees the current file as clean
 
     And "Alice" logs out
+
+  Scenario: an editor joins a session that was initiated by a viewer
+    Given "Admin" creates following users using API
+      | id    |
+      | Alice |
+      | Brian |
+    And "Alice" creates the following file into personal space using API
+      | pathToFile | content     |
+      | example.md | lorem ipsum |
+    And "Alice" shares the following resources using API
+      | resource   | recipient | type | role     |
+      | example.md | Brian     | user | Can view |
+
+    And "Brian" logs in
+    And "Brian" navigates to the shared with me page
+    And "Brian" opens file "example.md" via "text-editor" using the context menu
+    And "Brian" is in a text-editor
+
+    When "Alice" logs in
+    And "Alice" opens the "files" app
+    And "Alice" opens file "example.md" via "text-editor" using the context menu
+    And "Alice" is in a text-editor
+
+    Then "Alice" should see the text "lorem ipsum" in the text-editor
+    And "Brian" should see the text "lorem ipsum" in the text-editor
+
+    When "Alice" enters the text "Alice says hello" in editor "TextEditor"
+    Then "Brian" should see the text "Alice says hello" in the text-editor
+
+    And "Alice" logs out
+    And "Brian" logs out
