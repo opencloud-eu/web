@@ -5,7 +5,7 @@ import { getParentPaths } from '../../helpers'
 import { AncestorMetaData, AncestorMetaDataValue } from '../../types'
 import { DavProperty, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useSpacesStore } from './spaces'
-import { eventBus } from '../../services'
+import { eventBus, releaseFilePreviews } from '../../services'
 
 export const useResourcesStore = defineStore('resources', () => {
   const spacesStore = useSpacesStore()
@@ -50,6 +50,7 @@ export const useResourcesStore = defineStore('resources', () => {
   }
 
   const removeResources = (values: Resource[]) => {
+    releaseFilePreviews(values.map(({ id }) => id))
     resources.value = unref(resources).filter((file) => !values.find(({ id }) => id === file.id))
   }
 

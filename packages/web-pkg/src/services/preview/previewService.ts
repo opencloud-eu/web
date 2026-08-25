@@ -1,5 +1,4 @@
-import isEqual from 'lodash-es/isEqual'
-import { cacheService } from '../cache'
+import { buildFilePreviewCacheKey, cacheService } from '../cache'
 import { ClientService } from '../client'
 import { encodePath } from '../../utils'
 import { isPublicSpaceResource } from '@opencloud-eu/web-client'
@@ -13,6 +12,9 @@ export class PreviewService {
   configStore: ConfigStore
   userStore: UserStore
   authStore: AuthStore
+
+  /** Ongoing preview requests, so concurrent loads of the same key share one fetch. */
+  private inFlightPreviews = new Map<string, Promise<string>>()
 
   constructor({
     clientService,
@@ -76,23 +78,39 @@ export class PreviewService {
     signal?: AbortSignal
   ): Promise<string> {
     const { resource, dimensions } = options
-    const hit = cacheService.filePreview.get(resource.id.toString())
+    const key = buildFilePreviewCacheKey(resource.id, dimensions)
+    const hit = cacheService.filePreview.get(key)
 
-    if (hit && hit.etag === resource.etag && isEqual(dimensions, hit.dimensions)) {
+    if (hit && hit.etag === resource.etag) {
       return hit.src
     }
+
     try {
-      const src = await this.privatePreviewBlob(options, false, true, signal)
-      return cacheService.filePreview.set(
-        resource.id.toString(),
-        { src, etag: resource.etag, dimensions },
-        0
-      ).src
+      let request = this.inFlightPreviews.get(key)
+      if (!request) {
+        request = this.fetchAndCachePreview(options, key, signal)
+        this.inFlightPreviews.set(key, request)
+      }
+
+      return await request
     } catch (e) {
       if (silenceErrors) {
         return
       }
       throw e
+    }
+  }
+
+  private async fetchAndCachePreview(
+    options: LoadPreviewOptions,
+    key: string,
+    signal?: AbortSignal
+  ): Promise<string> {
+    try {
+      const { src, size } = await this.fetchPreviewBlob(options, signal)
+      return cacheService.filePreview.set(key, { src, size, etag: options.resource.etag }, 0).src
+    } finally {
+      this.inFlightPreviews.delete(key)
     }
   }
 
@@ -114,10 +132,19 @@ export class PreviewService {
     silenceErrors = true,
     signal?: AbortSignal
   ): Promise<string> {
-    const { resource, dimensions, processor } = options
     if (cached) {
       return this.cacheFactory(options, silenceErrors, signal)
     }
+
+    const { src } = await this.fetchPreviewBlob(options, signal)
+    return src
+  }
+
+  private async fetchPreviewBlob(
+    options: LoadPreviewOptions,
+    signal?: AbortSignal
+  ): Promise<{ src: string; size: number }> {
+    const { resource, dimensions, processor } = options
 
     const url = [
       this.configStore.serverUrl,
@@ -132,12 +159,12 @@ export class PreviewService {
         responseType: 'blob',
         signal
       })
-      return window.URL.createObjectURL(data)
+      return { src: window.URL.createObjectURL(data), size: data.size }
     } catch (e) {
       if ([425, 429].includes(e.status)) {
         const retryAfter = e.response?.headers?.['retry-after'] || 5
         await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000))
-        return this.privatePreviewBlob(options, cached, silenceErrors, signal)
+        return this.fetchPreviewBlob(options, signal)
       }
 
       throw e
