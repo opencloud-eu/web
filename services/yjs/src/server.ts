@@ -8,18 +8,6 @@ if (!opencloudUrl) {
   process.exit(1)
 }
 
-// Dev-only escape hatch for the integration test harness. Refused outright in
-// production so a stray env var can never turn into an auth bypass.
-const devFakeToken = process.env.DEV_FAKE_TOKEN ?? ''
-
-if (devFakeToken) {
-  if (process.env.NODE_ENV !== 'development') {
-    console.error('DEV_FAKE_TOKEN requires NODE_ENV=development')
-    process.exit(1)
-  }
-  console.warn('DEV_FAKE_TOKEN is set, authentication can be bypassed. Never do this in production')
-}
-
 /** The subset of the Graph `/me` response this service relies on. */
 type GraphUser = {
   id?: string
@@ -198,24 +186,6 @@ const server = new Server({
     }
 
     const clientAppVersion = requestParameters.get('appVersion') ?? ''
-
-    // Dev shortcut for integration tests: any token matching DEV_FAKE_TOKEN
-    // returns a synthetic identity. The ACL check is skipped (tests use random
-    // documentNames that don't exist in OC). Disabled when DEV_FAKE_TOKEN is
-    // unset.
-    if (devFakeToken && token === devFakeToken) {
-      const id = 'dev-fake-user'
-      // Gated the same way as a real connection, so the two paths cannot drift.
-      enforceAppVersion(documentName, clientAppVersion)
-      console.log(`[onAuthenticate] dev-fake document=${JSON.stringify(documentName)}`)
-      return {
-        user: {
-          id,
-          displayName: 'Dev Fake User',
-          color: deterministicColor(id)
-        }
-      }
-    }
 
     const me = await validateTokenAgainstOpenCloud(token)
     const id = me.id ?? me.userPrincipalName ?? me.mail ?? 'unknown'

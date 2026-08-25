@@ -1566,8 +1566,6 @@ def yjsService():
                 "PORT": "1234",
                 "OPENCLOUD_URL": "https://opencloud:9200",
                 "NODE_TLS_REJECT_UNAUTHORIZED": "0",
-                "NODE_ENV": "development",
-                "DEV_FAKE_TOKEN": "dev-integration-token",
             },
             "commands": [
                 "cd services/yjs",
