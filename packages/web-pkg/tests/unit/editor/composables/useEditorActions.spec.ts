@@ -27,7 +27,9 @@ function createState(): TextEditorState {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100),
-    currentResource: ref<Resource | null>(mock<Resource>({ id: 'resource', path: '/' }))
+    currentResource: ref<Resource | null>(
+      mock<Resource>({ id: 'resource', path: '/', name: 'My note.md' })
+    )
   }
 }
 
@@ -91,10 +93,17 @@ describe('useEditorActions', () => {
       expect(actions.print().showInSlashCommands).toBe(false)
     })
 
-    it('print delegates to print helper with editor and fallback title', () => {
+    it('print delegates to print helper with editor and resource file name', () => {
       const editor = createMockEditor()
       actions.print().toolbarAction!(editor)
-      expect(printEditorContentMock).toHaveBeenCalledWith(editor, expect.any(String))
+      expect(printEditorContentMock).toHaveBeenCalledWith(editor, 'My note.md')
+    })
+
+    it('print does nothing when resource has no name', () => {
+      state.currentResource.value = null
+      const editor = createMockEditor()
+      actions.print().toolbarAction!(editor)
+      expect(printEditorContentMock).not.toHaveBeenCalled()
     })
   })
 

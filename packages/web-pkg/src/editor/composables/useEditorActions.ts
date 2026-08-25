@@ -173,7 +173,13 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Print'),
     icon: 'printer',
     iconFillType: 'line',
-    toolbarAction: (editor) => printEditorContent(editor, document.title || $gettext('Document')),
+    toolbarAction: (editor) => {
+      const fileName = unref(currentResource)?.name
+      if (!fileName) {
+        return
+      }
+      printEditorContent(editor, fileName)
+    },
     showInSlashCommands: false
   })
 
