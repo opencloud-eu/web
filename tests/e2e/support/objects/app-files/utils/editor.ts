@@ -9,6 +9,7 @@ const textEditorContent = '.tiptap.ProseMirror'
 const collaborationCursorLabel = '.collaboration-cursor__label'
 const saveConflictDialog = '.oc-modal'
 const filesListUrl = /.*\/files\/(spaces|shares|link|search)\/.*/
+const errorNotification = '.oc-notification-message-danger'
 const saveConflictDialogButtons: Record<string, string> = {
   Save: '.oc-modal-body-actions-confirm',
   "Don't Save": '.oc-modal-body-actions-secondary',
@@ -25,6 +26,13 @@ export const close = async (page: Page) => {
 export const save = async (page: Page): Promise<unknown> => {
   return await Promise.all([
     page.waitForResponse((res) => res.request().method() === 'PUT' && res.status() === 204),
+    page.locator(saveTextEditorOrViewerButton).click()
+  ])
+}
+
+export const saveExpectingConflict = async (page: Page): Promise<unknown> => {
+  return await Promise.all([
+    page.waitForResponse((res) => res.request().method() === 'PUT' && res.status() === 412),
     page.locator(saveTextEditorOrViewerButton).click()
   ])
 }
@@ -51,6 +59,8 @@ export const fileViewerLocator = ({
 export const saveButtonLocator = (page: Page): Locator => page.locator(saveTextEditorOrViewerButton)
 
 export const textEditorContentLocator = (page: Page): Locator => page.locator(textEditorContent)
+
+export const errorNotificationLocator = (page: Page): Locator => page.locator(errorNotification)
 
 export const collaborationCaretLocator = (page: Page, displayName: string): Locator =>
   page.locator(collaborationCursorLabel, { hasText: displayName })

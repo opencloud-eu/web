@@ -58,6 +58,15 @@ When(
   }
 )
 
+When(
+  '{string} saves the file viewer, expecting a 412 conflict',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    await editor.saveExpectingConflict(page)
+    await expect(editor.errorNotificationLocator(page)).toBeVisible()
+  }
+)
+
 Then(
   /^"([^"]*)" is in a (text-editor|pdf-viewer|media-viewer)$/,
   async ({ world }: { world: World }, stepUser: string, fileViewerType: string): Promise<void> => {
