@@ -58,6 +58,7 @@ describe('useStrategyTiptapJson', () => {
         .editorActionGroups()
         .find((group) => group.id === 'table-tools')
 
+      expect(insertGroup?.actions.map((action) => action.id)).toContain('image-cloud')
       expect(insertGroup?.actions.map((action) => action.id)).toContain('table')
       expect(insertGroup?.actions.map((action) => action.id)).not.toContain('add-row-before')
       expect(tableToolsGroup?.actions.map((action) => action.id)).toEqual([

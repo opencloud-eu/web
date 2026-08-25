@@ -935,6 +935,18 @@ describe('useEditorActions', () => {
       const cloudChild = cloudActions.image().childActions?.find(({ id }) => id === 'image-cloud')
 
       expect(cloudChild).toBeTruthy()
+      expect(cloudChild?.showInSlashCommands).toBe(true)
+    })
+
+    it('opens cloud picker from slash command and removes the slash token', () => {
+      const editor = createMockEditor()
+      const cloudAction = actions.image().childActions?.find(({ id }) => id === 'image-cloud')
+
+      cloudAction?.slashCommandAction?.({ editor, range: mockRange })
+
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+      const store = useModals()
+      expect(store.modals[0].title).toBe('Insert image from cloud')
     })
   })
 

@@ -66,6 +66,7 @@ describe('useStrategyHtml', () => {
       expect(allIds).toContain('image')
       expect(allIds).toContain('image-url')
       expect(allIds).toContain('image-upload')
+      expect(allIds).toContain('image-cloud')
       expect(allIds).toContain('table')
       expect(allIds).toContain('delete-table')
       expect(allIds).toContain('font-size')

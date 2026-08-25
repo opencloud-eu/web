@@ -123,6 +123,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     image,
     imageUrl,
     imageUpload,
+    imageCloud,
     menuEmoji,
     createTable,
     addRowBefore,
@@ -199,6 +200,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           image(),
           imageUrl(),
           imageUpload(),
+          imageCloud(),
           createTable(),
           menuEmoji(),
           horizontalRule()
