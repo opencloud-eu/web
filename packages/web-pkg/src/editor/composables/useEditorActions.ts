@@ -14,6 +14,7 @@ import FilePickerModal from '../../components/Modals/FilePickerModal.vue'
 import { arrayBufferToDataUrl } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel } from '../helpers/link'
+import { printEditorContent } from '../helpers/print'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
 import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
@@ -165,6 +166,15 @@ export function useEditorActions(state: TextEditorState) {
     showInSlashCommands: false,
     menuCloseOnClick: false,
     childActions: [zoomOut(), zoomIn(), zoomReset()]
+  })
+
+  const print = (): EditorAction => ({
+    id: 'print',
+    title: $gettext('Print'),
+    icon: 'printer',
+    iconFillType: 'line',
+    toolbarAction: (editor) => printEditorContent(editor, document.title || $gettext('Document')),
+    showInSlashCommands: false
   })
 
   // Text formatting actions
@@ -994,6 +1004,7 @@ export function useEditorActions(state: TextEditorState) {
     zoomOut,
     zoomReset,
     zoomMenu,
+    print,
     toggleSourceMode,
     // Text formatting
     heading,

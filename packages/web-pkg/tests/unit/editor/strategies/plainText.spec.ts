@@ -66,7 +66,8 @@ describe('useStrategyPlainText', () => {
       expect(navigationGroup?.actions.map((action) => action.id)).toEqual([
         'undo',
         'redo',
-        'menu-zoom'
+        'menu-zoom',
+        'print'
       ])
 
       expect(emojiGroup).toMatchObject({

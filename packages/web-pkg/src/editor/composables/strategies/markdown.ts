@@ -97,6 +97,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     undo,
     redo,
     zoomMenu,
+    print,
     toggleSourceMode,
     bold,
     italic,
@@ -134,7 +135,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu()]
+        actions: [undo(), redo(), zoomMenu(), print()]
       },
       {
         id: 'view-options',

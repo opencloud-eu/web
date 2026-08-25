@@ -160,7 +160,7 @@ describe('useStrategyTiptapJson', () => {
         groups.find((g) => g.id === 'navigation')?.actions.map((a) => a.id) || []
       const searchIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
 
-      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
+      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom', 'print'])
       expect(searchIds).toEqual(['menu-search-and-replace'])
       expect(groups.at(-1)?.id).toBe('search')
     })

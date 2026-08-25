@@ -89,6 +89,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     undo,
     redo,
     zoomMenu,
+    print,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -136,7 +137,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu()]
+        actions: [undo(), redo(), zoomMenu(), print()]
       },
       {
         id: 'formatting',

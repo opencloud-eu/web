@@ -61,13 +61,14 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
     ]
   }
 
-  const { undo, redo, zoomMenu, menuEmoji, menuSearchAndReplace } = useEditorActions(editorState)
+  const { undo, redo, zoomMenu, print, menuEmoji, menuSearchAndReplace } =
+    useEditorActions(editorState)
   const editorActionGroups = (): EditorActionGroup[] => {
     return [
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu()]
+        actions: [undo(), redo(), zoomMenu(), print()]
       },
       {
         id: 'emoji',

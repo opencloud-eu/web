@@ -155,7 +155,7 @@ describe('useStrategyHtml', () => {
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
       const searchGroupIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
 
-      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
+      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom', 'print'])
       expect(sourceGroupIds).toEqual(['source-mode'])
       expect(searchGroupIds).toEqual(['menu-search-and-replace'])
     })

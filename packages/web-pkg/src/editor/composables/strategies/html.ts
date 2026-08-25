@@ -91,6 +91,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
     undo,
     redo,
     zoomMenu,
+    print,
     toggleSourceMode,
     fontSize,
     lineHeight,
@@ -141,7 +142,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu()]
+        actions: [undo(), redo(), zoomMenu(), print()]
       },
       {
         id: 'view-options',
