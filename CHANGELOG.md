@@ -98,6 +98,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency cropperjs to v2.2.0 [[#3202](https://github.com/opencloud-eu/web/pull/3202)]
 - chore(deps): update dependency highlight.js to v11.12.0 [[#3207](https://github.com/opencloud-eu/web/pull/3207)]
 - chore(deps): update pnpm to v11.23.0 [[#3203](https://github.com/opencloud-eu/web/pull/3203)]
 - chore(deps): update node.js to v24 [[#3092](https://github.com/opencloud-eu/web/pull/3092)]
