@@ -1,10 +1,11 @@
 import { PartialComponentProps, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, shallowRef, toRaw } from 'vue'
+import { defineComponent, shallowRef, toRaw, toValue } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Editor } from '@tiptap/vue-3'
 import type { Resource } from '@opencloud-eu/web-client'
+import type { YjsStatus } from '@opencloud-eu/web-pkg'
 import type { TextEditorOptions } from '@opencloud-eu/web-pkg/editor'
 import App from '../../src/App.vue'
 
@@ -82,10 +83,24 @@ describe('Text editor app', () => {
       false
     )
   })
+
+  it('passes the yjs status into useTextEditor', () => {
+    getWrapper({ yjsStatus: 'connected' })
+    expect(toValue(lastOptions().yjsStatus)).toBe('connected')
+  })
+
+  it('updates useTextEditor options when yjsStatus changes after mount', async () => {
+    const { wrapper } = getWrapper({ yjsStatus: 'connecting' })
+    expect(toValue(lastOptions().yjsStatus)).toBe('connecting')
+
+    await wrapper.setProps({ yjsStatus: 'connected' })
+    expect(toValue(lastOptions().yjsStatus)).toBe('connected')
+  })
 })
 
 function getWrapper(props: PartialComponentProps<typeof App> = {}) {
   const ydoc = (props.ydoc as Y.Doc) ?? new Y.Doc()
+  const yjsStatus = (props.yjsStatus as YjsStatus | null | undefined) ?? null
   return {
     wrapper: mount(App, {
       props: {
@@ -93,6 +108,7 @@ function getWrapper(props: PartialComponentProps<typeof App> = {}) {
         isReadOnly: false,
         resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' }),
         awareness: new Awareness(ydoc),
+        yjsStatus,
         ...props,
         ydoc
       },

@@ -5,12 +5,18 @@ import TextEditorToolbar from '../../../../src/editor/components/TextEditorToolb
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import type { EditorAction } from '../../../../src/editor/composables'
 
+vi.mock('vue3-gettext', () => ({
+  useGettext: () => ({ $gettext: (value: string) => value })
+}))
+
 function mountToolbar(
   sourceMode = false,
   contentType: 'markdown' | 'html' = 'markdown',
-  includeSearchAction = false
+  includeSearchAction = false,
+  collaborationStatus: 'connecting' | 'connected' | 'disconnected' | 'local' | null = null
 ) {
   const showSpy = vi.fn()
+  const collaborationStatusRef = ref(collaborationStatus)
 
   const actions: EditorAction[] = [
     {
@@ -41,6 +47,7 @@ function mountToolbar(
     editor: ref({}),
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
+    collaborationStatus: collaborationStatusRef,
     state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
     isFocused: computed(() => isFocusedRef.value),
     actionGroups: () => [
@@ -79,7 +86,7 @@ function mountToolbar(
     }
   })
 
-  return { wrapper, textEditor, isFocusedRef, showSpy }
+  return { wrapper, textEditor, isFocusedRef, showSpy, collaborationStatusRef }
 }
 
 describe('TextEditorToolbar', () => {
@@ -171,6 +178,38 @@ describe('TextEditorToolbar', () => {
 
     await wrapper.vm.$nextTick()
     expect(showSpy).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('shows the collaboration-ready indicator only when status is connected', () => {
+    const connected = mountToolbar(false, 'markdown', false, 'connected')
+    expect(connected.wrapper.find('.text-editor-toolbar-collaboration-ready').exists()).toBe(true)
+    connected.wrapper.unmount()
+
+    const local = mountToolbar(false, 'markdown', false, 'local')
+    expect(local.wrapper.find('.text-editor-toolbar-collaboration-ready').exists()).toBe(false)
+    local.wrapper.unmount()
+  })
+
+  it('sets an aria-label on the collaboration-ready indicator', () => {
+    const { wrapper } = mountToolbar(false, 'markdown', false, 'connected')
+    expect(wrapper.find('.text-editor-toolbar-collaboration-ready').attributes('aria-label')).toBe(
+      'Collaboration ready'
+    )
+    wrapper.unmount()
+  })
+
+  it('reacts to collaboration status changes after mount', async () => {
+    const { wrapper, collaborationStatusRef } = mountToolbar(false, 'markdown', false, null)
+    expect(wrapper.find('.text-editor-toolbar-collaboration-ready').exists()).toBe(false)
+
+    collaborationStatusRef.value = 'connected'
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.text-editor-toolbar-collaboration-ready').exists()).toBe(true)
+
+    collaborationStatusRef.value = 'disconnected'
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.text-editor-toolbar-collaboration-ready').exists()).toBe(false)
     wrapper.unmount()
   })
 })

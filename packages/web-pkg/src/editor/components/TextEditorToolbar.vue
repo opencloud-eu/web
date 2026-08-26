@@ -149,6 +149,18 @@
           </oc-button>
         </template>
       </div>
+      <div
+        v-if="showCollaborationReadyIndicator"
+        v-oc-tooltip="collaborationReadyLabel"
+        class="text-editor-toolbar-collaboration-ready ml-2 inline-flex shrink-0 items-center"
+        role="img"
+        :aria-label="collaborationReadyLabel"
+      >
+        <span
+          class="block size-2.5 rounded-full border border-green-700/30 bg-green-500"
+          aria-hidden="true"
+        />
+      </div>
     </div>
     <div
       v-if="canScrollLeft"
@@ -174,6 +186,7 @@ import {
   watch
 } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
@@ -185,6 +198,7 @@ const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
+const { $gettext } = useGettext()
 
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
@@ -284,6 +298,10 @@ const visible = computed(() => {
   }
   return !!unref(textEditor.editor)
 })
+const collaborationReadyLabel = computed(() => $gettext('Collaboration ready'))
+const showCollaborationReadyIndicator = computed(
+  () => unref(textEditor.collaborationStatus) === 'connected'
+)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const sourceModeEnabledActionIds = ['source-mode', 'menu-zoom', 'zoom-in', 'zoom-out', 'zoom-reset']

@@ -30,6 +30,22 @@ describe('useTextEditor', () => {
     expect(result.readonly.value).toBe(true)
   })
 
+  it('exposes collaborationStatus as ref', () => {
+    const { result } = createEditor({ yjsStatus: 'connected' })
+    expect(result.collaborationStatus.value).toBe('connected')
+  })
+
+  it('follows a collaboration status getter that flips after setup', async () => {
+    const status = ref<'connecting' | 'connected'>('connecting')
+    const { result } = createEditor({ yjsStatus: () => unref(status) })
+    expect(result.collaborationStatus.value).toBe('connecting')
+
+    status.value = 'connected'
+    await nextTick()
+
+    expect(result.collaborationStatus.value).toBe('connected')
+  })
+
   // Regression: `readonly` was snapshotted during setup, so a collaborative
   // session turning read-only after mount (locking the room on an app-version
   // mismatch, for one) hid the toolbar but left ProseMirror editable. The user
