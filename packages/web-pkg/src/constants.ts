@@ -1,5 +1,5 @@
 export abstract class ImageDimension {
-  static readonly Thumbnail: [number, number] = [32, 32]
+  static readonly Thumbnail: [number, number] = [64, 64]
   static readonly Small: [number, number] = [320, 320]
   static readonly Medium: [number, number] = [448, 448]
   /** @deprecated use `previewDimensions` of `useTileSize` instead */
@@ -15,7 +15,5 @@ export abstract class ImageType {
 }
 
 export const AVATAR_UPLOAD_MAX_FILE_SIZE_MB = 10
-
-export const RESOURCE_MAX_CHARACTER_LENGTH = 63
 
 export const RESOURCE_NAME_MAX_BYTES = 256
