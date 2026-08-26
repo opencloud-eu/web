@@ -4,6 +4,39 @@ packages:
   - 'services/*'
   - 'tests/*'
 
+catalogs:
+  tiptap:
+    '@tiptap/core': ^3.30.3
+    '@tiptap/extension-bubble-menu': ^3.30.3
+    '@tiptap/extension-code-block-lowlight': ^3.30.3
+    '@tiptap/extension-collaboration': ^3.30.3
+    '@tiptap/extension-document': ^3.30.3
+    '@tiptap/extension-drag-handle': ^3.30.3
+    '@tiptap/extension-drag-handle-vue-3': ^3.30.3
+    '@tiptap/extension-file-handler': ^3.30.3
+    '@tiptap/extension-find-and-replace': ^3.30.3
+    '@tiptap/extension-hard-break': ^3.30.3
+    '@tiptap/extension-image': ^3.30.3
+    '@tiptap/extension-link': ^3.30.3
+    '@tiptap/extension-node-range': ^3.30.3
+    '@tiptap/extension-paragraph': ^3.30.3
+    '@tiptap/extension-placeholder': ^3.30.3
+    '@tiptap/extension-subscript': ^3.30.3
+    '@tiptap/extension-superscript': ^3.30.3
+    '@tiptap/extension-table': ^3.30.3
+    '@tiptap/extension-task-item': ^3.30.3
+    '@tiptap/extension-task-list': ^3.30.3
+    '@tiptap/extension-text': ^3.30.3
+    '@tiptap/extension-text-align': ^3.30.3
+    '@tiptap/extension-text-style': ^3.30.3
+    '@tiptap/extension-underline': ^3.30.3
+    '@tiptap/markdown': ^3.30.3
+    '@tiptap/pm': ^3.30.3
+    '@tiptap/starter-kit': ^3.30.3
+    '@tiptap/suggestion': ^3.30.3
+    '@tiptap/vue-3': ^3.30.3
+    '@tiptap/y-tiptap': ^3.0.9
+
 autoInstallPeers: true
 sharedWorkspaceLockfile: true
 
