@@ -59,7 +59,7 @@ When(
 )
 
 When(
-  '{string} saves the file viewer, expecting a 412 conflict',
+  '{string} saves the file viewer expecting conflict error',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     await editor.saveExpectingConflict(page)

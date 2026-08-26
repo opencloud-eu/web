@@ -31,7 +31,7 @@ Feature: yjs conflict handling
       | textfile.ocnote  | textfile.ocnote  |
     Then "Alice" should see the text "Alice says hello" in the text-editor
 
-    And "Alice" saves the file viewer, expecting a 412 conflict
+    And "Alice" saves the file viewer expecting conflict error
     And "Alice" sees the current file as dirty
     And "Alice" reloads the page
     Then "Alice" should see the text "some random text" in the text-editor
@@ -129,7 +129,7 @@ Feature: yjs conflict handling
     Then "Brian" should see the text "some random text" in the text-editor
     # FIXME: uncomment when https://github.com/opencloud-eu/web/issues/3103 is resolved
     #And "Alice" should see the text "Alice update #2" in the text-editor
-    #And "Alice" should see the 412 conflict dialog
+    #And "Alice" should see the conflict dialog
     And "Alice" should see the text "some random text" in the text-editor
     And "Alice" logs out
     And "Brian" logs out
