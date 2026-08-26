@@ -47,7 +47,7 @@ function mountToolbar(
     editor: ref({}),
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
-    collaborationStatus: collaborationStatusRef,
+    yjsStatus: collaborationStatusRef,
     state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
     isFocused: computed(() => isFocusedRef.value),
     actionGroups: () => [

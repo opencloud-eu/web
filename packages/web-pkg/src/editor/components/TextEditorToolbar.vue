@@ -153,13 +153,13 @@
         v-if="showCollaborationReadyIndicator"
         v-oc-tooltip="collaborationReadyLabel"
         class="text-editor-toolbar-collaboration-ready ml-2 inline-flex shrink-0 items-center"
-        role="img"
         :aria-label="collaborationReadyLabel"
       >
         <span
-          class="block size-2.5 rounded-full border border-green-700/30 bg-green-500"
-          aria-hidden="true"
-        />
+          class="inline-flex size-5 items-center justify-center rounded-full border border-green-700/20 bg-green-500/15 text-green-700"
+        >
+          <oc-icon name="wifi" fill-type="line" size-class="size-3" />
+        </span>
       </div>
     </div>
     <div
@@ -300,7 +300,7 @@ const visible = computed(() => {
 })
 const collaborationReadyLabel = computed(() => $gettext('Collaboration ready'))
 const showCollaborationReadyIndicator = computed(
-  () => unref(textEditor.collaborationStatus) === 'connected'
+  () => unref(textEditor.yjsStatus) === 'connected'
 )
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))

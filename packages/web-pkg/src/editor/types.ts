@@ -77,7 +77,7 @@ export interface TextEditorInstance {
   /** Derived from the caller's `readonly` option; follows it while mounted. */
   readonly: Ref<boolean>
   /** Current transport status of the hosting Yjs session, if any. */
-  collaborationStatus: Ref<YjsStatus | null>
+  yjsStatus: Ref<YjsStatus | null>
   actionGroups(): EditorActionGroup[]
   getContent(): string
   setContent(value: string): void

@@ -8,7 +8,6 @@ import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
 import type { Resource } from '@opencloud-eu/web-client'
-import type { YjsStatus } from '../../composables/yjs'
 import type {
   TextEditorOptions,
   TextEditorInstance,
@@ -68,7 +67,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
 
   const contentType = ref(options.contentType)
   const readonly = computed(() => toValue(options.readonly) ?? false)
-  const collaborationStatus = computed<YjsStatus | null>(() => toValue(options.yjsStatus) ?? null)
+  const yjsStatus = computed(() => toValue(options.yjsStatus) ?? null)
   const strategy = resolveStrategy(options.contentType, state)
   const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
@@ -284,7 +283,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor,
     contentType,
     readonly,
-    collaborationStatus,
+    yjsStatus,
     actionGroups: editorActionGroups,
     getContent,
     setContent,
