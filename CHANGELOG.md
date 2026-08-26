@@ -17,6 +17,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#3089](https://github.com/opencloud-eu/web/pull/3089)]
 - chore(deps): update pnpm to v11.24.0 [[#3227](https://github.com/opencloud-eu/web/pull/3227)]
 
 ## [7.4.0](https://github.com/opencloud-eu/web/releases/tag/v7.4.0) - 2026-08-25
