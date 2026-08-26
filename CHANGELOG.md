@@ -19,6 +19,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update hocuspocus monorepo to v4.6.0 [[#3090](https://github.com/opencloud-eu/web/pull/3090)]
 - chore(deps): update devdependencies (non-major) [[#3089](https://github.com/opencloud-eu/web/pull/3089)]
 - chore(deps): update pnpm to v11.24.0 [[#3227](https://github.com/opencloud-eu/web/pull/3227)]
 
