@@ -2,10 +2,10 @@ import { Extension, getText, getTextSerializersFromSchema } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
+import { useGettext } from 'vue3-gettext'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { TextEditorState } from '../../types'
-import { useGettext } from 'vue3-gettext'
 
 export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()

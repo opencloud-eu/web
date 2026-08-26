@@ -1,5 +1,3 @@
-import { ContentTypeStrategy, ExtensionsOptions } from './types'
-import { useGettext } from 'vue3-gettext'
 import type { Extension } from '@tiptap/core'
 import { getHTMLFromFragment } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
@@ -13,7 +11,6 @@ import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import TextAlign from '@tiptap/extension-text-align'
-
 import {
   TextStyle,
   FontFamily,
@@ -22,6 +19,7 @@ import {
   FontSize,
   LineHeight
 } from '@tiptap/extension-text-style'
+import { useGettext } from 'vue3-gettext'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
 import {
@@ -29,6 +27,7 @@ import {
   createLinkExtension,
   imageFileHandlerExtension
 } from '../../extensions'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 
 export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()

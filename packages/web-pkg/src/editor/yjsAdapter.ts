@@ -6,7 +6,7 @@ import type { MaybeRefOrGetter } from 'vue'
 import type * as Y from 'yjs'
 import type { Schema } from '@tiptap/pm/model'
 import type { YjsAdapter } from '../composables/yjs/types'
-import type { ContentTypeStrategy } from './composables/strategies/types'
+import type { ContentTypeStrategy } from './composables/strategies'
 import { DEFAULT_YDOC_FRAGMENT } from './types'
 
 /**

@@ -28,7 +28,7 @@ function createState(): TextEditorState {
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100),
     currentResource: ref<Resource | null>(
-      mock<Resource>({ id: 'resource', path: '/', name: 'My note.md' })
+      mock<Resource>({ id: 'resource', path: '/', name: 'My note.md', extension: 'md' })
     )
   }
 }
@@ -93,10 +93,10 @@ describe('useEditorActions', () => {
       expect(actions.print().showInSlashCommands).toBe(false)
     })
 
-    it('print delegates to print helper with editor and resource file name', () => {
+    it('print delegates to print helper with editor and resource file name without extension', () => {
       const editor = createMockEditor()
       actions.print().toolbarAction!(editor)
-      expect(printEditorContentMock).toHaveBeenCalledWith(editor, 'My note.md')
+      expect(printEditorContentMock).toHaveBeenCalledWith(editor, 'My note')
     })
 
     it('print does nothing when resource has no name', () => {
