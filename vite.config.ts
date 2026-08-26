@@ -164,6 +164,10 @@ export default defineConfig(({ mode, command }) => {
                 {
                   name: 'zod',
                   test: /node_modules\/zod/
+                },
+                {
+                  name: 'web-client',
+                  test: /packages\/web-client\/src/
                 }
               ]
             }
