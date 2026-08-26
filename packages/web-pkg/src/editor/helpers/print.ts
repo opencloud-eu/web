@@ -11,6 +11,7 @@ export function printEditorContent(editor: Editor, title: string): void {
   `
 
   const content = editor.getHTML()
+  console.log(content)
 
   printFrame.onload = () => {
     const printWindow = printFrame.contentWindow

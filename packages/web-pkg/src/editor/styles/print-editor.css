@@ -105,6 +105,10 @@ td {
   text-align: left;
 }
 
+th {
+  background: rgba(148, 163, 184, 0.08);
+}
+
 hr {
   border: 0;
   border-top: 1px solid #ccc;

@@ -48,6 +48,8 @@ describe('printEditorContent', () => {
 
     expect(stylesheet).toContain('-webkit-print-color-adjust: exact;')
     expect(stylesheet).toContain('print-color-adjust: exact;')
+    expect(stylesheet).toContain('th {')
+    expect(stylesheet).toContain('background: rgba(148, 163, 184, 0.08);')
   })
 
   it('focuses and prints when iframe window is available', () => {
