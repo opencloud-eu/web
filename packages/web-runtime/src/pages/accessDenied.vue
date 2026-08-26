@@ -1,38 +1,28 @@
 <template>
-  <div class="h-screen flex flex-col justify-center items-center p-4">
-    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
-    <oc-card
-      :title="cardTitle"
-      body-class="text-center"
-      header-class="text-center"
-      class="w-full sm:w-sm rounded-lg"
-    >
-      <p v-text="cardHint" />
+  <plain-card :title="cardTitle" :description="cardHint" icon="user">
+    <div class="flex flex-col gap-4">
       <oc-button
         v-if="accessDeniedHelpUrl"
         type="a"
         appearance="raw"
+        justify-content="left"
         :href="accessDeniedHelpUrl"
         target="_blank"
         no-hover
       >
         <span v-text="$gettext('Read more')" />
       </oc-button>
-      <template #footer>
-        <p v-text="footerSlogan" />
-      </template>
-    </oc-card>
-    <oc-button
-      id="exitAnchor"
-      class="mt-4 w-full sm:w-sm"
-      size="large"
-      appearance="filled"
-      color-role="primary"
-      v-bind="logoutButtonsAttrs"
-    >
-      {{ navigateToLoginText }}
-    </oc-button>
-  </div>
+      <oc-button
+        id="exitAnchor"
+        class="w-full p-2"
+        size="large"
+        appearance="filled"
+        v-bind="logoutButtonsAttrs"
+      >
+        {{ navigateToLoginText }}
+      </oc-button>
+    </div>
+  </plain-card>
 </template>
 
 <script setup lang="ts">
@@ -45,6 +35,7 @@ import {
   useRouteQuery,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
+import PlainCard from '../components/PlainCard.vue'
 
 const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
@@ -54,8 +45,6 @@ const redirectUrlQuery = useRouteQuery('redirectUrl')
 const { $gettext } = useGettext()
 
 const accessDeniedHelpUrl = computed(() => unref(currentTheme).urls?.accessDeniedHelp)
-const footerSlogan = computed(() => unref(currentTheme).slogan)
-const logoImg = computed(() => unref(currentTheme).logo)
 
 const cardTitle = computed(() => {
   return $gettext('Not logged in')

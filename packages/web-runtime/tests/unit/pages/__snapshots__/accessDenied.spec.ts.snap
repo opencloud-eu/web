@@ -1,18 +1,29 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`access denied page > renders component 1`] = `
-"<div class="h-screen flex flex-col justify-center items-center p-4"><img src="themes/opencloud/assets/logo.svg" alt="" aria-hidden="true" class="max-w-48 max-h-48 mb-4">
-  <div class="oc-card w-full sm:w-sm rounded-lg">
-    <div class="oc-card-header text-center">
-      <h2 class="mt-0">Not logged in</h2>
+"<div class="oc-card w-full rounded-xl shadow-md dark:border">
+  <!--v-if-->
+  <div class="oc-card-body p-6 sm:p-8">
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-col gap-4"><span class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-role-secondary-container"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/user-line.svg" unique-ids="false" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-secondary-container);" class="size-5"></svg></span></span>
+        <div class="flex flex-col gap-1">
+          <h2 class="my-0 text-2xl font-bold">Not logged in</h2>
+          <p class="my-0 text-role-on-surface-variant">This could be because of a routine safety log out, or because your account is either inactive or not yet authorized for use. Please try logging in after a while or seek help from your Administrator.</p>
+        </div>
+      </div>
+      <div class="flex flex-col gap-4">
+        <!--v-if--> <a attrs="[object Object]" class="oc-button-secondary oc-button-filled oc-button-secondary-filled gap-2 justify-center text-lg min-h-7 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default w-full p-2" id="exitAnchor"></a>
+      </div>
     </div>
-    <div class="oc-card-body text-center">
-      <p>This could be because of a routine safety log out, or because your account is either inactive or not yet authorized for use. Please try logging in after a while or seek help from your Administrator.</p>
-      <!--v-if-->
-    </div>
-    <div class="oc-card-footer">
-      <p></p>
-    </div>
-  </div> <a attrs="[object Object]" class="oc-button-primary oc-button-filled oc-button-primary-filled gap-2 justify-center text-lg min-h-7 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default mt-4 w-full sm:w-sm" id="exitAnchor"></a>
+  </div>
+  <!--v-if-->
 </div>"
 `;

@@ -127,6 +127,7 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     document.documentElement.style.colorScheme = theme.isDark ? 'dark' : 'light'
+    document.documentElement.dataset.colorScheme = theme.isDark ? 'dark' : 'light'
     // expose the active theme on the DOM so deployment CSS (a global stylesheet or
     // theme.json) can attach structural styles (borders, radii, ...) that the
     // design-token system alone cannot express

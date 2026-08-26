@@ -1,13 +1,14 @@
 <template>
   <div class="oc-link-resolve h-full flex flex-col justify-center items-center p-4">
+    <app-loading-spinner v-if="loading" data-testid="loading-spinner" />
     <oc-card
-      :title="headerTitle"
+      v-else-if="errorMessage"
+      :title="$gettext('An error occurred while resolving the link')"
       body-class="text-center"
       header-class="text-center"
       class="w-auto md:w-lg rounded-lg"
     >
-      <oc-spinner v-if="loading" data-testid="loading-spinner" :aria-hidden="true" />
-      <p v-else-if="errorMessage" data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
+      <p data-testid="error-message" class="text-xl">{{ errorMessage }}</p>
     </oc-card>
   </div>
 </template>
@@ -23,7 +24,8 @@ import {
   getSharedDriveItem,
   useSpacesStore,
   useGetResourceContext,
-  useLinkTargetRoute
+  useLinkTargetRoute,
+  AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { unref, computed, onMounted } from 'vue'
 import { useTask } from 'vue-concurrency'
@@ -124,16 +126,6 @@ const getTargetRoute = async ({
 
 const loading = computed(() => {
   return !resolvePrivateLinkTask.last || resolvePrivateLinkTask.isRunning
-})
-
-const headerTitle = computed(() => {
-  if (unref(loading)) {
-    return $gettext('Resolving link…')
-  }
-  if (unref(errorMessage)) {
-    return $gettext('An error occurred while resolving the link')
-  }
-  return ''
 })
 
 const errorMessage = computed(() => {

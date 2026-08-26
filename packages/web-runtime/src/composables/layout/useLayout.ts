@@ -1,3 +1,4 @@
+import LayoutBare from '../../layouts/Bare.vue'
 import LayoutPlain from '../../layouts/Plain.vue'
 import LayoutApplication from '../../layouts/Application.vue'
 import { computed, unref } from 'vue'
@@ -9,24 +10,18 @@ export interface LayoutOptions {
   router?: Router
 }
 
-const layoutTypes = ['plain', 'application'] as const
-type LayoutType = (typeof layoutTypes)[number]
-
 export const useLayout = (options?: LayoutOptions) => {
   const router = options?.router || useRouter()
 
-  const layoutType = computed<LayoutType>(() => {
-    const plainLayoutRoutes = [
-      'login',
-      'logout',
-      'oidcCallback',
-      'resolvePublicLink',
-      'accessDenied'
-    ]
-    if (
-      !unref(router.currentRoute).name ||
-      plainLayoutRoutes.includes(unref(router.currentRoute).name as string)
-    ) {
+  const layoutType = computed<'bare' | 'plain' | 'application'>(() => {
+    const bareLayoutRoutes = ['login', 'oidcCallback']
+    const plainLayoutRoutes = ['logout', 'resolvePublicLink', 'accessDenied']
+
+    const routeName = unref(router.currentRoute).name as string
+    if (!routeName || bareLayoutRoutes.includes(routeName)) {
+      return 'bare'
+    }
+    if (plainLayoutRoutes.includes(routeName)) {
       return 'plain'
     }
 
@@ -38,8 +33,10 @@ export const useLayout = (options?: LayoutOptions) => {
       case 'application':
         return LayoutApplication
       case 'plain':
-      default:
         return LayoutPlain
+      case 'bare':
+      default:
+        return LayoutBare
     }
   })
 

@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import './defaults.css';
 
+@custom-variant dark (&:where([data-color-scheme='dark'], [data-color-scheme='dark'] *));
+
 @theme {
   --font-sans: var(--oc-font-family);
 

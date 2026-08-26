@@ -2,6 +2,8 @@
 @import 'tailwindcss/theme.css' layer(theme) prefix(ext);
 @import 'tailwindcss/utilities.css' layer(utilities) prefix(ext);
 
+@custom-variant dark (&:where([data-color-scheme='dark'], [data-color-scheme='dark'] *));
+
 @theme {
   --font-sans: var(--oc-font-family);
 

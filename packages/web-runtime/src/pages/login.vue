@@ -1,7 +1,5 @@
 <template>
-  <div class="size-full">
-    <app-loading-spinner />
-  </div>
+  <app-loading-spinner />
 </template>
 
 <script setup lang="ts">

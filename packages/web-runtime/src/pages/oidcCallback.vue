@@ -1,45 +1,27 @@
 <template>
-  <div class="h-screen flex flex-col justify-center items-center">
-    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
-    <oc-card :title="cardTitle" body-class="w-sm text-center" class="rounded-lg">
-      <p v-text="cardHint" />
-      <template #footer>
-        <p v-text="footerSlogan" />
-      </template>
-    </oc-card>
-  </div>
+  <plain-card
+    v-if="error"
+    class="w-full max-w-md"
+    :title="$gettext('Authentication failed')"
+    :description="$gettext('Please contact the administrator if this error persists.')"
+    icon="error-warning"
+  />
+  <app-loading-spinner v-else />
 </template>
 
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
-import { useEmbedMode, useRoute, useThemeStore } from '@opencloud-eu/web-pkg'
+import { onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { useEmbedMode, useRoute, AppLoadingSpinner } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
-import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
+import PlainCard from '../components/PlainCard.vue'
 
 const { $gettext } = useGettext()
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 
 const { isDelegatingAuthentication, postMessage, verifyDelegatedAuthenticationOrigin } =
   useEmbedMode()
 
 const error = ref(false)
-
-const logoImg = computed(() => unref(currentTheme)?.logo)
-const cardTitle = computed(() => {
-  if (unref(error)) {
-    return $gettext('Authentication failed')
-  }
-  return $gettext('Logging you in')
-})
-const cardHint = computed(() => {
-  if (unref(error)) {
-    return $gettext('Please contact the administrator if this error persists.')
-  }
-  return $gettext('Please wait, you are being redirected.')
-})
-const footerSlogan = computed(() => unref(currentTheme)?.slogan)
 
 const route = useRoute()
 

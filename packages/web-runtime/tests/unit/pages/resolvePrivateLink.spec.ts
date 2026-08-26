@@ -15,7 +15,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 const selectors = {
-  ocSpinnerStub: 'oc-spinner-stub',
+  loadingSpinner: '[data-testid="loading-spinner"]',
   errorMessage: '[data-testid="error-message"]'
 }
 
@@ -37,7 +37,7 @@ describe('resolvePrivateLink', () => {
 
   it('is in a loading state initially', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.find(selectors.ocSpinnerStub).exists()).toBeTruthy()
+    expect(wrapper.find(selectors.loadingSpinner).exists()).toBeTruthy()
   })
   it('resolves to "files-spaces-generic" and passes the scrollTo query', async () => {
     const fileId = '1'
