@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.4.1](https://github.com/opencloud-eu/web/releases/tag/v7.4.1) - 2026-08-26
+## [7.5.0](https://github.com/opencloud-eu/web/releases/tag/v7.5.0) - 2026-08-26
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @kulmann
+
+### 📈 Enhancement
+
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### ✅ Tests
 
