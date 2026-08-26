@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
 ### ✅ Tests
