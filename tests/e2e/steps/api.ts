@@ -206,19 +206,54 @@ Given(
   }
 )
 
+async function uploadLocalFiles({
+  world,
+  stepUser,
+  stepTable,
+  spaceName
+}: {
+  world: World
+  stepUser: string
+  stepTable: DataTable
+  spaceName?: string
+}): Promise<void> {
+  const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
+  for (const info of stepTable.hashes()) {
+    const fileInfo = world.filesEnvironment.getFile({ name: info.localFile })
+    const content = fs.readFileSync(fileInfo.path)
+    if (spaceName) {
+      await api.dav.uploadFileInsideSpaceBySpaceName({
+        user,
+        pathToFile: info.to,
+        spaceName,
+        content
+      })
+      continue
+    }
+    await api.dav.uploadFileInPersonalSpace({
+      user,
+      pathToFile: info.to,
+      content
+    })
+  }
+}
+
 Given(
   '{string} uploads the following local file(s) into personal space using API',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
-    for (const info of stepTable.hashes()) {
-      const fileInfo = world.filesEnvironment.getFile({ name: info.localFile })
-      const content = fs.readFileSync(fileInfo.path)
-      await api.dav.uploadFileInPersonalSpace({
-        user,
-        pathToFile: info.to,
-        content
-      })
-    }
+    await uploadLocalFiles({ world, stepUser, stepTable })
+  }
+)
+
+Given(
+  '{string} uploads the following local file(s) into space {string} using API',
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    spaceName: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    await uploadLocalFiles({ world, stepUser, stepTable, spaceName })
   }
 )
 
