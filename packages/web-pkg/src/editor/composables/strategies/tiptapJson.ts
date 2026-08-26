@@ -137,7 +137,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu(), print()]
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'formatting',
@@ -212,6 +212,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         id: 'search',
         title: $gettext('Search'),
         actions: [menuSearchAndReplace()]
+      },
+      {
+        id: 'export',
+        title: $gettext('Export'),
+        actions: [print()]
       }
     ]
   }

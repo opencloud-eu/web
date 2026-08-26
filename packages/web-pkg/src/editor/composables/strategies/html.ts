@@ -142,7 +142,7 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu(), print()]
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'view-options',
@@ -223,6 +223,11 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
         id: 'search',
         title: $gettext('Search'),
         actions: [menuSearchAndReplace()]
+      },
+      {
+        id: 'export',
+        title: $gettext('Export'),
+        actions: [print()]
       }
     ]
   }

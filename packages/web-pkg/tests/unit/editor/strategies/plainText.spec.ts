@@ -51,13 +51,14 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('returns navigation group with zoom, emoji group, and search group', () => {
+    it('returns navigation, emoji, search and export groups', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
-      expect(groups).toHaveLength(3)
+      expect(groups).toHaveLength(4)
       const navigationGroup = groups.find((group) => group.id === 'navigation')
       const emojiGroup = groups.find((group) => group.id === 'emoji')
       const searchGroup = groups.find((group) => group.id === 'search')
+      const exportGroup = groups.find((group) => group.id === 'export')
 
       expect(navigationGroup).toMatchObject({
         id: 'navigation',
@@ -66,8 +67,7 @@ describe('useStrategyPlainText', () => {
       expect(navigationGroup?.actions.map((action) => action.id)).toEqual([
         'undo',
         'redo',
-        'menu-zoom',
-        'print'
+        'menu-zoom'
       ])
 
       expect(emojiGroup).toMatchObject({
@@ -81,7 +81,12 @@ describe('useStrategyPlainText', () => {
         title: 'Search'
       })
       expect(searchGroup?.actions.map((action) => action.id)).toEqual(['menu-search-and-replace'])
-      expect(groups.at(-1)?.id).toBe('search')
+      expect(exportGroup).toMatchObject({
+        id: 'export',
+        title: 'Export'
+      })
+      expect(exportGroup?.actions.map((action) => action.id)).toEqual(['print'])
+      expect(groups.at(-1)?.id).toBe('export')
       expect(
         strategy.editorActionGroups().flatMap(({ actions }) => actions.map(({ id }) => id))
       ).not.toContain('link')

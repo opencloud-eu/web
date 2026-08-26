@@ -153,16 +153,18 @@ describe('useStrategyTiptapJson', () => {
   })
 
   describe('editorActionGroups', () => {
-    it('keeps zoom in navigation and search as the last group', () => {
+    it('keeps zoom in navigation and export as the last group', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
       const navigationIds =
         groups.find((g) => g.id === 'navigation')?.actions.map((a) => a.id) || []
       const searchIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
+      const exportIds = groups.find((g) => g.id === 'export')?.actions.map((a) => a.id) || []
 
-      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom', 'print'])
+      expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
       expect(searchIds).toEqual(['menu-search-and-replace'])
-      expect(groups.at(-1)?.id).toBe('search')
+      expect(exportIds).toEqual(['print'])
+      expect(groups.at(-1)?.id).toBe('export')
     })
   })
 

@@ -68,7 +68,7 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
       {
         id: 'navigation',
         title: $gettext('Navigation'),
-        actions: [undo(), redo(), zoomMenu(), print()]
+        actions: [undo(), redo(), zoomMenu()]
       },
       {
         id: 'emoji',
@@ -79,6 +79,11 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         id: 'search',
         title: $gettext('Search'),
         actions: [menuSearchAndReplace()]
+      },
+      {
+        id: 'export',
+        title: $gettext('Export'),
+        actions: [print()]
       }
     ]
   }
