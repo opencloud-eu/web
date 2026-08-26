@@ -43,7 +43,10 @@ describe('printEditorContent', () => {
   })
 
   it('defines print color adjustment in the stylesheet', () => {
-    const stylesheetPath = resolve(process.cwd(), 'packages/web-pkg/src/editor/styles/print-editor.css')
+    const stylesheetPath = resolve(
+      process.cwd(),
+      'packages/web-pkg/src/editor/styles/print-editor.css'
+    )
     const stylesheet = readFileSync(stylesheetPath, 'utf8')
 
     expect(stylesheet).toContain('-webkit-print-color-adjust: exact;')
