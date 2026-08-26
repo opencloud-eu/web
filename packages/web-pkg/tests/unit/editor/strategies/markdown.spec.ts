@@ -114,13 +114,13 @@ describe('useStrategyMarkdown', () => {
       expect(allIds).toContain('source-mode')
     })
 
-    it('places search group at the end', () => {
+    it('places export group at the end', () => {
       const strategy = createStrategy()
       const groupIds = strategy.editorActionGroups().map((g) => g.id)
-      expect(groupIds.at(-1)).toBe('search')
+      expect(groupIds.at(-1)).toBe('export')
     })
 
-    it('keeps navigation, source toggle and search actions in dedicated groups', () => {
+    it('keeps navigation, source toggle, search and export actions in dedicated groups', () => {
       const strategy = createStrategy()
       const groups = strategy.editorActionGroups()
       const navigationIds =
@@ -128,10 +128,12 @@ describe('useStrategyMarkdown', () => {
       const sourceGroupIds =
         groups.find((g) => g.id === 'view-options')?.actions.map((a) => a.id) || []
       const searchGroupIds = groups.find((g) => g.id === 'search')?.actions.map((a) => a.id) || []
+      const exportGroupIds = groups.find((g) => g.id === 'export')?.actions.map((a) => a.id) || []
 
       expect(navigationIds).toEqual(['undo', 'redo', 'menu-zoom'])
       expect(sourceGroupIds).toEqual(['source-mode'])
       expect(searchGroupIds).toEqual(['menu-search-and-replace'])
+      expect(exportGroupIds).toEqual(['print'])
     })
 
     it('returns expected group structure', () => {
