@@ -10,6 +10,11 @@ vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
 }))
 
+const printEditorContentMock = vi.fn()
+vi.mock('../../../../src/editor/helpers/print', () => ({
+  printEditorContent: (...args: unknown[]) => printEditorContentMock(...args)
+}))
+
 import { useEditorActions } from '../../../../src/editor/composables/useEditorActions'
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 import type { Resource } from '@opencloud-eu/web-client'
@@ -22,7 +27,9 @@ function createState(): TextEditorState {
     sourceMode: ref(false),
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100),
-    currentResource: ref<Resource | null>(mock<Resource>({ id: 'resource', path: '/' }))
+    currentResource: ref<Resource | null>(
+      mock<Resource>({ id: 'resource', path: '/', name: 'My note.md', extension: 'md' })
+    )
   }
 }
 
@@ -43,6 +50,7 @@ describe('useEditorActions', () => {
     createTestingPinia({ stubActions: false })
     state = createState()
     actions = useEditorActions(state)
+    printEditorContentMock.mockReset()
   })
 
   describe('history', () => {
@@ -79,6 +87,23 @@ describe('useEditorActions', () => {
     it('undo and redo are hidden from slash commands', () => {
       expect(actions.undo().showInSlashCommands).toBe(false)
       expect(actions.redo().showInSlashCommands).toBe(false)
+    })
+
+    it('print is hidden from slash commands', () => {
+      expect(actions.print().showInSlashCommands).toBe(false)
+    })
+
+    it('print delegates to print helper with editor and resource file name without extension', () => {
+      const editor = createMockEditor()
+      actions.print().toolbarAction!(editor)
+      expect(printEditorContentMock).toHaveBeenCalledWith(editor, 'My note')
+    })
+
+    it('print does nothing when resource has no name', () => {
+      state.currentResource.value = null
+      const editor = createMockEditor()
+      actions.print().toolbarAction!(editor)
+      expect(printEditorContentMock).not.toHaveBeenCalled()
     })
   })
 

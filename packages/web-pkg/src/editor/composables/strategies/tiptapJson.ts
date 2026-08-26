@@ -1,5 +1,3 @@
-import { ContentTypeStrategy, ExtensionsOptions } from './types'
-import { useGettext } from 'vue3-gettext'
 import type { Extension } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
@@ -12,7 +10,6 @@ import { Table, TableCell, TableHeader, TableRow } from '@tiptap/extension-table
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import TextAlign from '@tiptap/extension-text-align'
-import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import {
   BackgroundColor,
   Color,
@@ -21,12 +18,15 @@ import {
   LineHeight,
   TextStyle
 } from '@tiptap/extension-text-style'
+import { useGettext } from 'vue3-gettext'
+import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
 import {
   createCodeBlockLowlight,
   createLinkExtension,
   imageFileHandlerExtension
 } from '../../extensions'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 
 export const useStrategyTiptapJson = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -89,6 +89,7 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
     undo,
     redo,
     zoomMenu,
+    print,
     fontSize,
     lineHeight,
     backgroundColor,
@@ -213,6 +214,11 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
         id: 'search',
         title: $gettext('Search'),
         actions: [menuSearchAndReplace()]
+      },
+      {
+        id: 'export',
+        title: $gettext('Export'),
+        actions: [print()]
       }
     ]
   }

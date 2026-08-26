@@ -5,9 +5,8 @@ export type {
   TextEditorState,
   TextEditorLinkPanelRequest
 } from './types'
-export { useTextEditor } from './composables/useTextEditor'
-export { useContentStrategy } from './composables/useContentStrategy'
-export type { ContentTypeStrategy, ExtensionsOptions } from './composables/strategies/types'
+export { useTextEditor, useContentStrategy } from './composables'
+export type { ContentTypeStrategy, ExtensionsOptions } from './composables/strategies'
 export { makeTiptapYjsAdapter } from './yjsAdapter'
 export { default as TextEditorProvider } from './components/TextEditorProvider.vue'
 export { default as TextEditorContent } from './components/TextEditorContent.vue'

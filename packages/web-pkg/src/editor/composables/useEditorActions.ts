@@ -1,19 +1,16 @@
 import { computed, markRaw, ref, unref } from 'vue'
 import type { Component } from 'vue'
 import type { Editor, Range } from '@tiptap/core'
-import type {} from '@tiptap/extension-text-align'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import type { Resource } from '@opencloud-eu/web-client'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
 import { useModals, useThemeStore } from '../../composables'
-import { useClientService } from '../../composables/clientService'
-import { useGetMatchingSpace } from '../../composables/spaces'
-import { useFolderLink } from '../../composables/folderLink'
+import { useClientService, useGetMatchingSpace, useFolderLink } from '../../composables'
 import FilePickerModal from '../../components/Modals/FilePickerModal.vue'
-import { arrayBufferToDataUrl } from '../../helpers'
+import { arrayBufferToDataUrl, withoutExtension } from '../../helpers'
 import { TextEditorState } from '../types'
-import { requestLinkPanel } from '../helpers/link'
+import { requestLinkPanel, printEditorContent } from '../helpers'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
 import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
@@ -59,11 +56,6 @@ export interface EditorActionGroup {
   id: string
   title: string
   actions: EditorAction[]
-}
-
-export interface ContentTypeActions {
-  toolbarGroups: EditorAction[][]
-  slashCommandGroups: EditorActionGroup[]
 }
 
 export function useEditorActions(state: TextEditorState) {
@@ -165,6 +157,23 @@ export function useEditorActions(state: TextEditorState) {
     showInSlashCommands: false,
     menuCloseOnClick: false,
     childActions: [zoomOut(), zoomIn(), zoomReset()]
+  })
+
+  const print = (): EditorAction => ({
+    id: 'print',
+    title: $gettext('Print'),
+    icon: 'printer',
+    iconFillType: 'line',
+    toolbarAction: (editor) => {
+      const fileName = unref(currentResource)?.name
+      if (!fileName) {
+        return
+      }
+      const extension = unref(currentResource)?.extension
+      const title = extension ? withoutExtension(fileName, extension) : fileName
+      printEditorContent(editor, title)
+    },
+    showInSlashCommands: false
   })
 
   // Text formatting actions
@@ -994,6 +1003,7 @@ export function useEditorActions(state: TextEditorState) {
     zoomOut,
     zoomReset,
     zoomMenu,
+    print,
     toggleSourceMode,
     // Text formatting
     heading,

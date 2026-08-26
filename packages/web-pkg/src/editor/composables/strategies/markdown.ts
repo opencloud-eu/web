@@ -1,5 +1,3 @@
-import { EditorActionGroup, useEditorActions } from '../useEditorActions'
-import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import type { Extension, JSONContent } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
@@ -10,12 +8,14 @@ import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
+import { EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
 import {
   createCodeBlockLowlight,
   createLinkExtension,
   imageFileHandlerExtension
 } from '../../extensions'
+import { ContentTypeStrategy, ExtensionsOptions } from './types'
 
 export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
@@ -97,6 +97,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     undo,
     redo,
     zoomMenu,
+    print,
     toggleSourceMode,
     bold,
     italic,
@@ -190,6 +191,11 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'search',
         title: $gettext('Search'),
         actions: [menuSearchAndReplace()]
+      },
+      {
+        id: 'export',
+        title: $gettext('Export'),
+        actions: [print()]
       }
     ]
   }
