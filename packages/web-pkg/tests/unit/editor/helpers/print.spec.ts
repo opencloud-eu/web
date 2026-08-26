@@ -10,36 +10,65 @@ function createEditor(content: string): Editor {
   } as unknown as Editor
 }
 
-function getPrintFrame(): HTMLIFrameElement {
-  const printFrame = document.body.querySelector('iframe')
-  if (!printFrame) {
-    throw new Error('Expected print iframe to be appended')
+function createMockWindow() {
+  const mockDocument = {
+    title: '',
+    head: {
+      append: vi.fn()
+    },
+    body: {
+      append: vi.fn()
+    },
+    createElement: vi.fn((tag: string) => {
+      if (tag === 'style') {
+        return { textContent: '' }
+      }
+      if (tag === 'div') {
+        return { innerHTML: '' }
+      }
+      return {}
+    })
   }
-  return printFrame
+
+  return {
+    document: mockDocument,
+    focus: vi.fn(),
+    print: vi.fn(),
+    close: vi.fn()
+  }
 }
 
 describe('printEditorContent', () => {
+  let windowOpenSpy: ReturnType<typeof vi.spyOn>
+
   beforeEach(() => {
-    document.body.innerHTML = ''
-    vi.useFakeTimers()
+    windowOpenSpy = vi.spyOn(window, 'open')
   })
 
   afterEach(() => {
-    vi.useRealTimers()
-    document.body.innerHTML = ''
+    windowOpenSpy.mockRestore()
   })
 
   it('embeds editor html in the print document', () => {
+    const mockWindow = createMockWindow()
+    windowOpenSpy.mockReturnValue(mockWindow as any)
+
     const editor = createEditor(
       '<p><span style="background-color: #ffffcc; color: #000000;">highlighted</span></p>'
     )
 
     printEditorContent(editor, 'My document')
 
-    const printFrame = getPrintFrame()
-    expect(printFrame.srcdoc).toContain('<title>My document</title>')
-    expect(printFrame.srcdoc).toContain('background-color: #ffffcc; color: #000000;')
-    expect(printFrame.srcdoc).toContain('<style>')
+    expect(mockWindow.document.title).toBe('My document')
+    expect(mockWindow.document.head.append).toHaveBeenCalled()
+    expect(mockWindow.document.body.append).toHaveBeenCalled()
+
+    const styleCall = mockWindow.document.head.append.mock.calls[0][0]
+    expect(styleCall.textContent).toContain('body { padding: 20mm; }')
+    expect(styleCall.textContent).toContain('@media print { body { padding: 0; } }')
+
+    const contentCall = mockWindow.document.body.append.mock.calls[0][0]
+    expect(contentCall.innerHTML).toContain('background-color: #ffffcc; color: #000000;')
   })
 
   it('defines print color adjustment in the stylesheet', () => {
@@ -55,39 +84,24 @@ describe('printEditorContent', () => {
     expect(stylesheet).toContain('background: rgba(148, 163, 184, 0.08);')
   })
 
-  it('focuses and prints when iframe window is available', () => {
+  it('focuses, prints and closes the window', () => {
+    const mockWindow = createMockWindow()
+    windowOpenSpy.mockReturnValue(mockWindow as any)
+
     const editor = createEditor('<p>content</p>')
     printEditorContent(editor, 'My document')
 
-    const printFrame = getPrintFrame()
-    const focus = vi.fn()
-    const print = vi.fn()
-    Object.defineProperty(printFrame, 'contentWindow', {
-      value: { focus, print },
-      configurable: true
-    })
-
-    printFrame.onload?.(new Event('load'))
-
-    expect(focus).toHaveBeenCalledOnce()
-    expect(print).toHaveBeenCalledOnce()
-
-    vi.runAllTimers()
-    expect(document.body.contains(printFrame)).toBe(false)
+    expect(mockWindow.focus).toHaveBeenCalledOnce()
+    expect(mockWindow.print).toHaveBeenCalledOnce()
+    expect(mockWindow.close).toHaveBeenCalledOnce()
   })
 
-  it('removes iframe and skips print when iframe window is unavailable', () => {
+  it('returns early when window.open fails', () => {
+    windowOpenSpy.mockReturnValue(null)
+
     const editor = createEditor('<p>content</p>')
     printEditorContent(editor, 'My document')
 
-    const printFrame = getPrintFrame()
-    Object.defineProperty(printFrame, 'contentWindow', {
-      value: null,
-      configurable: true
-    })
-
-    printFrame.onload?.(new Event('load'))
-
-    expect(document.body.contains(printFrame)).toBe(false)
+    expect(windowOpenSpy).toHaveBeenCalledWith('', '_blank')
   })
 })
