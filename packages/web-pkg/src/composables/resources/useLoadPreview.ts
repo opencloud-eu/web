@@ -122,11 +122,6 @@ export const useLoadPreview = (viewMode?: Ref<string>) => {
       return
     }
 
-    // store-backed previews are loaded once, direct callers may want other dimensions
-    if (updateStore && resource.thumbnail) {
-      return resource.thumbnail
-    }
-
     try {
       return await loadPreviewTask.perform(options)
     } catch (e) {
