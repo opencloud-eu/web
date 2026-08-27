@@ -1,34 +1,20 @@
 <template>
-  <div
-    class="bg-role-chrome h-dvh max-h-dvh overflow-y-hidden flex flex-col justify-center items-center p-4"
-  >
-    <h1 class="sr-only" v-text="$gettext('Error')" />
-    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
-    <oc-card
+  <plain-shell :title="$gettext('Error')">
+    <plain-card
+      class="w-full max-w-md"
+      icon="error-warning"
       :title="$gettext('Missing or invalid config')"
-      body-class="text-center"
-      header-class="text-center"
-      class="rounded-lg"
+      :description="$gettext('Please check if the OpenCloud server is configured correctly.')"
     >
-      <p v-text="$gettext('Please check if the file config.json exists and is correct.')" />
-      <p v-text="$gettext('Also, make sure to check the browser console for more information.')" />
-      <template #footer>
-        <p v-if="footerSlogan" v-text="footerSlogan" />
-      </template>
-    </oc-card>
-  </div>
+      <p
+        class="my-0 text-role-on-surface-variant"
+        v-text="$gettext('Also, make sure to check the browser console for more information.')"
+      />
+    </plain-card>
+  </plain-shell>
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import { useThemeStore } from '@opencloud-eu/web-pkg'
-import { storeToRefs } from 'pinia'
-// import ods component because ods is not initialized in case of a missing or invalid config
-import { OcCard } from '@opencloud-eu/design-system/components'
-
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
-
-const logoImg = computed(() => unref(currentTheme)?.logo)
-const footerSlogan = computed(() => unref(currentTheme)?.slogan)
+import PlainCard from '../components/PlainCard.vue'
+import PlainShell from '../components/PlainShell.vue'
 </script>

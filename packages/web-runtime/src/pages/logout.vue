@@ -1,38 +1,23 @@
 <template>
-  <div class="h-screen flex flex-col justify-center items-center p-4">
-    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
-    <oc-card
-      :title="cardTitle"
-      body-class="text-center"
-      header-class="text-center"
-      class="w-full sm:w-sm rounded-lg"
-    >
-      <p v-text="cardHint" />
-      <template #footer>
-        <p v-text="footerSlogan" />
-      </template>
-    </oc-card>
+  <plain-card :title="cardTitle" :description="cardHint" icon="logout-box-r">
     <oc-button
       id="exitAnchor"
-      class="mt-4 w-full sm:w-sm"
+      class="w-full p-2"
       size="large"
       appearance="filled"
-      color-role="primary"
       v-bind="loginButtonAttrs"
     >
       {{ loginButtonText }}
     </oc-button>
-  </div>
+  </plain-card>
 </template>
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import { useConfigStore, useThemeStore } from '@opencloud-eu/web-pkg'
+import { computed } from 'vue'
+import { useConfigStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
-import { storeToRefs } from 'pinia'
+import PlainCard from '../components/PlainCard.vue'
 
 const { $gettext } = useGettext()
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 const configStore = useConfigStore()
 
 const cardTitle = computed(() => {
@@ -59,7 +44,4 @@ const loginButtonAttrs = computed(() => {
     }
   }
 })
-
-const footerSlogan = computed(() => unref(currentTheme).slogan)
-const logoImg = computed(() => unref(currentTheme).logo)
 </script>
