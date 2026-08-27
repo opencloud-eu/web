@@ -230,6 +230,10 @@ export class Resource {
     await po.searchResourceGlobalSearch({ ...args, page: this.#page })
   }
 
+  clearSearchUsingKeyboardShortcut(): Promise<void> {
+    return po.clearSearchUsingKeyboardShortcut(this.#page)
+  }
+
   getResourceLocator(resource: string) {
     return po.getResourceLocator({ page: this.#page, resource })
   }
