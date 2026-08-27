@@ -14,7 +14,7 @@ import {
 import { Public } from '../../support/objects/app-files/page/public'
 import { Resource } from '../../support/objects/app-files'
 import * as runtimeFs from '../../support/utils/runtimeFs'
-import { searchFilter } from '../../support/objects/app-files/resource/actions'
+import { searchFilter, SearchShortcutType } from '../../support/objects/app-files/resource/actions'
 import { File } from '../../support/types'
 import { waitProcessingToFinish } from '../../support/objects/app-files/fileEvents'
 import { editor } from '../../support/objects/app-files/utils'
@@ -404,6 +404,32 @@ When(
       filter: filter as searchFilter,
       pressEnter
     })
+  }
+)
+
+When(
+  /^"([^"]*)" searches "([^"]*)" globally using "(s|\/)" keyboard shortcut$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    keyword: string,
+    shortcut: string
+  ): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.searchResource({
+      keyword,
+      keyboardShortcut: shortcut as SearchShortcutType
+    })
+  }
+)
+
+When(
+  '{string} clears the search using keyboard shortcut',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page })
+    await resourceObject.clearSearchUsingKeyboardShortcut()
   }
 )
 
