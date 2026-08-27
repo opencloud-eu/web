@@ -1,5 +1,6 @@
 <template>
   <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
+
     <div
       ref="scrollContainer"
       class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
@@ -304,7 +305,8 @@ const visible = computed(() => {
 const showCollaborationStatusIndicator = computed(
   () =>
     unref(textEditor.yjsStatus) === YjsStatus.Connected ||
-    unref(textEditor.yjsStatus) === YjsStatus.Disconnected
+    unref(textEditor.yjsStatus) === YjsStatus.Disconnected ||
+    unref(textEditor.yjsStatus) === YjsStatus.Connecting
 )
 
 const collaborationStatusLabel = computed(() => {
@@ -314,12 +316,18 @@ const collaborationStatusLabel = computed(() => {
   if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
     return $gettext('Collaboration disconnected')
   }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
+    return $gettext('Connecting...')
+  }
   return ''
 })
 
-const collaborationStatusIcon = computed(() =>
-  unref(textEditor.yjsStatus) === YjsStatus.Disconnected ? 'wifi-off' : 'wifi'
-)
+const collaborationStatusIcon = computed(() => {
+  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
+    return 'wifi-off'
+  }
+  return 'wifi'
+})
 
 const collaborationStatusClasses = computed(() => {
   if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
@@ -327,6 +335,9 @@ const collaborationStatusClasses = computed(() => {
   }
   if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
     return 'border-red-700/20 bg-red-500/15 text-red-700'
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
+    return 'border-gray-700/20 bg-gray-500/15 text-gray-700'
   }
   return ''
 })

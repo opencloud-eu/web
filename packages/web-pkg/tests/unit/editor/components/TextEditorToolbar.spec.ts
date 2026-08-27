@@ -181,7 +181,7 @@ describe('TextEditorToolbar', () => {
     wrapper.unmount()
   })
 
-  it('shows the collaboration status indicator for connected and disconnected', () => {
+  it('shows the collaboration status indicator for connected, disconnected, and connecting', () => {
     const connected = mountToolbar(false, 'markdown', false, 'connected')
     expect(connected.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(true)
     connected.wrapper.unmount()
@@ -192,15 +192,13 @@ describe('TextEditorToolbar', () => {
     )
     disconnected.wrapper.unmount()
 
+    const connecting = mountToolbar(false, 'markdown', false, 'connecting')
+    expect(connecting.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(true)
+    connecting.wrapper.unmount()
+
     const local = mountToolbar(false, 'markdown', false, 'local')
     expect(local.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
     local.wrapper.unmount()
-
-    const connecting = mountToolbar(false, 'markdown', false, 'connecting')
-    expect(connecting.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(
-      false
-    )
-    connecting.wrapper.unmount()
   })
 
   it('sets correct aria-label and icon for connected status', () => {
@@ -216,6 +214,14 @@ describe('TextEditorToolbar', () => {
     const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
     expect(indicator.attributes('aria-label')).toBe('Collaboration disconnected')
     expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
+    wrapper.unmount()
+  })
+
+  it('sets correct aria-label and icon for connecting status', () => {
+    const { wrapper } = mountToolbar(false, 'markdown', false, 'connecting')
+    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    expect(indicator.attributes('aria-label')).toBe('Connecting...')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
     wrapper.unmount()
   })
 
