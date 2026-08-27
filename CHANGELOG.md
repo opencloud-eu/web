@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
 - feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
 - Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
 - Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
@@ -25,6 +26,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.12 [[#3240](https://github.com/opencloud-eu/web/pull/3240)]
 - fix(deps): update uppy monorepo to v6 [[#3237](https://github.com/opencloud-eu/web/pull/3237)]
 - chore(deps): update tiptap monorepo to v3.30.5 [[#3236](https://github.com/opencloud-eu/web/pull/3236)]
 - chore(deps): update node.js to v24.20.0 [[#3233](https://github.com/opencloud-eu/web/pull/3233)]
