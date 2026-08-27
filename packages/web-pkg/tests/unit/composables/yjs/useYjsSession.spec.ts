@@ -36,6 +36,7 @@ interface MockProvider {
   detach: ReturnType<typeof vi.fn>
   setAwarenessField: ReturnType<typeof vi.fn>
   triggerSynced(): void
+  triggerStatus(status: string): void
   triggerAuthFailed(reason: string): void
 }
 
@@ -71,6 +72,9 @@ vi.mock('@hocuspocus/provider', async () => {
     }
     triggerSynced() {
       this._opts.onSynced?.({ state: true })
+    }
+    triggerStatus(status: string) {
+      this._opts.onStatus?.({ status })
     }
     triggerAuthFailed(reason: string) {
       this._opts.onAuthenticationFailed?.({ reason })
@@ -1087,6 +1091,7 @@ describe('useYjsSession — stale-state recovery', () => {
       const peerMeta = peer.getMap(META_KEY)
       peerMeta.set('nativeEtag', 'etag-external')
       peerMeta.set('recoveryClientId', peer.clientID)
+      peerMeta.set('recoveryEpoch', 1)
       peerMeta.set('isStale', true)
     })
     Y.applyUpdate(doc, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(doc)))
@@ -1123,6 +1128,7 @@ describe('useYjsSession — stale-state recovery', () => {
       const peerMeta = peer.getMap(META_KEY)
       peerMeta.set('nativeEtag', 'etag-external')
       peerMeta.set('recoveryClientId', peer.clientID)
+      peerMeta.set('recoveryEpoch', 1)
       peerMeta.set('isStale', true)
     })
     Y.applyUpdate(doc, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(doc)))
@@ -1216,6 +1222,166 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(unref(s.session.isConflicted)).toBe(false)
     expect(unref(s.session.status)).toBe('local')
     expect(s.onConflict).not.toHaveBeenCalled()
+  })
+
+  /**
+   * A session that holds unsaved work and has typed since its last report,
+   * plus a peer doc that already carries every one of its ops - the state the
+   * room needs in order to be able to delete them.
+   */
+  async function syncedPeerHoldingOurOps(adapter: YjsAdapter = testAdapter) {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'seed',
+      hasUnsavedChanges: true,
+      adapter
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    s.ydoc!.getText(SHARED_TEXT_KEY).insert(4, ' ours')
+    vi.advanceTimersByTime(400)
+    await flushPromises()
+    expect(s.onContentChange).toHaveBeenLastCalledWith('seed ours')
+
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    return { s, peer }
+  }
+
+  /**
+   * The room rewriting itself the way a recovery does, on a peer doc: flag,
+   * rewrite and commit, all of it while we are not looking.
+   */
+  function rewriteRoom(peer: Y.Doc, body: string) {
+    const peerMeta = peer.getMap(META_KEY)
+    peer.transact(() => {
+      peerMeta.set('recoveryEpoch', 1)
+      peerMeta.set('isStale', true)
+    })
+    peer.transact(() => {
+      const text = peer.getText(SHARED_TEXT_KEY)
+      text.delete(0, text.length)
+      text.insert(0, body)
+    })
+    peer.transact(() => {
+      peerMeta.delete('isStale')
+      peerMeta.set('etag', 'etag-external')
+      peerMeta.set('savedStateVector', Y.encodeStateVector(peer))
+      peerMeta.set('lastSavedAt', 1)
+    })
+  }
+
+  /**
+   * A reconnect: everything the peer did since we last saw it arrives as one
+   * merged update, then the provider reports the sync.
+   */
+  async function resyncFromPeer(s: ReturnType<typeof setupSession>, peer: Y.Doc) {
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+  }
+
+  // Regression: a client that was offline while a recovery ran gets the whole
+  // thing back as one merged update, which Yjs integrates before any observer
+  // fires - and which raises and clears `isStale` in one go, so an observer
+  // keyed on the flag sees no net change and never reacted at all. The unsaved
+  // work was deleted silently and the next autosave wrote over it.
+  it('restores unsaved work the room dropped while we were away', async () => {
+    const { s, peer } = await syncedPeerHoldingOurOps()
+    providerInstances[0].triggerStatus('disconnected')
+
+    rewriteRoom(peer, 'body from a desktop client')
+    await resyncFromPeer(s, peer)
+
+    expect(s.onConflict).toHaveBeenCalledTimes(1)
+    expect(unref(s.session.isConflicted)).toBe(true)
+    expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    // The work is back in the doc, so the editor still shows it and the user
+    // can copy it out or "Save As".
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('seed ours')
+  })
+
+  // The debounce window outlives the restore, so what it eventually reports
+  // must be the restored work and never the body the room rewrote itself to.
+  it('never reports the rewritten body as our own content', async () => {
+    const { s, peer } = await syncedPeerHoldingOurOps()
+    providerInstances[0].triggerStatus('disconnected')
+
+    rewriteRoom(peer, 'body from a desktop client')
+    await resyncFromPeer(s, peer)
+    vi.advanceTimersByTime(400)
+    await flushPromises()
+
+    expect(s.onContentChange).not.toHaveBeenCalledWith('body from a desktop client')
+    expect(s.onContentChange).toHaveBeenLastCalledWith('seed ours')
+  })
+
+  // The rewriting peer's etag would make our next If-Match match what is on
+  // disk, so a manual save out of the conflict would overwrite their body.
+  it('does not adopt the etag of the peer that rewrote the room', async () => {
+    const { s, peer } = await syncedPeerHoldingOurOps()
+    providerInstances[0].triggerStatus('disconnected')
+
+    rewriteRoom(peer, 'body from a desktop client')
+    await resyncFromPeer(s, peer)
+    await flushPromises()
+
+    expect(s.onEtagChange).not.toHaveBeenCalledWith('etag-external')
+    expect(s.onServerContentChange).not.toHaveBeenCalled()
+  })
+
+  // The work is already gone at this point, so a conflict message telling the
+  // user to copy their changes out would be a lie. Lock instead.
+  //
+  // Also the one path where the re-armed report is not masked by a restore:
+  // type observers run before the doc `update` event, so the merged update
+  // arms a fresh debounce right after we react to it. Cancelling the pending
+  // report alone left the rewritten body reaching the caller as our own.
+  it('locks when the dropped work cannot be restored', async () => {
+    silenceConsoleError()
+    const { reset: _reset, ...resetlessAdapter } = testAdapter
+    const { s, peer } = await syncedPeerHoldingOurOps(resetlessAdapter)
+    providerInstances[0].triggerStatus('disconnected')
+
+    rewriteRoom(peer, 'body from a desktop client')
+    await resyncFromPeer(s, peer)
+    vi.advanceTimersByTime(400)
+    await flushPromises()
+
+    expect(unref(s.session.isLockedForReload)).toBe(true)
+    expect(unref(s.session.error)).toBeInstanceOf(Error)
+    expect(s.onConflict).not.toHaveBeenCalled()
+    expect(s.onContentChange).not.toHaveBeenCalledWith('body from a desktop client')
+  })
+
+  // Nothing of ours was dropped, so following the room loses nothing.
+  // Restoring here would throw the peer's edits away instead.
+  it('follows the room when a resync did not drop our ops', async () => {
+    const { s, peer } = await syncedPeerHoldingOurOps()
+    providerInstances[0].triggerStatus('disconnected')
+
+    peer.transact(() => peer.getText(SHARED_TEXT_KEY).insert(0, 'theirs '))
+    await resyncFromPeer(s, peer)
+
+    expect(s.onConflict).not.toHaveBeenCalled()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('theirs seed ours')
+  })
+
+  // A peer removing text we typed is ordinary collaboration, not a recovery.
+  it('leaves the room alone when a peer deletes text we typed mid-session', async () => {
+    const { s, peer } = await syncedPeerHoldingOurOps()
+
+    peer.transact(() => peer.getText(SHARED_TEXT_KEY).delete(4, 5))
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+    await flushPromises()
+
+    expect(s.onConflict).not.toHaveBeenCalled()
+    expect(unref(s.session.isConflicted)).toBe(false)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('seed')
   })
 
   it('clears the conflict when the session is rebuilt', async () => {

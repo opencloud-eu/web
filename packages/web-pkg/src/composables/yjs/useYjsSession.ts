@@ -171,6 +171,11 @@ interface SessionMeta {
   nativeEtag: string
   /** The client elected to run the stale-state recovery. */
   recoveryClientId: number
+  /**
+   * Bumped with every `isStale`. Unlike the flag it is never cleared, so a
+   * recovery that arrives whole in one merged update still shows as a change.
+   */
+  recoveryEpoch: number
   /** Doc state behind the last written file, see `lastReportedStateVector`. */
   savedStateVector: Uint8Array
   /** A writer announced it is seeding the room. */
@@ -305,6 +310,12 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   let lastReportedStateVector: Uint8Array | null = null
 
   /**
+   * The content behind `lastReportedStateVector`. Kept so a resync that
+   * dropped our unsaved work can be undone, see `undoResyncWipe`.
+   */
+  let lastReportedContent: string | null = null
+
+  /**
    * `lastReportedStateVector` frozen at the moment the caller began a save,
    * so a report landing while the PUT is in flight cannot move it. See
    * {@link YjsSession.beginSave}.
@@ -383,6 +394,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     if (!unref(effectiveReadOnly)) claimRecovery(doc, meta)
     doc.transact(() => {
       if (nativeEtag) meta.set('nativeEtag', nativeEtag)
+      meta.set('recoveryEpoch', (meta.get('recoveryEpoch') ?? 0) + 1)
       meta.set('isStale', true)
     })
   }
@@ -698,6 +710,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           .then((value) => {
             if (value === null) return
             lastReportedStateVector = vectorAtSerialize
+            lastReportedContent = value
             onContentChange(value)
           })
           .catch((e) => console.error('[yjs] serialize for content update failed:', e))
@@ -708,6 +721,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     }
     return { onDocUpdate, cancel }
   }
+  type ContentReporter = ReturnType<typeof createContentReporter>
 
   /** Connects a Hocuspocus provider and arms the connect timeout. */
   function connectRemote(doc: Y.Doc, name: string, serverUrl: string) {
@@ -785,10 +799,67 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
-   * `_oc_meta` is the side channel for save/stale coordination.
+   * A recovery may have deleted our unsaved work if it ran while we were offline.
+   * Leave the room and re-seed the doc from the last content we reported.
+   */
+  function undoResyncWipe(doc: Y.Doc, prov: HocuspocusProvider | null, reporter: ContentReporter) {
+    const content = lastReportedContent
+    const current = toValue(adapter)
+
+    // The doc holds the rewritten body from here on, and it must never reach
+    // the caller as our own content - the next save would put it on disk.
+    isRewritingDoc = true
+    reporter.cancel()
+
+    if (content === null || typeof current.reset !== 'function') {
+      // No conflict toast, there are no changes to be copied - they're gone.
+      markConflicted(false)
+      console.error('[yjs] the room discarded unsaved work that cannot be restored')
+      lockForReload(
+        prov,
+        $gettext(
+          'This file was changed externally and your unsaved changes could not be restored. Please reload.'
+        )
+      )
+      return
+    }
+
+    markConflicted()
+
+    // Deferred: Yjs is still cleaning up the transaction this reacts to.
+    // `markConflicted` stopped the provider, so nothing else touches the doc
+    // in between.
+    queueMicrotask(() => {
+      if (doc.isDestroyed) return
+      try {
+        doc.transact(() => {
+          current.reset?.(doc)
+          current.hydrate(doc, content)
+        }, STALE_RECOVERY_RESET_ORIGIN)
+        isRewritingDoc = false
+      } catch (e) {
+        // `reset` already committed, so the doc may be empty. Keep the rewrite
+        // flag up and lock: nothing may report or autosave what is left.
+        console.error('[yjs] restoring unsaved work after a resync failed:', e)
+        lockForReload(
+          prov,
+          $gettext(
+            'This file was changed externally and restoring your unsaved changes failed. Please reload.'
+          )
+        )
+      }
+    })
+  }
+
+  /**
+   * `_oc_meta` is the side channel for save/stale/version coordination.
    * Adapters bind to their own shared types and never see it.
    */
-  function createMetaObserver(doc: Y.Doc, prov: HocuspocusProvider | null) {
+  function createMetaObserver(
+    doc: Y.Doc,
+    prov: HocuspocusProvider | null,
+    reporter: ContentReporter
+  ) {
     const meta = sessionMeta(doc)
     return function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
       // The initial sync replays the room's whole meta map through this
@@ -798,13 +869,19 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // Remote ops carry no string origin, so this means "a peer is acting
       // right now" - not the initial sync, not one of our own writes.
       const isRemoteMetaWrite = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
+      // Handled further down, but needed here to keep the fan-out out of it.
+      const resyncWouldDropOurWork =
+        event.keysChanged.has('recoveryEpoch') && isRemoteMetaWrite && toValue(hasUnsavedChanges)
 
       // Peer-save fan-out. The fresh etag keeps our next If-Match correct.
       // The content only follows when the peer's snapshot covers everything
       // we hold; otherwise our dirty flag would drop over edits that never
       // reached the peer's PUT and they could leave with the tab. Re-checked
       // after serializing because a keystroke can land while that runs.
-      if (isRemoteMetaWrite) {
+      // Not on a recovery that costs us our work: the rewriting peer's etag
+      // would make our next If-Match match, so a manual save would overwrite
+      // the body they just put on disk.
+      if (isRemoteMetaWrite && !resyncWouldDropOurWork) {
         if (event.keysChanged.has('etag')) {
           const newEtag = meta.get('etag')
           if (newEtag) onEtagChange(newEtag)
@@ -835,17 +912,22 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         return
       }
 
+      // A peer wipes and re-seeds the room. Following that would silently
+      // drop our unsaved edits, so leave the room and keep our own doc.
+      if (resyncWouldDropOurWork) {
+        if (meta.get('isStale') === true) {
+          // The flag came ahead of the rewrite, our doc is untouched.
+          markConflicted()
+        } else {
+          // Recovery already ran, our unsaved edits are gone. Attempt to restore them.
+          undoResyncWipe(doc, prov, reporter)
+        }
+        return
+      }
+
       // Stale-state signal: every peer sees it, only the claimed one gets
       // past the guards in `recoverFromStaleState`.
       if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
-        // A peer is about to wipe and re-seed the room. Following that would
-        // silently drop our unsaved edits, so leave the room and keep the
-        // local doc instead. Our own `flagStale` (raised while `isReady` is
-        // still false) and the initial sync replay stay on the recovery path.
-        if (isRemoteMetaWrite && toValue(hasUnsavedChanges)) {
-          markConflicted()
-          return
-        }
         void recoverFromStaleState(doc, prov)
       }
     }
@@ -867,8 +949,11 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       isConflicted.value = false
       isReady.value = false
       hasLocalOnlyContent = false
+      // `undoResyncWipe` leaves this up for good when it cannot restore.
+      isRewritingDoc = false
       staleRecoveryContent = null
       lastReportedStateVector = null
+      lastReportedContent = null
       pendingSaveStateVector = null
 
       if (!key) {
@@ -901,7 +986,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       }
 
       const meta = sessionMeta(doc)
-      const metaObserver = createMetaObserver(doc, prov)
+      const metaObserver = createMetaObserver(doc, prov, reporter)
       meta.map.observe(metaObserver)
 
       ydoc.value = doc
