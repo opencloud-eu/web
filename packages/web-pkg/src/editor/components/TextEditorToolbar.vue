@@ -1,6 +1,5 @@
 <template>
   <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
-
     <div
       ref="scrollContainer"
       class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
