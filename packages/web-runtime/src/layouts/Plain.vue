@@ -1,51 +1,24 @@
 <template>
-  <div class="oc-login h-screen" :style="backgroundImgStyle">
-    <div v-if="pathIsRoot" class="flex items-center justify-center h-full bg-role-surface">
-      <oc-spinner size="large" :aria-label="$gettext('Loading')" />
-    </div>
-    <template v-else>
+  <plain-shell class="h-full" :title="pageTitle">
+    <template #banner>
       <announcement class="relative z-1" />
-      <h1 class="sr-only" v-text="pageTitle" />
-      <router-view class="relative z-1" />
-      <img
-        v-if="!backgroundImg && !pathIsRoot"
-        alt="OpenCloud emblem"
-        :src="emblemSrc"
-        class="hidden sm:block fixed w-3xs xs:w-xs md:w-md lg:w-lg bottom-[-40px] right-[-40px]"
-      />
     </template>
-  </div>
+    <router-view class="w-full max-w-md" />
+  </plain-shell>
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useRouteMeta, useThemeStore } from '@opencloud-eu/web-pkg'
-import { useRoute } from 'vue-router'
-import { addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
+import { useRouteMeta } from '@opencloud-eu/web-pkg'
 import Announcement from '../components/Announcement.vue'
+import PlainShell from '../components/PlainShell.vue'
 
 const { $gettext } = useGettext()
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 
 const title = useRouteMeta('title')
-const route = useRoute()
 
 const pageTitle = computed(() => {
   return $gettext(unref(title) || '')
-})
-const backgroundImg = computed(() => unref(currentTheme).background)
-const backgroundImgStyle = computed(() => {
-  return unref(backgroundImg) ? { backgroundImage: `url(${unref(backgroundImg)})` } : {}
-})
-const emblemSrc = computed(() => {
-  const url = unref(currentTheme).isDark ? 'images/icon-lilac.svg' : 'images/icon-petrol.svg'
-  return addVersionToAssetUrl(url)
-})
-
-const pathIsRoot = computed(() => {
-  return unref(route)?.fullPath === '/'
 })
 </script>

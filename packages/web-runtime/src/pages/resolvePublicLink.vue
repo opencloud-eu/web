@@ -1,39 +1,37 @@
 <template>
-  <div class="oc-link-resolve h-screen flex flex-col justify-center items-center p-4">
-    <img v-if="logoImg" :src="logoImg" alt="" :aria-hidden="true" class="max-w-48 max-h-48 mb-4" />
-    <oc-card
-      :title="headerTitle"
-      body-class="text-center"
-      header-class="text-center"
-      class="w-auto md:w-lg rounded-lg"
+  <plain-card
+    class="oc-link-resolve"
+    :title="cardTitle"
+    :description="cardDescription"
+    :icon="cardIcon"
+  >
+    <p v-if="errorMessage" data-testid="error-message" class="my-0">
+      {{ errorMessage }}
+    </p>
+    <form
+      v-else-if="isPasswordRequired"
+      class="flex flex-col gap-4"
+      @submit.prevent="resolvePublicLinkTask.perform(true)"
     >
-      <p v-if="errorMessage" data-testid="error-message" class="text-xl">
-        {{ errorMessage }}
-      </p>
-      <form v-else-if="isPasswordRequired" @submit.prevent="resolvePublicLinkTask.perform(true)">
-        <oc-text-input
-          ref="passwordInput"
-          v-model="password"
-          :error-message="wrongPasswordMessage"
-          :label="passwordFieldLabel"
-          type="password"
-          class="mb-2 [&_.oc-text-input-message]:justify-center"
-        />
-        <oc-button
-          appearance="filled"
-          class="oc-login-authorize-button"
-          :disabled="!password"
-          submit="submit"
-        >
-          <span v-text="$gettext('Continue')" />
-        </oc-button>
-      </form>
-      <oc-spinner v-else :aria-hidden="true" />
-      <template #footer>
-        <p v-text="footerSlogan" />
-      </template>
-    </oc-card>
-  </div>
+      <oc-text-input
+        ref="passwordInput"
+        v-model="password"
+        :error-message="wrongPasswordMessage"
+        :label="passwordFieldLabel"
+        type="password"
+      />
+      <oc-button
+        appearance="filled"
+        size="large"
+        class="oc-login-authorize-button w-full p-2"
+        :disabled="!password"
+        submit="submit"
+      >
+        <span v-text="$gettext('Continue')" />
+      </oc-button>
+    </form>
+    <oc-spinner v-else :aria-hidden="true" />
+  </plain-card>
 </template>
 
 <script setup lang="ts">
@@ -50,8 +48,7 @@ import {
   useRouteParam,
   useRouteQuery,
   useRouter,
-  useSpacesStore,
-  useThemeStore
+  useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
 import { ref, unref, computed, onMounted, useTemplateRef } from 'vue'
@@ -63,7 +60,7 @@ import {
   Resource
 } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { storeToRefs } from 'pinia'
+import PlainCard from '../components/PlainCard.vue'
 
 const clientService = useClientService()
 const router = useRouter()
@@ -72,11 +69,7 @@ const authStore = useAuthStore()
 const { $gettext } = useGettext()
 const token = useRouteParam('token')
 const redirectUrl = useRouteQuery('redirectUrl')
-const themeStore = useThemeStore()
 const spacesStore = useSpacesStore()
-
-const { currentTheme } = storeToRefs(themeStore)
-const logoImg = computed(() => unref(currentTheme).logo)
 
 const passwordInputRef = useTemplateRef<HTMLInputElement>('passwordInput')
 const password = ref('')
@@ -288,18 +281,32 @@ onMounted(async () => {
   }
 })
 
-const headerTitle = computed(() => {
+const cardTitle = computed(() => {
   if (unref(errorMessage)) {
     return $gettext('An error occurred while loading the public link')
   }
   if (unref(isPasswordRequired)) {
-    return $gettext('This resource is password-protected')
+    return $gettext('This link is password-protected')
   }
   return $gettext('Loading public link…')
 })
-const footerSlogan = computed(() => unref(currentTheme).slogan)
+const cardDescription = computed(() => {
+  if (!unref(errorMessage) && unref(isPasswordRequired)) {
+    return $gettext('Enter the password you received to open this link.')
+  }
+  return undefined
+})
+const cardIcon = computed(() => {
+  if (unref(errorMessage)) {
+    return 'error-warning'
+  }
+  if (unref(isPasswordRequired)) {
+    return 'lock'
+  }
+  return undefined
+})
 const passwordFieldLabel = computed(() => {
-  return $gettext('Enter password for public link')
+  return $gettext('Password')
 })
 const wrongPasswordMessage = computed(() => {
   if (unref(wrongPassword)) {

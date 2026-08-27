@@ -28,18 +28,12 @@ const OcTextInputStub = defineComponent({
 })
 
 const selectors = {
-  cardFooter: '.oc-card-footer',
   ocSpinnerStub: 'oc-spinner-stub',
   submitButton: '.oc-login-authorize-button',
   errorMessage: '[data-testid="error-message"]'
 }
 
 describe('resolvePublicLink', () => {
-  it('should display the configuration theme general slogan as the login card footer', () => {
-    const { wrapper } = getWrapper()
-    const slogan = wrapper.find(selectors.cardFooter)
-    expect(slogan.html()).toMatchSnapshot()
-  })
   it('should display the loading spinner', () => {
     const { wrapper } = getWrapper({ passwordRequired: true })
     const loading = wrapper.find(selectors.ocSpinnerStub)
@@ -208,6 +202,7 @@ function getWrapper({
         provide: mocks,
         stubs: {
           OcCard: false,
+          PlainCard: false,
           OcTextInput: OcTextInputStub
         }
       }
