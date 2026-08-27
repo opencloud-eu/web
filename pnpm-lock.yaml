@@ -1131,9 +1131,6 @@ importers:
       qs:
         specifier: ^6.15.0
         version: 6.15.3
-      semver:
-        specifier: ^7.8.0
-        version: 7.8.5
       uuid:
         specifier: ^14.0.0
         version: 14.0.2
@@ -1168,9 +1165,6 @@ importers:
       '@types/node':
         specifier: ^25.5.0
         version: 25.9.5
-      '@types/semver':
-        specifier: ^7.7.0
-        version: 7.8.0
       '@vitest/web-worker':
         specifier: ^4.1.2
         version: 4.1.11(vitest@4.1.11)
@@ -2348,9 +2342,6 @@ packages:
 
   '@types/retry@0.12.2':
     resolution: {integrity: sha512-XISRgDJ2Tc5q4TRqvgJtzsRkFYNJzZrhTdtMoGVBttwzzQJkPnS3WWTFc7kuDRoPtPakl+T+OfdEUjYJj7Jbow==}
-
-  '@types/semver@7.8.0':
-    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -6369,8 +6360,6 @@ snapshots:
   '@types/qs@6.15.1': {}
 
   '@types/retry@0.12.2': {}
-
-  '@types/semver@7.8.0': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
