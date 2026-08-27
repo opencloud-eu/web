@@ -147,6 +147,12 @@ services:
     depends_on:
       collabora:
         condition: service_healthy
+      yjs:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+      tika-service:
+        condition: service_started
 
   opencloud-federated:
     <<: *opencloud-service
@@ -176,6 +182,13 @@ services:
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
       - opencloud-federated-config:/etc/opencloud
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
+    depends_on:
+      yjs:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+      tika-service:
+        condition: service_started
 
   collabora:
     image: collabora/code:26.04.2.4.1
@@ -451,6 +464,7 @@ services:
       # model identical to what CI uses (CI has no Traefik).
       - traefik
     restart: unless-stopped
+    stop_grace_period: 20s
 
 volumes:
   uploads:

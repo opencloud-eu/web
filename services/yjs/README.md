@@ -17,10 +17,14 @@ Every connection is authenticated and authorized against OpenCloud:
 
 ## Configuration
 
-| Variable        | Default | Description                                                                  |
-| --------------- | ------- | ---------------------------------------------------------------------------- |
-| `OPENCLOUD_URL` | -       | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
-| `PORT`          | `1234`  | Port to listen on                                                            |
+| Variable                   | Default          | Description                                                                  |
+| -------------------------- | ---------------- | ---------------------------------------------------------------------------- |
+| `OPENCLOUD_URL`            | -                | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
+| `PORT`                     | `1234`           | Port to listen on                                                            |
+| `SHUTDOWN_GRACE_PERIOD_MS` | `15000`          | Grace period for graceful shutdown before the process exits with code `1`    |
+| `HEALTHCHECK_TIMEOUT_MS`   | `5000`           | Timeout used by the container healthcheck probe                              |
+| `HEALTHCHECK_READY_PATH`   | `/healthz/ready` | Internal readiness endpoint path                                             |
+| `HEALTHCHECK_HOST`         | `127.0.0.1`      | Host used by the container healthcheck probe                                 |
 
 ## Routing
 
@@ -61,3 +65,40 @@ As a container, built from the repository root:
 ```sh
 docker build -f services/yjs/Dockerfile -t opencloud-yjs-server .
 ```
+
+## Healthchecks and readiness
+
+The image defines a Docker `HEALTHCHECK` that verifies:
+
+1. the readiness endpoint (`GET /healthz/ready`) returns HTTP `200`
+2. a WebSocket handshake to `ws://127.0.0.1:$PORT` succeeds
+
+During normal operation `/healthz/ready` returns `200 ok`. Once shutdown starts, it flips to `503`
+immediately.
+
+## Graceful shutdown
+
+The service installs a SIGTERM/SIGINT/SIGQUIT handler and performs graceful shutdown:
+
+1. mark the instance as shutting down (readiness becomes `503`)
+2. stop accepting new upgrade/authentication attempts
+3. close existing WebSocket connections and let Hocuspocus unload/flush open documents
+4. exit successfully when done
+
+If shutdown does not complete within `SHUTDOWN_GRACE_PERIOD_MS`, the process exits with code `1`.
+
+## Docker Compose defaults
+
+In the repository `docker-compose.yml`:
+
+- `yjs` uses `restart: unless-stopped`
+- `yjs` uses `stop_grace_period: 20s` (5s buffer beyond the default 15s shutdown grace period)
+- OpenCloud services declare `depends_on: yjs` with `condition: service_healthy`
+
+Keep `stop_grace_period` higher than `SHUTDOWN_GRACE_PERIOD_MS` to allow the service time to
+flush and close cleanly before Docker sends SIGKILL.
+
+## Logging
+
+The service writes operational logs to standard output/error (`stdout`/`stderr`) via Node's
+`console` methods. No file logger is used.

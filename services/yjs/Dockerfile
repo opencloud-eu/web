@@ -31,4 +31,7 @@ COPY --from=builder /app ./
 USER node
 EXPOSE 1234
 
+HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
+  CMD ["node", "src/healthcheck.ts"]
+
 CMD ["node", "src/server.ts"]
