@@ -246,3 +246,35 @@ Feature: Search
       | mainFolder/mediaTest.txt |
     And "Alice" clears lastModified filter
     And "Alice" logs out
+
+
+  Scenario: Search using keyboard shortcuts
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+    And "Alice" creates the following folder in personal space using API
+      | name           |
+      | mainFolder     |
+      | mainFolder/sub |
+    And "Alice" creates the following files with mtime into personal space using API
+      | pathToFile              | content |
+      | mainFolder/sub/lorem.md | lorem   |
+      | mainFolder/epsum.txt    | epsum   |
+    And "Alice" logs in
+    When "Alice" searches "lorem" globally using "s" keyboard shortcut
+    Then following resources should be displayed in the search list for user "Alice"
+      | resource       |
+      | …/sub/lorem.md |
+    But following resources should not be displayed in the search list for user "Alice"
+      | resource             |
+      | mainFolder/epsum.txt |
+    When "Alice" clears the search using keyboard shortcut
+    And "Alice" navigates to the personal space page
+    And "Alice" searches "epsum" globally using "/" keyboard shortcut
+    Then following resources should be displayed in the search list for user "Alice"
+      | resource             |
+      | mainFolder/epsum.txt |
+    But following resources should not be displayed in the search list for user "Alice"
+      | resource       |
+      | …/sub/lorem.md |
+    And "Alice" logs out

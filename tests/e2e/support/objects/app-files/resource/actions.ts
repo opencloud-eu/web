@@ -1901,19 +1901,22 @@ export const getTagsForResourceVisibilityInDetailsPanel = async (
 
   return true
 }
-export type searchFilter = 'all files' | 'current folder'
 
+export type searchFilter = 'all files' | 'current folder'
+export type SearchShortcutType = 's' | '/'
 export interface searchResourceGlobalSearchArgs {
+  page: Page
   keyword: string
   filter?: searchFilter
   pressEnter?: boolean
-  page: Page
+  keyboardShortcut?: SearchShortcutType
 }
 
 export const searchResourceGlobalSearch = async (
   args: searchResourceGlobalSearchArgs
 ): Promise<void> => {
-  const { page, keyword, filter, pressEnter } = args
+  const { page, keyword, filter, pressEnter, keyboardShortcut } = args
+  const searchInputLocator = page.locator(globalSearchInput)
 
   // .reload() waits nicely for search indexing to be finished
   await page.reload()
@@ -1928,22 +1931,31 @@ export const searchResourceGlobalSearch = async (
       .click()
   }
 
-  await page.locator(globalSearchBarFilter).click()
-  await page.locator(appLoadingSpinner).waitFor({ state: 'detached' })
+  if (!keyboardShortcut) {
+    await page.locator(globalSearchBarFilter).click()
+    await page.locator(appLoadingSpinner).waitFor({ state: 'detached' })
+  }
 
   if (!keyword) {
-    await page.locator(globalSearchInput).click()
+    await searchInputLocator.click()
     await page.keyboard.press('Enter')
     return
   }
 
   // wait for tika indexing
   await new Promise((resolve) => setTimeout(resolve, 500))
+  const waitResponse = page.waitForResponse(
+    (resp) => resp.status() === 207 && resp.request().method() === 'REPORT'
+  )
 
-  await Promise.all([
-    page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'REPORT'),
-    page.locator(globalSearchInput).fill(keyword)
-  ])
+  if (keyboardShortcut) {
+    await expect(searchInputLocator).not.toBeFocused()
+    await page.keyboard.press(keyboardShortcut)
+    await expect(searchInputLocator).toBeFocused()
+    await Promise.all([waitResponse, page.keyboard.type(keyword)])
+  } else {
+    await Promise.all([waitResponse, searchInputLocator.fill(keyword)])
+  }
 
   await expect(page.locator(globalSearchOptions)).toBeVisible()
   await expect(page.locator(loadingSpinner)).not.toBeVisible()
@@ -1951,6 +1963,13 @@ export const searchResourceGlobalSearch = async (
   if (pressEnter) {
     await page.keyboard.press('Enter')
   }
+}
+
+export const clearSearchUsingKeyboardShortcut = async (page: Page): Promise<void> => {
+  await page.keyboard.press('Escape')
+  const searchInputLocator = page.locator(globalSearchInput)
+  await expect(searchInputLocator).toBeFocused()
+  await expect(searchInputLocator).toHaveValue('')
 }
 
 export type displayedResourceType = 'search list' | 'files list' | 'Shares' | 'trashbin'
