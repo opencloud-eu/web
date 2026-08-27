@@ -46,6 +46,10 @@ export interface YjsSessionOptions {
   onServerContentChange: (content: string) => void
   /** A peer save propagated a fresh etag through the room. */
   onEtagChange: (etag: string) => void
+  /** Whether the caller holds edits that are not on disk yet. */
+  hasUnsavedChanges: MaybeRefOrGetter<boolean>
+  /** The session gave up the room because the file changed outside it. */
+  onConflict: () => void
 }
 
 export interface YjsSession {
@@ -67,6 +71,18 @@ export interface YjsSession {
   isLockedForReload: Ref<boolean>
   /** Set when the persisted state was stale or Yjs auth failed. */
   error: ShallowRef<Error | null>
+  /**
+   * True after the session left the room over an external change it cannot
+   * follow without discarding the caller's unsaved work. The Y.Doc stays, so
+   * the editor keeps showing that work.
+   */
+  isConflicted: ShallowRef<boolean>
+  /**
+   * Give up the room because the file moved outside it. Idempotent, and a
+   * no-op in local mode. `notify` off when the caller already surfaced the
+   * conflict itself.
+   */
+  markConflicted: (notify?: boolean) => void
   /**
    * Whether the file now on disk under `etag` was written by this room.
    * A peer's save is already merged into our Y.Doc, so republishing over it
@@ -203,7 +219,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     documentPrefix,
     onContentChange,
     onServerContentChange,
-    onEtagChange
+    onEtagChange,
+    hasUnsavedChanges,
+    onConflict
   } = options
 
   const { $gettext } = useGettext()
@@ -217,6 +235,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   const status = shallowRef<YjsStatus>('connecting')
   const isReady = shallowRef(false)
   const isLockedForReload = ref(false)
+  const isConflicted = shallowRef(false)
   const error = shallowRef<Error | null>(null)
 
   const effectiveReadOnly = computed(() => toValue(isReadOnly) || unref(isLockedForReload))
@@ -389,6 +408,23 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     } catch {
       // can throw if already torn down; ignore.
     }
+  }
+
+  /**
+   * See {@link YjsSession.markConflicted}. Keeps the doc so the user can still
+   * copy their work out or use "Save As". Deliberately no `error`: the caller
+   * owns the conflict message and would otherwise get a second, generic toast.
+   */
+  function markConflicted(notify = true) {
+    if (unref(isConflicted)) return
+    // Local mode has no room to leave and no peer that could have written the
+    // file. Conflicting would only stop its autosave, which is the single
+    // safety net there.
+    if (unref(status) === YjsStatus.Local) return
+    isConflicted.value = true
+    const prov = unref(provider)
+    if (prov) stopProvider(prov)
+    if (notify) onConflict()
   }
 
   function lockForReload(prov: HocuspocusProvider | null, message: string) {
@@ -570,22 +606,28 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     const content = staleRecoveryContent
     const freshEtag = meta.get('nativeEtag') ?? toValue(resource)?.etag ?? ''
 
-    // Three phases, so a crash between reset and hydrate leaves `isStale` set
-    // and the next joiner retries instead of inheriting an empty doc. None of
-    // it is a user edit, so none of it is reported as content.
+    // Reset and hydrate share one transaction: mounted editors must never
+    // observe the emptied doc, or ProseMirror pads it with an empty paragraph
+    // that survives the re-seed. A crash inside still commits the reset and
+    // leaves `isStale` set, so the next joiner retries instead of inheriting
+    // an empty doc. None of it is a user edit, so none of it is reported as
+    // content.
     isRewritingDoc = true
     try {
       doc.transact(() => {
         current.reset?.(doc)
+        current.hydrate(doc, content)
       }, STALE_RECOVERY_RESET_ORIGIN)
-
-      current.hydrate(doc, content)
 
       doc.transact(() => {
         meta.delete('isStale')
         meta.delete('nativeEtag')
         meta.delete('recoveryClientId')
         if (freshEtag) meta.set('etag', freshEtag)
+        // The recovered body is what is on disk now, so clean peers take the
+        // ordinary peer-save fan-out and stop counting it as unsaved work.
+        meta.set('savedStateVector', Y.encodeStateVector(doc))
+        meta.set('lastSavedAt', Date.now())
       }, STALE_RECOVERY_COMMIT_ORIGIN)
 
       staleRecoveryContent = null
@@ -753,16 +795,16 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // observer; everything in it belongs to `runInitialHydration`, which
       // reads the same keys with the context to act on them.
       const isMidSession = unref(isReady)
-      // Remote ops carry no string origin, so this means "a peer is saving
+      // Remote ops carry no string origin, so this means "a peer is acting
       // right now" - not the initial sync, not one of our own writes.
-      const isPeerSave = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
+      const isRemoteMetaWrite = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
 
       // Peer-save fan-out. The fresh etag keeps our next If-Match correct.
       // The content only follows when the peer's snapshot covers everything
       // we hold; otherwise our dirty flag would drop over edits that never
       // reached the peer's PUT and they could leave with the tab. Re-checked
       // after serializing because a keystroke can land while that runs.
-      if (isPeerSave) {
+      if (isRemoteMetaWrite) {
         if (event.keysChanged.has('etag')) {
           const newEtag = meta.get('etag')
           if (newEtag) onEtagChange(newEtag)
@@ -796,6 +838,14 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // Stale-state signal: every peer sees it, only the claimed one gets
       // past the guards in `recoverFromStaleState`.
       if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
+        // A peer is about to wipe and re-seed the room. Following that would
+        // silently drop our unsaved edits, so leave the room and keep the
+        // local doc instead. Our own `flagStale` (raised while `isReady` is
+        // still false) and the initial sync replay stay on the recovery path.
+        if (isRemoteMetaWrite && toValue(hasUnsavedChanges)) {
+          markConflicted()
+          return
+        }
         void recoverFromStaleState(doc, prov)
       }
     }
@@ -814,6 +864,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // would drop the loading screen while `ydoc` is already null.
       error.value = null
       isLockedForReload.value = false
+      isConflicted.value = false
       isReady.value = false
       hasLocalOnlyContent = false
       staleRecoveryContent = null
@@ -911,6 +962,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     status,
     isReady,
     isLockedForReload,
+    isConflicted,
+    markConflicted,
     error,
     wasWrittenByRoom,
     beginSave,

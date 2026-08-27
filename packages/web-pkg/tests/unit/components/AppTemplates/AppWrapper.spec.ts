@@ -31,7 +31,10 @@ vi.mock('../../../../src/composables/appDefaults/useAppDefaults', () => ({
   useAppDefaults: (...args: unknown[]) => useAppDefaultsSpy(...args)
 }))
 
-vi.mock('../../../../src/composables/yjs/useYjsSession', () => ({
+// Spread the original: `YjsStatus` is a real const the wrapper compares
+// against, not just a type.
+vi.mock('../../../../src/composables/yjs/useYjsSession', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../../src/composables/yjs/useYjsSession')>()),
   useYjsSession: (...args: unknown[]) => useYjsSessionSpy(...args)
 }))
 
@@ -48,6 +51,7 @@ beforeEach(() => {
 
 afterEach(() => {
   consoleErrorSpy.mockRestore()
+  vi.useRealTimers()
 })
 
 const FILE_A = mock<Resource>({
@@ -81,16 +85,25 @@ function setup({
   const beginSave = vi.fn()
   const serializeMerged = vi.fn().mockResolvedValue(mergedContent)
   const isLockedForReload = ref(false)
+  const isConflicted = ref(false)
+  const markConflicted = vi.fn(() => {
+    isConflicted.value = true
+  })
   const statusRef = ref(status)
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
   let resolveContents: (c: GetFileContentsResponse) => void
+  let rejectContents: (e: Error) => void
 
   const getFileInfo = vi.fn().mockImplementation(() => new Promise((r) => (resolveInfo = r)))
-  const getFileContents = vi
-    .fn()
-    .mockImplementation(() => new Promise((r) => (resolveContents = r)))
+  const getFileContents = vi.fn().mockImplementation(
+    () =>
+      new Promise((resolve, reject) => {
+        resolveContents = resolve
+        rejectContents = reject
+      })
+  )
   const closeApp = vi.fn()
 
   useAppDefaultsSpy.mockReturnValue(
@@ -112,6 +125,8 @@ function setup({
       // Auto-mocked refs are truthy, which would fold into `effectiveReadOnly`
       // and hard-wire `isDirty` to false.
       isLockedForReload: isLockedForReload as any,
+      isConflicted: isConflicted as any,
+      markConflicted,
       error: ref<Error | null>(null) as any,
       wasWrittenByRoom,
       beginSave,
@@ -162,6 +177,8 @@ function setup({
     currentFileContext,
     isEnabled: () => sessionOptions?.enabled(),
     isLockedForReload,
+    isConflicted,
+    markConflicted,
     putFileContents,
     closeApp,
     getFileContents,
@@ -189,6 +206,9 @@ function setup({
         mock<GetFileContentsResponse>({ body, headers: { 'OC-ETag': 'etag' } as any })
       )
       await flushPromises()
+    },
+    rejectContent(error: Error) {
+      rejectContents(error)
     }
   }
 }
@@ -380,18 +400,43 @@ describe('AppWrapper — save conflict handling', () => {
     expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
   })
 
-  it('shows the conflict dialog when the session is not connected', async () => {
+  // `disconnected` and `connecting` are transient - the provider reconnects on
+  // its own - so the conflict must not take the room down with it.
+  it.each(['local', 'disconnected', 'connecting'] as const)(
+    'shows the conflict dialog without giving up the room when the status is %s',
+    async (status) => {
+      const putFileContents = vi.fn().mockRejectedValue(conflict())
+      const s = setup({ status, putFileContents })
+      await nextTick()
+      await s.resolveResource(FILE_A)
+      await s.resolveContent('content of a')
+      await s.edit('edited content')
+      await s.pressCtrlS()
+
+      expect(putFileContents).toHaveBeenCalledTimes(1)
+      expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
+      expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+      expect(s.markConflicted).not.toHaveBeenCalled()
+    }
+  )
+
+  // A failed refetch or a failed retry is just as likely a network blip as an
+  // external write, so the user gets the popup but keeps the session.
+  it('keeps the room when the reconciliation itself fails', async () => {
     const putFileContents = vi.fn().mockRejectedValue(conflict())
-    const s = setup({ status: 'local', putFileContents })
+    const s = setup({ status: 'connected', putFileContents })
     await nextTick()
     await s.resolveResource(FILE_A)
     await s.resolveContent('content of a')
     await s.edit('edited content')
-    await s.pressCtrlS()
 
-    expect(putFileContents).toHaveBeenCalledTimes(1)
-    expect(s.getFileContents).toHaveBeenCalledTimes(1) // the initial load only
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    s.rejectContent(new Error('network down'))
+    await pressed
+
     expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+    expect(s.markConflicted).not.toHaveBeenCalled()
   })
 
   // Regression: the retry ran for any conflict inside a connected session, so
@@ -526,6 +571,76 @@ describe('AppWrapper — save conflict handling', () => {
     await s.pressCtrlS()
 
     expect(s.beginSave).toHaveBeenCalled()
+  })
+
+  // The 412 path already tells the user; the session has to give up the room
+  // too, or the toolbar keeps claiming everything is fine while the doc is
+  // detached from what is on disk.
+  it('marks the session conflicted when an external write caused the conflict', async () => {
+    const putFileContents = vi.fn().mockRejectedValue(conflict())
+    const s = setup({ status: 'connected', writtenByRoom: false, putFileContents })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    const pressed = s.pressCtrlS()
+    await flushPromises()
+    await s.resolveContent('content written by a desktop client')
+    await pressed
+
+    // Silently: `saveFileTask` shows the popup itself, so a second toast from
+    // the session would only duplicate it.
+    expect(s.markConflicted).toHaveBeenCalledWith(false)
+    expect(useMessages().showErrorMessage).toHaveBeenCalledTimes(1)
+  })
+
+  // The other direction: the session noticed the external change first (a peer
+  // is re-seeding the room) and asks the wrapper to explain it.
+  it('shows the conflict message when the session reports an external change', async () => {
+    const s = setup({ status: 'connected' })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+
+    s.session().onConflict()
+    await nextTick()
+
+    const { showErrorMessage } = useMessages()
+    expect(showErrorMessage).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(showErrorMessage).mock.calls[0][0].desc).toContain(
+      'updated outside this window'
+    )
+  })
+
+  it('keeps autosaving while the session is healthy', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setup({ status: 'connected' })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(s.putFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  // Every attempt would fail the same way, so the popup would come back every
+  // interval until the user closes the tab.
+  it('skips the autosave while the session is conflicted', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setup({ status: 'connected' })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+
+    s.isConflicted.value = true
+    await nextTick()
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(s.putFileContents).not.toHaveBeenCalled()
   })
 })
 

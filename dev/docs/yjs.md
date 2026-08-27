@@ -314,10 +314,22 @@ convergence. A peer that joins while `isStale` is already up offers itself the s
 `nativeEtag` - the observer only fires on change, so without that the room would stay stuck if the elected peer
 navigated away mid-recovery.
 
+Peers receive the rewrite as ordinary CRDT updates, and a peer holding unsaved work would lose it without a word. So a
+peer that is dirty when a _remote_ `isStale` goes up does not follow: it marks itself conflicted, stops its provider
+and keeps its own Y.Doc. The editor still shows that work and the user sees a conflict message. A reload rejoins.
+
+Note that an external write drops _every_ peer in a room that holds any unsaved state, since the dirty state is shared
+across all peers. That is deliberate: a peer cannot tell whose edits the recovery would discard, and losing them silently
+is worse than a conflict message.
+
+A peer that is _clean_ follows the recovery, and the commit stamps `savedStateVector` and `lastSavedAt` alongside the
+fresh `etag`.
+
 Reset lands before hydrate, so a throw in between leaves every peer looking at an empty document. That path keeps
 `isStale` up for the next joiner to retry, and locks the session so the editor freezes. Note that the lock does _not_
-block saving - `isDirty` deliberately ignores it so a lock cannot silently discard unsaved work (see Known limits). What
-actually stops an empty document reaching disk is `serializeDoc` returning `null` when the adapter reports no content.
+block saving - `isDirty` deliberately ignores it so a lock cannot silently discard unsaved work (see Known limits).
+What actually stops an empty document reaching disk is `serializeDoc` returning `null` when the adapter reports no
+content.
 
 ### `_oc_meta`
 
@@ -326,8 +338,8 @@ A `Y.Map` alongside the editor content, used for coordination the editor never s
 | Key                | Written by          | Meaning                                       |
 | ------------------ | ------------------- | --------------------------------------------- |
 | `etag`             | whoever saved last  | the etag the room believes is on disk         |
-| `lastSavedAt`      | whoever saved last  | fan-out trigger for a peer save               |
-| `savedStateVector` | whoever saved last  | what that peer's doc held when it wrote       |
+| `lastSavedAt`      | last save, recovery | fan-out trigger for a peer save               |
+| `savedStateVector` | last save, recovery | what that peer's doc held when it wrote       |
 | `isStale`          | any writer          | the file changed outside this room; rehydrate |
 | `nativeEtag`       | writer that noticed | the etag recovery should settle on            |
 | `recoveryClientId` | writer that noticed | which peer is elected to re-seed the room     |
@@ -462,10 +474,10 @@ public-link tokens, so any context without a user access token - a public link, 
 `yjsServerUrl`. Editing works, it just does not sync. A signed-in visitor opening someone else's public link is treated
 the same way, since their token carries no grant on the shared file.
 
-**Connection state is invisible.** The session exposes a `status` ref (`connecting` / `connected` / `disconnected` /
-`local`). `AppWrapper` reads it to decide whether a save conflict can be reconciled, but never shows it. A websocket
-that drops _after_ a successful sync produces no indicator: the user keeps typing into a Y.Doc that no longer reaches
-anyone. Only a connect that never succeeds in the first place is caught, by the timeout above.
+**A conflicted peer stays out until reload.** Leaving the room protects unsaved work, but there is no way back inside
+the session: the provider is stopped for good, so the user keeps editing a document nobody else sees until they save
+elsewhere and reload. Re-joining would mean merging a diverged doc into a room that has moved on, which the CRDT cannot
+do meaningfully here.
 
 **Conflict reconciliation depends on a timely etag stamp.** While connected, a 409/412 is only retried when the room can
 account for the write: the fresh etag must match `_oc_meta.etag`, with a short grace period (`ROOM_ETAG_GRACE_MS`) for a

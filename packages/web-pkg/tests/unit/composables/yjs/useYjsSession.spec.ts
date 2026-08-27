@@ -127,6 +127,7 @@ function setupSession({
   adapter = testAdapter as YjsAdapter,
   enabled = true,
   isReadOnly = false,
+  hasUnsavedChanges = false,
   // Mirrors what AppWrapper does with a reported etag: it writes it back into
   // the resource it passes in. Off by default so most tests can assert on the
   // callback alone, on for the ones about what that write-back does to the
@@ -137,8 +138,10 @@ function setupSession({
   const adapterRef = shallowRef(adapter)
   const enabledRef = ref(enabled)
   const isReadOnlyRef = ref(isReadOnly)
+  const hasUnsavedChangesRef = ref(hasUnsavedChanges)
   const contentRef = ref(currentContent)
   const onContentChange = vi.fn()
+  const onConflict = vi.fn()
   const onServerContentChange = vi.fn()
   const onEtagChange = vi.fn((etag: string) => {
     if (!mirrorEtagToResource) return
@@ -157,7 +160,9 @@ function setupSession({
         documentPrefix: 'test-app',
         onContentChange,
         onServerContentChange,
-        onEtagChange
+        onEtagChange,
+        hasUnsavedChanges: hasUnsavedChangesRef,
+        onConflict
       })
     },
     {
@@ -178,10 +183,12 @@ function setupSession({
     adapterRef,
     enabledRef,
     isReadOnlyRef,
+    hasUnsavedChangesRef,
     contentRef,
     onContentChange,
     onServerContentChange,
     onEtagChange,
+    onConflict,
     get session() {
       return session
     },
@@ -843,13 +850,15 @@ describe('useYjsSession — stale-state recovery', () => {
     ourEtag = 'etag-new',
     adapter = testAdapter as YjsAdapter,
     roomContent = 'stale room content',
-    isReadOnly = false
+    isReadOnly = false,
+    hasUnsavedChanges = false
   } = {}) {
     const s = setupSession({
       yjsServerUrl,
       currentContent,
       adapter,
       isReadOnly,
+      hasUnsavedChanges,
       resource: makeResource({ etag: ourEtag })
     })
     await flushPromises()
@@ -898,6 +907,21 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(meta.get('nativeEtag')).toBeUndefined()
     expect(meta.get('recoveryClientId')).toBeUndefined()
     expect(meta.get('etag')).toBe('etag-new')
+  })
+
+  // Regression: reset and hydrate ran as separate transactions, so a mounted
+  // editor observed an empty doc in between and padded it with an empty
+  // paragraph that survived the re-seed.
+  it('never exposes the emptied doc to observers while re-seeding', async () => {
+    const s = await syncIntoStaleRoom({ currentContent: 'fresh body' })
+    const seen: string[] = []
+    const text = s.ydoc!.getText(SHARED_TEXT_KEY)
+    text.observe(() => seen.push(text.toString()))
+
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(seen).toEqual(['fresh body'])
   })
 
   // Regression: the election was "lowest awareness clientId wins" over every
@@ -1038,6 +1062,174 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(meta.get('isStale')).toBe(true)
     expect(meta.get('nativeEtag')).toBe('etag-new')
     expect(meta.get('recoveryClientId')).toBeUndefined()
+  })
+
+  // A peer that holds unsaved work must not follow the reset: it arrives as
+  // plain CRDT updates and would wipe that work with no warning. Leaving the
+  // room keeps the local doc, and the caller surfaces its conflict message.
+  it('leaves the room instead of following a recovery that would drop unsaved work', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'my unsaved body',
+      resource: makeResource({ etag: 'etag-current' }),
+      hasUnsavedChanges: true
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const doc = s.ydoc!
+    // A peer joined, found the file changed on disk and claimed the recovery.
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(doc))
+    peer.transact(() => {
+      const peerMeta = peer.getMap(META_KEY)
+      peerMeta.set('nativeEtag', 'etag-external')
+      peerMeta.set('recoveryClientId', peer.clientID)
+      peerMeta.set('isStale', true)
+    })
+    Y.applyUpdate(doc, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(doc)))
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(unref(s.session.isConflicted)).toBe(true)
+    expect(unref(s.session.status)).toBe('disconnected')
+    expect(s.onConflict).toHaveBeenCalledTimes(1)
+    expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    // Detached too, or the doc's update handler keeps feeding the socket.
+    expect(providerInstances[0].detach).toHaveBeenCalled()
+    // The work is still on screen, and we did not run the recovery ourselves.
+    expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('my unsaved body')
+    expect(doc.getMap(META_KEY).get('isStale')).toBe(true)
+  })
+
+  // The flip side: nothing to lose, so the peer follows the recovery.
+  it('follows a peer recovery when there is no unsaved work', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'room body',
+      resource: makeResource({ etag: 'etag-current' })
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const doc = s.ydoc!
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(doc))
+    peer.transact(() => {
+      const peerMeta = peer.getMap(META_KEY)
+      peerMeta.set('nativeEtag', 'etag-external')
+      peerMeta.set('recoveryClientId', peer.clientID)
+      peerMeta.set('isStale', true)
+    })
+    Y.applyUpdate(doc, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(doc)))
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(unref(s.session.isConflicted)).toBe(false)
+    expect(unref(s.session.status)).not.toBe('disconnected')
+    expect(s.onConflict).not.toHaveBeenCalled()
+  })
+
+  // The recovering client detected the drift itself, so it holds the fresh
+  // body and there is nothing of its own to lose - dirty or not.
+  it('still recovers when it detected the drift itself', async () => {
+    const s = await syncIntoStaleRoom({ hasUnsavedChanges: true })
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(unref(s.session.isConflicted)).toBe(false)
+    expect(s.onConflict).not.toHaveBeenCalled()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+  })
+
+  // Without the stamp, peers see the recovered body as a remote edit and go
+  // dirty over content that is demonstrably on disk - and autosave it back.
+  it('stamps the recovery commit as a save', async () => {
+    const s = await syncIntoStaleRoom()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(meta.get('savedStateVector')).toBeInstanceOf(Uint8Array)
+    expect(meta.get('lastSavedAt')).toBeTypeOf('number')
+  })
+
+  // The receiving end of that stamp: the recovered body becomes the peer's
+  // server content, so it is clean rather than holding a phantom edit.
+  it('takes a peer recovery as a save rather than an unsaved change', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'room body',
+      resource: makeResource({ etag: 'etag-old' })
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    // A peer holding the fresh body runs the whole recovery: reset, re-seed,
+    // commit - exactly what `recoverFromStaleState` writes.
+    const doc = s.ydoc!
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(doc))
+    peer.transact(() => {
+      const text = peer.getText(SHARED_TEXT_KEY)
+      text.delete(0, text.length)
+      text.insert(0, 'recovered body')
+      const peerMeta = peer.getMap(META_KEY)
+      peerMeta.set('etag', 'etag-new')
+      peerMeta.set('savedStateVector', Y.encodeStateVector(peer))
+      peerMeta.set('lastSavedAt', Date.now())
+    })
+    Y.applyUpdate(doc, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(doc)))
+    await flushPromises()
+
+    expect(unref(s.session.isConflicted)).toBe(false)
+    expect(s.onEtagChange).toHaveBeenCalledWith('etag-new')
+    expect(s.onServerContentChange).toHaveBeenCalledWith('recovered body')
+  })
+
+  it('gives up the room only once', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'x' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    s.session.markConflicted()
+    s.session.markConflicted()
+
+    expect(s.onConflict).toHaveBeenCalledTimes(1)
+    expect(providerInstances[0].disconnect).toHaveBeenCalledOnce()
+  })
+
+  it('never conflicts in local mode', async () => {
+    const s = setupSession({ currentContent: 'x' })
+    await flushPromises()
+
+    s.session.markConflicted()
+
+    expect(unref(s.session.isConflicted)).toBe(false)
+    expect(unref(s.session.status)).toBe('local')
+    expect(s.onConflict).not.toHaveBeenCalled()
+  })
+
+  it('clears the conflict when the session is rebuilt', async () => {
+    const s = setupSession({ yjsServerUrl, currentContent: 'x' })
+    await flushPromises()
+    s.session.markConflicted()
+    expect(unref(s.session.isConflicted)).toBe(true)
+
+    s.enabledRef.value = false
+    await flushPromises()
+    s.enabledRef.value = true
+    await flushPromises()
+
+    expect(unref(s.session.isConflicted)).toBe(false)
   })
 })
 
