@@ -1,5 +1,5 @@
 <template>
-  <plain-shell class="oc-login" :title="pageTitle">
+  <plain-shell class="oc-login h-full" :title="pageTitle">
     <template #banner>
       <announcement class="relative z-1" />
     </template>

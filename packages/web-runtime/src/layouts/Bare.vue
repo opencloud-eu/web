@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen overflow-y-auto flex flex-col bg-role-surface-container">
+  <div class="min-h-screen overflow-y-auto flex flex-col bg-role-surface-container h-full">
     <announcement />
     <h1 class="sr-only" v-text="pageTitle" />
     <div class="flex grow items-center justify-center">
