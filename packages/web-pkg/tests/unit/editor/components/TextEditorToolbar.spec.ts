@@ -220,7 +220,7 @@ describe('TextEditorToolbar', () => {
   it('sets correct aria-label and icon for connecting status', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'connecting')
     const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
-    expect(indicator.attributes('aria-label')).toBe('Connecting...')
+    expect(indicator.attributes('aria-label')).toBe('Collaboration connecting...')
     expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
     wrapper.unmount()
   })

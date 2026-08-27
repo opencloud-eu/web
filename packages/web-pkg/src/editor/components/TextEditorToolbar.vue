@@ -302,12 +302,10 @@ const visible = computed(() => {
   return !!unref(textEditor.editor)
 })
 
-const showCollaborationStatusIndicator = computed(
-  () =>
-    unref(textEditor.yjsStatus) === YjsStatus.Connected ||
-    unref(textEditor.yjsStatus) === YjsStatus.Disconnected ||
-    unref(textEditor.yjsStatus) === YjsStatus.Connecting
-)
+const showCollaborationStatusIndicator = computed(() => {
+  const status = unref(textEditor.yjsStatus)
+  return status !== YjsStatus.Local && status !== null
+})
 
 const collaborationStatusLabel = computed(() => {
   if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
@@ -317,7 +315,7 @@ const collaborationStatusLabel = computed(() => {
     return $gettext('Collaboration disconnected')
   }
   if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
-    return $gettext('Connecting...')
+    return $gettext('Collaboration connecting...')
   }
   return ''
 })
