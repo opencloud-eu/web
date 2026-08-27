@@ -81,6 +81,7 @@ function setup({
   const beginSave = vi.fn()
   const serializeMerged = vi.fn().mockResolvedValue(mergedContent)
   const isLockedForReload = ref(false)
+  const statusRef = ref(status)
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
@@ -107,7 +108,7 @@ function setup({
     sessionOptions = options
     return mock<YjsSession>({
       isReady: ref(true) as any,
-      status: ref(status) as any,
+      status: statusRef as any,
       // Auto-mocked refs are truthy, which would fold into `effectiveReadOnly`
       // and hard-wire `isDirty` to false.
       isLockedForReload: isLockedForReload as any,
@@ -168,6 +169,8 @@ function setup({
     beginSave,
     serializeMerged,
     currentContent: () => slotProps?.currentContent,
+    yjsStatus: () => slotProps?.yjsStatus,
+    statusRef,
     async edit(content: string) {
       slotProps['onUpdate:currentContent'](content)
       await nextTick()
@@ -242,6 +245,36 @@ describe('AppWrapper — Yjs session gate', () => {
 
     await s.resolveContent('content of b')
     expect(s.isEnabled()).toBe(true)
+  })
+
+  it('passes the current yjs status to the wrapped component slot props', async () => {
+    const s = setup({ status: 'connected' })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+
+    expect(s.yjsStatus()).toBe('connected')
+  })
+
+  it('passes null yjs status when the wrapped app did not opt into yjs', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+
+    expect(s.yjsStatus()).toBeNull()
+  })
+
+  it('updates slot yjs status when the session status changes', async () => {
+    const s = setup({ status: 'connecting' })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    expect(s.yjsStatus()).toBe('connecting')
+
+    s.statusRef.value = 'connected'
+    await nextTick()
+    expect(s.yjsStatus()).toBe('connected')
   })
 })
 

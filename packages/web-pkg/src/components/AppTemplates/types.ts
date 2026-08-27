@@ -3,6 +3,7 @@ import { AppConfigObject } from '../../apps/types'
 import { Ref } from 'vue'
 import type * as Y from 'yjs'
 import type { Awareness } from 'y-protocols/awareness'
+import type { YjsStatus } from '../../composables/yjs'
 import type {
   AppFileHandlingResult,
   AppFolderHandlingResult,
@@ -63,6 +64,11 @@ export interface AppWrapperSlotProps {
   ydoc: Y.Doc | null
   /** Set once the Yjs session is synced and hydrated, else null. */
   awareness: Awareness | null
+  /**
+   * Current collaboration transport status. Null when the wrapped app did not
+   * opt into Yjs.
+   */
+  yjsStatus: YjsStatus | null
 }
 
 /**
@@ -89,7 +95,8 @@ export type EditorSlotProps = Pick<
 >
 
 /** Editors opting into collaborative editing via {@link YjsOptions}. */
-export type YjsEditorSlotProps = EditorSlotProps & Pick<AppWrapperSlotProps, 'ydoc' | 'awareness'>
+export type YjsEditorSlotProps = EditorSlotProps &
+  Pick<AppWrapperSlotProps, 'ydoc' | 'awareness' | 'yjsStatus'>
 
 /** Apps that render the file from a URL instead of its body. */
 export type ViewerSlotProps = Pick<AppWrapperSlotProps, 'resource' | 'url'>
