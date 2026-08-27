@@ -7,13 +7,16 @@
   >
     <oc-button
       :class="btnClass"
-      justify-content="left"
-      appearance="raw"
+      :justify-content="btnJustifyContent"
+      :appearance="btnAppearance"
+      :color-role="btnColorRole"
       :disabled="isRemoteUploadInProgress"
       @click="triggerUpload"
     >
-      <oc-icon :name="uploadIcon" size-class="size-5" />
-      <span :id="uploadLabelId">{{ buttonLabel }}</span>
+      <slot :label-id="uploadLabelId" :label="buttonLabel">
+        <oc-icon :name="uploadIcon" size-class="size-5" />
+        <span :id="uploadLabelId">{{ buttonLabel }}</span>
+      </slot>
     </oc-button>
     <input
       :id="inputId"
@@ -39,16 +42,27 @@ import {
   convertToMinimalUppyFile
 } from '@opencloud-eu/web-pkg'
 import type { UppyService } from '@opencloud-eu/web-pkg'
+import type {
+  AppearanceType,
+  ColorRoleType,
+  JustifyContentType
+} from '@opencloud-eu/design-system/helpers'
 import { getItemsViaDirectoryPicker } from '../../../helpers/directoryPicker'
 import { useGettext } from 'vue3-gettext'
 
 const {
   btnLabel = '',
   btnClass = '',
+  btnAppearance = 'raw',
+  btnColorRole = 'secondary',
+  btnJustifyContent = 'left',
   isFolder = false
 } = defineProps<{
   btnLabel?: string
   btnClass?: string
+  btnAppearance?: AppearanceType
+  btnColorRole?: ColorRoleType
+  btnJustifyContent?: JustifyContentType
   isFolder?: boolean
 }>()
 
