@@ -67,6 +67,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
 
   const contentType = ref(options.contentType)
   const readonly = computed(() => toValue(options.readonly) ?? false)
+  const yjsStatus = computed(() => toValue(options.yjsStatus) ?? null)
   const strategy = resolveStrategy(options.contentType, state)
   const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
@@ -282,6 +283,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor,
     contentType,
     readonly,
+    yjsStatus,
     actionGroups: editorActionGroups,
     getContent,
     setContent,

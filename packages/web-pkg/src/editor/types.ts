@@ -4,6 +4,7 @@ import type { Resource } from '@opencloud-eu/web-client'
 import type { Editor } from '@tiptap/vue-3'
 import type * as Y from 'yjs'
 import type { Awareness } from 'y-protocols/awareness'
+import type { YjsStatus } from '../composables/yjs'
 import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
@@ -52,6 +53,8 @@ export interface TextEditorOptions {
    * is not also set.
    */
   awareness?: Awareness
+  /** Current transport status of the hosting Yjs session, if any. */
+  yjsStatus?: MaybeRefOrGetter<YjsStatus | null>
 }
 
 export interface TextEditorLinkPanelRequest {
@@ -73,6 +76,8 @@ export interface TextEditorInstance {
   contentType: Ref<ContentType>
   /** Derived from the caller's `readonly` option; follows it while mounted. */
   readonly: Ref<boolean>
+  /** Current transport status of the hosting Yjs session, if any. */
+  yjsStatus: Ref<YjsStatus | null>
   actionGroups(): EditorActionGroup[]
   getContent(): string
   setContent(value: string): void

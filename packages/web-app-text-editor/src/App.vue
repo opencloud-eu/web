@@ -10,7 +10,10 @@
 <script setup lang="ts">
 import { computed, toRef, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { YjsEditorSlotProps } from '@opencloud-eu/web-pkg'
+import type { Resource } from '@opencloud-eu/web-client'
+import type { YjsStatus } from '@opencloud-eu/web-pkg'
+import type * as Y from 'yjs'
+import type { Awareness } from 'y-protocols/awareness'
 import {
   useTextEditor,
   TextEditorProvider,
@@ -20,7 +23,14 @@ import {
 } from '@opencloud-eu/web-pkg/editor'
 import { detectContentType } from './yjs'
 
-const { ydoc, awareness, isReadOnly, resource } = defineProps<YjsEditorSlotProps>()
+const { ydoc, awareness, isReadOnly, resource, yjsStatus } = defineProps<{
+  currentContent: string
+  isReadOnly: boolean
+  resource: Resource
+  ydoc: Y.Doc | null
+  awareness: Awareness | null
+  yjsStatus: YjsStatus | null
+}>()
 
 const { $gettext } = useGettext()
 
@@ -41,6 +51,7 @@ const textEditor = useTextEditor({
   readonly: () => isReadOnly,
   placeholder: unref(placeholder),
   ydoc,
-  awareness
+  awareness,
+  yjsStatus: () => yjsStatus
 })
 </script>

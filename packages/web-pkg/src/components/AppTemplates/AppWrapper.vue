@@ -840,6 +840,7 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   // session being synced and hydrated. Always null for other apps.
   ydoc: unref(yjsSession?.ydoc) ?? null,
   awareness: unref(yjsSession?.awareness) ?? null,
+  yjsStatus: unref(yjsSession?.status) ?? null,
 
   'onUpdate:resource': (value: Resource) => {
     space.value = unref(unref(currentFileContext).space)

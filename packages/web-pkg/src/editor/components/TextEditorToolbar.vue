@@ -149,6 +149,19 @@
           </oc-button>
         </template>
       </div>
+      <div
+        v-if="showCollaborationStatusIndicator"
+        v-oc-tooltip="collaborationStatusLabel"
+        class="text-editor-toolbar-collaboration-status ml-2 inline-flex shrink-0 items-center"
+        :aria-label="collaborationStatusLabel"
+      >
+        <span
+          class="inline-flex size-5 items-center justify-center rounded-full border"
+          :class="collaborationStatusClasses"
+        >
+          <oc-icon :name="collaborationStatusIcon" fill-type="line" size-class="size-3" />
+        </span>
+      </div>
     </div>
     <div
       v-if="canScrollLeft"
@@ -174,10 +187,12 @@ import {
   watch
 } from 'vue'
 import type { ComponentPublicInstance } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
+import { YjsStatus } from '../../composables/yjs'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -185,6 +200,7 @@ const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
+const { $gettext } = useGettext()
 
 const scrollContainerRef = useTemplateRef('scrollContainer')
 const canScrollLeft = ref(false)
@@ -283,6 +299,44 @@ const visible = computed(() => {
     return false
   }
   return !!unref(textEditor.editor)
+})
+
+const showCollaborationStatusIndicator = computed(() => {
+  const status = unref(textEditor.yjsStatus)
+  return status !== YjsStatus.Local && status !== null
+})
+
+const collaborationStatusLabel = computed(() => {
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
+    return $gettext('Collaboration ready')
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
+    return $gettext('Collaboration disconnected')
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
+    return $gettext('Collaboration connecting...')
+  }
+  return ''
+})
+
+const collaborationStatusIcon = computed(() => {
+  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
+    return 'wifi-off'
+  }
+  return 'wifi'
+})
+
+const collaborationStatusClasses = computed(() => {
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
+    return 'border-green-700/20 bg-green-500/15 text-green-700'
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
+    return 'border-red-700/20 bg-red-500/15 text-red-700'
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
+    return 'border-gray-700/20 bg-gray-500/15 text-gray-700'
+  }
+  return ''
 })
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))

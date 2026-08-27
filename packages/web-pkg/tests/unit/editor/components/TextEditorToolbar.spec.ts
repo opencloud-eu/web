@@ -5,12 +5,18 @@ import TextEditorToolbar from '../../../../src/editor/components/TextEditorToolb
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import type { EditorAction } from '../../../../src/editor/composables'
 
+vi.mock('vue3-gettext', () => ({
+  useGettext: () => ({ $gettext: (value: string) => value })
+}))
+
 function mountToolbar(
   sourceMode = false,
   contentType: 'markdown' | 'html' = 'markdown',
-  includeSearchAction = false
+  includeSearchAction = false,
+  collaborationStatus: 'connecting' | 'connected' | 'disconnected' | 'local' | null = null
 ) {
   const showSpy = vi.fn()
+  const collaborationStatusRef = ref(collaborationStatus)
 
   const actions: EditorAction[] = [
     {
@@ -41,6 +47,7 @@ function mountToolbar(
     editor: ref({}),
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
+    yjsStatus: collaborationStatusRef,
     state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
     isFocused: computed(() => isFocusedRef.value),
     actionGroups: () => [
@@ -79,7 +86,7 @@ function mountToolbar(
     }
   })
 
-  return { wrapper, textEditor, isFocusedRef, showSpy }
+  return { wrapper, textEditor, isFocusedRef, showSpy, collaborationStatusRef }
 }
 
 describe('TextEditorToolbar', () => {
@@ -171,6 +178,72 @@ describe('TextEditorToolbar', () => {
 
     await wrapper.vm.$nextTick()
     expect(showSpy).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
+  it('shows the collaboration status indicator for connected, disconnected, and connecting', () => {
+    const connected = mountToolbar(false, 'markdown', false, 'connected')
+    expect(connected.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(true)
+    connected.wrapper.unmount()
+
+    const disconnected = mountToolbar(false, 'markdown', false, 'disconnected')
+    expect(disconnected.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(
+      true
+    )
+    disconnected.wrapper.unmount()
+
+    const connecting = mountToolbar(false, 'markdown', false, 'connecting')
+    expect(connecting.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(true)
+    connecting.wrapper.unmount()
+
+    const local = mountToolbar(false, 'markdown', false, 'local')
+    expect(local.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
+    local.wrapper.unmount()
+  })
+
+  it('sets correct aria-label and icon for connected status', () => {
+    const { wrapper } = mountToolbar(false, 'markdown', false, 'connected')
+    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    expect(indicator.attributes('aria-label')).toBe('Collaboration ready')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
+    wrapper.unmount()
+  })
+
+  it('sets correct aria-label and icon for disconnected status', () => {
+    const { wrapper } = mountToolbar(false, 'markdown', false, 'disconnected')
+    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    expect(indicator.attributes('aria-label')).toBe('Collaboration disconnected')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
+    wrapper.unmount()
+  })
+
+  it('sets correct aria-label and icon for connecting status', () => {
+    const { wrapper } = mountToolbar(false, 'markdown', false, 'connecting')
+    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    expect(indicator.attributes('aria-label')).toBe('Collaboration connecting...')
+    expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
+    wrapper.unmount()
+  })
+
+  it('reacts to collaboration status changes after mount', async () => {
+    const { wrapper, collaborationStatusRef } = mountToolbar(false, 'markdown', false, null)
+    expect(wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
+
+    collaborationStatusRef.value = 'connected'
+    await wrapper.vm.$nextTick()
+    const connectedIndicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    expect(connectedIndicator.exists()).toBe(true)
+    expect(connectedIndicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
+
+    collaborationStatusRef.value = 'disconnected'
+    await wrapper.vm.$nextTick()
+    const disconnectedIndicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    expect(disconnectedIndicator.exists()).toBe(true)
+    expect(disconnectedIndicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
+
+    collaborationStatusRef.value = 'local'
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
     wrapper.unmount()
   })
 })
