@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
 - Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### ✅ Tests
