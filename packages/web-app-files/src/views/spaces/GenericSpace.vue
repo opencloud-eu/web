@@ -1,5 +1,6 @@
 <template>
   <div class="flex w-full">
+    <drop-zone />
     <whitespace-context-menu :space="space" />
     <files-view-wrapper>
       <app-bar
@@ -140,6 +141,7 @@ import {
   UppyService
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
+import DropZone from '../../components/DropZone.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import NotFoundMessage from '../../components/FilesList/NotFoundMessage.vue'
 import QuickActions from '../../components/FilesList/QuickActions.vue'

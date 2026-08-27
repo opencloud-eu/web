@@ -11,10 +11,10 @@ exports[`CreateOrUploadMenu component > action buttons > should show and be enab
   </oc-list-stub>
   <oc-list-stub raw="false" id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
     <li>
-      <resource-upload-stub btnlabel="Files Upload" btnclass="w-full" isfolder="false"></resource-upload-stub>
+      <resource-upload-stub btnlabel="Files Upload" btnclass="w-full" btnappearance="raw" btncolorrole="secondary" btnjustifycontent="left" isfolder="false"></resource-upload-stub>
     </li>
     <li>
-      <resource-upload-stub btnlabel="Folder Upload" btnclass="w-full" isfolder="true"></resource-upload-stub>
+      <resource-upload-stub btnlabel="Folder Upload" btnclass="w-full" btnappearance="raw" btncolorrole="secondary" btnjustifycontent="left" isfolder="true"></resource-upload-stub>
     </li>
   </oc-list-stub>
   <!--v-if-->
@@ -54,10 +54,10 @@ exports[`CreateOrUploadMenu component > file handlers > should show entries for 
   </oc-list-stub>
   <oc-list-stub raw="false" id="upload-list" class="py-2 sm:first:pt-0 sm:last:pb-0 border-t">
     <li>
-      <resource-upload-stub btnlabel="Files Upload" btnclass="w-full" isfolder="false"></resource-upload-stub>
+      <resource-upload-stub btnlabel="Files Upload" btnclass="w-full" btnappearance="raw" btncolorrole="secondary" btnjustifycontent="left" isfolder="false"></resource-upload-stub>
     </li>
     <li>
-      <resource-upload-stub btnlabel="Folder Upload" btnclass="w-full" isfolder="true"></resource-upload-stub>
+      <resource-upload-stub btnlabel="Folder Upload" btnclass="w-full" btnappearance="raw" btncolorrole="secondary" btnjustifycontent="left" isfolder="true"></resource-upload-stub>
     </li>
   </oc-list-stub>
   <!--v-if-->

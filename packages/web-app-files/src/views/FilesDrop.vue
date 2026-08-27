@@ -1,47 +1,98 @@
 <template>
   <app-loading-spinner v-if="loading" />
-  <div
-    v-else
-    id="files-drop-container"
-    class="h-full flex flex-col justify-between m-2 sm:m-6 lg:m-12 bg-transparent border-dashed border-role-outline relative"
-  >
+  <div v-else class="h-full box-border overflow-auto p-2 sm:p-6 lg:p-12">
+    <drop-zone class="lg:inset-12 sm:inset-6 inset-2" />
     <div
-      v-if="dragareaEnabled"
-      class="absolute inset-0 z-90 bg-sky-600/20 rounded-xl pointer-events-none"
-    />
-    <h1 class="sr-only">{{ pageTitle }}</h1>
-    <div class="p-3 sm:p-4 h-full text-center">
-      <div key="loaded-drop" class="flex flex-col">
-        <h2 class="break-words" v-text="title" />
-        <resource-upload
-          id="files-drop-zone"
-          ref="fileUpload"
-          class="w-full flex items-center justify-center oc-placeholder"
-          btn-class="p-2"
-          :btn-label="$gettext('Drop files here to upload or click to select file')"
-        />
-        <div id="previews" hidden />
-      </div>
-      <div v-if="errorMessage">
-        <h2>
-          <span v-text="$gettext('An error occurred while loading the public link')" />
-        </h2>
+      id="files-drop-container"
+      class="min-h-full box-border flex flex-col items-center justify-center p-4 sm:p-8 relative rounded-xl border-2 border-dashed border-role-secondary-container"
+    >
+      <h1 class="sr-only">{{ pageTitle }}</h1>
+      <div v-if="errorMessage" class="text-center">
+        <h2 v-text="$gettext('An error occurred while loading the public link')" />
         <p class="m-0" v-text="errorMessage" />
       </div>
-      <div v-else class="flex justify-center w-full">
+      <div
+        v-else-if="uploadedFileCount"
+        role="status"
+        aria-live="polite"
+        class="flex flex-col items-center text-center max-w-xl"
+      >
+        <div class="flex items-center justify-center size-20 rounded-full bg-green-800 text-white">
+          <oc-icon name="check" fill-type="line" size-class="size-10" />
+        </div>
+        <h2 class="mt-6 text-2xl sm:text-3xl font-bold break-words" v-text="successTitle" />
+        <p class="mt-4 mb-0 text-role-on-surface-variant" v-text="successDescription" />
+        <p v-if="failedFileCount" class="mt-2 mb-0 text-role-error" v-text="failureDescription" />
+        <oc-button
+          ref="uploadMoreBtn"
+          class="mt-8 px-6 py-3 font-semibold"
+          appearance="filled"
+          @click="resetUploadState"
+        >
+          {{ $gettext('Upload more files') }}
+        </oc-button>
+      </div>
+      <div v-else class="flex flex-col items-center text-center max-w-xl">
+        <div
+          class="flex items-center justify-center size-20 rounded-2xl bg-role-secondary-container"
+        >
+          <oc-icon
+            name="upload-2"
+            fill-type="line"
+            size-class="size-8"
+            class="text-role-secondary"
+          />
+        </div>
+        <h2 class="mt-6 text-2xl sm:text-3xl font-bold break-words">
+          <template v-if="shareOwner">
+            <span v-text="titleParts[0]" /><span
+              class="text-role-secondary"
+              v-text="shareOwner"
+            /><span v-text="titleParts[1]" />
+          </template>
+          <template v-else>{{ $gettext('Upload files') }}</template>
+        </h2>
         <p
-          id="files-drop-info-message "
-          class="m-0 pt-12 text-sm w-full max-w-md lg:max-w-full"
+          class="mt-2 mb-0 text-role-on-surface-variant"
           v-text="
             $gettext(
-              'Note: Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
+              'Drop files here to upload or click the button below to select files or folders.'
             )
           "
         />
-      </div>
-
-      <div class="mt-24">
-        <p v-text="themeSlogan" />
+        <resource-upload
+          id="files-drop-zone"
+          class="mt-8"
+          btn-class="px-6 py-3 font-semibold"
+          btn-appearance="filled"
+          btn-justify-content="center"
+          :btn-label="$gettext('Select files')"
+        >
+          <template #default="{ labelId, label }">
+            <oc-icon name="upload-2" fill-type="line" size-class="size-5" />
+            <span :id="labelId">{{ label }}</span>
+          </template>
+        </resource-upload>
+        <resource-upload
+          class="mt-3"
+          btn-class="underline"
+          is-folder
+          :btn-label="$gettext('Select folder')"
+        >
+          <template #default="{ labelId, label }">
+            <span :id="labelId">{{ label }}</span>
+          </template>
+        </resource-upload>
+        <p
+          id="files-drop-info-message"
+          class="mt-8 mb-0 px-4 py-2 rounded-full bg-role-surface-container text-sm text-role-on-surface-variant"
+          v-text="
+            $gettext(
+              'Transfer of nested folder structures is not possible. Instead, all files from the subfolders will be uploaded individually.'
+            )
+          "
+        />
+        <p class="mt-8 mb-0 text-sm text-role-on-surface-variant" v-text="themeSlogan" />
       </div>
     </div>
   </div>
@@ -66,20 +117,32 @@ import {
   useRouteQuery,
   queryItemAsString,
   useUpload,
-  eventBus,
   useService,
   UppyService,
+  UploadResult,
   useAuthService,
   createFileRouteOptions
 } from '@opencloud-eu/web-pkg'
 import ResourceUpload from '../components/AppBar/Upload/ResourceUpload.vue'
-import { computed, onMounted, onBeforeUnmount, ref, unref, nextTick, watch } from 'vue'
+import DropZone from '../components/DropZone.vue'
+import {
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  ref,
+  unref,
+  nextTick,
+  watch,
+  useTemplateRef,
+  ComponentPublicInstance
+} from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { HandleUpload } from '../HandleUpload'
 import { PublicSpaceResource, SharePermissionBit } from '@opencloud-eu/web-client'
+import { OcButton } from '@opencloud-eu/design-system/components'
 
 const uppyService = useService<UppyService>('$uppyService')
-const { $gettext } = useGettext()
+const { $gettext, $ngettext } = useGettext()
 const userStore = useUserStore()
 const messageStore = useMessages()
 const themeStore = useThemeStore()
@@ -122,19 +185,11 @@ if (!uppyService.getPlugin('HandleUpload')) {
 }
 
 const share = ref<PublicSpaceResource>()
-const dragareaEnabled = ref(false)
+const uploadedFileCount = ref(0)
+const failedFileCount = ref(0)
+const uploadMoreBtn = useTemplateRef<ComponentPublicInstance<typeof OcButton>>('uploadMoreBtn')
 const loading = ref(true)
 const errorMessage = ref<string>()
-let dragOver: string
-let dragOut: string
-let drop: string
-
-const hideDropzone = () => {
-  dragareaEnabled.value = false
-}
-const onDragOver = (event: DragEvent) => {
-  dragareaEnabled.value = (event.dataTransfer.types || []).some((e) => e === 'Files')
-}
 
 const resolveToInternalLocation = (path: string) => {
   const internalSpace = getInternalSpace(unref(fileId).split('!')[0])
@@ -203,31 +258,65 @@ watch(loading, async (newLoadValue) => {
   }
 })
 
-const pageTitle = computed(() => {
-  return $gettext(unref(route).meta.title as string)
+const pageTitle = computed(() => $gettext(unref(route).meta.title as string))
+const shareOwner = computed(() => unref(share)?.publicLinkShareOwner || '')
+const titleParts = computed(() => $gettext('Upload files for %{owner}').split('%{owner}'))
+
+const successTitle = computed(() =>
+  $ngettext('%{count} file transferred', '%{count} files transferred', unref(uploadedFileCount), {
+    count: unref(uploadedFileCount).toString()
+  })
+)
+
+const successDescription = computed(() => {
+  if (!unref(shareOwner)) {
+    return $gettext('Your files have been successfully received.')
+  }
+  return $gettext('%{owner} has successfully received your files.', {
+    owner: unref(shareOwner)
+  })
 })
 
-const title = computed(() => {
-  // share might not be loaded
-  if (unref(share)) {
-    return $gettext('%{owner} shared this folder with you for uploading', {
-      owner: unref(share).publicLinkShareOwner
-    })
+const failureDescription = computed(() =>
+  $ngettext(
+    '%{count} file could not be transferred.',
+    '%{count} files could not be transferred.',
+    unref(failedFileCount),
+    { count: unref(failedFileCount).toString() }
+  )
+)
+
+function resetUploadState() {
+  uploadedFileCount.value = 0
+  failedFileCount.value = 0
+}
+
+function onUploadCompleted(result: UploadResult) {
+  const successful = result.successful?.length || 0
+  if (!successful) {
+    return
   }
-  return ''
+  uploadedFileCount.value = successful
+  failedFileCount.value = result.failed?.length || 0
+}
+
+watch(uploadedFileCount, async (count) => {
+  if (!count) {
+    return
+  }
+  await nextTick()
+  unref(uploadMoreBtn)?.$el?.focus()
 })
+
+let uploadCompletedSub: string
 
 onMounted(() => {
-  dragOver = eventBus.subscribe('drag-over', onDragOver)
-  dragOut = eventBus.subscribe('drag-out', hideDropzone)
-  drop = eventBus.subscribe('drop', hideDropzone)
+  uploadCompletedSub = uppyService.subscribe('uploadCompleted', onUploadCompleted)
   resolvePublicLink()
 })
 
 onBeforeUnmount(() => {
-  eventBus.unsubscribe('drag-over', dragOver)
-  eventBus.unsubscribe('drag-out', dragOut)
-  eventBus.unsubscribe('drop', drop)
+  uppyService.unsubscribe('uploadCompleted', uploadCompletedSub)
   uppyService.removeDropTarget()
   uppyService.removePlugin(uppyService.getPlugin('HandleUpload'))
 })
