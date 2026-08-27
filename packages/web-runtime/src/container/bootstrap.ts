@@ -89,7 +89,7 @@ import {
   onSSESpaceDeletedEvent,
   onSSESpaceEnabledEvent
 } from './sse'
-import { loadAppTranslations } from '../helpers/language'
+import { loadAppTranslations, resolveInitialLanguage } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
@@ -440,7 +440,9 @@ export const announceGettext = ({
   app: App
 } & Partial<GetTextOptions>) => {
   const gettext = createGettext({
-    defaultLanguage: navigator.language.substring(0, 2),
+    defaultLanguage: resolveInitialLanguage({
+      browserLanguage: navigator.language
+    }),
     silent: true,
     ...options
   })
