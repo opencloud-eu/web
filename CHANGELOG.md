@@ -4,7 +4,14 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @kulmann
+@AlexAndBear, @JammingBen, @kulmann, @saw-jan
+
+### ✅ Tests
+
+- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
+- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
+- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
+- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 📈 Enhancement
 
@@ -12,12 +19,6 @@
 - feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
 - Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
 - Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
-
-### ✅ Tests
-
-- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
-- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
-- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 🐛 Bug Fixes
 
