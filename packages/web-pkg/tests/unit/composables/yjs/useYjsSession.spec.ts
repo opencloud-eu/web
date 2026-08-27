@@ -303,6 +303,21 @@ describe('useYjsSession — local mode (no yjsServerUrl)', () => {
   })
 })
 
+describe('useYjsSession — vault resources', () => {
+  it('stays local and does not construct a HocuspocusProvider even when yjsServerUrl is set', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      resource: makeResource({ isInVault: true }),
+      currentContent: 'vault content'
+    })
+    await flushPromises()
+
+    expect(providerInstances).toHaveLength(0)
+    expect(unref(s.session.status)).toBe('local')
+    expect(unref(s.session.provider)).toBeNull()
+  })
+})
+
 describe('useYjsSession — failed hydration', () => {
   const META_KEY = '_oc_meta'
   const throwingAdapter: YjsAdapter = {

@@ -218,11 +218,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   // Awareness still spin up so the editor binding stays on one codepath, but
   // nothing connects. Public-link visitors stay local too: the Yjs server
   // authenticates user bearer tokens against Graph `/me` and knows nothing
-  // about public-link tokens.
+  // about public-link tokens. Vault resources are always local as well: even
+  // with a configured server URL, encrypted files must never go collaborative.
   const yjsServerUrl = computed<string | null>(() => {
     if (!configStore.options.yjsServerUrl) return null
     if (!authStore.accessToken) return null
     if (authStore.publicLinkContextReady) return null
+    if (toValue(resource)?.isInVault) return null
     return configStore.options.yjsServerUrl
   })
 
