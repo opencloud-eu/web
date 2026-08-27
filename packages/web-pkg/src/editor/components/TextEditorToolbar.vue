@@ -150,15 +150,16 @@
         </template>
       </div>
       <div
-        v-if="showCollaborationReadyIndicator"
-        v-oc-tooltip="collaborationReadyLabel"
-        class="text-editor-toolbar-collaboration-ready ml-2 inline-flex shrink-0 items-center"
-        :aria-label="collaborationReadyLabel"
+        v-if="showCollaborationStatusIndicator"
+        v-oc-tooltip="collaborationStatusLabel"
+        class="text-editor-toolbar-collaboration-status ml-2 inline-flex shrink-0 items-center"
+        :aria-label="collaborationStatusLabel"
       >
         <span
-          class="inline-flex size-5 items-center justify-center rounded-full border border-green-700/20 bg-green-500/15 text-green-700"
+          class="inline-flex size-5 items-center justify-center rounded-full border"
+          :class="collaborationStatusClasses"
         >
-          <oc-icon name="wifi" fill-type="line" size-class="size-3" />
+          <oc-icon :name="collaborationStatusIcon" fill-type="line" size-class="size-3" />
         </span>
       </div>
     </div>
@@ -191,6 +192,7 @@ import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
+import { YjsStatus } from '../../composables/yjs'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -298,10 +300,36 @@ const visible = computed(() => {
   }
   return !!unref(textEditor.editor)
 })
-const collaborationReadyLabel = computed(() => $gettext('Collaboration ready'))
-const showCollaborationReadyIndicator = computed(
-  () => unref(textEditor.yjsStatus) === 'connected'
+
+const showCollaborationStatusIndicator = computed(
+  () =>
+    unref(textEditor.yjsStatus) === YjsStatus.Connected ||
+    unref(textEditor.yjsStatus) === YjsStatus.Disconnected
 )
+
+const collaborationStatusLabel = computed(() => {
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
+    return $gettext('Collaboration ready')
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
+    return $gettext('Collaboration disconnected')
+  }
+  return ''
+})
+
+const collaborationStatusIcon = computed(() =>
+  unref(textEditor.yjsStatus) === YjsStatus.Disconnected ? 'wifi-off' : 'wifi'
+)
+
+const collaborationStatusClasses = computed(() => {
+  if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
+    return 'border-green-700/20 bg-green-500/15 text-green-700'
+  }
+  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
+    return 'border-red-700/20 bg-red-500/15 text-red-700'
+  }
+  return ''
+})
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
 const sourceModeEnabledActionIds = ['source-mode', 'menu-zoom', 'zoom-in', 'zoom-out', 'zoom-reset']

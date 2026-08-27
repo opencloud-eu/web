@@ -10,7 +10,14 @@ import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useConfigStore } from '../piniaStores'
 import type { YjsAdapter } from './types'
 
-export type YjsStatus = 'connecting' | 'connected' | 'disconnected' | 'local'
+export const YjsStatus = {
+  Connecting: 'connecting',
+  Connected: 'connected',
+  Disconnected: 'disconnected',
+  Local: 'local'
+} as const
+
+export type YjsStatus = (typeof YjsStatus)[keyof typeof YjsStatus]
 
 export interface YjsSessionOptions {
   /** The file the session is bound to. Its id forms the room name, its etag drives staleness detection. */
@@ -371,7 +378,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * the doc's update handler keeps calling `send()`.
    */
   function stopProvider(prov: HocuspocusProvider | null) {
-    status.value = 'disconnected'
+    status.value = YjsStatus.Disconnected
     if (!prov) return
     try {
       prov.disconnect()
@@ -872,7 +879,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       pendingSaveStateVector = null
 
       if (!key) {
-        status.value = 'connecting'
+        status.value = YjsStatus.Connecting
         return
       }
       // Non-null whenever `key` is: the key embeds it.
@@ -896,7 +903,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         // Local mode: standalone Awareness so editor bindings still see a
         // non-null instance; nobody else will ever join, which is the point.
         aw = new Awareness(doc)
-        status.value = 'local'
+        status.value = YjsStatus.Local
         void onProviderSynced(doc, null, aw)
       }
 
