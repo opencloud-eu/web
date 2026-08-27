@@ -195,7 +195,7 @@ Then(
 )
 
 Then(
-  '{string} should see an error message',
+  '{string} should see a password error message',
   async ({ world }: { world: World }, stepUser: any, errorMessage: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const linkObject = new objects.applicationFiles.Link({ page })
