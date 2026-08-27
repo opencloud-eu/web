@@ -20,52 +20,14 @@ type FileAccess = {
   canWrite: boolean
 }
 
-// Per-document first-seen app version. Acts as the authoritative gate for
-// "everybody in this room must run the same client version". First connect
-// for a documentName sets the baseline; subsequent connects with a different
-// appVersion are rejected at authenticate-time. In-memory only; on restart
-// the next connecter becomes the new baseline (acceptable for a stateless
-// yjs server). Empty appVersion is tolerated for legacy/test clients.
-const appVersionByDocument = new Map<string, string>()
-
-// A room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>` - a few hundred
-// characters at the very most. Anything longer is not a file we could serve, so
-// refuse it before it becomes a Graph URL.
+// A room name is `<prefix>::<storageid>$<spaceid>!<opaqueid>:<webVersion>` -
+// a few hundred characters at the very most. Anything longer is not a file we
+// could serve, so refuse it before it becomes a Graph URL.
 const MAX_DOCUMENT_NAME_LENGTH = 512
 
 // Bounds each Graph call so a stalled OpenCloud cannot keep WebSocket
 // handshakes hanging in `onAuthenticate` indefinitely.
 const GRAPH_TIMEOUT_MS = 10_000
-
-/**
- * App-version gate: everybody in a room must run the same client version, or
- * two incompatible Y.Doc layouts end up in one document. The first connect for
- * a documentName sets the baseline and later connects with a different version
- * are rejected. An empty client version is tolerated (back-compat for a raw
- * provider in a test harness).
- *
- * MUST run only after the connection is both authenticated and authorized.
- * Recording a baseline any earlier let an unauthenticated caller name any room,
- * claim a version nobody else runs and lock every legitimate client out of that
- * file until the process restarted - the entry is only cleared by
- * `onDisconnect`, which never fires for a rejected connection. The same path
- * grew the map without bound under attacker-chosen keys.
- */
-function enforceAppVersion(documentName: string, clientAppVersion: string): void {
-  if (!clientAppVersion) return
-
-  const baseline = appVersionByDocument.get(documentName)
-  if (!baseline) {
-    appVersionByDocument.set(documentName, clientAppVersion)
-    return
-  }
-  if (clientAppVersion !== baseline) {
-    throw new Error(
-      `app version mismatch for document=${JSON.stringify(documentName)}: ` +
-        `client=${clientAppVersion} room=${baseline}, please reload`
-    )
-  }
-}
 
 function hslToHex(h: number, s: number, l: number): string {
   const a = s * Math.min(l, 1 - l)
@@ -116,12 +78,15 @@ const WRITE_ACTION = 'libre.graph/driveItem/upload/create'
 //
 // The wrapper namespaces room names by app id to avoid schema collisions
 // between different editors opening the same file (e.g.
-// `text-editor::<composite>` vs `codemirror::<composite>`). Strip any
-// `<scope>::` prefix before parsing so the Graph probe targets the raw
-// file id.
+// `text-editor::<composite>:<webVersion>` vs
+// `codemirror::<composite>:<webVersion>`). Strip any `<scope>::` prefix and
+// optional `:<webVersion>` suffix before parsing so the Graph probe targets
+// the raw file id.
 function parseDocumentId(documentName: string): { driveId: string; itemId: string } {
   const scopeSep = documentName.indexOf('::')
-  const fileId = scopeSep >= 0 ? documentName.slice(scopeSep + 2) : documentName
+  const scopedFileId = scopeSep >= 0 ? documentName.slice(scopeSep + 2) : documentName
+  const versionSep = scopedFileId.lastIndexOf(':')
+  const fileId = versionSep >= 0 ? scopedFileId.slice(0, versionSep) : scopedFileId
   const sep = fileId.indexOf('!')
   if (sep <= 0 || sep === fileId.length - 1) {
     throw new Error(`malformed documentName=${JSON.stringify(documentName)}`)
@@ -177,15 +142,13 @@ const server = new Server({
   // here is "mostly ceremony" per the migration plan. Stale detection
   // moved to the client (see useYjsSession.onProviderSynced).
 
-  async onAuthenticate({ token, documentName, requestParameters, connectionConfig }) {
+  async onAuthenticate({ token, documentName, connectionConfig }) {
     if (!token) {
       throw new Error('missing token')
     }
     if (documentName.length > MAX_DOCUMENT_NAME_LENGTH) {
       throw new Error(`documentName too long (${documentName.length})`)
     }
-
-    const clientAppVersion = requestParameters.get('appVersion') ?? ''
 
     const me = await validateTokenAgainstOpenCloud(token)
     const id = me.id ?? me.userPrincipalName ?? me.mail ?? 'unknown'
@@ -195,10 +158,6 @@ const server = new Server({
     if (access === null) {
       throw new Error(`access denied for document=${JSON.stringify(documentName)}`)
     }
-
-    // Identity and access are settled, so this caller is entitled to influence
-    // the room's version baseline.
-    enforceAppVersion(documentName, clientAppVersion)
 
     const readOnly = !access.canWrite
 
@@ -213,7 +172,6 @@ const server = new Server({
     )
     return {
       readOnly,
-      clientAppVersion,
       user: {
         id,
         displayName: me.displayName ?? me.userPrincipalName ?? id,
@@ -229,11 +187,6 @@ const server = new Server({
 
   async onDisconnect({ documentName, clientsCount }) {
     console.log(`[onDisconnect] document=${JSON.stringify(documentName)} remaining=${clientsCount}`)
-    if (clientsCount === 0) {
-      // Forget the version baseline once the room empties out so a new
-      // deploy can start fresh without manual restart.
-      appVersionByDocument.delete(documentName)
-    }
   },
 
   // Anti-spoof identity stamp: before each inbound awareness update is

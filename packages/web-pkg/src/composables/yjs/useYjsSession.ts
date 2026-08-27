@@ -3,8 +3,6 @@ import type { MaybeRefOrGetter, Ref, ShallowRef } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import semverCompare from 'semver/functions/compare'
-import semverValid from 'semver/functions/valid'
 import type { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useConfigStore } from '../piniaStores'
@@ -38,11 +36,6 @@ export interface YjsSessionOptions {
   /** Translates between the native file format and the doc's shared types. */
   adapter: MaybeRefOrGetter<YjsAdapter>
   /**
-   * App version owned by the consuming app (typically `pkg.version`). Used to
-   * detect schema mismatch between peers in the same Y.Doc room.
-   */
-  appVersion: MaybeRefOrGetter<string>
-  /**
    * Namespace for the Yjs room. Editor apps with incompatible Y.Doc schemas
    * can open the same file, so they MUST land in separate rooms.
    */
@@ -67,7 +60,7 @@ export interface YjsSession {
    */
   isReady: ShallowRef<boolean>
   /**
-   * True after a forced disconnect (e.g. app-version mismatch). The editor
+   * True after a forced disconnect. The editor
    * should stay mounted with the last-known content but flip read-only, and
    * the user should be asked to reload.
    */
@@ -125,9 +118,29 @@ const SEED_CAPABLE_KEY = '_oc_canSeed'
  * write while peers are present.
  */
 const ROOM_ETAG_GRACE_MS = 1_000
+const FALLBACK_WEB_VERSION = '0.0.0'
 
 /** The awareness fields this composable sets or reads. */
 type AwarenessState = Record<string, unknown> & { [SEED_CAPABLE_KEY]?: boolean }
+
+function resolveWebVersion(): string {
+  const version = process.env.PACKAGE_VERSION?.trim()
+  return version || FALLBACK_WEB_VERSION
+}
+
+export function buildYjsRoomName({
+  documentPrefix,
+  fileId,
+  webVersion
+}: {
+  documentPrefix?: string
+  fileId: string
+  webVersion?: string
+}): string {
+  const version = webVersion?.trim() || FALLBACK_WEB_VERSION
+  const versionedFileId = `${fileId}:${version}`
+  return documentPrefix ? `${documentPrefix}::${versionedFileId}` : versionedFileId
+}
 
 /**
  * The coordination fields this session keeps in the doc's `_oc_meta` map,
@@ -136,8 +149,6 @@ type AwarenessState = Record<string, unknown> & { [SEED_CAPABLE_KEY]?: boolean }
 interface SessionMeta {
   /** Etag of the file on disk, stamped by whichever peer last wrote it. */
   etag: string
-  /** App version the room's current state was built with. */
-  appVersion: string
   /** The room's state no longer matches the file on disk; triggers recovery. */
   isStale: boolean
   /** Etag of the fresh file body recovery must settle on. */
@@ -175,18 +186,8 @@ function sessionMeta(doc: Y.Doc) {
 type SessionMetaMap = ReturnType<typeof sessionMeta>
 
 /**
- * Semver comparison (negative / zero / positive). Non-semver strings (e.g.
- * raw git SHAs in dev builds) fall back to strict equality: `0` for equal,
- * `NaN` otherwise, which callers treat as "incomparable, force reload".
- */
-function compareVersion(a: string, b: string): number {
-  if (semverValid(a) && semverValid(b)) return semverCompare(a, b)
-  return a === b ? 0 : Number.NaN
-}
-
-/**
  * Owns a Yjs session for a single file: the Y.Doc, the optional Hocuspocus
- * provider, hydration, stale-state recovery and the app-version gate.
+ * provider, hydration and stale-state recovery.
  *
  * It knows nothing about editors. The caller mounts whatever editor it likes
  * against the returned `ydoc` / `awareness`, and supplies a {@link YjsAdapter}
@@ -199,7 +200,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     enabled,
     isReadOnly,
     adapter,
-    appVersion,
     documentPrefix,
     onContentChange,
     onServerContentChange,
@@ -242,8 +242,11 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     const r = toValue(resource)
     const fileId = r?.fileId ?? r?.id
     if (!fileId) return null
-    const prefix = toValue(documentPrefix)
-    return prefix ? `${prefix}::${fileId}` : `${fileId}`
+    return buildYjsRoomName({
+      documentPrefix: toValue(documentPrefix),
+      fileId,
+      webVersion: resolveWebVersion()
+    })
   })
 
   // Explicit session key instead of a watchEffect: the caller mutates
@@ -452,7 +455,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   ) {
     const current = toValue(adapter)
     const meta = sessionMeta(doc)
-    const version = toValue(appVersion)
 
     // Already flagged stale: let the meta observer run the recovery, and skip
     // the checks below so we don't race-lock a doc that is about to be
@@ -465,35 +467,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         void recoverFromStaleState(doc, prov)
       }
       return
-    }
-
-    // App-version handshake:
-    // - empty: first client into the room, seed our version
-    // - equal: no-op
-    // - doc OLDER than us: persisted state pre-dates our schema, recover
-    // - doc NEWER than us or incomparable: we are out of date, force reload
-    const docVersion = meta.get('appVersion')
-    if (!docVersion) {
-      doc.transact(() => {
-        if (!meta.get('appVersion')) meta.set('appVersion', version)
-      })
-    } else {
-      const cmp = compareVersion(version, docVersion)
-      if (Number.isNaN(cmp) || cmp < 0) {
-        lockForReload(
-          prov,
-          $gettext(
-            'This file is being edited with app version %{docVersion} (yours is %{version}). Please reload.',
-            { docVersion, version }
-          )
-        )
-        return
-      }
-      if (cmp > 0) {
-        // Same recovery as an etag drift, and it needs the same claim to run.
-        flagStale(doc, meta)
-        return
-      }
     }
 
     // Etag drift check. The Yjs server is relay-only and persists nothing, so
@@ -613,9 +586,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         meta.delete('nativeEtag')
         meta.delete('recoveryClientId')
         if (freshEtag) meta.set('etag', freshEtag)
-        // The recovered content is in our current layout now; late joiners
-        // with the same version pass the handshake, older clients bounce.
-        meta.set('appVersion', toValue(appVersion))
       }, STALE_RECOVERY_COMMIT_ORIGIN)
 
       staleRecoveryContent = null
@@ -705,13 +675,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       connectTimer = undefined
     }
 
-    // HocuspocusProvider has no `parameters` option, so query params for the
-    // Yjs server go into the URL.
-    const version = toValue(appVersion)
-    const separator = serverUrl.includes('?') ? '&' : '?'
-    const wsUrlWithParams = `${serverUrl}${separator}appVersion=${encodeURIComponent(version)}`
     const prov: HocuspocusProvider = new HocuspocusProvider({
-      url: wsUrlWithParams,
+      url: serverUrl,
       name,
       document: doc,
       token: () => authStore.accessToken,
@@ -721,8 +686,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       onAuthenticationFailed({ reason }) {
         console.error('[yjs] auth failed:', reason)
         // Surfaced as an error so the user sees the reason rather than a
-        // silent disconnect. The server uses this for app-version rejection
-        // too.
+        // silent disconnect.
         error.value = new Error(reason || $gettext('authentication failed'))
         isLockedForReload.value = true
         clearConnectTimer()
@@ -779,7 +743,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
-   * `_oc_meta` is the side channel for save/stale/version coordination.
+   * `_oc_meta` is the side channel for save/stale coordination.
    * Adapters bind to their own shared types and never see it.
    */
   function createMetaObserver(doc: Y.Doc, prov: HocuspocusProvider | null) {
@@ -813,28 +777,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
                 onServerContentChange(value)
               })
               .catch((e) => console.error('[yjs] serialize for peer-save sync failed:', e))
-          }
-        }
-      }
-
-      // Version drift mid-session (e.g. a newer peer joined and bumped the
-      // stamp): lock and prompt reload. Strictly mid-session - the stored
-      // version arriving with the initial sync is `runInitialHydration`'s
-      // job, and locking on it here would keep a newer client from ever
-      // rebuilding the room.
-      if (event.keysChanged.has('appVersion') && isMidSession) {
-        const docVersion = meta.get('appVersion')
-        const version = toValue(appVersion)
-        if (docVersion) {
-          const cmp = compareVersion(version, docVersion)
-          if (Number.isNaN(cmp) || cmp !== 0) {
-            lockForReload(
-              prov,
-              $gettext(
-                'This file is now being edited with app version %{docVersion} (yours is %{version}). Please reload.',
-                { docVersion, version }
-              )
-            )
           }
         }
       }
