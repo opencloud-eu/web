@@ -22,9 +22,11 @@ import {
   useSpaceActionsUploadImage,
   useSpaceActionsEditImageMenu,
   useSpaceActionsLockVault,
-  useSpaceActionsUnlockVault
+  useSpaceActionsUnlockVault,
+  useSpaceActionsCreate
 } from '../actions'
 
+const adminSettingsSpacesCreateExtensionPointId = 'app.admin-settings.spaces.create'
 const adminSettingsSpacesContextActionsExtensionPointId =
   'app.admin-settings.spaces.context-actions'
 const adminSettingsSpacesSideBarActionsExtensionPointId =
@@ -48,8 +50,15 @@ export const useSpaceActions = (): ActionExtension[] => {
   const { actions: showMembersActions } = useSpaceActionsShowMembers()
   const { actions: lockVaultActions } = useSpaceActionsLockVault()
   const { actions: unlockVaultActions } = useSpaceActionsUnlockVault()
+  const { actions: createSpaceActions } = useSpaceActionsCreate()
 
   return [
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.action.create',
+      extensionPointIds: [adminSettingsSpacesCreateExtensionPointId],
+      type: 'action',
+      action: unref(createSpaceActions)[0]
+    },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.show-members',
       extensionPointIds: [contextActionsExtensionPoint.id],
