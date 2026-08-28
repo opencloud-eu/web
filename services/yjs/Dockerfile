@@ -1,6 +1,6 @@
 # Build context is the repository root, since the pnpm lockfile lives there:
 #   docker build -f services/yjs/Dockerfile .
-FROM node:24.19-alpine AS builder
+FROM node:24.20-alpine AS builder
 
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
@@ -21,7 +21,7 @@ RUN node -e "const fs=require('fs');const p=require('/repo/package.json');fs.wri
 # injected-workspace-packages setup pnpm otherwise requires is not needed.
 RUN pnpm deploy --filter=opencloud-yjs-server --prod --legacy /app
 
-FROM node:24.19-alpine
+FROM node:24.20-alpine
 
 ENV NODE_ENV=production
 WORKDIR /app
