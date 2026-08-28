@@ -83,10 +83,11 @@ import {
   useExtensionRegistry,
   useRouteQuery,
   useSideBar,
+  useSpacesStore,
   AppLoadingSpinner,
   ActionExtension
 } from '@opencloud-eu/web-pkg'
-import { call, SpaceResource } from '@opencloud-eu/web-client'
+import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   ComponentPublicInstance,
   computed,
@@ -109,6 +110,7 @@ const { $gettext } = useGettext()
 const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
 const { requestExtensions } = useExtensionRegistry()
+const spacesStore = useSpacesStore()
 
 let loadResourcesEventToken: string
 let updateQuotaForSpaceEventToken: string
@@ -221,6 +223,20 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length === 1
   }
 ] satisfies SideBarPanel<unknown, unknown, SpaceResource>[]
+
+// keep the list in sync with spaces created via the FAB
+spacesStore.$onAction(({ name, args, after }) => {
+  if (name !== 'upsertSpace') {
+    return
+  }
+  after(() => {
+    const [space] = args
+    const loadedSpaceIds = spaceSettingsStore.spaces.map(({ id }) => id)
+    if (isProjectSpaceResource(space) && !loadedSpaceIds.includes(space.id)) {
+      spaceSettingsStore.upsertSpace(space)
+    }
+  })
+})
 
 onMounted(async () => {
   await loadResourcesTask.perform()

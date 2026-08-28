@@ -6,6 +6,7 @@ import Spaces from './views/Spaces.vue'
 import Extensions from './views/Extensions.vue'
 import { urlJoin } from '@opencloud-eu/web-client'
 import {
+  ActionExtension,
   ApplicationInformation,
   AppMenuItemExtension,
   ClassicApplicationScript,
@@ -13,19 +14,15 @@ import {
   Extension,
   FloatingActionButtonExtension,
   useAbility,
+  useExtensionRegistry,
   useRoute,
-  useSpaceActionsCreate,
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  useGroupActionsCreateGroup,
-  useSpaceSettingsStore,
-  useUserActionsCreateUser
-} from './composables'
+import { useGroupActionsCreateGroup, useUserActionsCreateUser } from './composables'
 import { APPID } from './appid'
-import { extensionPoints } from './extensionPoints'
+import { extensionPoints, spacesCreateExtensionPoint } from './extensionPoints'
 
 export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext }) => [
   {
@@ -189,17 +186,15 @@ export default defineWebApplication({
     const userStore = useUserStore()
     const { $gettext } = useGettext()
     const currentRoute = useRoute()
-    const { upsertSpace } = useSpaceSettingsStore()
+    const { requestExtensions } = useExtensionRegistry()
 
     const { actions: createUserActions } = useUserActionsCreateUser()
     const createUserAction = computed(() => unref(createUserActions)[0])
     const { actions: createGroupActions } = useGroupActionsCreateGroup()
     const createGroupAction = computed(() => unref(createGroupActions)[0])
-    const { actions: createSpaceActions } = useSpaceActionsCreate({
-      onSpaceCreated: (space) => {
-        upsertSpace(space)
-      }
-    })
+    const createSpaceActions = computed(() =>
+      (requestExtensions<ActionExtension>(spacesCreateExtensionPoint) || []).map((e) => e.action)
+    )
     const createSpaceAction = computed(() => unref(createSpaceActions)[0])
 
     const appInfo: ApplicationInformation = {
@@ -242,7 +237,7 @@ export default defineWebApplication({
         mode: () => 'handler',
         handler: () => {
           if (unref(currentRoute).name === 'admin-settings-spaces') {
-            return unref(createSpaceAction).handler()
+            return unref(createSpaceAction)!.handler()
           }
 
           if (unref(currentRoute).name === 'admin-settings-users') {
@@ -258,7 +253,7 @@ export default defineWebApplication({
         isDisabled: () => {
           if (
             unref(currentRoute).name === 'admin-settings-spaces' &&
-            unref(createSpaceAction).isVisible()
+            unref(createSpaceAction)?.isVisible()
           ) {
             return false
           }

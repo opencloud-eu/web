@@ -1,9 +1,16 @@
 import { mock } from 'vitest-mock-extended'
 import { defineComponent, h } from 'vue'
-import CreateSpaceModal from '../../../../src/components/Spaces/CreateSpaceModal.vue'
+import CreateSpaceModal from '../../../../src/components/Modals/CreateSpaceModal.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import { Modal } from '../../../../src/composables/piniaStores'
+import { getVaultCreator, Modal, useCreateSpace } from '@opencloud-eu/web-pkg'
 
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  getVaultCreator: vi.fn(),
+  useCreateSpace: vi.fn()
+}))
+
+const addNewSpace = vi.fn()
 const finalize = vi.fn()
 
 const SetupStub = defineComponent({
@@ -105,9 +112,8 @@ describe('CreateSpaceModal', () => {
   })
 
   describe('method "onConfirm"', () => {
-    it('hands the name and the setup step’s finalize to the callback', async () => {
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ callbackFn })
+    it('hands the name and the setup step’s finalize to the space creation', async () => {
+      const { wrapper } = getWrapper()
       await setName(wrapper, 'Secrets')
       await toggleEncrypt(wrapper)
       await submitStep(wrapper)
@@ -115,20 +121,19 @@ describe('CreateSpaceModal', () => {
 
       await wrapper.vm.onConfirm()
 
-      expect(callbackFn).toHaveBeenCalledWith('Secrets', {
+      expect(addNewSpace).toHaveBeenCalledWith('Secrets', {
         encrypt: true,
         finalizeVault: finalize
       })
     })
 
     it('creates an unencrypted space without a finalize', async () => {
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ callbackFn })
+      const { wrapper } = getWrapper()
       await setName(wrapper, 'Team')
 
       await wrapper.vm.onConfirm()
 
-      expect(callbackFn).toHaveBeenCalledWith('Team', {
+      expect(addNewSpace).toHaveBeenCalledWith('Team', {
         encrypt: false,
         finalizeVault: undefined
       })
@@ -137,33 +142,30 @@ describe('CreateSpaceModal', () => {
     it('still creates once the modal wrapper has flipped the loading state on', async () => {
       // The wrapper sets `isLoading` before it calls us, so the in-flight guard
       // on the button must not block the confirm path itself.
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ callbackFn, isLoading: true })
+      const { wrapper } = getWrapper({ isLoading: true })
 
       await wrapper.vm.onConfirm()
 
-      expect(callbackFn).toHaveBeenCalledWith('New space', {
+      expect(addNewSpace).toHaveBeenCalledWith('New space', {
         encrypt: false,
         finalizeVault: undefined
       })
     })
 
     it('rejects while the setup step is still pending', async () => {
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ callbackFn })
+      const { wrapper } = getWrapper()
       await toggleEncrypt(wrapper)
 
       await expect(wrapper.vm.onConfirm()).rejects.toBeUndefined()
-      expect(callbackFn).not.toHaveBeenCalled()
+      expect(addNewSpace).not.toHaveBeenCalled()
     })
 
     it('rejects while the name is invalid so the modal stays open', async () => {
-      const callbackFn = vi.fn()
-      const { wrapper } = getWrapper({ callbackFn })
+      const { wrapper } = getWrapper()
       await setName(wrapper, '')
 
       await expect(wrapper.vm.onConfirm()).rejects.toBeUndefined()
-      expect(callbackFn).not.toHaveBeenCalled()
+      expect(addNewSpace).not.toHaveBeenCalled()
     })
   })
 })
@@ -198,22 +200,21 @@ function nameValue(wrapper: Wrapper) {
   return (wrapper.find('#create-space-input').element as HTMLInputElement).value
 }
 
-function getWrapper({ canEncrypt = true, isLoading = false, callbackFn = vi.fn() } = {}) {
+function getWrapper({ canEncrypt = true, isLoading = false } = {}) {
   const mocks = { ...defaultComponentMocks() }
+
+  vi.mocked(useCreateSpace).mockReturnValue(
+    mock<ReturnType<typeof useCreateSpace>>({ addNewSpace })
+  )
+  vi.mocked(getVaultCreator).mockReturnValue(
+    canEncrypt ? ({ creation: { setupComponent: SetupStub } } as any) : null
+  )
 
   return {
     mocks,
     wrapper: mount(CreateSpaceModal, {
       props: {
-        modal: mock<Modal>({ isLoading }),
-        vaultCreation: canEncrypt
-          ? {
-              vaultExtension: 'vault',
-              vaultContentType: 'application/vnd.opencloud.vault',
-              setupComponent: SetupStub
-            }
-          : undefined,
-        callbackFn
+        modal: mock<Modal>({ isLoading })
       },
       global: {
         plugins: [...defaultPlugins()],
