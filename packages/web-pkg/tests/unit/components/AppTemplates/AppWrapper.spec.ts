@@ -137,7 +137,7 @@ function setup({
     props: {
       applicationId: 'test-app',
       wrappedComponent,
-      ...(yjsEnabled ? { yjs: { appVersion: '1.0.0', makeAdapter: () => mock<any>() } } : {})
+      ...(yjsEnabled ? { yjs: { makeAdapter: () => mock<any>() } } : {})
     },
     global: {
       plugins: [

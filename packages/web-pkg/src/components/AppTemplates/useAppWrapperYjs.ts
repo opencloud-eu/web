@@ -66,7 +66,6 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
           unref(contentResourceId) === unref(resource)?.id,
         isReadOnly,
         adapter: yjs.makeAdapter({ resource }),
-        appVersion: yjs.appVersion,
         documentPrefix: yjs.documentPrefix ?? applicationId,
         onContentChange: (value) => {
           currentContent.value = value
@@ -100,8 +99,7 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
   /** True once the session is synced and hydrated; always true without one. */
   const isSessionReady = computed(() => !session || unref(session.isReady))
 
-  // A Yjs session can force read-only on top of the WebDAV permissions, e.g.
-  // after locking on an app-version mismatch.
+  // A Yjs session can force read-only on top of the WebDAV permissions.
   const effectiveReadOnly = computed(
     () => unref(isReadOnly) || Boolean(unref(session?.isLockedForReload))
   )
