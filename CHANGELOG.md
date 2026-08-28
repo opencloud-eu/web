@@ -28,6 +28,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.11.1 [[#3248](https://github.com/opencloud-eu/web/pull/3248)]
+- chore(deps): update devdependencies (non-major) [[#3245](https://github.com/opencloud-eu/web/pull/3245)]
 - chore(deps): update traefik docker tag to v3.7.12 [[#3240](https://github.com/opencloud-eu/web/pull/3240)]
 - fix(deps): update uppy monorepo to v6 [[#3237](https://github.com/opencloud-eu/web/pull/3237)]
 - chore(deps): update tiptap monorepo to v3.30.5 [[#3236](https://github.com/opencloud-eu/web/pull/3236)]
