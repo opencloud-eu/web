@@ -3,7 +3,7 @@ import type { Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import type { Resource } from '@opencloud-eu/web-client'
-import { useMessages, useYjsSession } from '../../composables'
+import { useMessages, useYjsSession, YjsStatus } from '../../composables'
 import type { AppFileHandlingResult, FileContentOptions, FileContext } from '../../composables'
 import type { YjsOptions } from './types'
 
@@ -13,6 +13,8 @@ export interface AppWrapperYjsOptions {
   applicationId: string
   resource: Ref<Resource>
   isReadOnly: Ref<boolean>
+  /** Whether the wrapper holds edits that are not on disk yet. */
+  isDirty: Ref<boolean>
   loading: Ref<boolean>
   loadingError: Ref<Error>
   contentResourceId: Ref<string | undefined>
@@ -25,6 +27,8 @@ export interface AppWrapperYjsOptions {
   putFileContents: AppFileHandlingResult['putFileContents']
   /** AppWrapper's landing point for a successful write. */
   applySavedResource: (etag: string, saved?: Resource | null) => void
+  /** The file changed outside this window and the session gave up the room. */
+  onConflict: () => void
 }
 
 /**
@@ -38,6 +42,7 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
     applicationId,
     resource,
     isReadOnly,
+    isDirty,
     loading,
     loadingError,
     contentResourceId,
@@ -48,7 +53,8 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
     fileContentOptions,
     getFileContents,
     putFileContents,
-    applySavedResource
+    applySavedResource,
+    onConflict
   } = options
 
   const { $gettext } = useGettext()
@@ -85,7 +91,9 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
           // saves itself would otherwise read the next reconnect as one and
           // wipe the room to "recover" it.
           resource.value = { ...unref(resource), etag: value }
-        }
+        },
+        hasUnsavedChanges: () => unref(isDirty),
+        onConflict
       })
     : null
 
@@ -113,7 +121,10 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
   // TNext must be `any`: the delegated `call()` generators expect different
   // resume types, which would otherwise intersect to `never`.
   function* reconcileConflict(newContent: unknown): Generator<unknown, boolean, any> {
-    if (!session || unref(session.status) !== 'connected') return false
+    if (!session) return false
+    // Not connected: nothing in the room can account for the write, so this is
+    // an external change like any other.
+    if (unref(session.status) !== YjsStatus.Connected) return false
     try {
       const fresh = yield* call(getFileContents(currentFileContext, { ...fileContentOptions }))
       const freshEtag = fresh.headers['OC-ETag']
@@ -129,7 +140,10 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
       // republished over: a write from outside the room never reached this
       // document, and retrying would destroy it unseen.
       const writtenByRoom = yield* call(session.wasWrittenByRoom(freshEtag))
-      if (!writtenByRoom) return false
+      if (!writtenByRoom) {
+        session.markConflicted(false)
+        return false
+      }
 
       // Retry with the merged state, not `newContent`: that snapshot predates
       // the peer save that caused this conflict, so writing it again would
@@ -151,11 +165,15 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
       return true
     } catch (retryErr) {
       // Fall through to the conflict popup so the user can still recover by
-      // copying out.
+      // copying out. The room stays: the cause is just as likely a failed
+      // request as an external write, and a retry may well go through.
       console.error('[yjs] conflict reconciliation failed:', retryErr)
       return false
     }
   }
 
-  return { session, isSessionReady, effectiveReadOnly, reconcileConflict }
+  /** True once the session gave up the room over an external write. */
+  const isConflicted = computed(() => Boolean(unref(session?.isConflicted)))
+
+  return { session, isSessionReady, effectiveReadOnly, isConflicted, reconcileConflict }
 }

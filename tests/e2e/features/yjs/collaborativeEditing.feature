@@ -20,12 +20,16 @@ Feature: yjs collaborative editing
     And "Brian" logs in
     And "Brian" navigates to the shared with me page
     And "Brian" opens file "example.md" via "text-editor" using the context menu
+    And "Brian" should see the following yjs status
+      | status    |
+      | Connected |
     And "Brian" is in a text-editor
     And "Brian" enters the text "Brian says hello" in editor "TextEditor"
 
     And "Carol" logs in
     And "Carol" navigates to the shared with me page
     And "Carol" opens file "example.md" via "text-editor" using the context menu
+    And "Carol" should not see a yjs status
     And "Carol" is in a text-editor
     And "Carol" should see the text "Brian says hello" in the text-editor
     And "Carol" should not be able to edit the current file
@@ -33,6 +37,9 @@ Feature: yjs collaborative editing
     And "Alice" logs in
     And "Alice" opens the "files" app
     And "Alice" opens file "example.md" via "text-editor" using the context menu
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" is in a text-editor
     Then "Alice" should see the text "Brian says hello" in the text-editor
 
@@ -77,12 +84,16 @@ Feature: yjs collaborative editing
     And "Brian" logs in
     And "Brian" navigates to the project space "team"
     And "Brian" opens file "example.md" via "text-editor" using the context menu
+    And "Brian" should see the following yjs status
+      | status    |
+      | Connected |
     And "Brian" is in a text-editor
     And "Brian" enters the text "Brian says hello" in editor "TextEditor"
 
     And "Carol" logs in
     And "Carol" navigates to the project space "team"
     And "Carol" opens file "example.md" via "text-editor" using the context menu
+    And "Carol" should not see a yjs status
     And "Carol" is in a text-editor
     And "Carol" should see the text "Brian says hello" in the text-editor
     And "Carol" should not be able to edit the current file
@@ -91,6 +102,9 @@ Feature: yjs collaborative editing
       | Brian |
 
     And "Alice" opens file "example.md" via "text-editor" using the context menu
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" is in a text-editor
     Then "Alice" should see the text "Brian says hello" in the text-editor
     And "Alice" should see the collaboration carets of the following users

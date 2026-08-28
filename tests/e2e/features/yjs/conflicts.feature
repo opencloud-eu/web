@@ -23,6 +23,9 @@ Feature: yjs conflict handling
     And "Alice" logs in
     And "Alice" opens the "files" app
     And "Alice" opens file "textfile.ocnote" via "text-editor" using the context menu
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" enters the text "Alice says hello" in editor "TextEditor"
 
     # external update
@@ -33,8 +36,14 @@ Feature: yjs conflict handling
 
     And "Alice" saves the file viewer expecting conflict error
     And "Alice" sees the current file as dirty
+    And "Alice" should see the following yjs status
+      | status       |
+      | Disconnected |
     And "Alice" reloads the page
     Then "Alice" should see the text "some random text" in the text-editor
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" logs out
 
   Scenario: editor sees external file update when peer with edit permissions joins
@@ -49,6 +58,9 @@ Feature: yjs conflict handling
       | user  | role     | kind |
       | Brian | Can edit | user |
     And "Alice" opens file "textfile.ocnote" via "text-editor" using the context menu
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" enters the text "Alice says hello" in editor "TextEditor"
     And "Alice" sees the current file as dirty
     And "Alice" saves the file viewer
@@ -62,8 +74,14 @@ Feature: yjs conflict handling
     When "Brian" logs in
     And "Brian" navigates to the project space "team"
     And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
+    And "Brian" should see the following yjs status
+      | status    |
+      | Connected |
     Then "Brian" should see the text "some random text" in the text-editor
     And "Alice" should see the text "some random text" in the text-editor
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" logs out
     And "Brian" logs out
 
@@ -79,6 +97,9 @@ Feature: yjs conflict handling
       | user  | role     | kind |
       | Brian | Can view | user |
     And "Alice" opens file "textfile.ocnote" via "text-editor" using the context menu
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" enters the text "Alice says hello" in editor "TextEditor"
     And "Alice" sees the current file as dirty
     And "Alice" saves the file viewer
@@ -112,6 +133,9 @@ Feature: yjs conflict handling
       | user  | role     | kind |
       | Brian | Can edit | user |
     And "Alice" opens file "textfile.ocnote" via "text-editor" using the context menu
+    And "Alice" should see the following yjs status
+      | status    |
+      | Connected |
     And "Alice" enters the text "Alice says hello" in editor "TextEditor"
     And "Alice" sees the current file as dirty
     And "Alice" saves the file viewer
@@ -127,10 +151,17 @@ Feature: yjs conflict handling
     And "Brian" navigates to the project space "team"
     And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
     Then "Brian" should see the text "some random text" in the text-editor
-    # FIXME: uncomment when https://github.com/opencloud-eu/web/issues/3103 is resolved
-    #And "Alice" should see the text "Alice update #2" in the text-editor
-    #And "Alice" should see the conflict dialog
-    And "Alice" should see the text "some random text" in the text-editor
+    And "Brian" should see the following yjs status
+      | status    |
+      | Connected |
+    And "Alice" should see the text "Alice update #2" in the text-editor
+    And "Alice" should see an error message
+      """
+      This file was updated outside this window. Please copy your changes, save the file under a new name (»Save As...«) or reload the page to discard your changes.
+      """
+    And "Alice" should see the following yjs status
+      | status       |
+      | Disconnected |
     And "Alice" logs out
     And "Brian" logs out
   

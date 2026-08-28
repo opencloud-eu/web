@@ -1458,6 +1458,36 @@ Then(
 )
 
 Then(
+  '{string} should see an error message',
+  async ({ world }: { world: World }, stepUser: string, errorMessage: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    await expect(editor.errorNotificationLocator(page, errorMessage)).toBeVisible()
+  }
+)
+
+Then(
+  '{string} should see the following yjs status',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+
+    for (const { status } of stepTable.hashes()) {
+      await expect(editor.yjsStatusLocator(page, status.toLowerCase())).toBeVisible()
+    }
+  }
+)
+
+Then(
+  '{string} should not see a yjs status',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+
+    // the editor must be loaded, otherwise the assertion passes trivially
+    await expect(editor.textEditorContentLocator(page)).toBeVisible()
+    await expect(editor.yjsStatusIndicatorLocator(page)).not.toBeVisible()
+  }
+)
+
+Then(
   '{string} should not be able to edit the current file',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })

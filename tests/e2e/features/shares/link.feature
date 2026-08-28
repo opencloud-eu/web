@@ -266,13 +266,13 @@ Feature: link
       | resource  | password |
       | lorem.txt | %public% |
     When "Alice" tries to sets a new password "OpenCloud-1" of the public link named "Unnamed link" of resource "lorem.txt"
-    Then "Alice" should see an error message
+    Then "Alice" should see a password error message
       """
       Unfortunately, your password is commonly used. please pick a harder-to-guess password for your safety
       """
     And "Alice" closes the public link password dialog box
     When "Alice" tries to sets a new password "OpenCloud-1" of the public link named "Unnamed link" of resource "lorem.txt"
-    Then "Alice" should see an error message
+    Then "Alice" should see a password error message
       """
       Unfortunately, your password is commonly used. please pick a harder-to-guess password for your safety
       """

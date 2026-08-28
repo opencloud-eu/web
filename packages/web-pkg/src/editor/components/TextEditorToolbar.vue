@@ -154,6 +154,7 @@
         v-oc-tooltip="collaborationStatusLabel"
         class="text-editor-toolbar-collaboration-status ml-2 inline-flex shrink-0 items-center"
         :aria-label="collaborationStatusLabel"
+        :data-test-yjs-status="yjsStatus"
       >
         <span
           class="inline-flex size-5 items-center justify-center rounded-full border"
@@ -300,6 +301,8 @@ const visible = computed(() => {
   }
   return !!unref(textEditor.editor)
 })
+
+const yjsStatus = computed(() => unref(textEditor.yjsStatus))
 
 const showCollaborationStatusIndicator = computed(() => {
   const status = unref(textEditor.yjsStatus)
