@@ -8,7 +8,6 @@ import {
   defineWebApplication
 } from '@opencloud-eu/web-pkg'
 import { makeTextEditorAdapter } from './yjs'
-import pkg from '../package.json'
 
 export default defineWebApplication({
   setup({ applicationConfig }) {
@@ -196,7 +195,6 @@ export default defineWebApplication({
         component: AppWrapperRoute(TextEditor, {
           applicationId: appId,
           yjs: {
-            appVersion: pkg.version,
             makeAdapter: makeTextEditorAdapter
           }
         }),

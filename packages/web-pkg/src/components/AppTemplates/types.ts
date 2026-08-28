@@ -22,12 +22,6 @@ export interface YjsAdapterContext {
 
 export interface YjsOptions {
   /**
-   * App version owned by the consuming app, typically `pkg.version` from its
-   * own package.json. Peers in the same room must agree on it, otherwise the
-   * older client is locked out and asked to reload.
-   */
-  appVersion: string
-  /**
    * Builds the bridge between the native file format and the shared Y.Doc.
    * Called once during the wrapper's setup, so it may use composables.
    */

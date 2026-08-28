@@ -15,7 +15,12 @@ import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Resource } from '@opencloud-eu/web-client'
 
-import { useYjsSession, type YjsAdapter, type YjsSession } from '../../../../src/composables/yjs'
+import {
+  buildYjsRoomName,
+  useYjsSession,
+  type YjsAdapter,
+  type YjsSession
+} from '../../../../src/composables/yjs'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 
 // vi.hoisted is required so providerInstances is reachable from the hoisted
@@ -118,7 +123,6 @@ function makeResource(overrides: Partial<Resource> = {}): Resource {
 function setupSession({
   currentContent = '',
   yjsServerUrl = undefined as string | undefined,
-  appVersion = '1.2.3',
   resource = makeResource(),
   adapter = testAdapter as YjsAdapter,
   enabled = true,
@@ -150,7 +154,6 @@ function setupSession({
         enabled: enabledRef,
         isReadOnly: isReadOnlyRef,
         adapter: adapterRef,
-        appVersion,
         documentPrefix: 'test-app',
         onContentChange,
         onServerContentChange,
@@ -223,10 +226,49 @@ describe('useYjsSession — enabled gate', () => {
 describe('useYjsSession — room name', () => {
   const yjsServerUrl = 'wss://example.test/yjs'
 
-  it('keys the room on the prefix and the resource id', async () => {
+  it('keys the room on the prefix, resource id and web version', async () => {
     setupSession({ yjsServerUrl, resource: makeResource({ id: 'storage$space!item-1' }) })
     await flushPromises()
-    expect(providerInstances[0].name).toBe('test-app::storage$space!item-1')
+    const webVersion = process.env.PACKAGE_VERSION || '0.0.0'
+    expect(providerInstances[0].name).toBe(`test-app::storage$space!item-1:${webVersion}`)
+  })
+
+  it('falls back to 0.0.0 when no web version is available', () => {
+    expect(
+      buildYjsRoomName({
+        documentPrefix: 'test-app',
+        fileId: 'storage$space!item-1',
+        webVersion: ''
+      })
+    ).toBe('test-app::storage$space!item-1:0.0.0')
+  })
+
+  it('builds the same room name for equal versions', () => {
+    const roomA = buildYjsRoomName({
+      documentPrefix: 'test-app',
+      fileId: 'storage$space!item-1',
+      webVersion: '7.4.0'
+    })
+    const roomB = buildYjsRoomName({
+      documentPrefix: 'test-app',
+      fileId: 'storage$space!item-1',
+      webVersion: '7.4.0'
+    })
+    expect(roomA).toBe(roomB)
+  })
+
+  it('builds different room names for different versions', () => {
+    const roomA = buildYjsRoomName({
+      documentPrefix: 'test-app',
+      fileId: 'storage$space!item-1',
+      webVersion: '7.4.0'
+    })
+    const roomB = buildYjsRoomName({
+      documentPrefix: 'test-app',
+      fileId: 'storage$space!item-1',
+      webVersion: '7.5.0'
+    })
+    expect(roomA).not.toBe(roomB)
   })
 
   // `fileId` is the real composite id for everyone: plain WebDAV resources set
@@ -268,7 +310,8 @@ describe('useYjsSession — room name', () => {
     })
     await flushPromises()
 
-    expect(providerInstances[1].name).toBe('test-app::storage$space!item-1')
+    const webVersion = process.env.PACKAGE_VERSION || '0.0.0'
+    expect(providerInstances[1].name).toBe(`test-app::storage$space!item-1:${webVersion}`)
     expect(providerInstances[0].name).toBe(providerInstances[1].name)
   })
 })
@@ -373,11 +416,11 @@ describe('useYjsSession — failed hydration', () => {
 })
 
 describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
-  it('constructs a HocuspocusProvider with the appVersion query param appended', async () => {
-    setupSession({ yjsServerUrl: 'wss://example.test/yjs', appVersion: '2.3.4' })
+  it('constructs a HocuspocusProvider with the configured URL', async () => {
+    setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
     await flushPromises()
     expect(providerInstances).toHaveLength(1)
-    expect(providerInstances[0].url).toBe('wss://example.test/yjs?appVersion=2.3.4')
+    expect(providerInstances[0].url).toBe('wss://example.test/yjs')
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('user', {})
   })
 
@@ -998,93 +1041,6 @@ describe('useYjsSession — stale-state recovery', () => {
   })
 })
 
-// The room's persisted state was written by an older app version, so its shared
-// types may not match the schema this client builds. It has to be rebuilt from
-// the native file, which is the same recovery an etag drift triggers.
-describe('useYjsSession — app version upgrade', () => {
-  const yjsServerUrl = 'wss://example.test/yjs'
-  const META_KEY = '_oc_meta'
-
-  /**
-   * Brings a session up against a room last touched by another version. The
-   * room state arrives as a genuine remote update, the way the initial sync
-   * delivers it - a local write would not reach the observer the same way.
-   */
-  async function syncIntoRoomAtVersion({ isReadOnly = false, docVersion = '1.0.0' } = {}) {
-    const s = setupSession({
-      yjsServerUrl,
-      appVersion: '2.0.0',
-      currentContent: 'fresh body',
-      resource: makeResource({ etag: 'etag-current' }),
-      isReadOnly
-    })
-    await flushPromises()
-
-    const room = new Y.Doc()
-    room.transact(() => {
-      room.getText(SHARED_TEXT_KEY).insert(0, 'body in the old schema')
-      room.getMap(META_KEY).set('appVersion', docVersion)
-      room.getMap(META_KEY).set('etag', 'etag-current')
-    })
-    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(room))
-
-    providerInstances[0].triggerSynced()
-    await flushPromises()
-    return s
-  }
-
-  beforeEach(() => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
-  })
-
-  // Regression: this path raised `isStale` and nothing else - no `nativeEtag`,
-  // no `recoveryClientId`, no captured body. Recovery bailed on the missing
-  // body, and every later joiner took the `isStale` early return, which runs
-  // neither the handshake nor the drift check nor hydration. The room was
-  // stuck for good, with no way left to clear the flag.
-  it('claims the recovery instead of only raising the flag', async () => {
-    const s = await syncIntoRoomAtVersion()
-    const meta = s.ydoc!.getMap(META_KEY)
-
-    expect(meta.get('nativeEtag')).toBe('etag-current')
-    expect(meta.get('recoveryClientId')).toBe(s.ydoc!.clientID)
-  })
-
-  it('rebuilds the room from the native file and bumps the version stamp', async () => {
-    const s = await syncIntoRoomAtVersion()
-    vi.advanceTimersByTime(200)
-    await flushPromises()
-
-    const meta = s.ydoc!.getMap(META_KEY)
-    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
-    expect(meta.get('isStale')).toBeUndefined()
-    expect(meta.get('appVersion')).toBe('2.0.0')
-  })
-
-  // The flag has to be recoverable by somebody, so a client that cannot run
-  // the recovery must still leave the etag a later writer can claim against.
-  it('leaves a claimable flag behind on a read-only client', async () => {
-    const s = await syncIntoRoomAtVersion({ isReadOnly: true })
-    vi.advanceTimersByTime(200)
-    await flushPromises()
-
-    const meta = s.ydoc!.getMap(META_KEY)
-    expect(meta.get('isStale')).toBe(true)
-    expect(meta.get('nativeEtag')).toBe('etag-current')
-    expect(meta.get('recoveryClientId')).toBeUndefined()
-  })
-
-  // The other direction is unchanged: an out-of-date client must not rewrite a
-  // room that newer peers are already using.
-  it('still locks a client older than the room', async () => {
-    const s = await syncIntoRoomAtVersion({ docVersion: '3.0.0' })
-
-    const meta = s.ydoc!.getMap(META_KEY)
-    expect(unref(s.session.isLockedForReload)).toBe(true)
-    expect(meta.get('isStale')).toBeUndefined()
-  })
-})
-
 describe('useYjsSession — etag mirror', () => {
   it('writes a new resource etag into _oc_meta.etag', async () => {
     const s = setupSession({ currentContent: 'x', resource: makeResource({ etag: 'a' }) })
@@ -1324,7 +1280,6 @@ describe('useYjsSession — initial sync is not a peer save', () => {
     room.transact(() => {
       room.getText(SHARED_TEXT_KEY).insert(0, content)
       const meta = room.getMap(META_KEY)
-      meta.set('appVersion', '1.2.3')
       meta.set('etag', etag)
       meta.set('savedStateVector', Y.encodeStateVector(room))
       meta.set('lastSavedAt', 1)

@@ -21,8 +21,8 @@ export interface TextEditorOptions {
   currentResource?: Ref<Resource>
   /**
    * Accepts a ref or getter, not just a snapshot: a Yjs session can
-   * flip the editor read-only mid-edit (locking the room on an app-version
-   * mismatch, say), and the ProseMirror view has to follow.
+   * flip the editor read-only mid-edit, and the ProseMirror view has to
+   * follow.
    */
   readonly?: MaybeRefOrGetter<boolean>
   slashCommands?: boolean
