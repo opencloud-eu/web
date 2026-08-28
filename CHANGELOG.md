@@ -31,6 +31,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.20.0 [[#3255](https://github.com/opencloud-eu/web/pull/3255)]
 - chore(deps): update dependency happy-dom to v20.11.12 [[#3251](https://github.com/opencloud-eu/web/pull/3251)]
 - fix(deps): update dependency vue-router to v5.3.0 [[#3250](https://github.com/opencloud-eu/web/pull/3250)]
 - chore(deps): update dependency fast-xml-parser to v5.11.1 [[#3248](https://github.com/opencloud-eu/web/pull/3248)]
