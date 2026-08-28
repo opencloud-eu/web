@@ -12,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-import { ActionExtension, ActionMenuItem, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { ActionMenuItem, FileActionOptions, useFileActions } from '@opencloud-eu/web-pkg'
 import { computed, inject, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { spacesSidebarActionsExtensionPoint } from '../../../extensionPoints'
@@ -21,14 +21,15 @@ const resource = inject<SpaceResource>('resource')
 const resources = computed(() => {
   return [unref(resource)]
 })
-const actionOptions = computed(() => ({
-  resources: unref(resources)
+const actionOptions = computed<FileActionOptions>(() => ({
+  resources: unref(resources),
+  space: undefined
 }))
-const { requestExtensions } = useExtensionRegistry()
+const { getExtensionActions } = useFileActions()
 
-const actions = computed(() => {
-  return (requestExtensions<ActionExtension>(spacesSidebarActionsExtensionPoint) || [])
-    .map((extension) => extension.action)
-    .filter((item) => item.isVisible(unref(actionOptions)))
-})
+const actions = computed(() =>
+  getExtensionActions(spacesSidebarActionsExtensionPoint.id).filter((item) =>
+    item.isVisible(unref(actionOptions))
+  )
+)
 </script>

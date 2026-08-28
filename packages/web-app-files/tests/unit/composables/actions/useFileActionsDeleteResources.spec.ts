@@ -1,4 +1,4 @@
-import { useFileActionsDeleteResources } from '../../../../../src/composables/actions'
+import { useFileActionsDeleteResources } from '../../../../src/composables/actions/useFileActionsDeleteResources'
 import { mockDeep } from 'vitest-mock-extended'
 import { FolderResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -6,13 +6,18 @@ import {
   getComposableWrapper,
   useGetMatchingSpaceMock
 } from '@opencloud-eu/web-test-helpers'
-import { useDeleteWorker } from '../../../../../src/composables/webWorkers/deleteWorker'
-import { useGetMatchingSpace } from '../../../../../src/composables/spaces/useGetMatchingSpace'
-import { useResourcesStore } from '../../../../../src/composables/piniaStores'
-import { eventBus } from '../../../../../src'
+import {
+  useDeleteWorker,
+  useGetMatchingSpace,
+  useResourcesStore,
+  eventBus
+} from '@opencloud-eu/web-pkg'
 
-vi.mock('../../../../../src/composables/webWorkers/deleteWorker')
-vi.mock('../../../../../src/composables/spaces/useGetMatchingSpace')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useDeleteWorker: vi.fn(),
+  useGetMatchingSpace: vi.fn()
+}))
 
 const currentFolder = {
   id: '1',

@@ -293,13 +293,12 @@ import {
 
 import {
   Action,
-  ActionExtension,
   FolderViewModeConstants,
   useAuthStore,
   useCapabilityStore,
   useEmbedMode,
-  useExtensionRegistry,
   useFilesViewScrollContainer,
+  useFileActions,
   useFolderLink,
   useGetMatchingSpace,
   useIsTopBarSticky,
@@ -396,7 +395,7 @@ defineSlots<{
 }>()
 
 const router = useRouter()
-const { requestExtensions } = useExtensionRegistry()
+const { getExtensionActions } = useFileActions()
 const capabilityStore = useCapabilityStore()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { interceptModifierClick } = useInterceptModifierClick()
@@ -456,12 +455,7 @@ const hasTags = computed(
 )
 
 const resourceTableActions = computed(() =>
-  (
-    requestExtensions<ActionExtension>({
-      id: 'global.files.resource-table-actions',
-      extensionType: 'action'
-    }) || []
-  ).map((e) => e.action as Action<FileActionOptions>)
+  getExtensionActions('global.files.resource-table-actions')
 )
 
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})

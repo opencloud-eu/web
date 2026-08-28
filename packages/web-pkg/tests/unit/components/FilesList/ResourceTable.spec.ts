@@ -10,7 +10,7 @@ import {
 } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import { CapabilityStore, useSideBar } from '../../../../src/composables/piniaStores'
-import { useExtensionRegistry } from '../../../../src/composables'
+import { useExtensionRegistry, useFileActions } from '../../../../src/composables'
 import {
   useCanBeOpenedWithSecureView,
   ResourceIndicator
@@ -42,11 +42,8 @@ vi.mock('../../../../src/composables', async (importOriginal) => ({
   useExtensionRegistry: vi.fn()
 }))
 
-vi.mock('../../../../src/composables/actions/files', async (importOriginal) => ({
-  ...(await importOriginal<any>()),
-  useFileActions: vi.fn().mockReturnValue({
-    getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() })
-  })
+vi.mock('../../../../src/composables/actions/useFileActions', () => ({
+  useFileActions: vi.fn()
 }))
 
 const router = {
@@ -698,26 +695,27 @@ function getMountedWrapper({
   })
 
   vi.mocked(useExtensionRegistry).mockReturnValue({
-    requestExtensions: vi.fn((extensionPoint) => {
-      if (!hasRenameAction || extensionPoint.id !== 'global.files.resource-table-actions') {
-        return []
-      }
-      return [
-        {
-          id: 'com.github.opencloud-eu.web.files.context-action.rename',
-          type: 'action',
-          action: mock<FileAction>({
-            name: 'rename',
-            isVisible: () => true,
-            handler: vi.fn(),
-            label: () => 'Rename',
-            icon: 'edit-2',
-            class: 'oc-files-actions-rename-trigger'
-          })
-        }
-      ]
-    })
+    requestExtensions: vi.fn(() => [])
   } as any)
+
+  const renameAction = mock<FileAction>({
+    name: 'rename',
+    isVisible: () => true,
+    handler: vi.fn(),
+    label: () => 'Rename',
+    icon: 'edit-2',
+    class: 'oc-files-actions-rename-trigger'
+  })
+  vi.mocked(useFileActions).mockReturnValue(
+    mock<ReturnType<typeof useFileActions>>({
+      getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() }),
+      getExtensionActions: vi.fn((extensionPoint) =>
+        hasRenameAction && extensionPoint === 'global.files.resource-table-actions'
+          ? [renameAction]
+          : []
+      )
+    })
+  )
 
   return {
     wrapper: mount(ResourceTable, {

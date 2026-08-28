@@ -1,8 +1,7 @@
 import { isTrashResource } from '@opencloud-eu/web-client'
-import { FileAction, FileActionOptions } from '../types'
+import { FileAction, FileActionOptions, useDownloadFile } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useDownloadFile } from '../../download'
 
 export const useFileActionsDownloadFile = () => {
   const { $gettext } = useGettext()

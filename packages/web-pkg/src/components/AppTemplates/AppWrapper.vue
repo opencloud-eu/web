@@ -52,12 +52,10 @@ import {
   useConfigStore,
   useResourcesStore,
   FileContentOptions,
-  useFileActionsDownloadFile,
   FileActionOptions,
   useLoadingService,
   useFileActionsSave,
   useSharesStore,
-  useFileActionsDelete,
   useEventBus,
   Action,
   Modifier,
@@ -66,8 +64,8 @@ import {
   useGetResourceContext,
   useKeyboardActions,
   useExtensionRegistry,
-  ActionExtension,
-  CustomComponentExtension
+  CustomComponentExtension,
+  useFileActions
 } from '../../composables'
 import { AppWrapperSlotHandlers, AppWrapperSlotProps, YjsOptions } from './types'
 import { useAppWrapperYjs } from './useAppWrapperYjs'
@@ -135,12 +133,11 @@ const eventBus = useEventBus()
 const { isMobile } = useIsMobile()
 const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
+const { getExtensionActions } = useFileActions()
 
 const { actions: openWithAppActions } = useFileActionsOpenWithApp({
   appId: applicationId
 })
-const { actions: downloadFileActions } = useFileActionsDownloadFile()
-const { actions: deleteFileActions } = useFileActionsDelete()
 
 const noResourceLoading = computed(() => {
   // component has its own way to load the resource(s)
@@ -166,7 +163,7 @@ let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
-const { registerExtensions, unregisterExtensions, requestExtensions } = extensionRegistry
+const { registerExtensions, unregisterExtensions } = extensionRegistry
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
 const appBarExtension = computed<CustomComponentExtension[]>(() => {
   if (unref(loading) || unref(loadingError) || !unref(resource)) {
@@ -695,12 +692,10 @@ bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
   save()
 })
 
-const actionOptions = computed<FileActionOptions>(() => {
-  return {
-    space: unref(space),
-    resources: [unref(resource)]
-  }
-})
+const actionOptions = computed<FileActionOptions>(() => ({
+  space: unref(space),
+  resources: [unref(resource)]
+}))
 
 /**
  * The interceptor is used to save the file automatically when in dirty state,
@@ -749,35 +744,36 @@ const menuItemsPrimary = computed(() => {
   )
 })
 
-const extensionContextActions = computed(() => {
-  return (
-    requestExtensions<ActionExtension>({
-      id: 'global.files.context-actions',
-      extensionType: 'action'
-    }) || []
-  ).map((e) => e.action)
-})
+const extensionContextActions = computed(() =>
+  getExtensionActions('global.files.context-actions').filter((a) =>
+    a.isVisible(unref(actionOptions))
+  )
+)
 
-const menuItemsSecondary = computed(() => {
-  return unref(extensionContextActions)
-    .filter((action) => action.category === 'secondary')
-    .filter((item) => item.isVisible(unref(actionOptions)))
+const deleteAction = computed(() => {
+  return unref(extensionContextActions).find((action) => action.name === 'delete')
 })
-const menuItemsTertiary = computed(() => {
-  return [
-    ...unref(downloadFileActions).map((originalAction) => ({
-      ...originalAction,
-      handler: (args: FileActionOptions) =>
-        downloadFileActionInterceptor(args, originalAction.handler)
-    })),
-    ...unref(deleteFileActions)
-  ].filter((item) => item.isVisible(unref(actionOptions)))
+const downloadAction = computed(() => {
+  const action = unref(extensionContextActions).find((action) => action.name === 'download-file')
+  if (!action) {
+    return undefined
+  }
+
+  return {
+    ...action,
+    handler: (args: FileActionOptions) => downloadFileActionInterceptor(args, action.handler)
+  }
 })
-const menuItemsQuaternary = computed(() => {
-  return unref(extensionContextActions)
-    .filter((action) => action.category === 'quaternary')
-    .filter((item) => item.isVisible(unref(actionOptions)))
-})
+const menuItemsSecondary = computed(() =>
+  unref(extensionContextActions).filter((action) => action.category === 'secondary')
+)
+const menuItemsTertiary = computed(() =>
+  // only show download and delete actions to reduce clutter in the tertiary menu
+  [unref(downloadAction), unref(deleteAction)].filter(Boolean)
+)
+const menuItemsQuaternary = computed(() =>
+  unref(extensionContextActions).filter((action) => action.category === 'quaternary')
+)
 const dropDownMenuSections = computed(() => {
   const sections = []
 
@@ -880,19 +876,7 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   },
 
   'onDelete:resource': () => {
-    if (
-      !unref(deleteFileActions)[0].isVisible({
-        space: unref(space),
-        resources: [unref(resource)]
-      })
-    ) {
-      return
-    }
-
-    unref(deleteFileActions)[0].handler({
-      space: unref(space),
-      resources: [unref(resource)]
-    })
+    unref(deleteAction)?.handler(unref(actionOptions))
   },
 
   onSave: save,

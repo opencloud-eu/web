@@ -145,14 +145,7 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  ActionExtension,
-  ActionOptions,
-  isMacOs,
-  useFileActionsDelete,
-  useExtensionRegistry,
-  useGetMatchingSpace
-} from '@opencloud-eu/web-pkg'
+import { ActionOptions, isMacOs, useFileActions, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
 import { previewToolbarActionsExtensionPoint } from '../extensionPoints'
 
@@ -191,8 +184,7 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { requestExtensions } = useExtensionRegistry()
-const { actions: deleteFileActions } = useFileActionsDelete()
+const { getExtensionActions } = useFileActions()
 
 const space = computed(() => getMatchingSpace(files[activeIndex].resource))
 const actionOptions = computed(() => ({
@@ -200,13 +192,16 @@ const actionOptions = computed(() => ({
   resources: [files[activeIndex].resource]
 }))
 
-const previewToolbarActions = computed(() => {
-  return (requestExtensions<ActionExtension>(previewToolbarActionsExtensionPoint) || []).map(
-    (e) => e.action
+const previewToolbarActions = computed(() =>
+  getExtensionActions(previewToolbarActionsExtensionPoint.id).filter((a) =>
+    a.isVisible(unref(actionOptions))
   )
-})
+)
 const favoriteAction = computed(() => {
   return unref(previewToolbarActions).find((action) => action.name === 'favorite')
+})
+const deleteAction = computed(() => {
+  return unref(previewToolbarActions).find((action) => action.name === 'delete')
 })
 
 const ariaHiddenFileCount = computed(() => {
@@ -229,24 +224,10 @@ const togglePhotoRollDescription = computed(() => {
   return $gettext('Show photo roll')
 })
 
-const showDeleteButton = computed(() => {
-  return unref(deleteFileActions)[0]?.isVisible({
-    space: unref(space),
-    resources: [files[activeIndex].resource]
-  })
-})
+const showDeleteButton = computed(() => !!unref(deleteAction))
+const showFavoriteButton = computed(() => !!unref(favoriteAction))
 
-const showFavoriteButton = computed(() => {
-  if (!unref(favoriteAction)) {
-    return false
-  }
-  return unref(favoriteAction).isVisible(unref(actionOptions))
-})
-
-const resourceDeleteIcon = computed(() => {
-  return unref(deleteFileActions)[0].icon as string
-})
-
+const resourceDeleteIcon = computed(() => unref(deleteAction)?.icon as string)
 const resourceDeleteDescription = computed(() => {
   return $gettext('Delete (%{key})', {
     key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')

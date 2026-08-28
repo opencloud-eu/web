@@ -1,8 +1,6 @@
-import { FileAction, FileActionOptions } from '../types'
+import { FileAction, FileActionOptions, useDownloadFile, useModals } from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useDownloadFile } from '../../download'
-import { useModals } from '../../piniaStores'
 import { useFileActionsDownloadFile } from './useFileActionsDownloadFile'
 
 export const useFileActionFallbackToDownload = () => {

@@ -120,7 +120,7 @@ import { FileAction, useResourcesStore, useUserStore, useSpacesStore } from '@op
 import { computed, unref, useId } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { useFileActions } from '@opencloud-eu/web-pkg'
 import { Action, ResourceIcon } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { uploadMenuExtensionPoint } from '../extensionPoints'
@@ -159,9 +159,9 @@ const createNewShortcutAction = () => {
 
 const { actions: createNewFileActions } = useFileActionsCreateNewFile({ space: currentSpace })
 
-const extensionRegistry = useExtensionRegistry()
+const { getExtensionActions } = useFileActions()
 const extensionActions = computed(() => {
-  return extensionRegistry.requestExtensions(uploadMenuExtensionPoint).map((e) => e.action)
+  return getExtensionActions(uploadMenuExtensionPoint.id)
 })
 
 const visibleCreateNewFileActions = computed(() => {

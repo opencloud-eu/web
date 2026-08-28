@@ -1,32 +1,33 @@
-import { cloneStateObject } from '../../../helpers/store'
-import { isSameResource } from '../../../helpers/resource'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { isLocationSpacesActive } from '../../../router'
-import { dirname } from 'path'
-import { createFileRouteOptions } from '../../../helpers'
-import { computed, unref } from 'vue'
-import { queryItemAsString } from '../../appDefaults'
-import { useGetMatchingSpace } from '../../spaces'
-import { useRouteQuery } from '../../router'
-import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
-import { useGettext } from 'vue3-gettext'
-import { ref } from 'vue'
 import {
+  isLocationSpacesActive,
+  queryItemAsString,
+  useGetMatchingSpace,
+  useRouteQuery,
+  useClientService,
+  useRouter,
+  createFileRouteOptions,
+  isSameResource,
+  cloneStateObject,
   useMessages,
   useModals,
   useSpacesStore,
   useConfigStore,
   useExtensionRegistry,
   useVaultStore,
-  useResourcesStore
-} from '../../piniaStores'
-import { encryptResourcePathsForServer } from '../../../helpers/vault'
+  useResourcesStore,
+  encryptResourcePathsForServer,
+  useDeleteWorker,
+  useEventBus,
+  Key,
+  Modifier,
+  useKeyboardActions
+} from '@opencloud-eu/web-pkg'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { dirname } from 'path'
+import { computed, ref, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
-import { useDeleteWorker } from '../../webWorkers'
-import { useEventBus } from '../../eventBus'
-import { useFileActionsUndoDelete } from '../files'
-import { Key, Modifier, useKeyboardActions } from '../../keyboardActions'
+import { useFileActionsUndoDelete } from './files/useFileActionsUndoDelete'
 
 export const useFileActionsDeleteResources = () => {
   const configStore = useConfigStore()

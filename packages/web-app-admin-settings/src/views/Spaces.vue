@@ -80,12 +80,11 @@ import {
   eventBus,
   queryItemAsString,
   useClientService,
-  useExtensionRegistry,
+  useFileActions,
   useRouteQuery,
   useSideBar,
   useSpacesStore,
-  AppLoadingSpinner,
-  ActionExtension
+  AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -109,8 +108,8 @@ const clientService = useClientService()
 const { $gettext } = useGettext()
 const sidebarStore = useSideBar()
 const { isSideBarOpen } = storeToRefs(sidebarStore)
-const { requestExtensions } = useExtensionRegistry()
 const spacesStore = useSpacesStore()
+const { getExtensionActions } = useFileActions()
 
 let loadResourcesEventToken: string
 let updateQuotaForSpaceEventToken: string
@@ -158,16 +157,16 @@ const breadcrumbs = computed(() => [
   }
 ])
 
-const extensionBatchActions = computed(() => {
-  return (requestExtensions<ActionExtension>(spacesBatchActionsExtensionPoint) || []).map(
-    (e) => e.action
-  )
-})
+const extensionBatchActions = computed(() =>
+  getExtensionActions<SpaceResource>(spacesBatchActionsExtensionPoint.id)
+)
 
 const batchActions = computed((): SpaceAction[] => {
-  return [...unref(extensionBatchActions)]
-    .filter((item) => item.category === 'tertiary')
-    .filter((item) => item.isVisible({ resources: unref(selectedSpaces) }))
+  return unref(extensionBatchActions).filter(
+    (item) =>
+      item.category === 'tertiary' &&
+      item.isVisible({ resources: unref(selectedSpaces), space: undefined })
+  )
 })
 
 const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, SpaceResource>>(() => {

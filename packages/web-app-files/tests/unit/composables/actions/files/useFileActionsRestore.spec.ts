@@ -5,13 +5,15 @@ import {
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { useMessages, useResourcesStore } from '../../../../../src/composables/piniaStores'
+import { useMessages, useResourcesStore, useRestoreWorker } from '@opencloud-eu/web-pkg'
 import { unref } from 'vue'
 import { HttpError, Resource, TrashResource } from '@opencloud-eu/web-client'
 import { ProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { useRestoreWorker } from '../../../../../src/composables/webWorkers/restoreWorker'
 
-vi.mock('../../../../../src/composables/webWorkers/restoreWorker')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useRestoreWorker: vi.fn()
+}))
 
 describe('restore', () => {
   describe('isVisible property', () => {
