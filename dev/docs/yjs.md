@@ -52,7 +52,7 @@ forwarded by OC's own proxy, but it could equally be a separate domain behind it
 be defined via the `WEB_OPTION_YJS_SERVER_URL` environment variable.
 
 | It does                                              | It does not                                      |
-|------------------------------------------------------|--------------------------------------------------|
+| ---------------------------------------------------- | ------------------------------------------------ |
 | Hold an in-memory replica and sync it with peers     | Persist anything (no storage extension is wired) |
 | Authenticate the bearer token against Graph `/me`    | Read or write the file                           |
 | Enforce read/write access per file, per user         | Decide when to save                              |
@@ -155,10 +155,10 @@ An app turns on collaboration with one route option.
 ```ts
 // packages/web-app-text-editor/src/index.ts
 AppWrapperRoute(TextEditor, {
-    applicationId: 'text-editor',
-    yjs: {
-        makeAdapter: makeTextEditorAdapter
-    }
+  applicationId: 'text-editor',
+  yjs: {
+    makeAdapter: makeTextEditorAdapter
+  }
 })
 ```
 
@@ -236,13 +236,13 @@ responsible for converting between the native file format and the Y.Doc's shared
 
 ```ts
 interface YjsAdapter {
-    hydrate(ydoc: Y.Doc, content: string): void | Promise<void>
+  hydrate(ydoc: Y.Doc, content: string): void | Promise<void>
 
-    serialize(ydoc: Y.Doc): string | Promise<string>
+  serialize(ydoc: Y.Doc): string | Promise<string>
 
-    hasContent(ydoc: Y.Doc): boolean
+  hasContent(ydoc: Y.Doc): boolean
 
-    reset?(ydoc: Y.Doc): void
+  reset?(ydoc: Y.Doc): void
 }
 ```
 
@@ -324,7 +324,7 @@ actually stops an empty document reaching disk is `serializeDoc` returning `null
 A `Y.Map` alongside the editor content, used for coordination the editor never sees:
 
 | Key                | Written by          | Meaning                                       |
-|--------------------|---------------------|-----------------------------------------------|
+| ------------------ | ------------------- | --------------------------------------------- |
 | `etag`             | whoever saved last  | the etag the room believes is on disk         |
 | `lastSavedAt`      | whoever saved last  | fan-out trigger for a peer save               |
 | `savedStateVector` | whoever saved last  | what that peer's doc held when it wrote       |
@@ -411,7 +411,7 @@ hold the same content and duplicate the document for everyone.
 ### File map
 
 | Path                                                          | Role                                                            |
-|---------------------------------------------------------------|-----------------------------------------------------------------|
+| ------------------------------------------------------------- | --------------------------------------------------------------- |
 | `packages/web-pkg/src/composables/yjs/useYjsSession.ts`       | the session: Y.Doc, provider, hydration, staleness, etag mirror |
 | `packages/web-pkg/src/composables/yjs/types.ts`               | `YjsAdapter`                                                    |
 | `packages/web-pkg/src/components/AppTemplates/AppWrapper.vue` | owns the session, the save loop and the loading gate            |
