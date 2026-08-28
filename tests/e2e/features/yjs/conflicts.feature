@@ -157,7 +157,7 @@ Feature: yjs conflict handling
     And "Alice" should see the text "Alice update #2" in the text-editor
     And "Alice" should see an error message
       """
-      This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).
+      This file was updated outside this window. Please copy your changes, save the file under a new name (»Save As...«) or reload the page to discard your changes.
       """
     And "Alice" should see the following yjs status
       | status       |

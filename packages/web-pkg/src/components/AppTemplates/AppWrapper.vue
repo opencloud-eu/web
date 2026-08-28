@@ -518,7 +518,7 @@ function showExternalUpdateConflict(response: Response = null) {
   errorPopup(
     new HttpError(
       $gettext(
-        'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
+        'This file was updated outside this window. Please copy your changes, save the file under a new name (»Save As...«) or reload the page to discard your changes.'
       ),
       response
     )
