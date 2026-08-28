@@ -229,16 +229,25 @@ const {
   applicationId
 })
 
+const isDirty = computed(() => {
+  if (unref(isReadOnly)) {
+    return false
+  }
+  return unref(currentContent) !== unref(serverContent)
+})
+
 const {
   session: yjsSession,
   isSessionReady,
   effectiveReadOnly,
+  isConflicted,
   reconcileConflict
 } = useAppWrapperYjs({
   yjs,
   applicationId,
   resource,
   isReadOnly,
+  isDirty,
   loading,
   loadingError,
   contentResourceId,
@@ -249,7 +258,8 @@ const {
   fileContentOptions,
   getFileContents,
   putFileContents,
-  applySavedResource
+  applySavedResource,
+  onConflict: showExternalUpdateConflict
 })
 
 // Keep the loading screen up until the Yjs session is synced and hydrated,
@@ -259,18 +269,6 @@ const {
 const isLoading = computed(() => {
   if (unref(loadingError)) return false
   return unref(loading) || !unref(isSessionReady)
-})
-
-const isDirty = computed(() => {
-  // Peer edits flow into `currentContent` of a read-only client too, but it
-  // has nothing to save, so it must never be prompted. Deliberately the
-  // WebDAV permission and not `effectiveReadOnly`: a session locking mid-edit
-  // may hold real unsaved work, which must keep the save action and the
-  // leave guards armed.
-  if (unref(isReadOnly)) {
-    return false
-  }
-  return unref(currentContent) !== unref(serverContent)
 })
 
 watch(isDirty, (dirty) => {
@@ -516,6 +514,17 @@ const autosavePopup = () => {
   showMessage({ title: $gettext('File autosaved') })
 }
 
+function showExternalUpdateConflict(response: Response = null) {
+  errorPopup(
+    new HttpError(
+      $gettext(
+        'This file was updated outside this window. Please copy your changes, save the file under a new name (»Save As...«) or reload the page to discard your changes.'
+      ),
+      response
+    )
+  )
+}
+
 /**
  * Single landing point for a successful write: updates the etag for the next
  * `If-Match`, the local `resource` ref and the store. `saved` is the PUT's
@@ -556,14 +565,7 @@ const saveFileTask = useTask(function* () {
       if (yield* reconcileConflict(newContent)) {
         return
       }
-      errorPopup(
-        new HttpError(
-          $gettext(
-            'This file was updated outside this window. Please copy your changes or save the file under a new name (»Save As...«).'
-          ),
-          e.response
-        )
-      )
+      showExternalUpdateConflict(e.response)
       return
     }
     switch (e.statusCode) {
@@ -630,10 +632,11 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
-        if (isDirty.value) {
-          await save()
-          autosavePopup()
+        if (!unref(isDirty) || unref(isConflicted)) {
+          return
         }
+        await save()
+        autosavePopup()
       },
       (editorOptions.autosaveInterval || 120) * 1000
     )
@@ -700,8 +703,18 @@ const downloadFileActionInterceptor = async (
   originalAction: Action<FileActionOptions>['handler']
 ) => {
   if (unref(isDirty)) {
-    await save()
-    autosavePopup()
+    if (unref(isConflicted)) {
+      showMessage({
+        title: $gettext('Unsaved changes are not included'),
+        desc: $gettext(
+          'This file was updated outside this window, so the download does not contain your unsaved changes.'
+        ),
+        status: 'warning'
+      })
+    } else {
+      await save()
+      autosavePopup()
+    }
   }
   originalAction(args)
 }

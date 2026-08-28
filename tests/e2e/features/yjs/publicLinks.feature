@@ -55,9 +55,9 @@ Feature: yjs public editing
     When "Alice" opens file "example.md" via "text-editor" using the context menu
     And "Alice" should see the text "Anonymous says hello" in the text-editor
     And "Alice" enters the text "Alice says hello" in editor "TextEditor"
+    And "Alice" sees the current file as dirty
     And "Anonymous" should see the text "Anonymous says hello" in the text-editor
     And "Alice" saves the file viewer
-    And "Alice" sees the current file as dirty
     Then "Anonymous" should see the text "Anonymous says hello" in the text-editor
 
     When "Anonymous" reloads the page
