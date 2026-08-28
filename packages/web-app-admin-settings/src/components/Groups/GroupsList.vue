@@ -59,7 +59,7 @@
     </template>
     <template #displayName="rowData">
       <div class="flex items-center">
-        {{ rowData.item.displayName }}
+        <filter-highlight :text="rowData.item.displayName" :term="filterTerm" />
         <oc-icon
           v-if="rowData.item.groupTypes?.includes('ReadOnly')"
           v-oc-tooltip="readOnlyLabel"
@@ -114,18 +114,8 @@
 </template>
 
 <script lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  defineComponent,
-  nextTick,
-  onMounted,
-  ref,
-  unref,
-  watch
-} from 'vue'
+import { ComponentPublicInstance, computed, defineComponent, ref, unref, watch } from 'vue'
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
 import {
   ContextMenuQuickAction,
   createVirtualCursorElement,
@@ -151,12 +141,12 @@ import { useGroupSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import { FilterHighlight, NoContentMessage } from '@opencloud-eu/web-pkg'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'GroupsList',
-  components: { NoContentMessage, ContextMenuQuickAction, Pagination },
+  components: { FilterHighlight, NoContentMessage, ContextMenuQuickAction, Pagination },
   props: {
     filterTerm: {
       type: String,
@@ -328,8 +318,7 @@ export default defineComponent({
           name: 'displayName',
           title: $gettext('Group name'),
           type: 'slot',
-          sortable: true,
-          tdClass: 'mark-element'
+          sortable: true
         },
         {
           name: 'actions',
@@ -351,21 +340,6 @@ export default defineComponent({
         await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
       }
     )
-
-    let markInstance: Mark | undefined
-    onMounted(async () => {
-      await nextTick()
-      markInstance = new Mark('.mark-element')
-    })
-    watch([() => props.filterTerm, paginatedItems], () => {
-      markInstance?.unmark()
-      if (props.filterTerm) {
-        markInstance?.mark(props.filterTerm, {
-          element: 'span',
-          className: 'mark-highlight'
-        })
-      }
-    })
 
     return {
       showDetails,

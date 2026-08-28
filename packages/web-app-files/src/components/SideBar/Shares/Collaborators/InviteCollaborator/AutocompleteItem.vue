@@ -19,23 +19,21 @@
       class="mr-2"
     />
     <div class="truncate">
-      <span class="files-collaborators-autocomplete-username" v-text="item.displayName" />
+      <span class="files-collaborators-autocomplete-username">
+        <filter-highlight :text="item.displayName" :term="term" />
+      </span>
       <template v-if="!isAnyPrimaryShareType">
         <span
           class="files-collaborators-autocomplete-share-type"
           v-text="`(${$gettext(shareType.label)})`"
         />
       </template>
-      <div
-        v-if="additionalInfo"
-        class="files-collaborators-autocomplete-additionalInfo text-sm"
-        v-text="`${additionalInfo}`"
-      />
-      <div
-        v-if="externalIssuer"
-        class="files-collaborators-autocomplete-externalIssuer text-sm"
-        v-text="`${externalIssuer}`"
-      />
+      <div v-if="additionalInfo" class="files-collaborators-autocomplete-additionalInfo text-sm">
+        <filter-highlight :text="additionalInfo" :term="term" />
+      </div>
+      <div v-if="externalIssuer" class="files-collaborators-autocomplete-externalIssuer text-sm">
+        <filter-highlight :text="externalIssuer" :term="term" />
+      </div>
     </div>
   </div>
 </template>
@@ -43,10 +41,11 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { FilterHighlight, UserAvatar } from '@opencloud-eu/web-pkg'
 
-const { item } = defineProps<{
+const { item, term = '' } = defineProps<{
   item: CollaboratorAutoCompleteItem
+  term?: string
 }>()
 
 const additionalInfo = computed(() => {

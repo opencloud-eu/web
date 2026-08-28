@@ -21,7 +21,7 @@
         class="mr-2"
       />
       <span class="truncate" :title="getDisplayName(m)">
-        {{ getDisplayName(m) }}
+        <filter-highlight :text="getDisplayName(m)" :term="term" />
       </span>
     </li>
   </ul>
@@ -29,9 +29,9 @@
 <script setup lang="ts">
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
-import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { FilterHighlight, UserAvatar } from '@opencloud-eu/web-pkg'
 
-const { permissions } = defineProps<{ permissions: Permission[] }>()
+const { permissions, term = '' } = defineProps<{ permissions: Permission[]; term?: string }>()
 
 const getDisplayName = (permission: Permission) => {
   return permission.grantedToV2.user?.displayName || permission.grantedToV2.group?.displayName || ''

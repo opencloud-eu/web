@@ -44,8 +44,8 @@
             <template #image="{ item }">
               <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
             </template>
-            <template #item="{ item }">
-              <div class="ml-2" v-text="item.displayName" />
+            <template #item="{ item, term }">
+              <div class="ml-2"><filter-highlight :text="item.displayName" :term="term" /></div>
             </template>
           </item-filter>
           <item-filter
@@ -63,8 +63,10 @@
             <template #image="{ item }">
               <oc-avatar :width="32" :userid="item.id" :user-name="$gettext(item.displayName)" />
             </template>
-            <template #item="{ item }">
-              <div class="ml-2" v-text="$gettext(item.displayName)" />
+            <template #item="{ item, term }">
+              <div class="ml-2">
+                <filter-highlight :text="$gettext(item.displayName)" :term="term" />
+              </div>
             </template>
           </item-filter>
         </div>
@@ -135,6 +137,7 @@ import {
 } from '../composables'
 import { User, Group, AppRole, Quota } from '@opencloud-eu/web-client/graph/generated'
 import {
+  FilterHighlight,
   ItemFilter,
   NoContentMessage,
   eventBus,
@@ -178,6 +181,7 @@ export default defineComponent({
     AppTemplate,
     UsersList,
     ContextActions,
+    FilterHighlight,
     ItemFilter
   },
   setup() {

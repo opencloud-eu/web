@@ -61,6 +61,7 @@
           :draggable="dragDrop"
           :lazy="areTilesLazy"
           :is-loading="isResourceInDeleteQueue(resource.id)"
+          :term="term"
           :class="{ 'opacity-60': isResourceCut(resource) }"
           @contextmenu="
             showContextMenuOnRightClick($event, resource, contextMenuDrops[resource.id])
@@ -190,7 +191,8 @@ const {
   dragDrop = false,
   lazy = true,
   areResourcesClickable = true,
-  arePathsDisplayed = false
+  arePathsDisplayed = false,
+  term = ''
 } = defineProps<{
   resources?: Resource[]
   isSelectable?: boolean
@@ -203,6 +205,10 @@ const {
   lazy?: boolean
   areResourcesClickable?: boolean
   arePathsDisplayed?: boolean
+  /**
+   * The filter term whose occurrences get highlighted in the resource names.
+   */
+  term?: string
 }>()
 
 const emit = defineEmits<{

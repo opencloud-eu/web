@@ -1,4 +1,4 @@
-import { shallowMount } from '@opencloud-eu/web-test-helpers'
+import { mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 
 import Name from '../../../../src/components/FilesList/ResourceName.vue'
 
@@ -109,5 +109,27 @@ describe('OcResourceName', () => {
     })
 
     expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  it('highlights the filter term in the basename and the extension', async () => {
+    const wrapper = mount(Name, {
+      props: { fullPath, name, extension, type, term: 'ES' }
+    })
+
+    expect(wrapper.find('.oc-resource-basename .filter-highlight-match').text()).toBe('es')
+    expect(wrapper.find('.oc-resource-basename').text()).toBe('forest')
+
+    await wrapper.setProps({ term: 'JP' })
+    expect(wrapper.find('.oc-resource-extension .filter-highlight-match').text()).toBe('jp')
+    expect(wrapper.find('.oc-resource-extension').text()).toBe('.jpg')
+  })
+
+  it('does not highlight anything without a filter term', () => {
+    const wrapper = mount(Name, {
+      props: { fullPath, name, extension, type }
+    })
+
+    expect(wrapper.find('.filter-highlight-match').exists()).toBeFalsy()
+    expect(wrapper.find('.oc-resource-basename').text()).toBe('forest')
   })
 })

@@ -44,6 +44,7 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
+          :term="filterTerm"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @item-hidden="dropPreview($event)"
@@ -85,14 +86,13 @@ import {
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useResourcesViewDefaults } from '../../composables'
-import { computed, onMounted, ref, unref, watch } from 'vue'
+import { computed, onMounted, ref, unref } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 import { useGettext } from 'vue3-gettext'
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
 
 const { $gettext } = useGettext()
 
@@ -138,21 +138,6 @@ const filteredItems = computed(() => {
     return searchEngine.search(unref(filterTerm)).map((r) => r.item)
   }
   return unref(paginatedResources)
-})
-
-let markInstance: Mark | undefined
-watch(filteredItems, () => {
-  if (!unref(areResourcesLoading)) {
-    if (!markInstance) {
-      markInstance = new Mark('.oc-resource-details')
-    }
-
-    markInstance.unmark()
-    markInstance.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
 })
 
 resourcesStore.$onAction((action) => {

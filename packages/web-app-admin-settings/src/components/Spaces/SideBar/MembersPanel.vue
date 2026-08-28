@@ -8,7 +8,7 @@
       button-hidden
       :is-rounded="false"
     />
-    <div ref="membersListRef" data-testid="space-members">
+    <div data-testid="space-members">
       <div v-if="!filteredPermissions.length">
         <h3 class="font-semibold text-base" v-text="$gettext('No members found')" />
       </div>
@@ -19,12 +19,12 @@
           :data-testid="`space-members-role-${role.displayName}`"
         >
           <h3 class="font-semibold text-base" v-text="role.displayName" />
-          <members-role-section :permissions="getPermissionsForRole(role)" />
+          <members-role-section :permissions="getPermissionsForRole(role)" :term="filterTerm" />
         </div>
       </div>
       <div v-if="permissionsWithoutRole.length" class="space-members-custom">
         <h3 class="font-semibold text-base" v-text="$gettext('Custom role')" />
-        <members-role-section :permissions="permissionsWithoutRole" />
+        <members-role-section :permissions="permissionsWithoutRole" :term="filterTerm" />
       </div>
     </div>
     <oc-pagination-inline
@@ -37,23 +37,17 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, unref, useTemplateRef } from 'vue'
+import { computed, inject, ref, unref } from 'vue'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from './MembersRoleSection.vue'
 import Fuse from 'fuse.js'
-import {
-  defaultFuseOptions,
-  useFilterHighlight,
-  useLocalPagination,
-  useSharesStore
-} from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, useLocalPagination, useSharesStore } from '@opencloud-eu/web-pkg'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
 const sharesStore = useSharesStore()
 
 const resource = inject<SpaceResource>('resource')
 const filterTerm = ref('')
-const membersListRef = useTemplateRef<HTMLElement>('membersListRef')
 
 const filterMembers = (collection: Permission[], term: string) => {
   if (!(term || '').trim()) {
@@ -117,6 +111,4 @@ const permissionsWithoutRole = computed(() => {
 const getPermissionsForRole = (role: ShareRole) => {
   return unref(paginatedPermissions).filter(({ roles }) => roles.includes(role.id))
 }
-
-useFilterHighlight({ element: membersListRef, term: filterTerm, items: paginatedPermissions })
 </script>

@@ -26,8 +26,8 @@
                 display-name-attribute="label"
                 filter-name="shareType"
               >
-                <template #item="{ item }">
-                  <span class="ml-2" v-text="item.label" />
+                <template #item="{ item, term }">
+                  <span class="ml-2"><filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
             </div>
@@ -68,6 +68,7 @@
           :sort-fields="sortFields.filter((field) => field.name === 'name')"
           :view-mode="viewMode"
           :view-size="viewSize"
+          :term="filterTerm"
           @file-click="triggerDefaultAction"
           @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
           @item-hidden="dropPreview($event)"
@@ -108,20 +109,20 @@ import {
   Pagination,
   useGetMatchingSpace,
   ContextActions,
+  FilterHighlight,
   ItemFilter
 } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useResourcesViewDefaults } from '../../composables'
-import { computed, unref, ref, watch, onMounted } from 'vue'
+import { computed, unref, ref, onMounted } from 'vue'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
 
 const { getMatchingSpace } = useGetMatchingSpace()
 const appsStore = useAppsStore()
@@ -202,21 +203,6 @@ const filteredItems = computed(() => {
       .map(({ value }) => value)
       .some((t) => item.shareTypes.includes(t))
   })
-})
-
-let markInstance: Mark | undefined
-watch(filteredItems, () => {
-  if (!unref(areResourcesLoading)) {
-    if (!markInstance) {
-      markInstance = new Mark('.oc-resource-details')
-    }
-
-    markInstance.unmark()
-    markInstance.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
 })
 
 resourcesStore.$onAction((action) => {

@@ -46,6 +46,9 @@
       <template #avatar="{ item }">
         <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
       </template>
+      <template #displayName="{ item }">
+        <filter-highlight :text="item.displayName" :term="filterTerm" />
+      </template>
       <template #role="{ item }">
         <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
       </template>
@@ -108,18 +111,16 @@ import {
   ComponentPublicInstance,
   computed,
   defineComponent,
-  nextTick,
-  onMounted,
   PropType,
   ref,
   unref,
-  useTemplateRef,
-  watch
+  useTemplateRef
 } from 'vue'
 import {
   AppLoadingSpinner,
   ContextMenuQuickAction,
   eventBus,
+  FilterHighlight,
   Pagination,
   queryItemAsString,
   useFileListHeaderPosition,
@@ -140,14 +141,19 @@ import {
   useKeyboardTableNavigation
 } from '../../composables/keyboardActions'
 import { findIndex } from 'lodash-es'
-import Mark from 'mark.js'
 import { OcDrop, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'UsersList',
-  components: { UserAvatar, AppLoadingSpinner, ContextMenuQuickAction, Pagination },
+  components: {
+    UserAvatar,
+    AppLoadingSpinner,
+    ContextMenuQuickAction,
+    FilterHighlight,
+    Pagination
+  },
   props: {
     roles: {
       type: Array as PropType<AppRole[]>,
@@ -345,8 +351,8 @@ export default defineComponent({
         {
           name: 'displayName',
           title: $gettext('First and last name'),
-          sortable: true,
-          tdClass: 'mark-element'
+          type: 'slot',
+          sortable: true
         },
         {
           name: 'mail',
@@ -381,24 +387,11 @@ export default defineComponent({
       return cols
     })
 
-    let markInstance: Mark | undefined
-    onMounted(async () => {
-      await nextTick()
-      markInstance = new Mark('.mark-element')
-    })
     const displayNameQuery = useRouteQuery('q_displayName')
-    watch([displayNameQuery, paginatedItems, tableRef], () => {
-      markInstance?.unmark()
-      const filterTerm = queryItemAsString(unref(displayNameQuery))
-      if (filterTerm) {
-        markInstance?.mark(filterTerm, {
-          element: 'span',
-          className: 'mark-highlight'
-        })
-      }
-    })
+    const filterTerm = computed(() => queryItemAsString(unref(displayNameQuery)))
 
     return {
+      filterTerm,
       showDetails,
       showEditPanel,
       showUserAssigmentPanel,

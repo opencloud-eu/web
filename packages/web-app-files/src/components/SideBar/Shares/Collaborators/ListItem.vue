@@ -25,11 +25,9 @@
         </div>
         <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
           <div class="truncate">
-            <span
-              aria-hidden="true"
-              class="files-collaborators-collaborator-name"
-              v-text="shareDisplayName"
-            />
+            <span aria-hidden="true" class="files-collaborators-collaborator-name">
+              <filter-highlight :text="shareDisplayName" :term="filterTerm" />
+            </span>
             <span class="sr-only" v-text="screenreaderShareDisplayName" />
             <oc-contextual-helper
               v-if="isExternalShare"
@@ -104,6 +102,7 @@ import EditDropdown from './EditDropdown.vue'
 import RoleDropdown from './RoleDropdown.vue'
 import { CollaboratorShare, ShareRole, ShareTypes } from '@opencloud-eu/web-client'
 import {
+  FilterHighlight,
   queryItemAsString,
   useMessages,
   useSpacesStore,
@@ -125,7 +124,8 @@ const {
   removable = false,
   sharedParentRoute = null,
   isLocked = false,
-  isSpaceShare = false
+  isSpaceShare = false,
+  filterTerm = ''
 } = defineProps<{
   share: CollaboratorShare
   modifiable?: boolean
@@ -133,6 +133,7 @@ const {
   sharedParentRoute?: RouteLocationNamedRaw
   isLocked?: boolean
   isSpaceShare?: boolean
+  filterTerm?: string
 }>()
 
 defineEmits<{

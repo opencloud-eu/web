@@ -20,7 +20,9 @@
                   class="flex items-center"
                   :data-test-id="`media-type-${item.id.toLowerCase()}`"
                 >
-                  <resource-icon :resource="getFakeResourceForIcon(item)" />
+                  <resource-icon
+                    :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
+                  />
                   <span class="ml-2">{{ item.label }}</span>
                 </div>
               </template>
@@ -38,10 +40,10 @@
               display-name-attribute="label"
               filter-name="tags"
             >
-              <template #image="{ item }">
+              <template #image="{ item, term }">
                 <div class="flex items-center">
                   <oc-icon name="price-tag-3" size-class="size-4" />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ml-2"><filter-highlight :text="item.label" :term="term" /></span>
                 </div>
               </template>
             </item-filter>
@@ -199,7 +201,7 @@ import {
 import { onBeforeRouteLeave } from 'vue-router'
 import { useTask } from 'vue-concurrency'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { ItemFilter } from '@opencloud-eu/web-pkg'
+import { FilterHighlight, ItemFilter } from '@opencloud-eu/web-pkg'
 import { isLocationCommonActive } from '@opencloud-eu/web-pkg'
 import { ItemFilterToggle } from '@opencloud-eu/web-pkg'
 import { useKeyboardActions, ResourceIcon } from '@opencloud-eu/web-pkg'

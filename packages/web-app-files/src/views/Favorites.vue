@@ -20,7 +20,9 @@
                   class="flex items-center"
                   :data-test-id="`media-type-${item.id.toLowerCase()}`"
                 >
-                  <resource-icon :resource="getFakeResourceForIcon(item)" />
+                  <resource-icon
+                    :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
+                  />
                   <span class="ml-2">{{ item.label }}</span>
                 </div>
               </template>

@@ -45,7 +45,6 @@
     "@tailwindcss/vite": "^4.2.2",
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.7.1",
-    "@types/mark.js": "^8.11.12",
     "@types/qs": "^6.15.0",
     "@vitejs/plugin-vue": "6.0.8",
     "@vitest/coverage-v8": "^4.1.2",
