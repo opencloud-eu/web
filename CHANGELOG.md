@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
 - feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
 - feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
 - feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
