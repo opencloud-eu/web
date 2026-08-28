@@ -15,7 +15,10 @@ import {
   ActionMenuItem,
   useExtensionRegistry,
   useFileActions,
-  useIsAppActive
+  useIsAppActive,
+  useFileActionsDelete,
+  useFileActionsDownloadFile,
+  useFileActionsRestore
 } from '@opencloud-eu/web-pkg'
 import { computed, inject, Ref, unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -32,6 +35,11 @@ const { getAllOpenWithActions } = useFileActions()
 const extensionActions = computed(() =>
   requestExtensions<ActionExtension>(fileSideBarActionsExtensionPoint).map((e) => e.action)
 )
+
+const { actions: downloadFileActions } = useFileActionsDownloadFile()
+const { actions: deleteActions } = useFileActionsDelete()
+const { actions: restoreActions } = useFileActionsRestore()
+
 const actions = computed(() => {
   const options = {
     space: unref(space),
@@ -41,9 +49,12 @@ const actions = computed(() => {
   }
 
   return [
-    // FIXME: as soon as all actions are migrated to web-app-files
-    // and registered as extension point, omit  ...getAllOpenWithActions(options),
+    // FIXME: remove as soon as actions are announced in extension system
     ...getAllOpenWithActions(options),
+    ...[...unref(downloadFileActions), ...unref(deleteActions), ...unref(restoreActions)].filter(
+      (action) => action.isVisible(options)
+    ),
+
     ...unref(extensionActions).filter((action) => action.isVisible(options))
   ]
 })

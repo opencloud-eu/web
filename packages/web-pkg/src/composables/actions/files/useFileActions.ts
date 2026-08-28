@@ -16,12 +16,7 @@ import {
   useWindowOpen
 } from '../../actions'
 
-import {
-  useFileActionsDelete,
-  useFileActionsDownloadFile,
-  useFileActionsNavigate,
-  useFileActionsRestore
-} from './index'
+import { useFileActionsNavigate } from './index'
 import {
   ActionExtension,
   useAppsStore,
@@ -33,9 +28,7 @@ import { storeToRefs } from 'pinia'
 import { useEmbedMode } from '../../embedMode'
 import { RouteRecordName } from 'vue-router'
 
-export interface GetFileActionsOptions extends FileActionOptions {
-  omitSystemActions?: boolean
-}
+export interface GetFileActionsOptions extends FileActionOptions {}
 
 export interface FileActionOptionsWithEvent extends FileActionOptions<Resource> {
   event?: MouseEvent
@@ -52,17 +45,8 @@ export const useFileActions = () => {
   const configStore = useConfigStore()
   const { options } = storeToRefs(configStore)
 
-  const { actions: deleteActions } = useFileActionsDelete()
-  const { actions: downloadFileActions } = useFileActionsDownloadFile()
-  const { actions: fallbackToDownloadAction } = useFileActionFallbackToDownload()
+  const { actions: fallbackToDownloadActions } = useFileActionFallbackToDownload()
   const { actions: navigateActions } = useFileActionsNavigate()
-  const { actions: restoreActions } = useFileActionsRestore()
-
-  const systemActions = computed<FileAction<any>[]>(() => [
-    ...unref(downloadFileActions),
-    ...unref(deleteActions),
-    ...unref(restoreActions)
-  ])
 
   const extensionsContextActions = computed(() => {
     return (
@@ -257,33 +241,25 @@ export const useFileActions = () => {
 
   const getDefaultAction = (options: GetFileActionsOptions): Action | undefined => {
     const actions = getAllOpenWithActions(options)
-
     if (actions.length) {
-      return actions[0].name === unref(downloadFileActions)[0].name
-        ? unref(fallbackToDownloadAction)[0]
-        : actions[0]
+      return actions[0]
     }
-    return undefined
+
+    return unref(fallbackToDownloadActions)[0].isVisible(options)
+      ? unref(fallbackToDownloadActions)[0]
+      : undefined
   }
 
   const getAllOpenWithActions = (
     options: GetFileActionsOptions & { omitEditorActions?: boolean }
   ) => {
-    const filterCallback = (action: FileAction) => action.isVisible(options)
-
-    const primaryActions = [
+    return [
       ...unref(extensionsContextActions),
       ...(options.omitEditorActions ? [] : unref(editorActions)),
       ...unref(navigateActions)
     ]
-      .filter(filterCallback)
+      .filter((action: FileAction) => action.isVisible(options))
       .sort((a, b) => Number(b.hasPriority) - Number(a.hasPriority))
-
-    const secondaryActions = options.omitSystemActions
-      ? []
-      : unref(systemActions).filter(filterCallback)
-
-    return [...primaryActions, ...secondaryActions]
   }
 
   return {
