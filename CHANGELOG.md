@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @kulmann, @saw-jan
 
+### 🐛 Bug Fixes
+
+- Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
+- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
+- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
+
 ### 📈 Enhancement
 
 - Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
@@ -21,11 +27,6 @@
 - test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
 - test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
 - test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
-
-### 🐛 Bug Fixes
-
-- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
-- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
 ### 📦️ Dependencies
 
