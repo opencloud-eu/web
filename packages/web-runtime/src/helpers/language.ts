@@ -2,21 +2,64 @@ import { ApplicationInformation } from '@opencloud-eu/web-pkg'
 import { merge } from 'lodash-es'
 import { Language, Translations } from 'vue3-gettext'
 
+export const currentLanguageLocalStorageKey = 'oc_language'
+
+function normalizeLanguage(languageSetting: string): string {
+  const trimmed = languageSetting.trim()
+  if (!trimmed) {
+    return ''
+  }
+  return trimmed.includes('-') ? trimmed.split('-')[0] : trimmed
+}
+
+function getStoredLanguage(): string {
+  const storedLanguage = window.localStorage.getItem(currentLanguageLocalStorageKey) ?? ''
+  if (!storedLanguage) {
+    return ''
+  }
+  return normalizeLanguage(storedLanguage)
+}
+
+function storeLanguage(language: string): void {
+  window.localStorage.setItem(currentLanguageLocalStorageKey, language)
+}
+
+function setDocumentLanguage(languageSetting: string): void {
+  const currentLanguage = normalizeLanguage(languageSetting)
+  if (!currentLanguage) {
+    return
+  }
+
+  document.documentElement.lang = currentLanguage
+}
+
+export const resolveInitialLanguage = ({
+  browserLanguage
+}: {
+  browserLanguage: string
+}): string => {
+  const stored = getStoredLanguage()
+  const currentLanguage = stored || normalizeLanguage(browserLanguage) || 'en'
+
+  setDocumentLanguage(currentLanguage)
+  return currentLanguage
+}
+
 export const setCurrentLanguage = ({
   language,
   languageSetting = null
 }: {
   language: Language
-  languageSetting?: string
+  languageSetting?: string | null
 }): void => {
-  let currentLanguage = languageSetting
-  if (currentLanguage) {
-    if (currentLanguage.indexOf('-')) {
-      currentLanguage = currentLanguage.split('-')[0]
-    }
-    language.current = currentLanguage
-    document.documentElement.lang = currentLanguage
+  const currentLanguage = normalizeLanguage(languageSetting || language.current)
+  if (!currentLanguage) {
+    return
   }
+
+  language.current = currentLanguage
+  setDocumentLanguage(currentLanguage)
+  storeLanguage(currentLanguage)
 }
 
 /**
