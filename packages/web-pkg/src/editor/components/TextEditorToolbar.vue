@@ -1,5 +1,15 @@
 <template>
   <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
+    <oc-button
+      v-if="canScrollLeft"
+      class="text-editor-toolbar-scroll-button absolute left-0 top-0 z-10 h-full"
+      appearance="raw"
+      type="button"
+      :aria-label="$gettext('Scroll toolbar left')"
+      @click="scrollToolbar(-1)"
+    >
+      <oc-icon name="arrow-left-s" fill-type="line" size-class="size-4" />
+    </oc-button>
     <div
       ref="scrollContainer"
       class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
@@ -164,6 +174,16 @@
         </span>
       </div>
     </div>
+    <oc-button
+      v-if="canScrollRight"
+      class="text-editor-toolbar-scroll-button absolute right-0 top-0 z-10 h-full"
+      appearance="raw"
+      type="button"
+      :aria-label="$gettext('Scroll toolbar right')"
+      @click="scrollToolbar(1)"
+    >
+      <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
+    </oc-button>
     <div
       v-if="canScrollLeft"
       class="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/15 to-transparent"
@@ -274,6 +294,12 @@ const updateScrollState = () => {
   }
   canScrollLeft.value = el.scrollLeft > 0
   canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
+}
+
+const scrollToolbar = (direction: number) => {
+  const el = scrollContainerRef.value
+  if (!el) return
+  el.scrollBy({ left: direction * el.clientWidth * 0.75, behavior: 'smooth' })
 }
 
 onMounted(async () => {

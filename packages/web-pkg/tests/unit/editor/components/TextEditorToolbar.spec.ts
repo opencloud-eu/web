@@ -90,6 +90,28 @@ function mountToolbar(
 }
 
 describe('TextEditorToolbar', () => {
+  it('provides controls for horizontal overflow', async () => {
+    const { wrapper } = mountToolbar()
+    const scrollContainer = wrapper.find('.overflow-x-auto').element as HTMLElement
+    Object.defineProperties(scrollContainer, {
+      clientWidth: { value: 100, configurable: true },
+      scrollWidth: { value: 300, configurable: true },
+      scrollLeft: { value: 0, writable: true, configurable: true }
+    })
+    scrollContainer.scrollBy = vi.fn()
+
+    await wrapper.find('.overflow-x-auto').trigger('scroll')
+    const rightButton = wrapper.find('[aria-label="Scroll toolbar right"]')
+    expect(rightButton.exists()).toBe(true)
+
+    await rightButton.trigger('click')
+    expect(scrollContainer.scrollBy).toHaveBeenCalledWith({
+      left: 75,
+      behavior: 'smooth'
+    })
+    wrapper.unmount()
+  })
+
   it('keeps regular actions enabled outside source mode', () => {
     const { wrapper } = mountToolbar(false)
     const buttons = wrapper.findAll('button')
