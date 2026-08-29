@@ -41,7 +41,9 @@ export function getSpaceForDriveAliasAndItem(
   fileId?: string
 ): SpaceResource | undefined {
   if (fileId) {
-    const spaceByFileId = spaces.find((s) => s.fileId && fileId.startsWith(`${s.fileId}`))
+    const spaceByFileId = spaces.find(
+      (s) => s.fileId && (fileId === s.fileId || fileId.startsWith(`${s.fileId}!`))
+    )
     if (spaceByFileId) {
       return spaceByFileId
     }

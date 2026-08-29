@@ -43,6 +43,15 @@ describe('getSpaceForDriveAliasAndItem', () => {
     ).toBe(second)
   })
 
+  it('does not match a fileId that only shares a prefix with a space', () => {
+    const shorterId = space('project/test', 'space-a')
+    const longerId = space('project/test', 'space-ab')
+
+    expect(
+      getSpaceForDriveAliasAndItem([shorterId, longerId], 'project/test', 'space-ab!item-1')
+    ).toBe(longerId)
+  })
+
   it('falls back to the drive alias without a fileId', () => {
     expect(getSpaceForDriveAliasAndItem([first, second], 'project/test')).toBe(first)
   })
