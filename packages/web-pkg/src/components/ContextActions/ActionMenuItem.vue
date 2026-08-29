@@ -78,11 +78,25 @@ const {
 const configStore = useConfigStore()
 const { options } = storeToRefs(configStore)
 
+const resolvedRoute = computed(() => {
+  if (!Object.hasOwn(action, 'route')) {
+    return undefined
+  }
+  return action.route(actionOptions)
+})
+
+const resolvedHref = computed(() => {
+  if (!Object.hasOwn(action, 'href')) {
+    return undefined
+  }
+  return action.href(actionOptions)
+})
+
 const componentType = computed<'a' | 'button' | 'router-link'>(() => {
-  if (Object.hasOwn(action, 'route')) {
+  if (unref(resolvedRoute)) {
     return 'router-link'
   }
-  if (Object.hasOwn(action, 'href')) {
+  if (unref(resolvedHref)) {
     return 'a'
   }
   if (Object.hasOwn(action, 'handler')) {
@@ -104,10 +118,10 @@ const componentProps = computed(() => {
   return {
     ...properties,
     ...(unref(componentType) === 'router-link' && {
-      to: action.route(actionOptions)
+      to: unref(resolvedRoute)
     }),
     ...(unref(componentType) === 'a' && {
-      href: action.href(actionOptions)
+      href: unref(resolvedHref)
     }),
     ...(['router-link', 'a'].includes(unref(componentType)) && {
       target: options.value.openFilesInNewTab ? ('_blank' as const) : ('_self' as const)
