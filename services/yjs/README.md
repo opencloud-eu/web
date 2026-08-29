@@ -22,9 +22,6 @@ Every connection is authenticated and authorized against OpenCloud:
 | `OPENCLOUD_URL`            | -                | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
 | `PORT`                     | `1234`           | Port to listen on                                                            |
 | `SHUTDOWN_GRACE_PERIOD_MS` | `15000`          | Grace period for graceful shutdown before the process exits with code `1`    |
-| `HEALTHCHECK_TIMEOUT_MS`   | `5000`           | Timeout used by the container healthcheck probe                              |
-| `HEALTHCHECK_READY_PATH`   | `/healthz/ready` | Internal readiness endpoint path                                             |
-| `HEALTHCHECK_HOST`         | `127.0.0.1`      | Host used by the container healthcheck probe                                 |
 
 ## Routing
 
@@ -93,7 +90,6 @@ In the repository `docker-compose.yml`:
 
 - `yjs` uses `restart: unless-stopped`
 - `yjs` uses `stop_grace_period: 20s` (5s buffer beyond the default 15s shutdown grace period)
-- OpenCloud services declare `depends_on: yjs` with `condition: service_healthy`
 
 Keep `stop_grace_period` higher than `SHUTDOWN_GRACE_PERIOD_MS` to allow the service time to
 flush and close cleanly before Docker sends SIGKILL.

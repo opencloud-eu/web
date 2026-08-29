@@ -149,7 +149,7 @@ const server = new Server({
   // here is "mostly ceremony" per the migration plan. Stale detection
   // moved to the client (see useYjsSession.onProviderSynced).
 
-  onRequest({ request, response }) {
+  async onRequest({ request, response }) {
     const requestPath = request.url?.split('?')[0] ?? '/'
     if (requestPath !== HEALTH_ENDPOINT_PATH) {
       return
@@ -164,7 +164,7 @@ const server = new Server({
     throw undefined
   },
 
-  onUpgrade({ socket }) {
+  async onUpgrade({ socket }) {
     if (!isShuttingDown) {
       return
     }
@@ -214,12 +214,12 @@ const server = new Server({
     }
   },
 
-  onConnect({ documentName, requestHeaders }) {
+  async onConnect({ documentName, requestHeaders }) {
     const origin = requestHeaders.get('origin') ?? '-'
     console.log(`[onConnect] document=${JSON.stringify(documentName)} origin=${origin}`)
   },
 
-  onDisconnect({ documentName, clientsCount }) {
+  async onDisconnect({ documentName, clientsCount }) {
     console.log(`[onDisconnect] document=${JSON.stringify(documentName)} remaining=${clientsCount}`)
   },
 
@@ -232,7 +232,7 @@ const server = new Server({
   // document-level callback the lib wires up internally (see
   // hocuspocus-server.cjs ~line 1299). Using positional args here would
   // silently no-op (states=undefined -> no user found -> return).
-  beforeHandleAwareness({ states, context, connection }) {
+  async beforeHandleAwareness({ states, context, connection }) {
     const user = context?.user ?? connection?.context?.user
     if (!user) {
       return

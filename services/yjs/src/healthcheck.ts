@@ -1,24 +1,17 @@
 const port = parseInt(process.env.PORT ?? '1234', 10)
-const host = process.env.HEALTHCHECK_HOST ?? '127.0.0.1'
-const readyPath = process.env.HEALTHCHECK_READY_PATH ?? '/healthz/ready'
-const timeoutMs = parseInt(process.env.HEALTHCHECK_TIMEOUT_MS ?? '5000', 10)
+const READY_PATH = '/healthz/ready'
+const LOCALHOST = '127.0.0.1'
+const TIMEOUT_MS = 5000
 
 if (!Number.isInteger(port) || port <= 0) {
   console.error(`invalid PORT=${JSON.stringify(process.env.PORT)}`)
   process.exit(1)
 }
 
-if (!Number.isInteger(timeoutMs) || timeoutMs <= 0) {
-  console.error(
-    `invalid HEALTHCHECK_TIMEOUT_MS=${JSON.stringify(process.env.HEALTHCHECK_TIMEOUT_MS)}`
-  )
-  process.exit(1)
-}
-
 async function checkReadinessEndpoint(): Promise<void> {
-  const url = `http://${host}:${port}${readyPath}`
+  const url = `http://${LOCALHOST}:${port}${READY_PATH}`
   const res = await fetch(url, {
-    signal: AbortSignal.timeout(timeoutMs)
+    signal: AbortSignal.timeout(TIMEOUT_MS)
   })
 
   if (!res.ok) {
@@ -27,7 +20,7 @@ async function checkReadinessEndpoint(): Promise<void> {
 }
 
 async function checkWebSocketEndpoint(): Promise<void> {
-  const url = `ws://${host}:${port}`
+  const url = `ws://${LOCALHOST}:${port}`
   await new Promise<void>((resolve, reject) => {
     const ws = new WebSocket(url)
     let opened = false
@@ -36,7 +29,7 @@ async function checkWebSocketEndpoint(): Promise<void> {
       cleanup()
       ws.close()
       reject(new Error('websocket handshake timed out'))
-    }, timeoutMs)
+    }, TIMEOUT_MS)
 
     function cleanup(): void {
       clearTimeout(timer)

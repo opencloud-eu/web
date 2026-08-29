@@ -1,7 +1,7 @@
 x-opencloud-server: &opencloud-service
   image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
   entrypoint: /bin/sh
-  command: ['-c', 'opencloud init || true && opencloud server']
+  command: [ '-c', 'opencloud init || true && opencloud server' ]
   environment: &opencloud-environment
     OC_INSECURE: '${OC_INSECURE:-true}'
     OC_LOG_LEVEL: '${OC_LOG_LEVEL:-error}'
@@ -98,8 +98,8 @@ services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
-    entrypoint: ['/bin/sh', '-c']
-    command: ['mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server']
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: [ 'mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server' ]
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
@@ -147,12 +147,6 @@ services:
     depends_on:
       collabora:
         condition: service_healthy
-      yjs:
-        condition: service_healthy
-      traefik:
-        condition: service_started
-      tika-service:
-        condition: service_started
 
   opencloud-federated:
     <<: *opencloud-service
@@ -182,13 +176,6 @@ services:
       - ./dev/docker/opencloud/app-registry.yaml:/etc/opencloud/app-registry.yaml
       - opencloud-federated-config:/etc/opencloud
       - ${OC_WEB_CONFIG:-./dev/docker/opencloud.web-federated.config.json}:/web/config.json:ro
-    depends_on:
-      yjs:
-        condition: service_healthy
-      traefik:
-        condition: service_started
-      tika-service:
-        condition: service_started
 
   collabora:
     image: collabora/code:26.04.2.4.1
@@ -230,7 +217,7 @@ services:
   # generates the WOPI proof key on first start and keeps it in a named volume
   collabora-proof-key:
     image: alpine/openssl:3.5.7
-    entrypoint: ['/bin/sh']
+    entrypoint: [ '/bin/sh' ]
     command:
       - -ec
       - |
@@ -383,7 +370,7 @@ services:
       traefik.http.services.stalwart.loadbalancer.server.port: 8180
     logging:
       driver: ${LOG_DRIVER:-local}
-    entrypoint: ['/bin/sh', '-c']
+    entrypoint: [ '/bin/sh', '-c' ]
     command:
       - |
         if [ ! -f /var/lib/stalwart/.initialized ]; then
@@ -424,7 +411,7 @@ services:
       STALWART_URL: 'http://stalwart:8180'
       STALWART_USER: 'admin'
       STALWART_PASSWORD: 'secret'
-    entrypoint: ['/bin/sh', '-c']
+    entrypoint: [ '/bin/sh', '-c' ]
     command:
       - |
         if [ -f /var/lib/stalwart/.initialized ]; then
