@@ -1,1 +1,0 @@
-import{$t as e,At as t,Et as n,mt as r,on as i,ot as a}from"./framework.C8TCNMbg.js";var o=r({__name:`toggle`,setup(r){let o=e(!1),s=()=>{o.value=!i(o)};return(e,r)=>{let i=t(`oc-filter-chip`);return n(),a(i,{"filter-label":`Toggle filter`,"is-toggle":!0,"is-toggle-active":o.value,onToggleFilter:s,onClearFilter:s},null,8,[`is-toggle-active`])}}});export{o as default};

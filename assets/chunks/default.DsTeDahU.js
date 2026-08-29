@@ -1,0 +1,1 @@
+import{$t as e,At as t,Et as n,at as r,ct as i,ft as a,mt as o,tt as s,un as c}from"./framework.DfLUzQf_.js";var l=o({__name:`default`,setup(o){let l=e(),u=e=>{l.value=e};return(e,o)=>{let d=t(`oc-search-bar`);return n(),i(s,null,[a(d,{label:`Search files`,placeholder:`Search files`,onSearch:u}),r(`p`,null,`Search query: `+c(l.value),1)],64)}}});export{l as default};
