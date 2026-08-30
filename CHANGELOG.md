@@ -1,6 +1,6 @@
 # Changelog
 
-## [7.5.0](https://github.com/opencloud-eu/web/releases/tag/v7.5.0) - 2026-08-29
+## [7.5.0](https://github.com/opencloud-eu/web/releases/tag/v7.5.0) - 2026-08-30
 
 ### ❤️ Thanks to all contributors! ❤️
 
