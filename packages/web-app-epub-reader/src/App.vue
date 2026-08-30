@@ -526,10 +526,8 @@ watch(
       }
     })
 
-    unref(rendition).on('relocated', (relocatedLocation: Location | undefined) => {
+    unref(rendition).on('relocated', (currentLocation: Location | undefined) => {
       isReaderLoading.value = false
-      const currentLocation =
-        relocatedLocation ?? (unref(rendition).currentLocation() as unknown as Location)
       if (!currentLocation) {
         return
       }

@@ -336,7 +336,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-130')
@@ -369,7 +369,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-1')
@@ -448,7 +448,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-2')
@@ -472,7 +472,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).readingProgressPercent).toBe(0)
