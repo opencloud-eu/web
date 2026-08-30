@@ -216,6 +216,32 @@ describe('chapterResolving', () => {
         const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
         expect(result?.id).toBe('ch-2')
       })
+
+      it('resolves chapter via navigation.get item id when href is ambiguous', () => {
+        const chapters: NavItem[] = [
+          { id: 'ch-1', label: 'Chapter 1', href: 'text/book.xhtml#ch1' },
+          { id: 'ch-2', label: 'Chapter 2', href: 'text/book.xhtml#ch2' }
+        ]
+
+        const location = mock<Location>({
+          start: {
+            href: 'text/book.xhtml',
+            cfi: 'epubcfi(/6/2)',
+            displayed: { page: 1, total: 12 }
+          }
+        })
+
+        mockBook.navigation.get.mockImplementation((href: string) => {
+          if (href === 'text/book.xhtml') {
+            return { id: 'ch-2', label: 'Chapter 2', href: 'text/book.xhtml' }
+          }
+          return null
+        })
+        mockBook.spine.get.mockReturnValue({ href: 'text/book.xhtml', index: 1 })
+
+        const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
+        expect(result?.id).toBe('ch-2')
+      })
     })
 
     describe('Strategy 3: navigation.get(spineHref)', () => {
@@ -366,6 +392,64 @@ describe('chapterResolving', () => {
 
         const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
         expect(result?.id).toBe('ch-2')
+      })
+
+      it('keeps TOC order when multiple chapters share the same spine index', () => {
+        const chapters: NavItem[] = [
+          { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1-a.xhtml' },
+          { id: 'ch-1b', label: 'Chapter 1b', href: 'text/ch1-b.xhtml' },
+          { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
+        ]
+
+        const location = mock<Location>({
+          start: {
+            href: 'text/interstitial.xhtml',
+            cfi: 'epubcfi(/6/8)',
+            displayed: { page: 1, total: 12 }
+          }
+        })
+
+        mockBook.spine.get.mockImplementation((target: string) => {
+          if (target === 'epubcfi(/6/8)' || target === 'text/interstitial.xhtml') {
+            return { href: 'text/interstitial.xhtml', index: 3 }
+          }
+          if (target === 'text/ch1-a.xhtml') return { index: 2 }
+          if (target === 'text/ch1-b.xhtml') return { index: 2 }
+          if (target === 'text/ch2.xhtml') return { index: 10 }
+          return null
+        })
+        mockBook.navigation.get.mockReturnValue(null)
+
+        const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
+        expect(result?.id).toBe('ch-1')
+      })
+
+      it('resolves to the first chapter when current position is before first chapter spine index', () => {
+        const chapters: NavItem[] = [
+          { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1.xhtml' },
+          { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
+        ]
+
+        const location = mock<Location>({
+          start: {
+            href: 'text/index.xhtml',
+            cfi: 'epubcfi(/6/4)',
+            displayed: { page: 1, total: 12 }
+          }
+        })
+
+        mockBook.spine.get.mockImplementation((target: string) => {
+          if (target === 'epubcfi(/6/4)' || target === 'text/index.xhtml') {
+            return { href: 'text/index.xhtml', index: 1 }
+          }
+          if (target === 'text/ch1.xhtml') return { index: 5 }
+          if (target === 'text/ch2.xhtml') return { index: 10 }
+          return null
+        })
+        mockBook.navigation.get.mockReturnValue(null)
+
+        const result = resolveCurrentChapter(location, mockBook, chapters, mockRendition)
+        expect(result?.id).toBe('ch-1')
       })
     })
 
