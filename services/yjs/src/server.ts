@@ -1,4 +1,5 @@
 import { Server } from '@hocuspocus/server'
+import type { onAuthenticatePayload } from '@hocuspocus/server'
 
 const port = parseInt(process.env.PORT ?? '1234', 10)
 const opencloudUrl = (process.env.OPENCLOUD_URL ?? '').replace(/\/$/, '')
@@ -35,6 +36,32 @@ const MAX_DOCUMENT_NAME_LENGTH = 512
 // handshakes hanging in `onAuthenticate` indefinitely.
 const GRAPH_TIMEOUT_MS = 10_000
 
+// Machine-readable codes for a refused handshake. Hocuspocus relays
+// `error.reason` to the client's `onAuthenticationFailed` and substitutes
+// "permission-denied" for a plain Error.
+const DeniedReason = {
+  /** The token was rejected. A renewed one may well be accepted. */
+  TokenInvalid: 'token-invalid',
+  /** The user does not have this file, or it does not exist. */
+  AccessDenied: 'access-denied',
+  /** The room name does not resolve to a file id. */
+  MalformedDocument: 'malformed-document',
+  /** The probe itself failed: OpenCloud unreachable, 5xx, unusable body. */
+  ServerError: 'server-error'
+} as const
+
+type DeniedReason = (typeof DeniedReason)[keyof typeof DeniedReason]
+
+/** An Error carrying the `reason` code Hocuspocus relays to the client. */
+function refuse(reason: DeniedReason, detail: string): Error {
+  return Object.assign(new Error(`${reason}: ${detail}`), { reason })
+}
+
+/** True for an error that already carries a client-facing `reason` code. */
+function isRefusal(e: unknown): e is Error & { reason: DeniedReason } {
+  return e instanceof Error && typeof (e as { reason?: unknown }).reason === 'string'
+}
+
 function hslToHex(h: number, s: number, l: number): string {
   const a = s * Math.min(l, 1 - l)
   function channel(n: number): string {
@@ -62,7 +89,8 @@ async function validateTokenAgainstOpenCloud(token: string): Promise<GraphUser> 
   })
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    throw new Error(`graph /me returned ${res.status}: ${detail.slice(0, 200)}`)
+    const reason = res.status === 401 ? DeniedReason.TokenInvalid : DeniedReason.ServerError
+    throw refuse(reason, `graph /me returned ${res.status}: ${detail.slice(0, 200)}`)
   }
   return res.json() as Promise<GraphUser>
 }
@@ -95,19 +123,24 @@ function parseDocumentId(documentName: string): { driveId: string; itemId: strin
   const fileId = versionSep >= 0 ? scopedFileId.slice(0, versionSep) : scopedFileId
   const sep = fileId.indexOf('!')
   if (sep <= 0 || sep === fileId.length - 1) {
-    throw new Error(`malformed documentName=${JSON.stringify(documentName)}`)
+    throw refuse(
+      DeniedReason.MalformedDocument,
+      `documentName=${JSON.stringify(documentName)} is not a file id`
+    )
   }
   return { driveId: fileId.slice(0, sep), itemId: fileId }
 }
 
 // Probes OC's Graph API for the user's effective access to the file. Returns
-// `{ canWrite }` on success; `null` when OC denies access (401/403/404).
+// `{ canWrite }`, or refuses with the `reason` the client needs to tell a
+// stale token (401) from a file it may not touch (403/404) - the two call for
+// opposite reactions there, and a single "denied" would blur them.
 //
 // The permissions endpoint reports the effective action set (top-level
 // `@libre.graph.permissions.actions.allowedValues`, the merged PermissionSet
 // that also backs WebDAV's `oc:permissions`) and 404s for a file the user
 // cannot see, which is what makes it the authorization gate.
-async function probeFileAccess(token: string, documentName: string): Promise<FileAccess | null> {
+async function probeFileAccess(token: string, documentName: string): Promise<FileAccess> {
   const { driveId, itemId } = parseDocumentId(documentName)
   // `$select` on the action set is what keeps this cheap: the endpoint returns
   // right after resolving the effective actions instead of also listing user,
@@ -123,12 +156,25 @@ async function probeFileAccess(token: string, documentName: string): Promise<Fil
     signal: AbortSignal.timeout(GRAPH_TIMEOUT_MS)
   })
 
-  if (res.status === 401 || res.status === 403 || res.status === 404) {
-    return null
-  }
   if (!res.ok) {
     const detail = await res.text().catch(() => '')
-    throw new Error(`graph permissions returned ${res.status}: ${detail.slice(0, 200)}`)
+    let reason: DeniedReason
+    switch (res.status) {
+      case 401:
+        reason = DeniedReason.TokenInvalid
+        break
+      case 403:
+      case 404:
+        reason = DeniedReason.AccessDenied
+        break
+      default:
+        reason = DeniedReason.ServerError
+    }
+    throw refuse(
+      reason,
+      `graph permissions returned ${res.status} for document=` +
+        `${JSON.stringify(documentName)}: ${detail.slice(0, 200)}`
+    )
   }
 
   const body = (await res.json()) as Record<string, unknown>
@@ -136,6 +182,45 @@ async function probeFileAccess(token: string, documentName: string): Promise<Fil
   const allowed = Array.isArray(actions) ? (actions as string[]) : []
 
   return { canWrite: allowed.includes(WRITE_ACTION) }
+}
+
+/**
+ * The handshake's authentication and authorization: who is connecting, and
+ * what they may do to this file. Refusals carry a `DeniedReason`.
+ */
+async function authenticate({ token, documentName, connectionConfig }: onAuthenticatePayload) {
+  if (!token) {
+    throw refuse(DeniedReason.TokenInvalid, 'no token in the handshake')
+  }
+  if (documentName.length > MAX_DOCUMENT_NAME_LENGTH) {
+    throw refuse(DeniedReason.MalformedDocument, `documentName too long (${documentName.length})`)
+  }
+
+  const me = await validateTokenAgainstOpenCloud(token)
+  const id = me.id ?? me.userPrincipalName ?? me.mail ?? 'unknown'
+
+  // Authorization: does this user have the file at all, and may they write it.
+  const access = await probeFileAccess(token, documentName)
+
+  const readOnly = !access.canWrite
+
+  // Writes are gated on `connectionConfig.readOnly`, which Hocuspocus reads
+  // when it builds the Connection. The hook's return value only feeds
+  // `context`, so setting it there would leave the connection writable.
+  connectionConfig.readOnly = readOnly
+
+  console.log(
+    `[onAuthenticate] document=${JSON.stringify(documentName)} user="${me.displayName ?? id}" ` +
+      `id="${id}" readOnly=${readOnly}`
+  )
+  return {
+    readOnly,
+    user: {
+      id,
+      displayName: me.displayName ?? me.userPrincipalName ?? id,
+      color: deterministicColor(id)
+    }
+  }
 }
 
 const server = new Server({
@@ -173,41 +258,18 @@ const server = new Server({
     throw undefined
   },
 
-  async onAuthenticate({ token, documentName, connectionConfig }) {
-    if (!token) {
-      throw new Error('missing token')
-    }
-    if (documentName.length > MAX_DOCUMENT_NAME_LENGTH) {
-      throw new Error(`documentName too long (${documentName.length})`)
-    }
-
-    const me = await validateTokenAgainstOpenCloud(token)
-    const id = me.id ?? me.userPrincipalName ?? me.mail ?? 'unknown'
-
-    // Authorization: does this user have the file at all, and may they write it.
-    const access = await probeFileAccess(token, documentName)
-    if (access === null) {
-      throw new Error(`access denied for document=${JSON.stringify(documentName)}`)
-    }
-
-    const readOnly = !access.canWrite
-
-    // Writes are gated on `connectionConfig.readOnly`, which Hocuspocus reads
-    // when it builds the Connection. The hook's return value only feeds
-    // `context`, so setting it there would leave the connection writable.
-    connectionConfig.readOnly = readOnly
-
-    console.log(
-      `[onAuthenticate] document=${JSON.stringify(documentName)} user="${me.displayName ?? id}" ` +
-        `id="${id}" readOnly=${readOnly}`
-    )
-    return {
-      readOnly,
-      user: {
-        id,
-        displayName: me.displayName ?? me.userPrincipalName ?? id,
-        color: deterministicColor(id)
+  async onAuthenticate(payload) {
+    try {
+      return await authenticate(payload)
+    } catch (e) {
+      const doc = JSON.stringify(payload.documentName)
+      if (isRefusal(e)) {
+        const log = e.reason === DeniedReason.ServerError ? console.error : console.warn
+        log(`[onAuthenticate] refused document=${doc} reason=${e.reason}: ${e.message}`)
+        throw e
       }
+      console.error(`[onAuthenticate] unexpected error document=${doc}:`, e)
+      throw refuse(DeniedReason.ServerError, e instanceof Error ? e.message : String(e))
     }
   },
 
