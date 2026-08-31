@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
 ### 🐛 Bug Fixes
@@ -36,6 +37,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency zod to v4.5.4 [[#3259](https://github.com/opencloud-eu/web/pull/3259)]
+- fix(deps): update dependency qs to v6.16.0 [[#3268](https://github.com/opencloud-eu/web/pull/3268)]
 - chore(deps): update alpine/openssl docker tag to v3.5.8 [[#3260](https://github.com/opencloud-eu/web/pull/3260)]
 - chore(deps): update devdependencies (non-major) [[#3257](https://github.com/opencloud-eu/web/pull/3257)]
 - chore(deps): update node.js to v24.20.0 [[#3255](https://github.com/opencloud-eu/web/pull/3255)]
