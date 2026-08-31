@@ -196,6 +196,26 @@ describe('useTextEditor', () => {
     )
   })
 
+  describe('paste formatting', () => {
+    it('removes pasted text and background colors', () => {
+      const { result } = createEditor()
+      const transformPastedHTML = (result.editor.value?.options.editorProps as any)
+        ?.transformPastedHTML as (html: string) => string
+
+      const transformedHtml = transformPastedHTML(
+        '<p><span style="color: #ff0000; background-color: #ffff00; font-weight: 700;">Styled</span><font color="#00ff00">Legacy</font><table><tr><td bgcolor="#0000ff">Cell</td></tr></table></p>'
+      )
+      const parsedHtml = new DOMParser().parseFromString(transformedHtml, 'text/html')
+      const span = parsedHtml.body.querySelector('span')
+
+      expect(span?.getAttribute('style')).toContain('font-weight')
+      expect(span?.style.color).toBe('')
+      expect(span?.style.backgroundColor).toBe('')
+      expect(parsedHtml.body.querySelector('[color]')).toBeNull()
+      expect(parsedHtml.body.querySelector('[bgcolor]')).toBeNull()
+    })
+  })
+
   describe('onUpdate debounce', () => {
     beforeEach(() => {
       vi.useFakeTimers()
