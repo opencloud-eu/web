@@ -12,6 +12,19 @@ type RenditionDom = {
   getRange?: (cfi: string) => Range | null
 }
 
+function findChapterFromNavigationItem(
+  chapterList: NavItem[],
+  navigationItem?: Pick<NavItem, 'id' | 'href'> | null
+): NavItem | undefined {
+  if (!navigationItem) {
+    return undefined
+  }
+  return (
+    chapterList.find((chapter) => chapter.id === navigationItem.id) ||
+    findChapterByHref(chapterList, navigationItem.href)
+  )
+}
+
 /**
  * Finds a chapter by href from the chapter list.
  * Supports both exact matches and normalized matches (strips hash fragments).
@@ -85,14 +98,14 @@ export function findChapterByDomPosition(
 
 /**
  * Resolves the current chapter based on the current location in the book.
- * Uses multiple fallback strategies to handle various EPUB structures:
+ * Uses multiple resolution strategies to handle various EPUB structures:
  *
  * Strategy 1: Exact/normalized match directly against loaded TOC using relocated href
  * Strategy 2: Resolve via navigation.get(locationHref) but only if it maps to loaded TOC
  * Strategy 3: Match via navigation.get(spineHref), but only if it maps to loaded TOC
  * Strategy 4: Match by normalized spine href (without hash fragment)
  * Strategy 4b: Multiple chapters in same file - find by DOM element position
- * Strategy 5: Find containing chapter by spine index (for chapters spanning multiple files)
+ * Strategy 5: Resolve by nearest TOC chapter in spine order
  *
  * Returns undefined when no strategy resolves a chapter, so that callers can keep the
  * previously resolved chapter instead of highlighting an unrelated one.
@@ -122,7 +135,10 @@ export function resolveCurrentChapter(
   // Strategy 2: Resolve via navigation.get(locationHref) but only if it maps to loaded TOC
   if (locationHref) {
     const byLocationHref = navigation.get(locationHref)
-    const byNavigationLocationHrefFromToc = findChapterByHref(chapterList, byLocationHref?.href)
+    const byNavigationLocationHrefFromToc = findChapterFromNavigationItem(
+      chapterList,
+      byLocationHref
+    )
     if (byNavigationLocationHrefFromToc) {
       return byNavigationLocationHrefFromToc
     }
@@ -140,7 +156,7 @@ export function resolveCurrentChapter(
 
   // Strategy 3: Match via navigation.get(spineHref), but only if it maps to loaded TOC
   const bySpineHref = navigation.get(spineHref)
-  const bySpineHrefFromToc = findChapterByHref(chapterList, bySpineHref?.href)
+  const bySpineHrefFromToc = findChapterFromNavigationItem(chapterList, bySpineHref)
   if (bySpineHrefFromToc) {
     return bySpineHrefFromToc
   }
@@ -167,23 +183,40 @@ export function resolveCurrentChapter(
     return matchingChapters[0]
   }
 
-  // Strategy 5: Find containing chapter by spine index (for chapters spanning multiple files)
+  // Strategy 5: Resolve by nearest TOC chapter in spine order
   const currentSpineIndex = spineItem?.index
   if (typeof currentSpineIndex === 'number') {
-    const chaptersWithSpineIndex = chapterList
-      .map((chapter) => {
-        const chapterSpineItem = book?.spine.get(chapter.href.split('#')[0])
-        return {
-          chapter,
-          spineIndex: chapterSpineItem?.index ?? -1
-        }
-      })
-      .filter((item) => item.spineIndex >= 0 && item.spineIndex <= currentSpineIndex)
-      .sort((a, b) => b.spineIndex - a.spineIndex)
+    let nearestChapter: { chapter: NavItem; spineIndex: number; tocOrder: number } | undefined
+    let firstChapterInSpine: { chapter: NavItem; spineIndex: number; tocOrder: number } | undefined
 
-    if (chaptersWithSpineIndex.length > 0) {
-      return chaptersWithSpineIndex[0].chapter
+    for (const [tocOrder, chapter] of chapterList.entries()) {
+      const chapterSpineItem = book?.spine.get(chapter.href.split('#')[0])
+      const chapterSpineIndex = chapterSpineItem?.index
+      if (typeof chapterSpineIndex !== 'number') {
+        continue
+      }
+
+      const chapterAtIndex = { chapter, spineIndex: chapterSpineIndex, tocOrder }
+      if (
+        !firstChapterInSpine ||
+        chapterSpineIndex < firstChapterInSpine.spineIndex ||
+        (chapterSpineIndex === firstChapterInSpine.spineIndex &&
+          tocOrder < firstChapterInSpine.tocOrder)
+      ) {
+        firstChapterInSpine = chapterAtIndex
+      }
+
+      if (
+        chapterSpineIndex <= currentSpineIndex &&
+        (!nearestChapter ||
+          chapterSpineIndex > nearestChapter.spineIndex ||
+          (chapterSpineIndex === nearestChapter.spineIndex && tocOrder < nearestChapter.tocOrder))
+      ) {
+        nearestChapter = chapterAtIndex
+      }
     }
+
+    return nearestChapter?.chapter ?? firstChapterInSpine?.chapter
   }
 
   return undefined
