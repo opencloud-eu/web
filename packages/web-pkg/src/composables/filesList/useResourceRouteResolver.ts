@@ -33,7 +33,7 @@ export const useResourceRouteResolver = (options: ResourceRouteResolverOptions =
       return {}
     }
     if (isLocationTrashActive(router, 'files-trash-overview')) {
-      return createLocationTrash('files-trash-generic', createFileRouteOptions(space))
+      return createLocationTrash('files-trash-generic', createFileRouteOptions(space, { fileId }))
     }
     if (isPublicSpaceResource(space)) {
       return createLocationPublic(
