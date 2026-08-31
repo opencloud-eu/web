@@ -51,6 +51,7 @@ export default defineWebApplication({
         { extension: 'asm', label: () => $gettext('Assembler source file') },
         { extension: 'log', label: () => $gettext('Log file') },
         { extension: 'ics', label: () => $gettext('Calendar file') },
+        { extension: 'url', label: () => $gettext('Internet shortcut file') },
         { extension: 'rtf', label: () => $gettext('Rich Text Format file') },
         { extension: 'dockerfile', label: () => $gettext('Dockerfile') },
         { extension: 'makefile', label: () => $gettext('Makefile') },
