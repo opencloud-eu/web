@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show trash breadcrumb with one space [[#3271](https://github.com/opencloud-eu/web/pull/3271)]
 - Fix default Open action for .url files and add Text Editor support [[#3266](https://github.com/opencloud-eu/web/pull/3266)]
 - fix: bound space file ID matching [[#3262](https://github.com/opencloud-eu/web/pull/3262)]
 - fix: preserve lazy tile height [[#3264](https://github.com/opencloud-eu/web/pull/3264)]
