@@ -8,25 +8,18 @@
     >
       <user-avatar :user-id="member.id" :user-name="member.displayName" class="mr-2" />
       <span class="truncate" :title="member.displayName">
-        {{ member.displayName }}
+        <oc-filter-highlight :text="member.displayName" :term="term" />
       </span>
     </li>
   </ul>
 </template>
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script setup lang="ts">
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-export default defineComponent({
-  name: 'MembersRoleSection',
-  components: { UserAvatar },
-  props: {
-    groupMembers: {
-      type: Array as PropType<User[]>,
-      required: false,
-      default: (): User[] => []
-    }
-  }
-})
+const { groupMembers = [], term = '' } = defineProps<{
+  groupMembers?: User[]
+  term?: string
+}>()
 </script>

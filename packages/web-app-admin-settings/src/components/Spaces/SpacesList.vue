@@ -60,7 +60,9 @@
       </div>
     </template>
     <template #name="{ item }">
-      <span :data-test-space-name="item.name" v-text="item.name" />
+      <span :data-test-space-name="item.name">
+        <oc-filter-highlight :text="item.name" :term="filterTerm" />
+      </span>
     </template>
     <template #manager="{ item }">
       {{ getManagerNames(item) }}
@@ -132,10 +134,13 @@ import {
   createVirtualCursorElement,
   ResourceIcon
 } from '@opencloud-eu/web-pkg'
-import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
-import { ComponentPublicInstance, computed, nextTick, onMounted, ref, unref, watch } from 'vue'
+import {
+  OcDrop,
+  OcFilterHighlight,
+  OcStatusIndicators
+} from '@opencloud-eu/design-system/components'
+import { ComponentPublicInstance, computed, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
-import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
 import { eventBus } from '@opencloud-eu/web-pkg'
@@ -160,7 +165,6 @@ import {
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
-import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const router = useRouter()
 const route = useRoute()
@@ -264,7 +268,6 @@ const fields = computed<FieldType[]>(() => [
     title: $gettext('Name'),
     type: 'slot',
     sortable: true,
-    tdClass: 'mark-element',
     width: 'expand'
   },
   {
@@ -370,27 +373,12 @@ const getSelectSpaceLabel = (space: SpaceResource) => {
   return $gettext('Select %{ space }', { space: space.name })
 }
 
-let markInstance: Mark | undefined
-onMounted(() => {
-  nextTick(() => {
-    markInstance = new Mark('.mark-element')
-  })
-})
-
 watch(
   () => filterTerm,
   async () => {
     await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
   }
 )
-
-watch([() => filterTerm, paginatedItems], () => {
-  markInstance?.unmark()
-  markInstance?.mark(filterTerm, {
-    element: 'span',
-    className: 'mark-highlight'
-  })
-})
 
 const fileClicked = (data: [SpaceResource, MouseEvent | KeyboardEvent]) => {
   const resource = data[0]

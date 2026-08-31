@@ -190,6 +190,10 @@ export default defineConfig({
               link: '/OcFilterChip'
             },
             {
+              text: 'OcFilterHighlight',
+              link: '/OcFilterHighlight'
+            },
+            {
               text: 'OcHiddenAnnouncer',
               link: '/OcHiddenAnnouncer'
             },

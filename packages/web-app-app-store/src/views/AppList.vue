@@ -25,6 +25,7 @@
         v-for="app in filteredApps"
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
+        :term="filterTerm"
         @search="setFilterTerm"
       />
     </oc-list>
@@ -32,8 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
-import Mark from 'mark.js'
+import { computed, ref, unref, watch } from 'vue'
 import Fuse from 'fuse.js'
 import { useAppsStore } from '../piniaStores'
 import AppTile from '../components/AppTile.vue'
@@ -80,19 +80,7 @@ const filteredApps = computed(() => {
   return filter(unref(apps), unref(filterTerm))
 })
 
-let markInstance: Mark | undefined
-onMounted(async () => {
-  await nextTick()
-  markInstance = new Mark('.mark-element')
-})
-watch([filterTerm, markInstance], () => {
+watch(filterTerm, () => {
   filterTermInput.value = unref(filterTerm)
-  markInstance?.unmark()
-  if (unref(filterTerm)) {
-    markInstance?.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
 })
 </script>

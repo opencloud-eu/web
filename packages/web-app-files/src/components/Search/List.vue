@@ -20,7 +20,9 @@
                   class="flex items-center"
                   :data-test-id="`media-type-${item.id.toLowerCase()}`"
                 >
-                  <resource-icon :resource="getFakeResourceForIcon(item)" />
+                  <resource-icon
+                    :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
+                  />
                   <span class="ml-2">{{ item.label }}</span>
                 </div>
               </template>
@@ -38,10 +40,10 @@
               display-name-attribute="label"
               filter-name="tags"
             >
-              <template #image="{ item }">
+              <template #image="{ item, term }">
                 <div class="flex items-center">
                   <oc-icon name="price-tag-3" size-class="size-4" />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </div>
               </template>
             </item-filter>
@@ -210,6 +212,7 @@ import {
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
 import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 type Tag = {
   id: string

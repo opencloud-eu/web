@@ -36,13 +36,13 @@
         <span v-text="$gettext('No contacts found.')" />
       </template>
     </no-content-message>
-    <div v-else ref="contactsListRef">
+    <div v-else>
       <oc-list>
         <li
           v-for="contact in filteredContacts"
           :id="`contact-list-item-${contact.id}`"
           :key="contact.id"
-          class="border-b-2 last:border-b-0 [&_mark]:bg-yellow-200"
+          class="border-b-2 last:border-b-0"
           :class="{ 'bg-role-secondary-container': currentContact?.id === contact.id }"
         >
           <div class="flex min-w-0 items-stretch">
@@ -54,7 +54,7 @@
               no-hover
               @click="onSelectContact(contact)"
             >
-              <ContactsListItem :contact="contact" />
+              <ContactsListItem :contact="contact" :term="normalizedSearchTerm" />
             </oc-button>
 
             <div class="flex items-center pr-2">
@@ -91,10 +91,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch, nextTick, unref, useTemplateRef } from 'vue'
+import { computed, watch, nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import Mark from 'mark.js'
 import {
   AppLoadingSpinner,
   ContextActionMenu,
@@ -121,7 +120,6 @@ const { currentAddressBook } = storeToRefs(addressBooksStore)
 const { setCurrentContact } = contactsStore
 
 const actionOptions = {} as ActionOptions
-const contactsListRef = useTemplateRef('contactsListRef')
 
 const sortedContacts = computed(() => {
   return [...contacts.value].sort((a, b) => {
@@ -132,7 +130,7 @@ const sortedContacts = computed(() => {
   })
 })
 
-const { searchTerm, filteredContacts } = useContactSearch(sortedContacts)
+const { searchTerm, normalizedSearchTerm, filteredContacts } = useContactSearch(sortedContacts)
 
 const onSelectContact = (contact: Contact) => {
   runWithDiscardConfirmation(() => {
@@ -158,18 +156,6 @@ const getContactMenuSections = (contact: Contact): MenuSection[] => {
     }
   ]
 }
-
-let markInstance: Mark | undefined
-watch(searchTerm, () => {
-  if (unref(contactsListRef)) {
-    markInstance = new Mark(unref(contactsListRef))
-    markInstance.unmark()
-    markInstance.mark(unref(searchTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
-})
 
 watch(
   [() => currentContact.value?.id, isLoading],

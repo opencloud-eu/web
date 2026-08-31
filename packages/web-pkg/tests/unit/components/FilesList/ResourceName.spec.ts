@@ -1,4 +1,4 @@
-import { shallowMount } from '@opencloud-eu/web-test-helpers'
+import { mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 
 import Name from '../../../../src/components/FilesList/ResourceName.vue'
 
@@ -15,7 +15,8 @@ describe('OcResourceName', () => {
         name: '.hidden',
         extension: '',
         type: 'folder'
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     expect(wrapper.find('.oc-resource-basename').text()).toMatch('.hidden')
@@ -30,7 +31,8 @@ describe('OcResourceName', () => {
         name: 'folder.with.dots',
         extension: '',
         type: 'folder'
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     expect(wrapper.find('.oc-resource-basename').text()).toMatch('folder.with.dots')
@@ -45,7 +47,8 @@ describe('OcResourceName', () => {
         name,
         extension,
         type
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     const node = wrapper.find('.oc-resource-name')
@@ -62,7 +65,8 @@ describe('OcResourceName', () => {
         name: '.super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt',
         extension: 'txt',
         type: 'file'
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -77,7 +81,8 @@ describe('OcResourceName', () => {
         extension: 'txt',
         type: 'file',
         truncateName: false
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -91,7 +96,8 @@ describe('OcResourceName', () => {
         extension: '',
         type: 'folder',
         isPathDisplayed: false
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     expect(wrapper.html()).toMatchSnapshot()
@@ -105,9 +111,32 @@ describe('OcResourceName', () => {
         extension: '',
         type: 'folder',
         isPathDisplayed: true
-      }
+      },
+      global: { stubs: { OcFilterHighlight: false } }
     })
 
     expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  it('highlights the filter term in the basename and the extension', async () => {
+    const wrapper = mount(Name, {
+      props: { fullPath, name, extension, type, term: 'ES' }
+    })
+
+    expect(wrapper.find('.oc-resource-basename .oc-filter-highlight-match').text()).toBe('es')
+    expect(wrapper.find('.oc-resource-basename').text()).toBe('forest')
+
+    await wrapper.setProps({ term: 'JP' })
+    expect(wrapper.find('.oc-resource-extension .oc-filter-highlight-match').text()).toBe('jp')
+    expect(wrapper.find('.oc-resource-extension').text()).toBe('.jpg')
+  })
+
+  it('does not highlight anything without a filter term', () => {
+    const wrapper = mount(Name, {
+      props: { fullPath, name, extension, type }
+    })
+
+    expect(wrapper.find('.oc-filter-highlight-match').exists()).toBeFalsy()
+    expect(wrapper.find('.oc-resource-basename').text()).toBe('forest')
   })
 })

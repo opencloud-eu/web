@@ -55,6 +55,7 @@
             :show-rename-quick-action="false"
             :view-mode="viewMode"
             :view-size="viewSize"
+            :term="filterTerm"
             @sort="handleSort"
             @item-visible="
               loadPreview({
@@ -103,8 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
-import Mark from 'mark.js'
+import { computed, onMounted, ref, unref } from 'vue'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
 import { useTask } from 'vue-concurrency'
@@ -301,23 +301,11 @@ const getTrashLink = (space: SpaceResource) =>
     ...createFileRouteOptions(space)
   })
 
-let markInstance: Mark | undefined
 onMounted(async () => {
   await loadResourcesTask.perform()
 
   if (unref(spaces).length === 1 && !isProjectSpaceResource(unref(spaces)[0])) {
     return router.push(getTrashLink(unref(spaces)[0]))
   }
-
-  await nextTick()
-  markInstance = new Mark('.oc-resource-details')
-})
-
-watch(filterTerm, () => {
-  markInstance?.unmark()
-  markInstance?.mark(unref(filterTerm), {
-    element: 'span',
-    className: 'mark-highlight'
-  })
 })
 </script>

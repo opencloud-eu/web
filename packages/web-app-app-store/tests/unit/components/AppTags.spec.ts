@@ -7,7 +7,7 @@ const tags: string[] = ['someTag', 'anotherTag', 'wololo-tag']
 
 const selectors = {
   button: '[data-testid="tag-button"]',
-  markElement: '.mark-element'
+  highlight: '.oc-filter-highlight-match'
 }
 
 describe('AppTags.vue', () => {
@@ -27,20 +27,19 @@ describe('AppTags.vue', () => {
     wrapper.find(selectors.button).trigger('click')
     expect(wrapper.emitted('click')).toBeTruthy()
   })
-  it('applies mark-element css class to tag text for highlighting', () => {
-    const { wrapper } = getWrapper()
-    wrapper.findAll(selectors.button).forEach((button) => {
-      expect(button.find(selectors.markElement).exists()).toBeTruthy()
-    })
+  it('highlights the occurrences of the given term', () => {
+    const { wrapper } = getWrapper('tag')
+    const highlights = wrapper.findAll(selectors.highlight)
+    expect(highlights.map((h) => h.text())).toEqual(['Tag', 'Tag', 'tag'])
   })
 })
 
-const getWrapper = () => {
+const getWrapper = (term = '') => {
   const app = { ...mock<App>({}), tags }
 
   return {
     wrapper: mount(AppTags, {
-      props: { app }
+      props: { app, term }
     })
   }
 }

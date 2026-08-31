@@ -7,18 +7,16 @@
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <span v-if="truncateName" class="truncate leading-4">
-      <span class="oc-resource-basename whitespace-pre text-role-on-surface" v-text="displayName" />
-    </span>
-    <span
-      v-else
-      class="oc-resource-basename break-normal text-role-on-surface leading-4"
-      v-text="displayName"
-    /><span
+    <span v-if="truncateName" class="truncate leading-4"
+      ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
+        ><oc-filter-highlight :text="displayName" :term="term" /></span></span
+    ><span v-else class="oc-resource-basename break-normal text-role-on-surface leading-4"
+      ><oc-filter-highlight :text="displayName" :term="term" /></span
+    ><span
       v-if="showExtension"
       class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
-      v-text="displayExtension"
-    />
+      ><oc-filter-highlight :text="displayExtension" :term="term"
+    /></span>
     <oc-icon
       v-if="isFavoriteDisplayed && isFavorite"
       name="star"
@@ -31,6 +29,7 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import path from 'path'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const {
   name,
@@ -42,7 +41,8 @@ const {
   isExtensionDisplayed = true,
   isFavoriteDisplayed = true,
   truncateName = true,
-  isFavorite = false
+  isFavorite = false,
+  term = ''
 } = defineProps<{
   name: string
   type: string
@@ -54,6 +54,10 @@ const {
   isFavoriteDisplayed?: boolean
   truncateName?: boolean
   isFavorite?: boolean
+  /**
+   * The filter term whose occurrences get highlighted in the name.
+   */
+  term?: string
 }>()
 
 const displayName = computed(() => {

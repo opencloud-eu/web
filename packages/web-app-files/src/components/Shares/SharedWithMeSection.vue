@@ -29,6 +29,7 @@
       :sort-fields="sortFields.filter((field) => field.name === 'name')"
       :view-mode="viewMode"
       :view-size="viewSize"
+      :term="term"
       @file-click="triggerDefaultAction"
       @item-visible="loadPreview({ space: getMatchingSpace($event), resource: $event })"
       @item-hidden="dropPreview($event)"
@@ -102,7 +103,8 @@ const {
   fileListHeaderY = 0,
   viewMode,
   viewSize,
-  sortFields
+  sortFields,
+  term = ''
 } = defineProps<{
   title: string
   items: IncomingShareResource[]
@@ -117,6 +119,10 @@ const {
   viewMode: string
   viewSize: number
   sortFields: SortField[]
+  /**
+   * The filter term whose occurrences get highlighted in the resource names.
+   */
+  term?: string
 }>()
 
 const { $gettext } = useGettext()

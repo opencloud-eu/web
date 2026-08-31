@@ -27,7 +27,8 @@ function getWrapper({ permissions = [] }: { permissions?: Permission[] } = {}) {
         permissions
       },
       global: {
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins()],
+        stubs: { OcFilterHighlight: false }
       }
     })
   }

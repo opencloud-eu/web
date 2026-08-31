@@ -14,9 +14,7 @@
       </div>
       <div v-if="filteredGroupMembers.length" class="mb-4" data-testid="group-members">
         <h3 class="font-semibold text-base" v-text="$gettext('Members')" />
-        <div ref="membersListRef">
-          <members-role-section :group-members="paginatedMembers" />
-        </div>
+        <members-role-section :group-members="paginatedMembers" :term="filterTerm" />
         <oc-pagination-inline
           v-model:current-page="currentPage"
           class="justify-center mt-2"
@@ -32,7 +30,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, watch, unref, Ref, useTemplateRef } from 'vue'
+import { computed, inject, ref, watch, unref, Ref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { call } from '@opencloud-eu/web-client'
 import MembersRoleSection from '../../Groups/SideBar/MembersRoleSection.vue'
@@ -41,7 +39,6 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import {
   defaultFuseOptions,
   useClientService,
-  useFilterHighlight,
   useLocalPagination,
   useMessages
 } from '@opencloud-eu/web-pkg'
@@ -54,7 +51,6 @@ const { $gettext } = useGettext()
 const group = inject<Ref<Group>>('group')
 const filterTerm = ref('')
 const members = ref<User[]>([])
-const membersListRef = useTemplateRef('membersListRef')
 
 const filterMembers = (collection: User[], term: string) => {
   if (!(term || '').trim()) {
@@ -78,8 +74,6 @@ const {
   perPage: 20,
   resetOn: [filterTerm, group]
 })
-
-useFilterHighlight({ element: membersListRef, term: filterTerm, items: paginatedMembers })
 
 const loadMembersTask = useTask(function* (signal) {
   members.value = []

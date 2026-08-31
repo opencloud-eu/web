@@ -25,6 +25,7 @@ export {
 export { default as OcDropzone } from './OcDropzone/OcDropzone.vue'
 export { default as OcFileInput } from './OcFileInput/OcFileInput.vue'
 export { default as OcFilterChip } from './OcFilterChip/OcFilterChip.vue'
+export { default as OcFilterHighlight } from './OcFilterHighlight/OcFilterHighlight.vue'
 export { default as OcHiddenAnnouncer } from './OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 export { default as OcIcon } from './OcIcon/OcIcon.vue'
 export { default as OcImage } from './OcImage/OcImage.vue'

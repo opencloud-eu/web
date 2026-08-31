@@ -111,7 +111,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-6"></svg></span></div>
       </td>
-      <td data-v-27e13406="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span data-test-space-name="1 Some space">1 Some space</span></td>
+      <td data-v-27e13406="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name"><span data-test-space-name="1 Some space"><span class="oc-filter-highlight">1 Some space</span></span></td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">3</td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-totalQuota">1 GB</td>
@@ -168,7 +168,7 @@ exports[`SpacesList > should render all spaces in a table 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-6"></svg></span></div>
       </td>
-      <td data-v-27e13406="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name mark-element"><span data-test-space-name="2 Another space">2 Another space</span></td>
+      <td data-v-27e13406="" class="oc-table-cell text-left align-middle min-w-38 oc-td oc-table-data-cell oc-table-data-cell-name"><span data-test-space-name="2 Another space"><span class="oc-filter-highlight">2 Another space</span></span></td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-manager">user1, user2... +1</td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-members">5</td>
       <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td oc-table-data-cell oc-table-data-cell-totalQuota">2 GB</td>
