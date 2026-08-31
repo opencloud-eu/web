@@ -88,6 +88,22 @@ describe('ActionMenuItem component', () => {
       // expect(link.attributes().href).toBe(action.route)
     })
   })
+  describe('route fallback', () => {
+    it('falls back to button handler when route callback resolves to undefined', async () => {
+      const spyHandler = vi.fn()
+      const action = {
+        ...fileActions.navigate,
+        route: (): undefined => undefined,
+        handler: spyHandler
+      } as unknown as FileAction
+      const { wrapper } = getWrapper(action, mount)
+      const button = wrapper.find(selectors.handler)
+      expect(button.exists()).toBeTruthy()
+      expect(button.element.tagName).toBe('BUTTON')
+      await button.trigger('click')
+      expect(spyHandler).toHaveBeenCalled()
+    })
+  })
   describe('component is of type a', () => {
     it('has a href', () => {
       const action = fileActions.redirect
