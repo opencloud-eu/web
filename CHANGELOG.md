@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: preserve lazy tile height [[#3264](https://github.com/opencloud-eu/web/pull/3264)]
 - fix: share the tooltip escape listener [[#3261](https://github.com/opencloud-eu/web/pull/3261)]
 - Fix chapter updates for fast EPUB slider seeks [[#3267](https://github.com/opencloud-eu/web/pull/3267)]
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
