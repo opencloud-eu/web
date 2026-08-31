@@ -7,10 +7,18 @@ interface TooltipData {
   showHandler: () => void
   hideHandler: () => void
   clickHandler: () => void
-  escapeHandler: (e: KeyboardEvent) => void
 }
 
 const tooltipMap = new WeakMap<HTMLElement, TooltipData>()
+const tooltipElements = new Set<HTMLElement>()
+
+const documentEscapeHandler = (event: KeyboardEvent) => {
+  if (event.code !== 'Escape') {
+    return
+  }
+
+  tooltipElements.forEach((el) => hideTooltip(el))
+}
 
 const showTooltip = async (el: HTMLElement) => {
   const data = tooltipMap.get(el)
@@ -32,6 +40,10 @@ const showTooltip = async (el: HTMLElement) => {
 
   document.body.appendChild(tooltipEl)
   data.tooltipEl = tooltipEl
+  tooltipElements.add(el)
+  if (tooltipElements.size === 1) {
+    document.addEventListener('keydown', documentEscapeHandler)
+  }
 
   const { x, y, placement, middlewareData } = await computePosition(el, tooltipEl, {
     placement: 'top',
@@ -72,6 +84,10 @@ const hideTooltip = (el: HTMLElement) => {
 
   data.tooltipEl.remove()
   data.tooltipEl = null
+  tooltipElements.delete(el)
+  if (tooltipElements.size === 0) {
+    document.removeEventListener('keydown', documentEscapeHandler)
+  }
 }
 
 const destroy = (el: HTMLElement) => {
@@ -87,8 +103,6 @@ const destroy = (el: HTMLElement) => {
   el.removeEventListener('mouseleave', data.hideHandler)
   el.removeEventListener('blur', data.hideHandler)
   el.removeEventListener('click', data.clickHandler)
-  document.removeEventListener('keydown', data.escapeHandler)
-
   tooltipMap.delete(el)
 }
 
@@ -113,27 +127,18 @@ const initOrUpdate = (el: HTMLElement, { value }: DirectiveBinding) => {
   const showHandler = () => showTooltip(el)
   const hideHandler = () => hideTooltip(el)
   const clickHandler = () => hideTooltip(el)
-  const escapeHandler = (e: KeyboardEvent) => {
-    if (e.code === 'Escape') {
-      hideTooltip(el)
-    }
-  }
-
   tooltipMap.set(el, {
     content: value,
     tooltipEl: null,
     showHandler,
     hideHandler,
-    clickHandler,
-    escapeHandler
+    clickHandler
   })
-
   el.addEventListener('mouseenter', showHandler)
   el.addEventListener('mouseleave', hideHandler)
   el.addEventListener('focus', showHandler)
   el.addEventListener('blur', hideHandler)
   el.addEventListener('click', clickHandler)
-  document.addEventListener('keydown', escapeHandler)
 }
 
 export default {
