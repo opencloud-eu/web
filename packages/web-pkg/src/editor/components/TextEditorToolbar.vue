@@ -2,7 +2,7 @@
   <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
     <oc-button
       v-if="canScrollLeft"
-      class="text-editor-toolbar-scroll-button absolute left-0 top-0 z-10 h-full"
+      class="text-editor-toolbar-scroll-button absolute left-0 top-0 z-10 h-full bg-role-surface shadow-sm"
       appearance="raw"
       type="button"
       :aria-label="$gettext('Scroll toolbar left')"
@@ -12,7 +12,8 @@
     </oc-button>
     <div
       ref="scrollContainer"
-      class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
+      class="text-editor-toolbar-scroll-container flex items-center gap-1 overflow-x-auto before:grow after:grow"
+      :class="{ 'px-8': canScrollLeft || canScrollRight }"
       @scroll="updateScrollState"
     >
       <div
@@ -176,7 +177,7 @@
     </div>
     <oc-button
       v-if="canScrollRight"
-      class="text-editor-toolbar-scroll-button absolute right-0 top-0 z-10 h-full"
+      class="text-editor-toolbar-scroll-button absolute right-0 top-0 z-10 h-full bg-role-surface shadow-sm"
       appearance="raw"
       type="button"
       :aria-label="$gettext('Scroll toolbar right')"
@@ -445,11 +446,11 @@ onBeforeUnmount(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 /* Hide scrollbar in toolbar */
-.text-editor-toolbar > div:first-child {
+.text-editor-toolbar-scroll-container {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
-.text-editor-toolbar > div:first-child::-webkit-scrollbar {
+.text-editor-toolbar-scroll-container::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
 }
 
