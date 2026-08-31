@@ -92,7 +92,6 @@
 import last from 'lodash-es/last'
 import { computed, onBeforeUnmount, onMounted, ref, unref, useSlots, useTemplateRef } from 'vue'
 import {
-  isPersonalSpaceResource,
   isProjectSpaceResource,
   isShareSpaceResource,
   Resource,
@@ -101,7 +100,6 @@ import {
 import BatchActions from '../BatchActions.vue'
 import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
-import { isLocationTrashActive } from '../../router'
 import { FolderView } from '../../ui/types'
 import {
   useFileActionsDelete,
@@ -113,13 +111,11 @@ import {
   FileAction,
   FolderViewModeConstants,
   useAbility,
-  useActiveLocation,
   useExtensionRegistry,
   useIsTopBarSticky,
   useResourcesStore,
   useRouteMeta,
-  useSideBar,
-  useSpacesStore
+  useSideBar
 } from '../../composables'
 import { BreadcrumbItem, EVENT_ITEM_DROPPED } from '@opencloud-eu/design-system/helpers'
 import { useGettext } from 'vue3-gettext'
@@ -159,7 +155,6 @@ const emit = defineEmits<{
   (e: typeof EVENT_ITEM_DROPPED, data: RouteLocationRaw): void
 }>()
 
-const spacesStore = useSpacesStore()
 const { $gettext, $ngettext } = useGettext()
 const { can } = useAbility()
 const { requestExtensions } = useExtensionRegistry()
@@ -216,17 +211,7 @@ const batchActions = computed(() => {
     })
 })
 
-const spaces = computed(() =>
-  spacesStore.spaces.filter((s) => isPersonalSpaceResource(s) || isProjectSpaceResource(s))
-)
-
-const isTrashLocation = useActiveLocation(isLocationTrashActive, 'files-trash-generic')
-const showBreadcrumb = computed(() => {
-  if (unref(isTrashLocation) && unref(spaces).length === 1) {
-    return false
-  }
-  return breadcrumbs.length
-})
+const showBreadcrumb = computed(() => breadcrumbs.length)
 
 const breadcrumbTruncationOffset = computed(() => {
   if (!unref(space)) {

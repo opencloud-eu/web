@@ -74,6 +74,18 @@ describe('AppBar component', () => {
         const { wrapper } = getShallowWrapper([], {}, { breadcrumbs: [] })
         expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeFalsy()
       })
+      it('shows the trash breadcrumb when the personal space is the only space', () => {
+        const { wrapper } = getShallowWrapper(
+          [],
+          {},
+          { breadcrumbs: [{ text: 'Deleted files' }] },
+          mock<RouteLocation>({ name: 'files-trash-generic' }),
+          false,
+          false,
+          [mock<SpaceResource>({ driveType: 'personal' })]
+        )
+        expect(wrapper.find(selectors.ocBreadcrumbStub).exists()).toBeTruthy()
+      })
     })
     describe('bulkActions', () => {
       it('if enabled and batch actions available', () => {
@@ -134,7 +146,8 @@ function getShallowWrapper(
     path: '/files/spaces/personal/admin'
   }),
   isMobile = false,
-  hasBatchActions = false
+  hasBatchActions = false,
+  spaces: SpaceResource[] = []
 ) {
   vi.mocked(useIsMobile).mockReturnValue({
     isMobile: computed(() => isMobile),
@@ -143,7 +156,8 @@ function getShallowWrapper(
 
   const plugins = defaultPlugins({
     piniaOptions: {
-      resourcesStore: { resources: selected, selectedIds: selected.map(({ id }) => id) }
+      resourcesStore: { resources: selected, selectedIds: selected.map(({ id }) => id) },
+      spacesState: { spaces }
     }
   })
 
