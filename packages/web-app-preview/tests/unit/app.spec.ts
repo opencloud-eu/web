@@ -94,6 +94,26 @@ const activeFiles = [
     path: 'personal/admin/labrador.gif',
     hidden: false,
     canDownload: () => true
+  },
+  {
+    id: '10',
+    fileId: '10',
+    name: 'otter.heic',
+    mimeType: 'image/heic',
+    path: 'personal/admin/otter.heic',
+    hidden: false,
+    canDownload: () => true,
+    hasPreview: () => true
+  },
+  {
+    id: '11',
+    fileId: '11',
+    name: 'badger.heic',
+    mimeType: 'image/heic',
+    path: 'personal/admin/badger.heic',
+    hidden: false,
+    canDownload: () => true,
+    hasPreview: () => false
   }
 ]
 
@@ -153,6 +173,26 @@ describe('Preview app', () => {
       expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
     })
 
+    it('marks the media file as failed if the server has no preview to offer', async () => {
+      const { wrapper, mocks } = createShallowMountWrapper()
+      await nextTick()
+      mocks.$previewService.loadPreview.mockClear()
+      mocks.$previewService.loadPreview.mockResolvedValue(undefined)
+
+      const mediaFile = {
+        isImage: true,
+        mimeType: 'image/heic',
+        isError: false,
+        isLoading: true,
+        resource: mock<Resource>({ isInVault: false, hasPreview: () => false })
+      }
+      await (wrapper.vm as any).loadPreviewImage(mediaFile)
+
+      // nothing to render, and the browser cannot decode HEIC by itself
+      expect(mediaFile.isError).toBe(true)
+      expect(mediaFile.isLoading).toBe(false)
+    })
+
     it('fetches SVG files via getUrlForResource instead of the preview service', async () => {
       const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
       await nextTick()
@@ -174,7 +214,17 @@ describe('Preview app', () => {
   describe('Generated "mediaFiles"', () => {
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {
       const { wrapper } = createShallowMountWrapper()
-      expect((wrapper.vm as any).mediaFiles.length).toStrictEqual(7)
+      expect((wrapper.vm as any).mediaFiles.length).toStrictEqual(8)
+    })
+
+    it('only includes HEIC files that the server has a preview for', () => {
+      const { wrapper } = createShallowMountWrapper()
+      const names = (wrapper.vm as any).mediaFiles.map(({ name }: { name: string }) => name)
+
+      // the browser cannot decode HEIC, so without a server side preview there
+      // is nothing to page to
+      expect(names).toContain('otter.heic')
+      expect(names).not.toContain('badger.heic')
     })
 
     it('should hide visible shares if the share visibility query is set to "hidden"', async () => {
