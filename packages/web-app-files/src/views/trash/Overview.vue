@@ -298,7 +298,7 @@ const handleSort = (event: { sortBy: keyof SpaceResource; sortDir: SortDir }) =>
 
 const getTrashLink = (space: SpaceResource) =>
   createLocationTrash('files-trash-generic', {
-    ...createFileRouteOptions(space)
+    ...createFileRouteOptions(space, { fileId: space.fileId })
   })
 
 onMounted(async () => {
