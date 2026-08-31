@@ -21,7 +21,7 @@
     >
       <div class="w-full aspect-[16/9]" />
       <div class="p-2">
-        <div class="h-6" />
+        <div class="h-7" />
       </div>
     </div>
     <template v-else>
