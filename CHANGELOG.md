@@ -10,6 +10,13 @@
 
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
+### 🐛 Bug Fixes
+
+- Fix chapter updates for fast EPUB slider seeks [[#3267](https://github.com/opencloud-eu/web/pull/3267)]
+- Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
+- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
+- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
+
 ### 📈 Enhancement
 
 - feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
@@ -19,12 +26,6 @@
 - feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
 - Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
 - Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
-
-### 🐛 Bug Fixes
-
-- Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
-- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
-- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
 ### ✅ Tests
 
