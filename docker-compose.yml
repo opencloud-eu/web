@@ -1,7 +1,7 @@
 x-opencloud-server: &opencloud-service
   image: ${OC_IMAGE:-opencloudeu/opencloud-rolling:daily}
   entrypoint: /bin/sh
-  command: [ '-c', 'opencloud init || true && opencloud server' ]
+  command: ['-c', 'opencloud init || true && opencloud server']
   environment: &opencloud-environment
     OC_INSECURE: '${OC_INSECURE:-true}'
     OC_LOG_LEVEL: '${OC_LOG_LEVEL:-error}'
@@ -98,8 +98,8 @@ services:
   opencloud:
     <<: *opencloud-service
     container_name: web_oc
-    entrypoint: [ '/bin/sh', '-c' ]
-    command: [ 'mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server' ]
+    entrypoint: ['/bin/sh', '-c']
+    command: ['mkdir -p /var/lib/opencloud/idm && (opencloud init || true) && opencloud server']
     environment:
       <<: *opencloud-environment
       OC_URL: ${OC_URL:-https://host.docker.internal:9200}
@@ -217,7 +217,7 @@ services:
   # generates the WOPI proof key on first start and keeps it in a named volume
   collabora-proof-key:
     image: alpine/openssl:3.5.7
-    entrypoint: [ '/bin/sh' ]
+    entrypoint: ['/bin/sh']
     command:
       - -ec
       - |
@@ -370,7 +370,7 @@ services:
       traefik.http.services.stalwart.loadbalancer.server.port: 8180
     logging:
       driver: ${LOG_DRIVER:-local}
-    entrypoint: [ '/bin/sh', '-c' ]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         if [ ! -f /var/lib/stalwart/.initialized ]; then
@@ -411,7 +411,7 @@ services:
       STALWART_URL: 'http://stalwart:8180'
       STALWART_USER: 'admin'
       STALWART_PASSWORD: 'secret'
-    entrypoint: [ '/bin/sh', '-c' ]
+    entrypoint: ['/bin/sh', '-c']
     command:
       - |
         if [ -f /var/lib/stalwart/.initialized ]; then

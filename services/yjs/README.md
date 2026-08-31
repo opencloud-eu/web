@@ -17,11 +17,11 @@ Every connection is authenticated and authorized against OpenCloud:
 
 ## Configuration
 
-| Variable                   | Default          | Description                                                                  |
-| -------------------------- | ---------------- | ---------------------------------------------------------------------------- |
-| `OPENCLOUD_URL`            | -                | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
-| `PORT`                     | `1234`           | Port to listen on                                                            |
-| `SHUTDOWN_GRACE_PERIOD_MS` | `15000`          | Grace period for graceful shutdown before the process exits with code `1`    |
+| Variable                   | Default | Description                                                                  |
+| -------------------------- | ------- | ---------------------------------------------------------------------------- |
+| `OPENCLOUD_URL`            | -       | Required. Base URL of the OpenCloud server, e.g. `https://cloud.example.com` |
+| `PORT`                     | `1234`  | Port to listen on                                                            |
+| `SHUTDOWN_GRACE_PERIOD_MS` | `15000` | Grace period for graceful shutdown before the process exits with code `1`    |
 
 ## Routing
 
@@ -78,7 +78,7 @@ immediately.
 The service installs a SIGTERM/SIGINT/SIGQUIT handler and performs graceful shutdown:
 
 1. mark the instance as shutting down (readiness becomes `503`)
-2. stop accepting new upgrade/authentication attempts
+2. stop accepting new upgrade attempts
 3. close existing WebSocket connections and let Hocuspocus unload/flush open documents
 4. exit successfully when done
 

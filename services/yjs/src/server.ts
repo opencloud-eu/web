@@ -174,9 +174,6 @@ const server = new Server({
   },
 
   async onAuthenticate({ token, documentName, connectionConfig }) {
-    if (isShuttingDown) {
-      throw new Error('server is shutting down')
-    }
     if (!token) {
       throw new Error('missing token')
     }
