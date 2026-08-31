@@ -336,7 +336,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-130')
@@ -369,10 +369,51 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-1')
+    })
+
+    it('uses relocated payload when rendition.currentLocation is stale after seek', async () => {
+      const { wrapper } = getWrapper()
+      await nextTicks(3)
+
+      ;(wrapper.vm as any).chapters = [
+        { id: 'ch-1', label: 'Chapter 1', href: 'text/ch1.xhtml' },
+        { id: 'ch-2', label: 'Chapter 2', href: 'text/ch2.xhtml' }
+      ]
+      ;(wrapper.vm as any).currentChapter = {
+        id: 'ch-1',
+        label: 'Chapter 1',
+        href: 'text/ch1.xhtml'
+      }
+
+      ;(wrapper.vm as any).rendition.currentLocation.mockReturnValue({
+        start: {
+          cfi: 'epubcfi(/6/2)',
+          href: 'text/ch1.xhtml',
+          displayed: { page: 1, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+
+      const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
+        ([eventName]: [string]) => eventName === 'relocated'
+      )?.[1]
+      relocatedHandler({
+        start: {
+          cfi: 'epubcfi(/6/4)',
+          href: 'text/ch2.xhtml',
+          displayed: { page: 3, total: 12 }
+        },
+        atStart: false,
+        atEnd: false
+      })
+      await nextTicks(1)
+
+      expect((wrapper.vm as any).currentChapter.id).toBe('ch-2')
     })
 
     it('keeps the current chapter when the location cannot be resolved', async () => {
@@ -407,7 +448,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).currentChapter.id).toBe('ch-2')
@@ -431,7 +472,7 @@ describe('Epub reader app', () => {
       const relocatedHandler = (wrapper.vm as any).rendition.on.mock.calls.find(
         ([eventName]: [string]) => eventName === 'relocated'
       )?.[1]
-      relocatedHandler()
+      relocatedHandler((wrapper.vm as any).rendition.currentLocation())
       await nextTicks(1)
 
       expect((wrapper.vm as any).readingProgressPercent).toBe(0)
