@@ -8,6 +8,8 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
+import { createMockEditor } from '../composables/helpers'
+import type { EditorAction } from '../../../../src/editor/composables/useEditorActions'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createStrategy() {
@@ -88,6 +90,80 @@ describe('useStrategyMarkdown', () => {
     })
   })
 
+  // Inside the frontmatter block the document is raw metadata text, so anything
+  // that formats or inserts content has nothing to act on.
+  describe('actions inside the frontmatter block', () => {
+    const allowed = [
+      'undo',
+      'redo',
+      'menu-zoom',
+      'source-mode',
+      'frontmatter',
+      'menu-emoji',
+      'menu-search-and-replace',
+      'print'
+    ]
+
+    function flatten(actions: EditorAction[]): EditorAction[] {
+      return actions.flatMap((action) => [action, ...flatten(action.childActions ?? [])])
+    }
+
+    function allActions() {
+      return flatten(
+        createStrategy()
+          .editorActionGroups()
+          .flatMap(({ actions }) => actions)
+      )
+    }
+
+    function editorIn(nodeName: string) {
+      return createMockEditor({
+        canUndo: true,
+        canRedo: true,
+        isActive: (type) => type === nodeName
+      })
+    }
+
+    it('enables only navigation, view and frontmatter actions', () => {
+      const editor = editorIn('frontmatter')
+      const enabled = createStrategy()
+        .editorActionGroups()
+        .flatMap(({ actions }) => actions)
+        .filter((action) => action.isEnabled?.(editor) ?? true)
+        .map(({ id }) => id)
+
+      expect(enabled.sort()).toEqual([...allowed].sort())
+    })
+
+    it('disables nested actions as well', () => {
+      const editor = editorIn('frontmatter')
+      const enabled = allActions()
+        .filter((action) => action.isEnabled?.(editor) ?? true)
+        .map(({ id }) => id)
+
+      expect(enabled.filter((id) => !allowed.includes(id) && !id.startsWith('zoom-'))).toEqual([])
+    })
+
+    it('offers only the frontmatter entry in the slash menu', () => {
+      const editor = editorIn('frontmatter')
+      const slashItems = allActions()
+        .filter((action) => action.showInSlashCommands !== false)
+        .filter((action) => action.isEnabled?.(editor) ?? true)
+        .map(({ id }) => id)
+
+      expect(slashItems).toEqual(['frontmatter'])
+    })
+
+    it('leaves everything enabled outside the block', () => {
+      const editor = editorIn('paragraph')
+      const enabled = allActions()
+        .filter((action) => action.isEnabled?.(editor) ?? true)
+        .map(({ id }) => id)
+
+      expect(enabled).toEqual(expect.arrayContaining(['bold', 'link', 'image', 'table']))
+    })
+  })
+
   describe('editorActionGroups', () => {
     it('does not include underline action but includes image actions', () => {
       const strategy = createStrategy()
@@ -106,6 +182,23 @@ describe('useStrategyMarkdown', () => {
       expect(link.slashCommandAction).toBeTypeOf('function')
       expect(link.showInToolbar).not.toBe(false)
       expect(link.showInSlashCommands).not.toBe(false)
+    })
+
+    it('offers the frontmatter toggle in the insert group and the slash menu', () => {
+      const strategy = createStrategy()
+      const insertIds =
+        strategy
+          .editorActionGroups()
+          .find(({ id }) => id === 'insert')
+          ?.actions.map(({ id }) => id) ?? []
+      expect(insertIds).toContain('frontmatter')
+
+      const frontmatter = strategy
+        .editorActionGroups()
+        .flatMap(({ actions }) => actions)
+        .find(({ id }) => id === 'frontmatter')!
+      expect(frontmatter.slashCommandAction).toBeTypeOf('function')
+      expect(frontmatter.showInSlashCommands).not.toBe(false)
     })
 
     it('includes source mode toggle', () => {

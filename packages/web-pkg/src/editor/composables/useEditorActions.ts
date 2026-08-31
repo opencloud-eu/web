@@ -816,6 +816,57 @@ export function useEditorActions(state: TextEditorState) {
     isActive: () => false
   })
 
+  // Frontmatter actions
+  const hasFrontmatter = (editor: Editor) => {
+    return editor.state.doc.firstChild?.type.name === 'frontmatter'
+  }
+
+  const toggleFrontmatter = (editor: Editor, range?: Range) => {
+    // Drop the slash query first, so it does not linger in the document when the
+    // confirmation below is cancelled.
+    if (range) {
+      editor.chain().focus().deleteRange(range).run()
+    }
+
+    if (!hasFrontmatter(editor)) {
+      editor.chain().focus().setFrontmatter().run()
+      return
+    }
+
+    // Only one block can exist, so there is nothing to add. Take the user to it
+    // instead, landing where another key would go.
+    if (!editor.isActive('frontmatter')) {
+      const endOfMetadata = editor.state.doc.firstChild!.nodeSize - 1
+      editor.chain().focus().setTextSelection(endOfMetadata).run()
+      return
+    }
+
+    // Removing the block throws away everything the metadata holds, so never do
+    // it on a single click.
+    dispatchModal({
+      title: $gettext('Delete frontmatter'),
+      message: $gettext(
+        'The frontmatter block and all metadata in it will be removed from the document.'
+      ),
+      confirmText: $gettext('Delete'),
+      onConfirm: () => {
+        editor.chain().focus().unsetFrontmatter().run()
+      }
+    })
+  }
+
+  const frontmatter = (): EditorAction => ({
+    id: 'frontmatter',
+    title: $gettext('Frontmatter'),
+    description: $gettext('Document metadata'),
+    icon: 'file-list-2',
+    iconFillType: 'line',
+    keywords: ['frontmatter', 'metadata', 'yaml'],
+    toolbarAction: (editor) => toggleFrontmatter(editor),
+    slashCommandAction: ({ editor, range }) => toggleFrontmatter(editor, range),
+    isActive: (editor) => editor.isActive('frontmatter')
+  })
+
   // Table actions
   const createTable = (): EditorAction => ({
     id: 'table',
@@ -1045,6 +1096,7 @@ export function useEditorActions(state: TextEditorState) {
     imageUpload,
     imageCloud,
     horizontalRule,
+    frontmatter,
     // Table
     createTable,
     addRowBefore,

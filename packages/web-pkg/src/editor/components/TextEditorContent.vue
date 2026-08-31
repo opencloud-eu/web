@@ -11,7 +11,10 @@
       :editor="textEditor.editor.value"
       @node-change="onDragHandleNodeChange"
     >
-      <div class="flex items-center gap-1 mr-1 mt-[0.125rem]">
+      <div
+        v-show="isDraggable"
+        class="drag-handle-controls flex items-center gap-1 mr-1 mt-[0.125rem]"
+      >
         <oc-button
           v-if="hasSlashCommands"
           appearance="raw"
@@ -59,6 +62,7 @@ import {
 } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
@@ -82,10 +86,21 @@ const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const sourceContent = ref('')
 const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 const currentDragHandleNodePos = ref<number | null>(null)
+const isFrontmatterNode = ref(false)
 const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
 const hljsThemeStyleElement = ref<HTMLLinkElement | null>(null)
 
 const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
+
+const isDraggable = computed(() => {
+  // Frontmatter is pinned to the top of the document and cannot be moved, so
+  // neither hover handle has anything to offer there.
+  if (unref(isFrontmatterNode)) {
+    return false
+  }
+
+  return true
+})
 const zoomFactor = computed(() => {
   return `${(unref(textEditor.state.editorZoom) || 100) / 100}`
 })
@@ -111,8 +126,9 @@ const onSourceInput = (event: Event) => {
   }
 }
 
-const onDragHandleNodeChange = ({ pos }: { pos: number }) => {
+const onDragHandleNodeChange = ({ node, pos }: { node: ProseMirrorNode | null; pos: number }) => {
   currentDragHandleNodePos.value = pos
+  isFrontmatterNode.value = node?.type.name === 'frontmatter'
 }
 
 const openSlashMenu = () => {

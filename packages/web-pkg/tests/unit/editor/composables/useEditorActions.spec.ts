@@ -693,6 +693,101 @@ describe('useEditorActions', () => {
     })
   })
 
+  describe('frontmatter', () => {
+    it('isActive only when the caret sits inside the frontmatter block', () => {
+      const inside = createMockEditor({
+        firstChildType: 'frontmatter',
+        isActive: (type) => type === 'frontmatter'
+      })
+      expect(actions.frontmatter().isActive!(inside)).toBe(true)
+
+      // The document has a frontmatter block, but the caret is elsewhere.
+      const outside = createMockEditor({ firstChildType: 'frontmatter' })
+      expect(actions.frontmatter().isActive!(outside)).toBe(false)
+
+      expect(actions.frontmatter().isActive!(createMockEditor())).toBe(false)
+    })
+
+    it('toolbarAction adds the block without asking when there is none', () => {
+      const editor = createMockEditor({ firstChildType: 'heading' })
+      actions.frontmatter().toolbarAction!(editor)
+
+      expect(editor._chain.setFrontmatter).toHaveBeenCalled()
+      expect(editor._chain.run).toHaveBeenCalled()
+      expect(useModals().modals).toHaveLength(0)
+    })
+
+    it('toolbarAction asks for confirmation before removing the block', () => {
+      const editor = createMockEditor({
+        firstChildType: 'frontmatter',
+        isActive: (type) => type === 'frontmatter'
+      })
+      actions.frontmatter().toolbarAction!(editor)
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Delete frontmatter',
+          confirmText: 'Delete'
+        })
+      )
+      expect(editor._chain.unsetFrontmatter).not.toHaveBeenCalled()
+    })
+
+    it('toolbarAction removes the block once confirmed', () => {
+      const editor = createMockEditor({
+        firstChildType: 'frontmatter',
+        isActive: (type) => type === 'frontmatter'
+      })
+      actions.frontmatter().toolbarAction!(editor)
+
+      useModals().modals[0].onConfirm(undefined)
+
+      expect(editor._chain.unsetFrontmatter).toHaveBeenCalled()
+      expect(editor._chain.run).toHaveBeenCalled()
+    })
+
+    it('toolbarAction moves the caret into the block instead of offering to delete it', () => {
+      const editor = createMockEditor({ firstChildType: 'frontmatter', firstChildSize: 16 })
+      actions.frontmatter().toolbarAction!(editor)
+
+      // End of the metadata, ready for another key.
+      expect(editor._chain.setTextSelection).toHaveBeenCalledWith(15)
+      expect(editor._chain.unsetFrontmatter).not.toHaveBeenCalled()
+      expect(editor._chain.setFrontmatter).not.toHaveBeenCalled()
+      expect(useModals().modals).toHaveLength(0)
+    })
+
+    it('slashCommandAction moves the caret into the block when one exists', () => {
+      const editor = createMockEditor({ firstChildType: 'frontmatter', firstChildSize: 16 })
+      actions.frontmatter().slashCommandAction!({ editor, range: mockRange })
+
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+      expect(editor._chain.setTextSelection).toHaveBeenCalledWith(15)
+      expect(useModals().modals).toHaveLength(0)
+    })
+
+    it('slashCommandAction adds the block after removing the query', () => {
+      const editor = createMockEditor({ firstChildType: 'heading' })
+      actions.frontmatter().slashCommandAction!({ editor, range: mockRange })
+
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+      expect(editor._chain.setFrontmatter).toHaveBeenCalled()
+      expect(useModals().modals).toHaveLength(0)
+    })
+
+    it('slashCommandAction asks for confirmation before removing the block', () => {
+      const editor = createMockEditor({
+        firstChildType: 'frontmatter',
+        isActive: (type) => type === 'frontmatter'
+      })
+      actions.frontmatter().slashCommandAction!({ editor, range: mockRange })
+
+      expect(useModals().dispatchModal).toHaveBeenCalled()
+      expect(editor._chain.unsetFrontmatter).not.toHaveBeenCalled()
+    })
+  })
+
   describe('imageUrl', () => {
     it('toolbarAction dispatches a modal with input', () => {
       const editor = createMockEditor()

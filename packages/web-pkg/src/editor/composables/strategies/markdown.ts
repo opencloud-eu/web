@@ -1,6 +1,7 @@
 import type { Extension, JSONContent } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
+import Document from '@tiptap/extension-document'
 import { Markdown, MarkdownManager } from '@tiptap/markdown'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
@@ -8,11 +9,12 @@ import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
-import { EditorActionGroup, useEditorActions } from '../useEditorActions'
+import { EditorAction, EditorActionGroup, useEditorActions } from '../useEditorActions'
 import { TextEditorState } from '../../types'
 import {
   createCodeBlockLowlight,
   createLinkExtension,
+  Frontmatter,
   imageFileHandlerExtension
 } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
@@ -76,8 +78,12 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       StarterKit.configure({
         link: false,
         codeBlock: false,
+        document: false,
         undoRedo: options?.yjs ? false : undefined
       }),
+      // Frontmatter is metadata about the document, it only ever belongs at the top.
+      Document.extend({ content: 'frontmatter? block+' }),
+      Frontmatter,
       createCodeBlockLowlight(),
       Markdown,
       createLinkExtension(),
@@ -116,6 +122,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     horizontalRule,
     link,
     menuEmoji,
+    frontmatter,
     image,
     menuSearchAndReplace,
     imageUrl,
@@ -131,8 +138,46 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
     toggleHeaderRow,
     deleteTable
   } = useEditorActions(editorState)
+  /**
+   * Actions that still make sense while the caret sits in the frontmatter block.
+   * Everything else formats or inserts content, and the block holds raw metadata
+   * text that none of it applies to.
+   *
+   * This is an allowlist on purpose: an action added later is restricted until
+   * someone decides it belongs here.
+   */
+  const actionsAllowedInFrontmatter = new Set([
+    'undo',
+    'redo',
+    'menu-zoom',
+    'zoom-in',
+    'zoom-out',
+    'zoom-reset',
+    'source-mode',
+    'menu-search-and-replace',
+    'print',
+    'frontmatter',
+    'menu-emoji'
+  ])
+
+  const restrictInFrontmatter = (action: EditorAction): EditorAction => {
+    const childActions = action.childActions?.map(restrictInFrontmatter)
+
+    if (actionsAllowedInFrontmatter.has(action.id)) {
+      return childActions ? { ...action, childActions } : action
+    }
+
+    const { isEnabled } = action
+
+    return {
+      ...action,
+      ...(childActions && { childActions }),
+      isEnabled: (editor) => !editor.isActive('frontmatter') && (isEnabled?.(editor) ?? true)
+    }
+  }
+
   const editorActionGroups = (): EditorActionGroup[] => {
-    return [
+    const groups: EditorActionGroup[] = [
       {
         id: 'navigation',
         title: $gettext('Navigation'),
@@ -169,6 +214,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
+          frontmatter(),
           link(),
           image(),
           imageUrl(),
@@ -198,6 +244,11 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         actions: [print()]
       }
     ]
+
+    return groups.map((group) => ({
+      ...group,
+      actions: group.actions.map(restrictInFrontmatter)
+    }))
   }
 
   return {
