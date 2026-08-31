@@ -36,6 +36,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update alpine/openssl docker tag to v3.5.8 [[#3260](https://github.com/opencloud-eu/web/pull/3260)]
 - chore(deps): update devdependencies (non-major) [[#3257](https://github.com/opencloud-eu/web/pull/3257)]
 - chore(deps): update node.js to v24.20.0 [[#3255](https://github.com/opencloud-eu/web/pull/3255)]
 - chore(deps): update dependency happy-dom to v20.11.12 [[#3251](https://github.com/opencloud-eu/web/pull/3251)]
