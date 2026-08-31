@@ -17,7 +17,6 @@ import {
   announceVersions,
   announceUppyService,
   announceAuthService,
-  startSentry,
   announceCustomScripts,
   announceLoadingService,
   announcePreviewService,
@@ -134,7 +133,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   }
 
   announceTranslations({ appsStore, gettext, coreTranslations, customTranslations })
-  startSentry(configStore, app)
   announceCustomStyles({ configStore })
   announceCustomScripts({ configStore })
   announceDefaults({ appsStore, router, extensionRegistry, configStore })

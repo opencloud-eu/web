@@ -53,7 +53,6 @@
     "@microsoft/fetch-event-source": "^2.0.1",
     "@opencloud-eu/design-system": "workspace:^",
     "@opencloud-eu/web-client": "workspace:^",
-    "@sentry/vue": "^10.46.0",
     "@tiptap/core": "catalog:tiptap",
     "@tiptap/extension-bubble-menu": "catalog:tiptap",
     "@tiptap/extension-code-block-lowlight": "catalog:tiptap",

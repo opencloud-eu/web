@@ -175,7 +175,6 @@ import { supportedLanguages } from '../../defaults'
 import { useTask } from 'vue-concurrency'
 import { call } from '@opencloud-eu/web-client'
 import { useNotificationsSettings } from '../../composables/notificationsSettings'
-import { captureException } from '@sentry/vue'
 
 const { showMessage, showErrorMessage } = useMessages()
 const language = useGettext()
@@ -463,7 +462,6 @@ const updateMultiChoiceSettingsValue = async (identifier: string, key: string, v
       const error = new TypeError(`Unsupported value type ${typeof value}`)
 
       console.error(error)
-      captureException(error)
 
       return
     }
@@ -485,7 +483,6 @@ const updateMultiChoiceSettingsValue = async (identifier: string, key: string, v
     updateValueInValueList(savedValue)
     showMessage({ title: $gettext('Preference saved.') })
   } catch (error) {
-    captureException(error)
     console.error(error)
     showErrorMessage({
       title: $gettext('Unable to save preference…'),
@@ -507,7 +504,6 @@ const updateSingleChoiceValue = async (
     updateValueInValueList(savedValue)
     showMessage({ title: $gettext('Preference saved.') })
   } catch (error) {
-    captureException(error)
     console.error(error)
     showErrorMessage({
       title: $gettext('Unable to save preference…'),
