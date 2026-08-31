@@ -1,5 +1,3 @@
-import { captureException } from '@sentry/vue'
-
 export interface SettingsValue {
   identifier: {
     bundle: string
@@ -135,7 +133,6 @@ function getSettingsDefaultValue(setting: SettingsBundleSetting) {
   const error = new Error('Unsupported setting value')
 
   console.error(error)
-  captureException(error)
 
   return null
 }

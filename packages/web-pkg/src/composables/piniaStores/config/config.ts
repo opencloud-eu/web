@@ -50,7 +50,6 @@ export const useConfigStore = defineStore('config', () => {
   const customTranslations = ref<RawConfig['customTranslations']>([])
   const oAuth2 = ref<RawConfig['auth']>({})
   const openIdConnect = ref<RawConfig['openIdConnect']>()
-  const sentry = ref<RawConfig['sentry']>()
   const scripts = ref<RawConfig['scripts']>([])
   const styles = ref<RawConfig['styles']>([])
 
@@ -72,7 +71,6 @@ export const useConfigStore = defineStore('config', () => {
     apps.value = data.apps || []
     customTranslations.value = data.customTranslations || []
     openIdConnect.value = data.openIdConnect
-    sentry.value = data.sentry
     scripts.value = data.scripts || []
     styles.value = data.styles || []
     theme.value = data.theme
@@ -95,7 +93,6 @@ export const useConfigStore = defineStore('config', () => {
     customTranslations,
     apps,
     externalApps,
-    sentry,
     theme,
     scripts,
     styles,

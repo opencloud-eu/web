@@ -29,7 +29,6 @@ import {
   SharesStore,
   ArchiverService,
   RawConfigSchema,
-  SentryConfig,
   AppProviderService,
   WebWorkersStore,
   useWebWorkersStore,
@@ -55,7 +54,6 @@ import {
   IconType
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
-import { init as sentryInit } from '@sentry/vue'
 import { v4 as uuidV4 } from 'uuid'
 import { merge } from 'lodash-es'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
@@ -755,35 +753,6 @@ export const announceUpdates = async ({
     updatesStore.setHasError(true)
   } finally {
     updatesStore.setIsLoading(false)
-  }
-}
-
-/**
- * starts the sentry monitor
- *
- * @remarks
- * if config does not contain dsn sentry will not be started
- *
- * @param configStore
- * @param app
- */
-export const startSentry = (configStore: ConfigStore, app: App): void => {
-  if (configStore.sentry?.dsn) {
-    const {
-      dsn,
-      environment = 'production',
-      transportOptions,
-      ...moreSentryOptions
-    } = configStore.sentry
-
-    sentryInit({
-      app,
-      dsn,
-      environment,
-      attachProps: true,
-      transportOptions: transportOptions as SentryConfig['transportOptions'],
-      ...moreSentryOptions
-    })
   }
 }
 
