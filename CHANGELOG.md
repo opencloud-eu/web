@@ -1,10 +1,14 @@
 # Changelog
 
-## [7.5.0](https://github.com/opencloud-eu/web/releases/tag/v7.5.0) - 2026-08-31
+## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-08-31
 
 ### ❤️ Thanks to all contributors! ❤️
 
 @AlexAndBear, @JammingBen, @kulmann, @saw-jan
+
+### 💥 Breaking changes
+
+- refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
 ### 📈 Enhancement
 
