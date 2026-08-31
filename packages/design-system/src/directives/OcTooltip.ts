@@ -40,6 +40,10 @@ const showTooltip = async (el: HTMLElement) => {
 
   document.body.appendChild(tooltipEl)
   data.tooltipEl = tooltipEl
+  tooltipElements.add(el)
+  if (tooltipElements.size === 1) {
+    document.addEventListener('keydown', documentEscapeHandler)
+  }
 
   const { x, y, placement, middlewareData } = await computePosition(el, tooltipEl, {
     placement: 'top',
@@ -80,6 +84,10 @@ const hideTooltip = (el: HTMLElement) => {
 
   data.tooltipEl.remove()
   data.tooltipEl = null
+  tooltipElements.delete(el)
+  if (tooltipElements.size === 0) {
+    document.removeEventListener('keydown', documentEscapeHandler)
+  }
 }
 
 const destroy = (el: HTMLElement) => {
@@ -95,11 +103,6 @@ const destroy = (el: HTMLElement) => {
   el.removeEventListener('mouseleave', data.hideHandler)
   el.removeEventListener('blur', data.hideHandler)
   el.removeEventListener('click', data.clickHandler)
-  tooltipElements.delete(el)
-  if (tooltipElements.size === 0) {
-    document.removeEventListener('keydown', documentEscapeHandler)
-  }
-
   tooltipMap.delete(el)
 }
 
@@ -131,11 +134,6 @@ const initOrUpdate = (el: HTMLElement, { value }: DirectiveBinding) => {
     hideHandler,
     clickHandler
   })
-  if (tooltipElements.size === 0) {
-    document.addEventListener('keydown', documentEscapeHandler)
-  }
-  tooltipElements.add(el)
-
   el.addEventListener('mouseenter', showHandler)
   el.addEventListener('mouseleave', hideHandler)
   el.addEventListener('focus', showHandler)
