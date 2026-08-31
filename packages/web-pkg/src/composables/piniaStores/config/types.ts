@@ -26,10 +26,6 @@ const OpenIdConnectConfigSchema = z.looseObject({})
 
 export type OpenIdConnectConfig = z.infer<typeof OpenIdConnectConfigSchema>
 
-const SentryConfigSchema = z.record(z.any(), z.any())
-
-export type SentryConfig = z.infer<typeof SentryConfigSchema>
-
 const StyleConfigSchema = z.object({
   href: z.string().optional()
 })
@@ -139,7 +135,6 @@ export const RawConfigSchema = z.object({
   customTranslations: z.array(CustomTranslationSchema).optional(),
   auth: OAuth2ConfigSchema.optional(),
   openIdConnect: OpenIdConnectConfigSchema.optional(),
-  sentry: SentryConfigSchema.optional(),
   scripts: z.array(ScriptConfigSchema).optional(),
   styles: z.array(StyleConfigSchema).optional()
 })

@@ -154,10 +154,6 @@ export default defineConfig(({ mode, command }) => {
                   test: /packages\/web-pkg\/l10n.*/
                 },
                 {
-                  name: '@sentry',
-                  test: /node_modules\/@sentry/
-                },
-                {
                   name: 'oidc-client-ts',
                   test: /node_modules\/oidc-client-ts/
                 },
