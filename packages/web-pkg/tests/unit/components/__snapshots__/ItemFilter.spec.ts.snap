@@ -24,34 +24,32 @@ exports[`ItemFilter > can use a custom attribute as display name 1`] = `
     </oc-button-stub>
     <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-4" mode="click" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-filter-chip-3" enforcedroponmobile="false" teleport="" ismenu="true" class="oc-filter-chip-drop">
       <!--v-if-->
-      <div>
-        <ul class="oc-list item-filter-list">
-          <li class="my-1">
-            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
-              <div class="flex items-center truncate">
-                <!--v-if-->
-                <div></div>
-                <div class="truncate"></div>
-              </div>
-              <div class="flex">
-                <!--v-if-->
-              </div>
-            </oc-button-stub>
-          </li>
-          <li class="my-1">
-            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
-              <div class="flex items-center truncate">
-                <!--v-if-->
-                <div></div>
-                <div class="truncate"></div>
-              </div>
-              <div class="flex">
-                <!--v-if-->
-              </div>
-            </oc-button-stub>
-          </li>
-        </ul>
-      </div>
+      <ul class="oc-list item-filter-list">
+        <li class="my-1">
+          <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
+            <div class="flex items-center truncate">
+              <!--v-if-->
+              <div></div>
+              <div class="truncate"></div>
+            </div>
+            <div class="flex">
+              <!--v-if-->
+            </div>
+          </oc-button-stub>
+        </li>
+        <li class="my-1">
+          <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
+            <div class="flex items-center truncate">
+              <!--v-if-->
+              <div></div>
+              <div class="truncate"></div>
+            </div>
+            <div class="flex">
+              <!--v-if-->
+            </div>
+          </oc-button-stub>
+        </li>
+      </ul>
       <!--v-if-->
     </oc-drop-stub>
     <!--v-if-->
@@ -83,34 +81,32 @@ exports[`ItemFilter > renders all items 1`] = `
     </oc-button-stub>
     <oc-drop-stub title="Users" closeonclick="false" dropid="oc-drop-2" mode="click" offset="5" paddingsize="small" position="bottom-start" toggle="#oc-filter-chip-1" enforcedroponmobile="false" teleport="" ismenu="true" class="oc-filter-chip-drop">
       <!--v-if-->
-      <div>
-        <ul class="oc-list item-filter-list">
-          <li class="my-1">
-            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
-              <div class="flex items-center truncate">
-                <!--v-if-->
-                <div></div>
-                <div class="truncate"></div>
-              </div>
-              <div class="flex">
-                <!--v-if-->
-              </div>
-            </oc-button-stub>
-          </li>
-          <li class="my-1">
-            <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
-              <div class="flex items-center truncate">
-                <!--v-if-->
-                <div></div>
-                <div class="truncate"></div>
-              </div>
-              <div class="flex">
-                <!--v-if-->
-              </div>
-            </oc-button-stub>
-          </li>
-        </ul>
-      </div>
+      <ul class="oc-list item-filter-list">
+        <li class="my-1">
+          <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Albert Einstein">
+            <div class="flex items-center truncate">
+              <!--v-if-->
+              <div></div>
+              <div class="truncate"></div>
+            </div>
+            <div class="flex">
+              <!--v-if-->
+            </div>
+          </oc-button-stub>
+        </li>
+        <li class="my-1">
+          <oc-button-stub appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="space-between" showspinner="false" size="medium" submit="button" type="button" nohover="false" class="item-filter-list-item flex items-center w-full justify-between" data-test-value="Marie Curie">
+            <div class="flex items-center truncate">
+              <!--v-if-->
+              <div></div>
+              <div class="truncate"></div>
+            </div>
+            <div class="flex">
+              <!--v-if-->
+            </div>
+          </oc-button-stub>
+        </li>
+      </ul>
       <!--v-if-->
     </oc-drop-stub>
     <!--v-if-->

@@ -25,11 +25,9 @@
         </div>
         <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
           <div class="truncate">
-            <span
-              aria-hidden="true"
-              class="files-collaborators-collaborator-name"
-              v-text="shareDisplayName"
-            />
+            <span aria-hidden="true" class="files-collaborators-collaborator-name">
+              <oc-filter-highlight :text="shareDisplayName" :term="filterTerm" />
+            </span>
             <span class="sr-only" v-text="screenreaderShareDisplayName" />
             <oc-contextual-helper
               v-if="isExternalShare"
@@ -118,6 +116,7 @@ import { useGettext } from 'vue3-gettext'
 import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const {
   share,
@@ -125,7 +124,8 @@ const {
   removable = false,
   sharedParentRoute = null,
   isLocked = false,
-  isSpaceShare = false
+  isSpaceShare = false,
+  filterTerm = ''
 } = defineProps<{
   share: CollaboratorShare
   modifiable?: boolean
@@ -133,6 +133,7 @@ const {
   sharedParentRoute?: RouteLocationNamedRaw
   isLocked?: boolean
   isSpaceShare?: boolean
+  filterTerm?: string
 }>()
 
 defineEmits<{

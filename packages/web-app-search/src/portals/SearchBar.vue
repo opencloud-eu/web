@@ -138,7 +138,6 @@ import {
   useKeyboardActions,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
-import Mark from 'mark.js'
 import { storeToRefs } from 'pinia'
 import { debounce } from 'lodash-es'
 import { useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
@@ -189,7 +188,6 @@ export default defineComponent({
     const searchResults = ref([])
     const loading = ref(false)
     const currentFolderAvailable = ref(false)
-    let markInstance: Mark | undefined
 
     const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 
@@ -203,10 +201,6 @@ export default defineComponent({
     )
 
     const currentFolderIsInVault = computed(() => !!unref(currentFolder)?.isInVault)
-
-    const dropElement = computed<HTMLElement>(
-      () => unref(optionsDropRef)?.$refs.drop as HTMLElement
-    )
 
     const updateLocationFilterInputPadding = () => {
       const inputElement = unref(searchBarRef)?.querySelector('.oc-search-input') as HTMLElement
@@ -434,7 +428,6 @@ export default defineComponent({
       userContextReady,
       publicLinkContextReady,
       showCancelButton,
-      dropElement,
       onLocationFilterChange,
       currentFolderAvailable,
       currentFolderIsInVault,
@@ -450,7 +443,6 @@ export default defineComponent({
       searchResults,
       loading,
       availableProviders,
-      markInstance,
       search,
       showPreview,
       updateTerm,
@@ -498,21 +490,6 @@ export default defineComponent({
     searchResults: {
       handler() {
         this.activePreviewIndex = null
-
-        this.$nextTick(() => {
-          if (this.showNoResults) {
-            return
-          }
-          if (this.optionsDrop) {
-            this.markInstance = new Mark(this.dropElement)
-            this.markInstance.unmark()
-            this.markInstance.mark(this.term, {
-              element: 'span',
-              className: 'mark-highlight',
-              exclude: ['.provider-details *']
-            })
-          }
-        })
       },
       deep: true
     },

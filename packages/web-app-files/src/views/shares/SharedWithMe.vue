@@ -26,8 +26,8 @@
                 display-name-attribute="label"
                 filter-name="shareType"
               >
-                <template #item="{ item }">
-                  <span class="ml-2" v-text="item.label" />
+                <template #item="{ item, term }">
+                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
               <item-filter
@@ -45,8 +45,10 @@
                 <template #image="{ item }">
                   <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
                 </template>
-                <template #item="{ item }">
-                  <span class="ml-2" v-text="item.displayName" />
+                <template #item="{ item, term }">
+                  <span class="ml-2"
+                    ><oc-filter-highlight :text="item.displayName" :term="term"
+                  /></span>
                 </template>
               </item-filter>
             </div>
@@ -76,6 +78,7 @@
           :view-mode="viewMode"
           :view-size="viewSize"
           :sort-fields="sortFields"
+          :term="filterTerm"
         />
       </template>
     </files-view-wrapper>
@@ -85,7 +88,6 @@
 
 <script setup lang="ts">
 import Fuse from 'fuse.js'
-import Mark from 'mark.js'
 import { useResourcesViewDefaults } from '../../composables'
 
 import {
@@ -101,7 +103,7 @@ import {
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue'
-import { computed, onMounted, ref, unref, watch } from 'vue'
+import { computed, onMounted, ref, unref } from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
@@ -111,6 +113,7 @@ import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const appsStore = useAppsStore()
 const resourcesStore = useResourcesStore()
@@ -197,21 +200,6 @@ const filteredItems = computed(() => {
   }
 
   return result
-})
-
-let markInstance: Mark | undefined
-watch(filteredItems, () => {
-  if (!unref(areResourcesLoading)) {
-    if (!markInstance) {
-      markInstance = new Mark('.oc-resource-details')
-    }
-
-    markInstance.unmark()
-    markInstance.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  }
 })
 
 const { sortBy, sortDir, items, handleSort } = useSort({

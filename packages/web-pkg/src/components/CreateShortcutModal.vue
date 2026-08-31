@@ -83,7 +83,7 @@
             justify-content="left"
             @click="dropItemResourceClicked(value)"
           >
-            <resource-preview :search-result="value" :is-clickable="false" />
+            <resource-preview :search-result="value" :is-clickable="false" :term="inputUrl" />
           </oc-button>
         </li>
       </template>
@@ -120,7 +120,6 @@ import {
   ComponentPublicInstance,
   computed,
   nextTick,
-  onMounted,
   Ref,
   ref,
   unref,
@@ -138,7 +137,6 @@ import {
 } from '../composables'
 import { useGettext } from 'vue3-gettext'
 import DOMPurify from 'dompurify'
-import Mark from 'mark.js'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { isComposingEvent } from '@opencloud-eu/design-system/helpers'
 import { resolveFileNameDuplicate } from '../helpers'
@@ -176,7 +174,6 @@ const inputFilename = ref('')
 const searchResult: Ref<SearchResult | null> = ref(null)
 const activeDropItemIndex = ref<number | null>(null)
 const isDropOpen = ref(false)
-let markInstance: Mark | undefined
 
 const getInputUrlWithProtocol = (input: string) => {
   const url = input.trim()
@@ -386,29 +383,6 @@ const onConfirm = async () => {
     })
   }
 }
-
-onMounted(async () => {
-  await nextTick()
-  markInstance = new Mark(unref(dropRef)?.$refs?.drop as HTMLElement)
-})
-
-watch(
-  searchResult,
-  async () => {
-    await nextTick()
-    if (!unref(isDropOpen) || !markInstance) {
-      return
-    }
-
-    markInstance.unmark()
-    markInstance.mark(unref(inputUrl), {
-      element: 'span',
-      className: 'mark-highlight',
-      exclude: ['.selectable-item-url *', '.create-shortcut-modal-search-separator *']
-    })
-  },
-  { deep: true }
-)
 
 watch(activeDropItemIndex, () => {
   if (!unref(isDropOpen) || typeof unref(dropRef)?.$el?.scrollTo !== 'function') {

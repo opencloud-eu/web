@@ -97,7 +97,7 @@ function createWrapper({
       global: {
         renderStubDefaultSlot: true,
         plugins: [...defaultPlugins()],
-        stubs: { 'avatar-image': true }
+        stubs: { 'avatar-image': true, OcFilterHighlight: false }
       }
     })
   }

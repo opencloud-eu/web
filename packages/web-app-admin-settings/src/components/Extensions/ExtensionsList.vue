@@ -26,7 +26,7 @@
     <template #name="{ item }">
       <div class="flex items-center gap-2">
         <oc-icon :name="item.icon || 'store'" size-class="size-5" fill-type="line" />
-        <span v-text="item.name" />
+        <oc-filter-highlight :text="item.name" :term="filterTerm" />
       </div>
     </template>
     <template #version="{ item }">
@@ -58,6 +58,7 @@ import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 interface ExtensionInfo {
   name: string

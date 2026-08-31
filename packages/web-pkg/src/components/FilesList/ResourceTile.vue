@@ -97,6 +97,7 @@
               :parent-folder-name="getParentFolderName(resource)"
               :parent-folder-link="getParentFolderLink(resource)"
               :link="resourceRoute"
+              :term="term"
               @click.stop="$emit('fileNameClicked', $event)"
             />
           </div>
@@ -139,7 +140,8 @@ const {
   isPathDisplayed = false,
   resourceIconSize = 'size-12',
   lazy = false,
-  isLoading = false
+  isLoading = false,
+  term = ''
 } = defineProps<{
   resource: Resource
   space?: SpaceResource
@@ -150,6 +152,10 @@ const {
   resourceIconSize?: string
   lazy?: boolean
   isLoading?: boolean
+  /**
+   * The filter term whose occurrences get highlighted in the resource names.
+   */
+  term?: string
 }>()
 
 const emit = defineEmits<{

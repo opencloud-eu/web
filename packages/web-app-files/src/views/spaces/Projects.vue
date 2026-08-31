@@ -74,6 +74,7 @@
             :header-position="fileListHeaderY"
             :view-size="viewSize"
             :view-mode="viewMode"
+            :term="filterTerm"
             v-bind="folderView.componentAttrs?.()"
             @sort="handleSort"
             @item-visible="
@@ -177,9 +178,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, unref, ref, watch, nextTick, onBeforeUnmount } from 'vue'
+import { onMounted, computed, unref, ref, watch, onBeforeUnmount } from 'vue'
 import { useTask } from 'vue-concurrency'
-import Mark from 'mark.js'
 import Fuse from 'fuse.js'
 
 import {
@@ -324,14 +324,8 @@ const batchActionsLoading = computed(() => {
   return selectedSpaces.some(({ graphPermissions }) => graphPermissions === undefined)
 })
 
-let markInstance: Mark | undefined
 watch(filterTerm, async () => {
   await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
-  markInstance?.unmark()
-  markInstance?.mark(unref(filterTerm), {
-    element: 'span',
-    className: 'mark-highlight'
-  })
 })
 
 watch(selectedResourcesIds, async (ids) => {
@@ -384,9 +378,6 @@ onMounted(async () => {
     }
   )
   scrollToResourceFromRoute(unref(items), 'files-app-bar')
-  nextTick(() => {
-    markInstance = new Mark('.oc-resource-details')
-  })
 })
 
 onBeforeUnmount(() => {

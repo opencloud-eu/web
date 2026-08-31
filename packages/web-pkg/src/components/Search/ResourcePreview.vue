@@ -9,6 +9,7 @@
     :parent-folder-link-icon-additional-attributes="parentFolderLinkIconAdditionalAttributes"
     :parent-folder-name="parentFolderName"
     :is-thumbnail-displayed="!!previewData"
+    :term="term"
     v-bind="additionalAttrs"
   />
 </template>

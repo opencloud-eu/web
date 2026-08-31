@@ -53,18 +53,14 @@
         </oc-button>
       </div>
 
-      <ul
-        id="files-collaborators-list"
-        ref="collaboratorList"
-        class="oc-list m-0"
-        :aria-label="$gettext('Space members')"
-      >
+      <ul id="files-collaborators-list" class="oc-list m-0" :aria-label="$gettext('Space members')">
         <li v-for="collaborator in paginatedSpaceMembers" :key="collaborator.id">
           <collaborator-list-item
             :share="collaborator"
             :modifiable="isModifiable(collaborator)"
             :removable="isModifiable(collaborator)"
             :is-space-share="true"
+            :filter-term="filterTerm"
             @on-delete="deleteMemberConfirm(collaborator)"
           />
         </li>
@@ -102,12 +98,11 @@ import { useContextualHelpers } from '../../../composables/contextualHelpers'
 import { ProjectSpaceResource, CollaboratorShare } from '@opencloud-eu/web-client'
 import { useClientService } from '@opencloud-eu/web-pkg'
 import Fuse from 'fuse.js'
-import { defaultFuseOptions, useFilterHighlight, useLocalPagination } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, useLocalPagination } from '@opencloud-eu/web-pkg'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 
 const filterInput = useTemplateRef<typeof OcTextInput>('filterInput')
-const collaboratorList = useTemplateRef<HTMLUListElement>('collaboratorList')
 
 const userStore = useUserStore()
 const clientService = useClientService()
@@ -240,12 +235,6 @@ const deleteMemberConfirm = (share: CollaboratorShare) => {
 
 watch(isFilterOpen, () => {
   filterTerm.value = ''
-})
-
-useFilterHighlight({
-  element: collaboratorList,
-  term: filterTerm,
-  items: paginatedSpaceMembers
 })
 </script>
 <style>

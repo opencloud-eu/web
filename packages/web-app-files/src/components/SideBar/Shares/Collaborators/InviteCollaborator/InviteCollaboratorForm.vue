@@ -40,7 +40,7 @@
         @close="onClose"
       >
         <template #option="option">
-          <autocomplete-item class="mark-element" :item="option" />
+          <autocomplete-item :item="option" :term="searchQuery" />
         </template>
         <template #no-options>
           <span v-text="noOptionsLabel" />
@@ -156,7 +156,6 @@
 <script setup lang="ts">
 import { debounce } from 'lodash-es'
 import PQueue from 'p-queue'
-import Mark from 'mark.js'
 import { storeToRefs } from 'pinia'
 import AutocompleteItem from './AutocompleteItem.vue'
 import RoleDropdown from '../RoleDropdown.vue'
@@ -296,30 +295,14 @@ watch(saving, (newValue) => {
   }, 700)
 })
 
-let markInstance: Mark | undefined
-watch([autocompleteResults, isOpen], async () => {
-  if (!unref(isOpen)) {
-    return
-  }
-
-  await nextTick()
-  markInstance?.unmark()
-  markInstance?.mark(unref(searchQuery), {
-    element: 'span',
-    className: 'mark-highlight'
-  })
-})
-
 const setInitialSelectedRole = () => {
   selectedRole.value = unref(isExternalShareRoleType)
     ? unref(availableExternalRoles)[0]
     : unref(availableInternalRoles)[0]
 }
 
-onMounted(async () => {
+onMounted(() => {
   setInitialSelectedRole()
-  await nextTick()
-  markInstance = new Mark('.mark-element')
 })
 
 const createSharesConcurrentRequests = computed(() => {

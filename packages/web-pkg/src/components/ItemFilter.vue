@@ -16,46 +16,44 @@
           autocomplete="off"
           :label="optionFilterLabel === '' ? $gettext('Filter list') : optionFilterLabel"
         />
-        <div ref="itemFilterListRef">
-          <oc-list class="item-filter-list">
-            <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
-              <oc-button
-                class="item-filter-list-item flex items-center w-full"
-                :class="{
-                  'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
-                  'justify-start': allowMultiple,
-                  'justify-between': !allowMultiple
-                }"
-                justify-content="space-between"
-                appearance="raw"
-                :data-test-value="item[displayNameAttribute as keyof Item]"
-                @click="toggleItemSelection(item)"
-              >
-                <div class="flex items-center truncate">
-                  <oc-checkbox
-                    v-if="allowMultiple"
-                    size="large"
-                    class="mr-2"
-                    :label="$gettext('Toggle selection')"
-                    :model-value="isItemSelected(item)"
-                    :label-hidden="true"
-                    @update:model-value="toggleItemSelection(item)"
-                    @click.stop
-                  />
-                  <div>
-                    <slot name="image" :item="item" />
-                  </div>
-                  <div class="truncate">
-                    <slot name="item" :item="item" />
-                  </div>
+        <oc-list class="item-filter-list">
+          <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
+            <oc-button
+              class="item-filter-list-item flex items-center w-full"
+              :class="{
+                'item-filter-list-item-active': !allowMultiple && isItemSelected(item),
+                'justify-start': allowMultiple,
+                'justify-between': !allowMultiple
+              }"
+              justify-content="space-between"
+              appearance="raw"
+              :data-test-value="item[displayNameAttribute as keyof Item]"
+              @click="toggleItemSelection(item)"
+            >
+              <div class="flex items-center truncate">
+                <oc-checkbox
+                  v-if="allowMultiple"
+                  size="large"
+                  class="mr-2"
+                  :label="$gettext('Toggle selection')"
+                  :model-value="isItemSelected(item)"
+                  :label-hidden="true"
+                  @update:model-value="toggleItemSelection(item)"
+                  @click.stop
+                />
+                <div>
+                  <slot name="image" :item="item" :term="filterTerm || ''" />
                 </div>
-                <div class="flex">
-                  <oc-icon v-if="!allowMultiple && isItemSelected(item)" name="check" />
+                <div class="truncate">
+                  <slot name="item" :item="item" :term="filterTerm || ''" />
                 </div>
-              </oc-button>
-            </li>
-          </oc-list>
-        </div>
+              </div>
+              <div class="flex">
+                <oc-icon v-if="!allowMultiple && isItemSelected(item)" name="check" />
+              </div>
+            </oc-button>
+          </li>
+        </oc-list>
         <p
           v-if="hiddenItemCount"
           class="item-filter-truncation-hint text-sm text-role-on-surface-variant mt-2 mb-0"
@@ -74,11 +72,9 @@ import {
   onMounted,
   ref,
   unref,
-  useTemplateRef,
-  watch
+  useTemplateRef
 } from 'vue'
 import Fuse, { FuseOptionKey } from 'fuse.js'
-import Mark from 'mark.js'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter } from '../composables'
 import { defaultFuseOptions } from '../helpers'
@@ -123,8 +119,8 @@ const emit = defineEmits<{
 }>()
 
 defineSlots<{
-  image?: (item: Item) => unknown
-  item?: (item: Item) => unknown
+  image?: (props: { item: Item; term: string }) => unknown
+  item?: (props: { item: Item; term: string }) => unknown
 }>()
 
 const { $ngettext } = useGettext()
@@ -132,7 +128,6 @@ const router = useRouter()
 const currentRoute = useRoute()
 const filterInputRef = useTemplateRef<ComponentPublicInstance<typeof OcTextInput>>('filterInputRef')
 const selectedItems = ref<Item[]>([])
-const itemFilterListRef = useTemplateRef('itemFilterListRef')
 
 const queryParam = `q_${filterName}`
 const currentRouteQuery = useRouteQuery(queryParam)
@@ -223,27 +218,6 @@ const showDrop = async () => {
   await nextTick()
   unref(filterInputRef)?.focus()
 }
-
-watch(
-  filterTerm,
-  () => {
-    if (!unref(itemFilterListRef)) {
-      return
-    }
-
-    const markInstance = new Mark(unref(itemFilterListRef))
-    markInstance.unmark()
-    if (!unref(filterTerm)) {
-      return
-    }
-
-    markInstance.mark(unref(filterTerm), {
-      element: 'span',
-      className: 'mark-highlight'
-    })
-  },
-  { flush: 'post' }
-)
 
 const setSelectedItemsBasedOnQuery = () => {
   const queryStr = queryItemAsString(unref(currentRouteQuery))

@@ -50,14 +50,40 @@ describe('ExtensionsList', () => {
       'Alpha'
     ])
   })
+
+  it('highlights the matching part of app names', () => {
+    const ocTableStub = {
+      props: ['data'],
+      template: `
+        <div class="oc-table-stub">
+          <div v-for="item in data" :key="item.name">
+            <slot name="name" :item="item" />
+          </div>
+        </div>
+      `
+    }
+
+    const { wrapper } = getWrapper({
+      filterTerm: 'fi',
+      stubs: {
+        OcTable: ocTableStub
+      }
+    })
+
+    const highlight = wrapper.find('.oc-filter-highlight-match')
+    expect(highlight.exists()).toBeTruthy()
+    expect(highlight.text().toLowerCase()).toBe('fi')
+  })
 })
 
 const getWrapper = ({
   extensions: extensionData = extensions,
-  filterTerm = ''
+  filterTerm = '',
+  stubs = {}
 }: {
   extensions?: { name: string; version?: string; loaded: boolean }[]
   filterTerm?: string
+  stubs?: Record<string, any>
 } = {}) => {
   return {
     wrapper: mount(ExtensionsList, {
@@ -71,7 +97,8 @@ const getWrapper = ({
           OcIcon: true,
           OcTag: true,
           OcTable: true,
-          NoContentMessage: true
+          NoContentMessage: true,
+          ...stubs
         }
       }
     })

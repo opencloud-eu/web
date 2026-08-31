@@ -87,6 +87,7 @@
           :is-resource-clickable="isResourceClickable(item, areResourcesClickable)"
           :link="getResourceLink(item)"
           :parent-folder-link="getParentFolderLink(item)"
+          :term="term"
           :parent-folder-link-icon-additional-attributes="
             getParentFolderLinkIconAdditionalAttributes(item)
           "
@@ -342,7 +343,8 @@ const {
   sortDir = undefined,
   space = undefined,
   resourceType = 'file',
-  lazy = true
+  lazy = true,
+  term = ''
 } = defineProps<{
   resources: Resource[]
   resourceDomSelector?: (resource: Resource) => string
@@ -362,6 +364,10 @@ const {
   space?: SpaceResource
   resourceType?: 'file' | 'space'
   lazy?: boolean
+  /**
+   * The filter term whose occurrences get highlighted in the resource names.
+   */
+  term?: string
 }>()
 
 const emit = defineEmits<{

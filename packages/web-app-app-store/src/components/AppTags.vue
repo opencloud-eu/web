@@ -9,15 +9,17 @@
       type="button"
       @click="emitClick(tag)"
     >
-      <span class="mark-element">{{ tag }}</span>
+      <oc-filter-highlight :text="tag" :term="term" />
     </oc-tag>
   </div>
 </template>
 <script setup lang="ts">
 import { App } from '../types'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-const { app } = defineProps<{
+const { app, term = '' } = defineProps<{
   app: App
+  term?: string
 }>()
 
 const emit = defineEmits<{

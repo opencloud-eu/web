@@ -44,8 +44,8 @@
             <template #image="{ item }">
               <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
             </template>
-            <template #item="{ item }">
-              <div class="ml-2" v-text="item.displayName" />
+            <template #item="{ item, term }">
+              <div class="ml-2"><oc-filter-highlight :text="item.displayName" :term="term" /></div>
             </template>
           </item-filter>
           <item-filter
@@ -63,8 +63,10 @@
             <template #image="{ item }">
               <oc-avatar :width="32" :userid="item.id" :user-name="$gettext(item.displayName)" />
             </template>
-            <template #item="{ item }">
-              <div class="ml-2" v-text="$gettext(item.displayName)" />
+            <template #item="{ item, term }">
+              <div class="ml-2">
+                <oc-filter-highlight :text="$gettext(item.displayName)" :term="term" />
+              </div>
             </template>
           </item-filter>
         </div>
@@ -170,10 +172,12 @@ import { storeToRefs } from 'pinia'
 
 import { useUserSettingsStore } from '../composables/stores/userSettings'
 import { call } from '@opencloud-eu/web-client'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'UsersView',
   components: {
+    OcFilterHighlight,
     NoContentMessage,
     AppTemplate,
     UsersList,

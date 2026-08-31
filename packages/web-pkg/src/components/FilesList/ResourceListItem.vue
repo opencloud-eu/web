@@ -57,6 +57,7 @@
           :is-extension-displayed="isExtensionDisplayed"
           :is-favorite="resource.starred"
           :is-favorite-displayed="isFavoriteDisplayed"
+          :term="term"
         />
       </resource-link>
       <div class="flex">
@@ -95,7 +96,8 @@ const {
   isThumbnailDisplayed = true,
   isIconDisplayed = true,
   isResourceClickable = true,
-  isFavoriteDisplayed = true
+  isFavoriteDisplayed = true,
+  term = ''
 } = defineProps<{
   resource: Resource
   pathPrefix?: string
@@ -109,6 +111,10 @@ const {
   isIconDisplayed?: boolean
   isResourceClickable?: boolean
   isFavoriteDisplayed?: boolean
+  /**
+   * The filter term whose occurrences get highlighted in the resource names.
+   */
+  term?: string
 }>()
 
 const emit = defineEmits<{
