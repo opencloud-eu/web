@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @kulmann, @saw-jan
+@AlexAndBear, @JammingBen, @fredrikblau, @kulmann, @saw-jan
 
 ### 💥 Breaking changes
 
@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: share the tooltip escape listener [[#3261](https://github.com/opencloud-eu/web/pull/3261)]
 - Fix chapter updates for fast EPUB slider seeks [[#3267](https://github.com/opencloud-eu/web/pull/3267)]
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
