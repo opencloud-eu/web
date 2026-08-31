@@ -74,7 +74,7 @@ describe('TrashOverview', () => {
     expect(mocks.$router.push).toHaveBeenCalledWith({
       name: 'files-trash-generic',
       params: { driveAliasAndItem: spaceMocks[0].getDriveAliasAndItem(undefined) },
-      query: {}
+      query: { fileId: spaceMocks[0].fileId }
     })
   })
   describe('view states', () => {
