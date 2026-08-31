@@ -21,7 +21,7 @@
         class="mr-2"
       />
       <span class="truncate" :title="getDisplayName(m)">
-        <filter-highlight :text="getDisplayName(m)" :term="term" />
+        <oc-filter-highlight :text="getDisplayName(m)" :term="term" />
       </span>
     </li>
   </ul>
@@ -29,7 +29,8 @@
 <script setup lang="ts">
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
-import { FilterHighlight, UserAvatar } from '@opencloud-eu/web-pkg'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { permissions, term = '' } = defineProps<{ permissions: Permission[]; term?: string }>()
 

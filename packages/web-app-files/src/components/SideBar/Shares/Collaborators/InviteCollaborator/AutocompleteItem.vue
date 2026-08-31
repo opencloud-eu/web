@@ -20,7 +20,7 @@
     />
     <div class="truncate">
       <span class="files-collaborators-autocomplete-username">
-        <filter-highlight :text="item.displayName" :term="term" />
+        <oc-filter-highlight :text="item.displayName" :term="term" />
       </span>
       <template v-if="!isAnyPrimaryShareType">
         <span
@@ -29,10 +29,10 @@
         />
       </template>
       <div v-if="additionalInfo" class="files-collaborators-autocomplete-additionalInfo text-sm">
-        <filter-highlight :text="additionalInfo" :term="term" />
+        <oc-filter-highlight :text="additionalInfo" :term="term" />
       </div>
       <div v-if="externalIssuer" class="files-collaborators-autocomplete-externalIssuer text-sm">
-        <filter-highlight :text="externalIssuer" :term="term" />
+        <oc-filter-highlight :text="externalIssuer" :term="term" />
       </div>
     </div>
   </div>
@@ -41,7 +41,8 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { FilterHighlight, UserAvatar } from '@opencloud-eu/web-pkg'
+import { UserAvatar } from '@opencloud-eu/web-pkg'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { item, term = '' } = defineProps<{
   item: CollaboratorAutoCompleteItem

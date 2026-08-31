@@ -9,13 +9,13 @@
       type="button"
       @click="emitClick(tag)"
     >
-      <filter-highlight :text="tag" :term="term" />
+      <oc-filter-highlight :text="tag" :term="term" />
     </oc-tag>
   </div>
 </template>
 <script setup lang="ts">
 import { App } from '../types'
-import { FilterHighlight } from '@opencloud-eu/web-pkg'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { app, term = '' } = defineProps<{
   app: App

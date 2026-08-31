@@ -3,10 +3,10 @@
     <oc-avatar :user-name="getContactDisplayName(contact)" />
     <div class="flex-1 min-w-0">
       <div class="truncate font-bold text-lg">
-        <filter-highlight :text="getContactDisplayName(contact)" :term="term" />
+        <oc-filter-highlight :text="getContactDisplayName(contact)" :term="term" />
       </div>
       <div class="truncate text-sm text-role-on-surface-variant">
-        <filter-highlight :text="getContactPrimaryEmail(contact)" :term="term" />
+        <oc-filter-highlight :text="getContactPrimaryEmail(contact)" :term="term" />
       </div>
     </div>
   </div>
@@ -14,8 +14,8 @@
 
 <script setup lang="ts">
 import { Contact } from '../types'
-import { FilterHighlight } from '@opencloud-eu/web-pkg'
 import { getContactDisplayName, getContactPrimaryEmail } from '../helpers'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { contact, term = '' } = defineProps<{
   contact: Contact

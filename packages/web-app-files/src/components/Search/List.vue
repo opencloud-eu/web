@@ -43,7 +43,7 @@
               <template #image="{ item, term }">
                 <div class="flex items-center">
                   <oc-icon name="price-tag-3" size-class="size-4" />
-                  <span class="ml-2"><filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </div>
               </template>
             </item-filter>
@@ -201,7 +201,7 @@ import {
 import { onBeforeRouteLeave } from 'vue-router'
 import { useTask } from 'vue-concurrency'
 import { eventBus } from '@opencloud-eu/web-pkg'
-import { FilterHighlight, ItemFilter } from '@opencloud-eu/web-pkg'
+import { ItemFilter } from '@opencloud-eu/web-pkg'
 import { isLocationCommonActive } from '@opencloud-eu/web-pkg'
 import { ItemFilterToggle } from '@opencloud-eu/web-pkg'
 import { useKeyboardActions, ResourceIcon } from '@opencloud-eu/web-pkg'
@@ -212,6 +212,7 @@ import {
 } from '../../composables/keyboardActions'
 import { storeToRefs } from 'pinia'
 import { folderViewsSearchExtensionPoint } from '../../extensionPoints'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 type Tag = {
   id: string

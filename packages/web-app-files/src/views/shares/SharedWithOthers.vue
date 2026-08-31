@@ -27,7 +27,7 @@
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
             </div>
@@ -109,7 +109,6 @@ import {
   Pagination,
   useGetMatchingSpace,
   ContextActions,
-  FilterHighlight,
   ItemFilter
 } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
@@ -123,6 +122,7 @@ import { useGettext } from 'vue3-gettext'
 import { folderViewsSharedWithOthersExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
 import Fuse from 'fuse.js'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { getMatchingSpace } = useGetMatchingSpace()
 const appsStore = useAppsStore()

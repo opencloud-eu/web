@@ -61,7 +61,7 @@
     </template>
     <template #name="{ item }">
       <span :data-test-space-name="item.name">
-        <filter-highlight :text="item.name" :term="filterTerm" />
+        <oc-filter-highlight :text="item.name" :term="filterTerm" />
       </span>
     </template>
     <template #manager="{ item }">
@@ -132,10 +132,13 @@ import {
   useSideBar,
   NoContentMessage,
   createVirtualCursorElement,
-  FilterHighlight,
   ResourceIcon
 } from '@opencloud-eu/web-pkg'
-import { OcStatusIndicators } from '@opencloud-eu/design-system/components'
+import {
+  OcDrop,
+  OcFilterHighlight,
+  OcStatusIndicators
+} from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Fuse from 'fuse.js'
@@ -162,7 +165,6 @@ import {
 import { useSpaceSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
-import { OcDrop } from '@opencloud-eu/design-system/components'
 
 const router = useRouter()
 const route = useRoute()

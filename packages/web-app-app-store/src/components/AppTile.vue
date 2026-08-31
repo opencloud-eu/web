@@ -18,14 +18,14 @@
             <router-link
               :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
             >
-              <filter-highlight :text="app.name" :term="term" />
+              <oc-filter-highlight :text="app.name" :term="term" />
             </router-link>
           </h3>
           <span class="ml-2 text-role-on-surface-variant text-sm mt-1">
             v{{ app.mostRecentVersion.version }}
           </span>
         </div>
-        <p class="my-2"><filter-highlight :text="app.subtitle" :term="term" /></p>
+        <p class="my-2"><oc-filter-highlight :text="app.subtitle" :term="term" /></p>
       </div>
       <app-tags :app="app" :term="term" @click="emitSearchTerm" />
       <app-actions :app="app" class="mt-4" />
@@ -39,7 +39,7 @@ import { APPID } from '../appid'
 import AppTags from './AppTags.vue'
 import AppActions from './AppActions.vue'
 import AppImageGallery from './AppImageGallery.vue'
-import { FilterHighlight } from '@opencloud-eu/web-pkg'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { app, term = '' } = defineProps<{
   app: App

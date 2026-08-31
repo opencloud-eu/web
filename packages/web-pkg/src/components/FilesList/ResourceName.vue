@@ -9,13 +9,13 @@
   >
     <span v-if="truncateName" class="truncate leading-4"
       ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
-        ><filter-highlight :text="displayName" :term="term" /></span></span
+        ><oc-filter-highlight :text="displayName" :term="term" /></span></span
     ><span v-else class="oc-resource-basename break-normal text-role-on-surface leading-4"
-      ><filter-highlight :text="displayName" :term="term" /></span
+      ><oc-filter-highlight :text="displayName" :term="term" /></span
     ><span
       v-if="showExtension"
       class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
-      ><filter-highlight :text="displayExtension" :term="term"
+      ><oc-filter-highlight :text="displayExtension" :term="term"
     /></span>
     <oc-icon
       v-if="isFavoriteDisplayed && isFavorite"
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import path from 'path'
-import FilterHighlight from '../FilterHighlight.vue'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const {
   name,

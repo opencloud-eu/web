@@ -26,7 +26,7 @@
         <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
           <div class="truncate">
             <span aria-hidden="true" class="files-collaborators-collaborator-name">
-              <filter-highlight :text="shareDisplayName" :term="filterTerm" />
+              <oc-filter-highlight :text="shareDisplayName" :term="filterTerm" />
             </span>
             <span class="sr-only" v-text="screenreaderShareDisplayName" />
             <oc-contextual-helper
@@ -102,7 +102,6 @@ import EditDropdown from './EditDropdown.vue'
 import RoleDropdown from './RoleDropdown.vue'
 import { CollaboratorShare, ShareRole, ShareTypes } from '@opencloud-eu/web-client'
 import {
-  FilterHighlight,
   queryItemAsString,
   useMessages,
   useSpacesStore,
@@ -117,6 +116,7 @@ import { useGettext } from 'vue3-gettext'
 import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import { ContextualHelperDataListItem } from '@opencloud-eu/design-system/helpers'
 import ExpirationDateIndicator from '../ExpirationDateIndicator.vue'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const {
   share,

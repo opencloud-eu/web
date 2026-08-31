@@ -7,7 +7,7 @@ const tags: string[] = ['someTag', 'anotherTag', 'wololo-tag']
 
 const selectors = {
   button: '[data-testid="tag-button"]',
-  highlight: '.filter-highlight-match'
+  highlight: '.oc-filter-highlight-match'
 }
 
 describe('AppTags.vue', () => {

@@ -20,6 +20,7 @@ import OcDrop from './src/components/OcDrop/OcDrop.vue'
 import OcDropzone from './src/components/OcDropzone/OcDropzone.vue'
 import OcFileInput from './src/components/OcFileInput/OcFileInput.vue'
 import OcFilterChip from './src/components/OcFilterChip/OcFilterChip.vue'
+import OcFilterHighlight from './src/components/OcFilterHighlight/OcFilterHighlight.vue'
 import OcHiddenAnnouncer from './src/components/OcHiddenAnnouncer/OcHiddenAnnouncer.vue'
 import OcIcon from './src/components/OcIcon/OcIcon.vue'
 import OcImage from './src/components/OcImage/OcImage.vue'
@@ -81,6 +82,7 @@ declare module 'vue' {
     OcDropzone: typeof OcDropzone
     OcFileInput: typeof OcFileInput
     OcFilterChip: typeof OcFilterChip
+    OcFilterHighlight: typeof OcFilterHighlight
     OcHiddenAnnouncer: typeof OcHiddenAnnouncer
     OcIcon: typeof OcIcon
     OcImage: typeof OcImage

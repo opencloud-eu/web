@@ -1,9 +1,9 @@
 <template>
-  <span class="filter-highlight"
+  <span class="oc-filter-highlight"
     ><template v-for="(segment, index) in segments" :key="index"
       ><span
         v-if="segment.match"
-        class="filter-highlight-match font-semibold"
+        class="oc-filter-highlight-match font-semibold"
         v-text="segment.text"
       /><template v-else>{{ segment.text }}</template></template
     ></span

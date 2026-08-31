@@ -59,7 +59,7 @@
     </template>
     <template #displayName="rowData">
       <div class="flex items-center">
-        <filter-highlight :text="rowData.item.displayName" :term="filterTerm" />
+        <oc-filter-highlight :text="rowData.item.displayName" :term="filterTerm" />
         <oc-icon
           v-if="rowData.item.groupTypes?.includes('ReadOnly')"
           v-oc-tooltip="readOnlyLabel"
@@ -141,12 +141,12 @@ import { useGroupSettingsStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
-import { FilterHighlight, NoContentMessage } from '@opencloud-eu/web-pkg'
-import { OcDrop } from '@opencloud-eu/design-system/components'
+import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 export default defineComponent({
   name: 'GroupsList',
-  components: { FilterHighlight, NoContentMessage, ContextMenuQuickAction, Pagination },
+  components: { OcFilterHighlight, NoContentMessage, ContextMenuQuickAction, Pagination },
   props: {
     filterTerm: {
       type: String,

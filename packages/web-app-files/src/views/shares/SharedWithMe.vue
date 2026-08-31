@@ -27,7 +27,7 @@
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
               <item-filter
@@ -47,7 +47,7 @@
                 </template>
                 <template #item="{ item, term }">
                   <span class="ml-2"
-                    ><filter-highlight :text="item.displayName" :term="term"
+                    ><oc-filter-highlight :text="item.displayName" :term="term"
                   /></span>
                 </template>
               </item-filter>
@@ -100,7 +100,7 @@ import {
   UserAvatar,
   createLocationShares
 } from '@opencloud-eu/web-pkg'
-import { AppBar, FilterHighlight, ItemFilterInline } from '@opencloud-eu/web-pkg'
+import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue'
 import { computed, onMounted, ref, unref } from 'vue'
@@ -113,6 +113,7 @@ import { IncomingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { uniq } from 'lodash-es'
 import { folderViewsSharedWithMeExtensionPoint } from '../../extensionPoints'
 import { v4 as uuidV4 } from 'uuid'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const appsStore = useAppsStore()
 const resourcesStore = useResourcesStore()

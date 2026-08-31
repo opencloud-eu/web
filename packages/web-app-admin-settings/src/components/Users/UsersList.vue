@@ -47,7 +47,7 @@
         <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
       </template>
       <template #displayName="{ item }">
-        <filter-highlight :text="item.displayName" :term="filterTerm" />
+        <oc-filter-highlight :text="item.displayName" :term="filterTerm" />
       </template>
       <template #role="{ item }">
         <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
@@ -120,7 +120,6 @@ import {
   AppLoadingSpinner,
   ContextMenuQuickAction,
   eventBus,
-  FilterHighlight,
   Pagination,
   queryItemAsString,
   useFileListHeaderPosition,
@@ -141,17 +140,17 @@ import {
   useKeyboardTableNavigation
 } from '../../composables/keyboardActions'
 import { findIndex } from 'lodash-es'
-import { OcDrop, OcTable } from '@opencloud-eu/design-system/components'
+import { OcDrop, OcFilterHighlight, OcTable } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'UsersList',
   components: {
+    OcFilterHighlight,
     UserAvatar,
     AppLoadingSpinner,
     ContextMenuQuickAction,
-    FilterHighlight,
     Pagination
   },
   props: {

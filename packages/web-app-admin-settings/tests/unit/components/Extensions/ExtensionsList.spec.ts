@@ -70,7 +70,7 @@ describe('ExtensionsList', () => {
       }
     })
 
-    const highlight = wrapper.find('.filter-highlight-match')
+    const highlight = wrapper.find('.oc-filter-highlight-match')
     expect(highlight.exists()).toBeTruthy()
     expect(highlight.text().toLowerCase()).toBe('fi')
   })
