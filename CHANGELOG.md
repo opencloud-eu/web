@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: safari file list performance [[#3283](https://github.com/opencloud-eu/web/pull/3283)]
 - fix: remove system actions from getAllOpenWithActions [[#3254](https://github.com/opencloud-eu/web/pull/3254)]
 - fix: remove pasted text/background colors in Tiptap editor [[#3275](https://github.com/opencloud-eu/web/pull/3275)]
 - Hide duplicate 'Insert from cloud' action in text editor toolbar [[#3274](https://github.com/opencloud-eu/web/pull/3274)]
