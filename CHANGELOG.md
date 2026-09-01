@@ -13,6 +13,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: remove pasted text/background colors in Tiptap editor [[#3275](https://github.com/opencloud-eu/web/pull/3275)]
 - Hide duplicate 'Insert from cloud' action in text editor toolbar [[#3274](https://github.com/opencloud-eu/web/pull/3274)]
 - fix: show trash breadcrumb with one space [[#3271](https://github.com/opencloud-eu/web/pull/3271)]
 - Fix default Open action for .url files and add Text Editor support [[#3266](https://github.com/opencloud-eu/web/pull/3266)]
