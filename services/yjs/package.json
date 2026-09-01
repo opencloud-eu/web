@@ -1,7 +1,6 @@
 {
   "name": "opencloud-yjs-server",
-  "version": "0.0.0",
-  "private": true,
+  "version": "1.0.0-rc.1",
   "description": "Yjs collaboration server (Hocuspocus) for OpenCloud Web",
   "license": "AGPL-3.0",
   "type": "module",
