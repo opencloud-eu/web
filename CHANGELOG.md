@@ -46,6 +46,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency axios to v1.20.0 [[#3050](https://github.com/opencloud-eu/web/pull/3050)]
 - chore(deps): update typescript-eslint monorepo to v8.69.0 [[#3278](https://github.com/opencloud-eu/web/pull/3278)]
 - fix(deps): update dependency zod to v4.5.4 [[#3259](https://github.com/opencloud-eu/web/pull/3259)]
 - fix(deps): update dependency qs to v6.16.0 [[#3268](https://github.com/opencloud-eu/web/pull/3268)]
