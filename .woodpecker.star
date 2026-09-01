@@ -824,7 +824,6 @@ def notifyMatrixCheckSteps():
     result = {
         "name": "all-checks-finished",
         "skip_clone": True,
-        "runs_on": ["success", "failure"],
         "steps": [
             {
                 "name": "notify-matrix",
@@ -862,11 +861,12 @@ def notifyMatrixCheckSteps():
             },
         ],
         "when": [
-            event["cron"],
-            event["pull_request"],
+            dict(event["cron"], status = ["success", "failure"]),
+            dict(event["pull_request"], status = ["success", "failure"]),
             {
                 "event": ["push", "manual"],
                 "branch": "${CI_REPO_DEFAULT_BRANCH}",
+                "status": ["success", "failure"],
             },
         ],
     }
@@ -1503,11 +1503,10 @@ def purgeCache(name, flush_path, flush_age):
         "name": name,
         "skip_clone": True,
         "when": [
-            event["cron"],
-            event["pull_request"],
-            event["main_branch"],
+            dict(event["cron"], status = ["success", "failure"]),
+            dict(event["pull_request"], status = ["success", "failure"]),
+            dict(event["main_branch"], status = ["success", "failure"]),
         ],
-        "runs_on": ["success", "failure"],
         "steps": {
             "purge": {
                 "image": MINIO_MC,
