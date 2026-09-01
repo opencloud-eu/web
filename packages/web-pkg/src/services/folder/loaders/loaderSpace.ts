@@ -66,23 +66,12 @@ export class FolderLoaderSpace implements FolderLoader {
           davProperties.push(DavProperty.DownloadURL)
         }
 
-        // Graph listing is opt-in while it is being validated against PROPFIND,
-        // toggle with localStorage.setItem('oc_graph_listing', '1').
-        const useGraphListing =
-          !isPublicSpaceResource(space) &&
-          (() => {
-            try {
-              return window.localStorage.getItem('oc_graph_listing') === '1'
-            } catch {
-              return false
-            }
-          })()
-
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
-          useGraphListing
-            ? listFilesViaGraph({ graphClient, space, path, fileId, signal: signal1 })
-            : webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
+          // public links have no drive, they are only reachable over webdav
+          isPublicSpaceResource(space)
+            ? webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
+            : listFilesViaGraph({ graphClient, space, path, fileId, signal: signal1 })
         )
 
         // if current folder has no id (= singe file public link) we must not correct the route
