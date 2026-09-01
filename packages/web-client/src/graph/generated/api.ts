@@ -409,6 +409,7 @@ export interface DriveItem {
      */
     'cTag'?: string;
     'deleted'?: Deleted;
+    'pendingOperations'?: PendingOperations;
     'file'?: OpenGraphFile;
     'fileSystemInfo'?: FileSystemInfo;
     'folder'?: Folder;
@@ -1054,6 +1055,21 @@ export interface PasswordProfile {
      * The user\'s password
      */
     'password'?: string;
+}
+/**
+ * Present while operations affecting the item\'s content have not completed, whether still queued or already running. While present, requests for the item\'s content fail, the content is withheld until processing completes and the facet disappears. 
+ */
+export interface PendingOperations {
+    'pendingContentUpdate'?: PendingOperationsPendingContentUpdate;
+}
+/**
+ * An update to the item\'s content has not completed, for example post-processing such as virus scanning after an upload. MS Graph does not specify how reads behave while this is present; in OpenCloud content requests fail. 
+ */
+export interface PendingOperationsPendingContentUpdate {
+    /**
+     * Time the operation was queued. May be absent. Read-only.
+     */
+    'queuedDateTime'?: string;
 }
 /**
  * The Permission resource provides information about a sharing permission granted for a DriveItem resource.  ### Remarks  The Permission resource uses *facets* to provide information about the kind of permission represented by the resource.  Permissions with a `link` facet represent sharing links created on the item. Sharing links contain a unique token that provides access to the item for anyone with the link.  Permissions with a `invitation` facet represent permissions added by inviting specific users or groups to have access to the file. 
@@ -1859,12 +1875,12 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {DriveItem} driveItem In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60; or &#x60;file&#x60;.
-         * @param {CreateChildDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-         * @param {CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+         * @param {CreateChildDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+         * @param {CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createChildDriveItem: async (driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createChildDriveItem: async (driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('createChildDriveItem', 'driveId', driveId)
             // verify required parameter 'itemId' is not null or undefined
@@ -2211,12 +2227,12 @@ export const DriveItemApiFp = function(configuration?: Configuration) {
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {DriveItem} driveItem In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60; or &#x60;file&#x60;.
-         * @param {CreateChildDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-         * @param {CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+         * @param {CreateChildDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+         * @param {CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createChildDriveItem(driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+        async createChildDriveItem(driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createChildDriveItem(driveId, itemId, driveItem, libreGraphConflictBehavior, libreGraphMissingParentsBehavior, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DriveItemApi.createChildDriveItem']?.[localVarOperationServerIndex]?.url;
@@ -2325,12 +2341,12 @@ export const DriveItemApiFactory = function (configuration?: Configuration, base
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {DriveItem} driveItem In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60; or &#x60;file&#x60;.
-         * @param {CreateChildDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-         * @param {CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+         * @param {CreateChildDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+         * @param {CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createChildDriveItem(driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+        createChildDriveItem(driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
             return localVarFp.createChildDriveItem(driveId, itemId, driveItem, libreGraphConflictBehavior, libreGraphMissingParentsBehavior, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2416,12 +2432,12 @@ export class DriveItemApi extends BaseAPI {
      * @param {string} driveId key: id of drive
      * @param {string} itemId key: id of item
      * @param {DriveItem} driveItem In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60; or &#x60;file&#x60;.
-     * @param {CreateChildDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-     * @param {CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+     * @param {CreateChildDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+     * @param {CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public createChildDriveItem(driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum, options?: RawAxiosRequestConfig) {
+    public createChildDriveItem(driveId: string, itemId: string, driveItem: DriveItem, libreGraphConflictBehavior?: CreateChildDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum, options?: RawAxiosRequestConfig) {
         return DriveItemApiFp(this.configuration).createChildDriveItem(driveId, itemId, driveItem, libreGraphConflictBehavior, libreGraphMissingParentsBehavior, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -2502,16 +2518,16 @@ export class DriveItemApi extends BaseAPI {
     }
 }
 
-export const CreateChildDriveItemLibreGraphConflictBehaviorEnum = {
+export const CreateChildDriveItemAtLibreGraphConflictBehaviorEnum = {
     Fail: 'fail',
     Replace: 'replace',
 } as const;
-export type CreateChildDriveItemLibreGraphConflictBehaviorEnum = typeof CreateChildDriveItemLibreGraphConflictBehaviorEnum[keyof typeof CreateChildDriveItemLibreGraphConflictBehaviorEnum];
-export const CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum = {
+export type CreateChildDriveItemAtLibreGraphConflictBehaviorEnum = typeof CreateChildDriveItemAtLibreGraphConflictBehaviorEnum[keyof typeof CreateChildDriveItemAtLibreGraphConflictBehaviorEnum];
+export const CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum = {
     Fail: 'fail',
     Create: 'create',
 } as const;
-export type CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum = typeof CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum[keyof typeof CreateChildDriveItemLibreGraphMissingParentsBehaviorEnum];
+export type CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum = typeof CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum[keyof typeof CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum];
 export const GetDriveItemSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
@@ -3808,13 +3824,13 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
          * Create a new folder or DriveItem in a Drive with the drive root as the parent.  Modeled on the MS Graph create driveItem endpoint (https://learn.microsoft.com/en-us/graph/api/driveitem-post-children).  The request body must specify exactly one of `folder` (set to `{}` to create a folder), `file` (to create a file item), or `remoteItem` (to mount a shared item; see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source `remoteItem.id`). Requests with none of these, or with more than one, return 400. Mounting a share changes the `@client.synchronize` property of the `driveItem` in [sharedWithMe](#/me.drive/ListSharedWithMe) to true.  The `@libre.graph.conflictBehavior` query parameter controls what happens if a child with the same name already exists.  This endpoint also accepts the MS Graph colon-syntax URL form:      POST /v1beta1/drives/{drive-id}/root:/{path}:/children  OpenAPI cannot express the colon-delimited path segment, so this URL form is not represented as a separate operation in this specification. The server still accepts it, resolves `:/{path}:` as the parent of the new item, and applies `@libre.graph.missingParentsBehavior` to decide whether to create missing intermediate folders. 
          * @summary Create a new DriveItem at the drive root
          * @param {string} driveId key: id of drive
-         * @param {CreateDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-         * @param {CreateDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+         * @param {CreateDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+         * @param {CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
          * @param {DriveItem} [driveItem] In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60;, &#x60;file&#x60;, or &#x60;remoteItem&#x60;. For mount-share, see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source &#x60;remoteItem.id&#x60; and &#x60;permission&#x60; id.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDriveItem: async (driveId: string, libreGraphConflictBehavior?: CreateDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        createDriveItem: async (driveId: string, libreGraphConflictBehavior?: CreateDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('createDriveItem', 'driveId', driveId)
             const localVarPath = `/v1beta1/drives/{drive-id}/root/children`
@@ -4247,13 +4263,13 @@ export const DrivesRootApiFp = function(configuration?: Configuration) {
          * Create a new folder or DriveItem in a Drive with the drive root as the parent.  Modeled on the MS Graph create driveItem endpoint (https://learn.microsoft.com/en-us/graph/api/driveitem-post-children).  The request body must specify exactly one of `folder` (set to `{}` to create a folder), `file` (to create a file item), or `remoteItem` (to mount a shared item; see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source `remoteItem.id`). Requests with none of these, or with more than one, return 400. Mounting a share changes the `@client.synchronize` property of the `driveItem` in [sharedWithMe](#/me.drive/ListSharedWithMe) to true.  The `@libre.graph.conflictBehavior` query parameter controls what happens if a child with the same name already exists.  This endpoint also accepts the MS Graph colon-syntax URL form:      POST /v1beta1/drives/{drive-id}/root:/{path}:/children  OpenAPI cannot express the colon-delimited path segment, so this URL form is not represented as a separate operation in this specification. The server still accepts it, resolves `:/{path}:` as the parent of the new item, and applies `@libre.graph.missingParentsBehavior` to decide whether to create missing intermediate folders. 
          * @summary Create a new DriveItem at the drive root
          * @param {string} driveId key: id of drive
-         * @param {CreateDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-         * @param {CreateDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+         * @param {CreateDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+         * @param {CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
          * @param {DriveItem} [driveItem] In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60;, &#x60;file&#x60;, or &#x60;remoteItem&#x60;. For mount-share, see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source &#x60;remoteItem.id&#x60; and &#x60;permission&#x60; id.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createDriveItem(driveId: string, libreGraphConflictBehavior?: CreateDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+        async createDriveItem(driveId: string, libreGraphConflictBehavior?: CreateDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createDriveItem(driveId, libreGraphConflictBehavior, libreGraphMissingParentsBehavior, driveItem, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DrivesRootApi.createDriveItem']?.[localVarOperationServerIndex]?.url;
@@ -4389,13 +4405,13 @@ export const DrivesRootApiFactory = function (configuration?: Configuration, bas
          * Create a new folder or DriveItem in a Drive with the drive root as the parent.  Modeled on the MS Graph create driveItem endpoint (https://learn.microsoft.com/en-us/graph/api/driveitem-post-children).  The request body must specify exactly one of `folder` (set to `{}` to create a folder), `file` (to create a file item), or `remoteItem` (to mount a shared item; see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source `remoteItem.id`). Requests with none of these, or with more than one, return 400. Mounting a share changes the `@client.synchronize` property of the `driveItem` in [sharedWithMe](#/me.drive/ListSharedWithMe) to true.  The `@libre.graph.conflictBehavior` query parameter controls what happens if a child with the same name already exists.  This endpoint also accepts the MS Graph colon-syntax URL form:      POST /v1beta1/drives/{drive-id}/root:/{path}:/children  OpenAPI cannot express the colon-delimited path segment, so this URL form is not represented as a separate operation in this specification. The server still accepts it, resolves `:/{path}:` as the parent of the new item, and applies `@libre.graph.missingParentsBehavior` to decide whether to create missing intermediate folders. 
          * @summary Create a new DriveItem at the drive root
          * @param {string} driveId key: id of drive
-         * @param {CreateDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-         * @param {CreateDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+         * @param {CreateDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+         * @param {CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
          * @param {DriveItem} [driveItem] In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60;, &#x60;file&#x60;, or &#x60;remoteItem&#x60;. For mount-share, see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source &#x60;remoteItem.id&#x60; and &#x60;permission&#x60; id.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createDriveItem(driveId: string, libreGraphConflictBehavior?: CreateDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+        createDriveItem(driveId: string, libreGraphConflictBehavior?: CreateDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
             return localVarFp.createDriveItem(driveId, libreGraphConflictBehavior, libreGraphMissingParentsBehavior, driveItem, options).then((request) => request(axios, basePath));
         },
         /**
@@ -4502,13 +4518,13 @@ export class DrivesRootApi extends BaseAPI {
      * Create a new folder or DriveItem in a Drive with the drive root as the parent.  Modeled on the MS Graph create driveItem endpoint (https://learn.microsoft.com/en-us/graph/api/driveitem-post-children).  The request body must specify exactly one of `folder` (set to `{}` to create a folder), `file` (to create a file item), or `remoteItem` (to mount a shared item; see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source `remoteItem.id`). Requests with none of these, or with more than one, return 400. Mounting a share changes the `@client.synchronize` property of the `driveItem` in [sharedWithMe](#/me.drive/ListSharedWithMe) to true.  The `@libre.graph.conflictBehavior` query parameter controls what happens if a child with the same name already exists.  This endpoint also accepts the MS Graph colon-syntax URL form:      POST /v1beta1/drives/{drive-id}/root:/{path}:/children  OpenAPI cannot express the colon-delimited path segment, so this URL form is not represented as a separate operation in this specification. The server still accepts it, resolves `:/{path}:` as the parent of the new item, and applies `@libre.graph.missingParentsBehavior` to decide whether to create missing intermediate folders. 
      * @summary Create a new DriveItem at the drive root
      * @param {string} driveId key: id of drive
-     * @param {CreateDriveItemLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
-     * @param {CreateDriveItemLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
+     * @param {CreateDriveItemAtLibreGraphConflictBehaviorEnum} [libreGraphConflictBehavior] Controls what happens when a child with the same name already exists. &#x60;fail&#x60; (default) returns 409; &#x60;replace&#x60; overwrites the existing item. MS Graph\&#39;s &#x60;rename&#x60; value is not supported. 
+     * @param {CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum} [libreGraphMissingParentsBehavior] Controls what happens when a colon-syntax URL refers to a path whose intermediate folders don\&#39;t all exist yet. &#x60;fail&#x60; (default) returns 404; &#x60;create&#x60; creates the missing intermediate folders before creating the final item. Only meaningful for colon-syntax URLs; ignored otherwise. 
      * @param {DriveItem} [driveItem] In the request body, provide a JSON object describing the new driveItem. Must specify exactly one of &#x60;folder&#x60;, &#x60;file&#x60;, or &#x60;remoteItem&#x60;. For mount-share, see [sharedWithMe](#/me.drive/ListSharedWithMe) for obtaining the source &#x60;remoteItem.id&#x60; and &#x60;permission&#x60; id.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public createDriveItem(driveId: string, libreGraphConflictBehavior?: CreateDriveItemLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options?: RawAxiosRequestConfig) {
+    public createDriveItem(driveId: string, libreGraphConflictBehavior?: CreateDriveItemAtLibreGraphConflictBehaviorEnum, libreGraphMissingParentsBehavior?: CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum, driveItem?: DriveItem, options?: RawAxiosRequestConfig) {
         return DrivesRootApiFp(this.configuration).createDriveItem(driveId, libreGraphConflictBehavior, libreGraphMissingParentsBehavior, driveItem, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -4614,16 +4630,16 @@ export class DrivesRootApi extends BaseAPI {
     }
 }
 
-export const CreateDriveItemLibreGraphConflictBehaviorEnum = {
+export const CreateDriveItemAtLibreGraphConflictBehaviorEnum = {
     Fail: 'fail',
     Replace: 'replace',
 } as const;
-export type CreateDriveItemLibreGraphConflictBehaviorEnum = typeof CreateDriveItemLibreGraphConflictBehaviorEnum[keyof typeof CreateDriveItemLibreGraphConflictBehaviorEnum];
-export const CreateDriveItemLibreGraphMissingParentsBehaviorEnum = {
+export type CreateDriveItemAtLibreGraphConflictBehaviorEnum = typeof CreateDriveItemAtLibreGraphConflictBehaviorEnum[keyof typeof CreateDriveItemAtLibreGraphConflictBehaviorEnum];
+export const CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum = {
     Fail: 'fail',
     Create: 'create',
 } as const;
-export type CreateDriveItemLibreGraphMissingParentsBehaviorEnum = typeof CreateDriveItemLibreGraphMissingParentsBehaviorEnum[keyof typeof CreateDriveItemLibreGraphMissingParentsBehaviorEnum];
+export type CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum = typeof CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum[keyof typeof CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum];
 export const GetRootSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
