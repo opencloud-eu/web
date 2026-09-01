@@ -232,7 +232,6 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         id: 'insert',
         title: $gettext('Insert'),
         actions: [
-          frontmatter(),
           link(),
           image(),
           imageUrl(),
@@ -248,7 +247,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           deleteColumn(),
           deleteTable(),
           menuEmoji(),
-          horizontalRule()
+          horizontalRule(),
+          frontmatter()
         ]
       },
       {

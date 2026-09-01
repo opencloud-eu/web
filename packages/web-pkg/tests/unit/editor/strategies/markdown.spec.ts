@@ -191,7 +191,7 @@ describe('useStrategyMarkdown', () => {
           .editorActionGroups()
           .find(({ id }) => id === 'insert')
           ?.actions.map(({ id }) => id) ?? []
-      expect(insertIds).toContain('frontmatter')
+      expect(insertIds.at(-1)).toBe('frontmatter')
 
       const frontmatter = strategy
         .editorActionGroups()
