@@ -16,9 +16,9 @@
 
 <script setup lang="ts">
 import { ImageDimension } from '../../constants'
-import { VisibilityObserver } from '../../observer'
 import { debounce } from 'lodash-es'
 import { computed, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import {
   useGetMatchingSpace,
   useFileActions,
@@ -31,8 +31,6 @@ import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
 import ResourceListItem from '../FilesList/ResourceListItem.vue'
 import { SearchResultValue } from './types'
 import { RouteLocationPathRaw } from 'vue-router'
-
-const visibilityObserver = new VisibilityObserver()
 
 const {
   searchResult = { data: {} },
@@ -124,35 +122,37 @@ const parentFolderLinkIconAdditionalAttributes = getParentFolderLinkIconAddition
   unref(resource)
 )
 
+const observerTarget = computed<HTMLElement>(() => unref(resourceListItem)?.$el)
+
+const debouncedLoadPreview = debounce(async () => {
+  unobserve()
+
+  const preview = await loadPreview({
+    space: unref(space),
+    resource: unref(resource),
+    dimensions: ImageDimension.Thumbnail,
+    cancelRunning: true,
+    updateStore: false
+  })
+
+  if (preview) {
+    previewData.value = preview
+  }
+}, 250)
+
+const { unobserve } = useIsVisible({
+  target: observerTarget,
+  root: ref<Element>(null),
+  mode: 'showHide',
+  onVisibleCallback: () => debouncedLoadPreview(),
+  onHiddenCallback: () => debouncedLoadPreview.cancel()
+})
+
+onBeforeUnmount(() => debouncedLoadPreview.cancel())
+
 onMounted(() => {
   if (unref(resourceDisabled)) {
     unref(resourceListItem).parentElement.classList.add('disabled')
   }
-
-  const loadPreviewCallback = async () => {
-    const preview = await loadPreview({
-      space: unref(space),
-      resource: unref(resource),
-      dimensions: ImageDimension.Thumbnail,
-      cancelRunning: true,
-      updateStore: false
-    })
-
-    preview && (previewData.value = preview)
-  }
-
-  const debounced = debounce(({ unobserve }) => {
-    unobserve()
-    loadPreviewCallback()
-  }, 250)
-
-  visibilityObserver.observe(unref(resourceListItem).$el, {
-    onEnter: debounced,
-    onExit: debounced.cancel
-  })
-})
-
-onBeforeUnmount(() => {
-  visibilityObserver.disconnect()
 })
 </script>

@@ -43,15 +43,9 @@
 <script setup lang="ts">
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../helpers/types'
-import {
-  ResourceIcon,
-  ResourceName,
-  useResourcesStore,
-  VisibilityObserver
-} from '@opencloud-eu/web-pkg'
-import { ref, computed, onMounted, onBeforeUnmount, useTemplateRef, unref } from 'vue'
-
-const visibilityObserver = new VisibilityObserver()
+import { ResourceIcon, ResourceName, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { useIsVisible } from '@opencloud-eu/design-system/composables'
+import { computed, ref, useTemplateRef } from 'vue'
 
 const props = defineProps<{
   item: MediaFile
@@ -65,7 +59,6 @@ const emit = defineEmits<{
 
 const resourcesStore = useResourcesStore()
 const itemRef = useTemplateRef<HTMLElement>('photoRollItem')
-const hasEmittedVisible = ref(false)
 
 const areFileExtensionsShown = computed(() => resourcesStore.areFileExtensionsShown)
 
@@ -81,23 +74,10 @@ const iconResource = computed(() => {
   } as Resource
 })
 
-onMounted(() => {
-  if (!itemRef.value) return
-
-  visibilityObserver.observe(itemRef.value, {
-    onEnter: ({ unobserve }) => {
-      if (unref(hasEmittedVisible)) {
-        return
-      }
-
-      hasEmittedVisible.value = true
-      emit('item-visible')
-      unobserve()
-    }
-  })
-})
-
-onBeforeUnmount(() => {
-  visibilityObserver.disconnect()
+useIsVisible({
+  target: itemRef,
+  // observed against the viewport, the photo roll is no scroll container of its own
+  root: ref<Element>(null),
+  onVisibleCallback: () => emit('item-visible')
 })
 </script>
