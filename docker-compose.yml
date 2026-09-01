@@ -451,6 +451,7 @@ services:
       # model identical to what CI uses (CI has no Traefik).
       - traefik
     restart: unless-stopped
+    stop_grace_period: 20s
 
 volumes:
   uploads:

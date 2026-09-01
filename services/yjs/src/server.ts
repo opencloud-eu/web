@@ -2,6 +2,12 @@ import { Server } from '@hocuspocus/server'
 
 const port = parseInt(process.env.PORT ?? '1234', 10)
 const opencloudUrl = (process.env.OPENCLOUD_URL ?? '').replace(/\/$/, '')
+const HEALTH_ENDPOINT_PATH = '/healthz/ready'
+const SHUTDOWN_GRACE_PERIOD_MS = parseInt(process.env.SHUTDOWN_GRACE_PERIOD_MS ?? '15000', 10)
+
+let isServerReady = false
+let isShuttingDown = false
+let shutdownPromise: Promise<void> | null = null
 
 if (!opencloudUrl) {
   console.error('OPENCLOUD_URL is required, e.g. https://cloud.example.com')
@@ -135,12 +141,37 @@ async function probeFileAccess(token: string, documentName: string): Promise<Fil
 const server = new Server({
   port,
   address: '0.0.0.0',
+  stopOnSignals: false,
   // No server-side persistence: every doc is file-backed via WebDAV.
   // Cold-start for a fresh peer = hydrate from `currentContent` in the
   // wrapper. The persisted SQLite snapshot would get discarded on stale-
   // state recovery anyway (etag drift triggers rehydrate); keeping it
   // here is "mostly ceremony" per the migration plan. Stale detection
   // moved to the client (see useYjsSession.onProviderSynced).
+
+  async onRequest({ request, response }) {
+    const requestPath = request.url?.split('?')[0] ?? '/'
+    if (requestPath !== HEALTH_ENDPOINT_PATH) {
+      return
+    }
+
+    const isReady = isServerReady && !isShuttingDown
+    response.writeHead(isReady ? 200 : 503, { 'Content-Type': 'text/plain' })
+    response.end(isReady ? 'ok' : 'shutting down')
+    // Hocuspocus convention: throwing (any value) signals that the request/upgrade
+    // has been fully handled and should not be processed further by the framework.
+    // Void/undefined return allows fallthrough to default handlers.
+    throw undefined
+  },
+
+  async onUpgrade({ socket }) {
+    if (!isShuttingDown) {
+      return
+    }
+    socket.destroy()
+    // Reject upgrade during shutdown by throwing (see onRequest comment above)
+    throw undefined
+  },
 
   async onAuthenticate({ token, documentName, connectionConfig }) {
     if (!token) {
@@ -200,7 +231,9 @@ const server = new Server({
   // silently no-op (states=undefined -> no user found -> return).
   async beforeHandleAwareness({ states, context, connection }) {
     const user = context?.user ?? connection?.context?.user
-    if (!user) return
+    if (!user) {
+      return
+    }
     const canonical = {
       id: user.id,
       name: user.displayName,
@@ -219,11 +252,70 @@ const server = new Server({
   }
 })
 
+function forceExitAfterGracePeriod(): NodeJS.Timeout {
+  const timeout = setTimeout(() => {
+    console.error(
+      `[shutdown] did not complete within ${SHUTDOWN_GRACE_PERIOD_MS}ms; forcing process exit`
+    )
+    process.exit(1)
+  }, SHUTDOWN_GRACE_PERIOD_MS)
+  timeout.unref()
+  return timeout
+}
+
+function gracefulShutdown(signal: NodeJS.Signals): Promise<void> {
+  if (shutdownPromise) {
+    return shutdownPromise
+  }
+
+  isShuttingDown = true
+  isServerReady = false
+  console.log(
+    `[shutdown] received ${signal}; draining connections (grace=${SHUTDOWN_GRACE_PERIOD_MS}ms)`
+  )
+
+  shutdownPromise = (async () => {
+    const forceExitTimer = forceExitAfterGracePeriod()
+    try {
+      await server.destroy()
+      clearTimeout(forceExitTimer)
+      console.log('[shutdown] graceful shutdown completed')
+    } catch (error) {
+      clearTimeout(forceExitTimer)
+      throw error
+    }
+  })()
+
+  return shutdownPromise
+}
+
+function installSignalHandlers(): void {
+  const signals: NodeJS.Signals[] = ['SIGTERM', 'SIGINT', 'SIGQUIT']
+
+  signals.forEach((signal) => {
+    process.on(signal, () => {
+      void gracefulShutdown(signal).then(
+        () => {
+          process.exit(0)
+        },
+        (error: unknown) => {
+          console.error('[shutdown] graceful shutdown failed:', error)
+          process.exit(1)
+        }
+      )
+    })
+  })
+}
+
+installSignalHandlers()
+
 server.listen().then(
   () => {
+    isServerReady = true
     console.log(`yjs server listening on :${port}, oc=${opencloudUrl}`)
   },
   (err: unknown) => {
+    isServerReady = false
     // Most often the port is already taken. Without this the process died on an
     // unhandled rejection and a stack trace instead of saying what went wrong.
     console.error(`yjs server failed to listen on :${port}:`, err)
