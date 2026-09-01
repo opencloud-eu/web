@@ -15,6 +15,10 @@ import { useLoadShares } from '../../../../src/composables/shares/useLoadShares'
 
 vi.mock('../../../../src/composables/shares/useLoadShares')
 
+function sendActivityNotification(mocks: ReturnType<typeof defaultComponentMocks>) {
+  return mocks.$clientService.graphAuthenticated.users.sendActivityNotification
+}
+
 function collaboratorShare(
   id: string,
   displayName: string,
@@ -144,7 +148,7 @@ describe('useMentionUsers', () => {
   })
 
   describe('notifyMentionedUsers', () => {
-    it('posts the unique selected user ids and clears the list', async () => {
+    it('notifies every unique selected user and clears the list', async () => {
       const { instance, mocks } = getWrapper()
 
       instance.selectMentionUser('user1')
@@ -152,27 +156,32 @@ describe('useMentionUsers', () => {
       instance.selectMentionUser('user1')
       await instance.notifyMentionedUsers()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledWith(
-        expect.stringContaining('/collaboration/notify'),
-        { fileID: 'file-id', userIDs: ['user1', 'user2'], type: 'mention' }
-      )
+      // the endpoint takes one recipient, so every mentioned user gets a request
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledTimes(2)
+      for (const userID of ['user1', 'user2']) {
+        expect(sendActivityNotification(mocks)).toHaveBeenCalledWith(userID, {
+          topic: { source: 'text', value: 'resource-id' },
+          activityType: 'mentioned',
+          teamsAppId: '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
+        })
+      }
 
       await instance.notifyMentionedUsers()
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledTimes(2)
     })
 
-    it('does not post without selected users', async () => {
+    it('does not notify without selected users', async () => {
       const { instance, mocks } = getWrapper()
 
       await instance.notifyMentionedUsers()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(sendActivityNotification(mocks)).not.toHaveBeenCalled()
     })
 
     it('keeps selected users for a retry when notifying fails', async () => {
       const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { instance, mocks } = getWrapper()
-      mocks.$clientService.httpAuthenticated.post
+      sendActivityNotification(mocks)
         .mockRejectedValueOnce(new Error('nope'))
         .mockResolvedValueOnce({} as never)
 
@@ -181,36 +190,54 @@ describe('useMentionUsers', () => {
       await instance.notifyMentionedUsers()
 
       expect(consoleError).toHaveBeenCalled()
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledTimes(2)
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenLastCalledWith(
-        expect.stringContaining('/collaboration/notify'),
-        { fileID: 'file-id', userIDs: ['user1'], type: 'mention' }
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledTimes(2)
+      expect(sendActivityNotification(mocks)).toHaveBeenLastCalledWith('user1', {
+        topic: { source: 'text', value: 'resource-id' },
+        activityType: 'mentioned',
+        teamsAppId: '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
+      })
+    })
+
+    it('only retries the recipient that failed', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { instance, mocks } = getWrapper()
+      sendActivityNotification(mocks).mockImplementation((userID: string) =>
+        userID === 'user1' ? Promise.reject(new Error('nope')) : Promise.resolve({} as never)
       )
+
+      instance.selectMentionUser('user1')
+      instance.selectMentionUser('user2')
+      await instance.notifyMentionedUsers()
+      sendActivityNotification(mocks).mockClear()
+      await instance.notifyMentionedUsers()
+
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledOnce()
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledWith('user1', expect.anything())
     })
 
     it('merges new selections into the retry after notifying fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { instance, mocks } = getWrapper()
-      let rejectPost!: (error: Error) => void
-      mocks.$clientService.httpAuthenticated.post.mockReturnValueOnce(
+      let rejectNotification!: (error: Error) => void
+      sendActivityNotification(mocks).mockReturnValueOnce(
         new Promise((_resolve, reject) => {
-          rejectPost = reject
+          rejectNotification = reject
         }) as never
       )
 
       instance.selectMentionUser('user1')
       const notification = instance.notifyMentionedUsers()
       instance.selectMentionUser('user2')
-      rejectPost(new Error('nope'))
+      rejectNotification(new Error('nope'))
       await notification
-      mocks.$clientService.httpAuthenticated.post.mockResolvedValueOnce({} as never)
+      sendActivityNotification(mocks).mockClear()
 
       await instance.notifyMentionedUsers()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenLastCalledWith(
-        expect.stringContaining('/collaboration/notify'),
-        { fileID: 'file-id', userIDs: ['user1', 'user2'], type: 'mention' }
-      )
+      expect(sendActivityNotification(mocks).mock.calls.map(([userID]) => userID)).toEqual([
+        'user1',
+        'user2'
+      ])
     })
   })
 
@@ -222,27 +249,27 @@ describe('useMentionUsers', () => {
       instance.resetMentionState()
       await instance.notifyMentionedUsers()
 
-      expect(mocks.$clientService.httpAuthenticated.post).not.toHaveBeenCalled()
+      expect(sendActivityNotification(mocks)).not.toHaveBeenCalled()
     })
 
     it('does not restore failed notifications after switching resources', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { instance, mocks } = getWrapper()
-      let rejectPost!: (error: Error) => void
-      mocks.$clientService.httpAuthenticated.post.mockReturnValueOnce(
+      let rejectNotification!: (error: Error) => void
+      sendActivityNotification(mocks).mockReturnValueOnce(
         new Promise((_resolve, reject) => {
-          rejectPost = reject
+          rejectNotification = reject
         }) as never
       )
 
       instance.selectMentionUser('user1')
       const notification = instance.notifyMentionedUsers()
       instance.resetMentionState()
-      rejectPost(new Error('nope'))
+      rejectNotification(new Error('nope'))
       await notification
       await instance.notifyMentionedUsers()
 
-      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledOnce()
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledOnce()
     })
 
     it('cancels a running share request and reloads on the next query', async () => {
@@ -295,7 +322,7 @@ function getWrapper({
   deferred = false,
   rejectLoad = false,
   space = ref(mock<SpaceResource>({ id: 'space-id' })),
-  resource = ref(mock<Resource>({ id: 'resource-id', fileId: 'file-id' })),
+  resource = ref(mock<Resource>({ id: 'resource-id' })),
   mocks = defaultComponentMocks()
 }: {
   collaboratorShares?: CollaboratorShare[]

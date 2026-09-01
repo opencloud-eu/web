@@ -3,13 +3,15 @@ import {
   type CollaboratorShare,
   type Resource,
   ShareTypes,
-  type SpaceResource,
-  urlJoin
+  type SpaceResource
 } from '@opencloud-eu/web-client'
 import type { MentionItem } from '../../editor/types'
 import { useClientService } from '../clientService'
-import { useConfigStore, useSharesStore, useUserStore } from '../piniaStores'
+import { useSharesStore, useUserStore } from '../piniaStores'
 import { useLoadShares } from '../shares'
+
+// the app an activity notification comes from, the server only accepts ids it knows
+const WEBOFFICE_APP_ID = '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
 
 function mentionLabel({ displayName, id }: CollaboratorShare['sharedWith']): string {
   return displayName || id
@@ -22,8 +24,7 @@ export function useMentionUsers({
   space: Ref<SpaceResource>
   resource: Ref<Resource>
 }) {
-  const { httpAuthenticated } = useClientService()
-  const configStore = useConfigStore()
+  const { graphAuthenticated } = useClientService()
   const sharesStore = useSharesStore()
   const userStore = useUserStore()
   const { loadSharesTask } = useLoadShares()
@@ -108,27 +109,34 @@ export function useMentionUsers({
     const stateVersion = mentionStateVersion
     selectedUserIds.value = []
 
-    try {
-      await httpAuthenticated.post(urlJoin(configStore.serverUrl, 'collaboration/notify'), {
-        fileID: unref(resource).fileId,
-        userIDs,
-        type: 'mention'
+    // the endpoint takes one recipient, so every mentioned user gets a request
+    const failedUserIDs: string[] = []
+    await Promise.all(
+      userIDs.map(async (userID) => {
+        try {
+          await graphAuthenticated.users.sendActivityNotification(userID, {
+            topic: { source: 'text', value: unref(resource).id },
+            activityType: 'mentioned',
+            teamsAppId: WEBOFFICE_APP_ID
+          })
+        } catch (error) {
+          console.error('Error notifying mentioned user', error)
+          failedUserIDs.push(userID)
+        }
       })
-    } catch (error) {
-      console.error('Error notifying mentioned users', error)
+    )
 
-      if (stateVersion !== mentionStateVersion) {
-        // the mention state has been reset in the meantime, e.g. because another resource
-        // is being edited now. those mentions must not be notified anymore.
-        return
-      }
-
-      // keep the users selected, so they are retried with the next notification
-      selectedUserIds.value = [
-        ...userIDs,
-        ...unref(selectedUserIds).filter((id) => !userIDs.includes(id))
-      ]
+    if (!failedUserIDs.length || stateVersion !== mentionStateVersion) {
+      // the mention state has been reset in the meantime, e.g. because another resource
+      // is being edited now. those mentions must not be notified anymore.
+      return
     }
+
+    // keep the failed users selected, so they are retried with the next notification
+    selectedUserIds.value = [
+      ...failedUserIDs,
+      ...unref(selectedUserIds).filter((id) => !failedUserIDs.includes(id))
+    ]
   }
 
   function invalidateCollaborators(): void {
