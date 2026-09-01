@@ -715,6 +715,7 @@ export function useEditorActions(state: TextEditorState) {
     icon: 'cloud-line',
     keywords: ['image', 'picture', 'cloud'],
     showInSlashCommands: true,
+    showInToolbar: false,
     toolbarAction: (editor) => openCloudImagePicker(editor),
     slashCommandAction: ({ editor, range }) => {
       editor.chain().focus().deleteRange(range).run()
