@@ -1,3 +1,4 @@
+import { AxiosHeaders } from 'axios'
 import { buildSpace } from '../../helpers'
 import { Drive, DrivesApiFactory, DrivesGetDrivesApi, MeDrivesApi } from './../generated'
 import type { GraphFactoryOptions } from './../types'
@@ -36,11 +37,8 @@ export const DrivesFactory = ({ axiosClient, config }: GraphFactoryOptions): Gra
 
     async deleteDrive(id, ifMatch, requestOptions) {
       await drivesApiFactory.deleteDrive(id, ifMatch, {
-        headers: {
-          ...((requestOptions?.headers && requestOptions.headers) || {}),
-          Purge: 'T'
-        },
-        ...((requestOptions && { requestOptions }) || {})
+        ...requestOptions,
+        headers: { ...requestOptions?.headers, common: new AxiosHeaders({ Purge: 'T' }) }
       })
     },
 
