@@ -44,11 +44,13 @@ export const davPermissionsFromActions = (actions: string[] = []): string => {
 export const buildResourceFromDriveItem = (
   driveItem: DriveItem,
   space: SpaceResource,
-  parentPath = ''
+  parentPath = '',
+  // the drive root reports its own name, so callers that know the path pin it
+  pathOverride?: string
 ): Resource => {
   const isFolder = !!driveItem.folder
   const name = driveItem.name || ''
-  const path = urlJoin(parentPath, name, { leadingSlash: true })
+  const path = pathOverride ?? urlJoin(parentPath, name, { leadingSlash: true })
   const actions = (driveItem as any)['@libre.graph.permissions.actions.allowedValues'] as string[]
   const shareTypes = ((driveItem as any)['@libre.graph.shareTypes'] || []) as string[]
   const lock = (driveItem as any).lockInfo
@@ -92,7 +94,7 @@ export const buildResourceFromDriveItem = (
     livePhoto: (driveItem as any)['@libre.graph.livePhoto'],
     extraProps: {},
     hasPreview: () => !!driveItem.thumbnails?.length || !isFolder,
-    canUpload: function () {
+    canUpload: function (this: Resource) {
       return this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
     },
     canDownload: function () {

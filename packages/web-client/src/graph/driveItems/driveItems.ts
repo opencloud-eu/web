@@ -1,6 +1,15 @@
 import { DriveItemApiFactory, DrivesRootApiFactory, MeDriveApiFactory } from './../generated'
+import { urlJoin } from '../../utils'
 import type { GraphFactoryOptions } from './../types'
-import type { GraphDriveItems } from './types'
+import type { DriveItemQueryOptions, GraphDriveItems } from './types'
+
+const odataQuery = ({ select, expand }: DriveItemQueryOptions = {}) => {
+  const params = [
+    ...(select?.length ? [`$select=${select.join(',')}`] : []),
+    ...(expand?.length ? [`$expand=${expand.join(',')}`] : [])
+  ]
+  return params.length ? `?${params.join('&')}` : ''
+}
 
 export const DriveItemsFactory = ({
   axiosClient,
@@ -65,12 +74,25 @@ export const DriveItemsFactory = ({
       return data?.value || []
     },
 
+    // statDriveItem stats an item by id or by graph's colon path syntax.
+    // Hand-rolled for the same reason as listDriveItemChildren: the generated
+    // client has no $select, no $expand and no path lookup.
+    async statDriveItem(driveId, ref, options, requestOptions) {
+      const suffix = ref.itemId
+        ? `/items/${ref.itemId}`
+        : `/root:${urlJoin(ref.path, { leadingSlash: true })}`
+      const { data } = await axiosClient.get(
+        `${config.basePath}/v1.0/drives/${driveId}${suffix}${odataQuery(options)}`,
+        requestOptions
+      )
+      return data
+    },
+
     // listDriveItemChildren lists a folder's children. Hand-rolled because the
     // generated client only covers the personal drive root.
     async listDriveItemChildren(driveId, itemId, options, requestOptions) {
-      const select = options?.select?.length ? `?$select=${options.select.join(',')}` : ''
       const { data } = await axiosClient.get(
-        `${config.basePath}/v1.0/drives/${driveId}/items/${itemId}/children${select}`,
+        `${config.basePath}/v1.0/drives/${driveId}/items/${itemId}/children${odataQuery(options)}`,
         requestOptions
       )
       return data?.value || []

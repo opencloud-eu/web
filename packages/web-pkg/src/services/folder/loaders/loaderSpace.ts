@@ -11,9 +11,10 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
+import { urlJoin } from '@opencloud-eu/web-client'
 import { FolderLoaderOptions } from './types'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { buildResourcesFromDriveItems } from '@opencloud-eu/web-client'
+import { buildResourceFromDriveItem, buildResourcesFromDriveItems } from '@opencloud-eu/web-client'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
@@ -80,7 +81,7 @@ export class FolderLoaderSpace implements FolderLoader {
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
           useGraphListing
-            ? listFilesViaGraph({ graphClient, webdav, space, path, fileId, signal: signal1 })
+            ? listFilesViaGraph({ graphClient, space, path, fileId, signal: signal1 })
             : webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
         )
 
@@ -153,44 +154,47 @@ export class FolderLoaderSpace implements FolderLoader {
   }
 }
 
-// listFilesViaGraph lists a folder through the graph children endpoint. The
-// current folder still comes from webdav: graph has no "stat this item" in the
-// listing call, and the loader needs it for the route correction.
+const graphListingSelect = [
+  '@libre.graph.permissions.actions.allowedValues',
+  '@libre.graph.shareTypes'
+]
+
+// listFilesViaGraph lists a folder through graph, folder and children in one
+// request via $expand=children, the same shape PROPFIND with Depth: 1 returns.
 const listFilesViaGraph = async ({
   graphClient,
-  webdav,
   space,
   path,
   fileId,
   signal
 }: {
   graphClient: any
-  webdav: any
   space: SpaceResource
   path: string
   fileId: string
   signal: AbortSignal
 }) => {
-  const { resource: currentFolder } = await webdav.listFiles(
-    space,
-    { path, fileId },
-    { depth: 0, signal }
-  )
-
-  const driveItems = await graphClient.driveItems.listDriveItemChildren(
-    space.id.toString(),
-    currentFolder.id.toString(),
-    {
-      select: [
-        '@libre.graph.permissions.actions.allowedValues',
-        '@libre.graph.shareTypes'
-      ]
-    },
+  const driveId = space.id.toString()
+  // graph has no path lookup for the drive root, it is addressed by its id
+  const isRoot = !path || path === '/'
+  const driveItem = await graphClient.driveItems.statDriveItem(
+    driveId,
+    fileId || isRoot ? { itemId: fileId || space.root?.id } : { path },
+    { select: graphListingSelect, expand: ['children'] },
     { signal }
   )
 
+  // the item is authoritative, not the url: the route correction below exists
+  // to fix a stale path. the drive root reports itself as '.'
+  const parentPath = driveItem.parentReference?.path
+  const currentPath =
+    !parentPath || parentPath === '.'
+      ? '/'
+      : urlJoin(parentPath, driveItem.name, { leadingSlash: true })
+  const currentFolder = buildResourceFromDriveItem(driveItem, space, '', currentPath)
+
   return {
     resource: currentFolder,
-    children: buildResourcesFromDriveItems(driveItems, space, currentFolder.path)
+    children: buildResourcesFromDriveItems(driveItem.children || [], space, currentFolder.path)
   }
 }

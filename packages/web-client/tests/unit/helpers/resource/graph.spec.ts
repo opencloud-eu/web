@@ -64,7 +64,7 @@ describe('buildResourceFromDriveItem', () => {
     expect(r.isFolder).toBe(true)
     expect(r.name).toBe('music')
     expect(r.path).toBe('/music')
-    expect(r.canUpload()).toBe(true)
+    expect(r.canUpload({})).toBe(true)
     expect(r.canBeDeleted()).toBe(true)
     expect(r.canRename()).toBe(true)
     expect(r.canDownload()).toBe(true)
