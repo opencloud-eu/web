@@ -852,6 +852,7 @@ export function useEditorActions(state: TextEditorState) {
     icon: 'file-list-2',
     iconFillType: 'line',
     keywords: ['frontmatter', 'metadata', 'yaml'],
+    showInSlashCommands: false,
     toolbarAction: (editor) => toggleFrontmatter(editor),
     slashCommandAction: ({ editor, range }) => toggleFrontmatter(editor, range),
     isActive: (editor) => editor.isActive('frontmatter')

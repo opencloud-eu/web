@@ -144,14 +144,14 @@ describe('useStrategyMarkdown', () => {
       expect(enabled.filter((id) => !allowed.includes(id) && !id.startsWith('zoom-'))).toEqual([])
     })
 
-    it('offers only the frontmatter entry in the slash menu', () => {
+    it('offers no slash entries in the frontmatter block', () => {
       const editor = editorIn('frontmatter')
       const slashItems = allActions()
         .filter((action) => action.showInSlashCommands !== false)
         .filter((action) => action.isEnabled?.(editor) ?? true)
         .map(({ id }) => id)
 
-      expect(slashItems).toEqual(['frontmatter'])
+      expect(slashItems).toEqual([])
     })
 
     it('leaves everything enabled outside the block', () => {
@@ -184,7 +184,7 @@ describe('useStrategyMarkdown', () => {
       expect(link.showInSlashCommands).not.toBe(false)
     })
 
-    it('offers the frontmatter toggle in the insert group and the slash menu', () => {
+    it('offers the frontmatter toggle in the insert group but not in the slash menu', () => {
       const strategy = createStrategy()
       const insertIds =
         strategy
@@ -198,7 +198,7 @@ describe('useStrategyMarkdown', () => {
         .flatMap(({ actions }) => actions)
         .find(({ id }) => id === 'frontmatter')!
       expect(frontmatter.slashCommandAction).toBeTypeOf('function')
-      expect(frontmatter.showInSlashCommands).not.toBe(false)
+      expect(frontmatter.showInSlashCommands).toBe(false)
     })
 
     it('includes source mode toggle', () => {

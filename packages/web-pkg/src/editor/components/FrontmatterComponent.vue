@@ -4,16 +4,26 @@
       <oc-icon name="file-list-2" size="xsmall" fill-type="line" />
       {{ $gettext('Frontmatter') }}
     </span>
-    <pre class="text-editor-frontmatter-content font-mono"><node-view-content /></pre>
+    <span :id="hintId" class="sr-only">
+      {{ $gettext('Press Shift+Enter to exit the frontmatter block.') }}
+    </span>
+    <pre
+      class="text-editor-frontmatter-content font-mono"
+      role="textbox"
+      :aria-describedby="hintId"
+      aria-multiline="true"
+    ><node-view-content /></pre>
   </node-view-wrapper>
 </template>
 
 <script setup lang="ts">
 import { NodeViewContent, nodeViewProps, NodeViewWrapper } from '@tiptap/vue-3'
 import { useGettext } from 'vue3-gettext'
+import { v4 as uuidV4 } from 'uuid'
 
 defineProps(nodeViewProps)
 const { $gettext } = useGettext()
+const hintId = `frontmatter-hint-${uuidV4()}`
 </script>
 
 <style scoped>

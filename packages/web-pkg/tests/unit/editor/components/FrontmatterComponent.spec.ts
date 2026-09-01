@@ -50,4 +50,15 @@ describe('FrontmatterComponent', () => {
       'false'
     )
   })
+
+  it('adds a screen reader hint for leaving the block', () => {
+    const wrapper = mountComponent()
+    const hint = wrapper.find('.sr-only')
+    const content = wrapper.find('.text-editor-frontmatter-content')
+
+    expect(hint.text()).toBe('Press Shift+Enter to exit the frontmatter block.')
+    expect(content.attributes('role')).toBe('textbox')
+    expect(content.attributes('aria-multiline')).toBe('true')
+    expect(content.attributes('aria-describedby')).toBe(hint.attributes('id'))
+  })
 })

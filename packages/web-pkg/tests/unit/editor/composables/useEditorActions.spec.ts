@@ -708,6 +708,10 @@ describe('useEditorActions', () => {
       expect(actions.frontmatter().isActive!(createMockEditor())).toBe(false)
     })
 
+    it('is hidden from slash commands', () => {
+      expect(actions.frontmatter().showInSlashCommands).toBe(false)
+    })
+
     it('toolbarAction adds the block without asking when there is none', () => {
       const editor = createMockEditor({ firstChildType: 'heading' })
       actions.frontmatter().toolbarAction!(editor)
