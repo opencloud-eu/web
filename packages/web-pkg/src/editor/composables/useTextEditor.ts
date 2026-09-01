@@ -17,6 +17,7 @@ import type {
 import { DEFAULT_YDOC_FRAGMENT } from '../types'
 import type { EditorAction, EditorActionGroup } from './useEditorActions'
 import { SlashCommands } from '../extensions'
+import { stripColorFormattingFromPastedHtml } from '../helpers'
 import { useContentStrategy } from './useContentStrategy'
 import { useConfigStore } from '../../composables'
 
@@ -177,6 +178,9 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
 
   editorOptions.editorProps = {
     attributes: editorAttributes,
+    transformPastedHTML(html: string) {
+      return stripColorFormattingFromPastedHtml(html)
+    },
     handleDOMEvents: {
       auxclick(view: Editor['view'], event: Event) {
         const target = event.target
