@@ -530,11 +530,77 @@ describe('frontmatter', () => {
     })
   })
 
+  // marked lexes the inside of a blockquote or list item with a fresh token
+  // array, so "nothing tokenized yet" is true in there too. A frontmatter node
+  // in a container is schema invalid, and whatever prunes it later takes the
+  // surrounding content with it.
+  describe('nested containers', () => {
+    function frontmatterNodes(editor: Editor) {
+      const found: string[] = []
+      editor.state.doc.descendants((node) => {
+        if (node.type.name === 'frontmatter') {
+          found.push(node.textContent)
+        }
+        return true
+      })
+
+      return found
+    }
+
+    it.each([
+      ['blockquote', '> ---\n> a: 1\n> ---\n\nFoo'],
+      ['list item', '- ---\n  a: 1\n  ---\n\nFoo']
+    ])('does not read fences inside a %s as frontmatter', (_name, content) => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, content)
+
+      expect(frontmatterNodes(editor)).toEqual([])
+      expect(editor.state.doc.textContent).toContain('Foo')
+      expect(editor.state.doc.textContent).toContain('a: 1')
+      editor.destroy()
+    })
+
+    // A node the schema does not allow survives `Node.fromJSON`, which does not
+    // validate, and is only destroyed later by a path that does. Checking the
+    // document catches it at the source instead of via one of its symptoms.
+    it('produces a document that satisfies the schema', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '> ---\n> a: 1\n> ---\n\nFoo')
+
+      expect(() => editor.state.doc.check()).not.toThrow()
+      editor.destroy()
+    })
+
+    it('still reads fences at the top of the document as frontmatter', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '---\na: 1\n---\n\nFoo')
+
+      expect(frontmatterNodes(editor)).toEqual(['a: 1'])
+      editor.destroy()
+    })
+  })
+
   describe('schema', () => {
+    // A document may legitimately hold nothing but metadata. `frontmatter? block+`
+    // would demand a block after it, and the resulting invalid document is only
+    // destroyed later, by whichever path enforces the schema first.
+    it.each([
+      ['metadata only', '---\na: 1\n---'],
+      ['empty metadata only', '---\n---'],
+      ['metadata and body', '---\na: 1\n---\n\n# Heading'],
+      ['body only', '# Heading']
+    ])('accepts a document with %s', (_name, content) => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, content)
+
+      expect(() => editor.state.doc.check()).not.toThrow()
+      editor.destroy()
+    })
+
     it('allows frontmatter only as the first block', () => {
       const strategy = createStrategy()
       const editor = createEditor(strategy, '# Heading\n')
-      expect(editor.state.schema.nodes.doc.spec.content).toBe('frontmatter? block+')
+      expect(editor.state.schema.nodes.doc.spec.content).toBe('block+ | (frontmatter block*)')
       editor.destroy()
     })
   })

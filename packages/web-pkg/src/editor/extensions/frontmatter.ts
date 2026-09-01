@@ -1,5 +1,6 @@
 import { Node, mergeAttributes } from '@tiptap/core'
 import type { JSONContent, MarkdownToken } from '@tiptap/core'
+import { MarkdownManager } from '@tiptap/markdown'
 import { TextSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import FrontmatterComponent from '../components/FrontmatterComponent.vue'
@@ -21,6 +22,47 @@ declare module '@tiptap/core' {
  * The metadata is captured verbatim, we never interpret it as YAML.
  */
 const frontmatterPattern = /^---[ \t]*\r?\n([\s\S]*?)(?:\r?\n)?---[ \t]*(?:\r?\n|$)/
+
+/**
+ * Registered with marked directly rather than through the node's
+ * `markdownTokenizer` hook, because that hook drops the lexer before calling us
+ * and the lexer carries the one signal that matters here.
+ *
+ * Marked lexes the inside of a blockquote with a fresh token array, so "nothing
+ * tokenized yet" is true in there too. A frontmatter node inside a container is
+ * invalid under the document schema, and since `Node.fromJSON` does not
+ * validate, it survives until a path that does (the DOM parser, y-prosemirror)
+ * prunes it, taking the surrounding content with it.
+ *
+ * Only the top level pass is handed the lexer's own token list, so comparing the
+ * two tells us where we are. `state.top` looks like the right flag but is not:
+ * marked sets it to true for blockquote contents as well.
+ *
+ * The registration targets the marked singleton that every `MarkdownManager`
+ * uses, so both the editor's manager and the strategy's own see the tokenizer.
+ */
+new MarkdownManager({ extensions: [] }).instance.use({
+  extensions: [
+    {
+      name: 'frontmatter',
+      level: 'block',
+      start: (src: string) => (src.startsWith('---') ? 0 : -1),
+      tokenizer(src, tokens) {
+        // Frontmatter opens the document, nothing else.
+        if (tokens !== this.lexer.tokens || tokens.length) {
+          return undefined
+        }
+
+        const match = frontmatterPattern.exec(src)
+        if (!match) {
+          return undefined
+        }
+
+        return { type: 'frontmatter', raw: match[0], text: match[1], tokens: [] }
+      }
+    }
+  ]
+})
 
 /**
  * Frontmatter is metadata, not prose. Marked has no rule for it, so without
@@ -172,25 +214,6 @@ export const Frontmatter = Node.create({
       'Mod-Backspace': stepBackIntoFrontmatter,
       Delete: stepForwardAcrossBoundary,
       'Mod-Delete': stepForwardAcrossBoundary
-    }
-  },
-
-  markdownTokenizer: {
-    name: 'frontmatter',
-    level: 'block' as const,
-    start: (src: string) => (src.startsWith('---') ? 0 : -1),
-    tokenize: (src: string, tokens: MarkdownToken[]) => {
-      // Frontmatter is only frontmatter when it opens the document.
-      if (tokens.length) {
-        return undefined
-      }
-
-      const match = frontmatterPattern.exec(src)
-      if (!match) {
-        return undefined
-      }
-
-      return { type: 'frontmatter', raw: match[0], text: match[1], tokens: [] } as MarkdownToken
     }
   },
 

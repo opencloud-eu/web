@@ -81,8 +81,12 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         document: false,
         undoRedo: options?.yjs ? false : undefined
       }),
-      // Frontmatter is metadata about the document, it only ever belongs at the top.
-      Document.extend({ content: 'frontmatter? block+' }),
+      // Frontmatter is metadata about the document, it only ever belongs at the
+      // top. Spelled as an alternation rather than `frontmatter? block+` so that
+      // a document holding nothing but metadata is valid too. `block+` has to
+      // come first: ProseMirror fills an empty document from the leading
+      // alternative, and that must be a paragraph rather than a metadata block.
+      Document.extend({ content: 'block+ | (frontmatter block*)' }),
       Frontmatter,
       createCodeBlockLowlight(),
       Markdown,
