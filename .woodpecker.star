@@ -16,6 +16,8 @@ OC_CI_WAIT_FOR = "quay.io/opencloudeu/wait-for-ci:latest"
 
 # renovate: datasource=docker depName=ghcr.io/euro-office/documentserver
 EURO_OFFICE_DOCUMENT_SERVER = "ghcr.io/euro-office/documentserver:v9.3.2"
+PLUGINS_DOCKER_BUILDX = "woodpeckerci/plugin-docker-buildx:latest"
+PLUGINS_DOCKER_PUSHRM = "chko/docker-pushrm:1"
 PLUGINS_GH_PAGES = "plugins/gh-pages:1"
 PLUGINS_GITHUB_RELEASE = "plugins/github-release:1"
 PLUGINS_GIT_ACTION = "quay.io/thegeeklab/wp-git-action:2"
@@ -25,6 +27,13 @@ PLUGINS_SLACK = "plugins/slack:1"
 POSTGRES_ALPINE = "postgres:alpine3.18"
 OPENLDAP = "bitnamilegacy/openldap:2.6"
 READY_RELEASE_GO = "woodpeckerci/plugin-ready-release-go:latest"
+
+YJS_TAG_PREFIX = "yjs-v"
+YJS_DOCKERFILE = "services/yjs/Dockerfile"
+YJS_PACKAGE_JSON = "services/yjs/package.json"
+YJS_DOCKER_REPOS = "opencloudeu/yjs,quay.io/opencloudeu/yjs"
+YJS_DOCKER_PLATFORMS = "linux/amd64,linux/arm64"
+YJS_IMAGE_DESCRIPTION = "Yjs collaboration server for OpenCloud"
 
 WEB_PUBLISH_NPM_PACKAGES = ["design-system", "eslint-config", "extension-sdk", "prettier-config", "tsconfig", "web-client", "web-pkg", "web-test-helpers"]
 WEB_PUBLISH_NPM_ORGANIZATION = "@opencloud-eu"
@@ -277,6 +286,9 @@ event = {
 def main(ctx):
     if ctx.build.event == "cron" and ctx.build.cron == "translation-sync":
         return translation_sync(ctx)
+    if isYjsRelease(ctx):
+        return publishYjsImage(ctx)
+
     is_release_pr = (ctx.build.event == "pull_request" and ctx.build.sender == "openclouders" and "🎉 release" in ctx.build.title.lower())
     if is_release_pr:
         license = licenseCheck()
@@ -492,6 +504,99 @@ def publishRelease(ctx):
     pipelines.append(build_pipeline)
 
     return pipelines
+
+def isYjsRelease(ctx):
+    return ctx.build.event == "tag" and ctx.build.ref.startswith("refs/tags/%s" % YJS_TAG_PREFIX)
+
+def determineYjsReleaseVersion(ctx):
+    return ctx.build.ref.replace("refs/tags/%s" % YJS_TAG_PREFIX, "")
+
+# The yjs image has its own version, independent of the web app version. It is released by
+# pushing a `yjs-vX.Y.Z` tag (see dev/scripts/create_and_push_yjs_tag.sh).
+def publishYjsImage(ctx):
+    version = determineYjsReleaseVersion(ctx)
+
+    # only stable releases move the rolling `latest` tag
+    tags = ["v%s" % version]
+    if len(version.split("-")) == 1:
+        tags.append("latest")
+
+    return [{
+        "name": "publish-yjs-image",
+        "steps": [
+            {
+                "name": "verify-version",
+                "image": OC_CI_NODEJS,
+                "commands": [
+                    "package_version=$(jq -r '.version' < %s)" % YJS_PACKAGE_JSON,
+                    "echo \"tag version: %s, %s: $package_version\"" % (version, YJS_PACKAGE_JSON),
+                    "[ \"$package_version\" = \"%s\" ] || (echo \"git tag does not match version in %s\"; exit 1)" % (version, YJS_PACKAGE_JSON),
+                ],
+            },
+            {
+                "name": "build-and-push",
+                "image": PLUGINS_DOCKER_BUILDX,
+                "depends_on": ["verify-version"],
+                "settings": {
+                    "repo": YJS_DOCKER_REPOS,
+                    "dockerfile": YJS_DOCKERFILE,
+                    "platforms": YJS_DOCKER_PLATFORMS,
+                    "tags": tags,
+                    "pull_image": False,
+                    "logins": [
+                        {
+                            "registry": "https://index.docker.io/v1/",
+                            "username": {
+                                "from_secret": "docker_username",
+                            },
+                            "password": {
+                                "from_secret": "docker_password",
+                            },
+                        },
+                        {
+                            "registry": "https://quay.io",
+                            "username": {
+                                "from_secret": "quay_username",
+                            },
+                            "password": {
+                                "from_secret": "quay_password",
+                            },
+                        },
+                    ],
+                },
+            },
+            {
+                "name": "push-readme-dockerhub",
+                "image": PLUGINS_DOCKER_PUSHRM,
+                "environment": {
+                    "DOCKER_USER": {
+                        "from_secret": "docker_username",
+                    },
+                    "DOCKER_PASS": {
+                        "from_secret": "docker_password",
+                    },
+                    "PUSHRM_TARGET": "opencloudeu/yjs",
+                    "PUSHRM_SHORT": YJS_IMAGE_DESCRIPTION,
+                    "PUSHRM_FILE": "services/yjs/README.md",
+                },
+                "depends_on": ["build-and-push"],
+            },
+            {
+                "name": "push-readme-quayio",
+                "image": PLUGINS_DOCKER_PUSHRM,
+                "environment": {
+                    "APIKEY__QUAY_IO": {
+                        "from_secret": "quay_apikey",
+                    },
+                    "PUSHRM_TARGET": "quay.io/opencloudeu/yjs",
+                    "PUSHRM_SHORT": YJS_IMAGE_DESCRIPTION,
+                    "PUSHRM_FILE": "services/yjs/README.md",
+                },
+                "depends_on": ["build-and-push"],
+            },
+        ],
+        "when": [event["tag"]],
+    }]
 
 def readyReleaseGo():
     return [

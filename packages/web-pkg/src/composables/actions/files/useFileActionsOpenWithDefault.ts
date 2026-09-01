@@ -6,7 +6,7 @@ import { useFileActions } from './useFileActions'
 export const useFileActionsOpenWithDefault = () => {
   const { $gettext } = useGettext()
 
-  const { getDefaultAction } = useFileActions()
+  const { getDefaultAction, getAllOpenWithActions } = useFileActions()
 
   const actions = computed((): FileAction[] => [
     {
@@ -14,25 +14,21 @@ export const useFileActionsOpenWithDefault = () => {
       icon: 'eye',
       label: () => $gettext('Open'),
       handler: (options) => {
-        const defaultAction = getDefaultAction({ ...options, omitSystemActions: true })
+        const defaultAction = getDefaultAction(options)
         if (!defaultAction || !Object.hasOwn(defaultAction, 'handler')) {
           return
         }
         defaultAction.handler(options)
       },
       route: (options) => {
-        const defaultAction = getDefaultAction({ ...options, omitSystemActions: true })
+        const defaultAction = getDefaultAction(options)
         if (!defaultAction || !Object.hasOwn(defaultAction, 'route')) {
           return
         }
         return defaultAction.route(options)
       },
       isVisible: (options) => {
-        const defaultAction = getDefaultAction({ ...options, omitSystemActions: true })
-        if (!defaultAction) {
-          return false
-        }
-        return defaultAction.isVisible(options)
+        return getAllOpenWithActions(options).length > 0
       },
       class: 'oc-files-actions-default-editor-trigger'
     }

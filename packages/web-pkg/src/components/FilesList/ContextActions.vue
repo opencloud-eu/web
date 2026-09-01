@@ -73,7 +73,7 @@ const menuItemsPrimary = computed(() => {
 })
 
 const menuItemsPrimaryDrop = computed(() => {
-  return getAllOpenWithActions({ ...unref(actionOptions), omitSystemActions: true })
+  return getAllOpenWithActions(unref(actionOptions))
     .filter((item) => item.isVisible(unref(actionOptions)))
     .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
 })
