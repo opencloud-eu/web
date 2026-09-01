@@ -167,7 +167,7 @@
   padding: 8px 12px;
   border: 1px dashed var(--oc-role-outline-variant);
   border-radius: 6px;
-  background: var(--oc-role-surface-container);
+  background: var(--oc-role-surface-container-high);
   color: var(--oc-role-on-surface-variant);
   font-size: calc(13px * var(--text-editor-zoom-factor));
 }

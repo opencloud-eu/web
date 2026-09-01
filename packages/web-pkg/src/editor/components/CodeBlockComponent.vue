@@ -1,9 +1,10 @@
 <template>
   <node-view-wrapper class="code-block">
     <div class="text-editor-code-block-language" contenteditable="false">
+      <oc-icon name="code-box" size="xsmall" fill-type="line" />
       <select
         v-model="selectedLanguageValue"
-        class="text-editor-code-block-select font-mono"
+        class="text-editor-code-block-select"
         :aria-label="$gettext('Code language')"
         :disabled="isReadonly"
       >
@@ -78,6 +79,9 @@ const isReadonly = computed(() => props.editor.isEditable === false)
   position: absolute;
   right: 12px;
   top: 4px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--oc-role-on-surface-variant);
 }
 
 .text-editor-code-block-select:focus {
@@ -87,10 +91,15 @@ const isReadonly = computed(() => props.editor.isEditable === false)
 
 .text-editor-code-block-select {
   text-align: right;
+  text-align-last: right;
+  field-sizing: content;
+  width: auto;
+  min-width: 0;
   font-size: 12px;
+  font-family: inherit;
   border: 0;
   background: transparent;
-  color: var(--oc-role-on-surface);
+  color: inherit;
 }
 
 .text-editor-code-block-select:disabled {
