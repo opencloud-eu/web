@@ -3,6 +3,8 @@ import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import Document from '@tiptap/extension-document'
 import { Markdown, MarkdownManager } from '@tiptap/markdown'
+import { Marked } from 'marked'
+import type { marked as markedDefault } from 'marked'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
@@ -15,12 +17,24 @@ import {
   createCodeBlockLowlight,
   createLinkExtension,
   Frontmatter,
-  imageFileHandlerExtension
+  imageFileHandlerExtension,
+  registerFrontmatterTokenizer
 } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 
 export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeStrategy => {
   const { $gettext } = useGettext()
+
+  // Every `MarkdownManager` appends its extensions' tokenizers to the marked
+  // instance it is given and never removes them. Left to the default, that is a
+  // process wide singleton which grows with every editor opened and keeps each
+  // manager it ever saw alive. Holding our own instance bounds both to the
+  // lifetime of this strategy.
+  // Cast because tiptap types the option as the default export, which carries a
+  // `getDefaults` helper a plain instance lacks. The manager never calls it: it
+  // only touches `use`, `setOptions`, `Lexer`, `lexer` and `defaults`.
+  const marked = new Marked() as unknown as typeof markedDefault
+  registerFrontmatterTokenizer(marked)
 
   const editorContentType = () => {
     return 'markdown'
@@ -32,7 +46,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   // never change for a given strategy.
   let markdownManager: MarkdownManager | null = null
   const serialize = (doc: ProseMirrorNode): string => {
-    markdownManager ??= new MarkdownManager({ extensions: extensions() })
+    markdownManager ??= new MarkdownManager({ marked, extensions: extensions() })
     return markdownManager.serialize(doc.toJSON())
   }
 
@@ -89,7 +103,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       Document.extend({ content: 'block+ | (frontmatter block*)' }),
       Frontmatter,
       createCodeBlockLowlight(),
-      Markdown,
+      Markdown.configure({ marked }),
       createLinkExtension(),
       Table.configure({ resizable: false }),
       TableRow,

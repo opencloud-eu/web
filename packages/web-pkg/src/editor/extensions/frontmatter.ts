@@ -1,6 +1,6 @@
-import { Node, mergeAttributes } from '@tiptap/core'
-import type { JSONContent, MarkdownToken } from '@tiptap/core'
-import { MarkdownManager } from '@tiptap/markdown'
+import { commands as coreCommands, Node, mergeAttributes } from '@tiptap/core'
+import type { CommandProps, JSONContent, MarkdownToken } from '@tiptap/core'
+import type { marked } from 'marked'
 import { TextSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import FrontmatterComponent from '../components/FrontmatterComponent.vue'
@@ -24,6 +24,8 @@ declare module '@tiptap/core' {
 const frontmatterPattern = /^---[ \t]*\r?\n([\s\S]*?)(?:\r?\n)?---[ \t]*(?:\r?\n|$)/
 
 /**
+ * Registers the frontmatter tokenizer on a marked instance.
+ *
  * Registered with marked directly rather than through the node's
  * `markdownTokenizer` hook, because that hook drops the lexer before calling us
  * and the lexer carries the one signal that matters here.
@@ -38,31 +40,35 @@ const frontmatterPattern = /^---[ \t]*\r?\n([\s\S]*?)(?:\r?\n)?---[ \t]*(?:\r?\n
  * two tells us where we are. `state.top` looks like the right flag but is not:
  * marked sets it to true for blockquote contents as well.
  *
- * The registration targets the marked singleton that every `MarkdownManager`
- * uses, so both the editor's manager and the strategy's own see the tokenizer.
+ * Takes the instance as an argument instead of reaching for marked's singleton:
+ * every `MarkdownManager` appends its tokenizers to whichever instance it is
+ * given and never removes them, so the singleton would grow for as long as the
+ * tab is open and hold on to every manager it ever saw.
  */
-new MarkdownManager({ extensions: [] }).instance.use({
-  extensions: [
-    {
-      name: 'frontmatter',
-      level: 'block',
-      start: (src: string) => (src.startsWith('---') ? 0 : -1),
-      tokenizer(src, tokens) {
-        // Frontmatter opens the document, nothing else.
-        if (tokens !== this.lexer.tokens || tokens.length) {
-          return undefined
-        }
+export function registerFrontmatterTokenizer(instance: typeof marked): void {
+  instance.use({
+    extensions: [
+      {
+        name: 'frontmatter',
+        level: 'block',
+        start: (src: string) => (src.startsWith('---') ? 0 : -1),
+        tokenizer(src, tokens) {
+          // Frontmatter opens the document, nothing else.
+          if (tokens !== this.lexer.tokens || tokens.length) {
+            return undefined
+          }
 
-        const match = frontmatterPattern.exec(src)
-        if (!match) {
-          return undefined
-        }
+          const match = frontmatterPattern.exec(src)
+          if (!match) {
+            return undefined
+          }
 
-        return { type: 'frontmatter', raw: match[0], text: match[1], tokens: [] }
+          return { type: 'frontmatter', raw: match[0], text: match[1], tokens: [] }
+        }
       }
-    }
-  ]
-})
+    ]
+  })
+}
 
 /**
  * Frontmatter is metadata, not prose. Marked has no rule for it, so without
@@ -102,7 +108,31 @@ export const Frontmatter = Node.create({
   },
 
   addCommands() {
+    // Toolbar and slash entries are gated by the strategy, but extensions bind
+    // their shortcuts straight into ProseMirror keymaps, so those keys stay live
+    // and would turn the metadata into a heading or a list. Every block
+    // conversion funnels through these few primitives, so guarding them covers
+    // all of the shortcuts at once, including extensions added later.
+    const refuseInside = <Args extends unknown[]>(
+      command: (...args: Args) => (props: CommandProps) => boolean
+    ) => {
+      return (...args: Args) =>
+        (props: CommandProps): boolean => {
+          if (props.editor.isActive(this.name)) {
+            return false
+          }
+
+          return command(...args)(props)
+        }
+    }
+
     return {
+      setNode: refuseInside(coreCommands.setNode),
+      toggleNode: refuseInside(coreCommands.toggleNode),
+      toggleList: refuseInside(coreCommands.toggleList),
+      wrapIn: refuseInside(coreCommands.wrapIn),
+      toggleWrap: refuseInside(coreCommands.toggleWrap),
+
       setFrontmatter:
         () =>
         ({ state, tr, dispatch }) => {

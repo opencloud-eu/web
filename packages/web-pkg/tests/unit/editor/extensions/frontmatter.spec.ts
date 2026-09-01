@@ -530,6 +530,125 @@ describe('frontmatter', () => {
     })
   })
 
+  // Toolbar and slash entries are gated by the strategy, but extensions bind
+  // their shortcuts straight into ProseMirror keymaps, so the keys stay live
+  // regardless. Anything that restructures the block turns the metadata into
+  // prose and loses the fences.
+  describe('keyboard shortcuts', () => {
+    /** Every shortcut the editor's extensions register, as far as they expose one. */
+    function registeredShortcuts(editor: Editor): string[] {
+      const keys = new Set<string>()
+
+      for (const extension of editor.extensionManager.extensions) {
+        const addKeyboardShortcuts = (extension.config as { addKeyboardShortcuts?: () => object })
+          .addKeyboardShortcuts
+
+        if (!addKeyboardShortcuts) {
+          continue
+        }
+
+        try {
+          const context = { editor, options: extension.options, name: extension.name }
+          Object.keys(addKeyboardShortcuts.call(context)).forEach((key) => keys.add(key))
+        } catch {
+          // Some shortcuts need a node type we cannot build here, skip those.
+        }
+      }
+
+      return [...keys].filter((key) => key.includes('-'))
+    }
+
+    it('leaves the block intact for every registered shortcut', () => {
+      const strategy = createStrategy()
+      const probe = createEditor(strategy, '---\na: 1\n---\n\n# Heading')
+      const shortcuts = registeredShortcuts(probe)
+      probe.destroy()
+
+      expect(shortcuts.length).toBeGreaterThan(5)
+
+      const damaged: string[] = []
+      for (const shortcut of shortcuts) {
+        const editor = createEditor(createStrategy(), '---\na: 1\n---\n\n# Heading')
+        editor.commands.setTextSelection(2)
+        editor.commands.keyboardShortcut(shortcut)
+
+        const first = editor.state.doc.firstChild
+        if (first?.type.name !== 'frontmatter' || first.textContent !== 'a: 1') {
+          damaged.push(`${shortcut} -> ${first?.type.name}`)
+        }
+        editor.destroy()
+      }
+
+      expect(damaged).toEqual([])
+    })
+
+    it('still applies shortcuts outside the block', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '---\na: 1\n---\n\nplain')
+      editor.commands.setTextSelection(editor.state.doc.content.size - 2)
+      editor.commands.keyboardShortcut('Mod-Alt-1')
+
+      expect(serializeBody(strategy, editor)).toContain('# plain')
+      editor.destroy()
+    })
+  })
+
+  // Content reaches the block through more than the keyboard. These pin the
+  // schema level protections that keep the other routes harmless: `text*` and
+  // `marks: ''` admit nothing but plain text, and `code: true` stops input rules
+  // from firing inside it.
+  describe('other input paths', () => {
+    function editorWithCaretInMetadata() {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '---\na: 1\n---\n\n# Heading')
+      editor.commands.setTextSelection(2)
+
+      return { strategy, editor }
+    }
+
+    it.each(['# ', '## ', '- ', '1. ', '> ', '```', '[ ] '])(
+      'types %j literally instead of running the input rule',
+      (typed) => {
+        const strategy = createStrategy()
+        const editor = createEditor(strategy, '---\na: 1\n---\n\n# Heading')
+        editor.commands.insertContentAt(1, typed, { applyInputRules: true })
+
+        expect(editor.state.doc.firstChild?.type.name).toBe('frontmatter')
+        expect(editor.state.doc.firstChild?.textContent).toBe(`${typed}a: 1`)
+        editor.destroy()
+      }
+    )
+
+    it.each([
+      ['a heading', '<h1>x</h1>'],
+      ['a list', '<ul><li>x</li></ul>'],
+      ['a quote', '<blockquote><p>x</p></blockquote>'],
+      ['a table', '<table><tr><td>x</td></tr></table>'],
+      ['an image', '<img src="data:image/png;base64,iVBORw0KGgo=" />']
+    ])('keeps the block plain text when pasting %s', (_name, html) => {
+      const { editor } = editorWithCaretInMetadata()
+      editor.commands.insertContent(html)
+
+      expect(editor.state.doc.firstChild?.type.name).toBe('frontmatter')
+      expect(() => editor.state.doc.check()).not.toThrow()
+      editor.destroy()
+    })
+
+    // The image file handler inserts at the drop position, which can land here.
+    it('refuses an image dropped onto the block', () => {
+      const { strategy, editor } = editorWithCaretInMetadata()
+      editor
+        .chain()
+        .insertContentAt(2, { type: 'image', attrs: { src: 'data:image/png;base64,x' } })
+        .run()
+
+      expect(editor.state.doc.firstChild?.childCount).toBe(1)
+      expect(editor.state.doc.firstChild?.textContent).toBe('a: 1')
+      expect(serializeBody(strategy, editor)).toBe('---\na: 1\n---\n\n# Heading')
+      editor.destroy()
+    })
+  })
+
   // marked lexes the inside of a blockquote or list item with a fresh token
   // array, so "nothing tokenized yet" is true in there too. A frontmatter node
   // in a container is schema invalid, and whatever prunes it later takes the
