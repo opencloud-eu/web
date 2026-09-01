@@ -3,6 +3,7 @@ import type { JSONContent, MarkdownToken } from '@tiptap/core'
 import { TextSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import FrontmatterComponent from '../components/FrontmatterComponent.vue'
+import { frontmatterHighlightPlugin } from './frontmatterHighlight'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -52,6 +53,10 @@ export const Frontmatter = Node.create({
 
   addNodeView() {
     return VueNodeViewRenderer(FrontmatterComponent)
+  },
+
+  addProseMirrorPlugins() {
+    return [frontmatterHighlightPlugin(this.name)]
   },
 
   addCommands() {
