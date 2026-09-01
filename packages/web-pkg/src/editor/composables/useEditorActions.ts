@@ -822,8 +822,7 @@ export function useEditorActions(state: TextEditorState) {
   }
 
   const toggleFrontmatter = (editor: Editor, range?: Range) => {
-    // Drop the slash query first, so it does not linger in the document when the
-    // confirmation below is cancelled.
+    // The slash query is not content the user wants to keep, drop it either way.
     if (range) {
       editor.chain().focus().deleteRange(range).run()
     }
@@ -841,18 +840,9 @@ export function useEditorActions(state: TextEditorState) {
       return
     }
 
-    // Removing the block throws away everything the metadata holds, so never do
-    // it on a single click.
-    dispatchModal({
-      title: $gettext('Delete frontmatter'),
-      message: $gettext(
-        'The frontmatter block and all metadata in it will be removed from the document.'
-      ),
-      confirmText: $gettext('Delete'),
-      onConfirm: () => {
-        editor.chain().focus().unsetFrontmatter().run()
-      }
-    })
+    // Unwrapping only drops the fences, the metadata stays in the document as
+    // content, so there is nothing to confirm.
+    editor.chain().focus().unsetFrontmatter().run()
   }
 
   const frontmatter = (): EditorAction => ({

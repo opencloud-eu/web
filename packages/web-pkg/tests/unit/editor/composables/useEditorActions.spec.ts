@@ -717,34 +717,16 @@ describe('useEditorActions', () => {
       expect(useModals().modals).toHaveLength(0)
     })
 
-    it('toolbarAction asks for confirmation before removing the block', () => {
+    it('toolbarAction unwraps the block without asking when the caret is inside it', () => {
       const editor = createMockEditor({
         firstChildType: 'frontmatter',
         isActive: (type) => type === 'frontmatter'
       })
       actions.frontmatter().toolbarAction!(editor)
-
-      const { dispatchModal } = useModals()
-      expect(dispatchModal).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Delete frontmatter',
-          confirmText: 'Delete'
-        })
-      )
-      expect(editor._chain.unsetFrontmatter).not.toHaveBeenCalled()
-    })
-
-    it('toolbarAction removes the block once confirmed', () => {
-      const editor = createMockEditor({
-        firstChildType: 'frontmatter',
-        isActive: (type) => type === 'frontmatter'
-      })
-      actions.frontmatter().toolbarAction!(editor)
-
-      useModals().modals[0].onConfirm(undefined)
 
       expect(editor._chain.unsetFrontmatter).toHaveBeenCalled()
       expect(editor._chain.run).toHaveBeenCalled()
+      expect(useModals().modals).toHaveLength(0)
     })
 
     it('toolbarAction moves the caret into the block instead of offering to delete it', () => {
@@ -776,15 +758,16 @@ describe('useEditorActions', () => {
       expect(useModals().modals).toHaveLength(0)
     })
 
-    it('slashCommandAction asks for confirmation before removing the block', () => {
+    it('slashCommandAction unwraps the block when the caret is inside it', () => {
       const editor = createMockEditor({
         firstChildType: 'frontmatter',
         isActive: (type) => type === 'frontmatter'
       })
       actions.frontmatter().slashCommandAction!({ editor, range: mockRange })
 
-      expect(useModals().dispatchModal).toHaveBeenCalled()
-      expect(editor._chain.unsetFrontmatter).not.toHaveBeenCalled()
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+      expect(editor._chain.unsetFrontmatter).toHaveBeenCalled()
+      expect(useModals().modals).toHaveLength(0)
     })
   })
 

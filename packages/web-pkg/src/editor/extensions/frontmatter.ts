@@ -9,7 +9,7 @@ declare module '@tiptap/core' {
     frontmatter: {
       /** Add an empty frontmatter block at the top of the document. */
       setFrontmatter: () => ReturnType
-      /** Remove the frontmatter block and the metadata it holds. */
+      /** Drop the fences, keeping the metadata as ordinary content. */
       unsetFrontmatter: () => ReturnType
     }
   }
@@ -83,7 +83,21 @@ export const Frontmatter = Node.create({
           }
 
           if (dispatch) {
-            tr.delete(0, firstChild.nodeSize)
+            // Drop the fences and keep the metadata as content. Without them it
+            // is ordinary markdown, so hand it back through the parser: what the
+            // editor shows now is what a reload would show.
+            const parsed = this.editor.markdown.parse(firstChild.textContent)
+            const content = (parsed.content ?? []).map((node) => state.schema.nodeFromJSON(node))
+
+            tr.replaceWith(
+              0,
+              firstChild.nodeSize,
+              // An empty block carries nothing to unwrap, but the document still
+              // needs a block to be valid when it held nothing else.
+              content.length || state.doc.childCount > 1
+                ? content
+                : state.schema.nodes.paragraph.create()
+            )
           }
 
           return true

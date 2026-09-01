@@ -61,6 +61,14 @@ function serializeBody(strategy: ContentTypeStrategy, editor: Editor): string {
   return strategy.serialize(editor.state.doc).trimEnd()
 }
 
+/** Node types of a live document, minus the trailing empty paragraph. */
+function typesOf(editor: Editor): string[] {
+  const types = editor.state.doc.children.map((node) => node.type.name)
+  const last = editor.state.doc.lastChild
+
+  return last?.type.name === 'paragraph' && last.content.size === 0 ? types.slice(0, -1) : types
+}
+
 function nodeTypes(content: string): string[] {
   const strategy = createStrategy()
   const editor = createEditor(strategy, content)
@@ -183,9 +191,34 @@ describe('frontmatter', () => {
       editor.destroy()
     })
 
-    it('removes the block', () => {
+    // Unwrapping drops the fences and keeps the metadata as content, so nothing
+    // is lost and no confirmation is needed.
+    it('unwraps a single key into a paragraph', () => {
       const strategy = createStrategy()
       const editor = createEditor(strategy, '---\ntitle: My note\n---\n\n# Heading')
+
+      expect(editor.commands.unsetFrontmatter()).toBe(true)
+      expect(typesOf(editor)).toEqual(['paragraph', 'heading'])
+      expect(serializeBody(strategy, editor)).toBe('title: My note\n\n# Heading')
+      editor.destroy()
+    })
+
+    it('unwraps multi line metadata into what it means as markdown', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(
+        strategy,
+        '---\ntitle: My note\ntags:\n  - a\n  - b\n---\n\n# Heading'
+      )
+
+      expect(editor.commands.unsetFrontmatter()).toBe(true)
+      expect(typesOf(editor)).toEqual(['paragraph', 'bulletList', 'heading'])
+      expect(serializeBody(strategy, editor)).toBe('title: My note\ntags:\n\n- a\n- b\n\n# Heading')
+      editor.destroy()
+    })
+
+    it('leaves a usable document when unwrapping an empty block', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '---\n---\n\n# Heading')
 
       expect(editor.commands.unsetFrontmatter()).toBe(true)
       expect(editor.state.doc.children.map((node) => node.type.name)).not.toContain('frontmatter')
@@ -193,7 +226,17 @@ describe('frontmatter', () => {
       editor.destroy()
     })
 
-    it('does not remove anything when there is no frontmatter', () => {
+    it('leaves a usable document when the block is all there is', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '---\n---')
+
+      expect(editor.commands.unsetFrontmatter()).toBe(true)
+      expect(editor.state.doc.childCount).toBeGreaterThan(0)
+      expect(editor.state.doc.children.map((node) => node.type.name)).not.toContain('frontmatter')
+      editor.destroy()
+    })
+
+    it('does not unwrap anything when there is no frontmatter', () => {
       const strategy = createStrategy()
       const editor = createEditor(strategy, '# Heading\n\nSome text.')
 
