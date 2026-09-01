@@ -24,8 +24,7 @@ const actionOptions: GetFileActionsOptions = {
       extension: 'txt'
     })
   ],
-  space: null,
-  omitSystemActions: true
+  space: null
 }
 
 describe('fileActions', () => {
