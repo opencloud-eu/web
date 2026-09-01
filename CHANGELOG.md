@@ -11,6 +11,17 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
+### 📈 Enhancement
+
+- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
+- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
+- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
+- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
+
 ### 🐛 Bug Fixes
 
 - fix: remove pasted text/background colors in Tiptap editor [[#3275](https://github.com/opencloud-eu/web/pull/3275)]
@@ -24,16 +35,6 @@
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
-
-### 📈 Enhancement
-
-- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
-- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
-- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
-- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
-- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
-- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
-- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### ✅ Tests
 
