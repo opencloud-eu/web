@@ -63,6 +63,17 @@ export const DriveItemsFactory = ({
     async listSharedWithMe(options, requestOptions) {
       const { data } = await meDriveApiFactory.listSharedWithMe(options?.expand, requestOptions)
       return data?.value || []
+    },
+
+    // listDriveItemChildren lists a folder's children. Hand-rolled because the
+    // generated client only covers the personal drive root.
+    async listDriveItemChildren(driveId, itemId, options, requestOptions) {
+      const select = options?.select?.length ? `?$select=${options.select.join(',')}` : ''
+      const { data } = await axiosClient.get(
+        `${config.basePath}/v1.0/drives/${driveId}/items/${itemId}/children${select}`,
+        requestOptions
+      )
+      return data?.value || []
     }
   }
 }

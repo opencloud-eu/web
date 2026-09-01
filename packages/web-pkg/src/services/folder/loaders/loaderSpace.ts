@@ -13,6 +13,7 @@ import {
 import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
+import { buildResourcesFromDriveItems } from '@opencloud-eu/web-client'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
@@ -64,9 +65,23 @@ export class FolderLoaderSpace implements FolderLoader {
           davProperties.push(DavProperty.DownloadURL)
         }
 
+        // Graph listing is opt-in while it is being validated against PROPFIND,
+        // toggle with localStorage.setItem('oc_graph_listing', '1').
+        const useGraphListing =
+          !isPublicSpaceResource(space) &&
+          (() => {
+            try {
+              return window.localStorage.getItem('oc_graph_listing') === '1'
+            } catch {
+              return false
+            }
+          })()
+
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
-          webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
+          useGraphListing
+            ? listFilesViaGraph({ graphClient, webdav, space, path, fileId, signal: signal1 })
+            : webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
         )
 
         // if current folder has no id (= singe file public link) we must not correct the route
@@ -135,5 +150,47 @@ export class FolderLoaderSpace implements FolderLoader {
         }
       }
     }).restartable()
+  }
+}
+
+// listFilesViaGraph lists a folder through the graph children endpoint. The
+// current folder still comes from webdav: graph has no "stat this item" in the
+// listing call, and the loader needs it for the route correction.
+const listFilesViaGraph = async ({
+  graphClient,
+  webdav,
+  space,
+  path,
+  fileId,
+  signal
+}: {
+  graphClient: any
+  webdav: any
+  space: SpaceResource
+  path: string
+  fileId: string
+  signal: AbortSignal
+}) => {
+  const { resource: currentFolder } = await webdav.listFiles(
+    space,
+    { path, fileId },
+    { depth: 0, signal }
+  )
+
+  const driveItems = await graphClient.driveItems.listDriveItemChildren(
+    space.id.toString(),
+    currentFolder.id.toString(),
+    {
+      select: [
+        '@libre.graph.permissions.actions.allowedValues',
+        '@libre.graph.shareTypes'
+      ]
+    },
+    { signal }
+  )
+
+  return {
+    resource: currentFolder,
+    children: buildResourcesFromDriveItems(driveItems, space, currentFolder.path)
   }
 }

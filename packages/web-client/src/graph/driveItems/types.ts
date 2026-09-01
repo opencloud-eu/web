@@ -1,7 +1,17 @@
 import { DriveItem } from '../generated'
 import type { GraphRequestOptions } from '../types'
 
+export interface ListDriveItemChildrenOptions {
+  select?: string[]
+}
+
 export interface GraphDriveItems {
+  listDriveItemChildren: (
+    driveId: string,
+    itemId: string,
+    options?: ListDriveItemChildrenOptions,
+    requestOptions?: GraphRequestOptions
+  ) => Promise<DriveItem[]>
   getDriveItem: (
     driveId: string,
     itemId: string,
