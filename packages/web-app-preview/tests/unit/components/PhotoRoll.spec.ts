@@ -9,6 +9,7 @@ import { mock } from 'vitest-mock-extended'
 import { MediaFile } from '../../../src/helpers/types'
 import PhotoRollItem from '../../../src/components/PhotoRollItem.vue'
 import { useLoadPreview } from '@opencloud-eu/web-pkg'
+import { ref } from 'vue'
 
 let mockItemsInViewPort = Infinity
 let observerCount = 0
@@ -17,15 +18,18 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useLoadPreview: vi.fn().mockReturnValue({
     loadPreview: vi.fn()
-  }),
-  VisibilityObserver: vi.fn().mockImplementation(function (this: any) {
-    this.observe = vi.fn((element, { onEnter }) => {
-      observerCount++
-      if (onEnter && observerCount <= mockItemsInViewPort) {
-        onEnter({ unobserve: vi.fn() })
-      }
-    })
-    this.disconnect = vi.fn()
+  })
+}))
+
+vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useIsVisible: vi.fn(({ onVisibleCallback }: { onVisibleCallback?: () => void }) => {
+    observerCount++
+    if (observerCount <= mockItemsInViewPort) {
+      onVisibleCallback?.()
+    }
+
+    return { isVisible: ref(true), unobserve: vi.fn() }
   })
 }))
 
