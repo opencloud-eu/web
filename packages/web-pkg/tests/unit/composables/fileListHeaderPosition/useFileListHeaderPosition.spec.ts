@@ -2,7 +2,22 @@ import { nextTick } from 'vue'
 import { createWrapper, createAppBar } from './spec'
 import { useFileListHeaderPosition } from '../../../../src/composables/fileListHeaderPosition'
 
+const resizeCallbacks: Array<() => void> = []
+
+vi.mock('@vueuse/core', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@vueuse/core')>()),
+  useResizeObserver: vi.fn((_target, callback: () => void) => {
+    resizeCallbacks.push(callback)
+    return { stop: vi.fn() }
+  })
+}))
+
 describe('useFileListHeaderPosition', () => {
+  beforeEach(() => {
+    resizeCallbacks.length = 0
+    document.body.innerHTML = ''
+  })
+
   it('should be valid', () => {
     const wrapper = createWrapper()
 
@@ -13,15 +28,24 @@ describe('useFileListHeaderPosition', () => {
     wrapper.unmount()
   })
 
-  it('should calculate y on window resize', async () => {
+  it('should keep y at 0 if no app bar exists', async () => {
     const wrapper = createWrapper()
-    const appBar = createAppBar()
 
+    await nextTick()
+    expect(wrapper.vm.y).toBe(0)
+
+    wrapper.unmount()
+  })
+
+  it('should calculate y on app bar resize', async () => {
+    const appBar = createAppBar()
     appBar.createElement()
+
+    const wrapper = createWrapper()
 
     for (const height of [50, 100, 150, 200, 201]) {
       appBar.resize(height)
-      window.onresize(new UIEvent('resize'))
+      resizeCallbacks.forEach((callback) => callback())
       await nextTick()
       expect(wrapper.vm.y).toBe(height)
     }
@@ -29,11 +53,22 @@ describe('useFileListHeaderPosition', () => {
     wrapper.unmount()
   })
 
-  it('should calculate y on manual refresh', async () => {
-    const wrapper = createWrapper()
+  it('should observe the app bar element', () => {
     const appBar = createAppBar()
-
     appBar.createElement()
+
+    const wrapper = createWrapper()
+
+    expect(resizeCallbacks.length).toBe(1)
+
+    wrapper.unmount()
+  })
+
+  it('should calculate y on manual refresh', async () => {
+    const appBar = createAppBar()
+    appBar.createElement()
+
+    const wrapper = createWrapper()
 
     for (const height of [50, 100, 150, 200, 201]) {
       appBar.resize(height)
