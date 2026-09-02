@@ -36,6 +36,9 @@ catalogs:
     '@tiptap/suggestion': ^3.30.3
     '@tiptap/vue-3': ^3.30.3
     '@tiptap/y-tiptap': ^3.0.9
+    # Kept in step with what @tiptap/markdown resolves, so the editor and the
+    # strategy share one marked instance instead of ending up with two copies.
+    marked: ^17.0.1
 
 autoInstallPeers: true
 sharedWorkspaceLockfile: true

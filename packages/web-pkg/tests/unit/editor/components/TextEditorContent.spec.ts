@@ -174,6 +174,24 @@ describe('TextEditorContent', () => {
     expect(wrapperWithout.find('.drag-handle-plus-button').exists()).toBe(false)
   })
 
+  it('hides the drag handle controls on the frontmatter block', async () => {
+    const { wrapper } = mountEditorContent({ hasSlashCommands: true })
+    const dragHandle = wrapper.findComponent({ name: 'DragHandle' })
+    const controlsStyle = () => wrapper.find('.drag-handle-controls').attributes('style') ?? ''
+
+    dragHandle.vm.$emit('node-change', { pos: 0, node: { type: { name: 'paragraph' } } })
+    await nextTick()
+    expect(controlsStyle()).not.toContain('display: none')
+
+    dragHandle.vm.$emit('node-change', { pos: 0, node: { type: { name: 'frontmatter' } } })
+    await nextTick()
+    expect(controlsStyle()).toContain('display: none')
+
+    dragHandle.vm.$emit('node-change', { pos: 0, node: null })
+    await nextTick()
+    expect(controlsStyle()).not.toContain('display: none')
+  })
+
   it('opens slash menu when plus button is clicked', async () => {
     const { wrapper, chain, run } = mountEditorContent({ hasSlashCommands: true })
 

@@ -160,6 +160,26 @@
   position: relative;
 }
 
+/* Frontmatter styles */
+.text-editor-content .ProseMirror .text-editor-frontmatter {
+  position: relative;
+  margin: 0 0 1.5rem;
+  padding: 8px 12px;
+  border: 1px dashed var(--oc-role-outline-variant);
+  border-radius: 6px;
+  background: var(--oc-role-surface-container-high);
+  color: var(--oc-role-on-surface-variant);
+  font-size: calc(13px * var(--text-editor-zoom-factor));
+}
+
+.text-editor-content .ProseMirror .text-editor-frontmatter pre {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  font-size: inherit;
+}
+
 /* Table styles */
 .text-editor-content .ProseMirror table {
   border-collapse: collapse;
