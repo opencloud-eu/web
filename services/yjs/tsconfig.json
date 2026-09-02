@@ -9,7 +9,7 @@
     "erasableSyntaxOnly": true,
     "allowImportingTsExtensions": true,
     "lib": ["ESNext"],
-    "types": ["node"]
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "tests/**/*.ts"]
 }
