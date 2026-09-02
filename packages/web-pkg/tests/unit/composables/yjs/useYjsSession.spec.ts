@@ -18,6 +18,7 @@ import type { Resource } from '@opencloud-eu/web-client'
 import {
   buildYjsRoomName,
   useYjsSession,
+  YjsDeniedReason,
   type YjsAdapter,
   type YjsSession
 } from '../../../../src/composables/yjs'
@@ -516,16 +517,57 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     expect(unref(s.session.isReady)).toBe(true)
   })
 
-  it('surfaces an auth failure as an error, locks read-only and releases the loading gate', async () => {
+  it('surfaces an auth failure as an error and releases the loading gate', async () => {
     silenceConsoleError()
     const s = setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
     await flushPromises()
-    providerInstances[0].triggerAuthFailed('token expired')
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     await flushPromises()
 
-    expect(unref(s.session.error)?.message).toBe('token expired')
-    expect(unref(s.session.isLockedForReload)).toBe(true)
+    expect(unref(s.session.error)?.message).toContain('Your session expired')
     expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  // A refused room is not a verdict on write permission: the caller derives
+  // read-only from the resource's own permissions, and the server's Graph
+  // probe can disagree with it (a version skew between the two is enough).
+  // Locking the editor over that took a working document away from the user.
+  it.each([
+    YjsDeniedReason.TokenInvalid,
+    YjsDeniedReason.AccessDenied,
+    YjsDeniedReason.MalformedDocument,
+    YjsDeniedReason.ServerError,
+    'something-we-never-shipped'
+  ])('continues locally instead of locking read-only on %s', async (reason) => {
+    silenceConsoleError()
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'my important notes'
+    })
+    await flushPromises()
+    providerInstances[0].triggerAuthFailed(reason)
+    await flushPromises()
+
+    expect(unref(s.session.isLockedForReload)).toBe(false)
+    expect(unref(s.session.error)).not.toBeNull()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('my important notes')
+  })
+
+  // The reason codes exist so the message can name the actual cause. An
+  // expired token is a "reload me", a denial is not.
+  it('tells an expired token apart from a denied document', async () => {
+    silenceConsoleError()
+    const expired = setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
+    await flushPromises()
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
+    await flushPromises()
+
+    const denied = setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
+    await flushPromises()
+    providerInstances[1].triggerAuthFailed(YjsDeniedReason.AccessDenied)
+    await flushPromises()
+
+    expect(unref(expired.session.error)?.message).not.toBe(unref(denied.session.error)?.message)
   })
 
   // Regression: the gate was released on an empty Y.Doc, so an expired token
@@ -659,13 +701,13 @@ describe('useYjsSession — unreachable Yjs server', () => {
     silenceConsoleError()
     const s = setupSession({ yjsServerUrl })
     await flushPromises()
-    providerInstances[0].triggerAuthFailed('token expired')
+    providerInstances[0].triggerAuthFailed(YjsDeniedReason.TokenInvalid)
     vi.advanceTimersByTime(20_000)
     await flushPromises()
 
     // The auth reason survives: the timeout must not overwrite it with its own
     // "server could not be reached" message.
-    expect(unref(s.session.error)?.message).toBe('token expired')
+    expect(unref(s.session.error)?.message).toContain('Your session expired')
     // Auth failure disconnects too (see below), so exactly one disconnect - the
     // timeout did not add a second.
     expect(providerInstances[0].disconnect).toHaveBeenCalledOnce()

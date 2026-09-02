@@ -77,8 +77,12 @@ sequenceDiagram
     G-->>HP: user identity
     HP->>G: GET drives/{driveId}/items/{itemId}/permissions
     G-->>HP: allowed actions
-    alt 401 / 403 / 404
-        HP-->>C: reject - access denied
+    alt 401
+        HP-->>C: refuse - token-invalid
+    else 403 / 404
+        HP-->>C: refuse - access-denied
+    else other failure
+        HP-->>C: refuse - server-error
     else
         alt write action present
             HP-->>C: accept (read-write)

@@ -19,9 +19,9 @@ const mockIntersectionObserver = () => {
       observeMock,
       unobserveMock,
       disconnectMock,
-      callback: (args: unknown[], fastForward = 0) => {
-        const observerMock = window.IntersectionObserver as any
-        observerMock.mock.calls[0][0](args, observerMock.mock.instances[0])
+      instanceCount: () => (window.IntersectionObserver as any).mock.calls.length,
+      callback: (entries: unknown[], fastForward = 0) => {
+        ;(window.IntersectionObserver as any).mock.calls.at(-1)[0](entries)
         vi.advanceTimersByTime(fastForward)
       }
     }
@@ -34,8 +34,10 @@ const mockIntersectionObserver = () => {
   return { enable, disable }
 }
 
-const createWrapper = (options = {}) =>
-  mount(
+const wrappers: Array<{ unmount: () => void }> = []
+
+const createWrapper = (options = {}) => {
+  const wrapper = mount(
     {
       template: `<div ref="target">{{ isVisible }}</div>`,
       setup: () => {
@@ -51,6 +53,39 @@ const createWrapper = (options = {}) =>
     },
     { attachTo: document.body }
   )
+  wrappers.push(wrapper)
+  return wrapper
+}
+
+const createListWrapper = (itemCount: number, options = {}) => {
+  const wrapper = mount(
+    {
+      template: `
+        <div>
+        <div v-for="item in items" :key="item" :ref="(el) => setTarget(item, el)" data-item>
+          {{ visibilities[item] }}
+        </div>
+        </div>`,
+      setup: () => {
+        const root = ref(document.createElement('div'))
+        const items = Array.from({ length: itemCount }, (_, index) => index)
+        const targets = items.map(() => ref<HTMLElement>())
+        const visibilities = items.map(
+          (item) => useIsVisible({ root, ...options, target: targets[item] }).isVisible
+        )
+
+        return {
+          items,
+          visibilities,
+          setTarget: (item: number, el: HTMLElement) => (targets[item].value = el)
+        }
+      }
+    },
+    { attachTo: document.body }
+  )
+  wrappers.push(wrapper)
+  return wrapper
+}
 
 const observerOptions = (call = 0) => (window.IntersectionObserver as any).mock.calls[call][1]
 
@@ -60,6 +95,8 @@ describe('useIsVisible', () => {
   })
 
   afterEach(() => {
+    // unmounting releases the targets from the shared observer
+    wrappers.splice(0).forEach((wrapper) => wrapper.unmount())
     vi.useRealTimers()
     vi.restoreAllMocks()
     document.body.innerHTML = ''
@@ -114,7 +151,7 @@ describe('useIsVisible', () => {
     expect(observerOptions().root).toBeNull()
   })
 
-  it('re-creates the observer and unobserves the old target if the root changes', async () => {
+  it('moves to another observer and unobserves the old target if the root changes', async () => {
     const { unobserveMock, observeMock } = enableIntersectionObserver()
     const firstRoot = document.createElement('div')
     const secondRoot = document.createElement('div')
@@ -131,16 +168,49 @@ describe('useIsVisible', () => {
     expect(unobserveMock).toHaveBeenCalledWith(wrapper.vm.$refs.target)
   })
 
+  it('uses one shared observer for all targets of a list', async () => {
+    const { observeMock, instanceCount } = enableIntersectionObserver()
+    createListWrapper(10)
+    await nextTick()
+
+    expect(observeMock).toHaveBeenCalledTimes(10)
+    expect(instanceCount()).toBe(1)
+  })
+
+  it('creates one observer per rootMargin', async () => {
+    const { instanceCount } = enableIntersectionObserver()
+    const root = ref(document.createElement('div'))
+    createWrapper({ root, rootMargin: '0px' })
+    createWrapper({ root, rootMargin: '100px' })
+    await nextTick()
+
+    expect(instanceCount()).toBe(2)
+  })
+
+  it('only notifies the target the entry belongs to', async () => {
+    const { callback: observerCallback } = enableIntersectionObserver()
+    const wrapper = createListWrapper(2)
+    await nextTick()
+
+    const [first, second] = wrapper.findAll('[data-item]')
+    observerCallback([{ isIntersecting: true, target: first.element }])
+    await nextTick()
+
+    expect(first.text()).toBe('true')
+    expect(second.text()).toBe('false')
+  })
+
   it('only shows once and then gets unobserved if the the composable is in the default show mode', async () => {
     const { unobserveMock, callback: observerCallback } = enableIntersectionObserver()
     const wrapper = createWrapper()
 
     await nextTick()
-    expect((wrapper.vm.$refs.target as any).innerHTML).toBe('false')
+    const target = wrapper.vm.$refs.target as HTMLElement
+    expect(target.innerHTML).toBe('false')
 
-    observerCallback([{ isIntersecting: true, target: wrapper.vm.$refs.target }])
+    observerCallback([{ isIntersecting: true, target }])
     await nextTick()
-    expect((wrapper.vm.$refs.target as any).innerHTML).toBe('true')
+    expect(target.innerHTML).toBe('true')
     expect(unobserveMock).toHaveBeenCalledTimes(1)
   })
 
@@ -149,21 +219,43 @@ describe('useIsVisible', () => {
     const wrapper = createWrapper({ mode: 'showHide' })
 
     await nextTick()
-    expect((wrapper.vm.$refs.target as any).innerHTML).toBe('false')
+    const target = wrapper.vm.$refs.target as HTMLElement
+    expect(target.innerHTML).toBe('false')
 
-    observerCallback([{ isIntersecting: true, target: wrapper.vm.$refs.target }])
+    observerCallback([{ isIntersecting: true, target }])
     await nextTick()
-    expect((wrapper.vm.$refs.target as any).innerHTML).toBe('true')
+    expect(target.innerHTML).toBe('true')
     expect(unobserveMock).toHaveBeenCalledTimes(0)
+
+    observerCallback([{ isIntersecting: false, target }])
+    await nextTick()
+    expect(target.innerHTML).toBe('false')
   })
 
-  it('disconnects the observer before component gets unmounted', async () => {
-    const { disconnectMock } = enableIntersectionObserver()
+  it('only takes the last entry per target into account', async () => {
+    const { callback: observerCallback } = enableIntersectionObserver()
     const wrapper = createWrapper()
 
-    expect(disconnectMock).toHaveBeenCalledTimes(0)
     await nextTick()
+    const target = wrapper.vm.$refs.target as HTMLElement
+
+    observerCallback([
+      { isIntersecting: false, target },
+      { isIntersecting: true, target }
+    ])
+    await nextTick()
+    expect(target.innerHTML).toBe('true')
+  })
+
+  it('unobserves the target before the component gets unmounted', async () => {
+    const { unobserveMock, disconnectMock } = enableIntersectionObserver()
+    const wrapper = createWrapper({ mode: 'showHide' })
+    await nextTick()
+
+    expect(unobserveMock).toHaveBeenCalledTimes(0)
     wrapper.unmount()
+    expect(unobserveMock).toHaveBeenCalledTimes(1)
+    // the shared observer is disconnected once its last target is gone
     expect(disconnectMock).toHaveBeenCalledTimes(1)
   })
 })

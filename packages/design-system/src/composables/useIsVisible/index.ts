@@ -1,4 +1,5 @@
 import { Ref, onBeforeUnmount, ref, watch } from 'vue'
+import { getObserver } from './intersectionObserver'
 
 export const useIsVisible = ({
   target,
@@ -31,90 +32,76 @@ export const useIsVisible = ({
   const isSupported = window && 'IntersectionObserver' in window
   if (!isSupported) {
     return {
-      isVisible: ref(true)
+      isVisible: ref(true),
+      unobserve: (): void => undefined
     }
   }
 
   const isVisible = ref(false)
   let hasBeenVisible = false
-  let observer: IntersectionObserver
-  let observedRoot: Element | null
+  let observedTarget: Element = null
+  let observer: ReturnType<typeof getObserver> = null
 
-  const createObserver = (rootElement: Element | null) =>
-    new IntersectionObserver(
-      (
-        intersectionObserverEntries: IntersectionObserverEntry[],
-        intersectionObserver: IntersectionObserver
-      ) => {
-        /**
-         * In some edge cases intersectionObserverEntries contains 2 entries with the first one having wrong rootBounds.
-         * This happens for some reason when the table is being re-sorted immediately after being rendered.
-         * Therefore we always check the last entry for isIntersecting.
-         */
-        const entry = intersectionObserverEntries.at(-1)
-        const isIntersecting = entry.isIntersecting
+  function unobserve() {
+    if (!observedTarget) {
+      return
+    }
+    observer.unobserve(observedTarget, onIntersect)
+    observedTarget = null
+    observer = null
+  }
 
-        /**
-         * In mode `show` the target stays visible once it has been visible.
-         */
-        if (mode === 'showHide' || !hasBeenVisible) {
-          isVisible.value = isIntersecting
-        }
-
-        if (isIntersecting) {
-          hasBeenVisible = true
-          onVisibleCallback?.()
-        } else if (hasBeenVisible) {
-          onHiddenCallback?.()
-        }
-
-        /**
-         * if given mode is `showHide` we need to keep the observation alive.
-         * the same applies if the caller wants to be notified about targets leaving the viewport.
-         */
-        if (mode === 'showHide' || onHiddenCallback) {
-          return
-        }
-        /**
-         * if the mode is `show` which is the default, the implementation needs to unsubscribe the target from the observer
-         */
-        if (!isIntersecting) {
-          return
-        }
-
-        intersectionObserver.unobserve(entry.target)
-      },
-      {
-        root: rootElement,
-        rootMargin
-      }
-    )
-
-  /**
-   * The observer is created lazily, so it picks up the root and the target as soon
-   * as both are available, and gets re-created whenever the root changes.
-   */
-  watch([target, root], ([targetElement, rootElement], [previousTargetElement]) => {
-    if (observer && previousTargetElement) {
-      observer.unobserve(previousTargetElement)
+  function onIntersect(isIntersecting: boolean) {
+    /**
+     * In mode `show` the target stays visible once it has been visible.
+     */
+    if (mode === 'showHide' || !hasBeenVisible) {
+      isVisible.value = isIntersecting
     }
 
+    if (isIntersecting) {
+      hasBeenVisible = true
+      onVisibleCallback?.()
+    } else if (hasBeenVisible) {
+      onHiddenCallback?.()
+    }
+
+    /**
+     * if given mode is `showHide` we need to keep the observation alive.
+     * the same applies if the caller wants to be notified about targets leaving the viewport.
+     */
+    if (mode === 'showHide' || onHiddenCallback) {
+      return
+    }
+    /**
+     * if the mode is `show` which is the default, the implementation needs to unsubscribe the target from the observer
+     */
+    if (!isIntersecting) {
+      return
+    }
+
+    unobserve()
+  }
+
+  /**
+   * The observation starts lazily, so it picks up the root and the target as soon
+   * as both are available, and moves to another observer whenever the root changes.
+   */
+  watch([target, root], ([targetElement, rootElement]) => {
+    unobserve()
     if (!targetElement) {
       return
     }
 
-    if (!observer || rootElement !== observedRoot) {
-      observer?.disconnect()
-      observer = createObserver(rootElement ?? null)
-      observedRoot = rootElement
-    }
-
-    observer.observe(targetElement)
+    observedTarget = targetElement
+    observer = getObserver(rootElement ?? null, rootMargin)
+    observer.observe(targetElement, onIntersect)
   })
 
-  onBeforeUnmount(() => observer?.disconnect())
+  onBeforeUnmount(unobserve)
 
   return {
-    isVisible
+    isVisible,
+    unobserve
   }
 }
