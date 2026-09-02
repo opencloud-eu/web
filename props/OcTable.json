@@ -91,6 +91,13 @@
     "type": "boolean"
   },
   {
+    "name": "scrollContainer",
+    "required": false,
+    "description": "The scrollable element the lazy look-ahead is measured against. Falls back\nto the closest scrollable ancestor.",
+    "default": "",
+    "type": "Element"
+  },
+  {
     "name": "paddingX",
     "required": false,
     "description": "The horizontal padding size of the table.",

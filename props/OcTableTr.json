@@ -5,5 +5,12 @@
     "description": "",
     "default": "",
     "type": "{ colspan: number }"
+  },
+  {
+    "name": "scrollContainer",
+    "required": false,
+    "description": "",
+    "default": "",
+    "type": "Element"
   }
 ]
