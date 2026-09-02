@@ -24,6 +24,10 @@ interface MockEditorOptions {
   canRedo?: boolean
   attributes?: Record<string, Record<string, unknown>>
   runResult?: boolean
+  /** Node type name of `state.doc.firstChild`, or undefined for an empty document. */
+  firstChildType?: string
+  /** `nodeSize` of `state.doc.firstChild`. */
+  firstChildSize?: number
 }
 
 export function createMockEditor(options: MockEditorOptions = {}) {
@@ -32,7 +36,9 @@ export function createMockEditor(options: MockEditorOptions = {}) {
     canUndo = false,
     canRedo = false,
     attributes = {},
-    runResult = true
+    runResult = true,
+    firstChildType,
+    firstChildSize = 16
   } = options
 
   const run = vi.fn().mockReturnValue(runResult)
@@ -80,7 +86,10 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'setImage',
       'insertContent',
       'command',
-      'toggleHeaderRow'
+      'toggleHeaderRow',
+      'setFrontmatter',
+      'unsetFrontmatter',
+      'setTextSelection'
     ]
     for (const method of methods) {
       chain[method] = vi.fn().mockReturnValue(chain)
@@ -107,7 +116,10 @@ export function createMockEditor(options: MockEditorOptions = {}) {
         $anchor: { before: () => 0 }
       },
       doc: {
-        nodeAt: (): any => null
+        nodeAt: (): any => null,
+        firstChild: firstChildType
+          ? { type: { name: firstChildType }, nodeSize: firstChildSize }
+          : null
       }
     },
     _chain: chainInstance,

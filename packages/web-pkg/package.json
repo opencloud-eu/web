@@ -99,6 +99,7 @@
     "lodash-es": "^4.17.23",
     "lowlight": "^3.3.0",
     "luxon": "^3.7.2",
+    "marked": "catalog:tiptap",
     "oidc-client-ts": "^3.5.0",
     "p-queue": "^9.1.0",
     "password-sheriff": "^2.0.0",

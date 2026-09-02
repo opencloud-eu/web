@@ -816,6 +816,48 @@ export function useEditorActions(state: TextEditorState) {
     isActive: () => false
   })
 
+  // Frontmatter actions
+  const hasFrontmatter = (editor: Editor) => {
+    return editor.state.doc.firstChild?.type.name === 'frontmatter'
+  }
+
+  const toggleFrontmatter = (editor: Editor, range?: Range) => {
+    // The slash query is not content the user wants to keep, drop it either way.
+    if (range) {
+      editor.chain().focus().deleteRange(range).run()
+    }
+
+    if (!hasFrontmatter(editor)) {
+      editor.chain().focus().setFrontmatter().run()
+      return
+    }
+
+    // Only one block can exist, so there is nothing to add. Take the user to it
+    // instead, landing where another key would go.
+    if (!editor.isActive('frontmatter')) {
+      const endOfMetadata = editor.state.doc.firstChild!.nodeSize - 1
+      editor.chain().focus().setTextSelection(endOfMetadata).run()
+      return
+    }
+
+    // Unwrapping only drops the fences, the metadata stays in the document as
+    // content, so there is nothing to confirm.
+    editor.chain().focus().unsetFrontmatter().run()
+  }
+
+  const frontmatter = (): EditorAction => ({
+    id: 'frontmatter',
+    title: $gettext('Frontmatter'),
+    description: $gettext('Document metadata'),
+    icon: 'file-list-2',
+    iconFillType: 'line',
+    keywords: ['frontmatter', 'metadata', 'yaml'],
+    showInSlashCommands: false,
+    toolbarAction: (editor) => toggleFrontmatter(editor),
+    slashCommandAction: ({ editor, range }) => toggleFrontmatter(editor, range),
+    isActive: (editor) => editor.isActive('frontmatter')
+  })
+
   // Table actions
   const createTable = (): EditorAction => ({
     id: 'table',
@@ -1045,6 +1087,7 @@ export function useEditorActions(state: TextEditorState) {
     imageUpload,
     imageCloud,
     horizontalRule,
+    frontmatter,
     // Table
     createTable,
     addRowBefore,

@@ -96,6 +96,9 @@ catalogs:
     '@tiptap/y-tiptap':
       specifier: ^3.0.9
       version: 3.0.9
+    marked:
+      specifier: ^17.0.1
+      version: 17.0.6
 
 overrides:
   epubjs>@xmldom/xmldom: ^0.9.10
@@ -1086,6 +1089,9 @@ importers:
       luxon:
         specifier: ^3.7.2
         version: 3.7.2
+      marked:
+        specifier: catalog:tiptap
+        version: 17.0.6
       oidc-client-ts:
         specifier: ^3.5.0
         version: 3.5.0
