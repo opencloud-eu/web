@@ -13,8 +13,22 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
+### 📈 Enhancement
+
+- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
+- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
+- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
+- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
+- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
+- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
+
 ### 🐛 Bug Fixes
 
+- fix: table header position overflow [[#3288](https://github.com/opencloud-eu/web/pull/3288)]
 - fix(yjs): report why a handshake was refused and keep editing locally [[#3270](https://github.com/opencloud-eu/web/pull/3270)]
 - fix: safari file list performance [[#3283](https://github.com/opencloud-eu/web/pull/3283)]
 - fix: remove system actions from getAllOpenWithActions [[#3254](https://github.com/opencloud-eu/web/pull/3254)]
@@ -29,18 +43,6 @@
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
-
-### 📈 Enhancement
-
-- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
-- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
-- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
-- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
-- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
-- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
-- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
-- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
-- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### ✅ Tests
 
