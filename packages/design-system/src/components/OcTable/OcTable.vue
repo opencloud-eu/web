@@ -63,6 +63,7 @@
         :dom-selector="domSelector(item) || trIndex"
         :padding-x="paddingX"
         :lazy="lazy"
+        :scroll-container="scrollContainer"
         :drag-drop="dragDrop"
         :is-highlighted="isHighlighted ?? defaultIsHighlighted"
         :is-disabled="isDisabled ?? defaultIsDisabled"
@@ -193,6 +194,11 @@ export interface Props {
    */
   lazy?: boolean
   /**
+   * @docs The scrollable element the lazy look-ahead is measured against. Falls back
+   * to the closest scrollable ancestor.
+   */
+  scrollContainer?: Element
+  /**
    * @docs The horizontal padding size of the table.
    * @default small
    */
@@ -289,6 +295,7 @@ const {
   idKey = 'id',
   itemDomSelector,
   lazy = false,
+  scrollContainer = undefined,
   paddingX = 'small',
   sortBy,
   sortDir,
