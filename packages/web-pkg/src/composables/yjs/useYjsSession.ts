@@ -17,6 +17,19 @@ export const YjsStatus = {
 
 export type YjsStatus = (typeof YjsStatus)[keyof typeof YjsStatus]
 
+/**
+ * Why the Yjs server refused the handshake. Mirrors `DeniedReason` in
+ * `services/yjs/src/server.ts`, keep the two in sync.
+ */
+export const YjsDeniedReason = {
+  TokenInvalid: 'token-invalid',
+  AccessDenied: 'access-denied',
+  MalformedDocument: 'malformed-document',
+  ServerError: 'server-error'
+} as const
+
+export type YjsDeniedReason = (typeof YjsDeniedReason)[keyof typeof YjsDeniedReason]
+
 export interface YjsSessionOptions {
   /** The file the session is bound to. Its id forms the room name, its etag drives staleness detection. */
   resource: MaybeRefOrGetter<Resource>
@@ -723,6 +736,22 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
   type ContentReporter = ReturnType<typeof createContentReporter>
 
+  /** The user-facing side of a refused handshake. */
+  function deniedMessage(reason: string): string {
+    switch (reason) {
+      case YjsDeniedReason.TokenInvalid:
+        return $gettext(
+          'Your session expired and collaborative editing stopped. Reload the page to collaborate again.'
+        )
+      case YjsDeniedReason.AccessDenied:
+        return $gettext('Collaborative editing is not available for this file.')
+      default:
+        return $gettext(
+          'The collaboration server refused the connection. Editing continues without collaboration.'
+        )
+    }
+  }
+
   /** Connects a Hocuspocus provider and arms the connect timeout. */
   function connectRemote(doc: Y.Doc, name: string, serverUrl: string) {
     let connectTimer: number | undefined
@@ -741,11 +770,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       },
       onAuthenticationFailed({ reason }) {
         console.error('[yjs] auth failed:', reason)
-        // Surfaced as an error so the user sees the reason rather than a
-        // silent disconnect.
-        error.value = new Error(reason || $gettext('authentication failed'))
-        isLockedForReload.value = true
         clearConnectTimer()
+        error.value = new Error(deniedMessage(reason))
 
         // Stop retrying: `permissionDeniedHandler` leaves `shouldConnect`
         // true, so the socket layer keeps reconnecting - and a later attempt
@@ -754,10 +780,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         stopProvider(prov)
 
         // Hydrate and release the loading gate, but only for a failed
-        // *opening* connect. A token expiring mid-session leaves a live,
-        // populated document; re-running the hydration checks there could
-        // plant a stale flag with a claim this now read-only client will
-        // never act on.
+        // *opening* connect. Mid-session the document is already live and
+        // populated; re-running the hydration checks there could plant a
+        // stale flag against a room this client has just left.
         if (unref(isReady)) return
         void onProviderSynced(doc, null, prov.awareness!)
       },
