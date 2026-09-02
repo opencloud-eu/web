@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- fix(design-system): useIsVisible observer look-ahead [[#3210](https://github.com/opencloud-eu/web/pull/3210)]
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
