@@ -1,15 +1,19 @@
 <template>
-  <nav id="shares-navigation" class="py-2" :aria-label="$gettext('Shares pages navigation')">
-    <oc-list class="hidden sm:flex">
+  <nav
+    id="shares-navigation"
+    class="mb-2 -mx-4 px-4 border-b"
+    :aria-label="$gettext('Shares pages navigation')"
+  >
+    <oc-list class="hidden sm:flex gap-4">
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
           type="router-link"
-          class="mr-4 py-2 w-full"
-          :class="{ 'border-b border-role-secondary rounded-none': navItem.active }"
+          class="py-2 w-full m-0"
+          :class="{ 'border-b border-role-secondary rounded-none font-bold': navItem.active }"
           appearance="raw"
           :to="navItem.to"
+          no-hover
         >
-          <oc-icon size-class="size-4" :name="navItem.icon" />
           <span v-text="navItem.text" />
         </oc-button>
       </li>
