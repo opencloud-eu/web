@@ -239,7 +239,34 @@ export const Frontmatter = Node.create({
       return stepIntoFrontmatterStart() || stepForwardIntoBody()
     }
 
+    // Match code block behaviour: on the third Enter at the end of the block,
+    // drop the two typed blank lines and move to a regular text block.
+    const exitOnTripleEnter = () => {
+      const { empty, $from } = this.editor.state.selection
+
+      if (!empty || $from.parent.type !== this.type) {
+        return false
+      }
+
+      const isAtEnd = $from.parentOffset === $from.parent.nodeSize - 2
+      const endsWithDoubleNewline = $from.parent.textContent.endsWith('\n\n')
+
+      if (!isAtEnd || !endsWithDoubleNewline) {
+        return false
+      }
+
+      return this.editor
+        .chain()
+        .command(({ tr }) => {
+          tr.delete($from.pos - 2, $from.pos)
+          return true
+        })
+        .exitCode()
+        .run()
+    }
+
     return {
+      Enter: exitOnTripleEnter,
       Backspace: stepBackIntoFrontmatter,
       'Mod-Backspace': stepBackIntoFrontmatter,
       Delete: stepForwardAcrossBoundary,

@@ -56,7 +56,9 @@ describe('FrontmatterComponent', () => {
     const hint = wrapper.find('.sr-only')
     const content = wrapper.find('.text-editor-frontmatter-content')
 
-    expect(hint.text()).toBe('Press Shift+Enter to exit the frontmatter block.')
+    expect(hint.text()).toBe(
+      'Press Shift+Enter or press Enter three times in a row to exit the frontmatter block.'
+    )
     expect(content.attributes('role')).toBe('textbox')
     expect(content.attributes('aria-multiline')).toBe('true')
     expect(content.attributes('aria-describedby')).toBe(hint.attributes('id'))

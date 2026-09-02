@@ -345,6 +345,28 @@ describe('frontmatter', () => {
     })
   })
 
+  describe('triple Enter', () => {
+    it('drops the two typed blank lines and exits the block on the third Enter', () => {
+      const strategy = createStrategy()
+      const editor = createEditor(strategy, '---\ntitle: My note\n---\n\n# Heading')
+      const metadata = editor.state.doc.firstChild!.textContent
+      const endOfFrontmatter = editor.state.doc.firstChild!.nodeSize - 1
+
+      editor.commands.setTextSelection(endOfFrontmatter)
+
+      expect(pressKey(editor, 'Enter')).toBe(true)
+      expect(pressKey(editor, 'Enter')).toBe(true)
+      expect(editor.state.doc.firstChild?.textContent).toBe(`${metadata}\n\n`)
+      expect(editor.state.selection.$from.parent.type.name).toBe('frontmatter')
+
+      expect(pressKey(editor, 'Enter')).toBe(true)
+      expect(editor.state.doc.firstChild?.textContent).toBe(metadata)
+      expect(editor.state.selection.$from.parent.type.name).toBe('paragraph')
+      expect(typesOf(editor)).toEqual(['frontmatter', 'paragraph', 'heading'])
+      editor.destroy()
+    })
+  })
+
   // Source mode replaces the whole document on every keystroke, so a guard that
   // rejects transactions would silently discard everything the user types there.
   describe('document replacement', () => {

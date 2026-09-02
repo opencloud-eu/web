@@ -5,7 +5,11 @@
       {{ $gettext('Frontmatter') }}
     </span>
     <span :id="hintId" class="sr-only">
-      {{ $gettext('Press Shift+Enter to exit the frontmatter block.') }}
+      {{
+        $gettext(
+          'Press Shift+Enter or press Enter three times in a row to exit the frontmatter block.'
+        )
+      }}
     </span>
     <pre
       class="text-editor-frontmatter-content font-mono"
