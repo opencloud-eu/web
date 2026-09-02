@@ -26,9 +26,10 @@ import OcTd from '../OcTableTd/OcTableTd.vue'
 
 export interface Props {
   lazy?: { colspan: number }
+  scrollContainer?: Element
 }
 
-const { lazy } = defineProps<Props>()
+const { lazy, scrollContainer } = defineProps<Props>()
 
 const emit = defineEmits([
   'contextmenu',
@@ -65,6 +66,7 @@ const { isVisible } = lazy
   ? useIsVisible({
       ...lazy,
       target: observerTarget as Ref<HTMLElement>,
+      root: computed(() => scrollContainer),
       onVisibleCallback: () => emit('itemVisible'),
       onHiddenCallback: () => emit('itemHidden')
     })
