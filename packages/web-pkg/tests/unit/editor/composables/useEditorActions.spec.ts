@@ -250,7 +250,7 @@ describe('useEditorActions', () => {
                   )!
                 : name === 'fontSize'
                   ? actions[name]().childActions!.find(({ id }) => id !== 'font-size-default')!
-                : actions[name]().childActions![0]
+                  : actions[name]().childActions![0]
           childAction.toolbarAction!(editor)
           expect(editor._chain[setMethod]).toHaveBeenCalled()
         })

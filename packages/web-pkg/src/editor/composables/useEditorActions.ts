@@ -194,8 +194,8 @@ export function useEditorActions(state: TextEditorState) {
         id: `font-size-${size}`,
         title: size,
         icon: 'font-size-2',
-        toolbarAction: (editor) => editor.chain().focus().setFontSize(size).run(),
-        isActive: (editor) => editor.getAttributes('textStyle').fontSize === size
+        toolbarAction: (editor: Editor) => editor.chain().focus().setFontSize(size).run(),
+        isActive: (editor: Editor) => editor.getAttributes('textStyle').fontSize === size
       }))
     ]
   })

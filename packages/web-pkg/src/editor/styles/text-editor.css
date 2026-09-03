@@ -67,15 +67,6 @@
   margin: 0 0 8px;
 }
 
-.text-editor-content .ProseMirror h1,
-.text-editor-content .ProseMirror h2,
-.text-editor-content .ProseMirror h3,
-.text-editor-content .ProseMirror h4 {
-  margin: 0 0 8px;
-  line-height: 1.25;
-  font-weight: 600;
-}
-
 .text-editor-content .ProseMirror a {
   color: var(--oc-role-primary);
   text-decoration: underline;
@@ -120,7 +111,6 @@
 
 .text-editor-content textarea {
   font-size: 15px;
-  line-height: 1.6;
   zoom: var(--text-editor-zoom-factor);
 }
 
