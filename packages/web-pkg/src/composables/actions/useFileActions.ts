@@ -5,26 +5,16 @@ import {
   Resource,
   SpaceResource
 } from '@opencloud-eu/web-client'
-import { routeToContextQuery } from '../../appDefaults'
+import { routeToContextQuery } from '../appDefaults'
 import { computed, unref } from 'vue'
-import { useRouter } from '../../router'
-import {
-  Action,
-  FileAction,
-  FileActionOptions,
-  useFileActionFallbackToDownload,
-  useWindowOpen
-} from '../../actions'
-
-import {
-  ActionExtension,
-  useAppsStore,
-  useConfigStore,
-  useExtensionRegistry
-} from '../../piniaStores'
-import { ApplicationFileExtension } from '../../../apps'
+import { useRouter } from '../router'
+import { Action, FileAction, FileActionOptions } from './types'
+import { useFileActionFallbackToDownload } from './files'
+import { useWindowOpen } from './useWindowOpen'
+import { ActionExtension, useAppsStore, useConfigStore, useExtensionRegistry } from '../piniaStores'
+import { ApplicationFileExtension } from '../../apps'
 import { storeToRefs } from 'pinia'
-import { useEmbedMode } from '../../embedMode'
+import { useEmbedMode } from '../embedMode'
 import { RouteRecordName } from 'vue-router'
 
 export interface GetFileActionsOptions extends FileActionOptions {}

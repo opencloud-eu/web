@@ -10,7 +10,7 @@ const { getDefaultActionMock, getFolderLinkMock } = vi.hoisted(() => ({
   getFolderLinkMock: vi.fn()
 }))
 
-vi.mock('../../../../src/composables/actions/files/useFileActions', () => ({
+vi.mock('../../../../src/composables/actions/useFileActions', () => ({
   useFileActions: () => ({ getDefaultAction: getDefaultActionMock })
 }))
 vi.mock('../../../../src/composables/folderLink/useFolderLink', () => ({

@@ -9,13 +9,13 @@ import {
   useFileActionsOpenWithApp,
   useIsFilesAppActive,
   useModals
-} from '../../../../../src/composables'
+} from '../../../../src/composables'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { ApplicationFileExtension, ApplicationInformation } from '../../../../../src'
+import { ApplicationFileExtension, ApplicationInformation } from '../../../../src'
 import { LocationQuery } from 'vue-router'
 
 window.open = vi.fn()
-vi.mock('../../../../../src/composables/actions/helpers/useIsFilesAppActive')
+vi.mock('../../../../src/composables/appDefaults/useIsAppActive')
 
 const spaceMock = mock<SpaceResource>({
   id: '1'
