@@ -23,7 +23,8 @@ import {
   isLocationTrashActive,
   useLinkTargetRoute,
   locationPublicUpload,
-  AppLoadingSpinner
+  AppLoadingSpinner,
+  useSpacesStore
 } from '@opencloud-eu/web-pkg'
 import {
   isPublicSpaceResource,
@@ -41,6 +42,7 @@ const isTrashRoute = useActiveLocation(isLocationTrashActive, 'files-trash-gener
 const { item, itemId, space } = useDriveResolver({ driveAliasAndItem })
 const { getInternalSpace } = useGetMatchingSpace()
 const { getLinkTargetRoute } = useLinkTargetRoute()
+const { updateSpaceField } = useSpacesStore()
 
 const loading = ref(true)
 
@@ -121,6 +123,11 @@ onMounted(async () => {
      **/
     if (unref(space).fileId === unref(space).id) {
       const publicSpace = (await getSpaceResource()) as PublicSpaceResource
+      updateSpaceField<PublicSpaceResource>({
+        id: unref(space).id,
+        field: 'publicLinkPermission',
+        value: publicSpace.publicLinkPermission
+      })
 
       // FIXME: check for type when server sends public-link-permission dav property
       if (publicSpace.publicLinkPermission === SharePermissionBit.Create) {
