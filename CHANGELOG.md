@@ -53,6 +53,8 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency vue-router to v5.3.1 [[#3295](https://github.com/opencloud-eu/web/pull/3295)]
+- chore(deps): update dependency prosemirror-transform to v1.12.1 [[#3294](https://github.com/opencloud-eu/web/pull/3294)]
 - chore(deps): update tiptap monorepo to v3.31.0 [[#3277](https://github.com/opencloud-eu/web/pull/3277)]
 - chore(deps): update pnpm to v11.25.0 [[#3276](https://github.com/opencloud-eu/web/pull/3276)]
 - chore(deps): update dependency axios to v1.20.0 [[#3050](https://github.com/opencloud-eu/web/pull/3050)]
