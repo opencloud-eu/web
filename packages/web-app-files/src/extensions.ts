@@ -4,6 +4,7 @@ import {
   FloatingActionButtonExtension,
   isLocationPublicActive,
   isLocationSpacesActive,
+  isLocationTrashActive,
   useCapabilityStore,
   useConfigStore,
   useResourcesStore,
@@ -77,6 +78,10 @@ export const extensions = (appInfo: ApplicationInformation) => {
           unref(createSpaceAction).isVisible()
         ) {
           return false
+        }
+
+        if (isLocationTrashActive(router, 'files-trash-generic')) {
+          return true
         }
 
         // permission checks on the space are preferred over the current folder,
