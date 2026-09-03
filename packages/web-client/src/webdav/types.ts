@@ -47,9 +47,14 @@ export interface WebDAV {
   setFavorite: ReturnType<typeof SetFavoriteFactory>['setFavorite']
   setProperties: ReturnType<typeof SetPropertiesFactory>['setProperties']
 
-  // register prop that will be added to resource.extraProps if available in a response
-  // because of a limitation in our WebDAV library, we cannot differentiate between
-  // the same tag in two different namespaces. Make sure to use unique tag names despite
-  // differing namespaces.
+  /**
+   * Register a prop that is requested on every PROPFIND and, when the response
+   * carries it, lands on `Resource.extraProps` under the name passed here.
+   *
+   * The name brings its own namespace, either in Clark notation
+   * (`{https://app.example/ns}color`) or as `myapp:color`, where the prefix
+   * doubles as the namespace. Properties are matched by namespace and name, so
+   * two apps can use the same name as long as their namespaces differ.
+   */
   registerExtraProp(name: string): void
 }

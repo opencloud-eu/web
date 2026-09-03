@@ -1,39 +1,36 @@
 import { XMLBuilder } from 'fast-xml-parser'
-import { DavNamespaces, DavProperties, DavPropertyValue } from '../constants'
+import { DavProperties, DavPropertyValue } from '../constants'
+import { buildPrefixMap, parsePropName } from './namespaces'
 
 export type DavPropertyRecord = Partial<Record<DavPropertyValue, unknown>> & Record<string, unknown>
 
 /**
  * The `xmlns:*` attributes for a request body: the two well-known namespaces,
- * plus one for every prefix appearing in `extraProps`.
+ * plus one for every namespace used by `extraProps`.
  *
- * An app's own prefix is declared as its own namespace, so `myapp:my-prop`
- * is stored and looked up under `myapp/my-prop`. That keeps prefixes
- * self-describing and lets any app introduce one without touching this package -
- * at the price of the namespace not being a URI, which nothing here needs.
- *
- * `d` and `oc` always keep their real URIs; an extra prop using either prefix
- * cannot override them.
+ * An app brings its own namespace with the property name, either in Clark
+ * notation (`{https://app.example/ns}color`) or in the older `myapp:color`
+ * form, where the prefix doubles as the namespace. Nothing has to be
+ * registered in this package. `d` and `oc` always keep their real URIs; an
+ * extra prop cannot override them.
  */
 const buildNamespaceDeclarations = (extraProps: string[]) => {
-  const declarations: Record<string, string> = Object.fromEntries(
-    Object.entries(DavNamespaces).map(([prefix, uri]) => [`@@xmlns:${prefix}`, uri])
-  )
-  for (const name of extraProps) {
-    const [prefix] = name.split(':')
-    // Unprefixed extra props need no declaration - they land in the default namespace.
-    if (prefix && prefix !== name && !(`@@xmlns:${prefix}` in declarations)) {
-      declarations[`@@xmlns:${prefix}`] = prefix
-    }
-  }
-  return declarations
+  const prefixes = buildPrefixMap(extraProps)
+  return Object.fromEntries(
+    [...prefixes].map(([uri, prefix]) => [`@@xmlns:${prefix}`, uri])
+  ) as Record<string, string>
 }
 
 const getNamespacedDavProps = (obj: DavPropertyRecord, extraProps: string[]) => {
+  const prefixes = buildPrefixMap(extraProps)
   return Object.fromEntries(
     Object.entries(obj).map(([name, value]) => {
       if (extraProps.includes(name)) {
-        return [name, value || '']
+        const { namespace, local } = parsePropName(name)
+        // Unprefixed extra props need no declaration, they land in the
+        // default namespace.
+        const prefix = prefixes.get(namespace)
+        return [prefix ? `${prefix}:${local}` : local, value || '']
       }
 
       const davNamespace = DavProperties.DavNamespace.includes(name as unknown as DavPropertyValue)
