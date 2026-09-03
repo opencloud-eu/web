@@ -70,6 +70,39 @@ describe('parseMultiStatus', () => {
   })
 })
 
+describe('the myapp:color spelling', () => {
+  // The prefix doubles as the namespace here, which is what earlier versions
+  // put on the wire and what the server has stored under `myapp/color`.
+  it('puts the same request on the wire as before', () => {
+    const body = buildPropFindBody([], { extraProps: ['myapp:color'] })
+
+    expect(body).toContain('xmlns:myapp="myapp"')
+    expect(body).toContain('<myapp:color/>')
+  })
+
+  it('still lands on extraProps under the name it was registered with', async () => {
+    const [response] = await parseMultiStatus(multiStatus('<color xmlns="myapp">red</color>'))
+    const resource = buildResource(response, ['myapp:color'])
+
+    expect(resource.extraProps['myapp:color']).toBe('red')
+    // `extraProps` is the stable surface. The parsed props themselves key a
+    // custom prop by its namespace now, they used to hold the bare local name.
+    expect(response.props['{myapp}color']).toBe('red')
+    expect(response.props['color']).toBeUndefined()
+  })
+
+  it('is kept apart from the same name in another namespace', async () => {
+    const [response] = await parseMultiStatus(
+      multiStatus(`<color xmlns="myapp">red</color>
+                   <color xmlns="${REVIEW_NS}">approved</color>`)
+    )
+    const resource = buildResource(response, ['myapp:color', `{${REVIEW_NS}}color`])
+
+    expect(resource.extraProps['myapp:color']).toBe('red')
+    expect(resource.extraProps[`{${REVIEW_NS}}color`]).toBe('approved')
+  })
+})
+
 describe('two apps using one property name', () => {
   const registered = [`{${PROJECT_NS}}color`, `{${REVIEW_NS}}color`]
 
