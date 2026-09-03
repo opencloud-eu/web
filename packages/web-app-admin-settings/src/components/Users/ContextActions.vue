@@ -13,7 +13,7 @@ import {
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { ContextActionMenu } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useActionsShowDetails } from '@opencloud-eu/web-pkg'
+import { useActionsShowDetails } from '../../composables/actions'
 
 export default defineComponent({
   name: 'ContextActions',
