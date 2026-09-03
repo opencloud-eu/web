@@ -228,7 +228,10 @@ describe('useEditorActions', () => {
 
         if (valueIsTitle) {
           it('child isActive reads from editor.getAttributes("textStyle")', () => {
-            const child = actions[name]().childActions![0]
+            const child =
+              name === 'fontSize'
+                ? actions[name]().childActions!.find(({ id }) => id === 'font-size-16px')!
+                : actions[name]().childActions![0]
             const editor = createMockEditor({
               attributes: { textStyle: { [attrKey]: child.title } }
             })
@@ -245,6 +248,8 @@ describe('useEditorActions', () => {
                 ? actions[name]().childActions!.find(
                     ({ id }) => id !== 'background-color-transparent'
                   )!
+                : name === 'fontSize'
+                  ? actions[name]().childActions!.find(({ id }) => id !== 'font-size-default')!
                 : actions[name]().childActions![0]
           childAction.toolbarAction!(editor)
           expect(editor._chain[setMethod]).toHaveBeenCalled()
@@ -287,6 +292,24 @@ describe('useEditorActions', () => {
       expect(
         noneAction!.isActive!(
           createMockEditor({ attributes: { textStyle: { backgroundColor: '#e60000' } } })
+        )
+      ).toBe(false)
+    })
+
+    it('fontSize has a default entry that resets font size', () => {
+      const editor = createMockEditor()
+      const action = actions.fontSize()
+      const defaultAction = action.childActions!.find(({ id }) => id === 'font-size-default')
+
+      expect(defaultAction).toBeDefined()
+      defaultAction!.toolbarAction!(editor)
+      expect(editor._chain.unsetFontSize).toHaveBeenCalled()
+      expect(defaultAction!.isActive!(createMockEditor({ attributes: { textStyle: {} } }))).toBe(
+        true
+      )
+      expect(
+        defaultAction!.isActive!(
+          createMockEditor({ attributes: { textStyle: { fontSize: '16px' } } })
         )
       ).toBe(false)
     })

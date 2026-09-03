@@ -182,13 +182,22 @@ export function useEditorActions(state: TextEditorState) {
     title: $gettext('Font size'),
     icon: 'font-size-2',
     showInSlashCommands: false,
-    childActions: ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'].map((size) => ({
-      id: `font-size-${size}`,
-      title: size,
-      icon: 'font-size-2',
-      toolbarAction: (editor) => editor.chain().focus().setFontSize(size).run(),
-      isActive: (editor) => editor.getAttributes('textStyle').fontSize === size
-    }))
+    childActions: [
+      {
+        id: 'font-size-default',
+        title: $gettext('Default'),
+        icon: 'font-size-2',
+        toolbarAction: (editor) => editor.chain().focus().unsetFontSize().run(),
+        isActive: (editor) => !editor.getAttributes('textStyle').fontSize
+      },
+      ...['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'].map((size) => ({
+        id: `font-size-${size}`,
+        title: size,
+        icon: 'font-size-2',
+        toolbarAction: (editor) => editor.chain().focus().setFontSize(size).run(),
+        isActive: (editor) => editor.getAttributes('textStyle').fontSize === size
+      }))
+    ]
   })
 
   const alignLeft = (): EditorAction => ({
