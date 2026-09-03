@@ -13,7 +13,10 @@
       :class="areFileExtensionsShown ? 'sm:min-w-xs' : null"
       class="py-2 sm:first:pt-0 sm:last:pb-0"
     >
-      <li>
+      <li v-if="!currentFolder" class="flex justify-center items-center my-2">
+        <oc-spinner :aria-label="$gettext('Loading actions')" />
+      </li>
+      <li v-else>
         <oc-button
           id="new-folder-btn"
           class="w-full"

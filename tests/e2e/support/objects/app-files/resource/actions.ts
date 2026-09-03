@@ -704,6 +704,7 @@ const isAppProviderServiceForOfficeSuitesReadyInWebUI = async (page: Page, type:
   let retry = 1
   let isCreateNewOfficeDocumentFileButtonVisible
   while (retry <= 5) {
+    await page.locator(createNewFolderButton).waitFor()
     isCreateNewOfficeDocumentFileButtonVisible = await page
       .locator(util.format(createNewOfficeDocumentFileBUtton, type))
       .isVisible()
