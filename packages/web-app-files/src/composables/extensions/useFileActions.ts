@@ -14,6 +14,7 @@ import {
   useFileActionsDownloadArchive,
   useFileActionsFavorite,
   useFileActionsEnableSync,
+  useFileActionsNavigate,
   useFileActionsMove,
   useFileActionsOpenShortcut,
   useSpaceActionsSetImage,
@@ -47,6 +48,7 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
   const { actions: lockVaultActions } = useFileActionsLockVault()
   const { actions: unlockVaultActions } = useFileActionsUnlockVault()
+  const { actions: navigateActions } = useFileActionsNavigate()
 
   return [
     {
@@ -227,6 +229,15 @@ export const useFileActions = (): ActionExtension[] => {
       action: {
         ...unref(unlockVaultActions)[0],
         category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.navigate',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(navigateActions)[0],
+        category: 'primary'
       }
     }
   ]

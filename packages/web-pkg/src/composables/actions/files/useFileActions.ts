@@ -16,7 +16,6 @@ import {
   useWindowOpen
 } from '../../actions'
 
-import { useFileActionsNavigate } from './index'
 import {
   ActionExtension,
   useAppsStore,
@@ -46,7 +45,6 @@ export const useFileActions = () => {
   const { options } = storeToRefs(configStore)
 
   const { actions: fallbackToDownloadActions } = useFileActionFallbackToDownload()
-  const { actions: navigateActions } = useFileActionsNavigate()
 
   const extensionsContextActions = computed(() => {
     return (
@@ -253,10 +251,11 @@ export const useFileActions = () => {
   const getAllOpenWithActions = (
     options: GetFileActionsOptions & { omitEditorActions?: boolean }
   ) => {
+    // Editor actions rank above the registry actions: an app that claims a
+    // file or folder type is more specific than the generic openers.
     return [
-      ...unref(extensionsContextActions),
       ...(options.omitEditorActions ? [] : unref(editorActions)),
-      ...unref(navigateActions)
+      ...unref(extensionsContextActions)
     ]
       .filter((action: FileAction) => action.isVisible(options))
       .sort((a, b) => Number(b.hasPriority) - Number(a.hasPriority))

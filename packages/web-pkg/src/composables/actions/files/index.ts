@@ -1,7 +1,6 @@
 export * from './useFileActions'
 export * from './useFileActionsDelete'
 export * from './useFileActionsDownloadFile'
-export * from './useFileActionsNavigate'
 export * from './useFileActionsOpenWithDefault'
 export * from './useFileActionsOpenWithApp'
 export * from './useFileActionsRestore'
