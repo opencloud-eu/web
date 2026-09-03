@@ -3,6 +3,7 @@ import { flushPromises } from '@vue/test-utils'
 import { MaybeRefOrGetter, ref, toValue } from 'vue'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { useMotionPhotoPlayback } from '../../../../src/composables/motionPhoto/useMotionPhotoPlayback'
 
 const mp4Body = () => new Blob([new Uint8Array(80)])
@@ -111,7 +112,7 @@ describe('useMotionPhotoPlayback', () => {
     vi.useFakeTimers()
     try {
       const { instance, mocks } = getWrapper()
-      let resolveFetch: (value: unknown) => void
+      let resolveFetch: (value: GetFileContentsResponse) => void
       mocks.$clientService.webdav.getFileContents.mockReturnValue(
         new Promise((resolve) => {
           resolveFetch = resolve
