@@ -54,6 +54,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#3292](https://github.com/opencloud-eu/web/pull/3292)]
+- chore(deps): update dependency filesize to v11.0.23 [[#3306](https://github.com/opencloud-eu/web/pull/3306)]
+- chore(deps): update vitest monorepo to v5 [[#3307](https://github.com/opencloud-eu/web/pull/3307)]
 - fix(deps): update dependency vue-router to v5.3.1 [[#3295](https://github.com/opencloud-eu/web/pull/3295)]
 - chore(deps): update dependency prosemirror-transform to v1.12.1 [[#3294](https://github.com/opencloud-eu/web/pull/3294)]
 - chore(deps): update tiptap monorepo to v3.31.0 [[#3277](https://github.com/opencloud-eu/web/pull/3277)]
