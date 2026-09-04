@@ -14,8 +14,17 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
+### ✅ Tests
+
+- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
+- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
+- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
+- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
+- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
+
 ### 🐛 Bug Fixes
 
+- fix: prevent browser login dialog on upload [[#3308](https://github.com/opencloud-eu/web/pull/3308)]
 - fix: new button flickering during navigation [[#3293](https://github.com/opencloud-eu/web/pull/3293)]
 - fix: table header position overflow [[#3288](https://github.com/opencloud-eu/web/pull/3288)]
 - fix(yjs): report why a handshake was refused and keep editing locally [[#3270](https://github.com/opencloud-eu/web/pull/3270)]
@@ -45,13 +54,6 @@
 - feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
 - Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
 - Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
-
-### ✅ Tests
-
-- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
-- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
-- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
-- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 📦️ Dependencies
 
