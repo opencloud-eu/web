@@ -1,3 +1,4 @@
+export * from './useSpaceActionsCreate'
 export * from './useSpaceActionsDeleteImage'
 export * from './useSpaceActionsDelete'
 export * from './useSpaceActionsDisable'

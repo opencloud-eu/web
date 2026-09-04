@@ -10,6 +10,11 @@ export const floatingActionButtonExtension: ExtensionPoint<FloatingActionButtonE
   extensionType: 'floatingActionButton'
 }
 
+export const spacesCreateExtensionPoint: ExtensionPoint<ActionExtension> = {
+  id: 'app.admin-settings.spaces.create',
+  extensionType: 'action'
+}
+
 export const spacesContextActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   id: 'app.admin-settings.spaces.context-actions',
   extensionType: 'action',
@@ -32,6 +37,7 @@ export const extensionPoints = () => {
   return computed<ExtensionPoint<any>[]>(() => {
     return [
       floatingActionButtonExtension,
+      spacesCreateExtensionPoint,
       spacesContextActionsExtensionPoint,
       spacesSidebarActionsExtensionPoint,
       spacesBatchActionsExtensionPoint

@@ -1,6 +1,7 @@
 import { unref } from 'vue'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { useModals, useSpaceActionsCreate } from '../../../../../src'
+import { useModals } from '@opencloud-eu/web-pkg'
+import { useSpaceActionsCreate } from '../../../../../src/composables/actions'
 
 describe('useSpaceActionsCreateSpace', () => {
   describe('method "isVisible"', () => {
