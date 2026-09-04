@@ -12,17 +12,24 @@
       :aria-current="isActive ? 'true' : 'false'"
       @click="$emit('select')"
     >
-      <img
-        v-if="item && item.resource.thumbnail"
-        :src="item.resource.thumbnail"
-        class="object-cover h-25 rounded-md aspect-video"
-        :alt="item.name"
-        referrerpolicy="no-referrer"
-        decoding="async"
-      />
-      <div v-else class="aspect-video h-25 flex items-center justify-center">
-        <resource-icon class="aspect-video" :resource="iconResource" size-class="size-12" />
-      </div>
+      <motion-photo-overlay
+        class="mx-auto w-fit"
+        :resource="item.resource"
+        badge-class="top-0 right-0 m-1"
+        video-class="rounded-md"
+      >
+        <img
+          v-if="item && item.resource.thumbnail"
+          :src="item.resource.thumbnail"
+          class="object-cover h-25 rounded-md aspect-video"
+          :alt="item.name"
+          referrerpolicy="no-referrer"
+          decoding="async"
+        />
+        <div v-else class="aspect-video h-25 flex items-center justify-center">
+          <resource-icon class="aspect-video" :resource="iconResource" size-class="size-12" />
+        </div>
+      </motion-photo-overlay>
       <span class="w-full">
         <resource-name
           :name="item.resource.name"
@@ -43,7 +50,12 @@
 <script setup lang="ts">
 import { Resource } from '@opencloud-eu/web-client'
 import { MediaFile } from '../helpers/types'
-import { ResourceIcon, ResourceName, useResourcesStore } from '@opencloud-eu/web-pkg'
+import {
+  MotionPhotoOverlay,
+  ResourceIcon,
+  ResourceName,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { computed, ref, useTemplateRef } from 'vue'
 
