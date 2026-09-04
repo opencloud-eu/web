@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- refactor!: move more file actions from web-pkg [[#3296](https://github.com/opencloud-eu/web/pull/3296)]
 - perf!: one shared intersection observer [[#3281](https://github.com/opencloud-eu/web/pull/3281)]
 - fix(design-system): useIsVisible observer look-ahead [[#3210](https://github.com/opencloud-eu/web/pull/3210)]
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
