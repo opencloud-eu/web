@@ -48,6 +48,7 @@ export const useFileActionsOpenShortcut = () => {
       name: 'open-shortcut',
       icon: 'external-link',
       category: 'primary',
+      hasPriority: true,
       handler,
       label: () => {
         return $gettext('Open shortcut')

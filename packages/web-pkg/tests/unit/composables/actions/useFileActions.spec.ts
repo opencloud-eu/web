@@ -1,5 +1,9 @@
 import { mock } from 'vitest-mock-extended'
-import { GetFileActionsOptions, useFileActions } from '../../../../../src/composables/actions'
+import {
+  GetFileActionsOptions,
+  useFileActions,
+  FileAction
+} from '../../../../src/composables/actions'
 import {
   defaultComponentMocks,
   RouteLocation,
@@ -8,10 +12,9 @@ import {
 import { computed } from 'vue'
 import { describe } from 'vitest'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { FileAction } from '../../../../../src'
 
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
-vi.mock('../../../../../src/composables/embedMode', () => ({
+vi.mock('../../../../src/composables/embedMode', () => ({
   useEmbedMode: vi.fn().mockImplementation(() => mockUseEmbedMode())
 }))
 

@@ -162,7 +162,7 @@ import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
 } from '../../composables/keyboardActions'
-import { useSpaceSettingsStore } from '../../composables'
+import { useSpaceSettingsStore } from '../../composables/stores/spaceSettings'
 import { storeToRefs } from 'pinia'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 

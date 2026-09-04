@@ -4,7 +4,7 @@ import { useGettext } from 'vue3-gettext'
 import { useModals } from '../../piniaStores'
 import SaveAsModal from '../../../components/Modals/SaveAsModal.vue'
 import { useFolderLink } from '../../folderLink'
-import { useIsFilesAppActive } from '../helpers'
+import { useIsFilesAppActive } from '../../appDefaults'
 
 export const useFileActionsSaveAs = ({ content }: { content: Ref<unknown> }) => {
   const { $gettext } = useGettext()

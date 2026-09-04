@@ -1,5 +1,5 @@
 import Users from '../../../src/views/Users.vue'
-import { ItemFilter, OptionsConfig, UserAction, useAppDefaults } from '@opencloud-eu/web-pkg'
+import { ItemFilter, OptionsConfig, useAppDefaults } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import {
   defaultComponentMocks,
@@ -10,15 +10,12 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { ClientService, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
-import { useUserActionsCreateUser } from '../../../src/composables/actions/users/useUserActionsCreateUser'
-import { ref } from 'vue'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
   useAppDefaults: vi.fn()
 }))
-vi.mock('../../../src/composables/actions/users/useUserActionsCreateUser')
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock())
 
 const getDefaultUser = (): User => {
@@ -273,7 +270,6 @@ function getMountedWrapper({
   groupFilterQuery = null,
   roleFilterQuery = null,
   options = {},
-  createUserActionEnabled = true,
   users = [],
   selectedUsers = []
 }: {
@@ -283,7 +279,6 @@ function getMountedWrapper({
   groupFilterQuery?: string
   roleFilterQuery?: string
   options?: OptionsConfig
-  createUserActionEnabled?: boolean
   users?: User[]
   selectedUsers?: User[]
 } = {}) {
@@ -291,11 +286,6 @@ function getMountedWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => groupFilterQuery)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => roleFilterQuery)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => displayNameFilterQuery)
-  vi.mocked(useUserActionsCreateUser).mockReturnValue(
-    mock<ReturnType<typeof useUserActionsCreateUser>>({
-      actions: ref([mock<UserAction>({ isVisible: () => createUserActionEnabled })])
-    })
-  )
 
   const mocks = {
     ...defaultComponentMocks(),

@@ -1,8 +1,8 @@
 import { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { RESOURCE_NAME_MAX_BYTES } from '../../../constants'
-import { useResourcesStore } from '../../piniaStores'
-import { getTextByteSize } from '../../../helpers'
+import { RESOURCE_NAME_MAX_BYTES } from '../../constants'
+import { useResourcesStore } from '../piniaStores'
+import { getTextByteSize } from '../../helpers'
 
 export const useIsResourceNameValid = () => {
   const { $gettext } = useGettext()

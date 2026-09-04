@@ -28,7 +28,7 @@ import {
 } from '../../router'
 import { ListPermissionsSpaceRootSelectEnum } from '@opencloud-eu/web-client/graph/generated'
 import PQueue from 'p-queue'
-import { useIsAppActive } from '../actions'
+import { useIsAppActive } from '../appDefaults'
 
 export const useLoadShares = () => {
   const clientService = useClientService()
