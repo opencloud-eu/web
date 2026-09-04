@@ -2,27 +2,35 @@
 
 exports[`ContextMenuQuickAction component > renders component 1`] = `
 "<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1" data-test-context-menu-resource-name="function(...args) {
+		DIRTY_MOCK_STATES.add(namedObject[name]);
+		if (prototypeMock) DIRTY_MOCK_STATES.add(prototypeMock);
 		registerCalls(args, state, prototypeState);
 		registerInvocationOrder(invocationCallCounter++, state, prototypeState);
 		const result = {
 			type: &quot;incomplete&quot;,
-			value: undefined
+			value: void 0
 		};
 		const settledResult = {
 			type: &quot;incomplete&quot;,
-			value: undefined
+			value: void 0
 		};
 		registerResult(result, state, prototypeState);
 		registerSettledResult(settledResult, state, prototypeState);
-		const context = new.target ? undefined : this;
+		const context = new.target ? void 0 : this;
 		const [instanceIndex, instancePrototypeIndex] = registerInstance(context, state, prototypeState);
 		const [contextIndex, contextPrototypeIndex] = registerContext(context, state, prototypeState);
-		const implementation = config.onceMockImplementations.shift() || config.mockImplementation || prototypeConfig?.onceMockImplementations.shift() || prototypeConfig?.mockImplementation || original || function() {};
+		const implementation = config.onceMockImplementations.shift() || config.mockImplementation || prototypeConfig?.onceMockImplementations.shift() || prototypeConfig?.mockImplementation || original || noopImplementation;
 		let returnValue;
 		let thrownValue;
 		let didThrow = false;
 		try {
 			if (new.target) {
+				// the prototype chain is already prepared when the implementation
+				// is registered, but a consumed \`mockImplementationOnce\` can change
+				// which implementation this construction uses
+				if (prototypeMembers.length === 0)
+ // eslint-disable-next-line ts/no-use-before-define
+				reparentMockPrototype(mock, implementation === noopImplementation ? void 0 : implementation);
 				returnValue = Reflect.construct(implementation, args, new.target);
 				// jest calls this before the implementation, but we have to resolve this _after_
 				// because we cannot do it before the \`Reflect.construct\` called the custom implementation.
@@ -32,28 +40,22 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 					const prototypeMock = returnValue[prop];
 					// the method was overridden because of inheritance, ignore it
 					// eslint-disable-next-line ts/no-use-before-define
-					if (prototypeMock !== mock.prototype[prop]) {
-						continue;
-					}
+					if (prototypeMock !== mock.prototype[prop]) continue;
 					const isMock = isMockFunction(prototypeMock);
-					const prototypeState = isMock ? prototypeMock.mock : undefined;
-					const prototypeConfig = isMock ? MOCK_CONFIGS.get(prototypeMock) : undefined;
+					const prototypeState = isMock ? prototypeMock.mock : void 0;
+					const prototypeConfig = isMock ? MOCK_CONFIGS.get(prototypeMock) : void 0;
 					returnValue[prop] = createMockInstance({
-						originalImplementation: keepMembersImplementation ? prototypeConfig?.mockOriginal : undefined,
+						originalImplementation: keepMembersImplementation ? prototypeConfig?.mockOriginal : void 0,
 						prototypeState,
 						prototypeConfig,
 						keepMembersImplementation
 					});
 				}
-			} else {
-				returnValue = implementation.apply(this, args);
-			}
+			} else returnValue = implementation.apply(this, args);
 		} catch (error) {
 			thrownValue = error;
 			didThrow = true;
-			if (error instanceof TypeError &amp;&amp; error.message.includes(&quot;is not a constructor&quot;)) {
-				console.warn(\`[vitest] The \${namedObject[name].getMockName()} mock did not use 'function' or 'class' in its implementation, see https://vitest.dev/api/vi#vi-spyon for examples.\`);
-			}
+			if (error instanceof TypeError &amp;&amp; error.message.includes(&quot;is not a constructor&quot;)) console.warn(\`[vitest] The \${namedObject[name].getMockName()} mock did not use 'function' or 'class' in its implementation, see https://vitest.dev/api/vi#vi-spyon for examples.\`);
 			throw error;
 		} finally {
 			if (didThrow) {
@@ -67,22 +69,17 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 				if (new.target) {
 					state.contexts[contextIndex - 1] = returnValue;
 					state.instances[instanceIndex - 1] = returnValue;
-					if (contextPrototypeIndex != null &amp;&amp; prototypeState) {
-						prototypeState.contexts[contextPrototypeIndex - 1] = returnValue;
-					}
-					if (instancePrototypeIndex != null &amp;&amp; prototypeState) {
-						prototypeState.instances[instancePrototypeIndex - 1] = returnValue;
-					}
+					if (contextPrototypeIndex != null &amp;&amp; prototypeState) prototypeState.contexts[contextPrototypeIndex - 1] = returnValue;
+					if (instancePrototypeIndex != null &amp;&amp; prototypeState) prototypeState.instances[instancePrototypeIndex - 1] = returnValue;
 				}
-				if (returnValue instanceof Promise) {
-					returnValue.then((settledValue) => {
-						settledResult.type = &quot;fulfilled&quot;;
-						settledResult.value = settledValue;
-					}, (rejectedValue) => {
-						settledResult.type = &quot;rejected&quot;;
-						settledResult.value = rejectedValue;
-					});
-				} else {
+				if (returnValue instanceof Promise) returnValue.then((settledValue) => {
+					settledResult.type = &quot;fulfilled&quot;;
+					settledResult.value = settledValue;
+				}, (rejectedValue) => {
+					settledResult.type = &quot;rejected&quot;;
+					settledResult.value = rejectedValue;
+				});
+				else {
 					settledResult.type = &quot;fulfilled&quot;;
 					settledResult.value = returnValue;
 				}
