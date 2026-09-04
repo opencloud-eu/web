@@ -38,6 +38,8 @@ export function useUpload(options: UploadOptions) {
     headers['X-Request-ID'] = uuidV4()
     headers['Accept-Language'] = language.current
     headers['Initiator-ID'] = clientService.initiatorId
+    // tells the server to not send a `Www-Authenticate` header, which would trigger the browser's native login dialog
+    headers['X-Requested-With'] = 'XMLHttpRequest'
     return headers
   }
 
@@ -50,6 +52,7 @@ export function useUpload(options: UploadOptions) {
           req.setHeader('X-Request-ID', headers['X-Request-ID'])
           req.setHeader('Accept-Language', headers['Accept-Language'])
           req.setHeader('Initiator-ID', headers['Initiator-ID'])
+          req.setHeader('X-Requested-With', headers['X-Requested-With'])
           if (file?.isRemote) {
             req.setHeader('x-oc-mtime', ((file?.data as File)?.lastModified / 1000).toFixed(0))
           }
