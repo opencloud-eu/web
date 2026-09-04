@@ -22,7 +22,6 @@ function mentionedLabels(content: string, labels: string[]): Set<string> {
   // longest label first, so that `@Alice Smith` wins over `@Alice`
   const sorted = [...new Set(labels)].sort((a, b) => b.length - a.length)
   const pattern = new RegExp(
-
     `(?:^|[\\s"])@(${sorted.map(escapeRegExp).join('|')})(?![^\\s.,!?;:)}\\]"])`,
     'g'
   )
