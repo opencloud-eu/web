@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue'
+import { ref, unref, type Ref } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
@@ -151,9 +151,9 @@ describe('useMentionUsers', () => {
     it('notifies every unique selected user and clears the list', async () => {
       const { instance, mocks } = getWrapper()
 
-      instance.selectMentionUser('user1')
-      instance.selectMentionUser('user2')
-      instance.selectMentionUser('user1')
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
+      instance.selectMentionUser({ id: 'user2', label: 'User2' })
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
       await instance.notifyMentionedUsers()
 
       // the endpoint takes one recipient, so every mentioned user gets a request
@@ -168,6 +168,63 @@ describe('useMentionUsers', () => {
 
       await instance.notifyMentionedUsers()
       expect(sendActivityNotification(mocks)).toHaveBeenCalledTimes(2)
+    })
+
+    it('does not notify a mention that was removed again before saving', async () => {
+      const { instance, mocks } = getWrapper()
+
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
+      instance.selectMentionUser({ id: 'user2', label: 'User2' })
+      await instance.notifyMentionedUsers('still mentions @User2 but not the other one')
+
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledOnce()
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledWith('user2', expect.anything())
+    })
+
+    it('respects mention boundaries when checking the saved content', async () => {
+      const { instance, mocks } = getWrapper({
+        collaboratorShares: [collaboratorShare('alice-smith', 'Alice Smith')]
+      })
+      await instance.getMentionUsers('')
+
+      instance.selectMentionUser({ id: 'alice', label: 'Alice' })
+      instance.selectMentionUser({ id: 'bob', label: 'Bob' })
+      instance.selectMentionUser({ id: 'carol', label: 'Carol' })
+      // Alice only occurs as part of a longer name, Bob only without a leading blank
+      await instance.notifyMentionedUsers('@Alice Smith wrote, foo@Bob asked, @Carol answered.')
+
+      const recipients = sendActivityNotification(mocks).mock.calls.map(([userID]) => userID)
+      expect(recipients).toEqual(['carol'])
+    })
+
+    it('notifies a user whose label is the prefix of another mention', async () => {
+      const { instance, mocks } = getWrapper()
+
+      instance.selectMentionUser({ id: 'alice', label: 'Alice' })
+      instance.selectMentionUser({ id: 'alice-smith', label: 'Alice Smith' })
+      await instance.notifyMentionedUsers('@Alice and @Alice Smith')
+
+      const recipients = sendActivityNotification(mocks).mock.calls.map(([userID]) => userID)
+      expect(recipients.sort()).toEqual(['alice', 'alice-smith'])
+    })
+
+    it('finds a mention in content that is serialized as JSON', async () => {
+      const { instance, mocks } = getWrapper()
+
+      instance.selectMentionUser({ id: 'alice', label: 'Alice Smith' })
+      await instance.notifyMentionedUsers('{"type":"text","text":"@Alice Smith"}')
+
+      expect(sendActivityNotification(mocks)).toHaveBeenCalledWith('alice', expect.anything())
+    })
+
+    it('does not retry a mention that was removed again before saving', async () => {
+      const { instance, mocks } = getWrapper()
+
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
+      await instance.notifyMentionedUsers('no mention left')
+      await instance.notifyMentionedUsers()
+
+      expect(sendActivityNotification(mocks)).not.toHaveBeenCalled()
     })
 
     it('does not notify without selected users', async () => {
@@ -185,7 +242,7 @@ describe('useMentionUsers', () => {
         .mockRejectedValueOnce(new Error('nope'))
         .mockResolvedValueOnce({} as never)
 
-      instance.selectMentionUser('user1')
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
       await expect(instance.notifyMentionedUsers()).resolves.toBeUndefined()
       await instance.notifyMentionedUsers()
 
@@ -205,8 +262,8 @@ describe('useMentionUsers', () => {
         userID === 'user1' ? Promise.reject(new Error('nope')) : Promise.resolve({} as never)
       )
 
-      instance.selectMentionUser('user1')
-      instance.selectMentionUser('user2')
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
+      instance.selectMentionUser({ id: 'user2', label: 'User2' })
       await instance.notifyMentionedUsers()
       sendActivityNotification(mocks).mockClear()
       await instance.notifyMentionedUsers()
@@ -225,9 +282,9 @@ describe('useMentionUsers', () => {
         }) as never
       )
 
-      instance.selectMentionUser('user1')
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
       const notification = instance.notifyMentionedUsers()
-      instance.selectMentionUser('user2')
+      instance.selectMentionUser({ id: 'user2', label: 'User2' })
       rejectNotification(new Error('nope'))
       await notification
       sendActivityNotification(mocks).mockClear()
@@ -241,11 +298,26 @@ describe('useMentionUsers', () => {
     })
   })
 
+  describe('ownMentionLabel', () => {
+    it('exposes the display name of the current user without loading shares', () => {
+      const { instance, loadSharesTask } = getWrapper({ currentUserDisplayName: 'Alan Turing' })
+
+      expect(unref(instance.ownMentionLabel)).toEqual('Alan Turing')
+      expect(loadSharesTask.perform).not.toHaveBeenCalled()
+    })
+
+    it('falls back to the id when the current user has no display name', () => {
+      const { instance } = getWrapper({ currentUserDisplayName: '' })
+
+      expect(unref(instance.ownMentionLabel)).toEqual('own-id')
+    })
+  })
+
   describe('resetMentionState', () => {
     it('drops pending mentions so they are not notified for another resource', async () => {
       const { instance, mocks } = getWrapper()
 
-      instance.selectMentionUser('user1')
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
       instance.resetMentionState()
       await instance.notifyMentionedUsers()
 
@@ -262,7 +334,7 @@ describe('useMentionUsers', () => {
         }) as never
       )
 
-      instance.selectMentionUser('user1')
+      instance.selectMentionUser({ id: 'user1', label: 'User1' })
       const notification = instance.notifyMentionedUsers()
       instance.resetMentionState()
       rejectNotification(new Error('nope'))
@@ -319,6 +391,7 @@ describe('useMentionUsers', () => {
 function getWrapper({
   collaboratorShares = [],
   currentUserId = 'own-id',
+  currentUserDisplayName = 'Own User',
   deferred = false,
   rejectLoad = false,
   space = ref(mock<SpaceResource>({ id: 'space-id' })),
@@ -327,6 +400,7 @@ function getWrapper({
 }: {
   collaboratorShares?: CollaboratorShare[]
   currentUserId?: string
+  currentUserDisplayName?: string
   deferred?: boolean
   rejectLoad?: boolean
   space?: Ref<SpaceResource>
@@ -391,7 +465,9 @@ function getWrapper({
       provide: mocks,
       pluginOptions: {
         piniaOptions: {
-          userState: { user: mock<User>({ id: currentUserId }) }
+          userState: {
+            user: mock<User>({ id: currentUserId, displayName: currentUserDisplayName })
+          }
         }
       }
     }

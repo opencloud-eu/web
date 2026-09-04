@@ -16,7 +16,8 @@ import {
   TextEditorProvider,
   TextEditorContent,
   TextEditorToolbar,
-  type ContentType
+  type ContentType,
+  type TextEditorMentionsOptions
 } from '@opencloud-eu/web-pkg/editor'
 import { detectContentType } from './yjs'
 
@@ -24,39 +25,51 @@ const { ydoc, awareness, isReadOnly, resource, space, yjsStatus } =
   defineProps<YjsEditorSlotProps>()
 
 const emit = defineEmits<{
-  (e: 'register:onSaveCallback', value: () => Promise<void>): void
+  (e: 'register:onSaveCallback', value: (content: unknown) => Promise<void>): void
 }>()
 
 const { $gettext } = useGettext()
 const authStore = useAuthStore()
 
-const mentionsEnabled = authStore.userContextReady
-
 const contentType = computed<ContentType>(() => {
   return detectContentType(resource)
 })
 
+const isRichText = computed(() => ['markdown', 'tiptap-json'].includes(unref(contentType)))
+
 const placeholder = computed(() => {
-  if (isReadOnly || !['markdown', 'tiptap-json'].includes(unref(contentType))) {
+  if (isReadOnly || !unref(isRichText)) {
     return undefined
   }
   return $gettext('Write or type / for formatting options...')
 })
 
-const { getMentionUsers, notifyMentionedUsers, resetMentionState, selectMentionUser } =
-  useMentionUsers({
+const mentionsEnabled = authStore.userContextReady && unref(isRichText)
+
+let mentions: TextEditorMentionsOptions | undefined
+if (mentionsEnabled) {
+  const {
+    getMentionUsers,
+    notifyMentionedUsers,
+    ownMentionLabel,
+    resetMentionState,
+    selectMentionUser
+  } = useMentionUsers({
     space: toRef(() => space),
     resource: toRef(() => resource)
   })
 
-function selectMention({ id }: { id: string }): void {
-  selectMentionUser(id)
-}
+  watch([() => space.id, () => resource.id], resetMentionState)
 
-watch([() => space.id, () => resource.id], resetMentionState)
+  emit('register:onSaveCallback', (content) =>
+    notifyMentionedUsers(typeof content === 'string' ? content : undefined)
+  )
 
-if (mentionsEnabled) {
-  emit('register:onSaveCallback', notifyMentionedUsers)
+  mentions = {
+    getItems: getMentionUsers,
+    onSelect: selectMentionUser,
+    highlightLabels: [unref(ownMentionLabel)].filter(Boolean)
+  }
 }
 
 const textEditor = useTextEditor({
@@ -67,11 +80,6 @@ const textEditor = useTextEditor({
   ydoc,
   awareness,
   yjsStatus: () => yjsStatus,
-  mentions: mentionsEnabled
-    ? {
-        items: getMentionUsers,
-        onSelect: selectMention
-      }
-    : undefined
+  mentions
 })
 </script>

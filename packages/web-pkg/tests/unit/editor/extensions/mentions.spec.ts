@@ -29,7 +29,7 @@ function createEditor(content: string, options = {}) {
     extensions: [
       StarterKit,
       Mentions.configure({
-        items: vi.fn().mockResolvedValue([]),
+        getItems: vi.fn().mockResolvedValue([]),
         onSelect: vi.fn(),
         ...options
       })
@@ -75,13 +75,13 @@ describe('Mentions', () => {
   })
 
   it('loads matching items for the entered query', async () => {
-    const items = vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice' }])
-    const editor = createEditor('<p></p>', { items })
+    const getItems = vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice' }])
+    const editor = createEditor('<p></p>', { getItems })
 
     editor.commands.insertContent('@ali')
     await flushPromises()
 
-    expect(items).toHaveBeenCalledWith('ali')
+    expect(getItems).toHaveBeenCalledWith('ali')
     editor.destroy()
   })
 
@@ -89,7 +89,7 @@ describe('Mentions', () => {
     const selected = { id: 'alice', label: 'Alice Smith' }
     const onSelect = vi.fn()
     const editor = createEditor('<p></p>', {
-      items: vi.fn().mockResolvedValue([selected]),
+      getItems: vi.fn().mockResolvedValue([selected]),
       onSelect
     })
     editor.commands.insertContent('@a')
@@ -104,7 +104,7 @@ describe('Mentions', () => {
 
   it('highlights the inserted mention but not the trailing blank', async () => {
     const selected = { id: 'alice', label: 'Alice Smith' }
-    const editor = createEditor('<p></p>', { items: vi.fn().mockResolvedValue([selected]) })
+    const editor = createEditor('<p></p>', { getItems: vi.fn().mockResolvedValue([selected]) })
     editor.commands.insertContent('@a')
     await flushPromises()
 
@@ -120,7 +120,7 @@ describe('Mentions', () => {
 
   it('highlights the mentions of the loaded content', async () => {
     const editor = createEditor('<p>Hello @Alice Smith, foo@Alice Smith</p>', {
-      items: vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice Smith' }])
+      highlightLabels: ['Alice Smith']
     })
 
     await flushPromises()
@@ -132,10 +132,7 @@ describe('Mentions', () => {
 
   it('highlights the mentions of replaced content', async () => {
     const editor = createEditor('<p>@Alice Smith </p>', {
-      items: vi.fn().mockResolvedValue([
-        { id: 'alice', label: 'Alice Smith' },
-        { id: 'bob', label: 'Bob Jones' }
-      ])
+      highlightLabels: ['Alice Smith', 'Bob Jones']
     })
     await flushPromises()
 
@@ -148,8 +145,8 @@ describe('Mentions', () => {
 
   it('highlights a mention of a user who was not loaded yet', async () => {
     const selected = { id: 'bob', label: 'Bob Jones' }
-    const items = vi.fn().mockResolvedValueOnce([]).mockResolvedValue([selected])
-    const editor = createEditor('<p></p>', { items })
+    const getItems = vi.fn().mockResolvedValueOnce([]).mockResolvedValue([selected])
+    const editor = createEditor('<p></p>', { getItems })
     await flushPromises()
 
     editor.commands.insertContent('@b')
@@ -160,9 +157,56 @@ describe('Mentions', () => {
     editor.destroy()
   })
 
+  it('does not load any users while no mention is being typed', async () => {
+    const getItems = vi.fn().mockResolvedValue([])
+    const editor = createEditor('<p>Hello @Alice Smith</p>', { getItems })
+
+    await flushPromises()
+
+    expect(getItems).not.toHaveBeenCalled()
+    editor.destroy()
+  })
+
+  it('highlights the mentions already in the content once a mention is typed', async () => {
+    const getItems = vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice Smith' }])
+    const editor = createEditor('<p>Hello @Alice Smith</p>', { getItems })
+    await flushPromises()
+    expect(mentionHighlights(editor)).toEqual([])
+
+    editor.commands.insertContent(' @a')
+    await flushPromises()
+
+    expect(mentionHighlights(editor)).toEqual(['@Alice Smith'])
+    editor.destroy()
+  })
+
+  it('does not suggest mentions inside a code block', async () => {
+    const getItems = vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice Smith' }])
+    const editor = createEditor('<pre><code></code></pre>', { getItems })
+
+    editor.commands.insertContent('@ali')
+    await flushPromises()
+
+    expect(getItems).not.toHaveBeenCalled()
+    expect(suggestionIsActive(editor)).toBe(false)
+    editor.destroy()
+  })
+
+  it('does not suggest mentions inside inline code', async () => {
+    const getItems = vi.fn().mockResolvedValue([{ id: 'alice', label: 'Alice Smith' }])
+    const editor = createEditor('<p></p>', { getItems })
+
+    editor.commands.setMark('code')
+    editor.commands.insertContent('@ali')
+    await flushPromises()
+
+    expect(getItems).not.toHaveBeenCalled()
+    editor.destroy()
+  })
+
   it('restores a mention highlight after undo and redo', async () => {
     const selected = { id: 'alice', label: 'Alice Smith' }
-    const editor = createEditor('<p></p>', { items: vi.fn().mockResolvedValue([selected]) })
+    const editor = createEditor('<p></p>', { getItems: vi.fn().mockResolvedValue([selected]) })
     editor.commands.insertContent('@a')
     await flushPromises()
 

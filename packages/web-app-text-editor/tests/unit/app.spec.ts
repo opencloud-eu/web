@@ -1,6 +1,6 @@
 import { PartialComponentProps, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, shallowRef, toRaw, toValue } from 'vue'
+import { computed, defineComponent, shallowRef, toRaw, toValue } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Editor } from '@tiptap/vue-3'
@@ -46,6 +46,7 @@ beforeEach(() => {
   vi.mocked(useMentionUsers).mockReturnValue({
     getMentionUsers,
     notifyMentionedUsers,
+    ownMentionLabel: computed(() => 'Own User'),
     resetMentionState,
     selectMentionUser
   })
@@ -121,34 +122,67 @@ describe('Text editor app', () => {
   it('provides mention users to the editor and remembers a selection', async () => {
     const mentionUsers = [{ id: 'alice', label: 'Alice' }]
     getMentionUsers.mockResolvedValue(mentionUsers)
-    getWrapper()
+    getWrapper({ resource: markdownResource() })
 
-    await expect(lastOptions().mentions?.items('ali')).resolves.toEqual(mentionUsers)
+    await expect(lastOptions().mentions?.getItems('ali')).resolves.toEqual(mentionUsers)
     lastOptions().mentions?.onSelect(mentionUsers[0])
 
     expect(getMentionUsers).toHaveBeenCalledWith('ali')
-    expect(selectMentionUser).toHaveBeenCalledWith('alice')
+    expect(selectMentionUser).toHaveBeenCalledWith(mentionUsers[0])
   })
 
-  it('registers mention notifications as a save callback', async () => {
-    const { wrapper } = getWrapper()
-    const [[saveCallback]] = wrapper.emitted('register:onSaveCallback') as [[() => Promise<void>]]
+  it('highlights the own name without loading any users', () => {
+    getWrapper({ resource: markdownResource() })
 
-    await saveCallback()
+    expect(lastOptions().mentions?.highlightLabels).toEqual(['Own User'])
+    expect(getMentionUsers).not.toHaveBeenCalled()
+  })
 
-    expect(notifyMentionedUsers).toHaveBeenCalledOnce()
+  it('notifies the mentions of the content that was persisted', async () => {
+    const { wrapper } = getWrapper({ resource: markdownResource() })
+    const [[saveCallback]] = wrapper.emitted('register:onSaveCallback') as [
+      [(content: unknown) => Promise<void>]
+    ]
+
+    await saveCallback('hello @Alice')
+
+    expect(notifyMentionedUsers).toHaveBeenCalledWith('hello @Alice')
+  })
+
+  it('notifies nothing verifiable when the persisted content is not text', async () => {
+    const { wrapper } = getWrapper({ resource: markdownResource() })
+    const [[saveCallback]] = wrapper.emitted('register:onSaveCallback') as [
+      [(content: unknown) => Promise<void>]
+    ]
+
+    await saveCallback(new ArrayBuffer(8))
+
+    expect(notifyMentionedUsers).toHaveBeenCalledWith(undefined)
+  })
+
+  it('disables mentions for content that is not rich text', () => {
+    const { wrapper } = getWrapper({
+      resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' })
+    })
+
+    expect(lastOptions().mentions).toBeUndefined()
+    expect(wrapper.emitted('register:onSaveCallback')).toBeUndefined()
   })
 
   it('disables mentions without a user context, e.g. on public links', () => {
     vi.mocked(useAuthStore).mockReturnValue(
       mock<ReturnType<typeof useAuthStore>>({ userContextReady: false })
     )
-    const { wrapper } = getWrapper()
+    const { wrapper } = getWrapper({ resource: markdownResource() })
 
     expect(lastOptions().mentions).toBeUndefined()
     expect(wrapper.emitted('register:onSaveCallback')).toBeUndefined()
   })
 })
+
+function markdownResource() {
+  return mock<Resource>({ extension: 'md', mimeType: 'text/markdown' })
+}
 
 function getWrapper(props: PartialComponentProps<typeof App> = {}) {
   const ydoc = (props.ydoc as Y.Doc) ?? new Y.Doc()

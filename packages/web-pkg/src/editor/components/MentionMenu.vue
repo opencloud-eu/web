@@ -127,7 +127,7 @@ onMounted(async () => {
 defineExpose({ onUpdate, onKeyDown })
 </script>
 
-<style>
+<style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 
 .text-editor-mention-menu {

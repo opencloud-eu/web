@@ -188,7 +188,7 @@ function setup({
     currentContent: () => slotProps?.currentContent,
     yjsStatus: () => slotProps?.yjsStatus,
     statusRef,
-    registerSaveCallback(callback: () => void | Promise<void>) {
+    registerSaveCallback(callback: (content: unknown) => void | Promise<void>) {
       slotProps['onRegister:onSaveCallback'](callback)
     },
     async edit(content: string) {
@@ -247,6 +247,33 @@ describe('AppWrapper — save callback', () => {
     expect(callback).toHaveBeenCalledOnce()
   })
 
+  it('hands the persisted content to the callback, not content edited while saving', async () => {
+    const callback = vi.fn()
+    let resolvePut!: (response: unknown) => void
+    const s = setup({
+      yjsEnabled: false,
+      putFileContents: vi.fn().mockReturnValue(
+        new Promise((resolve) => {
+          resolvePut = resolve
+        })
+      )
+    })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('saved content')
+    s.registerSaveCallback(callback)
+
+    const saving = s.pressCtrlS()
+    // an edit lands while the PUT is still in flight - it is not on disk yet
+    await s.edit('content added while saving')
+    resolvePut({ etag: 'new-etag' })
+    await saving
+    await flushPromises()
+
+    expect(callback).toHaveBeenCalledWith('saved content')
+  })
+
   it('does not run the registered callback when saving failed', async () => {
     const callback = vi.fn()
     const s = setup({
@@ -262,6 +289,21 @@ describe('AppWrapper — save callback', () => {
     await s.pressCtrlS()
 
     expect(callback).not.toHaveBeenCalled()
+  })
+
+  it('runs the registered callback when a peer saved our edits', async () => {
+    const callback = vi.fn()
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    s.registerSaveCallback(callback)
+
+    s.session().onServerContentChange('content a peer saved')
+    await flushPromises()
+
+    expect(callback).toHaveBeenCalledWith('content a peer saved')
   })
 
   it('logs an error when the registered save callback fails', async () => {

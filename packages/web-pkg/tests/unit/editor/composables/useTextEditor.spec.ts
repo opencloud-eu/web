@@ -123,7 +123,7 @@ describe('useTextEditor', () => {
     it('registers the mentions extension when mention options are provided', () => {
       const { result } = createEditor({
         mentions: {
-          items: vi.fn().mockResolvedValue([]),
+          getItems: vi.fn().mockResolvedValue([]),
           onSelect: vi.fn()
         }
       })

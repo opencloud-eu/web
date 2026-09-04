@@ -1,7 +1,7 @@
 import { Extension as TipTapExtension } from '@tiptap/core'
 import type { Node } from '@tiptap/pm/model'
 import { Plugin, PluginKey } from '@tiptap/pm/state'
-import { Decoration, DecorationSet } from '@tiptap/pm/view'
+import { Decoration, DecorationSet, type EditorView } from '@tiptap/pm/view'
 import { escapeRegExp } from 'lodash-es'
 import Suggestion, { type SuggestionKeyDownProps, type SuggestionProps } from '@tiptap/suggestion'
 import { VueRenderer } from '@tiptap/vue-3'
@@ -56,19 +56,32 @@ function mentionDecorations(doc: Node, labels: string[]): DecorationSet {
   return DecorationSet.create(doc, decorations)
 }
 
-// Mentions remain plain text when serialized. Rebuild their decorations from the users that can
-// be mentioned, so highlights also survive content reloads and undo/redo.
-function createMentionHighlightPlugin(items: TextEditorMentionsOptions['items']) {
+// Mentions remain plain text when serialized. Rebuild their decorations from the known labels, so
+// highlights also survive content reloads and undo/redo. Loading every collaborator up front just
+// to highlight would cost a share request per opened document, so the labels start with the ones
+// the caller already knows and grow as mentions are typed or picked.
+function createMentionHighlightPlugin(initialLabels: string[]) {
+  let view: EditorView | null = null
   // longest label first, so that `@Alice Smith` wins over `@Alice`
   let labels: string[] = []
   function setLabels(nextLabels: string[]): void {
     labels = [...new Set(nextLabels)].sort((a, b) => b.length - a.length)
   }
+  setLabels(initialLabels)
+
+  function addLabels(nextLabels: string[]): void {
+    const before = labels.length
+    setLabels([...labels, ...nextLabels])
+    if (labels.length === before || !view) {
+      return
+    }
+    view.dispatch(view.state.tr.setMeta(MentionHighlightPluginKey, true))
+  }
 
   const plugin = new Plugin<DecorationSet>({
     key: MentionHighlightPluginKey,
     state: {
-      init: () => DecorationSet.empty,
+      init: (_config, state) => mentionDecorations(state.doc, labels),
       apply: (transaction, decorations) => {
         if (!transaction.docChanged && !transaction.getMeta(MentionHighlightPluginKey)) {
           return decorations
@@ -80,29 +93,18 @@ function createMentionHighlightPlugin(items: TextEditorMentionsOptions['items'])
     props: {
       decorations: (state) => MentionHighlightPluginKey.getState(state)
     },
-    view: (view) => {
-      let destroyed = false
-
-      Promise.resolve(items(''))
-        .then((mentionItems) => {
-          if (destroyed) {
-            return
-          }
-
-          setLabels([...labels, ...mentionItems.map(({ label }) => label)])
-          view.dispatch(view.state.tr.setMeta(MentionHighlightPluginKey, true))
-        })
-        .catch((error) => console.error('Error loading users for mention highlights', error))
+    view: (editorView) => {
+      view = editorView
 
       return {
         destroy: () => {
-          destroyed = true
+          view = null
         }
       }
     }
   })
 
-  return { plugin, addLabel: (label: string) => setLabels([...labels, label]) }
+  return { plugin, addLabels }
 }
 
 export const Mentions = TipTapExtension.create<TextEditorMentionsOptions>({
@@ -110,14 +112,15 @@ export const Mentions = TipTapExtension.create<TextEditorMentionsOptions>({
 
   addOptions() {
     return {
-      items: () => [],
-      onSelect: () => undefined
+      getItems: () => [],
+      onSelect: () => undefined,
+      highlightLabels: []
     }
   },
 
   addProseMirrorPlugins() {
-    const { plugin: mentionHighlightPlugin, addLabel } = createMentionHighlightPlugin(
-      this.options.items
+    const { plugin: mentionHighlightPlugin, addLabels } = createMentionHighlightPlugin(
+      this.options.highlightLabels ?? []
     )
 
     return [
@@ -133,9 +136,22 @@ export const Mentions = TipTapExtension.create<TextEditorMentionsOptions>({
           transaction.selectionSet ||
           MentionSuggestionPluginKey.getState(editor.state)?.active === true,
         shouldResetDismissed: ({ transaction }) => transaction.selectionSet,
-        items: ({ query }) => this.options.items(query),
+        // mentions are meaningless in code, where an `@` is just an `@`
+        allow: ({ state, range }) => {
+          if (state.doc.resolve(range.from).parent.type.spec.code) {
+            return false
+          }
+          const codeMark = state.schema.marks.code
+          return !codeMark || !state.doc.rangeHasMark(range.from, range.to, codeMark)
+        },
+        items: async ({ query }) => {
+          const mentionItems = await this.options.getItems(query)
+          // the users are loaded anyway now, so highlight the mentions already in the document
+          addLabels(mentionItems.map(({ label }) => label))
+          return mentionItems
+        },
         command: ({ editor, range, props }) => {
-          addLabel(props.label)
+          addLabels([props.label])
           const inserted = editor
             .chain()
             .focus()

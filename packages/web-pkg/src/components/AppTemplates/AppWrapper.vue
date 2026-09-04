@@ -164,7 +164,7 @@ const currentContent = ref<unknown>()
 const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
 let appOnDeleteResourceCallback: (() => void) | null = null
-let appOnSaveCallback: (() => void | Promise<void>) | null = null
+let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
 const { registerExtensions, unregisterExtensions, requestExtensions } = extensionRegistry
@@ -260,6 +260,7 @@ const {
   getFileContents,
   putFileContents,
   applySavedResource,
+  runSaveCallback,
   onConflict: showExternalUpdateConflict
 })
 
@@ -609,17 +610,21 @@ const saveFileTask = useTask(function* () {
   }
 }).drop()
 
+async function runSaveCallback(content: unknown): Promise<void> {
+  try {
+    await appOnSaveCallback?.(content)
+  } catch (e) {
+    console.error('Error running the app save callback', e)
+  }
+}
+
 const save = async () => {
   const saved = await saveFileTask.perform()
   if (!saved) {
     return
   }
 
-  try {
-    await appOnSaveCallback?.()
-  } catch (e) {
-    console.error('Error running the app save callback', e)
-  }
+  await runSaveCallback(unref(serverContent))
 }
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
@@ -888,7 +893,7 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
     appOnDeleteResourceCallback = value
   },
 
-  'onRegister:onSaveCallback': (value: () => void | Promise<void>) => {
+  'onRegister:onSaveCallback': (value: (content: unknown) => void | Promise<void>) => {
     appOnSaveCallback = value
   },
 

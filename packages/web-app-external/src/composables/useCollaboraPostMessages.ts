@@ -43,6 +43,8 @@ export function useCollaboraPostMessages({
     selectMentionUser: handleMentionSelected
   } = useMentionUsers({ space, resource })
 
+  const mentionLabels = new Map<string, string>()
+
   function postMessageToCollabora(messageId: string, values?: Record<string, unknown>): void {
     const iframe = unref(appIframeRef)
     if (!iframe) {
@@ -232,12 +234,18 @@ export function useCollaboraPostMessages({
       return
     }
     if (message.Values?.type === 'selected' && typeof message.Values.username === 'string') {
-      handleMentionSelected(message.Values.username)
+      const id = message.Values.username
+      handleMentionSelected({ id, label: mentionLabels.get(id) ?? id })
     }
   }
 
   async function handleMentionAutocomplete(text: string): Promise<void> {
-    const list = (await getMentionUsers(text)).map(({ id, label }) => ({
+    const mentionUsers = await getMentionUsers(text)
+    for (const { id, label } of mentionUsers) {
+      mentionLabels.set(id, label)
+    }
+
+    const list = mentionUsers.map(({ id, label }) => ({
       username: id,
       // Collabora expects a URL for the profile, which we don't have
       // hence use the URL for the current document

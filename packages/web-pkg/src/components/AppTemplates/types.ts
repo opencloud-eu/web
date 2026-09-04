@@ -79,7 +79,7 @@ export interface AppWrapperSlotHandlers {
   'onUpdate:resource': (value: Resource) => void
   'onUpdate:currentContent': (value: unknown) => void
   'onRegister:onDeleteResourceCallback': (value: () => void) => void
-  'onRegister:onSaveCallback': (value: () => void | Promise<void>) => void
+  'onRegister:onSaveCallback': (value: (content: unknown) => void | Promise<void>) => void
   'onDelete:resource': () => void
 }
 

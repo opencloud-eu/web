@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue'
+import { computed, ref, type Ref } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { flushPromises } from '@vue/test-utils'
 import {
@@ -30,17 +30,13 @@ const getParsedPostMessageCalls = (postMessage: ReturnType<typeof vi.fn>) =>
   )
 
 describe('useCollaboraPostMessages', () => {
-  let mockMentionUsers: {
-    getMentionUsers: Mock
-    notifyMentionedUsers: Mock
-    resetMentionState: Mock
-    selectMentionUser: Mock
-  }
+  let mockMentionUsers: ReturnType<typeof useMentionUsers>
 
   beforeEach(() => {
     mockMentionUsers = {
       getMentionUsers: vi.fn().mockResolvedValue([]),
       notifyMentionedUsers: vi.fn().mockResolvedValue(undefined),
+      ownMentionLabel: computed(() => 'Own User'),
       resetMentionState: vi.fn(),
       selectMentionUser: vi.fn()
     }
@@ -351,7 +347,9 @@ describe('useCollaboraPostMessages', () => {
 
       it('posts Action_Mention with the mention users', async () => {
         const postMessage = vi.fn()
-        mockMentionUsers.getMentionUsers.mockResolvedValue([{ id: 'user1', label: 'Alice Smith' }])
+        vi.mocked(mockMentionUsers.getMentionUsers).mockResolvedValue([
+          { id: 'user1', label: 'Alice Smith' }
+        ])
 
         const { instance } = getWrapper({ appIframeRef: ref(createMockIframe(postMessage)) })
 
@@ -382,7 +380,35 @@ describe('useCollaboraPostMessages', () => {
           })
         )
 
-        expect(mockMentionUsers.selectMentionUser).toHaveBeenCalledWith('user1')
+        expect(mockMentionUsers.selectMentionUser).toHaveBeenCalledWith({
+          id: 'user1',
+          label: 'user1'
+        })
+      })
+
+      it('remembers the label the autocomplete list was built with', async () => {
+        vi.mocked(mockMentionUsers.getMentionUsers).mockResolvedValue([
+          { id: 'user1', label: 'Alice Smith' }
+        ])
+        const { instance } = getWrapper({ appIframeRef: ref(createMockIframe(vi.fn())) })
+
+        await instance.handlePostMessagesCollabora(
+          createMessageEvent({
+            MessageId: 'UI_Mention',
+            Values: { type: 'autocomplete', text: 'a' }
+          })
+        )
+        await instance.handlePostMessagesCollabora(
+          createMessageEvent({
+            MessageId: 'UI_Mention',
+            Values: { type: 'selected', username: 'user1' }
+          })
+        )
+
+        expect(mockMentionUsers.selectMentionUser).toHaveBeenCalledWith({
+          id: 'user1',
+          label: 'Alice Smith'
+        })
       })
 
       it('ignores a selection without a username', async () => {
