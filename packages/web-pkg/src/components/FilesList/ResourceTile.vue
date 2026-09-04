@@ -257,5 +257,9 @@ if (!lazy) {
   .oc-tile-card-lazy-shimmer::after {
     background-image: linear-gradient(90deg, #4c5f7900 0, #4c5f7933 20%, #4c5f7980 60%, #4c5f7900);
   }
+
+  .oc-tile-card-lazy-shimmer {
+    min-height: calc(var(--oc-size-tiles-actual) * 0.5625 + 44px);
+  }
 }
 </style>
