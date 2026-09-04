@@ -137,7 +137,7 @@ import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
 } from '../../composables/keyboardActions'
-import { useGroupSettingsStore } from '../../composables'
+import { useGroupSettingsStore } from '../../composables/stores/groupSettings'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'

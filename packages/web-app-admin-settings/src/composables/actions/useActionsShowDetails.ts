@@ -1,7 +1,6 @@
+import { Action, useSideBar } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useSideBar } from '../piniaStores'
-import { Action } from './types'
 
 export const useActionsShowDetails = () => {
   const { $gettext } = useGettext()

@@ -1,19 +1,20 @@
-import { createFileRouteOptions, isSameResource } from '../../../helpers'
+import merge from 'lodash-es/merge'
+import { computed, unref } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import { storeToRefs } from 'pinia'
+import { isProjectSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
 import {
+  createFileRouteOptions,
+  isSameResource,
   createLocationPublic,
   createLocationSpaces,
   createLocationTrash,
   isLocationPublicActive,
-  isLocationTrashActive
-} from '../../../router'
-import merge from 'lodash-es/merge'
-import { useRouter } from '../../router'
-import { computed, unref } from 'vue'
-import { useGettext } from 'vue3-gettext'
-import { FileAction } from '../types'
-import { useResourcesStore } from '../../piniaStores'
-import { storeToRefs } from 'pinia'
-import { isProjectSpaceResource, isTrashResource } from '@opencloud-eu/web-client'
+  isLocationTrashActive,
+  useRouter,
+  FileAction,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsNavigate = () => {
   const router = useRouter()

@@ -5,10 +5,10 @@
 </template>
 
 <script lang="ts">
-import { useActionsShowDetails } from '@opencloud-eu/web-pkg'
 import { computed, defineComponent, PropType, unref } from 'vue'
 import { ContextActionMenu } from '@opencloud-eu/web-pkg'
 import { GroupActionOptions } from '@opencloud-eu/web-pkg'
+import { useActionsShowDetails } from '../../composables/actions'
 import { useGroupActionsEdit, useGroupActionsDelete } from '../../composables/actions/groups'
 
 export default defineComponent({

@@ -65,7 +65,7 @@
 <script setup lang="ts">
 import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useIsResourceNameValid } from '../../composables/actions'
+import { useIsResourceNameValid } from '../../composables/resources'
 import type { VaultCreation, VaultFinalize, Modal } from '../../composables/piniaStores'
 
 const {

@@ -1,4 +1,4 @@
-import { FileAction } from '../types'
+import { FileAction } from './types'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useFileActions } from './useFileActions'

@@ -1,8 +1,4 @@
-import {
-  RESOURCE_NAME_MAX_BYTES,
-  useIsResourceNameValid,
-  useResourcesStore
-} from '../../../../../src'
+import { RESOURCE_NAME_MAX_BYTES, useIsResourceNameValid, useResourcesStore } from '../../../../src'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
