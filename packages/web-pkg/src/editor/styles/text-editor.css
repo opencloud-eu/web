@@ -23,8 +23,9 @@
   border: none;
   margin: 0 auto;
   padding: 0;
-  font-size: calc(15px * var(--text-editor-zoom-factor));
+  font-size: 15px;
   line-height: 1.6;
+  zoom: var(--text-editor-zoom-factor);
 }
 
 .text-editor-content .ProseMirror:focus,
@@ -64,31 +65,6 @@
 
 .text-editor-content .ProseMirror p {
   margin: 0 0 8px;
-}
-
-.text-editor-content .ProseMirror h1,
-.text-editor-content .ProseMirror h2,
-.text-editor-content .ProseMirror h3,
-.text-editor-content .ProseMirror h4 {
-  margin: 0 0 8px;
-  line-height: 1.25;
-  font-weight: 600;
-}
-
-.text-editor-content .ProseMirror h1 {
-  font-size: calc(30px * var(--text-editor-zoom-factor));
-}
-
-.text-editor-content .ProseMirror h2 {
-  font-size: calc(24px * var(--text-editor-zoom-factor));
-}
-
-.text-editor-content .ProseMirror h3 {
-  font-size: calc(20px * var(--text-editor-zoom-factor));
-}
-
-.text-editor-content .ProseMirror h4 {
-  font-size: calc(17px * var(--text-editor-zoom-factor));
 }
 
 .text-editor-content .ProseMirror a {
@@ -134,13 +110,13 @@
 }
 
 .text-editor-content textarea {
-  font-size: calc(15px * var(--text-editor-zoom-factor));
-  line-height: 1.6;
+  font-size: 15px;
+  zoom: var(--text-editor-zoom-factor);
 }
 
 /* Codeblock styles */
 .text-editor-content .ProseMirror pre {
-  font-size: calc(14px * var(--text-editor-zoom-factor));
+  font-size: 14px;
   background: var(--oc-role-surface-container-high);
   padding: 8px 12px;
   border-radius: 6px;
@@ -150,7 +126,7 @@
 
 /* Inline code styles */
 .text-editor-content .ProseMirror :not(pre) > code {
-  font-size: calc(13px * var(--text-editor-zoom-factor));
+  font-size: 13px;
   padding: 2px 4px;
   border-radius: 6px;
   background: var(--oc-role-surface-container-high);
@@ -169,7 +145,7 @@
   border-radius: 6px;
   background: var(--oc-role-surface-container-high);
   color: var(--oc-role-on-surface-variant);
-  font-size: calc(13px * var(--text-editor-zoom-factor));
+  font-size: 13px;
 }
 
 .text-editor-content .ProseMirror .text-editor-frontmatter pre {

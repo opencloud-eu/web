@@ -72,6 +72,7 @@ export function createMockEditor(options: MockEditorOptions = {}) {
       'insertTable',
       'setFontFamily',
       'setFontSize',
+      'unsetFontSize',
       'setLineHeight',
       'setColor',
       'unsetColor',
