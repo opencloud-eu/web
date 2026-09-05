@@ -164,9 +164,15 @@ describe('FileSideBar', () => {
       ).toHaveBeenCalledTimes(2)
     })
 
-    it('should load ancestor meta data to get indirect shares when on search page', async () => {
+    it.each([
+      [
+        'on the search page',
+        { currentRouteName: 'files-common-search', currentFolder: mock<Resource>() }
+      ],
+      ['when the current folder is not loaded', { currentFolder: null }]
+    ])('loads ancestor meta data for indirect shares %s', async (_, options) => {
       const resource = mock<Resource>()
-      const { wrapper, mocks } = createWrapper({ currentRouteName: 'files-common-search' })
+      const { wrapper, mocks } = createWrapper(options)
       const { loadAncestorMetaData } = useResourcesStore()
 
       mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({
@@ -177,6 +183,20 @@ describe('FileSideBar', () => {
 
       await (wrapper.vm as any).loadSharesTask.perform({ resource })
       expect(loadAncestorMetaData).toHaveBeenCalled()
+    })
+    it('does not load ancestor meta data when the current folder is loaded', async () => {
+      const resource = mock<Resource>()
+      const { wrapper, mocks } = createWrapper({ currentFolder: mock<Resource>() })
+      const { loadAncestorMetaData } = useResourcesStore()
+
+      mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({
+        shares: [],
+        allowedActions: [],
+        allowedRoles: []
+      })
+
+      await (wrapper.vm as any).loadSharesTask.perform({ resource })
+      expect(loadAncestorMetaData).not.toHaveBeenCalled()
     })
 
     it('loads inherited shares and project space members when explicitly requested', async () => {
@@ -303,9 +323,19 @@ function createWrapper({
   item = undefined,
   isOpen = true,
   currentRouteName = 'files-spaces-generic',
+  currentFolder = undefined,
   space = undefined
-}: { item?: Resource; isOpen?: boolean; currentRouteName?: string; space?: SpaceResource } = {}) {
+}: {
+  item?: Resource
+  isOpen?: boolean
+  currentRouteName?: string
+  currentFolder?: Resource
+  space?: SpaceResource
+} = {}) {
   const plugins = defaultPlugins()
+
+  const resourcesStore = useResourcesStore()
+  resourcesStore.currentFolder = currentFolder
 
   const { requestExtensions } = useExtensionRegistry()
   vi.mocked(requestExtensions).mockReturnValue([])
