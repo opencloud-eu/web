@@ -1058,11 +1058,12 @@ describe('useEditorActions', () => {
   })
 
   describe('menuEmoji', () => {
-    it('uses menu component mode and is hidden from slash commands', () => {
+    it('uses menu component mode and is available in slash commands', () => {
       const action = actions.menuEmoji()
       expect(action.id).toBe('menu-emoji')
       expect(action.menuComponent).toBeTruthy()
-      expect(action.showInSlashCommands).toBe(false)
+      expect(action.showInSlashCommands).toBe(true)
+      expect(action.slashCommandAction).toBeTypeOf('function')
     })
 
     it('menuComponentAttrs inserts selected emoji into editor', () => {
@@ -1076,6 +1077,24 @@ describe('useEditorActions', () => {
       expect(editor._chain.insertContent).toHaveBeenCalledWith('😀')
       expect(editor._chain.run).toHaveBeenCalled()
       expect(closeMenu).toHaveBeenCalled()
+    })
+
+    it('slashCommandAction removes slash token and opens emoji modal', () => {
+      const editor = createMockEditor()
+      const action = actions.menuEmoji()
+
+      action.slashCommandAction!({ editor, range: mockRange })
+
+      expect(editor._chain.deleteRange).toHaveBeenCalledWith(mockRange)
+
+      const store = useModals()
+      const modal = store.modals[0]
+      expect(modal.title).toBe('Insert emoji')
+      expect(modal.hideActions).toBe(true)
+
+      modal.onConfirm?.('😀')
+      expect(editor._chain.insertContent).toHaveBeenCalledWith('😀')
+      expect(editor._chain.run).toHaveBeenCalled()
     })
   })
 
