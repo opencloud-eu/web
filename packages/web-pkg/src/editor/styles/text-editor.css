@@ -97,6 +97,11 @@
   cursor: pointer;
 }
 
+.text-editor-content .ProseMirror .text-editor-mention {
+  color: var(--oc-role-primary);
+  font-weight: 600;
+}
+
 .text-editor-content .ProseMirror ul:not(.vs__dropdown-menu) {
   list-style-type: disc;
   padding-left: 20px;

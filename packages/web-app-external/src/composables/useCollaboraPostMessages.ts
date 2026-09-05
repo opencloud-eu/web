@@ -1,12 +1,6 @@
-import { onMounted, onBeforeUnmount, ref, unref, type Ref, markRaw } from 'vue'
+import { onMounted, onBeforeUnmount, unref, type Ref, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  CollaboratorShare,
-  Resource,
-  SpaceResource,
-  ShareTypes,
-  urlJoin
-} from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
 import {
   useRoute,
@@ -14,8 +8,7 @@ import {
   useClientService,
   useModals,
   useFolderLink,
-  useSharesStore,
-  useLoadShares,
+  useMentionUsers,
   useConfigStore,
   queryItemAsString,
   FilePickerModal
@@ -26,9 +19,6 @@ interface CollaboraMessage {
   MessageId: string
   Values?: Record<string, unknown>
 }
-
-// the app an activity notification comes from, the server only accepts ids it knows
-const WEBOFFICE_APP_ID = '8d1c9c88-9e2c-4d0b-9a1e-6a9de1cb9d3c'
 
 export function useCollaboraPostMessages({
   space,
@@ -42,16 +32,18 @@ export function useCollaboraPostMessages({
   const { $gettext } = useGettext()
   const route = useRoute()
   const router = useRouter()
-  const { graphAuthenticated, webdav } = useClientService()
+  const { webdav } = useClientService()
   const { dispatchModal } = useModals()
   const { getParentFolderLink } = useFolderLink()
-  const sharesStore = useSharesStore()
-  const { loadSharesTask } = useLoadShares()
   const configStore = useConfigStore()
+  const {
+    getMentionUsers,
+    notifyMentionedUsers,
+    resetMentionState,
+    selectMentionUser: handleMentionSelected
+  } = useMentionUsers({ space, resource })
 
-  const collaborators = ref<CollaboratorShare[]>([])
-  const collaboratorsFetched = ref(false)
-  const userIdsToMention = ref<string[]>([])
+  const mentionLabels = new Map<string, string>()
 
   function postMessageToCollabora(messageId: string, values?: Record<string, unknown>): void {
     const iframe = unref(appIframeRef)
@@ -242,100 +234,27 @@ export function useCollaboraPostMessages({
       return
     }
     if (message.Values?.type === 'selected' && typeof message.Values.username === 'string') {
-      handleMentionSelected(message.Values.username)
+      const id = message.Values.username
+      handleMentionSelected({ id, label: mentionLabels.get(id) ?? id })
     }
   }
 
   async function handleMentionAutocomplete(text: string): Promise<void> {
-    if (loadSharesTask.isRunning) {
-      loadSharesTask.cancelAll()
+    const mentionUsers = await getMentionUsers(text)
+    for (const { id, label } of mentionUsers) {
+      mentionLabels.set(id, label)
     }
 
-    if (!unref(collaboratorsFetched)) {
-      const { collaboratorShares } = await loadSharesTask.perform({
-        space: unref(space),
-        resource: unref(resource),
-        updateStore: false
-      })
-      // dedupe by user id (a user can be space member and share recipient)
-      collaborators.value = collaboratorShares.filter(
-        (share, index, self) =>
-          index === self.findIndex((s) => s.sharedWith.id === share.sharedWith.id)
-      )
-      collaboratorsFetched.value = true
-    }
-
-    if (!unref(collaborators).length) {
-      return
-    }
-
-    const searchText = text.toLowerCase()
-    const individualShareTypeValues = ShareTypes.individuals.map((t) => t.value)
-
-    const list = unref(collaborators)
-      .filter(
-        (m) =>
-          individualShareTypeValues.includes(m.shareType) &&
-          m.sharedWith.id &&
-          m.sharedWith.displayName?.toLowerCase().includes(searchText)
-      )
-      .map((m) => ({
-        username: m.sharedWith.id,
-        // Collabora expects a URL for the profile, which we don't have
-        // hence use the URL for the current document
-        profile: urlJoin(configStore.serverUrl, 'f', unref(resource).id),
-        label: m.sharedWith.displayName || m.sharedWith.id
-      }))
+    const list = mentionUsers.map(({ id, label }) => ({
+      username: id,
+      // Collabora expects a URL for the profile, which we don't have
+      // hence use the URL for the current document
+      profile: urlJoin(configStore.serverUrl, 'f', unref(resource).id),
+      label
+    }))
 
     postMessageToCollabora('Action_Mention', { list })
   }
-
-  function handleMentionSelected(userId: string): void {
-    if (!unref(userIdsToMention).includes(userId)) {
-      userIdsToMention.value.push(userId)
-    }
-  }
-
-  async function notifyMentionedUsers(): Promise<void> {
-    const userIds = unref(userIdsToMention)
-    if (userIds.length === 0) {
-      return
-    }
-
-    userIdsToMention.value = []
-
-    await Promise.all(
-      userIds.map(async (userId) => {
-        try {
-          await graphAuthenticated.users.sendActivityNotification(userId, {
-            topic: { source: 'text', value: unref(resource).id },
-            activityType: 'mentioned',
-            teamsAppId: WEBOFFICE_APP_ID
-          })
-        } catch (e) {
-          console.error('Error notifying mentioned user', e)
-        }
-      })
-    )
-  }
-
-  function resetMentionState(): void {
-    if (loadSharesTask.isRunning) {
-      loadSharesTask.cancelAll()
-    }
-    collaborators.value = []
-    collaboratorsFetched.value = false
-  }
-
-  sharesStore.$onAction(({ after, name }) => {
-    after(() => {
-      // when shares are added/removed while the app is open (via right sidebar),
-      // we need to update the list of collaborators for mentions in Collabora
-      if (['addShare', 'removeShare'].includes(name)) {
-        collaboratorsFetched.value = false
-      }
-    })
-  })
 
   function handleWindowBeforeUnload(): void {
     notifyMentionedUsers()

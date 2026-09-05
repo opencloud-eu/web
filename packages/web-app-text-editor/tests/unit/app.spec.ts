@@ -1,18 +1,28 @@
 import { PartialComponentProps, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { defineComponent, shallowRef, toRaw, toValue } from 'vue'
+import { computed, defineComponent, shallowRef, toRaw, toValue } from 'vue'
 import * as Y from 'yjs'
 import { Awareness } from 'y-protocols/awareness'
 import type { Editor } from '@tiptap/vue-3'
-import type { Resource } from '@opencloud-eu/web-client'
-import type { YjsStatus } from '@opencloud-eu/web-pkg'
-import type { TextEditorOptions } from '@opencloud-eu/web-pkg/editor'
+import type { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { useAuthStore, useMentionUsers, type YjsStatus } from '@opencloud-eu/web-pkg'
+import type { MentionItem, TextEditorOptions } from '@opencloud-eu/web-pkg/editor'
 import App from '../../src/App.vue'
 
 // The editor itself is covered by web-pkg. What App.vue owns is the decision
 // of *which* options the editor gets, so we capture those instead of mounting
 // a real ProseMirror stack.
 const useTextEditor = vi.hoisted(() => vi.fn())
+const getMentionUsers = vi.fn<(query: string) => Promise<MentionItem[]>>()
+const notifyMentionedUsers = vi.fn<() => Promise<void>>()
+const resetMentionState = vi.fn()
+const selectMentionUser = vi.fn()
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
+  useAuthStore: vi.fn(),
+  useMentionUsers: vi.fn()
+}))
 
 vi.mock('@opencloud-eu/web-pkg/editor', async (importOriginal) => {
   const original = await importOriginal<Record<string, unknown>>()
@@ -31,6 +41,18 @@ vi.mock('@opencloud-eu/web-pkg/editor', async (importOriginal) => {
 beforeEach(() => {
   useTextEditor.mockReset()
   useTextEditor.mockReturnValue({ editor: shallowRef<Editor | null>(null) })
+  getMentionUsers.mockResolvedValue([])
+  notifyMentionedUsers.mockResolvedValue()
+  vi.mocked(useMentionUsers).mockReturnValue({
+    getMentionUsers,
+    notifyMentionedUsers,
+    ownMentionLabel: computed(() => 'Own User'),
+    resetMentionState,
+    selectMentionUser
+  })
+  vi.mocked(useAuthStore).mockReturnValue(
+    mock<ReturnType<typeof useAuthStore>>({ userContextReady: true })
+  )
 })
 
 function lastOptions(): TextEditorOptions {
@@ -96,7 +118,71 @@ describe('Text editor app', () => {
     await wrapper.setProps({ yjsStatus: 'connected' })
     expect(toValue(lastOptions().yjsStatus)).toBe('connected')
   })
+
+  it('provides mention users to the editor and remembers a selection', async () => {
+    const mentionUsers = [{ id: 'alice', label: 'Alice' }]
+    getMentionUsers.mockResolvedValue(mentionUsers)
+    getWrapper({ resource: markdownResource() })
+
+    await expect(lastOptions().mentions?.getItems('ali')).resolves.toEqual(mentionUsers)
+    lastOptions().mentions?.onSelect(mentionUsers[0])
+
+    expect(getMentionUsers).toHaveBeenCalledWith('ali')
+    expect(selectMentionUser).toHaveBeenCalledWith(mentionUsers[0])
+  })
+
+  it('highlights the own name without loading any users', () => {
+    getWrapper({ resource: markdownResource() })
+
+    expect(lastOptions().mentions?.highlightLabels).toEqual(['Own User'])
+    expect(getMentionUsers).not.toHaveBeenCalled()
+  })
+
+  it('notifies the mentions of the content that was persisted', async () => {
+    const { wrapper } = getWrapper({ resource: markdownResource() })
+    const [[saveCallback]] = wrapper.emitted('register:onSaveCallback') as [
+      [(content: unknown) => Promise<void>]
+    ]
+
+    await saveCallback('hello @Alice')
+
+    expect(notifyMentionedUsers).toHaveBeenCalledWith('hello @Alice')
+  })
+
+  it('notifies nothing verifiable when the persisted content is not text', async () => {
+    const { wrapper } = getWrapper({ resource: markdownResource() })
+    const [[saveCallback]] = wrapper.emitted('register:onSaveCallback') as [
+      [(content: unknown) => Promise<void>]
+    ]
+
+    await saveCallback(new ArrayBuffer(8))
+
+    expect(notifyMentionedUsers).toHaveBeenCalledWith(undefined)
+  })
+
+  it('disables mentions for content that is not rich text', () => {
+    const { wrapper } = getWrapper({
+      resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' })
+    })
+
+    expect(lastOptions().mentions).toBeUndefined()
+    expect(wrapper.emitted('register:onSaveCallback')).toBeUndefined()
+  })
+
+  it('disables mentions without a user context, e.g. on public links', () => {
+    vi.mocked(useAuthStore).mockReturnValue(
+      mock<ReturnType<typeof useAuthStore>>({ userContextReady: false })
+    )
+    const { wrapper } = getWrapper({ resource: markdownResource() })
+
+    expect(lastOptions().mentions).toBeUndefined()
+    expect(wrapper.emitted('register:onSaveCallback')).toBeUndefined()
+  })
 })
+
+function markdownResource() {
+  return mock<Resource>({ extension: 'md', mimeType: 'text/markdown' })
+}
 
 function getWrapper(props: PartialComponentProps<typeof App> = {}) {
   const ydoc = (props.ydoc as Y.Doc) ?? new Y.Doc()
@@ -107,6 +193,7 @@ function getWrapper(props: PartialComponentProps<typeof App> = {}) {
         currentContent: '',
         isReadOnly: false,
         resource: mock<Resource>({ extension: 'txt', mimeType: 'text/plain' }),
+        space: mock<SpaceResource>(),
         awareness: new Awareness(ydoc),
         yjsStatus,
         ...props,

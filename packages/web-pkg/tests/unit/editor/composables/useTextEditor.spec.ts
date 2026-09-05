@@ -119,6 +119,29 @@ describe('useTextEditor', () => {
     )
   })
 
+  describe('mentions', () => {
+    it('registers the mentions extension when mention options are provided', () => {
+      const { result } = createEditor({
+        mentions: {
+          getItems: vi.fn().mockResolvedValue([]),
+          onSelect: vi.fn()
+        }
+      })
+      const extensionNames =
+        result.editor.value?.extensionManager.extensions.map(({ name }) => name) ?? []
+
+      expect(extensionNames).toContain('mentions')
+    })
+
+    it('does not register the mentions extension without mention options', () => {
+      const { result } = createEditor()
+      const extensionNames =
+        result.editor.value?.extensionManager.extensions.map(({ name }) => name) ?? []
+
+      expect(extensionNames).not.toContain('mentions')
+    })
+  })
+
   describe('links', () => {
     it('prevents auxiliary clicks from opening a link', () => {
       const { result } = createEditor({
