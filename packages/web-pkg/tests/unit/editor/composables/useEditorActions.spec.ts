@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { ref } from 'vue'
 import type { Range } from '@tiptap/core'
 import { Editor } from '@tiptap/vue-3'
+import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
 import { mock } from 'vitest-mock-extended'
 import { createMockEditor } from './helpers'
@@ -208,7 +209,7 @@ describe('useEditorActions', () => {
     }
 
     const dropdownActions = [
-      { name: 'fontSize', setMethod: 'setFontSize', attrKey: 'fontSize', valueIsTitle: true },
+      { name: 'fontSize', setMethod: 'setFontSize', attrKey: 'fontSize', valueIsTitle: false },
       { name: 'lineHeight', setMethod: 'setLineHeight', attrKey: 'lineHeight', valueIsTitle: true },
       { name: 'textColor', setMethod: 'setColor', attrKey: 'color', valueIsTitle: false },
       {
@@ -228,10 +229,7 @@ describe('useEditorActions', () => {
 
         if (valueIsTitle) {
           it('child isActive reads from editor.getAttributes("textStyle")', () => {
-            const child =
-              name === 'fontSize'
-                ? actions[name]().childActions!.find(({ id }) => id === 'font-size-16px')!
-                : actions[name]().childActions![0]
+            const child = actions[name]().childActions![0]
             const editor = createMockEditor({
               attributes: { textStyle: { [attrKey]: child.title } }
             })
@@ -312,6 +310,39 @@ describe('useEditorActions', () => {
           createMockEditor({ attributes: { textStyle: { fontSize: '16px' } } })
         )
       ).toBe(false)
+    })
+
+    it('fontSize option isActive delegates to editor.isActive', () => {
+      const option = actions.fontSize().childActions!.find(({ id }) => id === 'font-size-16px')
+      const editor = createMockEditor({
+        isActive: (type, attrs) => type === 'textStyle' && attrs?.fontSize === '16px'
+      })
+
+      expect(option).toBeDefined()
+      expect(option!.isActive!(editor)).toBe(true)
+      expect(editor.isActive).toHaveBeenCalledWith('textStyle', { fontSize: '16px' })
+    })
+
+    it('fontSize has no active option for mixed selection', () => {
+      const editor = createMockEditor({ attributes: { textStyle: {} }, isActive: () => false })
+      const action = actions.fontSize()
+
+      Object.assign(editor.state.selection, { from: 1, to: 6, empty: false })
+      Object.assign(editor.state.doc, {
+        nodesBetween: (_from: number, _to: number, callback: (node: ProseMirrorNode) => void) => {
+          callback({ isText: true, nodeSize: 1, marks: [] } as unknown as ProseMirrorNode)
+          callback({
+            isText: true,
+            nodeSize: 1,
+            marks: [{ type: { name: 'textStyle' }, attrs: { fontSize: '16px' } }]
+          } as unknown as ProseMirrorNode)
+        }
+      })
+
+      const activeStates = action.childActions!.map(
+        (childAction) => childAction.isActive?.(editor) ?? false
+      )
+      expect(activeStates).toEqual(Array(action.childActions!.length).fill(false))
     })
   })
 

@@ -1,5 +1,6 @@
 import { computed, markRaw, ref, unref } from 'vue'
 import type { Component } from 'vue'
+import { getMarksBetween } from '@tiptap/core'
 import type { Editor, Range } from '@tiptap/core'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -188,14 +189,24 @@ export function useEditorActions(state: TextEditorState) {
         title: $gettext('Default'),
         icon: 'font-size-2',
         toolbarAction: (editor) => editor.chain().focus().unsetFontSize().run(),
-        isActive: (editor) => !editor.getAttributes('textStyle').fontSize
+        isActive: (editor) => {
+          const { from, to, empty } = editor.state.selection
+          if (empty || from === to) {
+            return !editor.getAttributes('textStyle').fontSize
+          }
+
+          // For mixed font sizes in a range selection, no option should be active, including "Default".
+          return !getMarksBetween(from, to, editor.state.doc).some(
+            ({ mark }) => mark.type.name === 'textStyle' && !!mark.attrs.fontSize
+          )
+        }
       },
       ...['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'].map((size) => ({
         id: `font-size-${size}`,
         title: size,
         icon: 'font-size-2',
         toolbarAction: (editor: Editor) => editor.chain().focus().setFontSize(size).run(),
-        isActive: (editor: Editor) => editor.getAttributes('textStyle').fontSize === size
+        isActive: (editor: Editor) => editor.isActive('textStyle', { fontSize: size })
       }))
     ]
   })
