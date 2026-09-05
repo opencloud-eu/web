@@ -164,9 +164,12 @@ describe('FileSideBar', () => {
       ).toHaveBeenCalledTimes(2)
     })
 
-    it('should load ancestor meta data to get indirect shares when on search page', async () => {
+    it.each([
+      ['on the search page', { currentRouteName: 'files-common-search' }],
+      ['in an editor', { contextRouteName: 'files-spaces-generic' }]
+    ])('loads ancestor meta data for indirect shares %s', async (_, route) => {
       const resource = mock<Resource>()
-      const { wrapper, mocks } = createWrapper({ currentRouteName: 'files-common-search' })
+      const { wrapper, mocks } = createWrapper(route)
       const { loadAncestorMetaData } = useResourcesStore()
 
       mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({
@@ -273,8 +276,15 @@ function createWrapper({
   item = undefined,
   isOpen = true,
   currentRouteName = 'files-spaces-generic',
+  contextRouteName = undefined,
   space = undefined
-}: { item?: Resource; isOpen?: boolean; currentRouteName?: string; space?: SpaceResource } = {}) {
+}: {
+  item?: Resource
+  isOpen?: boolean
+  currentRouteName?: string
+  contextRouteName?: string
+  space?: SpaceResource
+} = {}) {
   const plugins = defaultPlugins()
 
   const { requestExtensions } = useExtensionRegistry()
@@ -288,7 +298,10 @@ function createWrapper({
   vi.mocked(useSelectedResources).mockReturnValue(useSelectedResourcesMock)
 
   const mocks = defaultComponentMocks({
-    currentRoute: mock<RouteLocation>({ name: currentRouteName })
+    currentRoute: mock<RouteLocation>({
+      name: currentRouteName,
+      query: { contextRouteName }
+    })
   })
   return {
     mocks,
