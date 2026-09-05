@@ -158,7 +158,7 @@ export const useLoadShares = () => {
       })
     }
 
-    if (isLocationCommonActive(router, 'files-common-search')) {
+    if (isLocationCommonActive(router, 'files-common-search') || unref(isAppActive)) {
       yield resourcesStore.loadAncestorMetaData({
         folder: unref(resource),
         space,
