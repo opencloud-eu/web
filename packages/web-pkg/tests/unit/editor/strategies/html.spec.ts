@@ -86,9 +86,10 @@ describe('useStrategyHtml', () => {
       const tableToolsGroup = strategy
         .editorActionGroups()
         .find((group) => group.id === 'table-tools')
+      const insertIds = insertGroup?.actions.map((action) => action.id) ?? []
 
-      expect(insertGroup?.actions.map((action) => action.id)).toContain('table')
-      expect(insertGroup?.actions.map((action) => action.id)).not.toContain('add-row-before')
+      expect(insertIds).toContain('table')
+      expect(insertIds).not.toContain('add-row-before')
       expect(tableToolsGroup?.actions.map((action) => action.id)).toEqual([
         'toggle-header-row',
         'add-row-before',

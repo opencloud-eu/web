@@ -202,8 +202,8 @@ export const useStrategyHtml = (editorState: TextEditorState): ContentTypeStrate
           imageUpload(),
           imageCloud(),
           createTable(),
-          menuEmoji(),
-          horizontalRule()
+          horizontalRule(),
+          menuEmoji()
         ]
       },
       {

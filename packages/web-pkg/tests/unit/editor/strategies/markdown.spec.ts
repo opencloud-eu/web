@@ -144,14 +144,14 @@ describe('useStrategyMarkdown', () => {
       expect(enabled.filter((id) => !allowed.includes(id) && !id.startsWith('zoom-'))).toEqual([])
     })
 
-    it('offers no slash entries in the frontmatter block', () => {
+    it('offers the emoji slash entry in the frontmatter block', () => {
       const editor = editorIn('frontmatter')
       const slashItems = allActions()
         .filter((action) => action.showInSlashCommands !== false)
         .filter((action) => action.isEnabled?.(editor) ?? true)
         .map(({ id }) => id)
 
-      expect(slashItems).toEqual([])
+      expect(slashItems).toEqual(['menu-emoji'])
     })
 
     it('leaves everything enabled outside the block', () => {

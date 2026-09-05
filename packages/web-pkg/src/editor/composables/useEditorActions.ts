@@ -8,6 +8,7 @@ import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
 import { useModals, useThemeStore } from '../../composables'
 import { useClientService, useGetMatchingSpace, useFolderLink } from '../../composables'
 import FilePickerModal from '../../components/Modals/FilePickerModal.vue'
+import EmojiPickerModal from '../../components/Modals/EmojiPickerModal.vue'
 import { arrayBufferToDataUrl, withoutExtension } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel, printEditorContent } from '../helpers'
@@ -741,7 +742,18 @@ export function useEditorActions(state: TextEditorState) {
     icon: 'emoji-sticker',
     iconFillType: 'line',
     keywords: ['emoji', 'smiley', 'emoticon'],
-    showInSlashCommands: false,
+    showInSlashCommands: true,
+    slashCommandAction: ({ editor, range }) => {
+      editor.chain().focus().deleteRange(range).run()
+      dispatchModal({
+        title: $gettext('Insert emoji'),
+        customComponent: markRaw(EmojiPickerModal),
+        hideActions: true,
+        onConfirm: (emoji: string) => {
+          editor.chain().focus().insertContent(emoji).run()
+        }
+      })
+    },
     menuCloseOnClick: false,
     menuComponent: markRaw(OcEmojiPicker),
     menuComponentAttrs: (editor, closeMenu) => ({
