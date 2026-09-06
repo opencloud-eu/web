@@ -1,6 +1,8 @@
-import { basename, extname } from 'path'
+import { extname } from 'path'
 import { urlJoin } from '../../utils'
 import { DavPermission } from '../../webdav/constants'
+import { ShareTypes } from '../share'
+import { extractStorageId } from './functions'
 import type { DriveItem } from '../../graph/generated'
 import type { SpaceResource } from '../space'
 import type { Resource } from './types'
@@ -51,15 +53,18 @@ export const buildResourceFromDriveItem = (
   const isFolder = !!driveItem.folder
   const name = driveItem.name || ''
   const path = pathOverride ?? urlJoin(parentPath, name, { leadingSlash: true })
-  const actions = (driveItem as any)['@libre.graph.permissions.actions.allowedValues'] as string[]
-  const shareTypes = ((driveItem as any)['@libre.graph.shareTypes'] || []) as string[]
-  const lock = (driveItem as any).lockInfo
+  const actions = driveItem['@libre.graph.permissions.actions.allowedValues']
+  const lock = driveItem.lockInfo
   const permissions = davPermissionsFromActions(actions)
+  // graph reports share types by key, the resource carries the numeric values
+  const shareTypes = ShareTypes.getValues(
+    ShareTypes.getByKeys(driveItem['@libre.graph.shareTypes'] || []).filter(Boolean)
+  )
 
-  const r: any = {
+  const r: Resource = {
     id: driveItem.id,
     fileId: driveItem.id,
-    storageId: space.id,
+    storageId: extractStorageId(driveItem.id),
     parentFolderId: driveItem.parentReference?.id,
     mimeType: driveItem.file?.mimeType,
     name,
@@ -71,28 +76,29 @@ export const buildResourceFromDriveItem = (
     locked: !!lock,
     lockOwner: lock?.owners?.[0]?.displayName,
     lockTime: lock?.createdDateTime,
-    processing: !!(driveItem as any).pendingOperations?.pendingContentUpdate,
+    processing: !!driveItem.pendingOperations?.pendingContentUpdate,
     mdate: driveItem.lastModifiedDateTime,
     size: (driveItem.size ?? 0).toString(),
     permissions,
     isInVault: false,
-    starred: (driveItem as any)['@libre.graph.me.following'] === true,
+    starred: driveItem['@libre.graph.me.following'] === true,
     etag: driveItem.eTag,
     shareTypes,
     privateLink: driveItem.webUrl,
-    remoteItemId: (driveItem as any).remoteItem?.id,
-    remoteItemPath: (driveItem as any).remoteItem?.path,
+    remoteItemId: driveItem.remoteItem?.id,
+    remoteItemPath: driveItem.remoteItem?.path,
     // the item owner is always the space owner, see node.Owner() in reva
-    owner: (space as any).owner?.user || (space as any).owner,
-    tags: ((driveItem as any)['@libre.graph.tags'] || []) as string[],
+    owner: space.owner,
+    tags: driveItem['@libre.graph.tags'] || [],
     audio: driveItem.audio,
     location: driveItem.location,
     image: driveItem.image,
     photo: driveItem.photo,
-    video: (driveItem as any).video,
-    livePhoto: (driveItem as any)['@libre.graph.livePhoto'],
     extraProps: {},
-    hasPreview: () => !!driveItem.thumbnails?.length || !isFolder,
+    // PROPFIND has a has-preview property, graph has none and cannot expand
+    // thumbnails on a stat. Approximated by "any file might have one", the
+    // preview service falls back to the file type icon when it doesn't.
+    hasPreview: () => !isFolder,
     canUpload: function (this: Resource) {
       return this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
     },
@@ -130,12 +136,12 @@ export const buildResourceFromDriveItem = (
       return this.permissions.indexOf(DavPermission.Shared) >= 0
     },
     isShareRoot(): boolean {
-      return !!(driveItem as any).remoteItem
+      return !!driveItem.remoteItem
     },
     getDomSelector: () => (driveItem.id || '').replace(/[^A-Za-z0-9\-_]/g, '')
   }
 
-  return r as Resource
+  return r
 }
 
 export const buildResourcesFromDriveItems = (
@@ -143,5 +149,3 @@ export const buildResourcesFromDriveItems = (
   space: SpaceResource,
   parentPath = ''
 ): Resource[] => driveItems.map((item) => buildResourceFromDriveItem(item, space, parentPath))
-
-export { basename }

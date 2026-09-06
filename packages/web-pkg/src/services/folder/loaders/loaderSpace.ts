@@ -11,10 +11,18 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
-import { urlJoin } from '@opencloud-eu/web-client'
+import {
+  buildResourceFromDriveItem,
+  buildResourcesFromDriveItems,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { FolderLoaderOptions } from './types'
-import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { buildResourceFromDriveItem, buildResourcesFromDriveItems } from '@opencloud-eu/web-client'
+import { Graph } from '@opencloud-eu/web-client/graph'
+import {
+  DriveItem,
+  GetDriveItemV1ExpandEnum,
+  GetDriveItemV1SelectEnum
+} from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
@@ -143,10 +151,11 @@ export class FolderLoaderSpace implements FolderLoader {
   }
 }
 
-const graphListingSelect = [
+const graphListingSelect = new Set<GetDriveItemV1SelectEnum>([
   '@libre.graph.permissions.actions.allowedValues',
   '@libre.graph.shareTypes'
-]
+])
+const graphListingExpand = new Set<GetDriveItemV1ExpandEnum>(['children'])
 
 // listFilesViaGraph lists a folder through graph, folder and children in one
 // request via $expand=children, the same shape PROPFIND with Depth: 1 returns.
@@ -157,7 +166,7 @@ const listFilesViaGraph = async ({
   fileId,
   signal
 }: {
-  graphClient: any
+  graphClient: Graph
   space: SpaceResource
   path: string
   fileId: string
@@ -166,10 +175,11 @@ const listFilesViaGraph = async ({
   const driveId = space.id.toString()
   // graph has no path lookup for the drive root, it is addressed by its id
   const isRoot = !path || path === '/'
+  const itemId = fileId || (isRoot ? space.root?.id : undefined)
   const driveItem = await graphClient.driveItems.statDriveItem(
     driveId,
-    fileId || isRoot ? { itemId: fileId || space.root?.id } : { path },
-    { select: graphListingSelect, expand: ['children'] },
+    itemId ? { itemId } : { path },
+    { select: graphListingSelect, expand: graphListingExpand },
     { signal }
   )
 

@@ -1,4 +1,8 @@
-import { davPermissionsFromActions, buildResourceFromDriveItem } from '../../../../src/helpers/resource/graph'
+import {
+  davPermissionsFromActions,
+  buildResourceFromDriveItem
+} from '../../../../src/helpers/resource/graph'
+import { ShareTypes } from '../../../../src/helpers/share'
 import type { SpaceResource } from '../../../../src/helpers/space'
 
 // a manager's action list, taken verbatim from a running server
@@ -21,7 +25,7 @@ const managerActions = [
 const space = {
   id: 'storage$space',
   webDavPath: '/dav/spaces/storage$space',
-  owner: { user: { id: 'alice', displayName: 'Alice' } }
+  owner: { id: 'alice', displayName: 'Alice' }
 } as unknown as SpaceResource
 
 describe('davPermissionsFromActions', () => {
@@ -68,6 +72,7 @@ describe('buildResourceFromDriveItem', () => {
     expect(r.canBeDeleted()).toBe(true)
     expect(r.canRename()).toBe(true)
     expect(r.canDownload()).toBe(true)
+    expect(r.storageId).toBe('storage$space')
     expect(r.owner).toEqual({ id: 'alice', displayName: 'Alice' })
   })
 
@@ -96,12 +101,17 @@ describe('buildResourceFromDriveItem', () => {
     expect(r.locked).toBe(true)
     expect(r.lockOwner).toBe('Alice')
     expect(r.processing).toBe(true)
-    expect(r.shareTypes).toEqual(['user', 'link'])
+    // graph reports keys, consumers compare against the numeric share types
+    expect(r.shareTypes).toEqual([ShareTypes.user.value, ShareTypes.link.value])
   })
 
   it('reports a shared item as a share root', () => {
     const r = buildResourceFromDriveItem(
-      { id: 'x', name: 'shared.txt', remoteItem: { id: 'other$drive!item', path: '/Project X' } } as any,
+      {
+        id: 'x',
+        name: 'shared.txt',
+        remoteItem: { id: 'other$drive!item', path: '/Project X' }
+      } as any,
       space
     )
     expect(r.isShareRoot()).toBe(true)
