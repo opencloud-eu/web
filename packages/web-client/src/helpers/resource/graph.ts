@@ -90,7 +90,6 @@ export const buildResourceFromDriveItem = (
     image: driveItem.image,
     photo: driveItem.photo,
     video: (driveItem as any).video,
-    motionPhoto: (driveItem as any)['@libre.graph.motionPhoto'],
     livePhoto: (driveItem as any)['@libre.graph.livePhoto'],
     extraProps: {},
     hasPreview: () => !!driveItem.thumbnails?.length || !isFolder,

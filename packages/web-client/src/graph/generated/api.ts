@@ -447,6 +447,7 @@ export interface DriveItem {
     'video'?: Video;
     '@libre.graph.motionPhoto'?: MotionPhoto;
     '@libre.graph.livePhoto'?: LivePhoto;
+    'lockInfo'?: LockInfo;
     /**
      * Indicates if the item is synchronized with the underlying storage provider. Read-only.
      */
@@ -471,7 +472,21 @@ export interface DriveItem {
      * A list of actions the caller is allowed to perform on this item.  Only returned when explicitly requested via `$select` on endpoints that support it. Mirrors the annotation of the same name on the `/permissions` endpoint, allowing clients to learn a caller\'s effective actions on an item without a separate round-trip. 
      */
     '@libre.graph.permissions.actions.allowedValues'?: Array<string>;
+    /**
+     * The types of shares existing on this item, aggregated over all of its grants. Absent or empty if the item is not shared.  This is a summary of the item\'s `permissions` collection. For the full grants use the permissions endpoints, for the caller\'s own capabilities use `@libre.graph.permissions.actions.allowedValues`.  Only returned when explicitly requested via `$select`. 
+     */
+    '@libre.graph.shareTypes'?: Array<DriveItemAtLibreGraphShareTypesEnum>;
 }
+
+export const DriveItemAtLibreGraphShareTypesEnum = {
+    User: 'user',
+    Group: 'group',
+    Link: 'link',
+    Remote: 'remote',
+} as const;
+
+export type DriveItemAtLibreGraphShareTypesEnum = typeof DriveItemAtLibreGraphShareTypesEnum[keyof typeof DriveItemAtLibreGraphShareTypesEnum];
+
 export interface DriveItemCreateLink {
     'type'?: SharingLinkType;
     /**
@@ -515,6 +530,10 @@ export interface DriveItemInvite {
  * Represents a person, group, or other recipient to share a drive item with using the invite action.  When using invite to add permissions, the `driveRecipient` object would specify the `email`, `alias`, or `objectId` of the recipient. Only one of these values is required; multiple values are not accepted. 
  */
 export interface DriveRecipient {
+    /**
+     * The email address for the recipient, if the recipient has an associated email address.
+     */
+    'email'?: string;
     /**
      * The unique identifier for the recipient in the directory.
      */
@@ -977,6 +996,39 @@ export interface LivePhoto {
      */
     'vitalityScoringVersion'?: number;
 }
+/**
+ * Read-only lock metadata for a file, matching the MS Graph beta lockInfo resource. Indicates whether the file is locked, the kind of lock, when it was created, when it expires and who holds it. 
+ */
+export interface LockInfo {
+    /**
+     * The type of lock currently held on the file. OpenCloud currently only issues exclusive locks, same as MS Graph, even if it defines more. Read-only.
+     */
+    'lockType'?: LockInfoLockTypeEnum;
+    /**
+     * The date and time when the lock was created, in UTC. Read-only.
+     */
+    'createdDateTime'?: string;
+    /**
+     * The date and time when the lock expires, in UTC. Read-only.
+     */
+    'expirationDateTime'?: string;
+    /**
+     * The collection of users that currently hold the lock on the file. Read-only.
+     */
+    'owners'?: Array<Identity>;
+    /**
+     * Name of the application holding the lock, for example an office application. Not part of MS Graph. Read-only.
+     */
+    '@libre.graph.appName'?: string;
+}
+
+export const LockInfoLockTypeEnum = {
+    None: 'none',
+    Exclusive: 'exclusive',
+} as const;
+
+export type LockInfoLockTypeEnum = typeof LockInfoLockTypeEnum[keyof typeof LockInfoLockTypeEnum];
+
 export interface MemberReference {
     '@odata.id'?: string;
 }
@@ -1978,10 +2030,11 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetDriveItemExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDriveItem: async (driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getDriveItem: async (driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, $expand?: Set<GetDriveItemExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getDriveItem', 'driveId', driveId)
             // verify required parameter 'itemId' is not null or undefined
@@ -2008,6 +2061,10 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
 
             if ($select) {
                 localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
+            }
+
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -2120,10 +2177,11 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {Set<GetDriveItemV1SelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetDriveItemV1ExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDriveItemV1: async (driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getDriveItemV1: async (driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, $expand?: Set<GetDriveItemV1ExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getDriveItemV1', 'driveId', driveId)
             // verify required parameter 'itemId' is not null or undefined
@@ -2150,6 +2208,10 @@ export const DriveItemApiAxiosParamCreator = function (configuration?: Configura
 
             if ($select) {
                 localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
+            }
+
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -2258,11 +2320,12 @@ export const DriveItemApiFp = function(configuration?: Configuration) {
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetDriveItemExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItem(driveId, itemId, $select, options);
+        async getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, $expand?: Set<GetDriveItemExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItem(driveId, itemId, $select, $expand, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DriveItemApi.getDriveItem']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2302,11 +2365,12 @@ export const DriveItemApiFp = function(configuration?: Configuration) {
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {Set<GetDriveItemV1SelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetDriveItemV1ExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getDriveItemV1(driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItemV1(driveId, itemId, $select, options);
+        async getDriveItemV1(driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, $expand?: Set<GetDriveItemV1ExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getDriveItemV1(driveId, itemId, $select, $expand, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DriveItemApi.getDriveItemV1']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -2366,11 +2430,12 @@ export const DriveItemApiFactory = function (configuration?: Configuration, base
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetDriveItemExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
-            return localVarFp.getDriveItem(driveId, itemId, $select, options).then((request) => request(axios, basePath));
+        getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, $expand?: Set<GetDriveItemExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+            return localVarFp.getDriveItem(driveId, itemId, $select, $expand, options).then((request) => request(axios, basePath));
         },
         /**
          * List the children of the item identified by `item-id` in the drive identified by `drive-id`. The item must exist and be a folder.  Modeled on the MS Graph list driveItem children endpoint (https://learn.microsoft.com/en-us/graph/api/driveitem-list-children).  This endpoint also accepts the MS Graph colon-syntax URL forms:      GET /v1.0/drives/{drive-id}/root:/{path}:/children     GET /v1.0/drives/{drive-id}/items/{item-id}:/{path}:/children  OpenAPI cannot express the colon-delimited path segment, so these URL forms are not represented as separate operations in this specification. The server still accepts them, resolves `:/{path}:` as the parent item, and lists its children. 
@@ -2401,11 +2466,12 @@ export const DriveItemApiFactory = function (configuration?: Configuration, base
          * @param {string} driveId key: id of drive
          * @param {string} itemId key: id of item
          * @param {Set<GetDriveItemV1SelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetDriveItemV1ExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getDriveItemV1(driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
-            return localVarFp.getDriveItemV1(driveId, itemId, $select, options).then((request) => request(axios, basePath));
+        getDriveItemV1(driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, $expand?: Set<GetDriveItemV1ExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+            return localVarFp.getDriveItemV1(driveId, itemId, $select, $expand, options).then((request) => request(axios, basePath));
         },
         /**
          * Update a DriveItem.  The request body must include a JSON object with the properties to update. Only the properties that are provided will be updated.  Currently it supports updating the following properties:  * `@UI.Hidden` - Hides the item from the UI. 
@@ -2459,11 +2525,12 @@ export class DriveItemApi extends BaseAPI {
      * @param {string} driveId key: id of drive
      * @param {string} itemId key: id of item
      * @param {Set<GetDriveItemSelectEnum>} [$select] Select additional properties to be returned.
+     * @param {Set<GetDriveItemExpandEnum>} [$expand] Expand related entities to be returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, options?: RawAxiosRequestConfig) {
-        return DriveItemApiFp(this.configuration).getDriveItem(driveId, itemId, $select, options).then((request) => request(this.axios, this.basePath));
+    public getDriveItem(driveId: string, itemId: string, $select?: Set<GetDriveItemSelectEnum>, $expand?: Set<GetDriveItemExpandEnum>, options?: RawAxiosRequestConfig) {
+        return DriveItemApiFp(this.configuration).getDriveItem(driveId, itemId, $select, $expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2497,11 +2564,12 @@ export class DriveItemApi extends BaseAPI {
      * @param {string} driveId key: id of drive
      * @param {string} itemId key: id of item
      * @param {Set<GetDriveItemV1SelectEnum>} [$select] Select additional properties to be returned.
+     * @param {Set<GetDriveItemV1ExpandEnum>} [$expand] Expand related entities to be returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getDriveItemV1(driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, options?: RawAxiosRequestConfig) {
-        return DriveItemApiFp(this.configuration).getDriveItemV1(driveId, itemId, $select, options).then((request) => request(this.axios, this.basePath));
+    public getDriveItemV1(driveId: string, itemId: string, $select?: Set<GetDriveItemV1SelectEnum>, $expand?: Set<GetDriveItemV1ExpandEnum>, options?: RawAxiosRequestConfig) {
+        return DriveItemApiFp(this.configuration).getDriveItemV1(driveId, itemId, $select, $expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2531,18 +2599,31 @@ export type CreateChildDriveItemAtLibreGraphMissingParentsBehaviorEnum = typeof 
 export const GetDriveItemSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
+    LibreGraphShareTypes: '@libre.graph.shareTypes',
 } as const;
 export type GetDriveItemSelectEnum = typeof GetDriveItemSelectEnum[keyof typeof GetDriveItemSelectEnum];
+export const GetDriveItemExpandEnum = {
+    Children: 'children',
+    Thumbnails: 'thumbnails',
+} as const;
+export type GetDriveItemExpandEnum = typeof GetDriveItemExpandEnum[keyof typeof GetDriveItemExpandEnum];
 export const GetDriveItemChildrenSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
+    LibreGraphShareTypes: '@libre.graph.shareTypes',
 } as const;
 export type GetDriveItemChildrenSelectEnum = typeof GetDriveItemChildrenSelectEnum[keyof typeof GetDriveItemChildrenSelectEnum];
 export const GetDriveItemV1SelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
+    LibreGraphShareTypes: '@libre.graph.shareTypes',
 } as const;
 export type GetDriveItemV1SelectEnum = typeof GetDriveItemV1SelectEnum[keyof typeof GetDriveItemV1SelectEnum];
+export const GetDriveItemV1ExpandEnum = {
+    Children: 'children',
+    Thumbnails: 'thumbnails',
+} as const;
+export type GetDriveItemV1ExpandEnum = typeof GetDriveItemV1ExpandEnum[keyof typeof GetDriveItemV1ExpandEnum];
 
 
 /**
@@ -4009,10 +4090,11 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
          * @summary Get root from arbitrary space
          * @param {string} driveId key: id of drive
          * @param {Set<GetRootSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetRootExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRoot: async (driveId: string, $select?: Set<GetRootSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getRoot: async (driveId: string, $select?: Set<GetRootSelectEnum>, $expand?: Set<GetRootExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'driveId' is not null or undefined
             assertParamExists('getRoot', 'driveId', driveId)
             const localVarPath = `/v1.0/drives/{drive-id}/root`
@@ -4036,6 +4118,10 @@ export const DrivesRootApiAxiosParamCreator = function (configuration?: Configur
 
             if ($select) {
                 localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
+            }
+
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -4322,11 +4408,12 @@ export const DrivesRootApiFp = function(configuration?: Configuration) {
          * @summary Get root from arbitrary space
          * @param {string} driveId key: id of drive
          * @param {Set<GetRootSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetRootExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getRoot(driveId: string, $select?: Set<GetRootSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getRoot(driveId, $select, options);
+        async getRoot(driveId: string, $select?: Set<GetRootSelectEnum>, $expand?: Set<GetRootExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getRoot(driveId, $select, $expand, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DrivesRootApi.getRoot']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -4452,11 +4539,12 @@ export const DrivesRootApiFactory = function (configuration?: Configuration, bas
          * @summary Get root from arbitrary space
          * @param {string} driveId key: id of drive
          * @param {Set<GetRootSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<GetRootExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getRoot(driveId: string, $select?: Set<GetRootSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
-            return localVarFp.getRoot(driveId, $select, options).then((request) => request(axios, basePath));
+        getRoot(driveId: string, $select?: Set<GetRootSelectEnum>, $expand?: Set<GetRootExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+            return localVarFp.getRoot(driveId, $select, $expand, options).then((request) => request(axios, basePath));
         },
         /**
          * Sends a sharing invitation for the root of a `drive`. A sharing invitation provides permissions to the recipients and optionally sends them an email with a sharing link.  The response will be a permission object with the grantedToV2 property containing the created grant details.  ## Roles property values For now, roles are only identified by a uuid. There are no hardcoded aliases like `read` or `write` because role actions can be completely customized. 
@@ -4569,11 +4657,12 @@ export class DrivesRootApi extends BaseAPI {
      * @summary Get root from arbitrary space
      * @param {string} driveId key: id of drive
      * @param {Set<GetRootSelectEnum>} [$select] Select additional properties to be returned.
+     * @param {Set<GetRootExpandEnum>} [$expand] Expand related entities to be returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getRoot(driveId: string, $select?: Set<GetRootSelectEnum>, options?: RawAxiosRequestConfig) {
-        return DrivesRootApiFp(this.configuration).getRoot(driveId, $select, options).then((request) => request(this.axios, this.basePath));
+    public getRoot(driveId: string, $select?: Set<GetRootSelectEnum>, $expand?: Set<GetRootExpandEnum>, options?: RawAxiosRequestConfig) {
+        return DrivesRootApiFp(this.configuration).getRoot(driveId, $select, $expand, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -4643,8 +4732,14 @@ export type CreateDriveItemAtLibreGraphMissingParentsBehaviorEnum = typeof Creat
 export const GetRootSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
+    LibreGraphShareTypes: '@libre.graph.shareTypes',
 } as const;
 export type GetRootSelectEnum = typeof GetRootSelectEnum[keyof typeof GetRootSelectEnum];
+export const GetRootExpandEnum = {
+    Children: 'children',
+    Thumbnails: 'thumbnails',
+} as const;
+export type GetRootExpandEnum = typeof GetRootExpandEnum[keyof typeof GetRootExpandEnum];
 export const ListPermissionsSpaceRootSelectEnum = {
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
     LibreGraphPermissionsRolesAllowedValues: '@libre.graph.permissions.roles.allowedValues',
@@ -8387,10 +8482,11 @@ export const MeDriveRootApiAxiosParamCreator = function (configuration?: Configu
          * 
          * @summary Get root from personal space
          * @param {Set<HomeGetRootSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<HomeGetRootExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        homeGetRoot: async ($select?: Set<HomeGetRootSelectEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        homeGetRoot: async ($select?: Set<HomeGetRootSelectEnum>, $expand?: Set<HomeGetRootExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/v1.0/me/drive/root`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -8411,6 +8507,10 @@ export const MeDriveRootApiAxiosParamCreator = function (configuration?: Configu
 
             if ($select) {
                 localVarQueryParameter['$select'] = Array.from($select).join(COLLECTION_FORMATS.csv);
+            }
+
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -8437,11 +8537,12 @@ export const MeDriveRootApiFp = function(configuration?: Configuration) {
          * 
          * @summary Get root from personal space
          * @param {Set<HomeGetRootSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<HomeGetRootExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async homeGetRoot($select?: Set<HomeGetRootSelectEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.homeGetRoot($select, options);
+        async homeGetRoot($select?: Set<HomeGetRootSelectEnum>, $expand?: Set<HomeGetRootExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DriveItem>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.homeGetRoot($select, $expand, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['MeDriveRootApi.homeGetRoot']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -8459,11 +8560,12 @@ export const MeDriveRootApiFactory = function (configuration?: Configuration, ba
          * 
          * @summary Get root from personal space
          * @param {Set<HomeGetRootSelectEnum>} [$select] Select additional properties to be returned.
+         * @param {Set<HomeGetRootExpandEnum>} [$expand] Expand related entities to be returned.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        homeGetRoot($select?: Set<HomeGetRootSelectEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
-            return localVarFp.homeGetRoot($select, options).then((request) => request(axios, basePath));
+        homeGetRoot($select?: Set<HomeGetRootSelectEnum>, $expand?: Set<HomeGetRootExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<DriveItem> {
+            return localVarFp.homeGetRoot($select, $expand, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -8476,19 +8578,26 @@ export class MeDriveRootApi extends BaseAPI {
      * 
      * @summary Get root from personal space
      * @param {Set<HomeGetRootSelectEnum>} [$select] Select additional properties to be returned.
+     * @param {Set<HomeGetRootExpandEnum>} [$expand] Expand related entities to be returned.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public homeGetRoot($select?: Set<HomeGetRootSelectEnum>, options?: RawAxiosRequestConfig) {
-        return MeDriveRootApiFp(this.configuration).homeGetRoot($select, options).then((request) => request(this.axios, this.basePath));
+    public homeGetRoot($select?: Set<HomeGetRootSelectEnum>, $expand?: Set<HomeGetRootExpandEnum>, options?: RawAxiosRequestConfig) {
+        return MeDriveRootApiFp(this.configuration).homeGetRoot($select, $expand, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
 export const HomeGetRootSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
+    LibreGraphShareTypes: '@libre.graph.shareTypes',
 } as const;
 export type HomeGetRootSelectEnum = typeof HomeGetRootSelectEnum[keyof typeof HomeGetRootSelectEnum];
+export const HomeGetRootExpandEnum = {
+    Children: 'children',
+    Thumbnails: 'thumbnails',
+} as const;
+export type HomeGetRootExpandEnum = typeof HomeGetRootExpandEnum[keyof typeof HomeGetRootExpandEnum];
 
 
 /**
@@ -8600,6 +8709,7 @@ export class MeDriveRootChildrenApi extends BaseAPI {
 export const HomeGetChildrenSelectEnum = {
     MicrosoftGraphDownloadUrl: '@microsoft.graph.downloadUrl',
     LibreGraphPermissionsActionsAllowedValues: '@libre.graph.permissions.actions.allowedValues',
+    LibreGraphShareTypes: '@libre.graph.shareTypes',
 } as const;
 export type HomeGetChildrenSelectEnum = typeof HomeGetChildrenSelectEnum[keyof typeof HomeGetChildrenSelectEnum];
 
