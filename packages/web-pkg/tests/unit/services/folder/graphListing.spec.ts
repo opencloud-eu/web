@@ -59,7 +59,7 @@ describe('listFilesViaGraph', () => {
     expect(statDriveItem).toHaveBeenCalledWith(
       'storage$space',
       { itemId: 'storage$space!root' },
-      expect.objectContaining({ expand: new Set(['children']) }),
+      expect.objectContaining({ expand: new Set(['children', 'thumbnails']) }),
       { signal: null }
     )
   })

@@ -18,7 +18,9 @@ const graphListingSelect = new Set<GetDriveItemV1SelectEnum>([
   '@libre.graph.permissions.actions.allowedValues',
   '@libre.graph.shareTypes'
 ])
-const graphListingExpand = new Set<GetDriveItemV1ExpandEnum>(['children'])
+// thumbnails answer whether an item has a preview, for the folder and its
+// children alike, which saves the client from guessing by mime type
+const graphListingExpand = new Set<GetDriveItemV1ExpandEnum>(['children', 'thumbnails'])
 
 // listFilesViaGraph lists a folder through graph, folder and children in one
 // request via $expand=children, the same shape PROPFIND with Depth: 1 returns.

@@ -105,6 +105,25 @@ describe('buildResourceFromDriveItem', () => {
     expect(r.shareTypes).toEqual([ShareTypes.user.value, ShareTypes.link.value])
   })
 
+  it('has a preview exactly when the server expanded thumbnails for it', () => {
+    const withThumbnail = buildResourceFromDriveItem(
+      {
+        id: 'x',
+        name: 'bild.jpg',
+        file: { mimeType: 'image/jpeg' },
+        thumbnails: [{ small: { url: 'https://cloud.test/preview' } }]
+      } as any,
+      space
+    )
+    const withoutThumbnail = buildResourceFromDriveItem(
+      { id: 'y', name: 'notes.json', file: { mimeType: 'application/json' } } as any,
+      space
+    )
+
+    expect(withThumbnail.hasPreview()).toBe(true)
+    expect(withoutThumbnail.hasPreview()).toBe(false)
+  })
+
   it('reports a shared item as a share root', () => {
     const r = buildResourceFromDriveItem(
       {

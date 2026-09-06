@@ -95,10 +95,9 @@ export const buildResourceFromDriveItem = (
     image: driveItem.image,
     photo: driveItem.photo,
     extraProps: {},
-    // PROPFIND has a has-preview property, graph has none and cannot expand
-    // thumbnails on a stat. Approximated by "any file might have one", the
-    // preview service falls back to the file type icon when it doesn't.
-    hasPreview: () => !isFolder,
+    // the server answers this through $expand=thumbnails, the counterpart of
+    // PROPFIND's has-preview property
+    hasPreview: () => !!driveItem.thumbnails?.length,
     canUpload: function (this: Resource) {
       return this.permissions.indexOf(DavPermission.FolderCreateable) >= 0
     },
