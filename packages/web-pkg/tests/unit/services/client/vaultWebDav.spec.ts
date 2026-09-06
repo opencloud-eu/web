@@ -11,7 +11,10 @@ import {
 vi.mock('../../../../src/composables/piniaStores/extensionRegistry', () => ({
   useExtensionRegistry: vi.fn(() => ({}))
 }))
-vi.mock('../../../../src/helpers/vault', () => ({
+// only the primitives are mocked, the translation on top of them (which moved
+// to vaultTranslate so the graph listing can use it too) runs for real
+vi.mock('../../../../src/helpers/vault', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../../../../src/helpers/vault')>()),
   getVaultClaim: vi.fn(),
   resolveVaultEngine: vi.fn(),
   decryptResourceInPlace: vi.fn((_engine, r) => Promise.resolve(r)),

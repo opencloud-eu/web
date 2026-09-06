@@ -11,18 +11,9 @@ import {
   SpaceResource
 } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
-import {
-  buildResourceFromDriveItem,
-  buildResourcesFromDriveItems,
-  urlJoin
-} from '@opencloud-eu/web-client'
 import { FolderLoaderOptions } from './types'
-import { Graph } from '@opencloud-eu/web-client/graph'
-import {
-  DriveItem,
-  GetDriveItemV1ExpandEnum,
-  GetDriveItemV1SelectEnum
-} from '@opencloud-eu/web-client/graph/generated'
+import { listFilesViaGraph } from './graphListing'
+import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
@@ -148,52 +139,5 @@ export class FolderLoaderSpace implements FolderLoader {
         }
       }
     }).restartable()
-  }
-}
-
-const graphListingSelect = new Set<GetDriveItemV1SelectEnum>([
-  '@libre.graph.permissions.actions.allowedValues',
-  '@libre.graph.shareTypes'
-])
-const graphListingExpand = new Set<GetDriveItemV1ExpandEnum>(['children'])
-
-// listFilesViaGraph lists a folder through graph, folder and children in one
-// request via $expand=children, the same shape PROPFIND with Depth: 1 returns.
-const listFilesViaGraph = async ({
-  graphClient,
-  space,
-  path,
-  fileId,
-  signal
-}: {
-  graphClient: Graph
-  space: SpaceResource
-  path: string
-  fileId: string
-  signal: AbortSignal
-}) => {
-  const driveId = space.id.toString()
-  // graph has no path lookup for the drive root, it is addressed by its id
-  const isRoot = !path || path === '/'
-  const itemId = fileId || (isRoot ? space.root?.id : undefined)
-  const driveItem = await graphClient.driveItems.statDriveItem(
-    driveId,
-    itemId ? { itemId } : { path },
-    { select: graphListingSelect, expand: graphListingExpand },
-    { signal }
-  )
-
-  // the item is authoritative, not the url: the route correction below exists
-  // to fix a stale path. the drive root reports itself as '.'
-  const parentPath = driveItem.parentReference?.path
-  const currentPath =
-    !parentPath || parentPath === '.'
-      ? '/'
-      : urlJoin(parentPath, driveItem.name, { leadingSlash: true })
-  const currentFolder = buildResourceFromDriveItem(driveItem, space, '', currentPath)
-
-  return {
-    resource: currentFolder,
-    children: buildResourcesFromDriveItems(driveItem.children || [], space, currentFolder.path)
   }
 }
