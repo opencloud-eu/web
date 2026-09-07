@@ -58,6 +58,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.15 [[#3316](https://github.com/opencloud-eu/web/pull/3316)]
+- chore(deps): update dependency eslint-plugin-vue to v10.11.0 [[#3317](https://github.com/opencloud-eu/web/pull/3317)]
 - chore(deps): update traefik docker tag to v3.7.13 [[#3311](https://github.com/opencloud-eu/web/pull/3311)]
 - chore(deps): update devdependencies (non-major) [[#3309](https://github.com/opencloud-eu/web/pull/3309)]
 - chore(deps): update devdependencies (non-major) [[#3292](https://github.com/opencloud-eu/web/pull/3292)]
