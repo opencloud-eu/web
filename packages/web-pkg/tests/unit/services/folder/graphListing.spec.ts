@@ -104,6 +104,30 @@ describe('listFilesViaGraph', () => {
     expect(children[0].mimeType).toBe('image/jpeg')
   })
 
+  it('keeps the paths relative to the share root in a share space', async () => {
+    // graph answers in drive coordinates: the share root reports itself as
+    // "/folderToShare", while the space is rooted at exactly that item
+    const { graphClient } = getGraphClient({
+      id: 'storage$space!shared',
+      name: 'folderToShare',
+      folder: {},
+      parentReference: { path: '/' },
+      children: [{ id: 'storage$space!child', name: 'lorem.txt' }]
+    } as DriveItem)
+    const shareSpace = { ...space, driveType: 'share' } as unknown as SpaceResource
+
+    const { resource, children } = await listFilesViaGraph({
+      graphClient,
+      space: shareSpace,
+      path: '/',
+      fileId: 'storage$space!shared',
+      signal: null
+    })
+
+    expect(resource.path).toBe('/')
+    expect(children[0].path).toBe('/lorem.txt')
+  })
+
   describe('inside a vault', () => {
     beforeEach(() => {
       vi.mocked(getVaultClaim).mockImplementation((_registry, _space, path) =>
