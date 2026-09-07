@@ -50,7 +50,8 @@ export const buildResourceFromDriveItem = (
   // the drive root reports its own name, so callers that know the path pin it
   pathOverride?: string
 ): Resource => {
-  const isFolder = !!driveItem.folder
+  // a drive root carries neither facet, it reports itself as a root instead
+  const isFolder = !!driveItem.folder || !!driveItem.root
   const name = driveItem.name || ''
   const path = pathOverride ?? urlJoin(parentPath, name, { leadingSlash: true })
   const actions = driveItem['@libre.graph.permissions.actions.allowedValues']

@@ -76,6 +76,26 @@ describe('buildResourceFromDriveItem', () => {
     expect(r.owner).toEqual({ id: 'alice', displayName: 'Alice' })
   })
 
+  it('treats a drive root as a folder, it carries neither facet', () => {
+    const r = buildResourceFromDriveItem(
+      {
+        id: 'storage$space!space',
+        name: '.',
+        size: 4897,
+        root: {},
+        parentReference: { id: 'storage$space', path: '.' },
+        '@libre.graph.permissions.actions.allowedValues': managerActions
+      } as any,
+      space,
+      '',
+      '/'
+    )
+
+    expect(r.isFolder).toBe(true)
+    expect(r.type).toBe('folder')
+    expect(r.path).toBe('/')
+  })
+
   it('carries the facets and the lock through', () => {
     const r = buildResourceFromDriveItem(
       {
