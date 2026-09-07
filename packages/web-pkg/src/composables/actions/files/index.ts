@@ -1,6 +1,5 @@
 export * from './useFileActionsDelete'
 export * from './useFileActionsDownloadFile'
 export * from './useFileActionsRestore'
-export * from './useFileActionsSaveAs'
 export * from './useFileActionsUndoDelete'
 export * from './useFileActionFallbackToDownload'

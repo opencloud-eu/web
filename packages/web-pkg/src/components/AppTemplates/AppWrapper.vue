@@ -54,9 +54,8 @@ import {
   FileContentOptions,
   useFileActionsDownloadFile,
   FileActionOptions,
-  FileAction,
   useLoadingService,
-  useFileActionsSaveAs,
+  useFileActionsSave,
   useSharesStore,
   useFileActionsDelete,
   useEventBus,
@@ -183,7 +182,7 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
         isReadOnly: unref(effectiveReadOnly),
         isEditor: unref(isEditor),
         hasAutoSave: !disableAutoSave,
-        mainActions: unref(fileActions),
+        mainActions: [unref(saveAction)],
         dropDownMenuSections: unref(dropDownMenuSections),
         dropDownActionOptions: unref(actionOptions),
         onClose: () => {
@@ -195,8 +194,6 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
 })
 
 registerExtensions(appBarExtension)
-
-const { actions: saveAsActions } = useFileActionsSaveAs({ content: currentContent })
 
 const isEditor = computed(() => {
   // A collaborative app drives its content through the Yjs session instead
@@ -610,6 +607,14 @@ const save = async () => {
   await saveFileTask.perform()
 }
 
+const { saveAction, saveAsAction } = useFileActionsSave({
+  content: currentContent,
+  isDirty,
+  isEditor,
+  isReadOnly,
+  onSave: save
+})
+
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
 onMounted(() => {
   deleteResourceEventToken = eventBus.subscribe(
@@ -670,23 +675,6 @@ bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
   save()
 })
 
-const fileActionsSave = computed<FileAction[]>(() => {
-  return [
-    {
-      name: 'save-file',
-      disabledTooltip: () => '',
-      // Same reasoning as `isDirty`: only a genuinely read-only permission
-      // hides the action; a locked session must still allow persisting.
-      isVisible: () => unref(isEditor) && !unref(isReadOnly),
-      isDisabled: () => !unref(isDirty),
-      icon: 'save',
-      id: 'app-save-action',
-      label: () => $gettext('Save'),
-      handler: save
-    }
-  ]
-})
-
 const actionOptions = computed<FileActionOptions>(() => {
   return {
     space: unref(space),
@@ -736,16 +724,9 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
 }
 
 const menuItemsPrimary = computed(() => {
-  return [
-    ...unref(openWithAppActions),
-    ...unref(fileActionsSave),
-    ...unref(saveAsActions).map((action) => {
-      return {
-        ...action,
-        isVisible: (args: FileActionOptions) => isEditor.value && action.isVisible(args)
-      }
-    })
-  ].filter((item) => item.isVisible(unref(actionOptions)))
+  return [...unref(openWithAppActions), unref(saveAction), unref(saveAsAction)].filter((item) =>
+    item.isVisible(unref(actionOptions))
+  )
 })
 
 const extensionContextActions = computed(() => {
@@ -806,8 +787,6 @@ const dropDownMenuSections = computed(() => {
   }
   return sections
 })
-
-const fileActions = computed((): Action[] => [...unref(fileActionsSave)])
 
 onBeforeRouteLeave((_to, _from, next) => {
   if (unref(isDirty)) {
