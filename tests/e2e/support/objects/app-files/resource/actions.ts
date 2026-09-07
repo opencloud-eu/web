@@ -772,11 +772,15 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to, password })
   }
 
-  const respPromise = page.waitForResponse(
-    (resp) =>
-      [201, 204].includes(resp.status()) &&
-      ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
-  )
+  // an upload that is expected to fail never produces this response, and a
+  // promise left pending rejects once the page closes
+  const respPromise = expectToFail
+    ? null
+    : page.waitForResponse(
+        (resp) =>
+          [201, 204].includes(resp.status()) &&
+          ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
+      )
 
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
   let uploadAction: Promise<void> = page
