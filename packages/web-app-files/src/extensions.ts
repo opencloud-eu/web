@@ -10,7 +10,6 @@ import {
   useResourcesStore,
   useRouter,
   useSearch,
-  useSpaceActionsCreate,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -23,6 +22,7 @@ import { useFileActions } from './composables/extensions/useFileActions'
 import { useSpaceActions } from './composables/extensions/useSpaceActions'
 import { useUploadActions } from './composables/extensions/useUploadActions'
 import { isPublicSpaceResource, SharePermissionBit, urlJoin } from '@opencloud-eu/web-client'
+import { useSpaceActionsCreate } from './composables/actions/spaces/useSpaceActionsCreate'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import CreateOrUploadMenu from './components/CreateOrUploadMenu.vue'

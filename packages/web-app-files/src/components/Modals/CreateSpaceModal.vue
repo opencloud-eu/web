@@ -32,7 +32,7 @@
       </div>
     </template>
     <component
-      :is="vaultCreation.setupComponent"
+      :is="vaultCreation!.setupComponent"
       v-else
       ref="setupComponent"
       :vault-name="spaceName"
@@ -65,24 +65,17 @@
 <script setup lang="ts">
 import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useIsResourceNameValid } from '../../composables/resources'
-import type { VaultCreation, VaultFinalize, Modal } from '../../composables/piniaStores'
+import {
+  getVaultCreator,
+  useCreateSpace,
+  useExtensionRegistry,
+  useIsResourceNameValid,
+  type Modal,
+  type VaultFinalize
+} from '@opencloud-eu/web-pkg'
 
-const {
-  modal,
-  vaultCreation = undefined,
-  callbackFn
-} = defineProps<{
+const { modal } = defineProps<{
   modal: Modal
-  /**
-   * Creation bits of the vault extension that would claim the new space.Absent
-   * when no extension can create vaults, hence hide the encryption switch.
-   */
-  vaultCreation?: VaultCreation
-  callbackFn: (
-    spaceName: string,
-    options: { encrypt: boolean; finalizeVault?: VaultFinalize }
-  ) => Promise<void>
 }>()
 
 const emit = defineEmits<{
@@ -91,6 +84,10 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const { isSpaceNameValid } = useIsResourceNameValid()
+const { addNewSpace } = useCreateSpace()
+const extensionRegistry = useExtensionRegistry()
+
+const vaultCreation = computed(() => getVaultCreator(extensionRegistry)?.creation)
 
 const setupComponent = ref<{ finalize: VaultFinalize }>()
 const step = ref<'name' | 'setup'>('name')
@@ -98,7 +95,7 @@ const encrypt = ref(false)
 const setupValid = ref(false)
 const spaceName = ref($gettext('New space'))
 
-const canEncrypt = computed(() => !!vaultCreation)
+const canEncrypt = computed(() => !!unref(vaultCreation))
 const errorMessage = computed(() => isSpaceNameValid(unref(spaceName)).error)
 const inputValid = computed(() =>
   unref(step) === 'setup' ? unref(setupValid) : !unref(errorMessage)
@@ -133,7 +130,7 @@ async function onConfirm() {
   if (!unref(inputValid) || (unref(encrypt) && unref(step) === 'name')) {
     return Promise.reject()
   }
-  await callbackFn(unref(spaceName), {
+  await addNewSpace(unref(spaceName), {
     encrypt: unref(encrypt),
     finalizeVault: unref(setupComponent)?.finalize
   })
