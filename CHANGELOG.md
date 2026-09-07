@@ -8,6 +8,7 @@
 
 ### 💥 Breaking changes
 
+- refactor!: useSpaceActionsCreate to files app [[#3303](https://github.com/opencloud-eu/web/pull/3303)]
 - refactor!: put save actions into one composable [[#3299](https://github.com/opencloud-eu/web/pull/3299)]
 - refactor!: move more file actions from web-pkg [[#3296](https://github.com/opencloud-eu/web/pull/3296)]
 - perf!: one shared intersection observer [[#3281](https://github.com/opencloud-eu/web/pull/3281)]
@@ -17,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- Editor: Add Default font-size reset and simplify zoom styling [[#3304](https://github.com/opencloud-eu/web/pull/3304)]
 - fix: send mtime metadata for public link uploads [[#3322](https://github.com/opencloud-eu/web/pull/3322)]
 - fix: prevent browser login dialog on upload [[#3308](https://github.com/opencloud-eu/web/pull/3308)]
 - fix: new button flickering during navigation [[#3293](https://github.com/opencloud-eu/web/pull/3293)]
