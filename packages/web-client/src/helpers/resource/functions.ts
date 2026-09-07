@@ -1,6 +1,7 @@
 import path, { basename, dirname } from 'path'
 import { urlJoin } from '../../utils'
 import { DavPermission, DavProperty } from '../../webdav/constants'
+import { toClarkKey } from '../../webdav/client/namespaces'
 import { Resource, SearchResource, TrashResource, WebDavResponseResource } from './types'
 import { camelCase } from 'lodash-es'
 
@@ -124,11 +125,11 @@ export function buildResource(
 
   const extraProps: Record<string, unknown> = {}
   for (const name of extraPropNames || []) {
-    // only use the tag name, the namespace is ignored by our WebDav library
-    // https://github.com/perry-mitchell/webdav-client/issues/210
-    const extraPropName = name.split(':').pop()
-    if (resource.props[extraPropName]) {
-      extraProps[name] = resource.props[extraPropName]
+    // Props are parsed in Clark notation, so a name is looked up under the
+    // namespace it was registered with and two apps can share a name.
+    const value = resource.props[toClarkKey(name)]
+    if (value !== undefined) {
+      extraProps[name] = value
     }
   }
 

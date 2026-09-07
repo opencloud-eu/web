@@ -139,8 +139,10 @@ describe('buildResource', () => {
       props: {
         'first-custom-prop': '1',
 
-        // WebDAV library removes the namespace in responses
-        'second-custom-prop': '2',
+        // Props are keyed in Clark notation, so a name registered with a
+        // namespace is looked up under that namespace.
+        '{x}second-custom-prop': '2',
+        '{https://apps.example/ns}third-custom-prop': '3',
 
         // make this explicit because of mockDeep
         'non-existing-prop': undefined
@@ -149,11 +151,29 @@ describe('buildResource', () => {
     const resource = buildResource(webDavResponse, [
       'first-custom-prop',
       'x:second-custom-prop',
+      '{https://apps.example/ns}third-custom-prop',
       'non-existing-prop'
     ])
 
     expect(resource.extraProps['first-custom-prop']).toBe('1')
     expect(resource.extraProps['x:second-custom-prop']).toBe('2')
+    expect(resource.extraProps['{https://apps.example/ns}third-custom-prop']).toBe('3')
     expect(resource.extraProps['non-existing-prop']).toBeUndefined()
+  })
+
+  it('keeps one name in two namespaces apart', () => {
+    const webDavResponse = mockDeep<WebDavResponseResource>({
+      props: {
+        '{https://apps.example/project}color': 'red',
+        '{https://apps.example/review}color': 'approved'
+      }
+    })
+    const resource = buildResource(webDavResponse, [
+      '{https://apps.example/project}color',
+      '{https://apps.example/review}color'
+    ])
+
+    expect(resource.extraProps['{https://apps.example/project}color']).toBe('red')
+    expect(resource.extraProps['{https://apps.example/review}color']).toBe('approved')
   })
 })

@@ -1,8 +1,13 @@
-import { parseXML, prepareFileFromProps } from 'webdav'
+import {
+  DAVResultResponseProps,
+  displaynameTagParser,
+  parseXML,
+  prepareFileFromProps
+} from 'webdav'
 import { XMLParser } from 'fast-xml-parser'
 import { WebDavResponseResource, WebDavResponseTusSupport } from '../../helpers'
 import { urlJoin } from '../../utils'
-import { DavErrorCode } from '../constants'
+import { DavErrorCode, DavNamespaces } from '../constants'
 
 export const parseTusHeaders = (headers: Headers) => {
   const result: WebDavResponseTusSupport = {}
@@ -25,6 +30,36 @@ export const parseTusHeaders = (headers: Headers) => {
   return result
 }
 
+/**
+ * Properties are parsed in Clark notation (`{namespace}name`), so that two apps
+ * can use the same property name in different namespaces without colliding.
+ * The well-known namespaces are stripped back off again: every consumer of
+ * `Resource.props` addresses those by their bare name, and so does the WebDAV
+ * library's own `prepareFileFromProps`.
+ */
+const stripWellKnownNamespaces = (props: Record<string, unknown>) => {
+  const wellKnown = Object.values(DavNamespaces).map((uri) => `{${uri}}`)
+
+  return Object.fromEntries(
+    Object.entries(props).map(([key, value]) => {
+      const namespace = wellKnown.find((prefix) => key.startsWith(prefix))
+      return [namespace ? key.slice(namespace.length) : key, value]
+    })
+  ) as DAVResultResponseProps
+}
+
+/**
+ * `oc:name` carries the file name and must not be interpreted: a file called
+ * `2024.10` would otherwise arrive as the number 2024.1. The WebDAV library
+ * guards `d:displayname` this way, but knows nothing about this one.
+ */
+const nameTagParser = (jPath: string, value: string): string | void => {
+  if (jPath.endsWith('propstat.prop.name')) {
+    return
+  }
+  return value
+}
+
 export const parseMultiStatus = async (xmlBody: string) => {
   const parseFileName = (name: string) => {
     const decoded = decodeURIComponent(name)
@@ -39,11 +74,17 @@ export const parseMultiStatus = async (xmlBody: string) => {
     return decoded
   }
 
-  const parsedXML = await parseXML(xmlBody)
+  const parsedXML = await parseXML(xmlBody, {
+    attributeNamePrefix: '@',
+    attributeParsers: [],
+    clarkNotationProps: true,
+    tagParsers: [displaynameTagParser, nameTagParser]
+  })
 
   return parsedXML.multistatus.response.map(({ href, propstat }) => {
+    const props = propstat.prop && typeof propstat.prop === 'object' ? propstat.prop : {}
     const data = {
-      ...prepareFileFromProps(propstat.prop, parseFileName(href), true),
+      ...prepareFileFromProps(stripWellKnownNamespaces(props), parseFileName(href), true),
       processing: propstat.status === 'HTTP/1.1 425 TOO EARLY'
     }
 
