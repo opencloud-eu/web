@@ -17,11 +17,15 @@ import { listFilesViaGraph } from './graphListing'
  * get the same shapes back, whichever API answered.
  *
  * What stays on webdav is what graph has no answer for: the trash bin, which
- * has no listing, and the file versions, which have no endpoint.
+ * has no listing, the file versions, which have no endpoint, and a request for
+ * custom dav properties, which graph has no mechanism for.
  */
 export function createGraphWebDav(inner: WebDAV, graphClient: () => Graph): WebDAV {
   const listFiles: WebDAV['listFiles'] = async (space, { path, fileId } = {}, options = {}) => {
-    if (options.isTrash) {
+    // the trash bin has no graph listing, and a caller asking for its own dav
+    // properties (the vault's integrity token, say) can only be answered by a
+    // PROPFIND: graph has no arbitrary property mechanism
+    if (options.isTrash || options.extraProps?.length) {
       return inner.listFiles(space, { path, fileId }, options)
     }
 
