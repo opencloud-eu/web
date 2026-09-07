@@ -1,5 +1,7 @@
 export type {
   ContentType,
+  MentionItem,
+  TextEditorMentionsOptions,
   TextEditorOptions,
   TextEditorInstance,
   TextEditorState,
