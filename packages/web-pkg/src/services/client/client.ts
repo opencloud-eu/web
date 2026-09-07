@@ -11,6 +11,7 @@ import { Language } from 'vue3-gettext'
 import { FetchEventSourceInit } from '@microsoft/fetch-event-source'
 import { sse } from '@opencloud-eu/web-client/sse'
 import { AuthStore, ConfigStore } from '../../composables'
+import { createGraphWebDav } from './graphWebDav'
 import { createVaultWebDav } from './vaultWebDav'
 
 const createFetchOptions = (authParams: AuthParameters, language: string): FetchEventSourceInit => {
@@ -121,7 +122,7 @@ export class ClientService {
   private initGraphClient() {
     const axiosClient = axios.create({ headers: this.staticHeaders })
     axiosClient.interceptors.request.use((config) => {
-      Object.assign(config.headers, this.getDynamicHeaders())
+      Object.assign(config.headers, this.getDynamicHeaders(), this.getPublicLinkHeaders())
       return config
     })
     this.graphClient = graph(this.configStore.serverUrl, axiosClient)
@@ -146,31 +147,41 @@ export class ClientService {
   }
 
   private initWebDavClient() {
-    const client = webdav(this.configStore.serverUrl, () => {
-      const headers = { ...this.staticHeaders, ...this.getDynamicHeaders() }
-
-      if (this.authStore.publicLinkToken) {
-        headers['public-token'] = this.authStore.publicLinkToken
-      }
-
-      if (this.authStore.publicLinkPassword) {
-        headers['Authorization'] =
-          'Basic ' +
-          Buffer.from(['public', this.authStore.publicLinkPassword].join(':')).toString('base64')
-      }
-
-      return headers
-    })
-    // Wrap the raw client so vault path/name translation happens
-    // transparently for every caller (clear-text in, clear-text out). It's a
-    // strict pass-through for any path that isn't inside a vault.
-    this.webDavClient = createVaultWebDav(client)
+    const client = webdav(this.configStore.serverUrl, () => ({
+      ...this.staticHeaders,
+      ...this.getDynamicHeaders(),
+      ...this.getPublicLinkHeaders()
+    }))
+    // Two wrappers, outside in: vault translation hands clear-text paths in and
+    // clear-text names out, below it the graph layer answers what graph can
+    // answer. The vault layer stays outermost so the graph requests carry the
+    // encrypted names the server stores.
+    this.webDavClient = createVaultWebDav(createGraphWebDav(client, () => this.graphClient))
   }
 
   /**
    * Dynamic headers that should be provided via callback or interceptor because they may
    * change during the lifetime of the application (e.g. token renewal).
    */
+  // A public link session has no access token: the link token identifies it and
+  // a link password rides along as basic auth. Graph needs them just like webdav
+  // does, public links are listed through graph as well.
+  private getPublicLinkHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {}
+
+    if (this.authStore.publicLinkToken) {
+      headers['public-token'] = this.authStore.publicLinkToken
+    }
+
+    if (this.authStore.publicLinkPassword) {
+      headers['Authorization'] =
+        'Basic ' +
+        Buffer.from(['public', this.authStore.publicLinkPassword].join(':')).toString('base64')
+    }
+
+    return headers
+  }
+
   private getDynamicHeaders({ useAuth = true }: { useAuth?: boolean } = {}): Record<
     string,
     string

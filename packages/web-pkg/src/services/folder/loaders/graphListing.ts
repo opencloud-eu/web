@@ -1,6 +1,7 @@
 import {
   buildResourceFromDriveItem,
   buildResourcesFromDriveItems,
+  graphDriveIdOfSpace,
   isShareSpaceResource,
   SpaceResource,
   urlJoin
@@ -56,7 +57,7 @@ export const listFilesViaGraph = async ({
   fileId: string
   signal: AbortSignal
 }) => {
-  const driveId = space.id.toString()
+  const driveId = graphDriveIdOfSpace(space)
   // graph has no path lookup for the drive root, it is addressed by its id
   const isRoot = !path || path === '/'
   const itemId = fileId || (isRoot ? space.root?.id : undefined)
