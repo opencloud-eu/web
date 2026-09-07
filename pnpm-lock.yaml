@@ -645,7 +645,7 @@ importers:
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
       dompurify:
         specifier: ^3.2.3
-        version: 3.4.14
+        version: 3.4.15
       fuse.js:
         specifier: 7.5.0
         version: 7.5.0
@@ -764,7 +764,7 @@ importers:
         version: 14.4.0(vue@3.5.42(typescript@6.0.3))
       dompurify:
         specifier: ^3.3.3
-        version: 3.4.14
+        version: 3.4.15
       lodash-es:
         specifier: ^4.17.21
         version: 4.18.1
@@ -1070,7 +1070,7 @@ importers:
         version: 4.3.1
       dompurify:
         specifier: ^3.3.3
-        version: 3.4.14
+        version: 3.4.15
       filesize:
         specifier: ^11.0.14
         version: 11.0.23
@@ -3037,8 +3037,8 @@ packages:
     resolution: {integrity: sha512-IGBwjF7tNk3cwypFNH/7bfzBcgSCbaMOD3GsaY1AU/JRrnHnYgEM0+9kQt52iZxjNsjBtJYtao146V+f8jFZNw==}
     engines: {node: '>=10'}
 
-  dompurify@3.4.14:
-    resolution: {integrity: sha512-dVoH9z+MY+C9IilgGCk3YfFqjLi3fChm2OiKJMzh6axrJ5qwxqWaZamgmHrpv22CN/KdbZJuGEGgfQoL00LTdg==}
+  dompurify@3.4.15:
+    resolution: {integrity: sha512-EUBjM+B+lkDE41iE82DDSCfkoPGfXx8IxFxPMjNzm/Uk4xDet77rTN9wqlxlVg71kK7XGuUMv6wUxJUwwv+Xyw==}
 
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
@@ -7038,7 +7038,7 @@ snapshots:
 
   domain-browser@4.22.0: {}
 
-  dompurify@3.4.14:
+  dompurify@3.4.15:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
