@@ -200,7 +200,7 @@ importers:
         version: 1.63.0
       playwright-bdd:
         specifier: ^9.2.0
-        version: 9.2.0(@playwright/test@1.63.0)
+        version: 9.2.1(@playwright/test@1.63.0)
       playwright-core:
         specifier: ^1.61.1
         version: 1.63.0
@@ -4295,8 +4295,8 @@ packages:
   pkg-types@2.3.1:
     resolution: {integrity: sha512-y+ichcgc2LrADuhLNAx8DFjVfgz91pRxfZdI3UDhxHvcVEZsenLO+7XaU5vOp0u/7V/wZ+plyuQxtrDlZJ+yeg==}
 
-  playwright-bdd@9.2.0:
-    resolution: {integrity: sha512-1tBTmo4DpOhLsc+A6PB4isWO3DHKb4BQ3Tzw5+ze/PmgBW9W2m9c+nc0TPy2nByWJtw0gKSfMoexyBR+y82+pg==}
+  playwright-bdd@9.2.1:
+    resolution: {integrity: sha512-gi7LTeat3ar1mPO53UBqQIv0HYHaw+GXq7P3stxGLPVlRpbW1ZmWre/yQBV/mtInJgEmKwBrJ/V1zT8NmJOuzg==}
     engines: {node: '>=20'}
     hasBin: true
     peerDependencies:
@@ -8313,7 +8313,7 @@ snapshots:
       exsolve: 1.1.1
       pathe: 2.0.3
 
-  playwright-bdd@9.2.0(@playwright/test@1.63.0):
+  playwright-bdd@9.2.1(@playwright/test@1.63.0):
     dependencies:
       '@cucumber/ci-environment': 13.0.0
       '@cucumber/cucumber-expressions': 19.0.0
