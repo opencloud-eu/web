@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @fredrikblau, @kulmann, @saw-jan, @v-scharf
+@AlexAndBear, @JammingBen, @fredrikblau, @kulmann, @saw-jan, @tammi-23, @v-scharf
 
 ### 💥 Breaking changes
 
@@ -15,6 +15,20 @@
 - fix(design-system): useIsVisible observer look-ahead [[#3210](https://github.com/opencloud-eu/web/pull/3210)]
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
+
+### 📈 Enhancement
+
+- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
+- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
+- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
+- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
+- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
+- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
+- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### 🐛 Bug Fixes
 
@@ -45,19 +59,6 @@
 - test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
 - test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
 - test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
-
-### 📈 Enhancement
-
-- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
-- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
-- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
-- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
-- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
-- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
-- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
-- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
-- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
-- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### 📦️ Dependencies
 
