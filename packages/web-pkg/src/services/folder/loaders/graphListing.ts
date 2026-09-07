@@ -2,6 +2,8 @@ import {
   buildResourceFromDriveItem,
   buildResourcesFromDriveItems,
   graphDriveIdOfSpace,
+  graphRefOfSpace,
+  isPublicSpaceResource,
   isShareSpaceResource,
   SpaceResource,
   urlJoin
@@ -58,17 +60,17 @@ export const listFilesViaGraph = async ({
   signal: AbortSignal
 }) => {
   const driveId = graphDriveIdOfSpace(space)
-  // graph has no path lookup for the drive root, it is addressed by its id
-  const isRoot = !path || path === '/'
-  const itemId = fileId || (isRoot ? space.root?.id : undefined)
   const registry = useExtensionRegistry()
   // inside a vault the server knows the encrypted names only
   const serverPath = await toVaultServerPath(registry, space, path)
   const driveItem = await graphClient.driveItems.statDriveItem(
     driveId,
-    itemId ? { itemId } : { path: serverPath },
+    graphRefOfSpace(space, { path: serverPath, fileId }),
     { select: graphListingSelect, expand: graphListingExpand },
-    { signal }
+    {
+      signal,
+      ...(isPublicSpaceResource(space) && { headers: { 'public-token': space.id.toString() } })
+    }
   )
 
   const currentPath = currentPathOf(driveItem, space, path)

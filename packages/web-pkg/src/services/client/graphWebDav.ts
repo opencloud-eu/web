@@ -1,7 +1,11 @@
 import {
+  buildPublicSpaceResourceFromDriveItem,
   buildResourceFromDriveItem,
   DavHttpError,
   graphDriveIdOfSpace,
+  graphRefOfSpace,
+  isPublicSpaceResource,
+  PublicSpaceResource,
   Resource,
   SpaceResource,
   urlJoin
@@ -34,19 +38,60 @@ export function createGraphWebDav(inner: WebDAV, graphClient: () => Graph): WebD
     ...inner,
 
     async getFileInfo(space, resource = {}, options): Promise<Resource> {
+      const driveId = graphDriveIdOfSpace(space)
+      // a public link is identified by its token, and the first stat runs
+      // before the auth store knows about it: it is what tells the client
+      // whether the link needs a password at all
+      const requestOptions = {
+        signal: options?.signal,
+        ...(isPublicSpaceResource(space) && { headers: { 'public-token': space.id.toString() } })
+      }
+
       try {
         const driveItem = await graphClient().driveItems.statDriveItem(
-          graphDriveIdOfSpace(space),
-          resource.fileId ? { itemId: resource.fileId } : { path: resource.path || '/' },
+          driveId,
+          graphRefOfSpace(space, resource),
           { select: statSelect, expand: statExpand },
-          { signal: options?.signal }
+          requestOptions
+        )
+        const built = buildResourceFromDriveItem(
+          driveItem,
+          space,
+          '',
+          pathOf(driveItem, space, resource)
         )
 
-        return buildResourceFromDriveItem(driveItem, space, '', pathOf(driveItem, space, resource))
+        // the root of a public link is the space the app navigates in, so it
+        // carries the link's own properties rather than being a plain resource
+        if (isPublicSpaceResource(space) && !resource.fileId && !resource.path) {
+          return buildPublicSpaceResourceFromDriveItem({
+            driveItem,
+            resource: built,
+            space: space as PublicSpaceResource,
+            drive: await publicLinkDrive(graphClient, driveId, requestOptions)
+          })
+        }
+
+        return built
       } catch (error) {
         throw asDavError(error)
       }
     }
+  }
+}
+
+// The mountpoint drive of a public link carries its owner. Failing to read it
+// costs the owner's name on the drop upload page, nothing else, so a link that
+// still works stays usable.
+const publicLinkDrive = async (
+  graphClient: () => Graph,
+  driveId: string,
+  requestOptions: Record<string, unknown>
+) => {
+  try {
+    return await graphClient().drives.getDrive(driveId, undefined, requestOptions)
+  } catch {
+    return undefined
   }
 }
 
