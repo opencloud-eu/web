@@ -58,6 +58,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update traefik docker tag to v3.7.13 [[#3311](https://github.com/opencloud-eu/web/pull/3311)]
+- chore(deps): update devdependencies (non-major) [[#3309](https://github.com/opencloud-eu/web/pull/3309)]
 - chore(deps): update devdependencies (non-major) [[#3292](https://github.com/opencloud-eu/web/pull/3292)]
 - chore(deps): update dependency filesize to v11.0.23 [[#3306](https://github.com/opencloud-eu/web/pull/3306)]
 - chore(deps): update vitest monorepo to v5 [[#3307](https://github.com/opencloud-eu/web/pull/3307)]
