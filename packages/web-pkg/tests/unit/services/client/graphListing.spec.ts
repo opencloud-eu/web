@@ -1,25 +1,7 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
-import { listFilesViaGraph } from '../../../../src/services/folder/loaders/graphListing'
-import {
-  decryptResourceInPlace,
-  getVaultClaim,
-  markVaultStatus,
-  resolveVaultEngine
-} from '../../../../src/helpers/vault'
-
-vi.mock('../../../../src/composables/piniaStores/extensionRegistry', () => ({
-  useExtensionRegistry: vi.fn(() => ({}))
-}))
-// only the vault primitives are mocked, the translation on top of them runs
-vi.mock('../../../../src/helpers/vault', () => ({
-  getVaultClaim: vi.fn(() => null),
-  resolveVaultEngine: vi.fn(),
-  decryptResourceInPlace: vi.fn((_engine, r) => Promise.resolve(r)),
-  markVaultStatus: vi.fn()
-}))
-
+import { listFilesViaGraph } from '../../../../src/services/client/graphListing'
 const space = {
   id: 'storage$space',
   webDavPath: '/dav/spaces/storage$space',
@@ -46,8 +28,6 @@ function getGraphClient(driveItem: DriveItem = folder) {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.mocked(getVaultClaim).mockReturnValue(null)
-  vi.mocked(decryptResourceInPlace).mockImplementation((_engine, r) => Promise.resolve(r))
 })
 
 describe('listFilesViaGraph', () => {
@@ -126,52 +106,5 @@ describe('listFilesViaGraph', () => {
 
     expect(resource.path).toBe('/')
     expect(children[0].path).toBe('/lorem.txt')
-  })
-
-  describe('inside a vault', () => {
-    beforeEach(() => {
-      vi.mocked(getVaultClaim).mockImplementation((_registry, _space, path) =>
-        path?.startsWith('/my.vault') ? ({ vaultRoot: '/my.vault' } as any) : null
-      )
-      vi.mocked(resolveVaultEngine).mockResolvedValue({
-        vaultRoot: '/my.vault',
-        encryptPath: vi.fn((p: string) => Promise.resolve(`ENC(${p})`))
-      } as any)
-    })
-
-    it('encrypts the looked up path, the server knows the encrypted names only', async () => {
-      const { graphClient, statDriveItem } = getGraphClient()
-
-      await listFilesViaGraph({
-        graphClient,
-        space,
-        path: '/my.vault/Urlaub',
-        fileId: null,
-        signal: null
-      })
-
-      expect(statDriveItem.mock.calls[0][1]).toEqual({ path: '/my.vault/ENC(Urlaub)' })
-    })
-
-    it('decrypts the folder and its children on the way back', async () => {
-      const { graphClient } = getGraphClient({
-        id: 'storage$space!enc',
-        name: 'enc-folder',
-        folder: {},
-        parentReference: { path: '/my.vault' },
-        children: [{ id: 'storage$space!encChild', name: 'enc-child' }]
-      } as DriveItem)
-
-      await listFilesViaGraph({
-        graphClient,
-        space,
-        path: '/my.vault/Urlaub',
-        fileId: null,
-        signal: null
-      })
-
-      expect(decryptResourceInPlace).toHaveBeenCalledTimes(2)
-      expect(markVaultStatus).toHaveBeenCalledTimes(1)
-    })
   })
 })

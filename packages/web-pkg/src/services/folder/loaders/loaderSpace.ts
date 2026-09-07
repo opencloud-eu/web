@@ -12,7 +12,6 @@ import {
 } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
 import { FolderLoaderOptions } from './types'
-import { listFilesViaGraph } from './graphListing'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
@@ -60,7 +59,7 @@ export class FolderLoaderSpace implements FolderLoader {
 
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
-          listFilesViaGraph({ graphClient, space, path, fileId, signal: signal1 })
+          webdav.listFiles(space, { path, fileId }, { signal: signal1 })
         )
 
         // if current folder has no id (= singe file public link) we must not correct the route

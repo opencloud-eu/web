@@ -1,78 +1,84 @@
 import {
   buildPublicSpaceResourceFromDriveItem,
-  buildResourceFromDriveItem,
   DavHttpError,
   graphDriveIdOfSpace,
-  graphRefOfSpace,
   isPublicSpaceResource,
   PublicSpaceResource,
   Resource,
-  SpaceResource,
   urlJoin
 } from '@opencloud-eu/web-client'
-import { WebDAV } from '@opencloud-eu/web-client/webdav'
+import { ListFilesResult, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { Graph } from '@opencloud-eu/web-client/graph'
-import {
-  GetDriveItemV1ExpandEnum,
-  GetDriveItemV1SelectEnum
-} from '@opencloud-eu/web-client/graph/generated'
-
-const statSelect = new Set<GetDriveItemV1SelectEnum>([
-  '@libre.graph.permissions.actions.allowedValues',
-  '@libre.graph.shareTypes',
-  '@microsoft.graph.downloadUrl'
-])
-const statExpand = new Set<GetDriveItemV1ExpandEnum>(['thumbnails'])
+import { listFilesViaGraph } from './graphListing'
 
 /**
- * Wrap a WebDAV client so a single stat goes through graph instead of a
- * PROPFIND with depth 0. Callers keep using `clientService.webdav.getFileInfo`
- * and get the same Resource back, whichever API answered.
+ * Wrap a WebDAV client so everything that only reads metadata goes through
+ * graph instead of a PROPFIND. Callers keep using `clientService.webdav` and
+ * get the same shapes back, whichever API answered.
  *
- * Everything a stat can be addressed by works: an item id, a path (through
- * graph's colon syntax) and a public link, which is a drive of its own built
- * from the link token.
+ * What stays on webdav is what graph has no answer for: the trash bin, which
+ * has no listing, and the file versions, which have no endpoint.
  */
 export function createGraphWebDav(inner: WebDAV, graphClient: () => Graph): WebDAV {
+  const listFiles: WebDAV['listFiles'] = async (space, { path, fileId } = {}, options = {}) => {
+    if (options.isTrash) {
+      return inner.listFiles(space, { path, fileId }, options)
+    }
+
+    try {
+      const { driveItem, resource, children } = await listFilesViaGraph({
+        graphClient: graphClient(),
+        space,
+        path,
+        fileId,
+        signal: options.signal,
+        withChildren: options.depth !== 0
+      })
+
+      // the root of a public link is the space the app navigates in, so it
+      // carries the link's own properties rather than being a plain resource
+      if (isPublicSpaceResource(space) && !fileId && (!path || path === '/')) {
+        return {
+          resource: buildPublicSpaceResourceFromDriveItem({
+            driveItem,
+            resource,
+            space: space as PublicSpaceResource,
+            drive: await publicLinkDrive(graphClient, graphDriveIdOfSpace(space), options.signal)
+          }),
+          children
+        } as ListFilesResult
+      }
+
+      return { resource, children }
+    } catch (error) {
+      throw asDavError(error)
+    }
+  }
+
   return {
     ...inner,
 
+    listFiles,
+
     async getFileInfo(space, resource = {}, options): Promise<Resource> {
-      const driveId = graphDriveIdOfSpace(space)
-      // a public link is identified by its token, and the first stat runs
-      // before the auth store knows about it: it is what tells the client
-      // whether the link needs a password at all
-      const requestOptions = {
-        signal: options?.signal,
-        ...(isPublicSpaceResource(space) && { headers: { 'public-token': space.id.toString() } })
-      }
+      return (await listFiles(space, resource, { ...options, depth: 0 })).resource
+    },
 
+    async getPathForFileId(id, options) {
       try {
+        // the item knows where it sits, and the drive it sits in is the first
+        // part of its own id
         const driveItem = await graphClient().driveItems.statDriveItem(
-          driveId,
-          graphRefOfSpace(space, resource),
-          { select: statSelect, expand: statExpand },
-          requestOptions
+          id.split('!')[0],
+          { itemId: id },
+          {},
+          options
         )
-        const built = buildResourceFromDriveItem(
-          driveItem,
-          space,
-          '',
-          pathOf(driveItem, space, resource)
-        )
+        const parentPath = driveItem.parentReference?.path
 
-        // the root of a public link is the space the app navigates in, so it
-        // carries the link's own properties rather than being a plain resource
-        if (isPublicSpaceResource(space) && !resource.fileId && !resource.path) {
-          return buildPublicSpaceResourceFromDriveItem({
-            driveItem,
-            resource: built,
-            space: space as PublicSpaceResource,
-            drive: await publicLinkDrive(graphClient, driveId, requestOptions)
-          })
-        }
-
-        return built
+        return !parentPath || parentPath === '.'
+          ? urlJoin(driveItem.name, { leadingSlash: true })
+          : urlJoin(parentPath, driveItem.name, { leadingSlash: true })
       } catch (error) {
         throw asDavError(error)
       }
@@ -83,33 +89,12 @@ export function createGraphWebDav(inner: WebDAV, graphClient: () => Graph): WebD
 // The mountpoint drive of a public link carries its owner. Failing to read it
 // costs the owner's name on the drop upload page, nothing else, so a link that
 // still works stays usable.
-const publicLinkDrive = async (
-  graphClient: () => Graph,
-  driveId: string,
-  requestOptions: Record<string, unknown>
-) => {
+const publicLinkDrive = async (graphClient: () => Graph, driveId: string, signal?: AbortSignal) => {
   try {
-    return await graphClient().drives.getDrive(driveId, undefined, requestOptions)
+    return await graphClient().drives.getDrive(driveId, undefined, { signal })
   } catch {
     return undefined
   }
-}
-
-// The item carries its path in drive coordinates, which is what the caller
-// asked for everywhere except a share space: that one is rooted at the shared
-// item, so the requested path is the one relative to it.
-const pathOf = (
-  driveItem: { name?: string; parentReference?: { path?: string } },
-  space: SpaceResource,
-  resource: { path?: string }
-) => {
-  if (resource.path) {
-    return resource.path
-  }
-  const parentPath = driveItem.parentReference?.path
-  return !parentPath || parentPath === '.'
-    ? '/'
-    : urlJoin(parentPath, driveItem.name, { leadingSlash: true })
 }
 
 // Callers branch on the shape webdav throws: a status code and, for a public
