@@ -1,5 +1,11 @@
-import { buildResourceFromDriveItem, graphDriveIdOfSpace, urlJoin } from '@opencloud-eu/web-client'
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  buildResourceFromDriveItem,
+  DavHttpError,
+  graphDriveIdOfSpace,
+  Resource,
+  SpaceResource,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import {
@@ -28,14 +34,18 @@ export function createGraphWebDav(inner: WebDAV, graphClient: () => Graph): WebD
     ...inner,
 
     async getFileInfo(space, resource = {}, options): Promise<Resource> {
-      const driveItem = await graphClient().driveItems.statDriveItem(
-        graphDriveIdOfSpace(space),
-        resource.fileId ? { itemId: resource.fileId } : { path: resource.path || '/' },
-        { select: statSelect, expand: statExpand },
-        { signal: options?.signal }
-      )
+      try {
+        const driveItem = await graphClient().driveItems.statDriveItem(
+          graphDriveIdOfSpace(space),
+          resource.fileId ? { itemId: resource.fileId } : { path: resource.path || '/' },
+          { select: statSelect, expand: statExpand },
+          { signal: options?.signal }
+        )
 
-      return buildResourceFromDriveItem(driveItem, space, '', pathOf(driveItem, space, resource))
+        return buildResourceFromDriveItem(driveItem, space, '', pathOf(driveItem, space, resource))
+      } catch (error) {
+        throw asDavError(error)
+      }
     }
   }
 }
@@ -55,4 +65,24 @@ const pathOf = (
   return !parentPath || parentPath === '.'
     ? '/'
     : urlJoin(parentPath, driveItem.name, { leadingSlash: true })
+}
+
+// Callers branch on the shape webdav throws: a status code and, for a public
+// link, the code that tells "needs a password" from "wrong password" apart.
+// Graph carries the same information in its error body.
+const asDavError = (error: any) => {
+  const response = error?.response
+  if (!response) {
+    return error
+  }
+
+  const code = response.data?.error?.code
+  const message = response.data?.error?.message || error.message
+
+  return new DavHttpError(message, davErrorCodes[code] ?? code, response, response.status)
+}
+
+const davErrorCodes: Record<string, string> = {
+  publicLinkPasswordRequired: 'ERR_MISSING_BASIC_AUTH',
+  publicLinkPasswordInvalid: 'ERR_INVALID_CREDENTIALS'
 }

@@ -59,13 +59,35 @@ describe('createGraphWebDav', () => {
 
   it('addresses a public link by the drive built from its token', async () => {
     const { dav, statDriveItem } = getDav()
-    const publicSpace = { ...space, id: 'sometoken', driveType: 'public' } as unknown as SpaceResource
+    const publicSpace = {
+      ...space,
+      id: 'sometoken',
+      driveType: 'public'
+    } as unknown as SpaceResource
 
     await dav.getFileInfo(publicSpace, { path: '/' })
 
     expect(statDriveItem.mock.calls[0][0]).toBe(
       '7993447f-687f-490d-875c-ac95e89a62a4$7993447f-687f-490d-875c-ac95e89a62a4!sometoken'
     )
+  })
+
+  it('maps a needed link password onto the code the callers branch on', async () => {
+    const statDriveItem = vi.fn().mockRejectedValue({
+      response: {
+        status: 401,
+        data: { error: { code: 'publicLinkPasswordRequired', message: 'password required' } }
+      }
+    })
+    const dav = createGraphWebDav(
+      { getFileInfo: vi.fn() } as unknown as WebDAV,
+      () => ({ driveItems: { statDriveItem } }) as unknown as Graph
+    )
+
+    await expect(dav.getFileInfo(space, { path: '/' })).rejects.toMatchObject({
+      statusCode: 401,
+      errorCode: 'ERR_MISSING_BASIC_AUTH'
+    })
   })
 
   it('asks for the previews and the download url', async () => {
