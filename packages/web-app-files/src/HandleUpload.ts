@@ -137,6 +137,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         file[this.getUploadPluginName()] = { endpoint }
         file.meta = {
           ...file.meta,
+          name: file.name,
+          mtime: (file.data as File).lastModified / 1000,
           tusEndpoint: endpoint,
           uploadId: uuidV4(),
           isFolder: file.type === 'directory'
