@@ -10,6 +10,7 @@ import { waitProcessingToFinish } from '../fileEvents'
 import { state } from '../../../../environment/shared'
 import { lstatSync, readFileSync } from 'fs'
 import { encodeWebDavPath } from '../../../utils'
+import { isFolderListingResponse } from '../../../utils/folderListing'
 
 const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -223,9 +224,7 @@ const clickResourceInEmbedMode = async ({
     }
 
     await resource.waitFor()
-    const waitResponse = page.waitForResponse(
-      (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
-    )
+    const waitResponse = page.waitForResponse(isFolderListingResponse)
     await resource.click()
     await waitResponse
 
@@ -248,14 +247,12 @@ export const clickResource = async ({
     const folder = name.replace(/'/g, "\\'").replace(/"/g, '\\"')
 
     const resource = page.locator(util.format(resourceNameSelector, folder))
-    const propfindPromise = page.waitForResponse(
-      (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
-    )
+    const listingPromise = page.waitForResponse(isFolderListingResponse)
     await resource.click()
     if (password && folder.includes('.vault')) {
       await unlockVault({ page, passphrase: password })
     }
-    await propfindPromise
+    await listingPromise
     // wait for the loading spinner to disappear and page is loaded
     await expect(page.locator('#app-loading-spinner')).toBeHidden()
   }
@@ -275,9 +272,7 @@ export const clickResourceFromBreadcrumb = async ({
   await Promise.all([
     page.waitForResponse(
       (resp) =>
-        (resp.status() === 207 &&
-          resp.request().method() === 'PROPFIND' &&
-          resp.url().endsWith(encodeURIComponent(resource))) ||
+        isFolderListingResponse(resp) ||
         resp.url().endsWith(itemId) ||
         resp.url().endsWith(encodeURIComponent(itemId))
     ),
@@ -615,10 +610,7 @@ const createDocumentFile = async (
         "Editor should be either 'Collabora' or 'Euro-Office' but found " + editorToOpen
       )
   }
-  await Promise.all([
-    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND'),
-    editor.close(page)
-  ])
+  await Promise.all([page.waitForResponse(isFolderListingResponse), editor.close(page)])
 
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
   // wait for lock to be removed
@@ -744,7 +736,7 @@ export const editTextDocument = async ({
   await page.locator(textEditorPlainTextInput).fill(content)
   const [putRequest] = await Promise.all([
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'PUT'),
-    page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
+    page.waitForResponse(isFolderListingResponse),
     page.locator(saveTextFileInEditorButton).click()
   ])
 
