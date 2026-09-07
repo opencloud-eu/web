@@ -217,14 +217,11 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
 })
 
 /**
- * A public link to a single file has no file id of its own, while a link to a folder does.
- * The `public-link-item-type` dav property can't be used here, the server reports "folder"
- * in both cases.
+ * The item type of the link root, which graph reports for what it is. Dav could
+ * not: it answered "folder" for a link to a single file as well, so the file id
+ * had to stand in for the distinction.
  */
-const isSingleFileLink = computed(() => {
-  const space = unref(loadedSpace)
-  return !space.fileId || space.fileId === space.id
-})
+const isSingleFileLink = computed(() => unref(loadedSpace).publicLinkItemType === 'file')
 
 /**
  * For a public link pointing to a single file, the link root is the file itself. Since the root

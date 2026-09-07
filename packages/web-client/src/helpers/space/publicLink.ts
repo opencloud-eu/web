@@ -27,9 +27,9 @@ export const publicLinkPermissionFromActions = (actions: string[] = []): number 
  * counterpart of the PROPFIND based buildPublicSpaceResource, for the graph
  * listing.
  *
- * The link's expiration, its share date and its item type came from dav
- * properties that graph has no counterpart for. Nothing reads them. The owner
- * comes from the mountpoint drive, which does not carry it yet.
+ * The link's expiration and its share date came from dav properties that graph
+ * has no counterpart for. Nothing reads them. The owner comes from the
+ * mountpoint drive.
  */
 export const buildPublicSpaceResourceFromDriveItem = ({
   driveItem,
@@ -54,6 +54,10 @@ export const buildPublicSpaceResourceFromDriveItem = ({
     }),
     {
       publicLinkPermission: publicLinkPermissionFromActions(actions),
+      // the item behind the link, which dav could not tell apart: it reported
+      // "folder" for a link to a single file as well
+      publicLinkItemType: driveItem.folder ? 'folder' : 'file',
+      fileId: driveItem.id,
       ...(drive?.owner?.displayName && { publicLinkShareOwner: drive.owner.displayName })
     }
   )
