@@ -4,7 +4,7 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @fredrikblau, @kulmann, @saw-jan
+@AlexAndBear, @JammingBen, @fredrikblau, @kulmann, @saw-jan, @v-scharf
 
 ### 💥 Breaking changes
 
@@ -15,16 +15,9 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
-### ✅ Tests
-
-- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
-- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
-- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
-- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
-- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
-
 ### 🐛 Bug Fixes
 
+- fix: send mtime metadata for public link uploads [[#3322](https://github.com/opencloud-eu/web/pull/3322)]
 - fix: prevent browser login dialog on upload [[#3308](https://github.com/opencloud-eu/web/pull/3308)]
 - fix: new button flickering during navigation [[#3293](https://github.com/opencloud-eu/web/pull/3293)]
 - fix: table header position overflow [[#3288](https://github.com/opencloud-eu/web/pull/3288)]
@@ -42,6 +35,14 @@
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
+
+### ✅ Tests
+
+- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
+- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
+- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
+- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
+- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 📈 Enhancement
 
