@@ -27,6 +27,8 @@ export interface AppWrapperYjsOptions {
   putFileContents: AppFileHandlingResult['putFileContents']
   /** AppWrapper's landing point for a successful write. */
   applySavedResource: (etag: string, saved?: Resource | null) => void
+  /** Hands content that landed on disk to the wrapped app. */
+  runSaveCallback: (content: unknown) => Promise<void>
   /** The file changed outside this window and the session gave up the room. */
   onConflict: () => void
 }
@@ -54,6 +56,7 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
     getFileContents,
     putFileContents,
     applySavedResource,
+    runSaveCallback,
     onConflict
   } = options
 
@@ -77,9 +80,12 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
           currentContent.value = value
         },
         // A peer saved: this content is what's on disk now, so `isDirty`
-        // drops back to false without a WebDAV round-trip.
+        // drops back to false without a WebDAV round-trip. The session only
+        // reports saves that cover our own edits, so the wrapped app has to
+        // hear about it too - it will never run its own save for them.
         onServerContentChange: (value) => {
           serverContent.value = value
+          runSaveCallback(value)
         },
         // A peer saved: its fresh etag keeps our next PUT's `If-Match`
         // correct.
