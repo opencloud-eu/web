@@ -9,7 +9,6 @@ import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
 import { state } from '../../../../environment/shared'
 import { lstatSync, readFileSync } from 'fs'
-import { encodeWebDavPath } from '../../../utils'
 import { isFolderListingResponse, isResourceStatResponse } from '../../../utils/folderListing'
 
 const appLoadingSpinner = '#app-loading-spinner'
