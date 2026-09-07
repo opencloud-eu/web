@@ -7,7 +7,7 @@ import { TokenEnvironmentFactory } from '../environment'
 export const getAuthHeader = (user: User, isKeycloakRequest: boolean = false) => {
   const tokenEnvironment = TokenEnvironmentFactory(isKeycloakRequest ? 'keycloak' : null)
   const authHeader = {
-    Authorization: 'Basic ' + Buffer.from(user.id + ':' + user.password).toString('base64')
+    Authorization: 'Basic ' + Buffer.from(user.username + ':' + user.password).toString('base64')
   }
 
   if (!appConfig.basicAuth) {
