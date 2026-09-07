@@ -92,6 +92,24 @@ describe('HandleUpload', () => {
 
       expect(processedFiles[0].meta.relativeFolder).toEqual(`/${fileToUpload.name}`)
     })
+    it('sets name and mtime meta for public file drop uploads', () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(mock<UppyPlugin>())
+      mocks.opts.resourcesStore.currentFolder = null
+      unref(mocks.opts.route).params.token = 'public-token'
+      mocks.opts.clientService.webdav.getPublicFileUrl.mockReturnValue('https://public/')
+
+      const lastModified = 1_700_000_000_000
+      const fileToUpload = mock<OcUppyFile>({
+        name: 'name',
+        data: { lastModified } as File
+      })
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      const processedFiles = instance.prepareFiles([fileToUpload], uploadFolder)
+
+      expect(processedFiles[0].meta.name).toEqual(fileToUpload.name)
+      expect(processedFiles[0].meta.mtime).toEqual(lastModified / 1000)
+    })
   })
   describe('method createDirectoryTree', () => {
     it('creates a directory for a single file with a relative folder given', async () => {
