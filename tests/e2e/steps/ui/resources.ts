@@ -19,6 +19,9 @@ import { File } from '../../support/types'
 import { waitProcessingToFinish } from '../../support/objects/app-files/fileEvents'
 import { editor } from '../../support/objects/app-files/utils'
 
+// how long a late duplicate of the hydrated content may need to arrive
+const duplicateContentGraceMs = 3000
+
 When(
   '{string} creates the following resource(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
@@ -1271,6 +1274,16 @@ Then(
   }
 )
 
+const allowedFileViewers = ['collabora-online', 'text-editor', 'preview'] as const
+type AllowedFileViewer = (typeof allowedFileViewers)[number]
+
+function toFileViewer(fileViewer: string): AllowedFileViewer {
+  if (!allowedFileViewers.includes(fileViewer as AllowedFileViewer)) {
+    throw new Error(`Unsupported file viewer: ${fileViewer}`)
+  }
+  return fileViewer as AllowedFileViewer
+}
+
 When(
   '{string} opens file {string} via {string} using the context menu',
   async (
@@ -1279,15 +1292,30 @@ When(
     file: string,
     fileViewer: string
   ): Promise<void> => {
-    const allowedViewers = ['collabora-online', 'text-editor', 'preview'] as const
-
-    if (!allowedViewers.includes(fileViewer as any)) {
-      throw new Error(`Unsupported file viewer: ${fileViewer}`)
-    }
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
 
-    await resourceObject.openFileViaContextMenu(file, fileViewer as (typeof allowedViewers)[number])
+    await resourceObject.openFileViaContextMenu(file, toFileViewer(fileViewer))
+  }
+)
+
+When(
+  'the following users open file {string} via {string} using the context menu at the same time',
+  async (
+    { world }: { world: World },
+    file: string,
+    fileViewer: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const viewer = toFileViewer(fileViewer)
+
+    await Promise.all(
+      stepTable.hashes().map(({ id }) => {
+        const { page } = world.actorsEnvironment.getActor({ key: id })
+        const resourceObject = new objects.applicationFiles.Resource({ page })
+        return resourceObject.openFileViaContextMenu(file, viewer)
+      })
+    )
   }
 )
 
@@ -1464,6 +1492,23 @@ Then(
   async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     await expect(page.locator('.tiptap.ProseMirror')).toContainText(text)
+  }
+)
+
+Then(
+  '{string} should see the text {string} exactly once in the text-editor',
+  async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const content = editor.textEditorContentLocator(page)
+    await expect(content).toContainText(text)
+
+    // a duplicate seed lands shortly after hydration, so the count has to stay at one
+    const deadline = Date.now() + duplicateContentGraceMs
+    for (;;) {
+      expect(await editor.countTextOccurrences(content, text)).toBe(1)
+      if (Date.now() >= deadline) break
+      await page.waitForTimeout(250)
+    }
   }
 )
 

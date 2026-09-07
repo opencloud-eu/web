@@ -74,6 +74,9 @@ export const yjsStatusLocator = (page: Page, status: string): Locator =>
 export const collaborationCaretLocator = (page: Page, displayName: string): Locator =>
   page.locator(collaborationCursorLabel, { hasText: displayName })
 
+export const countTextOccurrences = async (locator: Locator, text: string): Promise<number> =>
+  (await locator.innerText()).split(text).length - 1
+
 export const resolveSaveConflict = async (page: Page, action: string): Promise<void> => {
   const button = saveConflictDialogButtons[action]
   if (!button) {

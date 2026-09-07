@@ -71,9 +71,10 @@ export interface YjsSession {
   provider: ShallowRef<HocuspocusProvider | null>
   status: ShallowRef<YjsStatus>
   /**
-   * False until initial sync and the hydration decision have settled.
-   * Consumers gate the editor mount on this to avoid a brief empty-editor
-   * flash while hydration runs.
+   * False until initial sync and the hydration decision have settled. In
+   * remote mode that decision is a round trip to the Yjs server. Consumers
+   * gate the editor mount on this to avoid a brief empty-editor flash while
+   * hydration runs.
    */
   isReady: ShallowRef<boolean>
   /**
@@ -129,28 +130,27 @@ const CONNECT_TIMEOUT_MS = 10_000
 const LOCAL_SAVE_ORIGIN = 'local-save'
 const STALE_RECOVERY_RESET_ORIGIN = 'stale-recovery-reset'
 const STALE_RECOVERY_COMMIT_ORIGIN = 'stale-recovery-commit'
+const HYDRATE_ORIGIN = 'hydrate'
 const OWN_META_ORIGINS: unknown[] = [
   LOCAL_SAVE_ORIGIN,
   STALE_RECOVERY_RESET_ORIGIN,
-  STALE_RECOVERY_COMMIT_ORIGIN
+  STALE_RECOVERY_COMMIT_ORIGIN,
+  HYDRATE_ORIGIN
 ]
-/**
- * Awareness field: whether this client is able to seed an empty room.
- * Read-only clients set it false, so the hydration election can skip them -
- * the Yjs server rejects their writes, so their "win" would leave the room
- * empty for everyone.
- */
-const SEED_CAPABLE_KEY = '_oc_canSeed'
 /**
  * How long `wasWrittenByRoom` waits for a peer's etag stamp that may still be
  * in flight at conflict time. Only ever paid in full for a genuine external
  * write while peers are present.
  */
 const ROOM_ETAG_GRACE_MS = 1_000
+/**
+ * Stateless messages that arbitrate who seeds an empty room. Must match
+ * `SeedMessage` in `services/yjs/src/lib/seedGrant.ts`, keep the two in sync.
+ */
+const SEED_REQUEST = '_oc_seed_request'
+const SEED_GRANTED = '_oc_seed_granted'
+const SEED_DENIED = '_oc_seed_denied'
 const FALLBACK_WEB_VERSION = '0.0.0'
-
-/** The awareness fields this composable sets or reads. */
-type AwarenessState = Record<string, unknown> & { [SEED_CAPABLE_KEY]?: boolean }
 
 function resolveWebVersion(): string {
   const version = process.env.PACKAGE_VERSION?.trim()
@@ -486,7 +486,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     return value
   }
 
-  // True while recovery rewrites the doc. See `canReportContent`.
+  // True while the session itself writes the live doc (recovery, late seed).
+  // See `canReportContent`.
   let isRewritingDoc = false
 
   /**
@@ -505,15 +506,108 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
-   * Hydration: the elected client seeds the Y.Doc from native content, lowest
-   * awareness clientId wins. In local mode there are no peers, so the
-   * election degenerates to "we win unconditionally".
+   * The seed request this session is waiting on, if any. Also the marker for
+   * "a hydration is in flight": the request is the only thing hydration ever
+   * awaits.
    */
-  async function runInitialHydration(
-    doc: Y.Doc,
-    prov: HocuspocusProvider | null,
-    awarenessInstance: Awareness
-  ) {
+  let pendingSeedGrant: ((granted: boolean) => void) | null = null
+
+  /**
+   * Abandon a request whose session is gone. Answered as a refusal so the
+   * hydration it belongs to unwinds without touching the new session's doc.
+   */
+  function abandonSeedGrant() {
+    pendingSeedGrant?.(false)
+  }
+
+  /** Ask the Yjs server whether we may seed this room. */
+  function requestSeedGrant(prov: HocuspocusProvider): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      pendingSeedGrant = (granted) => {
+        pendingSeedGrant = null
+        resolve(granted)
+      }
+      prov.sendStateless(SEED_REQUEST)
+    })
+  }
+
+  /**
+   * The server's answer to a seed request, or an unsolicited grant when the
+   * previous holder left the room without seeding it.
+   */
+  function onSeedMessage(doc: Y.Doc, prov: HocuspocusProvider, payload: string) {
+    if (payload !== SEED_GRANTED && payload !== SEED_DENIED) return
+    const granted = payload === SEED_GRANTED
+    if (pendingSeedGrant) {
+      pendingSeedGrant(granted)
+      return
+    }
+    if (granted) seedOnUnsolicitedGrant(doc, prov)
+  }
+
+  /**
+   * Write the initial body, and announce it so a read-only peer can drop the
+   * private copy it hydrated while the room was still empty.
+   */
+  function seedDoc(doc: Y.Doc, current: YjsAdapter, meta: SessionMetaMap) {
+    try {
+      // Announce and body in one transaction, so a read-only peer sees the
+      // announce and the body together. Its meta observer then rebuilds the
+      // session from the room's state and cancels the pending report, so the
+      // merged private copy is never shown for long or reported.
+      doc.transact(() => {
+        meta.set('hydrated', true)
+        current.hydrate(doc, toValue(currentContent))
+      }, HYDRATE_ORIGIN)
+    } catch (e) {
+      // Withdraw the announce, or a read-only peer waits forever for a body
+      // that is never coming.
+      doc.transact(() => meta.delete('hydrated'), HYDRATE_ORIGIN)
+      throw e
+    }
+  }
+
+  /** Hydration threw. Lock rather than mount an editable empty doc. */
+  function failHydration(prov: HocuspocusProvider | null, e: unknown) {
+    console.error('[yjs] hydration failed:', e)
+    lockForReload(
+      prov,
+      $gettext('Preparing this file for collaborative editing failed. Please reload.')
+    )
+  }
+
+  /**
+   * A grant that arrived on its own, because the previous holder left the room
+   * without seeding it. The grant is permission, not an instruction, so every
+   * reason not to seed is re-checked here.
+   */
+  function seedOnUnsolicitedGrant(doc: Y.Doc, prov: HocuspocusProvider) {
+    if (doc.isDestroyed || unref(ydoc) !== doc) return
+    // Not synced yet: the room's content may still be on the way. Hydration
+    // asks for its own grant once it runs, and the server answers the holder
+    // with another grant.
+    if (!unref(isReady)) return
+    if (unref(effectiveReadOnly)) return
+    const current = toValue(adapter)
+    if (current.hasContent(doc)) return
+    // The session is live, so the seed must not be reported as an edit.
+    isRewritingDoc = true
+    try {
+      seedDoc(doc, current, sessionMeta(doc))
+      lastReportedStateVector = Y.encodeStateVector(doc)
+    } catch (e) {
+      failHydration(prov, e)
+    } finally {
+      isRewritingDoc = false
+    }
+  }
+
+  /**
+   * Hydration: one client per room seeds the Y.Doc from native content, and
+   * the Yjs server picks which - see `requestSeedGrant`. In local mode there
+   * is no room, so no permission is needed.
+   */
+  async function runInitialHydration(doc: Y.Doc, prov: HocuspocusProvider | null) {
     const current = toValue(adapter)
     const meta = sessionMeta(doc)
 
@@ -550,6 +644,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
     if (current.hasContent(doc)) return
 
+    // Seeding is a first-entry decision. Mid-session this is a reconnect, and
+    // an empty doc here is one the user emptied - the room takes it as is.
+    if (unref(isReady)) return
+
     // Read-only client in an empty room: hydrate a private copy so the file
     // is not shown blank. It never reaches the room (the server rejects
     // read-only writes); `hasLocalOnlyContent` lets the meta observer drop it
@@ -563,37 +661,14 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       return
     }
 
-    // Election to avoid double-hydration: let peers announce themselves via
-    // awareness, then the lowest seed-capable clientId wins. Skipped in local
-    // mode, where the announce wait would only delay first paint.
+    // Let the server pick who seeds. Skipped in local mode.
     if (prov) {
-      await new Promise<void>((resolve) => setTimeout(resolve, 150))
-
-      if (current.hasContent(doc)) return // someone beat us
-
-      // A peer announced its seeding but its content has not landed yet.
-      // `hasContent` is still false at that point.
-      if (meta.get('hydrated') === true) return
-
-      // A missing flag counts as seed-capable.
-      const myId = doc.clientID
-      const peers = Array.from(awarenessInstance.getStates().entries())
-        .filter(([, state]) => (state as AwarenessState)?.[SEED_CAPABLE_KEY] !== false)
-        .map(([clientId]) => clientId)
-      const lowest = peers.length ? Math.min(myId, ...peers) : myId
-      if (myId !== lowest) return
+      if (!(await requestSeedGrant(prov))) return
+      // Content may have landed while we waited.
+      if (current.hasContent(doc)) return
     }
 
-    // Announce before seeding, so read-only peers drop their private copy
-    // before our content lands rather than merge with it.
-    doc.transact(() => meta.set('hydrated', true))
-    try {
-      current.hydrate(doc, toValue(currentContent))
-    } catch (e) {
-      // Withdraw the announce so the next joiner can seed for real.
-      doc.transact(() => meta.delete('hydrated'))
-      throw e
-    }
+    seedDoc(doc, current, meta)
   }
 
   /**
@@ -677,21 +752,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * `ydoc.value === doc` guard keeps a stale invocation from clearing the
    * loading state of the next session.
    */
-  async function onProviderSynced(
-    doc: Y.Doc,
-    prov: HocuspocusProvider | null,
-    awarenessInstance: Awareness
-  ) {
+  async function onProviderSynced(doc: Y.Doc, prov: HocuspocusProvider | null) {
     try {
-      await runInitialHydration(doc, prov, awarenessInstance)
+      await runInitialHydration(doc, prov)
     } catch (e) {
       // Call sites fire this without awaiting, so an escaping rejection would
       // leave a half-hydrated document with no explanation.
-      console.error('[yjs] hydration failed:', e)
-      lockForReload(
-        prov,
-        $gettext('Preparing this file for collaborative editing failed. Please reload.')
-      )
+      failHydration(prov, e)
     } finally {
       if (!doc.isDestroyed && unref(ydoc) === doc) {
         // Baseline for a save before any edit: the hydrated doc is the same
@@ -784,11 +851,21 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         // populated; re-running the hydration checks there could plant a
         // stale flag against a room this client has just left.
         if (unref(isReady)) return
-        void onProviderSynced(doc, null, prov.awareness!)
+        void onProviderSynced(doc, null)
+      },
+      onStateless({ payload }) {
+        onSeedMessage(doc, prov, payload)
       },
       onSynced() {
         clearConnectTimer()
-        void onProviderSynced(doc, prov, prov.awareness!)
+        // Reconnected inside the seed wait. The answer to the old socket is
+        // lost, so ask again on this one instead of starting a second
+        // hydration next to the one still waiting.
+        if (pendingSeedGrant) {
+          prov.sendStateless(SEED_REQUEST)
+          return
+        }
+        void onProviderSynced(doc, prov)
       }
     })
 
@@ -811,14 +888,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // into a room that may already hold the same content.
       stopProvider(prov)
       // `runInitialHydration` bails if content synced in after all.
-      void onProviderSynced(doc, null, prov.awareness!)
+      void onProviderSynced(doc, null)
     }, CONNECT_TIMEOUT_MS)
 
     // Announce ourselves before the editor binding emits its first cursor
     // update. The server's beforeHandleAwareness hook overwrites `user` with
     // the authenticated identity.
     prov.setAwarenessField('user', {})
-    prov.setAwarenessField(SEED_CAPABLE_KEY, !unref(effectiveReadOnly))
 
     return { prov, clearConnectTimer }
   }
@@ -1007,7 +1083,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         // non-null instance; nobody else will ever join, which is the point.
         aw = new Awareness(doc)
         status.value = YjsStatus.Local
-        void onProviderSynced(doc, null, aw)
+        void onProviderSynced(doc, null)
       }
 
       const meta = sessionMeta(doc)
@@ -1021,6 +1097,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       onCleanup(() => {
         reporter.cancel()
         clearConnectTimer()
+        abandonSeedGrant()
         meta.map.unobserve(metaObserver)
         doc.off('update', reporter.onDocUpdate)
         if (prov) {
