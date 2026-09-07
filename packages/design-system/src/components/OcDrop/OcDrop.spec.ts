@@ -188,4 +188,18 @@ describe('OcDrop', () => {
       expect(wrapper.find('oc-mobile-drop-stub').exists()).toBeTruthy()
     })
   })
+
+  it('closes on escape when it was opened by pointer, so the focus never entered it', async () => {
+    const { wrapper } = dom()
+    document.querySelector<HTMLElement>('#trigger').click()
+    // no flushPromises: the drop is still positioning itself, escape has to
+    // close it even then
+    await nextTick()
+    expect(wrapper.find('.oc-drop').exists()).toBe(true)
+
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', bubbles: true }))
+    await nextTick()
+
+    expect(wrapper.find('.oc-drop').exists()).toBe(false)
+  })
 })
