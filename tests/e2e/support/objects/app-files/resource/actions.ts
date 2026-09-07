@@ -10,7 +10,7 @@ import { waitProcessingToFinish } from '../fileEvents'
 import { state } from '../../../../environment/shared'
 import { lstatSync, readFileSync } from 'fs'
 import { encodeWebDavPath } from '../../../utils'
-import { isFolderListingResponse } from '../../../utils/folderListing'
+import { isFolderListingResponse, isResourceStatResponse } from '../../../utils/folderListing'
 
 const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -2225,12 +2225,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
         // shared files opened via "shared with me" don't trigger a PROPFIND at all,
         // so only wait for (and assert) it when explicitly requested
         await Promise.all([
-          page.waitForResponse(
-            (resp) =>
-              resp.status() === 207 &&
-              resp.request().method() === 'PROPFIND' &&
-              resp.url().includes(encodeWebDavPath(name))
-          ),
+          page.waitForResponse(isResourceStatResponse),
           page.locator(util.format(resourceNameSelector, name)).click()
         ])
       } else {
@@ -2255,7 +2250,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
     case 'pdfviewer': {
       await Promise.all([
         page.waitForResponse(
-          (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+          isResourceStatResponse
         ),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
@@ -2264,12 +2259,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
     }
     case 'texteditor': {
       await Promise.all([
-        page.waitForResponse(
-          (resp) =>
-            resp.status() === 207 &&
-            resp.request().method() === 'PROPFIND' &&
-            (!verifyPropfindPath || resp.url().includes(encodeWebDavPath(name)))
-        ),
+        page.waitForResponse(isResourceStatResponse),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
       await page.locator(textEditorContainer).waitFor()

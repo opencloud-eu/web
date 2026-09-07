@@ -1,11 +1,11 @@
 import { Response } from '@playwright/test'
 
 /**
- * Matches the response that carries a folder listing, whichever API served it:
- * a PROPFIND for the places still on webdav (public links, trash bin) and a
- * driveItem stat with expanded children for spaces and shares.
+ * Matches the response that carries a resource, whichever API served it: a
+ * PROPFIND for what is still on webdav (the trash bin) and a driveItem stat
+ * for everything that moved to graph.
  */
-export const isFolderListingResponse = (resp: Response): boolean => {
+export const isResourceStatResponse = (resp: Response): boolean => {
   if (resp.request().method() === 'PROPFIND') {
     return resp.status() === 207
   }
@@ -13,7 +13,14 @@ export const isFolderListingResponse = (resp: Response): boolean => {
   return (
     resp.request().method() === 'GET' &&
     resp.status() === 200 &&
-    /\/graph\/v1\.0\/drives\/[^/]+\/(items|root)/.test(resp.url()) &&
-    resp.url().includes('expand=children')
+    /\/graph\/v1\.0\/drives\/[^/]+\/(items|root)/.test(resp.url())
   )
 }
+
+/**
+ * A stat that carries the folder's children, so a listing rather than a single
+ * resource.
+ */
+export const isFolderListingResponse = (resp: Response): boolean =>
+  isResourceStatResponse(resp) &&
+  (resp.request().method() === 'PROPFIND' || resp.url().includes('expand=children'))
