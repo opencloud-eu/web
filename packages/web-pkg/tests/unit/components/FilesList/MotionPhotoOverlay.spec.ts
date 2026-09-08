@@ -16,7 +16,7 @@ const motionPhotoResource = () =>
     motionPhoto: { videoSize: 120000, presentationTimestampUs: 0 }
   }) as unknown as Resource
 
-// useMediaQuery('(hover: hover)') gates hover-to-play; report a hover-capable device
+// hover-to-play is gated on useMediaQuery('(hover: hover)')
 function stubMatchMedia(hover = true) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: query.includes('hover: hover') ? hover : false,

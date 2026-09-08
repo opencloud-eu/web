@@ -2564,10 +2564,7 @@ export const getPreviewMotionPhotoBadgeLocator = (args: {
 
 const motionPhotoViewerControl = '[data-testid="motion-photo-toggle"]'
 
-// The play/pause control the media viewer shows in its controls bar for a motion
-// photo. Its presence proves the viewer recognized the motion-photo facet and
-// wired the playback control (the fetch/play/loop itself is unit-tested; the
-// bundled Chromium can't decode the H.264 clip).
+// the play/pause control in the media viewer's controls bar
 export const getMotionPhotoViewerControlLocator = (args: { page: Page }): Locator => {
   return args.page.locator(motionPhotoViewerControl)
 }

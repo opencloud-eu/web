@@ -22,16 +22,12 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
         <!--v-if-->
         <div class="oc-card-body p-0 flex flex-col">
           <div class="relative w-full"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full inline-flex oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1"></a>
-            <!-- outside the link: the badge is a button and must not nest in it; the
-             player is pointer-transparent so the link keeps its clicks -->
             <!--v-if-->
           </div>
           <div class="p-2">
             <div class="flex justify-between items-center">
               <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
                 <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
-                  <!-- the overlay wraps the link (not the other way round) so its play/pause
-         button never nests inside the link button -->
                   <!--v-if-->
                   <div class="oc-resource-details block truncate"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full inline-flex hover:outline-offset-0 focus:outline-offset-0 hover:underline"></a>
                     <div class="flex">
@@ -74,16 +70,12 @@ exports[`ResourceTiles component > renders an array of spaces correctly 1`] = `
         <!--v-if-->
         <div class="oc-card-body p-0 flex flex-col">
           <div class="relative w-full"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full inline-flex oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]" tabindex="-1"></a>
-            <!-- outside the link: the badge is a button and must not nest in it; the
-             player is pointer-transparent so the link keeps its clicks -->
             <!--v-if-->
           </div>
           <div class="p-2">
             <div class="flex justify-between items-center">
               <div class="flex items-center truncate resource-name-wrapper text-role-on-surface overflow-hidden">
                 <div class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible">
-                  <!-- the overlay wraps the link (not the other way round) so its play/pause
-         button never nests inside the link button -->
                   <!--v-if-->
                   <div class="oc-resource-details block truncate"><a attrs="[object Object]" target="_self" draggable="false" class="oc-resource-link max-w-full inline-flex hover:outline-offset-0 focus:outline-offset-0 hover:underline"></a>
                     <div class="flex">

@@ -154,10 +154,8 @@ export const uploadFileInsideSpaceBySpaceName = async ({
   await createFile({ user, pathToFile, content, webDavEndPathToRoot })
 }
 
-// The motion photo facet is written by the search service after the upload,
-// once tika has extracted the file. Poll until the property shows up so UI
-// steps do not race the extraction (a fresh tika takes a few seconds for the
-// first file).
+// the facet is written asynchronously after the upload, once tika has extracted
+// the file; a fresh tika takes a few seconds for its first file
 export const waitForMotionPhotoFacet = async ({
   user,
   pathToFile,

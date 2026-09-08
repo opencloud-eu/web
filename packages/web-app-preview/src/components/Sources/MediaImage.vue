@@ -10,12 +10,6 @@
       @loaded="initPanzoom"
     />
   </div>
-  <!-- with an overlay (e.g. a motion photo's clip) the wrapper is the panzoom
-       target, so zoom, pan and rotation apply to still and overlay alike. It
-       fills the stage (a content-sized wrapper would void the percentage
-       max-w/max-h of its children) and is a grid with one explicit 100% cell:
-       still and overlay share that cell and its constraints, so the overlay is
-       fitted exactly like the still -->
   <div
     v-else-if="$slots.overlay"
     ref="img"
@@ -63,6 +57,8 @@ const { file, currentImageRotation } = defineProps<{
 
 const eventBus = useEventBus()
 
+// with an overlay slot this is a stage-filling wrapper around the still: a
+// content-sized wrapper would void the percentage max-w/max-h of its children
 const img = useTemplateRef<HTMLElement>('img')
 const panzoom = ref<PanzoomObject>()
 const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')

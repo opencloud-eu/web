@@ -5,13 +5,6 @@ import { useMotionPhoto } from './useMotionPhoto'
 
 export const HOVER_INTENT_DELAY_MS = 150
 
-/**
- * Full inline-playback state for a single motion photo, shared by every surface
- * that plays a clip (grid tile, sidebar preview, media viewer). It owns the
- * fetch (via useMotionPhoto), the playing/loading flags, the delayed buffer
- * indicator, abort-on-leave and the still-frame seek, so consumers only wire the
- * returned state and handlers to their template.
- */
 export function useMotionPhotoPlayback(
   resource: MaybeRefOrGetter<Resource>,
   space: MaybeRefOrGetter<SpaceResource>
@@ -29,19 +22,14 @@ export function useMotionPhotoPlayback(
   let controller: AbortController = null
   let spinnerTimer: ReturnType<typeof setTimeout>
   let hoverTimer: ReturnType<typeof setTimeout>
-  // Every play() run gets its own generation. stop() bumps it, so a run that was
-  // cancelled while its fetch was in flight can tell (in its finally block) that
-  // it is stale and must not touch the state of a newer run: otherwise it would
-  // clear the newer run's spinner timer, reset its loading flag and drop the
-  // in-flight guard, leaving that newer run uncancelable.
+  // a run cancelled mid-fetch still reaches its finally block; the generation
+  // keeps it from resetting the state of the run that replaced it
   let generation = 0
 
   const canPlay = computed(() => canPlayResource(toValue(resource)))
 
   const play = async (): Promise<void> => {
     if (unref(isPlaying) || controller) {
-      // already playing, or a load is in flight (e.g. a badge click during a
-      // hover load): never fire a second request or lose the controller
       return
     }
     const currentSpace = toValue(space)
@@ -54,7 +42,6 @@ export function useMotionPhotoPlayback(
     const runController = new AbortController()
     controller = runController
     const { signal } = runController
-    // reveal a spinner only if fetching takes a moment (instant on SSD/localhost)
     spinnerTimer = setTimeout(() => {
       if (!signal.aborted) {
         isLoading.value = true
@@ -68,7 +55,7 @@ export function useMotionPhotoPlayback(
       videoUrl.value = url
       isPlaying.value = true
     } catch {
-      // aborted or the fetch failed: nothing to play
+      // aborted, or nothing to play
     } finally {
       if (runGeneration === generation) {
         controller = null
@@ -93,13 +80,9 @@ export function useMotionPhotoPlayback(
     unref(isPlaying) ? stop() : play()
   }
 
-  // hover-to-play only on hover-capable (non-touch) devices, so a tap on the
-  // resource opens it instead of accidentally starting playback. On touch the
-  // badge tap (toggle) drives play/pause.
+  // on touch devices a tap must open the resource, not start playback
   const canHover = useMediaQuery('(hover: hover)')
-  // A short hover intent delay: sweeping the pointer across a list must not
-  // fire (and abort) one range request per item. Kept short so a deliberate
-  // hover still feels instant.
+  // sweeping the pointer across a list must not fire a range request per item
   const hoverPlay = (): void => {
     if (!unref(canHover)) {
       return
@@ -108,7 +91,6 @@ export function useMotionPhotoPlayback(
     hoverTimer = setTimeout(play, HOVER_INTENT_DELAY_MS)
   }
 
-  // seek to the frame matching the still so the still -> motion transition is seamless
   const seekToStill = (event: Event): void => {
     const timestamp = getStillTimestampSeconds(toValue(resource))
     if (timestamp !== null) {
@@ -116,9 +98,6 @@ export function useMotionPhotoPlayback(
     }
   }
 
-  // reset playback when the resource changes (e.g. sidebar switches selection)
-  // and let go of the previous clip: a long-lived consumer must not keep one
-  // blob per resource it ever showed
   watch(
     () => toValue(resource)?.id,
     (_, previousId) => {

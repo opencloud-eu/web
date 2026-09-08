@@ -184,8 +184,6 @@ const isAutoPlayEnabled = ref(true)
 const isAutoAdvancing = ref(false)
 const photoRollEnabled = ref(true)
 const preview = useTemplateRef<HTMLElement>('preview')
-// exposed play/pause API of the active motion-photo player, driven from the
-// bottom media-controls bar
 const motionPlayer = useTemplateRef<{ isPlaying: boolean; toggle: () => void }>('motionPlayer')
 const keyBindings: string[] = []
 let loadPreviewImageController: AbortController = null
@@ -248,8 +246,6 @@ const buildMediaFiles = () => {
       isVideo: isFileTypeVideo(file),
       isImage: isFileTypeImage(file),
       isAudio: isFileTypeAudio(file),
-      // a motion photo is also an image (its still loads via the preview
-      // service); the dedicated flag routes it to the motion-photo player
       isMotionPhoto: isFileTypeImage(file) && !isEmpty(file.motionPhoto),
       isLoading: true,
       isError: false,

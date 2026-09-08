@@ -33,16 +33,8 @@ import { SizeType } from '@opencloud-eu/design-system/helpers'
 import MotionPhotoBadge from './MotionPhotoBadge.vue'
 import { useGetMatchingSpace, useMotionPhotoPlayback } from '../../composables'
 
-/**
- * The playback layer of a motion photo: the clip (while playing) and the
- * play/pause badge, laid over the still that the parent renders. It owns the
- * playback state, so mount it only for actual motion photos (a plain list row
- * must not pay for a playback composable it never uses).
- *
- * It is pointer-transparent except for the badge, so the still underneath keeps
- * receiving clicks. Position it inside a `relative` parent; hover-to-play is
- * driven by the parent via the exposed `hoverPlay`/`stop`.
- */
+// Owns the playback state, so mount it only for motion photos. Pointer-transparent
+// apart from the badge; the parent drives hover-to-play via hoverPlay/stop.
 const {
   resource,
   space = undefined,
@@ -51,21 +43,15 @@ const {
   videoClass = ''
 } = defineProps<{
   resource: Resource
-  /** The resource's space. Falls back to the matching space when omitted. */
   space?: SpaceResource
-  /** Size of the play/pause badge (mirrors OcIcon's SizeType). */
   badgeSize?: SizeType
-  /** Positioning classes for the badge (defaults to the top-right corner). */
   badgeClass?: string
-  /** Extra classes for the video overlay, e.g. surface-specific border radius. */
   videoClass?: string
 }>()
 
 const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
 
-// the space is resolved lazily (only when playback starts) so a grid of many
-// items does not run the space lookup on every render
 const { isPlaying, isLoading, videoUrl, canPlay, hoverPlay, stop, toggle, seekToStill } =
   useMotionPhotoPlayback(
     () => resource,

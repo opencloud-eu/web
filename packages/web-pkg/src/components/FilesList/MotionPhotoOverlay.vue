@@ -20,13 +20,6 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 import MotionPhotoPlayer from './MotionPhotoPlayer.vue'
 
-/**
- * Shared motion-photo overlay: wraps a still (default slot) and, when the
- * resource is a motion photo, lays the hover-to-play clip and the play/pause
- * badge over it. Owns the hover, so consumers only drop it around their still.
- * For every other resource it is just a positioned wrapper: no badge, no fetch,
- * no playback state.
- */
 const {
   resource,
   space = undefined,
@@ -35,13 +28,9 @@ const {
   videoClass = ''
 } = defineProps<{
   resource: Resource
-  /** The resource's space. Falls back to the matching space when omitted. */
   space?: SpaceResource
-  /** Size of the play/pause badge (mirrors OcIcon's SizeType). */
   badgeSize?: SizeType
-  /** Positioning classes for the badge (defaults to the top-right corner). */
   badgeClass?: string
-  /** Extra classes for the video overlay, e.g. surface-specific border radius. */
   videoClass?: string
 }>()
 

@@ -10,8 +10,6 @@ exports[`OcTile component > renders default space correctly 1`] = `
         <resource-icon-stub resource="[object Object]" sizeclass="size-12" class="tile-default-image relative pt-1"></resource-icon-stub>
       </div>
     </resource-link-stub>
-    <!-- outside the link: the badge is a button and must not nest in it; the
-             player is pointer-transparent so the link keeps its clicks -->
     <!--v-if-->
   </div>
   <div class="p-2">
@@ -40,8 +38,6 @@ exports[`OcTile component > renders disabled space correctly 1`] = `
         <resource-icon-stub resource="[object Object]" sizeclass="size-12" class="tile-default-image relative pt-1"></resource-icon-stub>
       </div>
     </resource-link-stub>
-    <!-- outside the link: the badge is a button and must not nest in it; the
-             player is pointer-transparent so the link keeps its clicks -->
     <!--v-if-->
   </div>
   <div class="p-2">

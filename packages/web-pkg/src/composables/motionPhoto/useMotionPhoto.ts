@@ -22,11 +22,6 @@ export function useMotionPhoto() {
 
   const isMotionPhoto = (resource: Resource): boolean => !isEmpty(resource?.motionPhoto)
 
-  /**
-   * Byte offset at which the embedded video starts, or `null` when the resource
-   * is not a usable motion photo (missing facet, non-numeric or out-of-range
-   * sizes). A `null` offset means "cannot play".
-   */
   const getVideoOffset = (resource: Resource): number | null => {
     if (!isMotionPhoto(resource)) {
       return null
@@ -45,12 +40,7 @@ export function useMotionPhoto() {
 
   const canPlay = (resource: Resource): boolean => getVideoOffset(resource) !== null
 
-  /**
-   * Timestamp (in seconds) of the video frame that matches the still image, from
-   * the facet's `presentationTimestampUs`. Seeking a freshly loaded clip here
-   * makes the still -> motion transition seamless. Returns `null` when the facet
-   * marks it unspecified (`-1`) or is missing.
-   */
+  // the facet marks an unspecified timestamp as -1
   const getStillTimestampSeconds = (resource: Resource): number | null => {
     const us = Number(resource?.motionPhoto?.presentationTimestampUs)
     if (!Number.isFinite(us) || us < 0) {
@@ -59,11 +49,6 @@ export function useMotionPhoto() {
     return us / 1_000_000
   }
 
-  /**
-   * Fetches the embedded MP4 and returns an object URL for it. Memoized per
-   * resource id. Throws when the resource has no playable video (see
-   * `getVideoOffset`).
-   */
   async function loadVideoUrl(
     space: SpaceResource,
     resource: Resource,
@@ -84,20 +69,16 @@ export function useMotionPhoto() {
       { responseType: 'blob', headers: { Range: `bytes=${offset}-` }, signal }
     )
 
-    // A 206 response body is already just the trailing bytes, but its
-    // Content-Type is the whole file's (image/jpeg), which <video> rejects. If
-    // the server ignored the Range header (200), it returned the full file, so
-    // slice off the leading still image ourselves.
+    // a 200 means the server ignored the Range header and sent the whole file
     const raw: Blob = response?.status === 200 ? body.slice(offset) : body
 
-    // re-tag the blob as video/mp4 so <video> accepts it
+    // the response is typed image/jpeg (the file's type), which <video> rejects
     const videoBlob = new Blob([raw], { type: 'video/mp4' })
     const url = URL.createObjectURL(videoBlob)
     blobUrlCache.set(resource.id, url)
     return url
   }
 
-  /** Drops the cached object URL of a single resource and revokes it. */
   function revoke(resourceId: string): void {
     const url = blobUrlCache.get(resourceId)
     if (!url) {

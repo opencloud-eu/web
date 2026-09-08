@@ -88,8 +88,6 @@
             </slot>
           </div>
         </resource-link>
-        <!-- outside the link: the badge is a button and must not nest in it; the
-             player is pointer-transparent so the link keeps its clicks -->
         <motion-photo-player
           v-if="resource.motionPhoto"
           ref="motionPlayer"
@@ -204,9 +202,8 @@ const { getParentFolderName, getParentFolderLink } = useFolderLink({
   space: ref(space)
 })
 
-// Not wrapped in MotionPhotoOverlay: the tile's hover must span the whole media
-// area (resource-link) so moving toward the selection checkbox does not stop
-// playback, and the player sits within the tile's absolute/z-index layering.
+// no MotionPhotoOverlay here: the hover has to span the whole media area, so
+// that moving toward the selection checkbox does not stop playback
 const motionPlayer = useTemplateRef<InstanceType<typeof MotionPhotoPlayer>>('motionPlayer')
 const resourcesStore = useResourcesStore()
 const isResourceSelected = computed(() => resourcesStore.selectedIdsSet.has(resource.id))

@@ -16,9 +16,6 @@
     :aria-label="tooltip"
     data-testid="motion-photo-badge"
   >
-    <!-- MDI motion-play/pause-outline geometry; the dot is a separate <g> so it
-         can orbit the ring as a buffer indicator while loading -->
-
     <svg
       viewBox="0 0 24 24"
       fill="currentColor"
@@ -33,8 +30,6 @@
         <path :d="DOT" />
       </g>
     </svg>
-    <!-- enlarge the tap target on touch (coarse pointer) devices only; desktop
-         keeps the small badge as the exact hit area -->
     <span
       v-if="interactive"
       class="absolute -inset-3 hidden pointer-coarse:block"
@@ -48,7 +43,8 @@ import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
 
-// MDI motion-*-outline sub-paths (viewBox 0 0 24 24)
+// sub-paths of the MDI motion-play-outline / motion-pause-outline icons; the
+// dot is separate so it can orbit the ring while loading
 const RING =
   'M22 12C22 6.46 17.54 2 12 2C10.83 2 9.7 2.19 8.62 2.56L9.32 4.5C10.17 4.16 11.06 3.97 12 3.97C16.41 3.97 20.03 7.59 20.03 12C20.03 16.41 16.41 20.03 12 20.03C7.59 20.03 3.97 16.41 3.97 12C3.97 11.06 4.16 10.12 4.5 9.28L2.56 8.62C2.19 9.7 2 10.83 2 12C2 17.54 6.46 22 12 22C17.54 22 22 17.54 22 12'
 const PLAY = 'M10 16.5L16 12L10 7.5'
@@ -64,32 +60,18 @@ const {
   icon = 'play-circle',
   label: labelProp
 } = defineProps<{
-  /** Size of the glyph (mirrors OcIcon's SizeType, same tailwind size classes). */
   size?: SizeType
-  /**
-   * When true the badge is meant to be clicked (e.g. as a play/pause trigger)
-   * and keeps pointer events. Passive indicators leave this false so they never
-   * intercept clicks on the underlying resource.
-   */
   interactive?: boolean
-  /**
-   * Greys the badge out. Used when the file is a motion photo (worth knowing,
-   * e.g. before sharing it) but its clip cannot be played here.
-   */
   muted?: boolean
-  /** While true the motion dot orbits the ring as a buffer/progress indicator. */
   loading?: boolean
-  /** Glyph, e.g. 'play-circle' or 'pause-circle' (only the play/pause part is used). */
   icon?: string
-  /** Accessible label / tooltip. Defaults to "Motion photo". */
   label?: string
 }>()
 
 const isPause = computed(() => icon.includes('pause'))
 const basePath = computed(() => `${isPause.value ? PAUSE : PLAY}${RING}`)
 
-// mirror OcIcon's SizeType -> tailwind size mapping so the badge matches the
-// app's icon sizes exactly (same classes OcIcon applies)
+// the size classes OcIcon uses for SizeType
 const SIZE_MAP: Record<SizeType, string> = {
   xsmall: 'size-3',
   small: 'size-4',

@@ -3,8 +3,6 @@
     class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible"
     :class="{ 'pointer-events-none': !isResourceClickable }"
   >
-    <!-- the overlay wraps the link (not the other way round) so its play/pause
-         button never nests inside the link button -->
     <motion-photo-overlay
       v-if="isIconDisplayed"
       :resource="resource"

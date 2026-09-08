@@ -138,10 +138,7 @@ describe('buildResource', () => {
     it('maps the motion photo facet and camel-cases its keys', () => {
       const webDavResponse = mockDeep<WebDavResponseResource>({
         props: {
-          // WebDAV delivers the facet's nested keys in kebab-case (matching a
-          // live PROPFIND: <oc:presentation-timestamp-us>, <oc:video-size>).
-          // buildResource normalizes them to camelCase. Cast because the mapped
-          // prop type describes the post-conversion (camelCase) shape.
+          // PROPFIND delivers the nested keys in kebab-case, buildResource camelCases them
           [DavProperty.MotionPhoto]: {
             version: 1,
             'presentation-timestamp-us': 500000,

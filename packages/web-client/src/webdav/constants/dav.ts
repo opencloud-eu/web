@@ -77,7 +77,6 @@ const DavPropertyMapping = {
     value: 'photo',
     type: null as Photo
   },
-  // oc:motion-photo, keep in sync with the property the backend emits
   MotionPhoto: {
     value: 'motion-photo',
     type: null as MotionPhoto

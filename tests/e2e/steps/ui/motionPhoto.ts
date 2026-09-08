@@ -44,9 +44,7 @@ Then(
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
-    // the viewer recognized the motion photo and wired the play/pause control;
-    // the fetch/play/loop itself is covered by unit tests (Chromium here can't
-    // decode the H.264 clip)
+    // the bundled Chromium cannot decode the H.264 clip, so only the control is asserted
     await expect(resourceObject.getMotionPhotoViewerControlLocator()).toBeVisible()
   }
 )

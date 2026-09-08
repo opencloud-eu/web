@@ -47,7 +47,6 @@ describe('MediaMotionPhoto component', () => {
     expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalled()
     const video = wrapper.find('[data-testid="motion-photo-video"]')
     expect(video.exists()).toBe(true)
-    // the initial auto-play does not loop
     expect(video.attributes('loop')).toBeUndefined()
   })
 
@@ -63,18 +62,15 @@ describe('MediaMotionPhoto component', () => {
   it('loops on explicit toggle and keeps playing on ended', async () => {
     const { wrapper } = getWrapper()
     await flushPromises()
-    // let the initial auto-play finish
     await wrapper.find('[data-testid="motion-photo-video"]').trigger('ended')
     expect(wrapper.find('[data-testid="motion-photo-video"]').exists()).toBe(false)
 
-    // explicit playback via the exposed toggle (driven by the media controls)
     ;(wrapper.vm as unknown as { toggle: () => void }).toggle()
     await flushPromises()
 
     const video = wrapper.find('[data-testid="motion-photo-video"]')
     expect(video.exists()).toBe(true)
     expect(video.attributes('loop')).toBeDefined()
-    // ended must not stop it while looping
     await video.trigger('ended')
     expect(wrapper.find('[data-testid="motion-photo-video"]').exists()).toBe(true)
   })
@@ -106,8 +102,7 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          // the still is rendered by MediaImage (so zoom/pan/rotation apply to
-          // it); stub it down to its still plus the overlay slot
+          // MediaImage renders the still, keep only that and the overlay slot
           MediaImage: {
             template:
               '<div class="media-image"><img :src="file.url" /><slot name="overlay" /></div>',

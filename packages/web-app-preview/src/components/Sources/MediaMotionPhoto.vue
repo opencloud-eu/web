@@ -1,8 +1,6 @@
 <template>
   <media-image :file="file" :current-image-rotation="currentImageRotation">
     <template #overlay>
-      <!-- the clip shares the still's grid cell and constraints while playing,
-           so it is fitted like the still and zoom, pan and rotation carry over -->
       <video
         v-if="isPlaying"
         :key="`motion-photo-video-${file.id}`"
@@ -48,8 +46,7 @@ const { isPlaying, isLoading, videoUrl, play, stop, seekToStill } = useMotionPho
   () => getMatchingSpace(file.resource)
 )
 
-// The initial auto-play runs once and reverts to the still. Explicit playback
-// (via the media-controls play/pause button) loops until stopped.
+// auto-play on open runs once, playback started from the controls loops
 const looping = ref(false)
 
 const onEnded = () => {
@@ -73,6 +70,5 @@ onMounted(() => {
   play()
 })
 
-// exposed so the media controls (bottom bar) can drive play/pause
 defineExpose({ isPlaying, toggle: togglePlayback })
 </script>
