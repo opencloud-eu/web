@@ -7,7 +7,7 @@
       v-if="isIconDisplayed"
       :resource="resource"
       class="inline-flex"
-      badge-size="xsmall"
+      badge-size-class="size-3"
       video-class="rounded-xs"
     >
       <resource-link

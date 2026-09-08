@@ -14,7 +14,7 @@
     <motion-photo-badge
       class="absolute pointer-events-auto"
       :class="badgeClass"
-      :size="badgeSize"
+      :size-class="badgeSizeClass"
       :interactive="canPlay"
       :muted="!canPlay"
       :loading="isLoading"
@@ -29,7 +29,6 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
 import MotionPhotoBadge from './MotionPhotoBadge.vue'
 import { useGetMatchingSpace, useMotionPhotoPlayback } from '../../composables'
 
@@ -38,13 +37,13 @@ import { useGetMatchingSpace, useMotionPhotoPlayback } from '../../composables'
 const {
   resource,
   space = undefined,
-  badgeSize = 'small',
+  badgeSizeClass = 'size-4',
   badgeClass = 'top-0 right-0',
   videoClass = ''
 } = defineProps<{
   resource: Resource
   space?: SpaceResource
-  badgeSize?: SizeType
+  badgeSizeClass?: string
   badgeClass?: string
   videoClass?: string
 }>()

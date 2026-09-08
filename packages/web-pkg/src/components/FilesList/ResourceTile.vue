@@ -93,7 +93,7 @@
           ref="motionPlayer"
           :resource="resource"
           :space="space"
-          badge-size="medium"
+          badge-size-class="size-5"
           badge-class="top-0 right-0 m-2"
           video-class="tile-motion-video aspect-[16/9] rounded-t-sm"
         />

@@ -8,7 +8,7 @@
           <motion-photo-overlay
             :resource="resource"
             :space="space"
-            badge-size="medium"
+            badge-size-class="size-5"
             badge-class="top-1 right-1"
           >
             <img

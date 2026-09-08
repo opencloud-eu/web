@@ -4,7 +4,7 @@
     v-oc-tooltip="showTooltip ? tooltip : undefined"
     class="motion-photo-badge inline-flex items-center justify-center text-white"
     :class="[
-      resolvedSizeClass,
+      sizeClass,
       {
         'pointer-events-none': !interactive,
         'cursor-pointer': interactive,
@@ -16,20 +16,13 @@
     :aria-label="tooltip"
     data-testid="motion-photo-badge"
   >
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden="true"
-      class="motion-photo-badge-glyph size-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)]"
-    >
-      <path :d="basePath" />
-      <g
-        class="motion-photo-badge-orbit"
-        :class="{ 'motion-photo-badge-orbit--spinning': loading }"
-      >
-        <path :d="DOT" />
-      </g>
-    </svg>
+    <oc-icon
+      :name="isPause ? 'motion-pause' : 'motion-play'"
+      fill-type="line"
+      :size-class="sizeClass"
+      class="motion-photo-badge-glyph drop-shadow-[0_1px_2px_rgba(0,0,0,0.65)]"
+      :class="{ 'motion-photo-badge-glyph--loading': loading }"
+    />
     <span
       v-if="interactive"
       class="absolute -inset-3 hidden pointer-coarse:block"
@@ -41,26 +34,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
-
-// sub-paths of the MDI motion-play-outline / motion-pause-outline icons; the
-// dot is separate so it can orbit the ring while loading
-const RING =
-  'M22 12C22 6.46 17.54 2 12 2C10.83 2 9.7 2.19 8.62 2.56L9.32 4.5C10.17 4.16 11.06 3.97 12 3.97C16.41 3.97 20.03 7.59 20.03 12C20.03 16.41 16.41 20.03 12 20.03C7.59 20.03 3.97 16.41 3.97 12C3.97 11.06 4.16 10.12 4.5 9.28L2.56 8.62C2.19 9.7 2 10.83 2 12C2 17.54 6.46 22 12 22C17.54 22 22 17.54 22 12'
-const PLAY = 'M10 16.5L16 12L10 7.5'
-const PAUSE = 'M9 9H11V15H9M13 9H15V15H13'
-const DOT =
-  'M5.47 3.97C6.32 3.97 7 4.68 7 5.47C7 6.32 6.32 7 5.47 7C4.68 7 3.97 6.32 3.97 5.47C3.97 4.68 4.68 3.97 5.47 3.97Z'
 
 const {
-  size = 'small',
+  sizeClass = 'size-4',
   interactive = false,
   muted = false,
   loading = false,
   icon = 'play-circle',
   label: labelProp
 } = defineProps<{
-  size?: SizeType
+  sizeClass?: string
   interactive?: boolean
   muted?: boolean
   loading?: boolean
@@ -69,19 +52,6 @@ const {
 }>()
 
 const isPause = computed(() => icon.includes('pause'))
-const basePath = computed(() => `${isPause.value ? PAUSE : PLAY}${RING}`)
-
-// the size classes OcIcon uses for SizeType
-const SIZE_MAP: Record<SizeType, string> = {
-  xsmall: 'size-3',
-  small: 'size-4',
-  medium: 'size-5',
-  large: 'size-8',
-  xlarge: 'size-12',
-  xxlarge: 'size-22',
-  xxxlarge: 'size-42'
-}
-const resolvedSizeClass = computed(() => SIZE_MAP[size])
 
 const { $gettext } = useGettext()
 const label = computed(() => labelProp ?? $gettext('Motion photo'))
@@ -90,12 +60,13 @@ const showTooltip = computed(() => !interactive)
 </script>
 
 <style scoped>
-.motion-photo-badge-orbit {
+/* the icon's dot (separate <g> in the svg) orbits the ring while loading */
+.motion-photo-badge-glyph :deep(.motion-dot) {
   transform-box: view-box;
   transform-origin: 12px 12px;
 }
 
-.motion-photo-badge-orbit--spinning {
+.motion-photo-badge-glyph--loading :deep(.motion-dot) {
   animation: motion-photo-badge-orbit 0.8s linear infinite;
 }
 

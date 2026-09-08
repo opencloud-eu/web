@@ -6,7 +6,7 @@
       ref="player"
       :resource="resource"
       :space="space"
-      :badge-size="badgeSize"
+      :badge-size-class="badgeSizeClass"
       :badge-class="badgeClass"
       :video-class="videoClass"
     />
@@ -17,19 +17,18 @@
 import { computed, useTemplateRef } from 'vue'
 import isEmpty from 'lodash-es/isEmpty'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
 import MotionPhotoPlayer from './MotionPhotoPlayer.vue'
 
 const {
   resource,
   space = undefined,
-  badgeSize = 'small',
+  badgeSizeClass = 'size-4',
   badgeClass = 'top-0 right-0',
   videoClass = ''
 } = defineProps<{
   resource: Resource
   space?: SpaceResource
-  badgeSize?: SizeType
+  badgeSizeClass?: string
   badgeClass?: string
   videoClass?: string
 }>()
