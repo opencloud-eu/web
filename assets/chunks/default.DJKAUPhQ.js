@@ -1,0 +1,1 @@
+import{Nt as e,_t as t,kt as n,lt as r,nn as i}from"./framework.VHIaDZDj.js";var a=t({__name:`default`,setup(t){let a=i(10),o=e=>{a.value=e};return(t,i)=>{let s=e(`oc-page-size`);return n(),r(s,{label:`Items per page`,options:[10,20,50],selected:a.value,onChange:o},null,8,[`selected`])}}});export{a as default};

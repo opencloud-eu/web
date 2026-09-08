@@ -1,0 +1,1 @@
+import{Nt as e,_t as t,kt as n,lt as r,nn as i}from"./framework.VHIaDZDj.js";var a=t({__name:`default`,setup(t){let a=i(1);return(t,i)=>{let o=e(`oc-pagination-inline`);return n(),r(o,{"current-page":a.value,"onUpdate:currentPage":i[0]||=e=>a.value=e,pages:3},null,8,[`current-page`])}}});export{a as default};

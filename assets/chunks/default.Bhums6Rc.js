@@ -1,0 +1,1 @@
+import{Nt as e,_t as t,ct as n,dt as r,ht as i,it as a,kt as o,nn as s,pn as c}from"./framework.VHIaDZDj.js";var l=t({__name:`default`,setup(t){let l=s(),u=e=>{l.value=e};return(t,s)=>{let d=e(`oc-emoji-picker`);return o(),r(a,null,[i(d,{onEmojiSelect:u}),n(`p`,null,`Selected emoji: `+c(l.value),1)],64)}}});export{l as default};

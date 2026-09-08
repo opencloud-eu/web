@@ -1,0 +1,1 @@
+import{Nt as e,_t as t,kt as n,ln as r,lt as i,nn as a}from"./framework.VHIaDZDj.js";var o=t({__name:`toggle`,setup(t){let o=a(!1),s=()=>{o.value=!r(o)};return(t,r)=>{let a=e(`oc-filter-chip`);return n(),i(a,{"filter-label":`Toggle filter`,"is-toggle":!0,"is-toggle-active":o.value,onToggleFilter:s,onClearFilter:s},null,8,[`is-toggle-active`])}}});export{o as default};
