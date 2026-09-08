@@ -3,40 +3,49 @@
     class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible"
     :class="{ 'pointer-events-none': !isResourceClickable }"
   >
-    <resource-link
+    <motion-photo-overlay
       v-if="isIconDisplayed"
-      v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
       :resource="resource"
-      :link="link"
-      :is-resource-clickable="isResourceClickable"
-      class="relative"
-      :class="{ 'hover:underline': isResourceClickable }"
-      :aria-label="
-        isResourceClickable ? $gettext('Open »%{name}«', { name: resource?.name ?? '' }) : undefined
-      "
-      @click="emitClick"
+      class="inline-flex"
+      badge-size-class="size-3"
+      video-class="rounded-xs"
     >
-      <oc-image
-        v-if="hasThumbnail"
-        :key="thumbnail"
-        v-oc-tooltip="tooltipLabelIcon"
-        :src="thumbnail"
-        :data-test-thumbnail-resource-name="resource.name"
-        class="rounded-xs size-6 object-cover max-w-fit"
-        :aria-label="tooltipLabelIcon"
-        alt=""
-        decoding="async"
-      />
-      <resource-icon
-        v-else
-        v-oc-tooltip="tooltipLabelIcon"
-        :aria-label="tooltipLabelIcon"
-        aria-hidden="true"
+      <resource-link
+        v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
         :resource="resource"
-        size-class="size-6"
-        class="rounded-xs"
-      />
-    </resource-link>
+        :link="link"
+        :is-resource-clickable="isResourceClickable"
+        class="relative"
+        :class="{ 'hover:underline': isResourceClickable }"
+        :aria-label="
+          isResourceClickable
+            ? $gettext('Open »%{name}«', { name: resource?.name ?? '' })
+            : undefined
+        "
+        @click="emitClick"
+      >
+        <oc-image
+          v-if="hasThumbnail"
+          :key="thumbnail"
+          v-oc-tooltip="tooltipLabelIcon"
+          :src="thumbnail"
+          :data-test-thumbnail-resource-name="resource.name"
+          class="rounded-xs size-6 object-cover max-w-fit"
+          :aria-label="tooltipLabelIcon"
+          alt=""
+          decoding="async"
+        />
+        <resource-icon
+          v-else
+          v-oc-tooltip="tooltipLabelIcon"
+          :aria-label="tooltipLabelIcon"
+          aria-hidden="true"
+          :resource="resource"
+          size-class="size-6"
+          class="rounded-xs"
+        />
+      </resource-link>
+    </motion-photo-overlay>
     <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">
       <resource-link
         :resource="resource"
@@ -81,6 +90,7 @@ import { Resource } from '@opencloud-eu/web-client'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceLink from './ResourceLink.vue'
 import ResourceName from './ResourceName.vue'
+import MotionPhotoOverlay from './MotionPhotoOverlay.vue'
 import { RouteLocationRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
 

@@ -40,6 +40,13 @@
             {{ $gettext('Failed to load "%{filename}"', { filename: activeMediaFile.name }) }}
           </p>
         </div>
+        <media-motion-photo
+          v-else-if="activeMediaFile.isMotionPhoto"
+          ref="motionPlayer"
+          :key="activeMediaFile.id"
+          :file="activeMediaFile"
+          :current-image-rotation="currentImageRotation"
+        />
         <media-image
           v-else-if="activeMediaFile.isImage"
           :file="activeMediaFile"
@@ -64,8 +71,11 @@
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         :is-folder-loading="isFolderLoading"
         :show-image-controls="activeMediaFile?.isImage && !activeMediaFile?.isError"
+        :show-motion-control="activeMediaFile?.isMotionPhoto && !activeMediaFile?.isError"
+        :is-motion-playing="motionPlayer?.isPlaying"
         :current-image-rotation="currentImageRotation"
         :photo-roll-enabled="photoRollEnabled"
+        @toggle-motion="motionPlayer?.toggle()"
         @set-rotation-right="imageRotateRight"
         @set-rotation-left="imageRotateLeft"
         @set-zoom="imageZoom"
@@ -93,6 +103,7 @@ import {
   watch
 } from 'vue'
 import omit from 'lodash-es/omit'
+import isEmpty from 'lodash-es/isEmpty'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
@@ -115,6 +126,7 @@ import {
 import MediaControls from './components/MediaControls.vue'
 import MediaAudio from './components/Sources/MediaAudio.vue'
 import MediaImage from './components/Sources/MediaImage.vue'
+import MediaMotionPhoto from './components/Sources/MediaMotionPhoto.vue'
 import MediaVideo from './components/Sources/MediaVideo.vue'
 import PhotoRoll from './components/PhotoRoll.vue'
 import { MediaFile } from './helpers/types'
@@ -172,6 +184,7 @@ const isAutoPlayEnabled = ref(true)
 const isAutoAdvancing = ref(false)
 const photoRollEnabled = ref(true)
 const preview = useTemplateRef<HTMLElement>('preview')
+const motionPlayer = useTemplateRef<{ isPlaying: boolean; toggle: () => void }>('motionPlayer')
 const keyBindings: string[] = []
 let loadPreviewImageController: AbortController = null
 
@@ -233,6 +246,7 @@ const buildMediaFiles = () => {
       isVideo: isFileTypeVideo(file),
       isImage: isFileTypeImage(file),
       isAudio: isFileTypeAudio(file),
+      isMotionPhoto: isFileTypeImage(file) && !isEmpty(file.motionPhoto),
       isLoading: true,
       isError: false,
       resource: file

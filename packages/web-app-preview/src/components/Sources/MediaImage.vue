@@ -10,6 +10,16 @@
       @loaded="initPanzoom"
     />
   </div>
+  <div
+    v-else-if="$slots.overlay"
+    ref="img"
+    :key="`media-image-wrapper-${file.id}`"
+    class="relative grid size-full grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
+    :data-id="file.id"
+  >
+    <img :src="file.url" :alt="file.name" class="max-w-full max-h-full" />
+    <slot name="overlay" />
+  </div>
   <img
     v-else
     ref="img"
@@ -47,6 +57,8 @@ const { file, currentImageRotation } = defineProps<{
 
 const eventBus = useEventBus()
 
+// with an overlay slot this is a stage-filling wrapper around the still: a
+// content-sized wrapper would void the percentage max-w/max-h of its children
 const img = useTemplateRef<HTMLElement>('img')
 const panzoom = ref<PanzoomObject>()
 const isSvgImage = computed(() => file.mimeType === 'image/svg+xml')

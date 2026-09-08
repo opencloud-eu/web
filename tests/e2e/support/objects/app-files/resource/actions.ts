@@ -116,6 +116,10 @@ const highlightedTileCardSelector = '.oc-tile-card-selected'
 const emptyTrashbinButtonSelector = '.oc-files-actions-empty-trash-bin-trigger'
 const resourceLockIcon =
   '//*[@data-test-resource-name="%s"]/ancestor::*[self::li or self::tr]//span[@data-test-indicator-type="resource-locked"]'
+const resourceMotionPhotoBadge =
+  '//*[@data-test-resource-name="%s"]/ancestor::*[contains(@class, "oc-tile-card") or contains(@class, "oc-tbody-tr")]//*[@data-testid="motion-photo-badge"]'
+const previewMotionPhotoBadge =
+  '//*[contains(@class, "photo-roll-item")][.//*[@data-test-resource-name="%s"]]//*[@data-testid="motion-photo-badge"]'
 const sharesNavigationButtonSelector = '.oc-sidebar-nav [data-nav-name="files-shares"]'
 const keepBothButton = '.oc-modal-body-actions-confirm'
 const mediaNavigationButton = `//button[contains(@class, "preview-controls-%s")]`
@@ -780,11 +784,15 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to, password })
   }
 
-  const respPromise = page.waitForResponse(
-    (resp) =>
-      [201, 204].includes(resp.status()) &&
-      ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
-  )
+  // an upload that is expected to fail may never produce a 2xx response,
+  // a dangling waitForResponse would then reject when the page closes
+  const respPromise = expectToFail
+    ? Promise.resolve()
+    : page.waitForResponse(
+        (resp) =>
+          [201, 204].includes(resp.status()) &&
+          ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
+      )
 
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
   let uploadAction: Promise<void> = page
@@ -2539,6 +2547,43 @@ export const getAllAvailableActions = async ({
 export const getFileThumbnailLocator = (args: { page: Page; resource: string }): Locator => {
   const { page, resource } = args
   return page.locator(util.format(fileThumbnail, resource))
+}
+
+export const getMotionPhotoBadgeLocator = (args: { page: Page; resource: string }): Locator => {
+  const { page, resource } = args
+  return page.locator(util.format(resourceMotionPhotoBadge, resource))
+}
+
+export const getPreviewMotionPhotoBadgeLocator = (args: {
+  page: Page
+  resource: string
+}): Locator => {
+  const { page, resource } = args
+  return page.locator(util.format(previewMotionPhotoBadge, resource))
+}
+
+const motionPhotoViewerControl = '[data-testid="motion-photo-toggle"]'
+
+// the play/pause control in the media viewer's controls bar
+export const getMotionPhotoViewerControlLocator = (args: { page: Page }): Locator => {
+  return args.page.locator(motionPhotoViewerControl)
+}
+
+const sidebarMotionPhotoBadge = '#oc-file-details-sidebar [data-testid="motion-photo-badge"]'
+const sidebarMotionPhotoVideo = '#oc-file-details-sidebar [data-testid="preview"] video'
+
+export const playMotionPhotoInSidebar = async (args: { page: Page }): Promise<void> => {
+  const { page } = args
+  await page.locator(sidebarMotionPhotoBadge).click()
+}
+
+export const getSidebarMotionPhotoVideoSource = async (args: { page: Page }): Promise<string> => {
+  const { page } = args
+  const locator = page.locator(sidebarMotionPhotoVideo)
+  if ((await locator.count()) === 0) {
+    return ''
+  }
+  return locator.evaluate((el: HTMLVideoElement) => el.currentSrc || el.src || '')
 }
 
 export const shouldSeeFilePreview = async ({

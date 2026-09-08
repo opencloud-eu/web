@@ -25,64 +25,75 @@
       </div>
     </div>
     <template v-else>
-      <resource-link
-        class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
-        :resource="resource"
-        :link="resourceRoute"
-        :is-resource-clickable="isResourceClickable"
-        tabindex="-1"
-        @click="$emit('fileNameClicked', $event)"
-      >
-        <div
-          class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
+      <div class="relative flex w-full" @mouseenter="onMediaEnter" @mouseleave="onMediaLeave">
+        <resource-link
+          class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
+          :resource="resource"
+          :link="resourceRoute"
+          :is-resource-clickable="isResourceClickable"
+          tabindex="-1"
+          @click="$emit('fileNameClicked', $event)"
         >
-          <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
-            <oc-spinner :aria-label="$gettext('File is being processed')" />
+          <div
+            class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
+          >
+            <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
+              <oc-spinner :aria-label="$gettext('File is being processed')" />
+            </div>
+            <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
           </div>
-          <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
-        </div>
-        <oc-tag
-          v-if="isProjectSpaceResource(resource) && resource.disabled"
-          class="z-10 absolute text-role-on-surface"
-          type="span"
-        >
-          <span v-text="$gettext('Disabled')" />
-        </oc-tag>
-        <div
-          v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
-          :class="{ 'p-2': isResourceSelected, 'hover:p-2': !isResourceSelected }"
-          :aria-label="tooltipLabelIcon"
-        >
-          <slot name="imageField" :item="resource">
-            <oc-image
-              v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
-              :class="{
-                'rounded-sm': isResourceSelected
-              }"
-              :src="resource.thumbnail"
-              :data-test-thumbnail-resource-name="resource.name"
-              decoding="async"
-              @click.stop="$emit('tileClicked', [resource, $event])"
-            />
-            <resource-icon
-              v-else
-              :resource="resource"
-              :size-class="isProjectSpaceResource(resource) ? 'size-full' : resourceIconSize"
-              class="tile-default-image relative"
-              :class="[
-                isProjectSpaceResource(resource) ? 'rounded-t-sm' : 'pt-1',
-                { 'rounded-sm': isProjectSpaceResource(resource) && isResourceSelected }
-              ]"
-            >
-              <template v-if="showStatusIcon" #status>
-                <oc-icon v-bind="statusIconAttrs" size-class="size-3" />
-              </template>
-            </resource-icon>
-          </slot>
-        </div>
-      </resource-link>
+          <oc-tag
+            v-if="isProjectSpaceResource(resource) && resource.disabled"
+            class="z-10 absolute text-role-on-surface"
+            type="span"
+          >
+            <span v-text="$gettext('Disabled')" />
+          </oc-tag>
+          <div
+            v-oc-tooltip="tooltipLabelIcon"
+            class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
+            :class="{ 'p-2 oc-tile-card-preview-inset': motionInset }"
+            :aria-label="tooltipLabelIcon"
+          >
+            <slot name="imageField" :item="resource">
+              <oc-image
+                v-if="resource.thumbnail"
+                class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
+                :class="{
+                  'rounded-sm': isResourceSelected
+                }"
+                :src="resource.thumbnail"
+                :data-test-thumbnail-resource-name="resource.name"
+                decoding="async"
+                @click.stop="$emit('tileClicked', [resource, $event])"
+              />
+              <resource-icon
+                v-else
+                :resource="resource"
+                :size-class="isProjectSpaceResource(resource) ? 'size-full' : resourceIconSize"
+                class="tile-default-image relative"
+                :class="[
+                  isProjectSpaceResource(resource) ? 'rounded-t-sm' : 'pt-1',
+                  { 'rounded-sm': isProjectSpaceResource(resource) && isResourceSelected }
+                ]"
+              >
+                <template v-if="showStatusIcon" #status>
+                  <oc-icon v-bind="statusIconAttrs" size-class="size-3" />
+                </template>
+              </resource-icon>
+            </slot>
+          </div>
+        </resource-link>
+        <motion-photo-player
+          v-if="resource.motionPhoto"
+          ref="motionPlayer"
+          :resource="resource"
+          :space="space"
+          badge-size-class="size-5"
+          badge-class="top-0 right-0 m-2.5"
+          :video-class="motionVideoClass"
+        />
+      </div>
       <div class="p-2" @click.stop="$emit('tileClicked', [resource, $event])">
         <div class="flex justify-between items-center">
           <div
@@ -124,6 +135,7 @@ import { computed, ref, unref, useTemplateRef } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
+import MotionPhotoPlayer from './MotionPhotoPlayer.vue'
 import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
@@ -185,8 +197,27 @@ const { getParentFolderName, getParentFolderLink } = useFolderLink({
   space: ref(space)
 })
 
+// no MotionPhotoOverlay here: the hover has to span the whole media area, so
+// that moving toward the selection checkbox does not stop playback
+const motionPlayer = useTemplateRef<InstanceType<typeof MotionPhotoPlayer>>('motionPlayer')
 const resourcesStore = useResourcesStore()
 const isResourceSelected = computed(() => resourcesStore.selectedIdsSet.has(resource.id))
+// the preview is inset while selected or hovered (the whole media area, badge
+// included, so that hovering the badge does not pop the still back out) and the
+// clip follows that inset; the badge keeps the checkbox's fixed edge distance
+const isMediaHovered = ref(false)
+const motionInset = computed(() => isResourceSelected.value || isMediaHovered.value)
+const motionVideoClass = computed(() =>
+  motionInset.value ? 'tile-motion-video inset-2 rounded-sm' : 'tile-motion-video rounded-t-sm'
+)
+const onMediaEnter = () => {
+  isMediaHovered.value = true
+  motionPlayer.value?.hoverPlay?.()
+}
+const onMediaLeave = () => {
+  isMediaHovered.value = false
+  motionPlayer.value?.stop?.()
+}
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
@@ -249,8 +280,8 @@ if (!lazy) {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .oc-tile-card-preview:hover img,
-  .oc-tile-card-preview:hover .oc-icon {
+  .oc-tile-card-preview-inset img,
+  .oc-tile-card-preview-inset .oc-icon {
     @apply rounded-sm;
   }
 
