@@ -18,6 +18,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: stop re-fetching resources in AppWrapper on every context change [[#3324](https://github.com/opencloud-eu/web/pull/3324)]
 - fix: defer sidebar actions until resource loads [[#3312](https://github.com/opencloud-eu/web/pull/3312)]
 - Editor: Add Default font-size reset and simplify zoom styling [[#3304](https://github.com/opencloud-eu/web/pull/3304)]
 - fix: send mtime metadata for public link uploads [[#3322](https://github.com/opencloud-eu/web/pull/3322)]
