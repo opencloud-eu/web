@@ -162,4 +162,29 @@ describe('useMotionPhoto', () => {
       expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob:mock-url')
     })
   })
+  describe('revoke', () => {
+    it('revokes and forgets the cached url of one resource only', async () => {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 206 },
+        body: mp4Blob()
+      })
+      await instance.loadVideoUrl(space, buildResource())
+      await instance.loadVideoUrl(space, buildResource({ id: 'mp2', fileId: 'mp2' }))
+
+      instance.revoke('mp1')
+      expect(global.URL.revokeObjectURL).toHaveBeenCalledTimes(1)
+
+      // mp1 is fetched again, mp2 is still served from the cache
+      await instance.loadVideoUrl(space, buildResource())
+      await instance.loadVideoUrl(space, buildResource({ id: 'mp2', fileId: 'mp2' }))
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(3)
+    })
+
+    it('ignores unknown ids', () => {
+      const { instance } = getWrapper()
+      instance.revoke('nope')
+      expect(global.URL.revokeObjectURL).not.toHaveBeenCalled()
+    })
+  })
 })

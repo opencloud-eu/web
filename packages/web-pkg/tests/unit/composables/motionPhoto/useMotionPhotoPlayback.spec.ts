@@ -4,7 +4,10 @@ import { MaybeRefOrGetter, ref, toValue } from 'vue'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
-import { useMotionPhotoPlayback } from '../../../../src/composables/motionPhoto/useMotionPhotoPlayback'
+import {
+  HOVER_INTENT_DELAY_MS,
+  useMotionPhotoPlayback
+} from '../../../../src/composables/motionPhoto/useMotionPhotoPlayback'
 
 const mp4Body = () => new Blob([new Uint8Array(80)])
 const space = mock<SpaceResource>()
@@ -166,5 +169,73 @@ describe('useMotionPhotoPlayback', () => {
     await flushPromises()
 
     expect(instance.isPlaying.value).toBe(false)
+  })
+  it('a cancelled play() does not disturb the next one (stale run stays out of the state)', async () => {
+    const { instance, mocks } = getWrapper()
+    const first = Promise.withResolvers<GetFileContentsResponse>()
+    const second = Promise.withResolvers<GetFileContentsResponse>()
+    mocks.$clientService.webdav.getFileContents
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise)
+
+    const firstRun = instance.play()
+    instance.stop()
+    const secondRun = instance.play()
+    expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(2)
+
+    // the aborted first run settles late (rejects, as an aborted fetch would)
+    first.reject(new DOMException('aborted', 'AbortError'))
+    await firstRun
+    await flushPromises()
+
+    // the second run must still be cancelable: stop() aborts it, nothing plays
+    instance.stop()
+    second.resolve({ response: { status: 206 }, body: mp4Body() } as GetFileContentsResponse)
+    await secondRun
+    await flushPromises()
+    expect(instance.isPlaying.value).toBe(false)
+    expect(instance.videoUrl.value).toBeUndefined()
+  })
+
+  it('hoverPlay() waits for hover intent and is cancelled by stop()', () => {
+    vi.useFakeTimers()
+    try {
+      const { instance, mocks } = getWrapper()
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 206 },
+        body: mp4Body()
+      })
+
+      instance.hoverPlay()
+      vi.advanceTimersByTime(HOVER_INTENT_DELAY_MS - 1)
+      expect(mocks.$clientService.webdav.getFileContents).not.toHaveBeenCalled()
+      instance.stop()
+      vi.advanceTimersByTime(HOVER_INTENT_DELAY_MS)
+      expect(mocks.$clientService.webdav.getFileContents).not.toHaveBeenCalled()
+
+      instance.hoverPlay()
+      vi.advanceTimersByTime(HOVER_INTENT_DELAY_MS)
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('revokes the previous clip when the resource changes', async () => {
+    const resource = ref(buildResource())
+    const { instance, mocks } = getWrapper(resource)
+    mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+      response: { status: 206 },
+      body: mp4Body()
+    })
+    await instance.play()
+    expect(instance.videoUrl.value).toBe('blob:video')
+
+    resource.value = buildResource({ id: 'mp2', fileId: 'mp2' })
+    await flushPromises()
+
+    expect(global.URL.revokeObjectURL).toHaveBeenCalledWith('blob:video')
+    expect(instance.isPlaying.value).toBe(false)
+    expect(instance.videoUrl.value).toBeUndefined()
   })
 })

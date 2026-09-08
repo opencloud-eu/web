@@ -97,6 +97,16 @@ export function useMotionPhoto() {
     return url
   }
 
+  /** Drops the cached object URL of a single resource and revokes it. */
+  function revoke(resourceId: string): void {
+    const url = blobUrlCache.get(resourceId)
+    if (!url) {
+      return
+    }
+    URL.revokeObjectURL(url)
+    blobUrlCache.delete(resourceId)
+  }
+
   function revokeAll(): void {
     for (const url of blobUrlCache.values()) {
       URL.revokeObjectURL(url)
@@ -112,6 +122,7 @@ export function useMotionPhoto() {
     getVideoOffset,
     getStillTimestampSeconds,
     loadVideoUrl,
+    revoke,
     revokeAll
   }
 }
