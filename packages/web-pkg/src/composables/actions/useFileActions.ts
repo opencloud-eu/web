@@ -240,15 +240,10 @@ export const useFileActions = () => {
     return unref(fallbackActions).find(({ isVisible }) => isVisible(options))
   }
 
-  const getAllOpenWithActions = (
-    options: GetFileActionsOptions & { omitEditorActions?: boolean }
-  ) => {
+  const getAllOpenWithActions = (options: GetFileActionsOptions) => {
     // Editor actions rank above the registry actions: an app that claims a
     // file or folder type is more specific than the generic openers.
-    return [
-      ...(options.omitEditorActions ? [] : unref(editorActions)),
-      ...unref(primaryExtensionActions)
-    ]
+    return [...unref(editorActions), ...unref(primaryExtensionActions)]
       .filter((action: FileAction) => action.isVisible(options))
       .sort((a, b) => Number(b.hasPriority) - Number(a.hasPriority))
   }
