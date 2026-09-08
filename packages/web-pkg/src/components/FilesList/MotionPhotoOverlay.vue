@@ -1,45 +1,31 @@
 <template>
-  <div class="relative" @mouseenter="hoverPlay" @mouseleave="stop">
+  <div class="relative" @mouseenter="player?.hoverPlay?.()" @mouseleave="player?.stop?.()">
     <slot />
-    <video
-      v-if="isPlaying && videoUrl"
-      :src="videoUrl"
-      class="absolute inset-0 size-full object-cover pointer-events-none"
-      :class="videoClass"
-      muted
-      loop
-      autoplay
-      playsinline
-      @loadedmetadata="seekToStill"
-    />
-    <motion-photo-badge
+    <motion-photo-player
       v-if="isMotionPhoto"
-      class="absolute"
-      :class="badgeClass"
-      :size="badgeSize"
-      interactive
-      :loading="isLoading"
-      :icon="isPlaying ? 'pause-circle' : 'play-circle'"
-      :label="isPlaying ? $gettext('Pause motion photo') : $gettext('Play motion photo')"
-      @click.stop.prevent="toggle"
+      ref="player"
+      :resource="resource"
+      :space="space"
+      :badge-size="badgeSize"
+      :badge-class="badgeClass"
+      :video-class="videoClass"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useGettext } from 'vue3-gettext'
+import { computed, useTemplateRef } from 'vue'
 import isEmpty from 'lodash-es/isEmpty'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { SizeType } from '@opencloud-eu/design-system/helpers'
-import MotionPhotoBadge from './MotionPhotoBadge.vue'
-import { useGetMatchingSpace, useMotionPhotoPlayback } from '../../composables'
+import MotionPhotoPlayer from './MotionPhotoPlayer.vue'
 
 /**
  * Shared motion-photo overlay: wraps a still (default slot) and, when the
- * resource is a motion photo, overlays the hover-to-play clip and the play/pause
- * badge on top of it. Owns its own hover, so consumers only drop it around their
- * still. Passive (no badge, no fetch) for non-motion-photo resources.
+ * resource is a motion photo, lays the hover-to-play clip and the play/pause
+ * badge over it. Owns the hover, so consumers only drop it around their still.
+ * For every other resource it is just a positioned wrapper: no badge, no fetch,
+ * no playback state.
  */
 const {
   resource,
@@ -59,16 +45,6 @@ const {
   videoClass?: string
 }>()
 
-const { $gettext } = useGettext()
-const { getMatchingSpace } = useGetMatchingSpace()
-
-// resolved lazily (only when playback starts) so a grid of many items does not
-// run the space lookup on every render
-const { isPlaying, isLoading, videoUrl, hoverPlay, stop, toggle, seekToStill } =
-  useMotionPhotoPlayback(
-    () => resource,
-    () => space ?? getMatchingSpace(resource)
-  )
-
+const player = useTemplateRef<InstanceType<typeof MotionPhotoPlayer>>('player')
 const isMotionPhoto = computed(() => !isEmpty(resource?.motionPhoto))
 </script>

@@ -25,86 +25,82 @@
       </div>
     </div>
     <template v-else>
-      <resource-link
-        class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
-        :resource="resource"
-        :link="resourceRoute"
-        :is-resource-clickable="isResourceClickable"
-        tabindex="-1"
-        @click="$emit('fileNameClicked', $event)"
-        @mouseenter="startMotionPlayback"
-        @mouseleave="stopMotionPlayback"
+      <div
+        class="relative w-full"
+        @mouseenter="motionPlayer?.hoverPlay?.()"
+        @mouseleave="motionPlayer?.stop?.()"
       >
-        <div
-          class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
+        <resource-link
+          class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
+          :resource="resource"
+          :link="resourceRoute"
+          :is-resource-clickable="isResourceClickable"
+          tabindex="-1"
+          @click="$emit('fileNameClicked', $event)"
         >
-          <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
-            <oc-spinner :aria-label="$gettext('File is being processed')" />
+          <div
+            class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface-container"
+          >
+            <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
+              <oc-spinner :aria-label="$gettext('File is being processed')" />
+            </div>
+            <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
           </div>
-          <slot v-else name="selection" :item="resource" :selected="isResourceSelected" />
-        </div>
-        <oc-tag
-          v-if="isProjectSpaceResource(resource) && resource.disabled"
-          class="z-10 absolute text-role-on-surface"
-          type="span"
-        >
-          <span v-text="$gettext('Disabled')" />
-        </oc-tag>
-        <motion-photo-badge
+          <oc-tag
+            v-if="isProjectSpaceResource(resource) && resource.disabled"
+            class="z-10 absolute text-role-on-surface"
+            type="span"
+          >
+            <span v-text="$gettext('Disabled')" />
+          </oc-tag>
+          <div
+            v-oc-tooltip="tooltipLabelIcon"
+            class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
+            :class="{ 'p-2': isResourceSelected, 'hover:p-2': !isResourceSelected }"
+            :aria-label="tooltipLabelIcon"
+          >
+            <slot name="imageField" :item="resource">
+              <oc-image
+                v-if="resource.thumbnail"
+                class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
+                :class="{
+                  'rounded-sm': isResourceSelected
+                }"
+                :src="resource.thumbnail"
+                :data-test-thumbnail-resource-name="resource.name"
+                decoding="async"
+                @click.stop="$emit('tileClicked', [resource, $event])"
+              />
+              <resource-icon
+                v-else
+                :resource="resource"
+                :size-class="isProjectSpaceResource(resource) ? 'size-full' : resourceIconSize"
+                class="tile-default-image relative"
+                :class="[
+                  isProjectSpaceResource(resource) ? 'rounded-t-sm' : 'pt-1',
+                  { 'rounded-sm': isProjectSpaceResource(resource) && isResourceSelected }
+                ]"
+              >
+                <template v-if="showStatusIcon" #status>
+                  <oc-icon v-bind="statusIconAttrs" size-class="size-3" />
+                </template>
+              </resource-icon>
+            </slot>
+          </div>
+        </resource-link>
+        <!-- outside the link: the badge is a button and must not nest in it; the
+             player is pointer-transparent so the link keeps its clicks -->
+        <motion-photo-player
           v-if="resource.motionPhoto"
-          class="z-20 absolute top-0 right-0 m-2"
-          size="medium"
-          interactive
-          :loading="showMotionSpinner"
-          :icon="isMotionPlaying ? 'pause-circle' : 'play-circle'"
-          :label="isMotionPlaying ? $gettext('Pause motion photo') : $gettext('Play motion photo')"
-          @click.stop.prevent="toggleMotionPlayback"
+          ref="motionPlayer"
+          class="z-20"
+          :resource="resource"
+          :space="space"
+          badge-size="medium"
+          badge-class="top-0 right-0 m-2"
+          video-class="tile-motion-video aspect-[16/9] rounded-t-sm"
         />
-        <video
-          v-if="isMotionPlaying && motionVideoUrl"
-          :src="motionVideoUrl"
-          class="tile-motion-video z-[5] absolute inset-0 size-full object-cover aspect-[16/9] rounded-t-sm pointer-events-none"
-          muted
-          loop
-          autoplay
-          playsinline
-          @loadedmetadata="seekMotionToStill"
-        />
-        <div
-          v-oc-tooltip="tooltipLabelIcon"
-          class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
-          :class="{ 'p-2': isResourceSelected, 'hover:p-2': !isResourceSelected }"
-          :aria-label="tooltipLabelIcon"
-        >
-          <slot name="imageField" :item="resource">
-            <oc-image
-              v-if="resource.thumbnail"
-              class="tile-preview rounded-t-sm size-full object-cover aspect-[16/9] pointer-events-none"
-              :class="{
-                'rounded-sm': isResourceSelected
-              }"
-              :src="resource.thumbnail"
-              :data-test-thumbnail-resource-name="resource.name"
-              decoding="async"
-              @click.stop="$emit('tileClicked', [resource, $event])"
-            />
-            <resource-icon
-              v-else
-              :resource="resource"
-              :size-class="isProjectSpaceResource(resource) ? 'size-full' : resourceIconSize"
-              class="tile-default-image relative"
-              :class="[
-                isProjectSpaceResource(resource) ? 'rounded-t-sm' : 'pt-1',
-                { 'rounded-sm': isProjectSpaceResource(resource) && isResourceSelected }
-              ]"
-            >
-              <template v-if="showStatusIcon" #status>
-                <oc-icon v-bind="statusIconAttrs" size-class="size-3" />
-              </template>
-            </resource-icon>
-          </slot>
-        </div>
-      </resource-link>
+      </div>
       <div class="p-2" @click.stop="$emit('tileClicked', [resource, $event])">
         <div class="flex justify-between items-center">
           <div
@@ -146,7 +142,7 @@ import { computed, ref, unref, useTemplateRef } from 'vue'
 import ResourceIcon from './ResourceIcon.vue'
 import ResourceListItem from './ResourceListItem.vue'
 import ResourceLink from './ResourceLink.vue'
-import MotionPhotoBadge from './MotionPhotoBadge.vue'
+import MotionPhotoPlayer from './MotionPhotoPlayer.vue'
 import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { isSpaceResource } from '@opencloud-eu/web-client'
@@ -155,7 +151,6 @@ import { OcCard } from '@opencloud-eu/design-system/components'
 import {
   useFilesViewScrollContainer,
   useFolderLink,
-  useMotionPhotoPlayback,
   useResourceLink,
   useResourcesStore
 } from '../../composables'
@@ -209,22 +204,10 @@ const { getParentFolderName, getParentFolderLink } = useFolderLink({
   space: ref(space)
 })
 
-// Kept inline instead of using MotionPhotoOverlay: the tile's hover must span the
-// whole media area (resource-link) so moving toward the selection checkbox does
-// not stop playback, and the badge/video sit within the tile's absolute/z-index
-// layering. Hover plays the clip over the thumbnail; the badge toggles play/pause.
-const {
-  isPlaying: isMotionPlaying,
-  isLoading: showMotionSpinner,
-  videoUrl: motionVideoUrl,
-  hoverPlay: startMotionPlayback,
-  stop: stopMotionPlayback,
-  toggle: toggleMotionPlayback,
-  seekToStill: seekMotionToStill
-} = useMotionPhotoPlayback(
-  () => resource,
-  () => space
-)
+// Not wrapped in MotionPhotoOverlay: the tile's hover must span the whole media
+// area (resource-link) so moving toward the selection checkbox does not stop
+// playback, and the player sits within the tile's absolute/z-index layering.
+const motionPlayer = useTemplateRef<InstanceType<typeof MotionPhotoPlayer>>('motionPlayer')
 const resourcesStore = useResourcesStore()
 const isResourceSelected = computed(() => resourcesStore.selectedIdsSet.has(resource.id))
 

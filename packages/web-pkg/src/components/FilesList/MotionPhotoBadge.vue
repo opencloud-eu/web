@@ -1,13 +1,19 @@
 <template>
-  <span
+  <component
+    :is="interactive ? 'button' : 'span'"
     v-oc-tooltip="showTooltip ? tooltip : undefined"
     class="motion-photo-badge inline-flex items-center justify-center text-white"
     :class="[
       resolvedSizeClass,
-      { 'pointer-events-none': !interactive, 'cursor-pointer': interactive }
+      {
+        'pointer-events-none': !interactive,
+        'cursor-pointer': interactive,
+        'opacity-50': muted
+      }
     ]"
+    :type="interactive ? 'button' : undefined"
+    :role="interactive ? undefined : 'img'"
     :aria-label="tooltip"
-    :role="interactive ? 'button' : 'img'"
     data-testid="motion-photo-badge"
   >
     <!-- MDI motion-play/pause-outline geometry; the dot is a separate <g> so it
@@ -34,7 +40,7 @@
       class="absolute -inset-3 hidden pointer-coarse:block"
       aria-hidden="true"
     />
-  </span>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -53,6 +59,7 @@ const DOT =
 const {
   size = 'small',
   interactive = false,
+  muted = false,
   loading = false,
   icon = 'play-circle',
   label: labelProp
@@ -65,6 +72,11 @@ const {
    * intercept clicks on the underlying resource.
    */
   interactive?: boolean
+  /**
+   * Greys the badge out. Used when the file is a motion photo (worth knowing,
+   * e.g. before sharing it) but its clip cannot be played here.
+   */
+  muted?: boolean
   /** While true the motion dot orbits the ring as a buffer/progress indicator. */
   loading?: boolean
   /** Glyph, e.g. 'play-circle' or 'pause-circle' (only the play/pause part is used). */

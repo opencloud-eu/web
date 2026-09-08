@@ -3,24 +3,28 @@
     class="oc-resource inline-flex justify-start items-center max-w-full overflow-visible"
     :class="{ 'pointer-events-none': !isResourceClickable }"
   >
-    <resource-link
+    <!-- the overlay wraps the link (not the other way round) so its play/pause
+         button never nests inside the link button -->
+    <motion-photo-overlay
       v-if="isIconDisplayed"
-      v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
       :resource="resource"
-      :link="link"
-      :is-resource-clickable="isResourceClickable"
-      class="relative"
-      :class="{ 'hover:underline': isResourceClickable }"
-      :aria-label="
-        isResourceClickable ? $gettext('Open »%{name}«', { name: resource?.name ?? '' }) : undefined
-      "
-      @click="emitClick"
+      class="inline-flex"
+      badge-size="xsmall"
+      video-class="rounded-xs"
     >
-      <motion-photo-overlay
+      <resource-link
+        v-oc-tooltip="isResourceClickable ? tooltipLabelIcon : undefined"
         :resource="resource"
-        class="inline-flex"
-        badge-size="xsmall"
-        video-class="rounded-xs"
+        :link="link"
+        :is-resource-clickable="isResourceClickable"
+        class="relative"
+        :class="{ 'hover:underline': isResourceClickable }"
+        :aria-label="
+          isResourceClickable
+            ? $gettext('Open »%{name}«', { name: resource?.name ?? '' })
+            : undefined
+        "
+        @click="emitClick"
       >
         <oc-image
           v-if="hasThumbnail"
@@ -42,8 +46,8 @@
           size-class="size-6"
           class="rounded-xs"
         />
-      </motion-photo-overlay>
-    </resource-link>
+      </resource-link>
+    </motion-photo-overlay>
     <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">
       <resource-link
         :resource="resource"
