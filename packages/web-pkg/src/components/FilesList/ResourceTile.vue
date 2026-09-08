@@ -91,7 +91,6 @@
         <motion-photo-player
           v-if="resource.motionPhoto"
           ref="motionPlayer"
-          class="z-20"
           :resource="resource"
           :space="space"
           badge-size="medium"
