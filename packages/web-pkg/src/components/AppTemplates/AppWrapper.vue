@@ -459,7 +459,10 @@ const loadFileTask = useTask(function* (signal) {
 }).restartable()
 
 watch(
-  currentFileContext,
+  () => {
+    const ctx = unref(currentFileContext)
+    return `${ctx.path}::${ctx.itemId ?? ''}`
+  },
   async () => {
     if (!unref(noResourceLoading)) {
       // Reset for the new file: `resource` swaps well before the matching
