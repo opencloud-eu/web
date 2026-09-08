@@ -93,11 +93,25 @@ describe('FileActions', () => {
           expect(wrapper.find(fileActions[action].selector).exists()).toBeTruthy()
         }
       })
+
+      it('skips action resolution while the resource is loading', () => {
+        const getAllOpenWithActions = vi.fn(() => [])
+        vi.mocked(useFileActions).mockImplementation(() =>
+          mock<ReturnType<typeof useFileActions>>({ getAllOpenWithActions })
+        )
+        vi.mocked(useExtensionRegistry).mockImplementation(() =>
+          mock<ReturnType<typeof useExtensionRegistry>>({ requestExtensions: () => [] })
+        )
+
+        getWrapper(null)
+
+        expect(getAllOpenWithActions).not.toHaveBeenCalled()
+      })
     })
   })
 })
 
-function getWrapper() {
+function getWrapper(resource: Resource = mock<Resource>({ extension: 'md' })) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({
       name: 'files-spaces-generic',
@@ -113,9 +127,7 @@ function getWrapper() {
         stubs: { ...defaultStubs, OcButton: false },
         provide: {
           space: mock<SpaceResource>(),
-          resource: mock<Resource>({
-            extension: 'md'
-          }),
+          resource,
           ...mocks
         }
       }
