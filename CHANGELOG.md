@@ -16,22 +16,9 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
-### 📈 Enhancement
-
-- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
-- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
-- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
-- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
-- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
-- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
-- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
-- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
-- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
-- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
-- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
-
 ### 🐛 Bug Fixes
 
+- fix: defer sidebar actions until resource loads [[#3312](https://github.com/opencloud-eu/web/pull/3312)]
 - Editor: Add Default font-size reset and simplify zoom styling [[#3304](https://github.com/opencloud-eu/web/pull/3304)]
 - fix: send mtime metadata for public link uploads [[#3322](https://github.com/opencloud-eu/web/pull/3322)]
 - fix: prevent browser login dialog on upload [[#3308](https://github.com/opencloud-eu/web/pull/3308)]
@@ -52,6 +39,20 @@
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
+### 📈 Enhancement
+
+- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
+- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
+- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
+- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
+- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
+- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
+- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
+
 ### ✅ Tests
 
 - test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
@@ -62,6 +63,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update tiptap monorepo to v3.31.3 [[#3305](https://github.com/opencloud-eu/web/pull/3305)]
+- chore(deps): update pnpm to v11.26.0 [[#3326](https://github.com/opencloud-eu/web/pull/3326)]
+- chore(deps): update dependency @uppy/core to v6.0.1 [[#3327](https://github.com/opencloud-eu/web/pull/3327)]
+- chore(deps): update dependency playwright-bdd to v9.2.1 [[#3320](https://github.com/opencloud-eu/web/pull/3320)]
 - chore(deps): update dependency dompurify to v3.4.15 [[#3316](https://github.com/opencloud-eu/web/pull/3316)]
 - chore(deps): update dependency eslint-plugin-vue to v10.11.0 [[#3317](https://github.com/opencloud-eu/web/pull/3317)]
 - chore(deps): update traefik docker tag to v3.7.13 [[#3311](https://github.com/opencloud-eu/web/pull/3311)]
