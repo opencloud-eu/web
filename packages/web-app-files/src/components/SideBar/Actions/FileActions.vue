@@ -41,6 +41,10 @@ const { actions: deleteActions } = useFileActionsDelete()
 const { actions: restoreActions } = useFileActionsRestore()
 
 const actions = computed(() => {
+  if (!unref(resource)) {
+    return []
+  }
+
   const options = {
     space: unref(space),
     resources: unref(resources),
