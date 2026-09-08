@@ -93,6 +93,11 @@ export interface Props {
    */
   paddingSize?: SizeType | 'remove'
   /**
+   * @docs The maximum width of the drop in pixels. It never grows beyond the available space.
+   * @default 400
+   */
+  maxWidth?: number
+  /**
    * @docs The position of the drop. Check the floating-ui documentation for more details on the type.
    * @default 'bottom-start'
    */
@@ -143,6 +148,7 @@ export interface Slots {
 const {
   closeOnClick = false,
   dropId = uniqueId('oc-drop-'),
+  maxWidth = 400,
   mode = 'click',
   offset = 5,
   paddingSize = 'medium',
@@ -238,7 +244,7 @@ const update = async ({
       size({
         apply({ availableWidth, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
-            maxWidth: `${Math.min(400, availableWidth - 10)}px`,
+            maxWidth: `${Math.min(maxWidth, availableWidth - 10)}px`,
             maxHeight: `${Math.max(0, availableHeight - 10)}px`
           })
         }
@@ -309,7 +315,7 @@ const showDrop = async ({
       size({
         apply({ availableWidth, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
-            maxWidth: `${Math.min(400, availableWidth - 10)}px`,
+            maxWidth: `${Math.min(maxWidth, availableWidth - 10)}px`,
             maxHeight: `${Math.max(0, availableHeight - 10)}px`
           })
         }
