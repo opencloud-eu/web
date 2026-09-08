@@ -386,6 +386,8 @@ Then(
   }
 )
 
+const searchIndexTimeout = 40 * 1000
+
 When(
   /^"([^"]*)" searches "([^"]*)" using the global search(?: and the "([^"]*)" filter)?( and presses enter)?$/,
   async (
@@ -399,6 +401,7 @@ When(
     const pressEnter = !!command && command.endsWith('presses enter')
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const resourceObject = new objects.applicationFiles.Resource({ page })
+    world.lastGlobalSearch[stepUser] = { keyword, filter: filter as searchFilter, pressEnter }
     await resourceObject.searchResource({
       keyword,
       filter: filter as searchFilter,
@@ -502,9 +505,16 @@ Then(
     const resourceObject = new objects.applicationFiles.Resource({ page })
     for (const info of stepTable.hashes()) {
       if (actionType === 'should') {
-        await expect(resourceObject.getResourceSearchItemLocator(info.resource)).toBeVisible({
-          timeout: appConfig.timeout * 1000
-        })
+        const lastSearch = world.lastGlobalSearch[stepUser]
+        let attempt = 0
+        await expect(async () => {
+          if (attempt++ > 0 && lastSearch) {
+            await resourceObject.searchResource(lastSearch)
+          }
+          await expect(resourceObject.getResourceSearchItemLocator(info.resource)).toBeVisible({
+            timeout: appConfig.minTimeout * 1000
+          })
+        }).toPass({ timeout: searchIndexTimeout })
       } else {
         await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
       }

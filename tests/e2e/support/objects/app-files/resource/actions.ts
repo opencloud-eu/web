@@ -1927,7 +1927,6 @@ export const searchResourceGlobalSearch = async (
   const { page, keyword, filter, pressEnter, keyboardShortcut } = args
   const searchInputLocator = page.locator(globalSearchInput)
 
-  // .reload() waits nicely for search indexing to be finished
   await page.reload()
 
   // select the filter if provided
@@ -1951,8 +1950,6 @@ export const searchResourceGlobalSearch = async (
     return
   }
 
-  // wait for tika indexing
-  await new Promise((resolve) => setTimeout(resolve, 500))
   const waitResponse = page.waitForResponse(
     (resp) => resp.status() === 207 && resp.request().method() === 'REPORT'
   )
