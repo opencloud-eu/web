@@ -1,158 +1,175 @@
 <template>
-  <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
-    <div
-      ref="scrollContainer"
-      class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
-      @scroll="updateScrollState"
-    >
+  <div
+    v-if="visible"
+    class="text-editor-toolbar flex items-center border-b border-b-role-border py-1"
+  >
+    <div class="relative min-w-0 grow">
       <div
-        v-for="(group, groupIndex) in toolbarGroups"
-        :key="`toolbar-group-${group.id}`"
-        class="text-editor-toolbar-group inline-flex items-stretch"
-        :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+        ref="scrollContainer"
+        class="text-editor-toolbar-scroll flex items-center gap-1 overflow-x-auto before:grow after:grow"
+        @scroll="updateScrollState"
       >
-        <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
-          <template v-if="item.childActions || item.menuComponent">
+        <div
+          v-for="(group, groupIndex) in toolbarGroups"
+          :key="`toolbar-group-${group.id}`"
+          class="text-editor-toolbar-group inline-flex items-stretch"
+          :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+        >
+          <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
+            <template v-if="item.childActions || item.menuComponent">
+              <oc-button
+                :id="`toolbar-dropdown-trigger-${item.id}`"
+                v-oc-tooltip="item.title"
+                type="button"
+                appearance="raw"
+                class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center p-2"
+                :class="{
+                  'text-editor-toolbar-btn--active': isItemActive(item)
+                }"
+                :aria-label="item.title"
+                :disabled="!isItemEnabled(item)"
+                @mousedown.prevent
+                @click.stop
+              >
+                <oc-icon
+                  :name="getActiveIcon(item).icon"
+                  :fill-type="getActiveIcon(item).iconFillType || 'none'"
+                  size-class="size-4"
+                />
+                <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
+              </oc-button>
+              <oc-drop
+                :ref="
+                  (el) => setDropRef(item.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+                "
+                :drop-id="`toolbar-dropdown-${item.id}`"
+                :toggle="`#toolbar-dropdown-trigger-${item.id}`"
+                :teleport="teleport"
+                mode="click"
+                class="text-editor-toolbar-dropdown w-auto min-w-40"
+                padding-size="small"
+                :close-on-click="item.menuCloseOnClick ?? true"
+              >
+                <component
+                  :is="item.menuComponent"
+                  v-if="item.menuComponent"
+                  v-bind="getMenuComponentAttrs(item)"
+                />
+                <ul v-else class="oc-list">
+                  <li
+                    v-for="child in item.childActions"
+                    :key="`${item.id}-${child.id}`"
+                    class="oc-rounded oc-menu-item-hover"
+                  >
+                    <oc-button
+                      v-if="child.menuComponent"
+                      :id="`toolbar-dropdown-trigger-${child.id}`"
+                      appearance="raw-inverse"
+                      color-role="surface"
+                      justify-content="space-between"
+                      class="p-1"
+                      :disabled="!isItemEnabled(child)"
+                      @mousedown.prevent
+                      @click.stop
+                    >
+                      <span class="inline-flex items-center gap-2">
+                        <oc-icon
+                          :name="child.icon"
+                          :fill-type="child.iconFillType || 'none'"
+                          size-class="size-4"
+                        />
+                        <span>{{ child.title }}</span>
+                      </span>
+                      <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
+                    </oc-button>
+                    <oc-button
+                      v-else
+                      :appearance="isItemActive(child) ? 'filled' : 'raw-inverse'"
+                      :color-role="isItemActive(child) ? 'secondaryContainer' : 'surface'"
+                      :no-hover="isItemActive(child)"
+                      justify-content="space-between"
+                      class="p-1"
+                      :disabled="!isItemEnabled(child)"
+                      @mousedown.prevent
+                      @click="child.toolbarAction?.(textEditor.editor.value!)"
+                    >
+                      <span class="inline-flex items-center gap-2">
+                        <span
+                          v-if="child.swatchColor"
+                          class="inline-block size-4 rounded-full border-2 border-role-outline-variant"
+                          :style="{ backgroundColor: child.swatchColor }"
+                        />
+                        <oc-icon
+                          v-else
+                          :name="child.icon"
+                          :fill-type="child.iconFillType || 'none'"
+                          size-class="size-4"
+                        />
+                        <span>{{ child.title }}</span>
+                      </span>
+                      <oc-icon
+                        v-if="isItemActive(child)"
+                        name="check"
+                        fill-type="line"
+                        size-class="size-4"
+                      />
+                    </oc-button>
+                    <oc-drop
+                      v-if="child.menuComponent"
+                      :ref="
+                        (el) =>
+                          setDropRef(child.id, el as ComponentPublicInstance<typeof OcDrop> | null)
+                      "
+                      :drop-id="`toolbar-dropdown-${child.id}`"
+                      :toggle="`#toolbar-dropdown-trigger-${child.id}`"
+                      mode="hover"
+                      class="text-editor-toolbar-dropdown-nested w-fit"
+                      :close-on-click="child.menuCloseOnClick ?? true"
+                      position="right-start"
+                      teleport="body"
+                    >
+                      <component :is="child.menuComponent" v-bind="getMenuComponentAttrs(child)" />
+                    </oc-drop>
+                  </li>
+                </ul>
+              </oc-drop>
+            </template>
             <oc-button
-              :id="`toolbar-dropdown-trigger-${item.id}`"
+              v-else
               v-oc-tooltip="item.title"
               type="button"
               appearance="raw"
-              class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center p-2"
-              :class="{
-                'text-editor-toolbar-btn--active': isItemActive(item)
-              }"
+              class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center p-2"
+              :class="{ 'text-editor-toolbar-btn--active': isItemActive(item) }"
               :aria-label="item.title"
               :disabled="!isItemEnabled(item)"
-              @mousedown.prevent
-              @click.stop
+              @click.stop="item.toolbarAction?.(textEditor.editor.value!)"
             >
               <oc-icon
-                :name="getActiveIcon(item).icon"
-                :fill-type="getActiveIcon(item).iconFillType || 'none'"
+                :name="item.icon"
+                :fill-type="item.iconFillType || 'none'"
                 size-class="size-4"
               />
-              <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
             </oc-button>
-            <oc-drop
-              :ref="
-                (el) => setDropRef(item.id, el as ComponentPublicInstance<typeof OcDrop> | null)
-              "
-              :drop-id="`toolbar-dropdown-${item.id}`"
-              :toggle="`#toolbar-dropdown-trigger-${item.id}`"
-              :teleport="teleport"
-              mode="click"
-              class="text-editor-toolbar-dropdown w-auto min-w-40"
-              padding-size="small"
-              :close-on-click="item.menuCloseOnClick ?? true"
-            >
-              <component
-                :is="item.menuComponent"
-                v-if="item.menuComponent"
-                v-bind="getMenuComponentAttrs(item)"
-              />
-              <ul v-else class="oc-list">
-                <li
-                  v-for="child in item.childActions"
-                  :key="`${item.id}-${child.id}`"
-                  class="oc-rounded oc-menu-item-hover"
-                >
-                  <oc-button
-                    v-if="child.menuComponent"
-                    :id="`toolbar-dropdown-trigger-${child.id}`"
-                    appearance="raw-inverse"
-                    color-role="surface"
-                    justify-content="space-between"
-                    class="p-1"
-                    :disabled="!isItemEnabled(child)"
-                    @mousedown.prevent
-                    @click.stop
-                  >
-                    <span class="inline-flex items-center gap-2">
-                      <oc-icon
-                        :name="child.icon"
-                        :fill-type="child.iconFillType || 'none'"
-                        size-class="size-4"
-                      />
-                      <span>{{ child.title }}</span>
-                    </span>
-                    <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
-                  </oc-button>
-                  <oc-button
-                    v-else
-                    :appearance="isItemActive(child) ? 'filled' : 'raw-inverse'"
-                    :color-role="isItemActive(child) ? 'secondaryContainer' : 'surface'"
-                    :no-hover="isItemActive(child)"
-                    justify-content="space-between"
-                    class="p-1"
-                    :disabled="!isItemEnabled(child)"
-                    @mousedown.prevent
-                    @click="child.toolbarAction?.(textEditor.editor.value!)"
-                  >
-                    <span class="inline-flex items-center gap-2">
-                      <span
-                        v-if="child.swatchColor"
-                        class="inline-block size-4 rounded-full border-2 border-role-outline-variant"
-                        :style="{ backgroundColor: child.swatchColor }"
-                      />
-                      <oc-icon
-                        v-else
-                        :name="child.icon"
-                        :fill-type="child.iconFillType || 'none'"
-                        size-class="size-4"
-                      />
-                      <span>{{ child.title }}</span>
-                    </span>
-                    <oc-icon
-                      v-if="isItemActive(child)"
-                      name="check"
-                      fill-type="line"
-                      size-class="size-4"
-                    />
-                  </oc-button>
-                  <oc-drop
-                    v-if="child.menuComponent"
-                    :ref="
-                      (el) =>
-                        setDropRef(child.id, el as ComponentPublicInstance<typeof OcDrop> | null)
-                    "
-                    :drop-id="`toolbar-dropdown-${child.id}`"
-                    :toggle="`#toolbar-dropdown-trigger-${child.id}`"
-                    mode="hover"
-                    class="text-editor-toolbar-dropdown-nested w-fit"
-                    :close-on-click="child.menuCloseOnClick ?? true"
-                    position="right-start"
-                    teleport="body"
-                  >
-                    <component :is="child.menuComponent" v-bind="getMenuComponentAttrs(child)" />
-                  </oc-drop>
-                </li>
-              </ul>
-            </oc-drop>
           </template>
-          <oc-button
-            v-else
-            v-oc-tooltip="item.title"
-            type="button"
-            appearance="raw"
-            class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center p-2"
-            :class="{ 'text-editor-toolbar-btn--active': isItemActive(item) }"
-            :aria-label="item.title"
-            :disabled="!isItemEnabled(item)"
-            @click.stop="item.toolbarAction?.(textEditor.editor.value!)"
-          >
-            <oc-icon
-              :name="item.icon"
-              :fill-type="item.iconFillType || 'none'"
-              size-class="size-4"
-            />
-          </oc-button>
-        </template>
+        </div>
       </div>
       <div
-        v-if="showCollaborationStatusIndicator"
+        v-if="canScrollLeft"
+        class="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/15 to-transparent"
+      />
+      <div
+        v-if="canScrollRight"
+        class="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/15 to-transparent"
+      />
+    </div>
+    <div
+      v-if="showCollaborationStatusIndicator"
+      class="text-editor-toolbar-status flex shrink-0 items-center gap-1 px-4 ml-4"
+    >
+      <div
         v-oc-tooltip="collaborationStatusLabel"
-        class="text-editor-toolbar-collaboration-status ml-2 inline-flex shrink-0 items-center"
+        class="text-editor-toolbar-collaboration-status inline-flex items-center"
         :aria-label="collaborationStatusLabel"
         :data-test-yjs-status="yjsStatus"
       >
@@ -164,14 +181,6 @@
         </span>
       </div>
     </div>
-    <div
-      v-if="canScrollLeft"
-      class="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/15 to-transparent"
-    />
-    <div
-      v-if="canScrollRight"
-      class="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/15 to-transparent"
-    />
   </div>
 </template>
 
@@ -419,11 +428,11 @@ onBeforeUnmount(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 /* Hide scrollbar in toolbar */
-.text-editor-toolbar > div:first-child {
+.text-editor-toolbar-scroll {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
 }
-.text-editor-toolbar > div:first-child::-webkit-scrollbar {
+.text-editor-toolbar-scroll::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
 }
 
