@@ -97,6 +97,7 @@ import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
   determineResourceTableSortFields,
+  eventBus,
   FolderViewerSlotProps,
   isLocationSharesActive,
   Key,
@@ -255,8 +256,23 @@ const loading = computed(() => {
   return unref(file.isLoading)
 })
 
+function publishOpenGraphMeta(mediaFile: MediaFile) {
+  if (!mediaFile.url) {
+    return
+  }
+
+  const isSupportedImage = mediaFile.isImage && mediaFile.mimeType !== 'image/svg+xml'
+  eventBus.publish('runtime.openGraphMeta.changed', {
+    title: mediaFile.name,
+    ...(isSupportedImage && { image: mediaFile.url, imageAlt: mediaFile.name }),
+    ...(mediaFile.isVideo && { video: mediaFile.url, videoType: mediaFile.mimeType }),
+    ...(mediaFile.isAudio && { audio: mediaFile.url, audioType: mediaFile.mimeType })
+  })
+}
+
 const loadPreviewImage = async (mediaFile: MediaFile) => {
   if (mediaFile.url) {
+    publishOpenGraphMeta(mediaFile)
     return
   }
 
@@ -297,6 +313,7 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
     }
 
     mediaFile.isLoading = false
+    publishOpenGraphMeta(mediaFile)
   } catch (e) {
     if (e.name === 'CanceledError') {
       return

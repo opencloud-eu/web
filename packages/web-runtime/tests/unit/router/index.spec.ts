@@ -4,13 +4,15 @@ import { urlJoin } from '@opencloud-eu/web-client'
 
 describe('buildUrl', () => {
   it.each`
-    location                                     | base      | path            | expected
-    ${'https://localhost:9200/#/files/list/all'} | ${''}     | ${'/login/foo'} | ${'https://localhost:9200/#/login/foo'}
-    ${'https://localhost:9200/#/files/list/all'} | ${''}     | ${'/bar.html'}  | ${'https://localhost:9200/bar.html'}
-    ${'https://localhost:9200/files/list/all'}   | ${'/'}    | ${'/login/foo'} | ${'https://localhost:9200/login/foo'}
-    ${'https://localhost:9200/files/list/all'}   | ${'/foo'} | ${'/login/foo'} | ${'https://localhost:9200/foo/login/foo'}
-    ${'https://localhost:9200/files/list/all'}   | ${'/'}    | ${'/bar.html'}  | ${'https://localhost:9200/bar.html'}
-    ${'https://localhost:9200/files/list/all'}   | ${'/foo'} | ${'/bar.html'}  | ${'https://localhost:9200/foo/bar.html'}
+    location                                                         | base      | path            | expected
+    ${'https://localhost:9200/#/files/list/all'}                     | ${''}     | ${'/login/foo'} | ${'https://localhost:9200/#/login/foo'}
+    ${'https://localhost:9200/index.html#/files/link/public/abcxyz'} | ${''}     | ${'/s/abcxyz'}  | ${'https://localhost:9200/#/s/abcxyz'}
+    ${'https://localhost:9200/#/files/list/all'}                     | ${''}     | ${'/bar.html'}  | ${'https://localhost:9200/bar.html'}
+    ${'https://localhost:9200/files/list/all'}                       | ${'/'}    | ${'/login/foo'} | ${'https://localhost:9200/login/foo'}
+    ${'https://localhost:9200/files/list/all'}                       | ${'/foo'} | ${'/login/foo'} | ${'https://localhost:9200/foo/login/foo'}
+    ${'https://localhost:9200/foo/files/link/public/abcxyz'}         | ${'/foo'} | ${'/s/abcxyz'}  | ${'https://localhost:9200/foo/s/abcxyz'}
+    ${'https://localhost:9200/files/list/all'}                       | ${'/'}    | ${'/bar.html'}  | ${'https://localhost:9200/bar.html'}
+    ${'https://localhost:9200/files/list/all'}                       | ${'/foo'} | ${'/bar.html'}  | ${'https://localhost:9200/foo/bar.html'}
   `('$path -> $expected', ({ location, base, path, expected }) => {
     delete window.location
     window.location = new URL(location) as any

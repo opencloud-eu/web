@@ -1,7 +1,7 @@
 import App from '../../src/App.vue'
 import { nextTick, ref } from 'vue'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
+import { eventBus, FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 
@@ -168,6 +168,32 @@ describe('Preview app', () => {
 
       expect(getUrlForResource).toHaveBeenCalled()
       expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+    })
+
+    it('publishes media metadata after loading a preview', async () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      const { wrapper, mocks } = createShallowMountWrapper()
+      await nextTick()
+      publishSpy.mockClear()
+      mocks.$previewService.loadPreview.mockResolvedValueOnce(
+        'https://opencloud.test/preview/bear.png'
+      )
+
+      await (wrapper.vm as any).loadPreviewImage({
+        name: 'bear.png',
+        mimeType: 'image/png',
+        isImage: true,
+        isVideo: false,
+        isAudio: false,
+        isLoading: true,
+        resource: mock<Resource>({ isInVault: false })
+      })
+
+      expect(publishSpy).toHaveBeenCalledWith('runtime.openGraphMeta.changed', {
+        title: 'bear.png',
+        image: 'https://opencloud.test/preview/bear.png',
+        imageAlt: 'bear.png'
+      })
     })
   })
 

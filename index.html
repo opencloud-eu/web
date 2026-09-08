@@ -6,6 +6,11 @@
     <meta http-equiv="x-ua-compatible" content="IE=edge" />
 
     <title>__TITLE__</title>
+    <!-- Generic Open Graph fallbacks. The running app refines them with the active theme and route,
+         see packages/web-runtime/src/helpers/meta.ts. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="__TITLE__" />
+    <meta property="og:site_name" content="__TITLE__" />
     <link rel="manifest" href="manifest.json" crossorigin="use-credentials" />
     <link rel="icon" href="img/favicon.svg" />
     <link rel="stylesheet" href="./packages/design-system/src/styles/tailwind.css" />
