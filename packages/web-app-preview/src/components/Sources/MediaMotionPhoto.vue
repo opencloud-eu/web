@@ -1,35 +1,31 @@
 <template>
-  <div class="motion-photo relative flex items-center justify-center max-w-full max-h-full pt-4">
-    <img
-      v-show="!isPlaying"
-      :key="`motion-photo-still-${file.id}`"
-      :src="file.url"
-      :alt="file.name"
-      :data-id="file.id"
-      class="max-w-full max-h-full"
-    />
-    <video
-      v-if="isPlaying"
-      :key="`motion-photo-video-${file.id}`"
-      :src="videoUrl"
-      :loop="looping"
-      muted
-      autoplay
-      playsinline
-      preload="auto"
-      class="max-w-full max-h-full"
-      data-testid="motion-photo-video"
-      @loadedmetadata="seekToStill"
-      @ended="onEnded"
-      @error="stop"
-    />
-    <oc-spinner
-      v-if="isLoading && !isPlaying"
-      class="absolute inset-0 m-auto"
-      size="large"
-      :aria-label="$gettext('Loading motion photo')"
-    />
-  </div>
+  <media-image :file="file" :current-image-rotation="currentImageRotation">
+    <template #overlay>
+      <!-- the clip shares the still's grid cell and constraints while playing,
+           so it is fitted like the still and zoom, pan and rotation carry over -->
+      <video
+        v-if="isPlaying"
+        :key="`motion-photo-video-${file.id}`"
+        :src="videoUrl"
+        :loop="looping"
+        muted
+        autoplay
+        playsinline
+        preload="auto"
+        class="max-w-full max-h-full object-contain"
+        data-testid="motion-photo-video"
+        @loadedmetadata="seekToStill"
+        @ended="onEnded"
+        @error="stop"
+      />
+      <oc-spinner
+        v-if="isLoading && !isPlaying"
+        class="absolute inset-0 m-auto"
+        size="large"
+        :aria-label="$gettext('Loading motion photo')"
+      />
+    </template>
+  </media-image>
 </template>
 
 <script setup lang="ts">
@@ -37,8 +33,12 @@ import { onMounted, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useGetMatchingSpace, useMotionPhotoPlayback } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../../helpers/types'
+import MediaImage from './MediaImage.vue'
 
-const { file } = defineProps<{ file: MediaFile }>()
+const { file, currentImageRotation } = defineProps<{
+  file: MediaFile
+  currentImageRotation: number
+}>()
 
 const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()

@@ -45,6 +45,7 @@
           ref="motionPlayer"
           :key="activeMediaFile.id"
           :file="activeMediaFile"
+          :current-image-rotation="currentImageRotation"
         />
         <media-image
           v-else-if="activeMediaFile.isImage"
@@ -69,9 +70,7 @@
         :active-index="activeIndex"
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         :is-folder-loading="isFolderLoading"
-        :show-image-controls="
-          activeMediaFile?.isImage && !activeMediaFile?.isMotionPhoto && !activeMediaFile?.isError
-        "
+        :show-image-controls="activeMediaFile?.isImage && !activeMediaFile?.isError"
         :show-motion-control="activeMediaFile?.isMotionPhoto && !activeMediaFile?.isError"
         :is-motion-playing="motionPlayer?.isPlaying"
         :current-image-rotation="currentImageRotation"

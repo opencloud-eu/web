@@ -10,6 +10,22 @@
       @loaded="initPanzoom"
     />
   </div>
+  <!-- with an overlay (e.g. a motion photo's clip) the wrapper is the panzoom
+       target, so zoom, pan and rotation apply to still and overlay alike. It
+       fills the stage (a content-sized wrapper would void the percentage
+       max-w/max-h of its children) and is a grid with one explicit 100% cell:
+       still and overlay share that cell and its constraints, so the overlay is
+       fitted exactly like the still -->
+  <div
+    v-else-if="$slots.overlay"
+    ref="img"
+    :key="`media-image-wrapper-${file.id}`"
+    class="relative grid size-full grid-cols-[100%] grid-rows-[100%] place-items-center pt-4 [&>*]:[grid-area:1/1]"
+    :data-id="file.id"
+  >
+    <img :src="file.url" :alt="file.name" class="max-w-full max-h-full" />
+    <slot name="overlay" />
+  </div>
   <img
     v-else
     ref="img"

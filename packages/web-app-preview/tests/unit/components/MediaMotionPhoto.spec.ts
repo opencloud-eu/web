@@ -100,11 +100,20 @@ function getWrapper({
   return {
     mocks,
     wrapper: shallowMount(MediaMotionPhoto, {
-      props: { file },
+      props: { file, currentImageRotation: 0 },
       global: {
         plugins: [...defaultPlugins()],
         mocks,
-        provide: mocks
+        provide: mocks,
+        stubs: {
+          // the still is rendered by MediaImage (so zoom/pan/rotation apply to
+          // it); stub it down to its still plus the overlay slot
+          MediaImage: {
+            template:
+              '<div class="media-image"><img :src="file.url" /><slot name="overlay" /></div>',
+            props: ['file', 'currentImageRotation']
+          }
+        }
       }
     })
   }
