@@ -246,8 +246,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
           addColumnAfter(),
           deleteColumn(),
           deleteTable(),
-          menuEmoji(),
           horizontalRule(),
+          menuEmoji(),
           frontmatter()
         ]
       },
