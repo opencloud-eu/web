@@ -5,29 +5,28 @@ import {
   isProjectSpaceResource,
   extractExtensionFromFile,
   SpaceResource,
-  isTrashResource
+  isTrashResource,
+  urlJoin
 } from '@opencloud-eu/web-client'
-import {
-  ResolveStrategy,
-  ResolveConflict,
-  resolveFileNameDuplicate,
-  ConflictDialog
-} from '../../../helpers/resource'
-import { urlJoin } from '@opencloud-eu/web-client'
-import { useClientService } from '../../clientService'
-import { useRouter } from '../../router'
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { FileAction, FileActionOptions } from '../types'
+import type { FileAction, FileActionOptions } from '@opencloud-eu/web-pkg'
 import {
   useMessages,
   useSpacesStore,
   useUserStore,
   useResourcesStore,
-  useExtensionRegistry
-} from '../../piniaStores'
-import { useRestoreWorker } from '../../webWorkers/restoreWorker'
-import { encryptFolderPathsForServer, encryptResourcePathsForServer } from '../../../helpers/vault'
+  useExtensionRegistry,
+  encryptFolderPathsForServer,
+  encryptResourcePathsForServer,
+  useRestoreWorker,
+  useRouter,
+  useClientService,
+  ResolveStrategy,
+  ResolveConflict,
+  resolveFileNameDuplicate,
+  ConflictDialog
+} from '@opencloud-eu/web-pkg'
 
 export const useFileActionsRestore = ({
   showSuccessMessage = true,

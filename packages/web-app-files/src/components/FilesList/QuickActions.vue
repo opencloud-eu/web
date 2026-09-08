@@ -8,7 +8,10 @@
       appearance="raw"
       class="ml-1 quick-action-button p-1"
       :class="`files-quick-action-${action.name}`"
-      @click="(e: MouseEvent) => action.handler({ space, resources: [item], event: e })"
+      @click="
+        (e: MouseEvent) =>
+          action.handler({ space, resources: [item], event: e } as FileActionOptionsWithEvent)
+      "
     >
       <oc-icon :name="getIconFromAction(action)" fill-type="line" />
     </oc-button>
@@ -16,8 +19,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
-import { Action, useEmbedMode, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { computed } from 'vue'
+import {
+  Action,
+  FileActionOptionsWithEvent,
+  useEmbedMode,
+  useFileActions
+} from '@opencloud-eu/web-pkg'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { quickActionsExtensionPoint } from '../../extensionPoints'
 
@@ -25,14 +33,13 @@ const { item, space = undefined } = defineProps<{
   item: Resource
   space?: SpaceResource
 }>()
-const extensionRegistry = useExtensionRegistry()
+const { getExtensionActions } = useFileActions()
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
 const filteredActions = computed(() => {
-  return unref(extensionRegistry)
-    .requestExtensions(quickActionsExtensionPoint)
-    .map((e) => e.action)
-    .filter(({ isVisible }) => isVisible({ space, resources: [item] }))
+  return getExtensionActions(quickActionsExtensionPoint.id).filter(({ isVisible }) =>
+    isVisible({ space, resources: [item] })
+  )
 })
 
 const getIconFromAction = (action: Action) => {

@@ -2,6 +2,7 @@ import { ActionExtension } from '@opencloud-eu/web-pkg'
 import {
   batchActionsExtensionPoint,
   contextActionsExtensionPoint,
+  defaultActionFallbackExtensionPoint,
   fileSideBarActionsExtensionPoint,
   quickActionsExtensionPoint,
   resourceTableActionsExtensionPoint
@@ -23,7 +24,11 @@ import {
   useFileActionsShowShares,
   useFileActionsToggleHideShare,
   useFileActionsLockVault,
-  useFileActionsUnlockVault
+  useFileActionsUnlockVault,
+  useFileActionsDelete,
+  useFileActionsRestore,
+  useFileActionsDownloadFile,
+  useFileActionFallbackToDownload
 } from '../actions'
 import { unref } from 'vue'
 
@@ -49,8 +54,28 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: lockVaultActions } = useFileActionsLockVault()
   const { actions: unlockVaultActions } = useFileActionsUnlockVault()
   const { actions: navigateActions } = useFileActionsNavigate()
+  const { actions: restoreActions } = useFileActionsRestore()
+  const { actions: downloadFileActions } = useFileActionsDownloadFile()
+  const { actions: fallbackToDownloadActions } = useFileActionFallbackToDownload()
+
+  const { actions: deleteActions } = useFileActionsDelete()
+  const deleteAction = unref(deleteActions).find(({ name }) => name === 'delete')
+  const deletePermanentAction = unref(deleteActions).find(({ name }) => name === 'delete-permanent')
 
   return [
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.download-file',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(downloadFileActions)[0],
+        category: 'tertiary'
+      }
+    },
     {
       id: 'com.github.opencloud-eu.web.files.context-action.download-archive',
       extensionPointIds: [
@@ -61,6 +86,46 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(downloadArchiveActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.delete-file',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id,
+        previewToolBarActionsExtensionPointId
+      ],
+      type: 'action',
+      action: {
+        ...deleteAction,
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.delete-file-permanent',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...deletePermanentAction,
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.restore-file',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(restoreActions)[0],
         category: 'tertiary'
       }
     },
@@ -228,6 +293,15 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(unlockVaultActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.context-action.download-file-fallback',
+      extensionPointIds: [defaultActionFallbackExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(fallbackToDownloadActions)[0],
         category: 'tertiary'
       }
     },

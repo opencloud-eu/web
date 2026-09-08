@@ -11,14 +11,10 @@
 
 <script setup lang="ts">
 import {
-  ActionExtension,
   ActionMenuItem,
-  useExtensionRegistry,
+  FileActionOptions,
   useFileActions,
-  useIsAppActive,
-  useFileActionsDelete,
-  useFileActionsDownloadFile,
-  useFileActionsRestore
+  useIsAppActive
 } from '@opencloud-eu/web-pkg'
 import { computed, inject, Ref, unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
@@ -26,39 +22,24 @@ import { fileSideBarActionsExtensionPoint } from '../../../extensionPoints'
 
 const resource = inject<Ref<Resource>>('resource')
 const space = inject<Ref<SpaceResource>>('space')
-const resources = computed(() => {
-  return [unref(resource)]
-})
-const { requestExtensions } = useExtensionRegistry()
+const resources = computed(() => [unref(resource)])
+
 const isAppActive = useIsAppActive()
-const { getAllOpenWithActions } = useFileActions()
-const extensionActions = computed(() =>
-  requestExtensions<ActionExtension>(fileSideBarActionsExtensionPoint).map((e) => e.action)
-)
-
-const { actions: downloadFileActions } = useFileActionsDownloadFile()
-const { actions: deleteActions } = useFileActionsDelete()
-const { actions: restoreActions } = useFileActionsRestore()
-
+const { getAllOpenWithActions, getExtensionActions } = useFileActions()
+const extensionActions = computed(() => getExtensionActions(fileSideBarActionsExtensionPoint.id))
 const actions = computed(() => {
   if (!unref(resource)) {
     return []
   }
 
-  const options = {
+  const options: FileActionOptions = {
     space: unref(space),
-    resources: unref(resources),
-    // exclude editor actions inside editors
-    omitEditorActions: !!unref(isAppActive)
+    resources: unref(resources)
   }
 
   return [
-    // FIXME: remove as soon as actions are announced in extension system
-    ...getAllOpenWithActions(options),
-    ...[...unref(downloadFileActions), ...unref(deleteActions), ...unref(restoreActions)].filter(
-      (action) => action.isVisible(options)
-    ),
-
+    // exclude editor actions inside editors
+    ...(unref(isAppActive) ? [] : getAllOpenWithActions(options)),
     ...unref(extensionActions).filter((action) => action.isVisible(options))
   ]
 })

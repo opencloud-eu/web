@@ -5,16 +5,7 @@
 <script setup lang="ts">
 import ContextActionMenu from '../ContextActions/ContextActionMenu.vue'
 import { computed, unref } from 'vue'
-import {
-  ActionExtension,
-  FileActionOptions,
-  useExtensionRegistry,
-  useFileActions,
-  useFileActionsDelete,
-  useFileActionsDownloadFile,
-  useFileActionsOpenWithDefault,
-  useFileActionsRestore
-} from '../../composables'
+import { FileActionOptions, useFileActions, useFileActionsOpenWithDefault } from '../../composables'
 import { useGettext } from 'vue3-gettext'
 import { MenuSection } from '../ContextActions'
 
@@ -22,47 +13,14 @@ const { actionOptions } = defineProps<{
   actionOptions: FileActionOptions
 }>()
 
-const { getAllOpenWithActions } = useFileActions()
+const { getAllOpenWithActions, getExtensionActions } = useFileActions()
 const { $gettext } = useGettext()
 
 const { actions: openWithDefaultActions } = useFileActionsOpenWithDefault()
-const { actions: deleteActions } = useFileActionsDelete()
-const { actions: downloadFileActions } = useFileActionsDownloadFile()
-const { actions: restoreActions } = useFileActionsRestore()
 
-const extensionRegistry = useExtensionRegistry()
-const extensionsContextActions = computed(() => {
-  return extensionRegistry
-    .requestExtensions<ActionExtension>({
-      id: 'global.files.context-actions',
-      extensionType: 'action'
-    })
-    .map((e) => e.action)
-})
-
-const menuItemsBatchPrimary = computed(() =>
-  [...unref(extensionsContextActions).filter((a) => a.category === 'primary')].filter((item) =>
-    item.isVisible(unref(actionOptions))
-  )
-)
-
-const menuItemsBatchSecondary = computed(() =>
-  [...unref(extensionsContextActions).filter((a) => a.category === 'secondary')].filter((item) =>
-    item.isVisible(unref(actionOptions))
-  )
-)
-
-const menuItemsBatchTertiary = computed(() =>
-  [
-    ...unref(deleteActions),
-    ...unref(restoreActions),
-    ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
-  ].filter((item) => item.isVisible(unref(actionOptions)))
-)
-
-const menuItemsBatchQuaternary = computed(() =>
-  [...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')].filter((item) =>
-    item.isVisible(unref(actionOptions))
+const extensionContextActions = computed(() =>
+  getExtensionActions('global.files.context-actions').filter((a) =>
+    a.isVisible(unref(actionOptions))
   )
 )
 
@@ -78,60 +36,20 @@ const menuItemsPrimaryDrop = computed(() => {
     .sort((x, y) => Number(y.hasPriority) - Number(x.hasPriority))
 })
 
-const menuItemsSecondary = computed(() => {
-  return [...unref(extensionsContextActions).filter((a) => a.category === 'secondary')].filter(
-    (item) => item.isVisible(unref(actionOptions))
-  )
-})
+const menuItemsSecondary = computed(() =>
+  unref(extensionContextActions).filter((a) => a.category === 'secondary')
+)
 
-const menuItemsTertiary = computed(() => {
-  return [
-    ...unref(downloadFileActions),
-    ...unref(deleteActions),
-    ...unref(restoreActions),
-    ...unref(extensionsContextActions).filter((a) => !a.category || a.category === 'tertiary')
-  ].filter((item) => item.isVisible(unref(actionOptions)))
-})
+const menuItemsTertiary = computed(() =>
+  unref(extensionContextActions).filter((a) => !a.category || a.category === 'tertiary')
+)
 
-const menuItemsQuaternary = computed(() => {
-  return [...unref(extensionsContextActions).filter((a) => a.category === 'quaternary')].filter(
-    (item) => item.isVisible(unref(actionOptions))
-  )
-})
+const menuItemsQuaternary = computed(() =>
+  unref(extensionContextActions).filter((a) => a.category === 'quaternary')
+)
 
 const menuSections = computed(() => {
   const sections: MenuSection[] = []
-  if (unref(actionOptions).resources.length > 1) {
-    if (unref(menuItemsBatchPrimary).length) {
-      sections.push({
-        name: 'primary',
-        items: [...unref(menuItemsBatchPrimary)]
-      })
-    }
-
-    if (unref(menuItemsBatchSecondary).length) {
-      sections.push({
-        name: 'secondary',
-        items: [...unref(menuItemsBatchSecondary)]
-      })
-    }
-
-    if (unref(menuItemsBatchTertiary).length) {
-      sections.push({
-        name: 'tertiary',
-        items: [...unref(menuItemsBatchTertiary)]
-      })
-    }
-
-    if (unref(menuItemsBatchQuaternary).length) {
-      sections.push({
-        name: 'quaternary',
-        items: [...unref(menuItemsBatchQuaternary)]
-      })
-    }
-    return sections
-  }
-
   if ([...unref(menuItemsPrimary), ...unref(menuItemsPrimaryDrop)].length) {
     sections.push({
       name: 'primary',

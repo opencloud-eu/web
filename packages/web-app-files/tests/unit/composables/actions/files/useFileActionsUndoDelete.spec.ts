@@ -1,14 +1,12 @@
+import { FileAction, CapabilityStore } from '@opencloud-eu/web-pkg'
 import {
-  FileAction,
   useFileActionsRestore,
   useFileActionsUndoDelete
 } from '../../../../../src/composables/actions'
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore } from '../../../../../src/composables/piniaStores'
 import { computed, unref } from 'vue'
-import { Resource } from '@opencloud-eu/web-client'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 vi.mock('../../../../../src/composables/actions/files/useFileActionsRestore')
 

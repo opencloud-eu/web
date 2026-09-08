@@ -1,8 +1,6 @@
 import { unref } from 'vue'
-import {
-  useFileActionsDeleteResources,
-  useFileActionsDelete
-} from '../../../../../src/composables/actions'
+import { useFileActionsDelete } from '../../../../../src/composables/actions'
+import { useFileActionsDeleteResources } from '../../../../../src/composables/actions/useFileActionsDeleteResources'
 import {
   IncomingShareResource,
   ProjectSpaceResource,
@@ -11,9 +9,9 @@ import {
   TrashResource
 } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
-import { CapabilityStore } from '../../../../../src/composables/piniaStores'
+import { CapabilityStore } from '@opencloud-eu/web-pkg'
 
-vi.mock('../../../../../src/composables/actions/helpers/useFileActionsDeleteResources')
+vi.mock('../../../../../src/composables/actions/useFileActionsDeleteResources')
 
 describe('delete', () => {
   describe('computed property "actions"', () => {

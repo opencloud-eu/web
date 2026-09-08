@@ -8,9 +8,8 @@ import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import ContextActions from '../../../../src/components/FilesList/ContextActions.vue'
 
-import { useFileActionsDelete } from '../../../../src/composables'
 import { computed } from 'vue'
-import { Action } from '../../../../src/composables/actions'
+import { Action, useFileActionsOpenWithDefault } from '../../../../src/composables/actions'
 
 // vi.mock('../../../../src/composables/actions/files', async (importOriginal) => {
 //   const original = await importOriginal()
@@ -25,7 +24,7 @@ describe.skip('ContextActions', () => {
     })
 
     it('render enabled actions', () => {
-      const enabledComposables = [useFileActionsDelete]
+      const enabledComposables = [useFileActionsOpenWithDefault]
       for (const composable of enabledComposables) {
         vi.mocked(composable).mockImplementation(() => ({
           actions: computed(() => [mock<Action>({ isVisible: () => true })])

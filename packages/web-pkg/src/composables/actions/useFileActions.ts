@@ -9,7 +9,6 @@ import { routeToContextQuery } from '../appDefaults'
 import { computed, unref } from 'vue'
 import { useRouter } from '../router'
 import { Action, FileAction, FileActionOptions } from './types'
-import { useFileActionFallbackToDownload } from './files'
 import { useWindowOpen } from './useWindowOpen'
 import { ActionExtension, useAppsStore, useConfigStore, useExtensionRegistry } from '../piniaStores'
 import { ApplicationFileExtension } from '../../apps'
@@ -34,18 +33,27 @@ export const useFileActions = () => {
   const configStore = useConfigStore()
   const { options } = storeToRefs(configStore)
 
-  const { actions: fallbackToDownloadActions } = useFileActionFallbackToDownload()
-
-  const extensionsContextActions = computed(() => {
-    return (
+  const getExtensionActions = <T extends Resource = Resource>(
+    extensionPoint: string
+  ): FileAction<T>[] =>
+    (
       requestExtensions<ActionExtension>({
-        id: 'global.files.context-actions',
+        id: extensionPoint,
         extensionType: 'action'
       }) || []
-    )
-      .map((e) => e.action)
-      .filter((action) => action.category === 'primary')
+    ).map((e) => e.action)
+
+  const extensionContextActions = computed<FileAction[]>(() =>
+    getExtensionActions('global.files.context-actions')
+  )
+
+  const primaryExtensionActions = computed(() => {
+    return unref(extensionContextActions).filter((action) => action.category === 'primary')
   })
+
+  const fallbackActions = computed<FileAction[]>(() =>
+    getExtensionActions('global.files.default-action-fallback')
+  )
 
   const editorActions = computed(() => {
     if (unref(isEmbedModeEnabled)) {
@@ -111,19 +119,15 @@ export const useFileActions = () => {
               return false
             }
 
-            // External editor apps (Collabora, …) load the
-            // file server-side via the WOPI bridge - they'd see the
-            // encrypted blob, not the cleartext the user expects.
-            // Restrict vault resources to in-browser editors only.
+            // External editor apps (Collabora, …) load the file server-side,
+            // so they cannot handle vault-protected files.
             if (resource.isInVault && fileExtension.app?.startsWith('external-')) {
               return false
             }
 
             // An app may register a file/folder extension purely to
             // contribute icon mapping or a new-file menu entry without
-            // owning a route (rclone-crypt's vault folder is one such case).
-            // Skip the editor action when no route is registered so the
-            // default action (folder navigation) can take over.
+            // owning a route. Default folder navigation takes over.
             const editorRouteName = fileExtension.routeName || fileExtension.app
             if (!editorRouteName || !router.hasRoute(editorRouteName)) {
               return false
@@ -199,8 +203,7 @@ export const useFileActions = () => {
     const routeName = appFileExtension.routeName || appFileExtension.app
     // Apps may register a file/folder extension purely to contribute icon
     // mapping or a new-file menu entry, without owning an editor route
-    // (rclone-crypt's vault folder is one such case). Bail silently rather
-    // than pushing to a route that doesn't exist.
+    // Bail silently rather than pushing to a route that doesn't exist.
     if (!routeName || !router.hasRoute(routeName)) {
       return
     }
@@ -217,9 +220,10 @@ export const useFileActions = () => {
     router.push(routeOpts)
   }
 
-  // TODO: Make user-configurable what is a defaultAction for a filetype/mimetype
-  // returns the _first_ action from actions array which we now construct from
-  // available mime-types coming from the app-provider and existing actions
+  /**
+   * Returns the _first_ action from actions array which we construct from
+   * available mime-types coming from the app-provider and existing actions.
+   */
   const triggerDefaultAction = (options: GetFileActionsOptions) => {
     const action = getDefaultAction(options)
     if (action) {
@@ -233,25 +237,19 @@ export const useFileActions = () => {
       return actions[0]
     }
 
-    return unref(fallbackToDownloadActions)[0].isVisible(options)
-      ? unref(fallbackToDownloadActions)[0]
-      : undefined
+    return unref(fallbackActions).find(({ isVisible }) => isVisible(options))
   }
 
-  const getAllOpenWithActions = (
-    options: GetFileActionsOptions & { omitEditorActions?: boolean }
-  ) => {
+  const getAllOpenWithActions = (options: GetFileActionsOptions) => {
     // Editor actions rank above the registry actions: an app that claims a
     // file or folder type is more specific than the generic openers.
-    return [
-      ...(options.omitEditorActions ? [] : unref(editorActions)),
-      ...unref(extensionsContextActions)
-    ]
+    return [...unref(editorActions), ...unref(primaryExtensionActions)]
       .filter((action: FileAction) => action.isVisible(options))
       .sort((a, b) => Number(b.hasPriority) - Number(a.hasPriority))
   }
 
   return {
+    getExtensionActions,
     getDefaultAction,
     getAllOpenWithActions,
     getEditorRouteOpts,
