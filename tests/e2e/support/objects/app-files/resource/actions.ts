@@ -9,7 +9,7 @@ import { File, Space } from '../../../types'
 import { waitProcessingToFinish } from '../fileEvents'
 import { state } from '../../../../environment/shared'
 import { lstatSync, readFileSync } from 'fs'
-import { encodeWebDavPath } from '../../../utils'
+import { isFolderListingResponse, isResourceStatResponse } from '../../../utils/folderListing'
 
 const appLoadingSpinner = '#app-loading-spinner'
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -223,9 +223,7 @@ const clickResourceInEmbedMode = async ({
     }
 
     await resource.waitFor()
-    const waitResponse = page.waitForResponse(
-      (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
-    )
+    const waitResponse = page.waitForResponse(isFolderListingResponse)
     await resource.click()
     await waitResponse
 
@@ -248,14 +246,12 @@ export const clickResource = async ({
     const folder = name.replace(/'/g, "\\'").replace(/"/g, '\\"')
 
     const resource = page.locator(util.format(resourceNameSelector, folder))
-    const propfindPromise = page.waitForResponse(
-      (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
-    )
+    const listingPromise = page.waitForResponse(isFolderListingResponse)
     await resource.click()
     if (password && folder.includes('.vault')) {
       await unlockVault({ page, passphrase: password })
     }
-    await propfindPromise
+    await listingPromise
     // wait for the loading spinner to disappear and page is loaded
     await expect(page.locator('#app-loading-spinner')).toBeHidden()
   }
@@ -275,9 +271,7 @@ export const clickResourceFromBreadcrumb = async ({
   await Promise.all([
     page.waitForResponse(
       (resp) =>
-        (resp.status() === 207 &&
-          resp.request().method() === 'PROPFIND' &&
-          resp.url().endsWith(encodeURIComponent(resource))) ||
+        isFolderListingResponse(resp) ||
         resp.url().endsWith(itemId) ||
         resp.url().endsWith(encodeURIComponent(itemId))
     ),
@@ -615,10 +609,7 @@ const createDocumentFile = async (
         "Editor should be either 'Collabora' or 'Euro-Office' but found " + editorToOpen
       )
   }
-  await Promise.all([
-    page.waitForResponse((res) => res.status() === 207 && res.request().method() === 'PROPFIND'),
-    editor.close(page)
-  ])
+  await Promise.all([page.waitForResponse(isFolderListingResponse), editor.close(page)])
 
   await page.locator(util.format(resourceNameSelector, name)).waitFor()
   // wait for lock to be removed
@@ -744,7 +735,7 @@ export const editTextDocument = async ({
   await page.locator(textEditorPlainTextInput).fill(content)
   const [putRequest] = await Promise.all([
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'PUT'),
-    page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
+    page.waitForResponse(isFolderListingResponse),
     page.locator(saveTextFileInEditorButton).click()
   ])
 
@@ -780,11 +771,15 @@ const performUpload = async (args: uploadResourceArgs): Promise<void> => {
     await clickResource({ page, path: to, password })
   }
 
-  const respPromise = page.waitForResponse(
-    (resp) =>
-      [201, 204].includes(resp.status()) &&
-      ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
-  )
+  // an upload that is expected to fail never produces this response, and a
+  // promise left pending rejects once the page closes
+  const respPromise = expectToFail
+    ? null
+    : page.waitForResponse(
+        (resp) =>
+          [201, 204].includes(resp.status()) &&
+          ['POST', 'PUT', 'PATCH'].includes(resp.request().method())
+      )
 
   const inputSelector = type === 'folder' ? folderUploadInput : fileUploadInput
   let uploadAction: Promise<void> = page
@@ -2229,12 +2224,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
         // shared files opened via "shared with me" don't trigger a PROPFIND at all,
         // so only wait for (and assert) it when explicitly requested
         await Promise.all([
-          page.waitForResponse(
-            (resp) =>
-              resp.status() === 207 &&
-              resp.request().method() === 'PROPFIND' &&
-              resp.url().includes(encodeWebDavPath(name))
-          ),
+          page.waitForResponse(isResourceStatResponse),
           page.locator(util.format(resourceNameSelector, name)).click()
         ])
       } else {
@@ -2259,7 +2249,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
     case 'pdfviewer': {
       await Promise.all([
         page.waitForResponse(
-          (resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'
+          isResourceStatResponse
         ),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
@@ -2268,12 +2258,7 @@ export const openFileInViewer = async (args: openFileInViewerArgs): Promise<void
     }
     case 'texteditor': {
       await Promise.all([
-        page.waitForResponse(
-          (resp) =>
-            resp.status() === 207 &&
-            resp.request().method() === 'PROPFIND' &&
-            (!verifyPropfindPath || resp.url().includes(encodeWebDavPath(name)))
-        ),
+        page.waitForResponse(isResourceStatResponse),
         page.locator(util.format(resourceNameSelector, name)).click()
       ])
       await page.locator(textEditorContainer).waitFor()

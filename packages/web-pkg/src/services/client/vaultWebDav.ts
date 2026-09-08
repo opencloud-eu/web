@@ -6,12 +6,12 @@ import { WebDAV } from '@opencloud-eu/web-client/webdav'
 // before `services`) creates an evaluation cycle that leaves unrelated
 // composable exports temporarily undefined.
 import { useExtensionRegistry } from '../../composables/piniaStores/extensionRegistry'
+import { getVaultClaim, resolveVaultEngine } from '../../helpers/vault'
 import {
-  decryptResourceInPlace,
-  getVaultClaim,
-  markVaultStatus,
-  resolveVaultEngine
-} from '../../helpers/vault'
+  applyVaultFromServer,
+  toVaultServerPath,
+  toVaultServerPathForWrite
+} from '../../helpers/vaultTranslate'
 import { encryptVaultPath } from '../../helpers/vaultEngine'
 import { streamToArrayBuffer } from '../../helpers/streams'
 
@@ -46,104 +46,18 @@ import { streamToArrayBuffer } from '../../helpers/streams'
  * then this is a known limitation.
  */
 export function createVaultWebDav(inner: WebDAV): WebDAV {
-  /**
-   * Encrypt a clear-text path into its server-side form. No-op (sync fast path)
-   * when the path isn't claimed by any vault. For a *locked* vault we have no
-   * key, so we leave the path untouched - mutations on a locked vault aren't
-   * reachable through the UI (the unlock gate stops them first).
-   */
-  async function toServerPath(
-    space: SpaceResource,
-    path: string | undefined
-  ): Promise<string | undefined> {
-    if (!space || !path) {
-      return path
-    }
-    const registry = useExtensionRegistry()
-    if (!getVaultClaim(registry, space, path)) {
-      return path
-    }
-    const engine = await resolveVaultEngine(registry, space, path)
-    return engine ? await encryptVaultPath(engine, path) : path
+  function registry() {
+    return useExtensionRegistry()
   }
 
-  /**
-   * Like `toServerPath`, but for *writes*: refuse to operate when the path
-   * belongs to a vault that is locked. Reads can fall through and just show
-   * ciphertext, but a write (create / put / move / copy / delete) with the
-   * untranslated clear-text path would put a clear-text name on the server and
-   * corrupt the vault. The UI never reaches a locked vault, so this only ever
-   * fires as a fail-closed backstop - never silently send clear text.
-   */
-  async function toServerPathForWrite(
-    space: SpaceResource,
-    path: string | undefined
-  ): Promise<string | undefined> {
-    if (!space || !path) {
-      return path
-    }
-    const registry = useExtensionRegistry()
-    const claim = getVaultClaim(registry, space, path)
-    if (!claim) {
-      return path
-    }
-    // The vault *root* itself is a clear-text folder name - creating, renaming
-    // or deleting the vault needs no key, so let it through untouched even when
-    // no engine exists (e.g. while creating the vault, or for a locked one).
-    // Only *content* below the root carries an encryptable name.
-    if (claim.vaultRoot === path) {
-      return path
-    }
-    const engine = await resolveVaultEngine(registry, space, path)
-    if (!engine) {
-      throw new Error(
-        `Refusing to write a clear-text path into the locked vault "${claim.vaultRoot}"`
-      )
-    }
-    return encryptVaultPath(engine, path)
-  }
+  const toServerPath = (space: SpaceResource, path: string | undefined) =>
+    toVaultServerPath(registry(), space, path)
 
-  /**
-   * Decrypt the names of resources coming back from the server and flag their
-   * vault status. Resources are grouped by vault root so a mixed listing (e.g.
-   * the trash bin, where each item's original location may sit in a different
-   * vault) resolves each engine exactly once. `markVaultStatus` is claim-based
-   * and runs even while a vault is locked; the actual name decrypt only happens
-   * when the vault is unlocked (the engine resolves).
-   */
-  async function fromServer(
-    space: SpaceResource,
-    resources: Array<Resource | undefined | null>
-  ): Promise<void> {
-    const list = resources.filter((r): r is Resource => !!r?.path)
-    if (!space || !list.length) {
-      return
-    }
-    const registry = useExtensionRegistry()
+  const toServerPathForWrite = (space: SpaceResource, path: string | undefined) =>
+    toVaultServerPathForWrite(registry(), space, path)
 
-    const byRoot = new Map<string, Resource[]>()
-    for (const r of list) {
-      const claim = getVaultClaim(registry, space, r.path)
-      if (!claim) {
-        continue
-      }
-      const group = byRoot.get(claim.vaultRoot) ?? []
-      group.push(r)
-      byRoot.set(claim.vaultRoot, group)
-    }
-
-    for (const [vaultRoot, group] of byRoot) {
-      const engine = await resolveVaultEngine(registry, space, vaultRoot)
-      if (engine) {
-        await Promise.all(group.map((r) => decryptResourceInPlace(engine, r)))
-      }
-    }
-
-    // Always (re-)flag vault status. Idempotent after decryptResourceInPlace,
-    // and the only thing that fires for a locked vault or for a vault root
-    // surfaced in a parent listing (where no engine resolves against it).
-    markVaultStatus(registry, space, list)
-  }
+  const fromServer = (space: SpaceResource, resources: Array<Resource | undefined | null>) =>
+    applyVaultFromServer(registry(), space, resources)
 
   return {
     ...inner,

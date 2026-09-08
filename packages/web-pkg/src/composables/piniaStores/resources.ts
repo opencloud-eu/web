@@ -3,7 +3,7 @@ import { Ref, computed, ref, unref } from 'vue'
 import { isProjectSpaceResource, SpaceResource, type Resource } from '@opencloud-eu/web-client'
 import { getParentPaths } from '../../helpers'
 import { AncestorMetaData, AncestorMetaDataValue } from '../../types'
-import { DavProperty, WebDAV } from '@opencloud-eu/web-client/webdav'
+import { WebDAV } from '@opencloud-eu/web-client/webdav'
 import { useSpacesStore } from './spaces'
 import { eventBus, releaseFilePreviews } from '../../services'
 
@@ -225,7 +225,6 @@ export const useResourcesStore = defineStore('resources', () => {
       }
     }
     const promises = []
-    const davProperties = [DavProperty.FileId, DavProperty.ShareTypes, DavProperty.FileParent]
     const parentPaths = getParentPaths(folder.path)
 
     for (const path of parentPaths) {
@@ -236,17 +235,15 @@ export const useResourcesStore = defineStore('resources', () => {
       }
 
       promises.push(
-        client
-          .listFiles(space, { path }, { depth: 0, davProperties, signal })
-          .then(({ resource }) => {
-            data[path] = {
-              id: resource.fileId,
-              shareTypes: resource.shareTypes,
-              parentFolderId: resource.parentFolderId,
-              spaceId: space.id,
-              path
-            }
-          })
+        client.getFileInfo(space, { path }, { signal }).then((resource) => {
+          data[path] = {
+            id: resource.fileId,
+            shareTypes: resource.shareTypes,
+            parentFolderId: resource.parentFolderId,
+            spaceId: space.id,
+            path
+          }
+        })
       )
     }
 

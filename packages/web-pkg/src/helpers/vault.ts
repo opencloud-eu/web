@@ -190,6 +190,11 @@ export async function decryptResourceInPlace(
     const guessed = mimeTypeForExtension(r.extension)
     if (guessed) {
       r.mimeType = guessed
+      // Same reason for the preview: the server sees an opaque blob and never
+      // renders a thumbnail for it, so it reports no preview. The client can
+      // render it once decrypted, and the preview service goes through the
+      // vault-aware client to get the plaintext.
+      r.hasPreview = () => true
     }
   }
   // The engine resolved → resource is by definition inside (or *is*) a vault.

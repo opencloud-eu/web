@@ -1,10 +1,39 @@
-import { DriveItem } from '../generated'
+import {
+  DriveItem,
+  GetDriveItemChildrenSelectEnum,
+  GetDriveItemV1ExpandEnum,
+  GetDriveItemV1SelectEnum
+} from '../generated'
 import type { GraphRequestOptions } from '../types'
 
+export interface DriveItemStatOptions {
+  select?: Set<GetDriveItemV1SelectEnum>
+  expand?: Set<GetDriveItemV1ExpandEnum>
+}
+
+export interface DriveItemChildrenOptions {
+  select?: Set<GetDriveItemChildrenSelectEnum>
+}
+
+// a driveItem is addressed either by its id or by its path, never by both
+export type DriveItemRef = { itemId: string; path?: never } | { itemId?: never; path: string }
+
 export interface GraphDriveItems {
+  listDriveItemChildren: (
+    driveId: string,
+    itemId: string,
+    options?: DriveItemChildrenOptions,
+    requestOptions?: GraphRequestOptions
+  ) => Promise<DriveItem[]>
   getDriveItem: (
     driveId: string,
     itemId: string,
+    requestOptions?: GraphRequestOptions
+  ) => Promise<DriveItem>
+  statDriveItem: (
+    driveId: string,
+    ref: DriveItemRef,
+    options?: DriveItemStatOptions,
     requestOptions?: GraphRequestOptions
   ) => Promise<DriveItem>
   createDriveItem: (

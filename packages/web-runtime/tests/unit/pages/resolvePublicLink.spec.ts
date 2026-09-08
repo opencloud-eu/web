@@ -98,10 +98,11 @@ describe('resolvePublicLink', () => {
         canBeDeleted: () => false,
         canRestore: () => false
       } as Resource
-      // a link to a single file has no file id of its own
+      // the item behind the link tells a single file link apart
       const { mocks } = getWrapper({
         redirectUrl: '',
         spaceFileId: 'token',
+        publicLinkItemType: 'file',
         children: [file]
       })
       await flushPromises()
@@ -146,12 +147,14 @@ function getWrapper({
   getFileInfoErrorStatusCode = null,
   redirectUrl = 'redirectUrl',
   spaceFileId = 'folder-id',
+  publicLinkItemType = 'folder',
   children = []
 }: {
   passwordRequired?: boolean
   getFileInfoErrorStatusCode?: number
   redirectUrl?: string
   spaceFileId?: string
+  publicLinkItemType?: 'file' | 'folder'
   children?: Resource[]
 } = {}) {
   const $clientService = mockDeep<ClientService>()
@@ -160,7 +163,8 @@ function getWrapper({
     fileId: spaceFileId,
     driveType: 'public',
     driveAlias: 'public/token',
-    isFolder: true,
+    publicLinkItemType,
+    isFolder: publicLinkItemType === 'folder',
     getDriveAliasAndItem: ({ path }: Resource) =>
       urlJoin('public/token', path, { leadingSlash: false })
   })

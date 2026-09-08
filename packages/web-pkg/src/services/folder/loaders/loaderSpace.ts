@@ -16,7 +16,6 @@ import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
 import { isLocationSpacesActive, isLocationPublicActive } from '../../../router'
 import { getSharedDriveItem, setCurrentUserShareSpacePermissions } from '../../../helpers'
 import { useFileRouteReplace } from '../../../composables'
-import { DavProperties, DavProperty } from '@opencloud-eu/web-client/webdav'
 
 export class FolderLoaderSpace implements FolderLoader {
   public isEnabled(): boolean {
@@ -58,15 +57,9 @@ export class FolderLoaderSpace implements FolderLoader {
       try {
         resourcesStore.clearResourceList()
 
-        const davProperties = DavProperties.Default
-        if (isPublicSpaceResource(space)) {
-          // needed for public links for make previews work
-          davProperties.push(DavProperty.DownloadURL)
-        }
-
         // eslint-disable-next-line prefer-const
         let { resource: currentFolder, children: resources } = yield* call(
-          webdav.listFiles(space, { path, fileId }, { signal: signal1, davProperties })
+          webdav.listFiles(space, { path, fileId }, { signal: signal1 })
         )
 
         // if current folder has no id (= singe file public link) we must not correct the route

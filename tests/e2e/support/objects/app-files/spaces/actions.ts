@@ -6,6 +6,7 @@ import Collaborator, { ICollaborator } from '../share/collaborator'
 import { createLink } from '../link/actions'
 import { File } from '../../../types'
 import { closeNotifications } from '../../../utils/closeNotifications'
+import { isFolderListingResponse } from '../../../utils/folderListing'
 
 const newSpaceMenuButton = '.oc-app-floating-action-button'
 const spaceContextMenuButton = '#space-context-btn'
@@ -220,7 +221,7 @@ export const changeSpaceDescription = async (args: {
   await page.locator(spacesDescriptionInputArea).fill(value)
   await Promise.all([
     page.waitForResponse((resp) => resp.status() === 204 && resp.request().method() === 'PUT'),
-    page.waitForResponse((resp) => resp.status() === 207 && resp.request().method() === 'PROPFIND'),
+    page.waitForResponse(isFolderListingResponse),
     page.locator(spacesDescriptionSaveTextFileInEditorButton).click()
   ])
   await editor.close(page)

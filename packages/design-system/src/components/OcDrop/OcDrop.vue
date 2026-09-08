@@ -273,6 +273,9 @@ const showDrop = async ({
   const anchorEl: HTMLElement | VirtualElement | null = anchorElement || unref(anchor)
   activeAnchorElement = anchorEl
   isOpen.value = true
+  // registered before the drop is positioned: everything below waits for a
+  // frame, and a key pressed in between has to close the drop as well
+  registerEventListener(document, 'keydown', handleDocumentKeydown, 'document')
   await nextTick()
   if (!anchorEl) {
     console.warn('OcDrop cannot be opened: anchor element not found')
@@ -281,6 +284,11 @@ const showDrop = async ({
 
   // fixes a timing issue with the rendering of the drop
   await awaitAnimationFrame()
+
+  // escape can close the drop again while it is still positioning itself
+  if (!unref(isOpen) || !unref(drop)) {
+    return
+  }
 
   if (isMenu) {
     // if drop is a menu, set role="menu" on all ul elements in the drop for better screen reader support
@@ -316,6 +324,10 @@ const showDrop = async ({
       })
     ]
   })
+
+  if (!unref(isOpen) || !unref(drop)) {
+    return
+  }
 
   Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
   unref(anchor)?.setAttribute('aria-expanded', 'true')
@@ -374,6 +386,18 @@ const handleDropClickOutside = async (event: Event) => {
       hideDrop()
     }
   }
+}
+
+// Escape has to close the drop even when the focus never entered it, which is
+// the case whenever it was opened by pointer: a context menu on right click for
+// instance. A key pressed inside the drop never reaches this handler, the drop's
+// own one below stops it from travelling further.
+const handleDocumentKeydown = (event: Event) => {
+  if (!isKeyboardEvent(event) || event.code !== 'Escape') {
+    return
+  }
+  hideDrop()
+  unref(anchor)?.focus()
 }
 
 const handleDropKeydown = (event: Event) => {
