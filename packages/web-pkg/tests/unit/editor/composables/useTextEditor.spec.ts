@@ -92,14 +92,14 @@ describe('useTextEditor', () => {
       expect(pluginNames).toContain('slashCommands')
     })
 
-    it('does not register the extension for plain-text when all actions are hidden in slash commands', () => {
+    it('registers the extension for plain-text when a slash action is available', () => {
       const { result } = createEditor({
         contentType: 'plain-text',
         modelValue: toRef('hi'),
         slashCommands: true
       })
       const pluginNames = result.editor.value?.extensionManager.extensions.map((e) => e.name) ?? []
-      expect(pluginNames).not.toContain('slashCommands')
+      expect(pluginNames).toContain('slashCommands')
     })
   })
 

@@ -192,8 +192,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
           imageUpload(),
           imageCloud(),
           createTable(),
-          menuEmoji(),
-          horizontalRule()
+          horizontalRule(),
+          menuEmoji()
         ]
       },
       {
