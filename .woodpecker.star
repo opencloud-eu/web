@@ -2,7 +2,7 @@ repo_slug = "opencloud-eu/web"
 docker_repo_slug = "opencloudeu/web"
 
 ALPINE_GIT = "alpine/git:latest"
-APACHE_TIKA = "apache/tika:2.8.0.0"
+APACHE_TIKA = "apache/tika:4.1.0-SNAPSHOT"
 
 # renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.2.4.1"

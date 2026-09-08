@@ -3,7 +3,6 @@ import { mock } from 'vitest-mock-extended'
 import { nextTick, ref } from 'vue'
 import {
   queryItemAsString,
-  useFileActionsDelete,
   useExtensionRegistry,
   FolderViewExtension,
   ResourceTable,
@@ -27,8 +26,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   queryItemAsString: vi.fn(),
   appDefaults: vi.fn(),
   useRouteQueryPersisted: vi.fn().mockImplementation(() => ref('resource-table')),
-  useFileActions: vi.fn(),
-  useFileActionsDelete: vi.fn(() => mock<ReturnType<typeof useFileActionsDelete>>())
+  useFileActions: vi.fn()
 }))
 
 const spacesResources = [

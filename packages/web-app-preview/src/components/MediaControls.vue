@@ -110,6 +110,17 @@
           />
         </oc-button>
       </div>
+      <oc-button
+        v-if="showMotionControl"
+        v-oc-tooltip="motionDescription"
+        class="preview-controls-motion raw-hover-surface p-1"
+        data-testid="motion-photo-toggle"
+        appearance="raw"
+        :aria-label="motionDescription"
+        @click="emit('toggleMotion')"
+      >
+        <oc-icon fill-type="line" :name="isMotionPlaying ? 'pause-circle' : 'play-circle'" />
+      </oc-button>
 
       <template v-if="showFavoriteButton || showDeleteButton">
         <span
@@ -145,14 +156,7 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import {
-  ActionExtension,
-  ActionOptions,
-  isMacOs,
-  useFileActionsDelete,
-  useExtensionRegistry,
-  useGetMatchingSpace
-} from '@opencloud-eu/web-pkg'
+import { ActionOptions, isMacOs, useFileActions, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
 import { previewToolbarActionsExtensionPoint } from '../extensionPoints'
 
@@ -163,6 +167,8 @@ const {
   isFullScreenModeActivated = false,
   isFolderLoading = false,
   showImageControls = false,
+  showMotionControl = false,
+  isMotionPlaying = false,
   currentImageRotation = 0
 } = defineProps<{
   files: MediaFile[]
@@ -170,6 +176,8 @@ const {
   isFullScreenModeActivated?: boolean
   isFolderLoading?: boolean
   showImageControls?: boolean
+  showMotionControl?: boolean
+  isMotionPlaying?: boolean
   currentImageRotation?: number
   photoRollEnabled?: boolean
 }>()
@@ -187,12 +195,12 @@ const emit = defineEmits<{
   (e: 'resetImage'): void
   (e: 'deleteResource'): void
   (e: 'togglePhotoRoll'): void
+  (e: 'toggleMotion'): void
 }>()
 
 const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
-const { requestExtensions } = useExtensionRegistry()
-const { actions: deleteFileActions } = useFileActionsDelete()
+const { getExtensionActions } = useFileActions()
 
 const space = computed(() => getMatchingSpace(files[activeIndex].resource))
 const actionOptions = computed(() => ({
@@ -200,13 +208,16 @@ const actionOptions = computed(() => ({
   resources: [files[activeIndex].resource]
 }))
 
-const previewToolbarActions = computed(() => {
-  return (requestExtensions<ActionExtension>(previewToolbarActionsExtensionPoint) || []).map(
-    (e) => e.action
+const previewToolbarActions = computed(() =>
+  getExtensionActions(previewToolbarActionsExtensionPoint.id).filter((a) =>
+    a.isVisible(unref(actionOptions))
   )
-})
+)
 const favoriteAction = computed(() => {
   return unref(previewToolbarActions).find((action) => action.name === 'favorite')
+})
+const deleteAction = computed(() => {
+  return unref(previewToolbarActions).find((action) => action.name === 'delete')
 })
 
 const ariaHiddenFileCount = computed(() => {
@@ -229,24 +240,10 @@ const togglePhotoRollDescription = computed(() => {
   return $gettext('Show photo roll')
 })
 
-const showDeleteButton = computed(() => {
-  return unref(deleteFileActions)[0]?.isVisible({
-    space: unref(space),
-    resources: [files[activeIndex].resource]
-  })
-})
+const showDeleteButton = computed(() => !!unref(deleteAction))
+const showFavoriteButton = computed(() => !!unref(favoriteAction))
 
-const showFavoriteButton = computed(() => {
-  if (!unref(favoriteAction)) {
-    return false
-  }
-  return unref(favoriteAction).isVisible(unref(actionOptions))
-})
-
-const resourceDeleteIcon = computed(() => {
-  return unref(deleteFileActions)[0].icon as string
-})
-
+const resourceDeleteIcon = computed(() => unref(deleteAction)?.icon as string)
 const resourceDeleteDescription = computed(() => {
   return $gettext('Delete (%{key})', {
     key: isMacOs() ? $gettext('⌘ + Backspace') : $gettext('Del')
@@ -274,4 +271,7 @@ const imageRotateRightDescription = computed(() =>
 )
 const previousDescription = computed(() => $gettext('Show previous media file in folder'))
 const nextDescription = computed(() => $gettext('Show next media file in folder'))
+const motionDescription = computed(() =>
+  isMotionPlaying ? $gettext('Pause motion photo') : $gettext('Play motion photo')
+)
 </script>

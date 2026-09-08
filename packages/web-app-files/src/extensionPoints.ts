@@ -33,6 +33,10 @@ export const contextActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   extensionType: 'action',
   multiple: true
 }
+export const defaultActionFallbackExtensionPoint: ExtensionPoint<ActionExtension> = {
+  id: 'global.files.default-action-fallback',
+  extensionType: 'action'
+}
 export const resourceTableActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   id: 'global.files.resource-table-actions',
   extensionType: 'action',
@@ -122,6 +126,7 @@ export const extensionPoints = () => {
       trashQuickActionsExtensionPoint,
       batchActionsExtensionPoint,
       contextActionsExtensionPoint,
+      defaultActionFallbackExtensionPoint,
       resourceTableActionsExtensionPoint,
       fileSideBarExtensionPoint,
       fileSideBarActionsExtensionPoint,

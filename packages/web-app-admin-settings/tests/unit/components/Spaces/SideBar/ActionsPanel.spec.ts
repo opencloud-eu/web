@@ -7,15 +7,14 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import ActionsPanel from '../../../../../src/components/Spaces/SideBar/ActionsPanel.vue'
-import { Action, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { Action, FileAction, useFileActions } from '@opencloud-eu/web-pkg'
 import { h } from 'vue'
-
-const sidebarActionsExtensionPointId = 'app.admin-settings.spaces.sidebar-actions'
+import { spacesSidebarActionsExtensionPoint } from '../../../../../src/extensionPoints'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
   return {
     ...(await importOriginal<any>()),
-    useExtensionRegistry: vi.fn(),
+    useFileActions: vi.fn(),
     ActionMenuItem: () => h('action-menu-item')
   }
 })
@@ -23,11 +22,7 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
 describe('ActionsPanel', () => {
   describe('menu sections', () => {
     it('do not render when no action enabled', () => {
-      vi.mocked(useExtensionRegistry).mockReturnValue({
-        requestExtensions: vi.fn(() => [])
-      } as any)
-
-      const { wrapper } = getWrapper()
+      const { wrapper } = getWrapper([])
       expect(wrapper.findAll('action-menu-item-stub').length).toBe(0)
     })
 
@@ -39,43 +34,24 @@ describe('ActionsPanel', () => {
         mock<Action>({ isVisible: () => true, category: 'tertiary' }),
         mock<Action>({ isVisible: () => true, category: 'tertiary' })
       ]
-      vi.mocked(useExtensionRegistry).mockReturnValue({
-        requestExtensions: vi.fn((extensionPoint) => {
-          if (extensionPoint.id === sidebarActionsExtensionPointId) {
-            return [
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
-                action: enabledActions[0]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
-                action: enabledActions[1]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.edit-quota',
-                action: enabledActions[2]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.disable',
-                action: enabledActions[3]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
-                action: enabledActions[4]
-              }
-            ]
-          }
-          return []
-        })
-      } as any)
 
-      const { wrapper } = getWrapper()
+      const { wrapper } = getWrapper(enabledActions)
       expect(wrapper.findAll('action-menu-item-stub').length).toBe(enabledActions.length)
     })
   })
 })
 
-function getWrapper() {
+function getWrapper(extensionActions: Action[] = []) {
+  vi.mocked(useFileActions).mockReturnValue(
+    mock<ReturnType<typeof useFileActions>>({
+      getExtensionActions: vi.fn((extensionPoint) =>
+        extensionPoint === spacesSidebarActionsExtensionPoint.id
+          ? (extensionActions as FileAction[])
+          : []
+      )
+    })
+  )
+
   const mocks = {
     ...defaultComponentMocks()
   }

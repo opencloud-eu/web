@@ -1,4 +1,3 @@
-import { useFileActionsDeleteResources } from '../helpers'
 import {
   isIncomingShareResource,
   isProjectSpaceResource,
@@ -6,9 +5,9 @@ import {
   isTrashResource
 } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
-import { FileAction } from '../types'
 import { computed } from 'vue'
-import { useUserStore, useCapabilityStore } from '../../piniaStores'
+import { useUserStore, useCapabilityStore, FileAction } from '@opencloud-eu/web-pkg'
+import { useFileActionsDeleteResources } from '../useFileActionsDeleteResources'
 
 export const useFileActionsDelete = () => {
   const userStore = useUserStore()

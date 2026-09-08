@@ -1,14 +1,19 @@
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import type { Action, FileActionOptions } from '../types'
-import { useMessages, useResourcesStore } from '../../piniaStores'
+import type { Action, FileActionOptions } from '@opencloud-eu/web-pkg'
+import {
+  useMessages,
+  useResourcesStore,
+  useCapabilityStore,
+  useClientService,
+  isLocationCommonActive,
+  isItemInCurrentFolder,
+  isMacOs,
+  useRouter
+} from '@opencloud-eu/web-pkg'
 import { useFileActionsRestore } from './useFileActionsRestore'
 import { storeToRefs } from 'pinia'
-import { useCapabilityStore, useClientService } from '../../'
 import { isPersonalSpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { isItemInCurrentFolder, isMacOs } from '../../../helpers'
-import { isLocationCommonActive } from '../../../router'
-import { useRouter } from 'vue-router'
 
 type UndoActionOptions = FileActionOptions & { callback?: () => void }
 

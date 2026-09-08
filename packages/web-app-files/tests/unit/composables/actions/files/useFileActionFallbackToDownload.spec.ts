@@ -5,14 +5,14 @@ import {
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import {
-  useFileActionFallbackToDownload,
-  useModals,
-  useDownloadFile
-} from '../../../../../src/composables'
+import { useModals, useDownloadFile } from '@opencloud-eu/web-pkg'
+import { useFileActionFallbackToDownload } from '../../../../../src/composables/actions'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
-vi.mock('../../../../../src/composables/download/useDownloadFile')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useDownloadFile: vi.fn()
+}))
 
 describe('fallbackToDownload', () => {
   describe('computed property "actions"', () => {

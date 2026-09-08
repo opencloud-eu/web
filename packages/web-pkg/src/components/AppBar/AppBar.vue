@@ -103,16 +103,9 @@ import ContextActions from '../FilesList/ContextActions.vue'
 import ViewOptions from '../ViewOptions.vue'
 import { FolderView } from '../../ui/types'
 import {
-  useFileActionsDelete,
-  useFileActionsDownloadFile,
-  useFileActionsRestore
-} from '../../composables/actions'
-import {
-  ActionExtension,
-  FileAction,
   FolderViewModeConstants,
   useAbility,
-  useExtensionRegistry,
+  useFileActions,
   useIsTopBarSticky,
   useResourcesStore,
   useRouteMeta,
@@ -158,7 +151,7 @@ const emit = defineEmits<{
 
 const { $gettext, $ngettext } = useGettext()
 const { can } = useAbility()
-const { requestExtensions } = useExtensionRegistry()
+const { getExtensionActions } = useFileActions()
 const { isSticky } = useIsTopBarSticky()
 
 const sidebarStore = useSideBar()
@@ -167,10 +160,6 @@ const { isSideBarOpen } = storeToRefs(sidebarStore)
 const resourcesStore = useResourcesStore()
 const { selectedResources } = storeToRefs(resourcesStore)
 const { resetSelection } = resourcesStore
-
-const { actions: deleteActions } = useFileActionsDelete()
-const { actions: downloadFileActions } = useFileActionsDownloadFile()
-const { actions: restoreActions } = useFileActionsRestore()
 
 const filesAppBar = useTemplateRef('filesAppBar')
 
@@ -182,18 +171,6 @@ const hasSharesNavigation = computed(
 )
 
 const batchActions = computed(() => {
-  let actions: FileAction[] = [...unref(downloadFileActions)]
-
-  const actionExtensions = requestExtensions<ActionExtension>({
-    id: 'global.files.batch-actions',
-    extensionType: 'action'
-  })
-  if (actionExtensions.length) {
-    actions = [...actions, ...actionExtensions.map((e) => e.action)]
-  }
-
-  actions = [...actions, ...unref(deleteActions), ...unref(restoreActions)]
-
   const categoryOrder: Record<string, number> = {
     primary: 0,
     secondary: 1,
@@ -201,7 +178,7 @@ const batchActions = computed(() => {
     quaternary: 3
   }
 
-  return actions
+  return getExtensionActions('global.files.batch-actions')
     .filter((item) =>
       item.isVisible({ space: unref(space), resources: resourcesStore.selectedResources })
     )
