@@ -25,11 +25,7 @@
       </div>
     </div>
     <template v-else>
-      <div
-        class="relative w-full"
-        @mouseenter="motionPlayer?.hoverPlay?.()"
-        @mouseleave="motionPlayer?.stop?.()"
-      >
+      <div class="relative flex w-full" @mouseenter="onMediaEnter" @mouseleave="onMediaLeave">
         <resource-link
           class="oc-card-media-top flex justify-center items-center m-0 w-full relative aspect-[16/9]"
           :resource="resource"
@@ -56,7 +52,7 @@
           <div
             v-oc-tooltip="tooltipLabelIcon"
             class="oc-tile-card-preview flex items-center justify-center text-center size-full absolute"
-            :class="{ 'p-2': isResourceSelected, 'hover:p-2': !isResourceSelected }"
+            :class="{ 'p-2 oc-tile-card-preview-inset': motionInset }"
             :aria-label="tooltipLabelIcon"
           >
             <slot name="imageField" :item="resource">
@@ -94,8 +90,8 @@
           :resource="resource"
           :space="space"
           badge-size-class="size-5"
-          badge-class="top-0 right-0 m-2"
-          video-class="tile-motion-video aspect-[16/9] rounded-t-sm"
+          badge-class="top-0 right-0 m-2.5"
+          :video-class="motionVideoClass"
         />
       </div>
       <div class="p-2" @click.stop="$emit('tileClicked', [resource, $event])">
@@ -206,6 +202,22 @@ const { getParentFolderName, getParentFolderLink } = useFolderLink({
 const motionPlayer = useTemplateRef<InstanceType<typeof MotionPhotoPlayer>>('motionPlayer')
 const resourcesStore = useResourcesStore()
 const isResourceSelected = computed(() => resourcesStore.selectedIdsSet.has(resource.id))
+// the preview is inset while selected or hovered (the whole media area, badge
+// included, so that hovering the badge does not pop the still back out) and the
+// clip follows that inset; the badge keeps the checkbox's fixed edge distance
+const isMediaHovered = ref(false)
+const motionInset = computed(() => isResourceSelected.value || isMediaHovered.value)
+const motionVideoClass = computed(() =>
+  motionInset.value ? 'tile-motion-video inset-2 rounded-sm' : 'tile-motion-video rounded-t-sm'
+)
+const onMediaEnter = () => {
+  isMediaHovered.value = true
+  motionPlayer.value?.hoverPlay?.()
+}
+const onMediaLeave = () => {
+  isMediaHovered.value = false
+  motionPlayer.value?.stop?.()
+}
 
 const observerTarget = useTemplateRef<InstanceType<typeof OcCard>>('observerTarget')
 const observerTargetElement = computed<HTMLElement>(() => unref(observerTarget)?.$el)
@@ -268,8 +280,8 @@ if (!lazy) {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
-  .oc-tile-card-preview:hover img,
-  .oc-tile-card-preview:hover .oc-icon {
+  .oc-tile-card-preview-inset img,
+  .oc-tile-card-preview-inset .oc-icon {
     @apply rounded-sm;
   }
 

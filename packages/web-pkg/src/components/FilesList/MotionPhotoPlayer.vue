@@ -1,16 +1,16 @@
 <template>
   <div class="motion-photo-player absolute inset-0 pointer-events-none">
-    <video
-      v-if="isPlaying && videoUrl"
-      :src="videoUrl"
-      class="absolute inset-0 size-full object-cover"
-      :class="videoClass"
-      muted
-      loop
-      autoplay
-      playsinline
-      @loadedmetadata="seekToStill"
-    />
+    <div v-if="isPlaying && videoUrl" class="absolute inset-0 overflow-hidden" :class="videoClass">
+      <video
+        :src="videoUrl"
+        class="size-full object-cover"
+        muted
+        loop
+        autoplay
+        playsinline
+        @loadedmetadata="seekToStill"
+      />
+    </div>
     <motion-photo-badge
       class="absolute pointer-events-auto"
       :class="badgeClass"
