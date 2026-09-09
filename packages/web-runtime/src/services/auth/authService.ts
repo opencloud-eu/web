@@ -1,5 +1,6 @@
 import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
+import { GuestSessionManager } from './guestSessionManager'
 import {
   AuthStore,
   ClientService,
@@ -7,7 +8,10 @@ import {
   CapabilityStore,
   ConfigStore,
   useTokenTimerWorker,
-  AuthServiceInterface
+  AuthServiceInterface,
+  GuestSession,
+  MessageStore,
+  SpacesStore
 } from '@opencloud-eu/web-pkg'
 import { RouteLocation, Router } from 'vue-router'
 import {
@@ -41,12 +45,15 @@ export class AuthService implements AuthServiceInterface {
   private router: Router
   private userManager: UserManager
   private publicLinkManager: PublicLinkManager
+  private guestSessionManager: GuestSessionManager
   private ability: Ability
   private language: Language
   private userStore: UserStore
   private authStore: AuthStore
   private capabilityStore: CapabilityStore
   private webWorkersStore: WebWorkersStore
+  private spacesStore: SpacesStore
+  private messagesStore: MessageStore
 
   private tokenTimerWorker: ReturnType<typeof useTokenTimerWorker>
   private tokenTimerInitialized = false
@@ -66,7 +73,9 @@ export class AuthService implements AuthServiceInterface {
     userStore: UserStore,
     authStore: AuthStore,
     capabilityStore: CapabilityStore,
-    webWorkersStore: WebWorkersStore
+    webWorkersStore: WebWorkersStore,
+    spacesStore: SpacesStore,
+    messagesStore: MessageStore
   ): void {
     this.configStore = configStore
     this.clientService = clientService
@@ -78,6 +87,21 @@ export class AuthService implements AuthServiceInterface {
     this.authStore = authStore
     this.capabilityStore = capabilityStore
     this.webWorkersStore = webWorkersStore
+    this.spacesStore = spacesStore
+    this.messagesStore = messagesStore
+
+    this.guestSessionManager = new GuestSessionManager({
+      clientService,
+      configStore,
+      authStore,
+      spacesStore,
+      messagesStore,
+      router
+    })
+  }
+
+  public get guestSessionExpired(): boolean {
+    return this.guestSessionManager?.sessionExpired === true
   }
 
   /**
@@ -109,6 +133,11 @@ export class AuthService implements AuthServiceInterface {
       // no need to clear public context if we're routing the to public link resolving page
       this.publicLinkManager.clearContext()
     }
+
+    // Unlike the public link context, the guest context is session-scoped rather than
+    // route-scoped: a guest lands on ordinary share routes that carry no marker to derive it
+    // from, so there is nothing to clear here. Restoring is cheap and idempotent.
+    this.guestSessionManager.restoreContext()
 
     if (!this.userManager) {
       this.userManager = new UserManager({
@@ -301,6 +330,13 @@ export class AuthService implements AuthServiceInterface {
   }
 
   public async handleAuthError(route: RouteLocation) {
+    // Must come first: with a guest session satisfying user-context routes, the user branch
+    // below would find no OIDC user, call `removeUser('authError')` and bounce the guest to
+    // the access denied page instead of the guest session expired page.
+    if (this.authStore.guestContextReady && !this.authStore.userContextReady) {
+      await this.guestSessionManager.handleSessionExpired()
+      return this.router.push({ name: 'guestSessionExpired' })
+    }
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
       this.publicLinkManager.clear(token)
@@ -389,6 +425,14 @@ export class AuthService implements AuthServiceInterface {
     this.publicLinkManager.setType(token, type)
 
     this.publicLinkManager.updateContext(token)
+  }
+
+  public resolveGuestLink(token: string): Promise<GuestSession> {
+    return this.guestSessionManager.verifyToken(token)
+  }
+
+  public verifyGuestPin(pin: string): Promise<GuestSession> {
+    return this.guestSessionManager.verifyPin(pin)
   }
 
   public async logoutUser() {
