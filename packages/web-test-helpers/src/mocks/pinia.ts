@@ -37,6 +37,8 @@ export type PiniaMockOptions = {
     idpContextReady?: boolean
     userContextReady?: boolean
     publicLinkContextReady?: boolean
+    guestContextReady?: boolean
+    guestPermissionId?: string
   }
   themeState?: { availableThemes?: WebThemeType[]; currentTheme?: WebThemeType }
   clipboardState?: { action?: ClipboardActions; resources?: Resource[] }

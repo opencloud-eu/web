@@ -1,5 +1,6 @@
 import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
+import { GuestSessionManager } from './guestSessionManager'
 import {
   AuthStore,
   ClientService,
@@ -7,7 +8,8 @@ import {
   CapabilityStore,
   ConfigStore,
   useTokenTimerWorker,
-  AuthServiceInterface
+  AuthServiceInterface,
+  SpacesStore
 } from '@opencloud-eu/web-pkg'
 import { RouteLocation, Router } from 'vue-router'
 import {
@@ -18,7 +20,7 @@ import {
   isUserContextRequired
 } from '../../router/helpers'
 import { unref } from 'vue'
-import { Ability } from '@opencloud-eu/web-client'
+import { Ability, ShareSpaceResource } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
 import { PublicLinkType } from '@opencloud-eu/web-client'
 import { WebWorkersStore } from '@opencloud-eu/web-pkg'
@@ -41,6 +43,7 @@ export class AuthService implements AuthServiceInterface {
   private router: Router
   private userManager: UserManager
   private publicLinkManager: PublicLinkManager
+  private guestSessionManager: GuestSessionManager
   private ability: Ability
   private language: Language
   private userStore: UserStore
@@ -66,7 +69,8 @@ export class AuthService implements AuthServiceInterface {
     userStore: UserStore,
     authStore: AuthStore,
     capabilityStore: CapabilityStore,
-    webWorkersStore: WebWorkersStore
+    webWorkersStore: WebWorkersStore,
+    spacesStore: SpacesStore
   ): void {
     this.configStore = configStore
     this.clientService = clientService
@@ -78,6 +82,11 @@ export class AuthService implements AuthServiceInterface {
     this.authStore = authStore
     this.capabilityStore = capabilityStore
     this.webWorkersStore = webWorkersStore
+    this.guestSessionManager = new GuestSessionManager({
+      clientService,
+      authStore,
+      spacesStore
+    })
   }
 
   /**
@@ -108,6 +117,10 @@ export class AuthService implements AuthServiceInterface {
     } else if (to.name !== 'resolvePublicLink') {
       // no need to clear public context if we're routing the to public link resolving page
       this.publicLinkManager.clearContext()
+    }
+
+    if (to.name !== 'resolveGuestLink') {
+      await this.guestSessionManager.restoreContext()
     }
 
     if (!this.userManager) {
@@ -301,6 +314,10 @@ export class AuthService implements AuthServiceInterface {
   }
 
   public async handleAuthError(route: RouteLocation) {
+    if (this.authStore.guestContextReady && !this.authStore.userContextReady) {
+      this.guestSessionManager.clear()
+      return
+    }
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
       this.publicLinkManager.clear(token)
@@ -389,6 +406,10 @@ export class AuthService implements AuthServiceInterface {
     this.publicLinkManager.setType(token, type)
 
     this.publicLinkManager.updateContext(token)
+  }
+
+  public redeemGuestLink(token: string): Promise<ShareSpaceResource> {
+    return this.guestSessionManager.redeem(token)
   }
 
   public async logoutUser() {

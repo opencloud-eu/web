@@ -77,6 +77,26 @@ export interface ActivityTopic {
      */
     'value': string;
 }
+/**
+ * Specifies an aggregation that should be computed and returned alongside search results. Follows the [MS Graph aggregationOption](https://learn.microsoft.com/en-us/graph/api/resources/aggregationoption) resource type.  For string fields, terms aggregations return the distinct values and their counts. For numeric and date fields, range aggregations can be defined using the `ranges` property of `bucketDefinition`.  At most one of `bucketDefinition`, `@libre.graph.metricDefinition` and `@libre.graph.geohashDefinition` may be set; requests specifying more than one are rejected with `invalidRequest`. 
+ */
+export interface AggregationOption {
+    /**
+     * Specifies the field in the schema of the specified entity type that the aggregation should be computed on. Required.  Examples: `audio.artist`, `audio.genre`, `audio.year`, `mimeType`. 
+     */
+    'field': string;
+    /**
+     * The number of `searchBucket` resources to be returned. This is optional and only applies to terms and geohash aggregations. For terms aggregations it combines with `bucketDefinition.sortBy` and `bucketDefinition.isDescending` to produce the top N results by count or key; for geohash aggregations it limits the buckets to the top N cells by count. When not specified, all buckets are returned. 
+     */
+    'size'?: number;
+    'bucketDefinition'?: BucketDefinition;
+    /**
+     * Nested aggregations computed within each bucket of this aggregation. Libregraph extension not present in MS Graph.  Backends that don\'t support native composite aggregations (e.g. bleve) emulate them by walking the matched result set; OpenSearch translates them to native composite aggregations. 
+     */
+    '@libre.graph.subAggregations'?: Array<AggregationOption>;
+    '@libre.graph.metricDefinition'?: MetricDefinition;
+    '@libre.graph.geohashDefinition'?: GeohashDefinition;
+}
 export interface AppRole {
     /**
      * Specifies whether this app role can be assigned to users and groups (by setting to [\'User\']), to other application\'s (by setting to [\'Application\'], or both (by setting to [\'User\', \'Application\']). App roles supporting assignment to other applications\' service principals are also known as application permissions. The \'Application\' value is only supported for app roles defined on application entities.
@@ -213,6 +233,49 @@ export interface Audio {
      */
     'year'?: number;
 }
+/**
+ * Specifies the lower and upper bound to compute a range aggregation bucket. At least one of `from` or `to` must be provided. 
+ */
+export interface BucketAggregationRange {
+    /**
+     * Defines the lower bound from which to compute the aggregation. The value is always a string. Numeric bounds must be provided as their string representation (e.g. `\"1980\"`). Date bounds must use the `YYYY-MM-DDTHH:mm:ssZ` format. Optional if `to` is provided. 
+     */
+    'from'?: string;
+    /**
+     * Defines the upper bound up to which to compute the aggregation. The value is always a string. Numeric bounds must be provided as their string representation (e.g. `\"2000\"`). Date bounds must use the `YYYY-MM-DDTHH:mm:ssZ` format. Optional if `from` is provided. 
+     */
+    'to'?: string;
+}
+/**
+ * Provides the details of how to generate the aggregation buckets in the response. Follows the [MS Graph bucketAggregationDefinition](https://learn.microsoft.com/en-us/graph/api/resources/bucketaggregationdefinition) resource type. 
+ */
+export interface BucketDefinition {
+    /**
+     * The possible values are `count` to sort by the number of matches in the aggregation, `keyAsString` to sort alphabetically based on the key in the aggregation, and `keyAsNumber` to sort numerically based on the key in the aggregation. Required. 
+     */
+    'sortBy': BucketDefinitionSortByEnum;
+    /**
+     * Set to `true` to specify the sort order as descending. Optional, defaults to `false` (ascending). 
+     */
+    'isDescending'?: boolean;
+    /**
+     * The minimum number of items that should be present in the aggregation for the bucket to be returned in the response. Optional, default is 0. 
+     */
+    'minimumCount'?: number;
+    /**
+     * Specifies the manual ranges to compute the aggregation buckets. This is only valid for non-string facets of date or numeric type. Optional. Follows the [MS Graph bucketAggregationRange](https://learn.microsoft.com/en-us/graph/api/resources/bucketaggregationrange) resource type. 
+     */
+    'ranges'?: Array<BucketAggregationRange>;
+}
+
+export const BucketDefinitionSortByEnum = {
+    Count: 'count',
+    KeyAsString: 'keyAsString',
+    KeyAsNumber: 'keyAsNumber',
+} as const;
+
+export type BucketDefinitionSortByEnum = typeof BucketDefinitionSortByEnum[keyof typeof BucketDefinitionSortByEnum];
+
 export interface ClassMemberReference {
     '@odata.id'?: string;
 }
@@ -814,6 +877,15 @@ export interface GeoCoordinates {
      */
     'longitude'?: number;
 }
+/**
+ * Provides the details of how to compute a geohash-grid aggregation over `field`, which must resolve to a geo-point field (e.g. `location`). When set on an `aggregationOption`, each `searchBucket` of the corresponding `searchAggregation` carries a geohash cell as its `key`, with `count` holding the number of matches in the cell, suitable for density/heatmap rendering. `size` limits the buckets to the top N cells by count. Libregraph extension not present in MS Graph. 
+ */
+export interface GeohashDefinition {
+    /**
+     * The geohash length of the returned cells (1-12); higher means finer cells. Required. 
+     */
+    'precision': number;
+}
 export interface Group {
     /**
      * Read-only.
@@ -839,6 +911,55 @@ export interface Group {
      * A list of member references to the members to be added. Up to 20 members can be added with a single request
      */
     'members@odata.bind'?: Set<string>;
+}
+/**
+ * Error returned by the guest link redeem endpoint.
+ */
+export interface GuestLinkError {
+    /**
+     * Machine-readable error identifier.
+     */
+    'errorType': GuestLinkErrorErrorTypeEnum;
+    /**
+     * Human-readable error message.
+     */
+    'message': string;
+    /**
+     * Permission (share) identifier related to the error, when known.
+     */
+    'permissionId': string;
+}
+
+export const GuestLinkErrorErrorTypeEnum = {
+    TokenInvalid: 'tokenInvalid',
+    TokenNotFound: 'tokenNotFound',
+    TokenExpired: 'tokenExpired',
+    TokenAlreadyRedeemed: 'tokenAlreadyRedeemed',
+    ShareNotFound: 'shareNotFound',
+    ShareExpired: 'shareExpired',
+    InvalidRequest: 'invalidRequest',
+    InternalError: 'internalError',
+} as const;
+
+export type GuestLinkErrorErrorTypeEnum = typeof GuestLinkErrorErrorTypeEnum[keyof typeof GuestLinkErrorErrorTypeEnum];
+
+/**
+ * Request body for redeeming a guest link token.
+ */
+export interface GuestLinkRedeemRequest {
+    /**
+     * One-time guest link token received from the guest link.
+     */
+    'token': string;
+}
+/**
+ * Response body for a successful guest link redemption.
+ */
+export interface GuestLinkRedeemResponse {
+    /**
+     * Identifier of the share (permission) the guest was invited to.
+     */
+    'permissionId': string;
 }
 /**
  * Hashes of the file\'s binary content, if available. Read-only.
@@ -1032,6 +1153,25 @@ export type LockInfoLockTypeEnum = typeof LockInfoLockTypeEnum[keyof typeof Lock
 export interface MemberReference {
     '@odata.id'?: string;
 }
+/**
+ * Provides the details of how to compute a scalar metric over the aggregation `field`, the counterpart of `bucketDefinition` for metric aggregations. When set on an `aggregationOption`, `size` is ignored, and the corresponding `searchAggregation` in the response carries a `@libre.graph.metric` rather than `buckets`. Libregraph extension not present in MS Graph. 
+ */
+export interface MetricDefinition {
+    /**
+     * The reducer applied to the field values of all matches. Required.  `avg` is not a simple reducer (averages of averages are not averages): the backend carries `(sum, count)` internally and emits only the final value on the outermost merge. 
+     */
+    'kind': MetricDefinitionKindEnum;
+}
+
+export const MetricDefinitionKindEnum = {
+    Sum: 'sum',
+    Min: 'min',
+    Max: 'max',
+    Avg: 'avg',
+} as const;
+
+export type MetricDefinitionKindEnum = typeof MetricDefinitionKindEnum[keyof typeof MetricDefinitionKindEnum];
+
 /**
  * Motion Photo metadata. A Motion Photo is a still image with a short video clip appended to the end of the file. The presence of this facet on a driveItem indicates that the item is a Motion Photo; absence indicates it is not.  Based on the Google Motion Photo format v1.0 specification: https://developer.android.com/media/platform/motion-photo-format 
  */
@@ -1295,6 +1435,174 @@ export interface RemoteItem {
     'webUrl'?: string;
 }
 /**
+ * Provides the details of a search aggregation in the search response. Follows the [MS Graph searchAggregation](https://learn.microsoft.com/en-us/graph/api/resources/searchaggregation) resource type. 
+ */
+export interface SearchAggregation {
+    /**
+     * Defines the field in the request on which the aggregation was computed. 
+     */
+    'field'?: string;
+    /**
+     * Defines the computed buckets for this aggregation. For bucket aggregations they are sorted according to the `sortBy` and `isDescending` specified in the `bucketDefinition` of the corresponding `aggregationOption`; for geohash aggregations they are ordered by `count`, descending. 
+     */
+    'buckets'?: Array<SearchBucket>;
+    '@libre.graph.metric'?: SearchMetric;
+}
+/**
+ * Represents a single bucket in a search aggregation result. Follows the [MS Graph searchBucket](https://learn.microsoft.com/en-us/graph/api/resources/searchbucket) resource type. 
+ */
+export interface SearchBucket {
+    /**
+     * The discrete value of the field that was used to compute the aggregation. For terms aggregations this is the field value. For range aggregations this is a string representation of the range. For geohash aggregations this is a geohash cell. 
+     */
+    'key'?: string;
+    /**
+     * The approximate number of search matches that share the same value specified in the `key` property. 
+     */
+    'count'?: number;
+    /**
+     * A token containing the encoded filter that narrows search matches to this bucket. To use it, pass it as part of the `aggregationFilters` property of a subsequent `searchRequest` in the format `{field}:{aggregationFilterToken}`. The filter matches the bucket `key` exactly and case-sensitively, so the narrowed result set is the set of matches counted in this bucket.  For terms buckets the token is the key encoded as lowercase hex of its UTF-8 bytes, prefixed with `ǂǂ` (U+01C2 twice) and wrapped in double quotes, e.g. `\"ǂǂ5361786f6e\"` for the key `Saxon`. For range buckets the token is `range({from}, {to})` with the bounds of the matching `bucketAggregationRange`; an open lower bound is written as `min`, an open upper bound as `max` followed by `to=\"le\"`, e.g. `range(min, 1980)`, `range(1980, 1990)` and `range(2010, max, to=\"le\")`. This is the same encoding MS Graph uses. Geohash buckets carry no token; narrow by location through the search query instead. 
+     */
+    'aggregationFilterToken'?: string;
+    /**
+     * Nested aggregation results, one per sub-aggregation requested on the parent `aggregationOption`. Libregraph extension not present in MS Graph. 
+     */
+    '@libre.graph.subAggregations'?: Array<SearchAggregation>;
+}
+/**
+ * Represents an individual search result. Follows the [MS Graph searchHit](https://learn.microsoft.com/en-us/graph/api/resources/searchhit) resource type. 
+ */
+export interface SearchHit {
+    /**
+     * The internal identifier for the item.
+     */
+    'hitId'?: string;
+    /**
+     * The rank or the order of the result.
+     */
+    'rank'?: number;
+    /**
+     * A summary of the result, if a summary is available. 
+     */
+    'summary'?: string;
+    'resource'?: DriveItem;
+}
+/**
+ * Contains a collection of search results. Follows the [MS Graph searchHitsContainer](https://learn.microsoft.com/en-us/graph/api/resources/searchhitscontainer) resource type. 
+ */
+export interface SearchHitsContainer {
+    /**
+     * A collection of the search results, ordered by relevance or, when the request specifies `sortProperties`, by those properties. 
+     */
+    'hits'?: Array<SearchHit>;
+    /**
+     * The total number of results. Note this is not the number of results on the page, but the total number of results satisfying the query. 
+     */
+    'total'?: number;
+    /**
+     * Provides information if more results are available. Based on this information, you can adjust the `from` and `size` properties of the `searchRequest` accordingly. 
+     */
+    'moreResultsAvailable'?: boolean;
+    /**
+     * Contains the collection of aggregations computed based on the provided `aggregationOption` definitions in the request. 
+     */
+    'aggregations'?: Array<SearchAggregation>;
+}
+/**
+ * The result of a metric aggregation, the counterpart of `buckets` for aggregations requested with a `@libre.graph.metricDefinition`. Absent for terms, range and geohash aggregations. Libregraph extension not present in MS Graph. 
+ */
+export interface SearchMetric {
+    /**
+     * Echoes the `kind` of the corresponding `metricDefinition`, allowing consumers (and the search service\'s cross-space merge layer) to pick the right reducer when combining results. 
+     */
+    'kind'?: SearchMetricKindEnum;
+    /**
+     * The scalar result of the metric.
+     */
+    'value'?: number;
+}
+
+export const SearchMetricKindEnum = {
+    Sum: 'sum',
+    Min: 'min',
+    Max: 'max',
+    Avg: 'avg',
+} as const;
+
+export type SearchMetricKindEnum = typeof SearchMetricKindEnum[keyof typeof SearchMetricKindEnum];
+
+/**
+ * Represents the search query. Follows the [MS Graph searchQuery](https://learn.microsoft.com/en-us/graph/api/resources/searchquery) resource type. 
+ */
+export interface SearchQuery {
+    /**
+     * The search query string in KQL (Keyword Query Language) format. The query string can contain free-text keywords and property filters.  Examples: - `budget report`: free text search - `mediatype:audio`: filter by media type - `audio.artist:\"Saxon\"`: filter by audio metadata - `audio.genre:Rock AND audio.year:1979`: combined filters 
+     */
+    'queryString': string;
+}
+export interface SearchQuery200Response {
+    /**
+     * A collection of search response objects, one per request.
+     */
+    'value'?: Array<SearchResponse>;
+}
+export interface SearchQueryRequest {
+    /**
+     * A collection of one or more search requests.
+     */
+    'requests': Array<SearchRequest>;
+}
+/**
+ * Represents an individual search request within a search query. Follows the [MS Graph searchRequest](https://learn.microsoft.com/en-us/graph/api/resources/searchrequest) resource type. 
+ */
+export interface SearchRequest {
+    /**
+     * One or more types of resources expected in the response. Currently only `driveItem` is supported. 
+     */
+    'entityTypes': Array<SearchRequestEntityTypesEnum>;
+    'query': SearchQuery;
+    /**
+     * Specifies the offset for the search results. Offset 0 returns the very first result. Used together with the `size` property for pagination. 
+     */
+    'from'?: number;
+    /**
+     * The size of the page to be retrieved. The maximum value is 500. Set to 0 to return only aggregations without any hits. 
+     */
+    'size'?: number;
+    /**
+     * Specifies aggregations (also known as refiners or facets) to be returned alongside the search results. Optional. 
+     */
+    'aggregations'?: Array<AggregationOption>;
+    /**
+     * Contains one or more filters to narrow search results to specific buckets of a prior aggregation. Build each filter from the response of a prior search that aggregated on the same field: take the `aggregationFilterToken` of the wanted `searchBucket` and combine it with the field as `{field}:{aggregationFilterToken}`, e.g. `audio.artist:\"ǂǂ5361786f6e\"` for a terms bucket or `audio.year:range(1980, 1990)` for a range bucket. Several buckets of the same field are combined with `{field}:or({aggregationFilterToken},{aggregationFilterToken})`. Whitespace after the commas of `range(...)` and `or(...)` is optional.  Multiple filters can be provided as separate array items. This results in a logical AND between the filters. Filters that are not built from server-issued tokens are rejected with `invalidRequest`. 
+     */
+    'aggregationFilters'?: Array<string>;
+    /**
+     * Contains the ordered collection of fields to sort the results on, primary sort key first. At most 5 sort properties. If absent, the results are sorted by relevance. See `sortProperty.name` for the set of sortable fields. Ties are broken by relevance, and results missing the sort property are placed last. Optional. 
+     */
+    'sortProperties'?: Array<SortProperty>;
+}
+
+export const SearchRequestEntityTypesEnum = {
+    DriveItem: 'driveItem',
+} as const;
+
+export type SearchRequestEntityTypesEnum = typeof SearchRequestEntityTypesEnum[keyof typeof SearchRequestEntityTypesEnum];
+
+/**
+ * Represents the response for an individual search request. Follows the [MS Graph searchResponse](https://learn.microsoft.com/en-us/graph/api/resources/searchresponse) resource type. 
+ */
+export interface SearchResponse {
+    /**
+     * Contains the search terms sent in the initial search query.
+     */
+    'searchTerms'?: Array<string>;
+    /**
+     * A collection of search result sets. One for each entity type that was queried. 
+     */
+    'hitsContainers'?: Array<SearchHitsContainer>;
+}
+/**
  * This resource is used to represent a set of identities associated with various events for an item, such as created by or last modified by.
  */
 export interface SharePointIdentitySet {
@@ -1364,6 +1672,19 @@ export interface SignInActivity {
      * The date and time of the last successful sign-in for the user.
      */
     'lastSuccessfulSignInDateTime'?: string;
+}
+/**
+ * Indicates the order to sort search results in. Follows the [MS Graph sortProperty](https://learn.microsoft.com/en-us/graph/api/resources/sortproperty) resource type. 
+ */
+export interface SortProperty {
+    /**
+     * The name of the property to sort the search results by. Required.  Sortable are the scalar search fields of the search hit\'s resource: `name`, `size`, `lastModifiedDateTime`, `mimeType` and the scalar facet properties such as `photo.takenDateTime`, `photo.iso`, `audio.artist`, `audio.year` or `image.width`. Strings sort lexicographically, numbers and dates by value. Multivalued properties (e.g. `@libre.graph.tags`) and unknown properties are rejected with `invalidRequest`. 
+     */
+    'name': string;
+    /**
+     * Set to `true` to specify the sort order as descending. Optional, defaults to `false` (ascending). 
+     */
+    'isDescending'?: boolean;
 }
 /**
  * If the current item is also available as a special folder, this facet is returned. Read-only
@@ -7713,6 +8034,114 @@ export type ListGroupsExpandEnum = typeof ListGroupsExpandEnum[keyof typeof List
 
 
 /**
+ * GuestLinksApi - axios parameter creator
+ */
+export const GuestLinksApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Redeem a guest link token to obtain a guest session.
+         * @summary Redeem a guest link token
+         * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        redeemGuestLink: async (guestLinkRedeemRequest: GuestLinkRedeemRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'guestLinkRedeemRequest' is not null or undefined
+            assertParamExists('redeemGuestLink', 'guestLinkRedeemRequest', guestLinkRedeemRequest)
+            const localVarPath = `/v1beta1/extensions/org.libregraph/guestLinks/redeem`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication openId required
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(guestLinkRedeemRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * GuestLinksApi - functional programming interface
+ */
+export const GuestLinksApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = GuestLinksApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Redeem a guest link token to obtain a guest session.
+         * @summary Redeem a guest link token
+         * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async redeemGuestLink(guestLinkRedeemRequest: GuestLinkRedeemRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuestLinkRedeemResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.redeemGuestLink(guestLinkRedeemRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GuestLinksApi.redeemGuestLink']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * GuestLinksApi - factory interface
+ */
+export const GuestLinksApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = GuestLinksApiFp(configuration)
+    return {
+        /**
+         * Redeem a guest link token to obtain a guest session.
+         * @summary Redeem a guest link token
+         * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        redeemGuestLink(guestLinkRedeemRequest: GuestLinkRedeemRequest, options?: RawAxiosRequestConfig): AxiosPromise<GuestLinkRedeemResponse> {
+            return localVarFp.redeemGuestLink(guestLinkRedeemRequest, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * GuestLinksApi - object-oriented interface
+ */
+export class GuestLinksApi extends BaseAPI {
+    /**
+     * Redeem a guest link token to obtain a guest session.
+     * @summary Redeem a guest link token
+     * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public redeemGuestLink(guestLinkRedeemRequest: GuestLinkRedeemRequest, options?: RawAxiosRequestConfig) {
+        return GuestLinksApiFp(this.configuration).redeemGuestLink(guestLinkRedeemRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+
+/**
  * InvitationsApi - axios parameter creator
  */
 export const InvitationsApiAxiosParamCreator = function (configuration?: Configuration) {
@@ -9603,6 +10032,126 @@ export class RoleManagementApi extends BaseAPI {
     }
 }
 
+
+
+/**
+ * SearchApi - axios parameter creator
+ */
+export const SearchApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * Run a specified search query. Search results are provided in the response.  The search endpoint allows clients to search for resources across all accessible spaces and retrieve aggregated metadata (facets) about the result set.  Aggregations can be used to group results by properties such as file type, author, or any indexed metadata field. This is useful for building faceted search UIs or computing statistics about the result set.  The query string uses KQL (Keyword Query Language) syntax for filtering. Results are sorted by relevance unless the request specifies `sortProperties`.  Modeled on the MS Graph search query endpoint (https://learn.microsoft.com/en-us/graph/api/search-query). Request and response follow the MS Graph resource types; Libregraph additions carry the `@libre.graph.` prefix. 
+         * @summary Search for resources
+         * @param {SearchQueryRequest} searchQueryRequest 
+         * @param {Set<SearchQueryExpandEnum>} [$expand] Relationships to expand inline on each hit\&#39;s driveItem. Only &#x60;thumbnails&#x60; is supported, attaching a preview thumbnail set for thumbnailable mime types. Libregraph extension: MS Graph search has no $expand and returns no thumbnails on search hits. 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchQuery: async (searchQueryRequest: SearchQueryRequest, $expand?: Set<SearchQueryExpandEnum>, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'searchQueryRequest' is not null or undefined
+            assertParamExists('searchQuery', 'searchQueryRequest', searchQueryRequest)
+            const localVarPath = `/v1beta1/search/query`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication openId required
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            if ($expand) {
+                localVarQueryParameter['$expand'] = Array.from($expand).join(COLLECTION_FORMATS.csv);
+            }
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(searchQueryRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * SearchApi - functional programming interface
+ */
+export const SearchApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = SearchApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * Run a specified search query. Search results are provided in the response.  The search endpoint allows clients to search for resources across all accessible spaces and retrieve aggregated metadata (facets) about the result set.  Aggregations can be used to group results by properties such as file type, author, or any indexed metadata field. This is useful for building faceted search UIs or computing statistics about the result set.  The query string uses KQL (Keyword Query Language) syntax for filtering. Results are sorted by relevance unless the request specifies `sortProperties`.  Modeled on the MS Graph search query endpoint (https://learn.microsoft.com/en-us/graph/api/search-query). Request and response follow the MS Graph resource types; Libregraph additions carry the `@libre.graph.` prefix. 
+         * @summary Search for resources
+         * @param {SearchQueryRequest} searchQueryRequest 
+         * @param {Set<SearchQueryExpandEnum>} [$expand] Relationships to expand inline on each hit\&#39;s driveItem. Only &#x60;thumbnails&#x60; is supported, attaching a preview thumbnail set for thumbnailable mime types. Libregraph extension: MS Graph search has no $expand and returns no thumbnails on search hits. 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async searchQuery(searchQueryRequest: SearchQueryRequest, $expand?: Set<SearchQueryExpandEnum>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SearchQuery200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.searchQuery(searchQueryRequest, $expand, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SearchApi.searchQuery']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+    }
+};
+
+/**
+ * SearchApi - factory interface
+ */
+export const SearchApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = SearchApiFp(configuration)
+    return {
+        /**
+         * Run a specified search query. Search results are provided in the response.  The search endpoint allows clients to search for resources across all accessible spaces and retrieve aggregated metadata (facets) about the result set.  Aggregations can be used to group results by properties such as file type, author, or any indexed metadata field. This is useful for building faceted search UIs or computing statistics about the result set.  The query string uses KQL (Keyword Query Language) syntax for filtering. Results are sorted by relevance unless the request specifies `sortProperties`.  Modeled on the MS Graph search query endpoint (https://learn.microsoft.com/en-us/graph/api/search-query). Request and response follow the MS Graph resource types; Libregraph additions carry the `@libre.graph.` prefix. 
+         * @summary Search for resources
+         * @param {SearchQueryRequest} searchQueryRequest 
+         * @param {Set<SearchQueryExpandEnum>} [$expand] Relationships to expand inline on each hit\&#39;s driveItem. Only &#x60;thumbnails&#x60; is supported, attaching a preview thumbnail set for thumbnailable mime types. Libregraph extension: MS Graph search has no $expand and returns no thumbnails on search hits. 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        searchQuery(searchQueryRequest: SearchQueryRequest, $expand?: Set<SearchQueryExpandEnum>, options?: RawAxiosRequestConfig): AxiosPromise<SearchQuery200Response> {
+            return localVarFp.searchQuery(searchQueryRequest, $expand, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * SearchApi - object-oriented interface
+ */
+export class SearchApi extends BaseAPI {
+    /**
+     * Run a specified search query. Search results are provided in the response.  The search endpoint allows clients to search for resources across all accessible spaces and retrieve aggregated metadata (facets) about the result set.  Aggregations can be used to group results by properties such as file type, author, or any indexed metadata field. This is useful for building faceted search UIs or computing statistics about the result set.  The query string uses KQL (Keyword Query Language) syntax for filtering. Results are sorted by relevance unless the request specifies `sortProperties`.  Modeled on the MS Graph search query endpoint (https://learn.microsoft.com/en-us/graph/api/search-query). Request and response follow the MS Graph resource types; Libregraph additions carry the `@libre.graph.` prefix. 
+     * @summary Search for resources
+     * @param {SearchQueryRequest} searchQueryRequest 
+     * @param {Set<SearchQueryExpandEnum>} [$expand] Relationships to expand inline on each hit\&#39;s driveItem. Only &#x60;thumbnails&#x60; is supported, attaching a preview thumbnail set for thumbnailable mime types. Libregraph extension: MS Graph search has no $expand and returns no thumbnails on search hits. 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public searchQuery(searchQueryRequest: SearchQueryRequest, $expand?: Set<SearchQueryExpandEnum>, options?: RawAxiosRequestConfig) {
+        return SearchApiFp(this.configuration).searchQuery(searchQueryRequest, $expand, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+export const SearchQueryExpandEnum = {
+    Thumbnails: 'thumbnails',
+} as const;
+export type SearchQueryExpandEnum = typeof SearchQueryExpandEnum[keyof typeof SearchQueryExpandEnum];
 
 
 /**
