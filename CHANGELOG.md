@@ -67,6 +67,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update node.js to v24.21.0 [[#3335](https://github.com/opencloud-eu/web/pull/3335)]
 - chore(deps): update typescript-eslint monorepo to v8.70.0 [[#3329](https://github.com/opencloud-eu/web/pull/3329)]
 - chore(deps): update tiptap monorepo to v3.31.3 [[#3305](https://github.com/opencloud-eu/web/pull/3305)]
 - chore(deps): update pnpm to v11.26.0 [[#3326](https://github.com/opencloud-eu/web/pull/3326)]
