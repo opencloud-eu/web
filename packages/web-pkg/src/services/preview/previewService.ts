@@ -53,7 +53,7 @@ export class PreviewService {
     if (
       !isPublic &&
       (!this.configStore.serverUrl ||
-        !this.user.onPremisesSamAccountName ||
+        !this.user?.onPremisesSamAccountName ||
         !this.authStore.accessToken)
     ) {
       return undefined
