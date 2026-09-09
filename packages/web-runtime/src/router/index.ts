@@ -5,6 +5,8 @@ import NotFoundPage from '../pages/notFound.vue'
 import OidcCallbackPage from '../pages/oidcCallback.vue'
 import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
+import ResolveGuestLinkPage from '../pages/resolveGuestLink.vue'
+import GuestSessionExpiredPage from '../pages/guestSessionExpired.vue'
 import { setupRouterHooks } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
 import { patchRouter } from './patchCleanPath'
@@ -95,6 +97,18 @@ const routes: readonly RouteRecordRaw[] = [
     name: routeNames.resolvePublicOcmLink,
     component: ResolvePublicLinkPage,
     meta: { title: $gettext('OCM link'), authContext: 'anonymous' }
+  },
+  {
+    path: '/g/:token',
+    name: routeNames.resolveGuestLink,
+    component: ResolveGuestLinkPage,
+    meta: { title: $gettext('Guest invitation'), authContext: 'anonymous' }
+  },
+  {
+    path: '/guest-session-expired',
+    name: routeNames.guestSessionExpired,
+    component: GuestSessionExpiredPage,
+    meta: { title: $gettext('Guest session expired'), authContext: 'anonymous' }
   },
   {
     path: '/access-denied',

@@ -14,6 +14,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import {
   CollaboratorShare,
+  GraphSharePermission,
   LinkShare,
   Resource,
   ShareRole,
@@ -37,6 +38,11 @@ export type PiniaMockOptions = {
     idpContextReady?: boolean
     userContextReady?: boolean
     publicLinkContextReady?: boolean
+    guestContextReady?: boolean
+    guestShareId?: string
+    guestShareName?: string
+    guestPermissions?: GraphSharePermission[]
+    guestSessionExpiresAt?: number
   }
   themeState?: { availableThemes?: WebThemeType[]; currentTheme?: WebThemeType }
   clipboardState?: { action?: ClipboardActions; resources?: Resource[] }

@@ -85,7 +85,9 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     userStore,
     authStore,
     capabilityStore,
-    webWorkersStore
+    webWorkersStore,
+    spacesStore,
+    messagesStore
   })
 
   const appProviderService = announceAppProviderService({
@@ -150,13 +152,20 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
 
   watch(
     () =>
-      authStore.userContextReady || authStore.idpContextReady || authStore.publicLinkContextReady,
+      authStore.userContextReady ||
+      authStore.idpContextReady ||
+      authStore.publicLinkContextReady ||
+      authStore.guestContextReady,
     async (newValue, oldValue) => {
       if (!newValue || newValue === oldValue) {
         return
       }
       announceVersions({ capabilityStore })
-      announceUpdates({ updatesStore, capabilityStore, configStore, clientService })
+      if (authStore.userContextReady) {
+        // reaches out to an OpenCloud operated update server, which is neither useful nor
+        // expected for a guest or a public link visitor
+        announceUpdates({ updatesStore, capabilityStore, configStore, clientService })
+      }
 
       await announceApplicationsReady({
         app,

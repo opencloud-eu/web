@@ -1,4 +1,10 @@
-import { ConfigStore, useAuthStore, useConfigStore } from '@opencloud-eu/web-pkg'
+import {
+  ConfigStore,
+  useAuthStore,
+  useConfigStore,
+  useMessages,
+  useSpacesStore
+} from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { Router } from 'vue-router'
 import { ErrorResponse, ErrorTimeout } from 'oidc-client-ts'
@@ -20,14 +26,33 @@ const initAuthService = ({
   configStore?: ConfigStore
   router?: Router
 }) => {
-  createTestingPinia()
+  // stubActions: false so the guest session actions actually mutate the store
+  createTestingPinia({ stubActions: false })
   const authStore = useAuthStore()
   configStore = configStore || useConfigStore()
 
-  authService.initialize(configStore, null, router, null, null, null, authStore, null, null)
+  authService.initialize(
+    configStore,
+    null,
+    router,
+    null,
+    null,
+    null,
+    authStore,
+    null,
+    null,
+    useSpacesStore(),
+    useMessages()
+  )
+
+  return { authStore }
 }
 
 describe('AuthService', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
   describe('signInCallback', () => {
     it.each([
       ['/', '/', {}],
@@ -330,6 +355,111 @@ describe('AuthService', () => {
       expect(signinSilent).toHaveBeenCalledTimes(1)
       expect(updateContext).toHaveBeenCalledTimes(1)
       expect(removeUser).toHaveBeenCalledWith('authError')
+    })
+
+    it('routes an expired guest to the guest session expired page instead of logging out', async () => {
+      const authService = new AuthService()
+      const removeUser = vi.fn()
+
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null), removeUser })
+      })
+
+      const router = createRouter({
+        routes: [
+          {
+            name: 'guestSessionExpired',
+            path: '/guest-session-expired',
+            component: { template: '<div />' }
+          }
+        ]
+      })
+      const pushSpy = vi.spyOn(router, 'push')
+      const { authStore } = initAuthService({ authService, router })
+      authStore.setGuestContext({
+        shareId: 'share-id',
+        shareName: 'share',
+        permissions: [],
+        expiresAt: Date.now() + 1000
+      })
+
+      await authService.handleAuthError(userContextRoute)
+
+      expect(pushSpy).toHaveBeenCalledWith({ name: 'guestSessionExpired' })
+      expect(removeUser).not.toHaveBeenCalled()
+      expect(authStore.guestContextReady).toBeFalsy()
+      // the share id survives, the renew endpoint and the PIN form both need it
+      expect(authStore.guestShareId).toEqual('share-id')
+    })
+
+    it("treats a signed-in user's auth error as a user error even with a guest record around", async () => {
+      const authService = new AuthService()
+      const removeUser = vi.fn()
+
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null), removeUser })
+      })
+
+      const { authStore } = initAuthService({ authService, router: createRouter() })
+      authStore.setGuestContext({
+        shareId: 'share-id',
+        shareName: 'share',
+        permissions: [],
+        expiresAt: Date.now() + 1000
+      })
+      authStore.setUserContextReady(true)
+
+      await authService.handleAuthError(userContextRoute)
+
+      expect(removeUser).toHaveBeenCalledWith('authError')
+    })
+  })
+
+  describe('initializeContext with a guest session', () => {
+    it('restores a persisted guest session', async () => {
+      localStorage.setItem(
+        'oc.guestSession',
+        JSON.stringify({
+          shareId: 'share-id',
+          shareName: 'Invited folder',
+          permissions: [],
+          expiresAt: Date.now() + 60000
+        })
+      )
+
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const { authStore } = initAuthService({ authService, router: createRouter() })
+      await authService.initializeContext(mock<RouteLocation>({}))
+
+      expect(authStore.guestContextReady).toBeTruthy()
+      expect(authStore.guestShareId).toEqual('share-id')
+    })
+
+    it('does not restore an expired guest session', async () => {
+      localStorage.setItem(
+        'oc.guestSession',
+        JSON.stringify({
+          shareId: 'share-id',
+          shareName: 'Invited folder',
+          permissions: [],
+          expiresAt: Date.now() - 1
+        })
+      )
+
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const { authStore } = initAuthService({ authService, router: createRouter() })
+      await authService.initializeContext(mock<RouteLocation>({}))
+
+      expect(authStore.guestContextReady).toBeFalsy()
+      expect(authService.guestSessionExpired).toBeTruthy()
     })
   })
 })

@@ -2,6 +2,7 @@ import { RouteLocation, RouteParams, Router, RouteRecordNormalized } from 'vue-r
 import {
   AuthContext,
   authContextValues,
+  AuthStore,
   contextQueryToFileContextProps,
   queryItemAsString,
   WebRouteMeta
@@ -118,6 +119,19 @@ const extractPublicLinkTokenFromRouteParams = (params: RouteParams): string => {
  */
 export const isAnonymousContext = (router: Router, to: RouteLocation): boolean => {
   return getRouteMeta(to).authContext === 'anonymous'
+}
+
+/**
+ * A guest lands on ordinary share routes, which declare `authContext: 'user'`. Until it is
+ * decided whether a guest rides the user context or gets one of its own
+ * (https://github.com/opencloud-eu/web/issues/2825), an established guest session stands in for
+ * a signed-in user towards the auth guard - and nowhere else.
+ *
+ * @param authStore {AuthStore}
+ * @returns {boolean}
+ */
+export const isGuestContextSufficient = (authStore: AuthStore): boolean => {
+  return authStore.guestContextReady
 }
 
 /**
