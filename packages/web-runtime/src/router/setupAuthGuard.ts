@@ -3,7 +3,7 @@ import {
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
-} from './index'
+} from './helpers'
 import { Router, RouteLocation } from 'vue-router'
 import {
   contextRouteNameKey,
