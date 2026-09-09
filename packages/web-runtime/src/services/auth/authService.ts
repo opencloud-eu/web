@@ -1,13 +1,20 @@
 import { UserManager } from './userManager'
 import { PublicLinkManager } from './publicLinkManager'
 import {
+  GuestSession,
+  GuestSessionManager,
+  isGuestSessionInvalidError
+} from './guestSessionManager'
+import {
   AuthStore,
   ClientService,
   UserStore,
   CapabilityStore,
   ConfigStore,
   useTokenTimerWorker,
-  AuthServiceInterface
+  AuthServiceInterface,
+  SpacesStore,
+  queryItemAsString
 } from '@opencloud-eu/web-pkg'
 import { RouteLocation, Router } from 'vue-router'
 import {
@@ -41,6 +48,7 @@ export class AuthService implements AuthServiceInterface {
   private router: Router
   private userManager: UserManager
   private publicLinkManager: PublicLinkManager
+  private guestSessionManager: GuestSessionManager
   private ability: Ability
   private language: Language
   private userStore: UserStore
@@ -66,7 +74,8 @@ export class AuthService implements AuthServiceInterface {
     userStore: UserStore,
     authStore: AuthStore,
     capabilityStore: CapabilityStore,
-    webWorkersStore: WebWorkersStore
+    webWorkersStore: WebWorkersStore,
+    spacesStore: SpacesStore
   ): void {
     this.configStore = configStore
     this.clientService = clientService
@@ -78,6 +87,11 @@ export class AuthService implements AuthServiceInterface {
     this.authStore = authStore
     this.capabilityStore = capabilityStore
     this.webWorkersStore = webWorkersStore
+    this.guestSessionManager = new GuestSessionManager({
+      clientService,
+      authStore,
+      spacesStore
+    })
   }
 
   /**
@@ -132,6 +146,14 @@ export class AuthService implements AuthServiceInterface {
           this.tokenTimerWorker.startWorker()
         }
       }
+    }
+
+    if (await this.isGuestContextExcluded(to)) {
+      this.guestSessionManager.clear()
+    } else if (isPublicLinkContextRequired(this.router, to)) {
+      this.guestSessionManager.deactivate()
+    } else if (to.name !== 'resolveGuestLink') {
+      await this.guestSessionManager.restoreContext(queryItemAsString(to.query.permissionId))
     }
 
     if (isPublicLinkContextRequired(this.router, to)) {
@@ -252,6 +274,17 @@ export class AuthService implements AuthServiceInterface {
     }
   }
 
+  private async isGuestContextExcluded(to: RouteLocation): Promise<boolean> {
+    if (isUserContextRequired(this.router, to) || isIdpContextRequired(this.router, to)) {
+      return true
+    }
+    if (isAnonymousContext(this.router, to)) {
+      return false
+    }
+    const user = await this.userManager.getUser()
+    return !!user && !user.expired
+  }
+
   public loginUser(redirectUrl?: string) {
     this.userManager.setPostLoginRedirectUrl(redirectUrl)
     return this.userManager.signinRedirect()
@@ -300,7 +333,17 @@ export class AuthService implements AuthServiceInterface {
     return '/?' + new URLSearchParams(currentQuery as Record<string, string>).toString()
   }
 
-  public async handleAuthError(route: RouteLocation) {
+  public async handleAuthError(route: RouteLocation, error?: unknown) {
+    if (
+      this.authStore.guestContextReady &&
+      !this.authStore.userContextReady &&
+      !isPublicLinkContextRequired(this.router, route)
+    ) {
+      if (isGuestSessionInvalidError(error)) {
+        this.guestSessionManager.clear()
+      }
+      return
+    }
     if (isPublicLinkContextRequired(this.router, route)) {
       const token = extractPublicLinkToken(route)
       this.publicLinkManager.clear(token)
@@ -391,6 +434,10 @@ export class AuthService implements AuthServiceInterface {
     this.publicLinkManager.updateContext(token)
   }
 
+  public redeemGuestLink(token: string): Promise<GuestSession> {
+    return this.guestSessionManager.redeem(token)
+  }
+
   public async logoutUser() {
     const endSessionEndpoint = await this.userManager.metadataService?.getEndSessionEndpoint()
     if (!endSessionEndpoint) {
@@ -410,6 +457,7 @@ export class AuthService implements AuthServiceInterface {
     // TODO: create UserUnloadTask interface and allow registering unload-tasks in the authService
     this.userStore.reset()
     this.authStore.clearUserContext()
+    this.guestSessionManager.clear()
     // stop the SSE stream from reconnecting with the now-removed access token
     resetSSE()
   }
