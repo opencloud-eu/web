@@ -1,10 +1,10 @@
 # Changelog
 
-## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-09-08
+## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-09-09
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @dschmidt, @fredrikblau, @kulmann, @saw-jan, @tammi-23, @v-scharf
+@AlexAndBear, @JammingBen, @dschmidt, @fredrikblau, @fschade, @kulmann, @saw-jan, @tammi-23, @v-scharf
 
 ### 💥 Breaking changes
 
@@ -15,6 +15,15 @@
 - fix(design-system): useIsVisible observer look-ahead [[#3210](https://github.com/opencloud-eu/web/pull/3210)]
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
+
+### ✅ Tests
+
+- test(e2e): repeat the global search while waiting for an indexed result [[#3333](https://github.com/opencloud-eu/web/pull/3333)]
+- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
+- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
+- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
+- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
+- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 📈 Enhancement
 
@@ -55,14 +64,6 @@
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
-
-### ✅ Tests
-
-- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
-- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
-- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
-- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
-- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 📦️ Dependencies
 
