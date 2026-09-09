@@ -588,7 +588,8 @@ export const announceAuthService = ({
   userStore,
   authStore,
   capabilityStore,
-  webWorkersStore
+  webWorkersStore,
+  spacesStore
 }: {
   app: App
   configStore: ConfigStore
@@ -597,6 +598,7 @@ export const announceAuthService = ({
   authStore: AuthStore
   capabilityStore: CapabilityStore
   webWorkersStore: WebWorkersStore
+  spacesStore: SpacesStore
 }): void => {
   const ability = app.config.globalProperties.$ability
   const language = app.config.globalProperties.$language
@@ -610,7 +612,8 @@ export const announceAuthService = ({
     userStore,
     authStore,
     capabilityStore,
-    webWorkersStore
+    webWorkersStore,
+    spacesStore
   )
   app.config.globalProperties.$authService = authService
   app.provide('$authService', authService)

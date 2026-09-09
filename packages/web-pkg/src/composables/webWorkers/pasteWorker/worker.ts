@@ -10,6 +10,7 @@ type MessageData = {
   baseUrl?: string
   accessToken?: string
   headers?: Record<string, string>
+  withCredentials?: boolean
   transferData?: TransferData[]
 }
 
@@ -34,10 +35,14 @@ self.onmessage = async (e: MessageEvent) => {
     return
   }
 
-  const { baseUrl, headers, transferData } = data
+  const { baseUrl, headers, withCredentials, transferData } = data
 
   storedHeaders = headers
-  const webdav = _webdav(baseUrl, () => storedHeaders)
+  const webdav = _webdav(
+    baseUrl,
+    () => storedHeaders,
+    () => withCredentials
+  )
 
   const successful: PasteWorkerReturnData['successful'] = []
   const failed: PasteWorkerReturnData['failed'] = []

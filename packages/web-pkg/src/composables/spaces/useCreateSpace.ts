@@ -175,11 +175,13 @@ export const useCreateSpace = () => {
             {
               roles: [roleId],
               recipients: [
-                {
-                  objectId: id,
-                  '@libre.graph.recipient.type':
-                    shareType === ShareTypes.group.value ? 'group' : 'user'
-                }
+                shareType === ShareTypes.guest.value
+                  ? { email: id }
+                  : {
+                      objectId: id,
+                      '@libre.graph.recipient.type':
+                        shareType === ShareTypes.group.value ? 'group' : 'user'
+                    }
               ]
             },
             sharesStore.graphRoles

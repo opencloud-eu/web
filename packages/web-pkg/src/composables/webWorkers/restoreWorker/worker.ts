@@ -10,6 +10,7 @@ type MessageData = {
   baseUrl?: string
   accessToken?: string
   headers?: Record<string, string>
+  withCredentials?: boolean
   space?: SpaceResource
   resources?: Resource[]
   missingFolderPaths?: string[]
@@ -70,10 +71,14 @@ self.onmessage = async (e: MessageEvent) => {
     return
   }
 
-  const { baseUrl, headers, space, resources, missingFolderPaths } = data
+  const { baseUrl, headers, withCredentials, space, resources, missingFolderPaths } = data
 
   storedHeaders = headers
-  const webdav = _webdav(baseUrl, () => storedHeaders)
+  const webdav = _webdav(
+    baseUrl,
+    () => storedHeaders,
+    () => withCredentials
+  )
 
   const successful: RestoreWorkerReturnData['successful'] = []
   const failed: RestoreWorkerReturnData['failed'] = []

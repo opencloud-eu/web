@@ -17,6 +17,7 @@ import { DavHttpError } from '../../errors'
 export interface DAVOptions {
   baseUrl: string
   headers?: () => Headers
+  withCredentials?: () => boolean
 }
 
 export interface DavResult {
@@ -34,12 +35,14 @@ export class DAV {
   private client: WebDAVClient
   private davPath: string
   private headers: () => Headers
+  private withCredentials: () => boolean
   public extraProps: string[]
 
-  constructor({ baseUrl, headers }: DAVOptions) {
+  constructor({ baseUrl, headers, withCredentials }: DAVOptions) {
     this.davPath = urlJoin(baseUrl, 'dav')
     this.client = createClient(this.davPath, {})
     this.headers = headers
+    this.withCredentials = withCredentials
     this.extraProps = []
   }
 
@@ -211,7 +214,8 @@ export class DAV {
     const requestOptions = {
       ...options,
       url,
-      headers: this.buildHeaders(options.headers || {})
+      headers: this.buildHeaders(options.headers || {}),
+      ...(this.withCredentials?.() && { withCredentials: true })
     } as RequestOptions
 
     try {
@@ -236,7 +240,8 @@ export class DAV {
         errorMessage.message,
         errorMessage.errorCode,
         response,
-        response.status
+        response.status,
+        errorMessage.errorType
       )
     }
   }

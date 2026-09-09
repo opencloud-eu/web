@@ -27,7 +27,8 @@ x-opencloud-server: &opencloud-service
     FRONTEND_GROUPWARE_ENABLED: 'true'
     #FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR: eu.opencloud.api.collaboration
     GRAPH_INCLUDE_OCM_SHAREES: 'true'
-    GRAPH_ENABLE_GUEST_INVITES: 'true'
+    OC_ENABLE_GUEST_LINKS: 'true'
+    AUTH_GUEST_SESSION_JWT_SECRET: '${AUTH_GUEST_SESSION_JWT_SECRET:-some-guest-session-secret}'
     FRONTEND_OPENXCHANGE_ENABLED: 'true'
     FRONTEND_OPENXCHANGE_API_URL: 'bogus'
 
