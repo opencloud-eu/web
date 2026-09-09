@@ -5,17 +5,23 @@
     controls
     preload="preload"
     :autoplay="isAutoPlayEnabled"
+    @error="onError"
+    @canplay="onCanPlay"
   >
-    <source :src="file.url" :type="sourceType" />
+    <source :src="file.url" :type="sourceType" @error="onError" />
   </video>
 </template>
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, useTemplateRef } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
 import { MediaFile } from '../../helpers/types'
 
 const { file, isAutoPlayEnabled = true } = defineProps<{
   file: MediaFile
   isAutoPlayEnabled?: boolean
+}>()
+
+const emit = defineEmits<{
+  (e: 'reload-url'): void
 }>()
 
 const video = useTemplateRef('video')
@@ -34,6 +40,65 @@ const sourceType = computed(() => {
   }
   return file.mimeType
 })
+
+// retry a video on error after updating the source with a new signed URL
+let shouldRetry = false
+let resumeTime = 0
+let resumePlaying = false
+
+function onCanPlay() {
+  shouldRetry = false
+}
+
+function onError() {
+  if (shouldRetry) {
+    return
+  }
+
+  shouldRetry = true
+  resumeTime = video.value?.currentTime || 0
+  resumePlaying = !!video.value && !video.value.paused
+  emit('reload-url')
+}
+
+watch(
+  () => file.id,
+  () => {
+    shouldRetry = false
+    resumeTime = 0
+    resumePlaying = false
+  }
+)
+
+watch(
+  () => file.url,
+  async (url) => {
+    if (!shouldRetry || !url) {
+      return
+    }
+
+    await nextTick()
+
+    const element = video.value
+    if (!element) {
+      return
+    }
+
+    element.addEventListener(
+      'loadedmetadata',
+      () => {
+        element.currentTime = resumeTime
+        if (resumePlaying) {
+          element.play().catch(() => {
+            console.error('Failed to resume video playback after retry.')
+          })
+        }
+      },
+      { once: true }
+    )
+    element.load()
+  }
+)
 
 onMounted(() => {
   resizeVideoDimensions()
