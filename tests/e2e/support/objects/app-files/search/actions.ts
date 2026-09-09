@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 import util from 'util'
 
 const searchResultMessageSelector = '//p[@class="text-role-on-surface-variant"]'
@@ -28,7 +28,16 @@ export const selectTagFilter = async ({
   tag: string
   page: Page
 }): Promise<void> => {
-  await page.locator(selectTagDropdownSelector).click()
+  const dropdown = page.locator(selectTagDropdownSelector)
+  let attempt = 0
+  await expect(async () => {
+    if (attempt++ > 0) {
+      await page.reload()
+    }
+    await expect(dropdown).toBeVisible({ timeout: 5000 })
+  }).toPass({ timeout: 30000 })
+
+  await dropdown.click()
   await page.locator(util.format(tagFilterChipSelector, tag)).click()
 }
 
