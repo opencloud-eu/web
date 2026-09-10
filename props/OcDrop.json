@@ -42,6 +42,13 @@
     "type": "SizeType | 'remove'"
   },
   {
+    "name": "maxWidth",
+    "required": false,
+    "description": "The maximum width of the drop in pixels. It never grows beyond the available space.",
+    "default": "400",
+    "type": "number"
+  },
+  {
     "name": "position",
     "required": false,
     "description": "The position of the drop. Check the floating-ui documentation for more details on the type.",
