@@ -163,7 +163,11 @@ export const useLoadShares = () => {
       })
     }
 
-    if (includeInheritedShares || isLocationCommonActive(router, 'files-common-search')) {
+    if (
+      includeInheritedShares ||
+      isLocationCommonActive(router, 'files-common-search') ||
+      !resourcesStore.currentFolder
+    ) {
       yield resourcesStore.loadAncestorMetaData({
         folder: unref(resource),
         space,
