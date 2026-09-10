@@ -16,17 +16,9 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
-### ✅ Tests
-
-- test(e2e): repeat the global search while waiting for an indexed result [[#3333](https://github.com/opencloud-eu/web/pull/3333)]
-- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
-- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
-- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
-- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
-- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
-
 ### 📈 Enhancement
 
+- feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
 - feat: motion photo support [[#2819](https://github.com/opencloud-eu/web/pull/2819)]
 - feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
 - feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
@@ -39,6 +31,15 @@
 - feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
 - Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
 - Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
+
+### ✅ Tests
+
+- test(e2e): repeat the global search while waiting for an indexed result [[#3333](https://github.com/opencloud-eu/web/pull/3333)]
+- test(yjs): add unit tests [[#3286](https://github.com/opencloud-eu/web/pull/3286)]
+- test(e2e): add test to search using keyboard shortcuts [[#3242](https://github.com/opencloud-eu/web/pull/3242)]
+- test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
+- test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
+- test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
 
 ### 🐛 Bug Fixes
 
