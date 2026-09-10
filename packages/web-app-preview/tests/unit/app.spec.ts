@@ -171,6 +171,90 @@ describe('Preview app', () => {
     })
   })
 
+  describe('Method "reloadMediaFileUrl"', () => {
+    it('fetches a fresh url without the cached download url and swaps it in', async () => {
+      const { wrapper, getUrlForResource, revokeUrl } = createShallowMountWrapper()
+      await nextTick()
+      getUrlForResource.mockClear()
+      revokeUrl.mockClear()
+      getUrlForResource.mockResolvedValue('new-url')
+
+      const resource = { downloadURL: 'expired-url' } as Resource
+      const mediaFile = { url: 'old-url', resource }
+      await (wrapper.vm as any).reloadMediaFileUrl(mediaFile)
+
+      expect(getUrlForResource).toHaveBeenCalledWith(
+        // no matching space in the test store
+        undefined,
+        expect.objectContaining({ downloadURL: undefined }),
+        expect.objectContaining({ signal: expect.anything() })
+      )
+      // the store resource must stay untouched
+      expect(resource.downloadURL).toBe('expired-url')
+      expect(revokeUrl).toHaveBeenCalledWith('old-url')
+      expect(mediaFile.url).toBe('new-url')
+    })
+
+    it('aborts a previous reload and discards its late url', async () => {
+      const { wrapper, getUrlForResource, revokeUrl } = createShallowMountWrapper()
+      await nextTick()
+      getUrlForResource.mockClear()
+      revokeUrl.mockClear()
+
+      let resolveFirst: (url: string) => void
+      getUrlForResource
+        .mockImplementationOnce(() => new Promise((resolve) => (resolveFirst = resolve)))
+        .mockResolvedValueOnce('second-url')
+
+      const mediaFile = { url: 'old-url', resource: {} as Resource }
+      const firstReload = (wrapper.vm as any).reloadMediaFileUrl(mediaFile)
+      await (wrapper.vm as any).reloadMediaFileUrl(mediaFile)
+      resolveFirst('first-url')
+      await firstReload
+
+      expect(getUrlForResource.mock.calls[0][2].signal.aborted).toBe(true)
+      expect(revokeUrl).toHaveBeenCalledWith('first-url')
+      expect(mediaFile.url).toBe('second-url')
+    })
+
+    it('discards the url when the app unmounts while the reload is in flight', async () => {
+      const { wrapper, getUrlForResource, revokeUrl } = createShallowMountWrapper()
+      await nextTick()
+      getUrlForResource.mockClear()
+      revokeUrl.mockClear()
+
+      let resolveUrl: (url: string) => void
+      getUrlForResource.mockImplementationOnce(
+        () => new Promise((resolve) => (resolveUrl = resolve))
+      )
+
+      const mediaFile = { url: 'old-url', resource: {} as Resource }
+      const reload = (wrapper.vm as any).reloadMediaFileUrl(mediaFile)
+      wrapper.unmount()
+      resolveUrl('late-url')
+      await reload
+
+      expect(revokeUrl).toHaveBeenCalledWith('late-url')
+      expect(mediaFile.url).toBe('old-url')
+    })
+
+    it('keeps the current url when the request fails', async () => {
+      const { wrapper, getUrlForResource, revokeUrl } = createShallowMountWrapper()
+      await nextTick()
+      getUrlForResource.mockClear()
+      revokeUrl.mockClear()
+      getUrlForResource.mockRejectedValue(new Error('failed'))
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+
+      const mediaFile = { url: 'old-url', resource: {} as Resource }
+      await (wrapper.vm as any).reloadMediaFileUrl(mediaFile)
+
+      expect(mediaFile.url).toBe('old-url')
+      expect(revokeUrl).not.toHaveBeenCalled()
+      consoleError.mockRestore()
+    })
+  })
+
   describe('Generated "mediaFiles"', () => {
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {
       const { wrapper } = createShallowMountWrapper()
@@ -197,6 +281,7 @@ function createShallowMountWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
 
   const getUrlForResource = vi.fn()
+  const revokeUrl = vi.fn()
 
   return {
     wrapper: shallowMount(App, {
@@ -207,7 +292,7 @@ function createShallowMountWrapper({
         }),
         activeFiles,
         isFolderLoading: true,
-        revokeUrl: vi.fn(),
+        revokeUrl,
         getUrlForResource,
         loadFolderForFileContext: vi.fn()
       },
@@ -218,6 +303,7 @@ function createShallowMountWrapper({
       }
     }),
     mocks,
-    getUrlForResource
+    getUrlForResource,
+    revokeUrl
   }
 }

@@ -56,6 +56,7 @@
           v-else-if="activeMediaFile.isVideo"
           :file="activeMediaFile"
           :is-auto-play-enabled="isAutoPlayEnabled"
+          @reload-url="reloadMediaFileUrl(activeMediaFile)"
         />
         <media-audio
           v-else-if="activeMediaFile.isAudio"
@@ -187,6 +188,7 @@ const preview = useTemplateRef<HTMLElement>('preview')
 const motionPlayer = useTemplateRef<{ isPlaying: boolean; toggle: () => void }>('motionPlayer')
 const keyBindings: string[] = []
 let loadPreviewImageController: AbortController = null
+let reloadUrlController: AbortController = null
 
 const space = computed(() => {
   if (!unref(activeMediaFile)) {
@@ -321,6 +323,41 @@ const loadPreviewImage = async (mediaFile: MediaFile) => {
     mediaFile.isLoading = false
   } finally {
     loadPreviewImageController = null
+  }
+}
+
+/** Signed URLs expire, so fetch a fresh one on demand. */
+async function reloadMediaFileUrl(mediaFile: MediaFile) {
+  reloadUrlController?.abort()
+  reloadUrlController = new AbortController()
+  const { signal } = reloadUrlController
+
+  try {
+    const url = await getUrlForResource(
+      getMatchingSpace(mediaFile.resource),
+      // don't pass the cached download URL to force a new signature
+      { ...mediaFile.resource, downloadURL: undefined },
+      { signal }
+    )
+
+    if (signal.aborted) {
+      revokeUrl(url)
+      return
+    }
+
+    revokeUrl(mediaFile.url)
+    mediaFile.url = url
+  } catch (e) {
+    if (e.name === 'CanceledError') {
+      return
+    }
+
+    console.error(e)
+    mediaFile.isError = true
+  } finally {
+    if (reloadUrlController?.signal === signal) {
+      reloadUrlController = null
+    }
   }
 }
 
@@ -476,10 +513,11 @@ onBeforeUnmount(() => {
     removeKeyAction(keyBindingId)
   })
 
+  loadPreviewImageController?.abort()
+  reloadUrlController?.abort()
+
   Object.values(unref(mediaFiles)).forEach((cachedFile) => {
     revokeUrl(unref(cachedFile.url))
   })
-
-  loadPreviewImageController?.abort()
 })
 </script>
