@@ -89,10 +89,67 @@ function mountToolbar(
   return { wrapper, textEditor, isFocusedRef, showSpy, collaborationStatusRef }
 }
 
+/**
+ * jsdom has no layout, so widths are faked: every measured action reports `itemWidth`, the toolbar
+ * row reports `containerWidth`.
+ */
+function mockWidths(itemWidth: number, containerWidth: number) {
+  vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (
+    this: HTMLElement
+  ) {
+    const width = this.dataset?.itemId ? itemWidth : 0
+    return { width, height: 0, top: 0, left: 0, right: width, bottom: 0, x: 0, y: 0 } as DOMRect
+  })
+
+  Object.defineProperty(HTMLElement.prototype, 'clientWidth', {
+    configurable: true,
+    get(this: HTMLElement) {
+      return this.classList.contains('text-editor-toolbar-items') ? containerWidth : 0
+    }
+  })
+}
+
 describe('TextEditorToolbar', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    Reflect.deleteProperty(HTMLElement.prototype, 'clientWidth')
+  })
+
+  it('keeps all actions in the toolbar if they fit', async () => {
+    mockWidths(20, 500)
+    const { wrapper } = mountToolbar()
+
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.text-editor-toolbar-overflow-trigger').attributes('aria-hidden')).toBe(
+      'true'
+    )
+    wrapper
+      .findAll('button:not(.text-editor-toolbar-overflow-trigger)')
+      .forEach((button) => expect(button.attributes('aria-hidden')).toBe('false'))
+    wrapper.unmount()
+  })
+
+  it('moves actions that do not fit into the overflow menu', async () => {
+    mockWidths(60, 100)
+    const { wrapper } = mountToolbar()
+
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.text-editor-toolbar-overflow-trigger').attributes('aria-hidden')).toBe(
+      'false'
+    )
+    wrapper
+      .findAll('button:not(.text-editor-toolbar-overflow-trigger)')
+      .forEach((button) => expect(button.attributes('aria-hidden')).toBe('true'))
+    wrapper.unmount()
+  })
+
   it('keeps regular actions enabled outside source mode', () => {
     const { wrapper } = mountToolbar(false)
-    const buttons = wrapper.findAll('button')
+    const buttons = wrapper.findAll('button:not(.text-editor-toolbar-overflow-trigger)')
 
     expect(buttons).toHaveLength(2)
     expect(buttons[0].attributes('disabled')).toBeUndefined()
@@ -102,7 +159,7 @@ describe('TextEditorToolbar', () => {
 
   it('disables all toolbar actions except source toggle in source mode', () => {
     const { wrapper } = mountToolbar(true)
-    const buttons = wrapper.findAll('button')
+    const buttons = wrapper.findAll('button:not(.text-editor-toolbar-overflow-trigger)')
 
     expect(buttons).toHaveLength(2)
     expect(buttons[0].attributes('disabled')).toBeUndefined()
@@ -112,7 +169,7 @@ describe('TextEditorToolbar', () => {
 
   it('disables all toolbar actions except source toggle in html source mode', () => {
     const { wrapper } = mountToolbar(true, 'html')
-    const buttons = wrapper.findAll('button')
+    const buttons = wrapper.findAll('button:not(.text-editor-toolbar-overflow-trigger)')
 
     expect(buttons).toHaveLength(2)
     expect(buttons[0].attributes('disabled')).toBeUndefined()
