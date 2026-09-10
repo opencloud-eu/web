@@ -217,7 +217,7 @@ function getMenuComponentAttrs(action: EditorAction) {
   }
 
   const closeMenu = () => {
-    dropRefs[action.id]?.hide?.()
+    dropRefs[action.id]?.hide?.({ includeAncestors: true })
   }
 
   return action.menuComponentAttrs(editor, closeMenu)

@@ -227,7 +227,10 @@ const show = async ({
     unref(drop).focus({ preventScroll: true })
   }
 }
-const hide = () => {
+const hide = ({ includeAncestors = false }: { includeAncestors?: boolean } = {}) => {
+  if (includeAncestors && unref(drop)) {
+    hideAncestorDrops(unref(drop))
+  }
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).hide()
     return
