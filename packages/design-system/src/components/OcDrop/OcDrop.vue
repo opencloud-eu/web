@@ -61,6 +61,12 @@ import { useIsMobile } from '../../composables'
 import OcMobileDrop from './OcMobileDrop.vue'
 import OcCard from '../OcCard/OcCard.vue'
 import { useEventListeners } from './useEventListeners'
+import {
+  hideAncestorDrops,
+  isInDropChain,
+  registerOpenDrop,
+  unregisterOpenDrop
+} from './dropRegistry'
 import { getFocusableItems } from '../../helpers/getFocusableElements'
 
 export interface Props {
@@ -186,6 +192,14 @@ const anchor = computed<HTMLElement | null>(() => {
 })
 let activeAnchorElement: HTMLElement | VirtualElement | null = null
 
+const getAnchorElement = (): HTMLElement | null => {
+  const anchorEl = activeAnchorElement || unref(anchor)
+  if (anchorEl instanceof HTMLElement) {
+    return anchorEl
+  }
+  return (anchorEl?.contextElement as HTMLElement) || null
+}
+
 const resetDropSize = () => {
   Object.assign(unref(drop).style, { maxWidth: '', maxHeight: '' })
 }
@@ -262,6 +276,8 @@ const onClick = (event: Event) => {
     ?.hasAttribute('aria-expanded')
 
   if (closeOnClick && !isNestedDropToggle) {
+    // a drop that closes itself also closes the drops it was opened from
+    hideAncestorDrops(unref(drop))
     hideDrop()
   }
 }
@@ -327,6 +343,8 @@ const showDrop = async ({
   unref(anchor)?.setAttribute('aria-expanded', 'true')
   emit('showDrop')
 
+  registerOpenDrop(unref(drop), { getAnchor: getAnchorElement, hide: hideDrop })
+
   registerEventListener(document, 'click', handleDropClickOutside, 'document', {
     capture: true
   })
@@ -347,6 +365,9 @@ const showDrop = async ({
 }
 
 const hideDrop = () => {
+  if (unref(drop)) {
+    unregisterOpenDrop(unref(drop))
+  }
   unregisterEventListeners(['drop', 'document'])
   activeAnchorElement = null
   isOpen.value = false
@@ -369,12 +390,9 @@ const handleDropFocusOut = (event: Event) => {
 
 const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
-  const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
+  const clickedOutsideDrop = unref(drop) && !isInDropChain(unref(drop), target)
   if (clickedOutsideDrop) {
-    const anchorEl = activeAnchorElement || unref(anchor)
-    const anchorContext =
-      anchorEl instanceof HTMLElement ? anchorEl : anchorEl?.contextElement || null
-    const clickedOnAnchor = anchorContext?.contains(target)
+    const clickedOnAnchor = getAnchorElement()?.contains(target)
     if (!clickedOnAnchor) {
       await awaitAnimationFrame()
       hideDrop()
@@ -557,6 +575,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   clearHoverTimeout()
+  if (unref(drop)) {
+    unregisterOpenDrop(unref(drop))
+  }
   unregisterEventListeners()
   activeAnchorElement = null
 
