@@ -12,7 +12,7 @@
   </video>
 </template>
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, unref, useTemplateRef, watch } from 'vue'
 import { MediaFile } from '../../helpers/types'
 
 const { file, isAutoPlayEnabled = true } = defineProps<{
@@ -41,21 +41,24 @@ const sourceType = computed(() => {
   return file.mimeType
 })
 
+// blob URLs (e.g. vault files) don't expire, so a retry can't fix them
+const isSignedUrl = computed(() => !!file.url && !file.url.startsWith('blob:'))
+
 // retry a video on error after updating the source with a new signed URL
-let shouldRetry = false
+let isRetryInProgress = false
 let resumeTime = 0
 let resumePlaying = false
 
 function onCanPlay() {
-  shouldRetry = false
+  isRetryInProgress = false
 }
 
 function onError() {
-  if (shouldRetry) {
+  if (isRetryInProgress || !unref(isSignedUrl)) {
     return
   }
 
-  shouldRetry = true
+  isRetryInProgress = true
   resumeTime = video.value?.currentTime || 0
   resumePlaying = !!video.value && !video.value.paused
   emit('reload-url')
@@ -64,7 +67,7 @@ function onError() {
 watch(
   () => file.id,
   () => {
-    shouldRetry = false
+    isRetryInProgress = false
     resumeTime = 0
     resumePlaying = false
   }
@@ -73,7 +76,7 @@ watch(
 watch(
   () => file.url,
   async (url) => {
-    if (!shouldRetry || !url) {
+    if (!isRetryInProgress || !url) {
       return
     }
 
