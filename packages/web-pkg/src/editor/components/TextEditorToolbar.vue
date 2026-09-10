@@ -91,10 +91,16 @@
       </oc-drop>
     </div>
     <div
-      v-if="showCollaborationStatusIndicator"
-      class="text-editor-toolbar-status flex shrink-0 items-center gap-1 px-4 ml-4"
+      v-if="showCollaborationStatusIndicator || collaborators.length"
+      class="text-editor-toolbar-status flex shrink-0 items-center gap-2 px-4 ml-4"
     >
+      <text-editor-collaborators
+        v-if="collaborators.length"
+        :users="collaborators"
+        :teleport="dropTeleport"
+      />
       <div
+        v-if="showCollaborationStatusIndicator"
         v-oc-tooltip="collaborationStatusLabel"
         class="text-editor-toolbar-collaboration-status inline-flex items-center"
         :aria-label="collaborationStatusLabel"
@@ -130,6 +136,7 @@ import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcBubbleMenu, OcDrop } from '@opencloud-eu/design-system/components'
 import TextEditorToolbarItem from './TextEditorToolbarItem.vue'
+import TextEditorCollaborators from './TextEditorCollaborators.vue'
 import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 import { YjsStatus } from '../../composables/yjs'
@@ -383,6 +390,7 @@ const visible = computed(() => {
 })
 
 const yjsStatus = computed(() => unref(textEditor.yjsStatus))
+const collaborators = computed(() => unref(textEditor.collaborators) ?? [])
 
 const showCollaborationStatusIndicator = computed(() => {
   const status = unref(textEditor.yjsStatus)

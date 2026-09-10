@@ -355,6 +355,36 @@ describe('beforeHandleAwareness', () => {
   })
 })
 
+describe('connected', () => {
+  it('sends the connection its own identity', async () => {
+    const conn = connection('a')
+    const user = { id: 'u1', displayName: 'Alice', color: '#123456' }
+
+    await getHooks().connected({ connection: conn, context: { readOnly: false, user } } as any)
+
+    expect(conn.sendStateless).toHaveBeenCalledWith(
+      '_oc_identity:{"id":"u1","name":"Alice","color":"#123456"}'
+    )
+  })
+
+  it('falls back to the connection context', async () => {
+    const user = { id: 'u1', displayName: 'Alice', color: '#123456' }
+    const conn = { ...connection('a'), context: { readOnly: false, user } }
+
+    await getHooks().connected({ connection: conn, context: undefined } as any)
+
+    expect(conn.sendStateless).toHaveBeenCalledOnce()
+  })
+
+  it('sends nothing when no user is known', async () => {
+    const conn = connection('a')
+
+    await getHooks().connected({ connection: conn, context: {} } as any)
+
+    expect(conn.sendStateless).not.toHaveBeenCalled()
+  })
+})
+
 describe('logging hooks', () => {
   it('logs the origin on connect', async () => {
     await getHooks().onConnect({

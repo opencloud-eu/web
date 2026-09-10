@@ -35,7 +35,7 @@
           :icon-size="iconSize"
         />
       </template>
-      <oc-avatar-count v-if="isOverlapping" :count="items.length - maxDisplayed" />
+      <oc-avatar-count v-if="isOverlapping" :count="items.length - maxDisplayed" :size="width" />
     </span>
     <span v-if="accessibleDescription" class="sr-only" v-text="accessibleDescription" />
   </span>

@@ -20,6 +20,7 @@ import { Mentions, SlashCommands } from '../extensions'
 import { stripColorFormattingFromPastedHtml } from '../helpers'
 import { useContentStrategy } from './useContentStrategy'
 import { useConfigStore } from '../../composables'
+import { useYjsCollaborators } from '../../composables/yjs'
 
 // Custom Tiptap extension that wires y-tiptap's yCursorPlugin to a given
 // Awareness. We bypass `@tiptap/extension-collaboration-cursor` because
@@ -69,6 +70,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const contentType = ref(options.contentType)
   const readonly = computed(() => toValue(options.readonly) ?? false)
   const yjsStatus = computed(() => toValue(options.yjsStatus) ?? null)
+  const collaborators = useYjsCollaborators(options.awareness)
   const strategy = resolveStrategy(options.contentType, state)
   const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
@@ -292,6 +294,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     contentType,
     readonly,
     yjsStatus,
+    collaborators,
     actionGroups: editorActionGroups,
     getContent,
     setContent,

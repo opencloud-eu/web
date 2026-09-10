@@ -14,6 +14,8 @@ Every connection is authenticated and authorized against OpenCloud:
 - the bearer token is validated against `/graph/v1.0/me`
 - write access is derived from the effective permission actions on the file
 - awareness states are re-stamped with the authenticated identity, so users cannot spoof each other
+- on connect, each client receives its own stamped identity over a stateless message, because Yjs
+  never echoes a client's own awareness back to it
 
 ## Seeding an empty room
 
