@@ -16,6 +16,32 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
+### 🐛 Bug Fixes
+
+- fix(preview): re-fetch signed URL when video playback fails [[#3340](https://github.com/opencloud-eu/web/pull/3340)]
+- fix: add emoji slash entry and tighten emoji picker modal width [[#3310](https://github.com/opencloud-eu/web/pull/3310)]
+- fix: stop re-fetching resources in AppWrapper on every context change [[#3324](https://github.com/opencloud-eu/web/pull/3324)]
+- fix: defer sidebar actions until resource loads [[#3312](https://github.com/opencloud-eu/web/pull/3312)]
+- Editor: Add Default font-size reset and simplify zoom styling [[#3304](https://github.com/opencloud-eu/web/pull/3304)]
+- fix: send mtime metadata for public link uploads [[#3322](https://github.com/opencloud-eu/web/pull/3322)]
+- fix: prevent browser login dialog on upload [[#3308](https://github.com/opencloud-eu/web/pull/3308)]
+- fix: new button flickering during navigation [[#3293](https://github.com/opencloud-eu/web/pull/3293)]
+- fix: table header position overflow [[#3288](https://github.com/opencloud-eu/web/pull/3288)]
+- fix(yjs): report why a handshake was refused and keep editing locally [[#3270](https://github.com/opencloud-eu/web/pull/3270)]
+- fix: safari file list performance [[#3283](https://github.com/opencloud-eu/web/pull/3283)]
+- fix: remove system actions from getAllOpenWithActions [[#3254](https://github.com/opencloud-eu/web/pull/3254)]
+- fix: remove pasted text/background colors in Tiptap editor [[#3275](https://github.com/opencloud-eu/web/pull/3275)]
+- Hide duplicate 'Insert from cloud' action in text editor toolbar [[#3274](https://github.com/opencloud-eu/web/pull/3274)]
+- fix: show trash breadcrumb with one space [[#3271](https://github.com/opencloud-eu/web/pull/3271)]
+- Fix default Open action for .url files and add Text Editor support [[#3266](https://github.com/opencloud-eu/web/pull/3266)]
+- fix: bound space file ID matching [[#3262](https://github.com/opencloud-eu/web/pull/3262)]
+- fix: preserve lazy tile height [[#3264](https://github.com/opencloud-eu/web/pull/3264)]
+- fix: share the tooltip escape listener [[#3261](https://github.com/opencloud-eu/web/pull/3261)]
+- Fix chapter updates for fast EPUB slider seeks [[#3267](https://github.com/opencloud-eu/web/pull/3267)]
+- Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
+- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
+- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
+
 ### 📈 Enhancement
 
 - feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
@@ -40,31 +66,6 @@
 - test(e2e): add yjs collaboration tests for public links and conflicts [[#3224](https://github.com/opencloud-eu/web/pull/3224)]
 - test(e2e): add yjs tests for solo editing (& more) [[#3222](https://github.com/opencloud-eu/web/pull/3222)]
 - test(e2e): more yjs collaboration tests [[#3216](https://github.com/opencloud-eu/web/pull/3216)]
-
-### 🐛 Bug Fixes
-
-- fix: add emoji slash entry and tighten emoji picker modal width [[#3310](https://github.com/opencloud-eu/web/pull/3310)]
-- fix: stop re-fetching resources in AppWrapper on every context change [[#3324](https://github.com/opencloud-eu/web/pull/3324)]
-- fix: defer sidebar actions until resource loads [[#3312](https://github.com/opencloud-eu/web/pull/3312)]
-- Editor: Add Default font-size reset and simplify zoom styling [[#3304](https://github.com/opencloud-eu/web/pull/3304)]
-- fix: send mtime metadata for public link uploads [[#3322](https://github.com/opencloud-eu/web/pull/3322)]
-- fix: prevent browser login dialog on upload [[#3308](https://github.com/opencloud-eu/web/pull/3308)]
-- fix: new button flickering during navigation [[#3293](https://github.com/opencloud-eu/web/pull/3293)]
-- fix: table header position overflow [[#3288](https://github.com/opencloud-eu/web/pull/3288)]
-- fix(yjs): report why a handshake was refused and keep editing locally [[#3270](https://github.com/opencloud-eu/web/pull/3270)]
-- fix: safari file list performance [[#3283](https://github.com/opencloud-eu/web/pull/3283)]
-- fix: remove system actions from getAllOpenWithActions [[#3254](https://github.com/opencloud-eu/web/pull/3254)]
-- fix: remove pasted text/background colors in Tiptap editor [[#3275](https://github.com/opencloud-eu/web/pull/3275)]
-- Hide duplicate 'Insert from cloud' action in text editor toolbar [[#3274](https://github.com/opencloud-eu/web/pull/3274)]
-- fix: show trash breadcrumb with one space [[#3271](https://github.com/opencloud-eu/web/pull/3271)]
-- Fix default Open action for .url files and add Text Editor support [[#3266](https://github.com/opencloud-eu/web/pull/3266)]
-- fix: bound space file ID matching [[#3262](https://github.com/opencloud-eu/web/pull/3262)]
-- fix: preserve lazy tile height [[#3264](https://github.com/opencloud-eu/web/pull/3264)]
-- fix: share the tooltip escape listener [[#3261](https://github.com/opencloud-eu/web/pull/3261)]
-- Fix chapter updates for fast EPUB slider seeks [[#3267](https://github.com/opencloud-eu/web/pull/3267)]
-- Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
-- fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
-- Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
 ### 📦️ Dependencies
 
