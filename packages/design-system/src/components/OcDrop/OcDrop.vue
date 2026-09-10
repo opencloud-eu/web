@@ -61,6 +61,12 @@ import { useIsMobile } from '../../composables'
 import OcMobileDrop from './OcMobileDrop.vue'
 import OcCard from '../OcCard/OcCard.vue'
 import { useEventListeners } from './useEventListeners'
+import {
+  hideAncestorDrops,
+  isInDropChain,
+  registerOpenDrop,
+  unregisterOpenDrop
+} from './dropRegistry'
 import { getFocusableItems } from '../../helpers/getFocusableElements'
 
 export interface Props {
@@ -92,6 +98,11 @@ export interface Props {
    * @default 'medium'
    */
   paddingSize?: SizeType | 'remove'
+  /**
+   * @docs The maximum width of the drop in pixels. It never grows beyond the available space.
+   * @default 400
+   */
+  maxWidth?: number
   /**
    * @docs The position of the drop. Check the floating-ui documentation for more details on the type.
    * @default 'bottom-start'
@@ -143,6 +154,7 @@ export interface Slots {
 const {
   closeOnClick = false,
   dropId = uniqueId('oc-drop-'),
+  maxWidth = 400,
   mode = 'click',
   offset = 5,
   paddingSize = 'medium',
@@ -180,6 +192,14 @@ const anchor = computed<HTMLElement | null>(() => {
 })
 let activeAnchorElement: HTMLElement | VirtualElement | null = null
 
+const getAnchorElement = (): HTMLElement | null => {
+  const anchorEl = activeAnchorElement || unref(anchor)
+  if (anchorEl instanceof HTMLElement) {
+    return anchorEl
+  }
+  return (anchorEl?.contextElement as HTMLElement) || null
+}
+
 const resetDropSize = () => {
   Object.assign(unref(drop).style, { maxWidth: '', maxHeight: '' })
 }
@@ -207,7 +227,10 @@ const show = async ({
     unref(drop).focus({ preventScroll: true })
   }
 }
-const hide = () => {
+const hide = ({ includeAncestors = false }: { includeAncestors?: boolean } = {}) => {
+  if (includeAncestors && unref(drop)) {
+    hideAncestorDrops(unref(drop))
+  }
   if (unref(useBottomDrawer)) {
     unref(bottomDrawerRef).hide()
     return
@@ -238,7 +261,7 @@ const update = async ({
       size({
         apply({ availableWidth, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
-            maxWidth: `${Math.min(400, availableWidth - 10)}px`,
+            maxWidth: `${Math.min(maxWidth, availableWidth - 10)}px`,
             maxHeight: `${Math.max(0, availableHeight - 10)}px`
           })
         }
@@ -256,6 +279,8 @@ const onClick = (event: Event) => {
     ?.hasAttribute('aria-expanded')
 
   if (closeOnClick && !isNestedDropToggle) {
+    // a drop that closes itself also closes the drops it was opened from
+    hideAncestorDrops(unref(drop))
     hideDrop()
   }
 }
@@ -309,7 +334,7 @@ const showDrop = async ({
       size({
         apply({ availableWidth, availableHeight, elements }) {
           Object.assign(elements.floating.style, {
-            maxWidth: `${Math.min(400, availableWidth - 10)}px`,
+            maxWidth: `${Math.min(maxWidth, availableWidth - 10)}px`,
             maxHeight: `${Math.max(0, availableHeight - 10)}px`
           })
         }
@@ -320,6 +345,8 @@ const showDrop = async ({
   Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
   unref(anchor)?.setAttribute('aria-expanded', 'true')
   emit('showDrop')
+
+  registerOpenDrop(unref(drop), { getAnchor: getAnchorElement, hide: hideDrop })
 
   registerEventListener(document, 'click', handleDropClickOutside, 'document', {
     capture: true
@@ -341,6 +368,9 @@ const showDrop = async ({
 }
 
 const hideDrop = () => {
+  if (unref(drop)) {
+    unregisterOpenDrop(unref(drop))
+  }
   unregisterEventListeners(['drop', 'document'])
   activeAnchorElement = null
   isOpen.value = false
@@ -363,12 +393,9 @@ const handleDropFocusOut = (event: Event) => {
 
 const handleDropClickOutside = async (event: Event) => {
   const target = event.target as Node
-  const clickedOutsideDrop = unref(drop) && !unref(drop).contains(target)
+  const clickedOutsideDrop = unref(drop) && !isInDropChain(unref(drop), target)
   if (clickedOutsideDrop) {
-    const anchorEl = activeAnchorElement || unref(anchor)
-    const anchorContext =
-      anchorEl instanceof HTMLElement ? anchorEl : anchorEl?.contextElement || null
-    const clickedOnAnchor = anchorContext?.contains(target)
+    const clickedOnAnchor = getAnchorElement()?.contains(target)
     if (!clickedOnAnchor) {
       await awaitAnimationFrame()
       hideDrop()
@@ -551,6 +578,9 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   clearHoverTimeout()
+  if (unref(drop)) {
+    unregisterOpenDrop(unref(drop))
+  }
   unregisterEventListeners()
   activeAnchorElement = null
 

@@ -1,158 +1,102 @@
 <template>
-  <div v-if="visible" class="text-editor-toolbar relative border-b border-b-role-border py-1">
+  <div
+    v-if="visible"
+    class="text-editor-toolbar flex items-center border-b border-b-role-border py-1"
+  >
     <div
-      ref="scrollContainer"
-      class="flex items-center gap-1 overflow-x-auto before:grow after:grow"
-      @scroll="updateScrollState"
+      ref="itemsRow"
+      class="text-editor-toolbar-items relative flex min-w-0 grow items-center gap-1 overflow-hidden before:grow after:grow"
     >
       <div
-        v-for="(group, groupIndex) in toolbarGroups"
+        v-for="group in renderedGroups"
         :key="`toolbar-group-${group.id}`"
-        class="text-editor-toolbar-group inline-flex items-stretch"
-        :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+        class="text-editor-toolbar-group items-stretch"
+        :class="
+          group.hasVisibleActions
+            ? { 'inline-flex': true, 'border-l border-l-role-border pl-1': group.showSeparator }
+            : 'contents'
+        "
       >
-        <template v-for="item in group.actions" :key="`toolbar-item-${item.id}`">
-          <template v-if="item.childActions || item.menuComponent">
-            <oc-button
-              :id="`toolbar-dropdown-trigger-${item.id}`"
-              v-oc-tooltip="item.title"
-              type="button"
-              appearance="raw"
-              class="text-editor-toolbar-btn min-w-[52px] inline-flex items-center justify-center p-2"
-              :class="{
-                'text-editor-toolbar-btn--active': isItemActive(item)
-              }"
-              :aria-label="item.title"
-              :disabled="!isItemEnabled(item)"
-              @mousedown.prevent
-              @click.stop
-            >
-              <oc-icon
-                :name="getActiveIcon(item).icon"
-                :fill-type="getActiveIcon(item).iconFillType || 'none'"
-                size-class="size-4"
-              />
-              <oc-icon name="arrow-down-s" fill-type="line" size-class="size-4" />
-            </oc-button>
-            <oc-drop
-              :ref="
-                (el) => setDropRef(item.id, el as ComponentPublicInstance<typeof OcDrop> | null)
-              "
-              :drop-id="`toolbar-dropdown-${item.id}`"
-              :toggle="`#toolbar-dropdown-trigger-${item.id}`"
-              :teleport="teleport"
-              mode="click"
-              class="text-editor-toolbar-dropdown w-auto min-w-40"
-              padding-size="small"
-              :close-on-click="item.menuCloseOnClick ?? true"
-            >
-              <component
-                :is="item.menuComponent"
-                v-if="item.menuComponent"
-                v-bind="getMenuComponentAttrs(item)"
-              />
-              <ul v-else class="oc-list">
-                <li
-                  v-for="child in item.childActions"
-                  :key="`${item.id}-${child.id}`"
-                  class="oc-rounded oc-menu-item-hover"
-                >
-                  <oc-button
-                    v-if="child.menuComponent"
-                    :id="`toolbar-dropdown-trigger-${child.id}`"
-                    appearance="raw-inverse"
-                    color-role="surface"
-                    justify-content="space-between"
-                    class="p-1"
-                    :disabled="!isItemEnabled(child)"
-                    @mousedown.prevent
-                    @click.stop
-                  >
-                    <span class="inline-flex items-center gap-2">
-                      <oc-icon
-                        :name="child.icon"
-                        :fill-type="child.iconFillType || 'none'"
-                        size-class="size-4"
-                      />
-                      <span>{{ child.title }}</span>
-                    </span>
-                    <oc-icon name="arrow-right-s" fill-type="line" size-class="size-4" />
-                  </oc-button>
-                  <oc-button
-                    v-else
-                    :appearance="isItemActive(child) ? 'filled' : 'raw-inverse'"
-                    :color-role="isItemActive(child) ? 'secondaryContainer' : 'surface'"
-                    :no-hover="isItemActive(child)"
-                    justify-content="space-between"
-                    class="p-1"
-                    :disabled="!isItemEnabled(child)"
-                    @mousedown.prevent
-                    @click="child.toolbarAction?.(textEditor.editor.value!)"
-                  >
-                    <span class="inline-flex items-center gap-2">
-                      <span
-                        v-if="child.swatchColor"
-                        class="inline-block size-4 rounded-full border-2 border-role-outline-variant"
-                        :style="{ backgroundColor: child.swatchColor }"
-                      />
-                      <oc-icon
-                        v-else
-                        :name="child.icon"
-                        :fill-type="child.iconFillType || 'none'"
-                        size-class="size-4"
-                      />
-                      <span>{{ child.title }}</span>
-                    </span>
-                    <oc-icon
-                      v-if="isItemActive(child)"
-                      name="check"
-                      fill-type="line"
-                      size-class="size-4"
-                    />
-                  </oc-button>
-                  <oc-drop
-                    v-if="child.menuComponent"
-                    :ref="
-                      (el) =>
-                        setDropRef(child.id, el as ComponentPublicInstance<typeof OcDrop> | null)
-                    "
-                    :drop-id="`toolbar-dropdown-${child.id}`"
-                    :toggle="`#toolbar-dropdown-trigger-${child.id}`"
-                    mode="hover"
-                    class="text-editor-toolbar-dropdown-nested w-fit"
-                    :close-on-click="child.menuCloseOnClick ?? true"
-                    position="right-start"
-                    teleport="body"
-                  >
-                    <component :is="child.menuComponent" v-bind="getMenuComponentAttrs(child)" />
-                  </oc-drop>
-                </li>
-              </ul>
-            </oc-drop>
-          </template>
-          <oc-button
-            v-else
-            v-oc-tooltip="item.title"
-            type="button"
-            appearance="raw"
-            class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center p-2"
-            :class="{ 'text-editor-toolbar-btn--active': isItemActive(item) }"
-            :aria-label="item.title"
-            :disabled="!isItemEnabled(item)"
-            @click.stop="item.toolbarAction?.(textEditor.editor.value!)"
-          >
-            <oc-icon
-              :name="item.icon"
-              :fill-type="item.iconFillType || 'none'"
-              size-class="size-4"
-            />
-          </oc-button>
-        </template>
+        <text-editor-toolbar-item
+          v-for="item in group.actions"
+          :key="`toolbar-item-${item.id}`"
+          :item="item"
+          :teleport="dropTeleport"
+          :measure-only="!visibleItemIds.includes(item.id)"
+          @register-drop="setDropRef"
+        />
       </div>
       <div
-        v-if="showCollaborationStatusIndicator"
+        class="text-editor-toolbar-group items-stretch"
+        :class="hasOverflow ? 'inline-flex border-l border-l-role-border pl-1' : 'contents'"
+      >
+        <oc-button
+          id="toolbar-overflow-trigger"
+          v-oc-tooltip="moreActionsLabel"
+          type="button"
+          appearance="raw"
+          class="text-editor-toolbar-btn text-editor-toolbar-overflow-trigger min-w-[42px] inline-flex items-center justify-center p-2"
+          :class="{
+            'absolute left-0 top-0 invisible pointer-events-none': !hasOverflow,
+            'bg-role-secondary-container': isOverflowMenuOpen
+          }"
+          :aria-label="moreActionsLabel"
+          :aria-hidden="!hasOverflow"
+          :tabindex="hasOverflow ? undefined : -1"
+          gap-size="none"
+          data-item-id="overflow-trigger"
+          @mousedown.prevent
+          @click.stop
+        >
+          <oc-icon name="more" fill-type="line" size-class="size-4" />
+        </oc-button>
+      </div>
+      <oc-drop
+        v-if="hasOverflow"
+        ref="overflowDrop"
+        drop-id="toolbar-overflow"
+        toggle="#toolbar-overflow-trigger"
+        :teleport="dropTeleport"
+        mode="click"
+        position="bottom"
+        class="text-editor-toolbar-overflow-drop !w-auto !overflow-visible !border-none !bg-transparent !shadow-none"
+        :max-width="availableWidth"
+        enforce-drop-on-mobile
+        :close-on-click="false"
+        @show-drop="isOverflowMenuOpen = true"
+        @hide-drop="isOverflowMenuOpen = false"
+      >
+        <template #special>
+          <OcBubbleMenu
+            class="text-editor-toolbar-overflow-menu max-w-full flex-wrap justify-center gap-1 px-3"
+          >
+            <div
+              v-for="(group, groupIndex) in overflowGroups"
+              :key="`toolbar-overflow-group-${group.id}`"
+              class="inline-flex items-stretch"
+              :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+            >
+              <text-editor-toolbar-item
+                v-for="item in group.actions"
+                :key="`toolbar-overflow-item-${item.id}`"
+                :item="item"
+                id-prefix="toolbar-overflow"
+                :teleport="dropTeleport"
+                @register-drop="setDropRef"
+                @action-click="overflowDropRef?.hide?.()"
+              />
+            </div>
+          </OcBubbleMenu>
+        </template>
+      </oc-drop>
+    </div>
+    <div
+      v-if="showCollaborationStatusIndicator"
+      class="text-editor-toolbar-status flex shrink-0 items-center gap-1 px-4 ml-4"
+    >
+      <div
         v-oc-tooltip="collaborationStatusLabel"
-        class="text-editor-toolbar-collaboration-status ml-2 inline-flex shrink-0 items-center"
+        class="text-editor-toolbar-collaboration-status inline-flex items-center"
         :aria-label="collaborationStatusLabel"
         :data-test-yjs-status="yjsStatus"
       >
@@ -164,14 +108,6 @@
         </span>
       </div>
     </div>
-    <div
-      v-if="canScrollLeft"
-      class="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/15 to-transparent"
-    />
-    <div
-      v-if="canScrollRight"
-      class="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-black/15 to-transparent"
-    />
   </div>
 </template>
 
@@ -182,6 +118,7 @@ import {
   nextTick,
   onBeforeUnmount,
   onMounted,
+  onUpdated,
   ref,
   unref,
   useTemplateRef,
@@ -191,7 +128,9 @@ import type { ComponentPublicInstance } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
-import { OcDrop } from '@opencloud-eu/design-system/components'
+import { OcBubbleMenu, OcDrop } from '@opencloud-eu/design-system/components'
+import TextEditorToolbarItem from './TextEditorToolbarItem.vue'
+import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 import { YjsStatus } from '../../composables/yjs'
 
@@ -203,11 +142,20 @@ const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
 const textEditor = inject<TextEditorInstance>('textEditor')!
 const { $gettext } = useGettext()
 
-const scrollContainerRef = useTemplateRef('scrollContainer')
-const canScrollLeft = ref(false)
-const canScrollRight = ref(false)
+/** Gap, border and padding that a group adds in front of its first action. */
+const groupSeparatorWidth = 9
+
+const itemsRowRef = useTemplateRef('itemsRow')
+const overflowDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('overflowDrop')
+const availableWidth = ref(0)
+const isOverflowMenuOpen = ref(false)
+const itemWidths = ref<Record<string, number>>({})
 
 const keyActionIds: string[] = []
+
+const moreActionsLabel = computed(() => $gettext('More actions'))
+const sourceMode = computed(() => unref(textEditor.state.sourceMode))
+const dropTeleport = computed(() => teleport || 'body')
 
 const isToolbarItemVisible = (item: EditorAction) => {
   if (!actionsToDisplay) {
@@ -227,25 +175,156 @@ const toolbarGroups = computed<EditorActionGroup[]>(() => {
     .filter((group) => group.actions.length)
 })
 
-const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-const searchAndReplaceActionId = 'menu-search-and-replace'
+const allActions = computed(() => unref(toolbarGroups).flatMap((group) => group.actions))
 
-function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop> | null) {
-  if (el) {
-    dropRefs.value[itemId] = el
+/**
+ * Ids of the actions that fit into the toolbar. Actions that don't fit
+ * move into the bubble menu.
+ */
+const visibleItemIds = computed<string[]>(() => {
+  const widths = unref(itemWidths)
+  const available = unref(availableWidth)
+  const groups = unref(toolbarGroups)
+  const allIds = unref(allActions).map((action) => action.id)
+
+  if (!available || !Object.keys(widths).length) {
+    return allIds
+  }
+
+  const getWidth = (id: string) => widths[id] ?? 0
+  const totalWidth = groups.reduce((total, group, index) => {
+    const actionsWidth = group.actions.reduce((sum, action) => sum + getWidth(action.id), 0)
+    return total + actionsWidth + (index > 0 ? groupSeparatorWidth : 0)
+  }, 0)
+
+  if (totalWidth <= available) {
+    return allIds
+  }
+
+  const budget = available - getWidth('overflow-trigger') - groupSeparatorWidth
+  const ids: string[] = []
+  let usedWidth = 0
+
+  for (const group of groups) {
+    let isFirstOfGroup = true
+    for (const action of group.actions) {
+      const width = getWidth(action.id) + (isFirstOfGroup && ids.length ? groupSeparatorWidth : 0)
+      if (usedWidth + width > budget) {
+        return ids
+      }
+      usedWidth += width
+      isFirstOfGroup = false
+      ids.push(action.id)
+    }
+  }
+
+  return ids
+})
+
+const hasOverflow = computed(() => unref(visibleItemIds).length < unref(allActions).length)
+
+const renderedGroups = computed(() => {
+  let visibleGroupCount = 0
+
+  return unref(toolbarGroups).map((group) => {
+    const hasVisibleActions = group.actions.some((action) =>
+      unref(visibleItemIds).includes(action.id)
+    )
+    const showSeparator = hasVisibleActions && visibleGroupCount > 0
+
+    if (hasVisibleActions) {
+      visibleGroupCount++
+    }
+
+    return { ...group, hasVisibleActions, showSeparator }
+  })
+})
+
+const overflowGroups = computed<EditorActionGroup[]>(() => {
+  return unref(toolbarGroups)
+    .map((group) => ({
+      ...group,
+      actions: group.actions.filter((action) => !unref(visibleItemIds).includes(action.id))
+    }))
+    .filter((group) => group.actions.length)
+})
+
+let resizeObserver: ResizeObserver | undefined
+let measureFrame: number | undefined
+let observedItemIds = ''
+
+function measure() {
+  const el = unref(itemsRowRef)
+  if (!el) {
+    return
+  }
+
+  availableWidth.value = el.clientWidth
+
+  const widths: Record<string, number> = {}
+  el.querySelectorAll<HTMLElement>('[data-item-id]').forEach((node) => {
+    widths[node.dataset.itemId!] = node.getBoundingClientRect().width
+  })
+
+  const hasChanged = Object.keys(widths).some((id) => widths[id] !== unref(itemWidths)[id])
+  if (hasChanged || Object.keys(widths).length !== Object.keys(unref(itemWidths)).length) {
+    itemWidths.value = widths
   }
 }
 
-const findActionById = (actionId: string) => {
-  return unref(toolbarGroups)
-    .flatMap((group) => group.actions)
-    .find((action) => action.id === actionId)
+/** Defers the layout reads out of the ResizeObserver callback to avoid observer loops. */
+function scheduleMeasure() {
+  if (measureFrame !== undefined) {
+    return
+  }
+
+  measureFrame = requestAnimationFrame(() => {
+    measureFrame = undefined
+    measure()
+  })
 }
 
-const openSearchAndReplaceMenu = async () => {
-  const action = findActionById(searchAndReplaceActionId)
-  if (!action || !isItemEnabled(action)) {
+function observeItems() {
+  const el = unref(itemsRowRef)
+  if (!resizeObserver || !el) {
     return
+  }
+
+  const nodes = Array.from(el.querySelectorAll<HTMLElement>('[data-item-id]'))
+  const itemIds = nodes.map((node) => node.dataset.itemId).join(',')
+  if (itemIds === observedItemIds) {
+    return
+  }
+
+  observedItemIds = itemIds
+  resizeObserver.disconnect()
+  resizeObserver.observe(el)
+  nodes.forEach((node) => resizeObserver.observe(node))
+}
+
+const dropRefs = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+const searchAndReplaceActionId = 'menu-search-and-replace'
+
+function setDropRef(itemId: string, el: ComponentPublicInstance<typeof OcDrop>) {
+  dropRefs.value[itemId] = el
+}
+
+function findActionById(actionId: string) {
+  return unref(allActions).find((action) => action.id === actionId)
+}
+
+async function openSearchAndReplaceMenu() {
+  const action = findActionById(searchAndReplaceActionId)
+  if (!action || !isEditorActionEnabled(action, unref(textEditor.editor), unref(sourceMode))) {
+    return
+  }
+
+  const isInOverflowMenu = !unref(visibleItemIds).includes(searchAndReplaceActionId)
+  const idPrefix = isInOverflowMenu ? 'toolbar-overflow' : 'toolbar'
+
+  if (isInOverflowMenu) {
+    await unref(overflowDropRef)?.show?.({ noFocus: true })
+    await nextTick()
   }
 
   const dropRef = dropRefs.value[searchAndReplaceActionId]
@@ -253,11 +332,11 @@ const openSearchAndReplaceMenu = async () => {
     return
   }
 
-  const triggerEl = document.getElementById(`toolbar-dropdown-trigger-${searchAndReplaceActionId}`)
+  const triggerEl = document.getElementById(`${idPrefix}-dropdown-trigger-${action.id}`)
   await dropRef.show({ anchorElement: triggerEl ?? undefined })
 }
 
-const handleSearchShortcut = (event: KeyboardEvent) => {
+function handleSearchShortcut(event: KeyboardEvent) {
   if (!unref(textEditor.isFocused)) {
     return
   }
@@ -265,20 +344,12 @@ const handleSearchShortcut = (event: KeyboardEvent) => {
   openSearchAndReplaceMenu()
 }
 
-const updateScrollState = () => {
-  const el = scrollContainerRef.value
-  if (!el) {
-    canScrollLeft.value = false
-    canScrollRight.value = false
-    return
-  }
-  canScrollLeft.value = el.scrollLeft > 0
-  canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 1
-}
-
 onMounted(async () => {
   await nextTick()
-  updateScrollState()
+
+  resizeObserver = new ResizeObserver(() => scheduleMeasure())
+  observeItems()
+  measure()
 
   if (unref(isSearchAndReplaceAvailable)) {
     const searchShortcutId = bindKeyAction(
@@ -290,9 +361,18 @@ onMounted(async () => {
   }
 })
 
+onUpdated(() => observeItems())
+
+// the overflow drop unmounts without emitting `hide-drop`, so reset the state manually
+watch(hasOverflow, (value) => {
+  if (!value) {
+    isOverflowMenuOpen.value = false
+  }
+})
+
 watch(toolbarGroups, async () => {
   await nextTick()
-  updateScrollState()
+  measure()
 })
 
 const visible = computed(() => {
@@ -342,96 +422,19 @@ const collaborationStatusClasses = computed(() => {
   return ''
 })
 
-const isSourceMode = computed(() => unref(textEditor.state.sourceMode))
-const sourceModeEnabledActionIds = ['source-mode', 'menu-zoom', 'zoom-in', 'zoom-out', 'zoom-reset']
-
-const isItemEnabled = (item: EditorAction) => {
-  if (unref(isSourceMode) && !sourceModeEnabledActionIds.includes(item.id)) {
-    return false
-  }
-
-  const editor = unref(textEditor.editor)
-  if (!editor) {
-    return false
-  }
-
-  if (item.isEnabled) {
-    return item.isEnabled(editor)
-  }
-  return true
-}
-
-const isItemActive = (item: EditorAction) => {
-  const editor = unref(textEditor.editor)
-  if (!editor) {
-    return false
-  }
-
-  if (item.isActive) {
-    return item.isActive(editor)
-  }
-  return false
-}
-
-const getActiveIcon = (item: EditorAction) => {
-  const editor = unref(textEditor.editor)
-  if (editor && item.activeIcon) {
-    const active = item.activeIcon(editor)
-    if (active) {
-      return active
-    }
-  }
-  return { icon: item.icon, iconFillType: item.iconFillType }
-}
-
-const getMenuComponentAttrs = (item: EditorAction) => {
-  const editor = unref(textEditor.editor)
-  if (!editor || !item.menuComponentAttrs) {
-    return {}
-  }
-
-  const closeMenu = () => {
-    const dropRef = dropRefs.value[item.id]
-    if (dropRef?.hide) {
-      dropRef.hide()
-    }
-  }
-
-  return item.menuComponentAttrs(editor, closeMenu)
-}
-
 const { bindKeyAction, removeKeyAction } = useKeyboardActions({
   skipDisabledKeyBindingsCheck: true
 })
 
 const isSearchAndReplaceAvailable = computed(() => {
-  return unref(toolbarGroups)
-    .flatMap((group) => group.actions)
-    .some((action) => action.id === searchAndReplaceActionId)
+  return unref(allActions).some((action) => action.id === searchAndReplaceActionId)
 })
 
 onBeforeUnmount(() => {
+  if (measureFrame !== undefined) {
+    cancelAnimationFrame(measureFrame)
+  }
+  resizeObserver?.disconnect()
   keyActionIds.forEach((id) => removeKeyAction(id))
 })
 </script>
-
-<style scoped>
-@reference '@opencloud-eu/design-system/tailwind';
-
-/* Hide scrollbar in toolbar */
-.text-editor-toolbar > div:first-child {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-.text-editor-toolbar > div:first-child::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
-
-.text-editor-toolbar-btn {
-  gap: 0 !important;
-}
-
-.text-editor-toolbar-btn--active {
-  @apply bg-role-secondary-container;
-}
-</style>
