@@ -24,8 +24,19 @@ export function printEditorContent(editor: Editor, title: string): void {
 
   document.head.append(style)
   document.body.append(content)
+  document.close()
 
-  printWindow.focus()
-  printWindow.print()
-  printWindow.close()
+  function startPrint() {
+    printWindow.focus()
+    printWindow.print()
+  }
+
+  printWindow.addEventListener('afterprint', () => printWindow.close(), { once: true })
+
+  if (document.readyState === 'complete') {
+    startPrint()
+    return
+  }
+
+  printWindow.addEventListener('load', startPrint, { once: true })
 }
