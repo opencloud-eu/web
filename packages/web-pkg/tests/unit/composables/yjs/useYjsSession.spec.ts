@@ -32,36 +32,87 @@ interface MockProvider {
   name: string
   document: Y.Doc
   awareness: Awareness
+  stopped: boolean
   destroy: ReturnType<typeof vi.fn>
   disconnect: ReturnType<typeof vi.fn>
   detach: ReturnType<typeof vi.fn>
   setAwarenessField: ReturnType<typeof vi.fn>
+  sendStateless: ReturnType<typeof vi.fn>
   triggerSynced(): void
   triggerStatus(status: string): void
   triggerAuthFailed(reason: string): void
+  triggerStateless(payload: string): void
 }
 
-const { providerInstances } = vi.hoisted(() => {
-  return { providerInstances: [] as MockProvider[] }
+// `relay` turns the mock into a tiny in-memory server: doc updates and
+// awareness fields travel between same-room providers with the given delays.
+const { providerInstances, relay } = vi.hoisted(() => {
+  return {
+    providerInstances: [] as MockProvider[],
+    // `seedHolders` mirrors the Yjs server's seed registry (see
+    // `services/yjs/src/lib/seedGrant.ts`): one grant per room.
+    relay: {
+      enabled: false,
+      docDelayMs: 0,
+      awarenessDelayMs: 0,
+      seedHolders: new Map<string, string>()
+    }
+  }
 })
 
 vi.mock('@hocuspocus/provider', async () => {
+  const Yjs = await import('yjs')
   const { Awareness: AwarenessImpl } = await import('y-protocols/awareness')
   class MockHocuspocusProvider {
     url: string
     name: string
     document: Y.Doc
     awareness: Awareness
+    stopped = false
     // Mirrors the real provider, which destroys its own awareness. A bare spy
     // would hide a double-destroy in the session's cleanup.
     destroy = vi.fn(() => {
+      this.stopped = true
       this.awareness.destroy()
     })
-    disconnect = vi.fn()
+    disconnect = vi.fn(() => {
+      this.stopped = true
+    })
     // Present on the real provider and load-bearing: without it, doc updates
     // after a disconnect keep queueing in the websocket's `messageQueue`.
     detach = vi.fn()
-    setAwarenessField = vi.fn()
+    setAwarenessField = vi.fn((field: string, value: unknown) => {
+      if (!relay.enabled) return
+      this.awareness.setLocalStateField(field, value)
+      const clientId = this.document.clientID
+      setTimeout(() => {
+        const state = { ...this.awareness.getLocalState() }
+        for (const peer of this.peers()) peer.awareness.states.set(clientId, state)
+      }, relay.awarenessDelayMs)
+    })
+    // The client asks the server who may seed. The answer comes from the
+    // server, not from a peer, so it does not depend on `relay.enabled`. It
+    // travels the same socket as a doc update, so it carries the same delay; a
+    // delay of 0 answers synchronously, which keeps every latency-agnostic
+    // test on a single `flushPromises`.
+    sendStateless = vi.fn((payload: string) => {
+      if (payload !== '_oc_seed_request') return
+      const socketId = String(this.document.clientID)
+      const answer = () => {
+        if (this.stopped) return
+        const holder = relay.seedHolders.get(this.name)
+        const granted = holder === undefined || holder === socketId
+        if (granted) relay.seedHolders.set(this.name, socketId)
+        this._opts.onStateless?.({
+          payload: granted ? '_oc_seed_granted' : '_oc_seed_denied'
+        })
+      }
+      if (relay.docDelayMs === 0) {
+        answer()
+        return
+      }
+      setTimeout(answer, relay.docDelayMs)
+    })
     private _opts: any
     constructor(opts: any) {
       this.url = opts.url
@@ -70,6 +121,22 @@ vi.mock('@hocuspocus/provider', async () => {
       this.awareness = new AwarenessImpl(opts.document)
       this._opts = opts
       providerInstances.push(this as MockProvider & MockHocuspocusProvider)
+
+      // Remote updates carry the provider as origin, like the real one.
+      this.document.on('update', (update: Uint8Array, origin: unknown) => {
+        if (!relay.enabled || origin === this || this.stopped) return
+        setTimeout(() => {
+          for (const peer of this.peers()) {
+            if (peer.document.isDestroyed) continue
+            Yjs.applyUpdate(peer.document, update, peer)
+          }
+        }, relay.docDelayMs)
+      })
+    }
+    private peers(): MockHocuspocusProvider[] {
+      return providerInstances.filter(
+        (p) => p !== (this as unknown as MockProvider) && p.name === this.name && !p.stopped
+      ) as unknown as MockHocuspocusProvider[]
     }
     triggerSynced() {
       this._opts.onSynced?.({ state: true })
@@ -79,6 +146,9 @@ vi.mock('@hocuspocus/provider', async () => {
     }
     triggerAuthFailed(reason: string) {
       this._opts.onAuthenticationFailed?.({ reason })
+    }
+    triggerStateless(payload: string) {
+      this._opts.onStateless?.({ payload })
     }
   }
   return { HocuspocusProvider: MockHocuspocusProvider }
@@ -209,6 +279,10 @@ function silenceConsoleError() {
 
 beforeEach(() => {
   providerInstances.length = 0
+  relay.enabled = false
+  relay.docDelayMs = 0
+  relay.awarenessDelayMs = 0
+  relay.seedHolders.clear()
 })
 
 afterEach(() => {
@@ -336,13 +410,8 @@ describe('useYjsSession — local mode (no yjsServerUrl)', () => {
     expect(unref(s.session.status)).toBe('local')
   })
 
-  it('hydrates the Y.Doc from currentContent (election degenerates to "we win")', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
+  it('hydrates the Y.Doc from currentContent without asking a server', async () => {
     const s = setupSession({ currentContent: 'hello local' })
-    await flushPromises()
-    // Local mode skips the remote-only 150ms awareness-settle wait and
-    // hydrates immediately; advancing timers here is just belt-and-braces.
-    vi.advanceTimersByTime(200)
     await flushPromises()
 
     expect(s.ydoc).toBeTruthy()
@@ -407,9 +476,10 @@ describe('useYjsSession — failed hydration', () => {
     expect(unref(s.session.isReady)).toBe(true)
   })
 
-  // The seeding announce goes out before the hydrate so read-only peers drop
-  // their private copy in time. Left standing after a throw, it promises
-  // content that never arrives and every viewer stares at a blank room.
+  // The announce tells read-only peers to drop their private copy. Left
+  // standing after a throw, it promises content that never arrives and every
+  // viewer stares at a blank room. The lock also closes the socket, which
+  // makes the server pass the grant to another writer.
   it('withdraws the seeding announce so another peer can seed', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
@@ -436,65 +506,115 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('user', {})
   })
 
-  // Regression: the election counted every awareness peer, but a read-only
-  // client never seeds - the server rejects its writes, it only hydrates a
-  // private copy. So whenever a viewer happened to hold the lower clientID, the
-  // editor deferred to it and nobody seeded: a blank editor over a file that is
-  // not blank, one keystroke away from being saved over the real content.
-  it('ignores read-only peers in the hydration election', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
+  // Regression: hydration used to be decided by an awareness election that
+  // counted every peer, but a read-only client never seeds - the server
+  // rejects its writes, it only hydrates a private copy. Whenever a viewer
+  // held the lower clientID the editor deferred to it and nobody seeded: a
+  // blank editor over a file that is not blank, one keystroke away from being
+  // saved over the real content. The server now decides, and it never grants
+  // to a read-only connection.
+  it('seeds an empty room while a read-only peer is connected', async () => {
     const s = setupSession({
       yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'the real file body'
     })
     await flushPromises()
 
-    // A read-only peer that won the election by holding the lower clientID.
-    const readOnlyPeer = s.ydoc!.clientID - 1
-    providerInstances[0].awareness.states.set(readOnlyPeer, {
-      user: { id: 'viewer', name: 'Margaret Hamilton' },
-      _oc_canSeed: false
+    providerInstances[0].awareness.states.set(s.ydoc!.clientID - 1, {
+      user: { id: 'viewer', name: 'Margaret Hamilton' }
     })
 
     providerInstances[0].triggerSynced()
-    vi.advanceTimersByTime(200)
     await flushPromises()
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the real file body')
   })
 
-  // The flip side: a peer that *can* seed still wins on the lower clientID, so
-  // two editors entering together do not both hydrate and duplicate the body.
-  it('still defers to a writable peer holding the lower clientID', async () => {
-    vi.useFakeTimers({ shouldAdvanceTime: true })
+  it('asks the server for permission before seeding', async () => {
     const s = setupSession({
       yjsServerUrl: 'wss://example.test/yjs',
       currentContent: 'the real file body'
     })
     await flushPromises()
 
-    const writablePeer = s.ydoc!.clientID - 1
-    providerInstances[0].awareness.states.set(writablePeer, {
-      user: { id: 'editor', name: 'Mary Kenneth Keller' },
-      _oc_canSeed: true
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith('_oc_seed_request')
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the real file body')
+  })
+
+  // The peer that holds the grant is seeding, and its body is on the way.
+  it('does not seed when the server denies the grant', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the real file body'
     })
+    await flushPromises()
+    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
 
     providerInstances[0].triggerSynced()
-    vi.advanceTimersByTime(200)
     await flushPromises()
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
+    expect(unref(s.session.isReady)).toBe(true)
   })
 
-  it('announces whether it can seed the room', async () => {
-    setupSession({ yjsServerUrl: 'wss://example.test/yjs', isReadOnly: true })
+  // Regression: a reconnect inside the seed wait started a second hydration
+  // next to the one still waiting, and the first one never settled.
+  it('asks again when the socket reconnects inside the seed wait, and seeds once', async () => {
+    vi.useFakeTimers()
+    relay.docDelayMs = 100
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the file body'
+    })
     await flushPromises()
-    expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('_oc_canSeed', false)
 
-    providerInstances.length = 0
-    setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
+    providerInstances[0].triggerSynced()
+    await vi.advanceTimersByTimeAsync(20)
+    providerInstances[0].triggerSynced()
+    await vi.advanceTimersByTimeAsync(1_000)
     await flushPromises()
-    expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('_oc_canSeed', true)
+
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledTimes(2)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+    expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  it('never asks for a grant on a read-only client', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the file body',
+      isReadOnly: true
+    })
+    await flushPromises()
+
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(providerInstances[0].sendStateless).not.toHaveBeenCalled()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+  })
+
+  // Seeding is a first-entry decision. A reconnect re-fires `onSynced`; an
+  // empty doc at that point is one the user emptied, not an unseeded room.
+  it('does not seed again on a mid-session reconnect into an emptied doc', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the file body'
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    const yText = s.ydoc!.getText(SHARED_TEXT_KEY)
+    yText.delete(0, yText.length)
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledTimes(1)
+    expect(yText.toString()).toBe('')
   })
 
   it('does not hydrate until onSynced fires (remote waits for the server)', async () => {
@@ -627,8 +747,6 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     })
     await flushPromises()
     providerInstances[0].triggerSynced()
-    // Past the 150ms hydration-election wait.
-    vi.advanceTimersByTime(200)
     await flushPromises()
     expect(unref(s.session.isReady)).toBe(true)
 
@@ -1879,5 +1997,170 @@ describe('useYjsSession — cleanup', () => {
     s.wrapper.unmount()
     expect(ydoc!.isDestroyed).toBe(true)
     expect(providerInstances).toHaveLength(0)
+  })
+})
+
+// Regression: two editors opening the same file at once (#3141). An awareness
+// election let both seed whenever the round-trip outlived its window, and the
+// body then showed twice for everyone. The Yjs server now grants seeding to
+// exactly one connection per room, so no wait has to be guessed.
+describe('useYjsSession — simultaneous hydration', () => {
+  const FILE_BODY = 'the file body'
+  const URL = 'wss://example.test/yjs'
+
+  async function bothOpenSimultaneously() {
+    vi.useFakeTimers()
+    relay.enabled = true
+    const a = setupSession({ yjsServerUrl: URL, currentContent: FILE_BODY })
+    const b = setupSession({ yjsServerUrl: URL, currentContent: FILE_BODY })
+    await flushPromises()
+
+    providerInstances[0].triggerSynced()
+    providerInstances[1].triggerSynced()
+
+    // Well past both relay hops and the seed answer.
+    await vi.advanceTimersByTimeAsync(2_000)
+    await flushPromises()
+
+    return { a, b }
+  }
+
+  function text(s: ReturnType<typeof setupSession>) {
+    return s.ydoc!.getText(SHARED_TEXT_KEY).toString()
+  }
+
+  // The mock server's registry knows who was granted, the doc only that someone was.
+  function seeder(a: ReturnType<typeof setupSession>, b: ReturnType<typeof setupSession>) {
+    return relay.seedHolders.get(providerInstances[0].name) === String(a.ydoc!.clientID) ? a : b
+  }
+
+  // A doubled body is not only wrong on screen: reported to the caller it is
+  // diffed against the file, marks it dirty and is one manual save away from
+  // being written to disk. 600ms outlives SERIALIZE_DEBOUNCE_MS, so a report
+  // would have time to get out.
+  it.each([20, 600])('seeds once with a %ims seed answer', async (docDelayMs) => {
+    relay.awarenessDelayMs = 300
+    relay.docDelayMs = docDelayMs
+
+    const { a, b } = await bothOpenSimultaneously()
+
+    const doubled = `${FILE_BODY}${FILE_BODY}`
+    expect(text(a)).toBe(FILE_BODY)
+    expect(text(b)).toBe(FILE_BODY)
+    expect(a.onContentChange).not.toHaveBeenCalledWith(doubled)
+    expect(b.onContentChange).not.toHaveBeenCalledWith(doubled)
+    expect(a.ydoc!.getMap('_oc_meta').get('hydrated')).toBe(true)
+    expect(b.ydoc!.getMap('_oc_meta').get('hydrated')).toBe(true)
+  })
+
+  it('keeps the client that did not seed editable', async () => {
+    relay.awarenessDelayMs = 300
+    relay.docDelayMs = 20
+
+    const { a, b } = await bothOpenSimultaneously()
+    const other = seeder(a, b) === a ? b : a
+
+    other.ydoc!.getText(SHARED_TEXT_KEY).insert(0, 'edit ')
+    await vi.advanceTimersByTimeAsync(1_000)
+
+    expect(text(a)).toBe(`edit ${FILE_BODY}`)
+    expect(text(b)).toBe(`edit ${FILE_BODY}`)
+    expect(other.onContentChange).toHaveBeenCalledWith(`edit ${FILE_BODY}`)
+  })
+})
+
+// The grant holder can leave before it seeds. The server then hands the grant
+// to someone still in the room, unasked.
+describe('useYjsSession — unsolicited seed grant', () => {
+  const URL = 'wss://example.test/yjs'
+
+  it('seeds an empty room on a grant that arrives on its own', async () => {
+    const s = setupSession({ yjsServerUrl: URL, currentContent: 'the file body' })
+    await flushPromises()
+    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
+
+    providerInstances[0].triggerStateless('_oc_seed_granted')
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+    expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBe(true)
+  })
+
+  // A grant for a room that already has content is normal: the server does not
+  // track whether the previous holder seeded, the client checks instead.
+  it('ignores a grant once the room has content', async () => {
+    const s = setupSession({ yjsServerUrl: URL, currentContent: 'the file body' })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    providerInstances[0].triggerStateless('_oc_seed_granted')
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+    expect(s.onContentChange).not.toHaveBeenCalled()
+  })
+
+  // The session is live by then, so without a guard the seed would be reported
+  // as an edit and mark an untouched file dirty.
+  it('does not report the late seed as content', async () => {
+    vi.useFakeTimers()
+    const s = setupSession({ yjsServerUrl: URL, currentContent: 'the file body' })
+    await flushPromises()
+    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    providerInstances[0].triggerStateless('_oc_seed_granted')
+    await vi.advanceTimersByTimeAsync(1_000)
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+    expect(s.onContentChange).not.toHaveBeenCalled()
+  })
+
+  // Same outcome as a failed initial hydration: the lock closes the socket,
+  // so the server passes the grant on instead of leaving it with a client
+  // that cannot use it.
+  it('locks the session when the late seed throws', async () => {
+    silenceConsoleError()
+    const throwingAdapter: YjsAdapter = {
+      ...testAdapter,
+      hydrate() {
+        throw new Error('adapter blew up')
+      }
+    }
+    const s = setupSession({
+      yjsServerUrl: URL,
+      currentContent: 'the file body',
+      adapter: throwingAdapter
+    })
+    await flushPromises()
+    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    providerInstances[0].triggerStateless('_oc_seed_granted')
+    await flushPromises()
+
+    expect(unref(s.session.isLockedForReload)).toBe(true)
+    expect(providerInstances[0].disconnect).toHaveBeenCalled()
+    expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBeUndefined()
+  })
+
+  it('ignores a grant on a read-only client', async () => {
+    const s = setupSession({ yjsServerUrl: URL, currentContent: 'the file body', isReadOnly: true })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+    s.ydoc!.getText(SHARED_TEXT_KEY).delete(0, s.ydoc!.getText(SHARED_TEXT_KEY).length)
+
+    providerInstances[0].triggerStateless('_oc_seed_granted')
+    await flushPromises()
+
+    expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBeUndefined()
   })
 })
