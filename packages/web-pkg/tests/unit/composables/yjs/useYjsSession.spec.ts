@@ -506,6 +506,32 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('user', {})
   })
 
+  it('takes its own identity from the server', async () => {
+    setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
+    await flushPromises()
+
+    providerInstances[0].triggerStateless(
+      '_oc_identity:{"id":"u1","name":"Alice","color":"#123456"}'
+    )
+
+    expect(providerInstances[0].setAwarenessField).toHaveBeenCalledWith('user', {
+      id: 'u1',
+      name: 'Alice',
+      color: '#123456'
+    })
+  })
+
+  it('ignores a malformed identity message', async () => {
+    setupSession({ yjsServerUrl: 'wss://example.test/yjs' })
+    await flushPromises()
+    providerInstances[0].setAwarenessField.mockClear()
+
+    providerInstances[0].triggerStateless('_oc_identity:{not json')
+    providerInstances[0].triggerStateless('_oc_identity:{"name":"no id"}')
+
+    expect(providerInstances[0].setAwarenessField).not.toHaveBeenCalled()
+  })
+
   // Regression: hydration used to be decided by an awareness election that
   // counted every peer, but a read-only client never seeds - the server
   // rejects its writes, it only hydrates a private copy. Whenever a viewer

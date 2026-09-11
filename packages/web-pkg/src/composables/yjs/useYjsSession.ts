@@ -7,6 +7,7 @@ import type { Resource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
 import { useAuthStore, useConfigStore } from '../piniaStores'
 import type { YjsAdapter } from './types'
+import { decodeIdentityMessage } from './useYjsCollaborators'
 
 export const YjsStatus = {
   Connecting: 'connecting',
@@ -854,6 +855,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         void onProviderSynced(doc, null)
       },
       onStateless({ payload }) {
+        const identity = decodeIdentityMessage(payload)
+        if (identity) {
+          // The server never echoes our own awareness back to us, so we receive
+          // it via a stateless identity message instead.
+          prov.setAwarenessField('user', identity)
+          return
+        }
         onSeedMessage(doc, prov, payload)
       },
       onSynced() {

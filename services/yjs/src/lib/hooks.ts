@@ -1,5 +1,6 @@
 import type {
   afterUnloadDocumentPayload,
+  connectedPayload,
   Document,
   Extension,
   onDisconnectPayload,
@@ -7,6 +8,7 @@ import type {
 } from '@hocuspocus/server'
 import { deterministicColor } from './color.ts'
 import { DeniedReason, isRefusal, refuse } from './errors.ts'
+import { encodeIdentityMessage } from './identity.ts'
 import {
   MAX_DOCUMENT_NAME_LENGTH,
   probeFileAccess,
@@ -168,6 +170,18 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
     }): Promise<void> {
       const origin = requestHeaders.get('origin') ?? '-'
       console.log(`[onConnect] document=${JSON.stringify(documentName)} origin=${origin}`)
+    },
+
+    /**
+     * Hand the connection its own identity, see `identity.ts`. Runs after
+     * authentication, so the context is populated.
+     */
+    async connected({ connection, context }: connectedPayload<YjsContext>): Promise<void> {
+      const user = context?.user ?? connection.context?.user
+      if (!user) {
+        return
+      }
+      connection.sendStateless(encodeIdentityMessage(user))
     },
 
     async onDisconnect({

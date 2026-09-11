@@ -107,7 +107,10 @@ id. The prefix still exists so two editors with incompatible Y.Doc layouts (Tipt
 `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
 
 Awareness is anti-spoofed: `beforeHandleAwareness` overwrites the `user` field on every inbound awareness state with the
-identity from the authenticated connection, so a client cannot present itself as someone else.
+identity from the authenticated connection, so a client cannot present itself as someone else. Yjs never echoes a
+client's own awareness back, so the `connected` hook sends each client its stamped identity over a stateless message.
+The client puts it into its own `user` awareness field, which is how it shows up in the collaborator list next to its
+peers.
 
 ## Inside `web`
 
