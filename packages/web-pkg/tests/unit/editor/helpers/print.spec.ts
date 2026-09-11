@@ -10,15 +10,19 @@ function createEditor(content: string): Editor {
   } as unknown as Editor
 }
 
-function createMockWindow() {
+function createMockWindow(readyState: DocumentReadyState = 'complete') {
+  const listeners: Record<string, Array<() => void>> = {}
+
   const mockDocument = {
     title: '',
+    readyState,
     head: {
       append: vi.fn()
     },
     body: {
       append: vi.fn()
     },
+    close: vi.fn(),
     createElement: vi.fn((tag: string) => {
       if (tag === 'style') {
         return { textContent: '' }
@@ -34,7 +38,11 @@ function createMockWindow() {
     document: mockDocument,
     focus: vi.fn(),
     print: vi.fn(),
-    close: vi.fn()
+    close: vi.fn(),
+    addEventListener: vi.fn((event: string, listener: () => void) => {
+      listeners[event] = [...(listeners[event] ?? []), listener]
+    }),
+    dispatch: (event: string) => listeners[event]?.forEach((listener) => listener())
   }
 }
 
@@ -84,16 +92,51 @@ describe('printEditorContent', () => {
     expect(stylesheet).toContain('background: rgba(148, 163, 184, 0.08);')
   })
 
-  it('focuses, prints and closes the window', () => {
+  it('closes the print document stream so it can finish loading', () => {
     const mockWindow = createMockWindow()
     windowOpenSpy.mockReturnValue(mockWindow as any)
 
-    const editor = createEditor('<p>content</p>')
-    printEditorContent(editor, 'My document')
+    printEditorContent(createEditor('<p>content</p>'), 'My document')
+
+    expect(mockWindow.document.close).toHaveBeenCalledOnce()
+  })
+
+  it('focuses and prints the already loaded print document', () => {
+    const mockWindow = createMockWindow()
+    windowOpenSpy.mockReturnValue(mockWindow as any)
+
+    printEditorContent(createEditor('<p>content</p>'), 'My document')
 
     expect(mockWindow.focus).toHaveBeenCalledOnce()
     expect(mockWindow.print).toHaveBeenCalledOnce()
+  })
+
+  it('keeps the window open until printing finished', () => {
+    const mockWindow = createMockWindow()
+    windowOpenSpy.mockReturnValue(mockWindow as any)
+
+    printEditorContent(createEditor('<p>content</p>'), 'My document')
+
+    expect(mockWindow.close).not.toHaveBeenCalled()
+
+    mockWindow.dispatch('afterprint')
+
     expect(mockWindow.close).toHaveBeenCalledOnce()
+  })
+
+  it('defers printing until the print document finished loading', () => {
+    const mockWindow = createMockWindow('loading')
+    windowOpenSpy.mockReturnValue(mockWindow as any)
+
+    printEditorContent(createEditor('<p>content</p>'), 'My document')
+
+    expect(mockWindow.print).not.toHaveBeenCalled()
+
+    mockWindow.dispatch('load')
+
+    expect(mockWindow.focus).toHaveBeenCalledOnce()
+    expect(mockWindow.print).toHaveBeenCalledOnce()
+    expect(mockWindow.close).not.toHaveBeenCalled()
   })
 
   it('returns early when window.open fails', () => {
