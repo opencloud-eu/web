@@ -14,6 +14,20 @@ Every connection is authenticated and authorized against OpenCloud:
 - the bearer token is validated against `/graph/v1.0/me`
 - write access is derived from the effective permission actions on the file
 - awareness states are re-stamped with the authenticated identity, so users cannot spoof each other
+- on connect, each client receives its own stamped identity over a stateless message, because Yjs
+  never echoes a client's own awareness back to it
+
+## Seeding an empty room
+
+The first client in a room writes the file body into the Y.Doc. Exactly one client may do that, or
+the room ends up holding the body twice. The yjs server decides which, because it is the only party
+that sees every connection to a room at once. A client asks over a stateless message, and gets a
+grant or a refusal. Read-only connections are always refused.
+
+Grants live in process memory and last as long as the holder's connection. If the holder leaves
+before it seeds, the grant passes to another writer in the room. A grant for a room that already has
+content is harmless: it is permission, not an instruction, and the client checks its own document
+first.
 
 ## Configuration
 

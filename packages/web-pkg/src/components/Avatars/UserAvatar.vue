@@ -1,5 +1,10 @@
 <template>
-  <oc-avatar :user-name="userName" :src="avatarSrc" :width="width" />
+  <oc-avatar
+    :user-name="userName"
+    :src="avatarSrc"
+    :width="width"
+    :background-color="backgroundColor"
+  />
 </template>
 
 <script setup lang="ts">
@@ -10,11 +15,13 @@ import { storeToRefs } from 'pinia'
 const {
   userId,
   userName,
-  width = 36
+  width = 36,
+  backgroundColor = undefined
 } = defineProps<{
   userId: string
   userName: string
   width?: number
+  backgroundColor?: string
 }>()
 
 const avatarsStore = useAvatarsStore()

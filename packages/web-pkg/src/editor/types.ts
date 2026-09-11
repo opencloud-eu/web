@@ -4,7 +4,7 @@ import type { Resource } from '@opencloud-eu/web-client'
 import type { Editor } from '@tiptap/vue-3'
 import type * as Y from 'yjs'
 import type { Awareness } from 'y-protocols/awareness'
-import type { YjsStatus } from '../composables/yjs'
+import type { YjsCollaborator, YjsStatus } from '../composables/yjs'
 import type { EditorActionGroup } from './composables'
 
 export type ContentType = 'plain-text' | 'markdown' | 'html' | 'tiptap-json'
@@ -90,6 +90,8 @@ export interface TextEditorInstance {
   readonly: Ref<boolean>
   /** Current transport status of the hosting Yjs session, if any. */
   yjsStatus: Ref<YjsStatus | null>
+  /** Users in the Yjs room, own user first. Empty without an awareness. */
+  collaborators: Ref<YjsCollaborator[]>
   actionGroups(): EditorActionGroup[]
   getContent(): string
   setContent(value: string): void

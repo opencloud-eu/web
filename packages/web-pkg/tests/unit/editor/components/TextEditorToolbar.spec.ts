@@ -4,6 +4,7 @@ import { vi } from 'vitest'
 import TextEditorToolbar from '../../../../src/editor/components/TextEditorToolbar.vue'
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import type { EditorAction } from '../../../../src/editor/composables'
+import type { YjsCollaborator } from '../../../../src/composables/yjs'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (value: string) => value })
@@ -13,10 +14,12 @@ function mountToolbar(
   sourceMode = false,
   contentType: 'markdown' | 'html' = 'markdown',
   includeSearchAction = false,
-  collaborationStatus: 'connecting' | 'connected' | 'disconnected' | 'local' | null = null
+  collaborationStatus: 'connecting' | 'connected' | 'disconnected' | 'local' | null = null,
+  collaborators: YjsCollaborator[] = []
 ) {
   const showSpy = vi.fn()
   const collaborationStatusRef = ref(collaborationStatus)
+  const collaboratorsRef = ref(collaborators)
 
   const actions: EditorAction[] = [
     {
@@ -48,6 +51,7 @@ function mountToolbar(
     contentType: ref<'markdown' | 'html'>(contentType),
     readonly: ref(false),
     yjsStatus: collaborationStatusRef,
+    collaborators: collaboratorsRef,
     state: { sourceMode: ref(sourceMode), editorZoom: ref(100) },
     isFocused: computed(() => isFocusedRef.value),
     actionGroups: () => [
@@ -81,12 +85,16 @@ function mountToolbar(
           inheritAttrs: false,
           template: '<button v-bind="$attrs"><slot /></button>'
         }),
-        'oc-icon': true
+        'oc-icon': true,
+        'text-editor-collaborators': defineComponent({
+          props: { users: { type: Array, required: true } },
+          template: '<div class="collaborators-stub" :data-count="users.length" />'
+        })
       }
     }
   })
 
-  return { wrapper, textEditor, isFocusedRef, showSpy, collaborationStatusRef }
+  return { wrapper, textEditor, isFocusedRef, showSpy, collaborationStatusRef, collaboratorsRef }
 }
 
 /**
@@ -301,6 +309,23 @@ describe('TextEditorToolbar', () => {
     collaborationStatusRef.value = 'local'
     await wrapper.vm.$nextTick()
     expect(wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('hides the collaborator stack when nobody is in the room', () => {
+    const { wrapper } = mountToolbar(false, 'markdown', false, 'connected')
+    expect(wrapper.find('.collaborators-stub').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('shows the collaborator stack and follows peers joining', async () => {
+    const me: YjsCollaborator = { id: 'me', name: 'Zoe', color: '#111111', isSelf: true }
+    const { wrapper, collaboratorsRef } = mountToolbar(false, 'markdown', false, 'connected', [me])
+    expect(wrapper.find('.collaborators-stub').attributes('data-count')).toBe('1')
+
+    collaboratorsRef.value = [me, { id: 'p1', name: 'Alice', color: '#222222', isSelf: false }]
+    await wrapper.vm.$nextTick()
+    expect(wrapper.find('.collaborators-stub').attributes('data-count')).toBe('2')
     wrapper.unmount()
   })
 })

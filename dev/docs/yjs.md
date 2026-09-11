@@ -107,7 +107,10 @@ id. The prefix still exists so two editors with incompatible Y.Doc layouts (Tipt
 `Y.XmlFragment` vs CodeMirror's `Y.Text`) never share a room for the same file.
 
 Awareness is anti-spoofed: `beforeHandleAwareness` overwrites the `user` field on every inbound awareness state with the
-identity from the authenticated connection, so a client cannot present itself as someone else.
+identity from the authenticated connection, so a client cannot present itself as someone else. Yjs never echoes a
+client's own awareness back, so the `connected` hook sends each client its stamped identity over a stateless message.
+The client puts it into its own `user` awareness field, which is how it shows up in the collaborator list next to its
+peers.
 
 ## Inside `web`
 
@@ -347,7 +350,7 @@ A `Y.Map` alongside the editor content, used for coordination the editor never s
 | `isStale`          | any writer          | the file changed outside this room; rehydrate |
 | `nativeEtag`       | writer that noticed | the etag recovery should settle on            |
 | `recoveryClientId` | writer that noticed | which peer is elected to re-seed the room     |
-| `hydrated`         | the seeding peer    | someone is seeding the room right now         |
+| `hydrated`         | the seeding peer    | this room has been seeded                     |
 
 Every key lives in the shared Y.Doc, so a read-only peer's writes to it are
 rejected by the Yjs server along with everything else. Staleness noticed by a
@@ -454,10 +457,6 @@ saved N times per autosave interval. There is election for hydration but none fo
 `beforeunload` and the unsaved-changes modal fire for edits you did not make. Writers only - `isDirty` is hard-wired to
 `false` for a read-only client, which has nothing to save.
 
-**Hydration election can race.** The 150 ms awareness-settle window is heuristic. If awareness has not propagated in
-time, two peers can both elect themselves and hydrate, duplicating content. Server-side hydration would remove the whole
-class.
-
 **`_oc_meta` is writable by any client with write access.** A buggy or hostile client can set `isStale` and reset every
 peer in the room. The room's control plane has no server authority beyond the read-only gate.
 
@@ -488,10 +487,6 @@ account for the write: the fresh etag must match `_oc_meta.etag`, with a short g
 peer's stamp that is still in flight. An external writer - a desktop sync client, say - fails that check and raises the
 conflict dialog instead of being overwritten. The residual gap is timing: a peer save whose stamp arrives after the
 grace period turns into a spurious conflict dialog.
-
-**`_oc_meta.hydrated` is never cleared.** Stale recovery deletes `isStale`, `nativeEtag` and `recoveryClientId` but
-leaves `hydrated` set. Harmless today, since the recovered room really is seeded, but it means the flag tracks "this
-room was ever seeded" rather than "a peer is seeding right now".
 
 **Stale recovery needs someone who holds the fresh body.** Only a peer whose fetched etag matches `nativeEtag` may
 re-seed the room. If that peer leaves before finishing, the room stays flagged until another client opens the file and

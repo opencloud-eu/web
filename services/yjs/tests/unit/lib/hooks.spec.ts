@@ -1,5 +1,6 @@
 import type { MockInstance } from 'vitest'
-import { createHooks, HEALTH_ENDPOINT_PATH, SEED_CAPABLE_KEY } from '../../../src/lib/hooks.ts'
+import { createHooks, HEALTH_ENDPOINT_PATH } from '../../../src/lib/hooks.ts'
+import { SeedMessage } from '../../../src/lib/seedGrant.ts'
 import { DeniedReason, refuse } from '../../../src/lib/errors.ts'
 import * as graph from '../../../src/lib/graph.ts'
 
@@ -23,6 +24,38 @@ function getHooks(lifecycle: { isReady?: boolean; isShuttingDown?: boolean } = {
 
 function getResponse() {
   return { writeHead: vi.fn(), end: vi.fn() }
+}
+
+type FakeConnection = {
+  socketId: string
+  readOnly: boolean
+  sendStateless: ReturnType<typeof vi.fn>
+}
+
+function connection(socketId: string, readOnly = false): FakeConnection {
+  return { socketId, readOnly, sendStateless: vi.fn() }
+}
+
+function statelessPayload(
+  conn: FakeConnection,
+  documentName = 'doc',
+  payload: string = SeedMessage.Request
+) {
+  return { connection: conn, documentName, payload } as any
+}
+
+function disconnectPayload({
+  documentName = 'doc',
+  clientsCount = 0,
+  socketId = 'a',
+  remaining = [] as FakeConnection[]
+} = {}) {
+  return {
+    documentName,
+    clientsCount,
+    socketId,
+    document: { getConnections: () => remaining }
+  } as any
 }
 
 let logSpy: MockInstance<typeof console.log>
@@ -289,16 +322,8 @@ describe('beforeHandleAwareness', () => {
 
     await getHooks().beforeHandleAwareness({ states, context: { readOnly: false, user } })
 
-    expect(states.get(1)).toEqual({ user: canonical, cursor: 1, [SEED_CAPABLE_KEY]: true })
-    expect(states.get(2)).toEqual({ user: canonical, [SEED_CAPABLE_KEY]: true })
-  })
-
-  it('marks a read-only connection as not seed capable', async () => {
-    const states = new Map<number, Record<string, any>>([[1, { [SEED_CAPABLE_KEY]: true }]])
-
-    await getHooks().beforeHandleAwareness({ states, context: { readOnly: true, user } })
-
-    expect(states.get(1)![SEED_CAPABLE_KEY]).toBe(false)
+    expect(states.get(1)).toEqual({ user: canonical, cursor: 1 })
+    expect(states.get(2)).toEqual({ user: canonical })
   })
 
   it('falls back to the connection context', async () => {
@@ -310,7 +335,7 @@ describe('beforeHandleAwareness', () => {
       connection: { context: { readOnly: true, user } }
     })
 
-    expect(states.get(1)).toEqual({ user: canonical, [SEED_CAPABLE_KEY]: false })
+    expect(states.get(1)).toEqual({ user: canonical })
   })
 
   it('leaves the states untouched when no user is known', async () => {
@@ -327,6 +352,36 @@ describe('beforeHandleAwareness', () => {
     await expect(
       getHooks().beforeHandleAwareness({ states, context: { readOnly: false, user } })
     ).resolves.toBeUndefined()
+  })
+})
+
+describe('connected', () => {
+  it('sends the connection its own identity', async () => {
+    const conn = connection('a')
+    const user = { id: 'u1', displayName: 'Alice', color: '#123456' }
+
+    await getHooks().connected({ connection: conn, context: { readOnly: false, user } } as any)
+
+    expect(conn.sendStateless).toHaveBeenCalledWith(
+      '_oc_identity:{"id":"u1","name":"Alice","color":"#123456"}'
+    )
+  })
+
+  it('falls back to the connection context', async () => {
+    const user = { id: 'u1', displayName: 'Alice', color: '#123456' }
+    const conn = { ...connection('a'), context: { readOnly: false, user } }
+
+    await getHooks().connected({ connection: conn, context: undefined } as any)
+
+    expect(conn.sendStateless).toHaveBeenCalledOnce()
+  })
+
+  it('sends nothing when no user is known', async () => {
+    const conn = connection('a')
+
+    await getHooks().connected({ connection: conn, context: {} } as any)
+
+    expect(conn.sendStateless).not.toHaveBeenCalled()
   })
 })
 
@@ -349,8 +404,130 @@ describe('logging hooks', () => {
   })
 
   it('logs the remaining client count on disconnect', async () => {
-    await getHooks().onDisconnect({ documentName: 'doc', clientsCount: 2 })
+    await getHooks().onDisconnect(
+      disconnectPayload({ documentName: 'doc', clientsCount: 2, socketId: 'other' })
+    )
 
     expect(logSpy).toHaveBeenCalledWith('[onDisconnect] document="doc" remaining=2')
+  })
+})
+
+// The server arbitrates who seeds an empty room, because peers cannot agree
+// on it among themselves - Yjs never echoes an update back to its sender.
+describe('seeding arbitration', () => {
+  it('grants the first writer and denies the next', async () => {
+    const hooks = getHooks()
+    const first = connection('a')
+    const second = connection('b')
+
+    await hooks.onStateless(statelessPayload(first))
+    await hooks.onStateless(statelessPayload(second))
+
+    expect(first.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
+    expect(second.sendStateless).toHaveBeenCalledWith(SeedMessage.Denied)
+  })
+
+  // The server rejects their writes, so a read-only grantee would leave the
+  // room empty for everyone.
+  it('denies a read-only connection', async () => {
+    const conn = connection('a', true)
+
+    await getHooks().onStateless(statelessPayload(conn))
+
+    expect(conn.sendStateless).toHaveBeenCalledWith(SeedMessage.Denied)
+  })
+
+  it('answers the holder again with a grant', async () => {
+    const hooks = getHooks()
+    const conn = connection('a')
+
+    await hooks.onStateless(statelessPayload(conn))
+    await hooks.onStateless(statelessPayload(conn))
+
+    expect(conn.sendStateless).toHaveBeenNthCalledWith(2, SeedMessage.Granted)
+  })
+
+  it('grants each room separately', async () => {
+    const hooks = getHooks()
+    const first = connection('a')
+    const second = connection('b')
+
+    await hooks.onStateless(statelessPayload(first, 'doc-1'))
+    await hooks.onStateless(statelessPayload(second, 'doc-2'))
+
+    expect(first.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
+    expect(second.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
+  })
+
+  it('ignores an unrelated stateless payload', async () => {
+    const conn = connection('a')
+
+    await getHooks().onStateless(statelessPayload(conn, 'doc', 'something-else'))
+
+    expect(conn.sendStateless).not.toHaveBeenCalled()
+  })
+
+  // The holder may have left before seeding, and nobody else is allowed to.
+  it('passes the grant on when the holder leaves', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const peer = connection('b')
+
+    await hooks.onStateless(statelessPayload(holder))
+    await hooks.onDisconnect(disconnectPayload({ socketId: 'a', remaining: [peer] }))
+
+    expect(peer.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
+  })
+
+  it('skips read-only peers when passing the grant on', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const viewer = connection('b', true)
+    const writer = connection('c')
+
+    await hooks.onStateless(statelessPayload(holder))
+    await hooks.onDisconnect(disconnectPayload({ socketId: 'a', remaining: [viewer, writer] }))
+
+    expect(viewer.sendStateless).not.toHaveBeenCalled()
+    expect(writer.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
+  })
+
+  it('passes the grant on to exactly one writer', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const first = connection('b')
+    const second = connection('c')
+
+    await hooks.onStateless(statelessPayload(holder))
+    await hooks.onDisconnect(disconnectPayload({ socketId: 'a', remaining: [first, second] }))
+
+    expect(first.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
+    expect(second.sendStateless).not.toHaveBeenCalled()
+    // The new holder is on record: a later request from the other writer is refused.
+    await hooks.onStateless(statelessPayload(second))
+    expect(second.sendStateless).toHaveBeenCalledWith(SeedMessage.Denied)
+  })
+
+  it('keeps the grant when someone other than the holder leaves', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const peer = connection('b')
+
+    await hooks.onStateless(statelessPayload(holder))
+    await hooks.onDisconnect(disconnectPayload({ socketId: 'b', remaining: [peer] }))
+
+    expect(peer.sendStateless).not.toHaveBeenCalled()
+  })
+
+  it('grants again once the room is gone', async () => {
+    const hooks = getHooks()
+    const first = connection('a')
+    const second = connection('b')
+
+    await hooks.onStateless(statelessPayload(first))
+    await hooks.afterUnloadDocument({ documentName: 'doc' } as any)
+    await hooks.onStateless(statelessPayload(second))
+
+    expect(second.sendStateless).toHaveBeenCalledWith(SeedMessage.Granted)
   })
 })

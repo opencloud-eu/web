@@ -31,7 +31,7 @@ Feature: yjs collaborative editing
     And "Carol" opens file "example.md" via "text-editor" using the context menu
     And "Carol" should not see a yjs status
     And "Carol" is in a text-editor
-    And "Carol" should see the text "Brian says hello" in the text-editor
+    And "Carol" should see the text "Brian says hello" exactly once in the text-editor
     And "Carol" should not be able to edit the current file
 
     And "Alice" logs in
@@ -41,7 +41,7 @@ Feature: yjs collaborative editing
       | status    |
       | Connected |
     And "Alice" is in a text-editor
-    Then "Alice" should see the text "Brian says hello" in the text-editor
+    Then "Alice" should see the text "Brian says hello" exactly once in the text-editor
 
     When "Alice" enters the text "Alice says hello" in editor "TextEditor"
     Then "Brian" should see the text "Alice says hello" in the text-editor
@@ -181,8 +181,8 @@ Feature: yjs collaborative editing
     And "Alice" opens file "example.md" via "text-editor" using the context menu
     And "Alice" is in a text-editor
 
-    Then "Alice" should see the text "lorem ipsum" in the text-editor
-    And "Brian" should see the text "lorem ipsum" in the text-editor
+    Then "Alice" should see the text "lorem ipsum" exactly once in the text-editor
+    And "Brian" should see the text "lorem ipsum" exactly once in the text-editor
 
     When "Alice" enters the text "Alice says hello" in editor "TextEditor"
     Then "Brian" should see the text "Alice says hello" in the text-editor

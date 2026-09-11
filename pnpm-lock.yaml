@@ -101,7 +101,7 @@ catalogs:
       version: 17.0.6
 
 overrides:
-  epubjs>@xmldom/xmldom: ^0.9.10
+  epubjs>@xmldom/xmldom: ^0.9.12
   '@module-federation/dts-plugin>axios': ^1.6.0
   axios: 1.20.0
 
@@ -2538,10 +2538,9 @@ packages:
     peerDependencies:
       vue: ^3.5.0
 
-  '@xmldom/xmldom@0.9.10':
-    resolution: {integrity: sha512-A9gOqLdi6cV4ibazAjcQufGj0B1y/vDqYrcuP6d/6x8P27gRS8643Dj9o1dEKtB6O7fwxb2FgBmJS2mX7gpvdw==}
+  '@xmldom/xmldom@0.9.12':
+    resolution: {integrity: sha512-5AXjrcMClTryPe9LgZrygpB1lj7s0S9E0+W+AHaVKAVyHanafK86iPSvG5xHVSp/jC+VH1UXu0TAEmY279xH7A==}
     engines: {node: '>=14.6'}
-    deprecated: this version has critical issues, please update to the latest version
 
   abbrev@2.0.0:
     resolution: {integrity: sha512-6/mh1E2u2YgEsCHdY0Yx5oW+61gZU+1vXaoiHHrpKeuRNNgFvS+/jrwHiQhB5apAf5oB7UB7E19ol2R2LKH8hQ==}
@@ -6531,7 +6530,7 @@ snapshots:
     dependencies:
       vue: 3.5.42(typescript@6.0.3)
 
-  '@xmldom/xmldom@0.9.10': {}
+  '@xmldom/xmldom@0.9.12': {}
 
   abbrev@2.0.0: {}
 
@@ -7099,7 +7098,7 @@ snapshots:
   epubjs@0.3.93:
     dependencies:
       '@types/localforage': 0.0.34
-      '@xmldom/xmldom': 0.9.10
+      '@xmldom/xmldom': 0.9.12
       core-js: 3.50.0
       event-emitter: 0.3.5
       jszip: 3.10.1

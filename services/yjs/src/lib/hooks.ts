@@ -1,20 +1,22 @@
-import type { Extension } from '@hocuspocus/server'
+import type {
+  afterUnloadDocumentPayload,
+  connectedPayload,
+  Document,
+  Extension,
+  onDisconnectPayload,
+  onStatelessPayload
+} from '@hocuspocus/server'
 import { deterministicColor } from './color.ts'
 import { DeniedReason, isRefusal, refuse } from './errors.ts'
+import { encodeIdentityMessage } from './identity.ts'
 import {
   MAX_DOCUMENT_NAME_LENGTH,
   probeFileAccess,
   validateTokenAgainstOpenCloud
 } from './graph.ts'
+import { createSeedRegistry, SeedMessage } from './seedGrant.ts'
 
 export const HEALTH_ENDPOINT_PATH = '/healthz/ready'
-
-/**
- * Awareness field marking a connection as able to seed an empty room. Read by
- * the client's hydration election in `useYjsSession`; the name has
- * to match `SEED_CAPABLE_KEY` there.
- */
-export const SEED_CAPABLE_KEY = '_oc_canSeed'
 
 export type YjsUser = {
   id: string
@@ -105,6 +107,21 @@ export async function authenticate(
 }
 
 export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
+  const seedRegistry = createSeedRegistry()
+
+  /**
+   * Hand the seed grant to another writer in the room. Called when the holder
+   * leaves, which may have happened before it seeded.
+   */
+  function passSeedGrantOn(document: Document, documentName: string): void {
+    const writer = document.getConnections().find((connection) => !connection.readOnly)
+    if (!writer) {
+      return
+    }
+    seedRegistry.grantTo(documentName, writer.socketId)
+    writer.sendStateless(SeedMessage.Granted)
+  }
+
   return {
     async onRequest({ request, response }: RequestPayload): Promise<void> {
       const requestPath = request.url?.split('?')[0] ?? '/'
@@ -155,16 +172,51 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
       console.log(`[onConnect] document=${JSON.stringify(documentName)} origin=${origin}`)
     },
 
+    /**
+     * Hand the connection its own identity, see `identity.ts`. Runs after
+     * authentication, so the context is populated.
+     */
+    async connected({ connection, context }: connectedPayload<YjsContext>): Promise<void> {
+      const user = context?.user ?? connection.context?.user
+      if (!user) {
+        return
+      }
+      connection.sendStateless(encodeIdentityMessage(user))
+    },
+
     async onDisconnect({
       documentName,
-      clientsCount
-    }: {
-      documentName: string
-      clientsCount: number
-    }): Promise<void> {
+      clientsCount,
+      socketId,
+      document
+    }: onDisconnectPayload<YjsContext>): Promise<void> {
       console.log(
         `[onDisconnect] document=${JSON.stringify(documentName)} remaining=${clientsCount}`
       )
+      if (seedRegistry.release(documentName, socketId)) {
+        passSeedGrantOn(document, documentName)
+      }
+    },
+
+    /**
+     * Safety net only: the holder's `onDisconnect` has normally released the
+     * grant by the time the room unloads.
+     */
+    async afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
+      seedRegistry.forget(documentName)
+    },
+
+    /**
+     * Seeding arbitration, see `seedGrant.ts`. The answer is permission, not
+     * an instruction: the client still checks its own document first, so a
+     * grant for a room that already has content costs nothing.
+     */
+    async onStateless({ connection, documentName, payload }: onStatelessPayload): Promise<void> {
+      if (payload !== SeedMessage.Request) {
+        return
+      }
+      const granted = seedRegistry.request(documentName, connection.socketId, connection.readOnly)
+      connection.sendStateless(granted ? SeedMessage.Granted : SeedMessage.Denied)
     },
 
     /**
@@ -182,11 +234,8 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
         name: user.displayName,
         color: user.color
       }
-      const readOnly = Boolean(context?.readOnly ?? connection?.context?.readOnly)
       for (const state of states.values()) {
         state.user = canonical
-        // Whether this connection may seed (hydrate) an empty room
-        state[SEED_CAPABLE_KEY] = !readOnly
       }
     }
   } satisfies Extension<YjsContext>
