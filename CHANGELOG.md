@@ -16,8 +16,30 @@
 - chore!: remove @sentry/vue [[#3258](https://github.com/opencloud-eu/web/pull/3258)]
 - refactor!: drop mark.js [[#3253](https://github.com/opencloud-eu/web/pull/3253)]
 
+### 🔒 Security
+
+- chore(deps): bump @xmldom/xmldom to 0.9.12 [[#3350](https://github.com/opencloud-eu/web/pull/3350)]
+
+### 📈 Enhancement
+
+- feat(editor): show users in active yjs session [[#3345](https://github.com/opencloud-eu/web/pull/3345)]
+- feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
+- feat: motion photo support [[#2819](https://github.com/opencloud-eu/web/pull/2819)]
+- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
+- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
+- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
+- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
+- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
+- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
+- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
+
 ### 🐛 Bug Fixes
 
+- fix(yjs): let the server decide who seeds an empty room [[#3331](https://github.com/opencloud-eu/web/pull/3331)]
 - fix(preview): re-fetch signed URL when video playback fails [[#3340](https://github.com/opencloud-eu/web/pull/3340)]
 - fix: add emoji slash entry and tighten emoji picker modal width [[#3310](https://github.com/opencloud-eu/web/pull/3310)]
 - fix: stop re-fetching resources in AppWrapper on every context change [[#3324](https://github.com/opencloud-eu/web/pull/3324)]
@@ -41,22 +63,6 @@
 - Persist selected language for plain layout pages [[#3244](https://github.com/opencloud-eu/web/pull/3244)]
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
-
-### 📈 Enhancement
-
-- feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
-- feat: motion photo support [[#2819](https://github.com/opencloud-eu/web/pull/2819)]
-- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
-- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
-- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
-- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
-- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
-- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
-- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
-- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
-- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
-- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
-- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
 
 ### ✅ Tests
 
