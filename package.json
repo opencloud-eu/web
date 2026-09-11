@@ -84,5 +84,10 @@
   "packageManager": "pnpm@11.26.0",
   "volta": {
     "node": "24.21.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "@xmldom/xmldom": "0.9.12"
+    }
   }
 }
