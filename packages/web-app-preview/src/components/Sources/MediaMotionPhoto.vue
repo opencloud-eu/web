@@ -10,7 +10,7 @@
         autoplay
         playsinline
         preload="auto"
-        class="max-w-full max-h-full object-contain"
+        class="size-full object-contain"
         data-testid="motion-photo-video"
         @loadedmetadata="seekToStill"
         @ended="onEnded"
