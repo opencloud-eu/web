@@ -189,16 +189,8 @@ const dropItemUrl = computed(() => {
   return getInputUrlWithProtocol(unref(inputUrl))
 })
 
-const inputFilenameWithExtension = computed(() => {
-  if (!unref(inputFilename)) {
-    return ''
-  }
-
-  return `${unref(inputFilename)}.url`
-})
-
 const inputFilenameValidation = computed(() => {
-  const newName = unref(inputFilenameWithExtension)
+  const newName = `${unref(inputFilename)}.url`
   const resource = {
     path: urlJoin(unref(currentFolder)?.path || '/', newName),
     name: newName,
