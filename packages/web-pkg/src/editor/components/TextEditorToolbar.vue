@@ -10,7 +10,7 @@
       <div
         v-for="group in renderedGroups"
         :key="`toolbar-group-${group.id}`"
-        class="text-editor-toolbar-group items-stretch"
+        class="text-editor-toolbar-group items-stretch gap-1"
         :class="
           group.hasVisibleActions
             ? { 'inline-flex': true, 'border-l border-l-role-border pl-1': group.showSeparator }
@@ -73,7 +73,7 @@
             <div
               v-for="(group, groupIndex) in overflowGroups"
               :key="`toolbar-overflow-group-${group.id}`"
-              class="inline-flex items-stretch"
+              class="inline-flex items-stretch gap-1"
               :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
             >
               <text-editor-toolbar-item
