@@ -45,6 +45,7 @@ export interface EditorAction {
   showInToolbar?: boolean
   showInSlashCommands?: boolean
   menuCloseOnClick?: boolean
+  menuEnforceDropOnMobile?: boolean
   menuComponent?: Component
   menuComponentAttrs?: (editor: Editor, closeMenu: () => void) => Record<string, unknown>
 
@@ -775,6 +776,7 @@ export function useEditorActions(state: TextEditorState) {
       })
     },
     menuCloseOnClick: false,
+    menuEnforceDropOnMobile: true,
     menuComponent: markRaw(OcEmojiPicker),
     menuComponentAttrs: (editor, closeMenu) => ({
       theme: unref(currentTheme)?.isDark ? 'dark' : 'light',
