@@ -73,12 +73,12 @@ describe('MonthView', () => {
 
   it('renders loading and error states', () => {
     expect(
-      getWrapper({ isLoading: true }).wrapper.findComponent({ name: 'AppLoadingSpinner' }).exists()
+      getWrapper({ isLoading: true }).wrapper.get('[data-testid="calendar-loading"]')
     ).toBeTruthy()
 
     const { wrapper } = getWrapper({ error: new Error('No connection') })
     expect(wrapper.get('[data-testid="calendar-month-error"]').text()).toContain(
-      'Appointments could not be loaded'
+      'Calendar could not be loaded'
     )
     expect(wrapper.text()).not.toContain('No connection')
   })
@@ -116,7 +116,7 @@ const getWrapper = (props: Partial<InstanceType<typeof MonthView>['$props']> = {
         stubs: {
           AppLoadingSpinner: {
             name: 'AppLoadingSpinner',
-            template: '<div data-testid="calendar-loading" />'
+            template: '<div data-testid="calendar-loading-spinner" />'
           }
         }
       }
