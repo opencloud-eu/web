@@ -89,7 +89,7 @@
       </template>
     </oc-list>
   </oc-drop>
-  <div v-if="inputFilename" class="flex w-full mt-4">
+  <div v-show="inputFilename" class="flex w-full mt-4">
     <oc-text-input
       id="create-shortcut-modal-filename-input"
       v-model="inputFilename"
@@ -126,10 +126,11 @@ import {
   useTemplateRef,
   watch
 } from 'vue'
-import { SpaceResource, urlJoin } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import {
   Modal,
   useClientService,
+  useIsResourceNameValid,
   useMessages,
   useResourcesStore,
   useRouter,
@@ -164,6 +165,7 @@ const { $gettext } = useGettext()
 const { showMessage, showErrorMessage } = useMessages()
 const router = useRouter()
 const { search } = useSearch()
+const { isFileNameValid } = useIsResourceNameValid()
 
 const resourcesStore = useResourcesStore()
 const { resources, currentFolder } = storeToRefs(resourcesStore)
@@ -187,12 +189,19 @@ const dropItemUrl = computed(() => {
   return getInputUrlWithProtocol(unref(inputUrl))
 })
 
-const fileAlreadyExists = computed(
-  () => !!unref(resources).find((file) => file.name === `${unref(inputFilename)}.url`)
-)
+const inputFilenameValidation = computed(() => {
+  const newName = `${unref(inputFilename)}.url`
+  const resource = {
+    path: urlJoin(unref(currentFolder)?.path || '/', newName),
+    name: newName,
+    extension: 'url'
+  } as Resource
+
+  return isFileNameValid(resource, newName, unref(resources))
+})
 
 const confirmButtonDisabled = computed(
-  () => unref(fileAlreadyExists) || !unref(inputFilename) || !unref(inputUrl)
+  () => !unref(inputUrl) || !unref(inputFilename) || !unref(inputFilenameValidation).isValid
 )
 
 watch(
@@ -204,15 +213,11 @@ watch(
 )
 
 const inputFileNameErrorMessage = computed(() => {
-  if (unref(fileAlreadyExists)) {
-    return $gettext('»%{name}« already exists', { name: `${unref(inputFilename)}.url` })
+  if (unref(inputFilenameValidation).isValid) {
+    return ''
   }
 
-  if (/[/]/.test(unref(inputFilename))) {
-    return $gettext('Shortcut name cannot contain "/"')
-  }
-
-  return ''
+  return unref(inputFilenameValidation).error || ''
 })
 
 const searchTask = useTask(function* (signal, searchTerm: string) {
