@@ -1,5 +1,5 @@
 <template>
-  <div class="w-[20rem] max-w-[calc(100vw-1rem)] rounded-md bg-role-surface p-2">
+  <div class="min-w-[20rem] rounded-md bg-role-surface p-2">
     <div class="flex items-center justify-between gap-2 px-1 py-1">
       <span class="text-sm text-role-on-surface-variant" data-testid="editor-search-result-counter">
         {{ resultPositionLabel }}
