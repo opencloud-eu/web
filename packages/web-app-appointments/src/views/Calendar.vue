@@ -3,14 +3,13 @@
     <MonthView
       :days="monthDays"
       :current-month="currentMonth"
-      :visible-occurrences="visibleOccurrences"
       :occurrences-by-day="occurrencesByDay"
       :calendar-color-by-id="calendarColorById"
       :is-loading="isCalendarLoading"
       :error="calendarLoadError"
-      @previous="onPreviousMonth"
-      @next="onNextMonth"
-      @today="onToday"
+      @previous="goToPreviousMonth"
+      @next="goToNextMonth"
+      @today="goToToday"
       @select-date="setSelectedDate"
       @select-appointment="setSelectedOccurrence"
     />
@@ -18,7 +17,7 @@
       v-if="selectedOccurrence"
       :occurrence="selectedOccurrence"
       :calendar="selectedOccurrenceCalendar"
-      @close="setSelectedOccurrence(null)"
+      @close="setSelectedOccurrence()"
     />
   </div>
 </template>
@@ -45,78 +44,62 @@ const accountsStore = useGroupwareAccountsStore()
 const appointmentsStore = useAppointmentsStore()
 const { loadCurrentAccount } = accountsStore
 const { httpAuthenticated } = useClientService()
-const { loadAppointments, loadCalendars } = useLoadAppointments()
+const { clearAppointments, loadAppointments, loadCalendars, isLoading, error } =
+  useLoadAppointments()
 
 const { currentAccount, isLoading: isLoadingAccounts } = storeToRefs(accountsStore)
 const {
-  calendarError,
   calendarColorById,
+  calendarIds,
   calendarsById,
-  currentMonthRange,
   currentMonth,
-  error,
-  isLoading: isLoadingAppointments,
-  isLoadingCalendars,
+  currentMonthRange,
   monthDays,
   occurrencesByDay,
-  selectedCalendarIds,
-  selectedOccurrence,
-  visibleOccurrences
+  selectedOccurrence
 } = storeToRefs(appointmentsStore)
 const { goToNextMonth, goToPreviousMonth, goToToday, setSelectedDate, setSelectedOccurrence } =
   appointmentsStore
 
 const currentAccountIdQuery = useRouteQuery('accountId')
 const isInitializing = ref(true)
+const accountError = ref<Error>()
 const loadedAccountId = ref<string>()
 
-const currentAccountId = computed(() => {
-  return unref(currentAccount)?.accountId
-})
+const currentAccountId = computed(() => unref(currentAccount)?.accountId)
+
 const selectedOccurrenceCalendar = computed(() => {
   const occurrence = unref(selectedOccurrence)
   return occurrence?.calendarId ? unref(calendarsById)[occurrence.calendarId] : undefined
 })
+
 const isCalendarLoading = computed(() => {
-  return (
-    unref(isInitializing) ||
-    unref(isLoadingAccounts) ||
-    unref(isLoadingCalendars) ||
-    unref(isLoadingAppointments)
-  )
+  return unref(isInitializing) || unref(isLoadingAccounts) || unref(isLoading)
 })
-const calendarLoadError = computed(() => unref(calendarError) || unref(error))
 
-function ignoreLoadError(): void {}
+const calendarLoadError = computed(() => unref(accountError) || unref(error))
 
-async function loadVisibleAppointments() {
-  appointmentsStore.setVisibleDateRange(unref(currentMonthRange))
+// Load errors are logged and exposed via `error` by the loading tasks already.
+const ignoreHandledError = () => {}
 
-  if (!unref(currentAccountId)) {
-    appointmentsStore.setError(null)
-    appointmentsStore.setAppointments([])
+const loadVisibleAppointments = async () => {
+  const accountId = unref(currentAccountId)
+
+  if (!accountId || !unref(calendarIds).length) {
+    clearAppointments()
     return
   }
 
-  if (!unref(selectedCalendarIds).length) {
-    appointmentsStore.setError(null)
-    appointmentsStore.setAppointments([])
-    return
-  }
-
-  await loadAppointments(
-    unref(currentAccountId),
-    unref(currentMonthRange),
-    unref(selectedCalendarIds)
-  )
+  await loadAppointments(accountId, unref(currentMonthRange), unref(calendarIds))
 }
 
-async function loadAccountCalendars() {
+const loadAccountCalendars = async () => {
   const accountId = unref(currentAccountId)
   loadedAccountId.value = undefined
+  appointmentsStore.setActiveAccountId(accountId)
 
   if (!accountId) {
-    appointmentsStore.setActiveAccountId(null)
+    clearAppointments()
     return
   }
 
@@ -129,24 +112,12 @@ async function loadAccountCalendars() {
   await loadVisibleAppointments()
 }
 
-function onPreviousMonth() {
-  goToPreviousMonth()
-}
-
-function onNextMonth() {
-  goToNextMonth()
-}
-
-function onToday() {
-  goToToday()
-}
-
-watch([currentMonthRange, selectedCalendarIds], () => {
+watch(currentMonthRange, () => {
   if (unref(loadedAccountId) !== unref(currentAccountId)) {
     return
   }
 
-  loadVisibleAppointments().catch(ignoreLoadError)
+  loadVisibleAppointments().catch(ignoreHandledError)
 })
 
 watch(
@@ -155,7 +126,8 @@ watch(
     if (accountId || !unref(isInitializing)) {
       currentAccountIdQuery.value = accountId || null
     }
-    loadAccountCalendars().catch(ignoreLoadError)
+
+    loadAccountCalendars().catch(ignoreHandledError)
   },
   { immediate: true }
 )
@@ -165,8 +137,8 @@ onMounted(() => {
     client: httpAuthenticated,
     query: queryItemAsString(unref(currentAccountIdQuery)) || undefined
   })
-    .catch((error) => {
-      appointmentsStore.setCalendarError(error instanceof Error ? error : new Error(String(error)))
+    .catch((e: unknown) => {
+      accountError.value = e instanceof Error ? e : new Error(String(e))
     })
     .finally(() => {
       isInitializing.value = false
