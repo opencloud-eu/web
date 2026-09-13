@@ -6,8 +6,8 @@
       :visible-occurrences="visibleOccurrences"
       :occurrences-by-day="occurrencesByDay"
       :calendar-color-by-id="calendarColorById"
-      :is-loading="isLoading"
-      :error="error"
+      :is-loading="isCalendarLoading"
+      :error="calendarLoadError"
       @previous="onPreviousMonth"
       @next="onNextMonth"
       @today="onToday"
@@ -47,14 +47,16 @@ const { loadCurrentAccount } = accountsStore
 const { httpAuthenticated } = useClientService()
 const { loadAppointments, loadCalendars } = useLoadAppointments()
 
-const { currentAccount } = storeToRefs(accountsStore)
+const { currentAccount, isLoading: isLoadingAccounts } = storeToRefs(accountsStore)
 const {
+  calendarError,
   calendarColorById,
   calendarsById,
   currentMonthRange,
   currentMonth,
   error,
-  isLoading,
+  isLoading: isLoadingAppointments,
+  isLoadingCalendars,
   monthDays,
   occurrencesByDay,
   selectedCalendarIds,
@@ -65,6 +67,7 @@ const { goToNextMonth, goToPreviousMonth, goToToday, setSelectedDate, setSelecte
   appointmentsStore
 
 const currentAccountIdQuery = useRouteQuery('accountId')
+const isInitializing = ref(true)
 const loadedAccountId = ref<string>()
 
 const currentAccountId = computed(() => {
@@ -74,6 +77,15 @@ const selectedOccurrenceCalendar = computed(() => {
   const occurrence = unref(selectedOccurrence)
   return occurrence?.calendarId ? unref(calendarsById)[occurrence.calendarId] : undefined
 })
+const isCalendarLoading = computed(() => {
+  return (
+    unref(isInitializing) ||
+    unref(isLoadingAccounts) ||
+    unref(isLoadingCalendars) ||
+    unref(isLoadingAppointments)
+  )
+})
+const calendarLoadError = computed(() => unref(calendarError) || unref(error))
 
 function ignoreLoadError(): void {}
 
@@ -137,17 +149,27 @@ watch([currentMonthRange, selectedCalendarIds], () => {
   loadVisibleAppointments().catch(ignoreLoadError)
 })
 
-watch(currentAccountId, (accountId) => {
-  currentAccountIdQuery.value = accountId || null
-  loadAccountCalendars().catch(ignoreLoadError)
-})
+watch(
+  currentAccountId,
+  (accountId) => {
+    if (accountId || !unref(isInitializing)) {
+      currentAccountIdQuery.value = accountId || null
+    }
+    loadAccountCalendars().catch(ignoreLoadError)
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   loadCurrentAccount({
     client: httpAuthenticated,
     query: queryItemAsString(unref(currentAccountIdQuery)) || undefined
-  }).catch((error) => {
-    appointmentsStore.setCalendarError(error instanceof Error ? error : new Error(String(error)))
   })
+    .catch((error) => {
+      appointmentsStore.setCalendarError(error instanceof Error ? error : new Error(String(error)))
+    })
+    .finally(() => {
+      isInitializing.value = false
+    })
 })
 </script>

@@ -12,7 +12,7 @@ import { computed, markRaw, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import CalendarNavigation from './components/CalendarNavigation.vue'
 
-export const extensions = (appInfo: ApplicationInformation) => {
+export function extensions(appInfo: ApplicationInformation) {
   const capabilityStore = useCapabilityStore()
   const userStore = useUserStore()
   const { user } = storeToRefs(userStore)

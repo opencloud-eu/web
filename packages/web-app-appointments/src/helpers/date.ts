@@ -115,7 +115,7 @@ export function isAppointmentInRange(appointment: Appointment, range: Appointmen
     return appointmentStart >= rangeStart && appointmentStart <= rangeEnd
   }
 
-  return appointmentStart <= rangeEnd && appointmentEnd >= rangeStart
+  return appointmentStart <= rangeEnd && appointmentEnd > rangeStart
 }
 
 export function formatOccurrenceDateTime(
