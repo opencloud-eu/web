@@ -1,11 +1,11 @@
 import type { Appointment } from '../types'
 
-export const neutralCalendarColor = 'var(--oc-role-primary)'
+const NEUTRAL_APPOINTMENT_COLOR = 'var(--oc-role-primary)'
 
-export function resolveCalendarColor(color?: string) {
-  return color?.trim() || neutralCalendarColor
-}
-
-export function resolveAppointmentColor(appointment: Appointment, calendarColor?: string) {
-  return resolveCalendarColor(appointment.color || calendarColor)
+/**
+ * The Groupware API does not expose a color for every calendar, so appointments fall back to a
+ * neutral accent instead of a color that would carry no meaning.
+ */
+export const resolveAppointmentColor = (appointment: Appointment, calendarColor?: string) => {
+  return appointment.color?.trim() || calendarColor?.trim() || NEUTRAL_APPOINTMENT_COLOR
 }

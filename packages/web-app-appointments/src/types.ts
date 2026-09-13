@@ -1,113 +1,117 @@
-import { DateTime, Duration } from 'luxon'
 import { z } from 'zod'
 
-export const AppointmentParticipantSchema = z
-  .object({
-    id: z.string().optional(),
-    name: z.string().optional(),
-    email: z.string().optional(),
-    status: z.string().optional(),
-    participationStatus: z.string().optional(),
-    role: z.string().optional(),
-    roles: z.record(z.string(), z.boolean()).optional()
-  })
-  .passthrough()
+/**
+ * JMAP sends `null` for properties that have no value (RFC 8620), so `null` and a missing
+ * property mean the same thing here.
+ */
+const optionalString = z
+  .string()
+  .nullish()
+  .transform((value) => value ?? undefined)
 
-const AppointmentLocationSchema = z
-  .object({
-    name: z.string().optional()
-  })
-  .passthrough()
+const optionalBoolean = z
+  .boolean()
+  .nullish()
+  .transform((value) => value ?? undefined)
 
-const RecurrenceRuleSchema = z.union([z.string(), z.record(z.string(), z.unknown())])
-const AppointmentParticipantsSchema = z.union([
-  z.array(AppointmentParticipantSchema),
-  z.record(z.string(), AppointmentParticipantSchema)
-])
-const AppointmentAlertsSchema = z.union([z.array(z.unknown()), z.record(z.string(), z.unknown())])
-
-const AppointmentInputSchema = z.object({
-  id: z.string(),
-  uid: z.string().optional(),
-  calendarId: z.string().optional(),
-  calendarIds: z.record(z.string(), z.boolean()).optional(),
-  accountId: z.string().optional(),
-  title: z.string().optional(),
-  name: z.string().optional(),
-  summary: z.string().optional(),
-  description: z.string().optional(),
-  location: z.string().optional(),
-  locations: z.record(z.string(), AppointmentLocationSchema).optional(),
-  start: z.string(),
-  end: z.string().optional(),
-  duration: z.string().optional(),
-  timeZone: z.string().nullable().optional(),
-  showWithoutTime: z.boolean().optional(),
-  allDay: z.boolean().optional(),
-  color: z.string().optional(),
-  organizer: AppointmentParticipantSchema.optional(),
-  participants: AppointmentParticipantsSchema.optional(),
-  privacy: z.string().optional(),
-  visibility: z.string().optional(),
-  status: z.string().optional(),
-  freeBusyStatus: z.string().optional(),
-  recurrenceRule: z.string().optional(),
-  recurrenceRules: z.array(RecurrenceRuleSchema).optional(),
-  recurrenceId: z.string().optional(),
-  recurrenceOverrides: z.record(z.string(), z.unknown()).optional(),
-  excluded: z.boolean().optional(),
-  alerts: AppointmentAlertsSchema.optional(),
-  useDefaultAlerts: z.boolean().optional()
+export const CalendarEventParticipantSchema = z.object({
+  id: optionalString,
+  name: optionalString,
+  email: optionalString,
+  status: optionalString,
+  participationStatus: optionalString,
+  role: optionalString,
+  roles: z.record(z.string(), z.boolean()).nullish()
 })
 
-export const AppointmentSchema = AppointmentInputSchema.transform(normalizeAppointment)
+export const CalendarEventLocationSchema = z.object({
+  name: optionalString
+})
 
-export const AppointmentListResponseSchema = z.object({
+export const RecurrenceRuleSchema = z.union([z.string(), z.record(z.string(), z.unknown())])
+
+export const CalendarEventParticipantsSchema = z.union([
+  z.array(CalendarEventParticipantSchema),
+  z.record(z.string(), CalendarEventParticipantSchema)
+])
+
+export const CalendarEventAlertsSchema = z.union([
+  z.array(z.unknown()),
+  z.record(z.string(), z.unknown())
+])
+
+export const CalendarEventSchema = z.object({
+  id: z.string(),
+  uid: optionalString,
+  calendarId: optionalString,
+  calendarIds: z.record(z.string(), z.boolean()).nullish(),
+  accountId: optionalString,
+  title: optionalString,
+  name: optionalString,
+  summary: optionalString,
+  description: optionalString,
+  location: optionalString,
+  locations: z.record(z.string(), CalendarEventLocationSchema).nullish(),
+  start: z.string(),
+  end: optionalString,
+  duration: optionalString,
+  timeZone: optionalString,
+  showWithoutTime: optionalBoolean,
+  allDay: optionalBoolean,
+  color: optionalString,
+  organizer: CalendarEventParticipantSchema.nullish(),
+  participants: CalendarEventParticipantsSchema.nullish(),
+  privacy: optionalString,
+  visibility: optionalString,
+  status: optionalString,
+  freeBusyStatus: optionalString,
+  recurrenceRule: optionalString,
+  recurrenceRules: z.array(RecurrenceRuleSchema).nullish(),
+  recurrenceId: optionalString,
+  recurrenceOverrides: z.record(z.string(), z.unknown()).nullish(),
+  excluded: optionalBoolean,
+  alerts: CalendarEventAlertsSchema.nullish(),
+  useDefaultAlerts: optionalBoolean
+})
+
+export const CalendarEventListResponseSchema = z.object({
   accountId: z.string().optional(),
   state: z.string().optional(),
-  list: z.array(AppointmentSchema).optional().default([]),
+  list: z.array(CalendarEventSchema),
   notFound: z.array(z.string()).optional()
 })
 
-export const AppointmentSearchResultsSchema = z.object({
-  results: z.array(AppointmentSchema).optional().default([]),
-  canCalculateChanges: z.boolean().optional(),
-  position: z.number().optional(),
-  limit: z.number().optional(),
-  total: z.number().optional()
-})
-
-export const AppointmentsArrayResponseSchema = z.array(AppointmentSchema)
-
-export const CalendarSchema = z
+export const CalendarEventSearchResultsSchema = z
   .object({
-    id: z.string().optional(),
-    calendarId: z.string().optional(),
-    name: z.string().optional(),
-    title: z.string().optional(),
-    displayName: z.string().optional(),
-    color: z.string().optional(),
-    isDefault: z.boolean().optional(),
-    isReadOnly: z.boolean().optional()
+    results: z.array(CalendarEventSchema).optional().default([]),
+    canCalculateChanges: optionalBoolean,
+    position: z.number().nullish(),
+    limit: z.number().nullish(),
+    total: z.number().nullish()
   })
-  .transform((calendar, ctx) => {
-    const id = calendar.id || calendar.calendarId
-    if (!id) {
-      ctx.addIssue({
-        code: 'custom',
-        message: 'Calendar id is required'
-      })
-      return z.NEVER
-    }
+  // The Groupware API omits `results` entirely when nothing matched, so the envelope has to be
+  // recognized by one of its other properties.
+  .refine(
+    (value) =>
+      value.results.length > 0 ||
+      [value.canCalculateChanges, value.position, value.limit, value.total].some(
+        (property) => property !== undefined && property !== null
+      ),
+    { message: 'Not a calendar event query response' }
+  )
 
-    return {
-      id,
-      name: calendar.name || calendar.title || calendar.displayName || id,
-      color: calendar.color,
-      isDefault: calendar.isDefault,
-      isReadOnly: calendar.isReadOnly
-    }
-  })
+export const CalendarEventsArrayResponseSchema = z.array(CalendarEventSchema)
+
+export const CalendarSchema = z.object({
+  id: optionalString,
+  calendarId: optionalString,
+  name: optionalString,
+  title: optionalString,
+  displayName: optionalString,
+  color: optionalString,
+  isDefault: optionalBoolean,
+  isReadOnly: optionalBoolean
+})
 
 export const CalendarListResponseSchema = z.object({
   accountId: z.string().optional(),
@@ -122,6 +126,11 @@ export const CalendarObjectResponseSchema = z.object({
 
 export const CalendarsArrayResponseSchema = z.array(CalendarSchema)
 
+export type CalendarEvent = z.infer<typeof CalendarEventSchema>
+export type CalendarEventParticipant = z.infer<typeof CalendarEventParticipantSchema>
+export type CalendarEventListResponse = z.infer<typeof CalendarEventListResponseSchema>
+export type RawCalendar = z.infer<typeof CalendarSchema>
+
 export type AppointmentParticipant = {
   id?: string
   name?: string
@@ -130,7 +139,7 @@ export type AppointmentParticipant = {
   role?: string
 }
 
-export type AppointmentRecurrenceRule = string | Record<string, unknown>
+export type AppointmentRecurrenceRule = z.infer<typeof RecurrenceRuleSchema>
 
 export type Appointment = {
   id: string
@@ -166,8 +175,6 @@ export type AppointmentOccurrence = {
   appointment: Appointment
 }
 
-export type AppointmentListResponse = z.infer<typeof AppointmentListResponseSchema>
-
 export type Calendar = {
   id: string
   name: string
@@ -181,31 +188,23 @@ export type AppointmentDateRange = {
   end: string
 }
 
-export function parseAppointmentsResponse(data: unknown): Appointment[] {
-  const arrayResponse = AppointmentsArrayResponseSchema.safeParse(data)
+export const parseCalendarEventsResponse = (data: unknown): CalendarEvent[] => {
+  const arrayResponse = CalendarEventsArrayResponseSchema.safeParse(data)
   if (arrayResponse.success) {
     return arrayResponse.data
   }
 
-  const singleResponse = AppointmentSchema.safeParse(data)
-  if (singleResponse.success) {
-    return [singleResponse.data]
-  }
-
-  const searchResponse = AppointmentSearchResultsSchema.safeParse(data)
-  if (searchResponse.success) {
-    return searchResponse.data.results
-  }
-
-  const listResponse = AppointmentListResponseSchema.safeParse(data)
+  // JMAP `/get` envelope.
+  const listResponse = CalendarEventListResponseSchema.safeParse(data)
   if (listResponse.success) {
     return listResponse.data.list
   }
 
-  return AppointmentSearchResultsSchema.parse(data).results
+  // JMAP `/query` envelope, which is what the events endpoint returns.
+  return CalendarEventSearchResultsSchema.parse(data).results
 }
 
-export function parseCalendarsResponse(data: unknown): Calendar[] {
+export const parseCalendarsResponse = (data: unknown): RawCalendar[] => {
   const listResponse = CalendarListResponseSchema.safeParse(data)
   if (listResponse.success) {
     return listResponse.data.list
@@ -221,100 +220,5 @@ export function parseCalendarsResponse(data: unknown): Calendar[] {
     return arrayResponse.data
   }
 
-  const singleResponse = CalendarSchema.safeParse(data)
-  if (singleResponse.success) {
-    return [singleResponse.data]
-  }
-
   return CalendarListResponseSchema.parse(data).list
-}
-
-type AppointmentInput = z.infer<typeof AppointmentInputSchema>
-type AppointmentParticipantInput = z.infer<typeof AppointmentParticipantSchema>
-
-function normalizeAppointment(event: AppointmentInput): Appointment {
-  const calendarId =
-    event.calendarId ||
-    Object.entries(event.calendarIds || {}).find(([, isMember]) => isMember)?.[0]
-  const participants = normalizeParticipants(event.participants)
-  const recurrenceRules: AppointmentRecurrenceRule[] = [
-    ...(event.recurrenceRule ? [event.recurrenceRule] : []),
-    ...(event.recurrenceRules || [])
-  ]
-
-  return {
-    id: event.id,
-    uid: event.uid,
-    calendarId,
-    accountId: event.accountId,
-    title: event.title || event.name || event.summary || '',
-    description: event.description,
-    location: event.location || Object.values(event.locations || {})[0]?.name,
-    start: event.start,
-    end: event.end || addDurationToDateString(event.start, event.duration, event.timeZone),
-    timeZone: event.timeZone || undefined,
-    allDay: event.allDay || event.showWithoutTime || false,
-    color: event.color,
-    organizer: event.organizer
-      ? normalizeParticipant(event.organizer)
-      : participants.find(({ role }) => ['chair', 'owner', 'organizer'].includes(role || '')),
-    participants,
-    privacy: event.privacy || event.visibility,
-    status: event.status,
-    freeBusyStatus: event.freeBusyStatus,
-    recurrenceRules,
-    recurrenceId: event.recurrenceId,
-    hasRecurrence: Boolean(
-      recurrenceRules.length ||
-      event.recurrenceId ||
-      Object.keys(event.recurrenceOverrides || {}).length
-    ),
-    hasReminder: Boolean(
-      event.useDefaultAlerts ||
-      (Array.isArray(event.alerts) ? event.alerts.length : Object.keys(event.alerts || {}).length)
-    ),
-    excluded: event.excluded || false
-  }
-}
-
-function normalizeParticipants(
-  participants: AppointmentInput['participants']
-): AppointmentParticipant[] {
-  if (!participants) {
-    return []
-  }
-
-  if (Array.isArray(participants)) {
-    return participants.map(normalizeParticipant)
-  }
-
-  return Object.entries(participants).map(([id, participant]) =>
-    normalizeParticipant({ ...participant, id })
-  )
-}
-
-function normalizeParticipant(participant: AppointmentParticipantInput): AppointmentParticipant {
-  return {
-    id: participant.id,
-    name: participant.name,
-    email: participant.email,
-    status: participant.status || participant.participationStatus,
-    role:
-      participant.role ||
-      Object.entries(participant.roles || {}).find(([, enabled]) => enabled)?.[0]
-  }
-}
-
-function addDurationToDateString(start: string, duration?: string, timeZone?: string | null) {
-  if (!duration) {
-    return start
-  }
-
-  const startDate = DateTime.fromISO(start, timeZone ? { zone: timeZone } : { setZone: true })
-  const parsedDuration = Duration.fromISO(duration)
-  if (!startDate.isValid || !parsedDuration.isValid) {
-    return start
-  }
-
-  return startDate.plus(parsedDuration).toISO() || start
 }

@@ -21,8 +21,9 @@
           <dt class="font-bold" v-text="$gettext('Calendar')" />
           <dd class="m-0 flex min-w-0 items-center gap-2">
             <span
+              v-if="calendar.color"
               class="size-3 shrink-0 rounded-full"
-              :style="{ backgroundColor: resolveCalendarColor(calendar.color) }"
+              :style="{ backgroundColor: calendar.color }"
               aria-hidden="true"
             />
             <span class="truncate" v-text="calendar.name" />
@@ -88,7 +89,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { resolveCalendarColor } from '../helpers/color'
 import { useAppointmentPresentation } from '../composables/useAppointmentPresentation'
 import type { AppointmentOccurrence, Calendar } from '../types'
 

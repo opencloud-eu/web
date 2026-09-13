@@ -1,17 +1,17 @@
 <template>
   <section
-    class="flex h-full min-h-0 flex-col overflow-hidden rounded-tl-lg bg-role-surface"
+    class="relative flex h-full min-h-0 flex-col overflow-hidden rounded-tl-lg bg-role-surface"
     data-testid="calendar-month-view"
   >
     <header
       class="grid shrink-0 grid-cols-[1fr_auto_1fr] items-center gap-4 bg-role-surface px-4 py-3"
     >
       <div class="min-w-0">
-        <h1 class="truncate text-xl font-bold" v-text="$gettext('Calendar')" />
+        <h1 class="truncate text-xl font-bold" v-text="$gettext('Appointments')" />
       </div>
 
       <div class="flex items-center justify-center gap-3">
-        <h2 class="min-w-52 text-center text-xl font-bold" v-text="monthLabel" />
+        <h2 :id="monthLabelId" class="min-w-52 text-center text-xl font-bold" v-text="monthLabel" />
         <oc-button
           data-testid="calendar-previous-button"
           appearance="raw"
@@ -49,10 +49,11 @@
     >
       <div
         v-for="weekday in weekdays"
-        :key="weekday"
+        :key="weekday.key"
         class="border-l border-role-outline-variant px-3 py-4 text-center text-sm text-role-on-surface"
         role="columnheader"
-        v-text="weekday"
+        :aria-label="weekday.fullLabel"
+        v-text="weekday.label"
       />
     </div>
 
@@ -66,45 +67,56 @@
 
     <div
       v-else-if="error"
-      class="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-6 text-center"
+      class="flex min-h-0 flex-1 items-center justify-center overflow-auto"
       data-testid="calendar-month-error"
     >
-      <p class="text-lg font-bold" v-text="$gettext('Calendar could not be loaded')" />
+      <no-content-message icon="calendar" icon-fill-type="line">
+        <template #message>
+          <span v-text="$gettext('Appointments could not be loaded')" />
+        </template>
+      </no-content-message>
     </div>
 
-    <div v-else class="grid min-h-0 flex-1 grid-cols-7 auto-rows-fr" role="grid">
+    <div
+      v-else
+      ref="grid"
+      class="grid min-h-0 flex-1 grid-cols-7 auto-rows-fr"
+      role="grid"
+      :aria-labelledby="monthLabelId"
+      @keydown="onGridKeydown"
+    >
       <div
         v-for="day in days"
         :key="day.key"
         :class="[
-          'flex min-h-0 flex-col overflow-hidden border-b border-l border-role-outline-variant px-1 py-2 text-left',
+          'group flex min-h-0 cursor-pointer flex-col overflow-hidden border-b border-l border-role-outline-variant px-1 py-2 text-left',
           day.isCurrentMonth ? 'bg-role-surface' : 'bg-role-surface-container'
         ]"
+        :tabindex="day.key === activeDayKey ? 0 : -1"
+        :aria-label="formatDayLabel(day.date)"
         :data-is-today="day.isToday || undefined"
         :data-testid="`calendar-day-cell-${day.key}`"
         role="gridcell"
+        @click="selectDay(day)"
       >
         <div class="mb-4 flex shrink-0 items-center justify-center">
-          <button
-            type="button"
+          <span
             :class="[
-              'flex size-6 items-center justify-center rounded-full text-sm text-role-on-surface outline-offset-2 hover:bg-role-surface-container-highest focus-visible:outline focus-visible:outline-role-outline',
+              'flex size-6 items-center justify-center rounded-full text-sm text-role-on-surface group-hover:bg-role-surface-container-highest',
               day.isToday ? 'bg-role-primary-container text-role-on-primary-container' : '',
               !day.isCurrentMonth ? 'text-role-on-surface-variant' : ''
             ]"
-            :aria-label="formatDayLabel(day.date)"
-            :data-testid="`calendar-day-${day.key}`"
-            @click="$emit('select-date', day.date)"
+            aria-hidden="true"
             v-text="day.dayOfMonth"
           />
         </div>
 
         <div class="flex min-h-0 flex-col gap-1">
           <button
-            v-for="occurrence in occurrencesByDay[day.key]?.slice(0, 3) || []"
+            v-for="occurrence in getVisibleOccurrences(day.key)"
             :key="occurrence.id"
             type="button"
-            class="grid w-full grid-cols-[1fr_auto] gap-2 truncate rounded border-l-4 bg-role-surface-container px-2 py-1 text-left text-xs text-role-on-surface hover:bg-role-surface-container-highest focus-visible:outline focus-visible:outline-role-outline"
+            class="grid w-full grid-cols-[1fr_auto] gap-2 truncate rounded border-l-4 bg-role-surface-container px-2 py-1 text-left text-xs text-role-on-surface hover:bg-role-surface-container-highest"
             :style="{
               borderColor: resolveAppointmentColor(
                 occurrence.appointment,
@@ -113,7 +125,7 @@
             }"
             :title="occurrence.appointment.title"
             :data-testid="`calendar-appointment-${occurrence.id}`"
-            @click="$emit('select-appointment', occurrence.id)"
+            @click.stop="$emit('select-appointment', occurrence.id)"
           >
             <span
               class="truncate"
@@ -125,18 +137,16 @@
             />
           </button>
           <div
-            v-if="(occurrencesByDay[day.key]?.length || 0) > 3"
+            v-if="getHiddenOccurrenceCount(day.key)"
             class="truncate px-2 py-1 text-xs text-role-on-surface-variant"
-            v-text="
-              $gettext('+%{count} more', { count: (occurrencesByDay[day.key]?.length || 0) - 3 })
-            "
+            v-text="$gettext('+%{count} more', { count: getHiddenOccurrenceCount(day.key) })"
           />
         </div>
       </div>
     </div>
 
     <div
-      v-if="!isLoading && !error && !visibleOccurrences.length"
+      v-if="!isLoading && !error && !hasOccurrences"
       class="pointer-events-none absolute inset-x-0 bottom-6 flex justify-center"
     >
       <div
@@ -148,25 +158,34 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, unref, useId, useTemplateRef, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { AppLoadingSpinner, formatDateFromJSDate } from '@opencloud-eu/web-pkg'
-import { DateTime } from 'luxon'
+import { AppLoadingSpinner, NoContentMessage, formatDateFromJSDate } from '@opencloud-eu/web-pkg'
+import { DateTime, Info } from 'luxon'
 import { resolveAppointmentColor } from '../helpers/color'
 import { formatOccurrenceTimeRange, type CalendarDay } from '../helpers/date'
 import type { AppointmentOccurrence } from '../types'
 
-const props = defineProps<{
+const DAYS_PER_WEEK = 7
+const MAX_OCCURRENCES_PER_DAY = 3
+
+const {
+  days,
+  currentMonth,
+  occurrencesByDay,
+  calendarColorById,
+  isLoading,
+  error = undefined
+} = defineProps<{
   days: CalendarDay[]
   currentMonth: Date
-  visibleOccurrences: AppointmentOccurrence[]
   occurrencesByDay: Record<string, AppointmentOccurrence[]>
   calendarColorById: Record<string, string | undefined>
   isLoading: boolean
-  error: Error | null
+  error?: Error
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   previous: []
   next: []
   today: []
@@ -175,24 +194,36 @@ defineEmits<{
 }>()
 
 const { $gettext, current: currentLanguage } = useGettext()
-const weekdays = computed(() => [
-  $gettext('Mon'),
-  $gettext('Tue'),
-  $gettext('Wed'),
-  $gettext('Thu'),
-  $gettext('Fri'),
-  $gettext('Sat'),
-  $gettext('Sun')
-])
+const monthLabelId = useId()
+
+const weekdays = computed(() => {
+  const fullLabels = Info.weekdays('long', { locale: currentLanguage })
+
+  return Info.weekdays('short', { locale: currentLanguage }).map((label, index) => ({
+    key: fullLabels[index],
+    label,
+    fullLabel: fullLabels[index]
+  }))
+})
+
+const hasOccurrences = computed(() => Object.keys(occurrencesByDay).length > 0)
 
 const monthLabel = computed(() => {
-  return formatDateFromJSDate(props.currentMonth, currentLanguage, {
+  return formatDateFromJSDate(currentMonth, currentLanguage, {
     month: 'long',
     year: 'numeric'
   })
 })
 
-function formatOccurrenceTime(occurrence: AppointmentOccurrence) {
+const getVisibleOccurrences = (dateKey: string) => {
+  return (occurrencesByDay[dateKey] || []).slice(0, MAX_OCCURRENCES_PER_DAY)
+}
+
+const getHiddenOccurrenceCount = (dateKey: string) => {
+  return Math.max((occurrencesByDay[dateKey] || []).length - MAX_OCCURRENCES_PER_DAY, 0)
+}
+
+const formatOccurrenceTime = (occurrence: AppointmentOccurrence) => {
   if (occurrence.appointment.allDay) {
     return $gettext('All day')
   }
@@ -200,7 +231,102 @@ function formatOccurrenceTime(occurrence: AppointmentOccurrence) {
   return formatOccurrenceTimeRange(occurrence, currentLanguage)
 }
 
-function formatDayLabel(date: Date) {
+const formatDayLabel = (date: Date) => {
   return formatDateFromJSDate(date, currentLanguage, DateTime.DATE_FULL)
 }
+
+/**
+ * The month grid is a single tab stop. Which day cell is tabbable moves with the arrow keys
+ * (roving tabindex), so reaching the appointments does not require tabbing through every day.
+ */
+const grid = useTemplateRef<HTMLElement>('grid')
+const activeDayKey = ref<string>()
+
+const activeDayIndex = computed(() => days.findIndex(({ key }) => key === unref(activeDayKey)))
+
+watch(
+  () => days,
+  () => {
+    activeDayKey.value =
+      days.find(({ isToday, isCurrentMonth }) => isToday && isCurrentMonth)?.key ||
+      days.find(({ isCurrentMonth }) => isCurrentMonth)?.key
+  },
+  { immediate: true }
+)
+
+const selectDay = (day: CalendarDay) => {
+  activeDayKey.value = day.key
+  emit('select-date', day.date)
+}
+
+const focusDay = async (index: number) => {
+  const day = days[Math.min(Math.max(index, 0), days.length - 1)]
+  if (!day) {
+    return
+  }
+
+  activeDayKey.value = day.key
+  await nextTick()
+  unref(grid)?.querySelector<HTMLElement>(`[data-testid="calendar-day-cell-${day.key}"]`)?.focus()
+}
+
+const onGridKeydown = (event: KeyboardEvent) => {
+  // Appointments inside a cell are regular tab stops and bring their own keyboard handling.
+  if ((event.target as HTMLElement).getAttribute('role') !== 'gridcell') {
+    return
+  }
+
+  const index = unref(activeDayIndex)
+  if (index < 0) {
+    return
+  }
+
+  switch (event.key) {
+    case 'ArrowLeft':
+      focusDay(index - 1)
+      break
+    case 'ArrowRight':
+      focusDay(index + 1)
+      break
+    case 'ArrowUp':
+      focusDay(index - DAYS_PER_WEEK)
+      break
+    case 'ArrowDown':
+      focusDay(index + DAYS_PER_WEEK)
+      break
+    case 'Home':
+      focusDay(index - (index % DAYS_PER_WEEK))
+      break
+    case 'End':
+      focusDay(index + DAYS_PER_WEEK - 1 - (index % DAYS_PER_WEEK))
+      break
+    case 'PageUp':
+      emit('previous')
+      break
+    case 'PageDown':
+      emit('next')
+      break
+    case 'Enter':
+    case ' ':
+      selectDay(days[index])
+      break
+    default:
+      return
+  }
+
+  event.preventDefault()
+}
 </script>
+
+<style scoped>
+/*
+ * The global focus ring of the design system is drawn outside the element, where the neighbouring
+ * grid cells paint over it. Draw it inside instead, the same way the design system does for
+ * truncated resource names.
+ */
+[role='gridcell']:focus-visible,
+[role='gridcell'] button:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--oc-role-secondary);
+}
+</style>

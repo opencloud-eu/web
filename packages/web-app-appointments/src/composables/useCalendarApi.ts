@@ -1,8 +1,9 @@
 import { urlJoin } from '@opencloud-eu/web-client'
 import { useClientService, useConfigStore, type HttpClient } from '@opencloud-eu/web-pkg'
+import { normalizeAppointments, normalizeCalendars } from '../helpers/appointment'
 import { isAppointmentInRange } from '../helpers/date'
 import {
-  parseAppointmentsResponse,
+  parseCalendarEventsResponse,
   parseCalendarsResponse,
   type Appointment,
   type AppointmentDateRange,
@@ -11,104 +12,80 @@ import {
 
 export type CalendarApiOptions = {
   client: HttpClient
-  groupwareUrl: string
+  /** Resolved lazily so that a changed runtime config is picked up. */
+  groupwareUrl: () => string
 }
 
 export type CalendarApi = {
-  loadCalendars: (accountId: string, signal?: AbortSignal) => Promise<Calendar[]>
+  loadCalendars: (accountId: string, signal: AbortSignal) => Promise<Calendar[]>
   loadAppointments: (
     accountId: string,
     range: AppointmentDateRange,
-    calendarId?: string | string[],
-    signal?: AbortSignal
+    calendarIds: string[],
+    signal: AbortSignal
   ) => Promise<Appointment[]>
 }
 
-export function useCalendarApi() {
+export const useCalendarApi = (): CalendarApi => {
   const configStore = useConfigStore()
   const clientService = useClientService()
 
   return createCalendarApi({
     client: clientService.httpAuthenticated,
-    groupwareUrl: configStore.groupwareUrl
+    groupwareUrl: () => configStore.groupwareUrl
   })
 }
 
-export function createCalendarApi({ client, groupwareUrl }: CalendarApiOptions): CalendarApi {
-  function get(url: string, signal?: AbortSignal) {
-    if (signal) {
-      return client.get(url, { signal })
-    }
-
-    return client.get(url)
-  }
-
-  async function loadCalendars(accountId: string, signal?: AbortSignal) {
-    const { data } = await get(
-      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars'),
-      signal
+export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions): CalendarApi => {
+  const loadCalendars = async (accountId: string, signal: AbortSignal) => {
+    const { data } = await client.get(
+      urlJoin(groupwareUrl(), 'accounts', encodeURIComponent(accountId), 'calendars'),
+      { signal }
     )
 
-    return parseCalendarsResponse(data)
+    return normalizeCalendars(parseCalendarsResponse(data))
   }
 
-  async function loadAppointmentsFromCollection(
-    accountId: string,
-    range: AppointmentDateRange,
-    calendarId?: string,
-    signal?: AbortSignal
-  ): Promise<Appointment[]> {
-    const { data } = await get(
-      urlJoin(groupwareUrl, 'accounts', encodeURIComponent(accountId), 'calendars', 'events'),
-      signal
+  const loadEvents = async (accountId: string, calendarId: string, signal: AbortSignal) => {
+    const { data } = await client.get(
+      urlJoin(
+        groupwareUrl(),
+        'accounts',
+        encodeURIComponent(accountId),
+        'calendars',
+        encodeURIComponent(calendarId),
+        'events'
+      ),
+      { signal }
     )
 
-    return filterAppointments(parseAppointmentsResponse(data), range, calendarId)
+    return normalizeAppointments(parseCalendarEventsResponse(data)).map((appointment) => ({
+      ...appointment,
+      calendarId: appointment.calendarId || calendarId
+    }))
   }
 
-  async function loadAppointments(
+  /**
+   * MVP limitation: the Groupware API rejects every query parameter but `limit`, so the full
+   * event collection of each calendar is fetched and narrowed down to the visible range here.
+   */
+  const loadAppointments = async (
     accountId: string,
     range: AppointmentDateRange,
-    calendarId?: string | string[],
-    signal?: AbortSignal
-  ): Promise<Appointment[]> {
-    if (Array.isArray(calendarId)) {
-      const appointmentLists: Appointment[][] = await Promise.all(
-        calendarId.map((id) => loadAppointments(accountId, range, id, signal))
-      )
-
-      return deduplicateAppointments(appointmentLists.flat())
+    calendarIds: string[],
+    signal: AbortSignal
+  ) => {
+    if (!calendarIds.length) {
+      return []
     }
 
-    if (!calendarId) {
-      return loadAppointmentsFromCollection(accountId, range, undefined, signal)
-    }
+    const appointmentLists = await Promise.all(
+      calendarIds.map((calendarId) => loadEvents(accountId, calendarId, signal))
+    )
 
-    try {
-      const { data } = await get(
-        urlJoin(
-          groupwareUrl,
-          'accounts',
-          encodeURIComponent(accountId),
-          'calendars',
-          encodeURIComponent(calendarId),
-          'events'
-        ),
-        signal
-      )
-
-      const appointments = parseAppointmentsResponse(data).map((appointment) => ({
-        ...appointment,
-        calendarId: appointment.calendarId || calendarId
-      }))
-      return filterAppointments(appointments, range, calendarId)
-    } catch (error) {
-      if (!shouldFallbackToCollectionEndpoint(error)) {
-        throw error
-      }
-
-      return loadAppointmentsFromCollection(accountId, range, calendarId, signal)
-    }
+    return deduplicateAppointments(appointmentLists.flat()).filter((appointment) =>
+      isAppointmentInRange(appointment, range)
+    )
   }
 
   return {
@@ -117,30 +94,7 @@ export function createCalendarApi({ client, groupwareUrl }: CalendarApiOptions):
   }
 }
 
-function shouldFallbackToCollectionEndpoint(error: unknown) {
-  if (!error || typeof error !== 'object' || !('response' in error)) {
-    return false
-  }
-
-  const response = (error as { response?: { status?: number } }).response
-  return [400, 404, 405].includes(response?.status || 0)
-}
-
-function filterAppointments(
-  appointments: Appointment[],
-  range: AppointmentDateRange,
-  calendarId?: string
-) {
-  return appointments.filter((appointment) => {
-    if (calendarId && appointment.calendarId !== calendarId) {
-      return false
-    }
-
-    return isAppointmentInRange(appointment, range)
-  })
-}
-
-function deduplicateAppointments(appointments: Appointment[]) {
+const deduplicateAppointments = (appointments: Appointment[]) => {
   const seen = new Set<string>()
 
   return appointments.filter((appointment) => {
