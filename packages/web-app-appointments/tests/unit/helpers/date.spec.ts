@@ -4,6 +4,7 @@ import {
   getMonthGridDays,
   getMonthGridRange,
   groupAppointmentOccurrencesByDay,
+  isAppointmentInRange,
   toDateKey
 } from '../../../src/helpers/date'
 import type { Appointment } from '../../../src/types'
@@ -65,6 +66,32 @@ describe('calendar date helpers', () => {
 
     expect(occurrences).toHaveLength(1)
     expect(occurrences[0].id).toContain('series:2026-06-25T08:00:00.000Z')
+  })
+
+  it('treats appointment ends as exclusive at the visible range boundary', () => {
+    const range = {
+      start: '2026-06-25T00:00:00.000Z',
+      end: '2026-06-25T23:59:59.999Z'
+    }
+
+    expect(
+      isAppointmentInRange(
+        appointment({
+          start: '2026-06-24T23:00:00.000Z',
+          end: range.start
+        }),
+        range
+      )
+    ).toBeFalsy()
+    expect(
+      isAppointmentInRange(
+        appointment({
+          start: range.start,
+          end: '2026-06-25T01:00:00.000Z'
+        }),
+        range
+      )
+    ).toBeTruthy()
   })
 })
 

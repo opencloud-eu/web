@@ -56,7 +56,11 @@
       />
     </div>
 
-    <div v-if="isLoading" class="flex min-h-0 flex-1 items-center justify-center">
+    <div
+      v-if="isLoading"
+      class="flex min-h-0 flex-1 items-center justify-center"
+      data-testid="calendar-loading"
+    >
       <app-loading-spinner />
     </div>
 
@@ -65,7 +69,7 @@
       class="flex min-h-0 flex-1 flex-col items-center justify-center gap-2 px-6 text-center"
       data-testid="calendar-month-error"
     >
-      <p class="text-lg font-bold" v-text="$gettext('Appointments could not be loaded')" />
+      <p class="text-lg font-bold" v-text="$gettext('Calendar could not be loaded')" />
     </div>
 
     <div v-else class="grid min-h-0 flex-1 grid-cols-7 auto-rows-fr" role="grid">
