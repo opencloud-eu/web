@@ -107,10 +107,10 @@
         :data-test-yjs-status="yjsStatus"
       >
         <span
-          class="inline-flex size-5 items-center justify-center rounded-full border"
+          class="inline-flex size-6 items-center justify-center rounded-full border"
           :class="collaborationStatusClasses"
         >
-          <oc-icon :name="collaborationStatusIcon" fill-type="line" size-class="size-3" />
+          <oc-icon :name="collaborationStatusIcon" fill-type="line" size-class="size-4" />
         </span>
       </div>
     </div>
