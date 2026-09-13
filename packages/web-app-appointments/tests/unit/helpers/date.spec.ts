@@ -1,8 +1,8 @@
 import {
   addMonths,
   createAppointmentOccurrences,
+  getMonthGridDateRange,
   getMonthGridDays,
-  getMonthGridRange,
   groupAppointmentOccurrencesByDay,
   isAppointmentInRange,
   toDateKey
@@ -11,10 +11,10 @@ import type { Appointment } from '../../../src/types'
 
 describe('calendar date helpers', () => {
   it('creates a monday based month grid range', () => {
-    const range = getMonthGridRange(new Date(2026, 5, 15))
+    const range = getMonthGridDateRange(new Date(2026, 5, 15))
 
-    expect(toDateKey(range.start)).toBe('2026-06-01')
-    expect(toDateKey(range.end)).toBe('2026-07-05')
+    expect(range.start).toBe('2026-06-01T00:00:00.000Z')
+    expect(range.end).toBe('2026-07-05T23:59:59.999Z')
   })
 
   it('creates month grid days with today and current month state', () => {

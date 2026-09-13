@@ -22,7 +22,7 @@
           v-for="weekday in weekdays"
           :key="weekday.key"
           :aria-label="weekday.fullLabel"
-          v-text="weekday.shortLabel"
+          v-text="weekday.label"
         />
       </div>
       <div class="grid grid-cols-7 gap-y-3 text-center text-sm">
@@ -52,7 +52,7 @@
           <span v-text="$gettext('Loading calendars')" />
         </li>
         <li
-          v-else-if="calendarError"
+          v-else-if="calendarsError"
           class="text-sm text-role-error"
           v-text="$gettext('Calendars could not be loaded')"
         />
@@ -66,14 +66,16 @@
               :data-testid="`calendar-navigation-item-${item.id}`"
             >
               <span
+                v-if="item.color"
                 class="size-3 shrink-0 rounded-full"
-                :style="{ backgroundColor: resolveCalendarColor(item.color) }"
+                :style="{ backgroundColor: item.color }"
                 aria-hidden="true"
               />
               <oc-checkbox
                 :model-value="selectedCalendarIds.includes(item.id)"
                 :label="item.name"
-                class="min-w-0 flex-1"
+                :title="item.name"
+                class="min-w-0 flex-1 [&>label]:min-w-0 [&>label]:truncate"
                 @update:model-value="setCalendarSelected(item.id, $event)"
               />
             </div>
@@ -88,36 +90,34 @@
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import { DateTime } from 'luxon'
+import { DateTime, Info } from 'luxon'
 import { formatDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { useAppointmentsStore } from '../composables/piniaStores/appointments'
+import { useLoadAppointments } from '../composables/useLoadAppointments'
 import { getMonthGridDays, toDateKey } from '../helpers/date'
-import { resolveCalendarColor } from '../helpers/color'
 
 const appointmentsStore = useAppointmentsStore()
-const {
-  calendars,
-  calendarError,
-  currentMonth,
-  isLoadingCalendars,
-  selectedCalendarIds,
-  selectedDate
-} = storeToRefs(appointmentsStore)
+const { calendars, currentMonth, selectedCalendarIds, selectedDate } =
+  storeToRefs(appointmentsStore)
 const { goToNextMonth, goToPreviousMonth, setCalendarSelected, setCurrentMonth, setSelectedDate } =
   appointmentsStore
+const { isLoadingCalendars, calendarsError } = useLoadAppointments()
 
 const { $gettext, current: currentLanguage } = useGettext()
-const weekdays = computed(() => [
-  { key: 'monday', shortLabel: $gettext('M'), fullLabel: $gettext('Monday') },
-  { key: 'tuesday', shortLabel: $gettext('T'), fullLabel: $gettext('Tuesday') },
-  { key: 'wednesday', shortLabel: $gettext('W'), fullLabel: $gettext('Wednesday') },
-  { key: 'thursday', shortLabel: $gettext('T'), fullLabel: $gettext('Thursday') },
-  { key: 'friday', shortLabel: $gettext('F'), fullLabel: $gettext('Friday') },
-  { key: 'saturday', shortLabel: $gettext('S'), fullLabel: $gettext('Saturday') },
-  { key: 'sunday', shortLabel: $gettext('S'), fullLabel: $gettext('Sunday') }
-])
+
+const weekdays = computed(() => {
+  const fullLabels = Info.weekdays('long', { locale: currentLanguage })
+
+  return Info.weekdays('narrow', { locale: currentLanguage }).map((label, index) => ({
+    key: fullLabels[index],
+    label,
+    fullLabel: fullLabels[index]
+  }))
+})
+
 const miniMonthDays = computed(() => getMonthGridDays(unref(currentMonth)))
 const selectedDateKey = computed(() => toDateKey(unref(selectedDate)))
+
 const monthLabel = computed(() => {
   return formatDateFromJSDate(unref(currentMonth), currentLanguage, {
     month: 'long',
@@ -125,12 +125,12 @@ const monthLabel = computed(() => {
   })
 })
 
-function selectDate(date: Date) {
+const selectDate = (date: Date) => {
   setSelectedDate(date)
   setCurrentMonth(date)
 }
 
-function formatDayLabel(date: Date) {
+const formatDayLabel = (date: Date) => {
   return formatDateFromJSDate(date, currentLanguage, DateTime.DATE_FULL)
 }
 </script>
