@@ -3,6 +3,8 @@ import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import { withSetup } from './helpers'
 import { nextTick, ref, toRef, unref } from 'vue'
 import * as Y from 'yjs'
+import { Awareness } from 'y-protocols/awareness'
+import { yUndoPluginKey } from '@tiptap/y-tiptap'
 import { createMockStore, createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 function createEditor(options = {}) {
@@ -117,6 +119,78 @@ describe('useTextEditor', () => {
         expect(pluginNames).toContain('findAndReplace')
       }
     )
+  })
+
+  describe('history', () => {
+    it('runs redo through the Collaboration history when bound to Yjs', () => {
+      const ydoc = new Y.Doc()
+      const { result } = createEditor({
+        contentType: 'plain-text',
+        modelValue: toRef(''),
+        ydoc,
+        awareness: new Awareness(ydoc)
+      })
+      const editor = result.editor.value!
+      const historyActions =
+        result.actionGroups().find((group) => group.id === 'navigation')?.actions ?? []
+      const undoAction = historyActions.find((action) => action.id === 'undo')!
+      const redoAction = historyActions.find((action) => action.id === 'redo')!
+
+      try {
+        editor.commands.insertContent('hello')
+
+        expect(editor.getText()).toBe('hello')
+        expect(undoAction.isEnabled!(editor)).toBe(true)
+
+        undoAction.toolbarAction!(editor)
+
+        expect(editor.getText()).toBe('')
+        expect(redoAction.isEnabled!(editor)).toBe(true)
+
+        redoAction.toolbarAction!(editor)
+
+        expect(editor.getText()).toBe('hello')
+      } finally {
+        result.destroy()
+        ydoc.destroy()
+      }
+    })
+
+    it('tracks UndoManager-originated changes so redo remains available', () => {
+      const ydoc = new Y.Doc()
+      const { result } = createEditor({
+        contentType: 'plain-text',
+        modelValue: toRef(''),
+        ydoc,
+        awareness: new Awareness(ydoc)
+      })
+      const editor = result.editor.value!
+      const historyActions =
+        result.actionGroups().find((group) => group.id === 'navigation')?.actions ?? []
+      const undoAction = historyActions.find((action) => action.id === 'undo')!
+      const redoAction = historyActions.find((action) => action.id === 'redo')!
+
+      try {
+        const undoManager = yUndoPluginKey.getState(editor.state).undoManager
+        undoManager.removeTrackedOrigin(undoManager)
+
+        editor.commands.insertContent('hello')
+
+        expect(editor.getText()).toBe('hello')
+
+        undoAction.toolbarAction!(editor)
+
+        expect(editor.getText()).toBe('')
+        expect(redoAction.isEnabled!(editor)).toBe(true)
+
+        redoAction.toolbarAction!(editor)
+
+        expect(editor.getText()).toBe('hello')
+      } finally {
+        result.destroy()
+        ydoc.destroy()
+      }
+    })
   })
 
   describe('mentions', () => {
