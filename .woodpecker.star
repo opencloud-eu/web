@@ -7,7 +7,7 @@ APACHE_TIKA = "apache/tika:4.1.0-SNAPSHOT"
 # renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.2.4.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:26.6.1"
-MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
+MINIO_MC = "quay.io/opencloudeu/minio-mc-ci:1.0"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
@@ -1618,7 +1618,6 @@ def uploadTestArtifacts(pipeline_name):
         "image": MINIO_MC,
         "environment": minio_mc_environment,
         "commands": [
-            "microdnf install -y zip",
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
             "cd %s/tests/e2e/playwright-report && zip -r /tmp/playwright-report.zip ." % dir["web"],
             "mc cp /tmp/playwright-report.zip s3/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/%s/playwright-report.zip" % pipeline_name,
