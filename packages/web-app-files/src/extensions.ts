@@ -67,6 +67,14 @@ export const extensions = (appInfo: ApplicationInformation) => {
       type: 'floatingActionButton',
       icon: 'add',
       label: () => $gettext('New'),
+      tooltip: () => {
+        if (
+          isLocationSpacesActive(router, 'files-spaces-projects') &&
+          !unref(createSpaceAction).isVisible()
+        ) {
+          return $gettext('Creating Spaces requires additional permissions')
+        }
+      },
       handler: () => {
         if (isLocationSpacesActive(router, 'files-spaces-projects')) {
           return unref(createSpaceAction).handler()

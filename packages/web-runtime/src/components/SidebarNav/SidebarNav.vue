@@ -8,6 +8,7 @@
         <div v-if="floatingActionButton && !isTablet" class="pb-3 px-2">
           <oc-button
             :id="getButtonId(floatingActionButton.id)"
+            v-oc-tooltip="floatingActionButton.tooltip?.()"
             :disabled="isFloatingActionButtonDisabled"
             appearance="filled"
             :color-role="currentTheme.isDark ? 'primaryContainer' : 'primary'"
