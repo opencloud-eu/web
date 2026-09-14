@@ -77,7 +77,6 @@ export const useFileActions = () => {
           },
           icon: fileExtension.icon || appInfo.icon,
           iconFillType: fileExtension.iconFillType || appInfo.iconFillType,
-          img: appInfo.img,
           route: ({ space, resources }) => {
             return getEditorRoute({
               appFileExtension: fileExtension,

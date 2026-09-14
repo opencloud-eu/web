@@ -48,7 +48,6 @@ export const useConfigStore = defineStore('config', () => {
   const apps = ref<RawConfig['apps']>([])
   const externalApps = ref<RawConfig['external_apps']>([])
   const customTranslations = ref<RawConfig['customTranslations']>([])
-  const oAuth2 = ref<RawConfig['auth']>({})
   const openIdConnect = ref<RawConfig['openIdConnect']>()
   const scripts = ref<RawConfig['scripts']>([])
   const styles = ref<RawConfig['styles']>([])
@@ -59,9 +58,6 @@ export const useConfigStore = defineStore('config', () => {
   const groupwareUrl = computed(() =>
     urlJoin(unref(serverUrl), 'groupware', { trailingSlash: true })
   )
-
-  const isOAuth2 = computed(() => false)
-  const isOIDC = computed(() => true)
 
   const loadConfig = (data: RawConfig) => {
     if (data.server) {
@@ -98,13 +94,7 @@ export const useConfigStore = defineStore('config', () => {
     styles,
     serverUrl,
     groupwareUrl,
-    loadConfig,
-    /** @deprecated this is always true */
-    isOIDC,
-    /** @deprecated there is no oauth2 config anymore */
-    oAuth2,
-    /** @deprecated this is always false */
-    isOAuth2
+    loadConfig
   }
 })
 
