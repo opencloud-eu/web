@@ -78,6 +78,7 @@ export type FloatingActionButtonExtensionMode = 'drop' | 'handler'
 export interface FloatingActionButtonExtension extends Extension {
   type: 'floatingActionButton'
   label: () => string
+  tooltip?: () => string
   isVisible?: () => boolean
   isDisabled?: () => boolean
   color?: string

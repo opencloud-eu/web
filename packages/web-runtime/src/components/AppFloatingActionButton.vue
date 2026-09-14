@@ -1,6 +1,7 @@
 <template>
   <template v-if="floatingActionButton && isTablet && !floatingActionButton?.isDisabled?.()">
     <oc-floating-action-button
+      v-oc-tooltip="floatingActionButton.tooltip?.()"
       :button-id="getButtonId(floatingActionButton.id)"
       :color-role="currentTheme.isDark ? 'primaryContainer' : 'primary'"
       class="oc-app-floating-action-button"
