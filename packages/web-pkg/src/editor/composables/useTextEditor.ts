@@ -7,6 +7,7 @@ import { yCursorPlugin } from '@tiptap/y-tiptap'
 import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
+import { UndoManager } from 'yjs'
 import type { Resource } from '@opencloud-eu/web-client'
 import type {
   TextEditorOptions,
@@ -106,7 +107,10 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     extensions.push(
       Collaboration.configure({
         document: options.ydoc,
-        field: yjsFragment
+        field: yjsFragment,
+        yUndoOptions: {
+          trackedOrigins: [UndoManager]
+        }
       }) as (typeof extensions)[number]
     )
     if (options.awareness) {
