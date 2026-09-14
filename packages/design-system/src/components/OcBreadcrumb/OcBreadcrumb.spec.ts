@@ -20,6 +20,11 @@ describe('OcBreadcrumb', () => {
     expect(wrapper.findAll('.oc-breadcrumb-list-item:not(.sr-only)').length).toBe(items.length)
     expect(wrapper.html()).toMatchSnapshot()
   })
+  it('renders item icons passed via props', () => {
+    const { wrapper } = getWrapper({ items: [{ text: 'Vault', icon: 'resource-type-vault' }] })
+    const iconNames = wrapper.findAll('oc-icon-stub').map((icon) => icon.attributes('name'))
+    expect(iconNames).toContain('resource-type-vault')
+  })
   it('displays context menu trigger if enabled via property', () => {
     const { wrapper } = getWrapper({ showContextActions: true })
     expect(wrapper.find('#oc-breadcrumb-contextmenu-trigger').exists()).toBe(true)

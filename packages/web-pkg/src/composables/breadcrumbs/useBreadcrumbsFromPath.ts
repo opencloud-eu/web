@@ -52,6 +52,7 @@ export const useBreadcrumbsFromPath = () => {
         id: uuidV4(),
         allowContextActions: last.allowContextActions,
         text: last.text,
+        ...(last.icon && { icon: last.icon }),
         onClick: () => eventBus.publish('app.files.list.load'),
         isTruncationPlaceholder: last.isTruncationPlaceholder,
         isStaticNav: last.isStaticNav

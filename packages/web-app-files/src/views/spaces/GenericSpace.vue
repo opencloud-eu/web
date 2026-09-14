@@ -216,7 +216,10 @@ const titleSegments = computed(() => {
 useDocumentTitle({ titleSegments })
 
 const route = useRoute()
+
 const breadcrumbs = computed(() => {
+  const vaultRoot = getVaultClaim(extensionRegistry, unref(space), props.item || '/')?.vaultRoot
+
   const rootBreadcrumbItems: BreadcrumbItem[] = []
   if (isProjectSpaceResource(unref(space))) {
     rootBreadcrumbItems.push({
@@ -290,14 +293,33 @@ const breadcrumbs = computed(() => {
     }
   }
 
+  if (vaultRoot === '/') {
+    spaceBreadcrumbItem = {
+      ...spaceBreadcrumbItem,
+      icon: 'shield-keyhole'
+    }
+  }
+
+  const resourcePathSegments = (props.item || '').split('/').filter(Boolean)
+  const pathBreadcrumbItems = breadcrumbsFromPath({
+    route: unref(route),
+    resourcePath: props.item,
+    ...ancestorMetaData
+  }).map((item, index) => {
+    const path = `/${resourcePathSegments.slice(0, index + 1).join('/')}`
+    if (path !== vaultRoot) {
+      return item
+    }
+    return {
+      ...item,
+      icon: 'shield-keyhole'
+    }
+  })
+
   return concatBreadcrumbs(
     ...rootBreadcrumbItems,
     spaceBreadcrumbItem,
-    ...breadcrumbsFromPath({
-      route: unref(route),
-      resourcePath: props.item,
-      ...ancestorMetaData
-    })
+    ...pathBreadcrumbItems
   )
 })
 
