@@ -11,7 +11,8 @@ import {
   useRouter,
   useSearch,
   useSpacesStore,
-  useUserStore
+  useUserStore,
+  useAbility
 } from '@opencloud-eu/web-pkg'
 import { computed, markRaw, unref } from 'vue'
 import { SDKSearch } from './search'
@@ -37,6 +38,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const router = useRouter()
   const { search: searchFunction } = useSearch()
   const { $gettext } = useGettext()
+  const { can } = useAbility()
 
   const { actions: createSpaceActions } = useSpaceActionsCreate()
   const createSpaceAction = computed(() => unref(createSpaceActions)[0])
@@ -70,7 +72,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
       tooltip: () => {
         if (
           isLocationSpacesActive(router, 'files-spaces-projects') &&
-          !unref(createSpaceAction).isVisible()
+          !can('create-all', 'Drive')
         ) {
           return $gettext('Creating Spaces requires additional permissions')
         }
