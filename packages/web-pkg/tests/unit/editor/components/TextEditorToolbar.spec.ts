@@ -22,13 +22,14 @@ function mountToolbar(
   contentType: 'markdown' | 'html' = 'markdown',
   includeSearchAction = false,
   collaborationStatus: 'connecting' | 'connected' | 'disconnected' | 'local' | null = null,
-  collaborators: YjsCollaborator[] = []
+  collaborators: YjsCollaborator[] = [],
+  actionsOverride?: EditorAction[]
 ) {
   const showSpy = vi.fn()
   const collaborationStatusRef = ref(collaborationStatus)
   const collaboratorsRef = ref(collaborators)
 
-  const actions: EditorAction[] = [
+  const defaultActions: EditorAction[] = [
     {
       id: 'source-mode',
       title: 'Show source',
@@ -42,6 +43,7 @@ function mountToolbar(
       toolbarAction: vi.fn()
     }
   ]
+  const actions: EditorAction[] = [...(actionsOverride ?? defaultActions)]
 
   if (includeSearchAction) {
     actions.push({
@@ -159,6 +161,39 @@ describe('TextEditorToolbar', () => {
     wrapper
       .findAll('button:not(.text-editor-toolbar-overflow-trigger)')
       .forEach((button) => expect(button.attributes('aria-hidden')).toBe('true'))
+    wrapper.unmount()
+  })
+
+  it('accounts for spacing between actions when deciding overflow visibility', async () => {
+    mockWidths(40, 124)
+    const customActions: EditorAction[] = [
+      {
+        id: 'source-mode',
+        title: 'Show source',
+        icon: 'code-s-slash',
+        toolbarAction: vi.fn()
+      },
+      {
+        id: 'bold',
+        title: 'Bold',
+        icon: 'bold',
+        toolbarAction: vi.fn()
+      },
+      {
+        id: 'italic',
+        title: 'Italic',
+        icon: 'italic',
+        toolbarAction: vi.fn()
+      }
+    ]
+    const { wrapper } = mountToolbar(false, 'markdown', false, null, [], customActions)
+
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.text-editor-toolbar-overflow-trigger').attributes('aria-hidden')).toBe(
+      'false'
+    )
     wrapper.unmount()
   })
 

@@ -117,7 +117,7 @@
     v-oc-tooltip="item.title"
     type="button"
     appearance="raw"
-    class="text-editor-toolbar-btn min-w-[42px] inline-flex items-center justify-center p-2"
+    class="text-editor-toolbar-btn min-w-[38px] inline-flex items-center justify-center p-2"
     :class="rootClasses"
     :aria-label="item.title"
     :aria-hidden="measureOnly"
