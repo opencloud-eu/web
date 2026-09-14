@@ -20,6 +20,25 @@
 
 - chore(deps): bump @xmldom/xmldom to 0.9.12 [[#3350](https://github.com/opencloud-eu/web/pull/3350)]
 
+### 📈 Enhancement
+
+- feat: add tooltip for fab when creating spaces is disabled [[#3364](https://github.com/opencloud-eu/web/pull/3364)]
+- feat(runtime): sync auto theme with system preference changes [[#3363](https://github.com/opencloud-eu/web/pull/3363)]
+- feat(editor): show users in active yjs session [[#3345](https://github.com/opencloud-eu/web/pull/3345)]
+- feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
+- feat: motion photo support [[#2819](https://github.com/opencloud-eu/web/pull/2819)]
+- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
+- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
+- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
+- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
+- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
+- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
+- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
+- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
+- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
+- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
+- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
+
 ### 🐛 Bug Fixes
 
 - fix (tiptap): enhance mobile toolbar actions [[#3353](https://github.com/opencloud-eu/web/pull/3353)]
@@ -52,24 +71,6 @@
 - fix(preview): reload thumbnails when preview profile changes [[#3230](https://github.com/opencloud-eu/web/pull/3230)]
 - Show cloud image insert action in slash command menu [[#3225](https://github.com/opencloud-eu/web/pull/3225)]
 
-### 📈 Enhancement
-
-- feat(runtime): sync auto theme with system preference changes [[#3363](https://github.com/opencloud-eu/web/pull/3363)]
-- feat(editor): show users in active yjs session [[#3345](https://github.com/opencloud-eu/web/pull/3345)]
-- feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
-- feat: motion photo support [[#2819](https://github.com/opencloud-eu/web/pull/2819)]
-- feat: add mention users for TipTap [[#3060](https://github.com/opencloud-eu/web/pull/3060)]
-- feat: improve shares navigation, checkbox contrast, search drop [[#3290](https://github.com/opencloud-eu/web/pull/3290)]
-- feat(web-pkg): support markdown YAML frontmatter in the text editor [[#3272](https://github.com/opencloud-eu/web/pull/3272)]
-- Harden yjs container readiness and shutdown behavior [[#3247](https://github.com/opencloud-eu/web/pull/3247)]
-- feat(yjs): improve handling of external file conflicts [[#3246](https://github.com/opencloud-eu/web/pull/3246)]
-- Isolate Yjs rooms by web version [[#3243](https://github.com/opencloud-eu/web/pull/3243)]
-- feat: redesign secret file drop [[#3238](https://github.com/opencloud-eu/web/pull/3238)]
-- feat(text-editor): show collaboration-ready indicator in toolbar [[#3235](https://github.com/opencloud-eu/web/pull/3235)]
-- feat: redesign plain layout pages [[#3232](https://github.com/opencloud-eu/web/pull/3232)]
-- Disable collaboration for vault files [[#3234](https://github.com/opencloud-eu/web/pull/3234)]
-- Add basic print action to text editor toolbar [[#3215](https://github.com/opencloud-eu/web/pull/3215)]
-
 ### ✅ Tests
 
 - test(e2e): repeat the global search while waiting for an indexed result [[#3333](https://github.com/opencloud-eu/web/pull/3333)]
@@ -81,6 +82,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.27.0 [[#3357](https://github.com/opencloud-eu/web/pull/3357)]
 - chore(deps): update devdependencies (non-major) [[#3342](https://github.com/opencloud-eu/web/pull/3342)]
 - chore(deps): update node.js to v24.21.0 [[#3335](https://github.com/opencloud-eu/web/pull/3335)]
 - chore(deps): update typescript-eslint monorepo to v8.70.0 [[#3329](https://github.com/opencloud-eu/web/pull/3329)]
