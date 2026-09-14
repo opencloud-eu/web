@@ -7,7 +7,7 @@ APACHE_TIKA = "apache/tika:4.1.0-SNAPSHOT"
 # renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.2.4.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:26.6.1"
-MINIO_MC = "scharfvi/minio-mc-ci:1.0"
+MINIO_MC = "quay.io/opencloudeu/minio-mc-ci:1.0"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
