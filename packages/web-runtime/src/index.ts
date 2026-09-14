@@ -37,6 +37,8 @@ import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import { extensionPoints } from './extensionPoints'
 import { extensions } from './extensions'
+import { usePreferredDark } from '@vueuse/core'
+import { useThemeStore } from '@opencloud-eu/web-pkg'
 
 export const bootstrapApp = async (configurationPath: string, appsReadyCallback: () => void) => {
   const pinia = createPinia()
@@ -277,6 +279,16 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       ;(space as PublicSpaceResource).publicLinkPassword = publicLinkPassword
     }
   )
+
+  const isDark = usePreferredDark()
+  const themeStore = useThemeStore()
+  watch(isDark, () => {
+    if (!themeStore.isCurrentThemeAutoSystem) {
+      return
+    }
+
+    themeStore.setAutoSystemTheme()
+  })
 }
 
 export const bootstrapErrorApp = async (err: Error): Promise<void> => {
