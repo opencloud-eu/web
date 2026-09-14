@@ -13,6 +13,24 @@ import { SearchResource } from '@opencloud-eu/web-client'
 import { useMessages, useResourcesStore } from '../../../src/composables/piniaStores'
 
 describe('CreateShortcutModal', () => {
+  describe('filename validation', () => {
+    it('disables confirm and shows an error for invalid filename characters', async () => {
+      const { wrapper } = getWrapper()
+
+      ;(wrapper.vm as any).inputUrl = 'https://example.org'
+      ;(wrapper.vm as any).inputFilename = 'valid-shortcut'
+      await wrapper.vm.$nextTick()
+
+      expect((wrapper.vm as any).confirmButtonDisabled).toBe(false)
+
+      ;(wrapper.vm as any).inputFilename = 'invalid\\name'
+      await wrapper.vm.$nextTick()
+
+      expect((wrapper.vm as any).confirmButtonDisabled).toBe(true)
+      expect((wrapper.vm as any).inputFileNameErrorMessage).toBe('The name cannot contain "\\"')
+    })
+  })
+
   describe('method "onConfirm"', () => {
     it('should show message on success', async () => {
       const { wrapper } = getWrapper()
