@@ -33,6 +33,7 @@
       class="text-editor-toolbar-dropdown w-auto min-w-40"
       padding-size="small"
       :close-on-click="item.menuCloseOnClick ?? true"
+      :enforce-drop-on-mobile="item.menuEnforceDropOnMobile ?? false"
     >
       <component
         :is="item.menuComponent"
@@ -103,6 +104,7 @@
             mode="hover"
             class="text-editor-toolbar-dropdown-nested w-fit"
             :close-on-click="child.menuCloseOnClick ?? true"
+            :enforce-drop-on-mobile="item.menuEnforceDropOnMobile ?? false"
             position="right-start"
             teleport="body"
           >
