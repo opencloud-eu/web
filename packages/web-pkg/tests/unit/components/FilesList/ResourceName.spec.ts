@@ -40,6 +40,22 @@ describe('OcResourceName', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  it('keeps folder names with extension-like suffix when file extensions are hidden', () => {
+    const wrapper = shallowMount(Name, {
+      props: {
+        fullPath: 'folder.with.dots',
+        name: 'folder.with.dots',
+        extension: 'dots',
+        type: 'folder',
+        isExtensionDisplayed: false
+      },
+      global: { stubs: { OcFilterHighlight: false } }
+    })
+
+    expect(wrapper.find('.oc-resource-basename').text()).toBe('folder.with.dots')
+    expect(wrapper.find('.oc-resource-extension').exists()).toBeFalsy()
+  })
+
   it('has properties for resource path, name and type', () => {
     const wrapper = shallowMount(Name, {
       props: {
@@ -138,5 +154,20 @@ describe('OcResourceName', () => {
 
     expect(wrapper.find('.oc-filter-highlight-match').exists()).toBeFalsy()
     expect(wrapper.find('.oc-resource-basename').text()).toBe('forest')
+  })
+
+  it('does not add a trailing dot to the title for files without an extension', () => {
+    const wrapper = shallowMount(Name, {
+      props: {
+        fullPath: 'README',
+        name: 'README',
+        extension: '',
+        type: 'file',
+        isExtensionDisplayed: true
+      },
+      global: { stubs: { OcFilterHighlight: false } }
+    })
+
+    expect(wrapper.find('.oc-resource-name').attributes('title')).toBe('README')
   })
 })

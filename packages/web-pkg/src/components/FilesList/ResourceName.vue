@@ -60,19 +60,23 @@ const {
   term?: string
 }>()
 
+const isFile = computed(() => {
+  return type === 'file'
+})
+
 const displayName = computed(() => {
-  if (extension && !name.startsWith('.')) {
+  if (unref(isFile) && extension && !name.startsWith('.')) {
     return name.slice(0, -extension.length - 1)
   }
   return name
 })
 
 const showExtension = computed(() => {
-  return extension && isExtensionDisplayed && !name.startsWith('.')
+  return unref(isFile) && extension && isExtensionDisplayed && !name.startsWith('.')
 })
 
 const displayExtension = computed(() => {
-  return extension ? '.' + extension : ''
+  return unref(isFile) && extension ? '.' + extension : ''
 })
 
 const displayPath = computed(() => {
