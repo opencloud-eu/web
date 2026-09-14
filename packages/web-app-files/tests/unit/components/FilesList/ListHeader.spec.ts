@@ -4,6 +4,12 @@ import { mock } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { flushPromises } from '@vue/test-utils'
 
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  preloadTextEditor: vi.fn().mockResolvedValue(undefined),
+  TextEditorViewer: { name: 'TextEditorViewer', template: '<div />' }
+}))
+
 describe('ListHeader', () => {
   it('renders a spinner when loading', () => {
     const wrapper = getWrapper()

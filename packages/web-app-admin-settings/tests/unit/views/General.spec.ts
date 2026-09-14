@@ -1,17 +1,20 @@
 import General from '../../../src/views/General.vue'
-import AnnouncementSection from '../../../src/components/General/AnnouncementSection.vue'
 import { AbilityRule } from '@opencloud-eu/web-client'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+
+vi.mock('../../../src/components/General/AnnouncementSection.vue', () => ({
+  default: { name: 'AnnouncementSection', template: '<div />' }
+}))
 
 describe('General view', () => {
   it('hides the announcement section without the Announcement permission', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.findComponent(AnnouncementSection).exists()).toBe(false)
+    expect(wrapper.find('announcement-section-stub').exists()).toBe(false)
   })
 
   it('shows the announcement section with the Announcement permission', () => {
     const { wrapper } = getWrapper([{ action: 'read-all', subject: 'Announcement' }])
-    expect(wrapper.findComponent(AnnouncementSection).exists()).toBe(true)
+    expect(wrapper.find('announcement-section-stub').exists()).toBe(true)
   })
 })
 
