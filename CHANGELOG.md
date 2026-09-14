@@ -22,6 +22,7 @@
 
 ### 📈 Enhancement
 
+- feat(runtime): sync auto theme with system preference changes [[#3363](https://github.com/opencloud-eu/web/pull/3363)]
 - feat(editor): show users in active yjs session [[#3345](https://github.com/opencloud-eu/web/pull/3345)]
 - feat(editor): rework toolbar [[#3336](https://github.com/opencloud-eu/web/pull/3336)]
 - feat: motion photo support [[#2819](https://github.com/opencloud-eu/web/pull/2819)]
@@ -39,6 +40,9 @@
 
 ### 🐛 Bug Fixes
 
+- fix (tiptap): equalize collaborator avatar and indicator icon size [[#3355](https://github.com/opencloud-eu/web/pull/3355)]
+- fix (tiptap): toolbar spacing [[#3354](https://github.com/opencloud-eu/web/pull/3354)]
+- fix: restore redo for collaborative text editor [[#3360](https://github.com/opencloud-eu/web/pull/3360)]
 - fix(yjs): let the server decide who seeds an empty room [[#3331](https://github.com/opencloud-eu/web/pull/3331)]
 - fix(preview): re-fetch signed URL when video playback fails [[#3340](https://github.com/opencloud-eu/web/pull/3340)]
 - fix: add emoji slash entry and tighten emoji picker modal width [[#3310](https://github.com/opencloud-eu/web/pull/3310)]
