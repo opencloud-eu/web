@@ -15,14 +15,7 @@
       v-on="componentListeners"
     >
       <oc-image
-        v-if="action.img"
-        data-testid="action-img"
-        :src="action.img"
-        alt=""
-        class="oc-icon oc-icon-m w-[22px]"
-      />
-      <oc-image
-        v-else-if="hasExternalImageIcon"
+        v-if="hasExternalImageIcon"
         data-testid="action-img"
         :src="actionIcon"
         alt=""
@@ -143,14 +136,6 @@ const componentListeners = computed(() => {
   }
 
   const callback = () => action.handler({ ...actionOptions })
-  if (action.keepOpen) {
-    return {
-      click: (event: Event) => {
-        event.stopPropagation()
-        callback()
-      }
-    }
-  }
   return {
     click: callback
   }

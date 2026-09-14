@@ -1,12 +1,19 @@
 import { mount } from '@vue/test-utils'
-import { computed, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, toRef } from 'vue'
 import { vi } from 'vitest'
 import TextEditorToolbar from '../../../../src/editor/components/TextEditorToolbar.vue'
+import TextEditorToolbarItem from '../../../../src/editor/components/TextEditorToolbarItem.vue'
+import { useTextEditor } from '../../../../src/editor/composables/useTextEditor'
 import type { TextEditorInstance } from '../../../../src/editor/types'
 import type { EditorAction } from '../../../../src/editor/composables'
 import type { YjsCollaborator } from '../../../../src/composables/yjs'
+import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
+import { Awareness } from 'y-protocols/awareness'
+import * as Y from 'yjs'
+import { withSetup } from '../composables/helpers'
 
 vi.mock('vue3-gettext', () => ({
+  createGettext: (): { install: () => void } => ({ install: () => undefined }),
   useGettext: () => ({ $gettext: (value: string) => value })
 }))
 
@@ -15,13 +22,14 @@ function mountToolbar(
   contentType: 'markdown' | 'html' = 'markdown',
   includeSearchAction = false,
   collaborationStatus: 'connecting' | 'connected' | 'disconnected' | 'local' | null = null,
-  collaborators: YjsCollaborator[] = []
+  collaborators: YjsCollaborator[] = [],
+  actionsOverride?: EditorAction[]
 ) {
   const showSpy = vi.fn()
   const collaborationStatusRef = ref(collaborationStatus)
   const collaboratorsRef = ref(collaborators)
 
-  const actions: EditorAction[] = [
+  const defaultActions: EditorAction[] = [
     {
       id: 'source-mode',
       title: 'Show source',
@@ -35,6 +43,7 @@ function mountToolbar(
       toolbarAction: vi.fn()
     }
   ]
+  const actions: EditorAction[] = [...(actionsOverride ?? defaultActions)]
 
   if (includeSearchAction) {
     actions.push({
@@ -155,6 +164,39 @@ describe('TextEditorToolbar', () => {
     wrapper.unmount()
   })
 
+  it('accounts for spacing between actions when deciding overflow visibility', async () => {
+    mockWidths(40, 124)
+    const customActions: EditorAction[] = [
+      {
+        id: 'source-mode',
+        title: 'Show source',
+        icon: 'code-s-slash',
+        toolbarAction: vi.fn()
+      },
+      {
+        id: 'bold',
+        title: 'Bold',
+        icon: 'bold',
+        toolbarAction: vi.fn()
+      },
+      {
+        id: 'italic',
+        title: 'Italic',
+        icon: 'italic',
+        toolbarAction: vi.fn()
+      }
+    ]
+    const { wrapper } = mountToolbar(false, 'markdown', false, null, [], customActions)
+
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.text-editor-toolbar-overflow-trigger').attributes('aria-hidden')).toBe(
+      'false'
+    )
+    wrapper.unmount()
+  })
+
   it('keeps regular actions enabled outside source mode', () => {
     const { wrapper } = mountToolbar(false)
     const buttons = wrapper.findAll('button:not(.text-editor-toolbar-overflow-trigger)')
@@ -183,6 +225,52 @@ describe('TextEditorToolbar', () => {
     expect(buttons[0].attributes('disabled')).toBeUndefined()
     expect(buttons[1].attributes('disabled')).toBeDefined()
     wrapper.unmount()
+  })
+
+  it('enables redo after an undo in a collaborative editor', async () => {
+    createTestingPinia()
+    const ydoc = new Y.Doc()
+    const { result: textEditor } = withSetup(() =>
+      useTextEditor({
+        contentType: 'plain-text',
+        modelValue: toRef(''),
+        ydoc,
+        awareness: new Awareness(ydoc)
+      })
+    )
+    const editor = textEditor.editor.value!
+    const historyActions =
+      textEditor.actionGroups().find((group) => group.id === 'navigation')?.actions ?? []
+    const undoAction = historyActions.find((action) => action.id === 'undo')!
+    const redoAction = historyActions.find((action) => action.id === 'redo')!
+    const wrapper = mount(TextEditorToolbarItem, {
+      props: { item: redoAction },
+      global: {
+        provide: { textEditor },
+        directives: { 'oc-tooltip': () => {}, ocTooltip: () => {} },
+        stubs: {
+          'oc-button': defineComponent({
+            inheritAttrs: false,
+            template: '<button v-bind="$attrs"><slot /></button>'
+          }),
+          'oc-icon': true
+        }
+      }
+    })
+
+    try {
+      expect(wrapper.find('button').attributes('disabled')).toBeDefined()
+
+      editor.commands.insertContent('hello')
+      undoAction.toolbarAction!(editor)
+      await wrapper.vm.$nextTick()
+
+      expect(wrapper.find('button').attributes('disabled')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+      textEditor.destroy()
+      ydoc.destroy()
+    }
   })
 
   it('opens search menu on Ctrl+F when editor is focused', async () => {

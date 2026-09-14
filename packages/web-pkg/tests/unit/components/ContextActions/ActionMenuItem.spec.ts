@@ -42,13 +42,6 @@ describe('ActionMenuItem component', () => {
     expect(wrapper.find(selectors.icon).exists()).toBeTruthy()
     expect(wrapper.find(selectors.icon).attributes().name).toBe(action.icon)
   })
-  it('renders an image if there is one defined in the action', () => {
-    const action = { ...fileActions.download, img: 'https://opencloud.eu/img.png' }
-    const { wrapper } = getWrapper(action)
-    expect(wrapper.find(selectors.icon).exists()).toBeFalsy()
-    expect(wrapper.find(selectors.img).exists()).toBeTruthy()
-    expect(wrapper.find(selectors.img).attributes().src).toBe(action.img)
-  })
   it('renders the action label', () => {
     const action = fileActions.download
     const { wrapper } = getWrapper(action)

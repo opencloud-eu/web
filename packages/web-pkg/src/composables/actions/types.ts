@@ -51,10 +51,6 @@ export interface Action<T = ActionOptions> {
    */
   id?: string
   /**
-   * @deprecated this is unused.
-   */
-  img?: string
-  /**
    * Additional CSS classes to apply to the action element in the UI.
    */
   class?: string
@@ -72,12 +68,6 @@ export interface Action<T = ActionOptions> {
    * This does not automatically register a keyboard shortcut for the action.
    */
   shortcut?: string
-  /**
-   * Setting this will call `stopPropagation()` on the click event.
-   * @default false
-   * @deprecated This should not be used anymore, as it can lead to unexpected behavior.
-   */
-  keepOpen?: boolean
   /**
    * External actions come first in the "New" context menu. Therefore, this flag only has
    * an effect for actions appearing in that menu.

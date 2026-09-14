@@ -16,7 +16,6 @@ export default defineWebApplication({
       name: $gettext('Rclone Crypt'),
       id: appId,
       icon: 'folder-lock',
-      iconFillType: 'line',
       color: 'var(--oc-role-secondary)',
       extensions: [
         {
