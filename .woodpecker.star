@@ -1618,7 +1618,6 @@ def uploadTestArtifacts(pipeline_name):
         "image": MINIO_MC,
         "environment": minio_mc_environment,
         "commands": [
-            "microdnf install -y zip",
             "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
             "cd %s/tests/e2e/playwright-report && zip -r /tmp/playwright-report.zip ." % dir["web"],
             "mc cp /tmp/playwright-report.zip s3/$PUBLIC_BUCKET/web/artifacts/$CI_REPO_NAME/$CI_PIPELINE_NUMBER/%s/playwright-report.zip" % pipeline_name,
