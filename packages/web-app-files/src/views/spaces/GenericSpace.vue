@@ -316,11 +316,7 @@ const breadcrumbs = computed(() => {
     }
   })
 
-  return concatBreadcrumbs(
-    ...rootBreadcrumbItems,
-    spaceBreadcrumbItem,
-    ...pathBreadcrumbItems
-  )
+  return concatBreadcrumbs(...rootBreadcrumbItems, spaceBreadcrumbItem, ...pathBreadcrumbItems)
 })
 
 const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {

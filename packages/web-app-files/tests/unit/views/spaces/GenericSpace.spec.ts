@@ -139,7 +139,9 @@ describe('GenericSpace view', () => {
         breadcrumbsFromPath: [{ text: 'Secure' }, { text: 'docs' }],
         vaultRoots: [vaultRoot]
       })
-      const breadcrumbItems = wrapper.findComponent<typeof AppBar>('app-bar-stub').props().breadcrumbs
+      const breadcrumbItems = wrapper
+        .findComponent<typeof AppBar>('app-bar-stub')
+        .props().breadcrumbs
       expect(breadcrumbItems[1]).toMatchObject({
         text: 'Secure',
         icon: 'shield-keyhole'
