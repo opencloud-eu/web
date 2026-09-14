@@ -151,6 +151,8 @@ const { $gettext } = useGettext()
 
 /** Gap, border and padding that a group adds in front of its first action. */
 const groupSeparatorWidth = 9
+/** Horizontal gap between actions inside one toolbar group (`gap-1`). */
+const groupActionGapWidth = 4
 
 const itemsRowRef = useTemplateRef('itemsRow')
 const overflowDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('overflowDrop')
@@ -200,7 +202,9 @@ const visibleItemIds = computed<string[]>(() => {
 
   const getWidth = (id: string) => widths[id] ?? 0
   const totalWidth = groups.reduce((total, group, index) => {
-    const actionsWidth = group.actions.reduce((sum, action) => sum + getWidth(action.id), 0)
+    const actionsWidth = group.actions.reduce((sum, action, actionIndex) => {
+      return sum + getWidth(action.id) + (actionIndex > 0 ? groupActionGapWidth : 0)
+    }, 0)
     return total + actionsWidth + (index > 0 ? groupSeparatorWidth : 0)
   }, 0)
 
@@ -215,7 +219,10 @@ const visibleItemIds = computed<string[]>(() => {
   for (const group of groups) {
     let isFirstOfGroup = true
     for (const action of group.actions) {
-      const width = getWidth(action.id) + (isFirstOfGroup && ids.length ? groupSeparatorWidth : 0)
+      const width =
+        getWidth(action.id) +
+        (!isFirstOfGroup ? groupActionGapWidth : 0) +
+        (isFirstOfGroup && ids.length ? groupSeparatorWidth : 0)
       if (usedWidth + width > budget) {
         return ids
       }
