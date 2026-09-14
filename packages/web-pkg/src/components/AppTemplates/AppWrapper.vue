@@ -1,7 +1,7 @@
 <template>
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc.stop="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
-    <loading-screen v-if="isLoading" />
+    <app-loading-spinner v-if="isLoading" />
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
     <div v-else class="flex size-full">
       <slot
@@ -33,7 +33,7 @@ import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import AppTopBar from '../AppTopBar.vue'
 import ErrorScreen from './PartialViews/ErrorScreen.vue'
-import LoadingScreen from './PartialViews/LoadingScreen.vue'
+import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 import FileSideBar from '../SideBar/FileSideBar.vue'
 import {
   UrlForResourceOptions,
