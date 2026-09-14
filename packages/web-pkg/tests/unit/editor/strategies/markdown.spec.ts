@@ -38,6 +38,7 @@ describe('useStrategyMarkdown', () => {
       expect(names).toContain('fileHandler')
       expect(names).toContain('findAndReplace')
       expect(names).toContain('codeBlock')
+      expect(names).toContain('markdownClipboard')
       expect(names).not.toContain('underline')
 
       const imageExtension = extensions.find((e) => e.name === 'image') as any
