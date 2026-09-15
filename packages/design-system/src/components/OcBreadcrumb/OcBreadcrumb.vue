@@ -197,7 +197,14 @@
       'justify-center': displayItems.length > 1
     }"
   >
-    <span class="truncate font-bold" aria-current="page" v-text="currentFolder.text" />
+    <oc-icon
+      v-if="currentFolder.icon"
+      :name="currentFolder.icon"
+      fill-type="line"
+      class="mr-1 shrink-0"
+      size-class="size-4"
+    />
+    <span class="min-w-0 truncate font-bold" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 

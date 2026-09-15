@@ -25,6 +25,11 @@ describe('OcBreadcrumb', () => {
     const iconNames = wrapper.findAll('oc-icon-stub').map((icon) => icon.attributes('name'))
     expect(iconNames).toContain('resource-type-vault')
   })
+  it('renders current item icons in the mobile breadcrumb', () => {
+    const { wrapper } = getWrapper({ items: [{ text: 'Vault', icon: 'resource-type-vault' }] })
+    const icon = wrapper.find('.oc-breadcrumb-mobile-current oc-icon-stub')
+    expect(icon.attributes('name')).toBe('resource-type-vault')
+  })
   it('displays context menu trigger if enabled via property', () => {
     const { wrapper } = getWrapper({ showContextActions: true })
     expect(wrapper.find('#oc-breadcrumb-contextmenu-trigger').exists()).toBe(true)
