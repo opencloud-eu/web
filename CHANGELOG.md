@@ -1,5 +1,19 @@
 # Changelog
 
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-15
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @v-scharf
+
+### 📈 Enhancement
+
+- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
+### 🐛 Bug Fixes
+
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
 ## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-09-14
 
 ### ❤️ Thanks to all contributors! ❤️
