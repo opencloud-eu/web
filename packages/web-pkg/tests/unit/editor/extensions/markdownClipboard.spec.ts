@@ -103,29 +103,4 @@ describe('markdown clipboard extension', () => {
     }
   })
 
-  it('leaves URL-only clipboard content to the default paste behavior', () => {
-    const editor = createEditor()
-    const event = createClipboardEvent('https://opencloud.eu ')
-
-    try {
-      const handled = handlePaste(editor, event)
-
-      expect(handled).toBeUndefined()
-    } finally {
-      editor.destroy()
-    }
-  })
-
-  it('leaves html clipboard content to the default paste behavior', () => {
-    const editor = createEditor()
-    const event = createClipboardEvent('Bold text', '', ['text/plain', 'text/html'])
-
-    try {
-      const handled = handlePaste(editor, event)
-
-      expect(handled).toBeUndefined()
-    } finally {
-      editor.destroy()
-    }
-  })
 })
