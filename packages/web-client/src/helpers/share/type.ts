@@ -39,7 +39,7 @@ export abstract class ShareTypes {
   static readonly user = new ShareType('user', 0, $gettext('User'), 'user')
   static readonly group = new ShareType('group', 1, $gettext('Group'), 'group')
   static readonly link = new ShareType('link', 3, $gettext('Link'), 'link')
-  static readonly guest = new ShareType('guest', 4, $gettext('Guest'), 'global')
+  static readonly mail = new ShareType('mail', 4, $gettext('Guest'), 'global')
   static readonly remote = new ShareType('remote', 6, $gettext('External'), 'earth')
   // Frontend-only pseudo type: an address book contact (e.g. Open-Xchange) that
   // is not an OpenCloud user. Such a recipient results in a public link being
@@ -47,11 +47,11 @@ export abstract class ShareTypes {
   // the backend.
   static readonly contact = new ShareType('contact', 100, $gettext('Contact'), 'global')
 
-  static readonly individuals = [this.user, this.guest, this.remote]
+  static readonly individuals = [this.user, this.mail, this.remote]
   static readonly collectives = [this.group]
   static readonly unauthenticated = [this.link]
-  static readonly authenticated = [this.user, this.group, this.guest, this.remote]
-  static readonly all = [this.user, this.group, this.link, this.guest, this.remote, this.contact]
+  static readonly authenticated = [this.user, this.group, this.mail, this.remote]
+  static readonly all = [this.user, this.group, this.link, this.mail, this.remote, this.contact]
 
   static isIndividual(type: ShareType): boolean {
     return this.individuals.includes(type)
