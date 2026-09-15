@@ -5,7 +5,7 @@ ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:4.1.0-SNAPSHOT"
 
 # renovate: datasource=docker depName=collabora/code
-COLLABORA_CODE = "collabora/code:26.04.2.4.1"
+COLLABORA_CODE = "collabora/code:26.04.3.2.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:26.6.1"
 MINIO_MC = "quay.io/opencloudeu/minio-mc-ci:1.0"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
