@@ -216,7 +216,14 @@ const titleSegments = computed(() => {
 useDocumentTitle({ titleSegments })
 
 const route = useRoute()
+
 const breadcrumbs = computed(() => {
+  const vaultRoot = getVaultClaim(extensionRegistry, unref(space), props.item || '/')?.vaultRoot
+  const vaultIcon = {
+    icon: 'shield-keyhole',
+    iconAccessibleLabel: $gettext('Encrypted vault')
+  }
+
   const rootBreadcrumbItems: BreadcrumbItem[] = []
   if (isProjectSpaceResource(unref(space))) {
     rootBreadcrumbItems.push({
@@ -290,15 +297,30 @@ const breadcrumbs = computed(() => {
     }
   }
 
-  return concatBreadcrumbs(
-    ...rootBreadcrumbItems,
-    spaceBreadcrumbItem,
-    ...breadcrumbsFromPath({
-      route: unref(route),
-      resourcePath: props.item,
-      ...ancestorMetaData
-    })
-  )
+  if (vaultRoot === '/') {
+    spaceBreadcrumbItem = {
+      ...spaceBreadcrumbItem,
+      ...vaultIcon
+    }
+  }
+
+  const resourcePathSegments = (props.item || '').split('/').filter(Boolean)
+  const pathBreadcrumbItems = breadcrumbsFromPath({
+    route: unref(route),
+    resourcePath: props.item,
+    ...ancestorMetaData
+  }).map((item, index) => {
+    const path = `/${resourcePathSegments.slice(0, index + 1).join('/')}`
+    if (path !== vaultRoot) {
+      return item
+    }
+    return {
+      ...item,
+      ...vaultIcon
+    }
+  })
+
+  return concatBreadcrumbs(...rootBreadcrumbItems, spaceBreadcrumbItem, ...pathBreadcrumbItems)
 })
 
 const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {

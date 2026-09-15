@@ -20,12 +20,16 @@ import { flushPromises } from '@vue/test-utils'
 
 const mockCreateFolder = vi.fn()
 const mockUseEmbedMode = vi.fn().mockReturnValue({ isEnabled: computed(() => false) })
+const extensionRegistryMock = {
+  extensions: ref([])
+}
 
 vi.mock('../../../../src/composables/resourcesViewDefaults')
 vi.mock('../../../../src/composables/keyboardActions')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useBreadcrumbsFromPath: vi.fn(),
+  useExtensionRegistry: vi.fn(() => extensionRegistryMock),
   useEmbedMode: vi.fn().mockImplementation(() => mockUseEmbedMode()),
   useFileActions: vi.fn(() => ({}))
 }))
@@ -126,6 +130,24 @@ describe('GenericSpace view', () => {
       const breadCrumbItem = wrapper.findComponent<typeof AppBar>('app-bar-stub').props()
         .breadcrumbs[0]
       expect((breadCrumbItem.to as RouteLocation).query.page).toBeUndefined()
+    })
+    it('sets shield-keyhole icon for vault root breadcrumb items', () => {
+      const vaultRoot = '/secure.vault'
+      const { wrapper } = getMountedWrapper({
+        files: [mockDeep<Resource>()],
+        props: { item: `${vaultRoot}/docs` },
+        breadcrumbsFromPath: [{ text: 'Secure' }, { text: 'docs' }],
+        vaultRoots: [vaultRoot]
+      })
+      const breadcrumbItems = wrapper
+        .findComponent<typeof AppBar>('app-bar-stub')
+        .props().breadcrumbs
+      expect(breadcrumbItems[1]).toMatchObject({
+        text: 'Secure',
+        icon: 'shield-keyhole',
+        iconAccessibleLabel: 'Encrypted vault'
+      })
+      expect(breadcrumbItems[2]).toMatchObject({ text: 'docs' })
     })
   })
   describe('loader task', () => {
@@ -233,6 +255,7 @@ function getMountedWrapper({
     driveType: ''
   }),
   breadcrumbsFromPath = [],
+  vaultRoots = [],
   stubs = {}
 }: {
   mocks?: Record<string, unknown>
@@ -243,8 +266,34 @@ function getMountedWrapper({
   currentFolder?: Resource
   space?: SpaceResource
   breadcrumbsFromPath?: BreadcrumbItem[]
+  vaultRoots?: string[]
   stubs?: any
 } = {}) {
+  extensionRegistryMock.extensions.value = vaultRoots.length
+    ? [
+        ref([
+          {
+            id: 'test-vault-extension',
+            type: 'vault',
+            claimsPath: (_space: SpaceResource, path: string) => {
+              const root = vaultRoots.find((vaultRoot) => {
+                return path === vaultRoot || path?.startsWith(`${vaultRoot}/`)
+              })
+              if (!root) {
+                return null
+              }
+              return {
+                vaultRoot: root,
+                encryptsNames: true,
+                unlockRoute: { name: 'rclone-crypt-unlock' }
+              }
+            },
+            resolve: vi.fn()
+          }
+        ])
+      ]
+    : []
+
   const plugins = defaultPlugins({
     piniaOptions: {
       resourcesStore: { currentFolder, resources: files }
