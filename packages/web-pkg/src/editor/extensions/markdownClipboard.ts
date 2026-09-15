@@ -27,7 +27,15 @@ export function createMarkdownClipboardExtension() {
               const text =
                 clipboardData?.getData('text/plain') || clipboardData?.getData('Text') || ''
 
-              return editor.commands.insertContent(text, { contentType: 'markdown' })
+              if (!text) {
+                return false
+              }
+
+              try {
+                return editor.commands.insertContent(text, { contentType: 'markdown' })
+              } catch {
+                return false
+              }
             }
           }
         })

@@ -102,4 +102,20 @@ describe('markdown clipboard extension', () => {
       editor.destroy()
     }
   })
+
+  it('falls back to regular paste handling when markdown insertion cannot handle the text', () => {
+    const editor = createEditor()
+
+    try {
+      editor.view.pasteText('https://opencloud.eu ')
+
+      const textNode = editor.state.doc.firstChild?.firstChild
+      expect(editor.state.doc.textContent).toBe('https://opencloud.eu ')
+      expect(textNode?.marks.find(({ type }) => type.name === 'link')?.attrs.href).toBe(
+        'https://opencloud.eu'
+      )
+    } finally {
+      editor.destroy()
+    }
+  })
 })
