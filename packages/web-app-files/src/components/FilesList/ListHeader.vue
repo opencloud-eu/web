@@ -15,7 +15,7 @@
         'mask-linear-[180deg,black,80%,transparent]': markdownCollapsed && showMarkdownCollapse
       }"
     >
-      <TextEditorContent class="w-full" :editor="readmeEditor" />
+      <TextEditorViewer class="w-full" :content="markdownContent" />
     </div>
     <div v-if="showMarkdownCollapse && markdownContent" class="markdown-collapse text-center mt-2">
       <oc-button appearance="raw" no-hover @click="toggleMarkdownCollapsed">
@@ -28,8 +28,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useClientService } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
+import { preloadTextEditor, TextEditorViewer, useClientService } from '@opencloud-eu/web-pkg'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 
@@ -43,11 +42,6 @@ const clientService = useClientService()
 const { getFileContents } = clientService.webdav
 
 const markdownContent = ref('')
-const readmeEditor = useTextEditor({
-  contentType: 'markdown',
-  modelValue: markdownContent,
-  readonly: true
-})
 
 const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownCollapsed = ref(true)
@@ -94,11 +88,14 @@ const unobserveMarkdownContainerResize = () => {
 
 const loadReadmeContentTask = useTask(function* (signal) {
   try {
-    const { body } = yield getFileContents(
-      space,
-      { fileId: unref(readmeFile).id, path: unref(readmeFile).path },
-      { signal }
-    )
+    const [{ body }] = yield Promise.all([
+      getFileContents(
+        space,
+        { fileId: unref(readmeFile).id, path: unref(readmeFile).path },
+        { signal }
+      ),
+      preloadTextEditor()
+    ])
     markdownContent.value = body || ''
   } catch (e) {
     console.error('failed to load README.md content', e)

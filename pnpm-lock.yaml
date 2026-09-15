@@ -102,6 +102,7 @@ catalogs:
 
 overrides:
   epubjs>@xmldom/xmldom: ^0.9.12
+  highlight.js: ^11.12.0
   '@module-federation/dts-plugin>axios': ^1.6.0
   axios: 1.20.0
 
@@ -1078,7 +1079,7 @@ importers:
         specifier: ^7.1.0
         version: 7.5.0
       highlight.js:
-        specifier: ^11.11.1
+        specifier: ^11.12.0
         version: 11.12.0
       lodash-es:
         specifier: ^4.17.23
@@ -1950,7 +1951,7 @@ packages:
       '@tiptap/core': 3.31.3
       '@tiptap/extension-code-block': 3.31.3
       '@tiptap/pm': 3.31.3
-      highlight.js: ^11
+      highlight.js: ^11.12.0
       lowlight: ^2 || ^3
 
   '@tiptap/extension-code-block@3.31.3':
@@ -3453,10 +3454,6 @@ packages:
 
   help-me@5.0.0:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
-
-  highlight.js@11.11.2:
-    resolution: {integrity: sha512-oaXMACAU0kzOMXBjWpNcX+vlwSBCIAiZ9BHa7gA15NOTtT2L/l8OSZDuqS2XppOhZBPJ7hm4o8ep2kyuip2uEQ==}
-    engines: {node: '>=12.0.0'}
 
   highlight.js@11.12.0:
     resolution: {integrity: sha512-nbfWpyRMcMrPMmDwJB+dhX/eiaPKtc2RB+0QZskqJ3WjRA/FDS0e9hZrx8EC/lbEv8gXy98FcDbNa/dspAaJMg==}
@@ -7523,8 +7520,6 @@ snapshots:
 
   help-me@5.0.0: {}
 
-  highlight.js@11.11.2: {}
-
   highlight.js@11.12.0: {}
 
   hmac-drbg@1.0.1:
@@ -7893,7 +7888,7 @@ snapshots:
     dependencies:
       '@types/hast': 3.0.5
       devlop: 1.1.0
-      highlight.js: 11.11.2
+      highlight.js: 11.12.0
 
   lru-cache@10.4.3: {}
 

@@ -1,13 +1,35 @@
 import { useGettext } from 'vue3-gettext'
+import { defineAsyncComponent, type Component } from 'vue'
 import translations from '../l10n/translations.json'
-import TextEditor from './App.vue'
 import {
   ApplicationFileExtension,
   ApplicationInformation,
+  AppLoadingSpinner,
   AppWrapperRoute,
   defineWebApplication
 } from '@opencloud-eu/web-pkg'
-import { makeTextEditorAdapter } from './yjs'
+
+let textEditorRoute: Component | undefined
+
+/**
+ * Keeps the editor (tiptap, prosemirror, highlight.js) out of the app entry so
+ * it is only fetched once the route is visited.
+ */
+async function loadTextEditorRoute(applicationId: string) {
+  if (!textEditorRoute) {
+    const [{ default: TextEditor }, { makeTextEditorAdapter }] = await Promise.all([
+      import('./App.vue'),
+      import('./yjs')
+    ])
+
+    textEditorRoute = AppWrapperRoute(TextEditor, {
+      applicationId,
+      yjs: { makeAdapter: makeTextEditorAdapter }
+    })
+  }
+
+  return textEditorRoute
+}
 
 export default defineWebApplication({
   setup({ applicationConfig }) {
@@ -193,11 +215,10 @@ export default defineWebApplication({
     const routes = [
       {
         path: '/:driveAliasAndItem(.*)?',
-        component: AppWrapperRoute(TextEditor, {
-          applicationId: appId,
-          yjs: {
-            makeAdapter: makeTextEditorAdapter
-          }
+        component: defineAsyncComponent({
+          loader: () => loadTextEditorRoute(appId),
+          loadingComponent: AppLoadingSpinner,
+          delay: 0
         }),
         name: 'text-editor',
         meta: {

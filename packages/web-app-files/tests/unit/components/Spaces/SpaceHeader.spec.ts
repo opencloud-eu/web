@@ -14,24 +14,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   useFileActions: vi.fn().mockReturnValue({
     getDefaultAction: vi.fn().mockReturnValue({ handler: vi.fn() })
   }),
-  useLoadPreview: vi.fn()
-}))
-
-vi.mock('@opencloud-eu/web-pkg/editor', () => ({
-  useTextEditor: vi.fn().mockReturnValue({
-    editor: { value: null },
-    contentType: { value: 'markdown' },
-    readonly: { value: true },
-    toolbarItems: [],
-    getContent: vi.fn().mockReturnValue(''),
-    isEmpty: { value: true },
-    isFocused: { value: false },
-    focus: vi.fn(),
-    blur: vi.fn(),
-    destroy: vi.fn()
-  }),
-  TextEditorProvider: { template: '<div><slot /></div>' },
-  TextEditorContent: { template: '<div />' }
+  useLoadPreview: vi.fn(),
+  preloadTextEditor: vi.fn().mockResolvedValue(undefined),
+  TextEditorViewer: { name: 'TextEditorViewer', template: '<div />' }
 }))
 
 vi.mock('@opencloud-eu/web-client', async (importOriginal) => ({
@@ -194,9 +179,7 @@ function getWrapper({
       plugins,
       provide: { ...mocks },
       stubs: {
-        'context-actions': true,
-        TextEditorProvider: true,
-        TextEditorContent: true
+        'context-actions': true
       }
     }
   })
