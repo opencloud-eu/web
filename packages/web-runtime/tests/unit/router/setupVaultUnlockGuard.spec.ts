@@ -391,6 +391,25 @@ describe('setupVaultUnlockGuard', () => {
     })
   })
 
+  it('does not lazy-load mount-points when the share space is already in the store', async () => {
+    // A guest session pre-creates its share space, precisely so this guard never reaches the
+    // user-scoped mount-point graph call.
+    const shareSpace = { id: 'share-id', driveAlias: 'share/Invited folder' }
+    const guard = installGuard({ spaces: [shareSpace], claim: null })
+
+    const result = await guard(
+      {
+        params: { driveAliasAndItem: 'share/Invited folder' },
+        query: { shareId: 'share-id' },
+        fullPath: '/files/spaces/share/Invited folder'
+      },
+      coldStart
+    )
+
+    expect(result).toBe(true)
+    expect(loadMountPoints).not.toHaveBeenCalled()
+  })
+
   it('lazy-loads mount-points and builds the share space, then redirects a locked vault', async () => {
     // On a hard reload into a share space, the share space isn't in the store
     // yet (mount-point spaces are fetched on demand). Given the `shareId` query,
