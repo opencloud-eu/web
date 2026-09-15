@@ -148,6 +148,30 @@ describe('markdown clipboard extension', () => {
     }
   })
 
+  it('copies a fully selected heading as markdown text', () => {
+    const editor = createEditor()
+
+    try {
+      editor.commands.setContent({
+        type: 'doc',
+        content: [
+          {
+            type: 'heading',
+            attrs: { level: 1 },
+            content: [{ type: 'text', text: 'Heading' }]
+          }
+        ]
+      })
+      selectText(editor, 'Heading')
+
+      const clipboardText = copySelectionAsText(editor)
+
+      expect(clipboardText.trim()).toBe('# Heading')
+    } finally {
+      editor.destroy()
+    }
+  })
+
   it('copies a selected list as markdown text', () => {
     const editor = createEditor()
 

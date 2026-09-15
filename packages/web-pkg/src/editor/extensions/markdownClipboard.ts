@@ -19,12 +19,16 @@ export function createMarkdownClipboardExtension() {
               }
 
               const { $from, $to } = view.state.selection
-              // A partial selection inside a textblock carries open parent context, e.g.
-              // bulletList > listItem > paragraph. Serialize only the selected inline content.
-              const content =
-                $from.sameParent($to) && $from.parent.isTextblock
-                  ? $from.parent.content.cut($from.parentOffset, $to.parentOffset).toJSON()
-                  : slice.content.toJSON()
+              const selectedTextblockPart =
+                $from.sameParent($to) &&
+                $from.parent.isTextblock &&
+                ($from.parentOffset > 0 || $to.parentOffset < $from.parent.content.size)
+
+              // A partial textblock selection carries open parent context, e.g.
+              // bulletList > listItem > paragraph. Serialize only its inline content.
+              const content = selectedTextblockPart
+                ? $from.parent.content.cut($from.parentOffset, $to.parentOffset).toJSON()
+                : slice.content.toJSON()
 
               return (
                 editor.markdown?.serialize({
