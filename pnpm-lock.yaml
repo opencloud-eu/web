@@ -463,6 +463,40 @@ importers:
         specifier: workspace:*
         version: link:../web-test-helpers
 
+  packages/web-app-appointments:
+    dependencies:
+      '@opencloud-eu/design-system':
+        specifier: workspace:^
+        version: link:../design-system
+      '@opencloud-eu/web-client':
+        specifier: workspace:*
+        version: link:../web-client
+      '@opencloud-eu/web-pkg':
+        specifier: workspace:*
+        version: link:../web-pkg
+      luxon:
+        specifier: ^3.7.2
+        version: 3.7.2
+      pinia:
+        specifier: 4.0.3
+        version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3))
+      vue-concurrency:
+        specifier: 5.0.3
+        version: 5.0.3(vue@3.5.42(typescript@6.0.3))
+      vue-router:
+        specifier: 5.3.1
+        version: 5.3.1(@vue/compiler-sfc@3.5.42)(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3)))(rolldown@1.2.5)(vite@8.2.2(@types/node@25.9.5)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.42(typescript@6.0.3))
+      vue3-gettext:
+        specifier: ^4.0.0-beta.1
+        version: 4.0.1(vue@3.5.42(typescript@6.0.3))
+      zod:
+        specifier: 4.5.4
+        version: 4.5.4
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
+
   packages/web-app-contacts:
     dependencies:
       '@opencloud-eu/design-system':
