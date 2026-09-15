@@ -59,6 +59,41 @@ function handlePaste(editor: Editor, event: ClipboardEvent) {
   return result
 }
 
+function copySelectionAsText(editor: Editor) {
+  return editor.view.serializeForClipboard(editor.state.selection.content()).text
+}
+
+function findTextRange(editor: Editor, text: string) {
+  let range: { from: number; to: number } | undefined
+
+  editor.state.doc.descendants((node, pos) => {
+    const index = node.text?.indexOf(text) ?? -1
+    if (index < 0) {
+      return true
+    }
+
+    range = { from: pos + index, to: pos + index + text.length }
+    return false
+  })
+
+  if (!range) {
+    throw new Error(`Text not found: ${text}`)
+  }
+
+  return range
+}
+
+function selectText(editor: Editor, text: string) {
+  editor.commands.setTextSelection(findTextRange(editor, text))
+}
+
+function selectTextRange(editor: Editor, fromText: string, toText: string) {
+  editor.commands.setTextSelection({
+    from: findTextRange(editor, fromText).from,
+    to: findTextRange(editor, toText).to
+  })
+}
+
 describe('markdown clipboard extension', () => {
   it('copies selected rich editor content as markdown text', () => {
     const editor = createEditor()
@@ -70,11 +105,116 @@ describe('markdown clipboard extension', () => {
       )
 
       editor.view.dispatch(editor.state.tr.setSelection(new AllSelection(editor.state.doc)))
-      const clipboardText = editor.view.serializeForClipboard(editor.state.selection.content()).text
+      const clipboardText = copySelectionAsText(editor)
 
       expect(clipboardText).toContain('# Heading')
       expect(clipboardText).toContain('**bold**')
       expect(clipboardText).toContain('[linked](https://opencloud.eu)')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('copies selected text inside a list item without the list marker', () => {
+    const editor = createEditor()
+
+    try {
+      editor.commands.setContent({
+        type: 'doc',
+        content: [
+          {
+            type: 'bulletList',
+            content: [
+              {
+                type: 'listItem',
+                content: [
+                  {
+                    type: 'paragraph',
+                    content: [{ type: 'text', text: 'lorem ipsum' }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      })
+      selectText(editor, 'ipsum')
+
+      const clipboardText = copySelectionAsText(editor)
+
+      expect(clipboardText.trim()).toBe('ipsum')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('copies a selected list as markdown text', () => {
+    const editor = createEditor()
+
+    try {
+      editor.commands.setContent({
+        type: 'doc',
+        content: [
+          {
+            type: 'bulletList',
+            content: [
+              {
+                type: 'listItem',
+                content: [
+                  {
+                    type: 'paragraph',
+                    content: [{ type: 'text', text: 'lorem ipsum' }]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      })
+      editor.view.dispatch(editor.state.tr.setSelection(new AllSelection(editor.state.doc)))
+
+      const clipboardText = copySelectionAsText(editor)
+
+      expect(clipboardText).toContain('- lorem ipsum')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('copies a selected list followed by a heading as markdown text', () => {
+    const editor = createEditor()
+
+    try {
+      editor.commands.setContent({
+        type: 'doc',
+        content: [
+          {
+            type: 'bulletList',
+            content: [
+              {
+                type: 'listItem',
+                content: [
+                  {
+                    type: 'paragraph',
+                    content: [{ type: 'text', text: 'lorem ipsum' }]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            type: 'heading',
+            attrs: { level: 1 },
+            content: [{ type: 'text', text: 'Next heading' }]
+          }
+        ]
+      })
+      selectTextRange(editor, 'lorem', 'Next heading')
+
+      const clipboardText = copySelectionAsText(editor)
+
+      expect(clipboardText).toContain('- lorem ipsum')
+      expect(clipboardText).toContain('# Next heading')
     } finally {
       editor.destroy()
     }

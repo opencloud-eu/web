@@ -13,13 +13,25 @@ export function createMarkdownClipboardExtension() {
         new Plugin({
           key: new PluginKey('markdownClipboard'),
           props: {
-            clipboardTextSerializer(slice: Slice) {
+            clipboardTextSerializer(slice: Slice, view) {
               if (!slice.content.size) {
                 return ''
               }
 
-              const content = slice.content.toJSON() as JSONContent[] | null
-              return editor.markdown?.serialize({ type: 'doc', content: content ?? [] }) ?? ''
+              const { $from, $to } = view.state.selection
+              // A partial selection inside a textblock carries open parent context, e.g.
+              // bulletList > listItem > paragraph. Serialize only the selected inline content.
+              const content =
+                $from.sameParent($to) && $from.parent.isTextblock
+                  ? $from.parent.content.cut($from.parentOffset, $to.parentOffset).toJSON()
+                  : slice.content.toJSON()
+
+              return (
+                editor.markdown?.serialize({
+                  type: 'doc',
+                  content: (content as JSONContent[] | null) ?? []
+                }) ?? ''
+              )
             },
 
             handlePaste(view, event) {
