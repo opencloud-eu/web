@@ -75,6 +75,7 @@ export interface BreadcrumbItem {
   isTruncationPlaceholder?: boolean
   isStaticNav?: boolean
   icon?: string
+  iconAccessibleLabel?: string
 }
 
 export type AppearanceType = 'filled' | 'outline' | 'raw' | 'raw-inverse'

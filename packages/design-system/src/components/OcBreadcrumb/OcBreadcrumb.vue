@@ -60,6 +60,7 @@
                 <oc-icon
                   v-if="truncationItem.icon"
                   :name="truncationItem.icon"
+                  :accessible-label="truncationItem.iconAccessibleLabel || ''"
                   fill-type="line"
                   class="align-middle"
                   size-class="size-4"
@@ -85,6 +86,7 @@
               <oc-icon
                 v-if="item.icon"
                 :name="item.icon"
+                :accessible-label="item.iconAccessibleLabel || ''"
                 fill-type="line"
                 class="align-sub"
                 size-class="size-4"
@@ -117,6 +119,7 @@
               <oc-icon
                 v-if="item.icon"
                 :name="item.icon"
+                :accessible-label="item.iconAccessibleLabel || ''"
                 fill-type="line"
                 class="align-sub"
                 size-class="size-4"
@@ -133,6 +136,7 @@
             <oc-icon
               v-if="item.icon"
               :name="item.icon"
+              :accessible-label="item.iconAccessibleLabel || ''"
               fill-type="line"
               class="align-sub"
               size-class="size-4"
@@ -200,6 +204,7 @@
     <oc-icon
       v-if="currentFolder.icon"
       :name="currentFolder.icon"
+      :accessible-label="currentFolder.iconAccessibleLabel || ''"
       fill-type="line"
       class="mr-1 shrink-0"
       size-class="size-4"

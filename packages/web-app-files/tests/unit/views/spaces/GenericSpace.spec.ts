@@ -144,7 +144,8 @@ describe('GenericSpace view', () => {
         .props().breadcrumbs
       expect(breadcrumbItems[1]).toMatchObject({
         text: 'Secure',
-        icon: 'shield-keyhole'
+        icon: 'shield-keyhole',
+        iconAccessibleLabel: 'Encrypted vault'
       })
       expect(breadcrumbItems[2]).toMatchObject({ text: 'docs' })
     })

@@ -219,6 +219,10 @@ const route = useRoute()
 
 const breadcrumbs = computed(() => {
   const vaultRoot = getVaultClaim(extensionRegistry, unref(space), props.item || '/')?.vaultRoot
+  const vaultIcon = {
+    icon: 'shield-keyhole',
+    iconAccessibleLabel: $gettext('Encrypted vault')
+  }
 
   const rootBreadcrumbItems: BreadcrumbItem[] = []
   if (isProjectSpaceResource(unref(space))) {
@@ -296,7 +300,7 @@ const breadcrumbs = computed(() => {
   if (vaultRoot === '/') {
     spaceBreadcrumbItem = {
       ...spaceBreadcrumbItem,
-      icon: 'shield-keyhole'
+      ...vaultIcon
     }
   }
 
@@ -312,7 +316,7 @@ const breadcrumbs = computed(() => {
     }
     return {
       ...item,
-      icon: 'shield-keyhole'
+      ...vaultIcon
     }
   })
 

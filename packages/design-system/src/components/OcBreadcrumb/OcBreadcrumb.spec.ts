@@ -21,14 +21,33 @@ describe('OcBreadcrumb', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
   it('renders item icons passed via props', () => {
-    const { wrapper } = getWrapper({ items: [{ text: 'Vault', icon: 'resource-type-vault' }] })
-    const iconNames = wrapper.findAll('oc-icon-stub').map((icon) => icon.attributes('name'))
-    expect(iconNames).toContain('resource-type-vault')
+    const { wrapper } = getWrapper({
+      items: [
+        {
+          text: 'Vault',
+          icon: 'resource-type-vault',
+          iconAccessibleLabel: 'Encrypted vault'
+        }
+      ]
+    })
+    const icon = wrapper
+      .findAll('oc-icon-stub')
+      .find((icon) => icon.attributes('name') === 'resource-type-vault')
+    expect(icon?.attributes('accessiblelabel')).toBe('Encrypted vault')
   })
   it('renders current item icons in the mobile breadcrumb', () => {
-    const { wrapper } = getWrapper({ items: [{ text: 'Vault', icon: 'resource-type-vault' }] })
+    const { wrapper } = getWrapper({
+      items: [
+        {
+          text: 'Vault',
+          icon: 'resource-type-vault',
+          iconAccessibleLabel: 'Encrypted vault'
+        }
+      ]
+    })
     const icon = wrapper.find('.oc-breadcrumb-mobile-current oc-icon-stub')
     expect(icon.attributes('name')).toBe('resource-type-vault')
+    expect(icon.attributes('accessiblelabel')).toBe('Encrypted vault')
   })
   it('displays context menu trigger if enabled via property', () => {
     const { wrapper } = getWrapper({ showContextActions: true })
