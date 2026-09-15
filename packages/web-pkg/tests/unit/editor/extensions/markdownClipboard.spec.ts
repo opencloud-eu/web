@@ -111,6 +111,113 @@ describe('markdown clipboard extension', () => {
     }
   })
 
+  it('pastes plain inline text without splitting the current paragraph', () => {
+    const editor = createEditor()
+
+    try {
+      editor.commands.setContent('<p>foobar</p>')
+      editor.commands.setTextSelection(4)
+
+      editor.view.pasteText('x')
+
+      expect(editor.state.doc.childCount).toBe(1)
+      expect(editor.state.doc.firstChild?.type.name).toBe('paragraph')
+      expect(editor.state.doc.textContent).toBe('fooxbar')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('pastes inline markdown without splitting the current paragraph', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('**x**')
+
+    try {
+      editor.commands.setContent('<p>foobar</p>')
+      editor.commands.setTextSelection(4)
+
+      const handled = handlePaste(editor, event)
+
+      expect(handled).toBe(true)
+      expect(editor.state.doc.childCount).toBe(1)
+      expect(editor.state.doc.textContent).toBe('fooxbar')
+      expect(editor.state.doc.firstChild?.child(1).marks[0]?.type.name).toBe('bold')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('pastes heading markdown without splitting the current paragraph', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('# x')
+
+    try {
+      editor.commands.setContent('<p>foobar</p>')
+      editor.commands.setTextSelection(4)
+
+      const handled = handlePaste(editor, event)
+
+      expect(handled).toBe(true)
+      expect(editor.state.doc.childCount).toBe(1)
+      expect(editor.state.doc.firstChild?.type.name).toBe('paragraph')
+      expect(editor.state.doc.textContent).toBe('fooxbar')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('keeps heading markdown as a heading when the current paragraph is empty', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('# Heading')
+
+    try {
+      const handled = handlePaste(editor, event)
+
+      expect(handled).toBe(true)
+      expect(editor.state.doc.firstChild?.type.name).toBe('heading')
+      expect(editor.state.doc.firstChild?.attrs.level).toBe(1)
+      expect(editor.state.doc.firstChild?.textContent).toBe('Heading')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('keeps list markdown structured when pasted into the current paragraph', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('- item')
+
+    try {
+      editor.commands.setContent('<p>foobar</p>')
+      editor.commands.setTextSelection(4)
+
+      const handled = handlePaste(editor, event)
+
+      expect(handled).toBe(true)
+      expect(editor.state.doc.child(1).type.name).toBe('bulletList')
+      expect(editor.state.doc.textContent).toBe('fooitembar')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('keeps fenced code markdown structured when pasted into the current paragraph', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('```\nconst value = 1\n```')
+
+    try {
+      editor.commands.setContent('<p>foobar</p>')
+      editor.commands.setTextSelection(4)
+
+      const handled = handlePaste(editor, event)
+
+      expect(handled).toBe(true)
+      expect(editor.state.doc.child(1).type.name).toBe('codeBlock')
+      expect(editor.state.doc.textContent).toBe('fooconst value = 1bar')
+    } finally {
+      editor.destroy()
+    }
+  })
+
   it('falls back to regular paste handling inside code blocks', () => {
     const editor = createEditor()
     const event = createClipboardEvent('\nconst after = false;')
