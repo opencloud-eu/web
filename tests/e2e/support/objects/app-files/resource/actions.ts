@@ -36,9 +36,9 @@ export const resourceNameSelector =
   ':is(#files-files-table, .oc-tiles-item, #files-shared-with-me-accepted-section, .files-table) [data-test-resource-name="%s"]'
 // following breadcrumb selectors is passed to buildXpathLiteral function as the content to be inserted might contain quotes
 const breadcrumbResourceNameSelector =
-  '//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()=%s]'
+  '//*[@id="files-breadcrumb"]//li[contains(@class, "oc-breadcrumb-list-item")]//span[text()[normalize-space(.)=%s]]'
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
-const breadcrumbResourceSelector = '//*[@id="files-breadcrumb"]//span[text()=%s]//ancestor::li'
+const breadcrumbResourceSelector = `${breadcrumbResourceNameSelector}//ancestor::li`
 const addNewResourceButton = `.oc-app-floating-action-button`
 const createNewFolderButton = '#new-folder-btn'
 const createNewNoteFileButton = '.new-file-btn-ocnote'
