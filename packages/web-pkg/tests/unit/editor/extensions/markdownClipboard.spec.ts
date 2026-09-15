@@ -46,9 +46,17 @@ function createClipboardEvent(
 }
 
 function handlePaste(editor: Editor, event: ClipboardEvent) {
-  return editor.view.someProp('handlePaste', (handler) =>
-    handler(editor.view, event, Slice.empty as ProseMirrorSlice)
-  )
+  let result: boolean | undefined
+
+  editor.view.someProp('handlePaste', (handler) => {
+    const handled = handler(editor.view, event, Slice.empty as ProseMirrorSlice)
+    if (typeof handled === 'boolean') {
+      result = handled
+    }
+    return handled
+  })
+
+  return result
 }
 
 describe('markdown clipboard extension', () => {
@@ -98,6 +106,33 @@ describe('markdown clipboard extension', () => {
       expect(handled).toBe(true)
       expect(editor.state.doc.firstChild?.type.name).toBe('bulletList')
       expect(editor.markdown?.serialize(editor.getJSON())).toContain('- List item')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('falls back to regular paste handling inside code blocks', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('\nconst after = false;')
+
+    try {
+      editor.commands.setContent({
+        type: 'doc',
+        content: [
+          {
+            type: 'codeBlock',
+            attrs: { language: null },
+            content: [{ type: 'text', text: 'const before = true;' }]
+          }
+        ]
+      })
+      editor.commands.setTextSelection((editor.state.doc.firstChild?.nodeSize ?? 0) - 1)
+      const contentBeforePaste = editor.getJSON().content
+
+      const handled = handlePaste(editor, event)
+
+      expect(handled).toBe(false)
+      expect(editor.getJSON().content).toEqual(contentBeforePaste)
     } finally {
       editor.destroy()
     }

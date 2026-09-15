@@ -22,7 +22,13 @@ export function createMarkdownClipboardExtension() {
               return editor.markdown?.serialize({ type: 'doc', content: content ?? [] }) ?? ''
             },
 
-            handlePaste(_view, event) {
+            handlePaste(view, event) {
+              // Let the original paste handler insert plain text inside code-like nodes.
+              // Parsing it as markdown would split pasted code into regular document blocks.
+              if (view.state.selection.$from.parent.type.spec.code) {
+                return false
+              }
+
               const clipboardData = event.clipboardData
               const text =
                 clipboardData?.getData('text/plain') || clipboardData?.getData('Text') || ''
@@ -34,6 +40,8 @@ export function createMarkdownClipboardExtension() {
               try {
                 return editor.commands.insertContent(text, { contentType: 'markdown' })
               } catch {
+                // Let the original paste handler take over when markdown insertion fails.
+                // This keeps browser/editor fallbacks like link-on-paste intact.
                 return false
               }
             }
