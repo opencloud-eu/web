@@ -36,6 +36,8 @@ export const concatBreadcrumbs = (...items: BreadcrumbItem[]): BreadcrumbItem[] 
       id: uuidV4(),
       allowContextActions: last.allowContextActions,
       text: last.text,
+      ...(last.icon && { icon: last.icon }),
+      ...(last.iconAccessibleLabel && { iconAccessibleLabel: last.iconAccessibleLabel }),
       onClick: () => eventBus.publish('app.files.list.load'),
       isTruncationPlaceholder: last.isTruncationPlaceholder,
       isStaticNav: last.isStaticNav

@@ -4,7 +4,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
 "<nav data-v-5914b352="" id="oc-breadcrumbs-4" class="oc-breadcrumb oc-breadcrumb-default overflow-visible" aria-label="Breadcrumbs">
   <ol data-v-5914b352="" class="oc-breadcrumb-list hidden items-baseline m-0 p-0 flex-nowrap sm:flex">
     <li data-v-5914b352="" data-key="0" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs"><!--v-if--> First folder</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" sizeclass="size-5" type="span" uniqueids="false" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -17,16 +17,16 @@ exports[`OcBreadcrumb > displays all items 1`] = `
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="2" class="oc-breadcrumb-list-item flex items-center">
-      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="inline-flex items-center first:text-base text-xl h-5"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
+      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="inline-flex items-center first:text-base text-xl h-5"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs"><!--v-if--> Subfolder</span></oc-button-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" sizeclass="size-5" type="span" uniqueids="false" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="3" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs"><!--v-if--> Deep</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" sizeclass="size-5" type="span" uniqueids="false" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-v-5914b352="" data-key="4" class="oc-breadcrumb-list-item flex items-center"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1">Deeper ellipsize in responsive mode</span>
+    <li data-v-5914b352="" data-key="4" class="oc-breadcrumb-list-item flex items-center"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1"><!--v-if--> Deeper ellipsize in responsive mode</span>
       <!--v-if-->
       <!--v-if-->
     </li>
@@ -36,14 +36,16 @@ exports[`OcBreadcrumb > displays all items 1`] = `
   </oc-button-stub>
 </nav>
 
-<div data-v-5914b352="" class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1 sm:hidden justify-center"><span data-v-5914b352="" class="truncate font-bold" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
+<div data-v-5914b352="" class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1 sm:hidden justify-center">
+  <!--v-if--> <span data-v-5914b352="" class="min-w-0 truncate font-bold" aria-current="page">Deeper ellipsize in responsive mode</span>
+</div>"
 `;
 
 exports[`OcBreadcrumb > sets correct variation 1`] = `
 "<nav data-v-5914b352="" id="oc-breadcrumbs-1" class="oc-breadcrumb oc-breadcrumb-lead overflow-visible" aria-label="Breadcrumbs">
   <ol data-v-5914b352="" class="oc-breadcrumb-list hidden items-baseline m-0 p-0 flex-nowrap sm:flex">
     <li data-v-5914b352="" data-key="0" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">First folder</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs"><!--v-if--> First folder</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" sizeclass="size-5" type="span" uniqueids="false" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
@@ -56,16 +58,16 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="2" class="oc-breadcrumb-list-item flex items-center">
-      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="inline-flex items-center first:text-base text-xl h-5"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Subfolder</span></oc-button-stub>
+      <oc-button-stub data-v-5914b352="" appearance="raw-inverse" colorrole="surface" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="inline-flex items-center first:text-base text-xl h-5"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs"><!--v-if--> Subfolder</span></oc-button-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" sizeclass="size-5" type="span" uniqueids="false" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="3" class="oc-breadcrumb-list-item flex items-center">
-      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">Deep</span></router-link-stub>
+      <router-link-stub data-v-5914b352="" tag="a" to="[object Object]" aria-current="page" class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"><span data-v-5914b352="" class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs"><!--v-if--> Deep</span></router-link-stub>
       <oc-icon-stub data-v-5914b352="" accessiblelabel="" color="var(--oc-role-on-surface)" filltype="line" name="arrow-right-s" sizeclass="size-5" type="span" uniqueids="false" class="mx-1 align-sub"></oc-icon-stub>
       <!--v-if-->
     </li>
-    <li data-v-5914b352="" data-key="4" class="oc-breadcrumb-list-item flex items-center"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1">Deeper ellipsize in responsive mode</span>
+    <li data-v-5914b352="" data-key="4" class="oc-breadcrumb-list-item flex items-center"><span data-v-5914b352="" class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs" tabindex="-1"><!--v-if--> Deeper ellipsize in responsive mode</span>
       <!--v-if-->
       <!--v-if-->
     </li>
@@ -75,5 +77,7 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
   </oc-button-stub>
 </nav>
 
-<div data-v-5914b352="" class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1 sm:hidden justify-center"><span data-v-5914b352="" class="truncate font-bold" aria-current="page">Deeper ellipsize in responsive mode</span></div>"
+<div data-v-5914b352="" class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1 sm:hidden justify-center">
+  <!--v-if--> <span data-v-5914b352="" class="min-w-0 truncate font-bold" aria-current="page">Deeper ellipsize in responsive mode</span>
+</div>"
 `;

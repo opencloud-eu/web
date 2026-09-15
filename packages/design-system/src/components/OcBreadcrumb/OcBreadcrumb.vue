@@ -57,7 +57,15 @@
                 class="p-2"
                 justify-content="left"
               >
-                <oc-icon name="folder" class="align-middle" fill-type="line" />
+                <oc-icon
+                  v-if="truncationItem.icon"
+                  :name="truncationItem.icon"
+                  :accessible-label="truncationItem.iconAccessibleLabel || ''"
+                  fill-type="line"
+                  class="align-middle"
+                  size-class="size-4"
+                />
+                <oc-icon v-else name="folder" class="align-middle" fill-type="line" />
                 <span>{{ truncationItem.text }}</span>
               </oc-button>
             </div>
@@ -74,9 +82,17 @@
               'font-bold': index === displayItems.length - 1
             }"
           >
-            <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">{{
-              item.text
-            }}</span>
+            <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">
+              <oc-icon
+                v-if="item.icon"
+                :name="item.icon"
+                :accessible-label="item.iconAccessibleLabel || ''"
+                fill-type="line"
+                class="align-sub"
+                size-class="size-4"
+              />
+              {{ item.text }}
+            </span>
           </component>
           <oc-button
             v-else-if="item.onClick"
@@ -99,16 +115,34 @@
                   'oc-breadcrumb-item-text-last font-bold': index === displayItems.length - 1
                 }
               ]"
-              v-text="item.text"
-            />
+            >
+              <oc-icon
+                v-if="item.icon"
+                :name="item.icon"
+                :accessible-label="item.iconAccessibleLabel || ''"
+                fill-type="line"
+                class="align-sub"
+                size-class="size-4"
+              />
+              {{ item.text }}
+            </span>
           </oc-button>
           <span
             v-else
             class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
             :aria-current="getAriaCurrent(index)"
             tabindex="-1"
-            v-text="item.text"
-          />
+          >
+            <oc-icon
+              v-if="item.icon"
+              :name="item.icon"
+              :accessible-label="item.iconAccessibleLabel || ''"
+              fill-type="line"
+              class="align-sub"
+              size-class="size-4"
+            />
+            {{ item.text }}
+          </span>
         </template>
         <oc-icon
           v-if="index !== displayItems.length - 1"
@@ -167,7 +201,15 @@
       'justify-center': displayItems.length > 1
     }"
   >
-    <span class="truncate font-bold" aria-current="page" v-text="currentFolder.text" />
+    <oc-icon
+      v-if="currentFolder.icon"
+      :name="currentFolder.icon"
+      :accessible-label="currentFolder.iconAccessibleLabel || ''"
+      fill-type="line"
+      class="mr-1 shrink-0"
+      size-class="size-4"
+    />
+    <span class="min-w-0 truncate font-bold" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 

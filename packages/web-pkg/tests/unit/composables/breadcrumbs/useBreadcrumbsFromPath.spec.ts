@@ -40,6 +40,24 @@ describe('useBreadcrumbsFromPath', () => {
       expect(result[0]).toMatchObject({ text: 'Foo' })
       expect(result[1]).toMatchObject({ text: 'Bar' })
     })
+
+    it('keeps the icon and accessible label on the last breadcrumb item', () => {
+      const wrapper = getWrapper()
+      const { concatBreadcrumbs } = wrapper.vm as ReturnType<typeof useBreadcrumbsFromPath>
+      const result = concatBreadcrumbs(
+        { text: 'Foo' },
+        {
+          text: 'Vault',
+          icon: 'resource-type-vault',
+          iconAccessibleLabel: 'Encrypted vault'
+        }
+      )
+      expect(result[1]).toMatchObject({
+        text: 'Vault',
+        icon: 'resource-type-vault',
+        iconAccessibleLabel: 'Encrypted vault'
+      })
+    })
   })
 })
 
