@@ -102,5 +102,4 @@ describe('markdown clipboard extension', () => {
       editor.destroy()
     }
   })
-
 })
