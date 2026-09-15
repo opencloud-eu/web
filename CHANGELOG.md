@@ -4,9 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@JammingBen
+@AlexAndBear, @JammingBen
 
+### 🐛 Bug Fixes
 
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-09-14
 
