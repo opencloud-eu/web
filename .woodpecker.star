@@ -517,7 +517,7 @@ def publishYjsImage(ctx):
     version = determineYjsReleaseVersion(ctx)
 
     # only stable releases move the rolling `latest` tag
-    tags = ["v%s" % version]
+    tags = [version]
     if len(version.split("-")) == 1:
         tags.append("latest")
 
