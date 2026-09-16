@@ -16,6 +16,7 @@ import { TextEditorState } from '../../types'
 import {
   createCodeBlockLowlight,
   createLinkExtension,
+  createMarkdownClipboardExtension,
   Frontmatter,
   imageFileHandlerExtension,
   registerFrontmatterTokenizer
@@ -104,6 +105,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       Frontmatter,
       createCodeBlockLowlight(),
       Markdown.configure({ marked }),
+      createMarkdownClipboardExtension(),
       createLinkExtension(),
       Table.configure({ resizable: false }),
       TableRow,
