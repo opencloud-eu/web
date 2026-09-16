@@ -46,7 +46,7 @@
     "@types/lodash-es": "^4.17.12",
     "@types/luxon": "^3.7.1",
     "@types/qs": "^6.15.0",
-    "@vitejs/plugin-vue": "6.0.8",
+    "@vitejs/plugin-vue": "6.0.9",
     "@vitest/coverage-v8": "^5.0.0",
     "@vitest/web-worker": "^5.0.0",
     "@vue/compiler-dom": "^3.5.31",
