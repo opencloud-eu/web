@@ -13,7 +13,7 @@
         </option>
       </select>
     </div>
-    <span :id="hintId" class="sr-only">
+    <span :id="hintId" class="sr-only" contenteditable="false">
       {{
         $gettext('Press Shift+Enter or press Enter three times in a row to exit the code block.')
       }}

@@ -4,7 +4,7 @@
       <oc-icon name="file-list-2" size="xsmall" fill-type="line" />
       {{ $gettext('Frontmatter') }}
     </span>
-    <span :id="hintId" class="sr-only">
+    <span :id="hintId" class="sr-only" contenteditable="false">
       {{
         $gettext(
           'Press Shift+Enter or press Enter three times in a row to exit the frontmatter block.'
