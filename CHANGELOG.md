@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @v-scharf
+@AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
 
 ### 📈 Enhancement
 
+- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
 
 ### 🐛 Bug Fixes
