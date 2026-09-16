@@ -571,4 +571,8 @@ export class Resource {
   getTopBarFilename(): Promise<string> {
     return po.getTopBarFilename(this.#page)
   }
+
+  async mentionUserInOpenDocument({ page, user }: { page: Page; user: string }): Promise<void> {
+    return await po.mentionUserInDocument({ page, user })
+  }
 }

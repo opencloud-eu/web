@@ -12,6 +12,8 @@ const notificationItemsMessages = `#oc-notifications-drop .oc-notifications-item
 const closeSidebarRootPanelBtn = `#app-sidebar .is-active-root-panel .header__close`
 const closeSidebarSubPanelBtn = `#app-sidebar .is-active-sub-panel .header__close`
 const notificationAvatarSelector = '#oc-notifications-drop .oc-notifications-item .oc-avatar'
+const notificationItemLink = '#oc-notifications-drop .oc-notifications-item a'
+const textEditorContent = '.text-editor-provider .ProseMirror'
 
 export class Application {
   #page: Page
@@ -34,6 +36,16 @@ export class Application {
     await expect(this.#page.locator('#app-switcher-dropdown')).toBeVisible()
   }
 
+  async #openNotificationsDrop(): Promise<void> {
+    const bell = this.#page.locator(notificationsBell)
+    await bell.waitFor()
+    if ((await bell.getAttribute('aria-expanded')) !== 'true') {
+      await bell.click()
+    }
+    await this.#page.locator(notificationsDrop).waitFor()
+    await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
+  }
+
   async getNotificationMessages(): Promise<string[]> {
     // reload will fetch notifications immediately
     // wait for the notifications to load
@@ -47,11 +59,7 @@ export class Application {
       this.#page.reload()
     ])
 
-    const dropIsOpen = await this.#page.locator(notificationsDrop).isVisible()
-    if (!dropIsOpen) {
-      await this.#page.locator(notificationsBell).click()
-    }
-    await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
+    await this.#openNotificationsDrop()
     const result = this.#page.locator(notificationItemsMessages)
     const messages = []
     const count = await result.count()
@@ -62,11 +70,7 @@ export class Application {
   }
 
   async markNotificationsAsRead(): Promise<void> {
-    const dropIsOpen = await this.#page.locator(notificationsDrop).isVisible()
-    if (!dropIsOpen) {
-      await this.#page.locator(notificationsBell).click()
-    }
-    await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
+    await this.#openNotificationsDrop()
     await this.#page.locator(markNotificationsAsReadButton).click()
     await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
   }
@@ -78,12 +82,11 @@ export class Application {
   async closeSidebar(): Promise<void> {
     // await sidebar transitions
     await new Promise((resolve) => setTimeout(resolve, 250))
-    const isSubPanelActive = await this.#page.locator(closeSidebarSubPanelBtn).isVisible()
-    if (isSubPanelActive) {
-      await this.#page.locator(closeSidebarSubPanelBtn).click()
-    } else {
-      await this.#page.locator(closeSidebarRootPanelBtn).click()
-    }
+    await this.#page
+      .locator(closeSidebarSubPanelBtn)
+      .or(this.#page.locator(closeSidebarRootPanelBtn))
+      .first()
+      .click()
   }
 
   async waitForTokenRenewalViaRefreshToken(): Promise<void> {
@@ -151,6 +154,13 @@ export class Application {
     ])
   }
 
+  async openFileFromNotification(): Promise<void> {
+    await this.#openNotificationsDrop()
+    const notificationLink = this.#page.locator(notificationItemLink).first()
+    await notificationLink.click()
+    await this.#page.locator(textEditorContent).waitFor()
+  }
+
   async getSharerAvatarFromNotification(): Promise<Locator> {
     await Promise.all([
       this.#page.waitForResponse(
@@ -162,11 +172,7 @@ export class Application {
       this.#page.reload()
     ])
 
-    const dropIsOpen = await this.#page.locator(notificationsDrop).isVisible()
-    if (!dropIsOpen) {
-      await this.#page.locator(notificationsBell).click()
-    }
-    await this.#page.locator(notificationsLoading).waitFor({ state: 'detached' })
+    await this.#openNotificationsDrop()
     return this.#page.locator(notificationAvatarSelector).locator('img')
   }
 }
