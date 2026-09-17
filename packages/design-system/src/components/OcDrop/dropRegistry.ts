@@ -11,6 +11,7 @@ type OpenDrop = {
  * drops apart from a real outside click, and lets a nested drop close its ancestors.
  */
 const openDrops = new Map<HTMLElement, OpenDrop>()
+const dropContainerSelector = '.oc-drop, [data-oc-drop-container]'
 
 export function registerOpenDrop(dropEl: HTMLElement, entry: OpenDrop): void {
   openDrops.set(dropEl, entry)
@@ -28,7 +29,7 @@ function getAncestorDrops(dropEl: HTMLElement): OpenDrop[] {
 
   while (current) {
     const anchor = openDrops.get(current)?.getAnchor() ?? null
-    const parent = anchor?.closest<HTMLElement>('.oc-drop') ?? null
+    const parent = anchor?.closest<HTMLElement>(dropContainerSelector) ?? null
     if (!parent || visited.has(parent)) {
       break
     }
@@ -47,7 +48,7 @@ function getAncestorDrops(dropEl: HTMLElement): OpenDrop[] {
 /** Checks if `target` sits inside `dropEl` or inside a drop that was opened from within it. */
 export function isInDropChain(dropEl: HTMLElement, target: Node): boolean {
   const targetEl = target instanceof HTMLElement ? target : target.parentElement
-  const nestedDrop = targetEl?.closest<HTMLElement>('.oc-drop') ?? null
+  const nestedDrop = targetEl?.closest<HTMLElement>(dropContainerSelector) ?? null
   if (!nestedDrop) {
     return false
   }

@@ -31,7 +31,7 @@
             <oc-icon name="close" fill-type="line" />
           </oc-button>
         </template>
-        <div ref="bottomDrawerCardBodyRef">
+        <div ref="bottomDrawerCardBodyRef" data-oc-drop-container>
           <slot />
         </div>
       </oc-card>
@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { onKeyStroke } from '@vueuse/core'
 import OcButton from '../OcButton/OcButton.vue'
@@ -48,6 +48,7 @@ import OcCard from '../OcCard/OcCard.vue'
 import OcBottomDrawer from '../OcBottomDrawer/OcBottomDrawer.vue'
 import { BottomDrawer, useBottomDrawer } from '../../composables'
 import { storeToRefs } from 'pinia'
+import { hideAncestorDrops, registerOpenDrop, unregisterOpenDrop } from './dropRegistry'
 
 export interface Props {
   /**
@@ -125,17 +126,26 @@ const isCurrentlyOnTop = computed(() => {
   return unref(drawer)?.id && unref(currentDrawer)?.id === unref(drawer).id
 })
 
-const show = async () => {
+const show = () => {
   drawer.value = showDrawer()
   emit('show')
-  await nextTick()
-  unref(bottomDrawerCardBodyRef)?.addEventListener('click', onChildClicked)
 }
 
-const hide = () => {
+const hide = ({ includeAncestors = false }: { includeAncestors?: boolean } = {}) => {
+  if (includeAncestors && unref(bottomDrawerCardBodyRef)) {
+    hideAncestorDrops(unref(bottomDrawerCardBodyRef))
+  }
   closeDrawer(unref(drawer)?.id)
-  unref(bottomDrawerCardBodyRef)?.removeEventListener('click', onChildClicked)
   emit('hide')
+}
+
+const unregisterDropElement = (dropElement: HTMLElement | null) => {
+  if (!dropElement) {
+    return
+  }
+
+  dropElement.removeEventListener('click', onChildClicked)
+  unregisterOpenDrop(dropElement)
 }
 
 const onChildClicked = (event: MouseEvent) => {
@@ -177,6 +187,19 @@ onMounted(() => {
   document.querySelector(toggle)?.addEventListener('click', show)
 })
 
+watch(bottomDrawerCardBodyRef, (dropElement, previousDropElement) => {
+  unregisterDropElement(previousDropElement)
+  if (!dropElement) {
+    return
+  }
+
+  dropElement.addEventListener('click', onChildClicked)
+  registerOpenDrop(dropElement, {
+    getAnchor: () => document.querySelector<HTMLElement>(toggle),
+    hide
+  })
+})
+
 onBeforeUnmount(() => {
   if (registerClickHandler) {
     document.querySelector(toggle)?.removeEventListener('click', show)
@@ -185,6 +208,7 @@ onBeforeUnmount(() => {
   if (unref(drawer)) {
     closeDrawer(unref(drawer).id)
   }
+  unregisterDropElement(unref(bottomDrawerCardBodyRef))
 })
 
 defineExpose({ show, hide })
