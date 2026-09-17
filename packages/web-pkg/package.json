@@ -88,7 +88,7 @@
     "@uppy/utils": "^7.2.0",
     "@uppy/xhr-upload": "^6.0.0",
     "@vue/shared": "^3.5.31",
-    "@vueuse/core": "^14.2.1",
+    "@vueuse/core": "^15.0.0",
     "axios": "^1.13.6",
     "cropperjs": "^2.0.0",
     "deepmerge": "^4.3.1",
