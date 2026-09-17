@@ -1,0 +1,72 @@
+[
+  {
+    "name": "label",
+    "required": true,
+    "description": "The label of the range input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "min",
+    "required": true,
+    "description": "The minimum value of the range input.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "max",
+    "required": true,
+    "description": "The maximum value of the range input.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "id",
+    "required": false,
+    "description": "The element ID of the range input.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "modelValue",
+    "required": false,
+    "description": "The value of the range input.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "step",
+    "required": false,
+    "description": "The step interval of the range input.",
+    "default": "",
+    "type": "number"
+  },
+  {
+    "name": "disabled",
+    "required": false,
+    "description": "Determines if the range input is disabled.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "inlineLabel",
+    "required": false,
+    "description": "Determines if the label will be displayed next to the range input.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "hideLabel",
+    "required": false,
+    "description": "Determines if the label should be visually hidden. Note that it will still be accessible to screen readers.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "inputClass",
+    "required": false,
+    "description": "The classes to be applied on the range input itself, e.g. to constrain its width.",
+    "default": "''",
+    "type": "string | string[] | Record<string, boolean> | Record<string, boolean>[]"
+  }
+]

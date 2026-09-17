@@ -1,0 +1,12 @@
+[
+  {
+    "name": "update:modelValue",
+    "description": "Emitted when the range value has updated.",
+    "type": "(event: 'update:modelValue', value: number): void"
+  },
+  {
+    "name": "change",
+    "description": "Emitted when the range value has changed.",
+    "type": "(event: 'change', value: number): void"
+  }
+]
