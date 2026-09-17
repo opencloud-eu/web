@@ -121,18 +121,15 @@
             @update:checked="updateEmptyTrashesShownModel"
           />
         </li>
-        <li
-          v-if="viewModeQuery === FolderViewModeConstants.name.tiles"
-          class="mt-2 mb-4 last:mb-0 flex justify-between items-center [&>*]:flex [&>*]:justify-between"
-        >
-          <label for="tiles-size-slider" v-text="$gettext('Tile size')" />
-          <input
+        <li v-if="viewModeQuery === FolderViewModeConstants.name.tiles" class="mt-2 mb-4 last:mb-0">
+          <oc-range
             id="tiles-size-slider"
-            v-model="viewSizeQuery"
-            type="range"
+            v-model="viewSizeModel"
+            :label="$gettext('Tile size')"
             :min="1"
             :max="viewSizeMax"
-            class="oc-range bg-role-surface-container-high rounded-sm outline-0 w-full max-w-[50%] h-1.5 hover:opacity-100 appearance-none"
+            inline-label
+            input-class="max-w-[50%]"
             data-testid="files-tiles-size-slider"
           />
         </li>
@@ -257,6 +254,15 @@ watch(
 
 const viewSizeMax = useViewSizeMax()
 
+const viewSizeModel = computed({
+  get() {
+    return Number(queryItemAsString(unref(viewSizeQuery)))
+  },
+  set(value: number) {
+    viewSizeQuery.value = value.toString()
+  }
+})
+
 const hiddenFilesShownModel = computed({
   get() {
     return unref(areHiddenFilesShown)
@@ -303,23 +309,3 @@ const updateEmptyTrashesShownModel = (event: boolean) => {
   emptyTrashesShownModel.value = event
 }
 </script>
-
-<style scoped>
-.oc-range::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  background: var(--oc-role-on-surface);
-  border-radius: 50%;
-  cursor: pointer;
-  height: 1rem;
-  width: 1rem;
-}
-
-.oc-range::-moz-range-thumb {
-  background: var(--oc-role-on-surface);
-  border-radius: 50%;
-  cursor: pointer;
-  height: 1rem;
-  width: 1rem;
-}
-</style>
