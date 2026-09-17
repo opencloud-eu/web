@@ -658,6 +658,31 @@ export const fillContentOfDocument = async ({
       throw new Error("Editor should be 'TextEditor' but found " + editorToOpen)
   }
 }
+const mentionMenuSelector = '.text-editor-mention-menu'
+const mentionMenuItemSelector = '.text-editor-mention-menu__item'
+const mentionHighlightSelector = '.text-editor-mention'
+
+export const mentionUserInDocument = async ({
+  page,
+  user
+}: {
+  page: Page
+  user: string
+}): Promise<void> => {
+  await page.locator(textEditorPlainTextInput).click()
+  await page.keyboard.press('ControlOrMeta+End')
+  await page.keyboard.type(' @')
+  await page.keyboard.type(user.split(' ')[0])
+
+  const mentionMenu = page.locator(mentionMenuSelector)
+  await mentionMenu.waitFor()
+  await mentionMenu
+    .locator(mentionMenuItemSelector, { has: page.locator(`[data-test-user-name="${user}"]`) })
+    .click()
+
+  await expect(page.locator(mentionHighlightSelector, { hasText: `@${user}` })).toBeVisible()
+}
+
 export const openAndGetContentOfDocument = async ({
   page,
   editorToOpen
