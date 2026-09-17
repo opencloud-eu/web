@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
 ### 📈 Enhancement
 
 - perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
@@ -16,11 +22,6 @@
 ### ✅ Tests
 
 - e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
-
-### 🐛 Bug Fixes
-
-- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
-- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ### 📦️ Dependencies
 
