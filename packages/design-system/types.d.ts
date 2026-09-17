@@ -57,6 +57,7 @@ import OcErrorLog from './src/components/OcErrorLog/OcErrorLog.vue'
 import OcEmojiPicker from './src/components/OcEmojiPicker/OcEmojiPicker.vue'
 import OcFloatingActionButton from './src/components/OcFloatingActionButton/OcFloatingActionButton.vue'
 import OcBubbleMenu from './src/components/OcBubbleMenu/OcBubbleMenu.vue'
+import OcRange from './src/components/OcRange/OcRange.vue'
 
 declare module 'vue' {
   interface GlobalComponents {
@@ -119,5 +120,6 @@ declare module 'vue' {
     OcEmojiPicker: typeof OcEmojiPicker
     OcFloatingActionButton: typeof OcFloatingActionButton
     OcBubbleMenu: typeof OcBubbleMenu
+    OcRange: typeof OcRange
   }
 }

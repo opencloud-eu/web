@@ -2,16 +2,15 @@
   <div class="px-3 pb-3 pt-1">
     <div v-if="enabled" class="flex items-center gap-2">
       <div class="relative flex-1">
-        <input
-          :value="sliderValue"
-          class="epub-reader-progress-slider oc-range bg-role-surface-container-high rounded-sm outline-0 w-full h-1.5 cursor-pointer disabled:cursor-not-allowed hover:opacity-100 appearance-none"
-          :aria-label="$gettext('Reading progress')"
-          type="range"
-          min="0"
-          max="100"
-          step="0.1"
-          :disabled="!enabled"
-          @input="onProgressInput"
+        <oc-range
+          :model-value="sliderValue"
+          :label="$gettext('Reading progress')"
+          hide-label
+          class="epub-reader-progress-slider"
+          :min="0"
+          :max="100"
+          :step="0.1"
+          @update:model-value="onProgressInput"
           @change="onProgressChange"
         />
       </div>
@@ -66,9 +65,8 @@ const progressTooltip = computed(() =>
   $gettext('Reading progress %{progress}', { progress: progressLabel.value })
 )
 
-function parseSliderValue(event: Event) {
-  const value = Number((event.target as HTMLInputElement).value)
-  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : null
+function clampProgress(value: number) {
+  return Math.max(0, Math.min(100, value))
 }
 
 function formatPercent(value: number) {
@@ -83,25 +81,18 @@ const throttledSeek = throttle(
   { leading: true, trailing: true }
 )
 
-function onProgressInput(event: Event) {
-  const value = parseSliderValue(event)
-  if (value === null) {
-    return
-  }
+function onProgressInput(sliderValue: number) {
+  const value = clampProgress(sliderValue)
 
   isDragging.value = true
   dragValue.value = value
   throttledSeek(value)
 }
 
-function onProgressChange(event: Event) {
+function onProgressChange(sliderValue: number) {
+  const value = clampProgress(sliderValue)
+
   isDragging.value = false
-
-  const value = parseSliderValue(event)
-  if (value === null) {
-    return
-  }
-
   dragValue.value = value
   throttledSeek.cancel()
   emit('seek', value)
@@ -148,34 +139,5 @@ watch(
   to {
     left: 100%;
   }
-}
-
-.epub-reader-progress-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  background: var(--oc-role-on-surface);
-  border-radius: 50%;
-  cursor: pointer;
-  height: 1rem;
-  width: 1rem;
-}
-
-.epub-reader-progress-slider:disabled::-webkit-slider-thumb {
-  background: var(--oc-role-on-surface-variant);
-  cursor: not-allowed;
-}
-
-.epub-reader-progress-slider::-moz-range-thumb {
-  background: var(--oc-role-on-surface);
-  border-radius: 50%;
-  border: 0;
-  cursor: pointer;
-  height: 1rem;
-  width: 1rem;
-}
-
-.epub-reader-progress-slider:disabled::-moz-range-thumb {
-  background: var(--oc-role-on-surface-variant);
-  cursor: not-allowed;
 }
 </style>

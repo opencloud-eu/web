@@ -196,7 +196,9 @@ describe('Epub reader app', () => {
       const { wrapper } = getWrapper()
       await nextTicks(6)
 
-      const slider = wrapper.find<HTMLInputElement>(selectors.progressSlider)
+      const slider = wrapper.find<HTMLInputElement>(
+        `${selectors.progressSlider} input[type="range"]`
+      )
       await slider.setValue('35')
       await slider.trigger('change')
 

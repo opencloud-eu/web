@@ -41,6 +41,7 @@ export { default as OcPaginationInline } from './OcPaginationInline/OcPagination
 export { default as OcProgress } from './OcProgress/OcProgress.vue'
 export { default as OcProgressPie } from './OcProgressPie/OcProgressPie.vue'
 export { default as OcRadio } from './OcRadio/OcRadio.vue'
+export { default as OcRange } from './OcRange/OcRange.vue'
 export { default as OcRecipient } from './OcRecipient/OcRecipient.vue'
 export { default as OcSearchBar } from './OcSearchBar/OcSearchBar.vue'
 export { default as OcSelect } from './OcSelect/OcSelect.vue'
