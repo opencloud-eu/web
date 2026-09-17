@@ -1,10 +1,8 @@
-import { describe, expect, it, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick, unref } from 'vue'
 import type { Ref } from 'vue'
 import TextEditorViewer from '../../../../src/editor/components/TextEditorViewer.vue'
 import { useTextEditor } from '../../../../src/editor/composables'
-import { defaultPlugins } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 vi.mock('../../../../src/editor/composables', () => ({
   useTextEditor: vi.fn(() => ({ editor: { value: null } }))

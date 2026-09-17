@@ -37,10 +37,10 @@ import { useLoadMailboxes } from '../composables/useLoadMailboxes'
 import { useLoadMails } from '../composables/useLoadMails'
 import { useLoadMail } from '../composables/useLoadMail'
 import { useMailCompose } from '../composables/useMailCompose'
+import { Mailbox } from '../types'
 
 // async: the compose form pulls in the editor (tiptap & co)
 const MailWidget = defineAsyncComponent(() => import('../components/MailWidget.vue'))
-import { Mailbox } from '../types'
 
 const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
