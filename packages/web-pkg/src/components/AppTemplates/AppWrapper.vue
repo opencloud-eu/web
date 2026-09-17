@@ -618,10 +618,11 @@ async function runSaveCallback(content: unknown): Promise<void> {
 const save = async () => {
   const saved = await saveFileTask.perform()
   if (!saved) {
-    return
+    return false
   }
 
   await runSaveCallback(unref(serverContent))
+  return true
 }
 
 const { saveAction, saveAsAction } = useFileActionsSave({
@@ -629,7 +630,9 @@ const { saveAction, saveAsAction } = useFileActionsSave({
   isDirty,
   isEditor,
   isReadOnly,
-  onSave: save
+  onSave: async () => {
+    await save()
+  }
 })
 
 let autosaveIntervalId: ReturnType<typeof setInterval> = null
@@ -821,8 +824,11 @@ onBeforeRouteLeave((_to, _from, next) => {
         }
       },
       async onConfirm() {
+        if (!(await save())) {
+          next(false)
+          return
+        }
         unregisterExtensions([topBarExtensionId])
-        await save()
         next()
       }
     })
@@ -879,7 +885,9 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
     unref(deleteAction)?.handler(unref(actionOptions))
   },
 
-  onSave: save,
+  onSave: async () => {
+    await save()
+  },
   onClose: closeApp,
   loadFolderForFileContext,
   revokeUrl,
