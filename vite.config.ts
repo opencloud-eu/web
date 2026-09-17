@@ -154,6 +154,21 @@ export default defineConfig(({ mode, command }) => {
                   test: /packages\/web-pkg\/l10n.*/
                 },
                 {
+                  name: 'files-translations',
+                  test: /packages\/web-app-files\/l10n.*/
+                },
+                {
+                  // split yjs from tiptap because it's required for the initial load,
+                  // while tiptap can be loaded lazily.
+                  name: 'yjs-vendor',
+                  test: /node_modules\/(yjs|lib0|y-protocols)\//,
+                  priority: 100
+                },
+                {
+                  name: 'tiptap-vendor',
+                  test: /node_modules\/@tiptap/
+                },
+                {
                   name: 'oidc-client-ts',
                   test: /node_modules\/oidc-client-ts/
                 },

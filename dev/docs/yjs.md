@@ -491,7 +491,3 @@ grace period turns into a spurious conflict dialog.
 **Stale recovery needs someone who holds the fresh body.** Only a peer whose fetched etag matches `nativeEtag` may
 re-seed the room. If that peer leaves before finishing, the room stays flagged until another client opens the file and
 picks the job up. Peers already in the room keep editing a document that no longer matches disk in the meantime.
-
-**Bundle weight.** `AppWrapper` imports the session directly, so `yjs`, `y-protocols` and `@hocuspocus/provider` land in
-web-pkg's main entry - loaded even by users who never open an editor. Moving the session behind a `defineAsyncComponent`
-would fix it at the cost of some indirection.
