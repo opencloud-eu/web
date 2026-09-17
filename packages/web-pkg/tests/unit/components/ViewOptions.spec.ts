@@ -105,18 +105,7 @@ describe('ViewOptions component', () => {
     it('shows if more than one viewModes are passed', () => {
       const { wrapper } = getWrapper({
         props: {
-          viewModes: [
-            mock<FolderView>({
-              name: FolderViewModeConstants.name.tiles,
-              label: 'Tiles view',
-              icon: { name: 'app-1', fillType: 'none' }
-            }),
-            mock<FolderView>({
-              name: FolderViewModeConstants.name.table,
-              label: 'Table view',
-              icon: { name: 'app-2', fillType: 'none' }
-            })
-          ]
+          viewModes: getTileViewModes()
         }
       })
       expect(wrapper.find(selectors.viewModeSwitchBtns).exists()).toBeTruthy()
@@ -130,18 +119,7 @@ describe('ViewOptions component', () => {
     it('shows if the viewModes include "resource-tiles"', () => {
       const { wrapper } = getWrapper({
         props: {
-          viewModes: [
-            mock<FolderView>({
-              name: FolderViewModeConstants.name.tiles,
-              label: 'Tiles view',
-              icon: { name: 'app-1', fillType: 'none' }
-            }),
-            mock<FolderView>({
-              name: FolderViewModeConstants.name.table,
-              label: 'Table view',
-              icon: { name: 'app-2', fillType: 'none' }
-            })
-          ]
+          viewModes: getTileViewModes()
         },
         viewMode: FolderViewModeConstants.name.tiles
       })
@@ -151,24 +129,40 @@ describe('ViewOptions component', () => {
       const { mocks } = getWrapper({
         tileSize: tileSize.toString(),
         props: {
-          viewModes: [
-            mock<FolderView>({
-              name: FolderViewModeConstants.name.tiles,
-              label: 'Tiles view',
-              icon: { name: 'app-1', fillType: 'none' }
-            }),
-            mock<FolderView>({
-              name: FolderViewModeConstants.name.table,
-              label: 'Table view',
-              icon: { name: 'app-2', fillType: 'none' }
-            })
-          ]
+          viewModes: getTileViewModes()
         }
       })
       expect(unref(mocks.tileSizeQueryMock)).toBe(tileSize.toString())
     })
+    it('updates the tile size query when the slider changes', async () => {
+      const { wrapper, mocks } = getWrapper({
+        props: {
+          viewModes: getTileViewModes()
+        },
+        viewMode: FolderViewModeConstants.name.tiles
+      })
+
+      await wrapper.find<HTMLInputElement>(selectors.tileSizeSlider).setValue('4')
+
+      expect(unref(mocks.tileSizeQueryMock)).toBe('4')
+    })
   })
 })
+
+function getTileViewModes(): FolderView[] {
+  return [
+    mock<FolderView>({
+      name: FolderViewModeConstants.name.tiles,
+      label: 'Tiles view',
+      icon: { name: 'app-1', fillType: 'none' }
+    }),
+    mock<FolderView>({
+      name: FolderViewModeConstants.name.table,
+      label: 'Table view',
+      icon: { name: 'app-2', fillType: 'none' }
+    })
+  ]
+}
 
 function getWrapper({
   perPage = '100',

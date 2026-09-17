@@ -254,6 +254,10 @@ export default defineConfig({
               link: '/OcRadio'
             },
             {
+              text: 'OcRange',
+              link: '/OcRange'
+            },
+            {
               text: 'OcRecipient',
               link: '/OcRecipient'
             },
