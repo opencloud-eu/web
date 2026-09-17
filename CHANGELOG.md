@@ -6,6 +6,10 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
 
+### ✅ Tests
+
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
+
 ### 🐛 Bug Fixes
 
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
