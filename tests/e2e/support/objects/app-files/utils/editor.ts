@@ -11,6 +11,7 @@ const saveConflictDialog = '.oc-modal'
 const filesListUrl = /.*\/files\/(spaces|shares|link|search)\/.*/
 const errorNotification = '.oc-notification-message-danger'
 const yjsStatusIndicator = '[data-test-yjs-status]'
+const notification = '.oc-notification-message:not(.oc-notification-message-danger)'
 const saveConflictDialogButtons: Record<string, string> = {
   Save: '.oc-modal-body-actions-confirm',
   "Don't Save": '.oc-modal-body-actions-secondary',
@@ -65,6 +66,9 @@ export const errorNotificationLocator = (page: Page, message?: string): Locator 
   message
     ? page.locator(errorNotification, { hasText: message }).first()
     : page.locator(errorNotification).first()
+
+export const notificationLocator = (page: Page, message: string): Locator =>
+  page.locator(notification, { hasText: message }).first()
 
 export const yjsStatusIndicatorLocator = (page: Page): Locator => page.locator(yjsStatusIndicator)
 

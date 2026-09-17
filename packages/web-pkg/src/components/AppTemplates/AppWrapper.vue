@@ -255,7 +255,16 @@ const {
   putFileContents,
   applySavedResource,
   runSaveCallback,
-  onConflict: showExternalUpdateConflict
+  onConflict: showExternalUpdateConflict,
+  isSaving: () => saveFileTask.isRunning,
+  onExternalUpdateApplied: () => {
+    showMessage({
+      title: $gettext('File updated'),
+      desc: $gettext(
+        'This file was updated outside this window. The editor now shows the latest version.'
+      )
+    })
+  }
 })
 
 // Keep the loading screen up until the Yjs session is synced and hydrated,
