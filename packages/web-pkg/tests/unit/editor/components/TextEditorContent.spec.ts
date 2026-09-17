@@ -1,4 +1,3 @@
-import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { defineComponent, nextTick, ref } from 'vue'
 import type { TextEditorInstance, TextEditorLinkPanelRequest } from '../../../../src/editor/types'

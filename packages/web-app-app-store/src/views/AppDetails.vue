@@ -23,7 +23,7 @@
       <p class="my-0">{{ app.subtitle }}</p>
       <div v-if="app.description">
         <h3>{{ $gettext('Details') }}</h3>
-        <TextEditorContent class="my-2" :editor="appDescriptionEditor" />
+        <TextEditorViewer class="my-2" :content="app.description" />
       </div>
       <div v-if="app.tags">
         <h3>{{ $gettext('Tags') }}</h3>
@@ -49,11 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { App } from '../types'
 import { APPID } from '../appid'
-import { useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
+import { TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { useAppsStore } from '../piniaStores'
 import AppResources from '../components/AppResources.vue'
 import AppTags from '../components/AppTags.vue'
@@ -71,12 +70,6 @@ const router = useRouter()
 
 const app = computed<App>(() => {
   return appsStore.getById(unref(appId))
-})
-
-const appDescriptionEditor = useTextEditor({
-  contentType: 'markdown',
-  modelValue: toRef(() => unref(app)?.description ?? ''),
-  readonly: true
 })
 
 const onTagClicked = (tag: string) => {

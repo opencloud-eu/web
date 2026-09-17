@@ -24,10 +24,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, onMounted } from 'vue'
+import { defineAsyncComponent, ref, unref, onMounted } from 'vue'
 import MailList from '../components/MailList.vue'
 import MailDetails from '../components/MailDetails.vue'
-import MailWidget from '../components/MailWidget.vue'
 import { AppLoadingSpinner, queryItemAsString, useClientService } from '@opencloud-eu/web-pkg'
 import { useRouteQuery } from '@opencloud-eu/web-pkg'
 import { useMailsStore } from '../composables/piniaStores/mails'
@@ -39,6 +38,9 @@ import { useLoadMails } from '../composables/useLoadMails'
 import { useLoadMail } from '../composables/useLoadMail'
 import { useMailCompose } from '../composables/useMailCompose'
 import { Mailbox } from '../types'
+
+// async: the compose form pulls in the editor (tiptap & co)
+const MailWidget = defineAsyncComponent(() => import('../components/MailWidget.vue'))
 
 const accountsStore = useGroupwareAccountsStore()
 const mailboxesStore = useMailboxesStore()
