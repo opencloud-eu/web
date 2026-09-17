@@ -1,10 +1,21 @@
-import { computed, unref, watch } from 'vue'
-import type { Ref } from 'vue'
+import { computed, toValue, unref, watch } from 'vue'
+import type { MaybeRefOrGetter, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { call } from '@opencloud-eu/web-client'
 import type { Resource } from '@opencloud-eu/web-client'
-import { useMessages, useYjsSession, YjsStatus } from '../../composables'
-import type { AppFileHandlingResult, FileContentOptions, FileContext } from '../../composables'
+import {
+  EXTERNAL_UPDATE_ETAG_GRACE_MS,
+  useExternalFileUpdates,
+  useMessages,
+  useYjsSession,
+  YjsStatus
+} from '../../composables'
+import type {
+  AppFileHandlingResult,
+  ExternalFileEvent,
+  FileContentOptions,
+  FileContext
+} from '../../composables'
 import type { YjsOptions } from './types'
 
 export interface AppWrapperYjsOptions {
@@ -31,6 +42,10 @@ export interface AppWrapperYjsOptions {
   runSaveCallback: (content: unknown) => Promise<void>
   /** The file changed outside this window and the session gave up the room. */
   onConflict: () => void
+  /** Whether a PUT of this wrapper is in flight. External events wait for it. */
+  isSaving: MaybeRefOrGetter<boolean>
+  /** The file changed outside this window and the editor now shows that version. */
+  onExternalUpdateApplied: () => void
 }
 
 /**
@@ -57,7 +72,9 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
     putFileContents,
     applySavedResource,
     runSaveCallback,
-    onConflict
+    onConflict,
+    isSaving,
+    onExternalUpdateApplied
   } = options
 
   const { $gettext } = useGettext()
@@ -99,7 +116,8 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
           resource.value = { ...unref(resource), etag: value }
         },
         hasUnsavedChanges: () => unref(isDirty),
-        onConflict
+        onConflict,
+        onExternalUpdate: onExternalUpdateApplied
       })
     : null
 
@@ -180,6 +198,75 @@ export function useAppWrapperYjs(options: AppWrapperYjsOptions) {
 
   /** True once the session gave up the room over an external write. */
   const isConflicted = computed(() => Boolean(unref(session?.isConflicted)))
+
+  /** Whether an SSE event may be acted on right now. */
+  const canHandleExternalEvents = computed(() => {
+    if (!session) return false
+    if (unref(loading) || unref(loadingError) || !unref(session.isReady)) return false
+    if (unref(session.isConflicted) || unref(session.isLockedForReload)) return false
+    if (unref(isReadOnly) || toValue(isSaving)) return false
+    const status = unref(session.status)
+    return status === YjsStatus.Connected || status === YjsStatus.Local
+  })
+
+  /**
+   * The server announced a write to this file by someone else. Most of these
+   * are peer saves the room already knows about, so the cheap checks come
+   * first.
+   */
+  async function handleExternalFileEvent({ etag }: ExternalFileEvent) {
+    if (!session) return
+    if (etag === unref(currentETag)) return
+    if (session.isRoomWrite(etag)) return
+
+    let fresh: Awaited<ReturnType<AppFileHandlingResult['getFileContents']>>
+    try {
+      fresh = await getFileContents(currentFileContext, { ...fileContentOptions })
+    } catch (e) {
+      console.error('[yjs] fetching an externally updated file failed:', e)
+      return
+    }
+    // A save or a conflict may have started while we waited. Same after
+    // every await below.
+    if (!unref(canHandleExternalEvents)) return
+    const freshEtag = fresh.headers['OC-ETag']
+    const body = fresh.body
+    if (typeof body !== 'string') return
+    if (!freshEtag || freshEtag === unref(currentETag)) return
+    if (session.isRoomWrite(freshEtag)) return
+
+    // Same body we last saw on disk: only the etag moved (a rename, a
+    // re-upload of the same bytes). Not a save, so peers keep their dirty state.
+    if (body === unref(serverContent)) {
+      session.adoptEtag(freshEtag)
+      return
+    }
+
+    // The room's own state is what landed: a peer saved and left before its
+    // stamp reached us. Land it like the conflict retry does.
+    const merged = await session.serializeMerged()
+    if (!unref(canHandleExternalEvents)) return
+    if (merged !== null && body === merged) {
+      serverContent.value = currentContent.value = body
+      applySavedResource(freshEtag)
+      return
+    }
+
+    // A peer's stamp may still be on the way. Only paid for a foreign body.
+    if (await session.wasWrittenByRoom(freshEtag, EXTERNAL_UPDATE_ETAG_GRACE_MS)) return
+    if (!unref(canHandleExternalEvents)) return
+
+    await session.applyExternalUpdate({ content: body, etag: freshEtag })
+  }
+
+  if (session) {
+    useExternalFileUpdates({
+      resource,
+      currentETag,
+      isActive: canHandleExternalEvents,
+      onExternalEvent: handleExternalFileEvent
+    })
+  }
 
   return { session, isSessionReady, effectiveReadOnly, isConflicted, reconcileConflict }
 }

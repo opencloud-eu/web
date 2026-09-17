@@ -10,6 +10,7 @@ const collaborationCursorLabel = '.collaboration-cursor__label'
 const saveConflictDialog = '.oc-modal'
 const filesListUrl = /.*\/files\/(spaces|shares|link|search)\/.*/
 const errorNotification = '.oc-notification-message-danger'
+const notification = '.oc-notification-message:not(.oc-notification-message-danger)'
 const yjsStatusIndicator = '.text-editor-toolbar-collaboration-status'
 const saveConflictDialogButtons: Record<string, string> = {
   Save: '.oc-modal-body-actions-confirm',
@@ -65,6 +66,9 @@ export const errorNotificationLocator = (page: Page, message?: string): Locator 
   message
     ? page.locator(errorNotification, { hasText: message }).first()
     : page.locator(errorNotification).first()
+
+export const notificationLocator = (page: Page, message: string): Locator =>
+  page.locator(notification, { hasText: message }).first()
 
 export const yjsStatusIndicatorLocator = (page: Page): Locator => page.locator(yjsStatusIndicator)
 

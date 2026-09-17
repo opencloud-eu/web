@@ -1521,6 +1521,14 @@ Then(
 )
 
 Then(
+  '{string} should see a notification',
+  async ({ world }: { world: World }, stepUser: string, message: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    await expect(editor.notificationLocator(page, message)).toBeVisible()
+  }
+)
+
+Then(
   '{string} should see the following yjs status',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
     const { page } = world.actorsEnvironment.getActor({ key: stepUser })
