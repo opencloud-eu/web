@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-16
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-17
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -17,6 +17,8 @@
 
 ### 📦️ Dependencies
 
+- Update Node.js to v24.21.0 [[#3344](https://github.com/opencloud-eu/web/pull/3344)]
+- Update hocuspocus monorepo to v4.7.0 [[#3341](https://github.com/opencloud-eu/web/pull/3341)]
 - Update dependency filesize to v11.0.24 [[#3384](https://github.com/opencloud-eu/web/pull/3384)]
 - Update devDependencies (non-major) [[#3370](https://github.com/opencloud-eu/web/pull/3370)]
 - Update collabora/code Docker tag to v26.04.3.2.1 [[#3083](https://github.com/opencloud-eu/web/pull/3083)]
