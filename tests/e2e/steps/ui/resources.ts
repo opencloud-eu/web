@@ -1598,3 +1598,14 @@ Then(
     expect(actualFilename).toBe(filename)
   }
 )
+
+When(
+  '{string} mentions user {string} in editor',
+  async ({ world }: { world: World }, stepUser: string, mentionedUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const { displayName } = world.usersEnvironment.getUser({ key: mentionedUser })
+    const actor = world.actorsEnvironment.getActor({ key: stepUser })
+    const resourceObject = new objects.applicationFiles.Resource({ page: actor.page })
+    await resourceObject.mentionUserInOpenDocument({ page, user: displayName })
+  }
+)

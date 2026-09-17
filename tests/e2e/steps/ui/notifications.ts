@@ -45,6 +45,15 @@ Then(
   }
 )
 
+When(
+  '{string} opens the file from the mention notification',
+  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
+    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const application = new objects.runtime.Application({ page })
+    await application.openFileFromNotification()
+  }
+)
+
 Then(
   '{string} opens notifications dropdown',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
