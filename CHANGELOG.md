@@ -6,6 +6,12 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
 
+### 📈 Enhancement
+
+- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
+- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
+- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
 ### ✅ Tests
 
 - e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
@@ -14,11 +20,6 @@
 
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
-
-### 📈 Enhancement
-
-- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
-- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
 
 ### 📦️ Dependencies
 
