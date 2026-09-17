@@ -166,8 +166,8 @@ importers:
         specifier: ^3.5.31
         version: 3.5.42
       '@vue/test-utils':
-        specifier: 2.5.0
-        version: 2.5.0(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))
+        specifier: 2.5.1
+        version: 2.5.1(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))
       browserslist-to-esbuild:
         specifier: ^2.1.1
         version: 2.1.1(browserslist@4.28.7)
@@ -456,8 +456,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.42(typescript@6.0.3))
       zod:
-        specifier: 4.5.4
-        version: 4.5.4
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -496,8 +496,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.42(typescript@6.0.3))
       zod:
-        specifier: 4.5.4
-        version: 4.5.4
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -561,8 +561,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.42(typescript@6.0.3))
       zod:
-        specifier: 4.5.4
-        version: 4.5.4
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -671,8 +671,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.42(typescript@6.0.3))
       zod:
-        specifier: 4.5.4
-        version: 4.5.4
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -711,8 +711,8 @@ importers:
         specifier: 5.3.1
         version: 5.3.1(@vue/compiler-sfc@3.5.42)(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3)))(rolldown@1.2.8)(vite@8.3.0(@types/node@25.9.7)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.42(typescript@6.0.3))
       zod:
-        specifier: 4.5.4
-        version: 4.5.4
+        specifier: 4.6.5
+        version: 4.6.5
 
   packages/web-app-office-settings:
     dependencies:
@@ -916,7 +916,7 @@ importers:
         version: 5.9.0
       zod:
         specifier: ^4.3.6
-        version: 4.5.4
+        version: 4.6.5
     devDependencies:
       '@types/luxon':
         specifier: 3.7.5
@@ -1133,7 +1133,7 @@ importers:
         version: 13.6.32
       zod:
         specifier: ^4.3.6
-        version: 4.5.4
+        version: 4.6.5
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:^
@@ -1232,8 +1232,8 @@ importers:
         specifier: 4.0.1
         version: 4.0.1(vue@3.5.42(typescript@6.0.3))
       zod:
-        specifier: 4.5.4
-        version: 4.5.4
+        specifier: 4.6.5
+        version: 4.6.5
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -1261,7 +1261,7 @@ importers:
         version: 2.0.1(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.42(typescript@6.0.3)))
       '@vue/test-utils':
         specifier: ^2.4.6
-        version: 2.5.0(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))
+        version: 2.5.1(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))
       axios:
         specifier: 1.20.0
         version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
@@ -2473,8 +2473,8 @@ packages:
   '@vue/shared@3.5.42':
     resolution: {integrity: sha512-2rPxex1jQf4jvl9MOHl6YaXCPcrNqz/FstMOEh3QWY+/OME9nQTvl9WYeCwhW7AFjaR0SnngZGlp/wkR6rkI6g==}
 
-  '@vue/test-utils@2.5.0':
-    resolution: {integrity: sha512-6Clu5EKR/r6cDPYrKsu+8wenciWJJ3rhS9OEGsfDlZeZIhlJeEPGIZQHxE4lHRJCzPSq3EWMsFxQUqCvrbHQuQ==}
+  '@vue/test-utils@2.5.1':
+    resolution: {integrity: sha512-V/4a99odJ7hapr0bRt35XxljGk8hefq31gSOnlKTcEq2fUeoj2qb+FcpJYfQu4qfYhW9Ug+O2+CZ3QmZ7gXDzA==}
     peerDependencies:
       '@vue/compiler-dom': 3.x
       '@vue/server-renderer': 3.x
@@ -5249,8 +5249,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@4.5.4:
-    resolution: {integrity: sha512-sC95tT5iHHH9gtpj6A81kh+NEaRAUFN+qlUPDUbRfOMvNf5QCBqsb3WgvnpVtK5Y+4UfA6KqufotuTvMGiTlsA==}
+  zod@4.6.5:
+    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -6497,7 +6497,7 @@ snapshots:
 
   '@vue/shared@3.5.42': {}
 
-  '@vue/test-utils@2.5.0(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))':
+  '@vue/test-utils@2.5.1(@vue/compiler-dom@3.5.42)(@vue/server-renderer@3.5.42)(vue@3.5.42(typescript@6.0.3))':
     dependencies:
       '@vue/compiler-dom': 3.5.42
       js-beautify: 2.0.3
@@ -9317,6 +9317,6 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@4.5.4: {}
+  zod@4.6.5: {}
 
   zwitch@2.0.4: {}
