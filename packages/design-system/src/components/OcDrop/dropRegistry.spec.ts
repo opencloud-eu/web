@@ -17,6 +17,14 @@ function createDrop(id: string) {
   return dropEl
 }
 
+function createMobileDrop(id: string) {
+  const dropEl = document.createElement('div')
+  dropEl.dataset.ocDropContainer = ''
+  dropEl.id = id
+  document.body.appendChild(dropEl)
+  return dropEl
+}
+
 function createAnchor(parent: HTMLElement) {
   const anchor = document.createElement('button')
   parent.appendChild(anchor)
@@ -69,6 +77,17 @@ describe('dropRegistry', () => {
 
     it('returns true for a target inside a nested drop', () => {
       const [parent, nested] = track(createDrop('parent'), createDrop('nested'))
+      register(parent)
+      register(nested, createAnchor(parent))
+
+      const child = document.createElement('span')
+      nested.appendChild(child)
+
+      expect(isInDropChain(parent, child)).toBe(true)
+    })
+
+    it('returns true for a target inside a nested mobile drop', () => {
+      const [parent, nested] = track(createDrop('parent'), createMobileDrop('nested'))
       register(parent)
       register(nested, createAnchor(parent))
 
@@ -159,6 +178,17 @@ describe('dropRegistry', () => {
       expect(hideNested).toHaveBeenCalledTimes(1)
       expect(hideParent).toHaveBeenCalledTimes(1)
       expect(hideDeep).not.toHaveBeenCalled()
+    })
+
+    it('hides ancestors of mobile drops', () => {
+      const [parent, nested] = track(createDrop('parent'), createMobileDrop('nested'))
+      const hideParent = register(parent)
+      const hideNested = register(nested, createAnchor(parent))
+
+      hideAncestorDrops(nested)
+
+      expect(hideParent).toHaveBeenCalledTimes(1)
+      expect(hideNested).not.toHaveBeenCalled()
     })
 
     it('stops at an ancestor that is no longer registered', () => {

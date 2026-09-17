@@ -228,12 +228,12 @@ const show = async ({
   }
 }
 const hide = ({ includeAncestors = false }: { includeAncestors?: boolean } = {}) => {
+  if (unref(useBottomDrawer)) {
+    unref(bottomDrawerRef).hide({ includeAncestors })
+    return
+  }
   if (includeAncestors && unref(drop)) {
     hideAncestorDrops(unref(drop))
-  }
-  if (unref(useBottomDrawer)) {
-    unref(bottomDrawerRef).hide()
-    return
   }
   hideDrop()
 }
