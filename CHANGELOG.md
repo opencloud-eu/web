@@ -6,14 +6,15 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
 
+### 🐛 Bug Fixes
+
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
 ### 📈 Enhancement
 
 - Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
-
-### 🐛 Bug Fixes
-
-- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ### 📦️ Dependencies
 
