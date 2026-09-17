@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
 - perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
 - Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
