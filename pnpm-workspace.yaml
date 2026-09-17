@@ -75,5 +75,7 @@ patchedDependencies:
 
 overrides:
   'epubjs>@xmldom/xmldom': ^0.9.12
+  # lowlight pins its own highlight.js, which would install a second copy
+  highlight.js: ^11.12.0
   '@module-federation/dts-plugin>axios': ^1.6.0
   axios: 1.20.0

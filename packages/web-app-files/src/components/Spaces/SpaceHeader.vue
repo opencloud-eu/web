@@ -84,7 +84,7 @@
           'mask-linear-[180deg,black,80%,transparent]': showMarkdownCollapse && markdownCollapsed
         }"
       >
-        <TextEditorContent class="markdown-container-content w-full" :editor="readmeEditor" />
+        <TextEditorViewer class="markdown-container-content w-full" :content="markdownContent" />
       </div>
       <div
         v-if="showMarkdownCollapse && markdownContent"
@@ -120,9 +120,10 @@ import {
   useResourcesStore,
   useSharesStore,
   useSideBar,
-  useSpacesStore
+  useSpacesStore,
+  preloadTextEditor,
+  TextEditorViewer
 } from '@opencloud-eu/web-pkg'
-import { useTextEditor, TextEditorContent } from '@opencloud-eu/web-pkg/editor'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useGettext } from 'vue3-gettext'
 import { DriveItem } from '@opencloud-eu/web-client/graph/generated'
@@ -152,11 +153,6 @@ const { isMobile } = useIsMobile()
 const isDropOpen = ref(false)
 
 const markdownContent = ref('')
-const readmeEditor = useTextEditor({
-  contentType: 'markdown',
-  modelValue: markdownContent,
-  readonly: true
-})
 
 const markdownContainerRef = useTemplateRef('markdownContainerRef')
 const markdownResource = ref<Resource>(null)
@@ -230,6 +226,8 @@ onBeforeUnmount(() => {
 const loadReadmeContent = async () => {
   spacesStore.addToReadmesLoading(space.id)
 
+  const editorPromise = preloadTextEditor()
+
   try {
     const fileContentsResponse = await getFileContents(space, {
       path: `.space/${space.spaceReadmeData.name}`
@@ -238,6 +236,8 @@ const loadReadmeContent = async () => {
     const fileInfoResponse = await getFileInfo(space, {
       path: `.space/${space.spaceReadmeData.name}`
     })
+
+    await editorPromise
 
     unobserveMarkdownContainerResize()
     markdownContent.value = fileContentsResponse.body
