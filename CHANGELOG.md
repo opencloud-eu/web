@@ -6,18 +6,19 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
 
+### 📈 Enhancement
+
+- Improve mobile table size picker [[#3393](https://github.com/opencloud-eu/web/pull/3393)]
+- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
+- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
+- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
+- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
 ### 🐛 Bug Fixes
 
 - fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
-
-### 📈 Enhancement
-
-- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
-- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
-- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
-- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
 
 ### ✅ Tests
 
