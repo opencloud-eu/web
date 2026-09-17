@@ -17,6 +17,8 @@
 
 ### 📦️ Dependencies
 
+- Update dependency @vue/test-utils to v2.5.1 [[#3390](https://github.com/opencloud-eu/web/pull/3390)]
+- Update dependency zod to v4.6.5 [[#3343](https://github.com/opencloud-eu/web/pull/3343)]
 - Update Node.js to v24.21.0 [[#3344](https://github.com/opencloud-eu/web/pull/3344)]
 - Update hocuspocus monorepo to v4.7.0 [[#3341](https://github.com/opencloud-eu/web/pull/3341)]
 - Update dependency filesize to v11.0.24 [[#3384](https://github.com/opencloud-eu/web/pull/3384)]
