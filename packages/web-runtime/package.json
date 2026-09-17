@@ -31,6 +31,8 @@
     "vue-concurrency": "5.0.3",
     "vue-router": "5.3.1",
     "vue3-gettext": "4.0.1",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.0",
     "zod": "4.6.5"
   },
   "devDependencies": {
