@@ -9,6 +9,7 @@ import {
   SpaceActionOptions,
   useExtensionRegistry,
   useVaultStore,
+  VaultStore,
   useMessages,
   useRoute,
   useRouter
@@ -31,6 +32,22 @@ function claimForSpace(
   return claim?.vaultRoot === VAULT_ROOT ? claim : null
 }
 
+export function lockSpaceVault({
+  extensionRegistry,
+  vaultStore,
+  space
+}: {
+  extensionRegistry: ExtensionRegistry
+  vaultStore: VaultStore
+  space: SpaceResource | undefined
+}): boolean {
+  if (!claimForSpace(extensionRegistry, space)) {
+    return false
+  }
+  vaultStore.clearEngine(space.id, VAULT_ROOT)
+  return true
+}
+
 export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
   const { $gettext } = useGettext()
   const vaultStore = useVaultStore()
@@ -48,10 +65,9 @@ export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
       category: 'tertiary',
       handler: ({ resources }: SpaceActionOptions) => {
         const space = resources?.[0]
-        if (!claimForSpace(extensionRegistry, space)) {
+        if (!lockSpaceVault({ extensionRegistry, vaultStore, space })) {
           return
         }
-        vaultStore.clearEngine(space.id, VAULT_ROOT)
         showMessage({
           title: $gettext('»%{space}« was locked', { space: space.name })
         })

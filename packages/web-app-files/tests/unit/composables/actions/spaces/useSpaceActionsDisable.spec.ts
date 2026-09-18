@@ -1,5 +1,5 @@
 import { useSpaceActionsDisable } from '../../../../../src/composables/actions/spaces'
-import { useMessages, useModals } from '@opencloud-eu/web-pkg'
+import { useMessages, useModals, useVaultStore, VaultStore } from '@opencloud-eu/web-pkg'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import {
   defaultComponentMocks,
@@ -9,6 +9,19 @@ import {
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
+
+let claim: { vaultRoot: string } | null = null
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@opencloud-eu/web-pkg')>()),
+  getVaultClaim: vi.fn(() => claim)
+}))
+
+beforeEach(() => {
+  claim = null
+})
+
+const projectSpace = (id: string) =>
+  mock<SpaceResource>({ id, canDisable: () => true, driveType: 'project' })
 
 describe('disable', () => {
   describe('isVisible property', () => {
@@ -98,7 +111,72 @@ describe('disable', () => {
       })
     })
   })
+
+  describe('vault locking', () => {
+    it('should lock the space when it is a vault space', async () => {
+      claim = { vaultRoot: '/' }
+      const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
+
+      await disableSpaces([projectSpace('1')])
+
+      expect(vaultStore.clearEngine).toHaveBeenCalledWith('1', '/')
+    })
+
+    it('should lock every disabled vault space of a multi-selection', async () => {
+      claim = { vaultRoot: '/' }
+      const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
+
+      await disableSpaces([projectSpace('1'), projectSpace('2')])
+
+      expect(vaultStore.clearEngine).toHaveBeenCalledWith('1', '/')
+      expect(vaultStore.clearEngine).toHaveBeenCalledWith('2', '/')
+    })
+
+    it('should not lock a space that is no vault space', async () => {
+      const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
+
+      await disableSpaces([projectSpace('1')])
+
+      expect(vaultStore.clearEngine).not.toHaveBeenCalled()
+    })
+
+    it('should not lock a space that merely holds vault folders', async () => {
+      claim = { vaultRoot: '/my.vault' }
+      const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
+
+      await disableSpaces([projectSpace('1')])
+
+      expect(vaultStore.clearEngine).not.toHaveBeenCalled()
+    })
+
+    it('should not lock the space when disabling it failed', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      claim = { vaultRoot: '/' }
+      const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
+      clientService.graphAuthenticated.drives.disableDrive.mockRejectedValue(new Error())
+
+      await disableSpaces([projectSpace('1')])
+
+      expect(vaultStore.clearEngine).not.toHaveBeenCalled()
+    })
+  })
 })
+
+function getDisableSpaces() {
+  let disableSpaces: ReturnType<typeof useSpaceActionsDisable>['disableSpaces']
+  let vaultStore: VaultStore
+  const { mocks } = getWrapper({
+    setup: (instance) => {
+      disableSpaces = instance.disableSpaces
+      vaultStore = useVaultStore()
+    }
+  })
+  return { disableSpaces, vaultStore, clientService: mocks.$clientService }
+}
 
 function getWrapper({
   setup

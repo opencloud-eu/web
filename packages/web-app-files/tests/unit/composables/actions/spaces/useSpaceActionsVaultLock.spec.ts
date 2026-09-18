@@ -1,5 +1,8 @@
 import { unref } from 'vue'
-import { useSpaceActionsLockVault } from '../../../../../src/composables/actions/spaces/useSpaceActionsVaultLock'
+import {
+  lockSpaceVault,
+  useSpaceActionsLockVault
+} from '../../../../../src/composables/actions/spaces/useSpaceActionsVaultLock'
 
 const showMessage = vi.fn()
 const push = vi.fn()
@@ -100,5 +103,49 @@ describe('lock-vault space action', () => {
 
     expect(clearEngine).not.toHaveBeenCalled()
     expect(showMessage).not.toHaveBeenCalled()
+  })
+
+  it('does not leave the space when it is no vault', () => {
+    claim = null
+    routeName = 'files-spaces-generic'
+    const { actions } = useSpaceActionsLockVault()
+    unref(actions)[0].handler({ resources: [vaultSpace()] })
+
+    expect(push).not.toHaveBeenCalled()
+  })
+
+  it('does nothing for an empty selection', () => {
+    const { actions } = useSpaceActionsLockVault()
+    unref(actions)[0].handler({ resources: [] })
+
+    expect(clearEngine).not.toHaveBeenCalled()
+    expect(showMessage).not.toHaveBeenCalled()
+  })
+})
+
+describe('lockSpaceVault', () => {
+  const vaultStore = { clearEngine } as any
+  const extensionRegistry = {} as any
+
+  it('clears the engine of a vault space', () => {
+    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: vaultSpace() })).toBe(true)
+    expect(clearEngine).toHaveBeenCalledWith('space-1', '/')
+  })
+
+  it('does nothing for a space that is no vault', () => {
+    claim = null
+    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: vaultSpace() })).toBe(false)
+    expect(clearEngine).not.toHaveBeenCalled()
+  })
+
+  it('does nothing for a space that merely holds vault folders', () => {
+    claim = { vaultRoot: '/my.vault' }
+    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: vaultSpace() })).toBe(false)
+    expect(clearEngine).not.toHaveBeenCalled()
+  })
+
+  it('does nothing without a space', () => {
+    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: undefined })).toBe(false)
+    expect(clearEngine).not.toHaveBeenCalled()
   })
 })
