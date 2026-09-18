@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { PublicLinkType, urlJoin } from '@opencloud-eu/web-client'
+import { GraphSharePermission, PublicLinkType, urlJoin } from '@opencloud-eu/web-client'
 import { HttpClient } from '../../http'
 import { z } from 'zod'
 
@@ -14,6 +14,13 @@ export const webFingerResponseSchema = z.object({
   links: z.array(webFingerLinkSchema).optional(),
   properties: z.record(z.string(), z.union([z.string(), z.array(z.string())])).optional()
 })
+
+export interface GuestSession {
+  shareId: string
+  shareName: string
+  permissions: GraphSharePermission[]
+  expiresAt: number
+}
 
 interface WebfingerDiscoveryData {
   authority: string
@@ -30,6 +37,11 @@ export const useAuthStore = defineStore('auth', () => {
   const publicLinkPassword = ref<string>()
   const publicLinkType = ref<PublicLinkType>()
   const publicLinkContextReady = ref(false)
+  const guestContextReady = ref(false)
+  const guestShareId = ref<string>()
+  const guestShareName = ref<string>()
+  const guestPermissions = ref<GraphSharePermission[]>()
+  const guestSessionExpiresAt = ref<number>()
   const webfingerDiscoveryData = ref<WebfingerDiscoveryData>()
 
   const setAccessToken = (value: string) => {
@@ -54,6 +66,35 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkPassword.value = context.publicLinkPassword
     publicLinkType.value = context.publicLinkType
     publicLinkContextReady.value = context.publicLinkContextReady
+  }
+
+  const setGuestContext = (session: GuestSession) => {
+    guestShareId.value = session.shareId
+    guestShareName.value = session.shareName
+    guestPermissions.value = session.permissions
+    guestSessionExpiresAt.value = session.expiresAt
+    guestContextReady.value = true
+  }
+
+  // The share id is known before a session exists: a `token_expired` response to the initial
+  // exchange carries it, and the renew endpoint plus the PIN form both need it.
+  const setGuestShareId = (value: string) => {
+    guestShareId.value = value
+  }
+
+  // Ends the session without forgetting which share it belonged to: the renew endpoint and the
+  // PIN form both need the share id after the session died.
+  const invalidateGuestSession = () => {
+    guestContextReady.value = false
+    guestSessionExpiresAt.value = null
+  }
+
+  const clearGuestContext = () => {
+    guestContextReady.value = false
+    guestShareId.value = null
+    guestShareName.value = null
+    guestPermissions.value = null
+    guestSessionExpiresAt.value = null
   }
 
   const clearUserContext = () => {
@@ -105,6 +146,11 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkPassword,
     publicLinkType,
     publicLinkContextReady,
+    guestContextReady,
+    guestShareId,
+    guestShareName,
+    guestPermissions,
+    guestSessionExpiresAt,
     webfingerDiscoveryData,
 
     setAccessToken,
@@ -112,6 +158,10 @@ export const useAuthStore = defineStore('auth', () => {
     setIdpContextReady,
     setUserContextReady,
     setPublicLinkContext,
+    setGuestContext,
+    setGuestShareId,
+    invalidateGuestSession,
+    clearGuestContext,
     clearUserContext,
     clearPublicLinkContext,
     loadWebfingerDiscoveryData

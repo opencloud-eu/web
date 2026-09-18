@@ -1,9 +1,10 @@
 import {
   extractPublicLinkToken,
+  isGuestContextSufficient,
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
-} from './index'
+} from './helpers'
 import { Router, RouteLocation } from 'vue-router'
 import {
   contextRouteNameKey,
@@ -33,6 +34,12 @@ export const setupAuthGuard = (router: Router) => {
       return to.name === 'accessDenied' || { name: 'accessDenied' }
     }
 
+    // same indirection as above: the guest session manager can't push a route from inside this
+    // guard, so it raises a flag and the redirect happens here
+    if (authService.guestSessionExpired) {
+      return to.name === 'guestSessionExpired' || { name: 'guestSessionExpired' }
+    }
+
     if (isPublicLinkContextRequired(router, to)) {
       if (!authStore.publicLinkContextReady) {
         const publicLinkToken = extractPublicLinkToken(to)
@@ -46,7 +53,7 @@ export const setupAuthGuard = (router: Router) => {
     }
 
     if (isUserContextRequired(router, to)) {
-      if (!authStore.userContextReady) {
+      if (!authStore.userContextReady && !isGuestContextSufficient(authStore)) {
         if (unref(isDelegatingAuthentication)) {
           return { path: '/web-oidc-callback' }
         }
