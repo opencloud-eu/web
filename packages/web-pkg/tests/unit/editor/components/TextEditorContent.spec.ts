@@ -66,6 +66,8 @@ function mountEditorContent({
   const textEditor = {
     editor: ref({
       commands: { setContent, insertContent },
+      on: vi.fn(),
+      off: vi.fn(),
       registerPlugin,
       unregisterPlugin,
       getAttributes: vi.fn(() => ({})),
@@ -85,8 +87,10 @@ function mountEditorContent({
     }),
     contentType: ref(contentType),
     readonly: ref(false),
+    yjsActive: ref(false),
     state: {
       sourceMode: ref(sourceMode),
+      sourceModeReadonly: ref(false),
       linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
       editorZoom: ref(100)
     },
@@ -111,58 +115,17 @@ function mountEditorContent({
 }
 
 describe('TextEditorContent', () => {
-  it('shows raw markdown in source mode and updates editor content while typing', async () => {
-    const { wrapper, textEditor, setContent } = mountEditorContent()
+  it('swaps the editor view for the source view in source mode', async () => {
+    const { wrapper, textEditor } = mountEditorContent()
+    const sourceView = () => wrapper.findComponent({ name: 'TextEditorSourceView' })
+
+    expect(sourceView().exists()).toBe(false)
 
     textEditor.state.sourceMode.value = true
     await nextTick()
 
-    const textarea = wrapper.find('textarea')
-    expect(textarea.exists()).toBe(true)
-    expect((textarea.element as HTMLTextAreaElement).value).toBe('# Initial')
-
-    await textarea.setValue('| a | b |\n|---|---|\n| 1 | 2 |')
-    expect(setContent).toHaveBeenCalledWith('| a | b |\n|---|---|\n| 1 | 2 |', {
-      contentType: 'markdown',
-      emitUpdate: true
-    })
-
-    textEditor.state.sourceMode.value = false
-    await nextTick()
-
-    expect(setContent).toHaveBeenCalledWith('| a | b |\n|---|---|\n| 1 | 2 |', {
-      contentType: 'markdown',
-      emitUpdate: true
-    })
-  })
-
-  it('does not show source textarea for non-markdown content', async () => {
-    const { wrapper, textEditor } = mountEditorContent({ contentType: 'html' })
-
-    textEditor.state.sourceMode.value = true
-    await nextTick()
-
-    expect(wrapper.find('textarea').exists()).toBe(true)
-  })
-
-  it('updates editor content as html in source mode', async () => {
-    const { wrapper, textEditor, setContent } = mountEditorContent({
-      contentType: 'html',
-      content: '<p>Initial</p>'
-    })
-
-    textEditor.state.sourceMode.value = true
-    await nextTick()
-
-    const textarea = wrapper.find('textarea')
-    expect(textarea.exists()).toBe(true)
-    expect((textarea.element as HTMLTextAreaElement).value).toBe('<p>Initial</p>')
-
-    await textarea.setValue('<h1>Hello</h1><p>World</p>')
-    expect(setContent).toHaveBeenCalledWith('<h1>Hello</h1><p>World</p>', {
-      contentType: 'html',
-      emitUpdate: true
-    })
+    expect(sourceView().exists()).toBe(true)
+    expect(wrapper.find('.mock-editor-content').attributes('style')).toContain('display: none')
   })
 
   it('shows plus button only when slash commands extension is available', () => {
