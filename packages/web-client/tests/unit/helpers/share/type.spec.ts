@@ -28,8 +28,8 @@ describe('ShareTypes', () => {
       [
         'some types',
         {
-          types: [ShareTypes.guest, ShareTypes.group],
-          values: [ShareTypes.guest.value, ShareTypes.group.value]
+          types: [ShareTypes.mail, ShareTypes.group],
+          values: [ShareTypes.mail.value, ShareTypes.group.value]
         }
       ]
     ])('with %s', (name: string, { types, values }) => {
@@ -67,7 +67,7 @@ describe('ShareTypes', () => {
         'given some types and some values without intersection',
         {
           types: [ShareTypes.user, ShareTypes.group],
-          values: [ShareTypes.guest.value, ShareTypes.link.value, ShareTypes.remote.value],
+          values: [ShareTypes.mail.value, ShareTypes.link.value, ShareTypes.remote.value],
           result: false
         }
       ],
@@ -75,7 +75,7 @@ describe('ShareTypes', () => {
         'given some types and some values with partial match',
         {
           types: [ShareTypes.user, ShareTypes.group],
-          values: [ShareTypes.guest.value, ShareTypes.group.value],
+          values: [ShareTypes.mail.value, ShareTypes.group.value],
           result: true
         }
       ],
