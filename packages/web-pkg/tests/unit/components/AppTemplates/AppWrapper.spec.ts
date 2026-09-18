@@ -56,6 +56,7 @@ afterEach(() => {
 
 const FILE_A = mock<Resource>({
   id: 'storage$space!file-a',
+  fileId: 'storage$space!file-a',
   name: 'a.md',
   etag: 'etag-a',
   permissions: 'RDNVW'
@@ -79,11 +80,18 @@ function setup({
   // session that cannot produce one, which falls back to the pre-conflict
   // snapshot.
   mergedContent = null as string | null,
-  putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' }))
+  putFileContents = vi.fn().mockResolvedValue(mock<Resource>({ etag: 'etag-saved' })),
+  // Whether the room recognises an announced write as one of its own.
+  roomWrite = false,
+  // Whether the runtime has an authenticated SSE stream for this user.
+  sse = true
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
   const serializeMerged = vi.fn().mockResolvedValue(mergedContent)
+  const isRoomWrite = vi.fn().mockReturnValue(roomWrite)
+  const adoptEtag = vi.fn()
+  const applyExternalUpdate = vi.fn().mockResolvedValue('recovered')
   const isLockedForReload = ref(false)
   const isConflicted = ref(false)
   const markConflicted = vi.fn(() => {
@@ -130,7 +138,10 @@ function setup({
       error: ref<Error | null>(null) as any,
       wasWrittenByRoom,
       beginSave,
-      serializeMerged
+      serializeMerged,
+      isRoomWrite,
+      adoptEtag,
+      applyExternalUpdate
     })
   })
 
@@ -140,6 +151,16 @@ function setup({
       params: { driveAliasAndItem: 'personal/alan/a.md' }
     })
   })
+  // A deep mock hands back a function for every property; the wrapper
+  // compares this one against the initiator in SSE events.
+  ;(mocks.$clientService as any).initiatorId = 'tab-own'
+  const sseListeners = new Map<string, (msg: MessageEvent) => void>()
+  vi.mocked(mocks.$clientService.sseAuthenticated.addEventListener).mockImplementation(((
+    topic: string,
+    listener: (msg: MessageEvent) => void
+  ) => {
+    sseListeners.set(topic, listener)
+  }) as any)
 
   let slotProps: any
   const wrapper = mount(AppWrapper, {
@@ -158,7 +179,9 @@ function setup({
       plugins: [
         ...defaultPlugins({
           piniaOptions: {
-            appsState: { apps: { 'test-app': { id: 'test-app', name: 'Test App' } } }
+            appsState: { apps: { 'test-app': { id: 'test-app', name: 'Test App' } } },
+            authState: { accessToken: sse ? 'token' : undefined },
+            capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
           }
         }),
         createRouter({
@@ -185,6 +208,23 @@ function setup({
     wasWrittenByRoom,
     beginSave,
     serializeMerged,
+    isRoomWrite,
+    adoptEtag,
+    applyExternalUpdate,
+    sseListeners,
+    /** The server announces a write to the open file by another tab. */
+    async emitFileEvent(data: Record<string, unknown> = {}) {
+      const payload = {
+        itemid: FILE_A.id,
+        initiatorid: 'tab-other',
+        etag: 'etag-external',
+        ...data
+      }
+      sseListeners.get('postprocessing-finished')?.({
+        data: JSON.stringify(payload)
+      } as MessageEvent)
+      await flushPromises()
+    },
     currentContent: () => slotProps?.currentContent,
     yjsStatus: () => slotProps?.yjsStatus,
     statusRef,
@@ -209,6 +249,9 @@ function setup({
         mock<GetFileContentsResponse>({ body, headers: { 'OC-ETag': 'etag' } as any })
       )
       await flushPromises()
+    },
+    resolveContentWith(body: string, etag: string) {
+      resolveContents(mock<GetFileContentsResponse>({ body, headers: { 'OC-ETag': etag } as any }))
     },
     rejectContent(error: Error) {
       rejectContents(error)
@@ -768,5 +811,158 @@ describe('AppWrapper — locked session', () => {
 
     await s.pressCtrlS()
     expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+})
+
+describe('AppWrapper — external file updates via SSE', () => {
+  async function openFile(options: Parameters<typeof setup>[0] = {}) {
+    const s = setup(options)
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    return s
+  }
+
+  it('listens for content events once the user has an SSE stream', async () => {
+    const s = await openFile()
+
+    expect(s.sseListeners.has('postprocessing-finished')).toBe(true)
+    expect(s.sseListeners.has('file-touched')).toBe(true)
+  })
+
+  it('does not listen without an SSE stream', async () => {
+    const s = await openFile({ sse: false })
+
+    expect(s.sseListeners.size).toBe(0)
+  })
+
+  it('ignores a write the room can account for without fetching', async () => {
+    const s = await openFile({ roomWrite: true })
+    s.getFileContents.mockClear()
+
+    await s.emitFileEvent()
+
+    expect(s.isRoomWrite).toHaveBeenCalledWith('etag-external')
+    expect(s.getFileContents).not.toHaveBeenCalled()
+    expect(s.applyExternalUpdate).not.toHaveBeenCalled()
+  })
+
+  it('adopts the etag when the body on disk is the one we know', async () => {
+    const s = await openFile()
+
+    await s.emitFileEvent()
+    s.resolveContentWith('content of a', 'etag-external')
+    await flushPromises()
+
+    expect(s.adoptEtag).toHaveBeenCalledWith('etag-external')
+    expect(s.applyExternalUpdate).not.toHaveBeenCalled()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  // A peer saved and left before its stamp reached us: what is on disk is the
+  // room's own state, so it lands as a save.
+  it('records the room state as saved when that is what landed', async () => {
+    const s = await openFile({ mergedContent: 'merged room state' })
+    await s.edit('merged room state')
+
+    await s.emitFileEvent()
+    s.resolveContentWith('merged room state', 'etag-external')
+    await flushPromises()
+
+    expect(s.applyExternalUpdate).not.toHaveBeenCalled()
+    expect(unref(s.session().resource).etag).toBe('etag-external')
+    // Nothing left to save.
+    await s.pressCtrlS()
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('waits for a late peer stamp before calling a body foreign', async () => {
+    const s = await openFile({ writtenByRoom: true })
+
+    await s.emitFileEvent()
+    s.resolveContentWith('a peer wrote this', 'etag-external')
+    await flushPromises()
+
+    expect(s.wasWrittenByRoom).toHaveBeenCalledWith('etag-external', expect.any(Number))
+    expect(s.applyExternalUpdate).not.toHaveBeenCalled()
+  })
+
+  it('hands a foreign body to the session with the etag it was read under', async () => {
+    const s = await openFile({ writtenByRoom: false })
+
+    await s.emitFileEvent({ etag: 'etag-announced' })
+    // The file moved again between the event and our GET.
+    s.resolveContentWith('desktop client wrote this', 'etag-fetched')
+    await flushPromises()
+
+    expect(s.applyExternalUpdate).toHaveBeenCalledWith({
+      content: 'desktop client wrote this',
+      etag: 'etag-fetched'
+    })
+  })
+
+  it('shows the update message when the session reports an applied update', async () => {
+    const s = await openFile()
+
+    s.session().onExternalUpdate()
+    await nextTick()
+
+    const { showMessage } = useMessages()
+    expect(showMessage).toHaveBeenCalledTimes(1)
+    expect(vi.mocked(showMessage).mock.calls[0][0].desc).toContain('updated outside this window')
+  })
+
+  it('leaves the session alone when the fetch fails', async () => {
+    const s = await openFile()
+
+    await s.emitFileEvent()
+    s.rejectContent(new Error('network'))
+    await flushPromises()
+
+    expect(s.applyExternalUpdate).not.toHaveBeenCalled()
+    expect(consoleErrorSpy).toHaveBeenCalled()
+  })
+
+  it('holds an event while a save is in flight and runs it afterwards', async () => {
+    let resolvePut: (r: Resource) => void
+    const putFileContents = vi.fn(() => new Promise<Resource>((r) => (resolvePut = r)))
+    const s = await openFile({ putFileContents })
+    await s.edit('edited content')
+    s.getFileContents.mockClear()
+
+    const pressed = s.pressCtrlS()
+    await s.emitFileEvent()
+    expect(s.getFileContents).not.toHaveBeenCalled()
+
+    resolvePut!(mock<Resource>({ etag: 'etag-saved' }))
+    await pressed
+    await flushPromises()
+
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  it('holds an event while the session is disconnected', async () => {
+    const s = await openFile({ status: 'disconnected' })
+    s.getFileContents.mockClear()
+
+    await s.emitFileEvent()
+    expect(s.getFileContents).not.toHaveBeenCalled()
+
+    s.statusRef.value = 'connected'
+    await nextTick()
+    await flushPromises()
+
+    expect(s.getFileContents).toHaveBeenCalledTimes(1)
+  })
+
+  it('never fetches for a conflicted session', async () => {
+    const s = await openFile()
+    s.isConflicted.value = true
+    await nextTick()
+    s.getFileContents.mockClear()
+
+    await s.emitFileEvent()
+
+    expect(s.getFileContents).not.toHaveBeenCalled()
   })
 })

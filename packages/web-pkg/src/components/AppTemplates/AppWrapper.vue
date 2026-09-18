@@ -224,6 +224,8 @@ const {
   applicationId
 })
 
+/** A PUT is in flight. External file events wait for it. */
+const isSaving = ref(false)
 const isDirty = computed(() => {
   if (unref(isReadOnly)) {
     return false
@@ -255,7 +257,16 @@ const {
   putFileContents,
   applySavedResource,
   runSaveCallback,
-  onConflict: showExternalUpdateConflict
+  onConflict: showExternalUpdateConflict,
+  isSaving,
+  onExternalUpdateApplied: () => {
+    showMessage({
+      title: $gettext('File updated'),
+      desc: $gettext(
+        'This file was updated outside this window. The editor now shows the latest version.'
+      )
+    })
+  }
 })
 
 // Keep the loading screen up until the Yjs session is synced and hydrated,
@@ -548,6 +559,7 @@ const saveFileTask = useTask(function* () {
   // Pin the Y.Doc state behind `newContent`; the doc usually moves on while
   // the PUT is in flight.
   yjsSession?.beginSave()
+  isSaving.value = true
   try {
     const putFileContentsResponse = yield putFileContents(currentFileContext, {
       content: newContent as string | ArrayBuffer,
@@ -604,6 +616,8 @@ const saveFileTask = useTask(function* () {
         errorPopup(new HttpError('', e.response))
     }
     return false
+  } finally {
+    isSaving.value = false
   }
 }).drop()
 

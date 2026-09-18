@@ -64,7 +64,12 @@ export interface YjsSessionOptions {
   hasUnsavedChanges: MaybeRefOrGetter<boolean>
   /** The session gave up the room because the file changed outside it. */
   onConflict: () => void
+  /** The room has been updated with an external write. Fired once per update. */
+  onExternalUpdate?: () => void
 }
+
+/** Outcome of {@link YjsSession.applyExternalUpdate}. */
+export type ExternalUpdateResult = 'recovered' | 'conflicted' | 'skipped'
 
 export interface YjsSession {
   ydoc: ShallowRef<Y.Doc | null>
@@ -117,6 +122,22 @@ export interface YjsSession {
    * peer edits that caused the conflict.
    */
   serializeMerged: () => Promise<string | null>
+  /**
+   * Whether a write announced with this etag came from inside the room, i.e.
+   * the room's etag stamp already names it. Always false in local mode.
+   */
+  isRoomWrite: (etag: string) => boolean
+  /**
+   * Stamp the given etag on the room without claiming a save, so peers keep
+   * their dirty state.
+   */
+  adoptEtag: (etag: string) => void
+  /**
+   * The file changed outside the room and the caller fetched the new body.
+   * Recovers the room from it when nothing is unsaved, otherwise flags the
+   * room and conflicts.
+   */
+  applyExternalUpdate: (update: { content: string; etag: string }) => Promise<ExternalUpdateResult>
 }
 
 const META_KEY = '_oc_meta'
@@ -132,11 +153,15 @@ const LOCAL_SAVE_ORIGIN = 'local-save'
 const STALE_RECOVERY_RESET_ORIGIN = 'stale-recovery-reset'
 const STALE_RECOVERY_COMMIT_ORIGIN = 'stale-recovery-commit'
 const HYDRATE_ORIGIN = 'hydrate'
+const EXTERNAL_UPDATE_ORIGIN = 'external-update'
+const ETAG_ADOPT_ORIGIN = 'etag-adopt'
 const OWN_META_ORIGINS: unknown[] = [
   LOCAL_SAVE_ORIGIN,
   STALE_RECOVERY_RESET_ORIGIN,
   STALE_RECOVERY_COMMIT_ORIGIN,
-  HYDRATE_ORIGIN
+  HYDRATE_ORIGIN,
+  EXTERNAL_UPDATE_ORIGIN,
+  ETAG_ADOPT_ORIGIN
 ]
 /**
  * How long `wasWrittenByRoom` waits for a peer's etag stamp that may still be
@@ -151,6 +176,11 @@ const ROOM_ETAG_GRACE_MS = 1_000
 const SEED_REQUEST = '_oc_seed_request'
 const SEED_GRANTED = '_oc_seed_granted'
 const SEED_DENIED = '_oc_seed_denied'
+/**
+ * How long an SSE-triggered check waits for a peer's etag stamp before it
+ * treats the write as external.
+ */
+export const EXTERNAL_UPDATE_ETAG_GRACE_MS = 2_000
 const FALLBACK_WEB_VERSION = '0.0.0'
 
 function resolveWebVersion(): string {
@@ -240,7 +270,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     onServerContentChange,
     onEtagChange,
     hasUnsavedChanges,
-    onConflict
+    onConflict,
+    onExternalUpdate
   } = options
 
   const { $gettext } = useGettext()
@@ -304,13 +335,17 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    */
   let hasLocalOnlyContent = false
 
+  /** What a recovery publishes: a native file body and the etag it was read under. */
+  interface RecoveryPayload {
+    content: string
+    etag: string
+  }
+
   /**
-   * The native file body captured at the moment etag drift was detected.
-   * Recovery must publish exactly this body; reading `currentContent` at
-   * recovery time would return the room's own (older) state, which the
-   * debounced serialize has reported back by then.
+   * The native file body and its etag captured at the moment etag drift was detected.
+   * Recovery must publish exactly this body.
    */
-  let staleRecoveryContent: string | null = null
+  let staleRecovery: RecoveryPayload | null = null
 
   /**
    * The doc state behind the last content handed to the caller, i.e. what its
@@ -388,9 +423,17 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * `currentContent`) and name ourselves. Last write wins, so concurrent
    * claims elect exactly one client.
    */
-  function claimRecovery(doc: Y.Doc, meta: SessionMetaMap) {
-    staleRecoveryContent = toValue(currentContent)
-    doc.transact(() => meta.set('recoveryClientId', doc.clientID))
+  function claimRecovery(
+    doc: Y.Doc,
+    meta: SessionMetaMap,
+    payload: RecoveryPayload = {
+      content: toValue(currentContent),
+      etag: toValue(resource)?.etag ?? ''
+    },
+    origin?: string
+  ) {
+    staleRecovery = payload
+    doc.transact(() => meta.set('recoveryClientId', doc.clientID), origin)
   }
 
   /**
@@ -401,16 +444,29 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * without claiming; the `nativeEtag` it leaves lets the first writer
    * holding the same body pick the claim up.
    */
-  function flagStale(doc: Y.Doc, meta: SessionMetaMap) {
-    const nativeEtag = toValue(resource)?.etag
+  function flagStale(
+    doc: Y.Doc,
+    meta: SessionMetaMap,
+    {
+      nativeEtag = toValue(resource)?.etag,
+      claim = !unref(effectiveReadOnly),
+      payload,
+      origin
+    }: {
+      nativeEtag?: string
+      claim?: boolean
+      payload?: RecoveryPayload
+      origin?: string
+    } = {}
+  ) {
     // The claim must be complete before `isStale` goes up: raising the flag
     // fires our own meta observer, whose recovery run needs the claim.
-    if (!unref(effectiveReadOnly)) claimRecovery(doc, meta)
+    if (claim) claimRecovery(doc, meta, payload, origin)
     doc.transact(() => {
       if (nativeEtag) meta.set('nativeEtag', nativeEtag)
       meta.set('recoveryEpoch', (meta.get('recoveryEpoch') ?? 0) + 1)
       meta.set('isStale', true)
-    })
+    }, origin)
   }
 
   /** Whether our freshly fetched etag is the one recovery must settle on. */
@@ -445,7 +501,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     if (unref(isConflicted)) return
     // Local mode has no room to leave and no peer that could have written the
     // file. Conflicting would only stop its autosave, which is the single
-    // safety net there.
+    // safety net there. `applyExternalUpdate` is the one path that knows
+    // better, see there.
     if (unref(status) === YjsStatus.Local) return
     isConflicted.value = true
     const prov = unref(provider)
@@ -672,6 +729,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     seedDoc(doc, current, meta)
   }
 
+  /** The recovery run in progress, so a second trigger queues behind it. */
+  let recoveryInFlight: Promise<boolean> | null = null
+
   /**
    * Stale-state recovery, fired when `_oc_meta.isStale` goes up: the claimed
    * client wipes the adapter content, clears the flags and re-hydrates from
@@ -683,12 +743,30 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * onto it, so the next save would overwrite the external writer with a
    * matching `If-Match` and no warning. Unreachable in local mode, but coded
    * provider-tolerant so the two modes share one path.
+   *
+   * True when this run rewrote the room.
    */
-  async function recoverFromStaleState(doc: Y.Doc, prov: HocuspocusProvider | null) {
+  async function recoverFromStaleState(
+    doc: Y.Doc,
+    prov: HocuspocusProvider | null
+  ): Promise<boolean> {
+    if (unref(effectiveReadOnly) || unref(isConflicted)) return false
+    if (staleRecovery === null) return false
+    while (recoveryInFlight) await recoveryInFlight
+    if (staleRecovery === null || doc.isDestroyed) return false
+    const run = runStaleRecovery(doc, prov)
+    recoveryInFlight = run
+    try {
+      return await run
+    } finally {
+      if (recoveryInFlight === run) recoveryInFlight = null
+    }
+  }
+
+  async function runStaleRecovery(doc: Y.Doc, prov: HocuspocusProvider | null): Promise<boolean> {
     const current = toValue(adapter)
     const meta = sessionMeta(doc)
-    if (unref(effectiveReadOnly)) return
-    if (staleRecoveryContent === null) return
+    if (staleRecovery === null) return false
     if (typeof current.reset !== 'function') {
       lockForReload(
         prov,
@@ -696,16 +774,24 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           'This file was changed externally and your editor cannot recover in-place. Please reload.'
         )
       )
-      return
+      return false
     }
 
     // Let concurrent claims converge, then check we came out on top.
     await new Promise<void>((resolve) => setTimeout(resolve, 150))
-    if (meta.get('isStale') !== true) return // someone else handled it
-    if (meta.get('recoveryClientId') !== doc.clientID) return
+    if (doc.isDestroyed || unref(ydoc) !== doc) return false
+    if (meta.get('isStale') !== true) {
+      // Someone else handled it. Drop the payload, or a later remote flag
+      // would read as one we hold the body for.
+      staleRecovery = null
+      return false
+    }
+    if (meta.get('recoveryClientId') !== doc.clientID) {
+      staleRecovery = null
+      return false
+    }
 
-    const content = staleRecoveryContent
-    const freshEtag = meta.get('nativeEtag') ?? toValue(resource)?.etag ?? ''
+    const { content, etag: freshEtag } = staleRecovery
 
     // Reset and hydrate share one transaction: mounted editors must never
     // observe the emptied doc, or ProseMirror pads it with an empty paragraph
@@ -731,7 +817,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         meta.set('lastSavedAt', Date.now())
       }, STALE_RECOVERY_COMMIT_ORIGIN)
 
-      staleRecoveryContent = null
+      staleRecovery = null
+      return true
     } catch (e) {
       // The reset already emptied the shared doc for every peer; `isStale`
       // stays up so a later joiner holding the fresh body retries. Lock so
@@ -741,6 +828,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         prov,
         $gettext('This file was changed externally and recovering it failed. Please reload.')
       )
+      return false
     } finally {
       isRewritingDoc = false
     }
@@ -776,33 +864,58 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    */
   function createContentReporter(doc: Y.Doc) {
     let timer: number | undefined
+    let inFlight: Promise<void> | null = null
+    function report(): Promise<void> {
+      // Re-checked: the debounce window can outlive the change that opened it.
+      if (!canReportContent()) return Promise.resolve()
+      // Vector taken before serializing: adapters may serialize
+      // asynchronously, and a peer update landing in between must not be
+      // counted as part of what we reported.
+      const vectorAtSerialize = Y.encodeStateVector(doc)
+      inFlight = serializeDoc(doc)
+        .then((value) => {
+          if (value === null) return
+          lastReportedStateVector = vectorAtSerialize
+          lastReportedContent = value
+          onContentChange(value)
+        })
+        .catch((e) => console.error('[yjs] serialize for content update failed:', e))
+        .finally(() => {
+          inFlight = null
+        })
+      return inFlight
+    }
     function onDocUpdate() {
       if (!canReportContent()) return
       if (timer !== undefined) window.clearTimeout(timer)
       timer = window.setTimeout(() => {
         timer = undefined
-        // Re-checked: the debounce window can outlive the change that opened it.
-        if (!canReportContent()) return
-        // Vector taken before serializing: adapters may serialize
-        // asynchronously, and a peer update landing in between must not be
-        // counted as part of what we reported.
-        const vectorAtSerialize = Y.encodeStateVector(doc)
-        serializeDoc(doc)
-          .then((value) => {
-            if (value === null) return
-            lastReportedStateVector = vectorAtSerialize
-            lastReportedContent = value
-            onContentChange(value)
-          })
-          .catch((e) => console.error('[yjs] serialize for content update failed:', e))
+        void report()
       }, SERIALIZE_DEBOUNCE_MS)
+    }
+    /**
+     * Run a pending report now. The caller's dirty state lags the doc by the
+     * debounce, and a decision about unsaved work must not miss a keystroke
+     * from inside that window. A doc with no pending report stays untouched:
+     * serializing it would report the renormalized body and mark a clean
+     * file dirty.
+     */
+    function flush(): Promise<void> {
+      if (timer === undefined) return inFlight ?? Promise.resolve()
+      window.clearTimeout(timer)
+      timer = undefined
+      return report()
     }
     function cancel() {
       if (timer !== undefined) window.clearTimeout(timer)
+      timer = undefined
     }
-    return { onDocUpdate, cancel }
+    return { onDocUpdate, flush, cancel }
   }
   type ContentReporter = ReturnType<typeof createContentReporter>
+
+  /** The reporter of the live session, for code outside the session watch. */
+  let activeReporter: ContentReporter | null = null
 
   /** The user-facing side of a refused handshake. */
   function deniedMessage(reason: string): string {
@@ -995,6 +1108,16 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           const newEtag = meta.get('etag')
           if (newEtag) onEtagChange(newEtag)
         }
+        // A peer's recovery commit: the flag goes down with the etag it
+        // settled on. Only now does this doc show the external write.
+        if (
+          event.keysChanged.has('isStale') &&
+          meta.get('isStale') !== true &&
+          event.keysChanged.has('etag') &&
+          !unref(isConflicted)
+        ) {
+          onExternalUpdate?.()
+        }
         if (event.keysChanged.has('lastSavedAt')) {
           const theirState = meta.get('savedStateVector')
           if (theirState instanceof Uint8Array) {
@@ -1035,11 +1158,138 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       }
 
       // Stale-state signal: every peer sees it, only the claimed one gets
-      // past the guards in `recoverFromStaleState`.
+      // past the guards in `recoverFromStaleState`. An external update this
+      // client applies itself runs the recovery explicitly, so it can await it.
       if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
+        if (transaction.origin === EXTERNAL_UPDATE_ORIGIN) return
+        if (isRemoteMetaWrite) {
+          void onRemoteStaleFlag(doc, meta, reporter)
+          return
+        }
         void recoverFromStaleState(doc, prov)
       }
     }
+  }
+
+  /**
+   * A peer raised `isStale` mid-session. Three cases: we claimed it earlier
+   * and run the recovery; a keystroke inside the debounce window made us
+   * dirty after all, so we conflict like the dirty peers did at flag time; or
+   * we are clean and follow the claimant's rewrite (`onExternalUpdate` fires
+   * when it lands).
+   */
+  async function onRemoteStaleFlag(doc: Y.Doc, meta: SessionMetaMap, reporter: ContentReporter) {
+    if (staleRecovery !== null) {
+      void recoverFromStaleState(doc, unref(provider))
+      return
+    }
+    await reporter.flush()
+    if (doc.isDestroyed || unref(ydoc) !== doc) return
+    if (meta.get('isStale') !== true) return
+    if (unref(isConflicted) || unref(isLockedForReload)) return
+    if (toValue(hasUnsavedChanges)) markConflicted()
+  }
+
+  /** Whether the room's recovery claimant is still connected. */
+  function isClaimantPresent(doc: Y.Doc, meta: SessionMetaMap): boolean {
+    const claimant = meta.get('recoveryClientId')
+    if (typeof claimant !== 'number') return false
+    if (claimant === doc.clientID) return true
+    return unref(awareness)?.getStates().has(claimant) ?? false
+  }
+
+  /** See {@link YjsSession.isRoomWrite}. */
+  function isRoomWrite(etag: string) {
+    const doc = unref(ydoc)
+    if (!doc || doc.isDestroyed || !unref(provider)) return false
+    return Boolean(etag) && sessionMeta(doc).get('etag') === etag
+  }
+
+  /** See {@link YjsSession.adoptEtag}. */
+  function adoptEtag(etag: string) {
+    const doc = unref(ydoc)
+    if (doc && !doc.isDestroyed) {
+      const meta = sessionMeta(doc)
+      // No `lastSavedAt`: this is not a save, peers must keep their dirty
+      // state. The caller's etag mirror then finds the stamp in place and
+      // does not claim one either.
+      if (meta.get('etag') !== etag) {
+        doc.transact(() => meta.set('etag', etag), ETAG_ADOPT_ORIGIN)
+      }
+    }
+    onEtagChange(etag)
+  }
+
+  /**
+   * The rewrite suppressed the content reporter and its commit carries an own
+   * origin, so nothing else tells the caller that its content, server content
+   * and etag all moved. Reports the serialized form: the next debounced report
+   * produces the same string, so the file stays clean.
+   */
+  async function reportRecovered(doc: Y.Doc, etag: string) {
+    const value = await serializeDoc(doc)
+    if (value === null || doc.isDestroyed || unref(ydoc) !== doc) return
+    lastReportedStateVector = Y.encodeStateVector(doc)
+    lastReportedContent = value
+    onContentChange(value)
+    onServerContentChange(value)
+    onEtagChange(etag)
+  }
+
+  /** See {@link YjsSession.applyExternalUpdate}. */
+  async function applyExternalUpdate({
+    content,
+    etag
+  }: {
+    content: string
+    etag: string
+  }): Promise<ExternalUpdateResult> {
+    const doc = unref(ydoc)
+    const prov = unref(provider)
+    if (!doc || doc.isDestroyed || !unref(isReady) || !etag) return 'skipped'
+    if (unref(effectiveReadOnly) || unref(isConflicted) || unref(isLockedForReload)) {
+      return 'skipped'
+    }
+    const meta = sessionMeta(doc)
+    if (meta.get('etag') === etag) return 'skipped'
+
+    await activeReporter?.flush()
+    if (doc.isDestroyed || unref(ydoc) !== doc) return 'skipped'
+
+    if (toValue(hasUnsavedChanges)) {
+      if (!prov) {
+        // Local mode keeps autosaving through `markConflicted` on purpose, but
+        // here the autosave would only hit 412 over the same write every
+        // interval, so stop it.
+        isConflicted.value = true
+        onConflict()
+        return 'conflicted'
+      }
+      // Flag without claiming: dirty peers conflict on the flag, clean peers
+      // recover from their own fetch, late joiners recover from theirs.
+      flagStale(doc, meta, { nativeEtag: etag, claim: false, origin: EXTERNAL_UPDATE_ORIGIN })
+      // Let the flag leave over the socket before it closes.
+      await new Promise<void>((resolve) => setTimeout(resolve, 0))
+      markConflicted()
+      return 'conflicted'
+    }
+
+    // A live claimant is already on it; without one, this is the same as a
+    // joiner finding the flag up. Concurrent claimants converge through
+    // `recoveryClientId` in `runStaleRecovery`, the losers just skip.
+    if (meta.get('isStale') === true && isClaimantPresent(doc, meta)) return 'skipped'
+    flagStale(doc, meta, {
+      nativeEtag: etag,
+      claim: true,
+      payload: { content, etag },
+      origin: EXTERNAL_UPDATE_ORIGIN
+    })
+
+    const recovered = await recoverFromStaleState(doc, prov)
+    if (!recovered) return 'skipped'
+    await reportRecovered(doc, etag)
+    onExternalUpdate?.()
+    return 'recovered'
   }
 
   /**
@@ -1060,7 +1310,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       hasLocalOnlyContent = false
       // `undoResyncWipe` leaves this up for good when it cannot restore.
       isRewritingDoc = false
-      staleRecoveryContent = null
+      staleRecovery = null
       lastReportedStateVector = null
       lastReportedContent = null
       pendingSaveStateVector = null
@@ -1074,6 +1324,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
       const doc = new Y.Doc()
       const reporter = createContentReporter(doc)
+      activeReporter = reporter
       doc.on('update', reporter.onDocUpdate)
 
       let prov: HocuspocusProvider | null = null
@@ -1104,6 +1355,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
       onCleanup(() => {
         reporter.cancel()
+        if (activeReporter === reporter) activeReporter = null
         clearConnectTimer()
         abandonSeedGrant()
         meta.map.unobserve(metaObserver)
@@ -1162,6 +1414,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     error,
     wasWrittenByRoom,
     beginSave,
-    serializeMerged
+    serializeMerged,
+    isRoomWrite,
+    adoptEtag,
+    applyExternalUpdate
   }
 }

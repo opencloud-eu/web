@@ -299,9 +299,9 @@ state recovery may re-run hydration if the room turns out to be stale, i.e. `_oc
 the joining client just fetched.
 
 Two clients can arrive into an empty room at the same moment, and only one may seed it - otherwise the content lands
-twice. The elected client is the one with the lowest Yjs `clientID`, after a 150 ms pause to let peers announce
-themselves. The winner sets `_oc_meta.hydrated` before it seeds, so peers can react to the incoming content rather than
-merge with it.
+twice. The Yjs server decides which: a client asks over a stateless message and gets a grant or a refusal (see
+`services/yjs/src/lib/seedGrant.ts`). The winner sets `_oc_meta.hydrated` before it seeds, so peers can react to the
+incoming content rather than merge with it.
 
 ### Stale recovery
 
@@ -337,6 +337,75 @@ Reset lands before hydrate, so a throw in between leaves every peer looking at a
 block saving - `isDirty` deliberately ignores it so a lock cannot silently discard unsaved work (see Known limits).
 What actually stops an empty document reaching disk is `serializeDoc` returning `null` when the adapter reports no
 content.
+
+### External updates
+
+Join-time drift detection only helps a client that is joining. An editor that sits open while a desktop client
+uploads a new version would work on a dead document until its next save fails with a 412. OpenCloud's server-sent
+events close that gap: `postprocessing-finished` and `file-touched` carry the item id, the writer's `Initiator-ID` and
+the etag the file now has.
+
+```mermaid
+sequenceDiagram
+    participant SSE as SSE stream
+    participant EU as useExternalFileUpdates
+    participant AW as useAppWrapperYjs
+    participant S as Session
+    participant P as Peers
+
+    SSE->>EU: postprocessing-finished {itemid, initiatorid, etag}
+    Note over EU: own file? not our tab? etag new?<br/>one at a time, deferred while loading / saving / disconnected
+    EU->>AW: handleExternalFileEvent
+    AW->>S: isRoomWrite? (room etag stamp)
+    Note over AW: GET file -> body, fresh etag
+    Note over AW: body == server content -> adoptEtag<br/>body == room state -> record as save<br/>else wasWrittenByRoom with a 2 s grace
+    AW->>S: applyExternalUpdate {content, etag}
+    Note over S: flush pending content report,<br/>then: unsaved work?
+    alt clean
+        S->>P: claim + isStale (one transaction)
+        S->>P: reset + hydrate, then commit with etag
+        S->>AW: onContentChange, onServerContentChange, onEtagChange
+    else dirty
+        S->>P: isStale + nativeEtag, no claim
+        S->>S: markConflicted
+    end
+```
+
+The wrapper does the cheap checks first, because most of these events are peer saves the room already knows about:
+every peer's own PUT announces itself to every other peer. The room's etag stamp settles those without a request,
+with a grace period (`EXTERNAL_UPDATE_ETAG_GRACE_MS`) for a stamp that is still on the way. Only a body the room
+cannot account for reaches the session.
+
+Which peers receive the event at all depends on the backend: file events go to the members of the space, and a
+personal space has one member. So for a file shared out of a personal space, only the owner's tabs hear about the
+write. Clean peers that hear it recover, the others follow the rewrite:
+
+- A **clean** detector claims and flags the room in one transaction and runs the recovery from the body it fetched.
+  Clean peers follow the rewrite, dirty peers conflict, exactly as after a join-time detection. The recovering peer
+  then reports content, server content and etag to its own wrapper: the rewrite runs with the content reporter
+  suppressed and its commit carries an own origin, so nothing else would.
+- A **dirty** detector flags the room _without_ claiming: it holds nothing safe to re-seed with. Dirty peers conflict
+  on the flag. Since every peer holds the same doc, a dirty detector means every peer is dirty, bar a keystroke still
+  in flight. The room stays flagged until the next join recovers it.
+
+Before deciding, the session flushes its pending content report. The caller's dirty state lags the doc by
+`SERIALIZE_DEBOUNCE_MS`, and a keystroke from inside that window is unsaved work all the same. Peers do the same when
+a remote flag arrives, so a keystroke that has not been reported yet still turns into a conflict rather than a silent
+wipe.
+
+Several clean peers usually hear the same event within milliseconds. Concurrent re-seeds would each delete the old
+body and insert their own, and Yjs keeps both inserts. The same election as at join time prevents that: every
+claimant writes its own client id to `recoveryClientId`, waits for the claims to converge and only rewrites when its
+own id came out on top. The others report `skipped` and follow the winner's rewrite.
+
+Two etag-only cases never reach the recovery. When the fetched body equals the last server content, only the etag
+moved, and `adoptEtag` records it for the room and the caller without a save stamp, so peers keep their dirty state.
+When the body equals the room's merged state, a peer saved and left before its stamp arrived, and the wrapper lands it
+like a save.
+
+While the wrapper cannot act - loading, a PUT in flight, the room disconnected, the session conflicted - the latest
+event is kept, not dropped. A reconnect's drift check compares the room's etag against the etag this client fetched
+at load time, so a write that landed in between would otherwise go unnoticed until the next 412.
 
 ### `_oc_meta`
 
@@ -429,16 +498,19 @@ hold the same content and duplicate the document for everyone.
 
 ### File map
 
-| Path                                                          | Role                                                            |
-| ------------------------------------------------------------- | --------------------------------------------------------------- |
-| `packages/web-pkg/src/composables/yjs/useYjsSession.ts`       | the session: Y.Doc, provider, hydration, staleness, etag mirror |
-| `packages/web-pkg/src/composables/yjs/types.ts`               | `YjsAdapter`                                                    |
-| `packages/web-pkg/src/components/AppTemplates/AppWrapper.vue` | owns the session, the save loop and the loading gate            |
-| `packages/web-pkg/src/components/AppTemplates/types.ts`       | `YjsOptions`, `YjsAdapterContext`, slot args                    |
-| `packages/web-pkg/src/editor/yjsAdapter.ts`                   | `makeTiptapYjsAdapter` - any strategy to a Y.Doc                |
-| `packages/web-pkg/src/editor/composables/useTextEditor.ts`    | binds Tiptap to a Y.Doc and renders peer carets                 |
-| `packages/web-app-text-editor/src/yjs.ts`                     | the text editor's adapter and content-type detection            |
-| `services/yjs/src/server.ts`                                  | the Yjs server (Hocuspocus)                                     |
+| Path                                                               | Role                                                            |
+| ------------------------------------------------------------------ | --------------------------------------------------------------- |
+| `packages/web-pkg/src/composables/yjs/useYjsSession.ts`            | the session: Y.Doc, provider, hydration, staleness, etag mirror |
+| `packages/web-pkg/src/composables/sse/useExternalFileUpdates.ts`   | SSE subscription for the open file, filtering and queueing      |
+| `packages/web-pkg/src/components/AppTemplates/useAppWrapperYjs.ts` | wrapper glue: save conflicts, external update classification    |
+| `packages/web-pkg/src/composables/yjs/types.ts`                    | `YjsAdapter`                                                    |
+| `packages/web-pkg/src/components/AppTemplates/AppWrapper.vue`      | owns the session, the save loop and the loading gate            |
+| `packages/web-pkg/src/components/AppTemplates/types.ts`            | `YjsOptions`, `YjsAdapterContext`, slot args                    |
+| `packages/web-pkg/src/editor/yjsAdapter.ts`                        | `makeTiptapYjsAdapter` - any strategy to a Y.Doc                |
+| `packages/web-pkg/src/editor/composables/useTextEditor.ts`         | binds Tiptap to a Y.Doc and renders peer carets                 |
+| `packages/web-app-text-editor/src/yjs.ts`                          | the text editor's adapter and content-type detection            |
+| `services/yjs/src/server.ts`                                       | the Yjs server (Hocuspocus)                                     |
+| `services/yjs/src/lib/seedGrant.ts`                                | who may seed an empty room                                      |
 
 ---
 
@@ -486,8 +558,16 @@ do meaningfully here.
 account for the write: the fresh etag must match `_oc_meta.etag`, with a short grace period (`ROOM_ETAG_GRACE_MS`) for a
 peer's stamp that is still in flight. An external writer - a desktop sync client, say - fails that check and raises the
 conflict dialog instead of being overwritten. The residual gap is timing: a peer save whose stamp arrives after the
-grace period turns into a spurious conflict dialog.
+grace period turns into a spurious conflict dialog. The SSE path is less exposed: nobody waits on it, so it gives the
+stamp `EXTERNAL_UPDATE_ETAG_GRACE_MS`.
 
-**Stale recovery needs someone who holds the fresh body.** Only a peer whose fetched etag matches `nativeEtag` may
-re-seed the room. If that peer leaves before finishing, the room stays flagged until another client opens the file and
-picks the job up. Peers already in the room keep editing a document that no longer matches disk in the meantime.
+**Stale recovery needs someone who holds the fresh body.** Only a peer that fetched the file after the write may re-seed
+the room. With SSE that is every writer in the space who has the file open; a peer that conflicts flags the room so
+the others fetch. Two gaps remain: when no tab of a space member is open, nobody hears the event and the room stays
+flagged until a client opens the file; and when the claimant leaves mid-recovery, the other peers only retry once
+something else makes them look (a later event, a join, a 412).
+
+**SSE is best effort.** File events reach the members of the space only, so a share recipient of a personal-space file
+depends on the owner's tab to flag the room. The stream has no replay: an event that lands during the 30 to 45 s
+reconnect window is lost, and the join-time and 412 paths are what catch it. A restored file version produces no SSE
+event at all today.
