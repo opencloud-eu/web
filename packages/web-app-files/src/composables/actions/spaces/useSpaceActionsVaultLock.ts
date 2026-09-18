@@ -66,52 +66,12 @@ export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
         if (resources?.length !== 1 || !claimForSpace(extensionRegistry, space)) {
           return false
         }
+        if (space.disabled) {
+          return false
+        }
         return vaultStore.isUnlocked(space.id, VAULT_ROOT)
       },
       class: 'oc-files-actions-lock-vault-trigger'
-    }
-  ])
-
-  return { actions }
-}
-
-export const useSpaceActionsUnlockVault = (): { actions: Ref<SpaceAction[]> } => {
-  const { $gettext } = useGettext()
-  const vaultStore = useVaultStore()
-  const extensionRegistry = useExtensionRegistry()
-  const router = useRouter()
-
-  const actions = computed((): SpaceAction[] => [
-    {
-      name: 'unlock-vault',
-      icon: 'lock-unlock',
-      iconFillType: 'line',
-      label: () => $gettext('Unlock space'),
-      category: 'tertiary',
-      handler: ({ resources }: SpaceActionOptions) => {
-        const claim = claimForSpace(extensionRegistry, resources?.[0])
-        if (!claim?.unlockRoute) {
-          return
-        }
-
-        const currentUrl = unref(router.currentRoute).fullPath
-        router.push({
-          ...claim.unlockRoute,
-          query: { ...claim.unlockRoute.query, redirectUrl: currentUrl, cancelUrl: currentUrl }
-        })
-      },
-      isVisible: ({ resources }: SpaceActionOptions) => {
-        const space = resources?.[0]
-        if (resources?.length !== 1) {
-          return false
-        }
-        const claim = claimForSpace(extensionRegistry, space)
-        if (!claim?.unlockRoute) {
-          return false
-        }
-        return !vaultStore.isUnlocked(space.id, VAULT_ROOT)
-      },
-      class: 'oc-files-actions-unlock-vault-trigger'
     }
   ])
 

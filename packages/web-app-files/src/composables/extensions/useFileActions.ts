@@ -24,7 +24,6 @@ import {
   useFileActionsShowShares,
   useFileActionsToggleHideShare,
   useFileActionsLockVault,
-  useFileActionsUnlockVault,
   useFileActionsDelete,
   useFileActionsRestore,
   useFileActionsDownloadFile,
@@ -52,7 +51,6 @@ export const useFileActions = (): ActionExtension[] => {
   const { actions: showDetailsActions } = useFileActionsShowDetails()
   const { actions: toggleHideShareActions } = useFileActionsToggleHideShare()
   const { actions: lockVaultActions } = useFileActionsLockVault()
-  const { actions: unlockVaultActions } = useFileActionsUnlockVault()
   const { actions: navigateActions } = useFileActionsNavigate()
   const { actions: restoreActions } = useFileActionsRestore()
   const { actions: downloadFileActions } = useFileActionsDownloadFile()
@@ -284,15 +282,6 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(lockVaultActions)[0],
-        category: 'tertiary'
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.context-action.unlock-vault',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(unlockVaultActions)[0],
         category: 'tertiary'
       }
     },
