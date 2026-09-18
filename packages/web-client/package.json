@@ -88,7 +88,7 @@
     "lodash-es": "^4.17.23",
     "luxon": "^3.7.2",
     "uuid": "^14.0.0",
-    "webdav": "5.9.0",
+    "webdav": "5.10.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
