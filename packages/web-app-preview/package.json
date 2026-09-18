@@ -15,7 +15,7 @@
     "@opencloud-eu/design-system": "workspace:*",
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
-    "@vueuse/core": "^14.0.0",
+    "@vueuse/core": "^14.0.0 || ^15.0.0",
     "dompurify": "^3.3.3",
     "lodash-es": "^4.17.21",
     "vue-router": "5.3.1",
