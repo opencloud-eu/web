@@ -1,8 +1,5 @@
 import { unref } from 'vue'
-import {
-  useFileActionsLockVault,
-  useFileActionsUnlockVault
-} from '../../../../../src/composables/actions/files/useFileActionsVaultLock'
+import { useFileActionsLockVault } from '../../../../../src/composables/actions/files/useFileActionsVaultLock'
 
 const showMessage = vi.fn()
 const push = vi.fn()
@@ -24,7 +21,7 @@ vi.mock('@opencloud-eu/web-pkg', () => ({
   useMessages: () => ({ showMessage }),
   useResourcesStore: () => ({ currentFolder }),
   useRouter: () => ({
-    currentRoute: { fullPath: '/back', params: routeParams },
+    currentRoute: { params: routeParams },
     push
   })
 }))
@@ -37,7 +34,7 @@ const rootResource = () => ({ path: vaultRoot, name: 'my.vault', storageId: 'spa
 beforeEach(() => {
   vi.clearAllMocks()
   unlocked = false
-  claim = { vaultRoot, unlockRoute: { name: 'unlock', query: { spaceId: 'space-1', vaultRoot } } }
+  claim = { vaultRoot }
   matchedSpace = { id: 'space-1', driveAlias: 'personal/admin' }
   routeParams = {}
   currentFolder = { id: '1' }
@@ -107,34 +104,5 @@ describe('lock-vault action', () => {
     const { actions } = useFileActionsLockVault()
     unref(actions)[0].handler({ resources: [inside] } as any)
     expect(clearEngine).not.toHaveBeenCalled()
-  })
-})
-
-describe('unlock-vault action', () => {
-  it('is visible for a locked vault root', () => {
-    unlocked = false
-    const { actions } = useFileActionsUnlockVault()
-    expect(unref(actions)[0].isVisible({ resources: [rootResource()] } as any)).toBe(true)
-  })
-
-  it('is hidden once the vault root is unlocked', () => {
-    unlocked = true
-    const { actions } = useFileActionsUnlockVault()
-    expect(unref(actions)[0].isVisible({ resources: [rootResource()] } as any)).toBe(false)
-  })
-
-  it('is hidden when the claim carries no unlock route', () => {
-    claim = { vaultRoot }
-    const { actions } = useFileActionsUnlockVault()
-    expect(unref(actions)[0].isVisible({ resources: [rootResource()] } as any)).toBe(false)
-  })
-
-  it('pushes the claim unlock route with the current location for both redirect and cancel', () => {
-    const { actions } = useFileActionsUnlockVault()
-    unref(actions)[0].handler({ resources: [rootResource()] } as any)
-    expect(push).toHaveBeenCalledWith({
-      name: 'unlock',
-      query: { spaceId: 'space-1', vaultRoot, redirectUrl: '/back', cancelUrl: '/back' }
-    })
   })
 })

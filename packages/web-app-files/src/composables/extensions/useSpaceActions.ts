@@ -22,7 +22,6 @@ import {
   useSpaceActionsUploadImage,
   useSpaceActionsEditImageMenu,
   useSpaceActionsLockVault,
-  useSpaceActionsUnlockVault,
   useSpaceActionsCreate
 } from '../actions'
 
@@ -49,7 +48,6 @@ export const useSpaceActions = (): ActionExtension[] => {
   const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
   const { actions: showMembersActions } = useSpaceActionsShowMembers()
   const { actions: lockVaultActions } = useSpaceActionsLockVault()
-  const { actions: unlockVaultActions } = useSpaceActionsUnlockVault()
   const { actions: createSpaceActions } = useSpaceActionsCreate()
 
   return [
@@ -147,12 +145,6 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
       type: 'action',
       action: unref(lockVaultActions)[0]
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.unlock-vault',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: unref(unlockVaultActions)[0]
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
