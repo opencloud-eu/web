@@ -1,52 +1,16 @@
 import { computed, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { SpaceResource } from '@opencloud-eu/web-client'
 import {
-  ExtensionRegistry,
-  VaultClaim,
-  getVaultClaim,
+  getSpaceVaultClaim,
+  SPACE_VAULT_ROOT,
   SpaceAction,
   SpaceActionOptions,
   useExtensionRegistry,
   useVaultStore,
-  VaultStore,
   useMessages,
   useRoute,
   useRouter
 } from '@opencloud-eu/web-pkg'
-
-/**
- * Space-level counterpart of `useFileActionsVaultLock`: an end-to-end encrypted
- * space is a vault rooted at the space root.
- */
-const VAULT_ROOT = '/'
-
-function claimForSpace(
-  extensionRegistry: ExtensionRegistry,
-  space: SpaceResource | undefined
-): VaultClaim | null {
-  if (!space) {
-    return null
-  }
-  const claim = getVaultClaim(extensionRegistry, space, VAULT_ROOT)
-  return claim?.vaultRoot === VAULT_ROOT ? claim : null
-}
-
-export function lockSpaceVault({
-  extensionRegistry,
-  vaultStore,
-  space
-}: {
-  extensionRegistry: ExtensionRegistry
-  vaultStore: VaultStore
-  space: SpaceResource | undefined
-}): boolean {
-  if (!claimForSpace(extensionRegistry, space)) {
-    return false
-  }
-  vaultStore.clearEngine(space.id, VAULT_ROOT)
-  return true
-}
 
 export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
   const { $gettext } = useGettext()
@@ -65,9 +29,10 @@ export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
       category: 'tertiary',
       handler: ({ resources }: SpaceActionOptions) => {
         const space = resources?.[0]
-        if (!lockSpaceVault({ extensionRegistry, vaultStore, space })) {
+        if (!getSpaceVaultClaim(extensionRegistry, space)) {
           return
         }
+        vaultStore.clearEngine(space.id, SPACE_VAULT_ROOT)
         showMessage({
           title: $gettext('»%{space}« was locked', { space: space.name })
         })
@@ -79,13 +44,13 @@ export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
       },
       isVisible: ({ resources }: SpaceActionOptions) => {
         const space = resources?.[0]
-        if (resources?.length !== 1 || !claimForSpace(extensionRegistry, space)) {
+        if (resources?.length !== 1 || !getSpaceVaultClaim(extensionRegistry, space)) {
           return false
         }
         if (space.disabled) {
           return false
         }
-        return vaultStore.isUnlocked(space.id, VAULT_ROOT)
+        return vaultStore.isUnlocked(space.id, SPACE_VAULT_ROOT)
       },
       class: 'oc-files-actions-lock-vault-trigger'
     }

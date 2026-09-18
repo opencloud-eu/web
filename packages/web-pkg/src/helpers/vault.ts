@@ -130,6 +130,27 @@ export function getVaultClaim(
 }
 
 /**
+ * Space-level counterpart of a folder vault: a space that *is* an end-to-end
+ * encrypted space is a vault rooted at the space root.
+ */
+export const SPACE_VAULT_ROOT = '/'
+
+/**
+ * The claim of a space that *is* a vault, or `null` for a plain space - including
+ * one that merely holds vault folders, whose claim is rooted below the space root.
+ */
+export function getSpaceVaultClaim(
+  extensionRegistry: ExtensionRegistry,
+  space: SpaceResource | undefined
+): VaultClaim | null {
+  if (!space) {
+    return null
+  }
+  const claim = getVaultClaim(extensionRegistry, space, SPACE_VAULT_ROOT)
+  return claim?.vaultRoot === SPACE_VAULT_ROOT ? claim : null
+}
+
+/**
  * First registered vault extension that can create vaults, i.e. one that brings
  * the `creation` bits needed to name and lock a fresh vault. Returns null
  * when no extension is registered or none supports creation.

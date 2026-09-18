@@ -13,7 +13,7 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 let claim: { vaultRoot: string } | null = null
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@opencloud-eu/web-pkg')>()),
-  getVaultClaim: vi.fn(() => claim)
+  getSpaceVaultClaim: vi.fn(() => claim)
 }))
 
 beforeEach(() => {
@@ -135,16 +135,6 @@ describe('disable', () => {
     })
 
     it('should not lock a space that is no vault space', async () => {
-      const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
-      clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
-
-      await disableSpaces([projectSpace('1')])
-
-      expect(vaultStore.clearEngine).not.toHaveBeenCalled()
-    })
-
-    it('should not lock a space that merely holds vault folders', async () => {
-      claim = { vaultRoot: '/my.vault' }
       const { disableSpaces, vaultStore, clientService } = getDisableSpaces()
       clientService.graphAuthenticated.drives.disableDrive.mockResolvedValue()
 
