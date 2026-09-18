@@ -13,8 +13,11 @@ import {
   useRoute,
   useRouter,
   useSpacesStore,
-  useUserStore
+  useUserStore,
+  useExtensionRegistry,
+  useVaultStore
 } from '@opencloud-eu/web-pkg'
+import { lockSpaceVault } from './useSpaceActionsVaultLock'
 
 export const useSpaceActionsDisable = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -26,6 +29,8 @@ export const useSpaceActionsDisable = () => {
   const router = useRouter()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
+  const extensionRegistry = useExtensionRegistry()
+  const vaultStore = useVaultStore()
 
   const filterResourcesToDisable = (resources: SpaceResource[]): SpaceResource[] => {
     return resources.filter(
@@ -47,6 +52,8 @@ export const useSpaceActionsDisable = () => {
           space.spaceQuota = { total: space.spaceQuota.total }
         }
         spacesStore.updateSpaceField({ id: space.id, field: 'disabled', value: true })
+        lockSpaceVault({ extensionRegistry, vaultStore, space })
+
         return space.id
       })
     )
