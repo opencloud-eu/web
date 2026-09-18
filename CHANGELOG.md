@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
 - Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
 - fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
