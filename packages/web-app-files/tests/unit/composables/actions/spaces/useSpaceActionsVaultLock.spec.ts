@@ -1,8 +1,5 @@
 import { unref } from 'vue'
-import {
-  useSpaceActionsLockVault,
-  useSpaceActionsUnlockVault
-} from '../../../../../src/composables/actions/spaces/useSpaceActionsVaultLock'
+import { useSpaceActionsLockVault } from '../../../../../src/composables/actions/spaces/useSpaceActionsVaultLock'
 
 const showMessage = vi.fn()
 const push = vi.fn()
@@ -19,17 +16,18 @@ vi.mock('@opencloud-eu/web-pkg', () => ({
   useVaultStore: () => ({ clearEngine, isUnlocked: () => unlocked }),
   useMessages: () => ({ showMessage }),
   useRoute: () => ({ name: routeName }),
-  useRouter: () => ({ currentRoute: { fullPath: '/back' }, push })
+  useRouter: () => ({ push })
 }))
 
 vi.mock('vue3-gettext', () => ({ useGettext: () => ({ $gettext: (s: string) => s }) }))
 
 const vaultSpace = () => ({ id: 'space-1', name: 'Secrets', driveType: 'project' }) as any
+const disabledVaultSpace = () => ({ ...vaultSpace(), disabled: true }) as any
 
 beforeEach(() => {
   vi.clearAllMocks()
   unlocked = false
-  claim = { vaultRoot: '/', unlockRoute: { name: 'unlock', query: { spaceId: 'space-1' } } }
+  claim = { vaultRoot: '/' }
   routeName = 'files-spaces-projects'
 })
 
@@ -65,6 +63,18 @@ describe('lock-vault space action', () => {
     expect(unref(actions)[0].isVisible({ resources: [vaultSpace(), vaultSpace()] })).toBe(false)
   })
 
+  it('is hidden for a disabled space', () => {
+    unlocked = true
+    const { actions } = useSpaceActionsLockVault()
+    expect(unref(actions)[0].isVisible({ resources: [disabledVaultSpace()] })).toBe(false)
+  })
+
+  it('is hidden for an empty selection', () => {
+    unlocked = true
+    const { actions } = useSpaceActionsLockVault()
+    expect(unref(actions)[0].isVisible({ resources: [] })).toBe(false)
+  })
+
   it('clears the engine and notifies, without redirecting from the spaces overview', () => {
     const { actions } = useSpaceActionsLockVault()
     unref(actions)[0].handler({ resources: [vaultSpace()] })
@@ -90,34 +100,5 @@ describe('lock-vault space action', () => {
 
     expect(clearEngine).not.toHaveBeenCalled()
     expect(showMessage).not.toHaveBeenCalled()
-  })
-})
-
-describe('unlock-vault space action', () => {
-  it('is visible for a locked vault space', () => {
-    const { actions } = useSpaceActionsUnlockVault()
-    expect(unref(actions)[0].isVisible({ resources: [vaultSpace()] })).toBe(true)
-  })
-
-  it('is hidden once the vault space is unlocked', () => {
-    unlocked = true
-    const { actions } = useSpaceActionsUnlockVault()
-    expect(unref(actions)[0].isVisible({ resources: [vaultSpace()] })).toBe(false)
-  })
-
-  it('is hidden when the scheme brings no unlock route', () => {
-    claim = { vaultRoot: '/' }
-    const { actions } = useSpaceActionsUnlockVault()
-    expect(unref(actions)[0].isVisible({ resources: [vaultSpace()] })).toBe(false)
-  })
-
-  it('routes to the unlock page and back to where the user is', () => {
-    const { actions } = useSpaceActionsUnlockVault()
-    unref(actions)[0].handler({ resources: [vaultSpace()] })
-
-    expect(push).toHaveBeenCalledWith({
-      name: 'unlock',
-      query: { spaceId: 'space-1', redirectUrl: '/back', cancelUrl: '/back' }
-    })
   })
 })

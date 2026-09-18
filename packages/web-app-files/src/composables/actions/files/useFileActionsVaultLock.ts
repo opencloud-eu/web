@@ -17,11 +17,12 @@ import {
   useRouter
 } from '@opencloud-eu/web-pkg'
 
-// Lock and unlock are scheme-agnostic: a vault counts as unlocked exactly when an
-// engine sits in the vault store, and the per-scheme bits (which resource is a
-// vault root, where the unlock UI lives) come straight from the claim a vault
-// extension reports via `getVaultClaim`. So these actions live with the generic
-// file actions and work for any vault scheme, not just rclone-crypt.
+// Locking is scheme-agnostic: a vault counts as unlocked exactly when an engine
+// sits in the vault store, and which resource is a vault root comes straight
+// from the claim a vault extension reports via `getVaultClaim`. So the action
+// lives with the generic file actions and works for any vault scheme, not just
+// rclone-crypt. There is no counterpart for unlocking: entering a locked vault
+// routes to the scheme's unlock UI on its own (see `setupVaultUnlockGuard`).
 function claimForRoot(
   extensionRegistry: ExtensionRegistry,
   space: SpaceResource | undefined,
@@ -31,8 +32,8 @@ function claimForRoot(
     return null
   }
   const claim = getVaultClaim(extensionRegistry, space, resource.path)
-  // Only the root carries the lock/unlock affordance; content inside a vault
-  // is not a thing you lock on its own.
+  // Only the root carries the lock affordance; content inside a vault is not a
+  // thing you lock on its own.
   return claim && claim.vaultRoot === resource.path ? claim : null
 }
 
@@ -96,58 +97,6 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
         return vaultStore.isUnlocked(space.id, resource.path)
       },
       class: 'oc-files-actions-lock-vault'
-    }
-  ])
-
-  return { actions }
-}
-
-export const useFileActionsUnlockVault = (): { actions: Ref<FileAction[]> } => {
-  const { $gettext } = useGettext()
-  const vaultStore = useVaultStore()
-  const extensionRegistry = useExtensionRegistry()
-  const { getMatchingSpace } = useGetMatchingSpace()
-  const router = useRouter()
-
-  const actions = computed((): FileAction[] => [
-    {
-      name: 'unlock-vault',
-      icon: 'lock-unlock',
-      iconFillType: 'line',
-      label: () => $gettext('Unlock vault'),
-      category: 'tertiary',
-      handler: ({ resources }: FileActionOptions) => {
-        const resource = resources?.[0]
-        const space = getMatchingSpace(resource)
-        const claim = claimForRoot(extensionRegistry, space, resource)
-        if (!claim?.unlockRoute) {
-          return
-        }
-        // Send the user through the scheme's unlock UI but bring them back to
-        // the current (parent) location, not into the vault. That keeps the
-        // surrounding listing in view - the vault entry just flips from locked
-        // to unlocked. Cancelling returns to the same place. The claim already
-        // carries the route + its query (space, vault root); we only add where
-        // to return to.
-        const currentUrl = unref(router.currentRoute).fullPath
-        router.push({
-          ...claim.unlockRoute,
-          query: { ...claim.unlockRoute.query, redirectUrl: currentUrl, cancelUrl: currentUrl }
-        })
-      },
-      isVisible: ({ resources }: FileActionOptions) => {
-        const resource = resources?.[0]
-        if (isSpaceResource(resource)) {
-          return false
-        }
-        const space = getMatchingSpace(resource)
-        const claim = claimForRoot(extensionRegistry, space, resource)
-        if (!claim?.unlockRoute) {
-          return false
-        }
-        return !vaultStore.isUnlocked(space.id, resource.path)
-      },
-      class: 'oc-files-actions-unlock-vault'
     }
   ])
 
