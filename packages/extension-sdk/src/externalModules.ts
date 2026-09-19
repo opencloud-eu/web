@@ -13,5 +13,7 @@ export const externalModules = [
   '@opencloud-eu/web-client/ocs',
   '@opencloud-eu/web-client/ox',
   '@opencloud-eu/web-client/sse',
-  '@opencloud-eu/web-client/webdav'
+  '@opencloud-eu/web-client/webdav',
+  'yjs',
+  'y-protocols/awareness'
 ]

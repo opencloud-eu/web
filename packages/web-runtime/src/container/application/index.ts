@@ -44,7 +44,9 @@ export const sharedModules: Record<string, unknown> = {
 // Lazily loaded shared modules - not bundled in the initial chunks.
 export const lazySharedModules: Record<string, () => Promise<unknown>> = {
   '@opencloud-eu/web-pkg': () => import('@opencloud-eu/web-pkg'),
-  '@opencloud-eu/web-pkg/editor': () => import('@opencloud-eu/web-pkg/editor')
+  '@opencloud-eu/web-pkg/editor': () => import('@opencloud-eu/web-pkg/editor'),
+  yjs: () => import('yjs'),
+  'y-protocols/awareness': () => import('y-protocols/awareness')
 }
 
 /**
