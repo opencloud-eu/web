@@ -4,6 +4,7 @@ import { mock } from 'vitest-mock-extended'
 import {
   decryptResourceInPlace,
   encryptResourcePathsForServer,
+  getSpaceVaultClaim,
   getVaultCreator,
   isVaultSpaceResource,
   markSpaceVaultStatus,
@@ -178,6 +179,49 @@ describe('isVaultSpaceResource', () => {
     expect(
       isVaultSpaceResource({ type: 'space', driveType: 'share', isInVault: true } as SpaceResource)
     ).toBe(false)
+  })
+})
+
+describe('getSpaceVaultClaim', () => {
+  const space = { id: 'space-1', driveType: 'project' } as SpaceResource
+
+  it('returns the claim of a space that is a vault', () => {
+    const claim = { vaultRoot: '/', encryptsNames: true }
+    const registry = mockExtensionRegistry((_space, path) => (path === '/' ? claim : null))
+
+    expect(getSpaceVaultClaim(registry, space)).toBe(claim)
+  })
+
+  it('returns null for a space that is no vault', () => {
+    const registry = mockExtensionRegistry(() => null)
+
+    expect(getSpaceVaultClaim(registry, space)).toBeNull()
+  })
+
+  it('returns null when the claim is rooted below the space root', () => {
+    const registry = mockExtensionRegistry(() => ({ vaultRoot: '/my.vault' }))
+
+    expect(getSpaceVaultClaim(registry, space)).toBeNull()
+  })
+
+  it('returns null for a space that merely holds vault folders', () => {
+    const registry = mockExtensionRegistry((_space, path) =>
+      path.startsWith('/my.vault') ? { vaultRoot: '/my.vault' } : null
+    )
+
+    expect(getSpaceVaultClaim(registry, space)).toBeNull()
+  })
+
+  it('returns null without a space', () => {
+    const registry = mockExtensionRegistry(() => ({ vaultRoot: '/' }))
+
+    expect(getSpaceVaultClaim(registry, undefined)).toBeNull()
+  })
+
+  it('returns null when no vault extension is registered', () => {
+    const registry = { extensions: [] } as unknown as ExtensionRegistry
+
+    expect(getSpaceVaultClaim(registry, space)).toBeNull()
   })
 })
 
