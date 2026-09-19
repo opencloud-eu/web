@@ -1,5 +1,42 @@
 # Changelog
 
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-19
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
+
+### 🐛 Bug Fixes
+
+- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
+- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
+### 📈 Enhancement
+
+- Improve mobile table size picker [[#3393](https://github.com/opencloud-eu/web/pull/3393)]
+- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
+- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
+- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
+- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
+### ✅ Tests
+
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
+
+### 📦️ Dependencies
+
+- Update dependency @vue/test-utils to v2.5.1 [[#3390](https://github.com/opencloud-eu/web/pull/3390)]
+- Update dependency zod to v4.6.5 [[#3343](https://github.com/opencloud-eu/web/pull/3343)]
+- Update Node.js to v24.21.0 [[#3344](https://github.com/opencloud-eu/web/pull/3344)]
+- Update hocuspocus monorepo to v4.7.0 [[#3341](https://github.com/opencloud-eu/web/pull/3341)]
+- Update dependency filesize to v11.0.24 [[#3384](https://github.com/opencloud-eu/web/pull/3384)]
+- Update devDependencies (non-major) [[#3370](https://github.com/opencloud-eu/web/pull/3370)]
+- Update collabora/code Docker tag to v26.04.3.2.1 [[#3083](https://github.com/opencloud-eu/web/pull/3083)]
+
 ## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-09-14
 
 ### ❤️ Thanks to all contributors! ❤️
