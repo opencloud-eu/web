@@ -13,7 +13,11 @@ export type IconType = {
   uniqueIds?: boolean
 }
 
-export type ResourceIconMapping = Record<'mimeType' | 'extension', Record<string, IconType>>
+export type ResourceIconMapping = {
+  mimeType: Record<string, IconType>
+  extension: Record<string, IconType>
+  folderExtension?: Record<string, IconType>
+}
 export const resourceIconMappingInjectionKey = 'oc-resource-icon-mapping'
 
 const fileIcon = {
