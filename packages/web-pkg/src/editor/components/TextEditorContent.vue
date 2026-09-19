@@ -37,29 +37,12 @@
     <TextEditorTableBubbleMenu v-show="!isSourceMode" />
     <TextEditorLinkBubbleMenu v-show="!isSourceMode" />
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
-    <div v-if="isSourceMode" class="flex size-full justify-center">
-      <textarea
-        ref="sourceModeTextarea"
-        :value="sourceContent"
-        class="w-full max-w-[800px] p-[1rem] resize-none border-0 focus:outline-none"
-        @input="onSourceInput"
-      />
-    </div>
+    <TextEditorSourceView v-if="isSourceMode" :editor="textEditor" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  inject,
-  nextTick,
-  onMounted,
-  onUnmounted,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref, unref, watch } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
@@ -67,6 +50,7 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
+import TextEditorSourceView from './TextEditorSourceView.vue'
 import type { TextEditorInstance } from '../types'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useThemeStore } from '../../composables'
@@ -83,8 +67,6 @@ const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
 
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
-const sourceContent = ref('')
-const sourceModeTextareaRef = useTemplateRef<HTMLTextAreaElement>('sourceModeTextarea')
 const currentDragHandleNodePos = ref<number | null>(null)
 const isFrontmatterNode = ref(false)
 const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
@@ -112,19 +94,6 @@ const hasSlashCommands = computed(() => {
   }
   return editor.extensionManager.extensions.some((ext) => ext.name === 'slashCommands')
 })
-
-const onSourceInput = (event: Event) => {
-  const value = (event.target as HTMLTextAreaElement).value
-  sourceContent.value = value
-
-  const contentType = unref(textEditor.contentType)
-
-  if (contentType === 'html' || contentType === 'markdown') {
-    textEditor.editor.value?.commands.setContent(value, { contentType, emitUpdate: true })
-  } else {
-    textEditor.editor.value?.commands.setContent(value, { emitUpdate: true })
-  }
-}
 
 const onDragHandleNodeChange = ({ node, pos }: { node: ProseMirrorNode | null; pos: number }) => {
   currentDragHandleNodePos.value = pos
@@ -197,17 +166,6 @@ onMounted(() => {
 onUnmounted(() => {
   hljsThemeStyleElement.value?.remove()
   hljsThemeStyleElement.value = null
-})
-
-watch(isSourceMode, async () => {
-  if (unref(isSourceMode)) {
-    sourceContent.value = textEditor.getContent()
-    await nextTick()
-    sourceModeTextareaRef.value?.focus()
-    sourceModeTextareaRef.value?.setSelectionRange(0, 0)
-    sourceModeTextareaRef.value?.scrollTo(0, 0)
-    return
-  }
 })
 </script>
 
