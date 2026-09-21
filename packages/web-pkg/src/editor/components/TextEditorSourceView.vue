@@ -6,7 +6,7 @@
       :readonly="isSourceReadonly"
       :aria-label="isSourceReadonly ? $gettext('Source view, read-only') : $gettext('Source view')"
       class="w-full max-w-[800px] p-[1rem] resize-none border-0 focus:outline-none"
-      :class="{ 'cursor-not-allowed': isSourceReadonly }"
+      :class="{ 'cursor-text': isSourceReadonly }"
       @input="onSourceInput"
     />
   </div>
