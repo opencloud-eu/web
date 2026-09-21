@@ -25,7 +25,15 @@ exports[`account information page > account information section > displays basic
             <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #9C27B0; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name="some-displayname"><span class="avatar-initials" style="color: white;">SD</span></span>
               <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
                   <!--v-if-->
-                  <!-- @slot Content of the button --> Upload
+                  <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/upload-cloud-line.svg" unique-ids="false" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> Upload
                 </button>
                 <!--v-if-->
               </div>
@@ -111,7 +119,15 @@ exports[`account information page > public link context > should render a limite
               <div class="flex flex-col items-center"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none mb-4" style="width: 128px; height: 128px; line-height: 128px; background-color: #b82015; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name=""><span class="avatar-initials" style="color: white;"></span></span>
                 <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
                     <!--v-if-->
-                    <!-- @slot Content of the button --> Upload
+                    <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/upload-cloud-line.svg" unique-ids="false" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> Upload
                   </button>
                   <!--v-if-->
                 </div>

@@ -154,7 +154,6 @@
 </template>
 
 <script setup lang="ts">
-import { debounce } from 'lodash-es'
 import PQueue from 'p-queue'
 import { storeToRefs } from 'pinia'
 import AutocompleteItem from './AutocompleteItem.vue'
@@ -166,11 +165,9 @@ import {
   CollaboratorShare,
   ShareRole,
   ShareTypes,
-  call,
   isSpaceResource
 } from '@opencloud-eu/web-client'
 import {
-  useCapabilityStore,
   useClientService,
   useMessages,
   useSpacesStore,
@@ -178,15 +175,17 @@ import {
   useSharesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
+import {
+  useCollaboratorAutocomplete,
+  useCollaboratorSearch
+} from '../../../../../composables/shares'
 
 import { computed, inject, ref, unref, watch, onMounted, nextTick, Ref, useTemplateRef } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { DateTime } from 'luxon'
 import { OcDrop } from '@opencloud-eu/design-system/components'
-import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
-import { Group } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
@@ -216,7 +215,6 @@ const clientService = useClientService()
 const { showMessage, showErrorMessage } = useMessages()
 const spacesStore = useSpacesStore()
 const { upsertSpace } = spacesStore
-const capabilityStore = useCapabilityStore()
 const configStore = useConfigStore()
 const userStore = useUserStore()
 
@@ -224,14 +222,11 @@ const sharesStore = useSharesStore()
 const { addShare } = sharesStore
 const { collaboratorShares } = storeToRefs(sharesStore)
 
+const { searchCollaborators } = useCollaboratorSearch()
 const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
 const { inviteContact } = useInviteContactViaEmail()
 
 const showMoreShareOptionsDropRef = useTemplateRef<typeof OcDrop>('showMoreShareOptionsDropRef')
-
-const searchQuery = ref('')
-const searchInProgress = ref(false)
-const autocompleteResults = ref<CollaboratorAutoCompleteItem[]>([])
 
 const saving = ref(false)
 const savingDelayed = ref(false)
@@ -309,67 +304,41 @@ const createSharesConcurrentRequests = computed(() => {
   return configStore.options.concurrentRequests.shares.create
 })
 
-const fetchRecipientsTask = useTask(function* (signal, query: string) {
-  let filter: string
-  if (unref(isExternalShareRoleType)) {
-    // filter for external user types only
-    filter = `(userType eq 'Federated')`
-  }
-
-  const client = clientService.graphAuthenticated
-  const userData = yield* call(
-    client.users.listUsers({ orderBy: ['displayName'], search: `"${query}"`, filter }, { signal })
-  )
-
-  let groupData: Group[]
-  if (!unref(isExternalShareRoleType)) {
-    // groups are only available for internal shares
-    groupData = yield* call(
-      client.groups.listGroups({ orderBy: ['displayName'], search: `"${query}"` }, { signal })
-    )
-  }
-
-  const users = (userData || []).map((u) => ({
-    ...u,
-    shareType: unref(isExternalShareRoleType) ? ShareTypes.remote.value : ShareTypes.user.value
-  })) as CollaboratorAutoCompleteItem[]
-
-  const groups = (groupData || []).map((u) => ({
-    ...u,
-    shareType: ShareTypes.group.value
-  })) as CollaboratorAutoCompleteItem[]
+const {
+  autocompleteResults,
+  fetchRecipients,
+  filterRecipients,
+  minSearchLength,
+  onSearch,
+  searchInProgress,
+  searchQuery
+} = useCollaboratorAutocomplete(async (query, signal) => {
+  const collaborators = await searchCollaborators(query, {
+    signal,
+    external: unref(isExternalShareRoleType)
+  })
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const guests = isSpace
-    ? []
-    : ((yield* call(searchOpenXchangeContacts(query, signal))) as CollaboratorAutoCompleteItem[])
+  const guests = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
 
-  autocompleteResults.value = [...users, ...groups, ...guests].filter(
-    (collaborator: CollaboratorAutoCompleteItem) => {
-      if (collaborator.id === userStore.user.id) {
-        // filter current user
-        return false
-      }
-
-      const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-      const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-      const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
-
-      if (selected || exists) {
-        return false
-      }
-
-      announcement.value = $gettext('Person was added')
-
-      return true
+  return [...collaborators, ...guests].filter((collaborator: CollaboratorAutoCompleteItem) => {
+    if (collaborator.id === userStore.user.id) {
+      return false
     }
-  )
-  searchInProgress.value = false
-}).restartable()
 
-const fetchRecipients = debounce((query: string) => {
-  fetchRecipientsTask.perform(query)
-}, 500)
+    const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
+    const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
+    const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
+
+    if (selected || exists) {
+      return false
+    }
+
+    announcement.value = $gettext('Person was added')
+
+    return true
+  })
+})
 
 const share = async () => {
   saving.value = true
@@ -518,38 +487,6 @@ const isValid = computed(() => {
 const selectedCollaboratorsPlaceholder = computed(() => {
   return inviteLabel || $gettext('Search')
 })
-const minSearchLength = computed(() => capabilityStore.sharingSearchMinLength)
-
-const onSearch = (query: string) => {
-  autocompleteResults.value = []
-  searchQuery.value = query
-
-  if (query.length < unref(minSearchLength)) {
-    searchInProgress.value = false
-
-    return
-  }
-
-  searchInProgress.value = true
-  fetchRecipients(query)
-}
-
-const filterRecipients = (recipients: CollaboratorAutoCompleteItem[], query: string) => {
-  if (!(query || '').trim()) {
-    return recipients
-  }
-
-  // Allow advanced queries
-  query = query.split(':')[1] || query
-
-  return recipients.filter(
-    (recipient) =>
-      recipient.shareType === ShareTypes.remote.value ||
-      recipient.displayName.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1 ||
-      recipient.mail?.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) > -1
-  )
-}
-
 const collaboratorRoleChanged = (role: ShareRole) => {
   selectedRole.value = role
 }

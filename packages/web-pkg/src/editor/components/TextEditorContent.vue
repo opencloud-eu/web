@@ -1,10 +1,12 @@
 <template>
   <div
     v-if="textEditor.editor.value"
+    ref="contentRef"
     class="text-editor-content h-full"
     :style="{
       '--text-editor-zoom-factor': zoomFactor
     }"
+    @mousemove="scrolledAway = false"
   >
     <DragHandle
       v-show="!isSourceMode"
@@ -13,6 +15,7 @@
     >
       <div
         v-show="isDraggable"
+        ref="controlsRef"
         class="drag-handle-controls flex items-center gap-1 mr-1 mt-[0.125rem]"
       >
         <oc-button
@@ -42,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onMounted, onUnmounted, ref, unref, watch } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref, unref, useTemplateRef, watch } from 'vue'
 import { EditorContent } from '@tiptap/vue-3'
 import { DragHandle } from '@tiptap/extension-drag-handle-vue-3'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
@@ -69,6 +72,9 @@ const { currentTheme } = storeToRefs(themeStore)
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!
 const currentDragHandleNodePos = ref<number | null>(null)
 const isFrontmatterNode = ref(false)
+const scrolledAway = ref(false)
+const contentRef = useTemplateRef<HTMLElement>('contentRef')
+const controlsRef = useTemplateRef<HTMLElement>('controlsRef')
 const isDarkTheme = computed(() => unref(currentTheme)?.isDark)
 const hljsThemeStyleElement = ref<HTMLLinkElement | null>(null)
 
@@ -81,7 +87,7 @@ const isDraggable = computed(() => {
     return false
   }
 
-  return true
+  return !unref(scrolledAway)
 })
 const zoomFactor = computed(() => {
   return `${(unref(textEditor.state.editorZoom) || 100) / 100}`
@@ -150,10 +156,35 @@ function applyHljsThemeCss() {
 
 watch(isDarkTheme, applyHljsThemeCss)
 
+/**
+ * The handle keeps the position it was given for the hovered node and never
+ * follows a scroll. Scrolling the editor itself is harmless - the handle stays
+ * over the text and the next pointer move corrects it - but a scroll further up
+ * moves the editor out from under it, leaving it floating over whatever sits
+ * around the editor. Only that case hides it.
+ */
+function onAnyScroll() {
+  if (unref(scrolledAway)) {
+    return
+  }
+
+  const content = unref(contentRef)
+  const controls = unref(controlsRef)
+  if (!content || !controls) {
+    return
+  }
+
+  const bounds = content.getBoundingClientRect()
+  const handle = controls.getBoundingClientRect()
+  scrolledAway.value = handle.bottom < bounds.top || handle.top > bounds.bottom
+}
+
 onMounted(() => {
   if (typeof document === 'undefined') {
     return
   }
+
+  document.addEventListener('scroll', onAnyScroll, true)
 
   const styleElement = document.createElement('link')
   styleElement.rel = 'stylesheet'
@@ -164,6 +195,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  document.removeEventListener('scroll', onAnyScroll, true)
   hljsThemeStyleElement.value?.remove()
   hljsThemeStyleElement.value = null
 })

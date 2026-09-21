@@ -1,15 +1,50 @@
 <template>
   <form autocomplete="off" @submit.prevent="onPrimaryAction">
     <template v-if="step === 'name'">
-      <oc-text-input
-        id="create-space-input"
-        v-model="spaceName"
-        :label="$gettext('Space name')"
-        required-mark
-        :error-message="errorMessage"
-        :fix-message-line="true"
-      />
-      <div v-if="canEncrypt" data-testid="create-space-encrypt">
+      <div v-if="!showOptions" class="flex justify-end mb-1">
+        <oc-button
+          class="create-space-options-toggle"
+          gap-size="xsmall"
+          appearance="raw"
+          no-hover
+          @click="showOptions = true"
+        >
+          <oc-icon name="settings-3" size-class="size-4" fill-type="fill" />
+          <span v-text="$gettext('Options')" />
+        </oc-button>
+      </div>
+      <div class="mb-2 flex flex-row items-center gap-3">
+        <!-- Doubles as the preview for the picked image, so the options don't
+             need one of their own. A space image is 16:9, like the crop it
+             comes from. An encrypted space gets no image. -->
+        <div
+          v-if="showOptions"
+          class="w-28 aspect-video shrink-0 flex items-center justify-center overflow-hidden rounded bg-role-surface-container-highest"
+        >
+          <oc-image
+            v-if="imageUrl && !encrypt"
+            :src="imageUrl"
+            :alt="$gettext('Selected space image')"
+            class="w-full h-full object-cover"
+          />
+          <resource-icon
+            v-else
+            :resource="{ type: 'space', driveType: 'project', isInVault: encrypt } as SpaceResource"
+            size-class="size-10"
+            class="rounded-sm"
+          />
+        </div>
+        <oc-text-input
+          id="create-space-input"
+          v-model="spaceName"
+          class="min-w-0 grow"
+          :label="$gettext('Space name')"
+          required-mark
+          :error-message="errorMessage"
+          :fix-message-line="true"
+        />
+      </div>
+      <div v-if="vaultCreation" data-testid="create-space-encrypt">
         <oc-switch
           v-model:checked="encrypt"
           :label="$gettext('End-to-end encrypt this space')"
@@ -30,6 +65,16 @@
           "
         />
       </div>
+      <create-space-options
+        v-if="showOptions"
+        v-model:quota="quota"
+        v-model:subtitle="subtitle"
+        v-model:description="description"
+        v-model:image="image"
+        v-model:members="members"
+        v-model:member-role-id="memberRoleId"
+        :encrypted="encrypt"
+      />
     </template>
     <component
       :is="vaultCreation!.setupComponent"
@@ -40,7 +85,8 @@
       @update:valid="setupValid = $event"
     />
 
-    <div class="flex justify-end items-center mt-4">
+    <!-- The modal body scrolls, so the actions are pinned to its bottom edge. -->
+    <div class="sticky bottom-0 -mx-4 flex justify-end items-center bg-role-surface px-4 pt-4">
       <div class="oc-modal-body-actions-grid">
         <oc-button
           v-if="step === 'setup'"
@@ -64,15 +110,23 @@
 
 <script setup lang="ts">
 import { computed, ref, unref, watch } from 'vue'
+import { useObjectUrl } from '@vueuse/core'
 import { useGettext } from 'vue3-gettext'
+import { isProjectSpaceResource, type SpaceResource } from '@opencloud-eu/web-client'
 import {
   getVaultCreator,
+  ResourceIcon,
+  resolveFileNameDuplicate,
   useCreateSpace,
   useExtensionRegistry,
   useIsResourceNameValid,
+  useModals,
+  useSpacesStore,
   type Modal,
+  type SpaceMemberInvite,
   type VaultFinalize
 } from '@opencloud-eu/web-pkg'
+import CreateSpaceOptions from './CreateSpace/CreateSpaceOptions.vue'
 
 const { modal } = defineProps<{
   modal: Modal
@@ -84,6 +138,7 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const { isSpaceNameValid } = useIsResourceNameValid()
+const { updateModal } = useModals()
 const { addNewSpace } = useCreateSpace()
 const extensionRegistry = useExtensionRegistry()
 
@@ -93,9 +148,26 @@ const setupComponent = ref<{ finalize: VaultFinalize }>()
 const step = ref<'name' | 'setup'>('name')
 const encrypt = ref(false)
 const setupValid = ref(false)
-const spaceName = ref($gettext('New space'))
+// Spaces may share a name, so counting up is a suggestion, not a constraint.
+const suggestedName = $gettext('New space')
+const projectSpaces = useSpacesStore().spaces.filter(isProjectSpaceResource)
+const spaceName = ref(
+  projectSpaces.some(({ name }) => name === suggestedName)
+    ? resolveFileNameDuplicate(suggestedName, '', projectSpaces)
+    : suggestedName
+)
 
-const canEncrypt = computed(() => !!unref(vaultCreation))
+const showOptions = ref(false)
+const quota = ref(0)
+const subtitle = ref('')
+const description = ref('')
+const image = ref<ArrayBuffer>(null)
+const imageUrl = useObjectUrl(
+  computed(() => (unref(image) ? new Blob([unref(image)], { type: 'image/png' }) : null))
+)
+const members = ref<SpaceMemberInvite[]>([])
+const memberRoleId = ref('')
+
 const errorMessage = computed(() => isSpaceNameValid(unref(spaceName)).error)
 const inputValid = computed(() =>
   unref(step) === 'setup' ? unref(setupValid) : !unref(errorMessage)
@@ -108,6 +180,15 @@ watch(step, (value) => {
   if (value === 'name') {
     setupValid.value = false
   }
+})
+
+// Only the options need the extra room.
+watch([step, showOptions], ([currentStep, optionsShown]) => {
+  updateModal(
+    modal.id,
+    'elementClass',
+    currentStep === 'name' && optionsShown ? '!max-w-4xl' : undefined
+  )
 })
 
 function onPrimaryAction() {
@@ -130,9 +211,16 @@ async function onConfirm() {
   if (!unref(inputValid) || (unref(encrypt) && unref(step) === 'name')) {
     return Promise.reject()
   }
+  // A vault space is encrypted all the way down, so it gets neither a readme
+  // nor an image - both would end up as plain text next to the encrypted files.
   await addNewSpace(unref(spaceName), {
     encrypt: unref(encrypt),
-    finalizeVault: unref(setupComponent)?.finalize
+    finalizeVault: unref(setupComponent)?.finalize,
+    quota: unref(quota) || undefined,
+    subtitle: unref(subtitle) || undefined,
+    description: (!unref(encrypt) && unref(description)) || undefined,
+    image: (!unref(encrypt) && unref(image)) || undefined,
+    members: unref(members)
   })
 }
 

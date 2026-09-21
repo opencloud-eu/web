@@ -153,6 +153,34 @@ describe('OcDrop', () => {
     })
   })
 
+  it('hands focus back to the toggle when the drop closes', async () => {
+    document.body.innerHTML = ''
+    const wrapper = mount(
+      {
+        template:
+          '<div><button id="trigger">trigger</button><oc-drop toggle="#trigger" mode="click" close-on-click><button id="item">item</button></oc-drop></div>',
+        components: { 'oc-drop': Drop }
+      },
+      {
+        global: { plugins: defaultPlugins(), stubs: { OcMobileDrop: true } },
+        attachTo: document.body
+      }
+    )
+
+    const trigger = document.querySelector<HTMLElement>('#trigger')
+    trigger.click()
+    await flushPromises()
+
+    const item = document.querySelector<HTMLElement>('#item')
+    item.focus()
+    item.click()
+    await flushPromises()
+
+    expect(document.activeElement).toBe(trigger)
+
+    wrapper.unmount()
+  })
+
   describe('Component "OcMobileDrop"', () => {
     it('renders on mobile device', async () => {
       vi.mocked(useIsMobile).mockImplementation(() => ({
