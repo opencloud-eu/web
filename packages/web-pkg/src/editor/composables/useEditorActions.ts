@@ -108,7 +108,9 @@ export function useEditorActions(state: TextEditorState) {
   // View options
   const toggleSourceMode = (): EditorAction => ({
     id: 'source-mode',
-    title: $gettext('Show source'),
+    title: unref(state.sourceModeReadonly)
+      ? $gettext('Show source (read-only)')
+      : $gettext('Show source'),
     icon: 'code-s-slash',
     iconFillType: 'line',
     toolbarAction: () => (state.sourceMode.value = !state.sourceMode.value),

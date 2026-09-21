@@ -399,21 +399,54 @@ describe('useTextEditor', () => {
       expect(ids).not.toContain('image-url')
     })
 
-    it('removes the source mode action when a Yjs session is active', () => {
+    it('keeps the source mode action when a Yjs session is active', () => {
       createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/yjs' } } })
-      const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
-      expect(collectIds(result.actionGroups())).not.toContain('source-mode')
-    })
-
-    it('keeps the source mode action without a Yjs server', () => {
       const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
       expect(collectIds(result.actionGroups())).toContain('source-mode')
     })
+  })
 
-    it('keeps the source mode action for non-collaborative editors', () => {
+  describe('sourceModeReadonly', () => {
+    const findSourceModeAction = (groups: { actions: { id: string; title: string }[] }[]) =>
+      groups.flatMap((group) => group.actions).find(({ id }) => id === 'source-mode')
+
+    it('is true when a Yjs session is active', () => {
+      createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/yjs' } } })
+      const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
+      expect(result.state.sourceModeReadonly.value).toBe(true)
+    })
+
+    it('is false without a Yjs server', () => {
+      const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
+      expect(result.state.sourceModeReadonly.value).toBe(false)
+    })
+
+    it('is false for non-collaborative editors', () => {
       createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/yjs' } } })
       const { result } = createEditor({ contentType: 'markdown' })
-      expect(collectIds(result.actionGroups())).toContain('source-mode')
+      expect(result.state.sourceModeReadonly.value).toBe(false)
+    })
+
+    it('titles the source mode action as read-only while a Yjs session is active', () => {
+      createMockStore({ configState: { options: { yjsServerUrl: 'wss://example.test/yjs' } } })
+      const { result } = createEditor({ contentType: 'markdown', ydoc: new Y.Doc() })
+      const action = findSourceModeAction(result.actionGroups())
+      expect(action?.title).toBe('Show source (read-only)')
+    })
+
+    it('titles the source mode action plainly for an editable editor', () => {
+      const { result } = createEditor({ contentType: 'markdown' })
+      const action = findSourceModeAction(result.actionGroups())
+      expect(action?.title).toBe('Show source')
+    })
+
+    it('follows the readonly option', () => {
+      const readonly = ref(false)
+      const { result } = createEditor({ contentType: 'markdown', readonly })
+      expect(result.state.sourceModeReadonly.value).toBe(false)
+
+      readonly.value = true
+      expect(result.state.sourceModeReadonly.value).toBe(true)
     })
   })
 

@@ -77,6 +77,13 @@ export interface TextEditorLinkPanelRequest {
 
 export interface TextEditorState {
   sourceMode: Ref<boolean>
+  /**
+   * Whether the source view may only be read. True for a read-only editor and
+   * while a Yjs session is active: the source textarea replaces the
+   * ProseMirror view, so its edits would never reach the shared document.
+   * Absent means editable.
+   */
+  sourceModeReadonly?: Ref<boolean>
   linkPanel: Ref<TextEditorLinkPanelRequest | null>
   editorZoom: Ref<number>
   currentResource?: Ref<Resource | null>
@@ -88,6 +95,12 @@ export interface TextEditorInstance {
   contentType: Ref<ContentType>
   /** Derived from the caller's `readonly` option; follows it while mounted. */
   readonly: Ref<boolean>
+  /**
+   * Whether a Yjs session backs this editor, i.e. it was handed a Y.Doc and a
+   * Yjs server is configured. The document can then change without local
+   * edits, so views that mirror it have to follow along.
+   */
+  yjsActive: Ref<boolean>
   /** Current transport status of the hosting Yjs session, if any. */
   yjsStatus: Ref<YjsStatus | null>
   /** Users in the Yjs room, own user first. Empty without an awareness. */
