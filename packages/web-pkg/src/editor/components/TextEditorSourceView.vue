@@ -15,6 +15,7 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { debounce } from 'lodash-es'
 import type { TextEditorInstance } from '../types'
 
 const { editor = undefined } = defineProps<{
@@ -29,9 +30,9 @@ const sourceContent = ref(textEditor.getContent())
 
 const isSourceReadonly = computed(() => unref(textEditor.state.sourceModeReadonly) ?? false)
 
-function syncSourceContent() {
+const syncSourceContent = debounce(function () {
   sourceContent.value = textEditor.getContent()
-}
+}, 250)
 
 function onSourceInput(event: Event) {
   if (unref(isSourceReadonly)) {
@@ -65,5 +66,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   unref(textEditor.editor)?.off('update', syncSourceContent)
+  syncSourceContent.cancel()
 })
 </script>

@@ -54,6 +54,10 @@ function mountSourceView({
 }
 
 describe('TextEditorSourceView', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('shows the raw markdown and writes edits back to the editor', async () => {
     const { wrapper, setContent } = mountSourceView()
 
@@ -100,12 +104,14 @@ describe('TextEditorSourceView', () => {
   })
 
   it('follows document updates while a Yjs session is active', async () => {
+    vi.useFakeTimers()
     const { wrapper, emitEditorUpdate } = mountSourceView({
       yjsActive: true,
       sourceModeReadonly: true
     })
 
     emitEditorUpdate('# Written by a peer')
+    vi.advanceTimersByTime(250)
     await nextTick()
 
     expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe(
@@ -113,25 +119,59 @@ describe('TextEditorSourceView', () => {
     )
   })
 
+  // A remote peer typing emits an `update` per keystroke, so the textarea is
+  // only rewritten once the burst has settled.
+  it('coalesces a burst of document updates into a single read', async () => {
+    vi.useFakeTimers()
+    const { wrapper, textEditor, emitEditorUpdate } = mountSourceView({
+      yjsActive: true,
+      sourceModeReadonly: true
+    })
+    const readsSoFar = vi.mocked(textEditor.getContent).mock.calls.length
+
+    emitEditorUpdate('# W')
+    vi.advanceTimersByTime(100)
+    emitEditorUpdate('# Wr')
+    vi.advanceTimersByTime(100)
+    emitEditorUpdate('# Written by a peer')
+
+    await nextTick()
+    expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe('# Initial')
+
+    vi.advanceTimersByTime(250)
+    await nextTick()
+
+    expect(vi.mocked(textEditor.getContent).mock.calls.length).toBe(readsSoFar + 1)
+    expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe(
+      '# Written by a peer'
+    )
+  })
+
   it('does not follow document updates without a Yjs session', async () => {
+    vi.useFakeTimers()
     const { wrapper, emitEditorUpdate } = mountSourceView()
 
     emitEditorUpdate('# Written elsewhere')
+    vi.advanceTimersByTime(250)
     await nextTick()
 
     expect((wrapper.find('textarea').element as HTMLTextAreaElement).value).toBe('# Initial')
   })
 
   it('stops following document updates once it unmounts', () => {
+    vi.useFakeTimers()
     const { wrapper, textEditor, emitEditorUpdate } = mountSourceView({
       yjsActive: true,
       sourceModeReadonly: true
     })
 
+    // Queued right before unmounting, so a pending debounce must not fire either.
+    emitEditorUpdate('# Written by a peer')
     wrapper.unmount()
 
     const readsSoFar = vi.mocked(textEditor.getContent).mock.calls.length
-    emitEditorUpdate('# Written by a peer')
+    emitEditorUpdate('# Written by another peer')
+    vi.advanceTimersByTime(250)
     expect(vi.mocked(textEditor.getContent).mock.calls.length).toBe(readsSoFar)
   })
 })
