@@ -1,8 +1,5 @@
 import { unref } from 'vue'
-import {
-  lockSpaceVault,
-  useSpaceActionsLockVault
-} from '../../../../../src/composables/actions/spaces/useSpaceActionsVaultLock'
+import { useSpaceActionsLockVault } from '../../../../../src/composables/actions/spaces/useSpaceActionsVaultLock'
 
 const showMessage = vi.fn()
 const push = vi.fn()
@@ -14,7 +11,8 @@ let claim: any = null
 let routeName = 'files-spaces-projects'
 
 vi.mock('@opencloud-eu/web-pkg', () => ({
-  getVaultClaim: vi.fn(() => claim),
+  getSpaceVaultClaim: vi.fn((_registry: unknown, space: unknown) => (space ? claim : null)),
+  SPACE_VAULT_ROOT: '/',
   useExtensionRegistry: () => ({}),
   useVaultStore: () => ({ clearEngine, isUnlocked: () => unlocked }),
   useMessages: () => ({ showMessage }),
@@ -49,13 +47,6 @@ describe('lock-vault space action', () => {
   it('is hidden for a space that is no vault', () => {
     unlocked = true
     claim = null
-    const { actions } = useSpaceActionsLockVault()
-    expect(unref(actions)[0].isVisible({ resources: [vaultSpace()] })).toBe(false)
-  })
-
-  it('is hidden for a space that merely holds vault folders', () => {
-    unlocked = true
-    claim = { vaultRoot: '/my.vault' }
     const { actions } = useSpaceActionsLockVault()
     expect(unref(actions)[0].isVisible({ resources: [vaultSpace()] })).toBe(false)
   })
@@ -120,32 +111,5 @@ describe('lock-vault space action', () => {
 
     expect(clearEngine).not.toHaveBeenCalled()
     expect(showMessage).not.toHaveBeenCalled()
-  })
-})
-
-describe('lockSpaceVault', () => {
-  const vaultStore = { clearEngine } as any
-  const extensionRegistry = {} as any
-
-  it('clears the engine of a vault space', () => {
-    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: vaultSpace() })).toBe(true)
-    expect(clearEngine).toHaveBeenCalledWith('space-1', '/')
-  })
-
-  it('does nothing for a space that is no vault', () => {
-    claim = null
-    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: vaultSpace() })).toBe(false)
-    expect(clearEngine).not.toHaveBeenCalled()
-  })
-
-  it('does nothing for a space that merely holds vault folders', () => {
-    claim = { vaultRoot: '/my.vault' }
-    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: vaultSpace() })).toBe(false)
-    expect(clearEngine).not.toHaveBeenCalled()
-  })
-
-  it('does nothing without a space', () => {
-    expect(lockSpaceVault({ extensionRegistry, vaultStore, space: undefined })).toBe(false)
-    expect(clearEngine).not.toHaveBeenCalled()
   })
 })

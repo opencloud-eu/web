@@ -15,9 +15,10 @@ import {
   useSpacesStore,
   useUserStore,
   useExtensionRegistry,
-  useVaultStore
+  useVaultStore,
+  getSpaceVaultClaim,
+  SPACE_VAULT_ROOT
 } from '@opencloud-eu/web-pkg'
-import { lockSpaceVault } from './useSpaceActionsVaultLock'
 
 export const useSpaceActionsDisable = () => {
   const { showMessage, showErrorMessage } = useMessages()
@@ -52,7 +53,9 @@ export const useSpaceActionsDisable = () => {
           space.spaceQuota = { total: space.spaceQuota.total }
         }
         spacesStore.updateSpaceField({ id: space.id, field: 'disabled', value: true })
-        lockSpaceVault({ extensionRegistry, vaultStore, space })
+        if (getSpaceVaultClaim(extensionRegistry, space)) {
+          vaultStore.clearEngine(space.id, SPACE_VAULT_ROOT)
+        }
 
         return space.id
       })
