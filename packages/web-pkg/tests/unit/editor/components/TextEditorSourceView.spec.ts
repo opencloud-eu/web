@@ -97,7 +97,7 @@ describe('TextEditorSourceView', () => {
 
     const textarea = wrapper.find('textarea')
     expect(textarea.attributes('readonly')).toBeDefined()
-    expect(textarea.classes()).toContain('cursor-not-allowed')
+    expect(textarea.classes()).toContain('cursor-text')
 
     await textarea.setValue('# Edited')
     expect(setContent).not.toHaveBeenCalled()
