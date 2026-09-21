@@ -24,7 +24,13 @@ export const useLayout = (options?: LayoutOptions) => {
    */
   const layoutType = computed<'bare' | 'plain' | 'application'>(() => {
     const bareLayoutRoutes = ['login', 'oidcCallback']
-    const plainLayoutRoutes = ['logout', 'resolvePublicLink', 'accessDenied']
+    const plainLayoutRoutes = [
+      'logout',
+      'resolvePublicLink',
+      'resolveGuestLink',
+      'guestSessionExpired',
+      'accessDenied'
+    ]
 
     const routeName = unref(router.currentRoute).name as string
     if (!routeName || bareLayoutRoutes.includes(routeName)) {
