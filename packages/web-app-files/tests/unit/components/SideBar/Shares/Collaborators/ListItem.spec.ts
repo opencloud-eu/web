@@ -193,6 +193,14 @@ describe('Collaborator ListItem component', () => {
       expect(roleDropDown.props('isExternal')).toBeTruthy()
       expect(wrapper.find(selectors.externalContextHelper).exists()).toBeTruthy()
     })
+    it('does not identify guest shares as external', () => {
+      const share = getShareMock({ shareType: ShareTypes.guest.value })
+      const { wrapper } = createWrapper({ share })
+      const roleDropDown = wrapper.findComponent<typeof RoleDropdown>('role-dropdown-stub')
+
+      expect(roleDropDown.props('isExternal')).toBeFalsy()
+      expect(wrapper.find(selectors.externalContextHelper).exists()).toBeFalsy()
+    })
   })
 })
 

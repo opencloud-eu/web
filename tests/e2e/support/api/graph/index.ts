@@ -7,6 +7,7 @@ export {
   addUserToGroup,
   assignRole,
   getUserId,
+  getUserIdByMail,
   getGroups,
   uploadProfileImage
 } from './userManagement'
