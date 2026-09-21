@@ -148,10 +148,7 @@ export const sortHelper = <T extends SortableItem>(
     const files = [...items.filter((i) => !isFolder(i))].sort((a, b) =>
       compare(a, b, collator, sortBy, sortDir, sortable)
     )
-    if (sortDir === SortDir.Asc) {
-      return folders.concat(files)
-    }
-    return files.concat(folders)
+    return folders.concat(files)
   }
   return [...items].sort((a, b) =>
     compare(a, b, collator, field.prop || field.name, sortDir, sortable)

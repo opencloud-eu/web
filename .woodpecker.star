@@ -7,7 +7,7 @@ ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:4.1.0-SNAPSHOT"
 
 # renovate: datasource=docker depName=collabora/code
-COLLABORA_CODE = "collabora/code:26.04.3.2.1"
+COLLABORA_CODE = "collabora/code:26.04.4.1.1"
 
 # renovate: datasource=docker depName=quay.io/keycloak/keycloak
 KEYCLOAK = "quay.io/keycloak/keycloak:26.7.3"
