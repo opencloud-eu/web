@@ -134,6 +134,14 @@ describe('useSort', () => {
 
         sortDir.value = SortDir.Desc
         expect(unref(items).map((i) => i.name)).toMatchObject([
+          'New folder (1)',
+          'New folder',
+          'dir11',
+          'Dir4',
+          'dir3',
+          'dir2',
+          'Dir1',
+          'dir.with.dot',
           'New file (10).txt',
           'New file (2).txt',
           'New file (1).txt',
@@ -157,15 +165,7 @@ describe('useSort', () => {
           'a.b.txt',
           'a.a.txt',
           'a.png',
-          'A.png',
-          'New folder (1)',
-          'New folder',
-          'dir11',
-          'Dir4',
-          'dir3',
-          'dir2',
-          'Dir1',
-          'dir.with.dot'
+          'A.png'
         ])
       })
     })
