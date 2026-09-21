@@ -53,7 +53,7 @@ export interface IAccessDetails {
   'Invited by'?: string
 }
 
-export type CollaboratorType = 'user' | 'group'
+export type CollaboratorType = 'user' | 'group' | 'guest'
 
 export default class Collaborator {
   private static readonly invitePanel = '//*[@id="oc-files-sharing-sidebar"]'
@@ -69,6 +69,8 @@ export default class Collaborator {
   private static readonly collaboratorUserSelector = '//*[@data-testid="collaborator-user-item-%s"]'
   private static readonly collaboratorGroupSelector =
     '//*[@data-testid="collaborator-group-item-%s" or @data-testid="collaborator-group-item-%s"]'
+  private static readonly collaboratorGuestSelector =
+    '//*[@data-testid="collaborator-group-item-%s"]'
   private static readonly collaboratorRoleSelector =
     '%s//button[contains(@class,"files-recipient-role-select-btn")]/span[text()="%s"]'
   private static readonly removeCollaboratorButton =
@@ -79,6 +81,8 @@ export default class Collaborator {
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"remove-expiration-date")]'
   private static readonly showAccessDetailsButton =
     '%s//ul[contains(@class,"collaborator-edit-dropdown-options-list")]//button[contains(@class,"show-access-details")]'
+  private static readonly collaboratorGuestIndication =
+    '%s//*[contains(@class,"files-collaborators-collaborator-indicator") and @data-test-item-name="guest"]'
   private static readonly collaboratorIndication =
     '%s//span[contains(@class,"files-collaborators-collaborator-indicator")]'
   private static readonly removeCollaboratorConfirmationButton = '.oc-modal-body-actions-confirm'
@@ -222,6 +226,13 @@ export default class Collaborator {
 
     await page.locator(collaboratorRow).waitFor()
 
+    if (type === 'guest') {
+      await expect(
+        page.locator(util.format(Collaborator.collaboratorGuestIndication, collaboratorRow))
+      ).toBeVisible()
+      return
+    }
+
     if (hasAvatar) {
       const avatarImgLocator = page
         .locator(util.format(Collaborator.collaboratorIndication, collaboratorRow))
@@ -300,6 +311,10 @@ export default class Collaborator {
   }
 
   static getCollaboratorUserOrGroupSelector = (collaborator: User | Group, type = 'user') => {
+    if (type === 'guest') {
+      return util.format(Collaborator.collaboratorGuestSelector, collaborator.displayName)
+    }
+
     return type === 'group'
       ? util.format(
           Collaborator.collaboratorGroupSelector,

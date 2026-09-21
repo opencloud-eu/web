@@ -325,6 +325,87 @@ describe('InviteCollaboratorForm', () => {
         })
       )
     })
+    it('invites users, groups and guests selected together with the matching recipient shape', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'user-id',
+          displayName: 'Albert Einstein',
+          shareType: ShareTypes.user.value
+        }),
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'group-id',
+          displayName: 'physics-lovers',
+          shareType: ShareTypes.group.value
+        }),
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledTimes(3)
+      const recipients = vi
+        .mocked(addShare)
+        .mock.calls.map(([{ options }]: any) => options.recipients[0])
+      expect(recipients).toEqual([
+        { objectId: 'user-id', '@libre.graph.recipient.type': 'user' },
+        { objectId: 'group-id', '@libre.graph.recipient.type': 'group' },
+        { email: 'guest@example.com' }
+      ])
+    })
+    it('passes the expiration date along when inviting a guest', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).expirationDate = '2026-10-01T00:00:00.000Z'
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            expirationDateTime: '2026-10-01T00:00:00.000Z',
+            recipients: [{ email: 'guest@example.com' }]
+          })
+        })
+      )
+    })
+    it('shows an error message when the guest invite fails', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      const error = new Error('guest invites are disabled')
+      vi.mocked(addShare).mockRejectedValue(error)
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      const { showErrorMessage, showMessage } = useMessages()
+      expect(showMessage).not.toHaveBeenCalled()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to add share for "guest@example.com"',
+        errors: [error]
+      })
+    })
     it('assigns an internal role to a guest invited from the external share mode', async () => {
       const internalRole = mock<ShareRole>({ id: 'internal-role' })
       const externalRole = mock<ShareRole>({ id: 'external-role' })

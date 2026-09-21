@@ -160,6 +160,29 @@ export const assignRole = async (admin: User, id: string, role: string): Promise
   checkResponseStatus(response, 'Failed while assigning role to the user')
 }
 
+export const getUserIdByMail = async ({
+  mail,
+  admin
+}: {
+  mail: string
+  admin: User
+}): Promise<string | null> => {
+  const response = await request({
+    method: 'GET',
+    path: urlJoin('graph', 'v1.0', 'users') + `?$search=${encodeURIComponent(`"${mail}"`)}`,
+    user: admin
+  })
+
+  if (!response.ok()) {
+    return null
+  }
+
+  const data = (await response.json()) as { value?: { id: string; mail?: string }[] }
+  const match = data.value?.find((user) => user.mail?.toLowerCase() === mail.toLowerCase())
+
+  return match?.id ?? null
+}
+
 export const getGroups = async (adminUser: User): Promise<Group[]> => {
   const response = await request({
     method: 'GET',
