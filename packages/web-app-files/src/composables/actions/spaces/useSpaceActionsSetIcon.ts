@@ -5,8 +5,7 @@ import {
   EmojiPickerModal,
   SpaceAction,
   SpaceActionOptions,
-  blobToArrayBuffer,
-  canvasToBlob,
+  emojiToImage,
   eventBus,
   useClientService,
   useCreateSpace,
@@ -44,31 +43,9 @@ export const useSpaceActionsSetIcon = () => {
     })
   }
 
-  const generateEmojiImage = async (emoji: string): Promise<ArrayBuffer | string> => {
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-    const aspectRatio = 16 / 9
-    const width = 720
-    const height = width / aspectRatio
-
-    canvas.width = width
-    canvas.height = height
-
-    const textSize = 0.4 * width
-    context.font = `${textSize}px sans-serif`
-    context.textBaseline = 'middle'
-    context.textAlign = 'center'
-
-    const heightOffset = 15
-    context.fillText(emoji, canvas.width / 2, canvas.height / 2 + heightOffset)
-
-    const blob = await canvasToBlob(canvas)
-    return blobToArrayBuffer(blob)
-  }
-
   const setIconSpace = async (space: SpaceResource, emoji: string) => {
     const graphClient = clientService.graphAuthenticated
-    const content = await generateEmojiImage(emoji)
+    const content = await emojiToImage(emoji)
 
     let metaFolder = await getDefaultMetaFolder(space)
     if (!metaFolder) {

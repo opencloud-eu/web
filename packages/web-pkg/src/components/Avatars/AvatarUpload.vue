@@ -11,7 +11,8 @@
       <user-avatar class="mb-4" :width="128" :user-id="user.id" :user-name="user.displayName" />
       <div class="oc-button-group">
         <oc-button size="small" @click="triggerFileInput">
-          {{ $gettext('Upload') }}
+          <oc-icon name="upload-cloud" fill-type="line" size-class="size-4" />
+          {{ hasAvatar ? $gettext('Replace') : $gettext('Upload') }}
         </oc-button>
         <oc-button
           v-if="hasAvatar"
@@ -19,6 +20,7 @@
           size="small"
           @click="showRemoveModal = true"
         >
+          <oc-icon name="delete-bin" fill-type="line" size-class="size-4" />
           {{ $gettext('Remove') }}
         </oc-button>
       </div>
@@ -56,6 +58,7 @@
 
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
+import { useObjectUrl } from '@vueuse/core'
 import { useAvatarsStore, useClientService, useMessages, useUserStore } from '../../composables'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
@@ -72,7 +75,8 @@ const { $gettext } = useGettext()
 const { showErrorMessage, showMessage } = useMessages()
 const { graphAuthenticated } = useClientService()
 
-const imageUrl = ref<string | null>(null)
+const selectedFile = ref<File>(null)
+const imageUrl = useObjectUrl(selectedFile)
 const imageCropperRef = ref<InstanceType<typeof ImageCropper> | null>(null)
 const showCropModal = ref(false)
 const showRemoveModal = ref(false)
@@ -100,7 +104,7 @@ const onFileChange = (event: Event) => {
     return
   }
 
-  imageUrl.value = URL.createObjectURL(file)
+  selectedFile.value = file
   showCropModal.value = true
 }
 
@@ -174,6 +178,6 @@ const destroyCropper = () => {
     fileInputRef.value.value = ''
   }
 
-  imageUrl.value = null
+  selectedFile.value = null
 }
 </script>

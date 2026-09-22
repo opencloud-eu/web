@@ -513,6 +513,11 @@ export default { components: { VueSelect } }
   background-color: transparent !important;
 }
 
+.oc-select .vs__search,
+.oc-select .vs__search:focus {
+  z-index: 0;
+}
+
 .oc-select-position-fixed .vs__dropdown-menu {
   position: fixed;
   overflow-y: auto;

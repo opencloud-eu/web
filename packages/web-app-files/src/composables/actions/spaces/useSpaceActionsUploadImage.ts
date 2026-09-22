@@ -7,12 +7,14 @@ import {
   useModals,
   useUserStore
 } from '@opencloud-eu/web-pkg'
+import { useSpaceImage } from '../../spaces'
 import { useGettext } from 'vue3-gettext'
 
 export const useSpaceActionsUploadImage = () => {
   const userStore = useUserStore()
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
+  const { saveSpaceImage } = useSpaceImage()
 
   let selectedSpace: SpaceResource = null
   let fileInput: HTMLInputElement = null
@@ -40,7 +42,10 @@ export const useSpaceActionsUploadImage = () => {
       confirmText: $gettext('Confirm'),
       customComponent: markRaw(SpaceImageModal),
       focusTrapInitial: '#image-cropper-selection',
-      customComponentAttrs: () => ({ file, space: unref(selectedSpace) })
+      customComponentAttrs: () => ({
+        file,
+        save: (content: ArrayBuffer) => saveSpaceImage(unref(selectedSpace), content)
+      })
     })
   }
 

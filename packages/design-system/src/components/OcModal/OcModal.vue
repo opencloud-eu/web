@@ -1,23 +1,24 @@
 <template>
   <div
-    class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] bg-black/40 flex items-center justify-center flex-row flex-wrap size-full"
+    class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full"
+    :class="{ 'bg-black/40': active }"
   >
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
         ref="ocModal"
         :class="classes"
-        class="z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] overflow-auto shadow-2xl border border-role-surface-container-highest"
+        class="z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest"
         tabindex="0"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="oc-modal-title"
+        :aria-labelledby="titleId"
         @keydown.esc.stop="cancelModalAction"
       >
         <div
-          class="oc-modal-title flex items-center flex-row justify-between py-3 px-4 rounded-t-xl"
+          class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl"
         >
-          <h2 id="oc-modal-title" class="truncate m-0 text-base" v-text="title" />
+          <h2 :id="titleId" class="truncate m-0 text-base" v-text="title" />
           <div class="flex items-center gap-1">
             <slot name="headerActions"></slot>
             <oc-button
@@ -32,7 +33,7 @@
             </oc-button>
           </div>
         </div>
-        <div class="oc-modal-body px-4 pt-4">
+        <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4">
           <div
             v-if="$slots.content"
             key="modal-slot-content"
@@ -61,7 +62,7 @@
               key="modal-input"
               ref="ocModalInput"
               v-model="userInputValue"
-              class="oc-modal-body-input -mb-5 pb-4"
+              class="oc-modal-body-input"
               :error-message="inputError"
               :label="inputLabel"
               :type="inputType"
@@ -75,7 +76,10 @@
           </template>
         </div>
 
-        <div v-if="!hideActions" class="oc-modal-body-actions flex justify-end p-4 text-right">
+        <div
+          v-if="!hideActions"
+          class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right"
+        >
           <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
             <oc-button
               v-if="!hideConfirmButton"
@@ -99,7 +103,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, ref, unref, useId, useTemplateRef, watch } from 'vue'
 import { FocusTrap } from 'focus-trap-vue'
 import OcButton, { Props as ButtonProps } from '../OcButton/OcButton.vue'
 import OcTextInput from '../OcTextInput/OcTextInput.vue'
@@ -112,6 +116,12 @@ export interface Props {
    * @docs Title of the modal.
    */
   title: string
+  /**
+   * @docs Determines if the modal is the topmost one. Modals below stay mounted and visible,
+   * but only the topmost one dims the background - and `focus-trap` pauses the ones below.
+   * @default true
+   */
+  active?: boolean
   /**
    * @docs Disables the confirm button.
    * @default false
@@ -233,6 +243,7 @@ export interface Slots {
 
 const {
   title,
+  active = true,
   buttonConfirmDisabled = false,
   buttonConfirmText = 'Confirm',
   contextualHelperData,
@@ -258,6 +269,11 @@ const {
 const emit = defineEmits<Emits>()
 
 const { $gettext } = useGettext()
+
+// Modals stack: the ones below the topmost one stay mounted, so a shared id
+// would make every dialog's `aria-labelledby` resolve to the first title in the
+// document instead of its own.
+const titleId = `oc-modal-title-${useId()}`
 
 const showSpinner = ref(false)
 const userInputValue = ref<string>()

@@ -307,6 +307,11 @@ const showDrop = async ({
   // fixes a timing issue with the rendering of the drop
   await awaitAnimationFrame()
 
+  if (!unref(drop)) {
+    // closed again, or unmounted, while we were waiting for the render
+    return
+  }
+
   if (isMenu) {
     // if drop is a menu, set role="menu" on all ul elements in the drop for better screen reader support
     const uls = unref(drop)?.getElementsByTagName('ul')
@@ -368,6 +373,8 @@ const showDrop = async ({
 }
 
 const hideDrop = () => {
+  const focusWasInDrop = unref(drop)?.contains(document.activeElement)
+
   if (unref(drop)) {
     unregisterOpenDrop(unref(drop))
   }
@@ -375,6 +382,14 @@ const hideDrop = () => {
   activeAnchorElement = null
   isOpen.value = false
   unref(anchor)?.setAttribute('aria-expanded', 'false')
+
+  // The drop takes the focused element with it when it goes. Without handing
+  // focus back, it falls to the body - and inside a focus trap that means it
+  // jumps to the first field of the dialog instead of the toggle.
+  if (focusWasInDrop) {
+    unref(anchor)?.focus()
+  }
+
   emit('hideDrop')
 }
 
@@ -594,7 +609,9 @@ onBeforeUnmount(() => {
 @layer components {
   .oc-drop {
     @apply w-xs absolute top-[-9999px] left-[-9999px] overflow-y-auto;
-    z-index: 1000;
+    /* Drops teleport to the body, so they have to outrank the modal layer to
+       stay visible when they are opened from within a modal. */
+    z-index: calc(var(--z-index-modal) + 1);
   }
 
   .oc-drop-enter-active {

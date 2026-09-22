@@ -1,13 +1,7 @@
 import { Modal, useModals } from '@opencloud-eu/web-pkg'
-import { mock } from 'vitest-mock-extended'
 import { PropType, defineComponent } from 'vue'
 import ModalWrapper from '../../../src/components/ModalWrapper.vue'
-import {
-  defaultPlugins,
-  shallowMount,
-  defaultComponentMocks,
-  writable
-} from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 
 const CustomModalComponent = defineComponent({
   name: 'CustomModalComponent',
@@ -21,115 +15,114 @@ const CustomModalComponent = defineComponent({
 })
 
 describe('ModalWrapper', () => {
-  it('renders OcModal when a modal is active', async () => {
-    const modal = mock<Modal>()
-    const { wrapper } = getShallowWrapper({ modals: [modal] })
-    const modalStore = useModals()
-    writable(modalStore).activeModal = modal
-    await wrapper.vm.$nextTick()
+  it('renders OcModal when a modal is active', () => {
+    const { wrapper } = getShallowWrapper({ modals: [modal()] })
 
     expect(wrapper.find('.oc-modal').exists()).toBeTruthy()
   })
-  it('renders a custom component if given', async () => {
-    const modal = {
-      id: 'some-id',
-      title: 'some-title',
-      customComponent: CustomModalComponent
-    } as Modal
-    const { wrapper } = getShallowWrapper({ modals: [modal] })
-    const modalStore = useModals()
-    writable(modalStore).activeModal = modal
-    await wrapper.vm.$nextTick()
+  it('renders a custom component if given', () => {
+    const { wrapper } = getShallowWrapper({
+      modals: [modal({ customComponent: CustomModalComponent })]
+    })
 
     expect(wrapper.find('custom-modal-component-stub').exists()).toBeTruthy()
   })
+  it('keeps every modal of the stack mounted and only marks the topmost one active', () => {
+    const { wrapper } = getShallowWrapper({
+      modals: [
+        modal({ id: 'below', customComponent: CustomModalComponent }),
+        modal({ id: 'top', customComponent: CustomModalComponent })
+      ]
+    })
+
+    const openModals = wrapper.findAllComponents({ name: 'OcModal' })
+    expect(openModals.length).toBe(2)
+    expect(openModals[0].props('active')).toBe(false)
+    expect(openModals[1].props('active')).toBe(true)
+    expect(wrapper.findAll('custom-modal-component-stub').length).toBe(2)
+  })
   describe('method "onModalConfirm"', () => {
     it('calls the modal "onConfirm" if given, disables the confirm button and removes the modal', async () => {
-      const modal = mock<Modal>({ onConfirm: vi.fn().mockResolvedValue(undefined) })
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
+      const activeModal = modal({ onConfirm: vi.fn().mockResolvedValue(undefined) })
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
       const modalStore = useModals()
-      writable(modalStore).activeModal = modal
 
       const value = 'value'
-      await (wrapper.vm as any).onModalConfirm(value)
+      await (wrapper.vm as any).onModalConfirm(activeModal, value)
 
-      expect(modal.onConfirm).toHaveBeenCalledWith(value)
+      expect(activeModal.onConfirm).toHaveBeenCalledWith(value)
       expect(modalStore.updateModal).toHaveBeenCalled()
-      expect(modalStore.removeModal).toHaveBeenCalled()
+      expect(modalStore.removeModal).toHaveBeenCalledWith(activeModal.id)
     })
     it('does not remove the modal if the promise has not been resolved', async () => {
-      const modal = mock<Modal>({ onConfirm: vi.fn().mockRejectedValue(new Error('')) })
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
+      const activeModal = modal({ onConfirm: vi.fn().mockRejectedValue(new Error('')) })
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
       const modalStore = useModals()
-      writable(modalStore).activeModal = modal
 
-      await (wrapper.vm as any).onModalConfirm()
+      await (wrapper.vm as any).onModalConfirm(activeModal)
 
       expect(modalStore.removeModal).not.toHaveBeenCalled()
     })
-    it('calls the custom component "onConfirm" if given', async () => {
-      const modal = mock<Modal>({ onConfirm: null })
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
-      const modalStore = useModals()
-      writable(modalStore).activeModal = modal
-      await wrapper.vm.$nextTick()
-      ;(wrapper.vm as any).customComponentRef = { onConfirm: vi.fn() }
+    it('calls the custom component "onConfirm" of that very modal', async () => {
+      const below = modal({ id: 'below', onConfirm: null })
+      const top = modal({ id: 'top', onConfirm: null })
+      const { wrapper } = getShallowWrapper({ modals: [below, top] })
+      const onConfirm = vi.fn()
+      ;(wrapper.vm as any).customComponentRefs.set(top.id, { onConfirm })
+      ;(wrapper.vm as any).customComponentRefs.set(below.id, { onConfirm: vi.fn() })
 
-      await (wrapper.vm as any).onModalConfirm()
+      await (wrapper.vm as any).onModalConfirm(top)
 
-      expect((wrapper.vm as any).customComponentRef.onConfirm).toHaveBeenCalled()
+      expect(onConfirm).toHaveBeenCalled()
+      expect((wrapper.vm as any).customComponentRefs.get(below.id).onConfirm).not.toHaveBeenCalled()
     })
   })
   describe('method "onModalCancel"', () => {
     it('calls the modal "onCancel" if given and removes the modal', () => {
-      const modal = mock<Modal>({ onCancel: vi.fn() })
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
+      const activeModal = modal({ onCancel: vi.fn() })
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
       const modalStore = useModals()
-      writable(modalStore).activeModal = modal
-      ;(wrapper.vm as any).onModalCancel()
+      ;(wrapper.vm as any).onModalCancel(activeModal)
 
-      expect(modal.onCancel).toHaveBeenCalled()
-      expect(modalStore.removeModal).toHaveBeenCalled()
+      expect(activeModal.onCancel).toHaveBeenCalled()
+      expect(modalStore.removeModal).toHaveBeenCalledWith(activeModal.id)
     })
-    it('calls the custom component "onCancel" if given', async () => {
-      const modal = mock<Modal>({ onCancel: null })
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
-      const modalStore = useModals()
-      writable(modalStore).activeModal = modal
-      await wrapper.vm.$nextTick()
-      ;(wrapper.vm as any).customComponentRef = { onCancel: vi.fn() }
-      ;(wrapper.vm as any).onModalCancel()
+    it('calls the custom component "onCancel" if given', () => {
+      const activeModal = modal({ onCancel: null })
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
+      const onCancel = vi.fn()
+      ;(wrapper.vm as any).customComponentRefs.set(activeModal.id, { onCancel })
+      ;(wrapper.vm as any).onModalCancel(activeModal)
 
-      expect((wrapper.vm as any).customComponentRef.onCancel).toHaveBeenCalled()
+      expect(onCancel).toHaveBeenCalled()
     })
   })
   describe('method "onModalInput"', () => {
     it('calls the modal "onInput" if given', () => {
-      const modal = mock<Modal>({ onInput: vi.fn() })
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
-      const modalStore = useModals()
-      writable(modalStore).activeModal = modal
+      const activeModal = modal({ onInput: vi.fn() })
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
 
       const value = 'value'
-      ;(wrapper.vm as any).onModalInput(value)
+      ;(wrapper.vm as any).onModalInput(activeModal, value)
 
-      expect(modal.onInput).toHaveBeenCalledWith(value, expect.anything())
+      expect(activeModal.onInput).toHaveBeenCalledWith(value, expect.anything())
     })
   })
   describe('method "onModalConfirmDisabled"', () => {
     it('updates the modal confirm button state', () => {
-      const modal = mock<Modal>()
-      const { wrapper } = getShallowWrapper({ modals: [modal] })
+      const activeModal = modal()
+      const { wrapper } = getShallowWrapper({ modals: [activeModal] })
       const modalStore = useModals()
-      writable(modalStore).activeModal = modal
+      ;(wrapper.vm as any).onModalConfirmDisabled(activeModal, true)
 
-      const value = true
-      ;(wrapper.vm as any).onModalConfirmDisabled(value)
-
-      expect(modalStore.updateModal).toHaveBeenCalled()
+      expect(modalStore.updateModal).toHaveBeenCalledWith(activeModal.id, 'confirmDisabled', true)
     })
   })
 })
+
+function modal(props: Partial<Modal> = {}) {
+  return { id: 'some-id', title: 'some-title', ...props } as Modal
+}
 
 function getShallowWrapper({ modals = [] }: { modals?: Modal[] } = {}) {
   const mocks = defaultComponentMocks()

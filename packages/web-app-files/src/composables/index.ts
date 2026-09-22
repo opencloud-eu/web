@@ -1,3 +1,5 @@
 export * from './actions'
 export * from './resourcesViewDefaults'
+export * from './shares'
+export * from './spaces'
 export * from './useFileUpload'
