@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-21
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-22
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -30,6 +30,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update collabora/code docker tag to v26.04.4.1.1 [[#3401](https://github.com/opencloud-eu/web/pull/3401)]
+- chore(deps): update devdependencies (non-major) [[#3402](https://github.com/opencloud-eu/web/pull/3402)]
 - Update dependency @vue/test-utils to v2.5.1 [[#3390](https://github.com/opencloud-eu/web/pull/3390)]
 - Update dependency zod to v4.6.5 [[#3343](https://github.com/opencloud-eu/web/pull/3343)]
 - Update Node.js to v24.21.0 [[#3344](https://github.com/opencloud-eu/web/pull/3344)]
