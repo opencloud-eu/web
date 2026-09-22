@@ -200,7 +200,7 @@ const showDatePickerModal = () => {
 
   dispatchModal({
     title: $gettext('Set expiration date'),
-    hideActions: true,
+    hideConfirmButton: true,
     customComponent: markRaw(DatePickerModal),
     customComponentAttrs: () => ({
       currentDate: currentDate.isValid ? currentDate : null,

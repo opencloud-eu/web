@@ -20,6 +20,12 @@ export type CustomModalComponentInstance = ComponentPublicInstance<
   CustomModalComponentEmits
 >
 
+/**
+ * Where a custom component teleports its footer buttons, so they render in the
+ * modal's own actions row instead of scrolling away with the body.
+ */
+export const modalActionsTarget = (modal: Modal) => `oc-modal-actions-${modal.id}`
+
 export type Modal = {
   id: string
   elementId?: string

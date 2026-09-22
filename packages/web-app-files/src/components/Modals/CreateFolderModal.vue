@@ -1,5 +1,5 @@
 <template>
-  <form autocomplete="off" @submit.prevent="onPrimaryAction">
+  <form :id="formId" autocomplete="off" @submit.prevent="onPrimaryAction">
     <template v-if="step === 'name'">
       <oc-text-input
         id="create-folder-input"
@@ -40,35 +40,35 @@
       @update:valid="setupValid = $event"
     />
 
-    <div class="flex justify-end items-center mt-4">
-      <div class="oc-modal-body-actions-grid">
-        <oc-button
-          v-if="step === 'setup'"
-          class="oc-modal-body-actions-cancel ml-2"
-          @click="step = 'name'"
-        >
-          {{ $gettext('Back') }}
-        </oc-button>
-        <oc-button
-          class="oc-modal-body-actions-confirm ml-2"
-          appearance="filled"
-          submit="submit"
-          :disabled="primaryDisabled"
-        >
-          {{ encrypt && step === 'name' ? $gettext('Continue') : $gettext('Create') }}
-        </oc-button>
-      </div>
-    </div>
+    <teleport defer :to="`#${modalActionsTarget(modal)}`">
+      <oc-button
+        v-if="step === 'setup'"
+        class="oc-modal-body-actions-cancel ml-2"
+        @click="step = 'name'"
+      >
+        {{ $gettext('Back') }}
+      </oc-button>
+      <oc-button
+        class="oc-modal-body-actions-confirm ml-2"
+        appearance="filled"
+        submit="submit"
+        :form="formId"
+        :disabled="primaryDisabled"
+      >
+        {{ encrypt && step === 'name' ? $gettext('Continue') : $gettext('Create') }}
+      </oc-button>
+    </teleport>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, unref, useId, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { join } from 'path'
 import { storeToRefs } from 'pinia'
 import type { Resource } from '@opencloud-eu/web-client'
 import {
+  modalActionsTarget,
   resolveFileNameDuplicate,
   useIsResourceNameValid,
   useResourcesStore,
@@ -99,6 +99,7 @@ const emit = defineEmits<{
   (e: 'confirm'): void
 }>()
 
+const formId = `create-folder-form-${useId()}`
 const { $gettext } = useGettext()
 const { isFileNameValid } = useIsResourceNameValid()
 const { resources, currentFolder, areFileExtensionsShown } = storeToRefs(useResourcesStore())

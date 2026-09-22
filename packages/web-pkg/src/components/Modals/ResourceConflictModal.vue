@@ -9,25 +9,23 @@
       :aria-label="checkboxLabel"
     />
   </div>
-  <div class="flex justify-end items-center mt-4">
-    <div class="oc-modal-body-actions-grid">
-      <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onCancel">
-        {{ $gettext('Skip') }}
-      </oc-button>
-      <oc-button class="oc-modal-body-actions-secondary ml-2" @click="onConfirmSecondary">
-        {{ confirmSecondaryText }}
-      </oc-button>
-      <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="onConfirm">
-        {{ $gettext('Keep both') }}
-      </oc-button>
-    </div>
-  </div>
+  <teleport defer :to="`#${modalActionsTarget(modal)}`">
+    <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onCancel">
+      {{ $gettext('Skip') }}
+    </oc-button>
+    <oc-button class="oc-modal-body-actions-secondary ml-2" @click="onConfirmSecondary">
+      {{ confirmSecondaryText }}
+    </oc-button>
+    <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="onConfirm">
+      {{ $gettext('Keep both') }}
+    </oc-button>
+  </teleport>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { Modal, useModals } from '../../composables'
+import { Modal, modalActionsTarget, useModals } from '../../composables'
 import { Resource } from '@opencloud-eu/web-client'
 import { ResolveConflict, ResolveStrategy } from '../../helpers/resource'
 
