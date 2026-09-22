@@ -7,6 +7,13 @@
     "type": "string"
   },
   {
+    "name": "active",
+    "required": false,
+    "description": "Determines if the modal is the topmost one. Modals below stay mounted and visible,\nbut only the topmost one dims the background - and `focus-trap` pauses the ones below.",
+    "default": "true",
+    "type": "boolean"
+  },
+  {
     "name": "buttonConfirmDisabled",
     "required": false,
     "description": "Disables the confirm button.",
