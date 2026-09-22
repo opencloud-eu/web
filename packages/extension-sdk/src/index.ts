@@ -124,6 +124,7 @@ export function defineConfig(overrides: ExtensionConfigOverrides = {}) {
                   name,
                   exposes: { '.': './src/index.ts' },
                   filename: `${remoteEntryName}${isProduction ? '-[hash]' : ''}${remoteEntryExt}`,
+                  ignoreOrigin: true,
                   shared: Object.fromEntries(
                     externalModules.map((pkg) => [pkg, { singleton: true, import: false }])
                   ),
