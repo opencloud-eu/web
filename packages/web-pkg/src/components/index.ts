@@ -9,6 +9,7 @@ export * from './SideBar'
 export * from './Search'
 export * from './Spaces'
 export * from './Avatars'
+export * from './Yjs'
 
 export { default as AppLoadingSpinner } from './AppLoadingSpinner.vue'
 export { default as AppTopBar } from './AppTopBar.vue'
