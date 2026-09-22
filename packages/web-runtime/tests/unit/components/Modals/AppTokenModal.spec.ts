@@ -5,8 +5,8 @@ import {
   mockAxiosResolve,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { mockDeep } from 'vitest-mock-extended'
-import { ClientService } from '@opencloud-eu/web-pkg'
+import { mock, mockDeep } from 'vitest-mock-extended'
+import { ClientService, Modal } from '@opencloud-eu/web-pkg'
 import { OcButton, OcDatepicker, OcTextInput } from '@opencloud-eu/design-system/components'
 import { DateTime } from 'luxon'
 import { VueWrapper } from '@vue/test-utils'
@@ -48,8 +48,8 @@ describe('AppTokenModal component', () => {
       const { wrapper } = getWrapper()
       emitNoteInput(wrapper, 'someNote')
       emitDateInput(wrapper, DateTime.now())
-      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       await wrapper.vm.$nextTick()
+      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       expect(btn.props('disabled')).toBeFalsy()
     })
     it('should create a token on submit', async () => {
@@ -102,10 +102,13 @@ const getWrapper = () => {
   return {
     mocks,
     wrapper: shallowMount(AppTokenModal, {
+      props: { modal: mock<Modal>({ id: 'modal-id' }) },
       global: {
         mocks,
         provide: mocks,
-        plugins: [...defaultPlugins()]
+        plugins: [...defaultPlugins()],
+        // the actions row only exists inside OcModal, so render them in place
+        stubs: { teleport: true }
       }
     })
   }

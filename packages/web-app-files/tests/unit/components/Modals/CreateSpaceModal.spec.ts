@@ -411,7 +411,9 @@ function getWrapper({
       global: {
         plugins: [...defaultPlugins({ abilities, piniaOptions: { spacesState: { spaces } } })],
         mocks,
-        provide: mocks
+        provide: mocks,
+        // the actions row only exists inside OcModal, so render them in place
+        stubs: { teleport: true }
       }
     })
   }

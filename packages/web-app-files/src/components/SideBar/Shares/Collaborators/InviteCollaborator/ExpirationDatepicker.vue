@@ -73,7 +73,7 @@ watch(
 const showDatePickerModal = () => {
   dispatchModal({
     title: language.$gettext('Set expiration date'),
-    hideActions: true,
+    hideConfirmButton: true,
     customComponent: markRaw(DatePickerModal),
     customComponentAttrs: () => ({
       currentDate: unref(dateCurrent),

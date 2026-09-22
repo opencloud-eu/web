@@ -1,5 +1,5 @@
 <template>
-  <form autocomplete="off" @submit.prevent="onPrimaryAction">
+  <form :id="formId" autocomplete="off" @submit.prevent="onPrimaryAction">
     <template v-if="step === 'name'">
       <div v-if="!showOptions" class="flex justify-end mb-1">
         <oc-button
@@ -85,36 +85,35 @@
       @update:valid="setupValid = $event"
     />
 
-    <!-- The modal body scrolls, so the actions are pinned to its bottom edge. -->
-    <div class="sticky bottom-0 -mx-4 flex justify-end items-center bg-role-surface px-4 pt-4">
-      <div class="oc-modal-body-actions-grid">
-        <oc-button
-          v-if="step === 'setup'"
-          class="oc-modal-body-actions-cancel ml-2"
-          @click="step = 'name'"
-        >
-          {{ $gettext('Back') }}
-        </oc-button>
-        <oc-button
-          class="oc-modal-body-actions-confirm ml-2"
-          appearance="filled"
-          submit="submit"
-          :disabled="primaryDisabled"
-        >
-          {{ encrypt && step === 'name' ? $gettext('Continue') : $gettext('Create') }}
-        </oc-button>
-      </div>
-    </div>
+    <teleport defer :to="`#${modalActionsTarget(modal)}`">
+      <oc-button
+        v-if="step === 'setup'"
+        class="oc-modal-body-actions-cancel ml-2"
+        @click="step = 'name'"
+      >
+        {{ $gettext('Back') }}
+      </oc-button>
+      <oc-button
+        class="oc-modal-body-actions-confirm ml-2"
+        appearance="filled"
+        submit="submit"
+        :form="formId"
+        :disabled="primaryDisabled"
+      >
+        {{ encrypt && step === 'name' ? $gettext('Continue') : $gettext('Create') }}
+      </oc-button>
+    </teleport>
   </form>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, unref, useId, watch } from 'vue'
 import { useObjectUrl } from '@vueuse/core'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource, type SpaceResource } from '@opencloud-eu/web-client'
 import {
   getVaultCreator,
+  modalActionsTarget,
   ResourceIcon,
   resolveFileNameDuplicate,
   useCreateSpace,
@@ -136,6 +135,7 @@ const emit = defineEmits<{
   (e: 'confirm'): void
 }>()
 
+const formId = `create-space-form-${useId()}`
 const { $gettext } = useGettext()
 const { isSpaceNameValid } = useIsResourceNameValid()
 const { updateModal } = useModals()

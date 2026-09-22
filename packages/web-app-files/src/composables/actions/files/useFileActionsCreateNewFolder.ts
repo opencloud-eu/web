@@ -108,7 +108,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       title: $gettext('Create a new folder'),
       focusTrapInitial: '#create-folder-input',
       customComponent: markRaw(CreateFolderModal),
-      hideActions: true,
+      hideConfirmButton: true,
       customComponentAttrs: () => ({
         vaultCreation: unref(vaultCreator)?.creation,
         callbackFn: addNewFolder

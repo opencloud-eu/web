@@ -20,7 +20,7 @@ export const useSpaceActionsCreate = () => {
           title: $gettext('Create a new space'),
           focusTrapInitial: '#create-space-input',
           customComponent: markRaw(CreateSpaceModal),
-          hideActions: true
+          hideConfirmButton: true
         })
       }
     }

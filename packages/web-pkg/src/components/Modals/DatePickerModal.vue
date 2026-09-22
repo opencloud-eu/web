@@ -10,7 +10,7 @@
     @date-changed="onDateChanged"
   />
 
-  <div class="flex justify-end items-center mt-2">
+  <teleport defer :to="`#${modalActionsTarget(modal)}`">
     <oc-button
       :disabled="confirmDisabled"
       class="oc-modal-body-actions-confirm ml-2"
@@ -19,13 +19,13 @@
     >
       {{ $gettext('Confirm') }}
     </oc-button>
-  </div>
+  </teleport>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { DateTime } from 'luxon'
-import { Modal, useThemeStore } from '../../composables/piniaStores'
+import { Modal, modalActionsTarget, useThemeStore } from '../../composables/piniaStores'
 import { storeToRefs } from 'pinia'
 
 const {

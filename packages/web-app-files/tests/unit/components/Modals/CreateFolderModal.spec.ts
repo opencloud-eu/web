@@ -389,7 +389,9 @@ function getWrapper({
           })
         ],
         mocks,
-        provide: mocks
+        provide: mocks,
+        // the actions row only exists inside OcModal, so render them in place
+        stubs: { teleport: true }
       }
     })
   }
