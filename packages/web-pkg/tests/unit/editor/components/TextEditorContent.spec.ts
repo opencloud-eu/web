@@ -154,6 +154,31 @@ describe('TextEditorContent', () => {
     expect(controlsStyle()).not.toContain('display: none')
   })
 
+  it('keeps the drag handle controls when the editor itself scrolls', async () => {
+    const { wrapper } = mountEditorContent({ hasSlashCommands: true })
+    // the handle is still over the text
+    stubRects(wrapper, { top: 100, bottom: 300 }, { top: 150, bottom: 170 })
+
+    document.dispatchEvent(new Event('scroll'))
+    await nextTick()
+
+    expect(controlsStyle(wrapper)).not.toContain('display: none')
+  })
+
+  it('hides the drag handle controls once a scroll moves the editor away from them', async () => {
+    const { wrapper } = mountEditorContent({ hasSlashCommands: true })
+    // an ancestor scrolled the editor up, the handle stayed behind
+    stubRects(wrapper, { top: 100, bottom: 300 }, { top: 400, bottom: 420 })
+
+    document.dispatchEvent(new Event('scroll'))
+    await nextTick()
+
+    expect(controlsStyle(wrapper)).toContain('display: none')
+
+    await wrapper.find('.text-editor-content').trigger('mousemove')
+    expect(controlsStyle(wrapper)).not.toContain('display: none')
+  })
+
   it('opens slash menu when plus button is clicked', async () => {
     const { wrapper, chain, run } = mountEditorContent({ hasSlashCommands: true })
 
@@ -171,3 +196,17 @@ describe('TextEditorContent', () => {
     expect(run).toHaveBeenCalled()
   })
 })
+
+function controlsStyle(wrapper: ReturnType<typeof mountEditorContent>['wrapper']) {
+  return wrapper.find('.drag-handle-controls').attributes('style') ?? ''
+}
+
+function stubRects(
+  wrapper: ReturnType<typeof mountEditorContent>['wrapper'],
+  content: { top: number; bottom: number },
+  controls: { top: number; bottom: number }
+) {
+  const rect = (r: { top: number; bottom: number }) => () => r as DOMRect
+  wrapper.find('.text-editor-content').element.getBoundingClientRect = rect(content)
+  wrapper.find('.drag-handle-controls').element.getBoundingClientRect = rect(controls)
+}

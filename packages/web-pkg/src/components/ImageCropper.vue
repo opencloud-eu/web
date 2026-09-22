@@ -172,6 +172,16 @@ const getCroppedCanvas = async (width?: number, height?: number) => {
   return await selectionRef.$toCanvas(undefined)
 }
 
+const getCroppedArrayBuffer = async (width?: number, height?: number) => {
+  const canvas = await getCroppedCanvas(width, height)
+  if (!canvas) {
+    return null
+  }
+
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'))
+  return blob ? await blob.arrayBuffer() : null
+}
+
 watch(cropperSelectionRef, (cropper) => {
   if (cropper) {
     setCropperInstance(cropperSelectionRef, cropperImageRef)
@@ -179,6 +189,7 @@ watch(cropperSelectionRef, (cropper) => {
 })
 
 defineExpose({
-  getCroppedCanvas
+  getCroppedCanvas,
+  getCroppedArrayBuffer
 })
 </script>

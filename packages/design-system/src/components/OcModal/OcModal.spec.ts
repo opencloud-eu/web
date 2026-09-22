@@ -39,6 +39,17 @@ describe('OcModal', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
+  it('only dims the background while it is the topmost modal', () => {
+    const backdrop = (active: boolean) =>
+      shallowMount(Modal, {
+        global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] },
+        props: { ...defaultProps, active }
+      }).find('.oc-modal-background')
+
+    expect(backdrop(true).classes()).toContain('bg-black/40')
+    expect(backdrop(false).classes()).not.toContain('bg-black/40')
+  })
+
   it('displays input', () => {
     const wrapper = shallowMount(Modal, {
       global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] },

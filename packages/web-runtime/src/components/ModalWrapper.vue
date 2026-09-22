@@ -1,6 +1,8 @@
 <template>
   <oc-modal
-    v-if="modal"
+    v-for="(modal, index) in modals"
+    :key="modal.id"
+    :active="index === modals.length - 1"
     :element-id="modal.elementId"
     :element-class="modal.elementClass"
     :title="modal.title"
@@ -22,77 +24,93 @@
     :contextual-helper-data="modal.contextualHelperData"
     :focus-trap-initial="modal.focusTrapInitial"
     :is-loading="modal.isLoading"
-    @cancel="onModalCancel"
-    @confirm="onModalConfirm"
-    @input="onModalInput"
+    @cancel="onModalCancel(modal)"
+    @confirm="onModalConfirm(modal, $event)"
+    @input="onModalInput(modal, $event)"
   >
     <template v-if="modal.customComponent" #content>
       <component
         :is="modal.customComponent"
-        ref="customComponentRef"
+        :ref="(instance: unknown) => setCustomComponentRef(modal.id, instance)"
         :modal="modal"
         v-bind="modal.customComponentAttrs?.() || {}"
-        @confirm="onModalConfirm"
-        @cancel="onModalCancel"
-        @update:confirm-disabled="onModalConfirmDisabled"
+        @confirm="onModalConfirm(modal, $event)"
+        @cancel="onModalCancel(modal)"
+        @update:confirm-disabled="onModalConfirmDisabled(modal, $event)"
       />
     </template>
   </oc-modal>
 </template>
 
 <script setup lang="ts">
-import { ref, unref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useLoadingService, useModals, CustomModalComponentInstance } from '@opencloud-eu/web-pkg'
+import {
+  useLoadingService,
+  useModals,
+  type CustomModalComponentInstance,
+  type Modal
+} from '@opencloud-eu/web-pkg'
 
 const loadingService = useLoadingService()
 
 const modalStore = useModals()
-const { activeModal: modal } = storeToRefs(modalStore)
+const { modals } = storeToRefs(modalStore)
 const { updateModal, removeModal } = modalStore
 
-const customComponentRef = ref<CustomModalComponentInstance>()
+// Every modal in the stack stays mounted, so the components below the topmost
+// one keep their state while it is open.
+const customComponentRefs = new Map<Modal['id'], CustomModalComponentInstance>()
 
-const onModalConfirm = async (value?: unknown) => {
+const setCustomComponentRef = (id: Modal['id'], instance: unknown) => {
+  if (!instance) {
+    customComponentRefs.delete(id)
+    return
+  }
+  customComponentRefs.set(id, instance as CustomModalComponentInstance)
+}
+
+const onModalConfirm = async (modal: Modal, value?: unknown) => {
+  const customComponent = customComponentRefs.get(modal.id)
+
   try {
-    updateModal(unref(modal)?.id, 'isLoading', true)
+    updateModal(modal.id, 'isLoading', true)
 
-    if (unref(modal)?.onConfirm) {
+    if (modal.onConfirm) {
       await loadingService.addTask(async () => {
-        await unref(modal).onConfirm(value)
+        await modal.onConfirm(value)
       })
-    } else if (unref(customComponentRef)?.onConfirm) {
-      await loadingService.addTask(() => unref(customComponentRef).onConfirm(value))
+    } else if (customComponent?.onConfirm) {
+      await loadingService.addTask(() => customComponent.onConfirm(value))
     }
   } catch {
-    updateModal(unref(modal)?.id, 'isLoading', false)
+    updateModal(modal.id, 'isLoading', false)
     return
   }
 
-  removeModal(unref(modal)?.id)
+  removeModal(modal.id)
 }
 
-const onModalCancel = () => {
-  if (unref(modal)?.onCancel) {
-    unref(modal).onCancel()
-  } else if (unref(customComponentRef)?.onCancel) {
-    unref(customComponentRef).onCancel()
+const onModalCancel = (modal: Modal) => {
+  if (modal.onCancel) {
+    modal.onCancel()
+  } else {
+    customComponentRefs.get(modal.id)?.onCancel?.()
   }
 
-  removeModal(unref(modal)?.id)
+  removeModal(modal.id)
 }
 
-const onModalInput = (value: string) => {
-  if (!unref(modal).onInput) {
+const onModalInput = (modal: Modal, value: string) => {
+  if (!modal.onInput) {
     return
   }
 
   // provide onError callback
-  const setError = (error: string) => updateModal(unref(modal).id, 'inputError', error)
-  unref(modal).onInput(value, setError)
+  const setError = (error: string) => updateModal(modal.id, 'inputError', error)
+  modal.onInput(value, setError)
 }
 
-const onModalConfirmDisabled = (value: boolean) => {
-  updateModal(unref(modal).id, 'confirmDisabled', value)
+const onModalConfirmDisabled = (modal: Modal, value: boolean) => {
+  updateModal(modal.id, 'confirmDisabled', value)
 }
 </script>

@@ -11,6 +11,7 @@ import {
   useModals,
   useUserStore
 } from '@opencloud-eu/web-pkg'
+import { useSpaceImage } from '../../spaces'
 
 export const useSpaceActionsSetImage = () => {
   const userStore = useUserStore()
@@ -19,6 +20,7 @@ export const useSpaceActionsSetImage = () => {
   const clientService = useClientService()
   const loadingService = useLoadingService()
   const { dispatchModal } = useModals()
+  const { saveSpaceImage } = useSpaceImage()
 
   const handler = async ({ space, resources }: FileActionOptions) => {
     const { getFileContents } = clientService.webdav
@@ -33,7 +35,10 @@ export const useSpaceActionsSetImage = () => {
       confirmText: $gettext('Confirm'),
       customComponent: markRaw(SpaceImageModal),
       focusTrapInitial: '#image-cropper-selection',
-      customComponentAttrs: () => ({ file, space })
+      customComponentAttrs: () => ({
+        file,
+        save: (content: ArrayBuffer) => saveSpaceImage(space, content)
+      })
     })
   }
 
