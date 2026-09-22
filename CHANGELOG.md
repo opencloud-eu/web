@@ -6,6 +6,17 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @tammi-23, @v-scharf
 
+### 🐛 Bug Fixes
+
+- Keep modal actions out of the scrollable body [[#3419](https://github.com/opencloud-eu/web/pull/3419)]
+- Always sort folders above files [[#3411](https://github.com/opencloud-eu/web/pull/3411)]
+- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
+- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
 ### 📈 Enhancement
 
 - feat: share yjs with external apps [[#3398](https://github.com/opencloud-eu/web/pull/3398)]
@@ -15,16 +26,6 @@
 - perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
 - Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
-
-### 🐛 Bug Fixes
-
-- Always sort folders above files [[#3411](https://github.com/opencloud-eu/web/pull/3411)]
-- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
-- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
-- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
-- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
-- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
-- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ### ✅ Tests
 
