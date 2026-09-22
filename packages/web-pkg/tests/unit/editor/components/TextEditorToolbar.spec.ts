@@ -95,7 +95,7 @@ function mountToolbar(
           template: '<button v-bind="$attrs"><slot /></button>'
         }),
         'oc-icon': true,
-        'text-editor-collaborators': defineComponent({
+        'yjs-collaborators': defineComponent({
           props: { users: { type: Array, required: true } },
           template: '<div class="collaborators-stub" :data-count="users.length" />'
         })
@@ -336,27 +336,25 @@ describe('TextEditorToolbar', () => {
 
   it('shows the collaboration status indicator for connected, disconnected, and connecting', () => {
     const connected = mountToolbar(false, 'markdown', false, 'connected')
-    expect(connected.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(true)
+    expect(connected.wrapper.find('.yjs-status-indicator').exists()).toBe(true)
     connected.wrapper.unmount()
 
     const disconnected = mountToolbar(false, 'markdown', false, 'disconnected')
-    expect(disconnected.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(
-      true
-    )
+    expect(disconnected.wrapper.find('.yjs-status-indicator').exists()).toBe(true)
     disconnected.wrapper.unmount()
 
     const connecting = mountToolbar(false, 'markdown', false, 'connecting')
-    expect(connecting.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(true)
+    expect(connecting.wrapper.find('.yjs-status-indicator').exists()).toBe(true)
     connecting.wrapper.unmount()
 
     const local = mountToolbar(false, 'markdown', false, 'local')
-    expect(local.wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
+    expect(local.wrapper.find('.yjs-status-indicator').exists()).toBe(false)
     local.wrapper.unmount()
   })
 
   it('sets correct aria-label and icon for connected status', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'connected')
-    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    const indicator = wrapper.find('.yjs-status-indicator')
     expect(indicator.attributes('aria-label')).toBe('Collaboration ready')
     expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
     wrapper.unmount()
@@ -364,7 +362,7 @@ describe('TextEditorToolbar', () => {
 
   it('sets correct aria-label and icon for disconnected status', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'disconnected')
-    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    const indicator = wrapper.find('.yjs-status-indicator')
     expect(indicator.attributes('aria-label')).toBe('Collaboration disconnected')
     expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
     wrapper.unmount()
@@ -372,7 +370,7 @@ describe('TextEditorToolbar', () => {
 
   it('sets correct aria-label and icon for connecting status', () => {
     const { wrapper } = mountToolbar(false, 'markdown', false, 'connecting')
-    const indicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    const indicator = wrapper.find('.yjs-status-indicator')
     expect(indicator.attributes('aria-label')).toBe('Collaboration connecting...')
     expect(indicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
     wrapper.unmount()
@@ -380,23 +378,23 @@ describe('TextEditorToolbar', () => {
 
   it('reacts to collaboration status changes after mount', async () => {
     const { wrapper, collaborationStatusRef } = mountToolbar(false, 'markdown', false, null)
-    expect(wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
+    expect(wrapper.find('.yjs-status-indicator').exists()).toBe(false)
 
     collaborationStatusRef.value = 'connected'
     await wrapper.vm.$nextTick()
-    const connectedIndicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    const connectedIndicator = wrapper.find('.yjs-status-indicator')
     expect(connectedIndicator.exists()).toBe(true)
     expect(connectedIndicator.find('oc-icon-stub').attributes('name')).toBe('wifi')
 
     collaborationStatusRef.value = 'disconnected'
     await wrapper.vm.$nextTick()
-    const disconnectedIndicator = wrapper.find('.text-editor-toolbar-collaboration-status')
+    const disconnectedIndicator = wrapper.find('.yjs-status-indicator')
     expect(disconnectedIndicator.exists()).toBe(true)
     expect(disconnectedIndicator.find('oc-icon-stub').attributes('name')).toBe('wifi-off')
 
     collaborationStatusRef.value = 'local'
     await wrapper.vm.$nextTick()
-    expect(wrapper.find('.text-editor-toolbar-collaboration-status').exists()).toBe(false)
+    expect(wrapper.find('.yjs-status-indicator').exists()).toBe(false)
     wrapper.unmount()
   })
 

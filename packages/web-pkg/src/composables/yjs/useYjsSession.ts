@@ -19,6 +19,14 @@ export const YjsStatus = {
 export type YjsStatus = (typeof YjsStatus)[keyof typeof YjsStatus]
 
 /**
+ * Whether a session has a transport state worth showing. A session that is local only or has
+ * not started yet collaborates with nobody, so there is nothing to report.
+ */
+export function hasVisibleYjsStatus(status: YjsStatus | null) {
+  return status !== null && status !== YjsStatus.Local
+}
+
+/**
  * Why the Yjs server refused the handshake. Mirrors `DeniedReason` in
  * `services/yjs/src/server.ts`, keep the two in sync.
  */
