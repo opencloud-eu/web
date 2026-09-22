@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @pascalwengerter, @v-scharf
+@AlexAndBear, @JammingBen, @pascalwengerter, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- feat: share yjs with external apps [[#3398](https://github.com/opencloud-eu/web/pull/3398)]
 - Create a space with quota, subtitle, description, image and members [[#3413](https://github.com/opencloud-eu/web/pull/3413)]
 - Improve mobile table size picker [[#3393](https://github.com/opencloud-eu/web/pull/3393)]
 - perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
