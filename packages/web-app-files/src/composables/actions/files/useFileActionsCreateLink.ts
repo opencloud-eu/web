@@ -44,7 +44,7 @@ export const useFileActionsCreateLink = ({
         ),
         customComponent: markRaw(CreateLinkModal),
         customComponentAttrs: () => ({ space, resources }),
-        hideActions: true
+        hideConfirmButton: true
       })
       return
     }

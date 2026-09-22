@@ -54,7 +54,7 @@
       @date-changed="onExpiryDateChanged"
     />
   </div>
-  <div class="flex justify-end items-center mt-2">
+  <teleport defer :to="`#${modalActionsTarget(modal)}`">
     <div class="ml-2" :class="{ 'oc-button-group': password.value }">
       <oc-button
         class="link-modal-confirm oc-modal-body-actions-confirm"
@@ -97,7 +97,7 @@
         </oc-list>
       </oc-drop>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script setup lang="ts">
@@ -111,6 +111,7 @@ import {
   useEmbedMode,
   useLinkTypes,
   Modal,
+  modalActionsTarget,
   useSharesStore,
   useClientService,
   useThemeStore,

@@ -204,7 +204,14 @@ function getWrapper({
         ],
         mocks,
         provide: mocks,
-        stubs: { OcTextInput: true, OcDatepicker: true, OcButton: true, OcDrop: true },
+        // the actions row only exists inside OcModal, so render them in place
+        stubs: {
+          OcTextInput: true,
+          OcDatepicker: true,
+          OcButton: true,
+          OcDrop: true,
+          teleport: true
+        },
         renderStubDefaultSlot: true
       }
     })

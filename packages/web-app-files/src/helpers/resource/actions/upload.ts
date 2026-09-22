@@ -41,7 +41,7 @@ export class UploadResourceConflict extends ConflictDialog {
         title: resource.isFolder
           ? this.$gettext('Folder already exists')
           : this.$gettext('File already exists'),
-        hideActions: true,
+        hideConfirmButton: true,
         customComponent: markRaw(ResourceConflictModal),
         customComponentAttrs: () => ({
           confirmSecondaryTextOverwrite: resource.isFolder

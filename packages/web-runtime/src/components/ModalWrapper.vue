@@ -3,6 +3,7 @@
     v-for="(modal, index) in modals"
     :key="modal.id"
     :active="index === modals.length - 1"
+    :actions-id="modalActionsTarget(modal)"
     :element-id="modal.elementId"
     :element-class="modal.elementClass"
     :title="modal.title"
@@ -47,6 +48,7 @@ import { storeToRefs } from 'pinia'
 import {
   useLoadingService,
   useModals,
+  modalActionsTarget,
   type CustomModalComponentInstance,
   type Modal
 } from '@opencloud-eu/web-pkg'

@@ -125,6 +125,7 @@ const { $gettext } = useGettext()
 const textEditor = useTextEditor({
   contentType: 'html',
   modelValue: toRef(() => modelValue.body),
+  autofocus: false,
   onUpdate: (content) => {
     updateField('body', content)
   }

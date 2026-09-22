@@ -91,28 +91,15 @@
       </oc-drop>
     </div>
     <div
-      v-if="showCollaborationStatusIndicator || collaborators.length"
+      v-if="hasVisibleYjsStatus(yjsStatus) || collaborators.length"
       class="text-editor-toolbar-status flex shrink-0 items-center gap-2 px-4 ml-4"
     >
-      <text-editor-collaborators
+      <yjs-collaborators
         v-if="collaborators.length"
         :users="collaborators"
         :teleport="dropTeleport"
       />
-      <div
-        v-if="showCollaborationStatusIndicator"
-        v-oc-tooltip="collaborationStatusLabel"
-        class="text-editor-toolbar-collaboration-status inline-flex items-center"
-        :aria-label="collaborationStatusLabel"
-        :data-test-yjs-status="yjsStatus"
-      >
-        <span
-          class="inline-flex size-6 items-center justify-center rounded-full border"
-          :class="collaborationStatusClasses"
-        >
-          <oc-icon :name="collaborationStatusIcon" fill-type="line" size-class="size-4" />
-        </span>
-      </div>
+      <yjs-status-indicator :status="yjsStatus" />
     </div>
   </div>
 </template>
@@ -136,10 +123,10 @@ import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
 import { OcBubbleMenu, OcDrop } from '@opencloud-eu/design-system/components'
 import TextEditorToolbarItem from './TextEditorToolbarItem.vue'
-import TextEditorCollaborators from './TextEditorCollaborators.vue'
+import { YjsCollaborators, YjsStatusIndicator } from '../../components/Yjs'
 import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
-import { YjsStatus } from '../../composables/yjs'
+import { hasVisibleYjsStatus } from '../../composables/yjs'
 
 const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -398,44 +385,6 @@ const visible = computed(() => {
 
 const yjsStatus = computed(() => unref(textEditor.yjsStatus))
 const collaborators = computed(() => unref(textEditor.collaborators) ?? [])
-
-const showCollaborationStatusIndicator = computed(() => {
-  const status = unref(textEditor.yjsStatus)
-  return status !== YjsStatus.Local && status !== null
-})
-
-const collaborationStatusLabel = computed(() => {
-  if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
-    return $gettext('Collaboration ready')
-  }
-  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
-    return $gettext('Collaboration disconnected')
-  }
-  if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
-    return $gettext('Collaboration connecting...')
-  }
-  return ''
-})
-
-const collaborationStatusIcon = computed(() => {
-  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
-    return 'wifi-off'
-  }
-  return 'wifi'
-})
-
-const collaborationStatusClasses = computed(() => {
-  if (unref(textEditor.yjsStatus) === YjsStatus.Connected) {
-    return 'border-green-700/20 bg-green-500/15 text-green-700'
-  }
-  if (unref(textEditor.yjsStatus) === YjsStatus.Disconnected) {
-    return 'border-red-700/20 bg-red-500/15 text-red-700'
-  }
-  if (unref(textEditor.yjsStatus) === YjsStatus.Connecting) {
-    return 'border-gray-700/20 bg-gray-500/15 text-gray-700'
-  }
-  return ''
-})
 
 const { bindKeyAction, removeKeyAction } = useKeyboardActions({
   skipDisabledKeyBindingsCheck: true

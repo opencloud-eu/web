@@ -80,7 +80,7 @@
           v-if="!hideActions"
           class="oc-modal-body-actions shrink-0 flex justify-end p-4 text-right"
         >
-          <div class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
+          <div :id="actionsId" class="oc-modal-body-actions-grid grid grid-flow-col auto-cols-1fr">
             <oc-button
               v-if="!hideConfirmButton"
               class="oc-modal-body-actions-confirm ml-2"
@@ -143,6 +143,11 @@ export interface Props {
   /**
    * @docs Additional class(es) to be added to the modal.
    */
+  /**
+   * @docs Id of the actions container. A custom component teleports its own buttons in
+   * here, so they sit in the footer instead of scrolling away inside the body.
+   */
+  actionsId?: string
   elementClass?: string
   /**
    * @docs Element ID of the modal.
@@ -243,6 +248,7 @@ export interface Slots {
 
 const {
   title,
+  actionsId = undefined,
   active = true,
   buttonConfirmDisabled = false,
   buttonConfirmText = 'Confirm',

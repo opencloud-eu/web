@@ -1,5 +1,5 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
-import TextEditorCollaborators from '../../../../src/editor/components/TextEditorCollaborators.vue'
+import YjsCollaborators from '../../../../src/components/Yjs/YjsCollaborators.vue'
 import type { YjsCollaborator } from '../../../../src/composables/yjs'
 
 const users: YjsCollaborator[] = [
@@ -11,7 +11,7 @@ const users: YjsCollaborator[] = [
 ]
 
 function getWrapper(props: Partial<{ users: YjsCollaborator[]; maxDisplayed: number }> = {}) {
-  const wrapper = mount(TextEditorCollaborators, {
+  const wrapper = mount(YjsCollaborators, {
     props: { users, ...props },
     global: {
       plugins: [...defaultPlugins()],
@@ -27,30 +27,30 @@ function getWrapper(props: Partial<{ users: YjsCollaborator[]; maxDisplayed: num
   return { wrapper }
 }
 
-describe('TextEditorCollaborators', () => {
+describe('YjsCollaborators', () => {
   it('stacks at most three avatars and counts the rest', () => {
     const { wrapper } = getWrapper()
-    const trigger = wrapper.find('.text-editor-toolbar-collaborators-trigger')
-    expect(trigger.findAll('.text-editor-collaborator-avatar')).toHaveLength(3)
+    const trigger = wrapper.find('.yjs-collaborators-trigger')
+    expect(trigger.findAll('.yjs-collaborator-avatar')).toHaveLength(3)
     expect(trigger.find('.oc-avatar-count').text()).toBe('+2')
   })
 
   it('shows no counter when everyone fits', () => {
     const { wrapper } = getWrapper({ users: users.slice(0, 2) })
-    expect(wrapper.findAll('.text-editor-collaborator-avatar')).toHaveLength(2)
+    expect(wrapper.findAll('.yjs-collaborator-avatar')).toHaveLength(2)
     expect(wrapper.find('.oc-avatar-count').exists()).toBe(false)
   })
 
   it('colors the avatar border and background with the user color', () => {
     const { wrapper } = getWrapper()
-    const avatar = wrapper.find('.text-editor-collaborator-avatar[data-test-user-id="p1"]')
+    const avatar = wrapper.find('.yjs-collaborator-avatar[data-test-user-id="p1"]')
     expect(avatar.attributes('style')).toContain('border-color: #222222')
     expect(avatar.find('.user-avatar-stub').attributes('data-bg')).toBe('#222222')
   })
 
   it('lists every user in the dropdown and marks the own user', () => {
     const { wrapper } = getWrapper()
-    const items = wrapper.findAll('.text-editor-collaborators-item')
+    const items = wrapper.findAll('.yjs-collaborators-item')
     expect(items).toHaveLength(5)
     expect(items[0].text()).toContain('Zoe')
     expect(items[0].text()).toContain('(you)')
@@ -59,8 +59,8 @@ describe('TextEditorCollaborators', () => {
 
   it('labels the trigger with the user count', () => {
     const { wrapper } = getWrapper()
-    expect(
-      wrapper.find('.text-editor-toolbar-collaborators-trigger').attributes('aria-label')
-    ).toBe('5 people in this editing session')
+    expect(wrapper.find('.yjs-collaborators-trigger').attributes('aria-label')).toBe(
+      '5 people in this editing session'
+    )
   })
 })

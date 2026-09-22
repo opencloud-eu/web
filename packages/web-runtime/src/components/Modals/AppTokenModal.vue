@@ -15,7 +15,7 @@
       required-mark
       @date-changed="onDateChanged"
     />
-    <div class="link-modal-actions flex justify-end items-center mt-2">
+    <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         :disabled="isConfirmDisabled"
         class="oc-modal-body-actions-confirm ml-2"
@@ -24,7 +24,7 @@
       >
         {{ $gettext('Confirm') }}
       </oc-button>
-    </div>
+    </teleport>
   </div>
   <div v-else>
     <span
@@ -56,7 +56,7 @@
         </div>
       </div>
     </div>
-    <div class="link-modal-actions flex justify-end items-center mt-6">
+    <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         class="oc-modal-body-actions-confirm ml-2"
         appearance="filled"
@@ -64,7 +64,7 @@
       >
         {{ $gettext('Close') }}
       </oc-button>
-    </div>
+    </teleport>
   </div>
 </template>
 
@@ -74,6 +74,7 @@ import { DateTime } from 'luxon'
 import {
   formatDateFromDateTime,
   Modal,
+  modalActionsTarget,
   useClientService,
   useThemeStore
 } from '@opencloud-eu/web-pkg'

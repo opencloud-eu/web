@@ -285,7 +285,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   onMounted(() => {
     editor.value?.on('selectionUpdate', triggerEditorUpdate)
     editor.value?.on('transaction', triggerEditorUpdate)
-    if (!unref(readonly)) {
+    if (!unref(readonly) && options.autofocus !== false) {
       focus()
     }
   })

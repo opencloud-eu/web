@@ -163,6 +163,7 @@ const descriptionEditor = useTextEditor({
   contentType: 'markdown',
   modelValue: toRef(() => unref(description)),
   ariaLabel: $gettext('Space description'),
+  autofocus: false,
   // The cloud picker needs somewhere to browse from, and the space has no files yet.
   currentResource: personalSpace,
   onUpdate: (content) => {

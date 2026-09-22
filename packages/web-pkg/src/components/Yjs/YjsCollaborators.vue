@@ -1,12 +1,12 @@
 <template>
-  <div class="text-editor-toolbar-collaborators inline-flex items-center">
+  <div class="yjs-collaborators inline-flex items-center">
     <oc-button
-      id="toolbar-collaborators-trigger"
+      id="yjs-collaborators-trigger"
       v-oc-tooltip="label"
       type="button"
       appearance="raw"
       gap-size="none"
-      class="text-editor-toolbar-collaborators-trigger rounded-full p-0.5"
+      class="yjs-collaborators-trigger rounded-full p-0.5"
       :aria-label="label"
       @mousedown.prevent
     >
@@ -15,13 +15,13 @@
         :width="24"
         :max-displayed="3"
         stacked
-        class="text-editor-collaborators-stack inline-flex"
+        class="yjs-collaborators-stack inline-flex"
       >
         <template #userAvatars="{ avatars }">
           <span
             v-for="(item, index) in avatars"
             :key="item.userId"
-            class="text-editor-collaborator-avatar relative inline-flex rounded-full border-2"
+            class="yjs-collaborator-avatar relative inline-flex rounded-full border-2"
             :style="{ borderColor: colorById[item.userId], zIndex: avatars.length - index }"
             :data-test-user-id="item.userId"
           >
@@ -36,20 +36,20 @@
       </oc-avatars>
     </oc-button>
     <oc-drop
-      drop-id="toolbar-collaborators"
-      toggle="#toolbar-collaborators-trigger"
+      drop-id="yjs-collaborators"
+      toggle="#yjs-collaborators-trigger"
       :teleport="teleport"
       mode="click"
       position="bottom-end"
       padding-size="small"
       enforce-drop-on-mobile
-      class="text-editor-toolbar-collaborators-drop"
+      class="yjs-collaborators-drop"
     >
-      <oc-list class="text-editor-collaborators-list">
+      <oc-list class="yjs-collaborators-list">
         <li
           v-for="user in users"
           :key="user.id"
-          class="text-editor-collaborators-item flex items-center gap-2 py-1"
+          class="yjs-collaborators-item flex items-center gap-2 py-1"
           :data-test-user-id="user.id"
         >
           <span
@@ -79,7 +79,7 @@
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { YjsCollaborator } from '../../composables/yjs'
-import UserAvatar from '../../components/Avatars/UserAvatar.vue'
+import UserAvatar from '../Avatars/UserAvatar.vue'
 
 const { users, teleport = 'body' } = defineProps<{
   users: YjsCollaborator[]
