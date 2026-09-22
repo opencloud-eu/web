@@ -343,7 +343,8 @@ export const announceApplicationsReady = async ({
 
   const mapping: ResourceIconMapping = {
     mimeType: {},
-    extension: {}
+    extension: {},
+    folderExtension: {}
   }
 
   appsStore.fileExtensions.forEach((fileExtensions) => {
@@ -361,7 +362,11 @@ export const announceApplicationsReady = async ({
     }
 
     if (fileExtensions.extension) {
-      mapping.extension[fileExtensions.extension] = getIconDefinition()
+      if (fileExtensions.type === 'folder') {
+        mapping.folderExtension[fileExtensions.extension] = getIconDefinition()
+      } else {
+        mapping.extension[fileExtensions.extension] = getIconDefinition()
+      }
     }
   })
 

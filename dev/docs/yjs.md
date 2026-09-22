@@ -416,8 +416,8 @@ exactly as in non-collaborative editing.
 When `options.yjsServerUrl` is unset the session still creates a `Y.Doc` and a standalone `Awareness`, skips the
 provider, and hydrates immediately. The Y.Doc binding is the same in both modes, so adapters and editor extensions need
 no branch. Two things do differ: no peers ever appear, and `useTextEditor` re-reads `yjsServerUrl` itself to decide
-whether to drop the source-mode action. That is what "collaboration disabled" means here - the editor works as it always
-did, it just never syncs.
+whether source mode is read-only - in local mode it stays editable. That is what "collaboration disabled" means here -
+the editor works as it always did, it just never syncs.
 
 A session configured for collaboration ends up here too when the server does not answer. A provider that cannot reach
 its server emits neither `onSynced` nor `onAuthenticationFailed` - it just keeps retrying - so nothing would ever
@@ -464,8 +464,8 @@ peer in the room. The room's control plane has no server authority beyond the re
 active editors by release. That avoids cross-version Y.Doc schema collisions, but those users now interact through
 WebDAV conflicts instead of live Yjs merges until they are on the same version again.
 
-**Source mode is disabled while collaborating.** It swaps the ProseMirror view for a plain textarea, which has no Y.Doc
-binding, so `useTextEditor` drops the `source-mode` action whenever a Yjs session is active. Marked as a `FIXME`.
+**Source mode is read-only while collaborating.** For markdown and HTML alike, the source view is a plain textarea with
+no Y.Doc binding, so it can follow the room but not write to it. Editing the source means leaving source mode first.
 
 **A locked session can still be saved.** `isLockedForReload` freezes the editor but deliberately leaves `isDirty` alone,
 so the user can still persist work they typed before the lock. The gap is an adapter that throws _partway_ through

@@ -86,8 +86,12 @@ const hasDisabledSpaceIcon = computed(() => {
   return isProjectSpaceResource(resource) && resource.disabled === true
 })
 
+const isFolder = computed(() => {
+  return resource.type === 'folder' || resource.isFolder
+})
+
 const fallbackIcon = computed(() => {
-  if (resource.type === 'folder' || resource.isFolder) {
+  if (unref(isFolder)) {
     return defaultFolderIcon
   }
   return defaultFileIcon
@@ -109,6 +113,10 @@ const icon = computed((): IconType => {
   }
   if (unref(hasSpaceIcon)) {
     return defaultFolderIcon
+  }
+
+  if (unref(isFolder)) {
+    return iconMappingInjection?.folderExtension?.[unref(extension)] ?? unref(fallbackIcon)
   }
 
   const typeIconOrUndefined =

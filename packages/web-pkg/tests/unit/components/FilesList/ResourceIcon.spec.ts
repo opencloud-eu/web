@@ -17,6 +17,11 @@ const resourceIconMapping: ResourceIconMapping = {
     'not-a-real-mimetype': {
       name: 'resource-type-file'
     }
+  },
+  folderExtension: {
+    vault: {
+      name: 'resource-type-vault'
+    }
   }
 }
 
@@ -45,6 +50,42 @@ describe('OcResourceIcon', () => {
     },
     'with mimetype "not-a-real-mimetype"'
   )
+
+  it('renders the folder icon for a folder whose name carries a file extension', () => {
+    const { wrapper } = getWrapper({
+      resource: { type: 'folder', isFolder: true, extension: 'txt' } as Partial<Resource>,
+      size: 'medium'
+    })
+    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-folder')
+  })
+
+  it('renders the folder icon for a folder whose extension an app claims for files', () => {
+    const { wrapper } = getWrapper({
+      resource: {
+        type: 'folder',
+        isFolder: true,
+        extension: 'not-a-real-extension'
+      } as Partial<Resource>,
+      size: 'medium'
+    })
+    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-folder')
+  })
+
+  it('renders the app icon for a folder whose extension an app claims for folders', () => {
+    const { wrapper } = getWrapper({
+      resource: { type: 'folder', isFolder: true, extension: 'vault' } as Partial<Resource>,
+      size: 'medium'
+    })
+    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-vault')
+  })
+
+  it('renders the text icon for a file with a text extension', () => {
+    const { wrapper } = getWrapper({
+      resource: { type: 'file', extension: 'txt' } as Partial<Resource>,
+      size: 'medium'
+    })
+    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-text')
+  })
 
   it('renders the vault icon for a space that is a vault', () => {
     const { wrapper } = getWrapper({

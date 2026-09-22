@@ -60,27 +60,35 @@ function makeYjsCursorExtension(awareness: Awareness): Extension {
 export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
   const { resolveStrategy } = useContentStrategy()
   const configStore = useConfigStore()
+  const readonly = computed(() => toValue(options.readonly) ?? false)
+
+  const yjsActive = computed(
+    () => Boolean(options.ydoc) && Boolean(configStore.options.yjsServerUrl)
+  )
+
+  // Source mode swaps the ProseMirror view for a plain textarea, and a textarea
+  // has no way to feed its edits back into the CRDT. So while a Yjs session is
+  // active the source view stays available, but read-only - as it does for a
+  // read-only editor.
+  const sourceModeReadonly = computed(() => unref(yjsActive) || unref(readonly))
+
   const state: TextEditorState = {
     sourceMode: ref(false),
+    sourceModeReadonly,
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100),
     currentResource: options.currentResource ?? ref<Resource | null>(null)
   }
 
   const contentType = ref(options.contentType)
-  const readonly = computed(() => toValue(options.readonly) ?? false)
   const yjsStatus = computed(() => toValue(options.yjsStatus) ?? null)
   const collaborators = useYjsCollaborators(options.awareness)
   const strategy = resolveStrategy(options.contentType, state)
   const yjsFragment = options.ydocFragment ?? DEFAULT_YDOC_FRAGMENT
 
-  // FIXME: Source mode swaps the ProseMirror view for a plain textarea, hence
-  // drop the action while a Yjs session is active.
-  const yjsActive = Boolean(options.ydoc) && Boolean(configStore.options.yjsServerUrl)
-
   // Filter out excluded actions (by id) from toolbar and slash commands, including
   // nested dropdown children (e.g. exclude 'image-upload' but keep 'image-url').
-  const excludeActions = [...(options.excludeActions ?? []), ...(yjsActive ? ['source-mode'] : [])]
+  const excludeActions = options.excludeActions ?? []
   const filterActions = (actions: EditorAction[]): EditorAction[] =>
     actions
       .filter((action) => !excludeActions.includes(action.id))
@@ -293,6 +301,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     editor,
     contentType,
     readonly,
+    yjsActive,
     yjsStatus,
     collaborators,
     actionGroups: editorActionGroups,
