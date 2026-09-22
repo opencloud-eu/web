@@ -36,6 +36,12 @@ export interface TextEditorOptions {
    * follow.
    */
   readonly?: MaybeRefOrGetter<boolean>
+  /**
+   * Whether the editor takes focus once it is mounted. An editor that is one
+   * field among several shouldn't pull focus away from the rest of the form.
+   * @default true
+   */
+  autofocus?: boolean
   slashCommands?: boolean
   placeholder?: string
   /** Accessible name for the editor's role="textbox" element (aria-label). */
