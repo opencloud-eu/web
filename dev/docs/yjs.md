@@ -312,13 +312,22 @@ Any other peer would publish the copy it opened with - or its own last serializa
 The detecting client captures that body at detection time rather than reading `currentContent` when recovery runs.
 
 Several clients can detect the same write at once, and only one may rewrite the room, or the body lands twice. Like
-seeding, the Yjs server decides: each client asks for the `recover:<etag>` grant, and only the one granted goes on. It
-raises `isStale` with `nativeEtag`, then resets, re-hydrates and commits, all in one go but as separate updates, so
-peers see the flag before the rewrite. The others wrote nothing and simply receive the rewrite. A joining client waits
-for the answer, and the rewrite, before its editor mounts. The grant lasts as long as the holder's connection and is not
-passed on when it leaves, since nobody else holds its body. A peer that joins while `isStale` is still up recovers to
-the etag it fetched itself, even if the flag names an older one - so the room does not stay stuck if the peer that
-raised the flag left, or the file moved on since.
+seeding, the Yjs server decides: each client asks for the room's `recover` grant with the etag it holds the body of
+(`recover:<etag>`), and only the one granted goes on. It raises `isStale` with `nativeEtag`, then resets, re-hydrates
+and commits, all in one go but as separate updates, so peers see the flag before the rewrite. The others wrote nothing
+and simply receive the rewrite. A joining client waits for the answer, and the rewrite, before its editor mounts.
+
+There is one `recover` grant per room, so two rewrites never run at once. While it is held, every other writer is
+refused, whatever etag it asks for. The server frees the grant once its own replica holds the granted etag, and flushes
+the room's updates before any grant goes out, so the next writer always has the rewrite before its grant. A holder
+that gives the job up without writing releases it itself, one that leaves loses it, and one that does neither loses it
+after a 30 s lease. The grant is never passed to a client that did not ask, since nobody else holds its body.
+
+After back-to-back writes, two peers may have fetched different bodies. The one refused leaves it to the winner: every
+writer hears every write, and the winner handles the newer event once its own recovery is done, fetches the newer body
+and recovers again. A peer that joins while
+`isStale` is still up recovers to the etag it fetched itself, even if the flag names an older one - so the room does not
+stay stuck if the peer that raised the flag left, or the file moved on since.
 
 A joining writer that does not rewrite the room itself - refused, or holding the room's etag - takes the room's etag
 instead of the one it fetched. It still shows the room's old content, and with the fresh etag its next save
@@ -363,7 +372,7 @@ sequenceDiagram
     AW->>S: applyExternalUpdate {content, etag}
     Note over S: flush pending content report,<br/>then: unsaved work?
     alt clean
-        S->>S: recover:etag grant from the Yjs server
+        S->>S: recover grant for etag from the Yjs server
         Note over S: refused - another peer recovers, skip
         S->>P: isStale, then reset + hydrate, then commit with etag
         S->>AW: onContentChange, onServerContentChange, onEtagChange
@@ -563,8 +572,9 @@ server lets one of them rewrite. Gaps remain:
 - When nobody in the room hears the event, the room stays stale until a writer joins or a save hits the 412.
 - When the grant holder leaves after it was granted but before it rewrote, the refused peers only retry once something
   else makes them look (a later event, a join, a 412).
-- The grant is keyed by the fresh etag. Two peers that fetched different etags after back-to-back writes can both be
-  granted, and if their rewrites cross, the room holds the body twice.
+- After back-to-back writes, the room catches up with the newer one only through the winner's next event. When the
+  winner leaves first, or never hears it, the room keeps the older body with its own etag, so the next save conflicts
+  instead of overwriting the newer file.
 
 **SSE is best effort.** File events reach the members of the space only, so a share recipient of a personal-space file
 depends on the owner's tab to flag the room. A restored file version produces no SSE event at all today.

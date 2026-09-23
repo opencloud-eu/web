@@ -571,8 +571,8 @@ describe('seeding arbitration', () => {
     expect(peer.sendStateless).toHaveBeenCalledWith(SEED_GRANTED)
   })
 
-  it.each(['', 'other', 'recover:' + 'x'.repeat(249)])(
-    'ignores a request for an unknown or oversized key',
+  it.each(['', 'other', 'seed:x', 'recover', 'recover:', 'recover:' + 'x'.repeat(257)])(
+    'ignores a request for an unknown key or a malformed argument',
     async (key) => {
       const conn = connection('a')
 
@@ -584,12 +584,25 @@ describe('seeding arbitration', () => {
 })
 
 // Every clean writer hears about an external write and asks to rewrite the
-// room from the body it fetched. Exactly one may, or the body lands twice.
+// room from the body it fetched. One at a time may, or the body lands twice.
 describe('recovery arbitration', () => {
   const RECOVER = 'recover:etag-1'
+  const NEWER = 'recover:etag-2'
 
   function request(conn: FakeConnection, key = RECOVER) {
     return statelessPayload(conn, 'doc', GrantMessage.Request + key)
+  }
+
+  function release(conn: FakeConnection, key = RECOVER) {
+    return statelessPayload(conn, 'doc', GrantMessage.Release + key)
+  }
+
+  // The server's replica after a peer's update, with the etag it stamped.
+  function change(etag?: string) {
+    return {
+      documentName: 'doc',
+      document: { getMap: () => new Map(etag ? [['etag', etag]] : []) }
+    } as any
   }
 
   it('grants the first writer and denies the next', async () => {
@@ -604,29 +617,103 @@ describe('recovery arbitration', () => {
     expect(second.sendStateless).toHaveBeenCalledWith(GrantMessage.Denied + RECOVER)
   })
 
-  it('grants each etag and the seed separately', async () => {
+  // Two back-to-back writes: both rewrites would merge into one doc.
+  it('denies a writer asking for another etag while the grant is held', async () => {
     const hooks = getHooks()
-    const seeder = connection('a')
-    const first = connection('b')
-    const second = connection('c')
+    const second = connection('b')
 
-    await hooks.onStateless(statelessPayload(seeder))
-    await hooks.onStateless(request(first))
-    await hooks.onStateless(request(second, 'recover:etag-2'))
+    await hooks.onStateless(request(connection('a')))
+    await hooks.onStateless(request(second, NEWER))
 
-    expect(seeder.sendStateless).toHaveBeenCalledWith(SEED_GRANTED)
-    expect(first.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + RECOVER)
-    expect(second.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + 'recover:etag-2')
+    expect(second.sendStateless).toHaveBeenCalledWith(GrantMessage.Denied + NEWER)
+  })
+
+  it('denies a read-only connection', async () => {
+    const conn = connection('a', true)
+
+    await getHooks().onStateless(request(conn))
+
+    expect(conn.sendStateless).toHaveBeenCalledWith(GrantMessage.Denied + RECOVER)
+  })
+
+  it('frees the grant once the room holds the granted etag', async () => {
+    const hooks = getHooks()
+    const next = connection('b')
+
+    await hooks.onStateless(request(connection('a')))
+    await hooks.onChange(change('etag-0'))
+    await hooks.onStateless(request(next, NEWER))
+    expect(next.sendStateless).toHaveBeenLastCalledWith(GrantMessage.Denied + NEWER)
+
+    await hooks.onChange(change('etag-1'))
+    await hooks.onStateless(request(next, NEWER))
+    expect(next.sendStateless).toHaveBeenLastCalledWith(GrantMessage.Granted + NEWER)
+  })
+
+  // The commit that freed the grant may still sit in the room's batch.
+  it('sends the room its pending updates before a grant', async () => {
+    const hooks = getHooks()
+    const calls: string[] = []
+    const conn = {
+      ...connection('a'),
+      document: { flush: vi.fn(() => calls.push('flush')) }
+    }
+    conn.sendStateless.mockImplementation((payload: string) => calls.push(payload))
+
+    await hooks.onStateless(request(conn))
+
+    expect(calls).toEqual(['flush', GrantMessage.Granted + RECOVER])
+  })
+
+  it('frees the grant when the holder releases it', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const next = connection('b')
+
+    await hooks.onStateless(request(holder))
+    await hooks.onStateless(release(holder))
+    await hooks.onStateless(request(next, NEWER))
+
+    expect(next.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + NEWER)
+  })
+
+  it('ignores a release from anyone but the holder, or for another etag', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const next = connection('b')
+
+    await hooks.onStateless(request(holder))
+    await hooks.onStateless(release(next))
+    await hooks.onStateless(release(holder, NEWER))
+    await hooks.onStateless(request(next, NEWER))
+
+    expect(next.sendStateless).toHaveBeenCalledWith(GrantMessage.Denied + NEWER)
+  })
+
+  // A holder that neither rewrites nor leaves must not block the room forever.
+  it('frees the grant when the lease runs out', async () => {
+    vi.useFakeTimers()
+    try {
+      const hooks = getHooks()
+      const next = connection('b')
+
+      await hooks.onStateless(request(connection('a')))
+      vi.advanceTimersByTime(30_000)
+      await hooks.onStateless(request(next, NEWER))
+
+      expect(next.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + NEWER)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   // Only the requester holds the body to recover from, so a grant handed to
   // anyone else would be one they cannot use.
   it('does not pass the grant on when the holder leaves, but grants the next request', async () => {
     const hooks = getHooks()
-    const holder = connection('a')
     const peer = connection('b')
 
-    await hooks.onStateless(request(holder))
+    await hooks.onStateless(request(connection('a')))
     await hooks.onDisconnect(disconnectPayload({ socketId: 'a', remaining: [peer] }))
     expect(peer.sendStateless).not.toHaveBeenCalled()
 
@@ -634,16 +721,29 @@ describe('recovery arbitration', () => {
     expect(peer.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + RECOVER)
   })
 
-  it("drops a writer's older recovery grant when it asks for a newer one", async () => {
+  it('lets the holder switch to a newer etag', async () => {
     const hooks = getHooks()
     const holder = connection('a')
     const peer = connection('b')
 
     await hooks.onStateless(request(holder))
-    await hooks.onStateless(request(holder, 'recover:etag-2'))
+    await hooks.onStateless(request(holder, NEWER))
     await hooks.onStateless(request(peer))
 
-    expect(peer.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + RECOVER)
+    expect(holder.sendStateless).toHaveBeenLastCalledWith(GrantMessage.Granted + NEWER)
+    expect(peer.sendStateless).toHaveBeenCalledWith(GrantMessage.Denied + RECOVER)
+  })
+
+  it('grants seeding and recovery separately', async () => {
+    const hooks = getHooks()
+    const seeder = connection('a')
+    const recoverer = connection('b')
+
+    await hooks.onStateless(statelessPayload(seeder))
+    await hooks.onStateless(request(recoverer))
+
+    expect(seeder.sendStateless).toHaveBeenCalledWith(SEED_GRANTED)
+    expect(recoverer.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + RECOVER)
   })
 
   it('passes only the seed grant on when the holder leaves with both', async () => {

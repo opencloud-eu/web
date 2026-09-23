@@ -19,17 +19,28 @@ Every connection is authenticated and authorized against OpenCloud:
 
 ## Seeding and recovering a room
 
-Two jobs may only be done by exactly one client per room, or the room ends up holding the file body
-twice: seeding an empty room (grant `seed`), and rewriting a stale room after the file changed
-outside it (grant `recover:<etag>`). The yjs server decides who, because it is the only party that
-sees every connection to a room at once. A client asks over a stateless message, and gets a grant
-or a refusal. The first writer to ask for a key gets it, read-only connections are always refused.
+Two jobs may only be done by one client at a time per room, or the room ends up holding the file
+body twice: seeding an empty room (grant `seed`), and rewriting a stale room after the file changed
+outside it (grant `recover`, requested as `recover:<etag>`). The yjs server decides who, because it
+is the only party that sees every connection to a room at once. A client asks over a stateless
+message, and gets a grant or a refusal. Read-only connections are always refused.
 
-Grants live in process memory and last as long as the holder's connection. If the holder of `seed`
-leaves before it seeds, the grant passes to another writer in the room. A recovery grant is not
-passed on, because only the requester holds the body to recover from; the next client that asks
-gets it. A grant for a job that is already done is harmless: it is permission, not an instruction,
-and the client checks its own document first.
+There is one `recover` grant per room, and the etag says which body the requester would rewrite the
+room with. While it is held, every other writer is refused, whatever etag it asks for. Each grant
+follows its own policy in `src/lib/grants.ts`:
+
+| Grant     | Released when                                                         | Holder leaves               |
+| --------- | --------------------------------------------------------------------- | --------------------------- |
+| `seed`    | never                                                                 | passed on to another writer |
+| `recover` | the room holds the granted etag, the holder releases it, or 30 s pass | freed                       |
+
+The server watches its own replica for the granted etag, and sends the room's pending updates
+before any grant, so the next writer always has the rewrite before its grant. A recovery grant is
+never passed to a client that did not ask, because only the requester holds the body to recover
+from.
+
+Grants live in process memory. A grant for a job that is already done is harmless: it is permission,
+not an instruction, and the client checks its own document first.
 
 ## Configuration
 
