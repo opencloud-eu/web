@@ -15,9 +15,7 @@
         <span v-text="$gettext('Edit')" />
       </oc-button>
     </account-heading>
-    <avatar-upload
-      class="account-page-avatar bg-role-surface-container border border-role-outline-variant rounded-xl p-4"
-    >
+    <avatar-upload class="account-page-avatar bg-role-surface-container rounded-xl p-4">
       <account-label
         class="text-center md:text-left"
         :label="$gettext('Profile picture')"
@@ -29,7 +27,7 @@
     <account-heading
       tag="h2"
       :title="$gettext('Account information')"
-      :subtitle="$gettext('Managed by your administrator.')"
+      :subtitle="$gettext('Details about your account.')"
     />
     <account-table
       :fields="[$gettext('Information name'), $gettext('Information value')]"
