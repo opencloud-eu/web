@@ -34,9 +34,9 @@
               <oc-table-body>
                 <oc-table-tr v-for="font in fontsData" :key="font.family">
                   <oc-table-td>{{ font.family }}</oc-table-td>
-                  <oc-table-td
-                    ><img :src="`/collaboration/fonts/preview/${font.file}`" alt=""
-                  /></oc-table-td>
+                  <oc-table-td>
+                    <img v-if="previewUrls[font.file]" :src="previewUrls[font.file]" alt="" />
+                  </oc-table-td>
                   <oc-table-td class="hidden md:table-cell">{{ font.version }}</oc-table-td>
                   <oc-table-td class="hidden md:table-cell">{{ font.designer }}</oc-table-td>
                   <oc-table-td class="text-right">
@@ -62,7 +62,8 @@ import {
   useIsTopBarSticky
 } from '@opencloud-eu/web-pkg'
 import { useAsyncState } from '@vueuse/core'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, unref, watch } from 'vue'
+import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 
@@ -112,6 +113,46 @@ const {
   }
 }, null)
 
+const previewUrls = ref<Record<string, string>>({})
+
+function revokePreviewUrls() {
+  Object.values(unref(previewUrls)).forEach((url) => URL.revokeObjectURL(url))
+  previewUrls.value = {}
+}
+
+const loadPreviewsTask = useTask(function* (signal, fonts: Font[]) {
+  const blobs: [string, Blob][] = yield Promise.all(
+    fonts.map(async (font) => {
+      try {
+        const { data } = await httpClient.get<Blob>(
+          `/collaboration/fonts/preview/${encodeURIComponent(font.file)}`,
+          { responseType: 'blob', signal }
+        )
+        return [font.file, data]
+      } catch (e) {
+        if (!signal.aborted) {
+          console.error(e)
+        }
+        return null
+      }
+    })
+  )
+
+  revokePreviewUrls()
+  previewUrls.value = Object.fromEntries(
+    blobs.filter((entry) => entry !== null).map(([file, blob]) => [file, URL.createObjectURL(blob)])
+  )
+}).restartable()
+
+watch(fontsData, (fonts) => {
+  if (!fonts) {
+    return
+  }
+  loadPreviewsTask.perform(fonts)
+})
+
+onBeforeUnmount(revokePreviewUrls)
+
 const files = ref<FileList>()
 watch(files, async (newFiles) => {
   await Promise.all(
@@ -135,7 +176,7 @@ watch(files, async (newFiles) => {
 
 const deleteFont = async (font: Font) => {
   try {
-    await httpClient.delete(`/collaboration/fonts/manage/${font.file}`)
+    await httpClient.delete(`/collaboration/fonts/manage/${encodeURIComponent(font.file)}`)
   } catch (e) {
     console.error(e)
     showErrorMessage({
