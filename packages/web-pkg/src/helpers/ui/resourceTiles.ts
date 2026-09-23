@@ -18,18 +18,6 @@ export const resourceTilesSortFields: SortField[] = [
     sortDir: SortDir.Desc
   },
   {
-    label: $gettext('Newest'),
-    name: 'mdate',
-    sortable: (date: string) => new Date(date).valueOf(),
-    sortDir: SortDir.Desc
-  },
-  {
-    label: $gettext('Oldest'),
-    name: 'mdate',
-    sortable: (date: string) => new Date(date).valueOf(),
-    sortDir: SortDir.Asc
-  },
-  {
     label: $gettext('Largest'),
     name: 'size',
     sortable: true,
@@ -40,38 +28,115 @@ export const resourceTilesSortFields: SortField[] = [
     name: 'size',
     sortable: true,
     sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Recently modified'),
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Desc
+  },
+  {
+    label: $gettext('Least recently modified'),
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Asc
   }
 ]
 
 export const spaceTilesSortFields: SortField[] = [
-  ...resourceTilesSortFields,
   {
-    label: $gettext('Remaining quota'),
-    name: 'remainingQuota',
-    prop: 'spaceQuota.remaining',
+    label: $gettext('A-Z'),
+    name: 'name',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Z-A'),
+    name: 'name',
     sortable: true,
     sortDir: SortDir.Desc
   },
   {
-    label: $gettext('Total quota'),
+    label: $gettext('Most members'),
+    name: 'members',
+    prop: 'root.permissions',
+    sortable: (permissions: unknown[]) => permissions?.length || 1,
+    sortDir: SortDir.Desc
+  },
+  {
+    label: $gettext('Fewest members'),
+    name: 'members',
+    prop: 'root.permissions',
+    sortable: (permissions: unknown[]) => permissions?.length || 1,
+    sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Most total quota'),
     name: 'totalQuota',
     prop: 'spaceQuota.total',
     sortable: true,
     sortDir: SortDir.Desc
   },
   {
-    label: $gettext('Used quota'),
+    label: $gettext('Least total quota'),
+    name: 'totalQuota',
+    prop: 'spaceQuota.total',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Most used quota'),
     name: 'usedQuota',
     prop: 'spaceQuota.used',
     sortable: true,
     sortDir: SortDir.Desc
   },
   {
-    label: $gettext('Members'),
-    name: 'members',
-    prop: 'root.permissions',
-    sortable: (permissions: unknown[]) => permissions?.length || 1,
+    label: $gettext('Least used quota'),
+    name: 'usedQuota',
+    prop: 'spaceQuota.used',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Most remaining quota'),
+    name: 'remainingQuota',
+    prop: 'spaceQuota.remaining',
+    sortable: true,
     sortDir: SortDir.Desc
+  },
+  {
+    label: $gettext('Least remaining quota'),
+    name: 'remainingQuota',
+    prop: 'spaceQuota.remaining',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Enabled first'),
+    name: 'indicators',
+    prop: 'disabled',
+    sortable: (disabled: boolean) => Number(!!disabled),
+    sortDir: SortDir.Asc
+  },
+  {
+    label: $gettext('Disabled first'),
+    name: 'indicators',
+    prop: 'disabled',
+    sortable: (disabled: boolean) => Number(!!disabled),
+    sortDir: SortDir.Desc
+  },
+  {
+    label: $gettext('Recently modified'),
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Desc
+  },
+  {
+    label: $gettext('Least recently modified'),
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Asc
   }
 ]
 

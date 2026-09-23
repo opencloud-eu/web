@@ -27,15 +27,15 @@ export const spaceTableSortFields: SortField[] = [
     sortDir: SortDir.Desc
   },
   {
-    name: 'mdate',
-    sortable: (date: string) => new Date(date).valueOf(),
-    sortDir: SortDir.Desc
-  },
-  {
     name: 'indicators',
     prop: 'disabled',
     sortable: (disabled: boolean) => Number(!!disabled),
     sortDir: SortDir.Asc
+  },
+  {
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Desc
   }
 ]
 
