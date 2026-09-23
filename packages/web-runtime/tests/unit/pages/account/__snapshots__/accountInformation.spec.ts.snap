@@ -97,7 +97,7 @@ exports[`account information page > public link context > should render a limite
   <div class="flex justify-between items-center gap-4 mb-4 mt-8">
     <div>
       <h2 class="my-0 text-lg">Account information</h2>
-      <p class="text-sm text-role-on-surface-variant mt-1 mb-0">Managed by your administrator.</p>
+      <p class="text-sm text-role-on-surface-variant mt-1 mb-0">Details about your account.</p>
     </div>
   </div>
   <div class="account-table account-page-info">
