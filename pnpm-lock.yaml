@@ -726,9 +726,16 @@ importers:
       '@vueuse/core':
         specifier: ^14.0.0
         version: 14.4.0(vue@3.5.43(typescript@6.0.3))
+      vue-concurrency:
+        specifier: 5.0.3
+        version: 5.0.3(vue@3.5.43(typescript@6.0.3))
       vue3-gettext:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.43(typescript@6.0.3))
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
 
   packages/web-app-pdf-viewer:
     dependencies:

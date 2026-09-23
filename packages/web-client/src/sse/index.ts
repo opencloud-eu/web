@@ -1,4 +1,18 @@
 import { fetchEventSource, FetchEventSourceInit } from '@microsoft/fetch-event-source'
+import { z } from 'zod'
+
+/** Payload of every file and space related SSE event. */
+export const sseEventSchema = z.object({
+  itemid: z.string().optional(),
+  parentitemid: z.string().optional(),
+  spaceid: z.string().optional(),
+  initiatorid: z.string().optional(),
+  etag: z.string().optional(),
+  affecteduserids: z.array(z.string()).optional().nullable(),
+  sessionid: z.string().optional()
+})
+
+export type SseEventData = z.infer<typeof sseEventSchema>
 
 export enum MESSAGE_TYPE {
   NOTIFICATION = 'userlog-notification',
