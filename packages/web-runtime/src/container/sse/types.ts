@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { sseEventSchema, SseEventData } from '@opencloud-eu/web-client/sse'
 import {
   AuthStore,
   ClientService,
@@ -14,17 +14,9 @@ import { Router } from 'vue-router'
 import { Language } from 'vue3-gettext'
 import PQueue from 'p-queue'
 
-export const eventSchema = z.object({
-  itemid: z.string().optional(),
-  parentitemid: z.string().optional(),
-  spaceid: z.string().optional(),
-  initiatorid: z.string().optional(),
-  etag: z.string().optional(),
-  affecteduserids: z.array(z.string()).optional().nullable(),
-  sessionid: z.string().optional()
-})
+export const eventSchema = sseEventSchema
 
-export type EventSchemaType = z.infer<typeof eventSchema>
+export type EventSchemaType = SseEventData
 
 export interface SSEEventOptions {
   resourcesStore: ResourcesStore
