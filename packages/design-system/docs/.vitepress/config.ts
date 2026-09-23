@@ -266,6 +266,10 @@ export default defineConfig({
               link: '/OcSearchBar'
             },
             {
+              text: 'OcSection',
+              link: '/OcSection'
+            },
+            {
               text: 'OcSelect',
               link: '/OcSelect'
             },
