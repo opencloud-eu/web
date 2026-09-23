@@ -6,8 +6,15 @@ import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourc
 import { createRouter, createMemoryHistory } from 'vue-router'
 
 import { defaultComponentMocks, defaultPlugins } from '@opencloud-eu/web-test-helpers'
-import { AppBar, ItemFilter, queryItemAsString, useResourcesStore } from '@opencloud-eu/web-pkg'
-import { defineComponent, h, ref } from 'vue'
+import {
+  AppBar,
+  ItemFilter,
+  queryItemAsString,
+  ResourceTiles,
+  SortField,
+  useResourcesStore
+} from '@opencloud-eu/web-pkg'
+import { Component, computed, defineComponent, h, ref, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
@@ -44,6 +51,19 @@ describe('List component', () => {
   it('should render resource table if resources found', () => {
     const { wrapper } = getWrapper({ resources: [mock<Resource>()] })
     expect(wrapper.find(selectors.resourceTableStub).exists()).toBeTruthy()
+  })
+  it('passes all sort fields to the tiles view', () => {
+    const sortFields = [
+      { name: 'name', sortable: true },
+      { name: 'size', sortable: true },
+      { name: 'mdate', sortable: true }
+    ]
+    const { wrapper } = getWrapper({
+      resources: [mock<Resource>()],
+      sortFields,
+      folderViewComponent: ResourceTiles
+    })
+    expect(wrapper.findComponent(ResourceTiles).props('sortFields')).toEqual(sortFields)
   })
   it('resets the initial store file state', () => {
     getWrapper({ resources: [mock<Resource>()] })
@@ -220,7 +240,9 @@ function getWrapper({
   fullTextSearchEnabled = true,
   availableLastModifiedValues = {},
   lastModifiedFilterQuery = null,
-  mocks = {}
+  mocks = {},
+  sortFields = [],
+  folderViewComponent = undefined
 }: {
   availableTags?: string[]
   resources?: Resource[]
@@ -231,6 +253,8 @@ function getWrapper({
   availableLastModifiedValues?: Record<string, string[]>
   lastModifiedFilterQuery?: string
   mocks?: Record<string, unknown>
+  sortFields?: SortField[]
+  folderViewComponent?: Component
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
@@ -238,8 +262,15 @@ function getWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => lastModifiedFilterQuery)
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
-    paginatedResources: ref(resources)
+    paginatedResources: ref(resources),
+    sortFields: ref(sortFields)
   })
+  if (folderViewComponent) {
+    resourcesViewDetailsMock.folderView = computed(() => ({
+      ...unref(resourcesViewDetailsMock.folderView),
+      component: folderViewComponent
+    }))
+  }
   vi.mocked(useResourcesViewDefaults).mockImplementation(() => resourcesViewDetailsMock)
 
   const localMocks = {
