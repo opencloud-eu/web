@@ -53,11 +53,6 @@
 </template>
 
 <script setup lang="ts">
-/**
- * The outline sits in a zero-height sticky rail along the right edge of the
- * scroll container, so it stays in the upper right while the content scrolls
- * underneath and takes no room in the flow.
- */
 import { computed, ref, unref, watch } from 'vue'
 import { useEventListener } from '@vueuse/core'
 import type { TableOfContentDataItem } from '@tiptap/extension-table-of-contents'
@@ -76,10 +71,6 @@ const activeId = ref<string | null>(null)
 
 const items = computed(() => unref(editor.state.tableOfContents) ?? [])
 
-/**
- * The active heading is the last one whose top has scrolled past the top of
- * the container, or the first heading while none has yet.
- */
 function updateActiveId() {
   const headings = unref(items)
   if (!headings.length || !scrollContainer) {
@@ -87,7 +78,6 @@ function updateActiveId() {
     return
   }
 
-  // A little slack, so a heading just scrolled to counts as reached.
   const threshold = scrollContainer.getBoundingClientRect().top + 24
   const reached = headings.filter(({ dom }) => dom.getBoundingClientRect().top <= threshold)
   activeId.value = (reached.at(-1) ?? headings[0]).id

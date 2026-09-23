@@ -53,12 +53,6 @@ export interface TextEditorOptions {
    */
   excludeActions?: string[]
   mentions?: TextEditorMentionsOptions
-  /**
-   * Show a collapsible outline of the document's headings, floating in the
-   * upper right of the content. Only content types whose strategy collects
-   * headings (markdown, tiptap-json) have anything to show.
-   * @default false
-   */
   tableOfContents?: boolean
   onUpdate?: (content: string) => void
   /**
@@ -101,11 +95,6 @@ export interface TextEditorState {
   linkPanel: Ref<TextEditorLinkPanelRequest | null>
   editorZoom: Ref<number>
   currentResource?: Ref<Resource | null>
-  /**
-   * The document's headings, kept up to date by the table of contents
-   * extension. Absent for editors that never render the outline (e.g. the
-   * headless Yjs adapter).
-   */
   tableOfContents?: Ref<TableOfContentData>
 }
 
@@ -125,7 +114,6 @@ export interface TextEditorInstance {
   yjsStatus: Ref<YjsStatus | null>
   /** Users in the Yjs room, own user first. Empty without an awareness. */
   collaborators: Ref<YjsCollaborator[]>
-  /** Whether the content shows the floating table of contents. */
   showTableOfContents: boolean
   actionGroups(): EditorActionGroup[]
   getContent(): string

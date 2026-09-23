@@ -21,8 +21,6 @@ function createState(): TextEditorState {
   }
 }
 
-// The extension collects its headings in `onCreate`, which Tiptap emits
-// asynchronously after construction.
 function createEditor(options: ConstructorParameters<typeof Editor>[0]): Promise<Editor> {
   return new Promise((resolve) => {
     const editor = new Editor({
