@@ -51,6 +51,26 @@ describe('ExtensionsList', () => {
     ])
   })
 
+  it('sorts by status ascending and descending', () => {
+    const { wrapper } = getWrapper({
+      extensions: [
+        { name: 'Alpha', version: '1.0.0', loaded: false },
+        { name: 'Beta', version: '1.0.0', loaded: true }
+      ]
+    })
+
+    ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Asc })
+    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
+      'Beta',
+      'Alpha'
+    ])
+    ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Desc })
+    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
+      'Alpha',
+      'Beta'
+    ])
+  })
+
   it('highlights the matching part of app names', () => {
     const ocTableStub = {
       props: ['data'],

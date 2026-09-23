@@ -73,7 +73,9 @@ const { extensions, filterTerm = '' } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-const sortBy = ref<keyof ExtensionInfo>('name')
+type SortField = 'name' | 'status'
+
+const sortBy = ref<SortField>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 
 const filteredExtensions = computed(() => {
@@ -90,14 +92,19 @@ const filteredExtensions = computed(() => {
 
 const items = computed(() => {
   return [...unref(filteredExtensions)].sort((a, b) => {
-    const c = (a[unref(sortBy)] || '').toString()
-    const d = (b[unref(sortBy)] || '').toString()
+    const field = unref(sortBy)
+    if (field === 'status') {
+      const result = Number(b.loaded) - Number(a.loaded)
+      return unref(sortDir) === SortDir.Desc ? -result : result
+    }
+    const c = (a[field] || '').toString()
+    const d = (b[field] || '').toString()
     return unref(sortDir) === SortDir.Desc ? d.localeCompare(c) : c.localeCompare(d)
   })
 })
 
 function handleSort(event: { sortBy: string; sortDir: SortDir }) {
-  sortBy.value = event.sortBy as keyof ExtensionInfo
+  sortBy.value = event.sortBy as SortField
   sortDir.value = event.sortDir
 }
 
@@ -121,6 +128,7 @@ const fields = computed(() => [
     name: 'status',
     title: $gettext('Status'),
     type: 'slot',
+    sortable: true,
     width: 'shrink' as const
   }
 ])
