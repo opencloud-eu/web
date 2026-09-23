@@ -94,17 +94,20 @@ function getStatusLabel(extension: ExtensionInfo) {
   return extension.loaded ? $gettext('Active') : $gettext('Failed')
 }
 
-function getSortValue(extension: ExtensionInfo) {
-  if (unref(sortBy) === 'status') {
-    return getStatusLabel(extension)
-  }
-  return extension.name || ''
+function compareByName(a: ExtensionInfo, b: ExtensionInfo) {
+  return (a.name || '').localeCompare(b.name || '')
+}
+
+function compareByStatus(a: ExtensionInfo, b: ExtensionInfo) {
+  return Number(b.loaded) - Number(a.loaded)
 }
 
 const items = computed(() => {
   return [...unref(filteredExtensions)].sort((a, b) => {
     const result =
-      getSortValue(a).localeCompare(getSortValue(b)) || (a.name || '').localeCompare(b.name || '')
+      unref(sortBy) === 'status'
+        ? compareByStatus(a, b) || compareByName(a, b)
+        : compareByName(a, b)
     return unref(sortDir) === SortDir.Desc ? -result : result
   })
 })
