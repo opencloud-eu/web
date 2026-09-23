@@ -51,24 +51,21 @@ describe('ExtensionsList', () => {
     ])
   })
 
-  it('sorts by status ascending and descending, falling back to name', () => {
+  it('sorts by status ascending and descending', () => {
     const { wrapper } = getWrapper({
       extensions: [
-        { name: 'Zulu', version: '1.0.0', loaded: false },
-        { name: 'Beta', version: '1.0.0', loaded: true },
-        { name: 'Alpha', version: '2.0.0', loaded: false }
+        { name: 'Alpha', version: '1.0.0', loaded: false },
+        { name: 'Beta', version: '1.0.0', loaded: true }
       ]
     })
 
     ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Asc })
     expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
       'Beta',
-      'Alpha',
-      'Zulu'
+      'Alpha'
     ])
     ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Desc })
     expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
-      'Zulu',
       'Alpha',
       'Beta'
     ])

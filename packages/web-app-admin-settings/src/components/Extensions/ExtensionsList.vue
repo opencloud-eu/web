@@ -39,7 +39,7 @@
         size="small"
         class="border-0 !rounded-sm !bg-green-200 !text-green-900"
       >
-        <span v-text="getStatusLabel(item)" />
+        <span v-text="$gettext('Active')" />
       </oc-tag>
       <oc-tag
         v-else
@@ -47,7 +47,7 @@
         size="small"
         class="border-0 !rounded-sm !bg-red-200 !text-red-900"
       >
-        <span v-text="getStatusLabel(item)" />
+        <span v-text="$gettext('Failed')" />
       </oc-tag>
     </template>
   </oc-table>
@@ -73,9 +73,7 @@ const { extensions, filterTerm = '' } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-type SortField = 'name' | 'status'
-
-const sortBy = ref<SortField>('name')
+const sortBy = ref<keyof ExtensionInfo | 'status'>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 
 const filteredExtensions = computed(() => {
@@ -90,30 +88,21 @@ const filteredExtensions = computed(() => {
   })
 })
 
-function getStatusLabel(extension: ExtensionInfo) {
-  return extension.loaded ? $gettext('Active') : $gettext('Failed')
-}
-
-function compareByName(a: ExtensionInfo, b: ExtensionInfo) {
-  return (a.name || '').localeCompare(b.name || '')
-}
-
-function compareByStatus(a: ExtensionInfo, b: ExtensionInfo) {
-  return Number(b.loaded) - Number(a.loaded)
-}
-
 const items = computed(() => {
   return [...unref(filteredExtensions)].sort((a, b) => {
-    const result =
-      unref(sortBy) === 'status'
-        ? compareByStatus(a, b) || compareByName(a, b)
-        : compareByName(a, b)
-    return unref(sortDir) === SortDir.Desc ? -result : result
+    const field = unref(sortBy)
+    if (field === 'status') {
+      const result = Number(b.loaded) - Number(a.loaded)
+      return unref(sortDir) === SortDir.Desc ? -result : result
+    }
+    const c = (a[field] || '').toString()
+    const d = (b[field] || '').toString()
+    return unref(sortDir) === SortDir.Desc ? d.localeCompare(c) : c.localeCompare(d)
   })
 })
 
 function handleSort(event: { sortBy: string; sortDir: SortDir }) {
-  sortBy.value = event.sortBy as SortField
+  sortBy.value = event.sortBy as keyof ExtensionInfo | 'status'
   sortDir.value = event.sortDir
 }
 
