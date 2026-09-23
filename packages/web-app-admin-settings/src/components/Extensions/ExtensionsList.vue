@@ -39,7 +39,7 @@
         size="small"
         class="border-0 !rounded-sm !bg-green-200 !text-green-900"
       >
-        <span v-text="$gettext('Active')" />
+        <span v-text="getStatusLabel(item)" />
       </oc-tag>
       <oc-tag
         v-else
@@ -47,7 +47,7 @@
         size="small"
         class="border-0 !rounded-sm !bg-red-200 !text-red-900"
       >
-        <span v-text="$gettext('Failed')" />
+        <span v-text="getStatusLabel(item)" />
       </oc-tag>
     </template>
   </oc-table>
@@ -73,7 +73,9 @@ const { extensions, filterTerm = '' } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-const sortBy = ref<keyof ExtensionInfo>('name')
+type SortField = 'name' | 'status'
+
+const sortBy = ref<SortField>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 
 const filteredExtensions = computed(() => {
@@ -88,16 +90,27 @@ const filteredExtensions = computed(() => {
   })
 })
 
+function getStatusLabel(extension: ExtensionInfo) {
+  return extension.loaded ? $gettext('Active') : $gettext('Failed')
+}
+
+function getSortValue(extension: ExtensionInfo) {
+  if (unref(sortBy) === 'status') {
+    return getStatusLabel(extension)
+  }
+  return extension.name || ''
+}
+
 const items = computed(() => {
   return [...unref(filteredExtensions)].sort((a, b) => {
-    const c = (a[unref(sortBy)] || '').toString()
-    const d = (b[unref(sortBy)] || '').toString()
-    return unref(sortDir) === SortDir.Desc ? d.localeCompare(c) : c.localeCompare(d)
+    const result =
+      getSortValue(a).localeCompare(getSortValue(b)) || (a.name || '').localeCompare(b.name || '')
+    return unref(sortDir) === SortDir.Desc ? -result : result
   })
 })
 
 function handleSort(event: { sortBy: string; sortDir: SortDir }) {
-  sortBy.value = event.sortBy as keyof ExtensionInfo
+  sortBy.value = event.sortBy as SortField
   sortDir.value = event.sortDir
 }
 
@@ -121,6 +134,7 @@ const fields = computed(() => [
     name: 'status',
     title: $gettext('Status'),
     type: 'slot',
+    sortable: true,
     width: 'shrink' as const
   }
 ])
