@@ -316,7 +316,7 @@ import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
 import {
   determineResourceTableSortFields,
-  spaceStatusSortField
+  spaceTableSortFields
 } from '../../helpers/ui/resourceTable'
 import { FileActionOptions } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
@@ -481,7 +481,10 @@ const fields = computed(() => {
     })
   }
 
-  const sortFields = determineResourceTableSortFields(firstResource)
+  const sortFields = [
+    ...determineResourceTableSortFields(firstResource),
+    ...(resourceType === 'space' ? spaceTableSortFields : [])
+  ]
   fields.push(
     ...(
       [
@@ -637,13 +640,6 @@ const fields = computed(() => {
         return hasField && fieldsDisplayed.includes(field.name)
       })
       .map((field) => {
-        if (field.name === 'indicators' && resourceType === 'space') {
-          Object.assign(field, {
-            sortable: spaceStatusSortField.sortable,
-            sortDir: spaceStatusSortField.sortDir
-          })
-          return field
-        }
         const sortField = sortFields.find((f) => f.name === field.name)
         if (sortField) {
           Object.assign(field, {

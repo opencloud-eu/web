@@ -210,7 +210,7 @@ import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import {
   sortFields as availableSortFields,
-  spaceStatusSortField,
+  spaceTableSortFields,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { defaultFuseOptions, formatFileSize, ResourceIcon } from '@opencloud-eu/web-pkg'
@@ -310,7 +310,7 @@ const filteredSpaces = computed(() => {
 const sortFields = translateSortFields(availableSortFields, language)
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
-  fields: [...sortFields, spaceStatusSortField]
+  fields: [...sortFields, ...spaceTableSortFields]
 })
 
 const {

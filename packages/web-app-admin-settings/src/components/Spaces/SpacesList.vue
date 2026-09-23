@@ -153,7 +153,7 @@ import {
   useResourceIndicators,
   useSort,
   sortFields as availableSortFields,
-  spaceStatusSortField,
+  spaceTableSortFields,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
@@ -201,7 +201,7 @@ const filteredSpaces = computed(() => filter(unref(spaces), filterTerm))
 const sortFields = translateSortFields(availableSortFields, language)
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
-  fields: [...sortFields, spaceStatusSortField]
+  fields: [...sortFields, ...spaceTableSortFields]
 })
 
 const highlighted = computed(() => unref(selectedSpaces).map((s) => s.id))
