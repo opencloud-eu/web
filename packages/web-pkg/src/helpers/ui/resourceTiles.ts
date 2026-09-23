@@ -4,7 +4,7 @@ import { Language } from 'vue3-gettext'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { $gettext } from '../../utils/dummyGettext'
 
-export const sortFields: SortField[] = [
+export const resourceTilesSortFields: SortField[] = [
   {
     label: $gettext('A-Z'),
     name: 'name',
@@ -40,7 +40,11 @@ export const sortFields: SortField[] = [
     name: 'size',
     sortable: true,
     sortDir: SortDir.Asc
-  },
+  }
+]
+
+export const spaceTilesSortFields: SortField[] = [
+  ...resourceTilesSortFields,
   {
     label: $gettext('Remaining quota'),
     name: 'remainingQuota',
@@ -76,7 +80,7 @@ export const determineResourceTilesSortFields = (firstResource: Resource): SortF
     return []
   }
 
-  return sortFields.filter((field) =>
+  return resourceTilesSortFields.filter((field) =>
     Object.prototype.hasOwnProperty.call(firstResource, field.name)
   )
 }

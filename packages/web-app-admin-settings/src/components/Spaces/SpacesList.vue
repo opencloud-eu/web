@@ -152,7 +152,7 @@ import {
   usePagination,
   useResourceIndicators,
   useSort,
-  sortFields as availableSortFields,
+  spaceTilesSortFields,
   spaceTableSortFields,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
@@ -198,7 +198,7 @@ const filter = (spaces: SpaceResource[], filterTerm: string) => {
 
 const filteredSpaces = computed(() => filter(unref(spaces), filterTerm))
 
-const sortFields = translateSortFields(availableSortFields, language)
+const sortFields = translateSortFields(spaceTilesSortFields, language)
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
   fields: [...sortFields, ...spaceTableSortFields]
