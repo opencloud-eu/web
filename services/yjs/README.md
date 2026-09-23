@@ -17,17 +17,19 @@ Every connection is authenticated and authorized against OpenCloud:
 - on connect, each client receives its own stamped identity over a stateless message, because Yjs
   never echoes a client's own awareness back to it
 
-## Seeding an empty room
+## Seeding and recovering a room
 
-The first client in a room writes the file body into the Y.Doc. Exactly one client may do that, or
-the room ends up holding the body twice. The yjs server decides which, because it is the only party
-that sees every connection to a room at once. A client asks over a stateless message, and gets a
-grant or a refusal. Read-only connections are always refused.
+Two jobs may only be done by exactly one client per room, or the room ends up holding the file body
+twice: seeding an empty room (grant `seed`), and rewriting a stale room after the file changed
+outside it (grant `recover:<etag>`). The yjs server decides who, because it is the only party that
+sees every connection to a room at once. A client asks over a stateless message, and gets a grant
+or a refusal. The first writer to ask for a key gets it, read-only connections are always refused.
 
-Grants live in process memory and last as long as the holder's connection. If the holder leaves
-before it seeds, the grant passes to another writer in the room. A grant for a room that already has
-content is harmless: it is permission, not an instruction, and the client checks its own document
-first.
+Grants live in process memory and last as long as the holder's connection. If the holder of `seed`
+leaves before it seeds, the grant passes to another writer in the room. A recovery grant is not
+passed on, because only the requester holds the body to recover from; the next client that asks
+gets it. A grant for a job that is already done is harmless: it is permission, not an instruction,
+and the client checks its own document first.
 
 ## Configuration
 

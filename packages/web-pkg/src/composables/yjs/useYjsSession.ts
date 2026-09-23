@@ -153,37 +153,23 @@ const SERIALIZE_DEBOUNCE_MS = 300
 /** How long to wait for the Yjs server before running the session locally. */
 const CONNECT_TIMEOUT_MS = 10_000
 /**
- * Transaction origins this session puts on its own meta writes. The meta
- * observer uses them to tell a peer save (remote update, no string origin)
- * apart from writes the caller already knows about or must not be told about.
- */
-const LOCAL_SAVE_ORIGIN = 'local-save'
-const STALE_RECOVERY_RESET_ORIGIN = 'stale-recovery-reset'
-const STALE_RECOVERY_COMMIT_ORIGIN = 'stale-recovery-commit'
-const HYDRATE_ORIGIN = 'hydrate'
-const EXTERNAL_UPDATE_ORIGIN = 'external-update'
-const ETAG_ADOPT_ORIGIN = 'etag-adopt'
-const OWN_META_ORIGINS: unknown[] = [
-  LOCAL_SAVE_ORIGIN,
-  STALE_RECOVERY_RESET_ORIGIN,
-  STALE_RECOVERY_COMMIT_ORIGIN,
-  HYDRATE_ORIGIN,
-  EXTERNAL_UPDATE_ORIGIN,
-  ETAG_ADOPT_ORIGIN
-]
-/**
  * How long `wasWrittenByRoom` waits for a peer's etag stamp that may still be
  * in flight at conflict time. Only ever paid in full for a genuine external
  * write while peers are present.
  */
 const ROOM_ETAG_GRACE_MS = 1_000
 /**
- * Stateless messages that arbitrate who seeds an empty room. Must match
- * `SeedMessage` in `services/yjs/src/lib/seedGrant.ts`, keep the two in sync.
+ * Stateless messages through which the Yjs server grants a room-wide job to
+ * exactly one client, each followed by the grant key. Must match
+ * `GrantMessage` in `services/yjs/src/lib/grants.ts`, keep the two in sync.
  */
-const SEED_REQUEST = '_oc_seed_request'
-const SEED_GRANTED = '_oc_seed_granted'
-const SEED_DENIED = '_oc_seed_denied'
+const GRANT_REQUEST = '_oc_grant_request:'
+const GRANT_GRANTED = '_oc_grant_granted:'
+const GRANT_DENIED = '_oc_grant_denied:'
+const SEED_GRANT = 'seed'
+function recoveryGrant(etag: string) {
+  return `recover:${etag}`
+}
 /**
  * How long an SSE-triggered check waits for a peer's etag stamp before it
  * treats the write as external.
@@ -221,8 +207,6 @@ interface SessionMeta {
   isStale: boolean
   /** Etag of the fresh file body recovery must settle on. */
   nativeEtag: string
-  /** The client elected to run the stale-state recovery. */
-  recoveryClientId: number
   /**
    * Bumped with every `isStale`. Unlike the flag it is never cleared, so a
    * recovery that arrives whole in one merged update still shows as a change.
@@ -350,12 +334,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
-   * The native file body and its etag captured at the moment etag drift was detected.
-   * Recovery must publish exactly this body.
-   */
-  let staleRecovery: RecoveryPayload | null = null
-
-  /**
    * The doc state behind the last content handed to the caller, i.e. what its
    * next PUT writes. Stamped into `_oc_meta.savedStateVector` after that PUT.
    *
@@ -426,62 +404,15 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
-   * Claim the stale-state recovery: capture the body it must publish (before
-   * the room's own state syncs in and gets reported back into
-   * `currentContent`) and name ourselves. Last write wins, so concurrent
-   * claims elect exactly one client.
+   * Raise the staleness flag for the file body behind `nativeEtag`. Peers
+   * holding unsaved work leave the room on it, see the meta observer.
    */
-  function claimRecovery(
-    doc: Y.Doc,
-    meta: SessionMetaMap,
-    payload: RecoveryPayload = {
-      content: toValue(currentContent),
-      etag: toValue(resource)?.etag ?? ''
-    },
-    origin?: string
-  ) {
-    staleRecovery = payload
-    doc.transact(() => meta.set('recoveryClientId', doc.clientID), origin)
-  }
-
-  /**
-   * Raise the staleness flag and, unless read-only, claim the recovery. The
-   * flag alone would strand the room - later joiners take the `isStale` early
-   * return in `runInitialHydration`, and without a claim and a `nativeEtag`
-   * to claim against, nothing ever clears it. A read-only client flags
-   * without claiming; the `nativeEtag` it leaves lets the first writer
-   * holding the same body pick the claim up.
-   */
-  function flagStale(
-    doc: Y.Doc,
-    meta: SessionMetaMap,
-    {
-      nativeEtag = toValue(resource)?.etag,
-      claim = !unref(effectiveReadOnly),
-      payload,
-      origin
-    }: {
-      nativeEtag?: string
-      claim?: boolean
-      payload?: RecoveryPayload
-      origin?: string
-    } = {}
-  ) {
-    // The claim must be complete before `isStale` goes up: raising the flag
-    // fires our own meta observer, whose recovery run needs the claim.
-    if (claim) claimRecovery(doc, meta, payload, origin)
+  function flagStale(doc: Y.Doc, meta: SessionMetaMap, nativeEtag: string) {
     doc.transact(() => {
-      if (nativeEtag) meta.set('nativeEtag', nativeEtag)
+      meta.set('nativeEtag', nativeEtag)
       meta.set('recoveryEpoch', (meta.get('recoveryEpoch') ?? 0) + 1)
       meta.set('isStale', true)
-    }, origin)
-  }
-
-  /** Whether our freshly fetched etag is the one recovery must settle on. */
-  function canSupplyRecoveryContent(meta: SessionMetaMap): boolean {
-    const target = meta.get('nativeEtag')
-    const ours = toValue(resource)?.etag
-    return Boolean(target && ours && target === ours)
+    })
   }
 
   /**
@@ -491,6 +422,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    */
   function stopProvider(prov: HocuspocusProvider | null) {
     status.value = YjsStatus.Disconnected
+    // No answer can arrive any more.
+    abandonGrants()
     if (!prov) return
     try {
       prov.disconnect()
@@ -572,43 +505,50 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
-   * The seed request this session is waiting on, if any. Also the marker for
-   * "a hydration is in flight": the request is the only thing hydration ever
-   * awaits.
+   * Grant requests waiting on the server's answer, by grant key. A pending
+   * request also marks a hydration or recovery in flight: they are what waits
+   * on it.
    */
-  let pendingSeedGrant: ((granted: boolean) => void) | null = null
+  const pendingGrants = new Map<string, (granted: boolean) => void>()
 
   /**
-   * Abandon a request whose session is gone. Answered as a refusal so the
-   * hydration it belongs to unwinds without touching the new session's doc.
+   * Abandon requests that can no longer be answered. Answered as refusals so
+   * whatever waits on them unwinds without touching the doc.
    */
-  function abandonSeedGrant() {
-    pendingSeedGrant?.(false)
+  function abandonGrants() {
+    for (const resolve of [...pendingGrants.values()]) resolve(false)
   }
 
-  /** Ask the Yjs server whether we may seed this room. */
-  function requestSeedGrant(prov: HocuspocusProvider): Promise<boolean> {
+  /**
+   * Ask the Yjs server whether we may do a job only one client in the room
+   * may do. A request already in flight for the same key is ours to finish,
+   * so a second one is refused right away.
+   */
+  function requestGrant(prov: HocuspocusProvider, key: string): Promise<boolean> {
+    if (pendingGrants.has(key)) return Promise.resolve(false)
     return new Promise<boolean>((resolve) => {
-      pendingSeedGrant = (granted) => {
-        pendingSeedGrant = null
+      pendingGrants.set(key, (granted) => {
+        pendingGrants.delete(key)
         resolve(granted)
-      }
-      prov.sendStateless(SEED_REQUEST)
+      })
+      prov.sendStateless(GRANT_REQUEST + key)
     })
   }
 
   /**
-   * The server's answer to a seed request, or an unsolicited grant when the
-   * previous holder left the room without seeding it.
+   * The server's answer to a grant request, or an unsolicited seed grant when
+   * the previous holder left the room without seeding it.
    */
-  function onSeedMessage(doc: Y.Doc, prov: HocuspocusProvider, payload: string) {
-    if (payload !== SEED_GRANTED && payload !== SEED_DENIED) return
-    const granted = payload === SEED_GRANTED
-    if (pendingSeedGrant) {
-      pendingSeedGrant(granted)
+  function onGrantMessage(doc: Y.Doc, prov: HocuspocusProvider, payload: string) {
+    const granted = payload.startsWith(GRANT_GRANTED)
+    if (!granted && !payload.startsWith(GRANT_DENIED)) return
+    const key = payload.slice((granted ? GRANT_GRANTED : GRANT_DENIED).length)
+    const pending = pendingGrants.get(key)
+    if (pending) {
+      pending(granted)
       return
     }
-    if (granted) seedOnUnsolicitedGrant(doc, prov)
+    if (granted && key === SEED_GRANT) seedOnUnsolicitedGrant(doc, prov)
   }
 
   /**
@@ -624,11 +564,11 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       doc.transact(() => {
         meta.set('hydrated', true)
         current.hydrate(doc, toValue(currentContent))
-      }, HYDRATE_ORIGIN)
+      })
     } catch (e) {
       // Withdraw the announce, or a read-only peer waits forever for a body
       // that is never coming.
-      doc.transact(() => meta.delete('hydrated'), HYDRATE_ORIGIN)
+      doc.transact(() => meta.delete('hydrated'))
       throw e
     }
   }
@@ -670,36 +610,31 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
   /**
    * Hydration: one client per room seeds the Y.Doc from native content, and
-   * the Yjs server picks which - see `requestSeedGrant`. In local mode there
+   * the Yjs server picks which - see `requestGrant`. In local mode there
    * is no room, so no permission is needed.
    */
   async function runInitialHydration(doc: Y.Doc, prov: HocuspocusProvider | null) {
     const current = toValue(adapter)
     const meta = sessionMeta(doc)
 
-    // Already flagged stale: let the meta observer run the recovery, and skip
-    // the checks below so we don't race-lock a doc that is about to be
-    // rehydrated. The observer only fires on change, so a joiner that finds
-    // the flag already up offers itself as claimant - the elected peer may
-    // have navigated away before finishing.
-    if (meta.get('isStale') === true) {
-      if (!unref(effectiveReadOnly) && canSupplyRecoveryContent(meta)) {
-        claimRecovery(doc, meta)
-        void recoverFromStaleState(doc, prov)
-      }
-      return
-    }
-
-    // Etag drift check. The Yjs server is relay-only and persists nothing, so
-    // the room's own `_oc_meta.etag` (seeded by whichever peer entered first)
-    // is compared against the etag the caller just fetched: the first peer
-    // seeds the baseline, a mismatch means the file on disk moved and flags
-    // recovery. `nativeEtag` lets recovery settle the final value without an
-    // extra fetch.
-    const docEtag = meta.get('etag')
+    // The body recovery must publish, captured now: once the room's own state
+    // syncs in, it gets reported back into `currentContent`.
     const nativeEtag = toValue(resource)?.etag
-    if (docEtag && nativeEtag && docEtag !== nativeEtag) {
-      flagStale(doc, meta)
+    const content = toValue(currentContent)
+
+    // Flagged stale, or etag drift. The Yjs server is relay-only and persists
+    // nothing, so the room's own `_oc_meta.etag` (seeded by whichever peer
+    // entered first) is compared against the etag the caller just fetched: a
+    // mismatch means the file on disk moved. A flag may be left by a peer
+    // that navigated away before finishing, so joiners retry it.
+    const docEtag = meta.get('etag')
+    if (meta.get('isStale') === true || (docEtag && nativeEtag && docEtag !== nativeEtag)) {
+      if (unref(effectiveReadOnly)) return
+      const recovered =
+        !!nativeEtag &&
+        nativeEtag !== docEtag &&
+        (await recoverFromStaleState(doc, prov, { content, etag: nativeEtag }))
+      if (!recovered) adoptRoomEtag(doc, meta)
       return
     }
     if (!docEtag && nativeEtag) {
@@ -729,7 +664,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
     // Let the server pick who seeds. Skipped in local mode.
     if (prov) {
-      if (!(await requestSeedGrant(prov))) return
+      if (!(await requestGrant(prov, SEED_GRANT))) return
       // Content may have landed while we waited.
       if (current.hasContent(doc)) return
     }
@@ -737,45 +672,40 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     seedDoc(doc, current, meta)
   }
 
-  /** The recovery run in progress, so a second trigger queues behind it. */
-  let recoveryInFlight: Promise<boolean> | null = null
+  /**
+   * A writer joined a room that is behind the file on disk and did not
+   * rewrite it. The caller still holds the fresh etag, so its next save would
+   * put the room's old content over the external write with a matching
+   * `If-Match`. The room's etag makes that save conflict instead; the rewrite
+   * brings the fresh one along if it still comes.
+   */
+  function adoptRoomEtag(doc: Y.Doc, meta: SessionMetaMap) {
+    if (doc.isDestroyed || unref(ydoc) !== doc) return
+    const roomEtag = meta.get('etag')
+    if (roomEtag) onEtagChange(roomEtag)
+  }
 
   /**
-   * Stale-state recovery, fired when `_oc_meta.isStale` goes up: the claimed
-   * client wipes the adapter content, clears the flags and re-hydrates from
-   * the body it captured at detection; peers receive the rewrite as ordinary
-   * CRDT updates.
+   * Stale-state recovery: rewrite the room from a fresh file body. The Yjs
+   * server grants it to one client per etag, so peers that noticed the same
+   * write at once never re-seed the room twice. The winner raises `isStale`,
+   * wipes the adapter content, re-hydrates and clears the flags; peers
+   * receive all of it as ordinary CRDT updates, the flag first.
    *
-   * Only the peer holding the fresh body may run this. Re-seeding from
-   * anything else would publish a pre-drift body and stamp the fresh etag
-   * onto it, so the next save would overwrite the external writer with a
-   * matching `If-Match` and no warning. Unreachable in local mode, but coded
-   * provider-tolerant so the two modes share one path.
+   * Only a client holding the body behind `etag` may run this. Re-seeding
+   * from anything else would publish a pre-drift body and stamp the fresh
+   * etag onto it, so the next save would overwrite the external writer with
+   * a matching `If-Match` and no warning.
    *
    * True when this run rewrote the room.
    */
   async function recoverFromStaleState(
     doc: Y.Doc,
-    prov: HocuspocusProvider | null
+    prov: HocuspocusProvider | null,
+    { content, etag }: RecoveryPayload
   ): Promise<boolean> {
-    if (unref(effectiveReadOnly) || unref(isConflicted)) return false
-    if (staleRecovery === null) return false
-    // A failed run must not reject its waiters too.
-    while (recoveryInFlight) await recoveryInFlight.catch(() => false)
-    if (staleRecovery === null || doc.isDestroyed) return false
-    const run = runStaleRecovery(doc, prov)
-    recoveryInFlight = run
-    try {
-      return await run
-    } finally {
-      if (recoveryInFlight === run) recoveryInFlight = null
-    }
-  }
-
-  async function runStaleRecovery(doc: Y.Doc, prov: HocuspocusProvider | null): Promise<boolean> {
     const current = toValue(adapter)
     const meta = sessionMeta(doc)
-    if (staleRecovery === null) return false
     if (typeof current.reset !== 'function') {
       lockForReload(
         prov,
@@ -786,21 +716,22 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       return false
     }
 
-    // Let concurrent claims converge, then check we came out on top.
-    await new Promise<void>((resolve) => setTimeout(resolve, 150))
+    if (prov && !(await requestGrant(prov, recoveryGrant(etag)))) return false
+    // The rewrite would wipe what was typed while waiting for the grant.
+    if (unref(isReady)) await activeReporter?.flush()
     if (doc.isDestroyed || unref(ydoc) !== doc) return false
-    if (meta.get('isStale') !== true) {
-      // Someone else handled it. Drop the payload, or a later remote flag
-      // would read as one we hold the body for.
-      staleRecovery = null
-      return false
-    }
-    if (meta.get('recoveryClientId') !== doc.clientID) {
-      staleRecovery = null
+    if (unref(effectiveReadOnly) || unref(isConflicted)) return false
+    // The rewrite for this etag already landed.
+    if (meta.get('etag') === etag) return false
+    if (unref(isReady) && toValue(hasUnsavedChanges)) {
+      flagStale(doc, meta, etag)
+      markConflicted()
       return false
     }
 
-    const { content, etag: freshEtag } = staleRecovery
+    // Flag, reset + hydrate and commit run in one go, as separate updates:
+    // dirty peers leave the room on the flag before the rewrite reaches them.
+    flagStale(doc, meta, etag)
 
     // Reset and hydrate share one transaction: mounted editors must never
     // observe the emptied doc, or ProseMirror pads it with an empty paragraph
@@ -813,20 +744,18 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       doc.transact(() => {
         current.reset?.(doc)
         current.hydrate(doc, content)
-      }, STALE_RECOVERY_RESET_ORIGIN)
+      })
 
       doc.transact(() => {
         meta.delete('isStale')
         meta.delete('nativeEtag')
-        meta.delete('recoveryClientId')
-        if (freshEtag) meta.set('etag', freshEtag)
+        meta.set('etag', etag)
         // The recovered body is what is on disk now, so clean peers take the
         // ordinary peer-save fan-out and stop counting it as unsaved work.
         meta.set('savedStateVector', Y.encodeStateVector(doc))
         meta.set('lastSavedAt', Date.now())
-      }, STALE_RECOVERY_COMMIT_ORIGIN)
+      })
 
-      staleRecovery = null
       return true
     } catch (e) {
       // The reset already emptied the shared doc for every peer; `isStale`
@@ -989,17 +918,15 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           prov.setAwarenessField('user', identity)
           return
         }
-        onSeedMessage(doc, prov, payload)
+        onGrantMessage(doc, prov, payload)
       },
       onSynced() {
         clearConnectTimer()
-        // Reconnected inside the seed wait. The answer to the old socket is
-        // lost, so ask again on this one instead of starting a second
-        // hydration next to the one still waiting.
-        if (pendingSeedGrant) {
-          prov.sendStateless(SEED_REQUEST)
-          return
-        }
+        // Answers to the old socket are lost, so ask again on this one.
+        for (const key of pendingGrants.keys()) prov.sendStateless(GRANT_REQUEST + key)
+        // Reconnected while a hydration or recovery waits on the server:
+        // don't start a second one next to it.
+        if (pendingGrants.size > 0) return
         void onProviderSynced(doc, prov)
       }
     })
@@ -1071,7 +998,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         doc.transact(() => {
           current.reset?.(doc)
           current.hydrate(doc, content)
-        }, STALE_RECOVERY_RESET_ORIGIN)
+        })
         isRewritingDoc = false
       } catch (e) {
         // `reset` already committed, so the doc may be empty. Keep the rewrite
@@ -1098,13 +1025,11 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   ) {
     const meta = sessionMeta(doc)
     return function metaObserver(event: Y.YMapEvent<unknown>, transaction: Y.Transaction) {
-      // The initial sync replays the room's whole meta map through this
-      // observer; everything in it belongs to `runInitialHydration`, which
-      // reads the same keys with the context to act on them.
-      const isMidSession = unref(isReady)
-      // Remote ops carry no string origin, so this means "a peer is acting
-      // right now" - not the initial sync, not one of our own writes.
-      const isRemoteMetaWrite = isMidSession && !OWN_META_ORIGINS.includes(transaction.origin)
+      // "A peer is acting right now". Our own writes are acted on where they
+      // are made. The initial sync replays the room's whole meta map through
+      // this observer; everything in it belongs to `runInitialHydration`,
+      // which reads the same keys with the context to act on them.
+      const isRemoteMetaWrite = unref(isReady) && !transaction.local
       // Handled further down, but needed here to keep the fan-out out of it.
       const resyncWouldDropOurWork =
         event.keysChanged.has('recoveryEpoch') && isRemoteMetaWrite && toValue(hasUnsavedChanges)
@@ -1171,45 +1096,24 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         return
       }
 
-      // Stale-state signal: every peer sees it, only the claimed one gets
-      // past the guards in `recoverFromStaleState`. An external update this
-      // client applies itself runs the recovery explicitly, so it can await it.
-      if (event.keysChanged.has('isStale') && meta.get('isStale') === true) {
-        if (transaction.origin === EXTERNAL_UPDATE_ORIGIN) return
-        if (isRemoteMetaWrite) {
-          void onRemoteStaleFlag(doc, meta, reporter)
-          return
-        }
-        void recoverFromStaleState(doc, prov)
+      if (isRemoteMetaWrite && event.keysChanged.has('isStale') && meta.get('isStale') === true) {
+        void onRemoteStaleFlag(doc, meta, reporter)
       }
     }
   }
 
   /**
-   * A peer raised `isStale` mid-session. Three cases: we claimed it earlier
-   * and run the recovery; a keystroke inside the debounce window made us
-   * dirty after all, so we conflict like the dirty peers did at flag time; or
-   * we are clean and follow the claimant's rewrite (`onExternalUpdate` fires
-   * when it lands).
+   * A peer raised `isStale` mid-session. Either a keystroke inside the
+   * debounce window made us dirty after all, so we conflict like the dirty
+   * peers did at flag time, or we are clean and follow the rewrite
+   * (`onExternalUpdate` fires when it lands).
    */
   async function onRemoteStaleFlag(doc: Y.Doc, meta: SessionMetaMap, reporter: ContentReporter) {
-    if (staleRecovery !== null) {
-      void recoverFromStaleState(doc, unref(provider))
-      return
-    }
     await reporter.flush()
     if (doc.isDestroyed || unref(ydoc) !== doc) return
     if (meta.get('isStale') !== true) return
     if (unref(isConflicted) || unref(isLockedForReload)) return
     if (toValue(hasUnsavedChanges)) markConflicted()
-  }
-
-  /** Whether the room's recovery claimant is still connected. */
-  function isClaimantPresent(doc: Y.Doc, meta: SessionMetaMap): boolean {
-    const claimant = meta.get('recoveryClientId')
-    if (typeof claimant !== 'number') return false
-    if (claimant === doc.clientID) return true
-    return unref(awareness)?.getStates().has(claimant) ?? false
   }
 
   /** See {@link YjsSession.isRoomWrite}. */
@@ -1228,17 +1132,17 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // state. The caller's etag mirror then finds the stamp in place and
       // does not claim one either.
       if (meta.get('etag') !== etag) {
-        doc.transact(() => meta.set('etag', etag), ETAG_ADOPT_ORIGIN)
+        doc.transact(() => meta.set('etag', etag))
       }
     }
     onEtagChange(etag)
   }
 
   /**
-   * The rewrite suppressed the content reporter and its commit carries an own
-   * origin, so nothing else tells the caller that its content, server content
-   * and etag all moved. Reports the serialized form: the next debounced report
-   * produces the same string, so the file stays clean.
+   * The rewrite suppressed the content reporter and the meta observer ignores
+   * our own writes, so nothing else tells the caller that its content, server
+   * content and etag all moved. Reports the serialized form: the next
+   * debounced report produces the same string, so the file stays clean.
    */
   async function reportRecovered(doc: Y.Doc, etag: string) {
     const value = await serializeDoc(doc)
@@ -1279,26 +1183,18 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         onConflict()
         return 'conflicted'
       }
-      // Flag without claiming: dirty peers conflict on the flag, clean peers
-      // recover from their own fetch, late joiners recover from theirs.
-      flagStale(doc, meta, { nativeEtag: etag, claim: false, origin: EXTERNAL_UPDATE_ORIGIN })
+      // Flag only, our doc is nothing safe to re-seed with: dirty peers
+      // conflict on the flag, clean peers recover from their own fetch, late
+      // joiners from theirs.
+      flagStale(doc, meta, etag)
       markConflicted()
       return 'conflicted'
     }
 
-    // A live claimant is already on it; without one, this is the same as a
-    // joiner finding the flag up. Concurrent claimants converge through
-    // `recoveryClientId` in `runStaleRecovery`, the losers just skip.
-    if (meta.get('isStale') === true && isClaimantPresent(doc, meta)) return 'skipped'
-    flagStale(doc, meta, {
-      nativeEtag: etag,
-      claim: true,
-      payload: { content, etag },
-      origin: EXTERNAL_UPDATE_ORIGIN
-    })
-
-    const recovered = await recoverFromStaleState(doc, prov)
-    if (!recovered) return 'skipped'
+    // Every clean writer that got the event gets here, the server lets one
+    // of them through.
+    const recovered = await recoverFromStaleState(doc, prov, { content, etag })
+    if (!recovered) return unref(isConflicted) ? 'conflicted' : 'skipped'
     await reportRecovered(doc, etag)
     onExternalUpdate?.()
     return 'recovered'
@@ -1322,7 +1218,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       hasLocalOnlyContent = false
       // `undoResyncWipe` leaves this up for good when it cannot restore.
       isRewritingDoc = false
-      staleRecovery = null
       lastReportedStateVector = null
       lastReportedContent = null
       pendingSaveStateVector = null
@@ -1369,7 +1264,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         reporter.cancel()
         if (activeReporter === reporter) activeReporter = null
         clearConnectTimer()
-        abandonSeedGrant()
+        abandonGrants()
         meta.map.unobserve(metaObserver)
         doc.off('update', reporter.onDocUpdate)
         if (prov) {
@@ -1407,7 +1302,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
           pendingSaveStateVector ?? lastReportedStateVector ?? Y.encodeStateVector(doc)
         )
         meta.set('lastSavedAt', Date.now())
-      }, LOCAL_SAVE_ORIGIN)
+      })
       // Consumed. An etag change the caller did not announce falls back to
       // the last reported state again.
       pendingSaveStateVector = null

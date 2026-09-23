@@ -49,13 +49,14 @@ interface MockProvider {
 const { providerInstances, relay } = vi.hoisted(() => {
   return {
     providerInstances: [] as MockProvider[],
-    // `seedHolders` mirrors the Yjs server's seed registry (see
-    // `services/yjs/src/lib/seedGrant.ts`): one grant per room.
+    // `grantHolders` mirrors the Yjs server's grant registry (see
+    // `services/yjs/src/lib/grants.ts`): one holder per room and key, stored
+    // under `grantSlot`.
     relay: {
       enabled: false,
       docDelayMs: 0,
       awarenessDelayMs: 0,
-      seedHolders: new Map<string, string>()
+      grantHolders: new Map<string, string>()
     }
   }
 })
@@ -90,26 +91,26 @@ vi.mock('@hocuspocus/provider', async () => {
         for (const peer of this.peers()) peer.awareness.states.set(clientId, state)
       }, relay.awarenessDelayMs)
     })
-    // The client asks the server who may seed. The answer comes from the
+    // The client asks the server for a grant. The answer comes from the
     // server, not from a peer, so it does not depend on `relay.enabled`. It
     // travels the same socket as a doc update, so it carries the same delay; a
     // delay of 0 answers synchronously, which keeps every latency-agnostic
     // test on a single `flushPromises`.
     sendStateless = vi.fn((payload: string) => {
+      const prefix = '_oc_grant_request:'
+      if (!payload.startsWith(prefix)) return
+      const key = payload.slice(prefix.length)
+      const slot = `${this.name}|${key}`
       const socketId = String(this.document.clientID)
-      let answer: (() => void) | null = null
-      if (payload === '_oc_seed_request') {
-        answer = () => {
-          if (this.stopped) return
-          const holder = relay.seedHolders.get(this.name)
-          const granted = holder === undefined || holder === socketId
-          if (granted) relay.seedHolders.set(this.name, socketId)
-          this._opts.onStateless?.({
-            payload: granted ? '_oc_seed_granted' : '_oc_seed_denied'
-          })
-        }
+      const answer = () => {
+        if (this.stopped) return
+        const holder = relay.grantHolders.get(slot)
+        const granted = holder === undefined || holder === socketId
+        if (granted) relay.grantHolders.set(slot, socketId)
+        this._opts.onStateless?.({
+          payload: `${granted ? '_oc_grant_granted:' : '_oc_grant_denied:'}${key}`
+        })
       }
-      if (!answer) return
       if (relay.docDelayMs === 0) {
         answer()
         return
@@ -279,6 +280,16 @@ function setupSession({
   }
 }
 
+/** Key of `relay.grantHolders`. */
+function grantSlot(provider: MockProvider, key: string) {
+  return `${provider.name}|${key}`
+}
+
+/** Someone else holds the grant, as far as the mock server is concerned. */
+function grantElsewhere(provider: MockProvider, key: string) {
+  relay.grantHolders.set(grantSlot(provider, key), 'a-peer')
+}
+
 function silenceConsoleError() {
   vi.spyOn(console, 'error').mockImplementation(() => undefined)
 }
@@ -288,7 +299,7 @@ beforeEach(() => {
   relay.enabled = false
   relay.docDelayMs = 0
   relay.awarenessDelayMs = 0
-  relay.seedHolders.clear()
+  relay.grantHolders.clear()
 })
 
 afterEach(() => {
@@ -572,7 +583,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith('_oc_seed_request')
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith('_oc_grant_request:seed')
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the real file body')
   })
 
@@ -583,7 +594,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
       currentContent: 'the real file body'
     })
     await flushPromises()
-    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+    grantElsewhere(providerInstances[0], 'seed')
 
     providerInstances[0].triggerSynced()
     await flushPromises()
@@ -766,9 +777,8 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
   })
 
   // A token expiring mid-session leaves a live, populated document. Re-entering
-  // the hydration path there would re-run the etag-drift check and could plant
-  // `isStale` plus a `recoveryClientId` claim this now read-only client will
-  // never act on - leaving the room flagged stale with a dead claim.
+  // the hydration path there would re-run the etag-drift check and could start
+  // a recovery against a room this client has just left.
   it('does not re-run hydration when the token expires mid-session', async () => {
     silenceConsoleError()
     vi.useFakeTimers({ shouldAdvanceTime: true })
@@ -789,7 +799,7 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
 
     const meta = s.ydoc!.getMap('_oc_meta')
     expect(meta.get('isStale')).toBeUndefined()
-    expect(meta.get('recoveryClientId')).toBeUndefined()
+    expect(meta.get('etag')).toBe('etag-old')
   })
 })
 
@@ -922,9 +932,9 @@ describe('useYjsSession — read-only clients', () => {
     const privateDoc = s.ydoc
     expect(privateDoc!.getText(SHARED_TEXT_KEY).toString()).toBe('read me')
 
-    // A remote transaction has no string origin, which is what tells the
-    // observer this came from a peer.
-    privateDoc!.transact(() => privateDoc!.getMap('_oc_meta').set('hydrated', true))
+    const peer = new Y.Doc()
+    peer.getMap('_oc_meta').set('hydrated', true)
+    Y.applyUpdate(privateDoc!, Y.encodeStateAsUpdate(peer))
     await flushPromises()
 
     expect(s.ydoc).not.toBe(privateDoc)
@@ -1038,7 +1048,7 @@ describe('useYjsSession — stale-state recovery', () => {
   /**
    * Brings a session up in remote mode against a room whose `_oc_meta.etag`
    * predates the file on disk, which is what makes the joining client detect
-   * drift and claim the recovery.
+   * drift and ask for the recovery.
    */
   async function syncIntoStaleRoom({
     currentContent = 'fresh body',
@@ -1071,15 +1081,89 @@ describe('useYjsSession — stale-state recovery', () => {
 
   beforeEach(() => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
+    // The grant answer takes a moment, so tests can look inside the wait.
+    relay.docDelayMs = 100
   })
 
-  it('flags the room stale and claims the recovery when the etag drifted', async () => {
+  it('asks the server to recover from the etag it fetched when the etag drifted', async () => {
     const s = await syncIntoStaleRoom()
-    const meta = s.ydoc!.getMap(META_KEY)
 
-    expect(meta.get('isStale')).toBe(true)
-    expect(meta.get('nativeEtag')).toBe('etag-new')
-    expect(meta.get('recoveryClientId')).toBe(s.ydoc!.clientID)
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith(
+      '_oc_grant_request:recover:etag-new'
+    )
+    // Nothing is written before the answer, and the editor waits for it.
+    expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBeUndefined()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+    expect(unref(s.session.isReady)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  // #3429: the client holding the grant is rewriting the room already, a
+  // second rewrite would put the body in twice.
+  it('leaves the room alone while another client holds the recovery grant', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'fresh body',
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+    grantElsewhere(providerInstances[0], 'recover:etag-new')
+    const doc = s.ydoc!
+    doc.getText(SHARED_TEXT_KEY).insert(0, 'stale room content')
+    doc.getMap(META_KEY).set('etag', 'etag-old')
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+
+    expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+    expect(doc.getMap(META_KEY).get('isStale')).toBeUndefined()
+  })
+
+  // The room still shows the old content. With the fresh etag, the first
+  // autosave would write it over the external change without a conflict.
+  it('takes the room etag when another client holds the recovery grant', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'fresh body',
+      resource: makeResource({ etag: 'etag-new' })
+    })
+    await flushPromises()
+    grantElsewhere(providerInstances[0], 'recover:etag-new')
+    const doc = s.ydoc!
+    doc.getText(SHARED_TEXT_KEY).insert(0, 'stale room content')
+    doc.getMap(META_KEY).set('etag', 'etag-old')
+    providerInstances[0].triggerSynced()
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(s.onEtagChange).toHaveBeenCalledWith('etag-old')
+    expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  it('recovers a room flagged for an older body than the one it holds', async () => {
+    const s = setupSession({
+      yjsServerUrl,
+      currentContent: 'even newer body',
+      resource: makeResource({ etag: 'etag-newest' })
+    })
+    await flushPromises()
+    const doc = s.ydoc!
+    const meta = doc.getMap(META_KEY)
+    doc.getText(SHARED_TEXT_KEY).insert(0, 'stale room content')
+    doc.transact(() => {
+      meta.set('etag', 'etag-old')
+      meta.set('nativeEtag', 'etag-new')
+      meta.set('isStale', true)
+    })
+    providerInstances[0].triggerSynced()
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('even newer body')
+    expect(meta.get('etag')).toBe('etag-newest')
+    expect(meta.get('isStale')).toBeUndefined()
   })
 
   // Regression: recovery used to re-seed from whatever the elected peer held
@@ -1101,7 +1185,6 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
     expect(meta.get('isStale')).toBeUndefined()
     expect(meta.get('nativeEtag')).toBeUndefined()
-    expect(meta.get('recoveryClientId')).toBeUndefined()
     expect(meta.get('etag')).toBe('etag-new')
   })
 
@@ -1137,11 +1220,15 @@ describe('useYjsSession — stale-state recovery', () => {
 
     // A peer elsewhere in the room notices the drift and flags it.
     const meta = s.ydoc!.getMap(META_KEY)
-    s.ydoc!.transact(() => {
-      meta.set('nativeEtag', 'etag-new')
-      meta.set('recoveryClientId', s.ydoc!.clientID + 1)
-      meta.set('isStale', true)
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.transact(() => {
+      const peerMeta = peer.getMap(META_KEY)
+      peerMeta.set('nativeEtag', 'etag-new')
+      peerMeta.set('recoveryEpoch', 1)
+      peerMeta.set('isStale', true)
     })
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
     vi.advanceTimersByTime(200)
     await flushPromises()
 
@@ -1167,6 +1254,9 @@ describe('useYjsSession — stale-state recovery', () => {
     await flushPromises()
 
     expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+    // Its writes never reach the room, so it neither flags nor asks.
+    expect(doc.getMap(META_KEY).get('isStale')).toBeUndefined()
+    expect(providerInstances[0].sendStateless).not.toHaveBeenCalled()
   })
 
   // The reset lands before the hydrate, so a throw in between leaves every peer
@@ -1193,11 +1283,10 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(unref(s.session.error)).toBeTruthy()
   })
 
-  // The claim is deliberately stealable: whoever was elected may have navigated
-  // away mid-recovery, and then nobody would finish. Safe because `hydrate` is
-  // synchronous by contract - reset, hydrate and commit run in one go, so a
-  // claim cannot move underneath a client that is already working.
-  it('takes the claim over from a peer that has left', async () => {
+  // Whoever raised the flag may have navigated away mid-recovery, and then
+  // nobody would finish. The server releases a leaver's grant, so a joiner
+  // holding the body asks for it again.
+  it('recovers a room it finds flagged for the body it holds', async () => {
     const s = setupSession({
       yjsServerUrl,
       currentContent: 'fresh body',
@@ -1207,10 +1296,9 @@ describe('useYjsSession — stale-state recovery', () => {
 
     const doc = s.ydoc!
     const meta = doc.getMap(META_KEY)
-    // Claimed by a client that is no longer in awareness: nobody would finish.
+    doc.getText(SHARED_TEXT_KEY).insert(0, 'stale room content')
     doc.transact(() => {
       meta.set('nativeEtag', 'etag-new')
-      meta.set('recoveryClientId', doc.clientID + 99)
       meta.set('isStale', true)
     })
 
@@ -1246,20 +1334,6 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(meta.get('isStale')).toBeUndefined()
   })
 
-  // A read-only client can spot the drift but cannot act on it. It still flags
-  // the room, and the `nativeEtag` it leaves behind is what lets a writer
-  // holding that same body take the claim.
-  it('flags without claiming on a read-only client', async () => {
-    const s = await syncIntoStaleRoom({ isReadOnly: true })
-    vi.advanceTimersByTime(200)
-    await flushPromises()
-
-    const meta = s.ydoc!.getMap(META_KEY)
-    expect(meta.get('isStale')).toBe(true)
-    expect(meta.get('nativeEtag')).toBe('etag-new')
-    expect(meta.get('recoveryClientId')).toBeUndefined()
-  })
-
   // A peer that holds unsaved work must not follow the reset: it arrives as
   // plain CRDT updates and would wipe that work with no warning. Leaving the
   // room keeps the local doc, and the caller surfaces its conflict message.
@@ -1276,13 +1350,12 @@ describe('useYjsSession — stale-state recovery', () => {
     await flushPromises()
 
     const doc = s.ydoc!
-    // A peer joined, found the file changed on disk and claimed the recovery.
+    // A peer joined, found the file changed on disk and won the recovery.
     const peer = new Y.Doc()
     Y.applyUpdate(peer, Y.encodeStateAsUpdate(doc))
     peer.transact(() => {
       const peerMeta = peer.getMap(META_KEY)
       peerMeta.set('nativeEtag', 'etag-external')
-      peerMeta.set('recoveryClientId', peer.clientID)
       peerMeta.set('recoveryEpoch', 1)
       peerMeta.set('isStale', true)
     })
@@ -1319,7 +1392,6 @@ describe('useYjsSession — stale-state recovery', () => {
     peer.transact(() => {
       const peerMeta = peer.getMap(META_KEY)
       peerMeta.set('nativeEtag', 'etag-external')
-      peerMeta.set('recoveryClientId', peer.clientID)
       peerMeta.set('recoveryEpoch', 1)
       peerMeta.set('isStale', true)
     })
@@ -1880,7 +1952,7 @@ describe('useYjsSession — initial sync is not a peer save', () => {
   // The point of the gate. With the write-back wired up as AppWrapper wires it,
   // the room's etag used to land in `resource.etag` before the drift check ran,
   // so the check compared the room etag against itself and a late joiner could
-  // never claim the recovery.
+  // never recover the room.
   it('still detects drift on a late joiner whose caller mirrors etags back', async () => {
     const s = setupSession({
       yjsServerUrl,
@@ -1894,9 +1966,8 @@ describe('useYjsSession — initial sync is not a peer save', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBe(true)
-    expect(s.ydoc!.getMap(META_KEY).get('nativeEtag')).toBe('etag-new')
-    expect(s.ydoc!.getMap(META_KEY).get('recoveryClientId')).toBe(s.ydoc!.clientID)
+    expect(s.ydoc!.getMap(META_KEY).get('etag')).toBe('etag-new')
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('our body')
   })
 
   // Recovery rewrites `_oc_meta.etag` itself, after the gate has opened. That
@@ -2063,7 +2134,8 @@ describe('useYjsSession — simultaneous hydration', () => {
 
   // The mock server's registry knows who was granted, the doc only that someone was.
   function seeder(a: ReturnType<typeof setupSession>, b: ReturnType<typeof setupSession>) {
-    return relay.seedHolders.get(providerInstances[0].name) === String(a.ydoc!.clientID) ? a : b
+    const holder = relay.grantHolders.get(grantSlot(providerInstances[0], 'seed'))
+    return holder === String(a.ydoc!.clientID) ? a : b
   }
 
   // A doubled body is not only wrong on screen: reported to the caller it is
@@ -2109,13 +2181,13 @@ describe('useYjsSession — unsolicited seed grant', () => {
   it('seeds an empty room on a grant that arrives on its own', async () => {
     const s = setupSession({ yjsServerUrl: URL, currentContent: 'the file body' })
     await flushPromises()
-    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+    grantElsewhere(providerInstances[0], 'seed')
 
     providerInstances[0].triggerSynced()
     await flushPromises()
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
 
-    providerInstances[0].triggerStateless('_oc_seed_granted')
+    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
     await flushPromises()
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
@@ -2130,7 +2202,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    providerInstances[0].triggerStateless('_oc_seed_granted')
+    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
     await flushPromises()
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
@@ -2143,11 +2215,11 @@ describe('useYjsSession — unsolicited seed grant', () => {
     vi.useFakeTimers()
     const s = setupSession({ yjsServerUrl: URL, currentContent: 'the file body' })
     await flushPromises()
-    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+    grantElsewhere(providerInstances[0], 'seed')
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    providerInstances[0].triggerStateless('_oc_seed_granted')
+    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
     await vi.advanceTimersByTimeAsync(1_000)
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
@@ -2171,11 +2243,11 @@ describe('useYjsSession — unsolicited seed grant', () => {
       adapter: throwingAdapter
     })
     await flushPromises()
-    relay.seedHolders.set(providerInstances[0].name, 'a-peer')
+    grantElsewhere(providerInstances[0], 'seed')
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    providerInstances[0].triggerStateless('_oc_seed_granted')
+    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
     await flushPromises()
 
     expect(unref(s.session.isLockedForReload)).toBe(true)
@@ -2190,7 +2262,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     await flushPromises()
     s.ydoc!.getText(SHARED_TEXT_KEY).delete(0, s.ydoc!.getText(SHARED_TEXT_KEY).length)
 
-    providerInstances[0].triggerStateless('_oc_seed_granted')
+    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
     await flushPromises()
 
     expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBeUndefined()
@@ -2217,7 +2289,7 @@ describe('useYjsSession — external updates', () => {
     return s
   }
 
-  /** Runs `applyExternalUpdate` through the 150 ms election wait. */
+  /** Runs `applyExternalUpdate` through the grant round trip. */
   async function apply(s: ReturnType<typeof setupSession>, update = EXTERNAL) {
     const result = s.session.applyExternalUpdate(update)
     await vi.advanceTimersByTimeAsync(500)
@@ -2274,7 +2346,6 @@ describe('useYjsSession — external updates', () => {
     expect(result).toBe('recovered')
     expect(text(s)).toBe('external body')
     expect(meta.get('etag')).toBe('etag-external')
-    expect(meta.get('recoveryClientId')).toBeUndefined()
     // The recovery commit is the only save stamp. The caller mirrors the
     // reported etag back into `resource.etag`, and that must not stamp a
     // second, fake local save on top.
@@ -2292,8 +2363,10 @@ describe('useYjsSession — external updates', () => {
     expect(meta.get('isStale')).toBe(true)
     expect(meta.get('nativeEtag')).toBe('etag-external')
     expect(meta.get('recoveryEpoch')).toBe(1)
-    // Not claimed: this client has nothing safe to re-seed with.
-    expect(meta.get('recoveryClientId')).toBeUndefined()
+    // No recovery: this client has nothing safe to re-seed with.
+    expect(providerInstances[0].sendStateless).not.toHaveBeenCalledWith(
+      '_oc_grant_request:recover:etag-external'
+    )
     expect(unref(s.session.isConflicted)).toBe(true)
     expect(providerInstances[0].disconnect).toHaveBeenCalled()
     expect(providerInstances[0].detach).toHaveBeenCalled()
@@ -2342,34 +2415,29 @@ describe('useYjsSession — external updates', () => {
     expect(text(s)).toBe('seed')
   })
 
-  it('skips when a connected peer already claimed the recovery', async () => {
+  it('skips when another client holds the recovery grant', async () => {
     const s = await remoteSession()
-    const meta = s.ydoc!.getMap(META_KEY)
-    const claimant = s.ydoc!.clientID + 99
-    providerInstances[0].awareness.states.set(claimant, {})
-    s.ydoc!.transact(() => {
-      meta.set('nativeEtag', 'etag-external')
-      meta.set('recoveryClientId', claimant)
-      meta.set('recoveryEpoch', 1)
-      meta.set('isStale', true)
-    }, 'test-peer')
+    grantElsewhere(providerInstances[0], 'recover:etag-external')
 
     const result = await apply(s)
 
     expect(result).toBe('skipped')
-    expect(meta.get('recoveryClientId')).toBe(claimant)
     expect(text(s)).toBe('seed')
+    expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBeUndefined()
   })
 
-  it('takes over the recovery when the claimant has left', async () => {
+  it('recovers a room that is still flagged for an older write', async () => {
     const s = await remoteSession()
     const meta = s.ydoc!.getMap(META_KEY)
-    s.ydoc!.transact(() => {
-      meta.set('nativeEtag', 'etag-older')
-      meta.set('recoveryClientId', s.ydoc!.clientID + 99)
-      meta.set('recoveryEpoch', 1)
-      meta.set('isStale', true)
-    }, 'test-peer')
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.transact(() => {
+      const peerMeta = peer.getMap(META_KEY)
+      peerMeta.set('nativeEtag', 'etag-older')
+      peerMeta.set('recoveryEpoch', 1)
+      peerMeta.set('isStale', true)
+    })
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
 
     const result = await apply(s)
 
@@ -2377,6 +2445,38 @@ describe('useYjsSession — external updates', () => {
     expect(text(s)).toBe('external body')
     expect(meta.get('isStale')).toBeUndefined()
     expect(meta.get('etag')).toBe('etag-external')
+  })
+
+  // No answer can arrive once the provider is stopped, so the wait must not hang.
+  it('gives up a recovery still waiting for the grant when the session leaves the room', async () => {
+    const s = await remoteSession()
+    relay.docDelayMs = 100
+
+    const result = s.session.applyExternalUpdate(EXTERNAL)
+    await flushPromises()
+    s.session.markConflicted()
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(await result).toBe('conflicted')
+    expect(text(s)).toBe('seed')
+  })
+
+  it('conflicts instead of rewriting over an edit typed while waiting for the grant', async () => {
+    const s = await remoteSession()
+    relay.docDelayMs = 100
+    s.onContentChange.mockImplementation(() => {
+      s.hasUnsavedChangesRef.value = true
+    })
+
+    const result = s.session.applyExternalUpdate(EXTERNAL)
+    await flushPromises()
+    s.ydoc!.getText(SHARED_TEXT_KEY).insert(0, 'typed ')
+    await vi.advanceTimersByTimeAsync(500)
+
+    expect(await result).toBe('conflicted')
+    expect(text(s)).toBe('typed seed')
+    expect(unref(s.session.isConflicted)).toBe(true)
+    expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBe(true)
   })
 
   it('skips for a read-only, conflicted or locked session', async () => {
@@ -2387,10 +2487,10 @@ describe('useYjsSession — external updates', () => {
   })
 
   describe('with peers', () => {
-    async function twoPeers({ bDirty = false } = {}) {
+    async function twoPeers({ bDirty = false, relayMs = 10 } = {}) {
       relay.enabled = true
-      relay.docDelayMs = 10
-      relay.awarenessDelayMs = 10
+      relay.docDelayMs = relayMs
+      relay.awarenessDelayMs = relayMs
       const a = setupSession({ yjsServerUrl: URL, currentContent: 'seed' })
       const b = setupSession({
         yjsServerUrl: URL,
@@ -2400,7 +2500,7 @@ describe('useYjsSession — external updates', () => {
       await flushPromises()
       providerInstances[0].triggerSynced()
       providerInstances[1].triggerSynced()
-      await vi.advanceTimersByTimeAsync(1_000)
+      await vi.advanceTimersByTimeAsync(4 * relayMs + 1_000)
       await flushPromises()
       expect(text(a)).toBe('seed')
       expect(text(b)).toBe('seed')
@@ -2409,40 +2509,51 @@ describe('useYjsSession — external updates', () => {
       return { a, b }
     }
 
-    it('lets exactly one of two clean peers rewrite, and the other follows', async () => {
-      const { a, b } = await twoPeers()
+    // #3429: a relay slower than the old 150 ms election wait let both rewrite,
+    // and the room held the body twice.
+    it.each([10, 500])(
+      'lets exactly one of two clean peers rewrite with a %ims relay',
+      async (relayMs) => {
+        const { a, b } = await twoPeers({ relayMs })
 
-      const [resultA, resultB] = await Promise.all([
-        a.session.applyExternalUpdate(EXTERNAL),
-        b.session.applyExternalUpdate(EXTERNAL)
-      ])
-      await vi.advanceTimersByTimeAsync(1_000)
-      await flushPromises()
+        const results = Promise.all([
+          a.session.applyExternalUpdate(EXTERNAL),
+          b.session.applyExternalUpdate(EXTERNAL)
+        ])
+        await vi.advanceTimersByTimeAsync(4 * relayMs + 1_000)
+        await flushPromises()
 
-      expect([resultA, resultB].sort()).toEqual(['recovered', 'skipped'])
-      expect(text(a)).toBe('external body')
-      expect(text(b)).toBe('external body')
-      for (const s of [a, b]) {
-        expect(s.onEtagChange).toHaveBeenCalledWith('etag-external')
-        expect(s.onServerContentChange).toHaveBeenCalledWith('external body')
-        expect(s.onConflict).not.toHaveBeenCalled()
-        expect(s.onExternalUpdate).toHaveBeenCalledTimes(1)
+        expect((await results).sort()).toEqual(['recovered', 'skipped'])
+        expect(text(a)).toBe('external body')
+        expect(text(b)).toBe('external body')
+        for (const s of [a, b]) {
+          expect(s.onEtagChange).toHaveBeenCalledWith('etag-external')
+          expect(s.onServerContentChange).toHaveBeenCalledWith('external body')
+          expect(s.onConflict).not.toHaveBeenCalled()
+          expect(s.onExternalUpdate).toHaveBeenCalledTimes(1)
+          // The client that was refused wrote nothing, so no flag outlives the rewrite.
+          expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBeUndefined()
+        }
       }
-    })
+    )
 
     // The toast says the editor shows the new version, so a follower must not
-    // hear it on the flag: the claimant may still lose the election or fail.
+    // hear it on the flag: the rewrite may still fail.
     it('tells a follower about the update only once the rewrite landed', async () => {
       const { a, b } = await twoPeers()
+      const callsAtFlag: number[] = []
+      const bMeta = b.ydoc!.getMap(META_KEY)
+      bMeta.observe((event) => {
+        if (event.keysChanged.has('isStale') && bMeta.get('isStale') === true) {
+          callsAtFlag.push(b.onExternalUpdate.mock.calls.length)
+        }
+      })
 
       const result = a.session.applyExternalUpdate(EXTERNAL)
-      // Flag is out, the 150 ms election wait is not over.
-      await vi.advanceTimersByTimeAsync(50)
-      expect(b.ydoc!.getMap(META_KEY).get('isStale')).toBe(true)
-      expect(b.onExternalUpdate).not.toHaveBeenCalled()
-
       await vi.advanceTimersByTimeAsync(1_000)
+
       expect(await result).toBe('recovered')
+      expect(callsAtFlag).toEqual([0])
       expect(text(b)).toBe('external body')
       expect(b.onExternalUpdate).toHaveBeenCalledTimes(1)
     })
@@ -2516,11 +2627,12 @@ describe('useYjsSession — external updates', () => {
     // save must cover the followers: its state vector was taken after the rewrite.
     it('stamps a save after recovery with a vector that covers a follower', async () => {
       const { a, b } = await twoPeers()
-      await Promise.all([
+      const results = Promise.all([
         a.session.applyExternalUpdate(EXTERNAL),
         b.session.applyExternalUpdate(EXTERNAL)
       ])
       await vi.advanceTimersByTimeAsync(1_000)
+      await results
       b.onServerContentChange.mockClear()
 
       a.resourceRef.value = { ...unref(a.resourceRef), etag: 'etag-saved' } as Resource
