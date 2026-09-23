@@ -107,7 +107,7 @@
           :sort-by="sortBy"
           :sort-dir="sortDir"
           :fields-displayed="['name', 'size', 'tags', 'mdate']"
-          :sort-fields="sortFields.filter((field) => field.name === 'name')"
+          :sort-fields="sortFields"
           :view-mode="viewMode"
           :view-size="viewSize"
           @file-click="triggerDefaultAction"
