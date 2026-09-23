@@ -10,7 +10,6 @@
         :accessible-label="recipient.icon.label"
         icon-size="xsmall"
         data-testid="recipient-icon"
-        icon-color="var(--oc-role-on-surface)"
       />
     </slot>
     <p class="oc-recipient-name m-0" data-testid="recipient-name" v-text="recipient.name" />

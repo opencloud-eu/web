@@ -2,9 +2,32 @@ import { When, Then } from '../../environment/fixtures'
 import { DataTable } from 'playwright-bdd'
 import { expect } from '@playwright/test'
 import { World } from '../../environment/world'
-import { environment, objects } from '../../support'
+import { environment, objects, store } from '../../support'
 import { CollaboratorType, ICollaborator } from '../../support/objects/app-files/share/collaborator'
 import { ActionViaType } from '../../support/objects/app-files/share/actions'
+import { Group, User } from '../../support/types'
+
+const resolveRecipient = function (
+  usersEnvironment: environment.UsersEnvironment,
+  { recipient, type, shareType }: { recipient: string; type?: string; shareType?: string }
+): User | Group {
+  if (type === 'guest') {
+    store.invitedGuestStore.add(recipient)
+    return {
+      id: recipient,
+      username: recipient,
+      displayName: recipient,
+      email: recipient,
+      password: ''
+    }
+  }
+
+  if (type === 'group') {
+    return usersEnvironment.getCreatedGroup({ key: recipient })
+  }
+
+  return usersEnvironment.getCreatedUser({ key: recipient, shareType })
+}
 
 const parseShareTable = function (
   stepTable: DataTable,
@@ -19,10 +42,7 @@ const parseShareTable = function (
     }
 
     acc[resource].push({
-      collaborator:
-        type === 'group'
-          ? usersEnvironment.getCreatedGroup({ key: recipient })
-          : usersEnvironment.getCreatedUser({ key: recipient, shareType: shareType }),
+      collaborator: resolveRecipient(usersEnvironment, { recipient, type, shareType }),
       role,
       type: type as CollaboratorType,
       resourceType,
@@ -246,12 +266,12 @@ Then(
 )
 
 When(
-  /^"([^"]*)" sets the expiration date of share "([^"]*)" of (group|user) "([^"]*)" to "([^"]*)"?$/,
+  /^"([^"]*)" sets the expiration date of share "([^"]*)" of (group|user|guest) "([^"]*)" to "([^"]*)"?$/,
   async function (
     { world }: { world: World },
     stepUser: string,
     resource: string,
-    collaboratorType: 'user' | 'group',
+    collaboratorType: CollaboratorType,
     collaboratorName: string,
     expirationDate: string
   ): Promise<void> {
@@ -260,10 +280,10 @@ When(
     await shareObject.addExpirationDate({
       resource,
       collaborator: {
-        collaborator:
-          collaboratorType === 'group'
-            ? world.usersEnvironment.getCreatedGroup({ key: collaboratorName })
-            : world.usersEnvironment.getCreatedUser({ key: collaboratorName }),
+        collaborator: resolveRecipient(world.usersEnvironment, {
+          recipient: collaboratorName,
+          type: collaboratorType
+        }),
         type: collaboratorType
       } as ICollaborator,
       expirationDate
@@ -272,7 +292,7 @@ When(
 )
 
 When(
-  /^"([^"]*)" checks the following access details of share "([^"]*)" for (user|group) "([^"]*)"$/,
+  /^"([^"]*)" checks the following access details of share "([^"]*)" for (user|group|guest) "([^"]*)"$/,
   async function (
     { world }: { world: World },
     stepUser: string,
@@ -287,10 +307,10 @@ When(
     const actualDetails = await shareObject.getAccessDetails({
       resource,
       collaborator: {
-        collaborator:
-          collaboratorType === 'group'
-            ? world.usersEnvironment.getCreatedGroup({ key: collaboratorName })
-            : world.usersEnvironment.getCreatedUser({ key: collaboratorName }),
+        collaborator: resolveRecipient(world.usersEnvironment, {
+          recipient: collaboratorName,
+          type: collaboratorType
+        }),
         type: collaboratorType
       } as ICollaborator
     })
