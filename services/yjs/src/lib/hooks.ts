@@ -14,7 +14,7 @@ import {
   probeFileAccess,
   validateTokenAgainstOpenCloud
 } from './graph.ts'
-import { createGrantRegistry, GrantMessage, parseGrantRequest, SEED_GRANT } from './grants.ts'
+import { createGrantRegistry, grantAnswer, parseGrantRequest, SEED_GRANT } from './grants.ts'
 
 export const HEALTH_ENDPOINT_PATH = '/healthz/ready'
 
@@ -111,7 +111,8 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
 
   /**
    * Hand the seed grant to another writer in the room. Called when the holder
-   * leaves, which may have happened before it seeded.
+   * leaves, which may have happened before it seeded. The writer may never
+   * have asked, so it gets the payload every client version understands.
    */
   function passSeedGrantOn(document: Document, documentName: string): void {
     const writer = document.getConnections().find((connection) => !connection.readOnly)
@@ -119,7 +120,7 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
       return
     }
     grants.grantTo(documentName, SEED_GRANT, writer.socketId)
-    writer.sendStateless(GrantMessage.Granted + SEED_GRANT)
+    writer.sendStateless(grantAnswer({ key: SEED_GRANT, legacy: true }, true))
   }
 
   return {
@@ -214,12 +215,17 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
      * document first, so a grant for a job that is already done costs nothing.
      */
     async onStateless({ connection, documentName, payload }: onStatelessPayload): Promise<void> {
-      const key = parseGrantRequest(payload)
-      if (key === null) {
+      const grant = parseGrantRequest(payload)
+      if (grant === null) {
         return
       }
-      const granted = grants.request(documentName, key, connection.socketId, connection.readOnly)
-      connection.sendStateless((granted ? GrantMessage.Granted : GrantMessage.Denied) + key)
+      const granted = grants.request(
+        documentName,
+        grant.key,
+        connection.socketId,
+        connection.readOnly
+      )
+      connection.sendStateless(grantAnswer(grant, granted))
     },
 
     /**

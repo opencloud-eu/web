@@ -167,6 +167,42 @@ const GRANT_REQUEST = '_oc_grant_request:'
 const GRANT_GRANTED = '_oc_grant_granted:'
 const GRANT_DENIED = '_oc_grant_denied:'
 const SEED_GRANT = 'seed'
+/**
+ * The seed grant's payloads, unchanged since before recovery grants, so every
+ * client and server version can seed. Must match `SeedMessage`.
+ *
+ * TODO: switch to `GRANT_*` and drop these, see https://github.com/opencloud-eu/web/issues/3436
+ */
+const SEED_REQUEST = '_oc_seed_request'
+const SEED_GRANTED = '_oc_seed_granted'
+const SEED_DENIED = '_oc_seed_denied'
+/**
+ * @deprecated How long a recovery grant request waits for an answer. A server
+ * from before the recovery grant never answers, see `RECOVERY_ELECTION_MS`.
+ */
+const RECOVERY_GRANT_TIMEOUT_MS = 5_000
+/**
+ * @deprecated Fallback for a Yjs server without recovery grants, drop once
+ * none is around (v1.0.0). The clients that noticed the write elect one among
+ * themselves instead: the last write to `recoveryClientId` wins after this
+ * wait. Unlike the grant it can let two recoveries through.
+ */
+const RECOVERY_ELECTION_MS = 150
+function grantRequest(key: string) {
+  return key === SEED_GRANT ? SEED_REQUEST : GRANT_REQUEST + key
+}
+/** Key and verdict of a grant answer, or null for any other payload. */
+function parseGrantAnswer(payload: string): { key: string; granted: boolean } | null {
+  if (payload === SEED_GRANTED) return { key: SEED_GRANT, granted: true }
+  if (payload === SEED_DENIED) return { key: SEED_GRANT, granted: false }
+  if (payload.startsWith(GRANT_GRANTED)) {
+    return { key: payload.slice(GRANT_GRANTED.length), granted: true }
+  }
+  if (payload.startsWith(GRANT_DENIED)) {
+    return { key: payload.slice(GRANT_DENIED.length), granted: false }
+  }
+  return null
+}
 function recoveryGrant(etag: string) {
   return `recover:${etag}`
 }
@@ -207,6 +243,8 @@ interface SessionMeta {
   isStale: boolean
   /** Etag of the fresh file body recovery must settle on. */
   nativeEtag: string
+  /** @deprecated The client elected to recover, see `RECOVERY_ELECTION_MS`. */
+  recoveryClientId: number
   /**
    * Bumped with every `isStale`. Unlike the flag it is never cleared, so a
    * recovery that arrives whole in one merged update still shows as a change.
@@ -509,7 +547,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * request also marks a hydration or recovery in flight: they are what waits
    * on it.
    */
-  const pendingGrants = new Map<string, (granted: boolean) => void>()
+  const pendingGrants = new Map<string, (granted: boolean | null) => void>()
 
   /**
    * Abandon requests that can no longer be answered. Answered as refusals so
@@ -522,16 +560,26 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   /**
    * Ask the Yjs server whether we may do a job only one client in the room
    * may do. A request already in flight for the same key is ours to finish,
-   * so a second one is refused right away.
+   * so a second one is refused right away. With `timeoutMs`, a request left
+   * unanswered resolves to null (deprecated, see `RECOVERY_GRANT_TIMEOUT_MS`).
    */
-  function requestGrant(prov: HocuspocusProvider, key: string): Promise<boolean> {
+  function requestGrant(
+    prov: HocuspocusProvider,
+    key: string,
+    timeoutMs?: number
+  ): Promise<boolean | null> {
     if (pendingGrants.has(key)) return Promise.resolve(false)
-    return new Promise<boolean>((resolve) => {
+    return new Promise<boolean | null>((resolve) => {
+      const timer =
+        timeoutMs === undefined
+          ? undefined
+          : window.setTimeout(() => pendingGrants.get(key)?.(null), timeoutMs)
       pendingGrants.set(key, (granted) => {
+        window.clearTimeout(timer)
         pendingGrants.delete(key)
         resolve(granted)
       })
-      prov.sendStateless(GRANT_REQUEST + key)
+      prov.sendStateless(grantRequest(key))
     })
   }
 
@@ -540,9 +588,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * the previous holder left the room without seeding it.
    */
   function onGrantMessage(doc: Y.Doc, prov: HocuspocusProvider, payload: string) {
-    const granted = payload.startsWith(GRANT_GRANTED)
-    if (!granted && !payload.startsWith(GRANT_DENIED)) return
-    const key = payload.slice((granted ? GRANT_GRANTED : GRANT_DENIED).length)
+    const answer = parseGrantAnswer(payload)
+    if (!answer) return
+    const { key, granted } = answer
     const pending = pendingGrants.get(key)
     if (pending) {
       pending(granted)
@@ -686,6 +734,16 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
+   * @deprecated Recovery arbitration for a Yjs server that never answers the
+   * recovery grant request, see `RECOVERY_ELECTION_MS`.
+   */
+  async function winRecoveryElection(doc: Y.Doc, meta: SessionMetaMap) {
+    doc.transact(() => meta.set('recoveryClientId', doc.clientID))
+    await new Promise((resolve) => window.setTimeout(resolve, RECOVERY_ELECTION_MS))
+    return meta.get('recoveryClientId') === doc.clientID
+  }
+
+  /**
    * Stale-state recovery: rewrite the room from a fresh file body. The Yjs
    * server grants it to one client per etag, so peers that noticed the same
    * write at once never re-seed the room twice. The winner raises `isStale`,
@@ -716,7 +774,12 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       return false
     }
 
-    if (prov && !(await requestGrant(prov, recoveryGrant(etag)))) return false
+    if (prov) {
+      const granted =
+        (await requestGrant(prov, recoveryGrant(etag), RECOVERY_GRANT_TIMEOUT_MS)) ??
+        (await winRecoveryElection(doc, meta))
+      if (!granted) return false
+    }
     // The rewrite would wipe what was typed while waiting for the grant.
     if (unref(isReady)) await activeReporter?.flush()
     if (doc.isDestroyed || unref(ydoc) !== doc) return false
@@ -749,6 +812,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       doc.transact(() => {
         meta.delete('isStale')
         meta.delete('nativeEtag')
+        // Deprecated, see `RECOVERY_ELECTION_MS`.
+        meta.delete('recoveryClientId')
         meta.set('etag', etag)
         // The recovered body is what is on disk now, so clean peers take the
         // ordinary peer-save fan-out and stop counting it as unsaved work.
@@ -923,7 +988,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       onSynced() {
         clearConnectTimer()
         // Answers to the old socket are lost, so ask again on this one.
-        for (const key of pendingGrants.keys()) prov.sendStateless(GRANT_REQUEST + key)
+        for (const key of pendingGrants.keys()) prov.sendStateless(grantRequest(key))
         // Reconnected while a hydration or recovery waits on the server:
         // don't start a second one next to it.
         if (pendingGrants.size > 0) return
