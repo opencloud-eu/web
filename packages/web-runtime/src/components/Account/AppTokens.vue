@@ -1,17 +1,19 @@
 <template>
   <div v-if="authStore.userContextReady" id="preferences-panel-app-tokens">
-    <div class="flex items-center mb-2">
-      <h1 class="my-2 text-lg" v-text="$gettext('App Tokens')" />
+    <account-heading
+      :title="$gettext('App Tokens')"
+      :subtitle="$gettext('Tokens for connecting apps and devices to your account.')"
+    >
       <oc-button
         v-if="!authAppServiceDisabled"
         size="small"
-        class="create-app-token-btn ml-4"
+        class="create-app-token-btn"
         @click="openCreateAppTokenModal"
       >
         <oc-icon name="add" size-class="size-4" />
         <span v-text="$gettext('New')" />
       </oc-button>
-    </div>
+    </account-heading>
     <p
       v-if="authAppServiceDisabled"
       class="ml-2"
@@ -92,6 +94,7 @@ import { computed, markRaw, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
+import AccountHeading from './AccountHeading.vue'
 import { AppToken, AppTokenListSchema } from '../../helpers/appTokens'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'

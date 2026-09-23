@@ -1,37 +1,38 @@
 <template>
   <div id="account-preferences">
-    <h1 class="text-lg mt-2" v-text="$gettext('Preferences')" />
+    <account-heading
+      :title="$gettext('Preferences')"
+      :subtitle="$gettext('Language, appearance, security and notifications.')"
+    />
     <app-loading-spinner v-if="isLoading" />
     <template v-else>
       <account-table
-        :fields="[
-          $gettext('Preference name'),
-          $gettext('Preference description'),
-          $gettext('Preference value')
-        ]"
+        :fields="[$gettext('Preference name'), $gettext('Preference value')]"
         class="account-page-preferences"
       >
         <oc-table-tr class="account-page-info-language">
-          <oc-table-td>{{ $gettext('Language') }}</oc-table-td>
           <oc-table-td>
-            <div>
-              <span v-text="$gettext('Select your language.')" />
-              <a href="https://explore.transifex.com/opencloud-eu/opencloud-eu/" target="_blank">
-                <div class="flex items-center">
+            <account-label :label="$gettext('Language')">
+              <template #description>
+                <span v-text="$gettext('Select your language.')" />
+                <a
+                  href="https://explore.transifex.com/opencloud-eu/opencloud-eu/"
+                  target="_blank"
+                  class="flex items-center"
+                >
                   <span v-text="$gettext('Help to translate')" />
                   <oc-icon class="ml-1" size-class="size-4" fill-type="line" name="service" />
-                </div>
-              </a>
-            </div>
+                </a>
+              </template>
+            </account-label>
           </oc-table-td>
           <oc-table-td data-testid="language">
             <oc-select
-              v-if="languageOptions"
               :model-value="selectedLanguageValue"
               :label="$gettext('Language')"
-              :label-hidden="true"
+              label-hidden
               :clearable="false"
-              :searchable="true"
+              searchable
               :options="languageOptions"
               @update:model-value="updateSelectedLanguage"
             />
@@ -39,7 +40,6 @@
         </oc-table-tr>
         <oc-table-tr v-if="showChangePassword">
           <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
-          <oc-table-td><span v-text="'**********'" /></oc-table-td>
           <oc-table-td data-testid="password">
             <oc-button
               appearance="raw"
@@ -52,39 +52,47 @@
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr class="account-page-info-theme">
-          <oc-table-td>{{ $gettext('Theme') }}</oc-table-td>
-          <oc-table-td><span v-text="$gettext('Select your favorite theme')" /></oc-table-td>
+          <oc-table-td>
+            <account-label
+              :label="$gettext('Theme')"
+              :description="$gettext('Select your favorite theme')"
+            />
+          </oc-table-td>
           <oc-table-td data-testid="theme">
             <theme-switcher />
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr v-if="showNotifications && !canConfigureSpecificNotifications">
-          <oc-table-td>{{ $gettext('Notifications') }}</oc-table-td>
-          <oc-table-td v-if="!isMobile">
-            <span v-text="$gettext('Receive notification mails')" />
+          <oc-table-td>
+            <account-label
+              :label="$gettext('Notifications')"
+              :description="$gettext('Receive notification mails')"
+            />
           </oc-table-td>
           <oc-table-td data-testid="notification-mails">
             <oc-checkbox
               :model-value="disableEmailNotificationsValue"
               size="large"
               :label="$gettext('Receive notification mails')"
-              :label-hidden="!isMobile"
+              label-hidden
               data-testid="account-page-notification-mails-checkbox"
               @update:model-value="updateDisableEmailNotifications"
             />
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr v-if="showWebDavDetails" class="account-page-view-options">
-          <oc-table-td>{{ $gettext('View options') }}</oc-table-td>
-          <oc-table-td v-if="!isMobile">
-            <span v-text="$gettext('Show WebDAV information in details view')" />
+          <oc-table-td>
+            <account-label
+              :label="$gettext('View options')"
+              :description="$gettext('Show WebDAV information in details view')"
+            />
           </oc-table-td>
           <oc-table-td data-testid="view-options">
             <oc-checkbox
               :model-value="viewOptionWebDavDetailsValue"
               size="large"
               :label="$gettext('Show WebDAV information in details view')"
-              :label-hidden="!isMobile"
+              label-hidden
               data-testid="account-page-webdav-details-checkbox"
               @update:model-value="updateViewOptionsWebDavDetails"
             />
@@ -92,50 +100,51 @@
         </oc-table-tr>
       </account-table>
       <template v-if="showNotifications && canConfigureSpecificNotifications">
-        <h2 class="mt-8" v-text="$gettext('Notifications')" />
-        <p
-          class="text-sm mt-0 mb-4"
-          v-text="
+        <account-heading
+          tag="h2"
+          :title="$gettext('Notifications')"
+          :subtitle="
             $gettext('Personalise your notification preferences about any file, folder, or Space.')
           "
         />
-        <account-table :fields="notificationsSettingsFields" :show-head="!isMobile">
+        <account-table :fields="notificationsSettingsFields" :show-head="!isTablet">
           <oc-table-tr v-for="option in notificationsOptions" :key="option.id">
-            <oc-table-td>{{ option.displayName }}</oc-table-td>
-            <oc-table-td>{{ option.description }}</oc-table-td>
-
-            <template v-if="option.multiChoiceCollectionValue">
-              <oc-table-td
-                v-for="choice in option.multiChoiceCollectionValue.options"
-                :key="choice.key"
-              >
-                <span class="checkbox-cell-wrapper">
-                  <oc-checkbox
-                    :model-value="
-                      (notificationsValues[option.id] as Record<string, boolean>)[choice.key]
-                    "
-                    size="large"
-                    :label="choice.displayValue"
-                    :label-hidden="!isMobile"
-                    :disabled="choice.attribute === 'disabled'"
-                    @update:model-value="
-                      (value) => updateMultiChoiceSettingsValue(option.name, choice.key, value)
-                    "
-                  />
-                </span>
-              </oc-table-td>
-            </template>
+            <oc-table-td>
+              <account-label :label="option.displayName" :description="option.description" />
+            </oc-table-td>
+            <oc-table-td
+              v-for="choice in option.multiChoiceCollectionValue?.options"
+              :key="choice.key"
+            >
+              <span class="checkbox-cell-wrapper">
+                <oc-checkbox
+                  :model-value="
+                    (notificationsValues[option.id] as Record<string, boolean>)[choice.key]
+                  "
+                  size="large"
+                  :label="choice.displayValue"
+                  :label-hidden="!isTablet"
+                  :disabled="choice.attribute === 'disabled'"
+                  @update:model-value="
+                    (value) => updateMultiChoiceSettingsValue(option.name, choice.key, value)
+                  "
+                />
+              </span>
+            </oc-table-td>
           </oc-table-tr>
         </account-table>
-        <h2 class="mt-8" v-text="$gettext('Mail notification options')" />
-        <account-table :fields="emailNotificationsOptionsFields" :show-head="!isMobile">
+        <account-heading
+          tag="h2"
+          :title="$gettext('Mail notification options')"
+          :subtitle="$gettext('Choose how often notification mails are sent to you.')"
+        />
+        <account-table :fields="emailNotificationsOptionsFields" :show-head="!isTablet">
           <oc-table-tr v-for="option in emailNotificationsOptions" :key="option.id">
             <oc-table-td>{{ option.displayName }}</oc-table-td>
-            <oc-table-td>{{ option.description }}</oc-table-td>
-
             <oc-table-td v-if="option.singleChoiceValue">
               <oc-select
                 :label="$gettext('Mail notification options')"
+                label-hidden
                 :model-value="emailNotificationsValues[option.id]"
                 :options="option.singleChoiceValue.options"
                 :clearable="false"
@@ -165,6 +174,8 @@ import {
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import ThemeSwitcher from '../../components/Account/ThemeSwitcher.vue'
 import AccountTable from '../../components/Account/AccountTable.vue'
+import AccountHeading from '../../components/Account/AccountHeading.vue'
+import AccountLabel from '../../components/Account/AccountLabel.vue'
 import EditPasswordModal from '../../components/EditPasswordModal.vue'
 import { computed, markRaw, onMounted, ref, unref } from 'vue'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../helpers/settings'
@@ -187,7 +198,7 @@ const { dispatchModal } = useModals()
 const spacesStore = useSpacesStore()
 const capabilityStore = useCapabilityStore()
 
-const { isMobile } = useIsMobile()
+const { isTablet } = useIsMobile()
 const disableEmailNotificationsValue = ref<boolean>()
 const viewOptionWebDavDetailsValue = ref<boolean>(resourcesStore.areWebDavDetailsShown)
 const selectedLanguageValue = ref<LanguageOption>()
@@ -227,14 +238,12 @@ const canConfigureSpecificNotifications = computed(
 )
 const notificationsSettingsFields = computed(() => [
   { label: $gettext('Event') },
-  { label: $gettext('Event description'), hidden: true },
   { label: $gettext('In-App'), alignH: 'right' as const },
   { label: $gettext('Mail'), alignH: 'right' as const }
 ])
 
 const emailNotificationsOptionsFields = computed(() => [
   { label: $gettext('Options') },
-  { label: $gettext('Option description'), hidden: true },
   { label: $gettext('Option value'), hidden: true }
 ])
 

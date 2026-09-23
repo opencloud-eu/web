@@ -1,7 +1,9 @@
 <template>
   <div id="account-information">
-    <div class="flex justify-between items-center w-full">
-      <h1 class="mt-2 text-lg" v-text="$gettext('Account Information')" />
+    <account-heading
+      :title="$gettext('Profile')"
+      :subtitle="$gettext('Your picture and account details.')"
+    >
       <oc-button
         v-if="accountEditLink"
         type="a"
@@ -12,27 +14,27 @@
         <oc-icon name="edit" />
         <span v-text="$gettext('Edit')" />
       </oc-button>
-    </div>
+    </account-heading>
+    <avatar-upload
+      class="account-page-avatar bg-role-surface-container border border-role-outline-variant rounded-xl p-4"
+    >
+      <account-label
+        class="text-center md:text-left"
+        :label="$gettext('Profile picture')"
+        :description="
+          $gettext('Max. %{size}MB, JPG, PNG', { size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString() })
+        "
+      />
+    </avatar-upload>
+    <account-heading
+      tag="h2"
+      :title="$gettext('Account information')"
+      :subtitle="$gettext('Managed by your administrator.')"
+    />
     <account-table
       :fields="[$gettext('Information name'), $gettext('Information value')]"
-      class="account-page-info mt-6"
+      class="account-page-info"
     >
-      <oc-table-tr>
-        <oc-table-td>
-          <div v-text="$gettext('Profile picture')" />
-          <div
-            class="text-sm text-role-on-surface-variant"
-            v-text="
-              $gettext('Max. %{size}MB, JPG, PNG', {
-                size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
-              })
-            "
-          />
-        </oc-table-td>
-        <oc-table-td>
-          <avatar-upload class="mb-2" />
-        </oc-table-td>
-      </oc-table-tr>
       <oc-table-tr class="account-page-info-username">
         <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
         <oc-table-td>{{ user.onPremisesSamAccountName }}</oc-table-td>
@@ -94,6 +96,8 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 import AccountTable from '../../components/Account/AccountTable.vue'
+import AccountHeading from '../../components/Account/AccountHeading.vue'
+import AccountLabel from '../../components/Account/AccountLabel.vue'
 import QuotaInformation from '../../components/Account/QuotaInformation.vue'
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'

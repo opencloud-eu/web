@@ -1,17 +1,16 @@
 <template>
   <div id="account-gdpr">
-    <h1 class="text-lg mt-2" v-text="$gettext('GDPR')" />
-    <account-table
-      :fields="[
-        $gettext('GDPR action name'),
-        $gettext('GDPR action description'),
-        $gettext('GDPR actions')
-      ]"
-    >
+    <account-heading
+      :title="$gettext('GDPR')"
+      :subtitle="$gettext('Your personal data and privacy rights.')"
+    />
+    <account-table :fields="[$gettext('GDPR action name'), $gettext('GDPR actions')]">
       <oc-table-tr>
-        <oc-table-td>{{ $gettext('GDPR export') }}</oc-table-td>
         <oc-table-td>
-          <span v-text="$gettext('Request a personal data export according to §20 GDPR.')" />
+          <account-label
+            :label="$gettext('GDPR export')"
+            :description="$gettext('Request a personal data export according to §20 GDPR.')"
+          />
         </oc-table-td>
         <oc-table-td data-testid="gdpr-export">
           <gdpr-export />
@@ -23,6 +22,8 @@
 <script setup lang="ts">
 import { useGettext } from 'vue3-gettext'
 import AccountTable from '../../components/Account/AccountTable.vue'
+import AccountHeading from '../../components/Account/AccountHeading.vue'
+import AccountLabel from '../../components/Account/AccountLabel.vue'
 import GdprExport from '../../components/Account/GdprExport.vue'
 
 const { $gettext } = useGettext()
