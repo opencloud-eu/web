@@ -2,27 +2,30 @@
   <div>
     <input
       ref="fileInputRef"
-      class="invisible avatar-file-input"
+      class="hidden avatar-file-input"
       type="file"
       accept="image/jpeg, image/png"
       @change="onFileChange"
     />
-    <div class="flex flex-col items-center">
-      <user-avatar class="mb-4" :width="128" :user-id="user.id" :user-name="user.displayName" />
-      <div class="oc-button-group">
-        <oc-button size="small" @click="triggerFileInput">
-          <oc-icon name="upload-cloud" fill-type="line" size-class="size-4" />
-          {{ hasAvatar ? $gettext('Replace') : $gettext('Upload') }}
-        </oc-button>
-        <oc-button
-          v-if="hasAvatar"
-          class="avatar-upload-remove-button"
-          size="small"
-          @click="showRemoveModal = true"
-        >
-          <oc-icon name="delete-bin" fill-type="line" size-class="size-4" />
-          {{ $gettext('Remove') }}
-        </oc-button>
+    <div class="flex flex-col md:flex-row items-center gap-6">
+      <user-avatar :width="128" :user-id="user.id" :user-name="user.displayName" />
+      <div class="flex flex-col items-center md:items-start gap-4">
+        <slot />
+        <div class="oc-button-group">
+          <oc-button size="small" @click="triggerFileInput">
+            <oc-icon name="upload-cloud" fill-type="line" size-class="size-4" />
+            {{ hasAvatar ? $gettext('Replace') : $gettext('Upload') }}
+          </oc-button>
+          <oc-button
+            v-if="hasAvatar"
+            class="avatar-upload-remove-button"
+            size="small"
+            @click="showRemoveModal = true"
+          >
+            <oc-icon name="delete-bin" fill-type="line" size-class="size-4" />
+            {{ $gettext('Remove') }}
+          </oc-button>
+        </div>
       </div>
     </div>
     <oc-modal

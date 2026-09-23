@@ -2,7 +2,16 @@
   <div id="account-calendar">
     <app-loading-spinner v-if="isCalDavLoading" />
     <template v-else>
-      <h1 class="text-lg mt-2" v-text="$gettext('Calendar')" />
+      <account-heading
+        :title="$gettext('Calendar')"
+        :subtitle="
+          isCalDavAvailable
+            ? $gettext(
+                'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
+              )
+            : ''
+        "
+      />
       <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
         <oc-icon name="information" size-class="size-4" fill-type="line" class="mr-1" />
 
@@ -26,25 +35,16 @@
         </oc-button>
       </span>
       <template v-else>
-        <p
-          class="text-sm mt-0 mb-4"
-          v-text="
-            $gettext(
-              'Here, you can access your personal calendar for integration with third-party apps like Thunderbird, Apple Calendar, and others.'
-            )
-          "
-        />
         <account-table
-          :fields="[
-            $gettext('CalDAV information name'),
-            $gettext('CalCAV information value'),
-            $gettext('CalCAV information actions')
-          ]"
+          :fields="[$gettext('CalDAV information name'), $gettext('CalDAV information actions')]"
         >
           <oc-table-tr>
-            <oc-table-td>{{ $gettext('CalDAV URL') }}</oc-table-td>
             <oc-table-td>
-              <span class="truncate">{{ configStore.serverUrl }}</span>
+              <account-label
+                class="truncate"
+                :label="$gettext('CalDAV URL')"
+                :description="configStore.serverUrl"
+              />
             </oc-table-td>
             <oc-table-td>
               <oc-button
@@ -60,9 +60,11 @@
             </oc-table-td>
           </oc-table-tr>
           <oc-table-tr>
-            <oc-table-td>{{ $gettext('Username') }}</oc-table-td>
             <oc-table-td>
-              <span>{{ user.onPremisesSamAccountName }}</span>
+              <account-label
+                :label="$gettext('Username')"
+                :description="user.onPremisesSamAccountName"
+              />
             </oc-table-td>
             <oc-table-td>
               <oc-button
@@ -78,9 +80,11 @@
             </oc-table-td>
           </oc-table-tr>
           <oc-table-tr>
-            <oc-table-td>{{ $gettext('Password') }}</oc-table-td>
             <oc-table-td colspan="2">
-              {{ $gettext('An app token needs to be generated and then can be used.') }}
+              <account-label
+                :label="$gettext('Password')"
+                :description="$gettext('An app token needs to be generated and then can be used.')"
+              />
             </oc-table-td>
           </oc-table-tr>
         </account-table>
@@ -91,6 +95,8 @@
 <script setup lang="ts">
 import { useGettext } from 'vue3-gettext'
 import AccountTable from '../../components/Account/AccountTable.vue'
+import AccountHeading from '../../components/Account/AccountHeading.vue'
+import AccountLabel from '../../components/Account/AccountLabel.vue'
 import { useClientService, useConfigStore, useUserStore } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, unref } from 'vue'

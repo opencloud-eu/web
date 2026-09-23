@@ -2,9 +2,7 @@
   <div class="account-table">
     <oc-table-simple>
       <colgroup>
-        <col class="w-auto md:w-[30%]" />
-        <col class="w-auto md:w-[40%]" />
-        <col class="w-auto md:w-[30%]" />
+        <col v-for="(width, index) in columnWidths" :key="index" :style="{ width }" />
       </colgroup>
       <oc-table-head :class="{ 'sr-only': !showHead }">
         <oc-table-tr>
@@ -28,6 +26,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 type AccountTableCell = {
   label: string
   alignH?: 'left' | 'center' | 'right'
@@ -38,13 +38,31 @@ const { fields, showHead = false } = defineProps<{
   fields: Array<string | AccountTableCell>
   showHead?: boolean
 }>()
+
+// the first column holds label and description, the remaining columns share the rest
+const columnWidths = computed(() => {
+  const restWidth = `${40 / (fields.length - 1)}%`
+  return ['60%', ...Array(fields.length - 1).fill(restWidth)]
+})
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  .account-table table {
+    @apply block md:table;
+  }
+
+  .account-table tbody {
+    @apply block md:table-row-group;
+  }
+
   .account-table td {
-    @apply block md:table-cell py-2 md:py-0 px-0;
+    @apply block md:table-cell py-2 md:py-3 px-0;
+  }
+
+  .account-table th {
+    @apply px-0;
   }
 
   .account-table td > .checkbox-cell-wrapper {
