@@ -631,6 +631,17 @@ describe('ResourceTable', () => {
       })
     })
   })
+  describe('status field', () => {
+    it('is sortable for spaces', () => {
+      const { wrapper } = getMountedWrapper({ props: { resourceType: 'space' } })
+      expect(wrapper.find('.oc-table-header-cell-indicators .oc-button-sort').exists()).toBeTruthy()
+    })
+    it('is not sortable for files', () => {
+      const { wrapper } = getMountedWrapper()
+      expect(wrapper.find('.oc-table-header-cell-indicators .oc-button-sort').exists()).toBeFalsy()
+    })
+  })
+
   describe('"shared with" field', () => {
     it('only displays authenticated shares', () => {
       const resource = mock<OutgoingShareResource>({ id: '1' })

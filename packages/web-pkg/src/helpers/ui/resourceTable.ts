@@ -2,6 +2,13 @@ import { Resource, ShareResource } from '@opencloud-eu/web-client'
 import { SortField } from '../../composables/sort'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 
+export const spaceStatusSortField: SortField = {
+  name: 'indicators',
+  prop: 'disabled',
+  sortable: (disabled: boolean) => Number(!!disabled),
+  sortDir: SortDir.Asc
+}
+
 export const determineResourceTableSortFields = (firstResource: Resource): SortField[] => {
   if (!firstResource) {
     return []

@@ -1,5 +1,6 @@
 import { ref, unref } from 'vue'
-import { SortOptions, useSort } from '../../../../src/composables'
+import { SortableItem, SortOptions, useSort } from '../../../../src/composables'
+import { spaceStatusSortField } from '../../../../src/helpers'
 import { Resource } from '@opencloud-eu/web-client'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -29,6 +30,32 @@ describe('useSort', () => {
         { id: '2' },
         { id: '5' }
       ])
+    })
+  })
+
+  describe('sorting spaces by status', () => {
+    const spaces = [
+      { id: '1', disabled: true },
+      { id: '2', disabled: false },
+      { id: '3' },
+      { id: '4', disabled: true }
+    ] as (SortableItem & { id: string; disabled?: boolean })[]
+
+    it.each([
+      { sortDir: SortDir.Asc, expected: ['2', '3', '1', '4'] },
+      { sortDir: SortDir.Desc, expected: ['1', '4', '2', '3'] }
+    ])('sorts enabled and disabled spaces $sortDir', ({ sortDir, expected }) => {
+      getComposableWrapper(() => {
+        const { items } = useSort({
+          items: spaces,
+          fields: [spaceStatusSortField],
+          sortBy: ref('indicators'),
+          sortDir: ref(sortDir),
+          routeName: 'mocked'
+        })
+
+        expect(unref(items).map(({ id }) => id)).toEqual(expected)
+      })
     })
   })
 

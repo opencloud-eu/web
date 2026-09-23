@@ -153,6 +153,7 @@ import {
   useResourceIndicators,
   useSort,
   sortFields as availableSortFields,
+  spaceStatusSortField,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
@@ -164,7 +165,7 @@ import {
 } from '../../composables/keyboardActions'
 import { useSpaceSettingsStore } from '../../composables/stores/spaceSettings'
 import { storeToRefs } from 'pinia'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 
 const router = useRouter()
 const route = useRoute()
@@ -200,7 +201,7 @@ const filteredSpaces = computed(() => filter(unref(spaces), filterTerm))
 const sortFields = translateSortFields(availableSortFields, language)
 const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
   items: filteredSpaces,
-  fields: sortFields
+  fields: [...sortFields, spaceStatusSortField]
 })
 
 const highlighted = computed(() => unref(selectedSpaces).map((s) => s.id))
@@ -305,7 +306,9 @@ const fields = computed<FieldType[]>(() => [
     type: 'slot',
     alignH: 'right',
     wrap: 'nowrap',
-    width: 'shrink'
+    width: 'shrink',
+    sortable: true,
+    sortDir: SortDir.Asc
   },
   {
     name: 'mdate',

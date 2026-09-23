@@ -314,7 +314,10 @@ import ResourceTableSelectAll from './ResourceTableSelectAll.vue'
 import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
-import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
+import {
+  determineResourceTableSortFields,
+  spaceStatusSortField
+} from '../../helpers/ui/resourceTable'
 import { FileActionOptions } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
@@ -634,6 +637,13 @@ const fields = computed(() => {
         return hasField && fieldsDisplayed.includes(field.name)
       })
       .map((field) => {
+        if (field.name === 'indicators' && resourceType === 'space') {
+          Object.assign(field, {
+            sortable: spaceStatusSortField.sortable,
+            sortDir: spaceStatusSortField.sortDir
+          })
+          return field
+        }
         const sortField = sortFields.find((f) => f.name === field.name)
         if (sortField) {
           Object.assign(field, {
