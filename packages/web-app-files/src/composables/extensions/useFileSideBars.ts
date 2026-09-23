@@ -349,7 +349,8 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: [fileSideBarExtensionPoint.id],
       panel: {
         name: 'activities',
-        icon: 'pulse',
+        icon: 'time',
+        iconFillType: 'line',
         title: () => $gettext('Activities'),
         component: markRaw(ActivitiesPanel),
         isVisible: ({ items }) => {

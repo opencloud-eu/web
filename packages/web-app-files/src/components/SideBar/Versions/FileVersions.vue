@@ -5,7 +5,12 @@
         <li v-for="(item, index) in versions" :key="index">
           <div class="flex items-start justify-between gap-2">
             <div>
-              <div class="flex h-lh items-center gap-2">
+              <span
+                class="block text-role-on-surface-variant text-sm leading-[1lh]"
+                data-testid="file-versions-file-full-date"
+                v-text="formatVersionDate(item)"
+              />
+              <div class="flex h-lh items-center gap-2 mt-1">
                 <span
                   class="version-date font-semibold"
                   data-testid="file-versions-file-last-modified-date"
@@ -15,11 +20,6 @@
                   {{ formatVersionFileSize(item) }}
                 </oc-tag>
               </div>
-              <span
-                class="text-role-on-surface-variant text-sm"
-                data-testid="file-versions-file-full-date"
-                v-text="formatVersionDate(item)"
-              />
             </div>
             <div class="flex h-lh shrink-0 items-center gap-2">
               <oc-button
