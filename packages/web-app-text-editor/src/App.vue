@@ -80,6 +80,7 @@ const textEditor = useTextEditor({
   ydoc,
   awareness,
   yjsStatus: () => yjsStatus,
-  mentions
+  mentions,
+  tableOfContents: unref(isRichText)
 })
 </script>
