@@ -314,10 +314,7 @@ import ResourceTableSelectAll from './ResourceTableSelectAll.vue'
 import { formatDateFromJSDate, formatRelativeDateFromJSDate } from '../../helpers'
 import ContextMenuQuickAction from '../ContextActions/ContextMenuQuickAction.vue'
 import { useInterceptModifierClick } from '../../composables/keyboardActions'
-import {
-  determineResourceTableSortFields,
-  spaceTableSortFields
-} from '../../helpers/ui/resourceTable'
+import { determineResourceTableSortFields } from '../../helpers/ui/resourceTable'
 import { FileActionOptions } from '../../composables/actions'
 import { createLocationCommon } from '../../router'
 import get from 'lodash-es/get'
@@ -481,10 +478,7 @@ const fields = computed(() => {
     })
   }
 
-  const sortFields =
-    resourceType === 'space'
-      ? spaceTableSortFields
-      : determineResourceTableSortFields(firstResource)
+  const sortFields = determineResourceTableSortFields(firstResource)
   fields.push(
     ...(
       [
