@@ -1,6 +1,6 @@
 import type { MockInstance } from 'vitest'
 import { createHooks, HEALTH_ENDPOINT_PATH } from '../../../src/lib/hooks.ts'
-import { GrantMessage, SEED_GRANT } from '../../../src/lib/grants.ts'
+import { GrantMessage } from '../../../src/lib/grants.ts'
 import { DeniedReason, refuse } from '../../../src/lib/errors.ts'
 import * as graph from '../../../src/lib/graph.ts'
 
@@ -36,10 +36,15 @@ function connection(socketId: string, readOnly = false): FakeConnection {
   return { socketId, readOnly, sendStateless: vi.fn() }
 }
 
+// Spelled out: every client version seeds with these.
+const SEED_REQUEST = '_oc_seed_request'
+const SEED_GRANTED = '_oc_seed_granted'
+const SEED_DENIED = '_oc_seed_denied'
+
 function statelessPayload(
   conn: FakeConnection,
   documentName = 'doc',
-  payload: string = GrantMessage.Request + SEED_GRANT
+  payload: string = SEED_REQUEST
 ) {
   return { connection: conn, documentName, payload } as any
 }
@@ -57,9 +62,6 @@ function disconnectPayload({
     document: { getConnections: () => remaining }
   } as any
 }
-
-const SEED_GRANTED = GrantMessage.Granted + SEED_GRANT
-const SEED_DENIED = GrantMessage.Denied + SEED_GRANT
 
 let logSpy: MockInstance<typeof console.log>
 
@@ -532,6 +534,41 @@ describe('seeding arbitration', () => {
     await hooks.onStateless(statelessPayload(second))
 
     expect(second.sendStateless).toHaveBeenCalledWith(SEED_GRANTED)
+  })
+
+  it('answers a seed request in the format it was asked in', async () => {
+    const hooks = getHooks()
+    const first = connection('a')
+    const second = connection('b')
+
+    await hooks.onStateless(statelessPayload(first, 'doc', GrantMessage.Request + 'seed'))
+    await hooks.onStateless(statelessPayload(second))
+
+    expect(first.sendStateless).toHaveBeenCalledWith(GrantMessage.Granted + 'seed')
+    expect(second.sendStateless).toHaveBeenCalledWith(SEED_DENIED)
+  })
+
+  it('denies a seed request in the format it was asked in', async () => {
+    const hooks = getHooks()
+    const first = connection('a')
+    const second = connection('b')
+
+    await hooks.onStateless(statelessPayload(first))
+    await hooks.onStateless(statelessPayload(second, 'doc', GrantMessage.Request + 'seed'))
+
+    expect(second.sendStateless).toHaveBeenCalledWith(GrantMessage.Denied + 'seed')
+  })
+
+  // The next writer may never have asked, so it may only know the old format.
+  it('passes a grant asked for in the new format on in the old one', async () => {
+    const hooks = getHooks()
+    const holder = connection('a')
+    const peer = connection('b')
+
+    await hooks.onStateless(statelessPayload(holder, 'doc', GrantMessage.Request + 'seed'))
+    await hooks.onDisconnect(disconnectPayload({ socketId: 'a', remaining: [peer] }))
+
+    expect(peer.sendStateless).toHaveBeenCalledWith(SEED_GRANTED)
   })
 
   it.each(['', 'other', 'recover:' + 'x'.repeat(249)])(

@@ -1,10 +1,10 @@
 /**
  * Stateless protocol for room-wide jobs that exactly one connection may do:
  * seeding an empty room (`seed`) and rewriting a stale one from the file body
- * behind an etag (`recover:<etag>`). Each payload is a prefix plus the key.
+ * behind an etag (`recover:<etag>`). A payload is a prefix plus the key.
  *
- * The prefixes have to match the `GRANT_*` constants in the client's
- * `useYjsSession.ts`, keep the two in sync.
+ * The payloads have to match the `GRANT_*` and `SEED_*` constants in the
+ * client's `useYjsSession.ts`, keep the two in sync.
  */
 export const GrantMessage = {
   Request: '_oc_grant_request:',
@@ -15,22 +15,50 @@ export const GrantMessage = {
 export const SEED_GRANT = 'seed'
 const RECOVER_PREFIX = 'recover:'
 
+/**
+ * @deprecated The seed grant's payloads from before `GrantMessage`, drop once
+ * no client sends `SeedMessage.Request` anymore. Until then an unsolicited
+ * seed grant uses them too, because every client version understands them.
+ */
+export const SeedMessage = {
+  Request: '_oc_seed_request',
+  Granted: '_oc_seed_granted',
+  Denied: '_oc_seed_denied'
+} as const
+
 /** Generous for `recover:<etag>`, but bounds what a client can make us store. */
 const MAX_GRANT_KEY_LENGTH = 256
 
-/** The key a grant request asks for, or null for any other payload. */
-export function parseGrantRequest(payload: string): string | null {
+export interface GrantRequest {
+  key: string
+  /** Asked with `SeedMessage`, so it has to be answered with it. */
+  legacy: boolean
+}
+
+/** The grant a request asks for, or null for any other payload. */
+export function parseGrantRequest(payload: string): GrantRequest | null {
+  if (payload === SeedMessage.Request) {
+    return { key: SEED_GRANT, legacy: true }
+  }
   if (!payload.startsWith(GrantMessage.Request)) {
     return null
   }
   const key = payload.slice(GrantMessage.Request.length)
-  if (
-    (key !== SEED_GRANT && !key.startsWith(RECOVER_PREFIX)) ||
-    key.length > MAX_GRANT_KEY_LENGTH
-  ) {
+  if (key !== SEED_GRANT && !key.startsWith(RECOVER_PREFIX)) {
     return null
   }
-  return key
+  if (key.length > MAX_GRANT_KEY_LENGTH) {
+    return null
+  }
+  return { key, legacy: false }
+}
+
+/** The payload that answers a grant request for `key`. */
+export function grantAnswer({ key, legacy }: GrantRequest, granted: boolean): string {
+  if (legacy) {
+    return granted ? SeedMessage.Granted : SeedMessage.Denied
+  }
+  return (granted ? GrantMessage.Granted : GrantMessage.Denied) + key
 }
 
 /**

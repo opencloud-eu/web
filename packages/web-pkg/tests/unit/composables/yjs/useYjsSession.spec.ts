@@ -51,12 +51,14 @@ const { providerInstances, relay } = vi.hoisted(() => {
     providerInstances: [] as MockProvider[],
     // `grantHolders` mirrors the Yjs server's grant registry (see
     // `services/yjs/src/lib/grants.ts`): one holder per room and key, stored
-    // under `grantSlot`.
+    // under `grantSlot`. `seedGrantOnly` plays a server from before the
+    // generic grants, which ignores every other request.
     relay: {
       enabled: false,
       docDelayMs: 0,
       awarenessDelayMs: 0,
-      grantHolders: new Map<string, string>()
+      grantHolders: new Map<string, string>(),
+      seedGrantOnly: false
     }
   }
 })
@@ -98,8 +100,9 @@ vi.mock('@hocuspocus/provider', async () => {
     // test on a single `flushPromises`.
     sendStateless = vi.fn((payload: string) => {
       const prefix = '_oc_grant_request:'
-      if (!payload.startsWith(prefix)) return
-      const key = payload.slice(prefix.length)
+      const isSeed = payload === '_oc_seed_request'
+      if (!isSeed && (relay.seedGrantOnly || !payload.startsWith(prefix))) return
+      const key = isSeed ? 'seed' : payload.slice(prefix.length)
       const slot = `${this.name}|${key}`
       const socketId = String(this.document.clientID)
       const answer = () => {
@@ -107,9 +110,10 @@ vi.mock('@hocuspocus/provider', async () => {
         const holder = relay.grantHolders.get(slot)
         const granted = holder === undefined || holder === socketId
         if (granted) relay.grantHolders.set(slot, socketId)
-        this._opts.onStateless?.({
-          payload: `${granted ? '_oc_grant_granted:' : '_oc_grant_denied:'}${key}`
-        })
+        const answerPayload = isSeed
+          ? `_oc_seed_${granted ? 'granted' : 'denied'}`
+          : `${granted ? '_oc_grant_granted:' : '_oc_grant_denied:'}${key}`
+        this._opts.onStateless?.({ payload: answerPayload })
       }
       if (relay.docDelayMs === 0) {
         answer()
@@ -300,6 +304,7 @@ beforeEach(() => {
   relay.docDelayMs = 0
   relay.awarenessDelayMs = 0
   relay.grantHolders.clear()
+  relay.seedGrantOnly = false
 })
 
 afterEach(() => {
@@ -583,8 +588,23 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith('_oc_grant_request:seed')
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith('_oc_seed_request')
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the real file body')
+  })
+
+  it('seeds against a server from before the generic grants', async () => {
+    relay.seedGrantOnly = true
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the real file body'
+    })
+    await flushPromises()
+
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the real file body')
+    expect(unref(s.session.isReady)).toBe(true)
   })
 
   // The peer that holds the grant is seeding, and its body is on the way.
@@ -1164,6 +1184,38 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('even newer body')
     expect(meta.get('etag')).toBe('etag-newest')
     expect(meta.get('isStale')).toBeUndefined()
+  })
+
+  // A server from before recovery grants ignores the request. The clients
+  // then elect one among themselves, as before the grants.
+  it('falls back to an election when the server never answers the recovery request', async () => {
+    relay.seedGrantOnly = true
+    const s = await syncIntoStaleRoom()
+
+    await vi.advanceTimersByTimeAsync(4_900)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+    expect(unref(s.session.isReady)).toBe(false)
+
+    await vi.advanceTimersByTimeAsync(300)
+
+    const meta = s.ydoc!.getMap(META_KEY)
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(meta.get('etag')).toBe('etag-new')
+    expect(meta.get('recoveryClientId')).toBeUndefined()
+    expect(unref(s.session.isReady)).toBe(true)
+  })
+
+  it('takes the room etag when it loses the election', async () => {
+    relay.seedGrantOnly = true
+    const s = await syncIntoStaleRoom()
+    await vi.advanceTimersByTimeAsync(5_000)
+
+    // A peer that noticed the same write claims after us, so it wins.
+    s.ydoc!.getMap(META_KEY).set('recoveryClientId', s.ydoc!.clientID + 1)
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+    expect(s.onEtagChange).toHaveBeenCalledWith('etag-old')
   })
 
   // Regression: recovery used to re-seed from whatever the elected peer held
@@ -2187,7 +2239,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     await flushPromises()
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('')
 
-    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
+    providerInstances[0].triggerStateless('_oc_seed_granted')
     await flushPromises()
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
@@ -2202,7 +2254,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
+    providerInstances[0].triggerStateless('_oc_seed_granted')
     await flushPromises()
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
@@ -2219,7 +2271,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
+    providerInstances[0].triggerStateless('_oc_seed_granted')
     await vi.advanceTimersByTimeAsync(1_000)
 
     expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
@@ -2247,7 +2299,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     providerInstances[0].triggerSynced()
     await flushPromises()
 
-    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
+    providerInstances[0].triggerStateless('_oc_seed_granted')
     await flushPromises()
 
     expect(unref(s.session.isLockedForReload)).toBe(true)
@@ -2262,7 +2314,7 @@ describe('useYjsSession — unsolicited seed grant', () => {
     await flushPromises()
     s.ydoc!.getText(SHARED_TEXT_KEY).delete(0, s.ydoc!.getText(SHARED_TEXT_KEY).length)
 
-    providerInstances[0].triggerStateless('_oc_grant_granted:seed')
+    providerInstances[0].triggerStateless('_oc_seed_granted')
     await flushPromises()
 
     expect(s.ydoc!.getMap('_oc_meta').get('hydrated')).toBeUndefined()
@@ -2426,6 +2478,17 @@ describe('useYjsSession — external updates', () => {
     expect(s.ydoc!.getMap(META_KEY).get('isStale')).toBeUndefined()
   })
 
+  it('recovers through the election when the server never answers', async () => {
+    relay.seedGrantOnly = true
+    const s = await remoteSession()
+
+    const result = s.session.applyExternalUpdate(EXTERNAL)
+    await vi.advanceTimersByTimeAsync(5_200)
+
+    expect(await result).toBe('recovered')
+    expect(text(s)).toBe('external body')
+  })
+
   it('recovers a room that is still flagged for an older write', async () => {
     const s = await remoteSession()
     const meta = s.ydoc!.getMap(META_KEY)
@@ -2536,6 +2599,22 @@ describe('useYjsSession — external updates', () => {
         }
       }
     )
+
+    it('lets exactly one of two clean peers rewrite when the server never answers', async () => {
+      const { a, b } = await twoPeers()
+      relay.seedGrantOnly = true
+
+      const results = Promise.all([
+        a.session.applyExternalUpdate(EXTERNAL),
+        b.session.applyExternalUpdate(EXTERNAL)
+      ])
+      await vi.advanceTimersByTimeAsync(6_000)
+      await flushPromises()
+
+      expect((await results).sort()).toEqual(['recovered', 'skipped'])
+      expect(text(a)).toBe('external body')
+      expect(text(b)).toBe('external body')
+    })
 
     // The toast says the editor shows the new version, so a follower must not
     // hear it on the flag: the rewrite may still fail.
