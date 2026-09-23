@@ -1,20 +1,18 @@
 import { isSpaceResource, Resource, ShareResource } from '@opencloud-eu/web-client'
 import { SortField } from '../../composables/sort'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
-import {
-  mdateSortField,
-  nameSortField,
-  remainingQuotaSortField,
-  sizeSortField,
-  sortByDate,
-  spaceStatusSortField,
-  totalQuotaSortField,
-  usedQuotaSortField
-} from './sortFields'
 
 export const resourceTableSortFields: SortField[] = [
-  nameSortField,
-  sizeSortField,
+  {
+    name: 'name',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    name: 'size',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
   {
     name: 'sharedWith',
     sortable: (sharedWith: ShareResource['sharedWith']) => {
@@ -42,26 +40,58 @@ export const resourceTableSortFields: SortField[] = [
     sortable: 'displayName',
     sortDir: SortDir.Asc
   },
-  mdateSortField,
+  {
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Desc
+  },
   {
     name: 'sdate',
-    sortable: sortByDate,
+    sortable: (date: string) => new Date(date).valueOf(),
     sortDir: SortDir.Desc
   },
   {
     name: 'ddate',
-    sortable: sortByDate,
+    sortable: (date: string) => new Date(date).valueOf(),
     sortDir: SortDir.Desc
   }
 ]
 
 export const spaceTableSortFields: SortField[] = [
-  nameSortField,
-  totalQuotaSortField,
-  usedQuotaSortField,
-  remainingQuotaSortField,
-  spaceStatusSortField,
-  mdateSortField
+  {
+    name: 'name',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    name: 'totalQuota',
+    prop: 'spaceQuota.total',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
+  {
+    name: 'usedQuota',
+    prop: 'spaceQuota.used',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
+  {
+    name: 'remainingQuota',
+    prop: 'spaceQuota.remaining',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
+  {
+    name: 'indicators',
+    prop: 'disabled',
+    sortable: (disabled: boolean) => Number(!!disabled),
+    sortDir: SortDir.Asc
+  },
+  {
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Desc
+  }
 ]
 
 export const determineResourceTableSortFields = (firstResource: Resource): SortField[] => {
