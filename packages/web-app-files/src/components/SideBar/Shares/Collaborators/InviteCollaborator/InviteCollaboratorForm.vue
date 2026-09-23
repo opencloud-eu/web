@@ -2,7 +2,7 @@
   <div
     id="new-collaborators-form"
     data-testid="new-collaborators-form"
-    class="[&_.vs\_\_actions]:!flex-nowrap mb-4"
+    class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 mb-4"
   >
     <div>
       <div class="flex justify-between mb-1">
