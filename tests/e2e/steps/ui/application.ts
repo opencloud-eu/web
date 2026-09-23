@@ -2,12 +2,12 @@ import { When } from '../../environment/fixtures'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { waitForSSEEvent } from '../../support/utils/locator'
+import { pageObjectFor, actorPage } from '../../environment/pageObject'
 
 When(
   '{string} navigates to the project spaces management page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationAdminSettings.page.Spaces({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.page.Spaces)
     await pageObject.navigate()
   }
 )
@@ -15,8 +15,7 @@ When(
 When(
   '{string} opens the {string} app',
   async ({ world }: { world: World }, stepUser: string, stepApp: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const applicationObject = new objects.runtime.Application({ page })
+    const applicationObject = pageObjectFor(world, stepUser, objects.runtime.Application)
     await applicationObject.open({ name: stepApp })
   }
 )
@@ -24,8 +23,7 @@ When(
 When(
   '{string} opens the apps menu',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const applicationObject = new objects.runtime.Application({ page })
+    const applicationObject = pageObjectFor(world, stepUser, objects.runtime.Application)
     await applicationObject.openAppsMenu()
   }
 )
@@ -33,8 +31,7 @@ When(
 When(
   '{string} reloads the page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const applicationObject = new objects.runtime.Application({ page })
+    const applicationObject = pageObjectFor(world, stepUser, objects.runtime.Application)
     await applicationObject.reloadPage()
   }
 )
@@ -49,7 +46,7 @@ When(
 When(
   '{string} opens the {string} url',
   async ({ world }: { world: World }, stepUser: string, url: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     const applicationObject = new objects.runtime.Application({ page })
     url = url === '%clipboard%' ? await page.evaluate('navigator.clipboard.readText()') : url
     await applicationObject.openUrl(url)
@@ -59,8 +56,7 @@ When(
 When(
   '{string} closes the sidebar',
   async ({ world }: { world: World }, user: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: user })
-    const applicationObject = new objects.runtime.Application({ page })
+    const applicationObject = pageObjectFor(world, user, objects.runtime.Application)
     await applicationObject.closeSidebar()
   }
 )

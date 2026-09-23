@@ -1,578 +1,16 @@
-import { When, Then } from '../../environment/fixtures'
+import { When } from '../../environment/fixtures'
 import { DataTable } from 'playwright-bdd'
 import path from 'path'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { expect } from '@playwright/test'
-import { appConfig } from '../../playwright.config'
 import {
   createResourceTypes,
-  shortcutType,
-  ActionViaType,
-  PanelType
+  ActionViaType
 } from '../../support/objects/app-files/resource/actions'
 import { Public } from '../../support/objects/app-files/page/public'
 import { Resource } from '../../support/objects/app-files'
-import * as runtimeFs from '../../support/utils/runtimeFs'
-import { searchFilter, SearchShortcutType } from '../../support/objects/app-files/resource/actions'
-import { File } from '../../support/types'
-import { waitProcessingToFinish } from '../../support/objects/app-files/fileEvents'
-import { editor } from '../../support/objects/app-files/utils'
-
-// how long a late duplicate of the hydrated content may need to arrive
-const duplicateContentGraceMs = 3000
-
-When(
-  '{string} creates the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    for (const info of stepTable.hashes()) {
-      await resourceObject.create({
-        name: info.resource,
-        type: info.type as createResourceTypes,
-        content: info.content,
-        password: info.password
-      })
-    }
-  }
-)
-
-When(
-  '{string} uploads the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      await resourceObject.upload({
-        to: info.to,
-        resources: [world.filesEnvironment.getFile({ name: info.resource })],
-        option: info.option,
-        type: info.type,
-        password: info.password
-      })
-    }
-  }
-)
-
-When(
-  '{string} tries to upload the following resource',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      await resourceObject.tryToUpload({
-        to: info.to,
-        resources: [world.filesEnvironment.getFile({ name: info.resource })],
-        error: info.error
-      })
-    }
-  }
-)
-
-When(
-  '{string} starts uploading the following large resource(s) from the temp upload directory',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      await resourceObject.startUpload({
-        to: info.to,
-        resources: [
-          world.filesEnvironment.getFile({
-            name: path.join(
-              runtimeFs.getTempUploadPath().replace(appConfig.assetsPath, ''),
-              info.resource
-            )
-          })
-        ],
-        option: info.option
-      })
-    }
-  }
-)
-
-When(
-  '{string} {word} the file upload',
-  async ({ world }: { world: World }, stepUser: string, action: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    switch (action) {
-      case 'pauses':
-        await resourceObject.pauseUpload()
-        break
-      case 'resumes':
-        await resourceObject.resumeUpload()
-        break
-      case 'cancels':
-        await resourceObject.cancelUpload()
-        break
-      default:
-        throw new Error(`Unknown action: ${action}`)
-    }
-  }
-)
-
-When(
-  /^"([^"]*)" downloads the following resource(?:s)? using the (sidebar panel|batch action|preview topbar)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    stepTable: DataTable
-  ) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await processDownload(stepTable, resourceObject, actionType)
-  }
-)
-
-When(
-  /^"([^"]*)" deletes the following resource(?:s)? using the (sidebar panel|batch action)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    stepTable: DataTable
-  ) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await processDelete(stepTable, resourceObject, actionType)
-  }
-)
-
-When(
-  /^"([^"]*)" deletes the resource using the app topbar$/,
-  async ({ world }: { world: World }, stepUser: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.deleteResourceViaAppTopbar()
-  }
-)
-When(
-  '{string} renames the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const { resource, as } of stepTable.hashes()) {
-      await resourceObject.rename({ resource, newName: as })
-    }
-  }
-)
-
-When(
-  /^"([^"]*)" (copies|moves) the following resource(?:s)? using (keyboard|drag-drop|drag-drop-breadcrumb|sidebar-panel|dropdown-menu|batch-action)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    method: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    // drag-n-drop always does MOVE
-    if (method.includes('drag-drop')) {
-      expect(actionType).toBe('moves')
-    }
-
-    for (const { resource, to, option } of stepTable.hashes()) {
-      await resourceObject[actionType === 'copies' ? 'copy' : 'move']({
-        resource,
-        newLocation: to,
-        method,
-        option: option
-      })
-    }
-  }
-)
-
-When(
-  /^"([^"]*)" (copies|moves) the following resources to "([^"]*)" at once using (keyboard|drag-drop|drag-drop-breadcrumb|dropdown-menu|batch-action)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    newLocation: string,
-    method: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    // drag-n-drop always does MOVE
-    if (method.includes('drag-drop')) {
-      expect(actionType).toBe('moves')
-    }
-
-    const resources = [].concat(...stepTable.rows())
-    await resourceObject[
-      actionType === 'copies' ? 'copyMultipleResources' : 'moveMultipleResources'
-    ]({
-      newLocation,
-      method,
-      resources
-    })
-  }
-)
-
-When(
-  /^"([^"]*)" (copies|moves) the following resource to a new folder "([^"]*)"( with copy instead)?$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    action: string,
-    newLocation: string,
-    copyInstead: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const resources = stepTable.rows().flat()
-    const actionFn =
-      action === 'copies'
-        ? 'copyResourcesWithCreateDestination'
-        : 'moveResourcesWithCreateDestination'
-
-    await resourceObject[actionFn]({
-      resources,
-      newLocation,
-      copyInstead: !!copyInstead
-    })
-  }
-)
-
-When(
-  '{string} restores following resource(s) version',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const fileInfo = stepTable.hashes().reduce<Record<string, any>>((acc, stepRow) => {
-      const { to, resource, version, openDetailsPanel } = stepRow
-
-      if (!acc[to]) {
-        acc[to] = []
-      }
-
-      acc[to].push(world.filesEnvironment.getFile({ name: resource }))
-
-      if (version !== '1') {
-        throw new Error('restoring is only supported for the most recent version')
-      }
-      acc[to]['openDetailsPanel'] = openDetailsPanel === 'true'
-
-      return acc
-    }, {})
-    for (const folder of Object.keys(fileInfo)) {
-      await resourceObject.restoreVersion({
-        folder,
-        files: fileInfo[folder],
-        openDetailsPanel: fileInfo[folder]['openDetailsPanel']
-      })
-    }
-  }
-)
-
-When(
-  '{string} downloads old version of the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const fileInfo = stepTable.hashes().reduce<Record<string, File[]>>((acc, stepRow) => {
-      const { to, resource } = stepRow
-
-      if (!acc[to]) {
-        acc[to] = []
-      }
-
-      acc[to].push(world.filesEnvironment.getFile({ name: resource }))
-
-      return acc
-    }, {})
-
-    for (const folder of Object.keys(fileInfo)) {
-      await resourceObject.downloadVersion({ folder, files: fileInfo[folder] })
-    }
-  }
-)
-
-When(
-  '{string} deletes the following resources from trashbin using the batch action',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const resources = [].concat(...stepTable.rows())
-    await resourceObject.deleteTrashbinMultipleResources({ resources })
-  }
-)
-
-When(
-  '{string} empties the trashbin',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.emptyTrashbin({ page })
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) be able to delete following resource(?:s)? from the trashbin?$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      if (actionType === 'should') {
-        const message = await resourceObject.deleteTrashBin({ resource: info.resource })
-        const paths = info.resource.split('/')
-        expect(message).toBe(`"${paths[paths.length - 1]}" was deleted successfully`)
-      } else {
-        await resourceObject.expectThatDeleteTrashBinButtonIsNotVisible({ resource: info.resource })
-      }
-    }
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) be able to restore following resource(?:s)? from the trashbin?$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      if (actionType === 'should') {
-        const message = await resourceObject.restoreTrashBin({
-          resource: info.resource
-        })
-        const paths = info.resource.split('/')
-        expect(message).toBe(`${paths[paths.length - 1]} was restored successfully`)
-      } else {
-        await resourceObject.expectThatRestoreTrashBinButtonIsNotVisible({
-          resource: info.resource
-        })
-      }
-    }
-  }
-)
-
-Then(
-  /^"([^"]*)" restores the following resource(?:s)? from trashbin( using the batch action)?$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    batchAction: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    if (batchAction) {
-      const resources = stepTable.hashes().map((info) => info.resource)
-      const message = await resourceObject.batchRestoreTrashBin({ resources })
-      expect(message).toBe(`${resources.length} files restored successfully`)
-    } else {
-      for (const info of stepTable.hashes()) {
-        const message = await resourceObject.restoreTrashBin({ resource: info.resource })
-        const paths = info.resource.split('/')
-        expect(message).toBe(`${paths[paths.length - 1]} was restored successfully`)
-      }
-    }
-  }
-)
-
-const searchIndexTimeout = 40 * 1000
-
-When(
-  /^"([^"]*)" searches "([^"]*)" using the global search(?: and the "([^"]*)" filter)?( and presses enter)?$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    keyword: string,
-    filter: string,
-    command: string
-  ): Promise<void> => {
-    keyword = keyword ?? ''
-    const pressEnter = !!command && command.endsWith('presses enter')
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    world.lastGlobalSearch[stepUser] = { keyword, filter: filter as searchFilter, pressEnter }
-    await resourceObject.searchResource({
-      keyword,
-      filter: filter as searchFilter,
-      pressEnter
-    })
-  }
-)
-
-When(
-  /^"([^"]*)" searches "([^"]*)" globally using "(s|\/)" keyboard shortcut$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    keyword: string,
-    shortcut: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.searchResource({
-      keyword,
-      keyboardShortcut: shortcut as SearchShortcutType
-    })
-  }
-)
-
-When(
-  '{string} clears the search using keyboard shortcut',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.clearSearchUsingKeyboardShortcut()
-  }
-)
-
-Then(
-  /^following resources? (should|should not) be displayed in the (?:files list|Shares|trashbin) for user "([^"]*)"$/,
-  async (
-    { world }: { world: World },
-    actionType: string,
-    stepUser: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const isFavoritesPage = page.url().includes('/favorites')
-
-    for (const info of stepTable.hashes()) {
-      if (isFavoritesPage) {
-        // In the favorites page, the resource may not be immediately visible due the search index update delay.
-        await expect(async () => {
-          const isVisible = await resourceObject.getResourceLocator(info.resource).isVisible()
-          if (isVisible !== (actionType === 'should')) {
-            await page.reload()
-            await page.locator('#app-loading-spinner').waitFor({ state: 'detached' })
-          }
-          expect(isVisible).toBe(actionType === 'should')
-        }).toPass({ timeout: appConfig.timeout * 1000 })
-      } else if (actionType === 'should') {
-        await expect(resourceObject.getResourceLocator(info.resource)).toBeVisible({
-          timeout: appConfig.timeout * 1000
-        })
-      } else {
-        await expect(resourceObject.getResourceLocator(info.resource)).not.toBeVisible()
-      }
-
-      if (actionType === 'should') {
-        await waitProcessingToFinish(page, info.resource)
-      }
-    }
-  }
-)
-
-Then(
-  '{string} should not be able to share following resource(s) from the space {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    space: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    await spacesObject.expectOpen({ key: space })
-    for (const info of stepTable.hashes()) {
-      await resourceObject.expectNotShareable({ resource: info.resource })
-    }
-  }
-)
-
-Then(
-  /^following resources? (should|should not) be displayed in the search list for user "([^"]*)"$/,
-  async (
-    { world }: { world: World },
-    actionType: string,
-    stepUser: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      if (actionType === 'should') {
-        const lastSearch = world.lastGlobalSearch[stepUser]
-        let attempt = 0
-        await expect(async () => {
-          if (attempt++ > 0 && lastSearch) {
-            await resourceObject.searchResource(lastSearch)
-          }
-          await expect(resourceObject.getResourceSearchItemLocator(info.resource)).toBeVisible({
-            timeout: appConfig.minTimeout * 1000
-          })
-        }).toPass({ timeout: searchIndexTimeout })
-      } else {
-        await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
-      }
-    }
-  }
-)
-
-When(
-  '{string} opens file/folder {string}',
-  async ({ world }: { world: World }, stepUser: string, resource: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openFolder(resource)
-  }
-)
-
-When(
-  '{string} navigates to folder {string} via breadcrumb',
-  async ({ world }: { world: World }, stepUser: string, resource: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openFolderViaBreadcrumb(resource)
-  }
-)
-
-When(
-  '{string} enables/disables the option to display the hidden file',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.showHiddenFiles()
-  }
-)
-
-When(
-  '{string} switches to the {string} view',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    viewMode: 'table' | 'tiles' | 'table-condensed'
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.switchViewMode(viewMode)
-  }
-)
-
-When(
-  '{string} sees the resources displayed as {string}',
-  async ({ world }: { world: World }, stepUser: string, viewMode: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.expectThatResourcesAreDisplayedAs(viewMode)
-  }
-)
+import { pageObjectFor } from '../../environment/pageObject'
 
 export const processDelete = async (
   stepTable: DataTable,
@@ -680,10 +118,136 @@ export const processDownload = async (
 }
 
 When(
+  '{string} creates the following resource(s)',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+
+    for (const info of stepTable.hashes()) {
+      await resourceObject.create({
+        name: info.resource,
+        type: info.type as createResourceTypes,
+        content: info.content,
+        password: info.password
+      })
+    }
+  }
+)
+
+When(
+  /^"([^"]*)" deletes the following resource(?:s)? using the (sidebar panel|batch action)$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    actionType: string,
+    stepTable: DataTable
+  ) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await processDelete(stepTable, resourceObject, actionType)
+  }
+)
+
+When(
+  /^"([^"]*)" deletes the resource using the app topbar$/,
+  async ({ world }: { world: World }, stepUser: string) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    await resourceObject.deleteResourceViaAppTopbar()
+  }
+)
+
+When(
+  '{string} renames the following resource(s)',
+  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable) => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    for (const { resource, as } of stepTable.hashes()) {
+      await resourceObject.rename({ resource, newName: as })
+    }
+  }
+)
+
+When(
+  /^"([^"]*)" (copies|moves) the following resource(?:s)? using (keyboard|drag-drop|drag-drop-breadcrumb|sidebar-panel|dropdown-menu|batch-action)$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    actionType: string,
+    method: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+
+    // drag-n-drop always does MOVE
+    if (method.includes('drag-drop')) {
+      expect(actionType).toBe('moves')
+    }
+
+    for (const { resource, to, option } of stepTable.hashes()) {
+      await resourceObject[actionType === 'copies' ? 'copy' : 'move']({
+        resource,
+        newLocation: to,
+        method,
+        option: option
+      })
+    }
+  }
+)
+
+When(
+  /^"([^"]*)" (copies|moves) the following resources to "([^"]*)" at once using (keyboard|drag-drop|drag-drop-breadcrumb|dropdown-menu|batch-action)$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    actionType: string,
+    newLocation: string,
+    method: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+
+    // drag-n-drop always does MOVE
+    if (method.includes('drag-drop')) {
+      expect(actionType).toBe('moves')
+    }
+
+    const resources = [].concat(...stepTable.rows())
+    await resourceObject[
+      actionType === 'copies' ? 'copyMultipleResources' : 'moveMultipleResources'
+    ]({
+      newLocation,
+      method,
+      resources
+    })
+  }
+)
+
+When(
+  /^"([^"]*)" (copies|moves) the following resource to a new folder "([^"]*)"( with copy instead)?$/,
+  async (
+    { world }: { world: World },
+    stepUser: string,
+    action: string,
+    newLocation: string,
+    copyInstead: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
+    const resources = stepTable.rows().flat()
+    const actionFn =
+      action === 'copies'
+        ? 'copyResourcesWithCreateDestination'
+        : 'moveResourcesWithCreateDestination'
+
+    await resourceObject[actionFn]({
+      resources,
+      newLocation,
+      copyInstead: !!copyInstead
+    })
+  }
+)
+
+When(
   '{string} edits the following resource(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
 
     for (const info of stepTable.hashes()) {
       await resourceObject.editResource({
@@ -696,145 +260,9 @@ When(
 )
 
 When(
-  '{string} clicks the tag {string} on the resource {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    tagName: string,
-    resourceName: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.clickTag({ resource: resourceName, tag: tagName.toLowerCase() })
-  }
-)
-
-When(
-  /^"([^"].*)" opens the following file(?:s)? in (mediaviewer|pdfviewer|texteditor|Collabora|Euro-Office)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    stepTable: DataTable
-  ) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    for (const info of stepTable.hashes()) {
-      await resourceObject.openFileInViewer({
-        name: info.resource,
-        actionType: actionType as
-          'mediaviewer' | 'pdfviewer' | 'texteditor' | 'Collabora' | 'Euro-Office',
-        verifyPropfindPath: info.verifyPropfindPath === 'true'
-      })
-    }
-  }
-)
-
-Then(
-  '{string} should see resource {string} of {string} in the mediaviewer controls',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    currentIndex: string,
-    totalCount: string
-  ) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.checkMediaViewerCount({
-      currentIndex: parseInt(currentIndex),
-      totalCount: parseInt(totalCount)
-    })
-  }
-)
-
-Then(
-  'the following resource(s) should contain the following tag(s) in the files list for user {string}',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const { resource, tags } of stepTable.hashes()) {
-      const isVisible = await resourceObject.areTagsVisibleForResourceInFilesTable({
-        resource,
-        tags: tags.split(',').map((tag) => tag.trim().toLowerCase())
-      })
-      expect(isVisible).toBe(true)
-    }
-  }
-)
-
-Then(
-  'the following resource(s) should contain the following tag(s) in the details panel for user {string}',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const { resource, tags } of stepTable.hashes()) {
-      const isVisible = await resourceObject.areTagsVisibleForResourceInDetailsPanel({
-        resource,
-        tags: tags.split(',').map((tag) => tag.trim().toLowerCase())
-      })
-      expect(isVisible).toBe(true)
-    }
-  }
-)
-
-When(
-  '{string} adds the following tag(s) for the following resource(s) using the sidebar panel',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const { resource, tags } of stepTable.hashes()) {
-      await resourceObject.addTags({
-        resource,
-        tags: tags.split(',').map((tag) => tag.trim().toLowerCase())
-      })
-    }
-  }
-)
-
-When(
-  '{string} removes the following tag(s) for the following resource(s) using the sidebar panel',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const { resource, tags } of stepTable.hashes()) {
-      await resourceObject.removeTags({
-        resource,
-        tags: tags.split(',').map((tag) => tag.trim().toLowerCase())
-      })
-    }
-  }
-)
-
-When(
-  /^"([^"].*)" creates a file from template file "([^"].*)" via "([^"].*)" using the (sidebar panel|context menu)$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    file: string,
-    webOffice: string,
-    via: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.createFileFromTemplate(file, webOffice, via)
-  }
-)
-
-When(
-  '{string} opens template file {string} via {string} using the context menu',
-  async ({ world }: { world: World }, stepUser: any, file: any, webOffice: any): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openTemplateFile(file, webOffice)
-  }
-)
-
-When(
   '{string} creates space {string} from folder {string} using the context menu',
   async ({ world }: { world: World }, stepUser: string, spaceName: string, folderName: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const space = await resourceObject.createSpaceFromFolder({
       folderName: folderName,
       spaceName: spaceName
@@ -854,8 +282,7 @@ When(
     spaceName: string,
     stepTable: DataTable
   ) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const resources = stepTable.hashes().map((item) => item.resource)
     const space = await resourceObject.createSpaceFromSelection({ resources, spaceName })
     world.spacesEnvironment.createSpace({
@@ -868,8 +295,7 @@ When(
 When(
   '{string} creates space {string} from all resources using the context menu',
   async ({ world }: { world: World }, stepUser: string, spaceName: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const space = await resourceObject.createSpaceFromAll({ spaceName })
     world.spacesEnvironment.createSpace({
       key: space.name,
@@ -878,496 +304,16 @@ When(
   }
 )
 
-Then(
-  '{string} should not see the version panel for the file(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const fileInfo = stepTable.hashes().reduce<Record<string, File[]>>((acc, stepRow) => {
-      const { to, resource } = stepRow
-
-      if (!acc[to]) {
-        acc[to] = []
-      }
-
-      acc[to].push(world.filesEnvironment.getFile({ name: resource }))
-
-      return acc
-    }, {})
-
-    for (const folder of Object.keys(fileInfo)) {
-      await resourceObject.checkThatFileVersionPanelIsNotAvailable({
-        folder,
-        files: fileInfo[folder]
-      })
-    }
-  }
-)
-
-When(
-  '{string} navigates to page {string} of the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string, pageNumber: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.changePage({ pageNumber })
-  }
-)
-
-When(
-  '{string} changes the items per page to {string}',
-  async ({ world }: { world: World }, stepUser: string, itemsPerPage: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.changeItemsPerPage({ itemsPerPage })
-  }
-)
-
-Then(
-  '{string} should see the text {string} at the footer of the page',
-  async ({ world }: { world: World }, stepUser: string, expectedText: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const actualText = await resourceObject.getFileListFooterText()
-    expect(actualText).toBe(expectedText)
-  }
-)
-
-Then(
-  '{string} should see {int} resources in the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
-    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
-  }
-)
-
-Then(
-  '{string} should not see the pagination in the personal/project space files view',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.expectPageNumberNotToBeVisible()
-  }
-)
-
-When(
-  '{string} navigates to page {string} of the files list',
-  async ({ world }: { world: World }, stepUser: string, pageNumber: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.changePage({ pageNumber })
-  }
-)
-
-Then(
-  '{string} should see {int} resource(s) in the files/spaces list',
-  async ({ world }: { world: World }, stepUser: string, expectedNumberOfResources: number) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const actualNumberOfResources = await resourceObject.countNumberOfResourcesInThePage()
-    expect(actualNumberOfResources).toBe(expectedNumberOfResources)
-  }
-)
-
-Then(
-  '{string} should see the pagination in the files/spaces list',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.expectPageNumberToBeVisible()
-  }
-)
-
-Then(
-  '{string} should not see the pagination in the files/spaces list',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.expectPageNumberNotToBeVisible()
-  }
-)
-
-When(
-  '{string} uploads the following resource(s) via drag-n-drop',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const resources = stepTable
-      .hashes()
-      .map((item) => world.filesEnvironment.getFile({ name: item.resource }))
-    await resourceObject.dropUpload({ resources, password: stepTable.hashes()[0].password })
-  }
-)
-
-When(
-  '{string} uploads {int} small files in personal space',
-  async ({ world }: { world: World }, stepUser: string, numberOfFiles: number): Promise<void> => {
-    const files = []
-    for (let i = 0; i < numberOfFiles; i++) {
-      const file = `file${i}.txt`
-      runtimeFs.createFile(file, 'test content')
-
-      files.push(
-        world.filesEnvironment.getFile({
-          name: path.join(runtimeFs.getTempUploadPath().replace(appConfig.assetsPath, ''), file)
-        })
-      )
-    }
-
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    await resourceObject.uploadLargeNumberOfResources({ resources: files })
-  }
-)
-
-When(
-  '{string} creates a shortcut for the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    for (const info of stepTable.hashes()) {
-      await resourceObject.createShotcut({
-        resource: info.resource,
-        name: info.name,
-        type: info.type as shortcutType
-      })
-    }
-  }
-)
-
-When(
-  '{string} opens a shortcut {string}',
-  async ({ world }: { world: World }, stepUser: string, name: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openShotcut({ name: name })
-  }
-)
-
-Then(
-  '{string} can open a shortcut {string} with external url {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    name: string,
-    url: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openShotcut({ name: name, url: url })
-  }
-)
-
-Then(
-  /^for "([^"]*)" file "([^"]*)" (should|should not) be locked$/,
-  async ({ world }: { world: World }, stepUser: string, file: string, actionType: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const lockLocator = resourceObject.getLockLocator({ resource: file })
-
-    actionType === 'should'
-      ? await expect(lockLocator).toBeVisible()
-      : // can take more than 5 seconds for lock to be released in case of Euro-Office
-        await expect(lockLocator).not.toBeVisible({ timeout: appConfig.timeout * 1000 })
-  }
-)
-
-When(
-  /^"([^"]*)" navigates to the (next|previous) media resource$/,
-  async ({ world }: { world: World }, stepUser: string, navigationType: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.navigateMediaFile(navigationType)
-  }
-)
-
-When(
-  '{string} opens a file {string} in the media-viewer using the sidebar panel',
-  async ({ world }: { world: World }, stepUser: any, file: any): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.previewMediaFromSidebarPanel(file)
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) be able to edit (?:folder|file) "([^"]*)"$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const userCanEdit = await resourceObject.canManageResource({ resource })
-    expect(userCanEdit).toBe(actionType === 'should' ? true : false)
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) see (link-direct|link-indirect|user-direct|user-indirect) indicator on the (?:folder|file) "([^"]*)"$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    buttonLabel: string,
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const showShareIndicator = resourceObject.showShareIndicatorSelector({
-      buttonLabel,
-      resource
-    })
-    actionType === 'should'
-      ? await expect(showShareIndicator).toBeVisible()
-      : await expect(showShareIndicator).not.toBeVisible()
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) be able to edit content of following resources?$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    for (const info of stepTable.hashes()) {
-      const canEdit = await resourceObject.canEditContent({ type: info.type })
-      expect(canEdit).toBe(actionType === 'should')
-    }
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) see following actions for (?:folder|file) "([^"]*)"$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    resource: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    for (const info of stepTable.hashes()) {
-      const actions = await resourceObject.getAllAvailableActions({ resource })
-      if (actionType === 'should') {
-        expect(actions.some((action) => action.startsWith(info.action))).toBe(true)
-      } else {
-        expect(actions.some((action) => action.startsWith(info.action))).toBe(false)
-      }
-    }
-  }
-)
-
-Then(
-  /^"([^"]*)" (should|should not) see (thumbnail and preview|preview) for file "([^"]*)"$/,
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    actionType: string,
-    action: string,
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    if (actionType === 'should') {
-      await resourceObject.getResourceLocator(resource).waitFor()
-      await waitProcessingToFinish(page, resource)
-      action === 'thumbnail and preview' &&
-        (await expect(resourceObject.getFileThumbnailLocator(resource)).toBeVisible())
-      await resourceObject.shouldSeeFilePreview({ resource })
-    } else {
-      action === 'thumbnail and preview' &&
-        (await expect(resourceObject.getFileThumbnailLocator(resource)).not.toBeVisible())
-      await resourceObject.shouldNotSeeFilePreview({ resource })
-    }
-  }
-)
-
-Then(
-  '{string} should see activity of the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    for (const info of stepTable.hashes()) {
-      await resourceObject.checkActivity({ resource: info.resource, activity: info.activity })
-    }
-  }
-)
-
-Then(
-  '{string} should not see any activity of the following resource(s)',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    for (const info of stepTable.hashes()) {
-      await resourceObject.checkEmptyActivity({ resource: info.resource })
-    }
-  }
-)
-
 When('{string} selects all files', async ({ world }: { world: World }, stepUser: string) => {
-  const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-  const resourceObject = new objects.applicationFiles.Resource({ page })
+  const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
   await resourceObject.selectAllFiles()
 })
 
 When('{string} deletes all files', async ({ world }: { world: World }, stepUser: string) => {
-  const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-  const resourceObject = new objects.applicationFiles.Resource({ page })
+  const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
   await resourceObject.selectAllFiles()
   await resourceObject.deleteAllFiles()
 })
-
-Then(
-  'the download button should be disabled for user {string} with the tooltip:',
-  async ({ world }: { world: World }, stepUser: string, tooltip: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const downloadButton = await resourceObject.getDownloadButtonTooltip()
-    expect(downloadButton).toBe(tooltip)
-  }
-)
-
-Then(
-  '{string} should see {string} avatar for the resource {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    avatarType: 'sharer' | 'recipient',
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const avatarLocator = await resourceObject.getAvatarLocator({ resource, avatarType })
-    await expect(avatarLocator).toBeVisible()
-  }
-)
-
-Then(
-  '{string} should see {string} avatar for the resource {string} in the activity panel',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    avatarUser: string,
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const avatarLocator = await resourceObject.getAvatarLocatorFromActivityPanel({
-      resource,
-      avatarUser
-    })
-    await expect(avatarLocator).toBeVisible()
-  }
-)
-
-const allowedFileViewers = ['collabora-online', 'text-editor', 'preview'] as const
-type AllowedFileViewer = (typeof allowedFileViewers)[number]
-
-function toFileViewer(fileViewer: string): AllowedFileViewer {
-  if (!allowedFileViewers.includes(fileViewer as AllowedFileViewer)) {
-    throw new Error(`Unsupported file viewer: ${fileViewer}`)
-  }
-  return fileViewer as AllowedFileViewer
-}
-
-When(
-  '{string} opens file {string} via {string} using the context menu',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    file: string,
-    fileViewer: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    await resourceObject.openFileViaContextMenu(file, toFileViewer(fileViewer))
-  }
-)
-
-When(
-  'the following users open file {string} via {string} using the context menu at the same time',
-  async (
-    { world }: { world: World },
-    file: string,
-    fileViewer: string,
-    stepTable: DataTable
-  ): Promise<void> => {
-    const viewer = toFileViewer(fileViewer)
-
-    await Promise.all(
-      stepTable.hashes().map(({ id }) => {
-        const { page } = world.actorsEnvironment.getActor({ key: id })
-        const resourceObject = new objects.applicationFiles.Resource({ page })
-        return resourceObject.openFileViaContextMenu(file, viewer)
-      })
-    )
-  }
-)
-
-When(
-  '{string} uploads an image from the clipboard',
-  async ({ world }: { world: World }, stepUser: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.uploadImageFromClipboard()
-  }
-)
-
-When(
-  '{string} reduces the tile size',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.reduceTileSize()
-  }
-)
-
-When(
-  '{string} opens the right sidebar of the resource {string}',
-  async ({ world }: { world: World }, stepUser: string, resource: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openRightSidebar(resource)
-  }
-)
-
-Then(
-  '{string} should see the file details in the sidebar',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.checkFileDetailsSidebar()
-  }
-)
-
-When(
-  '{string} opens a {string} panel of the resource {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    panel: string,
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.openResourcePanel(panel as PanelType, resource)
-  }
-)
 
 When(
   '{string} deletes and immediately undoes the following resource(s) using {string}',
@@ -1377,8 +323,7 @@ When(
     method: 'keyboard' | 'undo button',
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const resources = stepTable.hashes().map((row) => ({
       name: row.resource
     }))
@@ -1392,87 +337,6 @@ When(
 )
 
 When(
-  '{string} marks the following resource(s) as favorite using {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview',
-    stepTable: DataTable
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const resources = stepTable.hashes().map((row) => row.resource)
-
-    await resourceObject.markAsFavorite({ method, resources })
-  }
-)
-
-Then(
-  '{string} should see expiration date indicator on {string} for folder/file {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    context: 'publiclink' | 'share',
-    resource: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    const locator = await resourceObject.showExpirationDateIndicator(resource, context)
-    await expect(locator).toBeVisible()
-  }
-)
-
-When(
-  '{string} enters the vault {string} with passphrase {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    vault: string,
-    passphrase: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.enterVault({ vault, passphrase: passphrase })
-  }
-)
-
-When(
-  '{string} fails to enter the vault {string} with the wrong passphrase {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    vault: string,
-    passphrase: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-    await resourceObject.enterVault({ vault, passphrase: passphrase })
-    await expect(page.getByText('Incorrect password.')).toBeVisible()
-    expect(page.url()).toContain('/rclone-crypt/unlock')
-  }
-)
-
-When(
-  '{string} sets the vault password {string}',
-  async ({ world }: { world: World }, stepUser: string, password: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    await resourceObject.setupVaultPassword(password)
-  }
-)
-
-When(
-  '{string} locks the vault {string}',
-  async ({ world }: { world: World }, stepUser: string, vault: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
-
-    await resourceObject.lockVault(vault)
-  }
-)
-
-When(
   '{string} copies all resource from folder {string} to folder {string}',
   async (
     { world }: { world: World },
@@ -1480,140 +344,8 @@ When(
     source: string,
     destination: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
 
     await resourceObject.copyAllTo(source, destination)
-  }
-)
-
-Then(
-  '{string} should see the text {string} in the text-editor',
-  async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await expect(page.locator('.tiptap.ProseMirror')).toContainText(text)
-  }
-)
-
-Then(
-  '{string} should see the text {string} exactly once in the text-editor',
-  async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const content = editor.textEditorContentLocator(page)
-    await expect(content).toContainText(text)
-
-    // a duplicate seed lands shortly after hydration, so the count has to stay at one
-    const deadline = Date.now() + duplicateContentGraceMs
-    for (;;) {
-      expect(await editor.countTextOccurrences(content, text)).toBe(1)
-      if (Date.now() >= deadline) break
-      await page.waitForTimeout(250)
-    }
-  }
-)
-
-Then(
-  '{string} should see an error message',
-  async ({ world }: { world: World }, stepUser: string, errorMessage: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await expect(editor.errorNotificationLocator(page, errorMessage)).toBeVisible()
-  }
-)
-
-Then(
-  '{string} should see a notification',
-  async ({ world }: { world: World }, stepUser: string, message: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await expect(editor.notificationLocator(page, message)).toBeVisible()
-  }
-)
-
-Then(
-  '{string} should see the following yjs status',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-
-    for (const { status } of stepTable.hashes()) {
-      await expect(editor.yjsStatusLocator(page, status.toLowerCase())).toBeVisible()
-    }
-  }
-)
-
-Then(
-  '{string} should not see a yjs status',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-
-    // the editor must be loaded, otherwise the assertion passes trivially
-    await expect(editor.textEditorContentLocator(page)).toBeVisible()
-    await expect(editor.yjsStatusIndicatorLocator(page)).not.toBeVisible()
-  }
-)
-
-Then(
-  '{string} should not be able to edit the current file',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await expect(editor.textEditorContentLocator(page)).toHaveAttribute('contenteditable', 'false')
-    await expect(editor.saveButtonLocator(page)).not.toBeVisible()
-  }
-)
-
-Then(
-  '{string} should see the collaboration carets of the following users',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-
-    for (const { id } of stepTable.hashes()) {
-      const { displayName } = world.usersEnvironment.getUser({ key: id })
-      await expect(editor.collaborationCaretLocator(page, displayName)).toBeVisible()
-    }
-  }
-)
-
-Then(
-  /^"([^"]*)" sees the current file as (dirty|clean)$/,
-  async ({ world }: { world: World }, stepUser: string, state: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const saveButton = editor.saveButtonLocator(page)
-
-    if (state === 'dirty') {
-      await expect(saveButton).toBeEnabled()
-      return
-    }
-    await expect(saveButton).toBeDisabled()
-  }
-)
-
-When(
-  '{string} saves the current file as {string}',
-  async ({ world }: { world: World }, stepUser: string, newPath: string): Promise<void> => {
-    const actor = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page: actor.page })
-
-    const newPage = await resourceObject.saveAs(newPath)
-    // change current active page
-    actor.savePage(newPage)
-  }
-)
-
-Then(
-  'file {string} should be opened in texteditor for user {string}',
-  async ({ world }: { world: World }, filename: string, stepUser: string): Promise<void> => {
-    const actor = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page: actor.page })
-    const actualFilename = await resourceObject.getTopBarFilename()
-    expect(actualFilename).toBe(filename)
-  }
-)
-
-When(
-  '{string} mentions user {string} in editor',
-  async ({ world }: { world: World }, stepUser: string, mentionedUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const { displayName } = world.usersEnvironment.getUser({ key: mentionedUser })
-    const actor = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page: actor.page })
-    await resourceObject.mentionUserInOpenDocument({ page, user: displayName })
   }
 )

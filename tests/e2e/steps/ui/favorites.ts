@@ -2,12 +2,16 @@ import { When } from '../../environment/fixtures'
 import { DataTable } from 'playwright-bdd'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
+import { pageObjectFor } from '../../environment/pageObject'
 
 When(
   '{string} navigates to the favorites page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.favorites.Favorites({ page })
+    const pageObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationFiles.page.favorites.Favorites
+    )
     await pageObject.navigate()
   }
 )
@@ -20,8 +24,7 @@ When(
     method: 'context menu' | 'sidebar panel' | 'batch action',
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const resources = stepTable.hashes().map((row) => row.resource)
 
     await resourceObject.unmarkAsFavorite({ method, resources })

@@ -1,6 +1,7 @@
 import { When, Then } from '../../environment/fixtures'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
+import { pageObjectFor } from '../../environment/pageObject'
 
 When(
   '{string} navigates to {string} details panel of file {string} of space {string} through the URL',
@@ -11,9 +12,8 @@ When(
     resource: string,
     space: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
-    const urlNavObject = new objects.urlNavigation.URLNavigation({ page })
+    const urlNavObject = pageObjectFor(world, stepUser, objects.urlNavigation.URLNavigation)
     await urlNavObject.navigateToDetailsPanelOfResource({ resource, detailsPanel, user, space })
   }
 )
@@ -26,9 +26,8 @@ When(
     resource: string,
     space: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
-    const urlNavObject = new objects.urlNavigation.URLNavigation({ page })
+    const urlNavObject = pageObjectFor(world, stepUser, objects.urlNavigation.URLNavigation)
     await urlNavObject.openResourceViaUrl({ resource, user, space })
   }
 )
@@ -43,9 +42,8 @@ When(
     editorName: string,
     client: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
-    const urlNavObject = new objects.urlNavigation.URLNavigation({ page })
+    const urlNavObject = pageObjectFor(world, stepUser, objects.urlNavigation.URLNavigation)
     await urlNavObject.openResourceViaUrl({ resource, user, space, editorName, client })
   }
 )
@@ -53,9 +51,8 @@ When(
 When(
   '{string} opens space {string} through the URL',
   async ({ world }: { world: World }, stepUser: string, space: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
-    const urlNavObject = new objects.urlNavigation.URLNavigation({ page })
+    const urlNavObject = pageObjectFor(world, stepUser, objects.urlNavigation.URLNavigation)
     await urlNavObject.openSpaceViaUrl({ user, space })
   }
 )
@@ -63,8 +60,7 @@ When(
 When(
   '{string} navigates to a non-existing page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const urlNavObject = new objects.urlNavigation.URLNavigation({ page })
+    const urlNavObject = pageObjectFor(world, stepUser, objects.urlNavigation.URLNavigation)
     await urlNavObject.navigateToNonExistingPage()
   }
 )
@@ -72,8 +68,7 @@ When(
 Then(
   '{string} should see the not found page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const urlNavObject = new objects.urlNavigation.URLNavigation({ page })
+    const urlNavObject = pageObjectFor(world, stepUser, objects.urlNavigation.URLNavigation)
     await urlNavObject.waitForNotFoundPageToBeVisible()
   }
 )

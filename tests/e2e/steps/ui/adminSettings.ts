@@ -4,6 +4,7 @@ import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { expect } from '@playwright/test'
 import { shareRoles } from '../../support/api/share/share'
+import { pageObjectFor } from '../../environment/pageObject'
 
 Then(
   /^"([^"]*)" (should|should not) see the following space(?:s)?$/,
@@ -13,8 +14,7 @@ Then(
     actionType: string,
     stepTable: DataTable
   ) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const actualList = await spacesObject.getDisplayedSpaces()
 
     for (const info of stepTable.hashes()) {
@@ -32,8 +32,7 @@ When(
     action: string,
     key: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const spaceId = spacesObject.getUUID({ key })
     switch (action) {
       case 'disables':
@@ -60,8 +59,7 @@ When(
     attribute: string,
     value: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const spaceId = spacesObject.getUUID({ key })
     switch (attribute) {
       case 'name':
@@ -82,8 +80,7 @@ When(
 When(
   /^"([^"]*)" (?:changes|updates) quota of the following space(?:s)? to "([^"]*)" using the batch-actions$/,
   async ({ world }: { world: World }, stepUser: string, value: string, stepTable: DataTable) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const spaceIds = []
     for (const { id: space } of stepTable.hashes()) {
       spaceIds.push(spacesObject.getUUID({ key: space }))
@@ -100,8 +97,7 @@ When(
 When(
   /^"([^"]*)" (disables|enables|deletes) the following space(?:s)? using the batch-actions$/,
   async ({ world }: { world: World }, stepUser: string, action: string, stepTable: DataTable) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const spaceIds = []
     for (const { id: space } of stepTable.hashes()) {
       spaceIds.push(spacesObject.getUUID({ key: space }))
@@ -126,8 +122,7 @@ When(
 When(
   '{string} navigates to the users management page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationAdminSettings.page.Users({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.page.Users)
     await pageObject.navigate()
   }
 )
@@ -140,8 +135,7 @@ When(
     action: string,
     key: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
 
     switch (action) {
       case 'allows':
@@ -164,8 +158,7 @@ When(
     key: string,
     value: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     await usersObject.changeQuota({ key, value, action: 'context-menu' })
   }
 )
@@ -178,8 +171,7 @@ When(
     value: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     const users = []
     for (const { id: user } of stepTable.hashes()) {
       users.push(user)
@@ -192,8 +184,7 @@ When(
 Then(
   /^"([^"]*)" (should|should not) see the following user(?:s)?$/,
   async ({ world }: { world: World }, stepUser: string, action: string, stepTable: DataTable) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     const users = await usersObject.getDisplayedUsers()
     for (const { user } of stepTable.hashes()) {
       switch (action) {
@@ -213,8 +204,7 @@ Then(
 When(
   '{string} sets the following filter(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
 
     for (const { filter, values } of stepTable.hashes()) {
       let cleanedValues: string[]
@@ -243,8 +233,7 @@ When(
     groups: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     const userIds = []
 
     for (const { user } of stepTable.hashes()) {
@@ -274,8 +263,7 @@ When(
 When(
   /^"([^"]*)" clears the selection$/,
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     await usersObject.clearSelection()
   }
 )
@@ -289,8 +277,7 @@ When(
     value: string,
     user: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
 
     await usersObject.changeUser({
       key: user,
@@ -310,8 +297,7 @@ When(
     user: string,
     groups: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     const formattedGroups = groups
       .split(',')
       .map(
@@ -347,8 +333,7 @@ When(
     actionType: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     const userIds = []
     switch (actionType) {
       case 'batch actions':
@@ -372,8 +357,11 @@ When(
 When(
   '{string} navigates to the groups management page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.page.Groups({ page })
+    const groupsObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.Groups
+    )
     await groupsObject.navigate()
   }
 )
@@ -381,8 +369,7 @@ When(
 When(
   '{string} creates the following group(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
 
     for (const info of stepTable.hashes()) {
       await groupsObject.createGroup({ key: info.id })
@@ -399,8 +386,7 @@ When(
     value: string,
     user: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
 
     await groupsObject.changeGroup({
       key: user,
@@ -419,8 +405,7 @@ Then(
     action: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
     const groups = await groupsObject.getDisplayedGroups()
 
     for (const { group } of stepTable.hashes()) {
@@ -441,8 +426,7 @@ Then(
 When(
   '{string} creates the following user(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     for (const info of stepTable.hashes()) {
       await usersObject.createUser({
         name: info.name,
@@ -462,8 +446,7 @@ When(
     actionType: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
     const groupIds = []
 
     switch (actionType) {
@@ -493,8 +476,7 @@ When(
     actionUser: string,
     action: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     await usersObject.openEditPanel({ key: actionUser, action: action.replace(' ', '-') })
   }
 )
@@ -502,8 +484,7 @@ When(
 When(
   '{string} opens the edit panel of group {string} using the context menu',
   async ({ world }: { world: World }, stepUser: string, group: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
     await groupsObject.openEditPanel({ key: group, action: 'context-menu' })
   }
 )
@@ -511,8 +492,7 @@ When(
 Then(
   '{string} should see the edit panel',
   async ({ world }: { world: World }, stepUser: string) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     await usersObject.waitForEditPanelToBeVisible()
   }
 )
@@ -520,8 +500,7 @@ Then(
 When(
   '{string} lists the members of project space {string} using a sidebar panel',
   async ({ world }: { world: World }, stepUser: string, key: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     await spacesObject.openPanel({ key })
     await spacesObject.openActionSideBarPanel({ action: 'SpaceMembers' })
   }
@@ -530,8 +509,7 @@ When(
 Then(
   '{string} should see the following users in the sidebar panel of spaces admin settings',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const actualMemberList = {
       manager: await spacesObject.listMembers({ filter: 'Can manage' }),
       viewer: await spacesObject.listMembers({ filter: 'Can view' }),
@@ -547,8 +525,7 @@ Then(
 When(
   '{string} selects the user {string}',
   async ({ world }: { world: World }, stepUser: string, value: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     await usersObject.selectUser({ key: value })
   }
 )
@@ -556,8 +533,7 @@ When(
 When(
   '{string} selects the group {string}',
   async ({ world }: { world: World }, stepUser: string, value: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const groupsObject = new objects.applicationAdminSettings.Groups({ page })
+    const groupsObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Groups)
     await groupsObject.selectGroup({ key: value })
   }
 )
@@ -565,8 +541,7 @@ When(
 When(
   '{string} selects the space {string}',
   async ({ world }: { world: World }, stepUser: string, value: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationAdminSettings.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     await spacesObject.select({ key: value })
   }
 )
@@ -574,8 +549,7 @@ When(
 Then(
   '{string} sees profile photo of the user {string}',
   async ({ world }: { world: World }, stepUser: string, key: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const usersObject = new objects.applicationAdminSettings.Users({ page })
+    const usersObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Users)
     const userProfilePicture = usersObject.getUserProfilePicture({ key })
     await expect(userProfilePicture).toHaveAttribute('src', /.+/)
   }
@@ -584,8 +558,11 @@ Then(
 When(
   '{string} navigates to the general management page',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.navigate()
   }
 )
@@ -598,8 +575,11 @@ When(
     bannerText: string,
     details: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.saveAnnouncementBanner({ bannerText, details })
   }
 )
@@ -607,8 +587,11 @@ When(
 When(
   '{string} enables the announcement banner',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.setShowBanner({ enabled: true })
   }
 )
@@ -616,8 +599,11 @@ When(
 When(
   '{string} disables the announcement banner',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.setShowBanner({ enabled: false })
   }
 )
@@ -625,8 +611,11 @@ When(
 Then(
   '{string} should see the announcement banner {string}',
   async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await expect(generalObject.getAnnouncementBanner()).toContainText(text)
   }
 )
@@ -634,8 +623,11 @@ Then(
 Then(
   '{string} should not see the announcement banner',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await expect(generalObject.getAnnouncementBanner()).toBeHidden()
   }
 )
@@ -643,8 +635,11 @@ Then(
 When(
   '{string} opens the announcement banner details',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.openAnnouncementBannerDetails()
   }
 )
@@ -652,8 +647,11 @@ When(
 Then(
   '{string} should see {string} in the announcement details',
   async ({ world }: { world: World }, stepUser: string, text: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.expectAnnouncementBannerDetails({ text })
   }
 )
@@ -661,8 +659,11 @@ Then(
 When(
   '{string} closes the announcement banner details',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.closeAnnouncementBannerDetails()
   }
 )
@@ -670,8 +671,11 @@ When(
 When(
   '{string} dismisses the announcement banner',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const generalObject = new objects.applicationAdminSettings.page.General({ page })
+    const generalObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationAdminSettings.page.General
+    )
     await generalObject.dismissAnnouncementBanner()
   }
 )
