@@ -73,7 +73,9 @@ const { extensions, filterTerm = '' } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-const sortBy = ref<keyof ExtensionInfo | 'status'>('name')
+type SortField = 'name' | 'status'
+
+const sortBy = ref<SortField>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
 
 const filteredExtensions = computed(() => {
@@ -102,7 +104,7 @@ const items = computed(() => {
 })
 
 function handleSort(event: { sortBy: string; sortDir: SortDir }) {
-  sortBy.value = event.sortBy as keyof ExtensionInfo | 'status'
+  sortBy.value = event.sortBy as SortField
   sortDir.value = event.sortDir
 }
 
