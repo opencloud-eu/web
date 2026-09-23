@@ -42,9 +42,16 @@
     "type": "string"
   },
   {
+    "name": "actionsId",
+    "required": false,
+    "description": "Id of the actions container. A custom component teleports its own buttons in\nhere, so they sit in the footer instead of scrolling away inside the body.",
+    "default": "",
+    "type": "string"
+  },
+  {
     "name": "elementClass",
     "required": false,
-    "description": "Additional class(es) to be added to the modal.",
+    "description": "",
     "default": "",
     "type": "string"
   },
