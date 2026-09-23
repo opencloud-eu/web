@@ -192,12 +192,12 @@ describe('CreateSpaceModal', () => {
   describe('the options', () => {
     it('stay hidden until they are revealed', async () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.find('.create-space-presentation-toggle').exists()).toBeFalsy()
+      expect(wrapper.find('.create-space-presentation .oc-section-toggle').exists()).toBeFalsy()
 
       await revealOptions(wrapper)
 
       expect(wrapper.find('.create-space-options-toggle').exists()).toBeFalsy()
-      expect(wrapper.find('.create-space-presentation-toggle').exists()).toBeTruthy()
+      expect(wrapper.find('.create-space-presentation .oc-section-toggle').exists()).toBeTruthy()
     })
 
     it('start out with presentation open and advanced folded', async () => {
@@ -349,11 +349,11 @@ function submitStep(wrapper: Wrapper) {
 }
 
 function expandPresentation(wrapper: Wrapper) {
-  return wrapper.find('.create-space-presentation-toggle').trigger('click')
+  return wrapper.find('.create-space-presentation .oc-section-toggle').trigger('click')
 }
 
 function expandAdvanced(wrapper: Wrapper) {
-  return wrapper.find('.create-space-advanced-toggle').trigger('click')
+  return wrapper.find('.create-space-advanced .oc-section-toggle').trigger('click')
 }
 
 function setDescription(wrapper: Wrapper, description: string) {
