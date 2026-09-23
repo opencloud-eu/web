@@ -44,18 +44,16 @@ defineSlots<Slots>()
   ul.oc-list.oc-timeline li:before {
     @apply absolute;
     left: -4px;
-    top: 50%;
-  }
-  ul.oc-list.oc-timeline::before,
-  ul.oc-list.oc-timeline li::before {
-    @apply bg-role-outline-variant;
+    /* align the dot with the first line of the item (li padding + half a line) */
+    top: calc(var(--spacing) * 2 + 0.5lh);
   }
   ul.oc-list.oc-timeline::before {
+    @apply bg-role-outline-variant;
     width: 1.5px;
     content: '';
   }
   ul.oc-list.oc-timeline li::before {
-    @apply size-2.5;
+    @apply size-2.5 bg-role-surface border-2 border-role-outline;
     transform: translateY(-50%);
     content: '';
   }
