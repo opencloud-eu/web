@@ -160,12 +160,13 @@ const CONNECT_TIMEOUT_MS = 10_000
 const ROOM_ETAG_GRACE_MS = 1_000
 /**
  * Stateless messages through which the Yjs server grants a room-wide job to
- * exactly one client, each followed by the grant key. Must match
+ * one client at a time, each followed by the grant key. Must match
  * `GrantMessage` in `services/yjs/src/lib/grants.ts`, keep the two in sync.
  */
 const GRANT_REQUEST = '_oc_grant_request:'
 const GRANT_GRANTED = '_oc_grant_granted:'
 const GRANT_DENIED = '_oc_grant_denied:'
+const GRANT_RELEASE = '_oc_grant_release:'
 const SEED_GRANT = 'seed'
 /**
  * The seed grant's payloads, unchanged since before recovery grants, so every
@@ -584,6 +585,16 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /**
+   * Give a granted job back without doing it, so the next writer that asks
+   * does not wait for our disconnect or the server's lease. Only for jobs that
+   * left the doc untouched: the server frees a done one itself, once it has
+   * the result.
+   */
+  function releaseGrant(prov: HocuspocusProvider, key: string) {
+    prov.sendStateless(GRANT_RELEASE + key)
+  }
+
+  /**
    * The server's answer to a grant request, or an unsolicited seed grant when
    * the previous holder left the room without seeding it.
    */
@@ -745,10 +756,12 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
   /**
    * Stale-state recovery: rewrite the room from a fresh file body. The Yjs
-   * server grants it to one client per etag, so peers that noticed the same
-   * write at once never re-seed the room twice. The winner raises `isStale`,
-   * wipes the adapter content, re-hydrates and clears the flags; peers
-   * receive all of it as ordinary CRDT updates, the flag first.
+   * server grants it to one client at a time, so peers that noticed the same
+   * write, or back-to-back writes, never re-seed the room twice at once. A
+   * refused peer with a newer body leaves it to the winner, which hears the
+   * newer write too and recovers again. The winner raises `isStale`, wipes
+   * the adapter content, re-hydrates and clears the flags; peers receive all
+   * of it as ordinary CRDT updates, the flag first.
    *
    * Only a client holding the body behind `etag` may run this. Re-seeding
    * from anything else would publish a pre-drift body and stamp the fresh
@@ -774,18 +787,24 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       return false
     }
 
+    const grant = recoveryGrant(etag)
+    let isServerGrant = false
     if (prov) {
-      const granted =
-        (await requestGrant(prov, recoveryGrant(etag), RECOVERY_GRANT_TIMEOUT_MS)) ??
-        (await winRecoveryElection(doc, meta))
+      const answer = await requestGrant(prov, grant, RECOVERY_GRANT_TIMEOUT_MS)
+      isServerGrant = answer === true
+      const granted = answer ?? (await winRecoveryElection(doc, meta))
       if (!granted) return false
+    }
+    function giveUp() {
+      if (isServerGrant && prov) releaseGrant(prov, grant)
+      return false
     }
     // The rewrite would wipe what was typed while waiting for the grant.
     if (unref(isReady)) await activeReporter?.flush()
-    if (doc.isDestroyed || unref(ydoc) !== doc) return false
-    if (unref(effectiveReadOnly) || unref(isConflicted)) return false
+    if (doc.isDestroyed || unref(ydoc) !== doc) return giveUp()
+    if (unref(effectiveReadOnly) || unref(isConflicted)) return giveUp()
     // The rewrite for this etag already landed.
-    if (meta.get('etag') === etag) return false
+    if (meta.get('etag') === etag) return giveUp()
     if (unref(isReady) && toValue(hasUnsavedChanges)) {
       flagStale(doc, meta, etag)
       markConflicted()

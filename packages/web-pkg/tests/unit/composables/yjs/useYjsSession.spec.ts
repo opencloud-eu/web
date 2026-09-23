@@ -57,7 +57,7 @@ const { providerInstances, relay } = vi.hoisted(() => {
       enabled: false,
       docDelayMs: 0,
       awarenessDelayMs: 0,
-      grantHolders: new Map<string, string>(),
+      grantHolders: new Map<string, { socketId: string; arg?: string }>(),
       seedGrantOnly: false
     }
   }
@@ -100,19 +100,33 @@ vi.mock('@hocuspocus/provider', async () => {
     // test on a single `flushPromises`.
     sendStateless = vi.fn((payload: string) => {
       const prefix = '_oc_grant_request:'
+      const releasePrefix = '_oc_grant_release:'
       const isSeed = payload === '_oc_seed_request'
-      if (!isSeed && (relay.seedGrantOnly || !payload.startsWith(prefix))) return
-      const key = isSeed ? 'seed' : payload.slice(prefix.length)
-      const slot = `${this.name}|${key}`
       const socketId = String(this.document.clientID)
+      if (relay.seedGrantOnly && !isSeed) return
+      if (payload.startsWith(releasePrefix)) {
+        const [name, arg] = payload.slice(releasePrefix.length).split(':')
+        const slot = `${this.name}|${name}`
+        const holder = relay.grantHolders.get(slot)
+        if (holder?.socketId === socketId && holder.arg === arg) relay.grantHolders.delete(slot)
+        return
+      }
+      if (!isSeed && !payload.startsWith(prefix)) return
+      const key = isSeed ? 'seed' : payload.slice(prefix.length)
+      const [name, arg] = key.split(':')
+      const slot = `${this.name}|${name}`
       const answer = () => {
         if (this.stopped) return
         const holder = relay.grantHolders.get(slot)
-        const granted = holder === undefined || holder === socketId
-        if (granted) relay.grantHolders.set(slot, socketId)
-        const answerPayload = isSeed
-          ? `_oc_seed_${granted ? 'granted' : 'denied'}`
-          : `${granted ? '_oc_grant_granted:' : '_oc_grant_denied:'}${key}`
+        // The server settles a recovery once the room holds its etag, and
+        // sends the room's updates before the grant. So settled means the
+        // requester has the rewrite too.
+        const isSettled =
+          holder?.arg !== undefined && this.document.getMap('_oc_meta').get('etag') === holder.arg
+        const granted = !holder || isSettled || holder.socketId === socketId
+        if (granted) relay.grantHolders.set(slot, { socketId, arg })
+        const verdict = granted ? 'granted' : 'denied'
+        const answerPayload = isSeed ? `_oc_seed_${verdict}` : `_oc_grant_${verdict}:${key}`
         this._opts.onStateless?.({ payload: answerPayload })
       }
       if (relay.docDelayMs === 0) {
@@ -286,12 +300,12 @@ function setupSession({
 
 /** Key of `relay.grantHolders`. */
 function grantSlot(provider: MockProvider, key: string) {
-  return `${provider.name}|${key}`
+  return `${provider.name}|${key.split(':')[0]}`
 }
 
 /** Someone else holds the grant, as far as the mock server is concerned. */
 function grantElsewhere(provider: MockProvider, key: string) {
-  relay.grantHolders.set(grantSlot(provider, key), 'a-peer')
+  relay.grantHolders.set(grantSlot(provider, key), { socketId: 'a-peer', arg: key.split(':')[1] })
 }
 
 function silenceConsoleError() {
@@ -1184,6 +1198,30 @@ describe('useYjsSession — stale-state recovery', () => {
     expect(doc.getText(SHARED_TEXT_KEY).toString()).toBe('even newer body')
     expect(meta.get('etag')).toBe('etag-newest')
     expect(meta.get('isStale')).toBeUndefined()
+  })
+
+  // The server frees a done recovery once it has the rewrite. One that was
+  // never done would block every other writer until we leave.
+  it('releases a recovery grant it has no use for', async () => {
+    const s = await syncIntoStaleRoom()
+    // A peer's rewrite for the same etag lands while we wait for the answer.
+    s.ydoc!.getMap(META_KEY).set('etag', 'etag-new')
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledWith(
+      '_oc_grant_release:recover:etag-new'
+    )
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('stale room content')
+  })
+
+  it('leaves releasing a done recovery to the server', async () => {
+    const s = await syncIntoStaleRoom()
+    await vi.advanceTimersByTimeAsync(200)
+
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('fresh body')
+    expect(providerInstances[0].sendStateless).not.toHaveBeenCalledWith(
+      expect.stringContaining('_oc_grant_release:')
+    )
   })
 
   // A server from before recovery grants ignores the request. The clients
@@ -2187,7 +2225,7 @@ describe('useYjsSession — simultaneous hydration', () => {
   // The mock server's registry knows who was granted, the doc only that someone was.
   function seeder(a: ReturnType<typeof setupSession>, b: ReturnType<typeof setupSession>) {
     const holder = relay.grantHolders.get(grantSlot(providerInstances[0], 'seed'))
-    return holder === String(a.ydoc!.clientID) ? a : b
+    return holder?.socketId === String(a.ydoc!.clientID) ? a : b
   }
 
   // A doubled body is not only wrong on screen: reported to the caller it is
