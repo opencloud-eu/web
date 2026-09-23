@@ -236,6 +236,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       panel: {
         name: 'versions',
         icon: 'git-branch',
+        iconFillType: 'line',
         title: () => $gettext('Versions'),
         component: markRaw(FileVersions),
         componentAttrs: () => ({
