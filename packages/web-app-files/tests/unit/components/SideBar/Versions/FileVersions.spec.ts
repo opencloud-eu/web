@@ -41,6 +41,7 @@ const defaultVersions = [
 const selectors = {
   noVersionsMessage: '[data-testid="file-versions-no-versions"]',
   lastModifiedDate: '[data-testid="file-versions-file-last-modified-date"]',
+  fullDate: '[data-testid="file-versions-file-full-date"]',
   resourceSize: '[data-testid="file-versions-file-size"]',
   revertVersionButton: '[data-testid="file-versions-revert-button"]',
   downloadVersionButton: '[data-testid="file-versions-download-button"]'
@@ -63,6 +64,15 @@ describe('FileVersions', () => {
         expect(dateElement.length).toBe(2)
         expect(dateElement.at(0).text()).toBe('1 day ago')
         expect(dateElement.at(1).text()).toBe('7 days ago')
+      })
+      it('should show the full date of each version', () => {
+        const { wrapper } = getMountedWrapper({ mountType: shallowMount })
+        const fullDateElement = wrapper.findAll(selectors.fullDate)
+
+        expect(fullDateElement.length).toBe(2)
+        expect(fullDateElement.at(0).text()).toBe(
+          DateTime.fromHTTP(yesterday).setLocale('en').toLocaleString(DateTime.DATETIME_MED)
+        )
       })
       it('should show content length of each version', () => {
         const { wrapper } = getMountedWrapper({ mountType: shallowMount })
