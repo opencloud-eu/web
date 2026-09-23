@@ -89,8 +89,6 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100),
     currentResource: options.currentResource ?? ref<Resource | null>(null),
-    // Shallow: each entry holds the editor, its DOM node and a ProseMirror
-    // node, none of which may be wrapped in a reactive proxy.
     tableOfContents: shallowRef<TableOfContentData>([])
   }
 
