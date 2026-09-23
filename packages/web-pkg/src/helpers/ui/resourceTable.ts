@@ -4,6 +4,34 @@ import { SortDir } from '@opencloud-eu/design-system/helpers'
 
 export const spaceTableSortFields: SortField[] = [
   {
+    name: 'name',
+    sortable: true,
+    sortDir: SortDir.Asc
+  },
+  {
+    name: 'totalQuota',
+    prop: 'spaceQuota.total',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
+  {
+    name: 'usedQuota',
+    prop: 'spaceQuota.used',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
+  {
+    name: 'remainingQuota',
+    prop: 'spaceQuota.remaining',
+    sortable: true,
+    sortDir: SortDir.Desc
+  },
+  {
+    name: 'mdate',
+    sortable: (date: string) => new Date(date).valueOf(),
+    sortDir: SortDir.Desc
+  },
+  {
     name: 'indicators',
     prop: 'disabled',
     sortable: (disabled: boolean) => Number(!!disabled),
