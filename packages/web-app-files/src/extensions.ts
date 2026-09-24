@@ -79,16 +79,8 @@ export const extensions = (appInfo: ApplicationInformation) => {
           return
         }
 
-        if (isLocationSharesActive(router, 'files-shares-with-me')) {
-          return $gettext('To create or upload files, switch to Personal or a Space')
-        }
-
-        if (isLocationSharesActive(router, 'files-shares-with-others')) {
-          return $gettext('To share a file or folder, open its Shares panel and invite people')
-        }
-
-        if (isLocationSharesActive(router, 'files-shares-via-link')) {
-          return $gettext('To create a link, open the Shares panel of a file or folder')
+        if (isLocationSharesActive(router)) {
+          return $gettext('To share a file or folder, open its Shares panel')
         }
 
         if (isLocationCommonActive(router, 'files-common-favorites')) {
