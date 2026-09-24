@@ -10,7 +10,7 @@ import { provide, toRef } from 'vue'
 import type { TextEditorInstance } from '../types'
 import TextEditorLinkPanel from './TextEditorLinkPanel.vue'
 
-const props = defineProps<{
+const { editor, teleport = 'body' } = defineProps<{
   editor: TextEditorInstance
   /**
    * Where the editor's drops (link panel, toolbar menus) teleport to. Defaults to the body.
@@ -18,9 +18,9 @@ const props = defineProps<{
   teleport?: string
 }>()
 
-provide('textEditor', props.editor)
+provide('textEditor', editor)
 provide(
   'textEditorTeleport',
-  toRef(() => props.teleport)
+  toRef(() => teleport)
 )
 </script>
