@@ -6,17 +6,21 @@
 </template>
 
 <script setup lang="ts">
-import { provide } from 'vue'
+import { provide, toRef } from 'vue'
 import type { TextEditorInstance } from '../types'
 import TextEditorLinkPanel from './TextEditorLinkPanel.vue'
 
 const props = defineProps<{
   editor: TextEditorInstance
   /**
-   * Where the link panel teleports to. Defaults to the body.
+   * Where the editor's drops (link panel, toolbar menus) teleport to. Defaults to the body.
    */
   teleport?: string
 }>()
 
 provide('textEditor', props.editor)
+provide(
+  'textEditorTeleport',
+  toRef(() => props.teleport)
+)
 </script>

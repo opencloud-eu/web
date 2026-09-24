@@ -117,7 +117,7 @@ import {
   useTemplateRef,
   watch
 } from 'vue'
-import type { ComponentPublicInstance } from 'vue'
+import type { ComponentPublicInstance, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
@@ -134,6 +134,10 @@ const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
+const providerTeleport = inject<Ref<string | undefined>>(
+  'textEditorTeleport',
+  ref<string>(undefined)
+)
 const { $gettext } = useGettext()
 
 /** Gap, border and padding that a group adds in front of its first action. */
@@ -151,7 +155,7 @@ const keyActionIds: string[] = []
 
 const moreActionsLabel = computed(() => $gettext('More actions'))
 const sourceMode = computed(() => unref(textEditor.state.sourceMode))
-const dropTeleport = computed(() => teleport || 'body')
+const dropTeleport = computed(() => teleport || unref(providerTeleport) || 'body')
 
 const isToolbarItemVisible = (item: EditorAction) => {
   if (!actionsToDisplay) {
