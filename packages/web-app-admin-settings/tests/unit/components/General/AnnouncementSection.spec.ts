@@ -184,7 +184,8 @@ function getWrapper(stored?: Partial<StoredAnnouncement>) {
     global: {
       plugins: [...defaultPlugins()],
       mocks,
-      provide: mocks
+      provide: mocks,
+      renderStubDefaultSlot: true
     }
   })
 

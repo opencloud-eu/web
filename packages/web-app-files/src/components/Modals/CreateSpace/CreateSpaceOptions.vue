@@ -1,101 +1,59 @@
 <template>
   <div class="flex flex-col gap-3 mt-6">
-    <section class="create-space-presentation rounded-lg bg-role-surface-container p-3">
-      <oc-button
-        class="create-space-presentation-toggle w-full"
-        gap-size="xsmall"
-        appearance="raw"
-        justify-content="space-between"
-        no-hover
-        :aria-expanded="expanded.presentation"
-        @click="toggleSection('presentation', $event)"
-      >
-        <span class="flex flex-row items-center gap-4">
-          <oc-icon
-            name="image"
-            fill-type="line"
-            size-class="size-5"
-            color="var(--oc-role-on-surface)"
-          />
-          <span class="flex flex-col items-start">
-            <span class="font-semibold text-role-on-surface" v-text="$gettext('Presentation')" />
-            <span class="text-sm text-role-on-surface-variant" v-text="presentationFields" />
-          </span>
-        </span>
-        <oc-icon
-          :name="expanded.presentation ? 'arrow-up-s' : 'arrow-down-s'"
-          fill-type="line"
-          size-class="size-5"
-          color="var(--oc-role-on-surface)"
-        />
-      </oc-button>
-      <div v-if="expanded.presentation" class="flex flex-col gap-4 pt-4 pl-9">
-        <space-image-picker v-if="!encrypted" v-model="image" />
-        <oc-text-input
-          id="create-space-subtitle-input"
-          v-model="subtitle"
-          :label="$gettext('Subtitle')"
-        />
-        <div v-if="!encrypted" class="create-space-description">
-          <span class="inline-block mb-0.5" v-text="$gettext('Description')" />
-          <div
-            class="border border-role-outline-variant rounded-lg overflow-hidden bg-role-surface"
-          >
-            <text-editor-provider :editor="descriptionEditor">
-              <text-editor-toolbar />
-              <text-editor-content class="min-h-40 max-h-72 py-2 overflow-auto" />
-            </text-editor-provider>
-          </div>
+    <oc-section
+      ref="presentationSection"
+      v-model:expanded="expanded.presentation"
+      class="create-space-presentation"
+      :title="$gettext('Presentation')"
+      :subtitle="presentationFields"
+      icon="image"
+      title-tag="h3"
+      expandable
+      @update:expanded="revealSection(presentationSection, $event)"
+    >
+      <space-image-picker v-if="!encrypted" v-model="image" />
+      <oc-text-input
+        id="create-space-subtitle-input"
+        v-model="subtitle"
+        :label="$gettext('Subtitle')"
+      />
+      <div v-if="!encrypted" class="create-space-description">
+        <span class="inline-block mb-0.5" v-text="$gettext('Description')" />
+        <div class="border border-role-outline-variant rounded-lg overflow-hidden bg-role-surface">
+          <text-editor-provider :editor="descriptionEditor">
+            <text-editor-toolbar />
+            <text-editor-content class="min-h-40 max-h-72 py-2 overflow-auto" />
+          </text-editor-provider>
         </div>
       </div>
-    </section>
-    <section class="create-space-advanced rounded-lg bg-role-surface-container p-3">
-      <oc-button
-        class="create-space-advanced-toggle w-full"
-        gap-size="xsmall"
-        appearance="raw"
-        justify-content="space-between"
-        no-hover
-        :aria-expanded="expanded.advanced"
-        @click="toggleSection('advanced', $event)"
-      >
-        <span class="flex flex-row items-center gap-4">
-          <oc-icon
-            name="settings-3"
-            fill-type="line"
-            size-class="size-5"
-            color="var(--oc-role-on-surface)"
-          />
-          <span class="flex flex-col items-start">
-            <span class="font-semibold text-role-on-surface" v-text="$gettext('Advanced')" />
-            <span class="text-sm text-role-on-surface-variant" v-text="advancedFields" />
-          </span>
-        </span>
-        <oc-icon
-          :name="expanded.advanced ? 'arrow-up-s' : 'arrow-down-s'"
-          fill-type="line"
-          size-class="size-5"
-          color="var(--oc-role-on-surface)"
-        />
-      </oc-button>
-      <div v-if="expanded.advanced" class="flex flex-col gap-4 pt-4 pl-9">
-        <quota-select
-          v-if="canSetQuota"
-          id="create-space-quota-input"
-          class="create-space-quota"
-          :total-quota="quota"
-          :max-quota="spacesMaxQuota"
-          :position-fixed="true"
-          @selected-option-change="quota = $event.value"
-        />
-        <space-member-select v-model="members" v-model:role-id="memberRoleId" />
-      </div>
-    </section>
+    </oc-section>
+    <oc-section
+      ref="advancedSection"
+      v-model:expanded="expanded.advanced"
+      class="create-space-advanced"
+      :title="$gettext('Advanced')"
+      :subtitle="advancedFields"
+      icon="settings-3"
+      title-tag="h3"
+      expandable
+      @update:expanded="revealSection(advancedSection, $event)"
+    >
+      <quota-select
+        v-if="canSetQuota"
+        id="create-space-quota-input"
+        class="create-space-quota"
+        :total-quota="quota"
+        :max-quota="spacesMaxQuota"
+        :position-fixed="true"
+        @selected-option-change="quota = $event.value"
+      />
+      <space-member-select v-model="members" v-model:role-id="memberRoleId" />
+    </oc-section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, toRef, unref } from 'vue'
+import { ComponentPublicInstance, computed, nextTick, ref, toRef, unref, useTemplateRef } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import {
@@ -136,18 +94,17 @@ const expanded = ref({ presentation: true, advanced: false })
 
 const canSetQuota = computed(() => can('set-quota-all', 'Drive'))
 
-async function toggleSection(name: 'presentation' | 'advanced', event: MouseEvent) {
-  // Captured now - `currentTarget` is gone by the time the render settles.
-  const section = (event.currentTarget as HTMLElement).closest('section')
-  expanded.value[name] = !unref(expanded)[name]
+const presentationSection = useTemplateRef<ComponentPublicInstance>('presentationSection')
+const advancedSection = useTemplateRef<ComponentPublicInstance>('advancedSection')
 
-  if (!unref(expanded)[name]) {
+async function revealSection(section: ComponentPublicInstance, isExpanded: boolean) {
+  if (!isExpanded) {
     return
   }
 
   // The fields only exist once the section has rendered.
   await nextTick()
-  section?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  section?.$el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
 }
 
 const presentationFields = computed(() =>

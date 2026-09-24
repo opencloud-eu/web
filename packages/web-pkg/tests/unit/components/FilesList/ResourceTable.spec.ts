@@ -631,6 +631,31 @@ describe('ResourceTable', () => {
       })
     })
   })
+  describe('status field', () => {
+    it('is sortable for spaces', () => {
+      const space = {
+        id: '1',
+        name: 'Space',
+        path: '/',
+        type: 'space',
+        disabled: false,
+        spaceQuota: { total: 10, used: 5, remaining: 5 },
+        getDomSelector: () => extractDomSelector('space'),
+        canDownload: () => true,
+        canRename: () => false
+      } as SpaceResource
+      const { wrapper } = getMountedWrapper({
+        props: { resourceType: 'space' },
+        resources: [space]
+      })
+      expect(wrapper.find('.oc-table-header-cell-indicators .oc-button-sort').exists()).toBeTruthy()
+    })
+    it('is not sortable for files', () => {
+      const { wrapper } = getMountedWrapper()
+      expect(wrapper.find('.oc-table-header-cell-indicators .oc-button-sort').exists()).toBeFalsy()
+    })
+  })
+
   describe('"shared with" field', () => {
     it('only displays authenticated shares', () => {
       const resource = mock<OutgoingShareResource>({ id: '1' })

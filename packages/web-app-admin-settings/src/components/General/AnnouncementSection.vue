@@ -1,7 +1,47 @@
 <template>
-  <div class="max-w-2xl">
-    <div class="flex items-center justify-between gap-4 mb-1">
-      <h2 class="text-lg font-semibold" v-text="$gettext('Announcement banner')" />
+  <oc-section
+    class="announcement-section max-w-2xl"
+    :title="$gettext('Announcement banner')"
+    :subtitle="
+      $gettext('Shows a banner on top for all users. Do not include sensitive information.')
+    "
+    icon="megaphone"
+  >
+    <oc-text-input :id="bannerInputId" v-model="bannerText" :label="$gettext('Banner')">
+      <template #label>
+        <span class="mb-0.5 flex items-center gap-1">
+          <label :for="bannerInputId">{{ $gettext('Banner') }}</label>
+          <oc-contextual-helper
+            :title="$gettext('Banner')"
+            :text="
+              $gettext(
+                'Displayed text in the banner. Clicking it opens the details dialog. Visible only when Show banner is enabled. Users can dismiss it until the page is reloaded.'
+              )
+            "
+          />
+        </span>
+      </template>
+    </oc-text-input>
+    <div>
+      <span class="mb-0.5 flex items-center gap-1">
+        {{ $gettext('Banner details') }}
+        <oc-contextual-helper
+          :title="$gettext('Banner details')"
+          :text="
+            $gettext(
+              'The details are shown in a dialog when users click the banner. They can be formatted using Markdown. Leave empty to make the banner non-clickable.'
+            )
+          "
+        />
+      </span>
+      <div class="border border-role-outline-variant rounded-lg overflow-hidden bg-role-surface">
+        <text-editor-provider :editor="infoEditor">
+          <text-editor-toolbar />
+          <text-editor-content class="min-h-[32rem] max-h-[48rem] py-2 overflow-auto" />
+        </text-editor-provider>
+      </div>
+    </div>
+    <div class="flex items-center justify-between gap-2">
       <oc-switch
         :checked="enabled"
         :label="$gettext('Show banner')"
@@ -18,61 +58,21 @@
           "
         />
       </oc-switch>
+      <div class="flex items-center gap-2">
+        <oc-button appearance="outline" :disabled="!canPreview || isBusy" @click="preview">
+          {{ $gettext('Preview') }}
+        </oc-button>
+        <oc-button
+          appearance="filled"
+          :disabled="!isDirty || isBusy"
+          :show-spinner="saveTask.isRunning"
+          @click="saveTask.perform()"
+        >
+          {{ $gettext('Save') }}
+        </oc-button>
+      </div>
     </div>
-    <p class="text-role-on-surface-variant mb-3">
-      {{ $gettext('Shows a banner on top for all users. Do not include sensitive information.') }}
-    </p>
-    <oc-text-input
-      :id="bannerInputId"
-      v-model="bannerText"
-      :label="$gettext('Banner')"
-      class="mb-3"
-    >
-      <template #label>
-        <span class="mb-0.5 flex items-center gap-1">
-          <label :for="bannerInputId">{{ $gettext('Banner') }}</label>
-          <oc-contextual-helper
-            :title="$gettext('Banner')"
-            :text="
-              $gettext(
-                'Displayed text in the banner. Clicking it opens the details dialog. Visible only when Show banner is enabled. Users can dismiss it until the page is reloaded.'
-              )
-            "
-          />
-        </span>
-      </template>
-    </oc-text-input>
-    <span class="mb-0.5 flex items-center gap-1">
-      {{ $gettext('Banner details') }}
-      <oc-contextual-helper
-        :title="$gettext('Banner details')"
-        :text="
-          $gettext(
-            'The details are shown in a dialog when users click the banner. They can be formatted using Markdown. Leave empty to make the banner non-clickable.'
-          )
-        "
-      />
-    </span>
-    <div class="border border-role-outline-variant rounded-lg overflow-hidden">
-      <text-editor-provider :editor="infoEditor">
-        <text-editor-toolbar />
-        <text-editor-content class="min-h-[32rem] max-h-[48rem] py-2 overflow-auto" />
-      </text-editor-provider>
-    </div>
-    <div class="flex items-center justify-between gap-2 mt-3">
-      <oc-button appearance="outline" :disabled="!canPreview || isBusy" @click="preview">
-        {{ $gettext('Preview') }}
-      </oc-button>
-      <oc-button
-        appearance="filled"
-        :disabled="!isDirty || isBusy"
-        :show-spinner="saveTask.isRunning"
-        @click="saveTask.perform()"
-      >
-        {{ $gettext('Save') }}
-      </oc-button>
-    </div>
-  </div>
+  </oc-section>
 </template>
 
 <script setup lang="ts">

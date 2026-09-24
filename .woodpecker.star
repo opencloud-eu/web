@@ -4,7 +4,7 @@ docker_repo_slug = "opencloudeu/web"
 ALPINE_GIT = "alpine/git:latest"
 
 # renovate: datasource=docker depName=apache/tika
-APACHE_TIKA = "apache/tika:4.1.0-SNAPSHOT"
+APACHE_TIKA = "apache/tika:4.1.1-SNAPSHOT"
 
 # renovate: datasource=docker depName=collabora/code
 COLLABORA_CODE = "collabora/code:26.04.4.1.1"

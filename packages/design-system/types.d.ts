@@ -38,6 +38,7 @@ import OcProgressPie from './src/components/OcProgressPie/OcProgressPie.vue'
 import OcRadio from './src/components/OcRadio/OcRadio.vue'
 import OcRecipient from './src/components/OcRecipient/OcRecipient.vue'
 import OcSearchBar from './src/components/OcSearchBar/OcSearchBar.vue'
+import OcSection from './src/components/OcSection/OcSection.vue'
 import OcSelect from './src/components/OcSelect/OcSelect.vue'
 import OcSpinner from './src/components/OcSpinner/OcSpinner.vue'
 import OcStatusIndicators from './src/components/OcStatusIndicators/OcStatusIndicators.vue'
@@ -101,6 +102,7 @@ declare module 'vue' {
     OcRadio: typeof OcRadio
     OcRecipient: typeof OcRecipient
     OcSearchBar: typeof OcSearchBar
+    OcSection: typeof OcSection
     OcSelect: typeof OcSelect
     OcSpinner: typeof OcSpinner
     OcStatusIndicators: typeof OcStatusIndicators

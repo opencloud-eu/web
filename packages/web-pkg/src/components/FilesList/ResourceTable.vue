@@ -506,22 +506,19 @@ const fields = computed(() => {
           name: 'totalQuota',
           prop: 'spaceQuota.total',
           title: $gettext('Total quota'),
-          type: 'slot',
-          sortable: true
+          type: 'slot'
         },
         {
           name: 'usedQuota',
           prop: 'spaceQuota.used',
           title: $gettext('Used quota'),
-          type: 'slot',
-          sortable: true
+          type: 'slot'
         },
         {
           name: 'remainingQuota',
           prop: 'spaceQuota.remaining',
           title: $gettext('Remaining quota'),
-          type: 'slot',
-          sortable: true
+          type: 'slot'
         },
         {
           name: 'indicators',

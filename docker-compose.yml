@@ -304,7 +304,7 @@ services:
       - traefik
 
   tika:
-    image: apache/tika:4.1.0-SNAPSHOT
+    image: apache/tika:4.1.1-SNAPSHOT
     container_name: web_tika
     ports:
       - 9998:9998
