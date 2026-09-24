@@ -96,6 +96,7 @@ function getWrapper(space: SpaceResource, route: RouteLocationNormalizedLoaded) 
       props: { space },
       global: {
         renderStubDefaultSlot: true,
+        stubs: { NoContentMessage: false },
         mocks,
         provide: mocks,
         plugins: [...defaultPlugins()]

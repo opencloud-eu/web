@@ -1,20 +1,15 @@
 <template>
-  <div
-    id="files-list-not-found-message"
-    class="text-center items-center flex justify-center flex-col h-[75vh]"
-  >
-    <oc-icon name="cloud" type="div" size-class="size-22" />
-    <div class="text-role-on-surface-variant text-xl">
+  <no-content-message id="files-list-not-found-message" img-src="images/empty-states/404.svg">
+    <template #message>
       <span v-text="$gettext('Resource not found')" />
-    </div>
-    <div class="text-role-on-surface-variant">
-      <span
+    </template>
+    <template #callToAction>
+      <p
+        class="mt-0 mb-2"
         v-text="
           $gettext('We went looking everywhere, but were unable to find the selected resource.')
         "
       />
-    </div>
-    <div class="mt-2">
       <oc-button
         v-if="showSpacesButton"
         id="space-not-found-button-go-spaces"
@@ -42,12 +37,13 @@
       >
         <span v-text="$gettext('Reload public link')" />
       </oc-button>
-    </div>
-  </div>
+    </template>
+  </no-content-message>
 </template>
 
 <script setup lang="ts">
 import {
+  NoContentMessage,
   createLocationPublic,
   createLocationSpaces,
   isLocationPublicActive,
