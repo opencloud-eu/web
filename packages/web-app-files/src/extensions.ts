@@ -80,7 +80,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
         }
 
         if (isLocationSharesActive(router)) {
-          return $gettext('To share a file or folder, open its Shares panel')
+          return $gettext('To share a file or folder, open its Sharing panel')
         }
 
         if (isLocationCommonActive(router, 'files-common-favorites')) {
