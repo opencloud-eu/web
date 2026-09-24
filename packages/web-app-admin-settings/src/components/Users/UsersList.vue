@@ -129,9 +129,11 @@ import {
   useRouteQuery,
   UserAvatar,
   useSideBar,
-  createVirtualCursorElement
+  useSort,
+  createVirtualCursorElement,
+  SortField
 } from '@opencloud-eu/web-pkg'
-import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
+import { AppRole, AppRoleAssignment, User } from '@opencloud-eu/web-client/graph/generated'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
 import { storeToRefs } from 'pinia'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
@@ -170,8 +172,6 @@ export default defineComponent({
 
     const tableRef = useTemplateRef<ComponentPublicInstance<typeof OcTable>>('tableRef')
     const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-    const sortBy = ref('onPremisesSamAccountName')
-    const sortDir = ref<SortDir>(SortDir.Asc)
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 
     const lastSelectedUserIndex = ref(0)
@@ -267,8 +267,8 @@ export default defineComponent({
       unref(contextMenuDrops)[user.id]?.show({ anchorElement })
     }
 
-    const getRoleDisplayNameByUser = (user: User) => {
-      const assignedRole = user.appRoleAssignments[0]
+    const getRoleDisplayName = (appRoleAssignments: AppRoleAssignment[]) => {
+      const assignedRole = appRoleAssignments?.[0]
 
       return (
         $gettext(
@@ -277,30 +277,29 @@ export default defineComponent({
       )
     }
 
-    const orderBy = (list: User[], prop: string, desc: boolean) => {
-      return [...list].sort((user1, user2) => {
-        let a: string, b: string
-
-        switch (prop) {
-          case 'role':
-            a = getRoleDisplayNameByUser(user1)
-            b = getRoleDisplayNameByUser(user2)
-            break
-          case 'accountEnabled':
-            a = ('accountEnabled' in user1 ? user1.accountEnabled : true).toString()
-            b = ('accountEnabled' in user2 ? user2.accountEnabled : true).toString()
-            break
-          default:
-            a = user1[prop as keyof User].toString() || ''
-            b = user2[prop as keyof User].toString() || ''
-        }
-
-        return desc ? b.localeCompare(a) : a.localeCompare(b)
-      })
+    const getRoleDisplayNameByUser = (user: User) => {
+      return getRoleDisplayName(user.appRoleAssignments)
     }
 
-    const items = computed(() => {
-      return orderBy(unref(users), unref(sortBy), unref(sortDir) === SortDir.Desc)
+    const sortFields: SortField[] = [
+      { name: 'onPremisesSamAccountName', sortable: true, sortDir: SortDir.Asc },
+      { name: 'displayName', sortable: true, sortDir: SortDir.Asc },
+      { name: 'mail', sortable: true, sortDir: SortDir.Asc },
+      {
+        name: 'role',
+        prop: 'appRoleAssignments',
+        sortable: getRoleDisplayName,
+        sortDir: SortDir.Asc
+      },
+      {
+        name: 'accountEnabled',
+        sortable: (accountEnabled?: boolean) => (accountEnabled ?? true).toString(),
+        sortDir: SortDir.Asc
+      }
+    ]
+    const { sortBy, sortDir, items, handleSort } = useSort<User>({
+      items: users,
+      fields: sortFields
     })
 
     const {
@@ -407,7 +406,7 @@ export default defineComponent({
       paginatedItems,
       currentPage,
       totalPages,
-      orderBy,
+      handleSort,
       selectedUsers,
       selectUser,
       selectUsers,
@@ -432,10 +431,6 @@ export default defineComponent({
     }
   },
   methods: {
-    handleSort(event: { sortBy: string; sortDir: SortDir }) {
-      this.sortBy = event.sortBy
-      this.sortDir = event.sortDir
-    },
     getSelectUserLabel(user: User) {
       return this.$gettext('Select %{ user }', { user: user.displayName })
     }

@@ -54,9 +54,9 @@
 </template>
 
 <script setup lang="ts">
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
+import { NoContentMessage, SortField, useSort } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
-import { computed, ref, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
@@ -73,10 +73,6 @@ const { extensions, filterTerm = '' } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
-type SortField = 'name' | 'status'
-
-const sortBy = ref<SortField>('name')
-const sortDir = ref<SortDir>(SortDir.Asc)
 
 const filteredExtensions = computed(() => {
   const term = unref(filterTerm).toLowerCase()
@@ -90,23 +86,20 @@ const filteredExtensions = computed(() => {
   })
 })
 
-const items = computed(() => {
-  return [...unref(filteredExtensions)].sort((a, b) => {
-    const field = unref(sortBy)
-    if (field === 'status') {
-      const result = Number(b.loaded) - Number(a.loaded)
-      return unref(sortDir) === SortDir.Desc ? -result : result
-    }
-    const c = (a[field] || '').toString()
-    const d = (b[field] || '').toString()
-    return unref(sortDir) === SortDir.Desc ? d.localeCompare(c) : c.localeCompare(d)
-  })
+const sortFields: SortField[] = [
+  { name: 'name', sortable: true, sortDir: SortDir.Asc },
+  {
+    name: 'status',
+    prop: 'loaded',
+    // active extensions come first in ascending order
+    sortable: (loaded: boolean) => (loaded ? 0 : 1),
+    sortDir: SortDir.Asc
+  }
+]
+const { sortBy, sortDir, items, handleSort } = useSort<ExtensionInfo>({
+  items: filteredExtensions,
+  fields: sortFields
 })
-
-function handleSort(event: { sortBy: string; sortDir: SortDir }) {
-  sortBy.value = event.sortBy as SortField
-  sortDir.value = event.sortDir
-}
 
 const fields = computed(() => [
   {

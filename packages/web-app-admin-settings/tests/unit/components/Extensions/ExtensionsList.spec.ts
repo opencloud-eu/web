@@ -1,6 +1,7 @@
 import ExtensionsList from '../../../../src/components/Extensions/ExtensionsList.vue'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
-import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 
 const extensions = [
   { name: 'Calendar', version: '1.0.0', loaded: true },
@@ -31,44 +32,40 @@ describe('ExtensionsList', () => {
     expect(wrapper.find('oc-table-stub').exists()).toBeFalsy()
   })
 
-  it('sorts by name ascending and descending', () => {
+  it.each([
+    { sortDir: SortDir.Asc, expected: ['Alpha', 'Zulu'] },
+    { sortDir: SortDir.Desc, expected: ['Zulu', 'Alpha'] }
+  ])('sorts by name from the route query ($sortDir)', ({ sortDir, expected }) => {
     const { wrapper } = getWrapper({
       extensions: [
         { name: 'Zulu', version: '1.0.0', loaded: true },
         { name: 'Alpha', version: '2.0.0', loaded: true }
-      ]
+      ],
+      query: { 'sort-by': 'name', 'sort-dir': sortDir }
     })
-
-    ;(wrapper.vm as any).handleSort({ sortBy: 'name', sortDir: SortDir.Asc })
-    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
-      'Alpha',
-      'Zulu'
-    ])
-    ;(wrapper.vm as any).handleSort({ sortBy: 'name', sortDir: SortDir.Desc })
-    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
-      'Zulu',
-      'Alpha'
-    ])
+    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual(expected)
   })
 
-  it('sorts by status ascending and descending', () => {
+  it.each([
+    { sortDir: SortDir.Asc, expected: ['Beta', 'Alpha'] },
+    { sortDir: SortDir.Desc, expected: ['Alpha', 'Beta'] }
+  ])('sorts by status from the route query ($sortDir)', ({ sortDir, expected }) => {
     const { wrapper } = getWrapper({
       extensions: [
         { name: 'Alpha', version: '1.0.0', loaded: false },
         { name: 'Beta', version: '1.0.0', loaded: true }
-      ]
+      ],
+      query: { 'sort-by': 'status', 'sort-dir': sortDir }
     })
+    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual(expected)
+  })
 
-    ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Asc })
-    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
-      'Beta',
-      'Alpha'
-    ])
+  it('writes the sort parameters to the route query when calling "handleSort"', () => {
+    const { wrapper, mocks } = getWrapper()
     ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Desc })
-    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual([
-      'Alpha',
-      'Beta'
-    ])
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      query: expect.objectContaining({ 'sort-by': 'status', 'sort-dir': SortDir.Desc })
+    })
   })
 
   it('highlights the matching part of app names', () => {
@@ -99,13 +96,19 @@ describe('ExtensionsList', () => {
 const getWrapper = ({
   extensions: extensionData = extensions,
   filterTerm = '',
-  stubs = {}
+  stubs = {},
+  query = {}
 }: {
   extensions?: { name: string; version?: string; loaded: boolean }[]
   filterTerm?: string
   stubs?: Record<string, any>
+  query?: Record<string, string>
 } = {}) => {
+  const mocks = defaultComponentMocks({
+    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+  })
   return {
+    mocks,
     wrapper: mount(ExtensionsList, {
       props: {
         extensions: extensionData,
@@ -113,6 +116,8 @@ const getWrapper = ({
       },
       global: {
         plugins: [...defaultPlugins()],
+        mocks,
+        provide: mocks,
         stubs: {
           OcIcon: true,
           OcTag: true,
