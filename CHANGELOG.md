@@ -6,13 +6,9 @@
 
 @AlexAndBear, @JammingBen, @pascalwengerter, @tammi-23, @v-scharf
 
-### ✅ Tests
-
-- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
-- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
-
 ### 🐛 Bug Fixes
 
+- fix(files): use NoContentMessage for resource not found message [[#3447](https://github.com/opencloud-eu/web/pull/3447)]
 - fix: consistent sorting for spaces and resources [[#3432](https://github.com/opencloud-eu/web/pull/3432)]
 - fix(admin-settings): make apps sortable by status [[#3427](https://github.com/opencloud-eu/web/pull/3427)]
 - Keep modal actions out of the scrollable body [[#3419](https://github.com/opencloud-eu/web/pull/3419)]
@@ -23,6 +19,11 @@
 - fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
+### ✅ Tests
+
+- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
 
 ### 📈 Enhancement
 
