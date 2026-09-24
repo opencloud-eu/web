@@ -4,9 +4,9 @@
       ref="presentationSection"
       v-model:expanded="expanded.presentation"
       class="create-space-presentation"
-      :title="$gettext('Presentation')"
+      :title="$gettext('Customize')"
       :subtitle="presentationFields"
-      icon="image"
+      icon="palette"
       title-tag="h3"
       expandable
       @update:expanded="revealSection(presentationSection, $event)"
