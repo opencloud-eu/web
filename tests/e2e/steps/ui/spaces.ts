@@ -3,12 +3,12 @@ import { DataTable } from 'playwright-bdd'
 import { expect } from '@playwright/test'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
+import { pageObjectFor, actorPage } from '../../environment/pageObject'
 
 When(
   '{string} navigates to the personal space page',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.spaces.Personal({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.spaces.Personal)
     await pageObject.navigate()
   }
 )
@@ -16,8 +16,7 @@ When(
 When(
   '{string} navigates to the projects space page',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.spaces.Projects({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.spaces.Projects)
     await pageObject.navigate()
   }
 )
@@ -29,8 +28,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
 
     for (const space of stepTable.hashes()) {
       await spacesObject.create({
@@ -44,7 +42,7 @@ When(
 When(
   '{string} navigates to the project space {string}',
   async function ({ world }: { world: World }, stepUser: string, key: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     const spacesObject = new objects.applicationFiles.Spaces({ page })
     const pageObject = new objects.applicationFiles.page.spaces.Projects({ page })
     await pageObject.navigate()
@@ -60,7 +58,7 @@ When(
     key: string,
     passphrase: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     const spacesObject = new objects.applicationFiles.Spaces({ page })
     const pageObject = new objects.applicationFiles.page.spaces.Projects({ page })
     await pageObject.navigate()
@@ -75,8 +73,7 @@ When(
     stepUser: string,
     passphrase: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     await spacesObject.unlockVault({ passphrase })
   }
 )
@@ -84,8 +81,7 @@ When(
 Then(
   '{string} should see the unlock page of the vault space {string}',
   async function ({ world }: { world: World }, stepUser: string, key: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     await spacesObject.expectVaultLocked({ key })
   }
 )
@@ -99,8 +95,7 @@ When(
     attribute: string,
     value: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
 
     switch (attribute) {
       case 'name':
@@ -139,8 +134,7 @@ When(
     attribute: string,
     value: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
 
     switch (attribute) {
       case 'name':
@@ -174,8 +168,7 @@ When(
 When(
   '{string} deletes the space {string} image using context menu',
   async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     await spacesObject.deleteSpaceImage({ space, contextMenu: true })
   }
 )
@@ -183,8 +176,7 @@ When(
 When(
   '{string} deletes the space {string} image',
   async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     await spacesObject.deleteSpaceImage({ space })
   }
 )
@@ -196,8 +188,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     for (const { user, role, kind } of stepTable.hashes()) {
       const collaborator =
         kind === 'user'
@@ -219,8 +210,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     for (const { user, role } of stepTable.hashes()) {
       const member = {
         collaborator: world.usersEnvironment.getCreatedUser({ key: user }),
@@ -239,8 +229,7 @@ Then(
     actionType: string,
     space: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     const spaceLocator = spacesObject.getSpaceLocator(space)
     actionType === 'should'
       ? await expect(spaceLocator).toBeVisible()
@@ -255,8 +244,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     for (const { user, role } of stepTable.hashes()) {
       const member = {
         collaborator: world.usersEnvironment.getCreatedUser({ key: user }),
@@ -270,8 +258,7 @@ When(
 When(
   '{string} as project manager removes their own access to the project space',
   async function ({ world }: { world: World }, stepUser: any): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     await spacesObject.removeAccessToMember({
       users: [
         {
@@ -291,8 +278,7 @@ When(
     memberName: string,
     expirationDate: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     const member = { collaborator: world.usersEnvironment.getCreatedUser({ key: memberName }) }
     await spacesObject.addExpirationDate({ member, expirationDate })
   }
@@ -305,8 +291,7 @@ When(
     stepUser: string,
     memberName: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     const member = { collaborator: world.usersEnvironment.getCreatedUser({ key: memberName }) }
     await spacesObject.removeExpirationDate({ member })
   }
@@ -315,8 +300,7 @@ When(
 When(
   '{string} downloads the space {string}',
   async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     const downloadedResource = await spacesObject.downloadSpace()
     expect(downloadedResource).toContain(`${space}.zip`)
   }
@@ -329,8 +313,7 @@ Then(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
 
     for (const info of stepTable.hashes()) {
       await spacesObject.checkSpaceActivity({ activity: info.activity })
@@ -345,8 +328,7 @@ Then(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
 
     for (const info of stepTable.hashes()) {
       await spacesObject.checkSpaceActivity({ activity: new RegExp(info.activity) })
@@ -362,8 +344,7 @@ Then(
     expectedHeight: number,
     stepUser: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spacesObject = new objects.applicationFiles.Spaces({ page })
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     const { width, height } = await spacesObject.getSpaceImageRatio()
 
     expect(width / height).toBeCloseTo(expectedWidth / expectedHeight, 0.1)

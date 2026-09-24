@@ -1,11 +1,11 @@
 import { When, Then } from '../../environment/fixtures'
 import { DataTable } from 'playwright-bdd'
-import { Page, expect } from '@playwright/test'
+import { Page } from '@playwright/test'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { processDelete, processDownload } from './resources'
-import { editor } from '../../support/objects/app-files/utils'
 import { securePassword } from '../../support/store'
+import { pageObjectFor, actorPage } from '../../environment/pageObject'
 
 When(
   '{string} opens the public link {string}',
@@ -31,7 +31,7 @@ When(
 When(
   '{string} unlocks the public link with password {string}',
   async ({ world }: { world: World }, stepUser: string, password: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     const pageObject = new objects.applicationFiles.page.Public({ page })
     if (password === '%copied_password%') {
       password = await page.evaluate('navigator.clipboard.readText()')
@@ -43,80 +43,9 @@ When(
 )
 
 When(
-  '{string} closes the file viewer',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await editor.close(page)
-  }
-)
-
-When(
-  '{string} saves the file viewer',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await editor.save(page)
-  }
-)
-
-When(
-  '{string} saves the file viewer expecting conflict error',
-  async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    await editor.saveExpectingConflict(page)
-    await expect(editor.errorNotificationLocator(page)).toBeVisible()
-  }
-)
-
-Then(
-  /^"([^"]*)" is in a (text-editor|pdf-viewer|media-viewer)$/,
-  async ({ world }: { world: World }, stepUser: string, fileViewerType: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const fileViewerLocator = editor.fileViewerLocator({ page, fileViewerType })
-    await expect(fileViewerLocator).toBeVisible()
-  }
-)
-
-When(
-  '{string} enters the text {string} in editor {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    text: string,
-    editorToOpen: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
-    await pageObject.fillContentOfOpenDocumentOrMicrosoftWordDocument({
-      page,
-      text,
-      editorToOpen
-    })
-  }
-)
-
-When(
-  '{string} should see the content {string} in editor {string}',
-  async (
-    { world }: { world: World },
-    stepUser: string,
-    expectedContent: string,
-    editorToOpen: string
-  ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
-    const actualFileContent = await pageObject.getContentOfOpenDocumentOrMicrosoftWordDocument({
-      page,
-      editorToOpen
-    })
-    expect(actualFileContent.trim()).toBe(expectedContent)
-  }
-)
-
-When(
   '{string} drop uploads following resource(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
 
     const resources = stepTable
       .hashes()
@@ -128,8 +57,7 @@ When(
 When(
   '{string} refreshes the old link',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
     await pageObject.reload()
   }
 )
@@ -142,8 +70,7 @@ When(
     actionType: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
     await processDownload(stepTable, pageObject, actionType)
   }
 )
@@ -151,8 +78,7 @@ When(
 When(
   '{string} renames the following public link resource(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable) => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
     for (const { resource, as } of stepTable.hashes()) {
       await pageObject.rename({ resource, newName: as })
     }
@@ -162,8 +88,7 @@ When(
 When(
   '{string} uploads the following resource(s) in public link page',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
     for (const info of stepTable.hashes()) {
       await pageObject.upload({
         to: info.to,
@@ -178,8 +103,7 @@ When(
 Then(
   '{string} should not be able to open the old link {string}',
   async ({ world }: { world: World }, stepUser: string, name: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
     const { url } = world.linksEnvironment.getLink({ name })
     await pageObject.expectThatLinkIsDeleted({ url })
   }
@@ -193,17 +117,7 @@ When(
     actionType: string,
     stepTable: DataTable
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.Public({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.Public)
     await processDelete(stepTable, pageObject, actionType)
-  }
-)
-
-When(
-  '{string} sees the save conflict dialog and chooses the following action',
-  async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const [{ action }] = stepTable.hashes()
-    await editor.resolveSaveConflict(page, action)
   }
 )

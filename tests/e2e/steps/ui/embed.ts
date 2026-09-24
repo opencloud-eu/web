@@ -3,6 +3,7 @@ import { World } from '../../environment/world'
 import { appConfig } from '../../playwright.config'
 import { expect } from '@playwright/test'
 import { TokenEnvironmentFactory } from '../../support/environment/token'
+import { actorPage } from '../../environment/pageObject'
 
 When(
   '{string} opens the app in embed mode with delegated authentication',
@@ -56,7 +57,7 @@ When(
 Then(
   '{string} should see the embed mode actions',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     const frame = page.frameLocator('#embed-frame')
 
     await expect(frame.locator('[data-testid="button-cancel"]')).toBeVisible({ timeout: 15000 })
@@ -67,7 +68,7 @@ Then(
 Then(
   '{string} should not see the full web UI',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     const frame = page.frameLocator('#embed-frame')
 
     // In embed mode the user menu and app switcher should be hidden

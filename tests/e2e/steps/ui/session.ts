@@ -2,6 +2,7 @@ import { Given, When, Then } from '../../environment/fixtures'
 import { World } from '../../environment/world'
 import { appConfig } from '../../playwright.config'
 import { objects } from '../../support'
+import { pageObjectFor, actorPage } from '../../environment/pageObject'
 import { listenSSE } from '../../support/environment/sse'
 import { expect } from '@playwright/test'
 
@@ -15,7 +16,7 @@ async function createNewSession(world: World, stepUser: string) {
 
 async function LogInUser({ world }: { world: World }, stepUser: string): Promise<void> {
   const sessionObject = await createNewSession(world, stepUser)
-  const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+  const page = actorPage(world, stepUser)
 
   const user =
     stepUser === 'Admin'
@@ -47,7 +48,7 @@ When('{string} logs out', LogOutUser)
 
 Then('{string} fails to log in', async ({ world }: { world: World }, stepUser: string) => {
   const sessionObject = await createNewSession(world, stepUser)
-  const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+  const page = actorPage(world, stepUser)
   const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
 
   await page.goto(appConfig.baseUrl)
@@ -69,8 +70,7 @@ When(
     stepUser: string,
     renewalType: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const application = new objects.runtime.Application({ page })
+    const application = pageObjectFor(world, stepUser, objects.runtime.Application)
 
     if (renewalType === 'iframe') {
       await application.waitForTokenRenewalViaIframe()
@@ -83,7 +83,7 @@ When(
 When(
   '{string} waits for token to expire',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     // wait for the token to expire
     await page.waitForTimeout(appConfig.tokenTimeout * 1000)
   }
@@ -139,7 +139,7 @@ Given('using {string} server', function ({}: { world: World }, server: string): 
 Then(
   '{string} should be logged out',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
+    const page = actorPage(world, stepUser)
     await expect(page.locator('#web-content')).toBeHidden()
     await expect(page.locator('#exitAnchor')).toBeVisible()
   }
