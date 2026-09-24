@@ -5,10 +5,10 @@ const bannerDetailsEditor = '.text-editor-content [contenteditable="true"]'
 const showBannerSwitch = '[data-testid="oc-switch-btn"]'
 const saveButton = '//button[normalize-space()="Save"]'
 const announcementBanner = '.announcement'
-const announcementBannerButton = '.announcement button[aria-haspopup="dialog"]'
+const announcementBannerButton = '.announcement .announcement-details'
 const announcementDismissButton = '.announcement button[aria-label="Dismiss announcement"]'
 const announcementModal = '.oc-modal .announcement-modal'
-const announcementModalCloseButton = '.oc-modal .oc-modal-body-actions-confirm'
+const announcementModalCloseButton = '.oc-modal .oc-modal-title-actions-cancel'
 
 export class General {
   #page: Page

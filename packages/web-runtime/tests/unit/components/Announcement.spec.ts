@@ -24,30 +24,34 @@ describe('Announcement component', () => {
     const { wrapper } = getWrapper({ bannerText: 'Maintenance tonight' })
     expect(wrapper.find('.announcement').exists()).toBe(true)
 
-    await wrapper.find('oc-button-stub').trigger('click')
+    await wrapper.find('.announcement-dismiss').trigger('click')
 
     expect(wrapper.find('.announcement').exists()).toBe(false)
   })
 
-  it('opens the info dialog when info text is present', async () => {
-    const { wrapper } = getWrapper({ bannerText: 'Maintenance', infoText: '# Details' })
-    const { dispatchModal } = useModals()
+  it.each(['.announcement-text', '.announcement-details'])(
+    'opens the info dialog via "%s" when info text is present',
+    async (selector) => {
+      const { wrapper } = getWrapper({ bannerText: 'Maintenance', infoText: '# Details' })
+      const { dispatchModal } = useModals()
 
-    await wrapper.find('button').trigger('click')
+      await wrapper.find(selector).trigger('click')
 
-    expect(dispatchModal).toHaveBeenCalled()
-  })
+      expect(dispatchModal).toHaveBeenCalled()
+    }
+  )
 
-  it('is not clickable when no info text is present', () => {
+  it('is not clickable and has no details button when no info text is present', () => {
     const { wrapper } = getWrapper({ bannerText: 'Maintenance' })
     expect(wrapper.find('button').exists()).toBe(false)
+    expect(wrapper.find('.announcement-details').exists()).toBe(false)
   })
 
   it('shows again when the announcement changes after being dismissed', async () => {
     const { wrapper } = getWrapper({ bannerText: 'First' })
     expect(wrapper.find('.announcement').exists()).toBe(true)
 
-    await wrapper.find('oc-button-stub').trigger('click')
+    await wrapper.find('.announcement-dismiss').trigger('click')
     expect(wrapper.find('.announcement').exists()).toBe(false)
 
     // a fresh preview / changed announcement arrives

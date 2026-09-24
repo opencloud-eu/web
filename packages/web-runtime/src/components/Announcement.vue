@@ -7,7 +7,7 @@
     <button
       v-if="hasInfo"
       type="button"
-      class="grow flex items-center justify-center gap-2 min-w-0 cursor-pointer text-amber-950"
+      class="announcement-text grow flex items-center gap-2 min-w-0 cursor-pointer text-amber-950"
       aria-haspopup="dialog"
       @click="openModal"
     >
@@ -19,11 +19,11 @@
         class="shrink-0"
       />
       <span
-        class="text-sm font-medium underline-offset-2 hover:underline truncate"
+        class="text-sm font-bold underline-offset-2 hover:underline truncate"
         v-text="bannerText"
       />
     </button>
-    <div v-else class="grow flex items-center justify-center gap-2 min-w-0">
+    <div v-else class="announcement-text grow flex items-center gap-2 min-w-0">
       <oc-icon
         name="error-warning"
         fill-type="line"
@@ -31,12 +31,31 @@
         color="var(--color-amber-950)"
         class="shrink-0"
       />
-      <span class="text-sm font-medium truncate" v-text="bannerText" />
+      <span class="text-sm font-bold truncate" v-text="bannerText" />
     </div>
+    <template v-if="hasInfo">
+      <oc-button
+        appearance="raw"
+        no-hover
+        gap-size="xsmall"
+        class="announcement-details shrink-0 text-sm font-medium text-amber-950 underline-offset-2 hover:underline"
+        aria-haspopup="dialog"
+        @click="openModal"
+      >
+        <span v-text="$gettext('Details')" />
+        <oc-icon
+          name="arrow-right-s"
+          fill-type="line"
+          size="small"
+          color="var(--color-amber-950)"
+        />
+      </oc-button>
+      <span class="shrink-0 w-px h-4 bg-amber-950" aria-hidden="true" />
+    </template>
     <oc-button
       appearance="raw"
       no-hover
-      class="shrink-0"
+      class="announcement-dismiss shrink-0"
       :aria-label="$gettext('Dismiss announcement')"
       @click="dismissed = true"
     >
@@ -74,11 +93,10 @@ watch(announcement, () => {
 
 function openModal() {
   dispatchModal({
-    title: unref(bannerText) || $gettext('Announcement'),
+    title: $gettext('Announcement'),
     customComponent: markRaw(AnnouncementModal),
-    customComponentAttrs: () => ({ infoText: unref(infoText) }),
-    confirmText: $gettext('Close'),
-    hideCancelButton: true
+    customComponentAttrs: () => ({ title: unref(bannerText), infoText: unref(infoText) }),
+    hideActions: true
   })
 }
 </script>
