@@ -4,7 +4,7 @@
     mode="manual"
     position="bottom-start"
     padding-size="small"
-    teleport="body"
+    :teleport="teleport"
     enforce-drop-on-mobile
     :is-menu="false"
     class="text-editor-link-panel z-10001 box-border max-w-[calc(100vw-10px)]! overflow-hidden! w-[min(20rem,calc(100vw-10px))]!"
@@ -79,8 +79,9 @@ interface VirtualElement {
   getBoundingClientRect(): DOMRect
 }
 
-const { editor = undefined } = defineProps<{
+const { editor = undefined, teleport = 'body' } = defineProps<{
   editor?: TextEditorInstance
+  teleport?: string
 }>()
 
 const textEditor = editor || inject<TextEditorInstance>('textEditor')!

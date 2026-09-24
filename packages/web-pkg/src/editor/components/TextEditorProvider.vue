@@ -1,7 +1,7 @@
 <template>
   <div class="text-editor-provider h-full flex flex-col">
     <slot />
-    <TextEditorLinkPanel :editor="editor" />
+    <TextEditorLinkPanel :editor="editor" :teleport="teleport" />
   </div>
 </template>
 
@@ -12,6 +12,10 @@ import TextEditorLinkPanel from './TextEditorLinkPanel.vue'
 
 const props = defineProps<{
   editor: TextEditorInstance
+  /**
+   * Where the link panel teleports to. Defaults to the body.
+   */
+  teleport?: string
 }>()
 
 provide('textEditor', props.editor)
