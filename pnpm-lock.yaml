@@ -920,8 +920,8 @@ importers:
         specifier: ^14.0.0
         version: 14.0.2
       webdav:
-        specifier: 5.9.0
-        version: 5.9.0
+        specifier: 5.11.0
+        version: 5.11.0
       zod:
         specifier: ^4.3.6
         version: 4.6.5
@@ -5143,8 +5143,8 @@ packages:
     resolution: {integrity: sha512-d2JWLCivmZYTSIoge9MsgFCZrt571BikcWGYkjC1khllbTeDlGqZ2D8vD8E/lJa8WGWbb7Plm8/XJYV7IJHZZw==}
     engines: {node: '>= 8'}
 
-  webdav@5.9.0:
-    resolution: {integrity: sha512-OMJ6wtK1WvCO++aOLoQgE96S8KT4e5aaClWHmHXfFU369r4eyELN569B7EqT4OOUb99mmO58GkyuiCv/Ag6J0Q==}
+  webdav@5.11.0:
+    resolution: {integrity: sha512-DbUS8rHvWse55EiHM0q5q1z3eVRCLWW7Va7mUqA2/JJdQHIew4Op2HTglHkBJDOAVrQeQf0I+REUJkIrYqtL+w==}
     engines: {node: '>=14'}
 
   webidl-conversions@3.0.1:
@@ -9228,9 +9228,10 @@ snapshots:
 
   web-streams-polyfill@3.3.3: {}
 
-  webdav@5.9.0:
+  webdav@5.11.0:
     dependencies:
       '@buttercup/fetch': 0.2.1
+      '@nodable/entities': 3.0.0
       base-64: 1.0.0
       byte-length: 1.0.2
       entities: 6.0.1
