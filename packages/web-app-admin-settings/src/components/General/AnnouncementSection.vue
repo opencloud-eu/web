@@ -107,9 +107,7 @@ const infoEditor = useTextEditor({
   modelValue: toRef(() => unref(infoText)),
   ariaLabel: $gettext('Banner details'),
   autofocus: false,
-  // no image insertion via the UI: base64 uploads would bloat the public config.json,
-  // and anyone who really needs an image can add safe Markdown by hand
-  excludeActions: ['image', 'image-upload', 'image-url'],
+  excludeActions: ['frontmatter', 'print'],
   onUpdate: (content) => {
     infoText.value = content
   }
