@@ -74,7 +74,7 @@
         v-model:members="members"
         v-model:member-role-id="memberRoleId"
         :encrypted="encrypt"
-        :teleport="`#${formId}`"
+        :editor-teleport-target="`#${formId}`"
       />
     </template>
     <component
