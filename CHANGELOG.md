@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-23
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-24
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: consistent sorting for spaces and resources [[#3432](https://github.com/opencloud-eu/web/pull/3432)]
 - fix(admin-settings): make apps sortable by status [[#3427](https://github.com/opencloud-eu/web/pull/3427)]
 - Keep modal actions out of the scrollable body [[#3419](https://github.com/opencloud-eu/web/pull/3419)]
 - Always sort folders above files [[#3411](https://github.com/opencloud-eu/web/pull/3411)]
@@ -20,6 +21,8 @@
 
 ### 📈 Enhancement
 
+- feat(account): improve readability and consistency of account pages [[#3430](https://github.com/opencloud-eu/web/pull/3430)]
+- Declutter the announcement banner settings [[#3426](https://github.com/opencloud-eu/web/pull/3426)]
 - feat(yjs): immediately notify peers about external doc updates [[#3397](https://github.com/opencloud-eu/web/pull/3397)]
 - feat: share yjs with external apps [[#3398](https://github.com/opencloud-eu/web/pull/3398)]
 - Create a space with quota, subtitle, description, image and members [[#3413](https://github.com/opencloud-eu/web/pull/3413)]
@@ -35,6 +38,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.27.1 [[#3414](https://github.com/opencloud-eu/web/pull/3414)]
+- chore(deps): update apache/tika docker tag to v4.1.1 [[#3417](https://github.com/opencloud-eu/web/pull/3417)]
+- chore(deps): update typescript-eslint monorepo to v8.70.1 [[#3418](https://github.com/opencloud-eu/web/pull/3418)]
 - chore(deps): update collabora/code docker tag to v26.04.4.1.1 [[#3401](https://github.com/opencloud-eu/web/pull/3401)]
 - chore(deps): update devdependencies (non-major) [[#3402](https://github.com/opencloud-eu/web/pull/3402)]
 - Update dependency @vue/test-utils to v2.5.1 [[#3390](https://github.com/opencloud-eu/web/pull/3390)]
