@@ -134,10 +134,7 @@ const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
-const providerTeleport = inject<Ref<string | undefined>>(
-  'textEditorTeleport',
-  ref<string>(undefined)
-)
+const providerTeleport = inject<Ref<string | undefined>>('textEditorTeleport', undefined)
 const { $gettext } = useGettext()
 
 /** Gap, border and padding that a group adds in front of its first action. */
