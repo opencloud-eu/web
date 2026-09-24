@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "Content of the section. Not rendered while an expandable section is collapsed.",
+    "type": "() => unknown"
+  }
+]

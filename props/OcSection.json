@@ -1,0 +1,37 @@
+[
+  {
+    "name": "title",
+    "required": true,
+    "description": "The title of the section.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "subtitle",
+    "required": false,
+    "description": "A short text shown below the title, e.g. to describe or summarize the content.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "icon",
+    "required": false,
+    "description": "The name of the icon shown in front of the title. The content gets indented to align with the title.",
+    "default": "",
+    "type": "string"
+  },
+  {
+    "name": "expandable",
+    "required": false,
+    "description": "Determines if the content can be collapsed and expanded by clicking the header. Use `v-model:expanded` to control or observe the state.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "titleTag",
+    "required": false,
+    "description": "The html tag being used to render the section heading.",
+    "default": "'h2'",
+    "type": "string"
+  }
+]
