@@ -2,13 +2,13 @@ import { When, Then } from '../../environment/fixtures'
 import { DataTable } from 'playwright-bdd'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
+import { pageObjectFor } from '../../environment/pageObject'
 import { expect } from '@playwright/test'
 
 When(
   '{string} navigates to the app store',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.openAppStore()
   }
 )
@@ -16,8 +16,7 @@ When(
 Then(
   '{string} should see the app store',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.waitForAppStoreIsVisible()
   }
 )
@@ -25,8 +24,7 @@ Then(
 Then(
   '{string} should see the following apps(s)',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     const apps = await pageObject.getAppsList()
     for (const { app } of stepTable.hashes()) {
       expect(apps).toContain(app)
@@ -37,8 +35,7 @@ Then(
 When(
   '{string} enters the search term {string}',
   async ({ world }: { world: World }, stepUser: string, searchTerm: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.setSearchTerm(searchTerm)
   }
 )
@@ -51,8 +48,7 @@ When(
     tag: string,
     app: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.selectAppTag({ tag, app })
   }
 )
@@ -60,8 +56,7 @@ When(
 When(
   '{string} clicks on the tag {string}',
   async ({ world }: { world: World }, stepUser: string, tag: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.selectTag(tag)
   }
 )
@@ -69,8 +64,7 @@ When(
 When(
   '{string} clicks on the app {string}',
   async ({ world }: { world: World }, stepUser: string, app: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.selectApp(app)
   }
 )
@@ -78,8 +72,7 @@ When(
 Then(
   '{string} should see the app details of {string}',
   async ({ world }: { world: World }, stepUser: string, app: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.waitForAppDetailsIsVisible(app)
   }
 )
@@ -87,16 +80,14 @@ Then(
 Then(
   '{string} downloads app version {string}',
   async ({ world }: { world: World }, stepUser: string, version: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     expect(await pageObject.downloadAppVersion(version)).toContain(version)
   }
 )
 Then(
   '{string} downloads the latest version of the app {string}',
   async ({ world }: { world: World }, stepUser: string, app: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     expect(await pageObject.downloadApp(app)).toBeDefined()
   }
 )
@@ -104,8 +95,7 @@ Then(
 When(
   '{string} navigates back to the app store overview',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.appStore.AppStore({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.appStore.AppStore)
     await pageObject.navigateToAppStoreOverview()
   }
 )

@@ -5,6 +5,7 @@ import { World } from '../../environment/world'
 import { environment, objects } from '../../support'
 import { CollaboratorType, ICollaborator } from '../../support/objects/app-files/share/collaborator'
 import { ActionViaType } from '../../support/objects/app-files/share/actions'
+import { pageObjectFor } from '../../environment/pageObject'
 
 const parseShareTable = function (
   stepTable: DataTable,
@@ -43,8 +44,7 @@ When(
     actionType: string,
     stepTable: DataTable
   ) {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
 
     let via: ActionViaType
@@ -75,8 +75,7 @@ When(
 When(
   '{string} enables the sync for the following share(s)',
   async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
 
     for (const info of stepTable.hashes()) {
       await shareObject.enableSync({ resource: info.name })
@@ -87,8 +86,7 @@ When(
 When(
   '{string} updates following sharee(s) role(s)',
   async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
 
     for (const resource of Object.keys(shareInfo)) {
@@ -103,8 +101,7 @@ When(
 When(
   '{string} removes following sharee(s)',
   async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
 
     for (const resource of Object.keys(shareInfo)) {
@@ -116,8 +113,7 @@ When(
 Then(
   '{string} should see the following recipient(s)',
   async function ({ world }: { world: World }, stepUser: string, stepTable: DataTable) {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const shareInfo = parseShareTable(stepTable, world.usersEnvironment)
 
     for (const resource of Object.keys(shareInfo)) {
@@ -129,8 +125,7 @@ Then(
 When(
   '{string} navigates to the shared with me page',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.shares.WithMe({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.shares.WithMe)
     await pageObject.navigate()
   }
 )
@@ -138,8 +133,11 @@ When(
 When(
   '{string} navigates to the shared with others page',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.shares.WithOthers({ page })
+    const pageObject = pageObjectFor(
+      world,
+      stepUser,
+      objects.applicationFiles.page.shares.WithOthers
+    )
     await pageObject.navigate()
   }
 )
@@ -147,8 +145,7 @@ When(
 When(
   '{string} navigates to the shared via link page',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const pageObject = new objects.applicationFiles.page.shares.ViaLink({ page })
+    const pageObject = pageObjectFor(world, stepUser, objects.applicationFiles.page.shares.ViaLink)
     await pageObject.navigate()
   }
 )
@@ -160,8 +157,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
 
     for (const resource of stepTable.hashes()) {
       await shareObject.disableSync({ resource: resource.name })
@@ -176,8 +172,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
 
     for (const resource of stepTable.hashes()) {
       await shareObject.enableSync({ resource: resource.name, via: 'CONTEXT_MENU' })
@@ -188,8 +183,7 @@ When(
 When(
   '{string} enables the sync for all shares using the batch actions',
   async function ({ world }: { world: World }, stepUser: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     await shareObject.syncAll()
   }
 )
@@ -201,8 +195,7 @@ When(
     stepUser: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
 
     for (const resource of stepTable.hashes()) {
       await shareObject.disableSync({ resource: resource.name, via: 'CONTEXT_MENU' })
@@ -219,8 +212,7 @@ When(
     resource: string
   ): Promise<void> {
     const shouldSee = condition === 'should'
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     expect(await shareObject.resourceIsSynced(resource)).toBe(shouldSee)
   }
 )
@@ -234,8 +226,7 @@ Then(
     stepTable: DataTable
   ): Promise<void> {
     const shouldExist = condition === 'should'
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     for (const { resource, owner } of stepTable.hashes()) {
       const isAcceptedSharePresent = await shareObject.isAcceptedSharePresent(resource, owner)
       expect(isAcceptedSharePresent, '${resource} does not exist in accepted share').toBe(
@@ -255,8 +246,7 @@ When(
     collaboratorName: string,
     expirationDate: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     await shareObject.addExpirationDate({
       resource,
       collaborator: {
@@ -281,8 +271,7 @@ When(
     collaboratorName: string,
     stepTable: DataTable
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const expectedDetails = stepTable.rowsHash()
     const actualDetails = await shareObject.getAccessDetails({
       resource,
@@ -305,8 +294,7 @@ When(
 Then(
   '{string} should see the message {string} on the webUI',
   async function ({ world }: { world: World }, stepUser: string, message: string): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const actualMessage = await shareObject.getMessage()
     expect(actualMessage).toBe(message)
   }
@@ -321,8 +309,7 @@ Then(
     resource: string,
     recipient: string
   ): Promise<void> {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const shareObject = new objects.applicationFiles.Share({ page })
+    const shareObject = pageObjectFor(world, stepUser, objects.applicationFiles.Share)
     const changeRole = shareObject.changeRoleLocator(
       world.usersEnvironment.getCreatedUser({ key: recipient })
     )

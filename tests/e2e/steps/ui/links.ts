@@ -4,12 +4,12 @@ import { expect } from '@playwright/test'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { securePassword } from '../../support/store'
+import { pageObjectFor } from '../../environment/pageObject'
 
 When(
   '{string} creates a public link of following resource using the sidebar panel',
   async ({ world }: { world: World }, stepUser: string, stepTable: DataTable): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
 
     for (const info of stepTable.hashes()) {
       await linkObject.create({
@@ -27,8 +27,7 @@ When(
 When(
   '{string} creates a public link for the space with password {string} using the sidebar panel',
   async ({ world }: { world: World }, stepUser: string, password: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const spaceObject = new objects.applicationFiles.Spaces({ page })
+    const spaceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
     password = password === '%public%' ? securePassword : password
     await spaceObject.createPublicLink({ password })
   }
@@ -42,8 +41,7 @@ When(
     resource: string,
     newName: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const linkName = await linkObject.changeName({ resource, newName })
     expect(linkName).toBe(newName)
   }
@@ -52,8 +50,7 @@ When(
 When(
   '{string} renames the most recently created public link of space to {string}',
   async ({ world }: { world: World }, stepUser: string, newName: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const linkName = await linkObject.changeName({ newName, space: true })
     expect(linkName).toBe(newName)
   }
@@ -68,8 +65,7 @@ When(
     resource: string,
     expireDate: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.addExpiration({ resource, linkName, expireDate })
   }
 )
@@ -83,8 +79,7 @@ When(
     resource: string,
     newPassword: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.addPassword({ resource, linkName, newPassword })
   }
 )
@@ -98,8 +93,7 @@ When(
     linkName: string,
     resource: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.fillPassword({ resource, linkName, newPassword })
   }
 )
@@ -107,8 +101,7 @@ When(
 When(
   /^"([^"]*)" (reveals|hides) the password of the public link$/,
   async ({ world }: { world: World }, stepUser: string, showOrHide: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.showOrHidePassword({ showOrHide })
   }
 )
@@ -116,8 +109,7 @@ When(
 When(
   '{string} closes the public link password dialog box',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.clickOnCancelButton()
   }
 )
@@ -125,8 +117,7 @@ When(
 When(
   '{string} copies the password of the public link',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.copyEnteredPassword()
   }
 )
@@ -134,8 +125,7 @@ When(
 When(
   '{string} generates the password for the public link',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.generatePassword()
   }
 )
@@ -143,8 +133,7 @@ When(
 When(
   '{string} sets the password of the public link',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.setPassword()
   }
 )
@@ -158,8 +147,7 @@ When(
     resource: string,
     role: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const roleText = await linkObject.changeRole({ linkName, resource, role })
     expect(roleText.toLowerCase()).toBe(role.toLowerCase())
   }
@@ -173,8 +161,7 @@ When(
     name: string,
     resource: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.delete({ resourceName: resource, name })
   }
 )
@@ -187,8 +174,7 @@ Then(
     shouldOrShouldNot: string,
     linkName: any
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const isVisible = await linkObject.islinkEditButtonVisibile(linkName)
     expect(isVisible).toBe(shouldOrShouldNot !== 'should not')
   }
@@ -197,8 +183,7 @@ Then(
 Then(
   '{string} should see a password error message',
   async ({ world }: { world: World }, stepUser: any, errorMessage: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const actualErrorMessage = await linkObject.checkErrorMessage()
     expect(actualErrorMessage).toBe(errorMessage)
   }
@@ -212,8 +197,7 @@ When(
     linkName: string,
     role: any
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const newPermission = await linkObject.changeRole({ linkName, role, space: true })
     expect(newPermission.toLowerCase()).toBe(role.toLowerCase())
   }
@@ -228,8 +212,7 @@ When(
     resource: string,
     role: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const roleText = await linkObject.changeRole({
       linkName,
       resource,
@@ -248,8 +231,7 @@ When(
     linkName: string,
     resource: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     const clipboard = await linkObject.copyLinkToClipboard({ resource: resource, name: linkName })
     expect(clipboard).toBe(world.linksEnvironment.getLink({ name: linkName }).url)
   }
@@ -263,8 +245,7 @@ When(
     name: string,
     resource: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const linkObject = new objects.applicationFiles.Link({ page })
+    const linkObject = pageObjectFor(world, stepUser, objects.applicationFiles.Link)
     await linkObject.deletePassword({ resource, name })
   }
 )

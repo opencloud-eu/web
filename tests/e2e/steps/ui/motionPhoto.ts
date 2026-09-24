@@ -2,6 +2,7 @@ import { Then, When } from '../../environment/fixtures'
 import { World } from '../../environment/world'
 import { objects } from '../../support'
 import { expect } from '@playwright/test'
+import { pageObjectFor } from '../../environment/pageObject'
 
 Then(
   /^"([^"]*)" (should|should not) see the motion photo badge on resource "([^"]*)"$/,
@@ -11,8 +12,7 @@ Then(
     actionType: string,
     resource: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const badgeLocator = resourceObject.getMotionPhotoBadgeLocator(resource)
 
     actionType === 'should'
@@ -29,8 +29,7 @@ Then(
     actionType: string,
     resource: string
   ): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     const badgeLocator = resourceObject.getPreviewMotionPhotoBadgeLocator(resource)
 
     actionType === 'should'
@@ -42,8 +41,7 @@ Then(
 Then(
   '{string} should see the motion photo control in the media viewer',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     // the bundled Chromium cannot decode the H.264 clip, so only the control is asserted
     await expect(resourceObject.getMotionPhotoViewerControlLocator()).toBeVisible()
   }
@@ -52,8 +50,7 @@ Then(
 When(
   '{string} plays the motion photo inline from the sidebar for resource {string}',
   async ({ world }: { world: World }, stepUser: string, resource: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await resourceObject.openRightSidebar(resource)
     await resourceObject.playMotionPhotoInSidebar()
   }
@@ -62,8 +59,7 @@ When(
 Then(
   '{string} should see the motion photo clip loaded in the sidebar',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
-    const { page } = world.actorsEnvironment.getActor({ key: stepUser })
-    const resourceObject = new objects.applicationFiles.Resource({ page })
+    const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await expect
       .poll(() => resourceObject.getSidebarMotionPhotoVideoSource(), { timeout: 15000 })
       .toMatch(/^blob:/)
