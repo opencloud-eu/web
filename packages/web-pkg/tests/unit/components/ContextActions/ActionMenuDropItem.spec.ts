@@ -17,6 +17,23 @@ describe('ActionMenuDropItem component', () => {
       menuSectionDrop.items.length
     )
   })
+
+  it('renders a separate list per item group', () => {
+    const copy = { label: () => 'Copy' } as Action
+    const paste = { label: () => 'Paste' } as Action
+    const menuSectionDrop = {
+      label: 'Actions',
+      name: 'actions',
+      icon: 'eye',
+      items: [copy, paste],
+      itemGroups: [[copy], [paste]]
+    }
+    const { wrapper } = getWrapper(menuSectionDrop)
+    const lists = wrapper.find('.oc-files-context-action-drop').findAll('ul')
+    expect(lists.length).toEqual(2)
+    expect(lists[0].classes()).toContain('border-b')
+    expect(lists[1].classes()).not.toContain('border-b')
+  })
 })
 
 function getWrapper(menuSectionDrop: MenuSectionDrop) {

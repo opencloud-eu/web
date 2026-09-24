@@ -28,10 +28,17 @@
       close-on-click
     >
       <template v-if="menuSectionDrop.items.length">
-        <oc-list>
+        <oc-list
+          v-for="(group, groupIndex) in itemGroups"
+          :key="`section-${menuSectionDrop.label}-group-${groupIndex}`"
+          :class="{
+            'pb-2 border-b': groupIndex < itemGroups.length - 1,
+            'pt-2': groupIndex > 0
+          }"
+        >
           <action-menu-item
-            v-for="(action, actionIndex) in menuSectionDrop.items"
-            :key="`section-${menuSectionDrop.label}-action-${actionIndex}`"
+            v-for="(action, actionIndex) in group"
+            :key="`section-${menuSectionDrop.label}-group-${groupIndex}-action-${actionIndex}`"
             :action="action"
             :appearance="appearance"
             :action-options="actionOptions"
@@ -48,12 +55,15 @@ import { AppearanceType, uniqueId } from '@opencloud-eu/design-system/helpers'
 import type { ActionOptions } from '../../composables'
 import { MenuSectionDrop } from './types'
 import { OcDrop } from '@opencloud-eu/design-system/components'
+import { computed } from 'vue'
 
 const { menuSectionDrop, appearance, actionOptions } = defineProps<{
   menuSectionDrop: MenuSectionDrop
   appearance: AppearanceType
   actionOptions: ActionOptions
 }>()
+
+const itemGroups = computed(() => menuSectionDrop.itemGroups || [menuSectionDrop.items])
 
 const dropId = uniqueId(`oc-files-context-actions-${menuSectionDrop.name}-drop-`)
 const toggleId = uniqueId(`oc-files-context-actions-${menuSectionDrop.name}-toggle-`)

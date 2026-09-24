@@ -20,7 +20,7 @@ import {
   useSpaceActionsSetIcon,
   useSpaceActionsShowMembers,
   useSpaceActionsUploadImage,
-  useSpaceActionsEditImageMenu,
+  useSpaceActionsCustomizeMenu,
   useSpaceActionsLockVault,
   useSpaceActionsCreate
 } from '../actions'
@@ -42,7 +42,7 @@ export const useSpaceActions = (): ActionExtension[] => {
   const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
   const { actions: renameActions } = useSpaceActionsRename()
   const { actions: restoreActions } = useSpaceActionsRestore()
-  const { actions: editSpaceImageMenu } = useSpaceActionsEditImageMenu()
+  const { actions: customizeSpaceMenu } = useSpaceActionsCustomizeMenu()
   const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
   const { actions: uploadSpaceImage } = useSpaceActionsUploadImage()
   const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
@@ -83,7 +83,7 @@ export const useSpaceActions = (): ActionExtension[] => {
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-readme-content',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(editReadmeContentActions)[0],
@@ -93,7 +93,6 @@ export const useSpaceActions = (): ActionExtension[] => {
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
       extensionPointIds: [
-        contextActionsExtensionPoint.id,
         fileSideBarActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
         adminSettingsSpacesSideBarActionsExtensionPointId
@@ -105,11 +104,11 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-space-image-menu',
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.customize-space-menu',
       extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: {
-        ...unref(editSpaceImageMenu)[0],
+        ...unref(customizeSpaceMenu)[0],
         category: 'secondary'
       }
     },

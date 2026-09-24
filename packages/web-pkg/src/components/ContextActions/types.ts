@@ -5,6 +5,10 @@ export type MenuSectionDrop = {
   name: string
   icon: string
   items?: Action[]
+  /**
+   * Optional grouping of the items, groups are separated by a divider.
+   */
+  itemGroups?: Action[][]
   emptyMessage?: string
 }
 
