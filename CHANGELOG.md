@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
 - fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
 - fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
 - fix: group space customization actions in context menu [[#3444](https://github.com/opencloud-eu/web/pull/3444)]
