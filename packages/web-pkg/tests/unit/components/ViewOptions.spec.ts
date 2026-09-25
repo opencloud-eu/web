@@ -111,6 +111,22 @@ describe('ViewOptions component', () => {
       expect(wrapper.find(selectors.viewModeSwitchBtns).exists()).toBeTruthy()
     })
   })
+  describe('view mode and tile size queries', () => {
+    it('are not registered if no viewModes are passed', () => {
+      vi.mocked(useRouteQueryPersisted).mockClear()
+      getWrapper()
+      const names = vi.mocked(useRouteQueryPersisted).mock.calls.map(([{ name }]) => name)
+      expect(names).not.toContain(FolderViewModeConstants.queryName)
+      expect(names).not.toContain(FolderViewModeConstants.tilesSizeQueryName)
+    })
+    it('are registered if viewModes are passed', () => {
+      vi.mocked(useRouteQueryPersisted).mockClear()
+      getWrapper({ props: { viewModes: getTileViewModes() } })
+      const names = vi.mocked(useRouteQueryPersisted).mock.calls.map(([{ name }]) => name)
+      expect(names).toContain(FolderViewModeConstants.queryName)
+      expect(names).toContain(FolderViewModeConstants.tilesSizeQueryName)
+    })
+  })
   describe('tile size slider', () => {
     it('does not show initially', () => {
       const { wrapper } = getWrapper()
@@ -178,9 +194,11 @@ function getWrapper({
   currentPage?: string
 } = {}) {
   vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => ref(perPage))
-  vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => ref(viewMode))
   const tileSizeQueryMock = ref(tileSize)
-  vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => tileSizeQueryMock)
+  if (props.viewModes?.length) {
+    vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => ref(viewMode))
+    vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => tileSizeQueryMock)
+  }
   vi.mocked(useRouteQuery).mockImplementationOnce(() => ref(currentPage))
 
   const mocks = {

@@ -20,7 +20,7 @@ export interface SortField {
   label?: string
 }
 
-export interface SortOptions<T extends SortableItem> {
+export interface SortOptions<T extends object> {
   items: MaybeRef<Array<T>>
   fields: MaybeRef<Array<SortField>>
   sortBy?: MaybeRef<string>
@@ -37,7 +37,7 @@ export interface SortResult<T> {
   handleSort({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }): void
 }
 
-export function useSort<T extends SortableItem>(options: SortOptions<T>): SortResult<T> {
+export function useSort<T extends object>(options: SortOptions<T>): SortResult<T> {
   const router = useRouter()
   const sortByRef = createSortByQueryRef(options)
   const sortDirRef = createSortDirQueryRef(options)
@@ -84,7 +84,7 @@ export function useSort<T extends SortableItem>(options: SortOptions<T>): SortRe
   }
 }
 
-function createSortByQueryRef<T>(options: SortOptions<T>): Ref<QueryValue> {
+function createSortByQueryRef<T extends object>(options: SortOptions<T>): Ref<QueryValue> {
   if (options.sortBy) {
     return isRef(options.sortBy) ? options.sortBy : ref(options.sortBy)
   }
@@ -96,7 +96,7 @@ function createSortByQueryRef<T>(options: SortOptions<T>): Ref<QueryValue> {
   })
 }
 
-function createSortDirQueryRef<T>(options: SortOptions<T>): Ref<QueryValue> {
+function createSortDirQueryRef<T extends object>(options: SortOptions<T>): Ref<QueryValue> {
   if (options.sortDir) {
     return isRef(options.sortDir) ? options.sortDir : ref(options.sortDir)
   }
@@ -124,7 +124,7 @@ const defaultSortDirection = (name: string, fields: SortField[]): SortDir => {
   return SortDir.Desc
 }
 
-export const sortHelper = <T extends SortableItem>(
+export const sortHelper = <T extends object>(
   items: T[],
   fields: SortField[],
   sortBy: string,
@@ -140,8 +140,10 @@ export const sortHelper = <T extends SortableItem>(
   const collator = new Intl.Collator(navigator.language, { sensitivity: 'accent', numeric: true })
 
   if (sortBy === 'name') {
-    const isFolder = (item: T) =>
-      item.isFolder || item.type === 'folder' || item.type === 'directory'
+    const isFolder = (item: T) => {
+      const { isFolder, type } = item as SortableItem
+      return isFolder || type === 'folder' || type === 'directory'
+    }
     const folders = [...items.filter((i) => isFolder(i))].sort((a, b) =>
       compare(a, b, collator, sortBy, sortDir, sortable)
     )
@@ -197,8 +199,8 @@ function compareNamesWithLeadingZeroPrefix(
 }
 
 const compare = (
-  a: SortableItem,
-  b: SortableItem,
+  a: object,
+  b: object,
   collator: Intl.Collator,
   sortBy: string,
   sortDir: SortDir,

@@ -128,7 +128,9 @@ import {
   usePagination,
   useRoute,
   useRouter,
-  useSideBar
+  useSideBar,
+  useSort,
+  SortField
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { useGettext } from 'vue3-gettext'
@@ -157,8 +159,6 @@ export default defineComponent({
     const { $gettext } = useGettext()
     const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
     const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-    const sortBy = ref<keyof Group>('displayName')
-    const sortDir = ref<SortDir>(SortDir.Asc)
     const router = useRouter()
     const route = useRoute()
     const { isSticky } = useIsTopBarSticky()
@@ -259,20 +259,12 @@ export default defineComponent({
       return groupsSearchEngine.search(filterTerm).map((r) => r.item)
     }
 
-    const orderBy = (list: Group[], prop: keyof Group, desc: boolean) => {
-      return [...list].sort((a, b) => {
-        const c = a[prop]?.toString() || ''
-        const d = b[prop]?.toString() || ''
-        return desc ? d.localeCompare(c) : c.localeCompare(d)
-      })
-    }
+    const filteredGroups = computed(() => filter(unref(groups), props.filterTerm))
 
-    const items = computed(() => {
-      return orderBy(
-        filter(unref(groups), props.filterTerm),
-        unref(sortBy),
-        unref(sortDir) === SortDir.Desc
-      )
+    const sortFields: SortField[] = [{ name: 'displayName', sortable: true, sortDir: SortDir.Asc }]
+    const { sortBy, sortDir, items, handleSort } = useSort<Group>({
+      items: filteredGroups,
+      fields: sortFields
     })
 
     const {
@@ -357,8 +349,8 @@ export default defineComponent({
       paginatedItems,
       currentPage,
       totalPages,
+      handleSort,
       filter,
-      orderBy,
       selectedGroups,
       unselectAllGroups,
       selectGroups,
@@ -387,10 +379,6 @@ export default defineComponent({
     }
   },
   methods: {
-    handleSort(event: { sortBy: string; sortDir: SortDir }) {
-      this.sortBy = event.sortBy as keyof Group
-      this.sortDir = event.sortDir
-    },
     getSelectGroupLabel(group: Group) {
       return this.$gettext('Select %{ group }', { group: group.displayName })
     }

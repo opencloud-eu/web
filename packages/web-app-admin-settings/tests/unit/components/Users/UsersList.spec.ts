@@ -8,6 +8,8 @@ import {
 import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 
 const getUserMocks = () => [{ id: '1', displayName: 'jan' }] as User[]
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -33,63 +35,52 @@ describe('UsersList', () => {
     })
   })
 
-  describe('method "orderBy"', () => {
-    it('should return an ascending ordered list while desc is set to false', () => {
-      const { wrapper } = getWrapper()
-
-      expect(
-        wrapper.vm.orderBy(
-          [{ displayName: 'user' }, { displayName: 'admin' }] as User[],
-          'displayName',
-          false
-        )
-      ).toEqual([{ displayName: 'admin' }, { displayName: 'user' }])
+  describe('sorting', () => {
+    it('sorts by user name ascending by default', () => {
+      const { wrapper } = getWrapper({
+        users: [
+          { onPremisesSamAccountName: 'user' },
+          { onPremisesSamAccountName: 'admin' }
+        ] as User[]
+      })
+      expect(wrapper.vm.items.map((u) => u.onPremisesSamAccountName)).toEqual(['admin', 'user'])
     })
-    it('should return an descending ordered list based on role while desc is set to true', () => {
-      const { wrapper } = getWrapper()
-
-      expect(
-        wrapper.vm.orderBy(
-          [{ displayName: 'admin' }, { displayName: 'user' }] as User[],
-          'displayName',
-          true
-        )
-      ).toEqual([{ displayName: 'user' }, { displayName: 'admin' }])
+    it.each([
+      { sortDir: SortDir.Asc, expected: ['admin', 'user'] },
+      { sortDir: SortDir.Desc, expected: ['user', 'admin'] }
+    ])('sorts by display name from the route query ($sortDir)', ({ sortDir, expected }) => {
+      const { wrapper } = getWrapper({
+        users: [{ displayName: 'user' }, { displayName: 'admin' }] as User[],
+        query: { 'sort-by': 'displayName', 'sort-dir': sortDir }
+      })
+      expect(wrapper.vm.items.map((u) => u.displayName)).toEqual(expected)
     })
-
-    it('should return ascending ordered list based on role while desc is set to false', () => {
-      const { wrapper } = getWrapper()
-
-      expect(
-        wrapper.vm.orderBy(
-          [
-            { appRoleAssignments: [{ appRoleId: '1' }] },
-            { appRoleAssignments: [{ appRoleId: '2' }] }
-          ] as User[],
-          'role',
-          false
-        )
-      ).toEqual([
-        { appRoleAssignments: [{ appRoleId: '1' }] },
-        { appRoleAssignments: [{ appRoleId: '2' }] }
-      ])
+    it.each([
+      { sortDir: SortDir.Asc, expected: ['1', '2'] },
+      { sortDir: SortDir.Desc, expected: ['2', '1'] }
+    ])('sorts by role display name from the route query ($sortDir)', ({ sortDir, expected }) => {
+      const { wrapper } = getWrapper({
+        users: [
+          { id: '2', appRoleAssignments: [{ appRoleId: '2' }] },
+          { id: '1', appRoleAssignments: [{ appRoleId: '1' }] }
+        ] as User[],
+        query: { 'sort-by': 'role', 'sort-dir': sortDir }
+      })
+      expect(wrapper.vm.items.map((u) => u.id)).toEqual(expected)
     })
-    it('should return an role based descending ordered list while desc is set to true', () => {
-      const { wrapper } = getWrapper()
-
-      expect(
-        wrapper.vm.orderBy(
-          [
-            { appRoleAssignments: [{ appRoleId: '1' }] },
-            { appRoleAssignments: [{ appRoleId: '2' }] }
-          ] as User[],
-          'role',
-          true
-        )
-      ).toEqual([
-        { appRoleAssignments: [{ appRoleId: '2' }] },
-        { appRoleAssignments: [{ appRoleId: '1' }] }
-      ])
+    it('treats users without "accountEnabled" as enabled when sorting by login', () => {
+      const { wrapper } = getWrapper({
+        users: [{ id: '1' }, { id: '2', accountEnabled: false }] as User[],
+        query: { 'sort-by': 'accountEnabled', 'sort-dir': SortDir.Asc }
+      })
+      expect(wrapper.vm.items.map((u) => u.id)).toEqual(['2', '1'])
+    })
+    it('writes the sort parameters to the route query when calling "handleSort"', () => {
+      const { wrapper, mocks } = getWrapper()
+      wrapper.vm.handleSort({ sortBy: 'mail', sortDir: SortDir.Desc })
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        query: expect.objectContaining({ 'sort-by': 'mail', 'sort-dir': SortDir.Desc })
+      })
     })
   })
   it('should show the user details on details button click', async () => {
@@ -157,12 +148,21 @@ describe('UsersList', () => {
 function getWrapper({
   mountType = shallowMount,
   users = [],
-  selectedUsers = []
-}: { mountType?: typeof mount; users?: User[]; selectedUsers?: User[] } = {}) {
+  selectedUsers = [],
+  query = {}
+}: {
+  mountType?: typeof mount
+  users?: User[]
+  selectedUsers?: User[]
+  query?: Record<string, string>
+} = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
-  const mocks = defaultComponentMocks()
+  const mocks = defaultComponentMocks({
+    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+  })
   return {
+    mocks,
     wrapper: mountType(UsersList, {
       props: {
         roles: [
