@@ -267,6 +267,23 @@ Then(
   }
 )
 
+Then(
+  '{string} should see the following details of the project space',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
+    const { subtitle, description, quota } = stepTable.hashes()[0]
+    await spacesObject.expectSpaceOverview({
+      subtitle,
+      description,
+      quota: quota?.replace(/[^0-9]/g, '')
+    })
+  }
+)
+
 When(
   '{string} changes the roles of the following user(s) in the project space',
   async function (

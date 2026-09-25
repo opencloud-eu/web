@@ -28,6 +28,9 @@ const spacesDescriptionInputArea = '.text-editor-provider .ProseMirror'
 const spacesDescriptionSaveTextFileInEditorButton = '#app-save-action:visible'
 const spaceHeaderSelector = '.space-header'
 const spaceHeaderNameSelector = '.space-header h2'
+const spaceHeaderSubtitleSelector = '.space-header p.font-semibold'
+const spaceHeaderReadmeSelector = '.markdown-container-content'
+const spaceDetailsQuotaSelector = '#sidebar-panel-details-space .space-quota'
 const encryptSpaceSwitch = '[data-testid="create-space-encrypt"] [data-testid="oc-switch-btn"]'
 const vaultSetupPassphraseInput = '#vault-setup-passphrase'
 const vaultPassphraseInput = '#vault-passphrase'
@@ -543,4 +546,26 @@ export const getSpaceImageRatio = async (
   const width = await spaceImage.evaluate((img: HTMLImageElement) => img.naturalWidth)
   const height = await spaceImage.evaluate((img: HTMLImageElement) => img.naturalHeight)
   return { width, height }
+}
+
+export interface expectSpaceOverviewArgs {
+  page: Page
+  subtitle?: string
+  description?: string
+  quota?: string
+}
+
+export const expectSpaceOverview = async (args: expectSpaceOverviewArgs): Promise<void> => {
+  const { page, subtitle, description, quota } = args
+  if (subtitle) {
+    await expect(page.locator(spaceHeaderSubtitleSelector)).toHaveText(subtitle)
+  }
+  if (description) {
+    await expect(page.locator(spaceHeaderReadmeSelector)).toContainText(description)
+  }
+  if (quota) {
+    await sidebar.open({ page })
+    await expect(page.locator(spaceDetailsQuotaSelector)).toContainText(`${quota} GB`)
+    await sidebar.close({ page })
+  }
 }

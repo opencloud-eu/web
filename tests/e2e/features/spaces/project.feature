@@ -198,4 +198,7 @@ Feature: spaces.personal
     And "Brian" creates the following resources
       | resource   | type   |
       | brian-test | folder |
+    And "Brian" should see the following details of the project space
+      | subtitle      | description      | quota |
+      | Team Subtitle | Team Description | 10GB  |
     And "Brian" logs out

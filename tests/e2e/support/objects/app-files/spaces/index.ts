@@ -62,6 +62,10 @@ export class Spaces {
     await po.expectSpaceOpen({ page: this.#page, name })
   }
 
+  async expectSpaceOverview(args: Omit<po.expectSpaceOverviewArgs, 'page'>): Promise<void> {
+    await po.expectSpaceOverview({ ...args, page: this.#page })
+  }
+
   async expectVaultLocked({ key }: { key: string }): Promise<void> {
     const { name } = this.#spacesEnvironment.getSpace({ key })
     await po.expectVaultSpaceLocked({ page: this.#page, name })
