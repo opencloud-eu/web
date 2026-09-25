@@ -18,10 +18,7 @@
         color="var(--color-amber-950)"
         class="shrink-0"
       />
-      <span
-        class="text-sm font-bold underline-offset-2 hover:underline truncate"
-        v-text="bannerText"
-      />
+      <span class="text-sm font-bold truncate" v-text="bannerText" />
     </button>
     <div v-else class="announcement-text grow flex items-center gap-2 min-w-0">
       <oc-icon
@@ -38,7 +35,7 @@
         appearance="raw"
         no-hover
         gap-size="xsmall"
-        class="announcement-details shrink-0 text-sm font-medium text-amber-950 underline-offset-2 hover:underline"
+        class="announcement-details shrink-0 text-sm font-medium text-amber-950"
         aria-haspopup="dialog"
         @click="openModal"
       >
