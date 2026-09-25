@@ -3,7 +3,7 @@
     <div v-if="versions.length" class="ml-2">
       <oc-list class="oc-timeline">
         <li v-for="(item, index) in versions" :key="index">
-          <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center justify-between gap-2">
             <div>
               <span
                 class="block text-role-on-surface-variant text-sm leading-[1lh]"
@@ -16,12 +16,11 @@
                   data-testid="file-versions-file-last-modified-date"
                   >{{ formatVersionDateRelative(item) }}</span
                 >
-                <oc-tag size="small" data-testid="file-versions-file-size">
-                  {{ formatVersionFileSize(item) }}
-                </oc-tag>
+                <span aria-hidden="true">·</span>
+                <span data-testid="file-versions-file-size" v-text="formatVersionFileSize(item)" />
               </div>
             </div>
-            <div class="flex h-lh shrink-0 items-center gap-2">
+            <div class="flex shrink-0 items-center gap-2">
               <oc-button
                 v-if="isRevertible"
                 v-oc-tooltip="$gettext('Restore')"
