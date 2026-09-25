@@ -1513,7 +1513,7 @@ def purgeCache(name, flush_path, flush_age):
                 "environment": minio_mc_environment,
                 "commands": [
                     "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                    "to_delete=$(mc find s3/%s/ --older-than %sd)" % (flush_path, flush_age),
+                    "to_delete=$(mc find s3/%s/ --older-than %sd 2>/dev/null || true)" % (flush_path, flush_age),
                     'if [ -z "$to_delete" ]; then exit 0; fi',
                     "mc rm $to_delete",
                 ],
