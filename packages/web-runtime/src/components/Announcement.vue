@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="isVisible"
-    class="announcement flex items-stretch gap-3 px-4 bg-amber-400 text-amber-950"
+    class="announcement flex items-stretch pr-4 bg-amber-400 text-amber-950"
     role="status"
   >
     <button
       v-if="hasInfo"
       type="button"
-      class="announcement-text grow flex items-center gap-2 min-w-0 py-2 cursor-pointer text-amber-950"
+      class="announcement-text grow flex items-center gap-2 min-w-0 py-2 pl-4 pr-3 cursor-pointer text-amber-950"
       aria-haspopup="dialog"
       @click="openModal"
     >
@@ -31,7 +31,7 @@
         />
       </span>
     </button>
-    <div v-else class="announcement-text grow flex items-center gap-2 min-w-0 py-2">
+    <div v-else class="announcement-text grow flex items-center gap-2 min-w-0 py-2 pl-4 pr-3">
       <oc-icon
         name="error-warning"
         fill-type="line"
@@ -41,7 +41,11 @@
       />
       <span class="text-sm font-bold truncate" v-text="bannerText" />
     </div>
-    <span v-if="hasInfo" class="shrink-0 self-center w-px h-4 bg-amber-950" aria-hidden="true" />
+    <span
+      v-if="hasInfo"
+      class="shrink-0 self-center w-px h-4 mr-3 bg-amber-950"
+      aria-hidden="true"
+    />
     <oc-button
       appearance="raw"
       no-hover
