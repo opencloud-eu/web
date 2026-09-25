@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
 - fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
 - fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
 - fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
