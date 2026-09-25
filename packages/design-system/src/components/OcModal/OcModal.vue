@@ -11,7 +11,6 @@
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
-        data-custom-key-bindings-disabled="true"
         @keydown.esc.stop="cancelModalAction"
       >
         <div
