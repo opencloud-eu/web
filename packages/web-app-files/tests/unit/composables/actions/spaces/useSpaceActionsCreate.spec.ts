@@ -3,6 +3,10 @@ import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { useModals } from '@opencloud-eu/web-pkg'
 import { useSpaceActionsCreate } from '../../../../../src/composables/actions'
 
+vi.mock('../../../../../src/components/Modals/CreateSpaceModal.vue', () => ({
+  default: {}
+}))
+
 describe('useSpaceActionsCreateSpace', () => {
   describe('method "isVisible"', () => {
     it.each([true, false])('is enabled based on the capability', (canCreate) => {
@@ -15,14 +19,17 @@ describe('useSpaceActionsCreateSpace', () => {
     })
   })
   describe('method "handler"', () => {
-    it('creates a modal', () => {
+    it('creates a modal', async () => {
+      let actions: ReturnType<typeof useSpaceActionsCreate>['actions']
+      let dispatchModal: ReturnType<typeof useModals>['dispatchModal']
       getWrapper({
-        setup: async ({ actions }) => {
-          const { dispatchModal } = useModals()
-          await unref(actions)[0].handler()
-          expect(dispatchModal).toHaveBeenCalled()
+        setup: (instance) => {
+          actions = instance.actions
+          dispatchModal = useModals().dispatchModal
         }
       })
+      await unref(actions)[0].handler()
+      expect(dispatchModal).toHaveBeenCalled()
     })
   })
 })

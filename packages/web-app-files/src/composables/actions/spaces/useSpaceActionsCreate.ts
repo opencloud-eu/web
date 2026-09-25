@@ -1,7 +1,6 @@
 import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SpaceAction, useAbility, useModals } from '@opencloud-eu/web-pkg'
-import CreateSpaceModal from '../../../components/Modals/CreateSpaceModal.vue'
 
 export const useSpaceActionsCreate = () => {
   const { dispatchModal } = useModals()
@@ -15,7 +14,10 @@ export const useSpaceActionsCreate = () => {
       class: 'oc-files-actions-create-space-trigger',
       label: () => $gettext('New Space'),
       isVisible: () => can('create-all', 'Drive'),
-      handler: () => {
+      handler: async () => {
+        // lazy, the modal pulls in the editor chunk
+        const { default: CreateSpaceModal } =
+          await import('../../../components/Modals/CreateSpaceModal.vue')
         dispatchModal({
           title: $gettext('Create a new space'),
           focusTrapInitial: '#create-space-input',
