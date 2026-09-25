@@ -17,7 +17,7 @@ export interface YjsAdapter {
    *
    * **Must be synchronous.** Stale recovery wipes the shared document and
    * re-seeds it, and it relies on that running in one go: yielding partway
-   * through lets a remote update move the recovery claim.
+   * through lets a remote update land in the half-rewritten document.
    */
   hydrate(ydoc: Y.Doc, content: string): void
 

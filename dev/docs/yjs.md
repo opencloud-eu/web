@@ -191,7 +191,7 @@ considered.
 
 Client joining afterwards:
 
-1. `hasContent(ydoc)` is `true` → return early, no hydration, no election, no 150 ms wait. (`useYjsSession.ts`)
+1. `hasContent(ydoc)` is `true` → return early, no hydration, no seed request. (`useYjsSession.ts`)
 2. Y.Doc lives locally, and syncs to the Yjs server if a provider exists
 
 ### Y.Doc
@@ -299,27 +299,31 @@ state recovery may re-run hydration if the room turns out to be stale, i.e. `_oc
 the joining client just fetched.
 
 Two clients can arrive into an empty room at the same moment, and only one may seed it - otherwise the content lands
-twice. The Yjs server decides which: a client asks over a stateless message and gets a grant or a refusal (see
-`services/yjs/src/lib/seedGrant.ts`). The winner sets `_oc_meta.hydrated` before it seeds, so peers can react to the
-incoming content rather than merge with it.
+twice. The Yjs server decides which: a client asks for the `seed` grant over a stateless message and gets a grant or a
+refusal (see `services/yjs/src/lib/grants.ts`). The winner sets `_oc_meta.hydrated` before it seeds, so peers can react
+to the incoming content rather than merge with it.
 
 ### Stale recovery
 
 When a joining client finds that `_oc_meta.etag` no longer matches the etag it just fetched, the file changed outside
-the room. It stamps `nativeEtag`, claims the job via `recoveryClientId` and raises `isStale`. Every peer's meta observer
-fires, but only the elected one gets through: recovery wipes the room and re-seeds it, and the only peer holding the
-body behind `nativeEtag` is the one that just fetched the file. Any other peer would publish the copy it opened with -
-or its own last serialization - and then stamp the fresh etag onto it, so the next save would overwrite the external
-writer with a matching `If-Match` and no conflict.
+the room. Recovery wipes the room and re-seeds it, and only a peer holding the body behind the fresh etag may do that.
+Any other peer would publish the copy it opened with - or its own last serialization.
 
-The elected peer captures that body at detection time rather than reading `currentContent` when recovery runs. By then
-the room has synced its own state into the Y.Doc and the debounced serialize has reported it straight back into
-`currentContent`.
+The detecting client captures that body at detection time rather than reading `currentContent` when recovery runs.
 
-`recoveryClientId` is last-write-wins, so if several clients detect the same drift at once, exactly one of them survives
-convergence. A peer that joins while `isStale` is already up offers itself the same way, provided its etag matches
-`nativeEtag` - the observer only fires on change, so without that the room would stay stuck if the elected peer
-navigated away mid-recovery.
+Several clients can detect the same write at once, and only one may rewrite the room, or the body lands twice. Like
+seeding, the Yjs server decides: each client asks for the `recover:<etag>` grant, and only the one granted goes on. It
+raises `isStale` with `nativeEtag`, then resets, re-hydrates and commits, all in one go but as separate updates, so
+peers see the flag before the rewrite. The others wrote nothing and simply receive the rewrite. A joining client waits
+for the answer, and the rewrite, before its editor mounts. The grant lasts as long as the holder's connection and is not
+passed on when it leaves, since nobody else holds its body. A peer that joins while `isStale` is still up recovers to
+the etag it fetched itself, even if the flag names an older one - so the room does not stay stuck if the peer that
+raised the flag left, or the file moved on since.
+
+A joining writer that does not rewrite the room itself - refused, or holding the room's etag - takes the room's etag
+instead of the one it fetched. It still shows the room's old content, and with the fresh etag its next save
+would overwrite the external write without a conflict. With the room's etag that save conflicts instead, unless the
+rewrite lands first and brings the fresh etag along.
 
 Peers receive the rewrite as ordinary CRDT updates, and a peer holding unsaved work would lose it without a word. So a
 peer that is dirty when a _remote_ `isStale` goes up does not follow: it marks itself conflicted, stops its provider
@@ -359,11 +363,12 @@ sequenceDiagram
     AW->>S: applyExternalUpdate {content, etag}
     Note over S: flush pending content report,<br/>then: unsaved work?
     alt clean
-        S->>P: claim + isStale (one transaction)
-        S->>P: reset + hydrate, then commit with etag
+        S->>S: recover:etag grant from the Yjs server
+        Note over S: refused - another peer recovers, skip
+        S->>P: isStale, then reset + hydrate, then commit with etag
         S->>AW: onContentChange, onServerContentChange, onEtagChange
     else dirty
-        S->>P: isStale + nativeEtag, no claim
+        S->>P: isStale + nativeEtag, no recovery
         S->>S: markConflicted
     end
 ```
@@ -372,12 +377,13 @@ The wrapper does the cheap checks first, because most of these events are peer s
 The room's etag stamp settles those without a request, with a grace period (`EXTERNAL_UPDATE_ETAG_GRACE_MS`) for a
 stamp that is still on the way. Only a body the room cannot account for starts the recovery.
 
-- A **clean** detector claims and flags the room in one transaction and runs the recovery from the body it fetched.
-  Clean peers follow the rewrite, dirty peers conflict, exactly as after a join-time detection. The recovering peer
-  then reports content, server content and etag to its own wrapper: the rewrite runs with the content reporter
-  suppressed and its commit carries an own origin, so nothing else would.
-- A **dirty** detector flags the room _without_ claiming: it holds nothing safe to re-seed with. All peers are marked
-  dirty and the room stays flagged until the next join recovers it.
+- A **clean** detector asks for the recovery grant and, if granted, runs the recovery from the body it fetched. Every
+  clean writer with the file open gets the same event, so this is where the grant matters most. Clean peers follow the
+  rewrite, dirty peers conflict, exactly as after a join-time detection. The recovering peer then reports content,
+  server content and etag to its own wrapper: the rewrite runs with the content reporter suppressed and the meta
+  observer only reacts to remote writes, so nothing else would.
+- A **dirty** detector flags the room _without_ recovering: it holds nothing safe to re-seed with. All peers are marked
+  dirty, and a clean peer that fetched the file itself recovers it, otherwise the next join does.
 
 Before deciding, the session flushes its pending content report. The caller's dirty state lags the doc by
 `SERIALIZE_DEBOUNCE_MS`, and a keystroke from inside that window is unsaved work all the same. Peers do the same when
@@ -407,7 +413,7 @@ A `Y.Map` alongside the editor content, used for coordination the editor never s
 | `savedStateVector` | last save, recovery | what that peer's doc held when it wrote       |
 | `isStale`          | any writer          | the file changed outside this room; rehydrate |
 | `nativeEtag`       | writer that noticed | the etag recovery should settle on            |
-| `recoveryClientId` | writer that noticed | which peer is elected to re-seed the room     |
+| `recoveryEpoch`    | writer that noticed | bumped with every `isStale`, never cleared    |
 | `hydrated`         | the seeding peer    | this room has been seeded                     |
 
 Every key lives in the shared Y.Doc, so a read-only peer's writes to it are
@@ -499,7 +505,7 @@ hold the same content and duplicate the document for everyone.
 | `packages/web-pkg/src/editor/composables/useTextEditor.ts`         | binds Tiptap to a Y.Doc and renders peer carets                 |
 | `packages/web-app-text-editor/src/yjs.ts`                          | the text editor's adapter and content-type detection            |
 | `services/yjs/src/server.ts`                                       | the Yjs server (Hocuspocus)                                     |
-| `services/yjs/src/lib/seedGrant.ts`                                | who may seed an empty room                                      |
+| `services/yjs/src/lib/grants.ts`                                   | who may seed an empty room or recover a stale one               |
 
 ---
 
@@ -551,10 +557,14 @@ grace period turns into a spurious conflict dialog. The SSE path is less exposed
 stamp `EXTERNAL_UPDATE_ETAG_GRACE_MS`.
 
 **Stale recovery needs someone who holds the fresh body.** Only a peer that fetched the file after the write may re-seed
-the room. With SSE that is every writer in the space who has the file open; a peer that conflicts flags the room so
-the others fetch. Two gaps remain: when no tab of a space member is open, nobody hears the event and the room stays
-flagged until a client opens the file; and when the claimant leaves mid-recovery, the other peers only retry once
-something else makes them look (a later event, a join, a 412).
+the room. With SSE that is every writer in the space who has the file open; each fetches on its own event, and the
+server lets one of them rewrite. Gaps remain:
+
+- When nobody in the room hears the event, the room stays stale until a writer joins or a save hits the 412.
+- When the grant holder leaves after it was granted but before it rewrote, the refused peers only retry once something
+  else makes them look (a later event, a join, a 412).
+- The grant is keyed by the fresh etag. Two peers that fetched different etags after back-to-back writes can both be
+  granted, and if their rewrites cross, the room holds the body twice.
 
 **SSE is best effort.** File events reach the members of the space only, so a share recipient of a personal-space file
 depends on the owner's tab to flag the room. A restored file version produces no SSE event at all today.

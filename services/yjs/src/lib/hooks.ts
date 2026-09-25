@@ -14,7 +14,7 @@ import {
   probeFileAccess,
   validateTokenAgainstOpenCloud
 } from './graph.ts'
-import { createSeedRegistry, SeedMessage } from './seedGrant.ts'
+import { createGrantRegistry, grantAnswer, parseGrantRequest, SEED_GRANT } from './grants.ts'
 
 export const HEALTH_ENDPOINT_PATH = '/healthz/ready'
 
@@ -107,19 +107,20 @@ export async function authenticate(
 }
 
 export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
-  const seedRegistry = createSeedRegistry()
+  const grants = createGrantRegistry()
 
   /**
    * Hand the seed grant to another writer in the room. Called when the holder
-   * leaves, which may have happened before it seeded.
+   * leaves, which may have happened before it seeded. The writer may never
+   * have asked, so it gets the payload every client version understands.
    */
   function passSeedGrantOn(document: Document, documentName: string): void {
     const writer = document.getConnections().find((connection) => !connection.readOnly)
     if (!writer) {
       return
     }
-    seedRegistry.grantTo(documentName, writer.socketId)
-    writer.sendStateless(SeedMessage.Granted)
+    grants.grantTo(documentName, SEED_GRANT, writer.socketId)
+    writer.sendStateless(grantAnswer({ key: SEED_GRANT, legacy: true }, true))
   }
 
   return {
@@ -193,30 +194,38 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
       console.log(
         `[onDisconnect] document=${JSON.stringify(documentName)} remaining=${clientsCount}`
       )
-      if (seedRegistry.release(documentName, socketId)) {
+      // Only the seed grant moves on. A recovery needs the fresh body only its
+      // requester holds, so the next client that asks gets it instead.
+      if (grants.release(documentName, socketId).includes(SEED_GRANT)) {
         passSeedGrantOn(document, documentName)
       }
     },
 
     /**
      * Safety net only: the holder's `onDisconnect` has normally released the
-     * grant by the time the room unloads.
+     * grants by the time the room unloads.
      */
     async afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
-      seedRegistry.forget(documentName)
+      grants.forget(documentName)
     },
 
     /**
-     * Seeding arbitration, see `seedGrant.ts`. The answer is permission, not
-     * an instruction: the client still checks its own document first, so a
-     * grant for a room that already has content costs nothing.
+     * Seeding and recovery arbitration, see `grants.ts`. The answer is
+     * permission, not an instruction: the client still checks its own
+     * document first, so a grant for a job that is already done costs nothing.
      */
     async onStateless({ connection, documentName, payload }: onStatelessPayload): Promise<void> {
-      if (payload !== SeedMessage.Request) {
+      const grant = parseGrantRequest(payload)
+      if (grant === null) {
         return
       }
-      const granted = seedRegistry.request(documentName, connection.socketId, connection.readOnly)
-      connection.sendStateless(granted ? SeedMessage.Granted : SeedMessage.Denied)
+      const granted = grants.request(
+        documentName,
+        grant.key,
+        connection.socketId,
+        connection.readOnly
+      )
+      connection.sendStateless(grantAnswer(grant, granted))
     },
 
     /**
