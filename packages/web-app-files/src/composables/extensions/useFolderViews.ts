@@ -18,27 +18,27 @@ export const useFolderViews = (): FolderViewExtension[] => {
 
   return [
     {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-tiles',
       type: 'folderView',
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id,
         folderViewsFavoritesExtensionPoint.id,
         folderViewsTrashExtensionPoint.id,
         folderViewsTrashOverviewExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
         folderViewsSharedWithMeExtensionPoint.id,
         folderViewsSharedViaLinkExtensionPoint.id,
         folderViewsSharedWithOthersExtensionPoint.id,
         folderViewsSearchExtensionPoint.id
       ],
       folderView: {
-        name: 'resource-table-condensed',
-        label: $gettext('Condensed table view'),
+        name: 'resource-tiles',
+        label: $gettext('Tiles view'),
         icon: {
-          name: 'menu-line-condensed',
+          name: 'gallery-view-2',
           fillType: 'none'
         },
-        component: markRaw(ResourceTable)
+        component: markRaw(ResourceTiles)
       }
     },
     {
@@ -66,27 +66,27 @@ export const useFolderViews = (): FolderViewExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-tiles',
+      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
       type: 'folderView',
       extensionPointIds: [
         folderViewsFolderExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
         folderViewsFavoritesExtensionPoint.id,
         folderViewsTrashExtensionPoint.id,
         folderViewsTrashOverviewExtensionPoint.id,
+        folderViewsProjectSpacesExtensionPoint.id,
         folderViewsSharedWithMeExtensionPoint.id,
         folderViewsSharedViaLinkExtensionPoint.id,
         folderViewsSharedWithOthersExtensionPoint.id,
         folderViewsSearchExtensionPoint.id
       ],
       folderView: {
-        name: 'resource-tiles',
-        label: $gettext('Tiles view'),
+        name: 'resource-table-condensed',
+        label: $gettext('Condensed table view'),
         icon: {
-          name: 'gallery-view-2',
+          name: 'menu-line-condensed',
           fillType: 'none'
         },
-        component: markRaw(ResourceTiles)
+        component: markRaw(ResourceTable)
       }
     }
   ]
