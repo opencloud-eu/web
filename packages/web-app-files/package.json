@@ -12,7 +12,7 @@
     "@opencloud-eu/web-client": "workspace:*",
     "@opencloud-eu/web-pkg": "workspace:*",
     "@uppy/core": "6.0.1",
-    "@vueuse/core": "^14.0.0",
+    "@vueuse/core": "^14.0.0 || ^15.0.0",
     "axios": "^1.16.1",
     "email-validator": "^2.0.4",
     "fuse.js": "7.5.0",
