@@ -15,15 +15,16 @@
         <span v-text="$gettext('Edit')" />
       </oc-button>
     </account-heading>
-    <avatar-upload class="account-page-avatar bg-role-surface-container rounded-xl p-4">
-      <account-label
-        class="text-center md:text-left"
-        :label="$gettext('Profile picture')"
-        :description="
-          $gettext('Max. %{size}MB, JPG, PNG', { size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString() })
-        "
-      />
-    </avatar-upload>
+    <oc-section
+      class="account-page-avatar"
+      icon="account-circle"
+      :title="$gettext('Profile picture')"
+      :subtitle="
+        $gettext('Max. %{size}MB, JPG, PNG', { size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString() })
+      "
+    >
+      <avatar-upload />
+    </oc-section>
     <account-heading
       tag="h2"
       :title="$gettext('Account information')"
@@ -95,7 +96,6 @@ import {
 } from '@opencloud-eu/web-pkg'
 import AccountTable from '../../components/Account/AccountTable.vue'
 import AccountHeading from '../../components/Account/AccountHeading.vue'
-import AccountLabel from '../../components/Account/AccountLabel.vue'
 import QuotaInformation from '../../components/Account/QuotaInformation.vue'
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
