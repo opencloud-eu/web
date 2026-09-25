@@ -4,7 +4,7 @@
     <p v-if="!activities.length" v-text="$gettext('No activities')" />
     <div v-else class="ml-2">
       <oc-list class="oc-timeline wrap-anywhere">
-        <li v-for="activity in activities" :key="activity.id" class="pl-4">
+        <li v-for="activity in activities" :key="activity.id">
           <span
             class="text-role-on-surface-variant text-sm leading-[1lh]"
             v-text="getTimeFromActivity(activity)"
