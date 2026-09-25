@@ -12,22 +12,20 @@ Feature: download space
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
-    And "Alice" creates the following project spaces using API
-      | name | id     |
-      | team | team.1 |
+    And "Alice" creates the project space using API "team"
     And "Alice" creates the following folder in space "team" using API
       | name        |
       | spaceFolder |
     And "Alice" creates the following file in space "team" using API
       | name                  | content    |
       | spaceFolder/lorem.txt | space team |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     When "Alice" downloads the space "team"
     And "Alice" adds following user to the project space
       | user     | role     | kind  |
       | Brian    | Can edit | user  |
     And "Alice" logs out
     And "Brian" logs in
-    And "Brian" navigates to the project space "team.1"
+    And "Brian" navigates to the project space "team"
     When "Brian" downloads the space "team"
     And "Brian" logs out

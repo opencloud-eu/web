@@ -11,9 +11,7 @@ Feature: yjs conflict handling
     And "Admin" assigns following roles to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name | id   |
-      | Team | team |
+    And "Alice" creates the project space using API "Team"
 
   Scenario: editor with unsaved changes is told about an external file update right away
     When "Alice" uploads the following local file into personal space using API
@@ -85,7 +83,7 @@ Feature: yjs conflict handling
 
     When "Alice" logs in
     And "Alice" opens the "files" app
-    And "Alice" navigates to the project space "team"
+    And "Alice" navigates to the project space "Team"
     And "Alice" adds following user to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
@@ -111,7 +109,7 @@ Feature: yjs conflict handling
       | Connected |
 
     When "Brian" logs in
-    And "Brian" navigates to the project space "team"
+    And "Brian" navigates to the project space "Team"
     And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
     And "Brian" should see the following yjs status
       | status    |
@@ -127,7 +125,7 @@ Feature: yjs conflict handling
 
     And "Alice" logs in
     And "Alice" opens the "files" app
-    And "Alice" navigates to the project space "team"
+    And "Alice" navigates to the project space "Team"
     And "Alice" adds following user to the project space
       | user  | role     | kind |
       | Brian | Can view | user |
@@ -146,7 +144,7 @@ Feature: yjs conflict handling
     Then "Alice" should see the text "some random text" in the text-editor
 
     When "Brian" logs in
-    And "Brian" navigates to the project space "team"
+    And "Brian" navigates to the project space "Team"
     And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
     Then "Brian" should see the text "some random text" in the text-editor
     And "Alice" logs out
@@ -159,7 +157,7 @@ Feature: yjs conflict handling
 
     And "Alice" logs in
     And "Alice" opens the "files" app
-    And "Alice" navigates to the project space "team"
+    And "Alice" navigates to the project space "Team"
     And "Alice" adds following user to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
@@ -187,7 +185,7 @@ Feature: yjs conflict handling
 
     # a joiner holding the fresh file recovers the flagged room
     When "Brian" logs in
-    And "Brian" navigates to the project space "team"
+    And "Brian" navigates to the project space "Team"
     And "Brian" opens file "textfile.ocnote" via "text-editor" using the context menu
     Then "Brian" should see the text "some random text" in the text-editor
     And "Brian" should see the following yjs status

@@ -105,10 +105,8 @@ Feature: Trashbin delete
     Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Brian | Space Admin |
-    And "Brian" creates the following project space using API
-      | name     | id    |
-      | sales    | sales |
-      | hr       | hr    |
+    And "Brian" creates the project space using API "sales"
+    And "Brian" creates the project space using API "hr"
     And "Brian" creates the following folder in space "sales" using API
       | name |
       | f1   |

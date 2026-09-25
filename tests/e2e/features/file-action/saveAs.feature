@@ -10,9 +10,7 @@ Feature: rename
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name       |
-      | cool-space |
+    And "Alice" creates the project space using API "cool-space"
     And "Alice" creates the following folders in personal space using API
       | name       |
       | top-folder |
@@ -68,9 +66,7 @@ Feature: rename
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name       |
-      | cool-space |
+    And "Alice" creates the project space using API "cool-space"
     And "Alice" creates the following folders in space "cool-space" using API
       | name       |
       | top-folder |
