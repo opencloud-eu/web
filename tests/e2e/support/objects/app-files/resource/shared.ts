@@ -65,7 +65,6 @@ export const createNewFolderInEmbedMode = async ({
   await createBtn.click()
   await mkcolPromise
 }
-/**/
 
 export interface resourceArgs {
   name: string

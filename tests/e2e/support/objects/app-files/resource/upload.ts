@@ -30,7 +30,6 @@ const pauseUploadButton = '#pause-upload-info-btn[aria-label="Pause upload"]'
 const resumeUploadButton = '#pause-upload-info-btn[aria-label="Resume upload"]'
 const cancelUploadButton = '#cancel-upload-info-btn'
 const uploadList = '#upload-list'
-/**/
 
 export interface uploadResourceArgs {
   page: Page
