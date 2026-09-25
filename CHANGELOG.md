@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
+- fix: group space customization actions in context menu [[#3444](https://github.com/opencloud-eu/web/pull/3444)]
 - fix: show tiles view first in view mode options [[#3454](https://github.com/opencloud-eu/web/pull/3454)]
 - ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
 - fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
@@ -23,13 +25,9 @@
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
-### ✅ Tests
-
-- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
-- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
-
 ### 📈 Enhancement
 
+- Improve readability of the activities and versions timelines [[#3423](https://github.com/opencloud-eu/web/pull/3423)]
 - feat(account): improve readability and consistency of account pages [[#3430](https://github.com/opencloud-eu/web/pull/3430)]
 - Declutter the announcement banner settings [[#3426](https://github.com/opencloud-eu/web/pull/3426)]
 - feat(yjs): immediately notify peers about external doc updates [[#3397](https://github.com/opencloud-eu/web/pull/3397)]
@@ -40,6 +38,11 @@
 - perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
 - Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
+### ✅ Tests
+
+- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
 
 ### 📦️ Dependencies
 
