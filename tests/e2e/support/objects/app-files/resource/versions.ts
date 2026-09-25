@@ -6,7 +6,6 @@ import { clickResource } from './shared'
 
 const versionRevertButton = '//*[@data-testid="file-versions-revert-button"]'
 const versionsPanelSelect = '//*[@data-testid="sidebar-panel-versions-select"]'
-/**/
 
 export interface resourceVersionArgs {
   page: Page

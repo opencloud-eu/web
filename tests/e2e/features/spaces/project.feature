@@ -173,3 +173,29 @@ Feature: spaces.personal
       | resource        | to     | version | openDetailsPanel |
       | textfile.ocnote | parent | 1       | true             |
     And "Brian" logs out
+
+  
+  Scenario: creating project spaces with options
+    Given "Admin" creates following users using API
+      | id    |
+      | Alice |
+      | Brian |
+    And "Admin" assigns following role to the users using API
+      | id    | role        |
+      | Alice | Space Admin |
+    And "Alice" logs in
+    And "Alice" navigates to the projects space page
+    When "Alice" creates the project spaces with options
+      | name | image          | subtitle      | description      | quota | member | role     |
+      | team | testavatar.png | Team Subtitle | Team Description | 10GB  | Brian  | Can edit |
+    And "Alice" logs out
+    
+    And "Brian" logs in
+    And "Brian" opens the "files" app
+    And "Brian" navigates to the projects space page
+    And "Brian" should see space "team"
+    And "Brian" navigates to the project space "team"
+    And "Brian" creates the following resources
+      | resource   | type   |
+      | brian-test | folder |
+    And "Brian" logs out

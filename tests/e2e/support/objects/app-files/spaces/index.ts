@@ -32,6 +32,17 @@ export class Spaces {
     this.#spacesEnvironment.createSpace({ key, space: { name: space.name, id } })
   }
 
+  async createWithOptions({
+    key,
+    space
+  }: {
+    key: string
+    space: Omit<po.createSpaceOptionArgs, 'page'>
+  }): Promise<void> {
+    const id = await po.createSpaceOption({ ...space, page: this.#page })
+    this.#spacesEnvironment.createSpace({ key, space: { name: space.name, id } })
+  }
+
   async open({ key }: { key: string }): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
     await po.openSpace({ page: this.#page, id })
