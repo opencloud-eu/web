@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
 - fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
 - fix: group space customization actions in context menu [[#3444](https://github.com/opencloud-eu/web/pull/3444)]
 - fix: show tiles view first in view mode options [[#3454](https://github.com/opencloud-eu/web/pull/3454)]
