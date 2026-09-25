@@ -117,7 +117,7 @@ import {
   useTemplateRef,
   watch
 } from 'vue'
-import type { ComponentPublicInstance } from 'vue'
+import type { ComponentPublicInstance, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction, EditorActionGroup } from '../composables'
@@ -128,9 +128,8 @@ import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 import { hasVisibleYjsStatus } from '../../composables/yjs'
 
-const { actionsToDisplay = undefined, teleport = undefined } = defineProps<{
+const { actionsToDisplay = undefined } = defineProps<{
   actionsToDisplay?: string[]
-  teleport?: string
 }>()
 
 const textEditor = inject<TextEditorInstance>('textEditor')!
@@ -151,7 +150,7 @@ const keyActionIds: string[] = []
 
 const moreActionsLabel = computed(() => $gettext('More actions'))
 const sourceMode = computed(() => unref(textEditor.state.sourceMode))
-const dropTeleport = computed(() => teleport || 'body')
+const dropTeleport = inject<Ref<string>>('textEditorTeleport')!
 
 const isToolbarItemVisible = (item: EditorAction) => {
   if (!actionsToDisplay) {
