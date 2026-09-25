@@ -28,6 +28,9 @@ const spacesDescriptionInputArea = '.text-editor-provider .ProseMirror'
 const spacesDescriptionSaveTextFileInEditorButton = '#app-save-action:visible'
 const spaceHeaderSelector = '.space-header'
 const spaceHeaderNameSelector = '.space-header h2'
+const spaceHeaderSubtitleSelector = '.space-header p.font-semibold'
+const spaceHeaderReadmeSelector = '.markdown-container-content'
+const spaceDetailsQuotaSelector = '#sidebar-panel-details-space .space-quota'
 const encryptSpaceSwitch = '[data-testid="create-space-encrypt"] [data-testid="oc-switch-btn"]'
 const vaultSetupPassphraseInput = '#vault-setup-passphrase'
 const vaultPassphraseInput = '#vault-passphrase'
@@ -35,6 +38,19 @@ const vaultUnlockButton = '#vault-unlock-submit'
 const vaultNameSelector = '[data-testid="vault-name"]'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
+
+// create-space modal "Options" flow
+const createSpaceNameInput = '#create-space-input'
+const createSpaceOptionsToggle = '.create-space-options-toggle'
+const createSpaceSubtitleInput = '#create-space-subtitle-input'
+const createSpaceDescriptionEditor = '.create-space-description .ProseMirror'
+const createSpaceAdvancedSectionHeader = '.create-space-advanced .oc-section-header'
+const createSpaceQuotaSearchField = '#create-space-quota-input .vs__search'
+const createSpaceImageUploadButton = '.create-space-image-select'
+const createSpaceImageClearButton = '.create-space-image-clear'
+const createSpaceMembersSearchField = '#create-space-members-input'
+const dropdownOpen = '.vs--open'
+const dropdownOption = '.vs__dropdown-option'
 
 export const openActionsPanel = async (page: Page): Promise<void> => {
   await sidebar.open({ page })
@@ -50,8 +66,6 @@ export const openActivitiesPanel = async (page: Page): Promise<void> => {
   await sidebar.open({ page })
   await sidebar.openPanel({ page, name: 'activities' })
 }
-
-/**/
 
 export interface createSpaceArgs {
   name: string
@@ -100,7 +114,69 @@ export const createSpace = async (args: createSpaceArgs): Promise<string> => {
   return id
 }
 
-/**/
+export interface createSpaceOptionArgs {
+  page: Page
+  name: string
+  subtitle?: string
+  description?: string
+  quota?: string
+  image?: File
+  member?: ICollaborator
+}
+
+export const createSpaceOption = async (args: createSpaceOptionArgs): Promise<string> => {
+  const { page, name, subtitle, description, quota, image, member } = args
+
+  await page.locator(newSpaceMenuButton).click()
+  await page.locator(createSpaceNameInput).fill(name)
+  await page.locator(createSpaceOptionsToggle).click()
+
+  if (image) {
+    const [fileChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.locator(createSpaceImageUploadButton).click()
+    ])
+    await fileChooser.setFiles(image.path)
+    await page.locator(actionConfirmButton).last().click()
+    await expect(page.locator(createSpaceImageClearButton)).toBeVisible()
+  }
+  if (subtitle) {
+    await page.locator(createSpaceSubtitleInput).fill(subtitle)
+  }
+  if (description) {
+    await page.locator(createSpaceDescriptionEditor).fill(description)
+  }
+  await page.locator(createSpaceAdvancedSectionHeader).click()
+  if (quota) {
+    await page.locator(createSpaceQuotaSearchField).pressSequentially(quota)
+    await page.locator(selectedQuotaValueField).waitFor()
+    await page.locator(util.format(quotaValueDropDown, `${quota} GB`)).click()
+  }
+  if (member) {
+    const { collaborator, role } = member
+    await page
+      .locator(createSpaceMembersSearchField)
+      .fill('email' in collaborator ? collaborator.email : collaborator.displayName)
+    await page.locator(dropdownOpen).waitFor()
+    await page.locator(dropdownOption, { hasText: collaborator.displayName }).first().click()
+    if (role) {
+      await Collaborator.setCollaboratorRole(page, role, 'space')
+    }
+  }
+
+  const postResponsePromise = page.waitForResponse(
+    (postResp) =>
+      postResp.status() === 201 &&
+      postResp.request().method() === 'POST' &&
+      postResp.url().endsWith('drives?template=default')
+  )
+  const [responses] = await Promise.all([
+    postResponsePromise,
+    page.locator(actionConfirmButton).click()
+  ])
+  const { id } = await responses.json()
+  return id
+}
 
 export const unlockVaultSpace = async (args: { page: Page; passphrase: string }): Promise<void> => {
   const { page, passphrase } = args
@@ -132,8 +208,6 @@ export const expectVaultSpaceLocked = async (args: { page: Page; name: string })
   await expect(page.locator(vaultNameSelector)).toHaveText(name)
 }
 
-/**/
-
 export interface openSpaceArgs {
   id: string
   page: Page
@@ -144,7 +218,6 @@ export const openSpace = async (args: openSpaceArgs): Promise<void> => {
   await page.locator(util.format(spaceIdSelector, id)).click()
   await page.locator(spaceHeaderSelector).waitFor()
 }
-/**/
 
 export const changeSpaceName = async (args: {
   page: Page
@@ -170,8 +243,6 @@ export const changeSpaceName = async (args: {
   !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
-
-/**/
 
 export const changeSpaceSubtitle = async (args: {
   page: Page
@@ -202,8 +273,6 @@ export const changeSpaceSubtitle = async (args: {
   !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
-
-/**/
 
 export const changeSpaceDescription = async (args: {
   page: Page
@@ -236,8 +305,6 @@ export const changeSpaceDescription = async (args: {
   await editor.close(page)
   await closeNotifications({ page })
 }
-
-/**/
 
 export const changeQuota = async (args: {
   id: string
@@ -479,4 +546,26 @@ export const getSpaceImageRatio = async (
   const width = await spaceImage.evaluate((img: HTMLImageElement) => img.naturalWidth)
   const height = await spaceImage.evaluate((img: HTMLImageElement) => img.naturalHeight)
   return { width, height }
+}
+
+export interface expectSpaceOverviewArgs {
+  page: Page
+  subtitle?: string
+  description?: string
+  quota?: string
+}
+
+export const expectSpaceOverview = async (args: expectSpaceOverviewArgs): Promise<void> => {
+  const { page, subtitle, description, quota } = args
+  if (subtitle) {
+    await expect(page.locator(spaceHeaderSubtitleSelector)).toHaveText(subtitle)
+  }
+  if (description) {
+    await expect(page.locator(spaceHeaderReadmeSelector)).toContainText(description)
+  }
+  if (quota) {
+    await sidebar.open({ page })
+    await expect(page.locator(spaceDetailsQuotaSelector)).toContainText(`${quota} GB`)
+    await sidebar.close({ page })
+  }
 }

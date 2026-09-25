@@ -32,6 +32,17 @@ export class Spaces {
     this.#spacesEnvironment.createSpace({ key, space: { name: space.name, id } })
   }
 
+  async createWithOptions({
+    key,
+    space
+  }: {
+    key: string
+    space: Omit<po.createSpaceOptionArgs, 'page'>
+  }): Promise<void> {
+    const id = await po.createSpaceOption({ ...space, page: this.#page })
+    this.#spacesEnvironment.createSpace({ key, space: { name: space.name, id } })
+  }
+
   async open({ key }: { key: string }): Promise<void> {
     const { id } = this.#spacesEnvironment.getSpace({ key })
     await po.openSpace({ page: this.#page, id })
@@ -49,6 +60,10 @@ export class Spaces {
   async expectOpen({ key }: { key: string }): Promise<void> {
     const { name } = this.#spacesEnvironment.getSpace({ key })
     await po.expectSpaceOpen({ page: this.#page, name })
+  }
+
+  async expectSpaceOverview(args: Omit<po.expectSpaceOverviewArgs, 'page'>): Promise<void> {
+    await po.expectSpaceOverview({ ...args, page: this.#page })
   }
 
   async expectVaultLocked({ key }: { key: string }): Promise<void> {

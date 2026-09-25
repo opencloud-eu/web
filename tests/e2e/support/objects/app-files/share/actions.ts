@@ -100,8 +100,6 @@ export const createShare = async (args: createShareArgs): Promise<void> => {
   await sidebar.close({ page })
 }
 
-/**/
-
 export interface ShareStatusArgs extends Omit<ShareArgs, 'recipients'> {
   via?: 'STATUS' | 'CONTEXT_MENU'
 }
@@ -183,8 +181,6 @@ export const changeShareeRole = async (args: ShareArgs): Promise<void> => {
   }
 }
 
-/**/
-
 export interface removeShareeArgs extends ShareArgs {
   removeOwnSpaceAccess?: boolean
 }
@@ -197,8 +193,6 @@ export const removeSharee = async (args: removeShareeArgs): Promise<void> => {
     await Collaborator.removeCollaborator({ page, collaborator, removeOwnSpaceAccess })
   }
 }
-
-/**/
 
 export const checkSharee = async (args: ShareArgs): Promise<void> => {
   const { resource, page, recipients } = args

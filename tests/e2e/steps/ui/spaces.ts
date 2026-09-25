@@ -40,6 +40,36 @@ When(
 )
 
 When(
+  '{string} creates the project spaces with options',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
+    for (const info of stepTable.hashes()) {
+      const member = info.member
+        ? {
+            collaborator: world.usersEnvironment.getCreatedUser({ key: info.member }),
+            role: info.role
+          }
+        : undefined
+      await spacesObject.createWithOptions({
+        key: info.name,
+        space: {
+          name: info.name,
+          subtitle: info.subtitle,
+          description: info.description,
+          quota: info.quota?.replace(/[^0-9]/g, ''),
+          image: info.image ? world.filesEnvironment.getFile({ name: info.image }) : undefined,
+          member
+        }
+      })
+    }
+  }
+)
+
+When(
   '{string} navigates to the project space {string}',
   async function ({ world }: { world: World }, stepUser: string, key: string): Promise<void> {
     const page = actorPage(world, stepUser)
@@ -234,6 +264,23 @@ Then(
     actionType === 'should'
       ? await expect(spaceLocator).toBeVisible()
       : await expect(spaceLocator).not.toBeVisible()
+  }
+)
+
+Then(
+  '{string} should see the following details of the project space',
+  async function (
+    { world }: { world: World },
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> {
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
+    const { subtitle, description, quota } = stepTable.hashes()[0]
+    await spacesObject.expectSpaceOverview({
+      subtitle,
+      description,
+      quota: quota?.replace(/[^0-9]/g, '')
+    })
   }
 )
 
