@@ -21,12 +21,13 @@ export type ListFilesOptions = {
   depth?: number
   davProperties?: DavPropertyValue[]
   /**
-   * Namespaced props to request for this call only, e.g. `myapp:my-prop`, on top
-   * of anything registered globally via `registerExtraProp`. Names keep their own
-   * prefix instead of being forced into `oc:`, the prefix is declared for you, and
-   * the value lands on `Resource.extraProps` under the name you passed. Use this
-   * for props only one caller cares about, so every other PROPFIND in the app
-   * doesn't pay for them.
+   * Namespaced props to request for this call only, e.g.
+   * `{https://app.example/ns}color` or `myapp:color`, on top of anything
+   * registered globally via `registerExtraProp`. Names keep their own namespace
+   * instead of being forced into `oc:`, it is declared for you, and the value
+   * lands on `Resource.extraProps` under the name you passed. Use this for props
+   * only one caller cares about, so every other PROPFIND in the app doesn't pay
+   * for them.
    */
   extraProps?: string[]
   isTrash?: boolean

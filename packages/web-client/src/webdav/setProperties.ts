@@ -10,7 +10,7 @@ export const SetPropertiesFactory = (dav: DAV, options: WebDavOptions) => {
      *
      * Property names are namespaced the same way as in PROPFIND: DAV standard
      * props get `d:`, anything listed in `extraProps` (or registered globally via
-     * `registerExtraProp`) keeps its own prefix, everything else falls back to
+     * `registerExtraProp`) keeps its own namespace, everything else falls back to
      * `oc:`. A custom prop must be listed, otherwise it is written as
      * `oc:<name>` - which the server accepts but no PROPFIND can read back.
      */
