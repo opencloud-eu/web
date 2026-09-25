@@ -17,9 +17,7 @@ Feature: Accessibility checks
     And "Admin" adds user to the group using API
       | user  | group |
       | Alice | sales |
-    And "Alice" creates the following project spaces using API
-      | name     | id       |
-      | my_space | my_space |
+    And "Alice" creates the project space using API "my_space"
     And "Alice" creates the following folder in space "my_space" using API
       | name        |
       | spaceFolder |

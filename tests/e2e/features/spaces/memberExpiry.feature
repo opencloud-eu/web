@@ -9,17 +9,15 @@ Feature: spaces member expiry
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" creates the project space using API "team"
+    And "Alice" navigates to the project space "team"
     And "Alice" adds following user to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
     And "Alice" sets the expiration date of the member "Brian" of the project space to "+5 days"
     When "Brian" logs in
-    And "Brian" navigates to the project space "team.1"
+    And "Brian" navigates to the project space "team"
     And "Brian" logs out
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     And "Alice" removes the expiration date of the member "Brian" of the project space
     And "Alice" logs out

@@ -35,10 +35,8 @@ Feature: keycloak integration
       | groups      | sales             |
     And "Alice" opens the "files" app
     And "Alice" navigates to the projects space page
-    And "Alice" creates the following project spaces
-      | name      | id          |
-      | teamSpace | teamSpace.1 |
-    And "Alice" navigates to the project space "teamSpace.1"
+    And "Alice" creates the project space "teamSpace"
+    And "Alice" navigates to the project space "teamSpace"
     And "Alice" creates the following resources
       | resource        | type    |
       | security-folder | folder  |
@@ -52,10 +50,8 @@ Feature: keycloak integration
 
     And "Brian" logs in
     And "Brian" navigates to the projects space page
-    And "Brian" creates the following project spaces
-      | name       | id           |
-      | brianSpace | brianSpace.1 |
-    And "Brian" navigates to the project space "brianSpace.1"
+    And "Brian" creates the project space "brianSpace"
+    And "Brian" navigates to the project space "brianSpace"
     And "Brian" adds following users to the project space
       | user     | role     | kind  |
       | Carol    | Can edit | user  |
@@ -80,5 +76,5 @@ Feature: keycloak integration
     When admin enables user "Carol" using keycloak API
     Then "Carol" logs in
     And "Carol" opens the "files" app
-    And "Carol" navigates to the project space "brianSpace.1"
+    And "Carol" navigates to the project space "brianSpace"
     And "Carol" logs out

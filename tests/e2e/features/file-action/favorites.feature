@@ -12,9 +12,7 @@ Feature: Favorites
     Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project space using API
-      | name         | id           |
-      | service-team | service-team |
+    And "Alice" creates the project space using API "service-team"
     And "Alice" adds the following member to the space "service-team" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |

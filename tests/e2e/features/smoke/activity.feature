@@ -10,9 +10,7 @@ Feature: Users can see all activities of the resources and spaces
       | Alice | Space Admin |
 
   Scenario: activity
-    Given "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
+    Given "Alice" creates the project space using API "team"
     And "Alice" adds the following member to the space "team" using API
       | user  | role     | shareType |
       | Brian | Can view | user      |
@@ -66,7 +64,7 @@ Feature: Users can see all activities of the resources and spaces
 
     # see activity in the project space
     When "Brian" logs in
-    And "Brian" navigates to the project space "team.1"
+    And "Brian" navigates to the project space "team"
     Then "Brian" should see activity of the space
       | activity                               |
       | Alice Hansen shared team via link      |
