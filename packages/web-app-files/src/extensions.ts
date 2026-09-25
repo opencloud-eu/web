@@ -2,7 +2,9 @@ import {
   ApplicationInformation,
   Extension,
   FloatingActionButtonExtension,
+  isLocationCommonActive,
   isLocationPublicActive,
+  isLocationSharesActive,
   isLocationSpacesActive,
   isLocationTrashActive,
   useCapabilityStore,
@@ -70,11 +72,29 @@ export const extensions = (appInfo: ApplicationInformation) => {
       icon: 'add',
       label: () => $gettext('New'),
       tooltip: () => {
-        if (
-          isLocationSpacesActive(router, 'files-spaces-projects') &&
-          !can('create-all', 'Drive')
-        ) {
-          return $gettext('Creating Spaces requires additional permissions')
+        if (isLocationSpacesActive(router, 'files-spaces-projects')) {
+          if (!can('create-all', 'Drive')) {
+            return $gettext('Creating Spaces requires additional permissions')
+          }
+          return
+        }
+
+        if (isLocationSharesActive(router)) {
+          return $gettext('To share a file or folder, open the Sharing panel')
+        }
+
+        if (isLocationCommonActive(router, 'files-common-favorites')) {
+          return $gettext(
+            'To add a favorite, open the context menu of a file or folder and select "Add to favorites"'
+          )
+        }
+
+        if (isLocationCommonActive(router, 'files-common-search')) {
+          return $gettext('To create or upload files, open a folder or Space')
+        }
+
+        if (isLocationTrashActive(router)) {
+          return $gettext('To create or upload files, switch to Personal or a Space')
         }
       },
       handler: () => {
