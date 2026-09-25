@@ -20,5 +20,8 @@ defineSlots<Slots>()
   .oc-bubble-menu {
     @apply inline-flex items-center rounded-full border border-role-surface-container-highest bg-role-surface-container-low px-1 py-1.5 shadow-md sm:px-1.5 sm:py-2;
   }
+  .oc-bubble-menu .oc-button {
+    @apply rounded-full;
+  }
 }
 </style>
