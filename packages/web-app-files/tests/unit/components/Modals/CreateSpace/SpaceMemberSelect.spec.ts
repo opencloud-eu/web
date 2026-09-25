@@ -99,6 +99,25 @@ describe('SpaceMemberSelect', () => {
 
     expect(wrapper.emitted('update:roleId').at(-1)).toEqual(['space-editor'])
   })
+
+  it('gives the selected members a newly picked role', async () => {
+    const { wrapper } = getWrapper()
+
+    await selectCollaborators(wrapper, [collaborator()])
+    wrapper.findComponent(RoleDropdown).vm.$emit('optionChange', otherSpaceRole)
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('update:modelValue').at(-1)).toEqual([
+      [
+        {
+          id: 'user-1',
+          displayName: 'Alice',
+          shareType: ShareTypes.user.value,
+          roleId: 'space-editor'
+        }
+      ]
+    ])
+  })
 })
 
 type Wrapper = ReturnType<typeof getWrapper>['wrapper']
@@ -131,15 +150,18 @@ function getWrapper({
 } = {}) {
   const mocks = defaultComponentMocks()
 
-  return {
-    mocks,
-    wrapper: mount(SpaceMemberSelect, {
-      props: { modelValue, roleId },
-      global: {
-        plugins: [...defaultPlugins({ piniaOptions: { sharesState: { graphRoles } } })],
-        mocks,
-        provide: mocks
-      }
-    })
-  }
+  const wrapper = mount(SpaceMemberSelect, {
+    props: {
+      modelValue,
+      roleId,
+      'onUpdate:roleId': (id: string) => wrapper.setProps({ roleId: id })
+    },
+    global: {
+      plugins: [...defaultPlugins({ piniaOptions: { sharesState: { graphRoles } } })],
+      mocks,
+      provide: mocks
+    }
+  })
+
+  return { mocks, wrapper }
 }

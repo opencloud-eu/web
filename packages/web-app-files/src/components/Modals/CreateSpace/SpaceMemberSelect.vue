@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, provide, ref, unref } from 'vue'
+import { computed, provide, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { CollaboratorAutoCompleteItem, ShareRole } from '@opencloud-eu/web-client'
 import { SpaceMemberInvite, useSharesStore, useUserStore } from '@opencloud-eu/web-pkg'
@@ -104,29 +104,27 @@ const selectedRole = computed(
 provide('availableInternalShareRoles', spaceRoles)
 provide('availableExternalShareRoles', ref<ShareRole[]>([]))
 
-function onCollaboratorsChanged(collaborators: CollaboratorAutoCompleteItem[]) {
-  selectedCollaborators.value = collaborators
-  autocompleteResults.value = []
-  searchQuery.value = ''
-  updateMembers()
-}
-
-function onRoleChanged(role: ShareRole) {
-  roleId.value = role.id
-  updateMembers()
-}
-
-function updateMembers() {
-  if (!unref(selectedRole)) {
+watch([selectedCollaborators, selectedRole], ([collaborators, role]) => {
+  if (!role) {
     members.value = []
     return
   }
 
-  members.value = unref(selectedCollaborators).map(({ id, displayName, shareType }) => ({
+  members.value = collaborators.map(({ id, displayName, shareType }) => ({
     id,
     displayName,
     shareType,
-    roleId: unref(selectedRole).id
+    roleId: role.id
   }))
+})
+
+function onCollaboratorsChanged(collaborators: CollaboratorAutoCompleteItem[]) {
+  selectedCollaborators.value = collaborators
+  autocompleteResults.value = []
+  searchQuery.value = ''
+}
+
+function onRoleChanged(role: ShareRole) {
+  roleId.value = role.id
 }
 </script>
