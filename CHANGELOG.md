@@ -1,6 +1,6 @@
 # Changelog
 
-## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-24
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-25
 
 ### ❤️ Thanks to all contributors! ❤️
 
@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
 - fix(files): use NoContentMessage for resource not found message [[#3447](https://github.com/opencloud-eu/web/pull/3447)]
 - fix: consistent sorting for spaces and resources [[#3432](https://github.com/opencloud-eu/web/pull/3432)]
 - fix(admin-settings): make apps sortable by status [[#3427](https://github.com/opencloud-eu/web/pull/3427)]
@@ -40,6 +41,8 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency dompurify to v3.4.16 [[#3445](https://github.com/opencloud-eu/web/pull/3445)]
+- chore(deps): update dependency yjs to v13.6.33 [[#3448](https://github.com/opencloud-eu/web/pull/3448)]
 - chore(deps): update pnpm to v11.27.1 [[#3414](https://github.com/opencloud-eu/web/pull/3414)]
 - chore(deps): update apache/tika docker tag to v4.1.1 [[#3417](https://github.com/opencloud-eu/web/pull/3417)]
 - chore(deps): update typescript-eslint monorepo to v8.70.1 [[#3418](https://github.com/opencloud-eu/web/pull/3418)]
