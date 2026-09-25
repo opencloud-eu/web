@@ -29,17 +29,19 @@ describe('Announcement component', () => {
     expect(wrapper.find('.announcement').exists()).toBe(false)
   })
 
-  it.each(['.announcement-text', '.announcement-details'])(
-    'opens the info dialog via "%s" when info text is present',
-    async (selector) => {
-      const { wrapper } = getWrapper({ bannerText: 'Maintenance', infoText: '# Details' })
-      const { dispatchModal } = useModals()
+  it('opens the info dialog via the banner button when info text is present', async () => {
+    const { wrapper } = getWrapper({ bannerText: 'Maintenance', infoText: '# Details' })
+    const { dispatchModal } = useModals()
 
-      await wrapper.find(selector).trigger('click')
+    await wrapper.find('.announcement-text').trigger('click')
 
-      expect(dispatchModal).toHaveBeenCalled()
-    }
-  )
+    expect(dispatchModal).toHaveBeenCalled()
+  })
+
+  it('shows the details hint inside the banner button when info text is present', () => {
+    const { wrapper } = getWrapper({ bannerText: 'Maintenance', infoText: '# Details' })
+    expect(wrapper.find('button.announcement-text .announcement-details').exists()).toBe(true)
+  })
 
   it('is not clickable and has no details button when no info text is present', () => {
     const { wrapper } = getWrapper({ bannerText: 'Maintenance' })
