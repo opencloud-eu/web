@@ -34,4 +34,15 @@ describe('AnnouncementModal', () => {
     expect(viewer.exists()).toBe(true)
     expect(viewer.props('content')).toEqual('# Details')
   })
+
+  it('shows the title in a section', () => {
+    const wrapper = mount(AnnouncementModal, {
+      props: { modal: {} as any, title: 'Maintenance tonight', infoText: '# Details' },
+      global: { plugins: [...defaultPlugins()] }
+    })
+
+    expect(wrapper.find('.oc-section-title').text()).toEqual('Maintenance tonight')
+    expect(wrapper.find('.oc-section-subtitle').exists()).toBe(false)
+    expect(wrapper.find('.oc-section-toggle').exists()).toBe(false)
+  })
 })

@@ -1,13 +1,13 @@
 <template>
   <div
     v-if="isVisible"
-    class="announcement flex items-center gap-3 px-4 py-2 bg-amber-400 text-amber-950"
+    class="announcement flex items-stretch pr-4 bg-amber-400 text-amber-950"
     role="status"
   >
     <button
       v-if="hasInfo"
       type="button"
-      class="grow flex items-center justify-center gap-2 min-w-0 cursor-pointer text-amber-950"
+      class="announcement-text grow flex items-center gap-2 min-w-0 py-2 pl-4 pr-3 cursor-pointer text-amber-950"
       aria-haspopup="dialog"
       @click="openModal"
     >
@@ -18,12 +18,20 @@
         color="var(--color-amber-950)"
         class="shrink-0"
       />
+      <span class="text-sm font-bold truncate" v-text="bannerText" />
       <span
-        class="text-sm font-medium underline-offset-2 hover:underline truncate"
-        v-text="bannerText"
-      />
+        class="announcement-details ml-auto shrink-0 flex items-center gap-1 text-sm font-medium"
+      >
+        <span v-text="$gettext('Details')" />
+        <oc-icon
+          name="arrow-right-s"
+          fill-type="line"
+          size="small"
+          color="var(--color-amber-950)"
+        />
+      </span>
     </button>
-    <div v-else class="grow flex items-center justify-center gap-2 min-w-0">
+    <div v-else class="announcement-text grow flex items-center gap-2 min-w-0 py-2 pl-4 pr-3">
       <oc-icon
         name="error-warning"
         fill-type="line"
@@ -31,12 +39,17 @@
         color="var(--color-amber-950)"
         class="shrink-0"
       />
-      <span class="text-sm font-medium truncate" v-text="bannerText" />
+      <span class="text-sm font-bold truncate" v-text="bannerText" />
     </div>
+    <span
+      v-if="hasInfo"
+      class="shrink-0 self-center w-px h-4 mr-3 bg-amber-950"
+      aria-hidden="true"
+    />
     <oc-button
       appearance="raw"
       no-hover
-      class="shrink-0"
+      class="announcement-dismiss shrink-0 self-center"
       :aria-label="$gettext('Dismiss announcement')"
       @click="dismissed = true"
     >
@@ -74,11 +87,10 @@ watch(announcement, () => {
 
 function openModal() {
   dispatchModal({
-    title: unref(bannerText) || $gettext('Announcement'),
+    title: $gettext('Announcement'),
     customComponent: markRaw(AnnouncementModal),
-    customComponentAttrs: () => ({ infoText: unref(infoText) }),
-    confirmText: $gettext('Close'),
-    hideCancelButton: true
+    customComponentAttrs: () => ({ title: unref(bannerText), infoText: unref(infoText) }),
+    hideActions: true
   })
 }
 </script>

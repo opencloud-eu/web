@@ -67,6 +67,11 @@ const areCustomKeyBindingsDisabled = () => {
     return true
   }
 
+  // an open modal blocks the underlying view, even if the focus left the modal
+  if (document.querySelector("[aria-modal='true']")) {
+    return true
+  }
+
   const closestSelectionEl = document.activeElement
   if (!closestSelectionEl) {
     return false
