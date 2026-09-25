@@ -218,9 +218,9 @@ const itemsPerPageQuery = useRouteQueryPersisted({
 })
 
 // view mode and tile size only apply to views that offer view modes, so we don't want to write them into the url otherwise
-const hasViewModes = viewModes.length > 0
+const hasViewModes = computed(() => viewModes.length > 0)
 
-const viewModeQuery = hasViewModes
+const viewModeQuery = unref(hasViewModes)
   ? useRouteQueryPersisted({
       name: FolderViewModeConstants.queryName,
       defaultValue: viewModeDefault
@@ -231,7 +231,7 @@ const currentViewMode = computed(() => {
   return viewModes.find((viewMode) => viewMode.name === queryItemAsString(unref(viewModeQuery)))
 })
 
-const viewSizeQuery = hasViewModes
+const viewSizeQuery = unref(hasViewModes)
   ? useRouteQueryPersisted({
       name: FolderViewModeConstants.tilesSizeQueryName,
       defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
@@ -253,7 +253,10 @@ const setViewMode = (mode: FolderView) => {
 }
 
 watch(
-  hasViewModes ? [itemsPerPageQuery, viewModeQuery, viewSizeQuery] : [itemsPerPageQuery],
+  () =>
+    unref(hasViewModes)
+      ? [unref(itemsPerPageQuery), unref(viewModeQuery), unref(viewSizeQuery)]
+      : [unref(itemsPerPageQuery)],
   (params) => {
     queryParamsLoading.value = params.some((p) => !p)
   },
