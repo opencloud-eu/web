@@ -20,7 +20,7 @@
       <div v-if="!encrypted" class="create-space-description">
         <span class="inline-block mb-0.5" v-text="$gettext('Description')" />
         <div class="border border-role-outline-variant rounded-lg overflow-hidden bg-role-surface">
-          <text-editor-provider :editor="descriptionEditor">
+          <text-editor-provider :editor="descriptionEditor" :teleport="editorTeleportTarget">
             <text-editor-toolbar />
             <text-editor-content class="min-h-40 max-h-72 py-2 overflow-auto" />
           </text-editor-provider>
@@ -72,8 +72,11 @@ import {
 import SpaceImagePicker from './SpaceImagePicker.vue'
 import SpaceMemberSelect from './SpaceMemberSelect.vue'
 
-const { encrypted = false } = defineProps<{
+const { encrypted = false, editorTeleportTarget = undefined } = defineProps<{
   encrypted?: boolean
+  // The editor's drops teleport to the body by default, where the modal's focus
+  // trap would pull focus right back out of their inputs.
+  editorTeleportTarget?: string
 }>()
 
 const quota = defineModel<number>('quota', { default: 0 })
@@ -121,6 +124,7 @@ const descriptionEditor = useTextEditor({
   modelValue: toRef(() => unref(description)),
   ariaLabel: $gettext('Space description'),
   autofocus: false,
+  excludeActions: ['frontmatter', 'print'],
   // The cloud picker needs somewhere to browse from, and the space has no files yet.
   currentResource: personalSpace,
   onUpdate: (content) => {

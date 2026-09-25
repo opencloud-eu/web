@@ -108,7 +108,7 @@
             :close-on-click="child.menuCloseOnClick ?? true"
             :enforce-drop-on-mobile="child.menuEnforceDropOnMobile ?? false"
             position="right-start"
-            teleport="body"
+            :teleport="teleport"
           >
             <component :is="child.menuComponent" v-bind="getMenuComponentAttrs(child)" />
           </oc-drop>
