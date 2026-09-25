@@ -3,12 +3,16 @@
   <template v-else>
     <p v-if="!activities.length" v-text="$gettext('No activities')" />
     <div v-else class="ml-2">
-      <oc-list class="oc-timeline break-all">
+      <oc-list class="oc-timeline wrap-anywhere">
         <li v-for="activity in activities" :key="activity.id">
-          <div class="flex items-center">
+          <span
+            class="text-role-on-surface-variant text-sm leading-[1lh]"
+            v-text="getTimeFromActivity(activity)"
+          />
+          <div class="flex items-start mt-1">
             <oc-avatars
               :items="getAvatarsFromActivity(activity)"
-              class="mr-1 inline-flex"
+              class="mr-1 inline-flex h-lh shrink-0 items-center"
               stacked
               gap-size="small"
               :width="16.8"
@@ -26,10 +30,6 @@
             </oc-avatars>
             <span v-html="getHtmlFromActivity(activity)" />
           </div>
-          <span
-            class="text-role-on-surface-variant text-sm mt-2"
-            v-text="getTimeFromActivity(activity)"
-          />
         </li>
       </oc-list>
       <p class="text-role-on-surface-variant text-sm" v-text="activitiesFooterText" />
