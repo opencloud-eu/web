@@ -1,4 +1,4 @@
-import { useSpaceActionsEditImageMenu } from '../../../../../src/composables'
+import { useSpaceActionsCustomizeMenu } from '../../../../../src/composables'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import {
@@ -9,7 +9,7 @@ import {
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
-describe('editImageMenu', () => {
+describe('customizeMenu', () => {
   describe('isVisible property', () => {
     it('should be false when no resource given', () => {
       getWrapper({
@@ -19,21 +19,27 @@ describe('editImageMenu', () => {
       })
     })
 
-    it('should be false when canEditImage is false', () => {
-      const space = mock<SpaceResource>({ canEditImage: () => false })
+    it('should be false when no child action is permitted', () => {
+      const space = mock<SpaceResource>({
+        canEditImage: () => false,
+        canEditDescription: () => false,
+        canEditReadme: () => false,
+        driveType: 'project'
+      })
       getWrapper({
         setup: ({ actions }) => {
-          expect(
-            unref(actions)[0].isVisible({
-              resources: [space]
-            })
-          ).toBe(false)
+          expect(unref(actions)[0].isVisible({ resources: [space] })).toBe(false)
         }
       })
     })
 
     it.each(['personal', 'share'])('should be false when space is of type %s', (driveType) => {
-      const space = mock<SpaceResource>({ canEditImage: () => true, driveType })
+      const space = mock<SpaceResource>({
+        canEditImage: () => true,
+        canEditDescription: () => true,
+        canEditReadme: () => true,
+        driveType
+      })
 
       getWrapper({
         setup: ({ actions }) => {
@@ -42,22 +48,31 @@ describe('editImageMenu', () => {
       })
     })
 
-    it('should be true when space is project and canEditImage is true', () => {
-      const space = mock<SpaceResource>({ canEditImage: () => true, driveType: 'project' })
+    it.each(['canEditImage', 'canEditDescription', 'canEditReadme'])(
+      'should be true when space is project and %s is true',
+      (permission) => {
+        const space = mock<SpaceResource>({
+          canEditImage: () => false,
+          canEditDescription: () => false,
+          canEditReadme: () => false,
+          [permission]: () => true,
+          driveType: 'project'
+        })
 
-      getWrapper({
-        setup: ({ actions }) => {
-          expect(unref(actions)[0].isVisible({ resources: [space] })).toBe(true)
-        }
-      })
-    })
+        getWrapper({
+          setup: ({ actions }) => {
+            expect(unref(actions)[0].isVisible({ resources: [space] })).toBe(true)
+          }
+        })
+      }
+    )
   })
 })
 
 function getWrapper({
   setup
 }: {
-  setup: (instance: ReturnType<typeof useSpaceActionsEditImageMenu>) => void
+  setup: (instance: ReturnType<typeof useSpaceActionsCustomizeMenu>) => void
 }) {
   const mocks = {
     ...defaultComponentMocks({
@@ -68,7 +83,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useSpaceActionsEditImageMenu()
+        const instance = useSpaceActionsCustomizeMenu()
         setup(instance)
       },
       {

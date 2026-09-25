@@ -236,6 +236,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       panel: {
         name: 'versions',
         icon: 'git-branch',
+        iconFillType: 'line',
         title: () => $gettext('Versions'),
         component: markRaw(FileVersions),
         componentAttrs: () => ({
@@ -349,7 +350,8 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: [fileSideBarExtensionPoint.id],
       panel: {
         name: 'activities',
-        icon: 'pulse',
+        icon: 'time',
+        iconFillType: 'line',
         title: () => $gettext('Activities'),
         component: markRaw(ActivitiesPanel),
         isVisible: ({ items }) => {

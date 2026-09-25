@@ -81,6 +81,32 @@ describe('useKeyboardActions', () => {
 
     wrapper.unmount()
   })
+
+  it('should not execute callback on key event while a modal is open', () => {
+    const wrapper = getWrapper()
+    const { keyboardActions } = wrapper.vm
+    const counter = ref(0)
+
+    const increment = () => {
+      counter.value += 1
+    }
+
+    keyboardActions.bindKeyAction({ primary: Key.A }, increment)
+
+    const modal = document.createElement('div')
+    modal.setAttribute('aria-modal', 'true')
+    document.body.appendChild(modal)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }))
+    expect(counter.value).toBe(0)
+
+    modal.remove()
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }))
+    expect(counter.value).toBe(1)
+
+    wrapper.unmount()
+  })
 })
 
 function getWrapper() {

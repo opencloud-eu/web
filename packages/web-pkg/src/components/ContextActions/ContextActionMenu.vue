@@ -58,12 +58,23 @@ const {
 }>()
 
 function actionToDropItem(action: Action): MenuSectionDrop {
+  const items = (action.children || []).filter((child) => child.isVisible(actionOptions))
   return {
     label: action.label(actionOptions),
     name: action.name,
     icon: typeof action.icon === 'function' ? action.icon(actionOptions) : action.icon,
-    items: (action.children || []).filter((child) => child.isVisible(actionOptions))
+    items,
+    itemGroups: groupByCategory(items)
   }
+}
+
+function groupByCategory(actions: Action[]) {
+  const groups = new Map<string, Action[]>()
+  for (const action of actions) {
+    const category = action.category || 'tertiary'
+    groups.set(category, [...(groups.get(category) || []), action])
+  }
+  return [...groups.values()]
 }
 
 function getSectionClasses(index: number) {

@@ -15,7 +15,7 @@ const spaceIdSelector = `[data-item-id="%s"] .oc-resource-basename`
 const spacesRenameOptionSelector = '.oc-files-actions-rename-trigger:visible'
 const editSpacesSubtitleOptionSelector = '.oc-files-actions-edit-description-trigger:visible'
 const editQuotaOptionSelector = '.oc-files-actions-edit-quota-trigger:visible'
-const editImageMenuTrigger = '[id^="oc-files-context-actions-edit-space-image-menu-toggle-"]'
+const customizeMenuTrigger = '[id^="oc-files-context-actions-customize-space-menu-toggle-"]'
 const editImageOptionSelector = '.oc-files-actions-upload-space-image-trigger'
 const deleteImageButton = '.oc-files-actions-delete-space-image-trigger'
 const setIconButton = '.oc-files-actions-set-space-icon-trigger'
@@ -180,7 +180,12 @@ export const changeSpaceSubtitle = async (args: {
   contextMenu?: boolean
 }): Promise<void> => {
   const { page, value, id, contextMenu = false } = args
-  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
+  if (contextMenu) {
+    await page.locator(spaceContextMenuButton).click()
+    await page.locator(customizeMenuTrigger).click()
+  } else {
+    await openActionsPanel(page)
+  }
 
   await page.locator(editSpacesSubtitleOptionSelector).click()
   await page.locator(spaceNameInputField).fill(value)
@@ -206,7 +211,12 @@ export const changeSpaceDescription = async (args: {
   contextMenu?: boolean
 }): Promise<void> => {
   const { page, value, contextMenu = false } = args
-  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
+  if (contextMenu) {
+    await page.locator(spaceContextMenuButton).click()
+    await page.locator(customizeMenuTrigger).click()
+  } else {
+    await openActionsPanel(page)
+  }
 
   const waitForUpdate = () =>
     page.waitForResponse(
@@ -280,7 +290,7 @@ export const changeSpaceImage = async (args: {
   const { id, page, resource, contextMenu = false } = args
   if (contextMenu) {
     await page.locator(spaceContextMenuButton).click()
-    await page.locator(editImageMenuTrigger).click()
+    await page.locator(customizeMenuTrigger).click()
   } else {
     await openActionsPanel(page)
   }
@@ -318,7 +328,7 @@ export const changeSpaceIcon = async (args: {
   const { id, page, icon, contextMenu = false } = args
   if (contextMenu) {
     await page.locator(spaceContextMenuButton).click()
-    await page.locator(editImageMenuTrigger).click()
+    await page.locator(customizeMenuTrigger).click()
   } else {
     await openActionsPanel(page)
   }
@@ -353,7 +363,7 @@ export const deleteSpaceImage = async (args: {
   const { id, page, contextMenu = false } = args
   if (contextMenu) {
     await page.locator(spaceContextMenuButton).click()
-    await page.locator(editImageMenuTrigger).click()
+    await page.locator(customizeMenuTrigger).click()
   } else {
     await openActionsPanel(page)
   }
