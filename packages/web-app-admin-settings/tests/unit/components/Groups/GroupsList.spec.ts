@@ -8,6 +8,8 @@ import {
 import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../../../src/composables'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
+import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 
 const getGroupMocks = () =>
   [
@@ -21,28 +23,30 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('GroupsList', () => {
-  describe('method "orderBy"', () => {
-    it('should return an ascending ordered list while desc is set to false', () => {
-      const { wrapper } = getWrapper()
-
-      expect(
-        wrapper.vm.orderBy(
-          [{ displayName: 'users' }, { displayName: 'admins' }],
-          'displayName',
-          false
-        )
-      ).toEqual([{ displayName: 'admins' }, { displayName: 'users' }])
+  describe('sorting', () => {
+    it.each([
+      { query: {}, expected: ['admins', 'users'] },
+      {
+        query: { 'sort-by': 'displayName', 'sort-dir': SortDir.Asc },
+        expected: ['admins', 'users']
+      },
+      {
+        query: { 'sort-by': 'displayName', 'sort-dir': SortDir.Desc },
+        expected: ['users', 'admins']
+      }
+    ])('sorts by display name based on the route query $query', ({ query, expected }) => {
+      const { wrapper } = getWrapper({
+        groups: [{ displayName: 'users' }, { displayName: 'admins' }] as Group[],
+        query
+      })
+      expect(wrapper.vm.items.map((g) => g.displayName)).toEqual(expected)
     })
-    it('should return an descending ordered list while desc is set to true', () => {
-      const { wrapper } = getWrapper()
-
-      expect(
-        wrapper.vm.orderBy(
-          [{ displayName: 'admins' }, { displayName: 'users' }],
-          'displayName',
-          true
-        )
-      ).toEqual([{ displayName: 'users' }, { displayName: 'admins' }])
+    it('writes the sort parameters to the route query when calling "handleSort"', () => {
+      const { wrapper, mocks } = getWrapper()
+      wrapper.vm.handleSort({ sortBy: 'displayName', sortDir: SortDir.Desc })
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        query: expect.objectContaining({ 'sort-by': 'displayName', 'sort-dir': SortDir.Desc })
+      })
     })
   })
 
@@ -119,13 +123,22 @@ describe('GroupsList', () => {
 function getWrapper({
   mountType = shallowMount,
   groups = [],
-  selectedGroups = []
-}: { mountType?: typeof mount; groups?: Group[]; selectedGroups?: Group[] } = {}) {
+  selectedGroups = [],
+  query = {}
+}: {
+  mountType?: typeof mount
+  groups?: Group[]
+  selectedGroups?: Group[]
+  query?: Record<string, string>
+} = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
-  const mocks = defaultComponentMocks()
+  const mocks = defaultComponentMocks({
+    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+  })
 
   return {
+    mocks,
     wrapper: mountType(GroupsList, {
       global: {
         plugins: [

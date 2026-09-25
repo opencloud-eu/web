@@ -144,6 +144,7 @@ import { useGettext } from 'vue3-gettext'
 import {
   FolderViewModeConstants,
   PaginationConstants,
+  QueryValue,
   queryItemAsString,
   useActiveLocation,
   useResourcesStore,
@@ -216,19 +217,26 @@ const itemsPerPageQuery = useRouteQueryPersisted({
   storagePrefix: perPageStoragePrefix
 })
 
-const viewModeQuery = useRouteQueryPersisted({
-  name: FolderViewModeConstants.queryName,
-  defaultValue: viewModeDefault
-})
+// view mode and tile size only apply to views that offer view modes, so we don't want to write them into the url otherwise
+const hasViewModes = computed(() => viewModes.length > 0)
+
+const viewModeQuery = unref(hasViewModes)
+  ? useRouteQueryPersisted({
+      name: FolderViewModeConstants.queryName,
+      defaultValue: viewModeDefault
+    })
+  : ref<QueryValue>()
 
 const currentViewMode = computed(() => {
   return viewModes.find((viewMode) => viewMode.name === queryItemAsString(unref(viewModeQuery)))
 })
 
-const viewSizeQuery = useRouteQueryPersisted({
-  name: FolderViewModeConstants.tilesSizeQueryName,
-  defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
-})
+const viewSizeQuery = unref(hasViewModes)
+  ? useRouteQueryPersisted({
+      name: FolderViewModeConstants.tilesSizeQueryName,
+      defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
+    })
+  : ref<QueryValue>()
 
 const setItemsPerPage = (itemsPerPage: PageSizeOption) => {
   return router.replace({
@@ -245,7 +253,10 @@ const setViewMode = (mode: FolderView) => {
 }
 
 watch(
-  [itemsPerPageQuery, viewModeQuery, viewSizeQuery],
+  () =>
+    unref(hasViewModes)
+      ? [unref(itemsPerPageQuery), unref(viewModeQuery), unref(viewSizeQuery)]
+      : [unref(itemsPerPageQuery)],
   (params) => {
     queryParamsLoading.value = params.some((p) => !p)
   },
