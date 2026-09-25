@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show tiles view first in view mode options [[#3454](https://github.com/opencloud-eu/web/pull/3454)]
 - ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
 - fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
 - fix(files): use NoContentMessage for resource not found message [[#3447](https://github.com/opencloud-eu/web/pull/3447)]
