@@ -3,7 +3,7 @@
 exports[`OcModal > displays input 1`] = `
 "<div class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full bg-black/40">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
+    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0" data-custom-key-bindings-disabled="true">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
         <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Create new folder</h2>
         <div class="flex items-center gap-1">
@@ -11,8 +11,8 @@ exports[`OcModal > displays input 1`] = `
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span" uniqueids="false"></oc-icon-stub>
           </oc-button-stub>
         </div>
-      </div>
-      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4">
+      </div> <!-- focusable so that the keyboard can scroll the content -->
+      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
         <!--v-if-->
         <!--v-if-->
         <oc-text-input-stub label="Folder name" id="oc-textinput-1" type="text" modelvalue="New folder" clearbuttonenabled="false" clearbuttonaccessiblelabel="" disabled="false" inlinelabel="false" errormessagedebouncedtime="500" fixmessageline="true" readonly="false" requiredmark="false" passwordpolicy="[object Object]" hasborder="true" class="oc-modal-body-input"></oc-text-input-stub>
@@ -30,7 +30,7 @@ exports[`OcModal > displays input 1`] = `
 exports[`OcModal > displays loading state 1`] = `
 "<div class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full bg-black/40">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
+    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0" data-custom-key-bindings-disabled="true">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
         <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1"> <button type="button" disabled="" aria-label="Cancel" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default oc-modal-title-actions-cancel">
@@ -45,8 +45,8 @@ exports[`OcModal > displays loading state 1`] = `
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-5"></svg></span>
           </button></div>
-      </div>
-      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4">
+      </div> <!-- focusable so that the keyboard can scroll the content -->
+      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
         <p class="oc-modal-body-message mt-0 mb-0">Example message</p>
         <!--v-if-->
         <!--v-if-->
@@ -62,7 +62,7 @@ exports[`OcModal > displays loading state 1`] = `
 exports[`OcModal > matches snapshot 1`] = `
 "<div class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full bg-black/40">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
+    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0" data-custom-key-bindings-disabled="true">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
         <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1">
@@ -70,8 +70,8 @@ exports[`OcModal > matches snapshot 1`] = `
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span" uniqueids="false"></oc-icon-stub>
           </oc-button-stub>
         </div>
-      </div>
-      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4">
+      </div> <!-- focusable so that the keyboard can scroll the content -->
+      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
         <p class="oc-modal-body-message mt-0 mb-0">Example message</p>
         <!--v-if-->
         <!--v-if-->
@@ -89,7 +89,7 @@ exports[`OcModal > matches snapshot 1`] = `
 exports[`OcModal > overrides props message with slot 1`] = `
 "<div class="oc-modal-background fixed left-0 top-0 z-[var(--z-index-modal)] flex items-center justify-center flex-row flex-wrap size-full bg-black/40">
   <focus-trap-stub tabbableoptions="[object Object]" active="true" escapedeactivates="true" returnfocusondeactivate="true" allowoutsideclick="true" clickoutsidedeactivates="false" initialfocus="[Function]" delayinitialfocus="true" preventscroll="false" setreturnfocus="false">
-    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0">
+    <div class="oc-modal bg-role-surface z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest" role="dialog" aria-modal="true" aria-labelledby="oc-modal-title-v-0" data-custom-key-bindings-disabled="true">
       <div class="oc-modal-title shrink-0 flex items-center flex-row justify-between py-3 px-4 rounded-t-xl">
         <h2 id="oc-modal-title-v-0" class="truncate m-0 text-base">Example title</h2>
         <div class="flex items-center gap-1">
@@ -97,8 +97,8 @@ exports[`OcModal > overrides props message with slot 1`] = `
             <oc-icon-stub accessiblelabel="" color="" filltype="fill" name="close" sizeclass="size-5" type="span" uniqueids="false"></oc-icon-stub>
           </oc-button-stub>
         </div>
-      </div>
-      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4">
+      </div> <!-- focusable so that the keyboard can scroll the content -->
+      <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
         <div class="oc-modal-body-message mt-2 mb-4">
           <p>Slot message</p>
         </div>

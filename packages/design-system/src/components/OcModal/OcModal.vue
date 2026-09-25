@@ -6,13 +6,12 @@
     <focus-trap :active="true" :initial-focus="initialFocusRef" :tabbable-options="tabbableOptions">
       <div
         :id="elementId"
-        ref="ocModal"
         :class="classes"
-        class="z-[calc(var(--z-index-modal)+1)] rounded-xl focus:outline-0 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest"
-        tabindex="0"
+        class="z-[calc(var(--z-index-modal)+1)] rounded-xl w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden shadow-2xl border border-role-surface-container-highest"
         role="dialog"
         aria-modal="true"
         :aria-labelledby="titleId"
+        data-custom-key-bindings-disabled="true"
         @keydown.esc.stop="cancelModalAction"
       >
         <div
@@ -33,7 +32,12 @@
             </oc-button>
           </div>
         </div>
-        <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4">
+        <!-- focusable so that the keyboard can scroll the content -->
+        <div
+          ref="ocModalBody"
+          class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0"
+          tabindex="0"
+        >
           <div
             v-if="$slots.content"
             key="modal-slot-content"
@@ -284,7 +288,7 @@ const titleId = `oc-modal-title-${useId()}`
 const showSpinner = ref(false)
 const userInputValue = ref<string>()
 const buttonConfirmAppearance = ref<ButtonProps['appearance']>('filled')
-const ocModal = useTemplateRef<HTMLElement>('ocModal')
+const ocModalBody = useTemplateRef<HTMLElement>('ocModalBody')
 const ocModalInput = useTemplateRef<typeof OcTextInput>('ocModalInput')
 
 const tabbableOptions = computed((): FocusTrapTabbableOptions => {
@@ -332,7 +336,7 @@ const initialFocusRef = computed<FocusTargetOrFalse>(() => {
     return focusTrapInitial as FocusTargetOrFalse
   }
   // needs to be one of those elements or undefined. null will throw errors
-  return () => unref(ocModalInput)?.$el?.querySelector('input') || unref(ocModal) || undefined
+  return () => unref(ocModalInput)?.$el?.querySelector('input') || unref(ocModalBody) || undefined
 })
 
 const classes = computed(() => {
