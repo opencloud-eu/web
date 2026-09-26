@@ -68,16 +68,27 @@ exports[`account information page > public link context > should render a limite
       <p class="text-sm text-role-on-surface-variant mt-1 mb-0">Your picture and account details.</p>
     </div>
   </div>
-  <div class="account-page-avatar bg-role-surface-container rounded-xl p-4"><input class="hidden avatar-file-input" type="file" accept="image/jpeg, image/png">
-    <div class="flex flex-col md:flex-row items-center gap-6"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 128px; height: 128px; line-height: 128px; background-color: #b82015; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name=""><span class="avatar-initials" style="color: white;"></span></span>
-      <div class="flex flex-col items-center md:items-start gap-4">
-        <div class="text-center md:text-left">
-          <div>Profile picture</div>
-          <div class="text-sm text-role-on-surface-variant">Max. 10MB, JPG, PNG</div>
-        </div>
-        <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
-            <!--v-if-->
-            <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/upload-cloud-line.svg" unique-ids="false" transform-source="(svg) => {
+  <section class="oc-section rounded-lg bg-role-surface-container p-3 account-page-avatar">
+    <h2 class="oc-section-heading m-0 text-base font-normal">
+      <div class="oc-section-header flex w-full items-center justify-between"><span class="flex flex-row items-center gap-4"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/account-circle-line.svg" unique-ids="false" transform-source="(svg) => {
+			if (__props.accessibleLabel !== &quot;&quot;) {
+				const title = document.createElement(&quot;title&quot;);
+				title.setAttribute(&quot;id&quot;, svgTitleId.value);
+				title.appendChild(document.createTextNode(__props.accessibleLabel));
+				svg.insertBefore(title, svg.firstChild);
+			};
+			return svg;
+		}" aria-hidden="true" focusable="false" style="fill: var(--oc-role-on-surface);" class="size-5"></svg></span> <span class="flex flex-col items-start text-left"><span class="oc-section-title font-semibold text-role-on-surface">Profile picture</span> <span class="oc-section-subtitle text-sm text-role-on-surface-variant">Max. 10MB, JPG, PNG</span></span></span>
+        <!--v-if-->
+      </div>
+    </h2>
+    <div id="oc-section-content-1" class="oc-section-content flex flex-col gap-4 pt-4 pl-9">
+      <div><input class="hidden avatar-file-input" type="file" accept="image/jpeg, image/png">
+        <div class="flex flex-col items-center md:items-start gap-4"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 128px; height: 128px; line-height: 128px; background-color: #b82015; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name=""><span class="avatar-initials" style="color: white;"></span></span>
+          <div class="flex flex-col items-center md:items-start gap-4">
+            <div class="oc-button-group"><button type="button" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-sm min-h-3 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default">
+                <!--v-if-->
+                <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/upload-cloud-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -86,14 +97,16 @@ exports[`account information page > public link context > should render a limite
 			};
 			return svg;
 		}" aria-hidden="true" focusable="false" class="size-4"></svg></span> Upload
-          </button>
-          <!--v-if-->
+              </button>
+              <!--v-if-->
+            </div>
+          </div>
         </div>
+        <!--v-if-->
+        <!--v-if-->
       </div>
     </div>
-    <!--v-if-->
-    <!--v-if-->
-  </div>
+  </section>
   <div class="flex justify-between items-center gap-4 mb-4 mt-8">
     <div>
       <h2 class="my-0 text-lg">Account information</h2>

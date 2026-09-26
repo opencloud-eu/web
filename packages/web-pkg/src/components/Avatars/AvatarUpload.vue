@@ -7,7 +7,7 @@
       accept="image/jpeg, image/png"
       @change="onFileChange"
     />
-    <div class="flex flex-col md:flex-row items-center gap-6">
+    <div class="flex flex-col items-center md:items-start gap-4">
       <user-avatar :width="128" :user-id="user.id" :user-name="user.displayName" />
       <div class="flex flex-col items-center md:items-start gap-4">
         <slot />
