@@ -44,9 +44,7 @@ Feature: server sent events
     And "Brian" navigates to the projects space page
 
     And "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name      | id        |
-      | Marketing | marketing |
+    And "Alice" creates the project space using API "Marketing"
 
     # space-created
     Then "Alice" should get "space-created" SSE event
@@ -58,10 +56,10 @@ Feature: server sent events
     Then "Alice" should get "space-member-added" SSE event
     And "Brian" should get "userlog-notification" SSE event
     And "Brian" should get "space-member-added" SSE event
-    And "Brian" should see space "marketing"
+    And "Brian" should see space "Marketing"
 
     # folder-created
-    When "Brian" navigates to the project space "marketing"
+    When "Brian" navigates to the project space "Marketing"
     And "Alice" creates the following folder in space "Marketing" using API
       | name         |
       | space-folder |
@@ -73,7 +71,7 @@ Feature: server sent events
     And "Brian" should not be able to edit folder "space-folder"
 
     # space-share-updated
-    When "Alice" navigates to the project space "marketing"
+    When "Alice" navigates to the project space "Marketing"
     And "Alice" changes the roles of the following user in the project space
       | user  | role     |
       | Brian | Can edit |
@@ -126,13 +124,13 @@ Feature: server sent events
 
     # space-member-removed
     When "Brian" navigates to the projects space page
-    And "Alice" navigates to the project space "marketing"
+    And "Alice" navigates to the project space "Marketing"
     And "Alice" removes access to following user from the project space
       | user  |
       | Brian |
     Then "Alice" should get "space-member-removed" SSE event
     And "Brian" should get "space-member-removed" SSE event
-    And "Brian" should not see space "marketing"
+    And "Brian" should not see space "Marketing"
 
 
     # space-disabled
@@ -141,25 +139,25 @@ Feature: server sent events
       | Brian | Can view | user      |
     And "Alice" navigates to the projects space page
     And "Alice" disables the following space using the batch-actions
-      | id        |
-      | marketing |
+      | name      |
+      | Marketing |
     Then "Alice" should get "space-disabled" SSE event
     And "Brian" should get "space-disabled" SSE event
 
     # space-enabled
     When "Alice" enables the following space using the batch-actions
-      | id        |
-      | marketing |
+      | name      |
+      | Marketing |
     Then "Alice" should get "space-enabled" SSE event
     And "Brian" should get "space-enabled" SSE event
 
     # space-deleted
     And "Alice" disables the following space using the batch-actions
-      | id        |
-      | marketing |
+      | name      |
+      | Marketing |
     And "Alice" deletes the following space using the batch-actions
-      | id        |
-      | marketing |
+      | name      |
+      | Marketing |
     Then "Alice" should get "space-deleted" SSE event
     And "Brian" should get "space-deleted" SSE event
 
@@ -208,9 +206,7 @@ Feature: server sent events
     Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project space using API
-      | name      | id        |
-      | Marketing | marketing |
+    And "Alice" creates the project space using API "Marketing"
     And "Alice" adds the following member to the space "Marketing" using API
       | user  | role     | shareType |
       | Brian | Can edit | user      |
@@ -218,9 +214,9 @@ Feature: server sent events
       | name         |
       | space-folder |
     And "Alice" logs in
-    When "Alice" navigates to the project space "marketing"
+    When "Alice" navigates to the project space "Marketing"
     And "Brian" logs in
-    And "Brian" navigates to the project space "marketing"
+    And "Brian" navigates to the project space "Marketing"
 
     # postprocessing-finished - upload file
     When "Brian" uploads the following resource
@@ -267,7 +263,7 @@ Feature: server sent events
 
     # item-restored
     When "Brian" navigates to the trashbin
-    When "Brian" opens trashbin of the project space "marketing"
+    When "Brian" opens trashbin of the project space "Marketing"
     And "Brian" restores the following resource from trashbin
       | resource       |
       | example.ocnote |
@@ -278,7 +274,7 @@ Feature: server sent events
       | example.ocnote |
 
     # item-moved
-    When "Brian" navigates to the project space "marketing"
+    When "Brian" navigates to the project space "Marketing"
     And "Brian" opens folder "space-folder"
     And "Alice" moves the following resource using drag-drop
       | resource           | to           |

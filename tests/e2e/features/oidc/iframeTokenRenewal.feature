@@ -15,11 +15,9 @@ Feature: Token renewal using iframe
     And "Alice" logs in
     And "Alice" opens the "files" app
     And "Alice" navigates to the projects space page
-    And "Alice" creates the following project spaces
-      | name | id     |
-      | team | team.1 |
+    And "Alice" creates the project space "team"
     When "Alice" waits for token renewal via iframe
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     And "Alice" creates the following resource
       | resource     | type   |
       | space-folder | folder |

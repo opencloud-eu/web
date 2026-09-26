@@ -17,9 +17,7 @@ Feature: Work with an rclone-crypt encrypted vault space
   Scenario: Create a vault space, work with its files and share it with a space member
     When "Alice" logs in
     And "Alice" navigates to the projects space page
-    And "Alice" creates the following project spaces
-      | name       | password |
-      | vaultspace | foobar   |
+    And "Alice" creates the vault space "vaultspace" with password "foobar"
     And "Alice" enters the vault space "vaultspace" with passphrase "foobar"
     And "Alice" creates the following resources
       | resource     | type     | content     | password |
@@ -77,9 +75,7 @@ Feature: Work with an rclone-crypt encrypted vault space
   Scenario: Reloading an unlocked vault space locks it again
     When "Alice" logs in
     And "Alice" navigates to the projects space page
-    And "Alice" creates the following project spaces
-      | name       | password |
-      | vaultspace | foobar   |
+    And "Alice" creates the vault space "vaultspace" with password "foobar"
     And "Alice" enters the vault space "vaultspace" with passphrase "foobar"
     And "Alice" creates the following resources
       | resource     | type     | content     | password |

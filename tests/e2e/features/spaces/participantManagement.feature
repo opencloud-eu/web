@@ -20,10 +20,8 @@ Feature: spaces participant management
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" creates the project space using API "team"
+    And "Alice" navigates to the project space "team"
     And "Alice" adds following users to the project space
       | user     | role     | kind  |
       | Brian    | Can edit | user  |
@@ -31,7 +29,7 @@ Feature: spaces participant management
       | sales    | Can view | group |
       | security | Can edit | group |
     When "Brian" logs in
-    And "Brian" navigates to the project space "team.1"
+    And "Brian" navigates to the project space "team"
     And "Brian" creates the following resource
       | resource | type   |
       | parent   | folder |
@@ -39,11 +37,11 @@ Feature: spaces participant management
       | resource  | to     |
       | lorem.txt | parent |
     When "David" logs in
-    And "David" navigates to the project space "team.1"
+    And "David" navigates to the project space "team"
     Then "David" should not be able to edit folder "parent"
     And "David" logs out
     When "Edith" logs in
-    And "Edith" navigates to the project space "team.1"
+    And "Edith" navigates to the project space "team"
     And "Edith" creates the following resource
       | resource | type   |
       | edith    | folder |
@@ -52,7 +50,7 @@ Feature: spaces participant management
       | lorem.txt | edith |
     And "Edith" logs out
     When "Carol" logs in
-    And "Carol" navigates to the project space "team.1"
+    And "Carol" navigates to the project space "team"
     Then "Carol" should not be able to edit folder "parent"
     And "Alice" creates a public link of following resource using the sidebar panel
       | resource | role     | password |
@@ -69,7 +67,7 @@ Feature: spaces participant management
       | resource     | from   |
       | textfile.txt | parent |
     When "Carol" navigates to the trashbin
-    And "Carol" opens trashbin of the project space "team.1"
+    And "Carol" opens trashbin of the project space "team"
     Then "Carol" should not be able to delete following resources from the trashbin
       | resource            |
       | parent/lorem.txt    |
@@ -79,28 +77,28 @@ Feature: spaces participant management
       | parent/lorem.txt    |
       | parent/textfile.txt |
     When "Brian" navigates to the trashbin
-    And "Brian" opens trashbin of the project space "team.1"
+    And "Brian" opens trashbin of the project space "team"
     Then "Brian" should be able to restore following resource from the trashbin
       | resource         |
       | parent/lorem.txt |
     And "Brian" should not be able to delete following resource from the trashbin
       | resource            |
       | parent/textfile.txt |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     And "Alice" removes access to following user from the project space
       | user  |
       | Brian |
-    Then "Brian" should not see space "team.1"
+    Then "Brian" should not see space "team"
     And "Brian" logs out
     When "Alice" changes the roles of the following user in the project space
       | user  | role       |
       | Carol | Can manage |
     And "Carol" navigates to the trashbin
-    And "Carol" opens trashbin of the project space "team.1"
+    And "Carol" opens trashbin of the project space "team"
     Then "Carol" should be able to delete following resource from the trashbin
       | resource            |
       | parent/textfile.txt |
     And "Carol" logs out
     And "Alice" as project manager removes their own access to the project space
-    Then "Alice" should not see space "team.1"
+    Then "Alice" should not see space "team"
     And "Alice" logs out

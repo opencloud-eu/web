@@ -67,9 +67,7 @@ Feature: Delete
       | localFile      | to                   |
       | testavatar.jpg | testavatar.jpg       |
       | simple.pdf     | my-folder/simple.pdf |
-    And "Alice" creates the following project spaces using API
-      | name    | id      |
-      | mySpace | mySpace |
+    And "Alice" creates the project space using API "mySpace"
     And "Alice" creates the following folder in space "mySpace" using API
       | name        |
       | spaceFolder |
