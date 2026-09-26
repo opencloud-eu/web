@@ -1,5 +1,70 @@
 # Changelog
 
+## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-09-26
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @JammingBen, @flimmy, @pascalwengerter, @tammi-23, @v-scharf
+
+### ✅ Tests
+
+- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
+- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
+
+### 🐛 Bug Fixes
+
+- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
+- fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
+- fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
+- fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
+- fix: group space customization actions in context menu [[#3444](https://github.com/opencloud-eu/web/pull/3444)]
+- fix: show tiles view first in view mode options [[#3454](https://github.com/opencloud-eu/web/pull/3454)]
+- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
+- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
+- fix(files): use NoContentMessage for resource not found message [[#3447](https://github.com/opencloud-eu/web/pull/3447)]
+- fix: consistent sorting for spaces and resources [[#3432](https://github.com/opencloud-eu/web/pull/3432)]
+- fix(admin-settings): make apps sortable by status [[#3427](https://github.com/opencloud-eu/web/pull/3427)]
+- Keep modal actions out of the scrollable body [[#3419](https://github.com/opencloud-eu/web/pull/3419)]
+- Always sort folders above files [[#3411](https://github.com/opencloud-eu/web/pull/3411)]
+- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
+- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
+### 📈 Enhancement
+
+- Improve readability of the activities and versions timelines [[#3423](https://github.com/opencloud-eu/web/pull/3423)]
+- feat(account): improve readability and consistency of account pages [[#3430](https://github.com/opencloud-eu/web/pull/3430)]
+- Declutter the announcement banner settings [[#3426](https://github.com/opencloud-eu/web/pull/3426)]
+- feat(yjs): immediately notify peers about external doc updates [[#3397](https://github.com/opencloud-eu/web/pull/3397)]
+- feat: share yjs with external apps [[#3398](https://github.com/opencloud-eu/web/pull/3398)]
+- Create a space with quota, subtitle, description, image and members [[#3413](https://github.com/opencloud-eu/web/pull/3413)]
+- Improve mobile table size picker [[#3393](https://github.com/opencloud-eu/web/pull/3393)]
+- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
+- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
+- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
+- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency dompurify to v3.4.16 [[#3445](https://github.com/opencloud-eu/web/pull/3445)]
+- chore(deps): update dependency yjs to v13.6.33 [[#3448](https://github.com/opencloud-eu/web/pull/3448)]
+- chore(deps): update pnpm to v11.27.1 [[#3414](https://github.com/opencloud-eu/web/pull/3414)]
+- chore(deps): update apache/tika docker tag to v4.1.1 [[#3417](https://github.com/opencloud-eu/web/pull/3417)]
+- chore(deps): update typescript-eslint monorepo to v8.70.1 [[#3418](https://github.com/opencloud-eu/web/pull/3418)]
+- chore(deps): update collabora/code docker tag to v26.04.4.1.1 [[#3401](https://github.com/opencloud-eu/web/pull/3401)]
+- chore(deps): update devdependencies (non-major) [[#3402](https://github.com/opencloud-eu/web/pull/3402)]
+- Update dependency @vue/test-utils to v2.5.1 [[#3390](https://github.com/opencloud-eu/web/pull/3390)]
+- Update dependency zod to v4.6.5 [[#3343](https://github.com/opencloud-eu/web/pull/3343)]
+- Update Node.js to v24.21.0 [[#3344](https://github.com/opencloud-eu/web/pull/3344)]
+- Update hocuspocus monorepo to v4.7.0 [[#3341](https://github.com/opencloud-eu/web/pull/3341)]
+- Update dependency filesize to v11.0.24 [[#3384](https://github.com/opencloud-eu/web/pull/3384)]
+- Update devDependencies (non-major) [[#3370](https://github.com/opencloud-eu/web/pull/3370)]
+- Update collabora/code Docker tag to v26.04.3.2.1 [[#3083](https://github.com/opencloud-eu/web/pull/3083)]
+
 ## [8.0.0](https://github.com/opencloud-eu/web/releases/tag/v8.0.0) - 2026-09-14
 
 ### ❤️ Thanks to all contributors! ❤️
