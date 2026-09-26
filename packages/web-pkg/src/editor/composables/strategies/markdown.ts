@@ -16,6 +16,7 @@ import { TextEditorState } from '../../types'
 import {
   createCodeBlockLowlight,
   createLinkExtension,
+  createTableOfContentsExtension,
   createMarkdownClipboardExtension,
   Frontmatter,
   imageFileHandlerExtension,
@@ -115,7 +116,8 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TaskItem.configure({ nested: true }),
       markdownImage,
       imageFileHandlerExtension(),
-      FindAndReplace
+      FindAndReplace,
+      createTableOfContentsExtension(editorState)
     ]
   }
 

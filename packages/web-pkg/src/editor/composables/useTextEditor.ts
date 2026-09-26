@@ -1,9 +1,20 @@
-import { ref, computed, onBeforeUnmount, watch, unref, onMounted, toValue, triggerRef } from 'vue'
+import {
+  ref,
+  shallowRef,
+  computed,
+  onBeforeUnmount,
+  watch,
+  unref,
+  onMounted,
+  toValue,
+  triggerRef
+} from 'vue'
 import { useEditor } from '@tiptap/vue-3'
 import { Extension } from '@tiptap/core'
 import { Placeholder } from '@tiptap/extension-placeholder'
 import { Collaboration } from '@tiptap/extension-collaboration'
 import { yCursorPlugin } from '@tiptap/y-tiptap'
+import type { TableOfContentData } from '@tiptap/extension-table-of-contents'
 import type { Awareness } from 'y-protocols/awareness'
 import type { ShallowRef } from 'vue'
 import type { Editor } from '@tiptap/vue-3'
@@ -77,7 +88,8 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     sourceModeReadonly,
     linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
     editorZoom: ref(100),
-    currentResource: options.currentResource ?? ref<Resource | null>(null)
+    currentResource: options.currentResource ?? ref<Resource | null>(null),
+    tableOfContents: shallowRef<TableOfContentData>([])
   }
 
   const contentType = ref(options.contentType)
@@ -304,6 +316,7 @@ export function useTextEditor(options: TextEditorOptions): TextEditorInstance {
     yjsActive,
     yjsStatus,
     collaborators,
+    showTableOfContents: options.tableOfContents ?? false,
     actionGroups: editorActionGroups,
     getContent,
     setContent,
