@@ -50,6 +50,9 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency @uppy/core to v6.0.2 [[#3461](https://github.com/opencloud-eu/web/pull/3461)]
+- chore(deps): update pnpm to v11.28.0 [[#3462](https://github.com/opencloud-eu/web/pull/3462)]
+- chore(deps): update dependency prosemirror-transform to v1.12.2 [[#3463](https://github.com/opencloud-eu/web/pull/3463)]
 - chore(deps): update dependency dompurify to v3.4.16 [[#3445](https://github.com/opencloud-eu/web/pull/3445)]
 - chore(deps): update dependency yjs to v13.6.33 [[#3448](https://github.com/opencloud-eu/web/pull/3448)]
 - chore(deps): update pnpm to v11.27.1 [[#3414](https://github.com/opencloud-eu/web/pull/3414)]
