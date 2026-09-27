@@ -6,14 +6,9 @@
 
 @AlexAndBear, @JammingBen, @flimmy, @pascalwengerter, @tammi-23, @v-scharf
 
-### ✅ Tests
-
-- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
-- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
-- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
-
 ### 🐛 Bug Fixes
 
+- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
 - fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
 - fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
 - fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
@@ -33,6 +28,12 @@
 - fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
+### ✅ Tests
+
+- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
+- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
 
 ### 📈 Enhancement
 
