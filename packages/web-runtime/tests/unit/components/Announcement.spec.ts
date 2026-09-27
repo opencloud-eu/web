@@ -20,6 +20,11 @@ describe('Announcement component', () => {
     expect(wrapper.find('.announcement').exists()).toBe(false)
   })
 
+  it('does not render in embed mode', () => {
+    const { wrapper } = getWrapper({ bannerText: 'Maintenance tonight' }, { embedMode: true })
+    expect(wrapper.find('.announcement').exists()).toBe(false)
+  })
+
   it('hides the banner when dismissed', async () => {
     const { wrapper } = getWrapper({ bannerText: 'Maintenance tonight' })
     expect(wrapper.find('.announcement').exists()).toBe(true)
@@ -65,14 +70,22 @@ describe('Announcement component', () => {
   })
 })
 
-function getWrapper(announcement?: { bannerText?: string; infoText?: string }) {
+function getWrapper(
+  announcement?: { bannerText?: string; infoText?: string },
+  { embedMode = false }: { embedMode?: boolean } = {}
+) {
   return {
     wrapper: shallowMount(Announcement, {
       global: {
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
-              configState: { options: announcement ? { announcement } : {} }
+              configState: {
+                options: {
+                  ...(announcement && { announcement }),
+                  embed: { enabled: embedMode }
+                }
+              }
             }
           })
         ]
