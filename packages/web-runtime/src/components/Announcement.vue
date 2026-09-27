@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { computed, markRaw, ref, unref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useConfigStore, useModals } from '@opencloud-eu/web-pkg'
+import { useConfigStore, useEmbedMode, useModals } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import AnnouncementModal from './AnnouncementModal.vue'
 
@@ -70,6 +70,7 @@ const { $gettext } = useGettext()
 const configStore = useConfigStore()
 const { options } = storeToRefs(configStore)
 const { dispatchModal } = useModals()
+const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
 // dismissal is intentionally not persisted, so the banner reappears on reload
 const dismissed = ref(false)
@@ -78,7 +79,9 @@ const announcement = computed(() => unref(options).announcement)
 const bannerText = computed(() => unref(announcement)?.bannerText)
 const infoText = computed(() => unref(announcement)?.infoText)
 const hasInfo = computed(() => !!unref(infoText))
-const isVisible = computed(() => !!unref(bannerText) && !unref(dismissed))
+const isVisible = computed(
+  () => !unref(isEmbedModeEnabled) && !!unref(bannerText) && !unref(dismissed)
+)
 
 // a new or changed announcement (e.g. a fresh preview) should show again, even after a dismiss
 watch(announcement, () => {
