@@ -8,6 +8,8 @@
       class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 [&_input]:w-auto md:[&_input]:w-sm"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
+      :error-message="fileNameErrorMessage"
+      :fix-message-line="true"
     />
 
     <div class="flex items-center ml-auto">
@@ -56,11 +58,15 @@ import {
   FileAction,
   routeToContextQuery,
   useEmbedMode,
+  useIsResourceNameValid,
   useResourcesStore,
   useRouter,
-  useSpacesStore
+  useSpacesStore,
+  withExtension,
+  withoutExtension
 } from '@opencloud-eu/web-pkg'
-import { extractNameWithoutExtension, Resource } from '@opencloud-eu/web-client'
+import { extractExtensionFromFile, Resource } from '@opencloud-eu/web-client'
+import { join } from 'path'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { useFileActionsCreateLink } from '../../composables'
@@ -78,8 +84,38 @@ const spacesStore = useSpacesStore()
 const router = useRouter()
 const { currentSpace: space } = storeToRefs(spacesStore)
 const resourcesStore = useResourcesStore()
-const { currentFolder, selectedResources } = storeToRefs(resourcesStore)
-const fileName = ref(unref(chooseFileNameSuggestion))
+const { currentFolder, selectedResources, areFileExtensionsShown } = storeToRefs(resourcesStore)
+const { isFileNameValid } = useIsResourceNameValid()
+
+const suggestedFileName = unref(chooseFileNameSuggestion) || ''
+// taken from the suggestion, hidden in the input while file extensions are turned off
+const fileNameExtension = extractExtensionFromFile({ name: suggestedFileName } as Resource)
+
+const isFileNameExtensionHidden = computed(
+  () => !!fileNameExtension && !unref(areFileExtensionsShown)
+)
+
+const fileName = ref(
+  unref(isFileNameExtensionHidden)
+    ? withoutExtension(suggestedFileName, fileNameExtension)
+    : suggestedFileName
+)
+const fullFileName = computed(() =>
+  unref(isFileNameExtensionHidden)
+    ? withExtension(unref(fileName), fileNameExtension)
+    : unref(fileName)
+)
+
+const fileNameErrorMessage = computed(() => {
+  if (!unref(chooseFileName) || !unref(currentFolder)) {
+    return undefined
+  }
+  const name = unref(fullFileName)
+  const resource = { path: join(unref(currentFolder).path, name), name } as Resource
+  // no existing resources to check against, name conflicts get resolved on save
+  const { isValid, error } = isFileNameValid(resource, name, [])
+  return isValid ? undefined : error
+})
 
 const selectedFiles = computed<Resource[]>(() => {
   if (isLocationPicker.value) {
@@ -105,20 +141,19 @@ const isShareLinksButtonDisabled = computed<boolean>(
 
 const isChooseButtonDisabled = computed<boolean>(() => {
   return (
-    selectedFiles.value.length < 1 || !unref(currentFolder) || !unref(currentFolder)?.canCreate()
+    selectedFiles.value.length < 1 ||
+    !unref(currentFolder) ||
+    !unref(currentFolder)?.canCreate() ||
+    (unref(chooseFileName) && !unref(fileName)) ||
+    !!unref(fileNameErrorMessage)
   )
 })
 
 const fileNameInputSelectionRange = computed<[number, number] | null>(() => {
-  if (!unref(chooseFileName)) {
+  if (!unref(chooseFileName) || !fileNameExtension || unref(isFileNameExtensionHidden)) {
     return null
   }
-  const nameWithoutExtension = extractNameWithoutExtension({
-    name: unref(chooseFileNameSuggestion),
-    extension: unref(chooseFileNameSuggestion).split('.').pop()
-  } as Resource)
-
-  return [0, nameWithoutExtension.length]
+  return [0, withoutExtension(suggestedFileName, fileNameExtension).length]
 })
 
 const locationPickerSubmitButtonLabel = computed(() => {
@@ -129,7 +164,7 @@ const emitSelect = (): void => {
   if (unref(chooseFileName)) {
     postMessage<embedModeLocationPickMessageData>('opencloud-embed:select', {
       resources: JSON.parse(JSON.stringify(selectedFiles.value)),
-      fileName: unref(fileName),
+      fileName: unref(fullFileName),
       locationQuery: JSON.parse(JSON.stringify(routeToContextQuery(unref(router.currentRoute))))
     })
     return

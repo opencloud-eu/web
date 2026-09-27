@@ -10,6 +10,7 @@ import { useFileActionsCreateLink } from '../../../../src/composables/actions/fi
 import { mock } from 'vitest-mock-extended'
 import { ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
+import { OcTextInput } from '@opencloud-eu/design-system/components'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -76,7 +77,7 @@ describe('EmbedActions', () => {
     })
     it('should display the file name input when chooseFileName is configured', () => {
       const { wrapper } = getWrapper({
-        currentFolder: { id: '1', canCreate: () => true } as Resource,
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
         isLocationPicker: true,
         chooseFileName: true
       })
@@ -85,7 +86,7 @@ describe('EmbedActions', () => {
     })
     it('should hide the file name input when chooseFileName is not configured', () => {
       const { wrapper } = getWrapper({
-        currentFolder: { id: '1', canCreate: () => true } as Resource,
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
         isLocationPicker: true
       })
 
@@ -93,7 +94,7 @@ describe('EmbedActions', () => {
     })
     it('should emit select event with currentFolder as selected resource and fileName when select action is triggered and chooseFileName is configured', async () => {
       const { wrapper, mocks } = getWrapper({
-        currentFolder: { id: '1', canCreate: () => true } as Resource,
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
         isLocationPicker: true,
         chooseFileName: true
       })
@@ -102,13 +103,104 @@ describe('EmbedActions', () => {
 
       expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:select', {
         fileName: 'file.txt',
-        resources: [{ id: '1' }],
+        resources: [{ id: '1', path: '/' }],
         locationQuery: {
           contextRouteName: 'files-spaces-generic',
           contextRouteQuery: {}
         }
       })
       expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('file name input', () => {
+    const currentFolder = { id: '1', path: '/', canCreate: () => true } as Resource
+
+    it('shows the file extension and selects the name without it when file extensions are shown', () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('file.txt')
+      expect(input.props('selectionRange')).toEqual([0, 4])
+    })
+
+    it('hides the file extension in the input when file extensions are turned off', () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('file')
+      expect(input.props('selectionRange')).toBeNull()
+    })
+
+    it('adds the hidden file extension back when selecting', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+
+      await wrapper.find(selectors.btnSelect).trigger('click')
+
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'file.txt' })
+      )
+    })
+
+    it('disables the select action for an empty name when file extensions are turned off', async () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      await input.vm.$emit('update:modelValue', '')
+
+      expect(wrapper.find(selectors.btnSelect).attributes('disabled')).toBeDefined()
+    })
+
+    it.each([
+      { name: '', error: 'The name cannot be empty' },
+      { name: 'foo/bar.txt', error: 'The name cannot contain "/"' },
+      { name: ' file.txt', error: 'The name cannot start or end with whitespace' }
+    ])('shows an error and disables the select action for "$name"', async ({ name, error }) => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      await input.vm.$emit('update:modelValue', name)
+
+      expect(input.props('errorMessage')).toBe(error)
+      expect(wrapper.find(selectors.btnSelect).attributes('disabled')).toBeDefined()
+    })
+
+    it('allows a name that already exists in the current folder', () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        folderResources: [{ id: '2', name: 'file.txt', path: '/file.txt' } as Resource]
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('file.txt')
+      expect(input.props('errorMessage')).toBeUndefined()
+      expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
     })
   })
 
@@ -197,7 +289,9 @@ function getWrapper(
     createLinksActionEnabled = true,
     isLocationPicker = false,
     isFilePicker = false,
-    chooseFileName = false
+    chooseFileName = false,
+    areFileExtensionsShown = true,
+    folderResources = []
   }: {
     selectedIds?: string[]
     currentFolder?: Resource
@@ -205,6 +299,8 @@ function getWrapper(
     isLocationPicker?: boolean
     isFilePicker?: boolean
     chooseFileName?: boolean
+    areFileExtensionsShown?: boolean
+    folderResources?: Resource[]
   } = {
     selectedIds: []
   }
@@ -232,7 +328,7 @@ function getWrapper(
     })
   )
 
-  const resources = selectedIds.map((id) => ({ id })) as Resource[]
+  const resources = [...(selectedIds.map((id) => ({ id })) as Resource[]), ...folderResources]
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
@@ -253,7 +349,9 @@ function getWrapper(
         stubs: { OcButton: false },
         plugins: [
           ...defaultPlugins({
-            piniaOptions: { resourcesStore: { currentFolder, selectedIds, resources } }
+            piniaOptions: {
+              resourcesStore: { currentFolder, selectedIds, resources, areFileExtensionsShown }
+            }
           })
         ]
       }
