@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(runtime): show the help to translate link under the language select [[#3464](https://github.com/opencloud-eu/web/pull/3464)]
 - fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
 - fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
 - fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
