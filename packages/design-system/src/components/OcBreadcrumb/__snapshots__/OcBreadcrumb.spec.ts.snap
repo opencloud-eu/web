@@ -27,7 +27,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="4" class="oc-breadcrumb-list-item flex items-center">
-      <oc-breadcrumb-item-stub data-v-5914b352="" item="[object Object]" current="true" routerlinkcomponent="router-link" textclass="align-sub truncate inline-block leading-[1.2] max-w-3xs" class="first:text-base text-xl h-5 inline-flex items-center"></oc-breadcrumb-item-stub>
+      <oc-breadcrumb-item-stub data-v-5914b352="" item="[object Object]" current="true" routerlinkcomponent="router-link" textclass="align-sub truncate inline-block leading-[1.2] max-w-3xs oc-breadcrumb-item-text-last" class="first:text-base text-xl h-5 inline-flex items-center"></oc-breadcrumb-item-stub>
       <!--v-if-->
       <!--v-if-->
     </li>
@@ -69,7 +69,7 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
       <!--v-if-->
     </li>
     <li data-v-5914b352="" data-key="4" class="oc-breadcrumb-list-item flex items-center">
-      <oc-breadcrumb-item-stub data-v-5914b352="" item="[object Object]" current="true" routerlinkcomponent="router-link" textclass="align-sub truncate inline-block leading-[1.2] max-w-3xs" class="first:text-base text-xl h-5 inline-flex items-center"></oc-breadcrumb-item-stub>
+      <oc-breadcrumb-item-stub data-v-5914b352="" item="[object Object]" current="true" routerlinkcomponent="router-link" textclass="align-sub truncate inline-block leading-[1.2] max-w-3xs oc-breadcrumb-item-text-last" class="first:text-base text-xl h-5 inline-flex items-center"></oc-breadcrumb-item-stub>
       <!--v-if-->
       <!--v-if-->
     </li>

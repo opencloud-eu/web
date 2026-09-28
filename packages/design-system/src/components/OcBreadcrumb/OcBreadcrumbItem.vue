@@ -5,12 +5,7 @@
     :aria-current="current ? 'page' : null"
     :class="{ 'text-role-on-surface': !item.onClick, 'font-bold': current }"
   >
-    <span
-      :class="[
-        textClass,
-        { 'hover:underline': isInteractive, 'oc-breadcrumb-item-text-last': current }
-      ]"
-    >
+    <span :class="[textClass, { 'hover:underline': isInteractive }]">
       <oc-icon
         v-if="item.icon"
         :name="item.icon"

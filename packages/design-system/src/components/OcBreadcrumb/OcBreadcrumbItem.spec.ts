@@ -30,7 +30,6 @@ describe('OcBreadcrumbItem', () => {
     const root = wrapper.find('[aria-current="page"]')
     expect(root.exists()).toBe(true)
     expect(root.classes()).toContain('font-bold')
-    expect(wrapper.find('.oc-breadcrumb-item-text-last').exists()).toBe(true)
   })
   it('does not mark other items as current', () => {
     const { wrapper } = getWrapper({ item: { text: 'Folder', to: { path: 'folder' } } })

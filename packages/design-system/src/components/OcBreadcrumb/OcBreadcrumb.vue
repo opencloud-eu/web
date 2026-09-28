@@ -77,7 +77,7 @@
           :current="index === displayItems.length - 1"
           :router-link-component="routerLinkComponent"
           class="first:text-base text-xl h-5 inline-flex items-center"
-          text-class="align-sub truncate inline-block leading-[1.2] max-w-3xs"
+          :text-class="`align-sub truncate inline-block leading-[1.2] max-w-3xs${index === displayItems.length - 1 ? ' oc-breadcrumb-item-text-last' : ''}`"
         />
         <oc-icon
           v-if="index !== displayItems.length - 1"
