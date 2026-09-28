@@ -311,7 +311,6 @@ const createSharesConcurrentRequests = computed(() => {
 const {
   autocompleteResults,
   fetchRecipients,
-  fetchRecipientsTask,
   filterRecipients,
   minSearchLength,
   onSearch,

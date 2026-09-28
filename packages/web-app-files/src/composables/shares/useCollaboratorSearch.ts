@@ -103,7 +103,6 @@ export const useCollaboratorAutocomplete = (
   return {
     autocompleteResults,
     fetchRecipients,
-    fetchRecipientsTask,
     filterRecipients,
     minSearchLength,
     onSearch,

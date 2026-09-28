@@ -22,7 +22,7 @@ import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Col
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import { flushPromises } from '@vue/test-utils'
 
-vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn() }))
+vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn }))
 
 const folderMock = {
   id: '1',
@@ -78,29 +78,29 @@ describe('InviteCollaboratorForm', () => {
     })
   })
   describe('fetching recipients', () => {
-    it('fetches recipients upon mount', async () => {
-      const { mocks } = getWrapper()
-      await flushPromises()
+    it('queries users and groups', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await search(wrapper)
 
       expect(mocks.$clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(1)
       expect(mocks.$clientService.graphAuthenticated.groups.listGroups).toHaveBeenCalledTimes(1)
     })
     it('fetches users and groups returned from the server', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2' } as User], groups: [{ id: '3' }] })
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(2)
     })
     it('filters out the current user', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '1' } as User], groups: [{ id: '3' }] })
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('filters out selected users', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2' } as User], groups: [{ id: '3' }] })
       ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
@@ -113,13 +113,13 @@ describe('InviteCollaboratorForm', () => {
         ]
       })
 
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('does not query Open-Xchange when the capability is disabled', async () => {
-      const { mocks } = getWrapper({ users: [{ id: '2' } as User] })
-      await flushPromises()
+      const { wrapper, mocks } = getWrapper({ users: [{ id: '2' } as User] })
+      await search(wrapper)
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
@@ -129,7 +129,7 @@ describe('InviteCollaboratorForm', () => {
         openXchange: true,
         openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }]
       })
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(2)
       const contact = (wrapper.vm as any).autocompleteResults.find(
@@ -138,20 +138,19 @@ describe('InviteCollaboratorForm', () => {
       expect(contact?.mail).toBe('jane@example.com')
     })
     it('does not query Open-Xchange when the resource is a space', async () => {
-      const { mocks } = getWrapper({
+      const { wrapper, mocks } = getWrapper({
         users: [{ id: '2' } as User],
         openXchange: true,
         openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }],
         resource: mock<SpaceResource>(spaceMock)
       })
-      await flushPromises()
+      await search(wrapper)
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
     it('offers the entered value as a guest suggestion when it is a valid email address', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'someone@else.com' } as User] })
-      await (wrapper.vm as any).fetchRecipientsTask.perform('guest@example.com')
-      await flushPromises()
+      await search(wrapper, 'guest@example.com')
 
       const guest = (wrapper.vm as any).autocompleteResults.find(
         (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
@@ -161,8 +160,7 @@ describe('InviteCollaboratorForm', () => {
     })
     it('does not offer a guest suggestion for an invalid email', async () => {
       const { wrapper } = getWrapper()
-      await (wrapper.vm as any).fetchRecipientsTask.perform('not-an-email')
-      await flushPromises()
+      await search(wrapper, 'not-an-email')
 
       expect(
         (wrapper.vm as any).autocompleteResults.some(
@@ -172,8 +170,7 @@ describe('InviteCollaboratorForm', () => {
     })
     it('does not offer a guest suggestion without the guest invite permission', async () => {
       const { wrapper } = getWrapper({ canInviteGuests: false })
-      await (wrapper.vm as any).fetchRecipientsTask.perform('guest@example.com')
-      await flushPromises()
+      await search(wrapper, 'guest@example.com')
 
       expect(
         (wrapper.vm as any).autocompleteResults.some(
@@ -183,8 +180,7 @@ describe('InviteCollaboratorForm', () => {
     })
     it('does not offer a guest suggestion for an address with a display name', async () => {
       const { wrapper } = getWrapper()
-      await (wrapper.vm as any).fetchRecipientsTask.perform('Test User <guest@example.com>')
-      await flushPromises()
+      await search(wrapper, 'Test User <guest@example.com>')
 
       expect(
         (wrapper.vm as any).autocompleteResults.some(
@@ -194,8 +190,7 @@ describe('InviteCollaboratorForm', () => {
     })
     it('does not offer a guest suggestion when the email belongs to a known account', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
-      await (wrapper.vm as any).fetchRecipientsTask.perform('guest@example.com')
-      await flushPromises()
+      await search(wrapper, 'guest@example.com')
 
       expect(
         (wrapper.vm as any).autocompleteResults.some(
@@ -464,6 +459,11 @@ describe('InviteCollaboratorForm', () => {
     })
   })
 })
+
+async function search(wrapper: ReturnType<typeof getWrapper>['wrapper'], query = '') {
+  ;(wrapper.vm as any).fetchRecipients(query)
+  await flushPromises()
+}
 
 function getWrapper({
   storageId = 'fake-storage-id',
