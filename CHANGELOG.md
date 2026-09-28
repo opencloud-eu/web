@@ -6,8 +6,16 @@
 
 @AlexAndBear, @JammingBen, @flimmy, @pascalwengerter, @tammi-23, @v-scharf
 
+### ✅ Tests
+
+- e2e: simplify e2e project space creation steps [[#3457](https://github.com/opencloud-eu/web/pull/3457)]
+- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
+- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
+
 ### 📈 Enhancement
 
+- feat: harmonize the right sidebar panels [[#3470](https://github.com/opencloud-eu/web/pull/3470)]
 - feat: add hoverable selection zone to tile checkboxes [[#3471](https://github.com/opencloud-eu/web/pull/3471)]
 - feat(editor): add table of contents for markdown and tiptap-json [[#3440](https://github.com/opencloud-eu/web/pull/3440)]
 - Improve readability of the activities and versions timelines [[#3423](https://github.com/opencloud-eu/web/pull/3423)]
@@ -47,12 +55,6 @@
 - fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
-
-### ✅ Tests
-
-- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
-- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
-- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
 
 ### 📦️ Dependencies
 
