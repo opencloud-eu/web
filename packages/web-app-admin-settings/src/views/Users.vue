@@ -445,6 +445,7 @@ export default defineComponent({
         componentAttrs: ({ items }) => ({
           user: items.length === 1 ? items[0] : null,
           users: items,
+          usersCount: unref(users).length,
           roles: unref(roles)
         }),
         isRoot: () => true,

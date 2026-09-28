@@ -181,6 +181,7 @@ const sideBarAvailablePanels = [
     icon: 'layout-grid',
     title: () => $gettext('Details'),
     component: SpaceNoSelection,
+    componentAttrs: () => ({ spacesCount: unref(spaces).length }),
     isRoot: () => true,
     isVisible: ({ items }) => items.length === 0
   },

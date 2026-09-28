@@ -40,6 +40,17 @@ describe('DetailsPanel', () => {
     })
   })
 
+  describe('computed method "noSelectionDetails"', () => {
+    it.each([
+      [0, '0 groups'],
+      [1, '1 group'],
+      [9, '9 groups']
+    ])('should show %s as "%s"', (groupsCount, definition) => {
+      const { wrapper } = getWrapper({ propsData: { groups: [], groupsCount } })
+      expect(wrapper.vm.noSelectionDetails).toEqual([{ term: 'Items', definition }])
+    })
+  })
+
   describe('computed method "multipleGroups"', () => {
     it('should be false if no groups are given', () => {
       const { wrapper } = getWrapper({ propsData: { groups: [] } })

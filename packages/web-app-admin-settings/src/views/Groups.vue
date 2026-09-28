@@ -150,7 +150,10 @@ export default defineComponent({
         icon: 'group-2',
         title: () => $gettext('Details'),
         component: DetailsPanel,
-        componentAttrs: () => ({ groups: unref(selectedGroups) }),
+        componentAttrs: () => ({
+          groups: unref(selectedGroups),
+          groupsCount: unref(groups).length
+        }),
         isRoot: () => true,
         isVisible: () => true
       },

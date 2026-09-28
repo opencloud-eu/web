@@ -1,6 +1,7 @@
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import DetailsPanel from '../../../../../src/components/Users/SideBar/DetailsPanel.vue'
 import { PartialComponentProps, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { SideBarNoSelection } from '@opencloud-eu/web-pkg'
 
 const defaultUser = { displayName: 'user', memberOf: [] } as User
 
@@ -34,6 +35,19 @@ describe('DetailsPanel', () => {
     it('should be false if users are given', () => {
       const { wrapper } = getWrapper({ props: { user: defaultUser, users: [defaultUser] } })
       expect(wrapper.find('[data-testid="no-users-selected"]').exists()).toBeFalsy()
+    })
+  })
+
+  describe('no selection details', () => {
+    it.each([
+      [0, '0 users'],
+      [1, '1 user'],
+      [6, '6 users']
+    ])('should show %s as "%s"', (usersCount, definition) => {
+      const { wrapper } = getWrapper({ props: { user: null, users: [], usersCount } })
+      expect(wrapper.findComponent(SideBarNoSelection).props('details')).toEqual([
+        { term: 'Items', definition }
+      ])
     })
   })
 

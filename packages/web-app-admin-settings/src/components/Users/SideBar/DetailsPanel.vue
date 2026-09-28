@@ -1,12 +1,11 @@
 <template>
-  <div
+  <side-bar-no-selection
     v-if="noUsers"
-    class="flex flex-col items-center text-center mt-12"
     data-testid="no-users-selected"
-  >
-    <oc-icon name="user" size-class="size-22" />
-    <p>{{ $gettext('Select a user to view details') }}</p>
-  </div>
+    img-src="images/empty-states/empty-users.svg"
+    :message="$gettext('Select a user to view details')"
+    :details="noSelectionDetails"
+  />
   <div
     v-if="multipleUsers"
     id="oc-users-details-multiple-sidebar"
@@ -81,25 +80,37 @@
 import { computed } from 'vue'
 import UserInfoBox from './UserInfoBox.vue'
 import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
-import { formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
+import { SideBarNoSelection, formatFileSize, useCapabilityStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 
 const {
   users,
+  usersCount = 0,
   roles,
   user = null
 } = defineProps<{
   users: User[]
+  usersCount?: number
   roles: AppRole[]
   user?: User
 }>()
 
-const { current: currentLanguage, $gettext } = useGettext()
+const { current: currentLanguage, $gettext, $ngettext } = useGettext()
 const capabilityStore = useCapabilityStore()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 
 const noUsers = computed(() => !users.length)
+const noSelectionDetails = computed(() => {
+  return [
+    {
+      term: $gettext('Items'),
+      definition: $ngettext('%{count} user', '%{count} users', usersCount, {
+        count: usersCount.toString()
+      })
+    }
+  ]
+})
 const multipleUsers = computed(() => users.length > 1)
 const multipleUsersSelectedText = computed(() => {
   return $gettext('%{count} users selected', {

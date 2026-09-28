@@ -1,8 +1,10 @@
 <template>
-  <div v-if="noGroups" class="flex flex-col items-center text-center mt-12">
-    <oc-icon name="group-2" size-class="size-22" />
-    <p v-text="$gettext('Select a group to view details')" />
-  </div>
+  <side-bar-no-selection
+    v-if="noGroups"
+    img-src="images/empty-states/empty-groups.svg"
+    :message="$gettext('Select a group to view details')"
+    :details="noSelectionDetails"
+  />
   <div
     v-if="multipleGroups"
     id="oc-groups-details-multiple-sidebar"
@@ -25,13 +27,19 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
+import { SideBarNoSelection } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'DetailsPanel',
+  components: { SideBarNoSelection },
   props: {
     groups: {
       type: Array as PropType<Group[]>,
       required: true
+    },
+    groupsCount: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
@@ -40,6 +48,16 @@ export default defineComponent({
     },
     noGroups() {
       return !this.groups.length
+    },
+    noSelectionDetails() {
+      return [
+        {
+          term: this.$gettext('Items'),
+          definition: this.$ngettext('%{count} group', '%{count} groups', this.groupsCount, {
+            count: this.groupsCount.toString()
+          })
+        }
+      ]
     },
     multipleGroups() {
       return this.groups.length > 1
