@@ -201,15 +201,23 @@
       'justify-center': displayItems.length > 1
     }"
   >
-    <oc-icon
-      v-if="currentFolder.icon"
-      :name="currentFolder.icon"
-      :accessible-label="currentFolder.iconAccessibleLabel || ''"
-      fill-type="line"
-      class="mr-1 shrink-0"
-      size-class="size-4"
-    />
-    <span class="min-w-0 truncate font-bold" aria-current="page" v-text="currentFolder.text" />
+    <component
+      :is="currentFolderComponent"
+      v-bind="currentFolderAttrs"
+      class="flex items-center min-w-0 text-role-on-surface"
+      :class="{ 'cursor-pointer hover:underline': currentFolderComponent !== 'span' }"
+      aria-current="page"
+    >
+      <oc-icon
+        v-if="currentFolder.icon"
+        :name="currentFolder.icon"
+        :accessible-label="currentFolder.iconAccessibleLabel || ''"
+        fill-type="line"
+        class="mr-1 shrink-0"
+        size-class="size-4"
+      />
+      <span class="min-w-0 truncate font-bold" v-text="currentFolder.text" />
+    </component>
   </div>
 </template>
 
@@ -391,6 +399,25 @@ const currentFolder = computed<BreadcrumbItem>(() => {
     return undefined
   }
   return items[items.length - 1]
+})
+const currentFolderComponent = computed(() => {
+  if (unref(currentFolder)?.to) {
+    return routerLinkComponent
+  }
+  if (unref(currentFolder)?.onClick) {
+    return 'button'
+  }
+  return 'span'
+})
+const currentFolderAttrs = computed(() => {
+  const { to, onClick } = unref(currentFolder) || {}
+  if (to) {
+    return { to }
+  }
+  if (onClick) {
+    return { type: 'button', onClick }
+  }
+  return {}
 })
 const parentFolderTo = computed(() => {
   return items[items.length - 2]?.to

@@ -75,6 +75,27 @@ describe('OcBreadcrumb', () => {
       const { wrapper } = getWrapper({ items })
       expect(wrapper.find('.oc-breadcrumb-mobile-current').exists()).toBe(shows)
     })
+    it('renders a link if the current item has a route', () => {
+      const { wrapper } = getWrapper({ items: [items[0], items[2]] })
+      const link = wrapper.find('.oc-breadcrumb-mobile-current router-link-stub')
+      expect(link.exists()).toBe(true)
+      expect(link.attributes('aria-current')).toBe('page')
+    })
+    it('renders a button that triggers the click handler if the current item has one', async () => {
+      const onClick = vi.fn()
+      const { wrapper } = getWrapper({ items: [items[0], { text: 'Current', onClick }] })
+      const button = wrapper.find('.oc-breadcrumb-mobile-current button')
+      expect(button.exists()).toBe(true)
+      await button.trigger('click')
+      expect(onClick).toHaveBeenCalled()
+    })
+    it('renders plain text if the current item is neither a link nor clickable', () => {
+      const { wrapper } = getWrapper({ items: [items[0], items[3]] })
+      const current = wrapper.find('.oc-breadcrumb-mobile-current')
+      expect(current.find('router-link-stub').exists()).toBe(false)
+      expect(current.find('button').exists()).toBe(false)
+      expect(current.find('[aria-current="page"]').text()).toBe(items[3].text)
+    })
   })
   describe('mobile breakpoint', () => {
     it.each<{ breakpoint: 'sm' | 'md' | 'lg'; listClass: string }>([
