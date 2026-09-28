@@ -93,4 +93,43 @@ describe('useKeyboardFileNavigation', () => {
     expect(store.selectedIds).toEqual(['1'])
     expect(selectionStates.every((state) => state.length > 0)).toBe(true)
   })
+
+  describe('without a selected resource', () => {
+    beforeEach(() => {
+      document.body.innerHTML =
+        '<div id="tiles-view"><ul>' +
+        ['1', '2', '3'].map((id) => `<li><div data-item-id="${id}"></div></li>`).join('') +
+        '</ul></div>'
+    })
+
+    afterEach(() => {
+      document.body.innerHTML = ''
+    })
+
+    it.each(['ArrowUp', 'ArrowDown'])('does nothing on Shift+%s in tiles view', async (key) => {
+      const resources = [createResource('1'), createResource('2'), createResource('3')]
+      createMockStore({ stubActions: false, resourcesStore: { resources } })
+      const store = useResourcesStore()
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.tiles))
+      await nextTick()
+
+      expect(() => triggerAction(keyActions, key, 'Shift')).not.toThrow()
+      expect(store.selectedIds).toEqual([])
+    })
+
+    it('does not add an empty selection on Space', () => {
+      const resources = [createResource('1'), createResource('2')]
+      createMockStore({ stubActions: false, resourcesStore: { resources } })
+      const store = useResourcesStore()
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+
+      triggerAction(keyActions, ' ')
+
+      expect(store.selectedIds).toEqual([])
+    })
+  })
 })

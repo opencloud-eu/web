@@ -89,6 +89,10 @@
 <script setup lang="ts">
 import Fuse from 'fuse.js'
 import { useResourcesViewDefaults } from '../../composables'
+import {
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions
+} from '../../composables/keyboardActions'
 
 import {
   AppLoadingSpinner,
@@ -98,7 +102,8 @@ import {
   useAppsStore,
   useResourcesStore,
   UserAvatar,
-  createLocationShares
+  createLocationShares,
+  useKeyboardActions
 } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
@@ -206,6 +211,10 @@ const { sortBy, sortDir, items, handleSort } = useSort({
   items: filteredItems,
   fields: sortFields
 })
+
+const keyActions = useKeyboardActions()
+useKeyboardFileNavigation(keyActions, items, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
 
 const { getMatchingSpace } = useGetMatchingSpace()
 
