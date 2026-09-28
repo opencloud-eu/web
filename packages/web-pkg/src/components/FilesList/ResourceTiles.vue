@@ -82,12 +82,12 @@
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
-              class="inline-flex p-2.5"
+              class="size-11 justify-center rounded-tl-sm rounded-br-lg hover:bg-role-on-surface/10"
               :disabled="isResourceDisabled(resource)"
               :model-value="selected"
               :data-test-selection-resource-name="resource.name"
               :data-test-selection-resource-path="resource.path"
-              @click.stop="fileCheckboxClicked({ resource, event: $event })"
+              @click.stop="selectionZoneClicked(resource, $event)"
             />
           </template>
           <template #imageField>
@@ -267,6 +267,15 @@ const {
 })
 
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+
+// clicks on the zone around the checkbox must not follow the tile link. The input's own
+// click stays untouched, otherwise the browser reverts its checked state afterwards
+function selectionZoneClicked(resource: Resource, event: MouseEvent | KeyboardEvent) {
+  if (!(event.target instanceof HTMLInputElement)) {
+    event.preventDefault()
+  }
+  fileCheckboxClicked({ resource, event })
+}
 
 // Disable lazy loading during E2E tests to avoid having to scroll in tests
 const areTilesLazy = (window as any).__E2E__ === true ? false : lazy
