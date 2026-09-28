@@ -7,7 +7,7 @@
         </template>
         <template #actions>
           <div
-            class="flex w-full mt-2 mb-4 items-center"
+            class="flex flex-wrap gap-2 w-full mt-2 mb-4 items-center"
             :class="{
               'justify-between': shareTypes.length > 1,
               'justify-end': shareTypes.length <= 1
@@ -33,7 +33,7 @@
             </div>
             <oc-search-bar
               v-model="filterTerm"
-              class="search-filter w-3xs"
+              class="search-filter w-full sm:w-3xs"
               :label="$gettext('Search')"
               :placeholder="$gettext('Search for shares')"
               button-hidden

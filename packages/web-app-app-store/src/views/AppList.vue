@@ -6,7 +6,7 @@
     </h1>
     <div class="flex items-center mb-4">
       <oc-search-bar
-        class="apps-filter"
+        class="apps-filter w-full sm:w-auto"
         :model-value="filterTermInput"
         :label="$gettext('Search')"
         :placeholder="$gettext('Search for apps')"

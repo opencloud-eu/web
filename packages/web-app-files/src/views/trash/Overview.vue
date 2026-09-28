@@ -21,7 +21,7 @@
           <div class="flex justify-end flex-wrap items-end mx-4 mb-4">
             <oc-search-bar
               v-model="filterTerm"
-              class="w-3xs"
+              class="w-full sm:w-3xs"
               :label="$gettext('Search')"
               :placeholder="$gettext('Search for trash bins')"
               button-hidden
