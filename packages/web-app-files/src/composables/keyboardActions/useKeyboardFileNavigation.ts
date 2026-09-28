@@ -28,6 +28,9 @@ export const useKeyboardFileNavigation = (
   )
 
   keyActions.bindKeyAction({ primary: Key.Space }, () => {
+    if (!unref(latestSelectedId)) {
+      return
+    }
     resourcesStore.toggleSelection(unref(latestSelectedId))
   })
 
@@ -181,6 +184,10 @@ export const useKeyboardFileNavigation = (
   }
 
   const getVerticalProperties = (viewDirection: Direction) => {
+    if (!unref(latestSelectedId)) {
+      return {}
+    }
+
     const elementsInRow = getElementsInRow()
     if (elementsInRow === -1) {
       return {}
