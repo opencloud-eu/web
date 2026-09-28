@@ -18,7 +18,7 @@ Then(
     const actualList = await spacesObject.getDisplayedSpaces()
 
     for (const info of stepTable.hashes()) {
-      const space = spacesObject.getSpace({ key: info.id })
+      const space = spacesObject.getSpace({ key: info.name })
       expect(actualList.includes(space.id)).toBe(actionType === 'should')
     }
   }
@@ -82,7 +82,7 @@ When(
   async ({ world }: { world: World }, stepUser: string, value: string, stepTable: DataTable) => {
     const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const spaceIds = []
-    for (const { id: space } of stepTable.hashes()) {
+    for (const { name: space } of stepTable.hashes()) {
       spaceIds.push(spacesObject.getUUID({ key: space }))
       await spacesObject.select({ key: space })
     }
@@ -99,7 +99,7 @@ When(
   async ({ world }: { world: World }, stepUser: string, action: string, stepTable: DataTable) => {
     const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     const spaceIds = []
-    for (const { id: space } of stepTable.hashes()) {
+    for (const { name: space } of stepTable.hashes()) {
       spaceIds.push(spacesObject.getUUID({ key: space }))
       await spacesObject.select({ key: space })
     }

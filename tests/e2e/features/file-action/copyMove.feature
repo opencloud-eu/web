@@ -210,9 +210,7 @@ Feature: Copy
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name    | id      |
-      | mySpace | mySpace |
+    And "Alice" creates the project space using API "mySpace"
     And "Brian" creates the following folder in personal space using API
       | name  |
       | share |

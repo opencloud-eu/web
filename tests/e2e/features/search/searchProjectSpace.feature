@@ -8,10 +8,8 @@ Feature: Search in the project space
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" creates the project space using API "team"
+    And "Alice" navigates to the project space "team"
     And "Alice" creates the following resource
       | resource                   | type   |
       | folder(WithSymbols:!;_+-&) | folder |

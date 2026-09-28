@@ -12,9 +12,7 @@ Feature: spaces public link
       | id    | role        |
       | Alice | Space Admin |
     When "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
+    And "Alice" creates the project space using API "team"
     And "Alice" creates the following folder in space "team" using API
       | name                  |
       | spaceFolder/subFolder |
@@ -27,7 +25,7 @@ Feature: spaces public link
       | Brian | Can edit   | user      |
       | Carol | Can view   | user      |
       | David | Can manage | user      |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     And "Alice" uploads the following resources via drag-n-drop
       | resource       |
       | simple.pdf     |
@@ -116,13 +114,11 @@ Feature: spaces public link
       | id    | role        |
       | Alice | Space Admin |
     When "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
+    And "Alice" creates the project space using API "team"
     And "Alice" creates the following file in space "team" using API
       | name        | content   |
       | example.txt | some text |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     And "Alice" creates a public link for the space with password "%public%" using the sidebar panel
     And "Alice" renames the most recently created public link of space to "spaceLink"
     And "Alice" edits the public link named "spaceLink" of the space changing role to "Can edit"
