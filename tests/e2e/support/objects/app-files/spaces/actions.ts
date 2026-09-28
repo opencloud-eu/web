@@ -148,9 +148,13 @@ export const createSpaceOption = async (args: createSpaceOptionArgs): Promise<st
   }
   await page.locator(createSpaceAdvancedSectionHeader).click()
   if (quota) {
-    await page.locator(createSpaceQuotaSearchField).pressSequentially(quota)
+    const quotaSearchLocator = page.locator(createSpaceQuotaSearchField)
+    await quotaSearchLocator.click()
     await page.locator(selectedQuotaValueField).waitFor()
-    await page.locator(util.format(quotaValueDropDown, `${quota} GB`)).click()
+    await quotaSearchLocator.pressSequentially(quota)
+    const quotaOption = page.locator(util.format(quotaValueDropDown, `${quota} GB`))
+    await quotaOption.waitFor()
+    await quotaOption.click()
   }
   if (member) {
     const { collaborator, role } = member
@@ -317,9 +321,12 @@ export const changeQuota = async (args: {
 
   await page.locator(editQuotaOptionSelector).click()
   const searchLocator = page.locator(spacesQuotaSearchField)
-  await searchLocator.pressSequentially(value)
+  await searchLocator.click()
   await page.locator(selectedQuotaValueField).waitFor()
-  await page.locator(util.format(quotaValueDropDown, `${value} GB`)).click()
+  await searchLocator.pressSequentially(value)
+  const quotaOption = page.locator(util.format(quotaValueDropDown, `${value} GB`))
+  await quotaOption.waitFor()
+  await quotaOption.click()
 
   await Promise.all([
     page.waitForResponse(

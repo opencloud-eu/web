@@ -1,76 +1,44 @@
 Feature: spaces.project
 
-  Scenario: space management
+  Scenario: creating a project space
     Given "Admin" creates following users using API
       | id    |
       | Alice |
-      | Brian |
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" logs in
-    When "Alice" opens the "files" app
+   
+    When "Alice" logs in
+    And "Alice" opens the "files" app
     And "Alice" navigates to the projects space page
-    And "Alice" creates the project space "team"
-    And "Alice" navigates to the project space "team"
-
-    And "Alice" updates the space "team" name to "developer team"
-    And "Alice" changes the space "team" subtitle to "developer team - subtitle" using context menu
-    And "Alice" updates the space "team" description to "developer team - description"
-    And "Alice" changes the space "team" quota to "500" using context menu
-    And "Alice" updates the space "team" image to "testavatar.png"
+    And "Alice" creates the project space "sales-team"
+    And "Alice" navigates to the project space "sales-team"
+    And "Alice" updates the space "sales-team" name to "sales team"
+    And "Alice" changes the space "sales-team" subtitle to "sales team - subtitle"
+    And "Alice" updates the space "sales-team" description to "sales team - description"
+    And "Alice" changes the space "sales-team" quota to "50"
+    And "Alice" updates the space "sales-team" image to "testavatar.png"
     And space image should match 16/9 ratio for user "Alice"
-    And "Alice" deletes the space "team" image
-    And "Alice" changes the space "team" icon to "😍" using context menu
-    And "Alice" creates the following resources
-      | resource         | type   |
-      | folderPublic     | folder |
-      | folder_to_shared | folder |
-    And "Alice" uploads the following resources
-      | resource  | to               |
-      | lorem.txt | folderPublic     |
-      | lorem.txt | folder_to_shared |
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource     | password |
-      | folderPublic | %public% |
-    And "Alice" renames the most recently created public link of resource "folderPublic" to "team"
-    And "Alice" edits the public link named "team" of resource "folderPublic" changing role to "Secret File Drop"
-    And "Alice" sets the expiration date of the public link named "team" of resource "folderPublic" to "+5 days"
-    And "Alice" changes the password of the public link named "team" of resource "folderPublic" to "new-strongPass1"
-    When "Alice" shares the following resource using the sidebar panel
-      | resource         | recipient | type | role     | resourceType |
-      | folder_to_shared | Brian     | user | Can edit | folder       |
+    And "Alice" deletes the space "sales-team" image
+    And "Alice" changes the space "sales-team" icon to "😍"
+    Then "Alice" should see the following details of the project space
+      | subtitle              | description              | quota |
+      | sales team - subtitle | sales team - description | 50GB  |
 
-    When "Anonymous" opens the public link "team"
-    And "Anonymous" unlocks the public link with password "new-strongPass1"
-    And "Anonymous" drop uploads following resource
-      | resource     |
-      | textfile.txt |
-
-    And "Brian" logs in
-    When "Brian" opens the "files" app
-    And "Brian" navigates to the shared with me page
-    And "Brian" renames the following resource
-      | resource                   | as            |
-      | folder_to_shared/lorem.txt | lorem_new.txt |
-    And "Brian" uploads the following resource
-      | resource   | to               |
-      | simple.pdf | folder_to_shared |
-
-    And "Alice" navigates to the project space "team"
-    And "Alice" updates the space "team" image to "testavatar.jpeg"
-    Then space image should match 16/9 ratio for user "Alice"
-    And "Alice" uploads the following resource
-      | resource          | to               | option  |
-      | PARENT/simple.pdf | folder_to_shared | replace |
-    And "Brian" should not see the version panel for the file
-      | resource   | to               |
-      | simple.pdf | folder_to_shared |
-    When "Alice" deletes the following resources using the sidebar panel
-      | resource         | from             |
-      | lorem_new.txt    | folder_to_shared |
-      | folder_to_shared |                  |
-    And "Brian" logs out
+    # check operations using context menu
+    When "Alice" navigates to the projects space page
+    And "Alice" creates the project space "developer-team"
+    And "Alice" navigates to the project space "developer-team"
+    And "Alice" changes the space "developer-team" name to "developer team" using context menu
+    And "Alice" changes the space "developer-team" subtitle to "developer team - subtitle" using context menu
+    And "Alice" changes the space "developer-team" description to "developer team - description" using context menu
+    And "Alice" changes the space "developer-team" quota to "500" using context menu
+    And "Alice" changes the space "developer-team" image to "testavatar.png" using context menu
+    And "Alice" deletes the space "developer-team" image using context menu
+    And "Alice" changes the space "developer-team" icon to "😜" using context menu
+    Then "Alice" should see the following details of the project space
+      | subtitle                   | description                   | quota |
+      | developer team - subtitle  | developer team - description  | 500GB |
     And "Alice" logs out
 
 
