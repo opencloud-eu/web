@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
 - fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
 - fix(runtime): show the help to translate link under the language select [[#3464](https://github.com/opencloud-eu/web/pull/3464)]
 - fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
