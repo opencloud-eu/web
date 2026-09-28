@@ -12,19 +12,10 @@
       >
         <oc-table-tr class="account-page-info-language">
           <oc-table-td>
-            <account-label :label="$gettext('Language')">
-              <template #description>
-                <span v-text="$gettext('Select your language.')" />
-                <a
-                  href="https://explore.transifex.com/opencloud-eu/opencloud-eu/"
-                  target="_blank"
-                  class="flex items-center"
-                >
-                  <span v-text="$gettext('Help to translate')" />
-                  <oc-icon class="ml-1" size-class="size-4" fill-type="line" name="service" />
-                </a>
-              </template>
-            </account-label>
+            <account-label
+              :label="$gettext('Language')"
+              :description="$gettext('Select your language.')"
+            />
           </oc-table-td>
           <oc-table-td data-testid="language">
             <oc-select
@@ -36,6 +27,14 @@
               :options="languageOptions"
               @update:model-value="updateSelectedLanguage"
             />
+            <a
+              href="https://explore.transifex.com/opencloud-eu/opencloud-eu/"
+              target="_blank"
+              class="mt-1 inline-flex items-center"
+            >
+              <span v-text="$gettext('Help to translate')" />
+              <oc-icon class="ml-1" size-class="size-4" fill-type="line" name="service" />
+            </a>
           </oc-table-td>
         </oc-table-tr>
         <oc-table-tr v-if="showChangePassword">
