@@ -4,6 +4,7 @@
   >
     <oc-text-input
       v-if="chooseFileName"
+      ref="fileNameInputRef"
       v-model="fileName"
       class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 [&_input]:w-auto md:[&_input]:w-sm"
       :selection-range="fileNameInputSelectionRange"
@@ -52,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
+import { computed, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import {
   embedModeLocationPickMessageData,
   FileAction,
@@ -179,6 +180,12 @@ const fileNameInputSelectionRange: [number, number] | null =
   unref(chooseFileName) && suggestedFileExtension && !unref(hiddenFileExtension)
     ? [0, withoutExtension(suggestedFileName, suggestedFileExtension).length]
     : null
+
+// focus the input so the preselected name is visible and can be typed over right away
+const fileNameInputRef = useTemplateRef<{ focus: () => void }>('fileNameInputRef')
+onMounted(() => {
+  unref(fileNameInputRef)?.focus()
+})
 
 const locationPickerSubmitButtonLabel = computed(() => {
   return unref(submitButtonTitle) || (unref(chooseFileName) ? $gettext('Save') : $gettext('Choose'))

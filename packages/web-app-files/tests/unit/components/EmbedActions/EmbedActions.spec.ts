@@ -8,7 +8,7 @@ import EmbedActions from '../../../../src/components/EmbedActions/EmbedActions.v
 import { FileAction, useEmbedMode, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { useFileActionsCreateLink } from '../../../../src/composables/actions/files'
 import { mock } from 'vitest-mock-extended'
-import { nextTick, ref } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 
@@ -248,6 +248,16 @@ describe('EmbedActions', () => {
       )
     })
 
+    it('focuses the input initially', () => {
+      const { mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      expect(mocks.focusMock).toHaveBeenCalled()
+    })
+
     it('allows a name that already exists in the current folder', () => {
       const { wrapper } = getWrapper({
         currentFolder,
@@ -367,6 +377,7 @@ function getWrapper(
   }
 ) {
   const postMessageMock = vi.fn()
+  const focusMock = vi.fn()
   vi.mocked(useEmbedMode).mockReturnValue(
     mock<ReturnType<typeof useEmbedMode>>({
       isLocationPicker: ref(isLocationPicker),
@@ -398,7 +409,8 @@ function getWrapper(
       })
     }),
     createLinkHandlerMock,
-    postMessageMock
+    postMessageMock,
+    focusMock
   }
 
   return {
@@ -407,7 +419,7 @@ function getWrapper(
       global: {
         mocks,
         provide: mocks,
-        stubs: { OcButton: false },
+        stubs: { OcButton: false, OcTextInput: getOcTextInputStub(focusMock) },
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
@@ -418,4 +430,16 @@ function getWrapper(
       }
     })
   }
+}
+
+function getOcTextInputStub(focusMock: () => void) {
+  return defineComponent({
+    name: 'OcTextInput',
+    props: OcTextInput.props,
+    emits: ['update:modelValue'],
+    setup(_, { expose }) {
+      expose({ focus: focusMock })
+      return () => h('oc-text-input-stub')
+    }
+  })
 }
