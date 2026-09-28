@@ -1,5 +1,5 @@
 import SharesNavigation from '../../../../src/components/AppBar/SharesNavigation.vue'
-import { locationSharesWithMe } from '@opencloud-eu/web-pkg'
+import { eventBus, locationSharesWithMe } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { RouteRecordNormalized } from 'vue-router'
 import {
@@ -29,6 +29,20 @@ describe('SharesNavigation component', () => {
   it('renders a shares navigation for both mobile and a desktop viewports', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
+  })
+  describe('clicking a navigation item', () => {
+    it('reloads the list if the item is the active one', async () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      const { wrapper } = getWrapper()
+      await wrapper.findAll('#shares-navigation li').at(0).trigger('click')
+      expect(publishSpy).toHaveBeenCalledWith('app.files.list.load')
+    })
+    it('does not reload the list if the item is not the active one', async () => {
+      const publishSpy = vi.spyOn(eventBus, 'publish')
+      const { wrapper } = getWrapper()
+      await wrapper.findAll('#shares-navigation li').at(1).trigger('click')
+      expect(publishSpy).not.toHaveBeenCalled()
+    })
   })
 })
 

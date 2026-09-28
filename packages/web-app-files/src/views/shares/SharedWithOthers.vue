@@ -94,7 +94,6 @@
 
 <script setup lang="ts">
 import {
-  createLocationShares,
   defaultFuseOptions,
   queryItemAsString,
   useAppsStore,
@@ -110,7 +109,8 @@ import {
   useGetMatchingSpace,
   ContextActions,
   ItemFilter,
-  useKeyboardActions
+  useKeyboardActions,
+  eventBus
 } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -120,7 +120,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, unref, ref, onMounted } from 'vue'
+import { computed, unref, ref, onBeforeUnmount, onMounted } from 'vue'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
@@ -168,7 +168,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Shares'),
-      to: createLocationShares('files-shares-with-others'),
+      onClick: () => loadResourcesTask.perform(),
       isStaticNav: true
     }
   ]
@@ -239,8 +239,16 @@ const isEmpty = computed(() => {
   return unref(filteredItems).length < 1
 })
 
+let loadResourcesEventToken: string
 onMounted(async () => {
+  loadResourcesEventToken = eventBus.subscribe('app.files.list.load', () =>
+    loadResourcesTask.perform()
+  )
   await loadResourcesTask.perform()
   scrollToResourceFromRoute(unref(filteredItems), 'files-app-bar')
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.list.load', loadResourcesEventToken)
 })
 </script>

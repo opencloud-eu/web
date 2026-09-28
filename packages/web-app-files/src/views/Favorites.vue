@@ -120,7 +120,6 @@ import {
   useSpacesStore,
   useResourcesStore,
   useLoadPreview,
-  createLocationCommon,
   AppLoadingSpinner,
   FileSideBar,
   NoContentMessage,
@@ -232,7 +231,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Favorites'),
-      to: createLocationCommon('files-common-favorites'),
+      onClick: () => loadResourcesTask.perform(),
       isStaticNav: true
     }
   ]

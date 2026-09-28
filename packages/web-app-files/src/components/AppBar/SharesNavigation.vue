@@ -5,7 +5,11 @@
     :aria-label="$gettext('Shares pages navigation')"
   >
     <oc-list class="hidden sm:flex gap-4">
-      <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
+      <li
+        v-for="navItem in navItems"
+        :key="`shares-navigation-desktop-${navItem.to}`"
+        @click="onNavItemClick(navItem)"
+      >
         <oc-button
           type="router-link"
           class="py-2 w-full m-0"
@@ -31,7 +35,11 @@
         padding-size="small"
       >
         <oc-list>
-          <li v-for="navItem in navItems" :key="`shares-navigation-mobile-${navItem.to}`">
+          <li
+            v-for="navItem in navItems"
+            :key="`shares-navigation-mobile-${navItem.to}`"
+            @click="onNavItemClick(navItem)"
+          >
             <oc-button
               type="router-link"
               justify-content="left"
@@ -51,6 +59,7 @@
 
 <script setup lang="ts">
 import {
+  eventBus,
   isLocationSharesActive,
   locationSharesViaLink,
   locationSharesWithMe,
@@ -104,4 +113,12 @@ const navItems = computed(() => [
   }
 ])
 const currentNavItem = computed(() => unref(navItems).find((navItem) => navItem.active))
+
+function onNavItemClick(navItem: { active: boolean }) {
+  // navigating to the current route is a no-op in the router, so reload the list instead
+  if (!navItem.active) {
+    return
+  }
+  eventBus.publish('app.files.list.load')
+}
 </script>
