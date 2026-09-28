@@ -14,7 +14,7 @@
       ><oc-filter-highlight :text="displayName" :term="term" /></span
     ><span
       v-if="showExtension"
-      class="oc-resource-extension whitespace-pre text-role-on-surface leading-4"
+      class="oc-resource-extension shrink-0 whitespace-pre text-role-on-surface leading-4"
       ><oc-filter-highlight :text="displayExtension" :term="term"
     /></span>
     <oc-icon
