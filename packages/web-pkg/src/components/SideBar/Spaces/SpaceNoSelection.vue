@@ -1,9 +1,27 @@
 <template>
-  <div class="mt-12">
-    <div class="flex flex-col items-center space-info text-center">
-      <oc-icon name="layout-grid" size-class="size-22" />
-      <p v-text="$gettext('Select a space to view details')" />
-    </div>
-  </div>
+  <side-bar-no-selection
+    img-src="images/illustrations/spaces.svg"
+    :message="$gettext('Select a space to view details')"
+    :details="details"
+  />
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useGettext } from 'vue3-gettext'
+import SideBarNoSelection from '../SideBarNoSelection.vue'
+
+const { spacesCount = 0 } = defineProps<{ spacesCount?: number }>()
+
+const { $gettext, $ngettext } = useGettext()
+
+const details = computed(() => {
+  return [
+    {
+      term: $gettext('Items'),
+      definition: $ngettext('%{count} space', '%{count} spaces', spacesCount, {
+        count: spacesCount.toString()
+      })
+    }
+  ]
+})
+</script>

@@ -22,20 +22,23 @@ When(
 )
 
 When(
-  '{string} creates the following project spaces',
+  '{string} creates the project space {string}',
+  async function ({ world }: { world: World }, stepUser: string, name: string): Promise<void> {
+    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
+    await spacesObject.create({ key: name, space: { name } })
+  }
+)
+
+When(
+  '{string} creates the vault space {string} with password {string}',
   async function (
     { world }: { world: World },
     stepUser: string,
-    stepTable: DataTable
+    name: string,
+    password: string
   ): Promise<void> {
     const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
-
-    for (const space of stepTable.hashes()) {
-      await spacesObject.create({
-        key: space.id || space.name,
-        space: { name: space.name, password: space.password }
-      })
-    }
+    await spacesObject.create({ key: name, space: { name, password } })
   }
 )
 

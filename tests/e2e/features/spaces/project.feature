@@ -1,133 +1,45 @@
-Feature: spaces.personal
+Feature: spaces.project
 
-  Scenario: unstructured collection of testable space interactions,
-  once all needed features are there, split this into independent tests.
-  contains following features:
-  - ✓ assign role to user
-  - ✓ create space & internal alias to differentiate multiple spaces with the same name
-  - ✓ open space
-  - ✓ rename space
-  - ✓ change/set space subtitle
-  - ✓ change/set space description
-  - ✓ change/set space quota
-  - ✓ resources & existing resource actions
-  - ✓ change/set space image
-  - ✗ trash bin
-  - ✗ share
-  - ✗ link
+  Scenario: creating a project space
     Given "Admin" creates following users using API
       | id    |
       | Alice |
-      | Brian |
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" logs in
-    When "Alice" opens the "files" app
+   
+    When "Alice" logs in
+    And "Alice" opens the "files" app
     And "Alice" navigates to the projects space page
-    And "Alice" creates the following project spaces
-      | name  | id     |
-      | team  | team.1 |
-      | team2 | team.2 |
-
-    # team.1
-    And "Alice" navigates to the project space "team.1"
-    And "Alice" updates the space "team.1" name to "developer team"
-    And "Alice" updates the space "team.1" subtitle to "developer team - subtitle"
-    And "Alice" updates the space "team.1" description to "developer team - description"
-    And "Alice" updates the space "team.1" quota to "50"
-    And "Alice" updates the space "team.1" image to "testavatar.png"
+    And "Alice" creates the project space "sales-team"
+    And "Alice" navigates to the project space "sales-team"
+    And "Alice" updates the space "sales-team" name to "sales team"
+    And "Alice" changes the space "sales-team" subtitle to "sales team - subtitle"
+    And "Alice" updates the space "sales-team" description to "sales team - description"
+    And "Alice" changes the space "sales-team" quota to "50"
+    And "Alice" updates the space "sales-team" image to "testavatar.png"
     And space image should match 16/9 ratio for user "Alice"
-    And "Alice" deletes the space "team.1" image
-    And "Alice" changes the space "team.1" icon to "😍"
+    And "Alice" deletes the space "sales-team" image
+    And "Alice" changes the space "sales-team" icon to "😍"
+    Then "Alice" should see the following details of the project space
+      | subtitle              | description              | quota |
+      | sales team - subtitle | sales team - description | 50GB  |
 
-    # shared examples
-    And "Alice" creates the following resources
-      | resource         | type   |
-      | folderPublic     | folder |
-      | folder_to_shared | folder |
-    And "Alice" uploads the following resources
-      | resource  | to               |
-      | lorem.txt | folderPublic     |
-      | lorem.txt | folder_to_shared |
-
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource     | role             | password |
-      | folderPublic | Secret File Drop | %public% |
-    And "Alice" renames the most recently created public link of resource "folderPublic" to "team.1"
-    And "Alice" sets the expiration date of the public link named "team.1" of resource "folderPublic" to "+5 days"
-
-    # borrowed from share.feature
-    When "Alice" shares the following resource using the sidebar panel
-      | resource         | recipient | type | role     | resourceType |
-      | folder_to_shared | Brian     | user | Can edit | folder       |
-
-    # team.2: do the same thing, but using the context menu
-    And "Alice" navigates to the project space "team.2"
-    And "Alice" changes the space "team.2" name to "management team" using context menu
-    And "Alice" changes the space "team.2" subtitle to "management team - subtitle" using context menu
-    And "Alice" changes the space "team.2" description to "management team - description" using context menu
-    And "Alice" changes the space "team.2" quota to "500" using context menu
-    And "Alice" changes the space "team.2" image to "testavatar.png" using context menu
-    And "Alice" deletes the space "team.2" image using context menu
-    And "Alice" changes the space "team.2" icon to "😜" using context menu
-
-    And "Alice" creates the following resource
-      | resource     | type   |
-      | folderPublic | folder |
-    And "Alice" uploads the following resource
-      | resource  | to           |
-      | lorem.txt | folderPublic |
-
-    And "Alice" creates a public link of following resource using the sidebar panel
-      | resource     | password |
-      | folderPublic | %public% |
-    And "Alice" renames the most recently created public link of resource "folderPublic" to "team.2"
-    And "Alice" edits the public link named "team.2" of resource "folderPublic" changing role to "Secret File Drop"
-    And "Alice" sets the expiration date of the public link named "team.2" of resource "folderPublic" to "+5 days"
-    And "Alice" changes the password of the public link named "team.2" of resource "folderPublic" to "new-strongPass1"
-
-    # borrowed from link.feature, all existing resource actions can be reused
-    When "Anonymous" opens the public link "team.1"
-    And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" drop uploads following resource
-      | resource     |
-      | textfile.txt |
-
-    # borrowed from share.feature
-    And "Brian" logs in
-    When "Brian" opens the "files" app
-    And "Brian" navigates to the shared with me page
-    And "Brian" renames the following resource
-      | resource                   | as            |
-      | folder_to_shared/lorem.txt | lorem_new.txt |
-    And "Brian" uploads the following resource
-      | resource   | to               |
-      | simple.pdf | folder_to_shared |
-    And "Alice" navigates to the project space "team.1"
-    And "Alice" updates the space "team.1" image to "testavatar.jpeg"
-    Then space image should match 16/9 ratio for user "Alice"
-    And "Alice" uploads the following resource
-      | resource          | to               | option  |
-      | PARENT/simple.pdf | folder_to_shared | replace |
-    And "Brian" should not see the version panel for the file
-      | resource   | to               |
-      | simple.pdf | folder_to_shared |
-    When "Alice" deletes the following resources using the sidebar panel
-      | resource         | from             |
-      | lorem_new.txt    | folder_to_shared |
-      | folder_to_shared |                  |
-    And "Brian" logs out
-
-    # alice is done
-    When "Alice" logs out
-
-    # borrowed from link.feature, all existing resource actions can be reused
-    When "Anonymous" opens the public link "team.2"
-    And "Anonymous" unlocks the public link with password "new-strongPass1"
-    And "Anonymous" drop uploads following resource
-      | resource     |
-      | textfile.txt |
+    # check operations using context menu
+    When "Alice" navigates to the projects space page
+    And "Alice" creates the project space "developer-team"
+    And "Alice" navigates to the project space "developer-team"
+    And "Alice" changes the space "developer-team" name to "developer team" using context menu
+    And "Alice" changes the space "developer-team" subtitle to "developer team - subtitle" using context menu
+    And "Alice" changes the space "developer-team" description to "developer team - description" using context menu
+    And "Alice" changes the space "developer-team" quota to "500" using context menu
+    And "Alice" changes the space "developer-team" image to "testavatar.png" using context menu
+    And "Alice" deletes the space "developer-team" image using context menu
+    And "Alice" changes the space "developer-team" icon to "😜" using context menu
+    Then "Alice" should see the following details of the project space
+      | subtitle                   | description                   | quota |
+      | developer team - subtitle  | developer team - description  | 500GB |
+    And "Alice" logs out
 
 
   Scenario: members of the space can control the versions of the files
@@ -140,10 +52,8 @@ Feature: spaces.personal
       | id    | role        |
       | Alice | Space Admin |
     And "Alice" logs in
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" creates the project space using API "team"
+    And "Alice" navigates to the project space "team"
     And "Alice" creates the following resources
       | resource               | type     | content             |
       | parent                 | folder   |                     |
@@ -158,14 +68,14 @@ Feature: spaces.personal
     And "Alice" logs out
 
     When "Carol" logs in
-    And "Carol" navigates to the project space "team.1"
+    And "Carol" navigates to the project space "team"
     And "Carol" should not see the version panel for the file
       | resource        | to     |
       | textfile.ocnote | parent |
     And "Carol" logs out
 
     When "Brian" logs in
-    And "Brian" navigates to the project space "team.1"
+    And "Brian" navigates to the project space "team"
     And "Brian" downloads old version of the following resource
       | resource        | to     |
       | textfile.ocnote | parent |

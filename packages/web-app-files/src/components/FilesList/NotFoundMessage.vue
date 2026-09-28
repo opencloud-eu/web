@@ -1,5 +1,5 @@
 <template>
-  <no-content-message id="files-list-not-found-message" img-src="images/empty-states/404.svg">
+  <no-content-message id="files-list-not-found-message" img-src="images/illustrations/404.svg">
     <template #message>
       <span v-text="$gettext('Resource not found')" />
     </template>

@@ -29,9 +29,7 @@ Feature: Search
       | textfile.txt | fileWithTag.txt              |
       | textfile.txt | withTag.txt                  |
       | textfile.txt | testFolder/innerTextfile.txt |
-    And "Brian" creates the following project spaces using API
-      | name           | id               |
-      | FullTextSearch | fulltextsearch.1 |
+    And "Brian" creates the project space using API "FullTextSearch"
     And "Brian" creates the following folder in space "FullTextSearch" using API
       | name        |
       | spaceFolder |

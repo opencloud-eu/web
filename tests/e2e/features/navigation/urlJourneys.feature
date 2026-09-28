@@ -18,9 +18,7 @@ Feature: web can be navigated through urls
       | lorem.txt                     | some content |
       | test.odt                      | some content |
       | lorem.txt                     | new content  |
-    And "Alice" creates the following project space using API
-      | name        | id     |
-      | Development | team.1 |
+    And "Alice" creates the project space using API "Development"
     And "Alice" creates the following file in space "Development" using API
       | name              | content                   |
       | spaceTextfile.txt | This is test file. Cheers |

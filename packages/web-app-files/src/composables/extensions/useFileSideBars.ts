@@ -20,7 +20,8 @@ import {
   useGetMatchingSpace,
   useCapabilityStore,
   useCanListShares,
-  useCanListVersions
+  useCanListVersions,
+  useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { Resource } from '@opencloud-eu/web-client'
@@ -38,6 +39,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
   const { isPersonalSpaceRoot } = useGetMatchingSpace()
   const { canListShares } = useCanListShares()
   const { canListVersions } = useCanListVersions()
+  const resourcesStore = useResourcesStore()
 
   return [
     {
@@ -259,6 +261,11 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
         icon: 'questionnaire-line',
         title: () => $gettext('Details'),
         component: markRaw(SpaceNoSelection),
+        componentAttrs: () => ({
+          get spacesCount() {
+            return resourcesStore.resources.length
+          }
+        }),
         isRoot: () => true,
         isVisible: ({ items }) => {
           if (!isLocationSpacesActive(router, 'files-spaces-projects')) {

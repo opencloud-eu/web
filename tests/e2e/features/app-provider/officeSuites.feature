@@ -84,13 +84,11 @@ Feature: Integration with Collabora online office
     Given "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project space using API
-      | name      | id          |
-      | Marketing | marketing.1 |
+    And "Alice" creates the project space using API "Marketing"
     And "Alice" creates the following folder in space "Marketing" using API
       | name     |
       | myfolder |
-    When "Alice" navigates to the project space "marketing.1"
+    When "Alice" navigates to the project space "Marketing"
     And "Alice" creates a public link for the space with password "%public%" using the sidebar panel
     And "Alice" renames the most recently created public link of space to "spaceLink"
     And "Alice" edits the public link named "spaceLink" of the space changing role to "Can edit"
@@ -112,7 +110,7 @@ Feature: Integration with Collabora online office
       | resource            | type         | content              |
       | usingFolderLink.odt | OpenDocument | OpenDocument Content |
 
-    When "Alice" navigates to the project space "marketing.1"
+    When "Alice" navigates to the project space "Marketing"
     And "Alice" opens the following file in Collabora
       | resource           |
       | usingSpaceLink.odt |

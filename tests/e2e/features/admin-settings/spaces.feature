@@ -7,19 +7,15 @@ Feature: spaces management
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Admin" creates the following project spaces using API
-      | name   | id     |
-      | team A | team.a |
+    And "Admin" creates the project space using API "team A"
     When "Alice" logs in
     And "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
-    And "Alice" creates the following project spaces
-      | name | id     |
-      | team | team.b |
+    And "Alice" creates the project space "team"
     Then "Alice" should see the following spaces
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team   |
     And "Alice" logs out
 
   Scenario: spaces can be managed in the admin settings via the context menu
@@ -31,30 +27,28 @@ Feature: spaces management
       | id    | role        |
       | Alice | Space Admin |
       | Brian | Space Admin |
-    When "Alice" creates the following project spaces using API
-      | name   | id     |
-      | team A | team.a |
-      | team B | team.b |
+    When "Alice" creates the project space using API "team A"
+    And "Alice" creates the project space using API "team B"
     And "Alice" logs in
     When "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
-    When "Alice" updates the space "team.a" name to "developer team" using the context-menu
-    And "Alice" updates the space "team.a" subtitle to "developer team-subtitle" using the context-menu
-    And "Alice" updates the space "team.a" quota to "50" using the context-menu
-    And "Alice" disables the space "team.a" using the context-menu
-    And "Alice" enables the space "team.a" using the context-menu
+    When "Alice" updates the space "team A" name to "developer team" using the context-menu
+    And "Alice" updates the space "team A" subtitle to "developer team-subtitle" using the context-menu
+    And "Alice" updates the space "team A" quota to "50" using the context-menu
+    And "Alice" disables the space "team A" using the context-menu
+    And "Alice" enables the space "team A" using the context-menu
     Then "Alice" should see the following spaces
-      | id     |
-      | team.a |
+      | name   |
+      | team A |
     And "Alice" logs out
     When "Brian" logs in
     And "Brian" opens the "admin-settings" app
     And "Brian" navigates to the project spaces management page
-    When "Brian" disables the space "team.b" using the context-menu
-    And "Brian" deletes the space "team.b" using the context-menu
+    When "Brian" disables the space "team B" using the context-menu
+    And "Brian" deletes the space "team B" using the context-menu
     Then "Brian" should not see the following spaces
-      | id     |
-      | team.b |
+      | name   |
+      | team B |
     And "Brian" logs out
 
   Scenario: multiple spaces can be managed at once in the admin settings via the batch actions
@@ -64,51 +58,49 @@ Feature: spaces management
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name   | id     |
-      | team A | team.a |
-      | team B | team.b |
-      | team C | team.c |
-      | team D | team.d |
+    And "Alice" creates the project space using API "team A"
+    And "Alice" creates the project space using API "team B"
+    And "Alice" creates the project space using API "team C"
+    And "Alice" creates the project space using API "team D"
     And "Alice" logs in
     When "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
     And "Alice" disables the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
-      | team.c |
-      | team.d |
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     And "Alice" enables the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
-      | team.c |
-      | team.d |
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     And "Alice" updates quota of the following spaces to "50" using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
-      | team.c |
-      | team.d |
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     And "Alice" disables the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
-      | team.c |
-      | team.d |
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     And "Alice" deletes the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
-      | team.c |
-      | team.d |
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     Then "Alice" should not see the following spaces
-      | id     |
-      | team.a |
-      | team.b |
-      | team.c |
-      | team.d |
+      | name   |
+      | team A |
+      | team B |
+      | team C |
+      | team D |
     And "Alice" logs out
 
 
@@ -123,9 +115,7 @@ Feature: spaces management
     And "Admin" assigns following role to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Admin" creates the following project spaces using API
-      | name   | id     |
-      | team B | team.b |
+    And "Admin" creates the project space using API "team B"
     And "Admin" adds the following members to the space "team B" using API
       | user  | role     | shareType |
       | Brian | Can edit | user      |
@@ -135,7 +125,7 @@ Feature: spaces management
     When "Alice" logs in
     And "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
-    When "Alice" lists the members of project space "team.b" using a sidebar panel
+    When "Alice" lists the members of project space "team B" using a sidebar panel
     Then "Alice" should see the following users in the sidebar panel of spaces admin settings
       | user  | role       |
       | Admin | Can manage |
@@ -157,37 +147,33 @@ Feature: spaces management
       | Alice | Admin       |
       | Brian | Space Admin |
       | Carol | Space Admin |
-    And "Brian" creates the following project spaces using API
-      | name   | id     |
-      | team A | team.a |
-    And "Carol" creates the following project spaces using API
-      | name   | id     |
-      | team B | team.b |
+    And "Brian" creates the project space using API "team A"
+    And "Carol" creates the project space using API "team B"
     When "Alice" logs in
     And "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
     And "Alice" updates quota of the following spaces to "50" using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team B |
     And "Alice" disables the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team B |
     And "Alice" enables the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team B |
     And "Alice" disables the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team B |
     And "Alice" deletes the following spaces using the batch-actions
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team B |
     Then "Alice" should not see the following spaces
-      | id     |
-      | team.a |
-      | team.b |
+      | name   |
+      | team A |
+      | team B |
     And "Alice" logs out

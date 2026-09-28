@@ -1,30 +1,24 @@
 <template>
-  <div id="oc-file-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <div class="mb-6 text-center rounded-sm">
-      <div>
-        <oc-icon size-class="size-22" name="file-copy" />
-        <p data-testid="selectedFilesText" v-text="selectedFilesString" />
-      </div>
-    </div>
-    <div>
-      <oc-definition-list
-        :aria-label="$gettext('Overview of the information about the selected files')"
-        :items="details"
-        class="m-0"
-      />
-    </div>
-  </div>
+  <side-bar-multiple-selection
+    id="oc-file-details-multiple-sidebar"
+    :img-src="illustration"
+    :message="selectedFilesString"
+    :details="details"
+    :details-label="$gettext('Overview of the information about the selected files')"
+  />
 </template>
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
-import { formatFileSize, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { SideBarMultipleSelection, formatFileSize, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { useViewIllustration } from '../../../composables/useViewIllustration'
 
 const { showSpaceCount = false } = defineProps<{ showSpaceCount?: boolean }>()
 
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const resourcesStore = useResourcesStore()
+const { illustration } = useViewIllustration()
 const { selectedResources } = storeToRefs(resourcesStore)
 
 const hasSize = computed(() => {

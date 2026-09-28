@@ -28,10 +28,7 @@
               :is-rounded="false"
             />
           </div>
-          <no-content-message
-            v-if="!displaySpaces.length"
-            img-src="images/empty-states/empty-trash.svg"
-          >
+          <no-content-message v-if="!displaySpaces.length" img-src="images/illustrations/trash.svg">
             <template #message>
               <span v-text="$gettext('No trash bins found')" />
             </template>

@@ -1,7 +1,30 @@
 <template>
-  <div id="oc-trash-no-selection" class="text-center mt-12">
-    <oc-icon size-class="size-22" name="delete-bin" fill-type="line" />
-    <p data-testid="selectTrashText" v-text="$gettext('Select a trash bin to view details')" />
-  </div>
+  <side-bar-no-selection
+    id="oc-trash-no-selection"
+    img-src="images/illustrations/trash.svg"
+    :message="$gettext('Select a trash bin to view details')"
+    :details="details"
+  />
 </template>
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed, unref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useGettext } from 'vue3-gettext'
+import { SideBarNoSelection, useResourcesStore } from '@opencloud-eu/web-pkg'
+
+const { $gettext, $ngettext } = useGettext()
+const resourcesStore = useResourcesStore()
+const { resources } = storeToRefs(resourcesStore)
+
+const details = computed(() => {
+  const count = unref(resources).length
+  return [
+    {
+      term: $gettext('Items'),
+      definition: $ngettext('%{count} trash bin', '%{count} trash bins', count, {
+        count: count.toString()
+      })
+    }
+  ]
+})
+</script>

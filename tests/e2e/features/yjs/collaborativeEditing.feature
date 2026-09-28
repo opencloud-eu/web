@@ -67,22 +67,20 @@ Feature: yjs collaborative editing
     And "Admin" assigns following roles to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name | id   |
-      | Team | team |
+    And "Alice" creates the project space using API "Team"
     And "Alice" creates the following files in space "Team" using API
       | name        | content     |
       | example.md  | lorem ipsum |
 
     And "Alice" logs in
-    And "Alice" navigates to the project space "team"
+    And "Alice" navigates to the project space "Team"
     And "Alice" adds following user to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
       | Carol | Can view | user |
 
     And "Brian" logs in
-    And "Brian" navigates to the project space "team"
+    And "Brian" navigates to the project space "Team"
     And "Brian" opens file "example.md" via "text-editor" using the context menu
     And "Brian" should see the following yjs status
       | status    |
@@ -91,7 +89,7 @@ Feature: yjs collaborative editing
     And "Brian" enters the text "Brian says hello" in editor "TextEditor"
 
     And "Carol" logs in
-    And "Carol" navigates to the project space "team"
+    And "Carol" navigates to the project space "Team"
     And "Carol" opens file "example.md" via "text-editor" using the context menu
     And "Carol" should not see a yjs status
     And "Carol" is in a text-editor
@@ -227,9 +225,7 @@ Feature: yjs collaborative editing
     And "Admin" assigns following roles to the users using API
       | id    | role        |
       | Alice | Space Admin |
-    And "Alice" creates the following project spaces using API
-      | name | id   |
-      | Team | team |
+    And "Alice" creates the project space using API "Team"
     And "Alice" creates the following files in space "Team" using API
       | name        | content     |
       | example.md  | lorem ipsum |
@@ -239,7 +235,7 @@ Feature: yjs collaborative editing
       | Carol | Can view | user      |
 
     And "Brian" logs in
-    And "Brian" navigates to the project space "team"
+    And "Brian" navigates to the project space "Team"
     And "Brian" opens file "example.md" via "text-editor" using the context menu
     And "Brian" is in a text-editor
     And "Brian" enters the text "hello" in editor "TextEditor"

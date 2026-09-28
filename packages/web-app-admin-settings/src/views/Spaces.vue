@@ -39,7 +39,7 @@
         <no-content-message
           v-if="!spaces.length"
           id="admin-settings-spaces-empty"
-          img-src="images/empty-states/empty-spaces.svg"
+          img-src="images/illustrations/spaces.svg"
         >
           <template #message>
             <span v-text="$gettext('No spaces found')" />
@@ -181,6 +181,7 @@ const sideBarAvailablePanels = [
     icon: 'layout-grid',
     title: () => $gettext('Details'),
     component: SpaceNoSelection,
+    componentAttrs: () => ({ spacesCount: unref(spaces).length }),
     isRoot: () => true,
     isVisible: ({ items }) => items.length === 0
   },

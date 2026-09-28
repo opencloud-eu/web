@@ -23,9 +23,7 @@ Feature: Notifications
       | name             |
       | folder_to_shared |
       | share_to_group   |
-    And "Alice" creates the following project space using API
-      | name | id     |
-      | team | team.1 |
+    And "Alice" creates the project space using API "team"
     And "Alice" logs in
     When "Alice" shares the following resources using the sidebar panel
       | resource         | recipient | type  | role     | resourceType |
@@ -40,7 +38,7 @@ Feature: Notifications
     When "Alice" removes following sharee
       | resource         | recipient |
       | folder_to_shared | Brian     |
-    And "Alice" navigates to the project space "team.1"
+    And "Alice" navigates to the project space "team"
     And "Alice" adds following users to the project space
       | user  | role     | kind |
       | Brian | Can edit | user |
@@ -62,11 +60,11 @@ Feature: Notifications
     And "Carol" logs out
     When "Alice" opens the "admin-settings" app
     And "Alice" navigates to the project spaces management page
-    And "Alice" disables the space "team.1" using the context-menu
+    And "Alice" disables the space "team" using the context-menu
     Then "Brian" should see the following notification
       | message                          |
       | Alice Hansen disabled Space team |
-    When "Alice" deletes the space "team.1" using the context-menu
+    When "Alice" deletes the space "team" using the context-menu
     Then "Brian" should see the following notification
       | message                         |
       | Alice Hansen deleted Space team |

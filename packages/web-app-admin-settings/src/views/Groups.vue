@@ -45,7 +45,7 @@
         <no-content-message
           v-if="!groups.length"
           id="admin-settings-groups-empty"
-          img-src="images/empty-states/empty-groups.svg"
+          img-src="images/illustrations/groups.svg"
         >
           <template #message>
             <span v-text="$gettext('No groups found')" />
@@ -150,7 +150,10 @@ export default defineComponent({
         icon: 'group-2',
         title: () => $gettext('Details'),
         component: DetailsPanel,
-        componentAttrs: () => ({ groups: unref(selectedGroups) }),
+        componentAttrs: () => ({
+          groups: unref(selectedGroups),
+          groupsCount: unref(groups).length
+        }),
         isRoot: () => true,
         isVisible: () => true
       },
