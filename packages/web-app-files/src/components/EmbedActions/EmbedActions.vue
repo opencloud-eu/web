@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import {
   embedModeLocationPickMessageData,
   FileAction,
@@ -88,23 +88,48 @@ const { currentFolder, selectedResources, areFileExtensionsShown } = storeToRefs
 const { isFileNameValid } = useIsResourceNameValid()
 
 const suggestedFileName = unref(chooseFileNameSuggestion) || ''
-// taken from the suggestion, hidden in the input while file extensions are turned off
-const fileNameExtension = extractExtensionFromFile({ name: suggestedFileName } as Resource)
 
-const isFileNameExtensionHidden = computed(
-  () => !!fileNameExtension && !unref(areFileExtensionsShown)
+// value of the input, without the extension while file extensions are turned off
+const fileName = ref(suggestedFileName)
+// extension that got stripped from the input while file extensions are turned off
+const hiddenFileExtension = ref('')
+
+function getFileExtension(name: string) {
+  // dot files (e.g. ".env") keep their full name, same as in the file list
+  if (name.startsWith('.')) {
+    return ''
+  }
+  return extractExtensionFromFile({ name } as Resource)
+}
+
+// the setting can be changed while the input is visible, so the input needs to follow it
+watch(
+  areFileExtensionsShown,
+  (shown) => {
+    if (shown) {
+      if (unref(hiddenFileExtension) && unref(fileName)) {
+        fileName.value = withExtension(unref(fileName), unref(hiddenFileExtension))
+      }
+      hiddenFileExtension.value = ''
+      return
+    }
+
+    const extension = getFileExtension(unref(fileName))
+    if (!extension) {
+      return
+    }
+    hiddenFileExtension.value = extension
+    fileName.value = withoutExtension(unref(fileName), extension)
+  },
+  { immediate: true }
 )
 
-const fileName = ref(
-  unref(isFileNameExtensionHidden)
-    ? withoutExtension(suggestedFileName, fileNameExtension)
-    : suggestedFileName
-)
-const fullFileName = computed(() =>
-  unref(isFileNameExtensionHidden)
-    ? withExtension(unref(fileName), fileNameExtension)
-    : unref(fileName)
-)
+const fullFileName = computed(() => {
+  if (!unref(fileName) || !unref(hiddenFileExtension)) {
+    return unref(fileName)
+  }
+  return withExtension(unref(fileName), unref(hiddenFileExtension))
+})
 
 const fileNameErrorMessage = computed(() => {
   if (!unref(chooseFileName) || !unref(currentFolder)) {
@@ -144,17 +169,16 @@ const isChooseButtonDisabled = computed<boolean>(() => {
     selectedFiles.value.length < 1 ||
     !unref(currentFolder) ||
     !unref(currentFolder)?.canCreate() ||
-    (unref(chooseFileName) && !unref(fileName)) ||
     !!unref(fileNameErrorMessage)
   )
 })
 
-const fileNameInputSelectionRange = computed<[number, number] | null>(() => {
-  if (!unref(chooseFileName) || !fileNameExtension || unref(isFileNameExtensionHidden)) {
-    return null
-  }
-  return [0, withoutExtension(suggestedFileName, fileNameExtension).length]
-})
+// only applied initially, selects the name without its visible extension
+const suggestedFileExtension = getFileExtension(suggestedFileName)
+const fileNameInputSelectionRange: [number, number] | null =
+  unref(chooseFileName) && suggestedFileExtension && !unref(hiddenFileExtension)
+    ? [0, withoutExtension(suggestedFileName, suggestedFileExtension).length]
+    : null
 
 const locationPickerSubmitButtonLabel = computed(() => {
   return unref(submitButtonTitle) || (unref(chooseFileName) ? $gettext('Save') : $gettext('Choose'))

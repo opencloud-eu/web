@@ -5,10 +5,10 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import EmbedActions from '../../../../src/components/EmbedActions/EmbedActions.vue'
-import { FileAction, useEmbedMode } from '@opencloud-eu/web-pkg'
+import { FileAction, useEmbedMode, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { useFileActionsCreateLink } from '../../../../src/composables/actions/files'
 import { mock } from 'vitest-mock-extended'
-import { ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { OcTextInput } from '@opencloud-eu/design-system/components'
 
@@ -189,6 +189,65 @@ describe('EmbedActions', () => {
       expect(wrapper.find(selectors.btnSelect).attributes('disabled')).toBeDefined()
     })
 
+    it('adds the file extension back when file extensions get turned on', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+      await input.vm.$emit('update:modelValue', 'renamed')
+
+      useResourcesStore().areFileExtensionsShown = true
+      await nextTick()
+
+      expect(input.props('modelValue')).toBe('renamed.txt')
+      await wrapper.find(selectors.btnSelect).trigger('click')
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'renamed.txt' })
+      )
+    })
+
+    it('hides the file extension when file extensions get turned off', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+      await input.vm.$emit('update:modelValue', 'renamed.md')
+
+      useResourcesStore().areFileExtensionsShown = false
+      await nextTick()
+
+      expect(input.props('modelValue')).toBe('renamed')
+      await wrapper.find(selectors.btnSelect).trigger('click')
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'renamed.md' })
+      )
+    })
+
+    it('keeps the full name of dot files when file extensions are turned off', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false,
+        fileNameSuggestion: '.env'
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('.env')
+      await wrapper.find(selectors.btnSelect).trigger('click')
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: '.env' })
+      )
+    })
+
     it('allows a name that already exists in the current folder', () => {
       const { wrapper } = getWrapper({
         currentFolder,
@@ -291,7 +350,8 @@ function getWrapper(
     isFilePicker = false,
     chooseFileName = false,
     areFileExtensionsShown = true,
-    folderResources = []
+    folderResources = [],
+    fileNameSuggestion = 'file.txt'
   }: {
     selectedIds?: string[]
     currentFolder?: Resource
@@ -301,6 +361,7 @@ function getWrapper(
     chooseFileName?: boolean
     areFileExtensionsShown?: boolean
     folderResources?: Resource[]
+    fileNameSuggestion?: string
   } = {
     selectedIds: []
   }
@@ -311,7 +372,7 @@ function getWrapper(
       isLocationPicker: ref(isLocationPicker),
       isFilePicker: ref(isFilePicker),
       chooseFileName: ref(chooseFileName),
-      chooseFileNameSuggestion: ref('file.txt'),
+      chooseFileNameSuggestion: ref(fileNameSuggestion),
       postMessage: postMessageMock
     })
   )
