@@ -6,6 +6,22 @@
 
 @AlexAndBear, @JammingBen, @flimmy, @pascalwengerter, @tammi-23, @v-scharf
 
+### 📈 Enhancement
+
+- feat: add hoverable selection zone to tile checkboxes [[#3471](https://github.com/opencloud-eu/web/pull/3471)]
+- feat(editor): add table of contents for markdown and tiptap-json [[#3440](https://github.com/opencloud-eu/web/pull/3440)]
+- Improve readability of the activities and versions timelines [[#3423](https://github.com/opencloud-eu/web/pull/3423)]
+- feat(account): improve readability and consistency of account pages [[#3430](https://github.com/opencloud-eu/web/pull/3430)]
+- Declutter the announcement banner settings [[#3426](https://github.com/opencloud-eu/web/pull/3426)]
+- feat(yjs): immediately notify peers about external doc updates [[#3397](https://github.com/opencloud-eu/web/pull/3397)]
+- feat: share yjs with external apps [[#3398](https://github.com/opencloud-eu/web/pull/3398)]
+- Create a space with quota, subtitle, description, image and members [[#3413](https://github.com/opencloud-eu/web/pull/3413)]
+- Improve mobile table size picker [[#3393](https://github.com/opencloud-eu/web/pull/3393)]
+- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
+- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
+- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
+- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
 ### 🐛 Bug Fixes
 
 - fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
@@ -31,21 +47,6 @@
 - fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
 - Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
 - fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
-
-### 📈 Enhancement
-
-- feat(editor): add table of contents for markdown and tiptap-json [[#3440](https://github.com/opencloud-eu/web/pull/3440)]
-- Improve readability of the activities and versions timelines [[#3423](https://github.com/opencloud-eu/web/pull/3423)]
-- feat(account): improve readability and consistency of account pages [[#3430](https://github.com/opencloud-eu/web/pull/3430)]
-- Declutter the announcement banner settings [[#3426](https://github.com/opencloud-eu/web/pull/3426)]
-- feat(yjs): immediately notify peers about external doc updates [[#3397](https://github.com/opencloud-eu/web/pull/3397)]
-- feat: share yjs with external apps [[#3398](https://github.com/opencloud-eu/web/pull/3398)]
-- Create a space with quota, subtitle, description, image and members [[#3413](https://github.com/opencloud-eu/web/pull/3413)]
-- Improve mobile table size picker [[#3393](https://github.com/opencloud-eu/web/pull/3393)]
-- perf: optimize chunk sizes [[#3378](https://github.com/opencloud-eu/web/pull/3378)]
-- perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
-- Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
-- Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
 
 ### ✅ Tests
 
