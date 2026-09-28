@@ -334,6 +334,7 @@ const {
   }
   const trimmedQuery = (query || '').trim()
   const guests: CollaboratorAutoCompleteItem[] =
+    !unref(isExternalShareRoleType) &&
     can('create-all', 'GuestInvite') &&
     !emailBelongsToAccount(trimmedQuery) &&
     EmailValidator.validate(trimmedQuery)
@@ -408,14 +409,6 @@ const share = async () => {
             shareType === ShareTypes.group.value ? ShareTypes.group.key : ShareTypes.user.key
         }
 
-    // guests are internal-style shares and must never receive a federated role, so fall back to
-    // the first internal role when a guest is invited from the external share mode
-    // FIXME: clean up this internal vs external share type selection mess :-(
-    let roleId = unref(selectedRole).id
-    if (isGuest && unref(isExternalShareRoleType)) {
-      roleId = unref(availableInternalRoles)[0]?.id
-    }
-
     savePromises.push(
       saveQueue.add(async () => {
         try {
@@ -424,7 +417,7 @@ const share = async () => {
             space: unref(space),
             resource: unref(resource),
             options: {
-              roles: [roleId],
+              roles: [unref(selectedRole).id],
               expirationDateTime: unref(expirationDate),
               recipients: [recipient]
             }

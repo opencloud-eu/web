@@ -188,6 +188,17 @@ describe('InviteCollaboratorForm', () => {
         )
       ).toBe(false)
     })
+    it('does not offer a guest suggestion in the external share mode', async () => {
+      const { wrapper } = getWrapper({ externalShareRoles: [mock<ShareRole>()] })
+      ;(wrapper.vm as any).currentShareRoleType = mock<ShareRoleType>({ id: '2' })
+      await search(wrapper, 'guest@example.com')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
     it('does not offer a guest suggestion when the email belongs to a known account', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
       await search(wrapper, 'guest@example.com')
@@ -400,33 +411,6 @@ describe('InviteCollaboratorForm', () => {
         title: 'Failed to add share for "guest@example.com"',
         errors: [error]
       })
-    })
-    it('assigns an internal role to a guest invited from the external share mode', async () => {
-      const internalRole = mock<ShareRole>({ id: 'internal-role' })
-      const externalRole = mock<ShareRole>({ id: 'external-role' })
-      const { wrapper } = getWrapper({
-        internalShareRoles: [internalRole],
-        externalShareRoles: [externalRole]
-      })
-      const { addShare } = useSharesStore()
-      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
-      ;(wrapper.vm as any).currentShareRoleType = mock<ShareRoleType>({ id: '2' })
-      ;(wrapper.vm as any).selectedRole = externalRole
-      ;(wrapper.vm as any).selectedCollaborators = [
-        mock<CollaboratorAutoCompleteItem>({
-          id: 'guest@example.com',
-          displayName: 'guest@example.com',
-          shareType: ShareTypes.guest.value
-        })
-      ]
-      await wrapper.vm.$nextTick()
-      await (wrapper.vm as any).share()
-
-      expect(addShare).toHaveBeenCalledWith(
-        expect.objectContaining({
-          options: expect.objectContaining({ roles: ['internal-role'] })
-        })
-      )
     })
     it.todo('resets focus upon selecting an invitee')
   })
