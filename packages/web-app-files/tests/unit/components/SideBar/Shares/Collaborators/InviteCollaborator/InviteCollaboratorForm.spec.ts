@@ -188,6 +188,16 @@ describe('InviteCollaboratorForm', () => {
         )
       ).toBe(false)
     })
+    it('does not offer a guest suggestion when the server resolves the email to a single user', async () => {
+      const { wrapper } = getWrapper({ users: [{ id: '2', displayName: 'Admin' } as User] })
+      await search(wrapper, 'admin@example.org')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
     it('does not offer a guest suggestion in the external share mode', async () => {
       const { wrapper } = getWrapper({ externalShareRoles: [mock<ShareRole>()] })
       ;(wrapper.vm as any).currentShareRoleType = mock<ShareRoleType>({ id: '2' })

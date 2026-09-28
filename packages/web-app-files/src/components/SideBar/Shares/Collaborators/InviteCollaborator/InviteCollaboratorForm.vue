@@ -326,6 +326,10 @@ const {
   const contacts = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
 
   const emailBelongsToAccount = (query: string) => {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    if (users.length === 1 && !users[0].mail) {
+      return true
+    }
     return collaborators.some((c) =>
       [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
         query.toLowerCase()
