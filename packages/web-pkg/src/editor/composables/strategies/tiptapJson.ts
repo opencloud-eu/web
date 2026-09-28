@@ -24,6 +24,7 @@ import { TextEditorState } from '../../types'
 import {
   createCodeBlockLowlight,
   createLinkExtension,
+  createTableOfContentsExtension,
   imageFileHandlerExtension
 } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
@@ -81,7 +82,8 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       BackgroundColor,
       FontSize,
       LineHeight,
-      FindAndReplace
+      FindAndReplace,
+      createTableOfContentsExtension(editorState)
     ]
   }
 

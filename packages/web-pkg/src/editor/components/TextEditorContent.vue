@@ -8,6 +8,12 @@
     }"
     @mousemove="scrolledAway = false"
   >
+    <TextEditorTableOfContents
+      v-if="textEditor.showTableOfContents"
+      v-show="!isSourceMode"
+      :editor="textEditor"
+      :scroll-container="contentRef"
+    />
     <DragHandle
       v-show="!isSourceMode"
       :editor="textEditor.editor.value"
@@ -54,6 +60,7 @@ import { storeToRefs } from 'pinia'
 import TextEditorTableBubbleMenu from './TextEditorTableBubbleMenu.vue'
 import TextEditorLinkBubbleMenu from './TextEditorLinkBubbleMenu.vue'
 import TextEditorSourceView from './TextEditorSourceView.vue'
+import TextEditorTableOfContents from './TextEditorTableOfContents.vue'
 import type { TextEditorInstance } from '../types'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useThemeStore } from '../../composables'

@@ -71,6 +71,7 @@
     "@tiptap/extension-subscript": "catalog:tiptap",
     "@tiptap/extension-superscript": "catalog:tiptap",
     "@tiptap/extension-table": "catalog:tiptap",
+    "@tiptap/extension-table-of-contents": "catalog:tiptap",
     "@tiptap/extension-task-item": "catalog:tiptap",
     "@tiptap/extension-task-list": "catalog:tiptap",
     "@tiptap/extension-text": "catalog:tiptap",

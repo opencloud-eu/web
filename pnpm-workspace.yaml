@@ -24,6 +24,7 @@ catalogs:
     '@tiptap/extension-subscript': ^3.30.3
     '@tiptap/extension-superscript': ^3.30.3
     '@tiptap/extension-table': ^3.30.3
+    '@tiptap/extension-table-of-contents': ^3.30.3
     '@tiptap/extension-task-item': ^3.30.3
     '@tiptap/extension-task-list': ^3.30.3
     '@tiptap/extension-text': ^3.30.3

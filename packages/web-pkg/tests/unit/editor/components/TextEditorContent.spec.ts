@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { defineComponent, nextTick, ref } from 'vue'
+import { defineComponent, nextTick, ref, shallowRef } from 'vue'
 import type { TextEditorInstance, TextEditorLinkPanelRequest } from '../../../../src/editor/types'
 import TextEditorContent from '../../../../src/editor/components/TextEditorContent.vue'
 import { EditorActionGroup } from '../../../../src/editor/composables'
@@ -37,12 +37,14 @@ function mountEditorContent({
   contentType = 'markdown',
   sourceMode = false,
   content = '# Initial',
-  hasSlashCommands = false
+  hasSlashCommands = false,
+  showTableOfContents = false
 }: {
   contentType?: 'markdown' | 'html'
   sourceMode?: boolean
   content?: string
   hasSlashCommands?: boolean
+  showTableOfContents?: boolean
 } = {}) {
   const setContent = vi.fn()
   const insertContent = vi.fn()
@@ -88,11 +90,13 @@ function mountEditorContent({
     contentType: ref(contentType),
     readonly: ref(false),
     yjsActive: ref(false),
+    showTableOfContents,
     state: {
       sourceMode: ref(sourceMode),
       sourceModeReadonly: ref(false),
       linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-      editorZoom: ref(100)
+      editorZoom: ref(100),
+      tableOfContents: shallowRef([])
     },
     actionGroups: (): EditorActionGroup[] => [],
     actions: vi.fn(() => ({})),
@@ -126,6 +130,24 @@ describe('TextEditorContent', () => {
 
     expect(sourceView().exists()).toBe(true)
     expect(wrapper.find('.mock-editor-content').attributes('style')).toContain('display: none')
+  })
+
+  it('shows the table of contents only when enabled', () => {
+    const toc = (wrapper: ReturnType<typeof mountEditorContent>['wrapper']) =>
+      wrapper.findComponent({ name: 'TextEditorTableOfContents' })
+
+    expect(toc(mountEditorContent().wrapper).exists()).toBe(false)
+    expect(toc(mountEditorContent({ showTableOfContents: true }).wrapper).exists()).toBe(true)
+  })
+
+  it('hides the table of contents in source mode', async () => {
+    const { wrapper, textEditor } = mountEditorContent({ showTableOfContents: true })
+    const toc = wrapper.findComponent({ name: 'TextEditorTableOfContents' })
+
+    textEditor.state.sourceMode.value = true
+    await nextTick()
+
+    expect(toc.attributes('style')).toContain('display: none')
   })
 
   it('shows plus button only when slash commands extension is available', () => {
