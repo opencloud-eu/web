@@ -1,5 +1,7 @@
 import { defaultPlugins, PartialComponentProps, shallowMount } from '@opencloud-eu/web-test-helpers'
 import Breadcrumb from './OcBreadcrumb.vue'
+import OcBreadcrumbItem from './OcBreadcrumbItem.vue'
+import OcBreadcrumbContextMenu from './OcBreadcrumbContextMenu.vue'
 
 const items = [
   { text: 'First folder', to: { path: 'folder' } },
@@ -20,42 +22,27 @@ describe('OcBreadcrumb', () => {
     expect(wrapper.findAll('.oc-breadcrumb-list-item:not(.sr-only)').length).toBe(items.length)
     expect(wrapper.html()).toMatchSnapshot()
   })
-  it('renders item icons passed via props', () => {
-    const { wrapper } = getWrapper({
-      items: [
-        {
-          text: 'Vault',
-          icon: 'resource-type-vault',
-          iconAccessibleLabel: 'Encrypted vault'
-        }
-      ]
+  it('marks only the last list item as current', () => {
+    const { wrapper } = getWrapper()
+    const listItems = wrapper.findAll('.oc-breadcrumb-list oc-breadcrumb-item-stub')
+    expect(listItems.map((item) => item.attributes('current'))).toEqual([
+      'false',
+      'false',
+      'false',
+      'true'
+    ])
+  })
+  describe('context menu', () => {
+    it('is rendered for the last list item if enabled via property', () => {
+      const { wrapper } = getWrapper({ showContextActions: true })
+      const lastItem = wrapper.findAll('.oc-breadcrumb-list-item').at(-1)
+      expect(wrapper.findAllComponents(OcBreadcrumbContextMenu).length).toBe(1)
+      expect(lastItem.findComponent(OcBreadcrumbContextMenu).exists()).toBe(true)
     })
-    const icon = wrapper
-      .findAll('oc-icon-stub')
-      .find((icon) => icon.attributes('name') === 'resource-type-vault')
-    expect(icon?.attributes('accessiblelabel')).toBe('Encrypted vault')
-  })
-  it('renders current item icons in the mobile breadcrumb', () => {
-    const { wrapper } = getWrapper({
-      items: [
-        {
-          text: 'Vault',
-          icon: 'resource-type-vault',
-          iconAccessibleLabel: 'Encrypted vault'
-        }
-      ]
+    it('is not rendered if not enabled via property', () => {
+      const { wrapper } = getWrapper({ showContextActions: false })
+      expect(wrapper.findComponent(OcBreadcrumbContextMenu).exists()).toBe(false)
     })
-    const icon = wrapper.find('.oc-breadcrumb-mobile-current oc-icon-stub')
-    expect(icon.attributes('name')).toBe('resource-type-vault')
-    expect(icon.attributes('accessiblelabel')).toBe('Encrypted vault')
-  })
-  it('displays context menu trigger if enabled via property', () => {
-    const { wrapper } = getWrapper({ showContextActions: true })
-    expect(wrapper.find('#oc-breadcrumb-contextmenu-trigger').exists()).toBe(true)
-  })
-  it('does not display context menu trigger if not enabled via property', () => {
-    const { wrapper } = getWrapper({ showContextActions: false })
-    expect(wrapper.find('#oc-breadcrumb-contextmenu-trigger').exists()).toBe(false)
   })
   describe('mobile navigation', () => {
     it.each([
@@ -75,26 +62,11 @@ describe('OcBreadcrumb', () => {
       const { wrapper } = getWrapper({ items })
       expect(wrapper.find('.oc-breadcrumb-mobile-current').exists()).toBe(shows)
     })
-    it('renders a link if the current item has a route', () => {
-      const { wrapper } = getWrapper({ items: [items[0], items[2]] })
-      const link = wrapper.find('.oc-breadcrumb-mobile-current router-link-stub')
-      expect(link.exists()).toBe(true)
-      expect(link.attributes('aria-current')).toBe('page')
-    })
-    it('renders a button that triggers the click handler if the current item has one', async () => {
-      const onClick = vi.fn()
-      const { wrapper } = getWrapper({ items: [items[0], { text: 'Current', onClick }] })
-      const button = wrapper.find('.oc-breadcrumb-mobile-current button')
-      expect(button.exists()).toBe(true)
-      await button.trigger('click')
-      expect(onClick).toHaveBeenCalled()
-    })
-    it('renders plain text if the current item is neither a link nor clickable', () => {
-      const { wrapper } = getWrapper({ items: [items[0], items[3]] })
-      const current = wrapper.find('.oc-breadcrumb-mobile-current')
-      expect(current.find('router-link-stub').exists()).toBe(false)
-      expect(current.find('button').exists()).toBe(false)
-      expect(current.find('[aria-current="page"]').text()).toBe(items[3].text)
+    it('renders the last item as current item', () => {
+      const { wrapper } = getWrapper()
+      const current = wrapper.find('.oc-breadcrumb-mobile-current').findComponent(OcBreadcrumbItem)
+      expect(current.props('item')).toEqual(items[3])
+      expect(current.props('current')).toBe(true)
     })
   })
   describe('mobile breakpoint', () => {
