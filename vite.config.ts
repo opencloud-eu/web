@@ -222,8 +222,8 @@ export default defineConfig(({ mode, command }) => {
                 rename: { stripBase: 5 }
               })),
               {
-                src: `packages/design-system/src/assets/images/empty-states/*`,
-                dest: 'images/empty-states',
+                src: `packages/design-system/src/assets/images/illustrations/*`,
+                dest: 'images/illustrations',
                 rename: { stripBase: 6 }
               },
               {

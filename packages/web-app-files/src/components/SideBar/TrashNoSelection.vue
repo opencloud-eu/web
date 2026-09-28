@@ -1,7 +1,7 @@
 <template>
   <side-bar-no-selection
     id="oc-trash-no-selection"
-    img-src="images/empty-states/empty-trash.svg"
+    img-src="images/illustrations/trash.svg"
     :message="$gettext('Select a trash bin to view details')"
     :details="details"
   />

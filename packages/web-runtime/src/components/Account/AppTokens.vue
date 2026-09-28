@@ -26,7 +26,7 @@
     />
     <no-content-message
       v-else-if="!appTokens.length"
-      img-src="images/empty-states/empty-app-tokens.svg"
+      img-src="images/illustrations/app-tokens.svg"
       data-testid="no-app-tokens-available"
     >
       <template #message>

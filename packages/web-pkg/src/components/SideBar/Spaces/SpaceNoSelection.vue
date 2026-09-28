@@ -1,6 +1,6 @@
 <template>
   <side-bar-no-selection
-    img-src="images/empty-states/empty-spaces.svg"
+    img-src="images/illustrations/spaces.svg"
     :message="$gettext('Select a space to view details')"
     :details="details"
   />
