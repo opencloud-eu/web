@@ -109,12 +109,17 @@ import {
   Pagination,
   useGetMatchingSpace,
   ContextActions,
-  ItemFilter
+  ItemFilter,
+  useKeyboardActions
 } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useResourcesViewDefaults } from '../../composables'
+import {
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions
+} from '../../composables/keyboardActions'
 import { computed, unref, ref, onMounted } from 'vue'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
@@ -204,6 +209,10 @@ const filteredItems = computed(() => {
       .some((t) => item.shareTypes.includes(t))
   })
 })
+
+const keyActions = useKeyboardActions()
+useKeyboardFileNavigation(keyActions, filteredItems, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
 
 resourcesStore.$onAction((action) => {
   if (action.name !== 'updateResourceField') {

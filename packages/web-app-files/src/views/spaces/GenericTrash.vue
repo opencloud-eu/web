@@ -90,12 +90,17 @@ import {
   NoContentMessage,
   useDocumentTitle,
   useUserStore,
-  useResourcesStore
+  useResourcesStore,
+  useKeyboardActions
 } from '@opencloud-eu/web-pkg'
 
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import { useResourcesViewDefaults } from '../../composables'
+import {
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions
+} from '../../composables/keyboardActions'
 import { useFileActionsEmptyTrashBin } from '../../composables'
 import { isProjectSpaceResource, SpaceResource, TrashResource } from '@opencloud-eu/web-client'
 import { folderViewsTrashExtensionPoint } from '../../extensionPoints'
@@ -133,6 +138,10 @@ const {
   viewSize,
   sortFields
 } = resourcesViewDefaults
+
+const keyActions = useKeyboardActions()
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
 
 const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).length < 1)
 

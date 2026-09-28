@@ -137,12 +137,18 @@ import {
   useRouteQuery,
   getLastModifiedFilterOptions,
   getMediaTypeFilterOptions,
-  SearchMediaTypeFilterOption
+  SearchMediaTypeFilterOption,
+  useKeyboardActions
 } from '@opencloud-eu/web-pkg'
 import QuickActions from '../components/FilesList/QuickActions.vue'
 import ListInfo from '../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../components/FilesViewWrapper.vue'
 import { useResourcesViewDefaults } from '../composables'
+import {
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions,
+  useKeyboardFileActions
+} from '../composables/keyboardActions'
 import { folderViewsFavoritesExtensionPoint } from '../extensionPoints'
 import { useGettext } from 'vue3-gettext'
 import { v4 as uuidV4 } from 'uuid'
@@ -211,6 +217,11 @@ const {
 } = useResourcesViewDefaults<Resource, any, any[]>({
   folderViewExtensionPoint: folderViewsFavoritesExtensionPoint
 })
+
+const keyActions = useKeyboardActions()
+useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
+useKeyboardFileActions(keyActions)
 
 const { triggerDefaultAction } = useFileActions()
 

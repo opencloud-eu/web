@@ -81,11 +81,16 @@ import {
   AppBar,
   Pagination,
   useGetMatchingSpace,
-  ContextActions
+  ContextActions,
+  useKeyboardActions
 } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useResourcesViewDefaults } from '../../composables'
+import {
+  useKeyboardFileNavigation,
+  useKeyboardFileMouseActions
+} from '../../composables/keyboardActions'
 import { computed, onMounted, ref, unref } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
@@ -139,6 +144,10 @@ const filteredItems = computed(() => {
   }
   return unref(paginatedResources)
 })
+
+const keyActions = useKeyboardActions()
+useKeyboardFileNavigation(keyActions, filteredItems, viewMode)
+useKeyboardFileMouseActions(keyActions, viewMode)
 
 resourcesStore.$onAction((action) => {
   if (action.name !== 'updateResourceField') {
