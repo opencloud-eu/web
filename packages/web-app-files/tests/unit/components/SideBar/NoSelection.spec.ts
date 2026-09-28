@@ -16,17 +16,17 @@ const fileB = { id: '3', name: '3', type: 'file', size: '740' } as Resource
 
 describe('NoSelection', () => {
   it.each([
-    ['files-spaces-generic', 'empty-folder'],
-    ['files-common-favorites', 'empty-favorites'],
-    ['files-common-search', 'empty-search-results'],
-    ['files-shares-with-me', 'empty-shared-with-me'],
-    ['files-shares-with-others', 'empty-shared-with-others'],
-    ['files-shares-via-link', 'empty-shared-via-link'],
-    ['files-trash-generic', 'empty-trash']
-  ])('shows the empty state image of route "%s"', (routeName, image) => {
+    ['files-spaces-generic', 'folder'],
+    ['files-common-favorites', 'favorites'],
+    ['files-common-search', 'search-results'],
+    ['files-shares-with-me', 'shared-with-me'],
+    ['files-shares-with-others', 'shared-with-others'],
+    ['files-shares-via-link', 'shared-via-link'],
+    ['files-trash-generic', 'trash']
+  ])('shows the illustration of route "%s"', (routeName, image) => {
     const { wrapper } = createWrapper({ routeName })
     expect(wrapper.findComponent(SideBarNoSelection).props('imgSrc')).toBe(
-      `images/empty-states/${image}.svg`
+      `images/illustrations/${image}.svg`
     )
   })
   it('shows the item count and total size of the current resources', () => {

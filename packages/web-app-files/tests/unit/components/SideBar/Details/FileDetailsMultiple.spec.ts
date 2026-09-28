@@ -1,14 +1,13 @@
 import { Resource } from '@opencloud-eu/web-client'
 import FileDetailsMultiple from '../../../../../src/components/SideBar/Details/FileDetailsMultiple.vue'
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { OcDefinitionList } from '@opencloud-eu/design-system/components'
-
-const selectors = {
-  selectedFilesText: '[data-testid="selectedFilesText"]',
-  filesCount: '[data-testid="filesCount"]',
-  foldersCount: '[data-testid="foldersCount"]',
-  size: '[data-testid="size"]'
-}
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  RouteLocation,
+  shallowMount
+} from '@opencloud-eu/web-test-helpers'
+import { mock } from 'vitest-mock-extended'
+import { SideBarMultipleSelection } from '@opencloud-eu/web-pkg'
 
 const folderA = {
   id: '1',
@@ -40,39 +39,46 @@ const fileB = {
 } as Resource
 
 describe('Details Multiple Selection SideBar Item', () => {
+  it('should display the empty state image of the current view', () => {
+    const { wrapper } = createWrapper([fileA, fileB], 'files-common-favorites')
+    expect(wrapper.findComponent(SideBarMultipleSelection).props('imgSrc')).toBe(
+      'images/illustrations/favorites.svg'
+    )
+  })
   it('should display information for two selected folders', () => {
     const { wrapper } = createWrapper([folderA, folderB])
-    const definitionList = wrapper.findComponent<typeof OcDefinitionList>('oc-definition-list-stub')
-    const items = definitionList.props('items')
+    const overview = wrapper.findComponent(SideBarMultipleSelection)
+    const items = overview.props('details')
 
-    expect(wrapper.find(selectors.selectedFilesText).text()).toBe('2 items selected')
+    expect(overview.props('message')).toBe('2 items selected')
     expect(items.find(({ term }) => term === 'Files').definition).toBe('0')
     expect(items.find(({ term }) => term === 'Folders').definition).toBe('2')
     expect(items.find(({ term }) => term === 'Size').definition).toBe('1 kB')
   })
   it('should display information for two selected files', () => {
     const { wrapper } = createWrapper([fileA, fileB])
-    const definitionList = wrapper.findComponent<typeof OcDefinitionList>('oc-definition-list-stub')
-    const items = definitionList.props('items')
+    const overview = wrapper.findComponent(SideBarMultipleSelection)
+    const items = overview.props('details')
 
-    expect(wrapper.find(selectors.selectedFilesText).text()).toBe('2 items selected')
+    expect(overview.props('message')).toBe('2 items selected')
     expect(items.find(({ term }) => term === 'Files').definition).toBe('2')
     expect(items.find(({ term }) => term === 'Folders').definition).toBe('0')
     expect(items.find(({ term }) => term === 'Size').definition).toBe('1 kB')
   })
   it('should display information for one selected file, one selected folder', () => {
     const { wrapper } = createWrapper([fileA, folderA])
-    const definitionList = wrapper.findComponent<typeof OcDefinitionList>('oc-definition-list-stub')
-    const items = definitionList.props('items')
+    const overview = wrapper.findComponent(SideBarMultipleSelection)
+    const items = overview.props('details')
 
-    expect(wrapper.find(selectors.selectedFilesText).text()).toBe('2 items selected')
+    expect(overview.props('message')).toBe('2 items selected')
     expect(items.find(({ term }) => term === 'Files').definition).toBe('1')
     expect(items.find(({ term }) => term === 'Folders').definition).toBe('1')
     expect(items.find(({ term }) => term === 'Size').definition).toBe('1 kB')
   })
 })
 
-function createWrapper(resources: Resource[]) {
+function createWrapper(resources: Resource[], routeName = 'files-spaces-generic') {
+  const mocks = defaultComponentMocks({ currentRoute: mock<RouteLocation>({ name: routeName }) })
   return {
     wrapper: shallowMount(FileDetailsMultiple, {
       global: {
@@ -82,7 +88,9 @@ function createWrapper(resources: Resource[]) {
               resourcesStore: { resources, selectedIds: resources.map(({ id }) => id) }
             }
           })
-        ]
+        ],
+        mocks,
+        provide: mocks
       }
     })
   }

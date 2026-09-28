@@ -1,7 +1,7 @@
 <template>
   <side-bar-no-selection
     id="oc-no-selection"
-    :img-src="imgSrc"
+    :img-src="illustration"
     :message="$gettext('Select a file or folder to view details')"
     :details="details"
   />
@@ -10,46 +10,13 @@
 import { computed, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
-import {
-  SideBarNoSelection,
-  formatFileSize,
-  isLocationCommonActive,
-  isLocationSharesActive,
-  isLocationTrashActive,
-  useResourcesStore,
-  useRouter
-} from '@opencloud-eu/web-pkg'
+import { SideBarNoSelection, formatFileSize, useResourcesStore } from '@opencloud-eu/web-pkg'
+import { useViewIllustration } from '../../composables/useViewIllustration'
 
-const router = useRouter()
+const { illustration } = useViewIllustration()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const resourcesStore = useResourcesStore()
 const { resources } = storeToRefs(resourcesStore)
-
-const imgSrc = computed(() => {
-  return `images/empty-states/${getEmptyStateImage()}.svg`
-})
-
-function getEmptyStateImage() {
-  if (isLocationCommonActive(router, 'files-common-favorites')) {
-    return 'empty-favorites'
-  }
-  if (isLocationCommonActive(router, 'files-common-search')) {
-    return 'empty-search-results'
-  }
-  if (isLocationSharesActive(router, 'files-shares-with-me')) {
-    return 'empty-shared-with-me'
-  }
-  if (isLocationSharesActive(router, 'files-shares-with-others')) {
-    return 'empty-shared-with-others'
-  }
-  if (isLocationSharesActive(router, 'files-shares-via-link')) {
-    return 'empty-shared-via-link'
-  }
-  if (isLocationTrashActive(router, 'files-trash-generic')) {
-    return 'empty-trash'
-  }
-  return 'empty-folder'
-}
 
 const itemsValue = computed(() => {
   const filesCount = unref(resources).filter(({ type }) => type === 'file').length

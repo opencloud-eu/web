@@ -1,20 +1,27 @@
 <template>
   <side-bar-no-selection
     v-if="noGroups"
-    img-src="images/empty-states/empty-groups.svg"
+    img-src="images/illustrations/groups.svg"
     :message="$gettext('Select a group to view details')"
     :details="noSelectionDetails"
   />
-  <div
+  <side-bar-multiple-selection
     v-if="multipleGroups"
     id="oc-groups-details-multiple-sidebar"
-    class="flex flex-col items-center p-4 bg-role-surface-container rounded-sm"
-  >
-    <oc-icon name="group-2" size-class="size-22" />
-    <p>{{ multipleGroupsSelectedText }}</p>
-  </div>
-  <div v-if="group" id="oc-group-details-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <GroupInfoBox :group="group" />
+    img-src="images/illustrations/groups.svg"
+    :message="multipleGroupsSelectedText"
+  />
+  <div v-if="group" id="oc-group-details-sidebar" class="p-2">
+    <div
+      class="flex justify-center items-center h-[192px] p-4 mb-4 bg-role-surface-container rounded-xl"
+    >
+      <oc-avatar
+        :width="80"
+        :userid="group.id"
+        :user-name="group.displayName"
+        background-color="var(--oc-role-secondary)"
+      />
+    </div>
     <dl
       class="details-list"
       :aria-label="$gettext('Overview of the information about the selected group')"
@@ -27,11 +34,11 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { SideBarNoSelection } from '@opencloud-eu/web-pkg'
+import { SideBarMultipleSelection, SideBarNoSelection } from '@opencloud-eu/web-pkg'
 
 export default defineComponent({
   name: 'DetailsPanel',
-  components: { SideBarNoSelection },
+  components: { SideBarMultipleSelection, SideBarNoSelection },
   props: {
     groups: {
       type: Array as PropType<Group[]>,

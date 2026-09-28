@@ -1,16 +1,15 @@
 <template>
-  <div id="oc-spaces-details-multiple-sidebar" class="p-4 bg-role-surface-container rounded-sm">
-    <div class="text-center mb-6 rounded-sm">
-      <div>
-        <oc-icon size-class="size-22" name="layout-grid" />
-        <p v-text="selectedSpacesString" />
-      </div>
-    </div>
-    <oc-definition-list :aria-label="detailsTableLabel" :items="items" class="m-0" />
-  </div>
+  <side-bar-multiple-selection
+    id="oc-spaces-details-multiple-sidebar"
+    img-src="images/illustrations/spaces.svg"
+    :message="selectedSpacesString"
+    :details="items"
+    :details-label="detailsTableLabel"
+  />
 </template>
 <script setup lang="ts">
 import { formatFileSize } from '../../../../helpers'
+import SideBarMultipleSelection from '../../SideBarMultipleSelection.vue'
 import { computed, unref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
@@ -69,13 +68,13 @@ const selectedSpacesString = computed(() => {
 })
 
 const items = computed(() => [
-  { term: $gettext('Total quota:'), definition: unref(totalSelectedSpaceQuotaTotal).toString() },
+  { term: $gettext('Total quota'), definition: unref(totalSelectedSpaceQuotaTotal).toString() },
   {
-    term: $gettext('Remaining quota:'),
+    term: $gettext('Remaining quota'),
     definition: unref(totalSelectedSpaceQuotaRemaining).toString()
   },
-  { term: $gettext('Used quota:'), definition: unref(totalSelectedSpaceQuotaUsed).toString() },
-  { term: $gettext('Enabled:'), definition: unref(totalEnabledSpaces).toString() },
-  { term: $gettext('Disabled:'), definition: unref(totalDisabledSpaces).toString() }
+  { term: $gettext('Used quota'), definition: unref(totalSelectedSpaceQuotaUsed).toString() },
+  { term: $gettext('Enabled'), definition: unref(totalEnabledSpaces).toString() },
+  { term: $gettext('Disabled'), definition: unref(totalDisabledSpaces).toString() }
 ])
 </script>
