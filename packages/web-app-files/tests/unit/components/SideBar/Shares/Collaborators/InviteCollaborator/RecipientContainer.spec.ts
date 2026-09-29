@@ -21,6 +21,14 @@ describe('InviteCollaborator RecipientContainer', () => {
       expect(wrapper.html()).toMatchSnapshot()
     })
   })
+  it('renders the guest icon and label for guest recipients', () => {
+    const recipient = getRecipient(ShareTypes.guest.value)
+    const { wrapper } = getMountedWrapper(recipient)
+    expect((wrapper.vm as any).formattedRecipient.icon).toEqual({
+      name: ShareTypes.guest.icon,
+      label: 'Guest user'
+    })
+  })
   it('renders the contact icon and label for address book contact recipients', () => {
     const recipient = getRecipient(ShareTypes.contact.value)
     const { wrapper } = getMountedWrapper(recipient)

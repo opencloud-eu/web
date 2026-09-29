@@ -4,7 +4,6 @@
     :icon-size="iconSize"
     icon="global"
     icon-fill-type="line"
-    icon-color="#D78841"
     :name="name"
     :accessible-label="accessibleLabel"
   />

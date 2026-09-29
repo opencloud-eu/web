@@ -2,7 +2,7 @@
   <div
     id="new-collaborators-form"
     data-testid="new-collaborators-form"
-    class="[&_.vs\_\_actions]:!flex-nowrap mb-4"
+    class="[&_.vs\_\_actions]:!flex-nowrap [&_.vs\_\_search]:min-w-40 mb-4"
   >
     <div>
       <div class="flex justify-between mb-1">
@@ -155,6 +155,7 @@
 
 <script setup lang="ts">
 import PQueue from 'p-queue'
+import * as EmailValidator from 'email-validator'
 import { storeToRefs } from 'pinia'
 import AutocompleteItem from './AutocompleteItem.vue'
 import RoleDropdown from '../RoleDropdown.vue'
@@ -168,6 +169,7 @@ import {
   isSpaceResource
 } from '@opencloud-eu/web-client'
 import {
+  useAbility,
   useClientService,
   useMessages,
   useSpacesStore,
@@ -186,6 +188,7 @@ import { DateTime } from 'luxon'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource } from '@opencloud-eu/web-client'
+import { DriveRecipient } from '@opencloud-eu/web-client/graph/generated'
 import ExpirationDateIndicator from '../../ExpirationDateIndicator.vue'
 import { ContextualHelper } from '@opencloud-eu/design-system/helpers'
 import CopyPrivateLink from '../../../../Shares/CopyPrivateLink.vue'
@@ -217,6 +220,7 @@ const spacesStore = useSpacesStore()
 const { upsertSpace } = spacesStore
 const configStore = useConfigStore()
 const userStore = useUserStore()
+const { can } = useAbility()
 
 const sharesStore = useSharesStore()
 const { addShare } = sharesStore
@@ -319,25 +323,47 @@ const {
   })
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const guests = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
+  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
 
-  return [...collaborators, ...guests].filter((collaborator: CollaboratorAutoCompleteItem) => {
-    if (collaborator.id === userStore.user.id) {
-      return false
+  const emailBelongsToAccount = (query: string) => {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    if (users.length === 1 && !users[0].mail) {
+      return true
     }
+    return collaborators.some((c) =>
+      [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
+        query.toLowerCase()
+      )
+    )
+  }
+  const trimmedQuery = (query || '').trim()
+  const guests: CollaboratorAutoCompleteItem[] =
+    !unref(isExternalShareRoleType) &&
+    can('create-all', 'GuestInvite') &&
+    !emailBelongsToAccount(trimmedQuery) &&
+    EmailValidator.validate(trimmedQuery)
+      ? [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.guest.value }]
+      : []
 
-    const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
-    const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
-    const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
+  return [...collaborators, ...contacts, ...guests].filter(
+    (collaborator: CollaboratorAutoCompleteItem) => {
+      if (collaborator.id === userStore.user.id) {
+        return false
+      }
 
-    if (selected || exists) {
-      return false
+      const selected = unref(selectedCollaborators).some(({ id }) => collaborator.id === id)
+      const existingShares = unref(collaboratorShares).filter((c) => !c.indirect)
+      const exists = existingShares.some((s) => s.sharedWith.id === collaborator.id)
+
+      if (selected || exists) {
+        return false
+      }
+
+      announcement.value = $gettext('Person was added')
+
+      return true
     }
-
-    announcement.value = $gettext('Person was added')
-
-    return true
-  })
+  )
 })
 
 const share = async () => {
@@ -375,7 +401,18 @@ const share = async () => {
       return
     }
 
-    const type = shareType === ShareTypes.group.value ? 'group' : 'user'
+    const isGuest = shareType === ShareTypes.guest.value
+
+    // the backend rejects the invite when a recipient carries both a mail address and an object with
+    // objectId and recipient type, so guests are addressed by mail alone
+    const recipient: DriveRecipient = isGuest
+      ? { email: id }
+      : {
+          objectId: id,
+          '@libre.graph.recipient.type':
+            shareType === ShareTypes.group.value ? ShareTypes.group.key : ShareTypes.user.key
+        }
+
     savePromises.push(
       saveQueue.add(async () => {
         try {
@@ -386,12 +423,7 @@ const share = async () => {
             options: {
               roles: [unref(selectedRole).id],
               expirationDateTime: unref(expirationDate),
-              recipients: [
-                {
-                  objectId: id,
-                  '@libre.graph.recipient.type': type
-                }
-              ]
+              recipients: [recipient]
             }
           })
 
