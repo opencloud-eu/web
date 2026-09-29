@@ -124,11 +124,11 @@ export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<voi
     await expect(page.locator(mobileViewmodeSwitchDropdown)).toBeVisible()
 
     const mobileTexts = {
-      table: 'Default table view',
-      tiles: 'Tiles view',
-      'table-condensed': 'Condensed table view'
+      table: 'List',
+      tiles: 'Grid',
+      'table-condensed': 'Condensed list'
     }
-    await page.getByText(mobileTexts[target]).first().click()
+    await page.getByText(mobileTexts[target], { exact: true }).first().click()
   } else {
     const webSelectors = {
       table: 'resource-table',
