@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
 - fix: add missing icon for excalidraw [[#3483](https://github.com/opencloud-eu/web/pull/3483)]
 - fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
 - fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
