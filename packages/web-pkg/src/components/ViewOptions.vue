@@ -125,7 +125,7 @@
           <oc-range
             id="tiles-size-slider"
             v-model="viewSizeModel"
-            :label="$gettext('Tile size')"
+            :label="$gettext('Grid size')"
             :min="1"
             :max="viewSizeMax"
             inline-label
