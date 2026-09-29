@@ -51,7 +51,11 @@ describe('resourcesTransfer', () => {
     { name: 'a', extension: '', expectName: 'a (2)', existing: [{ name: 'a (1)' }] },
     { name: 'a (1)', extension: '', expectName: 'a (1) (1)' },
     { name: 'b.png', extension: 'png', expectName: 'b (1).png' },
-    { name: 'b.png', extension: 'png', expectName: 'b (2).png', existing: [{ name: 'b (1).png' }] }
+    { name: 'b.png', extension: 'png', expectName: 'b (2).png', existing: [{ name: 'b (1).png' }] },
+    { name: '.env', extension: 'env', expectName: '.env (1)' },
+    { name: '.env', extension: 'env', expectName: '.env (2)', existing: [{ name: '.env (1)' }] },
+    { name: '.config.json', extension: 'json', expectName: '.config (1).json' },
+    { name: 'b.md', extension: 'png', expectName: 'b.md (1)' }
   ])('should name duplicate file correctly', (dataSet) => {
     const existing = dataSet.existing ? [...resourcesToMove, ...dataSet.existing] : resourcesToMove
     const result = resolveFileNameDuplicate(dataSet.name, dataSet.extension, existing as Resource[])

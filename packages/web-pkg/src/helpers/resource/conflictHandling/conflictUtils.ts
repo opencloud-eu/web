@@ -1,5 +1,6 @@
 import { dirname } from 'path'
-import { extractNameWithoutExtension, Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { withoutExtension } from '../../fileExtension'
 
 export const resolveFileNameDuplicate = (
   name: string,
@@ -7,13 +8,12 @@ export const resolveFileNameDuplicate = (
   existingResources: Resource[],
   iteration = 1
 ): string => {
-  let potentialName
-  if (!extension) {
-    potentialName = `${name} (${iteration})`
-  } else {
-    const nameWithoutExtension = extractNameWithoutExtension({ name, extension } as Resource)
-    potentialName = `${nameWithoutExtension} (${iteration}).${extension}`
-  }
+  const nameWithoutExtension = extension ? withoutExtension(name, extension) : name
+  // dot files like ".env" and names not ending with the extension get the suffix appended
+  const potentialName =
+    nameWithoutExtension && nameWithoutExtension !== name
+      ? `${nameWithoutExtension} (${iteration}).${extension}`
+      : `${name} (${iteration})`
   const hasConflict = existingResources.some((f) => f.name === potentialName)
   if (!hasConflict) {
     return potentialName

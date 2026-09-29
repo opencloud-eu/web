@@ -5,11 +5,12 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import EmbedActions from '../../../../src/components/EmbedActions/EmbedActions.vue'
-import { FileAction, useEmbedMode } from '@opencloud-eu/web-pkg'
+import { FileAction, useEmbedMode, useResourcesStore } from '@opencloud-eu/web-pkg'
 import { useFileActionsCreateLink } from '../../../../src/composables/actions/files'
 import { mock } from 'vitest-mock-extended'
-import { ref } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
+import { OcTextInput } from '@opencloud-eu/design-system/components'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -76,7 +77,7 @@ describe('EmbedActions', () => {
     })
     it('should display the file name input when chooseFileName is configured', () => {
       const { wrapper } = getWrapper({
-        currentFolder: { id: '1', canCreate: () => true } as Resource,
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
         isLocationPicker: true,
         chooseFileName: true
       })
@@ -85,7 +86,7 @@ describe('EmbedActions', () => {
     })
     it('should hide the file name input when chooseFileName is not configured', () => {
       const { wrapper } = getWrapper({
-        currentFolder: { id: '1', canCreate: () => true } as Resource,
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
         isLocationPicker: true
       })
 
@@ -93,7 +94,7 @@ describe('EmbedActions', () => {
     })
     it('should emit select event with currentFolder as selected resource and fileName when select action is triggered and chooseFileName is configured', async () => {
       const { wrapper, mocks } = getWrapper({
-        currentFolder: { id: '1', canCreate: () => true } as Resource,
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
         isLocationPicker: true,
         chooseFileName: true
       })
@@ -102,13 +103,173 @@ describe('EmbedActions', () => {
 
       expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:select', {
         fileName: 'file.txt',
-        resources: [{ id: '1' }],
+        resources: [{ id: '1', path: '/' }],
         locationQuery: {
           contextRouteName: 'files-spaces-generic',
           contextRouteQuery: {}
         }
       })
       expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('file name input', () => {
+    const currentFolder = { id: '1', path: '/', canCreate: () => true } as Resource
+
+    it('shows the file extension and selects the name without it when file extensions are shown', () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('file.txt')
+      expect(input.props('selectionRange')).toEqual([0, 4])
+    })
+
+    it('hides the file extension in the input when file extensions are turned off', () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('file')
+      expect(input.props('selectionRange')).toBeNull()
+    })
+
+    it('adds the hidden file extension back when selecting', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+
+      await wrapper.find(selectors.btnSelect).trigger('click')
+
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'file.txt' })
+      )
+    })
+
+    it('disables the select action for an empty name when file extensions are turned off', async () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      await input.vm.$emit('update:modelValue', '')
+
+      expect(wrapper.find(selectors.btnSelect).attributes('disabled')).toBeDefined()
+    })
+
+    it.each([
+      { name: '', error: 'The name cannot be empty' },
+      { name: 'foo/bar.txt', error: 'The name cannot contain "/"' },
+      { name: ' file.txt', error: 'The name cannot start or end with whitespace' }
+    ])('shows an error and disables the select action for "$name"', async ({ name, error }) => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      await input.vm.$emit('update:modelValue', name)
+
+      expect(input.props('errorMessage')).toBe(error)
+      expect(wrapper.find(selectors.btnSelect).attributes('disabled')).toBeDefined()
+    })
+
+    it('adds the file extension back when file extensions get turned on', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+      await input.vm.$emit('update:modelValue', 'renamed')
+
+      useResourcesStore().areFileExtensionsShown = true
+      await nextTick()
+
+      expect(input.props('modelValue')).toBe('renamed.txt')
+      await wrapper.find(selectors.btnSelect).trigger('click')
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'renamed.txt' })
+      )
+    })
+
+    it('hides the file extension when file extensions get turned off', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+      await input.vm.$emit('update:modelValue', 'renamed.md')
+
+      useResourcesStore().areFileExtensionsShown = false
+      await nextTick()
+
+      expect(input.props('modelValue')).toBe('renamed')
+      await wrapper.find(selectors.btnSelect).trigger('click')
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: 'renamed.md' })
+      )
+    })
+
+    it('keeps the full name of dot files when file extensions are turned off', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        areFileExtensionsShown: false,
+        fileNameSuggestion: '.env'
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('.env')
+      await wrapper.find(selectors.btnSelect).trigger('click')
+      expect(mocks.postMessageMock).toHaveBeenCalledWith(
+        'opencloud-embed:select',
+        expect.objectContaining({ fileName: '.env' })
+      )
+    })
+
+    it('focuses the input initially', () => {
+      const { mocks } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      expect(mocks.focusMock).toHaveBeenCalled()
+    })
+
+    it('allows a name that already exists in the current folder', () => {
+      const { wrapper } = getWrapper({
+        currentFolder,
+        isLocationPicker: true,
+        chooseFileName: true,
+        folderResources: [{ id: '2', name: 'file.txt', path: '/file.txt' } as Resource]
+      })
+      const input = wrapper.findComponent<typeof OcTextInput>(selectors.fileNameInput)
+
+      expect(input.props('modelValue')).toBe('file.txt')
+      expect(input.props('errorMessage')).toBeUndefined()
+      expect(wrapper.find(selectors.btnSelect).attributes()).not.toHaveProperty('disabled')
     })
   })
 
@@ -197,7 +358,10 @@ function getWrapper(
     createLinksActionEnabled = true,
     isLocationPicker = false,
     isFilePicker = false,
-    chooseFileName = false
+    chooseFileName = false,
+    areFileExtensionsShown = true,
+    folderResources = [],
+    fileNameSuggestion = 'file.txt'
   }: {
     selectedIds?: string[]
     currentFolder?: Resource
@@ -205,17 +369,21 @@ function getWrapper(
     isLocationPicker?: boolean
     isFilePicker?: boolean
     chooseFileName?: boolean
+    areFileExtensionsShown?: boolean
+    folderResources?: Resource[]
+    fileNameSuggestion?: string
   } = {
     selectedIds: []
   }
 ) {
   const postMessageMock = vi.fn()
+  const focusMock = vi.fn()
   vi.mocked(useEmbedMode).mockReturnValue(
     mock<ReturnType<typeof useEmbedMode>>({
       isLocationPicker: ref(isLocationPicker),
       isFilePicker: ref(isFilePicker),
       chooseFileName: ref(chooseFileName),
-      chooseFileNameSuggestion: ref('file.txt'),
+      chooseFileNameSuggestion: ref(fileNameSuggestion),
       postMessage: postMessageMock
     })
   )
@@ -232,7 +400,7 @@ function getWrapper(
     })
   )
 
-  const resources = selectedIds.map((id) => ({ id })) as Resource[]
+  const resources = [...(selectedIds.map((id) => ({ id })) as Resource[]), ...folderResources]
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({
@@ -241,7 +409,8 @@ function getWrapper(
       })
     }),
     createLinkHandlerMock,
-    postMessageMock
+    postMessageMock,
+    focusMock
   }
 
   return {
@@ -250,13 +419,27 @@ function getWrapper(
       global: {
         mocks,
         provide: mocks,
-        stubs: { OcButton: false },
+        stubs: { OcButton: false, OcTextInput: getOcTextInputStub(focusMock) },
         plugins: [
           ...defaultPlugins({
-            piniaOptions: { resourcesStore: { currentFolder, selectedIds, resources } }
+            piniaOptions: {
+              resourcesStore: { currentFolder, selectedIds, resources, areFileExtensionsShown }
+            }
           })
         ]
       }
     })
   }
+}
+
+function getOcTextInputStub(focusMock: () => void) {
+  return defineComponent({
+    name: 'OcTextInput',
+    props: OcTextInput.props,
+    emits: ['update:modelValue'],
+    setup(_, { expose }) {
+      expose({ focus: focusMock })
+      return () => h('oc-text-input-stub')
+    }
+  })
 }

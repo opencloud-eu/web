@@ -28,7 +28,13 @@ import {
 } from '../../composables'
 import { LocationQuery, RouteLocationRaw } from 'vue-router'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
-import { isShareSpaceResource, Resource, SpaceResource, urlJoin } from '@opencloud-eu/web-client'
+import {
+  extractExtensionFromFile,
+  isShareSpaceResource,
+  Resource,
+  SpaceResource,
+  urlJoin
+} from '@opencloud-eu/web-client'
 import { resolveFileNameDuplicate } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import { DavProperty } from '@opencloud-eu/web-client/webdav'
@@ -112,7 +118,9 @@ const saveFile = async ({
     (existingResource) => existingResource.name === fileName
   )
   if (resourceAlreadyExists) {
-    fileName = resolveFileNameDuplicate(fileName, originalResource.extension, existingResources)
+    // the chosen name may have a different extension than the original file
+    const extension = extractExtensionFromFile({ name: fileName } as Resource)
+    fileName = resolveFileNameDuplicate(fileName, extension, existingResources)
   }
 
   return clientService.webdav.putFileContents(space, {
