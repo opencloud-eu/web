@@ -428,7 +428,10 @@ const spaceDetailsLabel = computed(() => {
   return $gettext('Show details')
 })
 const showDetailsForSpace = (space: SpaceResource) => {
-  selectSpace(space)
+  lastSelectedSpaceIndex.value = findIndex(unref(spaces), (g) => g.id === space.id)
+  lastSelectedSpaceId.value = space.id
+  keyActions.resetSelectionCursor()
+  spaceSettingsStore.setSelectedSpaces([space])
   openSideBar()
 }
 

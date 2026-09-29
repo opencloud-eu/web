@@ -133,6 +133,19 @@ describe('SpacesList', () => {
     await wrapper.find('.spaces-table-btn-details').trigger('click')
     expect(openSideBar).toHaveBeenCalled()
   })
+  it.each([
+    { description: 'another space', selectedSpaces: [spaceMocks[1]] },
+    { description: 'the same space', selectedSpaces: [spaceMocks[0]] }
+  ])(
+    'selects only the clicked space on details button click if $description is selected',
+    async ({ selectedSpaces }) => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks, selectedSpaces })
+      await wrapper.find('.spaces-table-btn-details').trigger('click')
+      const { setSelectedSpaces, addSelectedSpace } = useSpaceSettingsStore()
+      expect(setSelectedSpaces).toHaveBeenCalledWith([spaceMocks[0]])
+      expect(addSelectedSpace).not.toHaveBeenCalled()
+    }
+  )
   describe('toggle selection', () => {
     describe('selectSpaces method', () => {
       it('selects all spaces', () => {
