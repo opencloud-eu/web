@@ -1,23 +1,21 @@
 <template>
-  <div id="group-edit-panel" class="mt-2">
-    <GroupInfoBox :group="group" />
-    <form
-      id="group-edit-form"
-      class="bg-role-surface-container p-4 rounded-t-sm"
-      autocomplete="off"
-    >
-      <oc-text-input
-        id="displayName-input"
-        v-model="editGroup.displayName"
-        class="mb-2"
-        :label="$gettext('Group name')"
-        :error-message="formData.displayName.errorMessage"
-        :fix-message-line="true"
-        required-mark
-        @update:model-value="validateDisplayName"
-      />
+  <div id="group-edit-panel" class="flex-1 flex flex-col p-2">
+    <form id="group-edit-form" class="flex-1 flex flex-col" autocomplete="off">
+      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1">
+        <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Group')" />
+        <oc-text-input
+          id="displayName-input"
+          v-model="editGroup.displayName"
+          :label="$gettext('Group name')"
+          :error-message="formData.displayName.errorMessage"
+          :fix-message-line="true"
+          required-mark
+          @update:model-value="validateDisplayName"
+        />
+      </section>
       <compare-save-dialog
-        class="mb-6 rounded-b-sm"
+        v-model:saved="saved"
+        class="mt-auto pt-4"
         :original-object="group"
         :compare-object="editGroup"
         :confirm-button-disabled="invalidFormData"
@@ -27,123 +25,100 @@
     </form>
   </div>
 </template>
-<script lang="ts">
-import { defineComponent, PropType, ref } from 'vue'
+<script setup lang="ts">
+import { computed, ref, unref, watch } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { CompareSaveDialog, eventBus, useMessages } from '@opencloud-eu/web-pkg'
-import { MaybeRef, useClientService } from '@opencloud-eu/web-pkg'
+import { CompareSaveDialog, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../../composables'
 import { useGettext } from 'vue3-gettext'
 
-export default defineComponent({
-  name: 'EditPanel',
-  components: {
-    CompareSaveDialog
-  },
-  props: {
-    group: {
-      type: Object as PropType<Group>,
-      default: null
-    }
-  },
-  emits: ['confirm'],
-  setup() {
-    const clientService = useClientService()
-    const { showErrorMessage } = useMessages()
-    const groupSettingsStore = useGroupSettingsStore()
-    const { $gettext } = useGettext()
+const { group = null } = defineProps<{ group?: Group }>()
 
-    const editGroup: MaybeRef<Group> = ref({})
-    const formData = ref({
-      displayName: {
-        errorMessage: '',
-        valid: true
-      }
-    })
+const clientService = useClientService()
+const { showErrorMessage } = useMessages()
+const groupSettingsStore = useGroupSettingsStore()
+const { $gettext } = useGettext()
 
-    const onEditGroup = async (editGroup: Group) => {
-      try {
-        const client = clientService.graphAuthenticated
-        await client.groups.editGroup(editGroup.id, editGroup)
-        const updatedGroup = await client.groups.getGroup(editGroup.id)
-        groupSettingsStore.upsertGroup(updatedGroup)
-
-        eventBus.publish('sidebar.entity.saved')
-
-        return updatedGroup
-      } catch (error) {
-        console.error(error)
-        showErrorMessage({
-          title: $gettext('Failed to edit group'),
-          errors: [error]
-        })
-      }
-    }
-
-    return {
-      clientService,
-      editGroup,
-      formData,
-      onEditGroup
-    }
-  },
-  computed: {
-    invalidFormData() {
-      return Object.values(this.formData)
-        .map((v) => !!v.valid)
-        .includes(false)
-    }
-  },
-  watch: {
-    group: {
-      handler: function () {
-        this.editGroup = { ...this.group }
-      },
-      deep: true,
-      immediate: true
-    }
-  },
-  methods: {
-    async validateDisplayName() {
-      this.formData.displayName.valid = false
-
-      if (this.editGroup.displayName.trim() === '') {
-        this.formData.displayName.errorMessage = this.$gettext('Group name cannot be empty')
-        return false
-      }
-
-      if (this.editGroup.displayName.length > 255) {
-        this.formData.displayName.errorMessage = this.$gettext(
-          'Group name cannot exceed 255 characters'
-        )
-        return false
-      }
-
-      if (this.group.displayName !== this.editGroup.displayName) {
-        try {
-          const client = this.clientService.graphAuthenticated
-          await client.groups.getGroup(this.editGroup.displayName)
-          this.formData.displayName.errorMessage = this.$gettext(
-            'Group "%{groupName}" already exists',
-            {
-              groupName: this.editGroup.displayName
-            }
-          )
-          return false
-        } catch {}
-      }
-
-      this.formData.displayName.errorMessage = ''
-      this.formData.displayName.valid = true
-      return true
-    },
-    revertChanges() {
-      this.editGroup = { ...this.group }
-      Object.values(this.formData).forEach((formDataValue) => {
-        formDataValue.valid = true
-        formDataValue.errorMessage = ''
-      })
-    }
+const editGroup = ref<Group>({})
+const saved = ref(false)
+const formData = ref({
+  displayName: {
+    errorMessage: '',
+    valid: true
   }
 })
+
+const invalidFormData = computed(() => {
+  return Object.values(unref(formData)).some((v) => !v.valid)
+})
+
+async function onEditGroup(editGroup: Group) {
+  try {
+    const client = clientService.graphAuthenticated
+    await client.groups.editGroup(editGroup.id, editGroup)
+    const updatedGroup = await client.groups.getGroup(editGroup.id)
+    groupSettingsStore.upsertGroup(updatedGroup)
+    saved.value = true
+
+    return updatedGroup
+  } catch (error) {
+    console.error(error)
+    showErrorMessage({
+      title: $gettext('Failed to edit group'),
+      errors: [error]
+    })
+  }
+}
+
+async function validateDisplayName() {
+  formData.value.displayName.valid = false
+
+  if (unref(editGroup).displayName.trim() === '') {
+    formData.value.displayName.errorMessage = $gettext('Group name cannot be empty')
+    return false
+  }
+
+  if (unref(editGroup).displayName.length > 255) {
+    formData.value.displayName.errorMessage = $gettext('Group name cannot exceed 255 characters')
+    return false
+  }
+
+  if (group.displayName !== unref(editGroup).displayName) {
+    try {
+      const client = clientService.graphAuthenticated
+      await client.groups.getGroup(unref(editGroup).displayName)
+      formData.value.displayName.errorMessage = $gettext('Group "%{groupName}" already exists', {
+        groupName: unref(editGroup).displayName
+      })
+      return false
+    } catch {}
+  }
+
+  formData.value.displayName.errorMessage = ''
+  formData.value.displayName.valid = true
+  return true
+}
+
+function revertChanges() {
+  editGroup.value = { ...group }
+  Object.values(unref(formData)).forEach((formDataValue) => {
+    formDataValue.valid = true
+    formDataValue.errorMessage = ''
+  })
+}
+
+watch(
+  () => group,
+  () => {
+    editGroup.value = { ...group }
+  },
+  { deep: true, immediate: true }
+)
+
+watch(
+  () => group?.id,
+  () => {
+    saved.value = false
+  }
+)
 </script>
