@@ -62,7 +62,7 @@
         </template>
         <template #actions="{ item }">
           <oc-button
-            v-oc-tooltip="$gettext('Delete app token')"
+            v-oc-tooltip="$gettext('Delete')"
             appearance="raw"
             no-hover
             size="small"
