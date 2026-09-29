@@ -9,44 +9,51 @@
               <div class="flex justify-between items-center h-12">
                 <oc-breadcrumb id="admin-settings-breadcrumb" :items="breadcrumbs" />
               </div>
-              <div class="flex">
-                <h1>{{ $gettext('Manage Fonts') }}</h1>
+              <div class="mt-2">
+                <h1 class="text-2xl my-0" v-text="$gettext('Manage Fonts')" />
+                <p
+                  class="text-sm text-role-on-surface-variant mt-1 mb-0"
+                  v-text="$gettext('Fonts available in the office documents editor.')"
+                />
               </div>
-              <div class="flex">
+              <div class="flex justify-between items-center my-6 gap-4">
                 <oc-file-input
                   v-model="files"
                   file-types=".ttf,.otf"
                   :multiple="true"
                   :label="$gettext('Select font')"
-                  class="my-6"
+                  :description-message="$gettext('Allowed file types: .ttf, .otf')"
+                />
+                <oc-search-bar
+                  v-model="filterTerm"
+                  class="w-3xs"
+                  :label="$gettext('Search')"
+                  :placeholder="$gettext('Search for fonts')"
+                  button-hidden
+                  :is-rounded="false"
                 />
               </div>
             </div>
-            <oc-table-simple>
-              <oc-table-head>
-                <oc-table-tr>
-                  <oc-table-th>{{ $gettext('Name') }}</oc-table-th>
-                  <oc-table-th>{{ $gettext('Preview') }}</oc-table-th>
-                  <oc-table-th class="hidden md:table-cell">{{ $gettext('Version') }}</oc-table-th>
-                  <oc-table-th class="hidden md:table-cell">{{ $gettext('Designer') }}</oc-table-th>
-                </oc-table-tr>
-              </oc-table-head>
-              <oc-table-body>
-                <oc-table-tr v-for="font in fontsData" :key="font.family">
-                  <oc-table-td>{{ font.family }}</oc-table-td>
-                  <oc-table-td>
-                    <img v-if="previewUrls[font.file]" :src="previewUrls[font.file]" alt="" />
-                  </oc-table-td>
-                  <oc-table-td class="hidden md:table-cell">{{ font.version }}</oc-table-td>
-                  <oc-table-td class="hidden md:table-cell">{{ font.designer }}</oc-table-td>
-                  <oc-table-td class="text-right">
-                    <oc-button :aria-label="$gettext('Delete')" @click="deleteFont(font)">
-                      <oc-icon name="delete-bin" fill-type="line" size-class="size-4" />
-                    </oc-button>
-                  </oc-table-td>
-                </oc-table-tr>
-              </oc-table-body>
-            </oc-table-simple>
+            <no-content-message
+              v-if="!fontsData?.length"
+              id="office-settings-fonts-empty"
+              icon="font-size"
+              icon-fill-type="none"
+            >
+              <template #message>
+                <span v-text="$gettext('No fonts found')" />
+              </template>
+              <template #callToAction>
+                <span v-text="$gettext('Upload a font and it will show up here')" />
+              </template>
+            </no-content-message>
+            <fonts-list
+              v-else
+              :fonts="fontsData"
+              :preview-urls="previewUrls"
+              :filter-term="filterTerm"
+              @delete="deleteFont"
+            />
           </div>
         </div>
       </div>
@@ -59,36 +66,24 @@ import {
   useClientService,
   AppLoadingSpinner,
   useMessages,
-  useIsTopBarSticky
+  useIsTopBarSticky,
+  NoContentMessage
 } from '@opencloud-eu/web-pkg'
 import { useAsyncState } from '@vueuse/core'
 import { computed, onBeforeUnmount, ref, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
-
-interface Font {
-  file: string
-  family: string
-  copyright: string
-  version: string
-  trademark: string
-  manufacturer: string
-  designer: string
-  description: string
-  vendor_url: string
-  designer_url: string
-  license: string
-  license_url: string
-  uri: string
-}
+import FontsList from './components/FontsList.vue'
+import { Font } from './types'
 
 const { $gettext } = useGettext()
 const { showErrorMessage } = useMessages()
 const { isSticky } = useIsTopBarSticky()
 const breadcrumbs = computed<BreadcrumbItem[]>(() => [
   {
-    text: $gettext('Office')
+    text: $gettext('Office'),
+    to: { path: '/admin-settings/office' }
   }
 ])
 
@@ -153,8 +148,14 @@ watch(fontsData, (fonts) => {
 
 onBeforeUnmount(revokePreviewUrls)
 
-const files = ref<FileList>()
+const filterTerm = ref('')
+
+const files = ref<FileList>(null)
 watch(files, async (newFiles) => {
+  if (!newFiles?.length) {
+    return
+  }
+
   await Promise.all(
     Array.from(newFiles).map(async (file) => {
       const formData = new FormData()
@@ -172,6 +173,8 @@ watch(files, async (newFiles) => {
       await refreshFonts()
     })
   )
+
+  files.value = null
 })
 
 const deleteFont = async (font: Font) => {
@@ -187,12 +190,3 @@ const deleteFont = async (font: Font) => {
   await refreshFonts()
 }
 </script>
-
-<style scoped>
-@reference '@opencloud-eu/design-system/tailwind';
-
-th,
-td {
-  @apply p-4;
-}
-</style>
