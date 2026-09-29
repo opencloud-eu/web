@@ -6,6 +6,33 @@
 
 @AlexAndBear, @JammingBen, @flimmy, @kulmann, @pascalwengerter, @tammi-23, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix: add missing icon for excalidraw [[#3483](https://github.com/opencloud-eu/web/pull/3483)]
+- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
+- fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
+- fix(runtime): show the help to translate link under the language select [[#3464](https://github.com/opencloud-eu/web/pull/3464)]
+- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
+- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
+- fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
+- fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
+- fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
+- fix: group space customization actions in context menu [[#3444](https://github.com/opencloud-eu/web/pull/3444)]
+- fix: show tiles view first in view mode options [[#3454](https://github.com/opencloud-eu/web/pull/3454)]
+- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
+- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
+- fix(files): use NoContentMessage for resource not found message [[#3447](https://github.com/opencloud-eu/web/pull/3447)]
+- fix: consistent sorting for spaces and resources [[#3432](https://github.com/opencloud-eu/web/pull/3432)]
+- fix(admin-settings): make apps sortable by status [[#3427](https://github.com/opencloud-eu/web/pull/3427)]
+- Keep modal actions out of the scrollable body [[#3419](https://github.com/opencloud-eu/web/pull/3419)]
+- Always sort folders above files [[#3411](https://github.com/opencloud-eu/web/pull/3411)]
+- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
+- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
 ### 📈 Enhancement
 
 - feat(office-settings): polish fonts table to match overall design [[#3479](https://github.com/opencloud-eu/web/pull/3479)]
@@ -31,32 +58,6 @@
 - e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
 - refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
 - e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
-
-### 🐛 Bug Fixes
-
-- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
-- fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
-- fix(runtime): show the help to translate link under the language select [[#3464](https://github.com/opencloud-eu/web/pull/3464)]
-- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
-- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
-- fix(admin-settings): persist sorting of users, groups and extensions tables [[#3441](https://github.com/opencloud-eu/web/pull/3441)]
-- fix(design-system): round buttons inside the bubble menu [[#3456](https://github.com/opencloud-eu/web/pull/3456)]
-- fix: polish announcement banner and details modal [[#3442](https://github.com/opencloud-eu/web/pull/3442)]
-- fix: group space customization actions in context menu [[#3444](https://github.com/opencloud-eu/web/pull/3444)]
-- fix: show tiles view first in view mode options [[#3454](https://github.com/opencloud-eu/web/pull/3454)]
-- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
-- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
-- fix(files): use NoContentMessage for resource not found message [[#3447](https://github.com/opencloud-eu/web/pull/3447)]
-- fix: consistent sorting for spaces and resources [[#3432](https://github.com/opencloud-eu/web/pull/3432)]
-- fix(admin-settings): make apps sortable by status [[#3427](https://github.com/opencloud-eu/web/pull/3427)]
-- Keep modal actions out of the scrollable body [[#3419](https://github.com/opencloud-eu/web/pull/3419)]
-- Always sort folders above files [[#3411](https://github.com/opencloud-eu/web/pull/3411)]
-- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
-- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
-- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
-- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
-- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
-- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ### 📦️ Dependencies
 
