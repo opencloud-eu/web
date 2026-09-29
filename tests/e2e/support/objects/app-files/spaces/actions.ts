@@ -52,9 +52,13 @@ const createSpaceMembersSearchField = '#create-space-members-input'
 const dropdownOpen = '.vs--open'
 const dropdownOption = '.vs__dropdown-option'
 
-export const openActionsPanel = async (page: Page): Promise<void> => {
-  await sidebar.open({ page })
-  await sidebar.openPanel({ page, name: 'space-actions' })
+const openContextMenu = async (page: Page): Promise<void> => {
+  await page.locator(spaceContextMenuButton).click()
+}
+
+const openCustomizeMenu = async (page: Page): Promise<void> => {
+  await openContextMenu(page)
+  await page.locator(customizeMenuTrigger).click()
 }
 
 export const openSharingPanel = async (page: Page): Promise<void> => {
@@ -227,10 +231,9 @@ export const changeSpaceName = async (args: {
   page: Page
   id: string
   value: string
-  contextMenu?: boolean
 }): Promise<void> => {
-  const { page, value, id, contextMenu = false } = args
-  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
+  const { page, value, id } = args
+  await openContextMenu(page)
 
   await page.locator(spacesRenameOptionSelector).click()
   await page.locator(spaceNameInputField).fill(value)
@@ -244,7 +247,6 @@ export const changeSpaceName = async (args: {
     page.locator(actionConfirmButton).click()
   ])
 
-  !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
 
@@ -252,15 +254,9 @@ export const changeSpaceSubtitle = async (args: {
   page: Page
   id: string
   value: string
-  contextMenu?: boolean
 }): Promise<void> => {
-  const { page, value, id, contextMenu = false } = args
-  if (contextMenu) {
-    await page.locator(spaceContextMenuButton).click()
-    await page.locator(customizeMenuTrigger).click()
-  } else {
-    await openActionsPanel(page)
-  }
+  const { page, value, id } = args
+  await openCustomizeMenu(page)
 
   await page.locator(editSpacesSubtitleOptionSelector).click()
   await page.locator(spaceNameInputField).fill(value)
@@ -274,22 +270,15 @@ export const changeSpaceSubtitle = async (args: {
     page.locator(actionConfirmButton).click()
   ])
 
-  !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
 
 export const changeSpaceDescription = async (args: {
   page: Page
   value: string
-  contextMenu?: boolean
 }): Promise<void> => {
-  const { page, value, contextMenu = false } = args
-  if (contextMenu) {
-    await page.locator(spaceContextMenuButton).click()
-    await page.locator(customizeMenuTrigger).click()
-  } else {
-    await openActionsPanel(page)
-  }
+  const { page, value } = args
+  await openCustomizeMenu(page)
 
   const waitForUpdate = () =>
     page.waitForResponse(
@@ -314,10 +303,9 @@ export const changeQuota = async (args: {
   id: string
   page: Page
   value: string
-  contextMenu?: boolean
 }): Promise<void> => {
-  const { id, page, value, contextMenu = false } = args
-  await (contextMenu ? page.locator(spaceContextMenuButton).click() : openActionsPanel(page))
+  const { id, page, value } = args
+  await openContextMenu(page)
 
   await page.locator(editQuotaOptionSelector).click()
   const searchLocator = page.locator(spacesQuotaSearchField)
@@ -338,7 +326,6 @@ export const changeQuota = async (args: {
     page.locator(actionConfirmButton).click()
   ])
 
-  !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
 
@@ -359,15 +346,9 @@ export const changeSpaceImage = async (args: {
   id: string
   page: Page
   resource: File
-  contextMenu?: boolean
 }): Promise<void> => {
-  const { id, page, resource, contextMenu = false } = args
-  if (contextMenu) {
-    await page.locator(spaceContextMenuButton).click()
-    await page.locator(customizeMenuTrigger).click()
-  } else {
-    await openActionsPanel(page)
-  }
+  const { id, page, resource } = args
+  await openCustomizeMenu(page)
   const uploadTrigger = page.locator(editImageOptionSelector)
   await expect(uploadTrigger).toBeVisible()
 
@@ -389,7 +370,6 @@ export const changeSpaceImage = async (args: {
     fileChooser.setFiles(resource.path)
   ])
 
-  !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
 
@@ -397,15 +377,9 @@ export const changeSpaceIcon = async (args: {
   id: string
   page: Page
   icon: string
-  contextMenu?: boolean
 }): Promise<void> => {
-  const { id, page, icon, contextMenu = false } = args
-  if (contextMenu) {
-    await page.locator(spaceContextMenuButton).click()
-    await page.locator(customizeMenuTrigger).click()
-  } else {
-    await openActionsPanel(page)
-  }
+  const { id, page, icon } = args
+  await openCustomizeMenu(page)
   const setIcon = page.locator(setIconButton)
   await expect(setIcon).toBeVisible()
   await setIcon.click()
@@ -425,22 +399,12 @@ export const changeSpaceIcon = async (args: {
     ),
     page.locator(`button[aria-label="${icon}"]`).first().click()
   ])
-  !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
 
-export const deleteSpaceImage = async (args: {
-  id: string
-  page: Page
-  contextMenu?: boolean
-}): Promise<void> => {
-  const { id, page, contextMenu = false } = args
-  if (contextMenu) {
-    await page.locator(spaceContextMenuButton).click()
-    await page.locator(customizeMenuTrigger).click()
-  } else {
-    await openActionsPanel(page)
-  }
+export const deleteSpaceImage = async (args: { id: string; page: Page }): Promise<void> => {
+  const { id, page } = args
+  await openCustomizeMenu(page)
   const deleteTrigger = page.locator(deleteImageButton)
   await expect(deleteTrigger).toBeVisible()
 
@@ -460,7 +424,6 @@ export const deleteSpaceImage = async (args: {
     page.locator(actionConfirmButton).click(),
     deleteTrigger.click()
   ])
-  !contextMenu && (await sidebar.close({ page }))
   await closeNotifications({ page })
 }
 
@@ -524,12 +487,11 @@ export const removeExpirationDateFromMember = async (args: {
 }
 
 export const downloadSpace = async (page: Page): Promise<string> => {
-  await openActionsPanel(page)
+  await openContextMenu(page)
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     page.locator(downloadSpaceSelector).click()
   ])
-  await sidebar.close({ page })
 
   return download.suggestedFilename()
 }

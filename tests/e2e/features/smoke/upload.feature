@@ -41,7 +41,7 @@ Feature: Upload
       | resource       |
       | simple.pdf     |
       | testavatar.jpg |
-    And "Alice" downloads the following resources using the sidebar panel
+    And "Alice" downloads the following resources using the context menu
       | resource      | type   |
       | PARENT        | folder |
       | comma,.txt    | file   |

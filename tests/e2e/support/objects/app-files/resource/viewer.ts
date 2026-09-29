@@ -13,10 +13,11 @@ import {
   euroOfficeSaveButtonSelector,
   externalEditorIframe,
   navigateFolderInEmbedMode,
+  openContextMenu,
   openWithButton,
   opencloudFrame,
   resourceNameSelector,
-  sideBarActionButton
+  subContextMenuAction
 } from './shared'
 
 const topbarFilenameSelector = '#app-top-bar-resource .oc-resource-name'
@@ -329,16 +330,16 @@ export const checkMediaViewerCount = async ({
   expect(elementCount).toEqual(`${currentIndex} of ${totalCount}`)
 }
 
-export const previewMediaFromSidebarPanel = async ({
+export const previewMediaFromContextMenu = async ({
   page,
   resource
 }: {
   page: Page
   resource: string
 }): Promise<void> => {
-  await sidebar.open({ page, resource })
-  await sidebar.openPanel({ page, name: 'actions' })
-  await page.locator(util.format(sideBarActionButton, 'Preview')).first().click()
+  await openContextMenu({ page, resource })
+  await page.locator(openWithButton).hover()
+  await page.locator(util.format(subContextMenuAction, 'Preview')).click()
 }
 
 export interface expectFileToBeLockedArgs {

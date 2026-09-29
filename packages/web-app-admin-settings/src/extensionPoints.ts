@@ -21,12 +21,6 @@ export const spacesContextActionsExtensionPoint: ExtensionPoint<ActionExtension>
   multiple: true
 }
 
-export const spacesSidebarActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
-  id: 'app.admin-settings.spaces.sidebar-actions',
-  extensionType: 'action',
-  multiple: true
-}
-
 export const spacesBatchActionsExtensionPoint: ExtensionPoint<ActionExtension> = {
   id: 'app.admin-settings.spaces.batch-actions',
   extensionType: 'action',
@@ -39,7 +33,6 @@ export const extensionPoints = () => {
       floatingActionButtonExtension,
       spacesCreateExtensionPoint,
       spacesContextActionsExtensionPoint,
-      spacesSidebarActionsExtensionPoint,
       spacesBatchActionsExtensionPoint
     ]
   })

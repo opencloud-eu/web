@@ -11,10 +11,12 @@ import {
   clickResource,
   fileRow,
   filesContextMenuAction,
+  openContextMenu,
   openWithButton,
+  openWithDropMenu,
   resourceNameSelector,
   selectBatchAction,
-  sideBarActionButton
+  subContextMenuAction
 } from './shared'
 
 const breadcrumbLastResourceNameSelector = '.oc-breadcrumb-item-text-last'
@@ -32,8 +34,6 @@ const filesTableRowSelector = 'tbody tr'
 const filesTableTilesSelector = '.oc-tiles-item'
 const itemsPerPageDropDownSelector = '.vs__actions'
 const filesPaginationNavSelector = '.files-pagination'
-const sideBarActions =
-  '//ul[@id="oc-files-actions-sidebar"]//button[not(@disabled)]//span[contains(@class,"oc-files-context-action-label")]/span'
 const sharerAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedBy")]//img'
 const recipientAvatarSelector =
@@ -45,7 +45,6 @@ const fileDetailsSidebar = '#oc-file-details-sidebar'
 const fileDetailsTimestamp = '#oc-file-details-sidebar [data-testid="timestamp"]'
 const activitySidebarPanel = 'sidebar-panel-activities'
 const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-panel__body-content'
-const subContextMenuAction = '//*[@id="app-runtime-drop"]//span[text()="%s"]'
 const tilesSlider = '#tiles-size-slider'
 const previewFavoriteButton = '.preview-controls-favorite'
 const filesContextMenu = 'div[id^="context-menu-drop"]'
@@ -97,27 +96,16 @@ export const openTemplateFile = async ({
 export const createFileFromTemplate = async ({
   page,
   resource,
-  webOffice,
-  via
+  webOffice
 }: {
   page: Page
   resource: string
   webOffice: string
-  via: string
 }): Promise<void> => {
   const menuItem = `Create from template via ${webOffice}`
-  if (via.startsWith('sidebar')) {
-    await sidebar.open({ page, resource })
-    await sidebar.openPanel({ page, name: 'actions' })
-    await page.locator(util.format(sideBarActionButton, menuItem)).click()
-    return
-  } else if (via.startsWith('context')) {
-    await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
-    await page.locator(openWithButton).hover()
-    await page.locator(util.format(subContextMenuAction, menuItem)).click()
-    return
-  }
-  throw new Error(`Invalid action '${via}' was provided`)
+  await openContextMenu({ page, resource })
+  await page.locator(openWithButton).hover()
+  await page.locator(util.format(subContextMenuAction, menuItem)).click()
 }
 
 export interface switchViewModeArgs {
@@ -327,9 +315,7 @@ export interface canManageResourceArgs {
 export const canManageResource = async (args: canManageResourceArgs): Promise<boolean> => {
   const { resource, page } = args
   const notExpectedActions = ['move', 'rename', 'delete']
-  await sidebar.open({ page: page, resource })
-  await sidebar.openPanel({ page: page, name: 'actions' })
-  const presentActions = await page.locator(sideBarActions).allTextContents()
+  const presentActions = await getAllAvailableActions({ page, resource })
   const presentActionsToLower = presentActions.map((actions) => actions.toLowerCase())
   for (const actions of notExpectedActions) {
     if (presentActionsToLower.includes(actions)) {
@@ -346,9 +332,29 @@ export const getAllAvailableActions = async ({
   page: Page
   resource: string
 }): Promise<string[]> => {
-  await sidebar.open({ page: page, resource })
-  await sidebar.openPanel({ page: page, name: 'actions' })
-  return await page.getByTestId('action-label').allTextContents()
+  await openContextMenu({ page, resource })
+  const contextMenu = page.locator(filesContextMenu)
+  await expect(contextMenu).toBeVisible()
+  const actions = await contextMenu
+    .locator('button:not([disabled]) [data-testid="action-label"]')
+    .allTextContents()
+
+  // open with actions are nested in a sub menu
+  const openWith = page.locator(openWithButton)
+  if (await openWith.isVisible()) {
+    await openWith.hover()
+    const openWithDrop = page.locator(openWithDropMenu)
+    await expect(openWithDrop).toBeVisible()
+    actions.push(
+      ...(await openWithDrop
+        .locator('button:not([disabled]) [data-testid="action-label"]')
+        .allTextContents())
+    )
+  }
+
+  await page.keyboard.press('Escape')
+  await expect(contextMenu).toBeHidden()
+  return actions.map((action) => action.trim())
 }
 
 export const checkActivity = async ({
@@ -458,7 +464,7 @@ export const checkFileDetailsSidebar = async ({ page }: { page: Page }): Promise
   await expect(page.locator(fileDetailsTimestamp)).toBeVisible()
 }
 
-export type PanelType = 'actions' | 'sharing' | 'versions' | 'activities'
+export type PanelType = 'sharing' | 'versions' | 'activities'
 
 export const openResourcePanel = async ({
   page,
@@ -479,7 +485,7 @@ export const markAsFavorite = async ({
   resources
 }: {
   page: Page
-  method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview'
+  method: 'context menu' | 'batch action' | 'preview'
   resources: string[]
 }): Promise<void> => {
   const waitForFollowResponse = (): Promise<Response> =>
@@ -496,16 +502,6 @@ export const markAsFavorite = async ({
         const postPromise = waitForFollowResponse()
         await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
         await page.locator(util.format(filesContextMenuAction, 'favorite')).click()
-        await postPromise
-      }
-      break
-
-    case 'sidebar panel':
-      for (const resource of resources) {
-        const postPromise = waitForFollowResponse()
-        await sidebar.open({ page, resource })
-        await sidebar.openPanel({ page, name: 'actions' })
-        await page.locator(util.format(sideBarActionButton, 'Add to favorites')).click()
         await postPromise
       }
       break
@@ -538,7 +534,7 @@ export const unmarkAsFavorite = async ({
   resources
 }: {
   page: Page
-  method: 'context menu' | 'sidebar panel' | 'batch action'
+  method: 'context menu' | 'batch action'
   resources: string[]
 }): Promise<void> => {
   const waitForUnfollowResponse = (): Promise<Response> =>
@@ -556,19 +552,6 @@ export const unmarkAsFavorite = async ({
         await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
         const removeFavoriteBtn = page.locator(util.format(filesContextMenuAction, 'favorite'))
         await expect(removeFavoriteBtn).toHaveAttribute('aria-label', 'Remove from favorites')
-        await removeFavoriteBtn.click()
-        await deletePromise
-      }
-      break
-
-    case 'sidebar panel':
-      for (const resource of resources) {
-        const deletePromise = waitForUnfollowResponse()
-        await sidebar.open({ page, resource })
-        await sidebar.openPanel({ page, name: 'actions' })
-        const removeFavoriteBtn = page.locator(
-          util.format(sideBarActionButton, 'Remove from favorites')
-        )
         await removeFavoriteBtn.click()
         await deletePromise
       }

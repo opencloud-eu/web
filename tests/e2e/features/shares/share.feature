@@ -51,7 +51,7 @@ Feature: share
       | resource        | to                 |
       | simple.pdf      | folder_to_shared   |
       | testavatar.jpeg | folder_to_shared_2 |
-    When "Brian" deletes the following resource using the sidebar panel
+    When "Brian" deletes the following resource using the context menu
       | resource      | from               |
       | lorem-big.txt | folder_to_shared_2 |
     And "Alice" opens the "files" app
@@ -64,7 +64,7 @@ Feature: share
     And "Alice" removes following sharee
       | resource           | recipient |
       | folder_to_shared_2 | Brian     |
-    When "Alice" deletes the following resources using the sidebar panel
+    When "Alice" deletes the following resources using the context menu
       | resource         | from             |
       | lorem_new.txt    | folder_to_shared |
       | folder_to_shared |                  |
@@ -100,7 +100,7 @@ Feature: share
     Then "Alice" should see thumbnail and preview for file "sampleGif.gif"
     And "Alice" should see thumbnail and preview for file "testavatar.jpeg"
     And "Alice" should see thumbnail and preview for file "testavatar.png"
-    When "Alice" opens a file "testavatar.png" in the media-viewer using the sidebar panel
+    When "Alice" opens a file "testavatar.png" in the media-viewer using the context menu
     Then "Alice" is in a media-viewer
     When "Alice" closes the file viewer
     And "Alice" opens the following file in mediaviewer

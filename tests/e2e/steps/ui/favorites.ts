@@ -21,7 +21,7 @@ When(
   async (
     { world }: { world: World },
     stepUser: string,
-    method: 'context menu' | 'sidebar panel' | 'batch action',
+    method: 'context menu' | 'batch action',
     stepTable: DataTable
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)

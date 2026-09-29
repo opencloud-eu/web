@@ -68,7 +68,6 @@ import AppTemplate from '../components/AppTemplate.vue'
 import SpacesList from '../components/Spaces/SpacesList.vue'
 import ContextActions from '../components/Spaces/ContextActions.vue'
 import MembersPanel from '../components/Spaces/SideBar/MembersPanel.vue'
-import ActionsPanel from '../components/Spaces/SideBar/ActionsPanel.vue'
 import {
   NoContentMessage,
   SideBarPanel,
@@ -206,14 +205,6 @@ const sideBarAvailablePanels = [
     }),
     isRoot: () => true,
     isVisible: ({ items }) => items.length > 1
-  },
-  {
-    name: 'SpaceActions',
-    icon: 'play-circle',
-    iconFillType: 'line',
-    title: () => $gettext('Actions'),
-    component: ActionsPanel,
-    isVisible: ({ items }) => items.length === 1
   },
   {
     name: 'SpaceMembers',

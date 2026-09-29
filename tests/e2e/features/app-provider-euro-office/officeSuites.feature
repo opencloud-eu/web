@@ -125,7 +125,7 @@ Feature: Integrate with online office suites using Euro-Office online office
       | localFile     | to            |
       | Template.dotx | Template.dotx |
 
-    When "Alice" creates a file from template file "Template.dotx" via "Euro-Office" using the sidebar panel
+    When "Alice" creates a file from template file "Template.dotx" via "Euro-Office" using the context menu
     Then "Alice" should see the content "As a user I want to create a document by clicking on a template file" in editor "Euro-Office"
     And "Alice" closes the file viewer
 

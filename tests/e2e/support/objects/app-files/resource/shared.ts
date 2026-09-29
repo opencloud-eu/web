@@ -71,8 +71,7 @@ export interface resourceArgs {
   type?: string
 }
 
-export type ActionViaType =
-  'SIDEBAR_PANEL' | 'BATCH_ACTION' | 'SINGLE_SHARE_VIEW' | 'PREVIEW_TOPBAR'
+export type ActionViaType = 'CONTEXT_MENU' | 'BATCH_ACTION' | 'SINGLE_SHARE_VIEW' | 'PREVIEW_TOPBAR'
 
 export type selectResourcesArgs = {
   page: Page
@@ -146,8 +145,6 @@ export const filesBatchAction = '.files-app-bar-actions .oc-files-actions-%s-tri
 export const actionConfirmationButton =
   '//button[contains(@class,"oc-modal-body-actions-confirm") and text()="%s"]'
 export const actionSecondaryConfirmationButton = '.oc-modal-body-actions-secondary'
-export const sideBarActionButton =
-  '//div[contains(@class, "files-side-bar")]//*[contains(@data-testid, "action-handler")]//span[text()="%s"]'
 export const notificationMessageDialog = '.oc-notification-message-title'
 export const externalEditorIframe = '[name="app-iframe"]'
 export const filesContextMenuAction =
@@ -161,6 +158,18 @@ export const collaboraDocTextAreaSelector = '#clipboard-area'
 export const euroOfficeInnerFrameSelector = '[name="frameEditor"]'
 export const euroOfficeSaveButtonSelector = '#slot-btn-dt-save > button'
 export const euroOfficeDocTextAreaSelector = '#area_id'
+export const openContextMenu = async ({
+  page,
+  resource
+}: {
+  page: Page
+  resource: string
+}): Promise<void> => {
+  await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
+}
+
+export const subContextMenuAction = '//*[@id="app-runtime-drop"]//span[text()="%s"]'
+export const openWithDropMenu = '#app-runtime-drop .oc-files-context-action-drop:visible'
 export const openWithButton =
   '//*[@id="oc-files-context-actions-primary"]//span[text()="Open with..."]'
 

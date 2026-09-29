@@ -101,9 +101,8 @@ const onBottomDrawerClicked = (event: MouseEvent) => {
 
   const bottomDrawerOutsideClicked = event.target === event.currentTarget
   const linkClicked = event.target instanceof HTMLAnchorElement
-  const actionPanelItemClicked = (event.target as HTMLElement).closest('ul.sidebar-actions-panel')
-  if (bottomDrawerOutsideClicked || linkClicked || actionPanelItemClicked) {
-    // in some scenarios we want to close the bottom drawer, e.g. when clicking outside or on a file action
+  if (bottomDrawerOutsideClicked || linkClicked) {
+    // in some scenarios we want to close the bottom drawer, e.g. when clicking outside or on a link
     closeSideBar()
   }
 }

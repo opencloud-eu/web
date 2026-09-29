@@ -63,7 +63,7 @@ When(
 )
 
 When(
-  /^"([^"]*)" downloads the following public link resource(?:s)? using the (sidebar panel|batch action|single share view)$/,
+  /^"([^"]*)" downloads the following public link resource(?:s)? using the (context menu|batch action|single share view)$/,
   async (
     { world }: { world: World },
     stepUser: string,
@@ -110,7 +110,7 @@ Then(
 )
 
 When(
-  /^"([^"]*)" deletes the following resources? from public link using (sidebar panel|batch action)$/,
+  /^"([^"]*)" deletes the following resources? from public link using (context menu|batch action)$/,
   async (
     { world }: { world: World },
     stepUser: string,

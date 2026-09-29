@@ -110,16 +110,15 @@ When(
 )
 
 When(
-  /^"([^"].*)" creates a file from template file "([^"].*)" via "([^"].*)" using the (sidebar panel|context menu)$/,
+  /^"([^"].*)" creates a file from template file "([^"].*)" via "([^"].*)" using the context menu$/,
   async (
     { world }: { world: World },
     stepUser: string,
     file: string,
-    webOffice: string,
-    via: string
+    webOffice: string
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    await resourceObject.createFileFromTemplate(file, webOffice, via)
+    await resourceObject.createFileFromTemplate(file, webOffice)
   }
 )
 
@@ -409,7 +408,7 @@ When(
   async (
     { world }: { world: World },
     stepUser: string,
-    method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview',
+    method: 'context menu' | 'batch action' | 'preview',
     stepTable: DataTable
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)

@@ -373,8 +373,8 @@ export class Resource {
     return po.navigateMediaFile({ page: this.#page, navigationType })
   }
 
-  async previewMediaFromSidebarPanel(resource: string): Promise<void> {
-    await po.previewMediaFromSidebarPanel({ page: this.#page, resource })
+  async previewMediaFromContextMenu(resource: string): Promise<void> {
+    await po.previewMediaFromContextMenu({ page: this.#page, resource })
   }
 
   showShareIndicatorSelector({
@@ -449,8 +449,8 @@ export class Resource {
     await po.openTemplateFile({ page: this.#page, resource, webOffice: actionName })
   }
 
-  async createFileFromTemplate(resource: string, webOffice: string, via: string): Promise<void> {
-    await po.createFileFromTemplate({ page: this.#page, resource, webOffice, via })
+  async createFileFromTemplate(resource: string, webOffice: string): Promise<void> {
+    await po.createFileFromTemplate({ page: this.#page, resource, webOffice })
   }
 
   async selectAllFiles(): Promise<void> {
@@ -520,7 +520,7 @@ export class Resource {
   }
 
   async markAsFavorite(args: {
-    method: 'context menu' | 'sidebar panel' | 'batch action' | 'preview'
+    method: 'context menu' | 'batch action' | 'preview'
     resources: string[]
   }): Promise<void> {
     await po.markAsFavorite({
@@ -531,7 +531,7 @@ export class Resource {
   }
 
   async unmarkAsFavorite(args: {
-    method: 'context menu' | 'sidebar panel' | 'batch action'
+    method: 'context menu' | 'batch action'
     resources: string[]
   }): Promise<void> {
     await po.unmarkAsFavorite({

@@ -1,7 +1,6 @@
 import FileDetails from '../../components/SideBar/Details/FileDetails.vue'
 import FileDetailsMultiple from '../../components/SideBar/Details/FileDetailsMultiple.vue'
 import ExifPanel from '../../components/SideBar/Exif/ExifPanel.vue'
-import FileActions from '../../components/SideBar/Actions/FileActions.vue'
 import FileVersions from '../../components/SideBar/Versions/FileVersions.vue'
 import SharesPanel from '../../components/SideBar/Shares/SharesPanel.vue'
 import NoSelection from '../../components/SideBar/NoSelection.vue'
@@ -180,30 +179,6 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.sidebar-panel.actions',
-      type: 'sidebarPanel',
-      extensionPointIds: [fileSideBarExtensionPoint.id],
-      panel: {
-        name: 'actions',
-        icon: 'play-circle',
-        iconFillType: 'line',
-        title: () => $gettext('Actions'),
-        component: markRaw(FileActions),
-        isRoot: () => false,
-        isVisible: ({ items }) => {
-          if (items?.length !== 1) {
-            return false
-          }
-          if (isPersonalSpaceRoot(items[0])) {
-            // actions panel is not available on the personal space root for now ;-)
-            return false
-          }
-          // project spaces have their own "actions" panel
-          return !isProjectSpaceResource(items[0])
-        }
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.sidebar-panel.sharing',
       type: 'sidebarPanel',
       extensionPointIds: [fileSideBarExtensionPoint.id],
@@ -306,27 +281,6 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
         isRoot: () => true,
         isVisible: ({ items }) => {
           return items?.length > 1 && isLocationSpacesActive(router, 'files-spaces-projects')
-        }
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.sidebar-panel.projects.actions',
-      type: 'sidebarPanel',
-      extensionPointIds: [fileSideBarExtensionPoint.id],
-      panel: {
-        name: 'space-actions',
-        icon: 'play-circle',
-        iconFillType: 'line',
-        title: () => $gettext('Actions'),
-        component: markRaw(FileActions),
-        isVisible: ({ items }) => {
-          if (items?.length !== 1) {
-            return false
-          }
-          if (!isProjectSpaceResource(items[0])) {
-            return false
-          }
-          return true
         }
       }
     },
