@@ -304,11 +304,7 @@ Then(
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     for (const info of stepTable.hashes()) {
       const actions = await resourceObject.getAllAvailableActions({ resource })
-      if (actionType === 'should') {
-        expect(actions.some((action) => action.startsWith(info.action))).toBe(true)
-      } else {
-        expect(actions.some((action) => action.startsWith(info.action))).toBe(false)
-      }
+      expect(actions.includes(info.action)).toBe(actionType === 'should')
     }
   }
 )

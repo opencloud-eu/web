@@ -48,6 +48,9 @@ const activitySidebarPanelBodyContent = '#sidebar-panel-activities .sidebar-pane
 const tilesSlider = '#tiles-size-slider'
 const previewFavoriteButton = '.preview-controls-favorite'
 const filesContextMenu = 'div[id^="context-menu-drop"]'
+// actions with a route are rendered as links, so match on the action handler instead of buttons
+const enabledActionLabel =
+  '[data-testid="action-handler"]:not([disabled]) [data-testid="action-label"]'
 const showSharesActionSelector = 'button.oc-files-actions-show-shares-trigger'
 const quickActionShareButton =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//button[contains(@class, "files-quick-action-show-shares")]'
@@ -335,9 +338,7 @@ export const getAllAvailableActions = async ({
   await openContextMenu({ page, resource })
   const contextMenu = page.locator(filesContextMenu)
   await expect(contextMenu).toBeVisible()
-  const actions = await contextMenu
-    .locator('button:not([disabled]) [data-testid="action-label"]')
-    .allTextContents()
+  const actions = await contextMenu.locator(enabledActionLabel).allTextContents()
 
   // open with actions are nested in a sub menu
   const openWith = page.locator(openWithButton)
@@ -345,11 +346,7 @@ export const getAllAvailableActions = async ({
     await openWith.hover()
     const openWithDrop = page.locator(openWithDropMenu)
     await expect(openWithDrop).toBeVisible()
-    actions.push(
-      ...(await openWithDrop
-        .locator('button:not([disabled]) [data-testid="action-label"]')
-        .allTextContents())
-    )
+    actions.push(...(await openWithDrop.locator(enabledActionLabel).allTextContents()))
   }
 
   await page.keyboard.press('Escape')
