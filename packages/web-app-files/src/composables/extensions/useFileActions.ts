@@ -88,6 +88,19 @@ export const useFileActions = (): ActionExtension[] => {
       }
     },
     {
+      id: 'com.github.opencloud-eu.web.files.context-action.rename',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        resourceTableActionsExtensionPoint.id,
+        fileSideBarActionsExtensionPoint.id
+      ],
+      type: 'action',
+      action: {
+        ...unref(renameActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
       id: 'com.github.opencloud-eu.web.files.context-action.delete-file',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
@@ -178,19 +191,6 @@ export const useFileActions = (): ActionExtension[] => {
       action: {
         ...unref(permanentLinkActions)[0],
         category: 'secondary'
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.context-action.rename',
-      extensionPointIds: [
-        contextActionsExtensionPoint.id,
-        resourceTableActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id
-      ],
-      type: 'action',
-      action: {
-        ...unref(renameActions)[0],
-        category: 'tertiary'
       }
     },
     {
