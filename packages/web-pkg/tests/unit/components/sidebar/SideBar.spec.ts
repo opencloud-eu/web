@@ -54,17 +54,6 @@ describe('SideBar', () => {
         drawer.vm.$emit('clicked', { target: clickedEl })
         expect(wrapper.emitted('close')).toBeDefined()
       })
-      it('closes when clicking on an action from the actions panel', () => {
-        const { wrapper } = createWrapper({ isMobile: true })
-        const drawer = wrapper.findComponent<typeof OcBottomDrawer>('oc-bottom-drawer-stub')
-
-        const clickedEl = document.createElement('button')
-        const actionsList = document.createElement('ul')
-        actionsList.classList.add('sidebar-actions-panel')
-        actionsList.appendChild(clickedEl)
-        drawer.vm.$emit('clicked', { target: clickedEl })
-        expect(wrapper.emitted('close')).toBeDefined()
-      })
     })
   })
   describe('on desktop', () => {

@@ -38,7 +38,7 @@ export const processDelete = async (
     await pageObject.delete({
       folder: parentFolder,
       resourcesWithInfo: files,
-      via: actionType === 'batch action' ? 'BATCH_ACTION' : 'SIDEBAR_PANEL'
+      via: actionType === 'batch action' ? 'BATCH_ACTION' : 'CONTEXT_MENU'
     })
   }
 }
@@ -76,8 +76,8 @@ export const processDownload = async (
       case 'batch action':
         via = 'BATCH_ACTION'
         break
-      case 'sidebar panel':
-        via = 'SIDEBAR_PANEL'
+      case 'context menu':
+        via = 'CONTEXT_MENU'
         break
       case 'preview topbar':
         via = 'PREVIEW_TOPBAR'
@@ -96,7 +96,7 @@ export const processDownload = async (
       downloadedResources.push(download.suggestedFilename())
     })
 
-    if (actionType === 'sidebar panel' || actionType === 'preview topbar') {
+    if (actionType === 'context menu' || actionType === 'preview topbar') {
       expect(downloads.length).toBe(files.length)
       for (const resource of files) {
         if (resource.type === 'file') {
@@ -134,7 +134,7 @@ When(
 )
 
 When(
-  /^"([^"]*)" deletes the following resource(?:s)? using the (sidebar panel|batch action)$/,
+  /^"([^"]*)" deletes the following resource(?:s)? using the (context menu|batch action)$/,
   async (
     { world }: { world: World },
     stepUser: string,
@@ -165,7 +165,7 @@ When(
 )
 
 When(
-  /^"([^"]*)" (copies|moves) the following resource(?:s)? using (keyboard|drag-drop|drag-drop-breadcrumb|sidebar-panel|dropdown-menu|batch-action)$/,
+  /^"([^"]*)" (copies|moves) the following resource(?:s)? using (keyboard|drag-drop|drag-drop-breadcrumb|dropdown-menu|batch-action)$/,
   async (
     { world }: { world: World },
     stepUser: string,

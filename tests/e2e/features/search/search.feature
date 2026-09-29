@@ -108,7 +108,7 @@ Feature: Search
       | strängéनेपालीName |
 
     # deleting folder from search result and search deleted resource
-    When "Alice" deletes the following resource using the sidebar panel
+    When "Alice" deletes the following resource using the context menu
       | resource          | from |
       | strängéनेपालीName |      |
     And "Alice" searches "forDeleting" using the global search and the "all files" filter

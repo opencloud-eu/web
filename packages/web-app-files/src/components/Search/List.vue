@@ -379,7 +379,8 @@ const breadcrumbs = computed(() => {
     {
       text: unref(searchTerm)
         ? $gettext('Search results for "%{searchTerm}"', { searchTerm: unref(searchTerm) })
-        : $gettext('Search')
+        : $gettext('Search'),
+      onClick: () => emit('search', doSearch())
     }
   ]
 })

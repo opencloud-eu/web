@@ -68,14 +68,14 @@ Feature: Kindergarten can use web to organize a day
     # Then what do we check for to be confident that the above things done by Alice have worked?
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
-    And "Brian" downloads the following resource using the sidebar panel
+    And "Brian" downloads the following resource using the context menu
       | resource | from      | type |
       | data.zip | meal plan | file |
     # Then what do we check for to be confident that the above things done by Brian have worked?
     # Then the downloaded zip should contain... ?
     When "Carol" logs in
     And "Carol" navigates to the shared with me page
-    And "Carol" downloads the following resources using the sidebar panel
+    And "Carol" downloads the following resources using the context menu
       | resource      | from      | type   |
       | data.zip      | meal plan | file   |
       | lorem.txt     | meal plan | file   |
@@ -84,7 +84,7 @@ Feature: Kindergarten can use web to organize a day
     # Then what do we check for to be confident that the above things done by Carol have worked?
     # Then the downloaded files should have content "abc..."
     And "Carol" logs out
-    When "Brian" downloads the following resources using the sidebar panel
+    When "Brian" downloads the following resources using the context menu
       | resource      | from      | type   |
       | lorem.txt     | meal plan | file   |
       | lorem-big.txt | meal plan | file   |
@@ -92,7 +92,7 @@ Feature: Kindergarten can use web to organize a day
     # Then what do we check for to be confident that the above things done by Brian have worked?
     # Then the downloaded files should have content "abc..."
     And "Brian" logs out
-    And "Alice" downloads the following resources using the sidebar panel
+    And "Alice" downloads the following resources using the context menu
       | resource            | from                                 | type   |
       | parent.txt          | groups/Kindergarten Koalas/meal plan | file   |
       | lorem.txt           | groups/Kindergarten Koalas/meal plan | file   |

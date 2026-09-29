@@ -120,7 +120,7 @@ Feature: Work with an rclone-crypt encrypted vault
     Then following resource should be displayed in the files list for user "Alice"
       | resource     |
       | hello.ocnote |
-    And "Alice" downloads the following resource using the sidebar panel
+    And "Alice" downloads the following resource using the context menu
       | resource     | type |
       | hello.ocnote | file |
     And "Alice" logs out

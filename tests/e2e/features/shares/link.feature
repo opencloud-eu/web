@@ -54,13 +54,13 @@ Feature: link
       | simple.pdf   |
       | SubFolder    |
       | lorem.txt    |
-    And "Brian" deletes the following resource from public link using sidebar panel
+    And "Brian" deletes the following resource from public link using context menu
       | resource   |
       | simple.pdf |
     And "Brian" logs out
 
     And "Anonymous" refreshes the old link
-    And "Anonymous" downloads the following public link resources using the sidebar panel
+    And "Anonymous" downloads the following public link resources using the context menu
       | resource     | type |
       | lorem.txt    | file |
       | textfile.txt | file |
@@ -80,7 +80,7 @@ Feature: link
     And "Anonymous" moves the following resource using drag-drop
       | resource      | to        |
       | new-lorem.txt | SubFolder |
-    And "Anonymous" copies the following resource using sidebar-panel
+    And "Anonymous" copies the following resource using dropdown-menu
       | resource  | to       |
       | lorem.txt | myfolder |
     And "Anonymous" renames the following public link resources
@@ -151,7 +151,7 @@ Feature: link
     And "Brian" logs in
     When "Brian" opens the public link "folderLink"
     And "Brian" unlocks the public link with password "%public%"
-    And "Brian" downloads the following public link resources using the sidebar panel
+    And "Brian" downloads the following public link resources using the context menu
       | resource         | type |
       | shareToBrian.txt | file |
     And "Brian" uploads the following resource
@@ -188,7 +188,7 @@ Feature: link
     And "Carol" logs in
     When "Carol" opens the public link "folderLink"
     And "Carol" unlocks the public link with password "%public%"
-    And "Carol" downloads the following public link resources using the sidebar panel
+    And "Carol" downloads the following public link resources using the context menu
       | resource  | type |
       | lorem.txt | file |
     When "Carol" opens the public link "textLink"
@@ -221,7 +221,7 @@ Feature: link
     # Anonymous user
     When "Anonymous" opens the public link "folderLink"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" downloads the following public link resources using the sidebar panel
+    And "Anonymous" downloads the following public link resources using the context menu
       | resource  | type |
       | lorem.txt | file |
     When "Anonymous" opens the public link "textLink"
@@ -304,7 +304,7 @@ Feature: link
     And "Alice" changes the password of the public link named "myPublicLink" of resource "folderPublic" to "new-strongPass1"
     And "Anonymous" refreshes the old link
     And "Anonymous" unlocks the public link with password "new-strongPass1"
-    And "Anonymous" downloads the following public link resources using the sidebar panel
+    And "Anonymous" downloads the following public link resources using the context menu
       | resource  | type |
       | lorem.txt | file |
     And "Alice" logs out

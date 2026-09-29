@@ -3,23 +3,18 @@ import { ActionExtension } from '@opencloud-eu/web-pkg'
 import {
   batchActionsExtensionPoint,
   contextActionsExtensionPoint,
-  fileSideBarActionsExtensionPoint,
   resourceTableActionsExtensionPoint
 } from '../../extensionPoints'
 import {
   useSpaceActionsDelete,
-  useSpaceActionsDeleteImage,
   useSpaceActionsDisable,
   useSpaceActionsDuplicate,
-  useSpaceActionsEditReadmeContent,
   useSpaceActionsEditDescription,
   useSpaceActionsEditQuota,
   useSpaceActionsNavigateToTrash,
   useSpaceActionsRename,
   useSpaceActionsRestore,
-  useSpaceActionsSetIcon,
   useSpaceActionsShowMembers,
-  useSpaceActionsUploadImage,
   useSpaceActionsCustomizeMenu,
   useSpaceActionsLockVault,
   useSpaceActionsCreate
@@ -28,24 +23,18 @@ import {
 const adminSettingsSpacesCreateExtensionPointId = 'app.admin-settings.spaces.create'
 const adminSettingsSpacesContextActionsExtensionPointId =
   'app.admin-settings.spaces.context-actions'
-const adminSettingsSpacesSideBarActionsExtensionPointId =
-  'app.admin-settings.spaces.sidebar-actions'
 const adminSettingsSpacesBatchActionsExtensionPointId = 'app.admin-settings.spaces.batch-actions'
 
 export const useSpaceActions = (): ActionExtension[] => {
   const { actions: deleteActions } = useSpaceActionsDelete()
   const { actions: disableActions } = useSpaceActionsDisable()
   const { actions: duplicateActions } = useSpaceActionsDuplicate()
-  const { actions: editReadmeContentActions } = useSpaceActionsEditReadmeContent()
   const { actions: editDescriptionActions } = useSpaceActionsEditDescription()
   const { actions: editQuotaActions } = useSpaceActionsEditQuota()
   const { actions: navigateToTrashActions } = useSpaceActionsNavigateToTrash()
   const { actions: renameActions } = useSpaceActionsRename()
   const { actions: restoreActions } = useSpaceActionsRestore()
   const { actions: customizeSpaceMenu } = useSpaceActionsCustomizeMenu()
-  const { actions: setSpaceIconActions } = useSpaceActionsSetIcon()
-  const { actions: uploadSpaceImage } = useSpaceActionsUploadImage()
-  const { actions: deleteSpaceImageActions } = useSpaceActionsDeleteImage()
   const { actions: showMembersActions } = useSpaceActionsShowMembers()
   const { actions: lockVaultActions } = useSpaceActionsLockVault()
   const { actions: createSpaceActions } = useSpaceActionsCreate()
@@ -71,9 +60,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         resourceTableActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId
       ],
       type: 'action',
       action: {
@@ -82,21 +69,8 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-readme-content',
-      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(editReadmeContentActions)[0],
-        category: 'secondary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
-      extensionPointIds: [
-        fileSideBarActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId
-      ],
+      extensionPointIds: [adminSettingsSpacesContextActionsExtensionPointId],
       type: 'action',
       action: {
         ...unref(editDescriptionActions)[0],
@@ -113,41 +87,14 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.upload-space-image',
-      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(uploadSpaceImage)[0],
-        category: 'secondary'
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.set-space-icon',
-      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(setSpaceIconActions)[0],
-        category: 'secondary'
-      }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.delete-space-image',
-      extensionPointIds: [fileSideBarActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(deleteSpaceImageActions)[0],
-        category: 'secondary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.lock-vault',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: unref(lockVaultActions)[0]
     },
     {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.navigate-to-trash',
-      extensionPointIds: [contextActionsExtensionPoint.id, fileSideBarActionsExtensionPoint.id],
+      extensionPointIds: [contextActionsExtensionPoint.id],
       type: 'action',
       action: {
         ...unref(navigateToTrashActions)[0],
@@ -159,9 +106,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId
       ],
       type: 'action',
       action: {
@@ -174,9 +119,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
@@ -190,9 +133,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
@@ -206,9 +147,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
@@ -222,9 +161,7 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        fileSideBarActionsExtensionPoint.id,
         adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesSideBarActionsExtensionPointId,
         adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',

@@ -80,10 +80,10 @@ When(
 )
 
 When(
-  '{string} opens a file {string} in the media-viewer using the sidebar panel',
+  '{string} opens a file {string} in the media-viewer using the context menu',
   async ({ world }: { world: World }, stepUser: any, file: any): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    await resourceObject.previewMediaFromSidebarPanel(file)
+    await resourceObject.previewMediaFromContextMenu(file)
   }
 )
 

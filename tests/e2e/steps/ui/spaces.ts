@@ -159,54 +159,6 @@ When(
 )
 
 When(
-  /^"([^"]*)" changes the space "([^"]*)" (name|subtitle|description|quota|image|icon) to "([^"]*)" using context menu$/,
-  async function (
-    { world }: { world: World },
-    stepUser: string,
-    key: string,
-    attribute: string,
-    value: string
-  ): Promise<void> {
-    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
-
-    switch (attribute) {
-      case 'name':
-        await spacesObject.changeName({ key, value, contextMenu: true })
-        break
-      case 'subtitle':
-        await spacesObject.changeSubtitle({ key, value, contextMenu: true })
-        break
-      case 'description':
-        await spacesObject.changeDescription({ value, contextMenu: true })
-        break
-      case 'quota':
-        await spacesObject.changeQuota({ key, value, contextMenu: true })
-        break
-      case 'image':
-        await spacesObject.changeSpaceImage({
-          key,
-          resource: world.filesEnvironment.getFile({ name: value }),
-          contextMenu: true
-        })
-        break
-      case 'icon':
-        await spacesObject.changeSpaceIcon({ key, icon: value, contextMenu: true })
-        break
-      default:
-        throw new Error(`${attribute} not implemented`)
-    }
-  }
-)
-
-When(
-  '{string} deletes the space {string} image using context menu',
-  async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
-    const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)
-    await spacesObject.deleteSpaceImage({ space, contextMenu: true })
-  }
-)
-
-When(
   '{string} deletes the space {string} image',
   async function ({ world }: { world: World }, stepUser: string, space: string): Promise<void> {
     const spacesObject = pageObjectFor(world, stepUser, objects.applicationFiles.Spaces)

@@ -65,14 +65,14 @@ Feature: Trashbin delete
     And following resource should be displayed in the files list for user "Brian"
       | resource  |
       | lorem.txt |
-    When "Brian" deletes the following resource using the sidebar panel
+    When "Brian" deletes the following resource using the context menu
       | resource  |
       | lorem.txt |
     And "Brian" navigates to the trashbin
     Then following resource should not be displayed in the trashbin for user "Brian"
       | resource                |
       | folderToShare/lorem.txt |
-    When "Alice" deletes the following resources using the sidebar panel
+    When "Alice" deletes the following resources using the context menu
       | resource     |
       | sample.txt   |
       | empty-folder |
@@ -113,7 +113,7 @@ Feature: Trashbin delete
     And "Brian" logs in
 
     When "Brian" navigates to the project space "sales"
-    And "Brian" deletes the following resource using the sidebar panel
+    And "Brian" deletes the following resource using the context menu
       | resource |
       | f1       |
 

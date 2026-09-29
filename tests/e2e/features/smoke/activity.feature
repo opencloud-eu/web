@@ -43,7 +43,7 @@ Feature: Users can see all activities of the resources and spaces
     And "Alice" renames the following resource
       | resource                  | as      |
       | sharedFolder/textfile.txt | new.txt |
-    And "Alice" deletes the following resource using the sidebar panel
+    And "Alice" deletes the following resource using the context menu
       | resource  | from         |
       | subFolder | sharedFolder |
     Then "Alice" should see activity of the following resources
