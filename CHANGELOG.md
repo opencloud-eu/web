@@ -58,6 +58,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update pnpm to v11.28.1 [[#3478](https://github.com/opencloud-eu/web/pull/3478)]
 - chore(deps): update collabora/code docker tag to v26.04.4.2.1 [[#3452](https://github.com/opencloud-eu/web/pull/3452)]
 - chore(deps): update dependency @uppy/core to v6.0.2 [[#3461](https://github.com/opencloud-eu/web/pull/3461)]
 - chore(deps): update pnpm to v11.28.0 [[#3462](https://github.com/opencloud-eu/web/pull/3462)]
