@@ -36,7 +36,7 @@
           @update:model-value="validateEmail"
         />
       </section>
-      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1 mt-2">
+      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1 mt-4">
         <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Access')" />
         <oc-text-input
           id="password-input"
@@ -87,7 +87,7 @@
           @selected-option-change="changeSelectedQuotaOption"
         />
       </section>
-      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1 mt-2">
+      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1 mt-4">
         <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Membership')" />
         <group-select
           :read-only="isInputFieldReadOnly('user.memberOf')"
