@@ -14,7 +14,7 @@
       >
         <template #actions>
           <div class="flex items-center justify-between w-full my-2">
-            <div class="flex items-center h-full">
+            <div class="hidden sm:flex items-center h-full">
               <span v-text="$gettext('Learn about spaces')" />
               <oc-contextual-helper
                 :list="spacesHelpList"
@@ -22,10 +22,10 @@
                 class="ml-1"
               />
             </div>
-            <div class="flex justify-end flex-wrap items-end">
+            <div class="flex justify-end flex-wrap items-end w-full sm:w-auto ml-auto">
               <oc-search-bar
                 v-model="filterTerm"
-                class="w-3xs"
+                class="w-full sm:w-3xs"
                 :label="$gettext('Search')"
                 :placeholder="$gettext('Search for spaces')"
                 button-hidden

@@ -24,7 +24,7 @@
       <div class="flex justify-end w-full my-2 items-center">
         <oc-search-bar
           v-model="filterTerm"
-          class="w-3xs"
+          class="w-full sm:w-3xs"
           :label="$gettext('Search')"
           :placeholder="$gettext('Search for spaces')"
           button-hidden

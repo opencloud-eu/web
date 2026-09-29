@@ -26,7 +26,7 @@
       </div>
     </template>
     <template #actions>
-      <div class="flex justify-between w-full my-2 items-center">
+      <div class="flex flex-wrap gap-2 justify-between w-full my-2 items-center">
         <div class="flex items-center">
           <item-filter
             v-if="groups.length"
@@ -72,7 +72,7 @@
         </div>
         <oc-search-bar
           v-model="filterTermDisplayName"
-          class="w-3xs"
+          class="w-full sm:w-3xs"
           :label="$gettext('Search')"
           :placeholder="$gettext('Search for users')"
           :is-rounded="false"
