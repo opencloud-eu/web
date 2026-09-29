@@ -9,7 +9,7 @@
         appearance="raw"
         justify-content="space-between"
         no-hover
-        class="text-editor-table-of-contents-toggle gap-2 p-2"
+        class="text-editor-table-of-contents-toggle shrink-0 gap-2 p-2"
         :aria-expanded="!collapsed"
         :aria-label="
           collapsed ? $gettext('Show table of contents') : $gettext('Hide table of contents')
@@ -23,7 +23,11 @@
         <oc-icon v-if="!collapsed" name="arrow-up-s" fill-type="line" size-class="size-4" />
       </oc-button>
       <template v-if="!collapsed">
-        <ul v-if="items.length" class="m-0 list-none overflow-y-auto px-1 pb-2">
+        <ul
+          v-if="items.length"
+          ref="listRef"
+          class="relative m-0 min-h-0 list-none overflow-y-auto px-1 pb-2"
+        >
           <li v-for="item in items" :key="item.id">
             <oc-button
               appearance="raw"
@@ -53,8 +57,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, unref, watch } from 'vue'
-import { useEventListener } from '@vueuse/core'
+import { computed, ref, unref, useTemplateRef, watch } from 'vue'
+import { useEventListener, useTimeoutFn } from '@vueuse/core'
 import type { TableOfContentDataItem } from '@tiptap/extension-table-of-contents'
 import { useGettext } from 'vue3-gettext'
 import type { TextEditorInstance } from '../types'
@@ -68,6 +72,11 @@ const { $gettext } = useGettext()
 
 const collapsed = ref(true)
 const activeId = ref<string | null>(null)
+const listRef = useTemplateRef<HTMLUListElement>('listRef')
+const isNavigating = ref(false)
+const { start: settleNavigation } = useTimeoutFn(() => (isNavigating.value = false), 150, {
+  immediate: false
+})
 
 const items = computed(() => unref(editor.state.tableOfContents) ?? [])
 
@@ -84,10 +93,36 @@ function updateActiveId() {
 }
 
 function scrollToHeading(item: TableOfContentDataItem) {
-  item.dom.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  isNavigating.value = true
   activeId.value = item.id
+  item.dom.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  settleNavigation()
 }
 
-useEventListener(() => scrollContainer, 'scroll', updateActiveId, { passive: true })
+function onScroll() {
+  if (unref(isNavigating)) {
+    settleNavigation()
+    return
+  }
+
+  updateActiveId()
+}
+
+function revealActiveItem() {
+  if (unref(isNavigating)) {
+    return
+  }
+
+  const list = unref(listRef)
+  const entry = list?.querySelector<HTMLElement>('[aria-current="location"]')
+  if (!list || !entry) {
+    return
+  }
+
+  list.scrollTop = entry.offsetTop - (list.clientHeight - entry.offsetHeight) / 2
+}
+
+useEventListener(() => scrollContainer, 'scroll', onScroll, { passive: true })
 watch([items, () => scrollContainer], updateActiveId, { immediate: true })
+watch([collapsed, activeId], revealActiveItem, { flush: 'post' })
 </script>

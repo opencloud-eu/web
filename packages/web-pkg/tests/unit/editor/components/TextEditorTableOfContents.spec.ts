@@ -41,6 +41,11 @@ const headings = () => [
 ]
 
 describe('TextEditorTableOfContents', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+    vi.useRealTimers()
+  })
+
   it('shows a hint instead of an outline without headings', async () => {
     const { wrapper } = await getWrapper()
 
@@ -125,5 +130,61 @@ describe('TextEditorTableOfContents', () => {
     await nextTick()
 
     expect(active()).toBe('Section')
+  })
+
+  describe('list position', () => {
+    function mockListLayout() {
+      vi.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockReturnValue(800)
+      vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(30)
+      vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(400)
+      return vi.spyOn(HTMLElement.prototype, 'scrollTop', 'set')
+    }
+
+    function scrollPastSection(items: TableOfContentData, scrollContainer: HTMLElement) {
+      items[1].dom.getBoundingClientRect = () => ({ top: -100 }) as DOMRect
+      scrollContainer.dispatchEvent(new Event('scroll'))
+      return nextTick()
+    }
+
+    it('centers the active heading when expanded', async () => {
+      const items = headings()
+      items[2].dom.getBoundingClientRect = () => ({ top: -100 }) as DOMRect
+      const { wrapper } = await getWrapper({ items, expanded: false })
+      const scrollTop = mockListLayout()
+
+      await wrapper.find('.text-editor-table-of-contents-toggle').trigger('click')
+
+      expect(scrollTop).toHaveBeenCalledWith(615)
+    })
+
+    it('follows the active heading while scrolling', async () => {
+      const items = headings()
+      const { scrollContainer } = await getWrapper({ items })
+      const scrollTop = mockListLayout()
+
+      await scrollPastSection(items, scrollContainer)
+
+      expect(scrollTop).toHaveBeenCalledWith(615)
+    })
+
+    it('stays put while navigating to a clicked heading', async () => {
+      vi.useFakeTimers()
+      const items = headings()
+      const { wrapper, scrollContainer } = await getWrapper({ items })
+      const active = () => wrapper.find('[aria-current="location"]').text()
+      const scrollTop = mockListLayout()
+
+      await wrapper.findAll('.text-editor-table-of-contents-item')[2].trigger('click')
+      await scrollPastSection(items, scrollContainer)
+
+      expect(scrollTop).not.toHaveBeenCalled()
+      expect(active()).toBe('Other')
+
+      vi.advanceTimersByTime(150)
+      await scrollPastSection(items, scrollContainer)
+
+      expect(active()).toBe('Section')
+      expect(scrollTop).toHaveBeenCalled()
+    })
   })
 })
