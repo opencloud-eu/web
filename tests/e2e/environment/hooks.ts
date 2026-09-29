@@ -46,6 +46,7 @@ After(async ({ world }) => {
   }
 
   await cleanUpUser(store.createdUserStore, world.usersEnvironment.getUser({ key: 'admin' }))
+  await cleanUpGuests(world.usersEnvironment.getUser({ key: 'admin' }))
   await cleanUpSpaces(world.usersEnvironment.getUser({ key: 'admin' }))
   await cleanUpGroup(world.usersEnvironment.getUser({ key: 'admin' }))
 
@@ -72,6 +73,25 @@ const cleanUpUser = async (createdUserStore: Map<string, User>, adminUser: User)
   })
   await Promise.all(requests)
   createdUserStore.clear()
+}
+
+const cleanUpGuests = async (adminUser: User) => {
+  const requests: Promise<void>[] = []
+  store.invitedGuestStore.forEach((mail) => {
+    requests.push(
+      api.graph.getUserIdByMail({ mail, admin: adminUser }).then(async (id) => {
+        if (!id) {
+          return
+        }
+        await api.graph.deleteUser({
+          user: { id: mail, username: id, displayName: mail, email: mail, password: '' },
+          admin: adminUser
+        })
+      })
+    )
+  })
+  await Promise.all(requests)
+  store.invitedGuestStore.clear()
 }
 
 const cleanUpSpaces = async (adminUser: User) => {

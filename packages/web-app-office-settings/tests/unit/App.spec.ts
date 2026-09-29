@@ -10,6 +10,7 @@ type AppVm = {
   previewUrls: Record<string, string>
   loadPreviewsTask: { perform: (fonts: Font[]) => Promise<void>; last: Promise<unknown> }
   deleteFont: (font: Font) => Promise<void>
+  files: FileList | null
 }
 
 const font = (file: string): Font => ({ file, family: file.replace(/\.[^.]+$/, '') })
@@ -90,6 +91,24 @@ describe('App', () => {
     wrapper.unmount()
 
     expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:2')
+  })
+
+  it('uploads the selected fonts and clears the input afterwards', async () => {
+    const { vm, clientService } = getWrapper([])
+    const file = new File([''], 'new.ttf')
+
+    vm.files = [file] as unknown as FileList
+    await flushPromises()
+    // the font list refresh is delayed by the anti-flicker timer
+    await vi.advanceTimersByTimeAsync(500)
+    await flushPromises()
+
+    expect(clientService.httpAuthenticated.post).toHaveBeenCalledTimes(1)
+    expect(clientService.httpAuthenticated.post).toHaveBeenCalledWith(
+      '/collaboration/fonts/manage/',
+      expect.any(FormData)
+    )
+    expect(vm.files).toBeNull()
   })
 
   it('encodes the file name when deleting a font', async () => {

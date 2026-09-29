@@ -22,7 +22,7 @@ import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Col
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import { flushPromises } from '@vue/test-utils'
 
-vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn() }))
+vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn }))
 
 const folderMock = {
   id: '1',
@@ -78,29 +78,29 @@ describe('InviteCollaboratorForm', () => {
     })
   })
   describe('fetching recipients', () => {
-    it('fetches recipients upon mount', async () => {
-      const { mocks } = getWrapper()
-      await flushPromises()
+    it('queries users and groups', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await search(wrapper)
 
       expect(mocks.$clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(1)
       expect(mocks.$clientService.graphAuthenticated.groups.listGroups).toHaveBeenCalledTimes(1)
     })
     it('fetches users and groups returned from the server', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2' } as User], groups: [{ id: '3' }] })
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(2)
     })
     it('filters out the current user', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '1' } as User], groups: [{ id: '3' }] })
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('filters out selected users', async () => {
       const { wrapper } = getWrapper({ users: [{ id: '2' } as User], groups: [{ id: '3' }] })
       ;(wrapper.vm as any).selectedCollaborators = [mock<CollaboratorAutoCompleteItem>({ id: '2' })]
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
@@ -113,13 +113,13 @@ describe('InviteCollaboratorForm', () => {
         ]
       })
 
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(1)
     })
     it('does not query Open-Xchange when the capability is disabled', async () => {
-      const { mocks } = getWrapper({ users: [{ id: '2' } as User] })
-      await flushPromises()
+      const { wrapper, mocks } = getWrapper({ users: [{ id: '2' } as User] })
+      await search(wrapper)
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
     })
@@ -129,7 +129,7 @@ describe('InviteCollaboratorForm', () => {
         openXchange: true,
         openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }]
       })
-      await flushPromises()
+      await search(wrapper)
 
       expect((wrapper.vm as any).autocompleteResults.length).toBe(2)
       const contact = (wrapper.vm as any).autocompleteResults.find(
@@ -138,15 +138,86 @@ describe('InviteCollaboratorForm', () => {
       expect(contact?.mail).toBe('jane@example.com')
     })
     it('does not query Open-Xchange when the resource is a space', async () => {
-      const { mocks } = getWrapper({
+      const { wrapper, mocks } = getWrapper({
         users: [{ id: '2' } as User],
         openXchange: true,
         openXchangeContacts: [{ id: '10', displayName: 'Jane', email: 'jane@example.com' }],
         resource: mock<SpaceResource>(spaceMock)
       })
-      await flushPromises()
+      await search(wrapper)
 
       expect(mocks.$clientService.ox.autocompleteContacts).not.toHaveBeenCalled()
+    })
+    it('offers the entered value as a guest suggestion when it is a valid email address', async () => {
+      const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'someone@else.com' } as User] })
+      await search(wrapper, 'guest@example.com')
+
+      const guest = (wrapper.vm as any).autocompleteResults.find(
+        (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+      )
+      expect(guest?.id).toBe('guest@example.com')
+      expect(guest?.displayName).toBe('guest@example.com')
+    })
+    it('does not offer a guest suggestion for an invalid email', async () => {
+      const { wrapper } = getWrapper()
+      await search(wrapper, 'not-an-email')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion without the guest invite permission', async () => {
+      const { wrapper } = getWrapper({ canInviteGuests: false })
+      await search(wrapper, 'guest@example.com')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion for an address with a display name', async () => {
+      const { wrapper } = getWrapper()
+      await search(wrapper, 'Test User <guest@example.com>')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion when the server resolves the email to a single user', async () => {
+      const { wrapper } = getWrapper({ users: [{ id: '2', displayName: 'Admin' } as User] })
+      await search(wrapper, 'admin@example.org')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion in the external share mode', async () => {
+      const { wrapper } = getWrapper({ externalShareRoles: [mock<ShareRole>()] })
+      ;(wrapper.vm as any).currentShareRoleType = mock<ShareRoleType>({ id: '2' })
+      await search(wrapper, 'guest@example.com')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
+    })
+    it('does not offer a guest suggestion when the email belongs to a known account', async () => {
+      const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
+      await search(wrapper, 'guest@example.com')
+
+      expect(
+        (wrapper.vm as any).autocompleteResults.some(
+          (r: CollaboratorAutoCompleteItem) => r.shareType === ShareTypes.guest.value
+        )
+      ).toBe(false)
     })
   })
   describe('share action', () => {
@@ -248,6 +319,109 @@ describe('InviteCollaboratorForm', () => {
 
       expect(addShare).toHaveBeenCalled()
     })
+    it('invites a guest by email only, without objectId or recipient type', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            recipients: [{ email: 'guest@example.com' }]
+          })
+        })
+      )
+    })
+    it('invites users, groups and guests selected together with the matching recipient shape', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'user-id',
+          displayName: 'Albert Einstein',
+          shareType: ShareTypes.user.value
+        }),
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'group-id',
+          displayName: 'physics-lovers',
+          shareType: ShareTypes.group.value
+        }),
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledTimes(3)
+      const recipients = vi
+        .mocked(addShare)
+        .mock.calls.map(([{ options }]: any) => options.recipients[0])
+      expect(recipients).toEqual([
+        { objectId: 'user-id', '@libre.graph.recipient.type': 'user' },
+        { objectId: 'group-id', '@libre.graph.recipient.type': 'group' },
+        { email: 'guest@example.com' }
+      ])
+    })
+    it('passes the expiration date along when inviting a guest', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      vi.mocked(addShare).mockResolvedValue(mock<CollaboratorShare>())
+      ;(wrapper.vm as any).expirationDate = '2026-10-01T00:00:00.000Z'
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      expect(addShare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          options: expect.objectContaining({
+            expirationDateTime: '2026-10-01T00:00:00.000Z',
+            recipients: [{ email: 'guest@example.com' }]
+          })
+        })
+      )
+    })
+    it('shows an error message when the guest invite fails', async () => {
+      const { wrapper } = getWrapper()
+      const { addShare } = useSharesStore()
+      const error = new Error('guest invites are disabled')
+      vi.mocked(addShare).mockRejectedValue(error)
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      ;(wrapper.vm as any).selectedCollaborators = [
+        mock<CollaboratorAutoCompleteItem>({
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value
+        })
+      ]
+      await wrapper.vm.$nextTick()
+      await (wrapper.vm as any).share()
+
+      const { showErrorMessage, showMessage } = useMessages()
+      expect(showMessage).not.toHaveBeenCalled()
+      expect(showErrorMessage).toHaveBeenCalledWith({
+        title: 'Failed to add share for "guest@example.com"',
+        errors: [error]
+      })
+    })
     it.todo('resets focus upon selecting an invitee')
   })
   describe('share role type filter', () => {
@@ -280,26 +454,35 @@ describe('InviteCollaboratorForm', () => {
   })
 })
 
+async function search(wrapper: ReturnType<typeof getWrapper>['wrapper'], query = '') {
+  ;(wrapper.vm as any).fetchRecipients(query)
+  await flushPromises()
+}
+
 function getWrapper({
   storageId = 'fake-storage-id',
   resource = mock<Resource>(folderMock),
   users = [],
   groups = [],
   existingCollaborators = [],
+  internalShareRoles = [mock<ShareRole>()],
   externalShareRoles = [],
   user = mock<User>({ id: '1' }),
   openXchange = false,
-  openXchangeContacts = []
+  openXchangeContacts = [],
+  canInviteGuests = true
 }: {
   storageId?: string
   resource?: Resource
   users?: User[]
   groups?: Group[]
   existingCollaborators?: CollaboratorShare[]
+  internalShareRoles?: ShareRole[]
   externalShareRoles?: ShareRole[]
   user?: User
   openXchange?: boolean
   openXchangeContacts?: Contact[]
+  canInviteGuests?: boolean
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -319,6 +502,7 @@ function getWrapper({
       global: {
         plugins: [
           ...defaultPlugins({
+            abilities: canInviteGuests ? [{ action: 'create-all', subject: 'GuestInvite' }] : [],
             piniaOptions: {
               userState: { user },
               capabilityState: { capabilities },
@@ -341,7 +525,7 @@ function getWrapper({
           ...mocks,
           resource,
           availableExternalShareRoles: externalShareRoles,
-          availableInternalShareRoles: [mock<ShareRole>()]
+          availableInternalShareRoles: internalShareRoles
         },
         mocks,
         stubs: { OcSelect: false, VueSelect: false }
