@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(office-settings): polish fonts table to match overall design [[#3479](https://github.com/opencloud-eu/web/pull/3479)]
 - Guest invite [[#2915](https://github.com/opencloud-eu/web/pull/2915)]
 - feat: harmonize the right sidebar panels [[#3470](https://github.com/opencloud-eu/web/pull/3470)]
 - feat: add hoverable selection zone to tile checkboxes [[#3471](https://github.com/opencloud-eu/web/pull/3471)]
