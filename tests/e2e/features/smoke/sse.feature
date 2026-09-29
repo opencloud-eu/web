@@ -85,7 +85,6 @@ Feature: server sent events
       | space-folder | Carol     | user | Can view |
     Then "Alice" should get "share-created" SSE event
     And "Brian" should get "share-created" SSE event
-    And "Brian" closes the sidebar
     And "Brian" should see user-direct indicator on the folder "space-folder"
 
     # share-updated
@@ -252,7 +251,7 @@ Feature: server sent events
       | simple-renamed.pdf |
 
     # item-trashed
-    When "Alice" deletes the following resource using the sidebar panel
+    When "Alice" deletes the following resource using the context menu
       | resource       |
       | example.ocnote |
     Then "Alice" should get "item-trashed" SSE event

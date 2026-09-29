@@ -84,8 +84,8 @@ Feature: Secure view
 
     # .odt file
     Then "Brian" should see following actions for file "secureDocument.odt"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "secureDocument.odt"
       | action     |
       | Download   |
@@ -101,8 +101,8 @@ Feature: Secure view
 
     # .pdf file
     Then "Brian" should see following actions for file "secure.pdf"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "secure.pdf"
       | action     |
       | Download   |
@@ -112,8 +112,8 @@ Feature: Secure view
 
     # .jpeg file
     Then "Brian" should see following actions for file "securePhoto.jpeg"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "securePhoto.jpeg"
       | action   |
       | Download |
@@ -123,8 +123,8 @@ Feature: Secure view
 
     # .txt file
     Then "Brian" should see following actions for file "secureFile.txt"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "secureFile.txt"
       | action      |
       | Download    |
@@ -143,8 +143,8 @@ Feature: Secure view
 
     # .txt file
     Then "Brian" should see following actions for file "secureFile.txt"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "secureFile.txt"
       | action      |
       | Download    |
@@ -154,8 +154,8 @@ Feature: Secure view
 
     # .jpeg file
     Then "Brian" should see following actions for file "securePhoto.jpeg"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "securePhoto.jpeg"
       | action   |
       | Download |
@@ -165,8 +165,8 @@ Feature: Secure view
 
     # .pdf file
     Then "Brian" should see following actions for file "secure.pdf"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "secure.pdf"
       | action     |
       | Download   |
@@ -176,8 +176,8 @@ Feature: Secure view
 
     # .odt file
     Then "Brian" should see following actions for file "secureDocument.odt"
-      | action    |
-      | Collabora |
+      | action          |
+      | CollaboraOnline |
     But "Brian" should not see following actions for file "secureDocument.odt"
       | action     |
       | Download   |

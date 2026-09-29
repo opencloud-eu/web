@@ -38,7 +38,7 @@ Feature: Favorites
       | resource        |
       | testavatar.jpg  |
     And "Brian" navigates to the personal space page
-    And "Brian" marks the following resource as favorite using "sidebar panel"
+    And "Brian" marks the following resource as favorite using "context menu"
       | resource   |
       | image.png  |
     And "Brian" opens the following file in mediaviewer
@@ -61,7 +61,7 @@ Feature: Favorites
     And following resource should not be displayed in the files list for user "Brian"
       | resource       |
       | image.png      |
-    And "Brian" removes the following resource from favorites using "sidebar panel"
+    And "Brian" removes the following resource from favorites using "context menu"
       | resource  |
       | video.mp4 |
     And following resource should not be displayed in the files list for user "Brian"

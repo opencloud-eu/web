@@ -7,7 +7,7 @@ import { pageObjectFor } from '../../environment/pageObject'
 import { processDownload } from './resources'
 
 When(
-  /^"([^"]*)" downloads the following resource(?:s)? using the (sidebar panel|batch action|preview topbar)$/,
+  /^"([^"]*)" downloads the following resource(?:s)? using the (context menu|batch action|preview topbar)$/,
   async (
     { world }: { world: World },
     stepUser: string,

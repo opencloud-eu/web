@@ -49,7 +49,7 @@ Feature: Download
       | folderPublic   | folder |
       | emptyFolder    | folder |
       | testavatar.jpg | file   |
-    And "Brian" downloads the following resources using the sidebar panel
+    And "Brian" downloads the following resources using the context menu
       | resource       | from         | type   |
       | new file.txt   | folderPublic | file   |
       | testavatar.jpg |              | file   |

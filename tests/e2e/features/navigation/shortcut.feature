@@ -33,7 +33,7 @@ Feature: Users can create shortcuts for resources and sites
       | docs                       |                | folder  |
       | https://opencloud.eu/news/ | companyNews    | website |
 
-    And "Alice" downloads the following resource using the sidebar panel
+    And "Alice" downloads the following resource using the context menu
       | resource           | type |
       | important file.url | file |
 

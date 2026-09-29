@@ -37,7 +37,7 @@ Feature: Copy
     And "Alice" logs in
     And "Alice" reduces the tile size
 
-    When "Alice" copies the following resource using sidebar-panel
+    When "Alice" copies the following resource using dropdown-menu
       | resource    | to          |
       | sidebar.txt | Personal/PARENTCopy2 |
     And "Alice" copies the following resource using dropdown-menu
@@ -65,7 +65,7 @@ Feature: Copy
     And "Alice" moves the following resource using keyboard
       | resource    | to         |
       | PARENTCopy2 | Personal/PARENTMove |
-    And "Alice" moves the following resource using sidebar-panel
+    And "Alice" moves the following resource using dropdown-menu
       | resource    | to         |
       | PARENTCopy3 | Personal/PARENTMove |
     And "Alice" opens folder "PARENTCopy4"
@@ -181,21 +181,21 @@ Feature: Copy
     And "Alice" logs in
 
     # copy and move file
-    When "Alice" copies the following resources using sidebar-panel
+    When "Alice" copies the following resources using dropdown-menu
       | resource     | to                  | option    |
       | example1.txt | Personal/folder1   | keep both |
       | example1.txt | Personal/folder1   | replace   |
-    And "Alice" moves the following resources using sidebar-panel
+    And "Alice" moves the following resources using dropdown-menu
       | resource             | to                   | option    |
       | example1.txt         | Personal/sub/folder1 | keep both |
       | folder1/example1.txt | Personal/sub/folder1 | replace   |
 
     # copy and move folder
-    And "Alice" copies the following resources using sidebar-panel
+    And "Alice" copies the following resources using dropdown-menu
       | resource | to           | option    |
       | folder1  | Personal/sub | keep both |
       | folder1  | Personal/sub | replace   |
-    And "Alice" moves the following resources using sidebar-panel
+    And "Alice" moves the following resources using dropdown-menu
       | resource     | to           | option    |
       | folder1      | Personal/sub | keep both |
       | sub1/folder1 | Personal/sub | replace   |
@@ -228,24 +228,24 @@ Feature: Copy
     And "Alice" logs in
     And "Alice" navigates to the shared with me page
     And "Alice" opens folder "share"
-    And "Alice" copies the following resource using sidebar-panel
+    And "Alice" copies the following resource using dropdown-menu
       | resource | to              |
       | file.txt | Project/mySpace |
     And "Alice" copies the following resource to a new folder "Project/mySpace/new-folder"
       | resource |
       | test.txt |
     And "Alice" navigates to the project space "mySpace"
-    And "Alice" copies the following resource using sidebar-panel
+    And "Alice" copies the following resource using dropdown-menu
       | resource | to                   |
       | file.txt | Personal/f1/f2/f3/f4 |
     And "Alice" navigates to the personal space page
     And "Alice" opens folder "f1/f2"
-    And "Alice" copies the following resource using sidebar-panel
+    And "Alice" copies the following resource using dropdown-menu
       | resource | to           |
       | f3       | Shares/share |
 
     # try to move. moving doesn't work between space -> expect copy instead
-    And "Alice" moves the following resource using sidebar-panel
+    And "Alice" moves the following resource using dropdown-menu
       | resource | to              | option       |
       | f3       | Project/mySpace | copy instead |
     And "Alice" navigates to the project space "mySpace"

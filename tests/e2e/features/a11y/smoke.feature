@@ -159,8 +159,6 @@ Feature: Accessibility checks
     And "Alice" opens the "files" app
     And "Alice" opens the right sidebar of the resource "lorem.txt"
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-details" on the "right sidebar"
-    And "Alice" opens a "actions" panel of the resource "lorem.txt"
-    And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-actions" on the "right sidebar->actions panel"
     And "Alice" opens a "versions" panel of the resource "lorem.txt"
     And "Alice" checks the accessibility of the DOM selector "#sidebar-panel-versions" on the "right sidebar->versions panel"
     And "Alice" opens a "activities" panel of the resource "lorem.txt"

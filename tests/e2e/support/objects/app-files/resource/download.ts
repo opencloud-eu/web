@@ -1,19 +1,17 @@
 import { Download, Page, expect } from '@playwright/test'
-import { sidebar } from '../utils'
+import util from 'util'
 import {
   ActionViaType,
   appBarContextMenu,
   clickResource,
+  filesContextMenuAction,
+  openContextMenu,
   resourceArgs,
   selectOrDeselectResources
 } from './shared'
 
 const downloadFileButtonSingleShareView = '.oc-files-actions-download-file-trigger'
 const downloadFolderButtonSingleShareView = '.oc-files-actions-download-archive-trigger'
-const downloadFileButtonSideBar =
-  '#oc-files-actions-sidebar .oc-files-actions-download-file-trigger'
-const downloadFolderButtonSideBar =
-  '#oc-files-actions-sidebar .oc-files-actions-download-archive-trigger'
 const downloadButtonBatchAction = '.oc-files-actions-download-archive-trigger'
 const appBarDownloadFileButton = '#oc-openfile-contextmenu .oc-files-actions-download-file-trigger'
 
@@ -29,21 +27,17 @@ export const downloadResources = async (args: downloadResourcesArgs): Promise<Do
   const downloads = []
 
   switch (via) {
-    case 'SIDEBAR_PANEL': {
+    case 'CONTEXT_MENU': {
       if (folder) {
         await clickResource({ page, path: folder })
       }
       for (const resource of resources) {
-        await sidebar.open({ page, resource: resource.name })
-        await sidebar.openPanel({ page, name: 'actions' })
-        const downloadResourceSelector =
-          resource.type === 'file' ? downloadFileButtonSideBar : downloadFolderButtonSideBar
+        await openContextMenu({ page, resource: resource.name })
+        const downloadAction = resource.type === 'file' ? 'download-file' : 'download-archive'
         const [download] = await Promise.all([
           page.waitForEvent('download'),
-          page.locator(downloadResourceSelector).click()
+          page.locator(util.format(filesContextMenuAction, downloadAction)).click()
         ])
-
-        await sidebar.close({ page })
 
         downloads.push(download)
       }

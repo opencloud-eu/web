@@ -25,20 +25,6 @@ Feature: spaces.project
       | subtitle              | description              | quota |
       | sales team - subtitle | sales team - description | 50GB  |
 
-    # check operations using context menu
-    When "Alice" navigates to the projects space page
-    And "Alice" creates the project space "developer-team"
-    And "Alice" navigates to the project space "developer-team"
-    And "Alice" changes the space "developer-team" name to "developer team" using context menu
-    And "Alice" changes the space "developer-team" subtitle to "developer team - subtitle" using context menu
-    And "Alice" changes the space "developer-team" description to "developer team - description" using context menu
-    And "Alice" changes the space "developer-team" quota to "500" using context menu
-    And "Alice" changes the space "developer-team" image to "testavatar.png" using context menu
-    And "Alice" deletes the space "developer-team" image using context menu
-    And "Alice" changes the space "developer-team" icon to "😜" using context menu
-    Then "Alice" should see the following details of the project space
-      | subtitle                   | description                   | quota |
-      | developer team - subtitle  | developer team - description  | 500GB |
     And "Alice" logs out
 
 

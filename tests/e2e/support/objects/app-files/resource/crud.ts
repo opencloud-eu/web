@@ -1,7 +1,7 @@
 import { Page, expect } from '@playwright/test'
 import util from 'util'
 import path from 'path'
-import { editor, sidebar } from '../utils'
+import { editor } from '../utils'
 import { state } from '../../../../environment/shared'
 import {
   actionConfirmationButton,
@@ -16,6 +16,7 @@ import {
   euroOfficeSaveButtonSelector,
   externalEditorIframe,
   filesContextMenuAction,
+  openContextMenu,
   resourceArgs,
   resourceNameInput,
   resourceNameSelector,
@@ -29,7 +30,6 @@ const createNewNoteFileButton = '.new-file-btn-ocnote'
 const createNewMdFileButton = '.new-file-btn-md'
 const createNewOfficeDocumentFileBUtton = '//div[@id="create-or-upload-drop"]//span[text()="%s"]'
 const fileRenameInput = '.oc-text-input'
-const deleteButtonSidebar = '#oc-files-actions-sidebar .oc-files-actions-delete-trigger'
 const undoBtn = 'action-handler'
 const encryptFolderSwitch = '[data-testid="create-folder-encrypt"] [data-testid="oc-switch-btn"]'
 
@@ -322,13 +322,12 @@ export interface deleteResourceArgs {
 export const deleteResource = async (args: deleteResourceArgs): Promise<void> => {
   const { page, resourcesWithInfo, folder, via, isPublicLink } = args
   switch (via) {
-    case 'SIDEBAR_PANEL': {
+    case 'CONTEXT_MENU': {
       if (folder) {
         await clickResource({ page, path: folder })
       }
       for (const resource of resourcesWithInfo) {
-        await sidebar.open({ page, resource: resource.name })
-        await sidebar.openPanel({ page, name: 'actions' })
+        await openContextMenu({ page, resource: resource.name })
         await Promise.all([
           page.waitForResponse(
             (resp) =>
@@ -336,9 +335,8 @@ export const deleteResource = async (args: deleteResourceArgs): Promise<void> =>
               resp.status() === 204 &&
               resp.request().method() === 'DELETE'
           ),
-          page.locator(deleteButtonSidebar).first().click()
+          page.locator(util.format(filesContextMenuAction, 'delete')).click()
         ])
-        await sidebar.close({ page })
       }
       break
     }

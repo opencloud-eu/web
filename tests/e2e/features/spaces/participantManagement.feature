@@ -60,10 +60,10 @@ Feature: spaces participant management
     And "Anonymous" uploads the following resource in public link page
       | resource     |
       | textfile.txt |
-    And "Anonymous" deletes the following resource from public link using sidebar panel
+    And "Anonymous" deletes the following resource from public link using context menu
       | resource  | from |
       | lorem.txt |      |
-    When "Brian" deletes the following resource using the sidebar panel
+    When "Brian" deletes the following resource using the context menu
       | resource     | from   |
       | textfile.txt | parent |
     When "Carol" navigates to the trashbin

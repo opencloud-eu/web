@@ -58,7 +58,7 @@ Feature: federation management
 
     And "Brian" navigates to the next media resource
     And "Brian" closes the file viewer
-    And "Brian" downloads the following resources using the sidebar panel
+    And "Brian" downloads the following resources using the context menu
       | resource       | type   |
       | folderPublic   | folder |
       | sampleGif.gif  | file   |

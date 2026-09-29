@@ -95,14 +95,14 @@ Feature: spaces public link
     When "Edith" logs in
     And "Edith" opens the public link "folderLink"
     And "Edith" unlocks the public link with password "%public%"
-    And "Edith" downloads the following public link resources using the sidebar panel
+    And "Edith" downloads the following public link resources using the context menu
       | resource  | type   |
       | subFolder | folder |
     And "Edith" logs out
     # download a folder in the public link as anonymous user
     And "Anonymous" opens the public link "folderLink"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" downloads the following public link resources using the sidebar panel
+    And "Anonymous" downloads the following public link resources using the context menu
       | resource  | type   |
       | subFolder | folder |
 
@@ -126,7 +126,7 @@ Feature: spaces public link
 
     And "Anonymous" opens the public link "spaceLink"
     And "Anonymous" unlocks the public link with password "%public%"
-    And "Anonymous" downloads the following public link resources using the sidebar panel
+    And "Anonymous" downloads the following public link resources using the context menu
       | resource    | type |
       | example.txt | file |
     And "Anonymous" uploads the following resource in public link page
@@ -138,7 +138,7 @@ Feature: spaces public link
     And "Anonymous" edits the following resource
       | resource    | content     |
       | renamed.txt | new content |
-    When "Anonymous" deletes the following resources using the sidebar panel
+    When "Anonymous" deletes the following resources using the context menu
       | resource      |
       | renamed.txt   |
       | new-lorem.txt |
