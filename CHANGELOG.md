@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: make search results breadcrumb consistent with other views [[#3475](https://github.com/opencloud-eu/web/pull/3475)]
 - fix: use full width search inputs on mobile screens [[#3474](https://github.com/opencloud-eu/web/pull/3474)]
 - fix(editor): keep table of contents toggle size and follow active heading [[#3473](https://github.com/opencloud-eu/web/pull/3473)]
 - fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
