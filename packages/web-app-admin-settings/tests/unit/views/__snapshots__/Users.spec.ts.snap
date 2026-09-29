@@ -14,12 +14,12 @@ exports[`Users view > list view > renders initially warning if filters are manda
           </div>
           <div class="flex relative flex items-start justify-end min-h-10">
             <div class="peer flex [&amp;:not(:empty)]:w-full">
-              <div class="flex justify-between w-full my-2 items-center">
+              <div class="flex flex-wrap gap-2 justify-between w-full my-2 items-center">
                 <div class="flex items-center">
                   <item-filter-stub filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="mr-2"></item-filter-stub>
                   <item-filter-stub filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
                 </div>
-                <div data-v-8440503a="" role="search" class="oc-search flex items-center w-3xs">
+                <div data-v-8440503a="" role="search" class="oc-search flex items-center w-full sm:w-3xs">
                   <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input placeholder:text-role-outline disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Search" placeholder="Search for users" type="search">
                     <oc-button-stub data-v-8440503a="" arialabel="Search" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"></oc-button-stub>
                   </div>
@@ -55,12 +55,12 @@ exports[`Users view > list view > renders list initially 1`] = `
           </div>
           <div class="flex relative flex items-start justify-end min-h-10">
             <div class="peer flex [&amp;:not(:empty)]:w-full">
-              <div class="flex justify-between w-full my-2 items-center">
+              <div class="flex flex-wrap gap-2 justify-between w-full my-2 items-center">
                 <div class="flex items-center">
                   <item-filter-stub filterlabel="Groups" items="undefined" filtername="groups" optionfilterlabel="Filter groups" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false" class="mr-2"></item-filter-stub>
                   <item-filter-stub filterlabel="Roles" items="[object Object],[object Object],[object Object],[object Object]" filtername="roles" optionfilterlabel="Filter roles" showoptionfilter="true" allowmultiple="true" idattribute="id" displaynameattribute="displayName" filterableattributes="displayName" closeonclick="false"></item-filter-stub>
                 </div>
-                <div data-v-8440503a="" role="search" class="oc-search flex items-center w-3xs">
+                <div data-v-8440503a="" role="search" class="oc-search flex items-center w-full sm:w-3xs">
                   <div data-v-8440503a="" class="flex-1 relative"><input data-v-8440503a="" id="search-input-v-0" class="oc-search-input oc-input placeholder:text-role-outline disabled:cursor-not-allowed focus:bg-none focus:outline focus:outline-offset-2 focus:outline-white h-9" aria-label="Search" placeholder="Search for users" type="search">
                     <oc-button-stub data-v-8440503a="" arialabel="Search" appearance="raw" colorrole="secondary" disabled="false" gapsize="medium" justifycontent="center" showspinner="false" size="medium" submit="button" type="button" nohover="true" class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"></oc-button-stub>
                   </div>

@@ -6,7 +6,7 @@
           <SharesNavigation />
         </template>
         <template #actions>
-          <div class="flex justify-between w-full mt-2 mb-4 items-center">
+          <div class="flex flex-wrap gap-2 justify-between w-full mt-2 mb-4 items-center">
             <div class="flex flex-wrap">
               <item-filter-inline
                 class="share-visibility-filter"
@@ -54,7 +54,7 @@
             </div>
             <oc-search-bar
               v-model="filterTerm"
-              class="search-filter w-3xs"
+              class="search-filter w-full sm:w-3xs"
               :label="$gettext('Search')"
               :placeholder="$gettext('Search for shares')"
               button-hidden

@@ -9,7 +9,7 @@
           <div class="flex justify-end w-full mt-2 mb-4 items-center">
             <oc-search-bar
               v-model="filterTerm"
-              class="search-filter w-3xs"
+              class="search-filter w-full sm:w-3xs"
               :label="$gettext('Search')"
               :placeholder="$gettext('Search for shares')"
               button-hidden
