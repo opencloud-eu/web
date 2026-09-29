@@ -38,9 +38,12 @@
     </no-content-message>
     <div v-else>
       <oc-table
-        class="app-token-table [&_td]:px-0 [&_th]:px-0"
+        class="app-token-table [&_td]:px-0 [&_th]:px-0 [&_.oc-table-data-cell-creationDate]:w-1/4 [&_.oc-table-data-cell-expirationDate]:w-1/4"
         :data="visibleAppTokens"
         :fields="tableFields"
+        :sort-by="sortBy"
+        :sort-dir="sortDir"
+        @sort="handleSort"
       >
         <template #label="{ item }">
           <div class="w-full truncate">
@@ -59,15 +62,14 @@
         </template>
         <template #actions="{ item }">
           <oc-button
+            v-oc-tooltip="$gettext('Delete app token')"
             appearance="raw"
             no-hover
-            gap-size="none"
             size="small"
             :aria-label="$gettext('Delete app token')"
             @click="openDeleteAppTokenModal(item)"
           >
             <oc-icon name="delete-bin-5" size-class="size-4" fill-type="line" />
-            <span class="ml-1" v-text="$gettext('Delete')" />
           </oc-button>
         </template>
       </oc-table>
@@ -88,7 +90,8 @@ import {
   useAuthStore,
   useClientService,
   useMessages,
-  useModals
+  useModals,
+  useSort
 } from '@opencloud-eu/web-pkg'
 import { computed, markRaw, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
@@ -96,7 +99,7 @@ import { useGettext } from 'vue3-gettext'
 import AppTokenModal from '../Modals/AppTokenModal.vue'
 import AccountHeading from './AccountHeading.vue'
 import { AppToken, AppTokenListSchema } from '../../helpers/appTokens'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 
 const { $gettext, current: currentLanguage } = useGettext()
@@ -115,7 +118,7 @@ const loadTokensTask = useTask(function* (signal) {
   try {
     const { data } = yield* call(client.get<AppToken[]>('/auth-app/tokens', { signal }))
     const tokens = AppTokenListSchema.parse(data)
-    appTokens.value = tokens.sort((a, b) => b.created_date.localeCompare(a.created_date))
+    appTokens.value = tokens
     authAppServiceDisabled.value = false
   } catch (error) {
     console.error(error)
@@ -160,11 +163,25 @@ const openDeleteAppTokenModal = (appToken: AppToken) => {
   })
 }
 
+const sortFields = [
+  { name: 'creationDate', prop: 'created_date', sortable: true, sortDir: SortDir.Desc },
+  { name: 'expirationDate', prop: 'expiration_date', sortable: true, sortDir: SortDir.Desc }
+]
+const {
+  items: sortedAppTokens,
+  sortBy,
+  sortDir,
+  handleSort
+} = useSort<AppToken>({
+  items: appTokens,
+  fields: sortFields
+})
+
 const visibleAppTokens = computed(() => {
   if (unref(listExpanded)) {
-    return unref(appTokens)
+    return unref(sortedAppTokens)
   }
-  return unref(appTokens).slice(0, TOKENS_TO_DISPLAY)
+  return unref(sortedAppTokens).slice(0, TOKENS_TO_DISPLAY)
 })
 
 const tableFields = computed<FieldType[]>(() => {
@@ -180,18 +197,21 @@ const tableFields = computed<FieldType[]>(() => {
       name: 'creationDate',
       type: 'slot',
       wrap: 'truncate',
-      title: $gettext('Created at')
+      title: $gettext('Created at'),
+      sortable: true
     },
     {
       name: 'expirationDate',
       type: 'slot',
       wrap: 'truncate',
-      title: $gettext('Expires at')
+      title: $gettext('Expires at'),
+      sortable: true
     },
     {
       name: 'actions',
       type: 'slot',
       width: 'shrink',
+      alignH: 'right',
       title: $gettext('Actions')
     }
   ]
@@ -207,19 +227,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style scoped>
-@reference '@opencloud-eu/design-system/tailwind';
-
-@layer utilities {
-  .app-token-table td:nth-of-type(1),
-  .app-token-table td:nth-of-type(4) {
-    width: 30%;
-  }
-
-  .app-token-table td:nth-of-type(2),
-  .app-token-table td:nth-of-type(3) {
-    width: 20%;
-  }
-}
-</style>
