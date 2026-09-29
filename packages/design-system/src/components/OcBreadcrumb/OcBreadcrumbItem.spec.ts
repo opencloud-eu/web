@@ -23,13 +23,18 @@ describe('OcBreadcrumbItem', () => {
   })
   it.each([
     { item: { text: 'Folder', to: { path: 'folder' } } },
-    { item: { text: 'Folder', onClick: vi.fn() } },
-    { item: { text: 'Folder' } }
-  ])('marks the current item as current page and bold', ({ item }) => {
+    { item: { text: 'Folder', onClick: vi.fn() } }
+  ])('marks the current item as current page and bold if it is clickable', ({ item }) => {
     const { wrapper } = getWrapper({ item, current: true })
     const root = wrapper.find('[aria-current="page"]')
     expect(root.exists()).toBe(true)
     expect(root.classes()).toContain('font-bold')
+  })
+  it('marks the current item as current page but not bold if it is plain text', () => {
+    const { wrapper } = getWrapper({ item: { text: 'Folder' }, current: true })
+    const root = wrapper.find('[aria-current="page"]')
+    expect(root.exists()).toBe(true)
+    expect(root.classes()).not.toContain('font-bold')
   })
   it('does not mark other items as current', () => {
     const { wrapper } = getWrapper({ item: { text: 'Folder', to: { path: 'folder' } } })

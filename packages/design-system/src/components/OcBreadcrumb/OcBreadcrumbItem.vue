@@ -3,7 +3,7 @@
     :is="tag"
     v-bind="tagAttrs"
     :aria-current="current ? 'page' : null"
-    :class="{ 'text-role-on-surface': !item.onClick, 'font-bold': current }"
+    :class="{ 'text-role-on-surface': !item.onClick, 'font-bold': current && isInteractive }"
   >
     <span :class="[textClass, { 'hover:underline': isInteractive }]">
       <oc-icon
