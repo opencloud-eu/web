@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: use full width search inputs on mobile screens [[#3474](https://github.com/opencloud-eu/web/pull/3474)]
 - fix(editor): keep table of contents toggle size and follow active heading [[#3473](https://github.com/opencloud-eu/web/pull/3473)]
 - fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
 - fix: add missing icon for excalidraw [[#3483](https://github.com/opencloud-eu/web/pull/3483)]
