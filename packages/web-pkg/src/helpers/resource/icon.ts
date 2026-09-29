@@ -191,9 +191,9 @@ const fileIcon = {
     icon: { name: 'resource-type-game' },
     extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'snes', 'sfc', 'smc', 'n64', 'v64', 'z64']
   },
-  odg: {
+  graphic: {
     icon: { name: 'resource-type-graphic' },
-    extensions: ['odg']
+    extensions: ['odg', 'excalidraw']
   },
   pdf: {
     icon: { name: 'resource-type-pdf', hasDarkVariant: true },
