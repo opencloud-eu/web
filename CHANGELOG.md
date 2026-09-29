@@ -6,26 +6,9 @@
 
 @AlexAndBear, @JammingBen, @flimmy, @kulmann, @pascalwengerter, @tammi-23, @v-scharf
 
-### 🐛 Bug Fixes
-
-- fix: move rename action below download in context menu [[#3485](https://github.com/opencloud-eu/web/pull/3485)]
-- fix: use full width search inputs on mobile screens [[#3474](https://github.com/opencloud-eu/web/pull/3474)]
-- fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
-- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
-- fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
-- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
-- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
-- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
-- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
-- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
-- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
-- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
-- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
-- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
-- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
-
 ### 📈 Enhancement
 
+- feat: rename view mode labels to grid and list [[#3486](https://github.com/opencloud-eu/web/pull/3486)]
 - feat: make search results breadcrumb consistent with other views [[#3475](https://github.com/opencloud-eu/web/pull/3475)]
 - feat: remove actions panel from right sidebar [[#3484](https://github.com/opencloud-eu/web/pull/3484)]
 - feat(editor): keep table of contents toggle size and follow active heading [[#3473](https://github.com/opencloud-eu/web/pull/3473)]
@@ -57,6 +40,24 @@
 - perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
 - Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
+### 🐛 Bug Fixes
+
+- fix: move rename action below download in context menu [[#3485](https://github.com/opencloud-eu/web/pull/3485)]
+- fix: use full width search inputs on mobile screens [[#3474](https://github.com/opencloud-eu/web/pull/3474)]
+- fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
+- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
+- fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
+- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
+- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
+- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
+- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
+- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
+- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ### ✅ Tests
 
