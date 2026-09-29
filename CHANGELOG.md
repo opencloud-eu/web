@@ -4,17 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @JammingBen, @flimmy, @pascalwengerter, @tammi-23, @v-scharf
-
-### ✅ Tests
-
-- e2e: simplify e2e project space creation steps [[#3457](https://github.com/opencloud-eu/web/pull/3457)]
-- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
-- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
-- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
+@AlexAndBear, @JammingBen, @flimmy, @kulmann, @pascalwengerter, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- Guest invite [[#2915](https://github.com/opencloud-eu/web/pull/2915)]
 - feat: harmonize the right sidebar panels [[#3470](https://github.com/opencloud-eu/web/pull/3470)]
 - feat: add hoverable selection zone to tile checkboxes [[#3471](https://github.com/opencloud-eu/web/pull/3471)]
 - feat(editor): add table of contents for markdown and tiptap-json [[#3440](https://github.com/opencloud-eu/web/pull/3440)]
@@ -29,6 +23,13 @@
 - perf: load the editor chunk lazily [[#3373](https://github.com/opencloud-eu/web/pull/3373)]
 - Editor: preserve markdown when copying and pasting [[#3371](https://github.com/opencloud-eu/web/pull/3371)]
 - Show vault breadcrumb icons from breadcrumb item props [[#3367](https://github.com/opencloud-eu/web/pull/3367)]
+
+### ✅ Tests
+
+- e2e: simplify e2e project space creation steps [[#3457](https://github.com/opencloud-eu/web/pull/3457)]
+- e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
+- refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
+- e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
 
 ### 🐛 Bug Fixes
 
