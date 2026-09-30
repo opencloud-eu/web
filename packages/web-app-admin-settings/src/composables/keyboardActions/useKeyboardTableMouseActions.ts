@@ -65,17 +65,17 @@ export function useKeyboardTableMouseActions(
 
   onMounted(() => {
     resourceListClickedMetaEvent = eventBus.subscribe(
-      'app.files.list.clicked.meta',
+      'app.admin-settings.list.clicked.meta',
       handleCtrlClickAction
     )
     resourceListClickedShiftEvent = eventBus.subscribe(
-      'app.files.list.clicked.shift',
+      'app.admin-settings.list.clicked.shift',
       handleShiftClickAction
     )
   })
 
   onBeforeUnmount(() => {
-    eventBus.unsubscribe('app.files.list.clicked.meta', resourceListClickedMetaEvent)
-    eventBus.unsubscribe('app.files.list.clicked.shift', resourceListClickedShiftEvent)
+    eventBus.unsubscribe('app.admin-settings.list.clicked.meta', resourceListClickedMetaEvent)
+    eventBus.unsubscribe('app.admin-settings.list.clicked.shift', resourceListClickedShiftEvent)
   })
 }

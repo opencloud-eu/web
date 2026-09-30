@@ -283,10 +283,10 @@ function rowClicked([group, event]: [Group, MouseEvent | KeyboardEvent]) {
   }
 
   if (event?.metaKey) {
-    return eventBus.publish('app.files.list.clicked.meta', group)
+    return eventBus.publish('app.admin-settings.list.clicked.meta', group)
   }
   if (event?.shiftKey) {
-    return eventBus.publish('app.files.list.clicked.shift', {
+    return eventBus.publish('app.admin-settings.list.clicked.shift', {
       resource: group,
       skipTargetSelection: isCheckboxClicked
     })

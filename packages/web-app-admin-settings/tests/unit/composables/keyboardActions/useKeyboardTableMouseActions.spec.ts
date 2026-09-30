@@ -17,7 +17,7 @@ describe('useKeyboardTableMouseActions', () => {
   describe('shift click', () => {
     it('selects the range between the last selected and the clicked row', () => {
       const { selectedRows } = getWrapper()
-      eventBus.publish('app.files.list.clicked.shift', {
+      eventBus.publish('app.admin-settings.list.clicked.shift', {
         resource: items[2],
         skipTargetSelection: false
       })

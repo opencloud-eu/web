@@ -431,10 +431,10 @@ function fileClicked([resource, eventData]: [SpaceResource, MouseEvent | Keyboar
     return
   }
   if (eventData?.metaKey) {
-    return eventBus.publish('app.files.list.clicked.meta', resource)
+    return eventBus.publish('app.admin-settings.list.clicked.meta', resource)
   }
   if (eventData?.shiftKey) {
-    return eventBus.publish('app.files.list.clicked.shift', {
+    return eventBus.publish('app.admin-settings.list.clicked.shift', {
       resource,
       skipTargetSelection: isCheckboxClicked
     })
