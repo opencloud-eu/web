@@ -165,6 +165,12 @@ export default defineConfig(({ mode, command }) => {
                   priority: 100
                 },
                 {
+                  // shared with web-client, would otherwise land in tiptap-vendor as a dependency of a tiptap extension
+                  name: 'uuid',
+                  test: /node_modules\/uuid\//,
+                  priority: 100
+                },
+                {
                   name: 'tiptap-vendor',
                   test: /node_modules\/@tiptap/
                 },
