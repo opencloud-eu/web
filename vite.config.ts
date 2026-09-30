@@ -19,6 +19,7 @@ import browserslistToEsbuild from 'browserslist-to-esbuild'
 import fetch from 'node-fetch'
 import { Agent } from 'https'
 import { federationRegistrationHost } from './dev/vite-plugins/federationRegistrationHost.ts'
+import { lazyChunks } from './dev/vite-plugins/lazyChunks.ts'
 
 const dist = process.env.DIST_DIR || 'dist'
 
@@ -241,6 +242,7 @@ export default defineConfig(({ mode, command }) => {
           })()
         }),
         registrationHost,
+        lazyChunks(['tiptap-vendor']),
         {
           name: '@opencloud-eu/vite-plugin-runtime-config',
           configureServer(server: ViteDevServer) {
