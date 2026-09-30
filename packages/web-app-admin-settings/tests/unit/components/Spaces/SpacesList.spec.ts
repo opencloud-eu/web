@@ -133,6 +133,18 @@ describe('SpacesList', () => {
     await wrapper.find('.spaces-table-btn-details').trigger('click')
     expect(openSideBar).toHaveBeenCalled()
   })
+  it.each([
+    { description: 'another space', selectedSpaces: [spaceMocks[1]] },
+    { description: 'the same space', selectedSpaces: [spaceMocks[0]] }
+  ])(
+    'selects only the clicked space on details button click if $description is selected',
+    async ({ selectedSpaces }) => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks, selectedSpaces, stubActions: false })
+      await wrapper.find('.spaces-table-btn-details').trigger('click')
+      const { selectedSpaces: newSelection } = useSpaceSettingsStore()
+      expect(newSelection).toEqual([spaceMocks[0]])
+    }
+  )
   describe('toggle selection', () => {
     describe('selectSpaces method', () => {
       it('selects all spaces', () => {
@@ -177,8 +189,14 @@ describe('SpacesList', () => {
 function getWrapper({
   mountType = mount,
   spaces = [],
-  selectedSpaces = []
-}: { mountType?: typeof mount; spaces?: SpaceResource[]; selectedSpaces?: SpaceResource[] } = {}) {
+  selectedSpaces = [],
+  stubActions = true
+}: {
+  mountType?: typeof mount
+  spaces?: SpaceResource[]
+  selectedSpaces?: SpaceResource[]
+  stubActions?: boolean
+} = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
   const mocks = defaultComponentMocks()
@@ -193,6 +211,7 @@ function getWrapper({
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions,
               spaceSettingsStore: { spaces, selectedSpaces }
             }
           })
