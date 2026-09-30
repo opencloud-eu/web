@@ -102,13 +102,13 @@ import {
   useAppsStore,
   useResourcesStore,
   UserAvatar,
-  createLocationShares,
   useKeyboardActions
 } from '@opencloud-eu/web-pkg'
+import { eventBus } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
 import { queryItemAsString, useRouteQuery } from '@opencloud-eu/web-pkg'
 import SharedWithMeSection from '../../components/Shares/SharedWithMeSection.vue'
-import { computed, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { useGetMatchingSpace, useSort } from '@opencloud-eu/web-pkg'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
@@ -151,7 +151,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Shares'),
-      to: createLocationShares('files-shares-with-me'),
+      onClick: () => loadResourcesTask.perform(),
       isStaticNav: true
     }
   ]
@@ -258,7 +258,13 @@ const fileOwners = computed(() => {
   return [...new Map(flatList.map((item) => [item.displayName, item])).values()]
 })
 
+let loadResourcesEventToken: string
 onMounted(() => {
   performLoaderTask()
+  loadResourcesEventToken = eventBus.subscribe('app.files.list.load', performLoaderTask)
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.list.load', loadResourcesEventToken)
 })
 </script>

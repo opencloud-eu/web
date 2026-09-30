@@ -7,12 +7,13 @@
     <oc-list class="hidden sm:flex gap-4">
       <li v-for="navItem in navItems" :key="`shares-navigation-desktop-${navItem.to}`">
         <oc-button
-          type="router-link"
+          :type="navItem.active ? 'button' : 'router-link'"
           class="py-2 w-full m-0"
           :class="{ 'border-b border-role-secondary rounded-none font-bold': navItem.active }"
           appearance="raw"
-          :to="navItem.to"
+          :to="navItem.active ? undefined : navItem.to"
           no-hover
+          @click="reloadList"
         >
           <span v-text="navItem.text" />
         </oc-button>
@@ -33,11 +34,12 @@
         <oc-list>
           <li v-for="navItem in navItems" :key="`shares-navigation-mobile-${navItem.to}`">
             <oc-button
-              type="router-link"
+              :type="navItem.active ? 'button' : 'router-link'"
               justify-content="left"
-              :to="navItem.to"
+              :to="navItem.active ? undefined : navItem.to"
               :class="{ 'bg-role-secondary-container': navItem.active }"
               appearance="raw"
+              @click="reloadList"
             >
               <oc-icon :name="navItem.icon" />
               <span v-text="navItem.text" />
@@ -51,6 +53,7 @@
 
 <script setup lang="ts">
 import {
+  eventBus,
   isLocationSharesActive,
   locationSharesViaLink,
   locationSharesWithMe,
@@ -104,4 +107,10 @@ const navItems = computed(() => [
   }
 ])
 const currentNavItem = computed(() => unref(navItems).find((navItem) => navItem.active))
+
+// the active item is rendered as a button because navigating to the current route
+// is a no-op in the router, so clicking it reloads the list instead
+function reloadList() {
+  eventBus.publish('app.files.list.load')
+}
 </script>

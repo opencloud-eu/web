@@ -70,7 +70,6 @@
 
 <script setup lang="ts">
 import {
-  createLocationShares,
   defaultFuseOptions,
   FileSideBar,
   useFileActions,
@@ -82,7 +81,8 @@ import {
   Pagination,
   useGetMatchingSpace,
   ContextActions,
-  useKeyboardActions
+  useKeyboardActions,
+  eventBus
 } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
@@ -91,7 +91,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
@@ -175,7 +175,7 @@ const breadcrumbs = computed(() => {
     {
       id: uuidV4(),
       text: $gettext('Shares'),
-      to: createLocationShares('files-shares-via-link'),
+      onClick: () => loadResourcesTask.perform(),
       isStaticNav: true
     }
   ]
@@ -185,8 +185,16 @@ const isEmpty = computed(() => {
   return unref(filteredItems).length < 1
 })
 
+let loadResourcesEventToken: string
 onMounted(async () => {
+  loadResourcesEventToken = eventBus.subscribe('app.files.list.load', () =>
+    loadResourcesTask.perform()
+  )
   await loadResourcesTask.perform()
   scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
+})
+
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.list.load', loadResourcesEventToken)
 })
 </script>

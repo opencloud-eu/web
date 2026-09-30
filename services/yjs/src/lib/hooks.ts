@@ -1,8 +1,9 @@
 import type {
   afterUnloadDocumentPayload,
   connectedPayload,
-  Document,
+  Connection,
   Extension,
+  onChangePayload,
   onDisconnectPayload,
   onStatelessPayload
 } from '@hocuspocus/server'
@@ -14,7 +15,13 @@ import {
   probeFileAccess,
   validateTokenAgainstOpenCloud
 } from './graph.ts'
-import { createSeedRegistry, SeedMessage } from './seedGrant.ts'
+import {
+  createGrantRegistry,
+  grantAnswer,
+  type GrantAnswer,
+  parseGrantRelease,
+  parseGrantRequest
+} from './grants.ts'
 
 export const HEALTH_ENDPOINT_PATH = '/healthz/ready'
 
@@ -106,21 +113,26 @@ export async function authenticate(
   }
 }
 
-export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
-  const seedRegistry = createSeedRegistry()
+/** The side of a Hocuspocus connection the grants need. */
+type GrantConnection = Pick<Connection, 'socketId' | 'readOnly' | 'sendStateless'> & {
+  document?: Pick<Connection['document'], 'flush'>
+}
 
+/** Where the clients keep their coordination state, see `useYjsSession.ts`. */
+const META_KEY = '_oc_meta'
+
+export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
   /**
-   * Hand the seed grant to another writer in the room. Called when the holder
-   * leaves, which may have happened before it seeded.
+   * Updates are batched before they go out, stateless messages are not. The
+   * room's pending updates go first, so a recovery grant freed by a commit
+   * never reaches the next writer before that commit does.
    */
-  function passSeedGrantOn(document: Document, documentName: string): void {
-    const writer = document.getConnections().find((connection) => !connection.readOnly)
-    if (!writer) {
-      return
+  const grants = createGrantRegistry<GrantConnection>(
+    ({ claimant, request, granted }: GrantAnswer<GrantConnection>) => {
+      claimant.document?.flush()
+      claimant.sendStateless(grantAnswer(request, granted))
     }
-    seedRegistry.grantTo(documentName, writer.socketId)
-    writer.sendStateless(SeedMessage.Granted)
-  }
+  )
 
   return {
     async onRequest({ request, response }: RequestPayload): Promise<void> {
@@ -193,30 +205,44 @@ export function createHooks({ opencloudUrl, lifecycle }: HookOptions) {
       console.log(
         `[onDisconnect] document=${JSON.stringify(documentName)} remaining=${clientsCount}`
       )
-      if (seedRegistry.release(documentName, socketId)) {
-        passSeedGrantOn(document, documentName)
+      grants.leave(documentName, socketId, document.getConnections())
+    },
+
+    /**
+     * A recovery is done once the room holds the etag it was granted for.
+     * Freed from the server's own replica, so the next writer is only granted
+     * once the server has the rewrite.
+     */
+    async onChange({ documentName, document }: onChangePayload<YjsContext>): Promise<void> {
+      const etag = grants.heldArg(documentName, 'recover')
+      if (etag !== undefined && document.getMap(META_KEY).get('etag') === etag) {
+        grants.settle(documentName, { key: 'recover', arg: etag })
       }
     },
 
     /**
      * Safety net only: the holder's `onDisconnect` has normally released the
-     * grant by the time the room unloads.
+     * grants by the time the room unloads.
      */
     async afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
-      seedRegistry.forget(documentName)
+      grants.forget(documentName)
     },
 
     /**
-     * Seeding arbitration, see `seedGrant.ts`. The answer is permission, not
-     * an instruction: the client still checks its own document first, so a
-     * grant for a room that already has content costs nothing.
+     * Seeding and recovery arbitration, see `grants.ts`. The answer is
+     * permission, not an instruction: the client still checks its own
+     * document first, so a grant for a job that is already done costs nothing.
      */
     async onStateless({ connection, documentName, payload }: onStatelessPayload): Promise<void> {
-      if (payload !== SeedMessage.Request) {
+      const request = parseGrantRequest(payload)
+      if (request) {
+        grants.request(documentName, connection, request)
         return
       }
-      const granted = seedRegistry.request(documentName, connection.socketId, connection.readOnly)
-      connection.sendStateless(granted ? SeedMessage.Granted : SeedMessage.Denied)
+      const release = parseGrantRelease(payload)
+      if (release) {
+        grants.release(documentName, release, connection.socketId)
+      }
     },
 
     /**
