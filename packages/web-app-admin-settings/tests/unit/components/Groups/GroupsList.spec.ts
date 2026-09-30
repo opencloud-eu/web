@@ -82,6 +82,15 @@ describe('GroupsList', () => {
   })
 
   describe('toggle selection', () => {
+    it('does not check the header checkbox if only groups of another page are selected', () => {
+      const groups = getGroupMocks()
+      const { wrapper } = getWrapper({
+        mountType: mount,
+        groups: [groups[0]],
+        selectedGroups: [{ id: 'other-page' } as Group]
+      })
+      expect(getCheckboxes(wrapper).at(0).props('modelValue')).toBeFalsy()
+    })
     it('selects all groups via the header checkbox', () => {
       const groups = getGroupMocks()
       const { wrapper } = getWrapper({ mountType: mount, groups })

@@ -190,8 +190,9 @@ useKeyboardTableNavigation(keyActions, paginatedItems, selectedGroups, lastSelec
 useKeyboardTableMouseActions(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)
 
 const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))
+// the selection is kept across pages, so only the groups of the current page count
 const allGroupsSelected = computed(
-  () => unref(paginatedItems).length === unref(selectedGroups).length
+  () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isGroupSelected)
 )
 const highlighted = computed(() => unref(selectedGroups).map((group) => group.id))
 const footerTextTotal = computed(() =>

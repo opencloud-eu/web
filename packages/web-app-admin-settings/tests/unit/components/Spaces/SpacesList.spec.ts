@@ -251,6 +251,13 @@ describe('SpacesList', () => {
       mock<SpaceResource>({ id: '2', name: 'Some other Space' })
     ]
 
+    it('does not check the header checkbox if only spaces of another page are selected', () => {
+      const { wrapper } = getWrapper({
+        spaces: [spaces[0]],
+        selectedSpaces: [mock<SpaceResource>({ id: 'other-page' })]
+      })
+      expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeFalsy()
+    })
     it('selects all spaces via the header checkbox', () => {
       const { wrapper } = getWrapper({ spaces })
       getSelectAllCheckbox(wrapper).vm.$emit('update:modelValue', true)

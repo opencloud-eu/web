@@ -199,8 +199,9 @@ const keyActions = useKeyboardActions()
 useKeyboardTableNavigation(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
 useKeyboardTableMouseActions(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
 
+// the selection is kept across pages, so only the users of the current page count
 const allUsersSelected = computed(
-  () => unref(paginatedItems).length === unref(selectedUsers).length
+  () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isUserSelected)
 )
 const highlighted = computed(() => unref(selectedUsers).map((user) => user.id))
 const footerTextTotal = computed(() =>

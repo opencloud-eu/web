@@ -37,6 +37,14 @@ describe('UsersList', () => {
       })
       expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeFalsy()
     })
+    it('is not checked if only users of another page are selected', () => {
+      const { wrapper } = getWrapper({
+        mountType: mount,
+        users: getUserMocks(),
+        selectedUsers: [{ id: 'other-page', displayName: 'other' } as User]
+      })
+      expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeFalsy()
+    })
   })
 
   describe('sorting', () => {

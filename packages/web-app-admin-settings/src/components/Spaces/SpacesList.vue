@@ -280,9 +280,10 @@ watch(totalPages, async (pageCount) => {
   }
 })
 
-const allSpacesSelected = computed(() => {
-  return unref(paginatedItems).length === unref(selectedSpaces).length
-})
+// the selection is kept across pages, so only the spaces of the current page count
+const allSpacesSelected = computed(
+  () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isSpaceSelected)
+)
 function isSpaceSelected(space: SpaceResource) {
   return unref(selectedSpaces).some((s) => s.id === space.id)
 }
