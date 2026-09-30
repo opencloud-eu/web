@@ -1,11 +1,5 @@
 <template>
-  <app-template
-    ref="template"
-    :loading="isLoading"
-    :breadcrumbs="breadcrumbs"
-    :show-batch-actions="false"
-    :show-view-options="false"
-  >
+  <app-template :breadcrumbs="breadcrumbs" :show-batch-actions="false" :show-view-options="false">
     <template #actions>
       <div class="flex justify-end w-full my-2 items-center">
         <oc-search-bar
@@ -20,9 +14,8 @@
     </template>
 
     <template #mainContent>
-      <app-loading-spinner v-if="isLoading" />
       <no-content-message
-        v-else-if="!extensions.length"
+        v-if="!extensions.length"
         id="admin-settings-extensions-empty"
         img-src="images/illustrations/extensions.svg"
       >
@@ -41,12 +34,7 @@
 <script setup lang="ts">
 import AppTemplate from '../components/AppTemplate.vue'
 import ExtensionsList from '../components/Extensions/ExtensionsList.vue'
-import {
-  AppLoadingSpinner,
-  NoContentMessage,
-  useAppsStore,
-  useConfigStore
-} from '@opencloud-eu/web-pkg'
+import { NoContentMessage, useAppsStore, useConfigStore } from '@opencloud-eu/web-pkg'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -57,7 +45,6 @@ const configStore = useConfigStore()
 const { apps, appLoadingFailure } = storeToRefs(appsStore)
 
 const filterTerm = ref('')
-const isLoading = ref(false)
 
 interface ExtensionInfo {
   name: string

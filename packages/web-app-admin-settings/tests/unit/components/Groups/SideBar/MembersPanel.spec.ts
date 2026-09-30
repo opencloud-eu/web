@@ -6,7 +6,7 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { flushPromises, VueWrapper } from '@vue/test-utils'
-import { OcPaginationInline } from '@opencloud-eu/design-system/components'
+import { OcPaginationInline, OcSearchBar } from '@opencloud-eu/design-system/components'
 import { mock } from 'vitest-mock-extended'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import MembersRoleSection from '../../../../../src/components/Groups/SideBar/MembersRoleSection.vue'
@@ -91,8 +91,7 @@ describe('MembersPanel', () => {
   it('should filter members accordingly to the entered search term', async () => {
     const { wrapper } = getWrapper()
     await flushPromises()
-    ;(wrapper.vm as any).filterTerm = 'ein'
-    await wrapper.vm.$nextTick()
+    await setFilterTerm(wrapper, 'ein')
 
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(1)
     expect(
@@ -136,8 +135,7 @@ describe('MembersPanel', () => {
       const { wrapper } = getWrapper({ members: generateMembers(25) })
       await flushPromises()
       await goToPage(wrapper, 2)
-      ;(wrapper.vm as any).filterTerm = 'User'
-      await wrapper.vm.$nextTick()
+      await setFilterTerm(wrapper, 'User')
 
       expect(
         wrapper.findComponent<typeof MembersRoleSection>(selectors.membersRolePanelStub).props()
@@ -162,13 +160,17 @@ describe('MembersPanel', () => {
   it('should display an empty result if no matching members found', async () => {
     const { wrapper } = getWrapper()
     await flushPromises()
-    ;(wrapper.vm as any).filterTerm = 'no-match'
-    await wrapper.vm.$nextTick()
+    await setFilterTerm(wrapper, 'no-match')
 
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(0)
     expect(wrapper.find(selectors.groupMembers).exists()).toBeFalsy()
   })
 })
+
+function setFilterTerm(wrapper: VueWrapper, term: string) {
+  wrapper.findComponent(OcSearchBar).vm.$emit('update:modelValue', term)
+  return wrapper.vm.$nextTick()
+}
 
 function goToPage(wrapper: VueWrapper, page: number) {
   wrapper
