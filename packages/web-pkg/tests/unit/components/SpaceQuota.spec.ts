@@ -8,6 +8,15 @@ describe('SpaceQuota component', () => {
     expect(wrapper.find('.space-quota').exists()).toBeTruthy()
     expect(wrapper.html()).toMatchSnapshot()
   })
+  it('shows the progress bar if the quota is limited', () => {
+    const { wrapper } = getWrapper({ total: 10, used: 1, state: 'normal' })
+    expect(wrapper.find('oc-progress-stub').exists()).toBeTruthy()
+  })
+  it('hides the progress bar and shows "no restriction" if the quota is unlimited', () => {
+    const { wrapper } = getWrapper({ total: 0, used: 1, state: 'normal' })
+    expect(wrapper.find('oc-progress-stub').exists()).toBeFalsy()
+    expect(wrapper.find('p').text()).toBe('1 B used (no restriction)')
+  })
 })
 
 function getWrapper(spaceQuota: Quota) {
