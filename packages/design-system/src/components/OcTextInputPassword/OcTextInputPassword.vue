@@ -162,6 +162,13 @@ const setSelectionRange = (start: number, end: number) => {
 
 defineExpose({ focus, select, setSelectionRange })
 
+watch(
+  () => value,
+  (newValue) => {
+    password.value = newValue
+  }
+)
+
 watch(password, (value) => {
   if (!Object.keys(passwordPolicy).length) {
     return

@@ -6,7 +6,7 @@ import {
   mount
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { eventBus, useMessages } from '@opencloud-eu/web-pkg'
+import { useMessages } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 
 describe('EditPanel', () => {
@@ -17,53 +17,53 @@ describe('EditPanel', () => {
   describe('method "revertChanges"', () => {
     it('should revert changes on property editGroup', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.editGroup.displayName = 'users'
-      wrapper.vm.revertChanges()
-      expect(wrapper.vm.editGroup.displayName).toEqual('group')
+      ;(wrapper.vm as any).editGroup.displayName = 'users'
+      ;(wrapper.vm as any).revertChanges()
+      expect((wrapper.vm as any).editGroup.displayName).toEqual('group')
     })
     it('should revert changes on property formData', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.formData.displayName.valid = false
-      wrapper.vm.formData.displayName.errorMessage = 'error'
-      wrapper.vm.revertChanges()
-      expect(wrapper.vm.formData.displayName.valid).toBeTruthy()
-      expect(wrapper.vm.formData.displayName.errorMessage).toEqual('')
+      ;(wrapper.vm as any).formData.displayName.valid = false
+      ;(wrapper.vm as any).formData.displayName.errorMessage = 'error'
+      ;(wrapper.vm as any).revertChanges()
+      expect((wrapper.vm as any).formData.displayName.valid).toBeTruthy()
+      expect((wrapper.vm as any).formData.displayName.errorMessage).toEqual('')
     })
   })
 
   describe('method "validateDisplayName"', () => {
     it('should return true if displayName is valid', async () => {
       const { wrapper, mocks } = getWrapper()
-      wrapper.vm.editGroup.displayName = 'users'
+      ;(wrapper.vm as any).editGroup.displayName = 'users'
       const graphMock = mocks.$clientService.graphAuthenticated
       const getGroupStub = graphMock.groups.getGroup.mockRejectedValue(() => mockAxiosReject())
-      expect(await wrapper.vm.validateDisplayName()).toBeTruthy()
+      expect(await (wrapper.vm as any).validateDisplayName()).toBeTruthy()
       expect(getGroupStub).toHaveBeenCalled()
     })
     it('should return false if displayName is longer than 255 characters', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.editGroup.displayName = 'n'.repeat(256)
-      expect(await wrapper.vm.validateDisplayName()).toBeFalsy()
+      ;(wrapper.vm as any).editGroup.displayName = 'n'.repeat(256)
+      expect(await (wrapper.vm as any).validateDisplayName()).toBeFalsy()
     })
     it('should return false if displayName is empty', async () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.editGroup.displayName = ''
-      expect(await wrapper.vm.validateDisplayName()).toBeFalsy()
+      ;(wrapper.vm as any).editGroup.displayName = ''
+      expect(await (wrapper.vm as any).validateDisplayName()).toBeFalsy()
     })
     it('should return false if displayName is already existing', async () => {
       const { wrapper, mocks } = getWrapper()
-      wrapper.vm.editGroup.displayName = 'users'
+      ;(wrapper.vm as any).editGroup.displayName = 'users'
       const graphMock = mocks.$clientService.graphAuthenticated
       const getGroupStub = graphMock.groups.getGroup.mockResolvedValue(
         mock<Group>({ displayName: 'group' })
       )
-      expect(await wrapper.vm.validateDisplayName()).toBeFalsy()
+      expect(await (wrapper.vm as any).validateDisplayName()).toBeFalsy()
       expect(getGroupStub).toHaveBeenCalled()
     })
   })
 
   describe('method "onEditGroup"', () => {
-    it('should emit event on success', async () => {
+    it('should mark the changes as saved on success', async () => {
       const { wrapper, mocks } = getWrapper()
 
       const clientService = mocks.$clientService
@@ -77,12 +77,11 @@ describe('EditPanel', () => {
         name: 'administrators'
       }
 
-      const busStub = vi.spyOn(eventBus, 'publish')
-      const updatedGroup = await wrapper.vm.onEditGroup(editGroup)
+      const updatedGroup = await (wrapper.vm as any).onEditGroup(editGroup)
 
       expect(updatedGroup.id).toEqual('1')
       expect(updatedGroup.displayName).toEqual('administrators')
-      expect(busStub).toHaveBeenCalled()
+      expect((wrapper.vm as any).saved).toBe(true)
     })
 
     it('should show message on error', async () => {
@@ -90,7 +89,7 @@ describe('EditPanel', () => {
       const { wrapper, mocks } = getWrapper()
       const clientService = mocks.$clientService
       clientService.graphAuthenticated.groups.editGroup.mockRejectedValue(undefined)
-      await wrapper.vm.onEditGroup({})
+      await (wrapper.vm as any).onEditGroup({})
 
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
@@ -100,13 +99,13 @@ describe('EditPanel', () => {
   describe('computed method "invalidFormData"', () => {
     it('should be false if formData is invalid', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.formData.displayName.valid = true
-      expect(wrapper.vm.invalidFormData).toBeFalsy()
+      ;(wrapper.vm as any).formData.displayName.valid = true
+      expect((wrapper.vm as any).invalidFormData).toBeFalsy()
     })
     it('should be true if formData is valid', () => {
       const { wrapper } = getWrapper()
-      wrapper.vm.formData.displayName.valid = false
-      expect(wrapper.vm.invalidFormData).toBeTruthy()
+      ;(wrapper.vm as any).formData.displayName.valid = false
+      expect((wrapper.vm as any).invalidFormData).toBeTruthy()
     })
   })
 })

@@ -53,13 +53,14 @@
         <div
           class="sidebar-panel__body-content"
           :class="{
-            'flex-1 ': !panel.isRoot?.(panelContext)
+            'flex-1 flex flex-col': !panel.isRoot?.(panelContext)
           }"
         >
           <slot name="body">
             <div
               v-for="(p, index) in panel.isRoot?.(panelContext) ? rootPanels : [panel]"
               :key="`sidebar-panel-${p.name}`"
+              :class="{ 'flex-1 flex flex-col': !panel.isRoot?.(panelContext) }"
             >
               <component
                 :is="p.component"

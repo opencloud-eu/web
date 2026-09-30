@@ -7,7 +7,7 @@ exports[`GroupSelect > renders the select input 1`] = `
     </label>
     <!--v-if-->
     <vue-select-stub data-v-9521f10d="" modelvalue="[object Object]" inputid="oc-select-1" components="[object Object]" options="undefined" disabled="false" clearable="false" deselectfromdropdown="false" searchable="true" multiple="true" placeholder="" transition="vs__fade" clearsearchonselect="true" closeonselect="true" label="displayName" autocomplete="off" reduce="[Function]" selectable="[Function]" getoptionlabel="[Function]" getoptionkey="[Function]" taggable="false" pushtags="false" filterable="true" filterby="[Function]" filter="[Function]" createoption="[Function]" resetonoptionschange="false" clearsearchonblur="[Function]" nodrop="false" dir="auto" selectontab="false" selectonkeycodes="13" searchinputqueryselector="[type=search]" mapkeydown="[Function]" appendtobody="false" calculateposition="[Function]" dropdownshouldopen="[Function]" uid="1" loading="false" class="oc-select bg-transparent mb-2"></vue-select-stub>
-    <div data-v-9521f10d="" class="oc-text-input-message text-sm">
+    <div data-v-9521f10d="" class="oc-text-input-message text-sm mt-1 min-h-4.5">
       <!--v-if--> <span data-v-9521f10d="" id="oc-select-1-message" class=""></span>
     </div>
   </div>
