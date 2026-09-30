@@ -13,7 +13,7 @@
       v-if="notificationCount"
       :key="notificationCount"
       :class="{ 'animate-shake transform-[translate3d(0, 0, 0)]': animate }"
-      class="badge absolute top-[-6px] right-[-9px] p-1 text-xs leading-2 font-light text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2 shadow-sm"
+      class="badge absolute top-[-6px] right-[-9px] p-1 text-xs leading-2 font-normal text-center bg-red-600 text-white rounded-4xl box-content min-w-2 h-2 shadow-sm"
       v-text="notificationCountLabel"
     />
   </oc-button>
