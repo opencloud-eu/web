@@ -68,6 +68,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency fast-xml-parser to v5.11.2 [[#3490](https://github.com/opencloud-eu/web/pull/3490)]
+- chore(deps): update dependency filesize to v11.0.25 [[#3465](https://github.com/opencloud-eu/web/pull/3465)]
+- chore(deps): update dependency @uppy/core to v6.1.0 [[#3480](https://github.com/opencloud-eu/web/pull/3480)]
+- chore(deps): update typescript-eslint monorepo to v8.71.0 [[#3481](https://github.com/opencloud-eu/web/pull/3481)]
 - chore(deps): update pnpm to v11.28.2 [[#3482](https://github.com/opencloud-eu/web/pull/3482)]
 - chore(deps): update pnpm to v11.28.1 [[#3478](https://github.com/opencloud-eu/web/pull/3478)]
 - chore(deps): update collabora/code docker tag to v26.04.4.2.1 [[#3452](https://github.com/opencloud-eu/web/pull/3452)]
