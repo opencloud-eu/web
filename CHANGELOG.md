@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: mute verbs and lighten highlighted values in activities panel [[#3494](https://github.com/opencloud-eu/web/pull/3494)]
 - feat: explain why the new button is disabled in unsupported views [[#3443](https://github.com/opencloud-eu/web/pull/3443)]
 - feat: sort app tokens by creation and expiration date [[#3488](https://github.com/opencloud-eu/web/pull/3488)]
 - feat: rename view mode labels to grid and list [[#3486](https://github.com/opencloud-eu/web/pull/3486)]
@@ -72,6 +73,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency eslint-plugin-vue to v10.11.1 [[#3453](https://github.com/opencloud-eu/web/pull/3453)]
 - fix(deps): update dependency webdav to v5.11.0 [[#3051](https://github.com/opencloud-eu/web/pull/3051)]
 - chore(deps): update dependency fast-xml-parser to v5.11.2 [[#3490](https://github.com/opencloud-eu/web/pull/3490)]
 - chore(deps): update dependency filesize to v11.0.25 [[#3465](https://github.com/opencloud-eu/web/pull/3465)]
