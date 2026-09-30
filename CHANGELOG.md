@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: explain why the new button is disabled in unsupported views [[#3443](https://github.com/opencloud-eu/web/pull/3443)]
 - feat: sort app tokens by creation and expiration date [[#3488](https://github.com/opencloud-eu/web/pull/3488)]
 - feat: rename view mode labels to grid and list [[#3486](https://github.com/opencloud-eu/web/pull/3486)]
 - feat: make search results breadcrumb consistent with other views [[#3475](https://github.com/opencloud-eu/web/pull/3475)]
@@ -71,6 +72,7 @@
 
 ### 📦️ Dependencies
 
+- fix(deps): update dependency webdav to v5.11.0 [[#3051](https://github.com/opencloud-eu/web/pull/3051)]
 - chore(deps): update dependency fast-xml-parser to v5.11.2 [[#3490](https://github.com/opencloud-eu/web/pull/3490)]
 - chore(deps): update dependency filesize to v11.0.25 [[#3465](https://github.com/opencloud-eu/web/pull/3465)]
 - chore(deps): update dependency @uppy/core to v6.1.0 [[#3480](https://github.com/opencloud-eu/web/pull/3480)]
