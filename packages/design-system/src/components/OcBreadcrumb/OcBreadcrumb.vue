@@ -71,79 +71,14 @@
             </div>
           </oc-drop>
         </template>
-        <template v-else>
-          <component
-            :is="routerLinkComponent"
-            v-if="item.to"
-            :aria-current="getAriaCurrent(index)"
-            :to="item.to as RouteLocationRaw"
-            class="first:text-base text-xl text-role-on-surface h-5 inline-flex items-center"
-            :class="{
-              'font-bold': index === displayItems.length - 1
-            }"
-          >
-            <span class="hover:underline align-sub truncate inline-block leading-[1.2] max-w-3xs">
-              <oc-icon
-                v-if="item.icon"
-                :name="item.icon"
-                :accessible-label="item.iconAccessibleLabel || ''"
-                fill-type="line"
-                class="align-sub"
-                size-class="size-4"
-              />
-              {{ item.text }}
-            </span>
-          </component>
-          <oc-button
-            v-else-if="item.onClick"
-            :aria-current="getAriaCurrent(index)"
-            appearance="raw-inverse"
-            color-role="surface"
-            class="inline-flex items-center first:text-base text-xl h-5"
-            no-hover
-            @click="item.onClick"
-          >
-            <span
-              :class="[
-                'hover:underline',
-                'align-sub',
-                'truncate',
-                'inline-block',
-                'leading-[1.2]',
-                'max-w-3xs',
-                {
-                  'oc-breadcrumb-item-text-last font-bold': index === displayItems.length - 1
-                }
-              ]"
-            >
-              <oc-icon
-                v-if="item.icon"
-                :name="item.icon"
-                :accessible-label="item.iconAccessibleLabel || ''"
-                fill-type="line"
-                class="align-sub"
-                size-class="size-4"
-              />
-              {{ item.text }}
-            </span>
-          </oc-button>
-          <span
-            v-else
-            class="first:text-base text-xl align-sub truncate inline-block leading-[1.2] max-w-3xs"
-            :aria-current="getAriaCurrent(index)"
-            tabindex="-1"
-          >
-            <oc-icon
-              v-if="item.icon"
-              :name="item.icon"
-              :accessible-label="item.iconAccessibleLabel || ''"
-              fill-type="line"
-              class="align-sub"
-              size-class="size-4"
-            />
-            {{ item.text }}
-          </span>
-        </template>
+        <oc-breadcrumb-item
+          v-else
+          :item="item as BreadcrumbItem"
+          :current="index === displayItems.length - 1"
+          :router-link-component="routerLinkComponent"
+          class="first:text-base text-xl h-5 inline-flex items-center"
+          :text-class="`align-sub truncate inline-block leading-[1.2] max-w-3xs${index === displayItems.length - 1 ? ' oc-breadcrumb-item-text-last' : ''}`"
+        />
         <oc-icon
           v-if="index !== displayItems.length - 1"
           color="var(--oc-role-on-surface)"
@@ -151,28 +86,13 @@
           class="mx-1 align-sub"
           fill-type="line"
         />
-        <template v-if="showContextActions && index === displayItems.length - 1">
-          <oc-button
-            id="oc-breadcrumb-contextmenu-trigger"
-            v-oc-tooltip="contextMenuLabel"
-            :aria-label="contextMenuLabel"
-            appearance="raw"
-            no-hover
-            class="mx-1"
-          >
-            <oc-icon name="more-2" color="var(--oc-role-on-surface)" class="align-middle" />
-          </oc-button>
-          <oc-drop
-            drop-id="oc-breadcrumb-contextmenu"
-            toggle="#oc-breadcrumb-contextmenu-trigger"
-            mode="click"
-            close-on-click
-            :padding-size="contextMenuPadding"
-          >
-            <!-- @slot Add context actions that open in a dropdown when clicking on the "three dots" button -->
-            <slot name="contextMenu" />
-          </oc-drop>
-        </template>
+        <oc-breadcrumb-context-menu
+          v-if="showContextActions && index === displayItems.length - 1"
+          :padding-size="contextMenuPadding"
+        >
+          <!-- @slot Add context actions that open in a dropdown when clicking on the "three dots" button -->
+          <slot name="contextMenu" />
+        </oc-breadcrumb-context-menu>
       </li>
     </ol>
     <oc-button
@@ -201,25 +121,24 @@
       'justify-center': displayItems.length > 1
     }"
   >
-    <oc-icon
-      v-if="currentFolder.icon"
-      :name="currentFolder.icon"
-      :accessible-label="currentFolder.iconAccessibleLabel || ''"
-      fill-type="line"
-      class="mr-1 shrink-0"
-      size-class="size-4"
+    <oc-breadcrumb-item
+      :item="currentFolder"
+      current
+      :router-link-component="routerLinkComponent"
+      class="flex items-center min-w-0"
+      text-class="block min-w-0 truncate"
     />
-    <span class="min-w-0 truncate font-bold" aria-current="page" v-text="currentFolder.text" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, nextTick, ref, unref, watch } from 'vue'
-import { useGettext } from 'vue3-gettext'
 import { EVENT_ITEM_DROPPED_BREADCRUMB, uniqueId, BreadcrumbItem, SizeType } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcDrop from '../OcDrop/OcDrop.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
+import OcBreadcrumbItem from './OcBreadcrumbItem.vue'
+import OcBreadcrumbContextMenu from './OcBreadcrumbContextMenu.vue'
 import { RouteLocationPathRaw, RouteLocationRaw } from 'vue-router'
 
 export interface Props {
@@ -297,7 +216,6 @@ const {
 const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
-const { $gettext } = useGettext()
 const displayItems = ref<BreadcrumbItem[]>([])
 const truncationItems = ref<BreadcrumbItem[]>([])
 
@@ -395,14 +313,6 @@ const currentFolder = computed<BreadcrumbItem>(() => {
 const parentFolderTo = computed(() => {
   return items[items.length - 2]?.to
 })
-
-const contextMenuLabel = computed(() => {
-  return $gettext('Show actions for current folder')
-})
-
-const getAriaCurrent = (index: number): 'page' | null => {
-  return items.length - 1 === index ? 'page' : null
-}
 
 const dropItemStyling = (
   item: BreadcrumbItem,
