@@ -19,6 +19,21 @@ describe('CreateGroupModal', () => {
   })
 
   describe('display name validation', () => {
+    it('ignores the result of a name check that finished after the name changed', async () => {
+      const { wrapper, mocks } = getWrapper()
+      let rejectLookup: (error: Error) => void
+      mocks.$clientService.graphAuthenticated.groups.getGroup.mockReturnValueOnce(
+        new Promise((_, reject) => {
+          rejectLookup = reject
+        }) as ReturnType<typeof mocks.$clientService.graphAuthenticated.groups.getGroup>
+      )
+      getDisplayNameInput(wrapper).vm.$emit('update:modelValue', 'ab')
+      await setDisplayName(wrapper, '')
+      rejectLookup(new Error(''))
+      await flushPromises()
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('Group name cannot be empty')
+      expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
+    })
     it('shows an error when the display name is empty', async () => {
       const { wrapper } = getWrapper()
       await setDisplayName(wrapper, ' ')

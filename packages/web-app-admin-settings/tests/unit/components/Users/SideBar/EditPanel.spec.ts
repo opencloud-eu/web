@@ -92,6 +92,23 @@ describe('EditPanel', () => {
   })
 
   describe('user name validation', () => {
+    it('ignores the result of a name check that finished after the name changed', async () => {
+      const { wrapper, mocks } = getWrapper()
+      let rejectLookup: (error: Error) => void
+      mocks.$clientService.graphAuthenticated.users.getUser.mockReturnValueOnce(
+        new Promise((_, reject) => {
+          rejectLookup = reject
+        }) as ReturnType<typeof mocks.$clientService.graphAuthenticated.users.getUser>
+      )
+      getInput(wrapper, selectors.userNameInput).vm.$emit('update:modelValue', 'ab')
+      await setInput(wrapper, selectors.userNameInput, '')
+      rejectLookup(new Error(''))
+      await flushPromises()
+      expect(getInput(wrapper, selectors.userNameInput).props('errorMessage')).toBe(
+        'User name cannot be empty'
+      )
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toEqual(true)
+    })
     it.each([
       { userName: ' ', error: 'User name cannot be empty' },
       { userName: 'n'.repeat(256), error: 'User name cannot exceed 255 characters' },

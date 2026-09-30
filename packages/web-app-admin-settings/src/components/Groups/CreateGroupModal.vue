@@ -68,12 +68,19 @@ async function validateDisplayName() {
     return setDisplayNameError($gettext('Group name cannot exceed 255 characters'))
   }
 
-  try {
-    await clientService.graphAuthenticated.groups.getGroup(displayName)
+  const exists = await clientService.graphAuthenticated.groups.getGroup(displayName).then(
+    () => true,
+    () => false
+  )
+  // the name changed while the request was running, the validation of the new name decides
+  if (unref(group).displayName !== displayName) {
+    return false
+  }
+  if (exists) {
     return setDisplayNameError(
       $gettext('Group "%{groupName}" already exists', { groupName: displayName })
     )
-  } catch {}
+  }
 
   formData.value.displayName.errorMessage = ''
   formData.value.displayName.valid = true

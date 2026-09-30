@@ -117,11 +117,18 @@ async function validateUserName() {
     return setFieldError('userName', error)
   }
 
-  try {
-    // the user name is taken if fetching a user with it succeeds
-    await clientService.graphAuthenticated.users.getUser(userName)
+  // the user name is taken if fetching a user with it succeeds
+  const exists = await clientService.graphAuthenticated.users.getUser(userName).then(
+    () => true,
+    () => false
+  )
+  // the name changed while the request was running, the validation of the new name decides
+  if (unref(user).onPremisesSamAccountName !== userName) {
+    return false
+  }
+  if (exists) {
     return setFieldError('userName', $gettext('User "%{userName}" already exists', { userName }))
-  } catch {}
+  }
 
   return setFieldValid('userName')
 }

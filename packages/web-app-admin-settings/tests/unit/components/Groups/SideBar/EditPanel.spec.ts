@@ -17,6 +17,21 @@ describe('EditPanel', () => {
   })
 
   describe('display name validation', () => {
+    it('ignores the result of a name check that finished after the name changed', async () => {
+      const { wrapper, mocks } = getWrapper()
+      let rejectLookup: (error: Error) => void
+      mocks.$clientService.graphAuthenticated.groups.getGroup.mockReturnValueOnce(
+        new Promise((_, reject) => {
+          rejectLookup = reject
+        }) as ReturnType<typeof mocks.$clientService.graphAuthenticated.groups.getGroup>
+      )
+      getDisplayNameInput(wrapper).vm.$emit('update:modelValue', 'ab')
+      await setDisplayName(wrapper, '')
+      rejectLookup(new Error(''))
+      await flushPromises()
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('Group name cannot be empty')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toEqual(true)
+    })
     it('accepts a display name that is not taken yet', async () => {
       const { wrapper, mocks } = getWrapper()
       const { getGroup } = mocks.$clientService.graphAuthenticated.groups
