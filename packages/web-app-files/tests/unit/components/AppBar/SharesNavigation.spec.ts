@@ -1,5 +1,6 @@
 import SharesNavigation from '../../../../src/components/AppBar/SharesNavigation.vue'
 import { eventBus, locationSharesWithMe } from '@opencloud-eu/web-pkg'
+import { OcButton } from '@opencloud-eu/design-system/components'
 import { mock } from 'vitest-mock-extended'
 import { RouteRecordNormalized } from 'vue-router'
 import {
@@ -30,18 +31,21 @@ describe('SharesNavigation component', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
   })
-  describe('clicking a navigation item', () => {
-    it('reloads the list if the item is the active one', async () => {
+  describe('navigation items', () => {
+    it('renders the active item as a button that reloads the list on click', async () => {
       const publishSpy = vi.spyOn(eventBus, 'publish')
       const { wrapper } = getWrapper()
-      await wrapper.findAll('#shares-navigation li').at(0).trigger('click')
+      const activeItem = wrapper.findAllComponents(OcButton).at(0)
+      expect(activeItem.props('type')).toBe('button')
+      expect(activeItem.props('to')).toBeUndefined()
+      await activeItem.vm.$emit('click')
       expect(publishSpy).toHaveBeenCalledWith('app.files.list.load')
     })
-    it('does not reload the list if the item is not the active one', async () => {
-      const publishSpy = vi.spyOn(eventBus, 'publish')
+    it('renders inactive items as router links', () => {
       const { wrapper } = getWrapper()
-      await wrapper.findAll('#shares-navigation li').at(1).trigger('click')
-      expect(publishSpy).not.toHaveBeenCalled()
+      const inactiveItem = wrapper.findAllComponents(OcButton).at(1)
+      expect(inactiveItem.props('type')).toBe('router-link')
+      expect(inactiveItem.props('to')).toBe('/files/shares/with-others/')
     })
   })
 })
