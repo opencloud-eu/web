@@ -96,7 +96,8 @@ describe('EditPanel', () => {
       { userName: ' ', error: 'User name cannot be empty' },
       { userName: 'n'.repeat(256), error: 'User name cannot exceed 255 characters' },
       { userName: 'jan openCloud', error: 'User name cannot contain white spaces' },
-      { userName: '1moretry', error: 'User name cannot start with a number' }
+      { userName: '1moretry', error: 'User name cannot start with a number' },
+      { userName: 'jan(', error: 'User name cannot contain special characters' }
     ])('shows "$error" for "$userName"', async ({ userName, error }) => {
       const { wrapper } = getWrapper()
       await setInput(wrapper, selectors.userNameInput, userName)

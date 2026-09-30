@@ -127,6 +127,7 @@ import { useClientService } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { diff } from 'deep-object-diff'
 import { useUserSettingsStore } from '../../../composables/stores/userSettings'
+import { useUserNameValidation } from '../../../composables/users'
 import { useGettext } from 'vue3-gettext'
 
 const {
@@ -148,6 +149,7 @@ const userSettingsStore = useUserSettingsStore()
 const spacesStore = useSpacesStore()
 const { showErrorMessage } = useMessages()
 const { $gettext } = useGettext()
+const { getUserNameError } = useUserNameValidation()
 const authService = useAuthService()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 const editUser = ref<User>()
@@ -320,26 +322,9 @@ function changeSelectedGroupOption(option: Group[]) {
 async function validateUserName() {
   formData.value.userName.valid = false
 
-  if (unref(editUser).onPremisesSamAccountName.trim() === '') {
-    formData.value.userName.errorMessage = $gettext('User name cannot be empty')
-    return false
-  }
-
-  if (unref(editUser).onPremisesSamAccountName.includes(' ')) {
-    formData.value.userName.errorMessage = $gettext('User name cannot contain white spaces')
-    return false
-  }
-
-  if (
-    unref(editUser).onPremisesSamAccountName.length &&
-    !isNaN(parseInt(unref(editUser).onPremisesSamAccountName[0]))
-  ) {
-    formData.value.userName.errorMessage = $gettext('User name cannot start with a number')
-    return false
-  }
-
-  if (unref(editUser).onPremisesSamAccountName.length > 255) {
-    formData.value.userName.errorMessage = $gettext('User name cannot exceed 255 characters')
+  const error = getUserNameError(unref(editUser).onPremisesSamAccountName)
+  if (error) {
+    formData.value.userName.errorMessage = error
     return false
   }
 

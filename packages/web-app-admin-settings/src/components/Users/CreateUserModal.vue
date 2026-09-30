@@ -54,6 +54,7 @@ import { computed, ref, unref, watch } from 'vue'
 import * as EmailValidator from 'email-validator'
 import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../composables/stores/userSettings'
+import { useUserNameValidation } from '../../composables/users'
 
 type FormField = 'userName' | 'displayName' | 'email' | 'password'
 
@@ -68,12 +69,7 @@ const { showMessage, showErrorMessage } = useMessages()
 const clientService = useClientService()
 const { $gettext } = useGettext()
 const userSettingsStore = useUserSettingsStore()
-
-// validates usernames like the server does: no special characters except . and _,
-// no leading number, optionally followed by an email domain
-const userNamePattern = new RegExp(
-  "^[a-zA-Z_][a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]*(@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)*$"
-)
+const { getUserNameError } = useUserNameValidation()
 
 const formData = ref<Record<FormField, { errorMessage: string; valid: boolean }>>({
   userName: { errorMessage: '', valid: false },
@@ -116,24 +112,9 @@ function setFieldValid(field: FormField) {
 async function validateUserName() {
   const userName = unref(user).onPremisesSamAccountName
 
-  if (userName.trim() === '') {
-    return setFieldError('userName', $gettext('User name cannot be empty'))
-  }
-
-  if (userName.includes(' ')) {
-    return setFieldError('userName', $gettext('User name cannot contain white spaces'))
-  }
-
-  if (userName.length > 255) {
-    return setFieldError('userName', $gettext('User name cannot exceed 255 characters'))
-  }
-
-  if (!isNaN(parseInt(userName[0]))) {
-    return setFieldError('userName', $gettext('User name cannot start with a number'))
-  }
-
-  if (!userNamePattern.test(userName)) {
-    return setFieldError('userName', $gettext('User name cannot contain special characters'))
+  const error = getUserNameError(userName)
+  if (error) {
+    return setFieldError('userName', error)
   }
 
   try {
