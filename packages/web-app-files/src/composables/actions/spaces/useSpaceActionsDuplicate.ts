@@ -36,13 +36,13 @@ export const useSpaceActionsDuplicate = () => {
     const duplicatedSpaceName = resolveFileNameDuplicate(existingSpace.name, '', projectSpaces)
 
     try {
+      const existingSpaceFiles = await clientService.webdav.listFiles(existingSpace)
+
       let duplicatedSpace = await clientService.graphAuthenticated.drives.createDrive({
         name: duplicatedSpaceName,
         description: existingSpace.description,
         quota: { total: existingSpace.spaceQuota.total }
       })
-
-      const existingSpaceFiles = await clientService.webdav.listFiles(existingSpace)
 
       if (existingSpaceFiles.children.length) {
         const queue = new PQueue({
@@ -118,9 +118,14 @@ export const useSpaceActionsDuplicate = () => {
     }
   }
 
+  // the files of a space can only be copied if the user is a member of it
+  function isMemberSpace(space: SpaceResource) {
+    return spacesStore.spaces.some(({ id }) => id === space.id)
+  }
+
   const handler = async ({ resources }: SpaceActionOptions) => {
     for (const resource of resources) {
-      if (resource.disabled || !isProjectSpaceResource(resource)) {
+      if (resource.disabled || !isProjectSpaceResource(resource) || !isMemberSpace(resource)) {
         continue
       }
       await duplicateSpace(resource)
@@ -147,6 +152,10 @@ export const useSpaceActionsDuplicate = () => {
         }
 
         if (resources.some((resource) => resource.isInVault)) {
+          return false
+        }
+
+        if (!resources.some(isMemberSpace)) {
           return false
         }
 

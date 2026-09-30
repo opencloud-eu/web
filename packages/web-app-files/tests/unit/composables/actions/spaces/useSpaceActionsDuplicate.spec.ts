@@ -12,13 +12,15 @@ import { useMessages, useResourcesStore, useSpacesStore } from '@opencloud-eu/we
 
 const spaces = [
   mock<SpaceResource>({
+    id: '1',
     name: 'Moon',
     description: 'To the moon',
     type: 'project',
     spaceImageData: null,
     spaceReadmeData: null,
     spaceQuota: { total: Math.pow(10, 9) }
-  })
+  }),
+  mock<SpaceResource>({ id: '2', name: 'Sun', type: 'project' })
 ]
 describe('restore', () => {
   describe('isVisible property', () => {
@@ -80,12 +82,14 @@ describe('restore', () => {
             unref(actions)[0].isVisible({
               resources: [
                 mock<SpaceResource>({
+                  id: '1',
                   name: 'Moon',
                   disabled: false,
                   driveType: 'project',
                   isInVault: false
                 }),
                 mock<SpaceResource>({
+                  id: '2',
                   name: 'Sun',
                   disabled: false,
                   driveType: 'project',
@@ -94,6 +98,24 @@ describe('restore', () => {
               ]
             })
           ).toBe(true)
+        }
+      })
+    })
+    it('should be false when the current user is no member of the space', () => {
+      getWrapper({
+        setup: ({ actions }) => {
+          expect(
+            unref(actions)[0].isVisible({
+              resources: [
+                mock<SpaceResource>({
+                  id: 'other',
+                  disabled: false,
+                  driveType: 'project',
+                  isInVault: false
+                })
+              ]
+            })
+          ).toBe(false)
         }
       })
     })
@@ -122,7 +144,46 @@ describe('restore', () => {
       })
     })
   })
+  describe('handler', () => {
+    it('should skip spaces the current user is no member of', () => {
+      getWrapper({
+        setup: async ({ actions }, { clientService }) => {
+          clientService.graphAuthenticated.drives.createDrive.mockResolvedValue(
+            mock<SpaceResource>({ id: '3', name: 'Moon (1)' })
+          )
+          clientService.webdav.listFiles.mockResolvedValue({ children: [] } as ListFilesResult)
+          const otherSpace = mock<SpaceResource>({
+            id: 'other',
+            disabled: false,
+            driveType: 'project'
+          })
+          const memberSpace = mock<SpaceResource>({
+            id: '1',
+            name: 'Moon',
+            disabled: false,
+            driveType: 'project',
+            spaceQuota: { total: 1 }
+          })
+          await unref(actions)[0].handler({ resources: [otherSpace, memberSpace] })
+          expect(clientService.webdav.listFiles).toHaveBeenCalledTimes(1)
+          expect(clientService.webdav.listFiles).toHaveBeenCalledWith(memberSpace)
+        }
+      })
+    })
+  })
   describe('method "duplicateSpace"', () => {
+    it('should not create a space if the files of the space can not be read', () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      getWrapper({
+        setup: async ({ duplicateSpace }, { clientService }) => {
+          clientService.webdav.listFiles.mockRejectedValue(new Error())
+          await duplicateSpace(spaces[0])
+          expect(clientService.graphAuthenticated.drives.createDrive).not.toHaveBeenCalled()
+          const { showErrorMessage } = useMessages()
+          expect(showErrorMessage).toHaveBeenCalledTimes(1)
+        }
+      })
+    })
     it('should show error message on error', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       getWrapper({
