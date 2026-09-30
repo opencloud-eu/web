@@ -8,6 +8,7 @@ const actionConfirmButton = '.oc-modal-body-actions-confirm'
 const contextMenuSelector = `[data-item-id="%s"] .spaces-table-btn-action-dropdown`
 const spaceCheckboxSelector = `[data-item-id="%s"] input[type=checkbox]`
 const contextMenuActionButton = `.oc-files-actions-%s-trigger`
+const customizeMenuTrigger = '[id^="oc-files-context-actions-customize-space-menu-toggle-"]'
 const inputFieldSelector =
   '//div[contains(@class,"oc-modal-body-input")]//input[contains(@class,"oc-text-input")]'
 const modalConfirmBtn = `.oc-modal-body-actions-confirm`
@@ -55,7 +56,9 @@ const performAction = async (args: {
       contextMenuActionButtonSelector += util.format(contextMenuActionButton, action)
       break
     case 'edit-description':
-      contextMenuActionButtonSelector += util.format(contextMenuActionButton, action)
+      // the subtitle can be edited via the "Customize" submenu
+      await page.locator(customizeMenuTrigger).click()
+      contextMenuActionButtonSelector = util.format(contextMenuActionButton, action)
       break
     case 'edit-quota':
       contextMenuActionButtonSelector += util.format(contextMenuActionButton, action)
