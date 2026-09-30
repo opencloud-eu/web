@@ -78,6 +78,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) [[#3446](https://github.com/opencloud-eu/web/pull/3446)]
 - chore(deps): update dependency eslint-plugin-vue to v10.11.1 [[#3453](https://github.com/opencloud-eu/web/pull/3453)]
 - fix(deps): update dependency webdav to v5.11.0 [[#3051](https://github.com/opencloud-eu/web/pull/3051)]
 - chore(deps): update dependency fast-xml-parser to v5.11.2 [[#3490](https://github.com/opencloud-eu/web/pull/3490)]
