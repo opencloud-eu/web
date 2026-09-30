@@ -9,7 +9,39 @@ import { useUserSettingsStore } from '../../../../src/composables/stores/userSet
 describe('LoginModal', () => {
   it('renders the input including two options', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.html()).toMatchSnapshot()
+    const select = wrapper.findComponent<typeof OcSelect>('oc-select-stub')
+    expect(select.props('label')).toBe('Login')
+    expect((select.vm.$attrs.options as { label: string }[]).map(({ label }) => label)).toEqual([
+      'Allowed',
+      'Forbidden'
+    ])
+  })
+  it.each([
+    { accountEnabled: undefined, expected: true },
+    { accountEnabled: false, expected: false }
+  ])(
+    'preselects login allowed=$expected if all users have accountEnabled $accountEnabled',
+    async ({ accountEnabled, expected }) => {
+      const users = [{ id: '2', accountEnabled } as User, { id: '3', accountEnabled } as User]
+      const { wrapper, mocks } = getWrapper(users)
+      const { editUser, getUser } = mocks.$clientService.graphAuthenticated.users
+      editUser.mockResolvedValue(mock<User>({ id: '2' }))
+      getUser.mockResolvedValue(mock<User>({ id: '2' }))
+      await wrapper.vm.$nextTick()
+      expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([false])
+
+      await wrapper.vm.onConfirm()
+      expect(editUser).toHaveBeenCalledWith('2', { accountEnabled: expected })
+      expect(editUser).toHaveBeenCalledWith('3', { accountEnabled: expected })
+    }
+  )
+  it('preselects nothing if users have a different login state', async () => {
+    const { wrapper } = getWrapper([
+      { id: '2', accountEnabled: true } as User,
+      { id: '3', accountEnabled: false } as User
+    ])
+    await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
   })
   it('shows a warning when the current user is being selected', () => {
     const { wrapper } = getWrapper([mock<User>({ id: '1' })])

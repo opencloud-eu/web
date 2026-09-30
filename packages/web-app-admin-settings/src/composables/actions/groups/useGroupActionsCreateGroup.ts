@@ -3,7 +3,7 @@ import { computed, markRaw } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import CreateGroupModal from '../../../components/Groups/CreateGroupModal.vue'
 
-export const useGroupActionsCreateGroup = () => {
+export function useGroupActionsCreateGroup() {
   const { dispatchModal } = useModals()
   const { $gettext } = useGettext()
 

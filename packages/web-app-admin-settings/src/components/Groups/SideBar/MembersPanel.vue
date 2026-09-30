@@ -52,7 +52,7 @@ const group = inject<Ref<Group>>('group')
 const filterTerm = ref('')
 const members = ref<User[]>([])
 
-const filterMembers = (collection: User[], term: string) => {
+function filterMembers(collection: User[], term: string) {
   if (!(term || '').trim()) {
     return collection
   }

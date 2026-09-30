@@ -4,12 +4,12 @@ import { UserAction, useModals, useCapabilityStore, UserActionOptions } from '@o
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import AddToGroupsModal from '../../../components/Users/AddToGroupsModal.vue'
 
-export const useUserActionsAddToGroups = ({ groups }: { groups: Ref<Group[]> }) => {
+export function useUserActionsAddToGroups({ groups }: { groups: Ref<Group[]> }) {
   const { dispatchModal } = useModals()
   const { $gettext, $ngettext } = useGettext()
   const capabilityStore = useCapabilityStore()
 
-  const handler = ({ resources }: UserActionOptions) => {
+  function handler({ resources }: UserActionOptions) {
     dispatchModal({
       title: $ngettext(
         'Add user "%{user}" to groups',

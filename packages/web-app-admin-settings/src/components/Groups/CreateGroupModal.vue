@@ -1,5 +1,5 @@
 <template>
-  <form autocomplete="off" @submit.prevent="$emit('confirm')">
+  <form autocomplete="off" @submit.prevent="emit('confirm')">
     <oc-text-input
       id="create-group-input-display-name"
       v-model="group.displayName"
@@ -14,111 +14,96 @@
   </form>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { useGettext } from 'vue3-gettext'
-import { computed, defineComponent, ref, PropType, unref, watch } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { MaybeRef, Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
+import { Modal, useClientService, useMessages } from '@opencloud-eu/web-pkg'
 import { useGroupSettingsStore } from '../../composables/stores/groupSettings'
 
-export default defineComponent({
-  name: 'CreateGroupModal',
-  props: {
-    modal: { type: Object as PropType<Modal>, required: true }
-  },
-  emits: ['confirm', 'update:confirmDisabled'],
-  setup(props, { emit, expose }) {
-    const { $gettext } = useGettext()
-    const { showMessage, showErrorMessage } = useMessages()
-    const clientService = useClientService()
-    const groupSettingsStore = useGroupSettingsStore()
+defineProps<{ modal: Modal }>()
 
-    const group: MaybeRef<Group> = ref({ displayName: '' })
-    const formData = ref<Record<string, { errorMessage: string; valid: boolean }>>({
-      displayName: {
-        errorMessage: '',
-        valid: false
-      }
-    })
+const emit = defineEmits<{
+  (e: 'confirm'): void
+  (e: 'update:confirmDisabled', value: boolean): void
+}>()
 
-    const isFormInvalid = computed(() => {
-      return Object.keys(unref(formData))
-        .map((k) => !!unref(formData)[k].valid)
-        .includes(false)
-    })
+const { $gettext } = useGettext()
+const { showMessage, showErrorMessage } = useMessages()
+const clientService = useClientService()
+const groupSettingsStore = useGroupSettingsStore()
 
-    watch(
-      isFormInvalid,
-      () => {
-        emit('update:confirmDisabled', unref(isFormInvalid))
-      },
-      { immediate: true }
-    )
-
-    const onConfirm = async () => {
-      if (unref(isFormInvalid)) {
-        return Promise.reject()
-      }
-
-      try {
-        const client = clientService.graphAuthenticated
-        const createdGroup = await client.groups.createGroup(unref(group))
-        showMessage({ title: $gettext('Group was created successfully') })
-        groupSettingsStore.upsertGroup(createdGroup)
-      } catch (error) {
-        console.error(error)
-        showErrorMessage({
-          title: $gettext('Failed to create group'),
-          errors: [error]
-        })
-      }
-    }
-
-    expose({ onConfirm })
-
-    return {
-      clientService,
-      group,
-      formData,
-      isFormInvalid,
-
-      // unit tests
-      onConfirm
-    }
-  },
-  methods: {
-    async validateDisplayName() {
-      if (this.group.displayName.trim() === '') {
-        this.formData.displayName.errorMessage = this.$gettext('Group name cannot be empty')
-        this.formData.displayName.valid = false
-        return false
-      }
-
-      if (this.group.displayName.length > 255) {
-        this.formData.displayName.errorMessage = this.$gettext(
-          'Group name cannot exceed 255 characters'
-        )
-        this.formData.displayName.valid = false
-        return false
-      }
-
-      try {
-        const client = this.clientService.graphAuthenticated
-        await client.groups.getGroup(this.group.displayName)
-        this.formData.displayName.errorMessage = this.$gettext(
-          'Group "%{groupName}" already exists',
-          {
-            groupName: this.group.displayName
-          }
-        )
-        this.formData.displayName.valid = false
-        return false
-      } catch {}
-
-      this.formData.displayName.errorMessage = ''
-      this.formData.displayName.valid = true
-      return true
-    }
+const group = ref<Group>({ displayName: '' })
+const formData = ref({
+  displayName: {
+    errorMessage: '',
+    valid: false
   }
 })
+
+const isFormInvalid = computed(() => Object.values(unref(formData)).some((v) => !v.valid))
+
+watch(
+  isFormInvalid,
+  () => {
+    emit('update:confirmDisabled', unref(isFormInvalid))
+  },
+  { immediate: true }
+)
+
+function setDisplayNameError(errorMessage: string) {
+  formData.value.displayName.errorMessage = errorMessage
+  formData.value.displayName.valid = false
+  return false
+}
+
+async function validateDisplayName() {
+  const { displayName } = unref(group)
+
+  if (displayName.trim() === '') {
+    return setDisplayNameError($gettext('Group name cannot be empty'))
+  }
+
+  if (displayName.length > 255) {
+    return setDisplayNameError($gettext('Group name cannot exceed 255 characters'))
+  }
+
+  const exists = await clientService.graphAuthenticated.groups.getGroup(displayName).then(
+    () => true,
+    () => false
+  )
+  // the name changed while the request was running, the validation of the new name decides
+  if (unref(group).displayName !== displayName) {
+    return false
+  }
+  if (exists) {
+    return setDisplayNameError(
+      $gettext('Group "%{groupName}" already exists', { groupName: displayName })
+    )
+  }
+
+  formData.value.displayName.errorMessage = ''
+  formData.value.displayName.valid = true
+  return true
+}
+
+async function onConfirm() {
+  if (unref(isFormInvalid)) {
+    return Promise.reject()
+  }
+
+  try {
+    const createdGroup = await clientService.graphAuthenticated.groups.createGroup(unref(group))
+    showMessage({ title: $gettext('Group was created successfully') })
+    groupSettingsStore.upsertGroup(createdGroup)
+  } catch (error) {
+    console.error(error)
+    showErrorMessage({
+      title: $gettext('Failed to create group'),
+      errors: [error]
+    })
+  }
+}
+
+defineExpose({ onConfirm })
 </script>

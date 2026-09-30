@@ -3,13 +3,20 @@ import GroupSelect from '../../../../src/components/Users/GroupSelect.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
+import { OcSelect } from '@opencloud-eu/design-system/components'
 
 const groupMock = mock<Group>({ id: '1', groupTypes: [] })
 
 describe('GroupSelect', () => {
-  it('renders the select input', () => {
+  it('renders a multi select input with the selected groups', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.html()).toMatchSnapshot()
+    const select = wrapper.findComponent(OcSelect)
+    expect(select.props('label')).toBe('Groups')
+    expect(select.props('multiple')).toBeTruthy()
+    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    const [selectedGroup] = vueSelect.props('modelValue')
+    expect(selectedGroup.id).toBe(groupMock.id)
+    expect(selectedGroup.readonly).toBeFalsy()
   })
   it('correctly maps the read-only state', () => {
     const groupMock = mock<Group>({ id: '1', groupTypes: ['ReadOnly'] })

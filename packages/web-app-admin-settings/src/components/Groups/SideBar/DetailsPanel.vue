@@ -31,49 +31,30 @@
     </dl>
   </div>
 </template>
-<script lang="ts">
-import { defineComponent, PropType } from 'vue'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { SideBarMultipleSelection, SideBarNoSelection } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  name: 'DetailsPanel',
-  components: { SideBarMultipleSelection, SideBarNoSelection },
-  props: {
-    groups: {
-      type: Array as PropType<Group[]>,
-      required: true
-    },
-    groupsCount: {
-      type: Number,
-      default: 0
-    }
-  },
-  computed: {
-    group() {
-      return this.groups.length === 1 ? this.groups[0] : null
-    },
-    noGroups() {
-      return !this.groups.length
-    },
-    noSelectionDetails() {
-      return [
-        {
-          term: this.$gettext('Items'),
-          definition: this.$ngettext('%{count} group', '%{count} groups', this.groupsCount, {
-            count: this.groupsCount.toString()
-          })
-        }
-      ]
-    },
-    multipleGroups() {
-      return this.groups.length > 1
-    },
-    multipleGroupsSelectedText() {
-      return this.$gettext('%{count} groups selected', {
-        count: this.groups.length.toString()
-      })
-    }
+const { groups, groupsCount = 0 } = defineProps<{ groups: Group[]; groupsCount?: number }>()
+
+const { $gettext, $ngettext } = useGettext()
+
+const group = computed(() => (groups.length === 1 ? groups[0] : null))
+const noGroups = computed(() => !groups.length)
+const multipleGroups = computed(() => groups.length > 1)
+
+const noSelectionDetails = computed(() => [
+  {
+    term: $gettext('Items'),
+    definition: $ngettext('%{count} group', '%{count} groups', groupsCount, {
+      count: groupsCount.toString()
+    })
   }
-})
+])
+
+const multipleGroupsSelectedText = computed(() =>
+  $gettext('%{count} groups selected', { count: groups.length.toString() })
+)
 </script>

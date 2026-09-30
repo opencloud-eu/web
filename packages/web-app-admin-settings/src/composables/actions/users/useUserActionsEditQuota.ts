@@ -12,13 +12,13 @@ import { SpaceResource } from '@opencloud-eu/web-client'
 import { isPersonalSpaceResource } from '@opencloud-eu/web-client'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
-export const useUserActionsEditQuota = () => {
+export function useUserActionsEditQuota() {
   const { dispatchModal } = useModals()
   const capabilityStore = useCapabilityStore()
   const { $gettext } = useGettext()
   const ability = useAbility()
 
-  const getModalTitle = ({ resources }: { resources: User[] }) => {
+  function getModalTitle({ resources }: { resources: User[] }) {
     if (resources.length === 1) {
       return $gettext('Change quota for user »%{name}«', {
         name: resources[0].displayName
@@ -29,7 +29,7 @@ export const useUserActionsEditQuota = () => {
     })
   }
 
-  const getUserDrives = ({ resources }: { resources: User[] }) => {
+  function getUserDrives({ resources }: { resources: User[] }) {
     const selectedPersonalDrives: SpaceResource[] = []
     resources.forEach((user) => {
       const drive = toRaw(user.drive)
@@ -46,7 +46,7 @@ export const useUserActionsEditQuota = () => {
     return selectedPersonalDrives
   }
 
-  const handler = ({ resources }: UserActionOptions) => {
+  function handler({ resources }: UserActionOptions) {
     const usersWithoutDrive = resources.filter(
       ({ drive }) => !isPersonalSpaceResource(drive as SpaceResource)
     )

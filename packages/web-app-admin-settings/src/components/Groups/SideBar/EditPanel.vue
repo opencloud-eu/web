@@ -83,15 +83,22 @@ async function validateDisplayName() {
     return false
   }
 
-  if (group.displayName !== unref(editGroup).displayName) {
-    try {
-      const client = clientService.graphAuthenticated
-      await client.groups.getGroup(unref(editGroup).displayName)
+  const { displayName } = unref(editGroup)
+  if (group.displayName !== displayName) {
+    const exists = await clientService.graphAuthenticated.groups.getGroup(displayName).then(
+      () => true,
+      () => false
+    )
+    // the name changed while the request was running, the validation of the new name decides
+    if (unref(editGroup).displayName !== displayName) {
+      return false
+    }
+    if (exists) {
       formData.value.displayName.errorMessage = $gettext('Group "%{groupName}" already exists', {
-        groupName: unref(editGroup).displayName
+        groupName: displayName
       })
       return false
-    } catch {}
+    }
   }
 
   formData.value.displayName.errorMessage = ''

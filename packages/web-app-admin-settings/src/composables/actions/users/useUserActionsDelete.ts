@@ -14,7 +14,7 @@ import { useGettext } from 'vue3-gettext'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { useUserSettingsStore } from '../../stores/userSettings'
 
-export const useUserActionsDelete = () => {
+export function useUserActionsDelete() {
   const { showMessage, showErrorMessage } = useMessages()
   const capabilityStore = useCapabilityStore()
   const { $gettext, $ngettext } = useGettext()
@@ -32,7 +32,7 @@ export const useUserActionsDelete = () => {
     return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
   })
 
-  const deleteUsers = async (users: User[]) => {
+  async function deleteUsers(users: User[]) {
     const graphClient = clientService.graphAuthenticated
     const promises = users.map((user) => graphClient.users.deleteUser(user.id))
     const results = await Promise.allSettled(promises)
@@ -80,7 +80,7 @@ export const useUserActionsDelete = () => {
     }
   }
 
-  const handler = ({ resources }: UserActionOptions) => {
+  function handler({ resources }: UserActionOptions) {
     if (!resources.length) {
       return
     }

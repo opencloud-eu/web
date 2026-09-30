@@ -1,5 +1,6 @@
 import ExtensionsList from '../../../../src/components/Extensions/ExtensionsList.vue'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { OcTable } from '@opencloud-eu/design-system/components'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 
@@ -11,15 +12,13 @@ const extensions = [
 describe('ExtensionsList', () => {
   it('renders table data when filter matches results', () => {
     const { wrapper } = getWrapper({ filterTerm: 'fi' })
-    expect((wrapper.vm as any).filteredExtensions).toHaveLength(1)
-    expect((wrapper.vm as any).filteredExtensions[0].name).toBe('Files')
-    expect(wrapper.find('oc-table-stub').exists()).toBeTruthy()
+    expect(getTableData(wrapper).map(({ name }) => name)).toEqual(['Files'])
   })
 
   it('renders no-content message when filter has no matches', () => {
     const { wrapper } = getWrapper({ filterTerm: 'unknown' })
-    expect((wrapper.vm as any).filteredExtensions).toHaveLength(0)
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
+    expect(wrapper.findComponent(OcTable).exists()).toBeFalsy()
   })
 
   it('filters by name only', () => {
@@ -27,9 +26,8 @@ describe('ExtensionsList', () => {
       extensions: [{ name: 'Calendar', version: '1.0.0', loaded: true }],
       filterTerm: '1.0.0'
     })
-    expect((wrapper.vm as any).filteredExtensions).toHaveLength(0)
     expect(wrapper.find('no-content-message-stub').exists()).toBeTruthy()
-    expect(wrapper.find('oc-table-stub').exists()).toBeFalsy()
+    expect(wrapper.findComponent(OcTable).exists()).toBeFalsy()
   })
 
   it.each([
@@ -43,7 +41,7 @@ describe('ExtensionsList', () => {
       ],
       query: { 'sort-by': 'name', 'sort-dir': sortDir }
     })
-    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual(expected)
+    expect(getTableData(wrapper).map(({ name }) => name)).toEqual(expected)
   })
 
   it.each([
@@ -57,12 +55,12 @@ describe('ExtensionsList', () => {
       ],
       query: { 'sort-by': 'status', 'sort-dir': sortDir }
     })
-    expect((wrapper.vm as any).items.map((item: { name: string }) => item.name)).toEqual(expected)
+    expect(getTableData(wrapper).map(({ name }) => name)).toEqual(expected)
   })
 
-  it('writes the sort parameters to the route query when calling "handleSort"', () => {
+  it('writes the sort parameters to the route query when the table emits "sort"', () => {
     const { wrapper, mocks } = getWrapper()
-    ;(wrapper.vm as any).handleSort({ sortBy: 'status', sortDir: SortDir.Desc })
+    wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'status', sortDir: SortDir.Desc })
     expect(mocks.$router.replace).toHaveBeenCalledWith({
       query: expect.objectContaining({ 'sort-by': 'status', 'sort-dir': SortDir.Desc })
     })
@@ -93,7 +91,11 @@ describe('ExtensionsList', () => {
   })
 })
 
-const getWrapper = ({
+function getTableData(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  return wrapper.findComponent(OcTable).props('data') as { name: string }[]
+}
+
+function getWrapper({
   extensions: extensionData = extensions,
   filterTerm = '',
   stubs = {},
@@ -103,7 +105,7 @@ const getWrapper = ({
   filterTerm?: string
   stubs?: Record<string, any>
   query?: Record<string, string>
-} = {}) => {
+} = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
   })

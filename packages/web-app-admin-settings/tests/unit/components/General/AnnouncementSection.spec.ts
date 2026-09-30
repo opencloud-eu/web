@@ -1,6 +1,7 @@
 import AnnouncementSection from '../../../../src/components/General/AnnouncementSection.vue'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mockDeep } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 import { ClientService, useConfigStore, useMessages } from '@opencloud-eu/web-pkg'
 
 // avoid spinning up a real TipTap editor; getContent/setContent are backed by a shared value so
@@ -21,40 +22,27 @@ vi.mock('@opencloud-eu/web-pkg/editor', () => ({
 
 type StoredAnnouncement = { enabled: boolean; bannerText: string; infoText: string }
 
-// script-setup bindings accessed for testing; not part of the component's public type
-type AnnouncementVm = {
-  enabled: boolean
-  bannerText: string
-  infoText: string
-  loadTask: { last: Promise<unknown> }
-  saveTask: { perform: () => void; last: Promise<unknown> }
-  toggleTask: { last: Promise<unknown> }
-  onToggleEnabled: (value: boolean) => void
-  preview: () => void
-}
-
 describe('AnnouncementSection', () => {
   beforeEach(() => {
     editorState.content = ''
   })
 
   it('loads the stored announcement on mount and mirrors the live banner when enabled', async () => {
-    const { vm } = getWrapper({ enabled: true, bannerText: 'Hi', infoText: 'Details' })
-    await vm.loadTask.last
+    const { wrapper } = getWrapper({ enabled: true, bannerText: 'Hi', infoText: 'Details' })
+    await flushPromises()
 
-    expect(vm.enabled).toBe(true)
-    expect(vm.bannerText).toBe('Hi')
+    expect(getSwitch(wrapper).props('checked')).toBe(true)
+    expect(getBannerInput(wrapper).props('modelValue')).toBe('Hi')
     expect(useConfigStore().options.announcement).toEqual({ bannerText: 'Hi', infoText: 'Details' })
   })
 
   it('saves the text via PUT while keeping the current (disabled) state hidden', async () => {
-    const { vm, clientService } = getWrapper()
-    await vm.loadTask.last
+    const { wrapper, clientService } = getWrapper()
+    await flushPromises()
 
-    vm.bannerText = 'Maintenance'
+    await setBannerText(wrapper, 'Maintenance')
     editorState.content = 'Details'
-    vm.saveTask.perform()
-    await vm.saveTask.last
+    await clickButton(wrapper, 'Save')
 
     expect(clientService.httpAuthenticated.put).toHaveBeenCalledWith('announcement', {
       enabled: false,
@@ -67,12 +55,15 @@ describe('AnnouncementSection', () => {
   })
 
   it('removes the announcement when saving with an empty banner text', async () => {
-    const { vm, clientService } = getWrapper({ enabled: true, bannerText: 'Hi', infoText: 'x' })
-    await vm.loadTask.last
+    const { wrapper, clientService } = getWrapper({
+      enabled: true,
+      bannerText: 'Hi',
+      infoText: 'x'
+    })
+    await flushPromises()
 
-    vm.bannerText = ''
-    vm.saveTask.perform()
-    await vm.saveTask.last
+    await setBannerText(wrapper, '')
+    await clickButton(wrapper, 'Save')
 
     expect(clientService.httpAuthenticated.put).toHaveBeenCalledWith('announcement', {
       enabled: false,
@@ -83,17 +74,17 @@ describe('AnnouncementSection', () => {
   })
 
   it('enables the saved announcement via the switch without publishing unsaved edits', async () => {
-    const { vm, clientService } = getWrapper({
+    const { wrapper, clientService } = getWrapper({
       enabled: false,
       bannerText: 'Hi',
       infoText: 'Details'
     })
-    await vm.loadTask.last
+    await flushPromises()
 
     // unsaved edit in the form
-    vm.bannerText = 'Unsaved edit'
-    vm.onToggleEnabled(true)
-    await vm.toggleTask.last
+    await setBannerText(wrapper, 'Unsaved edit')
+    getSwitch(wrapper).vm.$emit('update:checked', true)
+    await flushPromises()
 
     // toggle persisted the stored text, not the unsaved edit
     expect(clientService.httpAuthenticated.put).toHaveBeenCalledWith('announcement', {
@@ -105,33 +96,37 @@ describe('AnnouncementSection', () => {
   })
 
   it('disables the switch until a banner text has been saved', async () => {
-    const { vm, wrapper } = getWrapper()
-    await vm.loadTask.last
+    const { wrapper } = getWrapper()
+    await flushPromises()
 
     // nothing saved yet -> the switch cannot be toggled
-    expect(wrapper.findComponent({ name: 'OcSwitch' }).props('disabled')).toBe(true)
+    expect(getSwitch(wrapper).props('disabled')).toBe(true)
   })
 
   it('reverts the switch when the toggle request fails', async () => {
-    const { vm, clientService } = getWrapper({ enabled: false, bannerText: 'Hi', infoText: 'x' })
-    await vm.loadTask.last
+    const { wrapper, clientService } = getWrapper({
+      enabled: false,
+      bannerText: 'Hi',
+      infoText: 'x'
+    })
+    await flushPromises()
     clientService.httpAuthenticated.put.mockRejectedValue(new Error('boom'))
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-    vm.onToggleEnabled(true)
-    await vm.toggleTask.last
+    getSwitch(wrapper).vm.$emit('update:checked', true)
+    await flushPromises()
 
-    expect(vm.enabled).toBe(false)
+    expect(getSwitch(wrapper).props('checked')).toBe(false)
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
   })
 
   it('previews in the session only without persisting', async () => {
-    const { vm, clientService } = getWrapper()
-    await vm.loadTask.last
+    const { wrapper, clientService } = getWrapper()
+    await flushPromises()
 
-    vm.bannerText = 'Maintenance'
+    await setBannerText(wrapper, 'Maintenance')
     editorState.content = 'Details'
-    vm.preview()
+    await clickButton(wrapper, 'Preview')
 
     expect(useConfigStore().options.announcement).toEqual({
       bannerText: 'Maintenance',
@@ -141,27 +136,25 @@ describe('AnnouncementSection', () => {
   })
 
   it('shows an error message when saving fails', async () => {
-    const { vm, clientService } = getWrapper()
-    await vm.loadTask.last
+    const { wrapper, clientService } = getWrapper()
+    await flushPromises()
     clientService.httpAuthenticated.put.mockRejectedValue(new Error('boom'))
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-    vm.bannerText = 'Maintenance'
-    vm.saveTask.perform()
-    await vm.saveTask.last
+    await setBannerText(wrapper, 'Maintenance')
+    await clickButton(wrapper, 'Save')
 
     expect(useMessages().showErrorMessage).toHaveBeenCalled()
   })
 
   it('shows a size-specific error when the announcement is too large', async () => {
-    const { vm, clientService } = getWrapper()
-    await vm.loadTask.last
+    const { wrapper, clientService } = getWrapper()
+    await flushPromises()
     clientService.httpAuthenticated.put.mockRejectedValue({ response: { status: 413 } })
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
 
-    vm.bannerText = 'Maintenance'
-    vm.saveTask.perform()
-    await vm.saveTask.last
+    await setBannerText(wrapper, 'Maintenance')
+    await clickButton(wrapper, 'Save')
 
     expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -170,6 +163,29 @@ describe('AnnouncementSection', () => {
     )
   })
 })
+
+type Wrapper = ReturnType<typeof getWrapper>['wrapper']
+
+function getBannerInput(wrapper: Wrapper) {
+  return wrapper.findComponent({ name: 'OcTextInput' })
+}
+
+function getSwitch(wrapper: Wrapper) {
+  return wrapper.findComponent({ name: 'OcSwitch' })
+}
+
+async function setBannerText(wrapper: Wrapper, value: string) {
+  getBannerInput(wrapper).vm.$emit('update:modelValue', value)
+  await flushPromises()
+}
+
+async function clickButton(wrapper: Wrapper, text: string) {
+  const button = wrapper
+    .findAllComponents({ name: 'OcButton' })
+    .find((b) => b.text().trim() === text)
+  button.vm.$emit('click')
+  await flushPromises()
+}
 
 function getWrapper(stored?: Partial<StoredAnnouncement>) {
   const clientService = mockDeep<ClientService>()
@@ -192,7 +208,6 @@ function getWrapper(stored?: Partial<StoredAnnouncement>) {
   return {
     mocks,
     clientService,
-    wrapper,
-    vm: wrapper.vm as unknown as AnnouncementVm
+    wrapper
   }
 }

@@ -9,12 +9,12 @@ export const useSpaceSettingsStore = defineStore('spaceSettings', () => {
   const spaces = ref<SpaceResource[]>([])
   const selectedSpaces = ref<SpaceResource[]>([])
 
-  const setSpaces = (data: SpaceResource[]) => {
+  function setSpaces(data: SpaceResource[]) {
     markSpaceVaultStatus(extensionRegistry, data)
     spaces.value = data
   }
 
-  const upsertSpace = (space: SpaceResource) => {
+  function upsertSpace(space: SpaceResource) {
     const existing = unref(spaces).find(({ id }) => id === space.id)
     if (existing) {
       Object.assign(existing, space)
@@ -22,22 +22,22 @@ export const useSpaceSettingsStore = defineStore('spaceSettings', () => {
       return
     }
     markSpaceVaultStatus(extensionRegistry, [space])
-    unref(spaces).push(space)
+    spaces.value.push(space)
   }
 
-  const removeSpaces = (values: SpaceResource[]) => {
+  function removeSpaces(values: SpaceResource[]) {
     spaces.value = unref(spaces).filter((space) => !values.find(({ id }) => id === space.id))
   }
 
-  const setSelectedSpaces = (data: SpaceResource[]) => {
+  function setSelectedSpaces(data: SpaceResource[]) {
     selectedSpaces.value = data
   }
 
-  const addSelectedSpace = (data: SpaceResource) => {
-    unref(selectedSpaces).push(data)
+  function addSelectedSpace(data: SpaceResource) {
+    selectedSpaces.value.push(data)
   }
 
-  const reset = () => {
+  function reset() {
     spaces.value = []
     selectedSpaces.value = []
   }

@@ -34,11 +34,11 @@ import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const { permissions, term = '' } = defineProps<{ permissions: Permission[]; term?: string }>()
 
-const getDisplayName = (permission: Permission) => {
+function getDisplayName(permission: Permission) {
   return permission.grantedToV2.user?.displayName || permission.grantedToV2.group?.displayName || ''
 }
 
-const getId = (permission: Permission) => {
+function getId(permission: Permission) {
   return permission.grantedToV2.user?.id || permission.grantedToV2.group?.id || permission.id
 }
 </script>

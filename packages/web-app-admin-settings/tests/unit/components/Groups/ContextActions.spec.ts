@@ -1,75 +1,76 @@
-import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { Resource } from '@opencloud-eu/web-client'
+import { computed } from 'vue'
+import { Action, ContextActionMenu, GroupActionOptions } from '@opencloud-eu/web-pkg'
+import { Group } from '@opencloud-eu/web-client/graph/generated'
 import ContextActions from '../../../../src/components/Groups/ContextActions.vue'
 import { useGroupActionsDelete, useGroupActionsEdit } from '../../../../src/composables/actions'
-import { computed, ref } from 'vue'
-import { Action } from '@opencloud-eu/web-pkg'
 
-function createMockActionComposables(module: Record<string, unknown>) {
-  const mockModule: Record<string, any> = {}
-  for (const m of Object.keys(module)) {
-    mockModule[m] = vi.fn(() => ({ actions: ref([]) }))
-  }
-  return mockModule
+vi.mock('../../../../src/composables/actions/groups/useGroupActionsDelete', () => ({
+  useGroupActionsDelete: vi.fn()
+}))
+vi.mock('../../../../src/composables/actions/groups/useGroupActionsEdit', () => ({
+  useGroupActionsEdit: vi.fn()
+}))
+
+function mockActions(...names: string[]) {
+  return computed(() => names.map((name) => mock<Action>({ name, isVisible: () => true })))
 }
 
-vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
-  const original = await importOriginal<any>()
-  return createMockActionComposables(original)
-})
-
-vi.mock(
-  'web-app-admin-settings/src/composables/actions/groups/useGroupActionsDelete',
-  async (importOriginal) => {
-    const original = await importOriginal<any>()
-    return createMockActionComposables(original)
-  }
-)
-vi.mock(
-  'web-app-admin-settings/src/composables/actions/groups/useGroupActionsEdit',
-  async (importOriginal) => {
-    const original = await importOriginal<any>()
-    return createMockActionComposables(original)
-  }
-)
-
-const selectors = {
-  actionMenuItemStub: 'action-menu-item-stub'
-}
-
-describe.skip('ContextActions', () => {
-  describe('menu sections', () => {
-    it('do not render when no action enabled', () => {
-      const { wrapper } = getWrapper()
-      expect(wrapper.findAll(selectors.actionMenuItemStub).length).toBe(0)
+describe('ContextActions', () => {
+  beforeEach(() => {
+    vi.mocked(useGroupActionsDelete).mockReturnValue({
+      actions: mockActions(),
+      deleteGroups: vi.fn()
     })
+    vi.mocked(useGroupActionsEdit).mockReturnValue({ actions: mockActions() })
+  })
 
-    it('render enabled actions', () => {
-      const enabledComposables = [useGroupActionsDelete, useGroupActionsEdit]
-      vi.mocked(useGroupActionsDelete).mockImplementation(() => ({
-        actions: computed(() => [mock<Action>({ isVisible: () => true })]),
-        deleteGroups: null
-      }))
-      vi.mocked(useGroupActionsEdit).mockImplementation(() => ({
-        actions: computed(() => [mock<Action>({ isVisible: () => true })])
-      }))
-      const { wrapper } = getWrapper()
-      expect(wrapper.findAll(selectors.actionMenuItemStub).length).toBe(enabledComposables.length)
+  it('renders no menu sections if no action is visible', () => {
+    const { wrapper } = getWrapper({ resources: [] })
+    expect(getMenuSections(wrapper)).toEqual([])
+  })
+
+  it('renders edit and delete actions in the primary section', () => {
+    vi.mocked(useGroupActionsEdit).mockReturnValue({ actions: mockActions('edit') })
+    vi.mocked(useGroupActionsDelete).mockReturnValue({
+      actions: mockActions('delete'),
+      deleteGroups: vi.fn()
     })
+    const { wrapper } = getWrapper({ resources: [] })
+
+    const sections = getMenuSections(wrapper)
+    expect(sections.map(({ name }) => name)).toEqual(['primaryActions'])
+    expect(sections[0].items.map(({ name }) => name)).toEqual(['edit', 'delete'])
+  })
+
+  it('renders the show details action in the quaternary section if a group is given', () => {
+    const { wrapper } = getWrapper({ resources: [mock<Group>()] })
+
+    const sections = getMenuSections(wrapper)
+    expect(sections.map(({ name }) => name)).toEqual(['quaternaryActions'])
+    expect(sections[0].items.map(({ name }) => name)).toEqual(['show-details'])
+  })
+
+  it('passes the action options to the menu', () => {
+    const actionOptions = { resources: [mock<Group>()] }
+    const { wrapper } = getWrapper(actionOptions)
+    expect(wrapper.findComponent(ContextActionMenu).props('actionOptions')).toEqual(actionOptions)
   })
 })
 
-function getWrapper() {
+function getMenuSections(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  return wrapper.findComponent(ContextActionMenu).props('menuSections') as {
+    name: string
+    items: Action[]
+  }[]
+}
+
+function getWrapper(actionOptions: GroupActionOptions) {
   return {
-    wrapper: mount(ContextActions, {
-      props: {
-        actionOptions: {
-          resources: [mock<Resource>()]
-        }
-      },
+    wrapper: shallowMount(ContextActions, {
+      props: { actionOptions },
       global: {
-        stubs: { 'action-menu-item': true },
         plugins: [...defaultPlugins()]
       }
     })

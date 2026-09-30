@@ -13,6 +13,7 @@
   </no-content-message>
   <oc-table
     v-else
+    class="[&_tbody_tr]:select-none"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :fields="fields"
@@ -113,14 +114,15 @@
   </oc-table>
 </template>
 
-<script lang="ts">
-import { ComponentPublicInstance, computed, defineComponent, ref, unref, watch } from 'vue'
+<script setup lang="ts">
+import { ComponentPublicInstance, computed, ref, unref, watch } from 'vue'
 import Fuse from 'fuse.js'
 import {
   ContextMenuQuickAction,
   createVirtualCursorElement,
   defaultFuseOptions,
   eventBus,
+  NoContentMessage,
   Pagination,
   useFileListHeaderPosition,
   useIsTopBarSticky,
@@ -143,245 +145,195 @@ import { useGroupSettingsStore } from '../../composables/stores/groupSettings'
 import { storeToRefs } from 'pinia'
 import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
-import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-export default defineComponent({
-  name: 'GroupsList',
-  components: { OcFilterHighlight, NoContentMessage, ContextMenuQuickAction, Pagination },
-  props: {
-    filterTerm: {
-      type: String,
-      default: ''
-    }
-  },
-  setup(props) {
-    const { $gettext } = useGettext()
-    const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
-    const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-    const router = useRouter()
-    const route = useRoute()
-    const { isSticky } = useIsTopBarSticky()
-    const { openSideBar, openSideBarPanel } = useSideBar()
+const { filterTerm = '' } = defineProps<{ filterTerm?: string }>()
 
-    const lastSelectedGroupIndex = ref(0)
-    const lastSelectedGroupId = ref<string>()
+defineSlots<{
+  contextMenu?: (props: { group: Group }) => unknown
+}>()
 
-    const groupSettingsStore = useGroupSettingsStore()
-    const { groups, selectedGroups } = storeToRefs(groupSettingsStore)
+const { $gettext } = useGettext()
+const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
+const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+const router = useRouter()
+const route = useRoute()
+const { isSticky } = useIsTopBarSticky()
+const { openSideBar, openSideBarPanel } = useSideBar()
 
-    const isGroupSelected = (group: Group) => {
-      return unref(selectedGroups).some((s) => s.id === group.id)
-    }
-    const selectGroup = (selectedGroup: Group) => {
-      lastSelectedGroupIndex.value = findIndex(unref(groups), (g) => g.id === selectedGroup.id)
-      lastSelectedGroupId.value = selectedGroup.id
-      keyActions.resetSelectionCursor()
+const lastSelectedGroupIndex = ref(0)
+const lastSelectedGroupId = ref<string>()
 
-      const isGroupSelected = unref(selectedGroups).find((group) => group.id === selectedGroup.id)
-      if (!isGroupSelected) {
-        return groupSettingsStore.addSelectedGroup(selectedGroup)
-      }
+const groupSettingsStore = useGroupSettingsStore()
+const { groups, selectedGroups } = storeToRefs(groupSettingsStore)
 
-      groupSettingsStore.setSelectedGroups(
-        unref(selectedGroups).filter((group) => group.id !== selectedGroup.id)
-      )
-    }
-
-    const unselectAllGroups = () => {
-      groupSettingsStore.setSelectedGroups([])
-    }
-
-    const selectGroups = (groups: Group[]) => {
-      groupSettingsStore.setSelectedGroups(groups)
-    }
-
-    const showDetails = (group: Group) => {
-      if (!isGroupSelected(group)) {
-        selectGroup(group)
-      }
-      openSideBar()
-    }
-    const rowClicked = (data: [Group, MouseEvent | KeyboardEvent]) => {
-      const resource = data[0]
-      const eventData = data[1]
-      const isCheckboxClicked =
-        (eventData?.target as HTMLElement).getAttribute('type') === 'checkbox'
-
-      const contextActionClicked =
-        (eventData?.target as HTMLElement)?.closest('div')?.id === 'oc-files-context-menu'
-      if (contextActionClicked) {
-        return
-      }
-
-      if (eventData?.metaKey) {
-        return eventBus.publish('app.resources.list.clicked.meta', resource)
-      }
-      if (eventData?.shiftKey) {
-        return eventBus.publish('app.resources.list.clicked.shift', {
-          resource,
-          skipTargetSelection: isCheckboxClicked
-        })
-      }
-      if (isCheckboxClicked) {
-        return
-      }
-
-      unselectAllGroups()
-      selectGroup(resource)
-    }
-    const showContextMenuOnBtnClick = (event: MouseEvent | KeyboardEvent, group: Group) => {
-      unref(contextMenuDrops)[group.id]?.show({ event })
-    }
-    const showContextMenuOnRightClick = (event: MouseEvent, group: Group) => {
-      event.preventDefault()
-      if (!isGroupSelected(group)) {
-        groupSettingsStore.setSelectedGroups([group])
-      }
-      const anchorElement = createVirtualCursorElement(event as MouseEvent)
-      unref(contextMenuDrops)[group.id]?.show({ anchorElement })
-    }
-
-    const showEditPanel = (group: Group) => {
-      if (!isGroupSelected(group)) {
-        selectGroup(group)
-      }
-      openSideBarPanel('EditPanel')
-    }
-
-    const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))
-
-    const filter = (groups: Group[], filterTerm: string) => {
-      if (!(filterTerm || '').trim()) {
-        return groups
-      }
-      const groupsSearchEngine = new Fuse(groups, { ...defaultFuseOptions, keys: ['displayName'] })
-      return groupsSearchEngine.search(filterTerm).map((r) => r.item)
-    }
-
-    const filteredGroups = computed(() => filter(unref(groups), props.filterTerm))
-
-    const sortFields: SortField[] = [{ name: 'displayName', sortable: true, sortDir: SortDir.Asc }]
-    const { sortBy, sortDir, items, handleSort } = useSort<Group>({
-      items: filteredGroups,
-      fields: sortFields
-    })
-
-    const {
-      items: paginatedItems,
-      page: currentPage,
-      total: totalPages
-    } = usePagination({ items, perPageDefault, perPageStoragePrefix })
-
-    const keyActions = useKeyboardActions()
-    useKeyboardTableNavigation(
-      keyActions,
-      paginatedItems,
-      selectedGroups,
-      lastSelectedGroupIndex,
-      lastSelectedGroupId
-    )
-    useKeyboardTableMouseActions(
-      keyActions,
-      paginatedItems,
-      selectedGroups,
-      lastSelectedGroupIndex,
-      lastSelectedGroupId
-    )
-
-    const fields = computed<FieldType[]>(() => {
-      return [
-        {
-          name: 'select',
-          title: '',
-          type: 'slot',
-          width: 'shrink',
-          headerType: 'slot'
-        },
-        {
-          name: 'avatar',
-          title: '',
-          type: 'slot',
-          width: 'shrink',
-          headerType: 'slot',
-          sortable: false
-        },
-        {
-          name: 'displayName',
-          title: $gettext('Group name'),
-          type: 'slot',
-          sortable: true
-        },
-        {
-          name: 'actions',
-          title: $gettext('Actions'),
-          sortable: false,
-          type: 'slot',
-          alignH: 'right'
-        }
-      ]
-    })
-
-    watch(currentPage, () => {
-      unselectAllGroups()
-    })
-
-    watch(
-      () => props.filterTerm,
-      async () => {
-        await unref(router).push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
-      }
-    )
-
-    return {
-      showDetails,
-      rowClicked,
-      isGroupSelected,
-      showContextMenuOnBtnClick,
-      showContextMenuOnRightClick,
-      fileListHeaderY,
-      contextMenuDrops,
-      showEditPanel,
-      readOnlyLabel,
-      sortBy,
-      sortDir,
-      items,
-      paginatedItems,
-      currentPage,
-      totalPages,
-      handleSort,
-      filter,
-      selectedGroups,
-      unselectAllGroups,
-      selectGroups,
-      selectGroup,
-      groups,
-      isSticky,
-      fields
-    }
-  },
-  computed: {
-    allGroupsSelected() {
-      return this.paginatedItems.length === this.selectedGroups.length
-    },
-    footerTextTotal() {
-      return this.$gettext('%{groupCount} groups in total', {
-        groupCount: this.groups.length.toString()
-      })
-    },
-    footerTextFilter() {
-      return this.$gettext('%{groupCount} matching groups', {
-        groupCount: this.items.length.toString()
-      })
-    },
-    highlighted() {
-      return this.selectedGroups.map((group) => group.id)
-    }
-  },
-  methods: {
-    getSelectGroupLabel(group: Group) {
-      return this.$gettext('Select %{ group }', { group: group.displayName })
-    }
+const filteredGroups = computed(() => {
+  if (!filterTerm.trim()) {
+    return unref(groups)
   }
+  const searchEngine = new Fuse(unref(groups), { ...defaultFuseOptions, keys: ['displayName'] })
+  return searchEngine.search(filterTerm).map((r) => r.item)
 })
+
+const sortFields: SortField[] = [{ name: 'displayName', sortable: true, sortDir: SortDir.Asc }]
+const { sortBy, sortDir, items, handleSort } = useSort<Group>({
+  items: filteredGroups,
+  fields: sortFields
+})
+
+const {
+  items: paginatedItems,
+  page: currentPage,
+  total: totalPages
+} = usePagination({ items, perPageDefault, perPageStoragePrefix })
+
+const keyActions = useKeyboardActions()
+useKeyboardTableNavigation(
+  keyActions,
+  paginatedItems,
+  selectedGroups,
+  lastSelectedGroupIndex,
+  lastSelectedGroupId
+)
+useKeyboardTableMouseActions(
+  keyActions,
+  paginatedItems,
+  selectedGroups,
+  lastSelectedGroupIndex,
+  lastSelectedGroupId
+)
+
+const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))
+const allGroupsSelected = computed(
+  () => unref(paginatedItems).length === unref(selectedGroups).length
+)
+const highlighted = computed(() => unref(selectedGroups).map((group) => group.id))
+const footerTextTotal = computed(() =>
+  $gettext('%{groupCount} groups in total', { groupCount: unref(groups).length.toString() })
+)
+const footerTextFilter = computed(() =>
+  $gettext('%{groupCount} matching groups', { groupCount: unref(items).length.toString() })
+)
+
+const fields = computed<FieldType[]>(() => [
+  {
+    name: 'select',
+    title: '',
+    type: 'slot',
+    width: 'shrink',
+    headerType: 'slot'
+  },
+  {
+    name: 'avatar',
+    title: '',
+    type: 'slot',
+    width: 'shrink',
+    headerType: 'slot',
+    sortable: false
+  },
+  {
+    name: 'displayName',
+    title: $gettext('Group name'),
+    type: 'slot',
+    sortable: true
+  },
+  {
+    name: 'actions',
+    title: $gettext('Actions'),
+    sortable: false,
+    type: 'slot',
+    alignH: 'right'
+  }
+])
+
+function isGroupSelected(group: Group) {
+  return unref(selectedGroups).some((s) => s.id === group.id)
+}
+
+function selectGroup(group: Group) {
+  lastSelectedGroupIndex.value = findIndex(unref(groups), (g) => g.id === group.id)
+  lastSelectedGroupId.value = group.id
+  keyActions.resetSelectionCursor()
+
+  if (!isGroupSelected(group)) {
+    return groupSettingsStore.addSelectedGroup(group)
+  }
+
+  groupSettingsStore.setSelectedGroups(unref(selectedGroups).filter((g) => g.id !== group.id))
+}
+
+function selectGroups(groups: Group[]) {
+  groupSettingsStore.setSelectedGroups(groups)
+}
+
+function unselectAllGroups() {
+  groupSettingsStore.setSelectedGroups([])
+}
+
+function getSelectGroupLabel(group: Group) {
+  return $gettext('Select %{ group }', { group: group.displayName })
+}
+
+function showDetails(group: Group) {
+  if (!isGroupSelected(group)) {
+    selectGroup(group)
+  }
+  openSideBar()
+}
+
+function showEditPanel(group: Group) {
+  if (!isGroupSelected(group)) {
+    selectGroup(group)
+  }
+  openSideBarPanel('EditPanel')
+}
+
+function rowClicked([group, event]: [Group, MouseEvent | KeyboardEvent]) {
+  const target = event?.target as HTMLElement
+  const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
+  const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
+  if (contextActionClicked) {
+    return
+  }
+
+  if (event?.metaKey) {
+    return eventBus.publish('app.resources.list.clicked.meta', group)
+  }
+  if (event?.shiftKey) {
+    return eventBus.publish('app.resources.list.clicked.shift', {
+      resource: group,
+      skipTargetSelection: isCheckboxClicked
+    })
+  }
+  if (isCheckboxClicked) {
+    return
+  }
+
+  unselectAllGroups()
+  selectGroup(group)
+}
+
+function showContextMenuOnBtnClick(event: MouseEvent | KeyboardEvent, group: Group) {
+  unref(contextMenuDrops)[group.id]?.show({ event })
+}
+
+function showContextMenuOnRightClick(event: MouseEvent, group: Group) {
+  event.preventDefault()
+  if (!isGroupSelected(group)) {
+    groupSettingsStore.setSelectedGroups([group])
+  }
+  const anchorElement = createVirtualCursorElement(event)
+  unref(contextMenuDrops)[group.id]?.show({ anchorElement })
+}
+
+watch(currentPage, () => {
+  unselectAllGroups()
+})
+
+watch(
+  () => filterTerm,
+  async () => {
+    await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+  }
+)
 </script>

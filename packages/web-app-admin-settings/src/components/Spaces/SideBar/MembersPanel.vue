@@ -37,7 +37,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, inject, ref, unref } from 'vue'
+import { computed, inject, Ref, ref, unref } from 'vue'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from './MembersRoleSection.vue'
 import Fuse from 'fuse.js'
@@ -46,10 +46,10 @@ import { Permission } from '@opencloud-eu/web-client/graph/generated'
 
 const sharesStore = useSharesStore()
 
-const resource = inject<SpaceResource>('resource')
+const resource = inject<Ref<SpaceResource>>('resource')
 const filterTerm = ref('')
 
-const filterMembers = (collection: Permission[], term: string) => {
+function filterMembers(collection: Permission[], term: string) {
   if (!(term || '').trim()) {
     return collection
   }
@@ -86,7 +86,7 @@ const availableRoles = computed<ShareRole[]>(() => {
 // group members by role before paginating, so a role section is not scattered across pages
 const sortedPermissions = computed(() => {
   const roleIds = unref(availableRoles).map(({ id }) => id)
-  const roleIndex = (permission: Permission) => {
+  function roleIndex(permission: Permission) {
     const index = roleIds.findIndex((id) => permission.roles.includes(id))
     return index === -1 ? roleIds.length : index
   }
@@ -108,7 +108,7 @@ const permissionsWithoutRole = computed(() => {
   return unref(paginatedPermissions).filter(({ roles }) => !roles.length)
 })
 
-const getPermissionsForRole = (role: ShareRole) => {
+function getPermissionsForRole(role: ShareRole) {
   return unref(paginatedPermissions).filter(({ roles }) => roles.includes(role.id))
 }
 </script>

@@ -2,7 +2,7 @@ import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
 import { GroupAction, useSideBar } from '@opencloud-eu/web-pkg'
 
-export const useGroupActionsEdit = () => {
+export function useGroupActionsEdit() {
   const { $gettext } = useGettext()
   const { openSideBarPanel } = useSideBar()
 

@@ -6,32 +6,32 @@ export const useGroupSettingsStore = defineStore('groupSettings', () => {
   const groups = ref<Group[]>([])
   const selectedGroups = ref<Group[]>([])
 
-  const setGroups = (data: Group[]) => {
+  function setGroups(data: Group[]) {
     groups.value = data
   }
 
-  const upsertGroup = (group: Group) => {
+  function upsertGroup(group: Group) {
     const existing = unref(groups).find(({ id }) => id === group.id)
     if (existing) {
       Object.assign(existing, group)
       return
     }
-    unref(groups).push(group)
+    groups.value.push(group)
   }
 
-  const removeGroups = (values: Group[]) => {
+  function removeGroups(values: Group[]) {
     groups.value = unref(groups).filter((group) => !values.find(({ id }) => id === group.id))
   }
 
-  const setSelectedGroups = (data: Group[]) => {
+  function setSelectedGroups(data: Group[]) {
     selectedGroups.value = data
   }
 
-  const addSelectedGroup = (data: Group) => {
-    unref(selectedGroups).push(data)
+  function addSelectedGroup(data: Group) {
+    selectedGroups.value.push(data)
   }
 
-  const reset = () => {
+  function reset() {
     groups.value = []
     selectedGroups.value = []
   }

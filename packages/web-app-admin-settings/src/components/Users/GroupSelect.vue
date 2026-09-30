@@ -60,7 +60,7 @@ const emit = defineEmits<{
 }>()
 
 const selectedOptions = ref<Option[]>([])
-const onUpdate = (group: Option[]) => {
+function onUpdate(group: Option[]) {
   selectedOptions.value = group
   emit('selectedOptionChange', unref(selectedOptions))
 }

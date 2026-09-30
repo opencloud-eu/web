@@ -3,12 +3,12 @@ import { useGettext } from 'vue3-gettext'
 import { UserAction, useModals, useCapabilityStore, UserActionOptions } from '@opencloud-eu/web-pkg'
 import LoginModal from '../../../components/Users/LoginModal.vue'
 
-export const useUserActionsEditLogin = () => {
+export function useUserActionsEditLogin() {
   const { dispatchModal } = useModals()
   const capabilityStore = useCapabilityStore()
   const { $gettext, $ngettext } = useGettext()
 
-  const handler = ({ resources }: UserActionOptions) => {
+  function handler({ resources }: UserActionOptions) {
     dispatchModal({
       title: $ngettext(
         'Edit login for "%{user}"',

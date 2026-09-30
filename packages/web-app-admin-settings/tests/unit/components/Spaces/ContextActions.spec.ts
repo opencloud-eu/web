@@ -1,97 +1,89 @@
-import {
-  defaultComponentMocks,
-  defaultPlugins,
-  defaultStubs,
-  mount
-} from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import ContextActions from '../../../../src/components/Spaces/ContextActions.vue'
-import { Action, useExtensionRegistry } from '@opencloud-eu/web-pkg'
+import { Action, ContextActionMenu, useFileActions } from '@opencloud-eu/web-pkg'
+import { spacesContextActionsExtensionPoint } from '../../../../src/extensionPoints'
 
-const contextActionsExtensionPointId = 'app.admin-settings.spaces.context-actions'
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useFileActions: vi.fn()
+}))
 
-vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => {
-  return {
-    ...(await importOriginal<any>()),
-    useExtensionRegistry: vi.fn()
-  }
-})
+describe('ContextActions', () => {
+  it('requests the actions of the spaces context actions extension point', () => {
+    const { getExtensionActions } = getWrapper()
+    expect(getExtensionActions).toHaveBeenCalledWith(spacesContextActionsExtensionPoint.id)
+  })
 
-describe.skip('ContextActions', () => {
-  describe('menu sections', () => {
-    it('do not render when no action enabled', () => {
-      vi.mocked(useExtensionRegistry).mockReturnValue({
-        requestExtensions: vi.fn(() => [])
-      } as any)
+  it('renders no menu sections when no action is available', () => {
+    const { wrapper } = getWrapper()
+    expect(getMenuSections(wrapper)).toEqual([])
+  })
 
-      const { wrapper } = getWrapper()
-      expect(wrapper.findAll('action-menu-item-stub').length).toBe(0)
-    })
+  it('groups the visible actions into menu sections by category', () => {
+    const actions = [
+      mock<Action>({ name: 'rename', isVisible: () => true, category: 'primary' }),
+      mock<Action>({ name: 'edit-description', isVisible: () => true, category: 'secondary' }),
+      mock<Action>({ name: 'edit-quota', isVisible: () => true, category: 'secondary' }),
+      mock<Action>({ name: 'disable', isVisible: () => true, category: 'tertiary' }),
+      mock<Action>({ name: 'restore', isVisible: () => true, category: 'tertiary' }),
+      mock<Action>({ name: 'details', isVisible: () => true, category: 'quaternary' })
+    ]
+    const { wrapper } = getWrapper({ actions })
 
-    it('render enabled actions', () => {
-      const enabledActions = [
-        mock<Action>({ isVisible: () => true, category: 'primary' }),
-        mock<Action>({ isVisible: () => true, category: 'secondary' }),
-        mock<Action>({ isVisible: () => true, category: 'secondary' }),
-        mock<Action>({ isVisible: () => true, category: 'tertiary' }),
-        mock<Action>({ isVisible: () => true, category: 'tertiary' }),
-        mock<Action>({ isVisible: () => true, category: 'quaternary' })
-      ]
+    expect(
+      getMenuSections(wrapper).map(({ name, items }) => ({
+        name,
+        items: items.map((item: Action) => item.name)
+      }))
+    ).toEqual([
+      { name: 'primaryActions', items: ['rename'] },
+      { name: 'secondaryActions', items: ['edit-description', 'edit-quota'] },
+      { name: 'tertiaryActions', items: ['disable', 'restore'] },
+      { name: 'quaternaryActions', items: ['details'] }
+    ])
+  })
 
-      vi.mocked(useExtensionRegistry).mockReturnValue({
-        requestExtensions: vi.fn((extensionPoint) => {
-          if (extensionPoint.id === contextActionsExtensionPointId) {
-            return [
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
-                action: enabledActions[0]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.context-action.edit-description',
-                action: enabledActions[1]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.edit-quota',
-                action: enabledActions[2]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.disable',
-                action: enabledActions[3]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.batch-action.restore',
-                action: enabledActions[4]
-              },
-              {
-                id: 'com.github.opencloud-eu.web.files.spaces.sidebar-action.details',
-                action: enabledActions[5]
-              }
-            ]
-          }
-          return []
-        })
-      } as any)
+  it('omits invisible actions and checks visibility against the given spaces', () => {
+    const space = mock<SpaceResource>({ id: '1' })
+    const isVisible = vi.fn(() => false)
+    const actions = [
+      mock<Action>({ name: 'rename', isVisible: () => true, category: 'primary' }),
+      mock<Action>({ name: 'disable', isVisible, category: 'tertiary' })
+    ]
+    const { wrapper } = getWrapper({ actions, items: [space] })
 
-      const { wrapper } = getWrapper()
-      expect(wrapper.findAll('action-menu-item-stub').length).toBe(enabledActions.length)
-    })
+    expect(getMenuSections(wrapper).map(({ name }) => name)).toEqual(['primaryActions'])
+    expect(isVisible).toHaveBeenCalledWith({ resources: [space], space: undefined })
   })
 })
 
-function getWrapper() {
-  const mocks = {
-    ...defaultComponentMocks()
-  }
+function getMenuSections(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  return wrapper.findComponent(ContextActionMenu).props('menuSections') as {
+    name: string
+    items: Action[]
+  }[]
+}
+
+function getWrapper({
+  actions = [],
+  items = [mock<SpaceResource>()]
+}: { actions?: Action[]; items?: SpaceResource[] } = {}) {
+  const getExtensionActions = vi.fn(() => actions)
+  vi.mocked(useFileActions).mockReturnValue(
+    mock<ReturnType<typeof useFileActions>>({ getExtensionActions })
+  )
+  const mocks = defaultComponentMocks()
+
   return {
+    getExtensionActions,
     mocks,
-    wrapper: mount(ContextActions, {
-      props: {
-        items: [mock<SpaceResource>()]
-      },
+    wrapper: shallowMount(ContextActions, {
+      props: { items },
       global: {
         mocks,
-        stubs: { ...defaultStubs, 'action-menu-item': true },
+        provide: mocks,
         plugins: [...defaultPlugins()]
       }
     })

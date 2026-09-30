@@ -6,6 +6,7 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { VueWrapper } from '@vue/test-utils'
+import { nextTick } from 'vue'
 import { mock } from 'vitest-mock-extended'
 import { ShareRole, SpaceResource } from '@opencloud-eu/web-client'
 import MembersRoleSection from '../../../../../src/components/Spaces/SideBar/MembersRoleSection.vue'
@@ -69,7 +70,7 @@ describe('MembersPanel', () => {
     const { wrapper } = getWrapper()
     const input = wrapper.find('input')
     await input.setValue('ein')
-    await wrapper.vm.$nextTick()
+    await nextTick()
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(1)
     expect(
       wrapper.findComponent<typeof MembersRoleSection>(selectors.membersRolePanelStub).props()
@@ -80,7 +81,7 @@ describe('MembersPanel', () => {
     const { wrapper } = getWrapper()
     const input = wrapper.find('input')
     await input.setValue('no-match')
-    await wrapper.vm.$nextTick()
+    await nextTick()
     expect(wrapper.findAll(selectors.membersRolePanelStub).length).toBe(0)
     expect(wrapper.text()).toContain('No members found')
   })
@@ -120,7 +121,7 @@ describe('MembersPanel', () => {
         mountType: mount
       })
       await wrapper.find('input').setValue('User')
-      await wrapper.vm.$nextTick()
+      await nextTick()
       await goToPage(wrapper, 2)
 
       // the leading `U2` is the initials of the rendered avatar
@@ -155,7 +156,7 @@ function goToPage(wrapper: VueWrapper, page: number) {
     .findComponent<typeof OcPaginationInline>(selectors.pagination)
     .vm.$emit('update:currentPage', page)
 
-  return wrapper.vm.$nextTick()
+  return nextTick()
 }
 
 function getWrapper({
