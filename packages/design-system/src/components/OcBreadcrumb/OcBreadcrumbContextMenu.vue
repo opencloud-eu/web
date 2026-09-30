@@ -11,6 +11,7 @@
   </oc-button>
   <oc-drop
     :drop-id="dropId"
+    :title="title"
     :toggle="`#${triggerId}`"
     mode="click"
     close-on-click
@@ -34,6 +35,10 @@ export interface Props {
    * @default medium
    */
   paddingSize?: SizeType | 'remove'
+  /**
+   * @docs The title of the context menu dropdown, only displayed in the bottom drawer in the mobile view.
+   */
+  title?: string
 }
 
 export interface Slots {
@@ -43,7 +48,7 @@ export interface Slots {
   default?: () => unknown
 }
 
-const { paddingSize = 'medium' } = defineProps<Props>()
+const { paddingSize = 'medium', title = '' } = defineProps<Props>()
 defineSlots<Slots>()
 
 const { $gettext } = useGettext()

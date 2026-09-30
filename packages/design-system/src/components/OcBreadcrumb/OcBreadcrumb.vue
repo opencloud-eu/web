@@ -89,6 +89,7 @@
         <oc-breadcrumb-context-menu
           v-if="showContextActions && index === displayItems.length - 1"
           :padding-size="contextMenuPadding"
+          :title="currentFolder?.text"
         >
           <!-- @slot Add context actions that open in a dropdown when clicking on the "three dots" button -->
           <slot name="contextMenu" />
@@ -128,6 +129,13 @@
       class="flex items-center min-w-0"
       text-class="block min-w-0 truncate"
     />
+    <oc-breadcrumb-context-menu
+      v-if="showContextActions"
+      :padding-size="contextMenuPadding"
+      :title="currentFolder?.text"
+    >
+      <slot name="contextMenu" />
+    </oc-breadcrumb-context-menu>
   </div>
 </template>
 
