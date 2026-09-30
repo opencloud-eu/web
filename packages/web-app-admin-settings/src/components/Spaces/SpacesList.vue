@@ -281,6 +281,16 @@ watch(currentPage, () => {
   unselectAllSpaces()
 })
 
+// e.g. after deleting all spaces of the last page: show the new last page instead of an empty one
+watch(totalPages, async (pageCount) => {
+  if (pageCount > 0 && unref(currentPage) > pageCount) {
+    await router.push({
+      ...unref(route),
+      query: { ...unref(route).query, page: String(pageCount) }
+    })
+  }
+})
+
 const allSpacesSelected = computed(() => {
   return unref(paginatedItems).length === unref(selectedSpaces).length
 })

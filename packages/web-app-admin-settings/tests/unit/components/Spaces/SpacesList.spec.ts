@@ -1,3 +1,4 @@
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 import SpacesList from '../../../../src/components/Spaces/SpacesList.vue'
 import {
   defaultComponentMocks,
@@ -121,6 +122,28 @@ describe('SpacesList', () => {
 
       expect(loadPreview).toHaveBeenCalledTimes(1)
       expect(loadPreview).toHaveBeenCalledWith(expect.objectContaining({ space: spaceMocks[1] }))
+    })
+  })
+
+  describe('pagination', () => {
+    it('shows the new last page if the current page gets empty, e.g. after deleting spaces', async () => {
+      const { mocks } = getWrapper({
+        mountType: shallowMount,
+        stubActions: false,
+        page: '2',
+        perPage: '1'
+      })
+      const spacesStore = useSpacesStore()
+      spacesStore.setAllProjectSpaces(spaceMocks.map((space) => ({ ...space })) as SpaceResource[])
+      await flushPromises()
+      expect(mocks.$router.push).not.toHaveBeenCalled()
+
+      spacesStore.removeSpace(spaceMocks[1])
+      await flushPromises()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+      )
     })
   })
 
@@ -273,16 +296,26 @@ function getWrapper({
   mountType = mount,
   spaces = [],
   selectedSpaces = [],
-  stubActions = true
+  stubActions = true,
+  page,
+  perPage
 }: {
   mountType?: typeof mount
   spaces?: SpaceResource[]
   selectedSpaces?: SpaceResource[]
   stubActions?: boolean
+  page?: string
+  perPage?: string
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
-  const mocks = defaultComponentMocks()
+  const query: Record<string, string> = {
+    ...(page && { page }),
+    ...(perPage && { 'items-per-page': perPage })
+  }
+  const mocks = defaultComponentMocks({
+    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+  })
   const loadPreview = vi.fn().mockResolvedValue('blob:preview')
   vi.mocked(useLoadPreview).mockReturnValue(
     mock<ReturnType<typeof useLoadPreview>>({ loadPreview })

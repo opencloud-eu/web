@@ -75,10 +75,8 @@ import {
   SpaceDetails,
   SpaceDetailsMultiple,
   SpaceNoSelection,
-  queryItemAsString,
   useClientService,
   useFileActions,
-  useRouteQuery,
   useSideBar,
   useSpacesStore,
   AppLoadingSpinner
@@ -104,16 +102,6 @@ const { allProjectSpaces } = storeToRefs(spacesStore)
 const spaces = computed(() => unref(allProjectSpaces) || [])
 
 const filterTerm = ref('')
-
-const currentPageQuery = useRouteQuery('page', '1')
-const currentPage = computed(() => {
-  return parseInt(queryItemAsString(unref(currentPageQuery)))
-})
-
-const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
-const itemsPerPage = computed(() => {
-  return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
-})
 
 // the members of a space (incl. its managers) are only part of the response with this expansion
 const spacePermissionsExpand = 'root($expand=permissions)'
@@ -271,7 +259,7 @@ watch(
   }
 )
 
-// e.g. after deleting spaces: drop them from the selection and avoid an empty last page
+// e.g. after deleting spaces: drop them from the selection
 watch(
   () => unref(spaces).length,
   () => {
@@ -279,11 +267,6 @@ watch(
     const selection = unref(selectedSpaces).filter(({ id }) => spaceIds.includes(id))
     if (selection.length !== unref(selectedSpaces).length) {
       spaceSettingsStore.setSelectedSpaces(selection)
-    }
-
-    const pageCount = Math.max(1, Math.ceil(spaceIds.length / unref(itemsPerPage)))
-    if (unref(currentPage) > pageCount) {
-      currentPageQuery.value = pageCount.toString()
     }
   }
 )
