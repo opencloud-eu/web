@@ -5,7 +5,14 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
+import {
+  ProcessorType,
+  queryItemAsString,
+  useLoadPreview,
+  useSideBar,
+  useSpacesStore
+} from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
@@ -80,10 +87,61 @@ const spaceMocks = [
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  queryItemAsString: vi.fn()
+  queryItemAsString: vi.fn(),
+  useLoadPreview: vi.fn()
 }))
 
 describe('SpacesList', () => {
+  describe('space images', () => {
+    it('loads the images of the visible spaces and stores them on the spaces', async () => {
+      const { loadPreview } = getWrapper({ spaces: spaceMocks })
+      await flushPromises()
+      expect(loadPreview).toHaveBeenCalledTimes(spaceMocks.length)
+      expect(loadPreview).toHaveBeenCalledWith({
+        space: spaceMocks[0],
+        resource: spaceMocks[0],
+        processor: ProcessorType.enum.fit,
+        updateStore: false
+      })
+      const { updateSpaceField } = useSpacesStore()
+      expect(updateSpaceField).toHaveBeenCalledWith({
+        id: spaceMocks[0].id,
+        field: 'thumbnail',
+        value: 'blob:preview'
+      })
+    })
+    it('loads the image of a space again when it changes', async () => {
+      // plain spaces, filled and changed via the store like in the app. the table rows aren't
+      // rendered (shallowMount), they would need the methods of real space resources
+      const spaces = ['1', '2'].map((id) => ({
+        id,
+        name: `space ${id}`,
+        driveType: 'project',
+        root: { permissions: [] as Permission[] },
+        spaceQuota: { total: 1, used: 0, remaining: 1 },
+        spaceImageData: { eTag: '1' }
+      }))
+      const { loadPreview } = getWrapper({ mountType: shallowMount, stubActions: false })
+      const spacesStore = useSpacesStore()
+      spacesStore.setAllProjectSpaces(spaces as SpaceResource[])
+      await flushPromises()
+      expect(loadPreview).toHaveBeenCalledTimes(spaces.length)
+      loadPreview.mockClear()
+
+      spacesStore.updateSpaceField({
+        id: spaces[1].id,
+        field: 'spaceImageData',
+        value: { id: 'image', eTag: '2' }
+      })
+      await flushPromises()
+
+      expect(loadPreview).toHaveBeenCalledTimes(1)
+      expect(loadPreview).toHaveBeenCalledWith(
+        expect.objectContaining({ space: expect.objectContaining({ id: spaces[1].id }) })
+      )
+    })
+  })
+
   describe('rendering', () => {
     it('renders a row per space', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
@@ -243,9 +301,14 @@ function getWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
   const mocks = defaultComponentMocks()
+  const loadPreview = vi.fn().mockResolvedValue('blob:preview')
+  vi.mocked(useLoadPreview).mockReturnValue(
+    mock<ReturnType<typeof useLoadPreview>>({ loadPreview })
+  )
 
   return {
     mocks,
+    loadPreview,
     wrapper: mountType(SpacesList, {
       global: {
         plugins: [

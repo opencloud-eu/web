@@ -56,7 +56,7 @@
     </template>
     <template #icon="{ item }">
       <div class="flex items-center justify-center">
-        <resource-icon :resource="item" size-class="size-6" class="rounded-sm" />
+        <space-image :space="item" />
       </div>
     </template>
     <template #name="{ item }">
@@ -133,7 +133,9 @@ import {
   useSideBar,
   NoContentMessage,
   createVirtualCursorElement,
-  ResourceIcon
+  ProcessorType,
+  SpaceImage,
+  useLoadPreview
 } from '@opencloud-eu/web-pkg'
 import {
   OcDrop,
@@ -185,7 +187,8 @@ const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
 const { selectedSpaces } = storeToRefs(spaceSettingsStore)
-const { allProjectSpaces } = storeToRefs(useSpacesStore())
+const spacesStore = useSpacesStore()
+const { allProjectSpaces } = storeToRefs(spacesStore)
 const spaces = computed(() => unref(allProjectSpaces) || [])
 
 const { getIndicators } = useResourceIndicators()
@@ -237,6 +240,33 @@ useKeyboardTableMouseActions(
   selectedSpaces,
   lastSelectedSpaceIndex,
   lastSelectedSpaceId
+)
+
+const { loadPreview } = useLoadPreview()
+
+async function loadSpaceImage(space: SpaceResource) {
+  // spaces aren't resources of the resources store, the preview is stored on the space instead
+  const thumbnail = await loadPreview({
+    space,
+    resource: space,
+    processor: ProcessorType.enum.fit,
+    updateStore: false
+  })
+  if (thumbnail) {
+    spacesStore.updateSpaceField({ id: space.id, field: 'thumbnail', value: thumbnail })
+  }
+}
+
+// (re)load the images of the visible spaces, also when an image is set or changed later on,
+// e.g. via the "Customize" menu or the image chosen when creating a space
+watch(
+  () => unref(paginatedItems).map((space) => `${space.id}:${space.spaceImageData?.eTag}`),
+  (imageKeys, previousImageKeys = []) => {
+    unref(paginatedItems)
+      .filter((_, index) => !previousImageKeys.includes(imageKeys[index]))
+      .forEach(loadSpaceImage)
+  },
+  { immediate: true }
 )
 
 watch(currentPage, () => {
