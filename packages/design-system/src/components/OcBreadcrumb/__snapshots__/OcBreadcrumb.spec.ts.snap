@@ -39,6 +39,7 @@ exports[`OcBreadcrumb > displays all items 1`] = `
 
 <div data-v-5914b352="" class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1 sm:hidden justify-center">
   <oc-breadcrumb-item-stub data-v-5914b352="" item="[object Object]" current="true" routerlinkcomponent="router-link" textclass="block min-w-0 truncate" class="flex items-center min-w-0"></oc-breadcrumb-item-stub>
+  <!--v-if-->
 </div>"
 `;
 
@@ -81,5 +82,6 @@ exports[`OcBreadcrumb > sets correct variation 1`] = `
 
 <div data-v-5914b352="" class="oc-breadcrumb-mobile-current flex items-center w-0 flex-1 sm:hidden justify-center">
   <oc-breadcrumb-item-stub data-v-5914b352="" item="[object Object]" current="true" routerlinkcomponent="router-link" textclass="block min-w-0 truncate" class="flex items-center min-w-0"></oc-breadcrumb-item-stub>
+  <!--v-if-->
 </div>"
 `;
