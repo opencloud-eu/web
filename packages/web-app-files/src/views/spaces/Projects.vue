@@ -440,7 +440,7 @@ const breadcrumbs = computed(() => {
     {
       text: $gettext('Spaces'),
       onClick: () => loadResourcesTask.perform(),
-      isStativNav: true
+      isStaticNav: true
     }
   ]
 })
