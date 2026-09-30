@@ -5,8 +5,7 @@ import { Quota } from '@opencloud-eu/web-client/graph/generated'
 describe('SpaceQuota component', () => {
   it('renders the space storage quota label', () => {
     const { wrapper } = getWrapper({ total: 10, used: 1, state: 'normal' })
-    expect(wrapper.find('.space-quota').exists()).toBeTruthy()
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(wrapper.find('p').text()).toBe('1 B of 10 B used (10%)')
   })
   it('shows the progress bar if the quota is limited', () => {
     const { wrapper } = getWrapper({ total: 10, used: 1, state: 'normal' })
