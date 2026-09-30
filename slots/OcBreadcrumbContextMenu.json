@@ -1,0 +1,7 @@
+[
+  {
+    "name": "default",
+    "description": "The context actions that open in a dropdown when clicking the trigger.",
+    "type": "() => unknown"
+  }
+]

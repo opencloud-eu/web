@@ -1,0 +1,9 @@
+[
+  {
+    "name": "paddingSize",
+    "required": false,
+    "description": "The padding size of the context menu dropdown.",
+    "default": "medium",
+    "type": "SizeType | 'remove'"
+  }
+]

@@ -1,0 +1,30 @@
+[
+  {
+    "name": "item",
+    "required": true,
+    "description": "The breadcrumb item to render.",
+    "default": "",
+    "type": "BreadcrumbItem"
+  },
+  {
+    "name": "current",
+    "required": false,
+    "description": "Whether the item is the current (last) breadcrumb item.",
+    "default": "false",
+    "type": "boolean"
+  },
+  {
+    "name": "routerLinkComponent",
+    "required": false,
+    "description": "The component to use for router links.",
+    "default": "router-link",
+    "type": "'router-link' | 'nuxt-link'"
+  },
+  {
+    "name": "textClass",
+    "required": false,
+    "description": "Additional classes for the element holding the item text.",
+    "default": "",
+    "type": "string"
+  }
+]
