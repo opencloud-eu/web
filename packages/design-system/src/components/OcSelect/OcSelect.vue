@@ -127,6 +127,8 @@ import {
 import { useGettext } from 'vue3-gettext'
 import 'vue-select/dist/vue-select.css'
 import { ContextualHelper } from '../../helpers'
+// @ts-ignore
+import VueSelect from 'vue-select'
 
 export interface Props {
   /**
@@ -475,13 +477,7 @@ const messageId = computed(() => {
   return `${id}-message`
 })
 </script>
-<script lang="ts">
-// @ts-ignore
-import VueSelect from 'vue-select'
 
-// importing VueSelect in script setup leads to an anomymousstub in unit tests
-export default { components: { VueSelect } }
-</script>
 <style scoped>
 @reference '@opencloud-eu/design-system/tailwind';
 

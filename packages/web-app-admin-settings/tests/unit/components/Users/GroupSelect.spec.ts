@@ -13,7 +13,7 @@ describe('GroupSelect', () => {
     const select = wrapper.findComponent(OcSelect)
     expect(select.props('label')).toBe('Groups')
     expect(select.props('multiple')).toBeTruthy()
-    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    const vueSelect = getVueSelect(wrapper)
     const [selectedGroup] = vueSelect.props('modelValue')
     expect(selectedGroup.id).toBe(groupMock.id)
     expect(selectedGroup.readonly).toBeFalsy()
@@ -21,18 +21,18 @@ describe('GroupSelect', () => {
   it('correctly maps the read-only state', () => {
     const groupMock = mock<Group>({ id: '1', groupTypes: ['ReadOnly'] })
     const { wrapper } = getWrapper(groupMock)
-    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    const vueSelect = getVueSelect(wrapper)
     expect(vueSelect.props('modelValue')[0].readonly).toBeTruthy()
   })
   it('selects nothing if the groups have not been loaded yet', () => {
     const { wrapper } = getWrapper(groupMock, { selectedGroups: undefined })
-    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    const vueSelect = getVueSelect(wrapper)
     expect(vueSelect.props('modelValue')).toEqual([])
   })
   it('emits "selectedOptionChange" on update', async () => {
     const group = mock<Group>({ id: '2', groupTypes: [] })
     const { wrapper } = getWrapper()
-    const vueSelect = wrapper.findComponent('vue-select-stub') as any
+    const vueSelect = getVueSelect(wrapper)
 
     vueSelect.vm.$emit('update:modelValue', group)
     expect(wrapper.emitted().selectedOptionChange).toBeTruthy()
@@ -40,6 +40,10 @@ describe('GroupSelect', () => {
     expect(vueSelect.props('modelValue')).toEqual(group)
   })
 })
+
+function getVueSelect(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  return wrapper.findComponent(OcSelect).findComponent({ ref: 'selectRef' }) as any
+}
 
 function getWrapper(group = groupMock, propsOverride: { selectedGroups?: Group[] } = {}) {
   return {

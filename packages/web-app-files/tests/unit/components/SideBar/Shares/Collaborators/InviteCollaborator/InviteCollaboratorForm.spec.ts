@@ -3,8 +3,8 @@ import InviteCollaboratorForm from '../../../../../../../src/components/SideBar/
 import {
   defaultComponentMocks,
   defaultPlugins,
-  RouteLocation,
-  shallowMount
+  mount,
+  RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { useMessages, useSharesStore } from '@opencloud-eu/web-pkg'
@@ -22,7 +22,10 @@ import RoleDropdown from '../../../../../../../src/components/SideBar/Shares/Col
 import { ShareRoleType } from '../../../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/InviteCollaboratorForm.vue'
 import { flushPromises } from '@vue/test-utils'
 
-vi.mock('lodash-es', () => ({ debounce: (fn: any) => fn }))
+vi.mock('lodash-es', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('lodash-es')>()),
+  debounce: (fn: any) => fn
+}))
 
 const folderMock = {
   id: '1',
@@ -431,7 +434,7 @@ describe('InviteCollaboratorForm', () => {
     ])(
       'is present depending on the available external share roles',
       ({ externalRoles, available }) => {
-        const { wrapper } = getWrapper({ externalShareRoles: externalRoles })
+        const { wrapper } = getWrapper({ externalShareRoles: externalRoles, shallow: false })
         expect(wrapper.find('.invite-form-share-role-type').exists()).toBe(available)
       }
     )
@@ -470,7 +473,8 @@ function getWrapper({
   user = mock<User>({ id: '1' }),
   openXchange = false,
   openXchangeContacts = [],
-  canInviteGuests = true
+  canInviteGuests = true,
+  shallow = true
 }: {
   storageId?: string
   resource?: Resource
@@ -483,6 +487,7 @@ function getWrapper({
   openXchange?: boolean
   openXchangeContacts?: Contact[]
   canInviteGuests?: boolean
+  shallow?: boolean
 } = {}) {
   const mocks = defaultComponentMocks({
     currentRoute: mock<RouteLocation>({ params: { storageId } })
@@ -498,7 +503,8 @@ function getWrapper({
 
   return {
     mocks,
-    wrapper: shallowMount(InviteCollaboratorForm, {
+    wrapper: mount(InviteCollaboratorForm, {
+      shallow,
       global: {
         plugins: [
           ...defaultPlugins({
@@ -528,7 +534,7 @@ function getWrapper({
           availableInternalShareRoles: internalShareRoles
         },
         mocks,
-        stubs: { OcSelect: false, VueSelect: false }
+        stubs: { OcSelect: false, RoleDropdown: true }
       }
     })
   }
