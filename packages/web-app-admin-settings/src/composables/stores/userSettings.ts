@@ -6,32 +6,32 @@ export const useUserSettingsStore = defineStore('userSettings', () => {
   const users = ref<User[]>([])
   const selectedUsers = ref<User[]>([])
 
-  const setUsers = (data: User[]) => {
+  function setUsers(data: User[]) {
     users.value = data
   }
 
-  const upsertUser = (user: User) => {
+  function upsertUser(user: User) {
     const existing = unref(users).find(({ id }) => id === user.id)
     if (existing) {
       Object.assign(existing, user)
       return
     }
-    unref(users).push(user)
+    users.value.push(user)
   }
 
-  const removeUsers = (values: User[]) => {
+  function removeUsers(values: User[]) {
     users.value = unref(users).filter((user) => !values.find(({ id }) => id === user.id))
   }
 
-  const setSelectedUsers = (data: User[]) => {
+  function setSelectedUsers(data: User[]) {
     selectedUsers.value = data
   }
 
-  const addSelectedUser = (data: User) => {
-    unref(selectedUsers).push(data)
+  function addSelectedUser(data: User) {
+    selectedUsers.value.push(data)
   }
 
-  const reset = () => {
+  function reset() {
     users.value = []
     selectedUsers.value = []
   }

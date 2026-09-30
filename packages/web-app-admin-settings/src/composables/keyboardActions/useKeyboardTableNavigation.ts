@@ -1,170 +1,101 @@
 import { useScrollTo } from '@opencloud-eu/web-pkg'
 import { Ref, unref } from 'vue'
 import { Key, KeyboardActions, Modifier, focusCheckbox } from '@opencloud-eu/web-pkg'
-import { find, findIndex } from 'lodash-es'
 import { Item } from '@opencloud-eu/web-client'
 
-export const useKeyboardTableNavigation = (
+export function useKeyboardTableNavigation(
   keyActions: KeyboardActions,
   paginatedResources: Ref<Item[]>,
   selectedRows: Ref<Item[]>,
   lastSelectedRowIndex: Ref<number>,
   lastSelectedRowId: Ref<string | null>
-) => {
+) {
   const { scrollToResource } = useScrollTo()
 
-  keyActions.bindKeyAction({ primary: Key.ArrowUp }, () => handleNavigateAction(true))
+  function getResourceIndex(id: string) {
+    return unref(paginatedResources).findIndex((resource) => resource.id === id)
+  }
 
-  keyActions.bindKeyAction({ primary: Key.ArrowDown }, () => handleNavigateAction())
-
-  keyActions.bindKeyAction({ modifier: Modifier.Shift, primary: Key.ArrowUp }, () =>
-    handleShiftUpAction()
-  )
-
-  keyActions.bindKeyAction({ modifier: Modifier.Shift, primary: Key.ArrowDown }, () =>
-    handleShiftDownAction()
-  )
-
-  keyActions.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.A }, () =>
-    handleSelectAllAction()
-  )
-
-  keyActions.bindKeyAction({ primary: Key.Space }, () => {
-    const { lastSelectedRow, lastSelectedRowIndex } = getLastSelectedRow()
-    if (lastSelectedRowIndex === -1) {
-      selectedRows.value.push(lastSelectedRow)
-    } else {
-      selectedRows.value = unref(selectedRows).filter((item) => item.id !== lastSelectedRow.id)
+  function getNextResource(previous = false) {
+    const lastIndex = getResourceIndex(unref(lastSelectedRowId))
+    if (lastIndex === -1) {
+      return undefined
     }
-  })
+    return unref(paginatedResources)[lastIndex + (previous ? -1 : 1)]
+  }
 
-  keyActions.bindKeyAction({ primary: Key.Esc }, () => {
-    keyActions.resetSelectionCursor()
-    selectedRows.value = []
-  })
+  function toggleLastSelectedRow() {
+    const lastSelectedRow = unref(paginatedResources).find(
+      (resource) => resource.id === unref(lastSelectedRowId)
+    )
+    const isSelected = unref(selectedRows).some((row) => row.id === unref(lastSelectedRowId))
 
-  const handleNavigateAction = (up = false) => {
-    const nextResource = !unref(lastSelectedRowId) ? getFirstResource() : getNextResource(up)
+    if (!isSelected) {
+      selectedRows.value.push(lastSelectedRow)
+      return
+    }
+    selectedRows.value = unref(selectedRows).filter((row) => row.id !== lastSelectedRow.id)
+  }
 
-    if (nextResource === -1) {
+  function moveCursorTo(resource: Item) {
+    focusCheckbox(resource.id)
+    lastSelectedRowIndex.value = getResourceIndex(resource.id)
+    lastSelectedRowId.value = String(resource.id)
+    scrollToResource(resource.id, { topbarElement: 'admin-settings-app-bar' })
+  }
+
+  function handleNavigateAction(up = false) {
+    const nextResource = unref(lastSelectedRowId)
+      ? getNextResource(up)
+      : unref(paginatedResources)[0]
+    if (!nextResource) {
       return
     }
 
-    const nextResourceIndex = findIndex(
-      paginatedResources.value,
-      (resource) => resource.id === nextResource.id
-    )
-
-    focusCheckbox(nextResource.id)
     keyActions.resetSelectionCursor()
     selectedRows.value = [nextResource]
-    lastSelectedRowIndex.value = nextResourceIndex
-    lastSelectedRowId.value = String(nextResource.id)
-
-    scrollToResource(nextResource.id, { topbarElement: 'admin-settings-app-bar' })
+    moveCursorTo(nextResource)
   }
 
-  const handleShiftUpAction = () => {
-    const nextResource = getNextResource(true)
-    if (nextResource === -1) {
+  function handleShiftAction(up: boolean) {
+    const nextResource = getNextResource(up)
+    if (!nextResource) {
       return
     }
 
-    const nextResourceIndex = findIndex(
-      paginatedResources.value,
-      (resource) => resource.id === nextResource.id
-    )
-
-    if (unref(keyActions.selectionCursor) > 0) {
-      const { lastSelectedRow, lastSelectedRowIndex } = getLastSelectedRow()
-
-      lastSelectedRowIndex === -1
-        ? selectedRows.value.push(lastSelectedRow)
-        : (selectedRows.value = unref(selectedRows).filter(
-            (item) => item.id !== lastSelectedRow.id
-          ))
+    // moving back towards the selection start deselects, moving away extends the selection
+    const isShrinkingSelection = up
+      ? unref(keyActions.selectionCursor) > 0
+      : unref(keyActions.selectionCursor) < 0
+    if (isShrinkingSelection) {
+      toggleLastSelectedRow()
     } else {
       selectedRows.value.push(nextResource)
     }
 
-    focusCheckbox(nextResource.id)
-    lastSelectedRowIndex.value = nextResourceIndex
-    lastSelectedRowId.value = String(nextResource.id)
-    keyActions.selectionCursor.value = unref(keyActions.selectionCursor) - 1
-    scrollToResource(nextResource.id, { topbarElement: 'admin-settings-app-bar' })
-  }
-  const handleShiftDownAction = () => {
-    const nextResource = getNextResource(false)
-    if (nextResource === -1) {
-      return
-    }
-
-    const nextResourceIndex = findIndex(
-      paginatedResources.value,
-      (resource) => resource.id === nextResource.id
-    )
-
-    if (unref(keyActions.selectionCursor) < 0) {
-      const lastSelectedRow = find(
-        paginatedResources.value,
-        (resource) => resource.id === lastSelectedRowId.value
-      )
-      const lastSelectedRowIndex = findIndex(
-        unref(selectedRows),
-        (resource) => resource.id === lastSelectedRowId.value
-      )
-
-      if (lastSelectedRowIndex === -1) {
-        selectedRows.value.push(lastSelectedRow)
-      } else {
-        selectedRows.value = unref(selectedRows).filter((item) => item.id !== lastSelectedRow.id)
-      }
-    } else {
-      selectedRows.value.push(nextResource)
-    }
-
-    focusCheckbox(nextResource.id)
-    lastSelectedRowIndex.value = nextResourceIndex
-    lastSelectedRowId.value = String(nextResource.id)
-    keyActions.selectionCursor.value = unref(keyActions.selectionCursor) + 1
-    scrollToResource(nextResource.id, { topbarElement: 'admin-settings-app-bar' })
+    moveCursorTo(nextResource)
+    keyActions.selectionCursor.value = unref(keyActions.selectionCursor) + (up ? -1 : 1)
   }
 
-  const handleSelectAllAction = () => {
+  function handleSelectAllAction() {
     keyActions.resetSelectionCursor()
     selectedRows.value = [...unref(paginatedResources)]
   }
 
-  const getNextResource = (previous = false) => {
-    const latestSelectedResourceIndex = paginatedResources.value.findIndex(
-      (resource) => resource.id === lastSelectedRowId.value
-    )
-    if (latestSelectedResourceIndex === -1) {
-      return -1
-    }
-    const nextResourceIndex = latestSelectedResourceIndex + (previous ? -1 : 1)
-    if (nextResourceIndex < 0 || nextResourceIndex >= paginatedResources.value.length) {
-      return -1
-    }
-    return paginatedResources.value[nextResourceIndex]
+  function handleEscAction() {
+    keyActions.resetSelectionCursor()
+    selectedRows.value = []
   }
 
-  const getFirstResource = () => {
-    return paginatedResources.value.length ? paginatedResources.value[0] : -1
-  }
-
-  const getLastSelectedRow = () => {
-    const lastSelectedRow = find(
-      paginatedResources.value,
-      (resource) => resource.id === lastSelectedRowId.value
-    )
-    const lastSelectedRowIndex = findIndex(
-      unref(selectedRows),
-      (resource) => resource.id === lastSelectedRowId.value
-    )
-    return {
-      lastSelectedRow,
-      lastSelectedRowIndex
-    }
-  }
+  keyActions.bindKeyAction({ primary: Key.ArrowUp }, () => handleNavigateAction(true))
+  keyActions.bindKeyAction({ primary: Key.ArrowDown }, () => handleNavigateAction())
+  keyActions.bindKeyAction({ modifier: Modifier.Shift, primary: Key.ArrowUp }, () =>
+    handleShiftAction(true)
+  )
+  keyActions.bindKeyAction({ modifier: Modifier.Shift, primary: Key.ArrowDown }, () =>
+    handleShiftAction(false)
+  )
+  keyActions.bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.A }, handleSelectAllAction)
+  keyActions.bindKeyAction({ primary: Key.Space }, toggleLastSelectedRow)
+  keyActions.bindKeyAction({ primary: Key.Esc }, handleEscAction)
 }

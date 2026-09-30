@@ -4,12 +4,12 @@ import { UserAction, useModals, useCapabilityStore, UserActionOptions } from '@o
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import RemoveFromGroupsModal from '../../../components/Users/RemoveFromGroupsModal.vue'
 
-export const useUserActionsRemoveFromGroups = ({ groups }: { groups: Ref<Group[]> }) => {
+export function useUserActionsRemoveFromGroups({ groups }: { groups: Ref<Group[]> }) {
   const { dispatchModal } = useModals()
   const { $gettext, $ngettext } = useGettext()
   const capabilityStore = useCapabilityStore()
 
-  const handler = ({ resources }: UserActionOptions) => {
+  function handler({ resources }: UserActionOptions) {
     dispatchModal({
       title: $ngettext(
         'Remove user "%{user}" from groups',

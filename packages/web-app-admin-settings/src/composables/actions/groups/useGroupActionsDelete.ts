@@ -13,7 +13,7 @@ import { useGettext } from 'vue3-gettext'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { useGroupSettingsStore } from '../../stores'
 
-export const useGroupActionsDelete = () => {
+export function useGroupActionsDelete() {
   const { showMessage, showErrorMessage } = useMessages()
   const { $gettext, $ngettext } = useGettext()
   const clientService = useClientService()
@@ -30,7 +30,7 @@ export const useGroupActionsDelete = () => {
     return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
   })
 
-  const deleteGroups = async (groups: Group[]) => {
+  async function deleteGroups(groups: Group[]) {
     const graphClient = clientService.graphAuthenticated
     const promises = groups.map((group) => graphClient.groups.deleteGroup(group.id))
     const results = await Promise.allSettled(promises)
@@ -78,7 +78,7 @@ export const useGroupActionsDelete = () => {
     }
   }
 
-  const handler = ({ resources }: GroupActionOptions) => {
+  function handler({ resources }: GroupActionOptions) {
     if (!resources.length) {
       return
     }

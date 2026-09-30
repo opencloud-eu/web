@@ -4,7 +4,7 @@ import { useGettext } from 'vue3-gettext'
 import { UserAction } from '@opencloud-eu/web-pkg'
 import CreateUserModal from '../../../components/Users/CreateUserModal.vue'
 
-export const useUserActionsCreateUser = () => {
+export function useUserActionsCreateUser() {
   const { dispatchModal } = useModals()
   const capabilityStore = useCapabilityStore()
   const { $gettext } = useGettext()
