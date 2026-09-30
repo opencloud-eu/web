@@ -2,8 +2,8 @@
 
 exports[`ContextMenuQuickAction component > renders component 1`] = `
 "<button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default quick-action-button ml-1 p-1" id="context-menu-trigger-1" data-test-context-menu-resource-name="function(...args) {
-		DIRTY_MOCK_STATES.add(namedObject[name]);
-		if (prototypeMock) DIRTY_MOCK_STATES.add(prototypeMock);
+		addDirtyMock(namedObject[name]);
+		if (prototypeMock) addDirtyMock(prototypeMock);
 		registerCalls(args, state, prototypeState);
 		registerInvocationOrder(invocationCallCounter++, state, prototypeState);
 		const result = {
