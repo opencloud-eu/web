@@ -311,10 +311,6 @@ function showContextMenuOnRightClick(event: MouseEvent, group: Group) {
   unref(contextMenuDrops)[group.id]?.show({ anchorElement })
 }
 
-watch(currentPage, () => {
-  unselectAllGroups()
-})
-
 watch(
   () => filterTerm,
   async () => {

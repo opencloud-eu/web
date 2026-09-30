@@ -250,8 +250,8 @@ async function loadSpaceImage(space: SpaceResource) {
   }
 }
 
-// like the spaces list of the files app: load the images of the spaces showing up on the current
-// page, and again after an image was set (e.g. via the "Customize" menu)
+// load the images of the spaces showing up on the current page, and again after an image was set
+// (e.g. via the "Customize" menu)
 watch(
   () => unref(paginatedItems).map(({ id }) => id),
   (spaceIds, previousSpaceIds = []) => {
@@ -268,10 +268,6 @@ const uploadedImageToken = eventBus.subscribe(
 )
 onBeforeUnmount(() => {
   eventBus.unsubscribe('app.files.spaces.uploaded-image', uploadedImageToken)
-})
-
-watch(currentPage, () => {
-  unselectAllSpaces()
 })
 
 // e.g. after deleting all spaces of the last page: show the new last page instead of an empty one

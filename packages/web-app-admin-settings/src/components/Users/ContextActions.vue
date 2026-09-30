@@ -41,19 +41,19 @@ const menuSections = computed(() => {
 
   if (unref(menuItemsPrimaryActions).length) {
     sections.push({
-      name: 'primaryActions',
+      name: 'primary',
       items: unref(menuItemsPrimaryActions)
     })
   }
   if (unref(menuItemsSecondaryActions).length) {
     sections.push({
-      name: 'secondaryActions',
+      name: 'secondary',
       items: unref(menuItemsSecondaryActions)
     })
   }
   if (unref(menuItemsQuaternaryActions).length) {
     sections.push({
-      name: 'quaternaryActions',
+      name: 'quaternary',
       items: unref(menuItemsQuaternaryActions)
     })
   }

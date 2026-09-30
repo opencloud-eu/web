@@ -7,7 +7,9 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import {
+  Action,
   AppLoadingSpinner,
+  BatchActions,
   SideBar,
   SideBarPanel,
   useIsTopBarSticky,
@@ -80,6 +82,43 @@ describe('AppTemplate', () => {
       expect(wrapper.find(stubSelectors.sideBar).exists()).toBeFalsy()
     })
   })
+  describe('app bar', () => {
+    it('renders the last breadcrumb as page title for screen readers', () => {
+      const { wrapper } = getWrapper({
+        props: { breadcrumbs: [{ text: 'Administration Settings' }, { text: 'Spaces' }] }
+      })
+      expect(wrapper.find('h1.sr-only').text()).toBe('Spaces')
+    })
+    it('sorts the batch actions by category', () => {
+      const action = (name: string, category?: Action['category']) =>
+        mock<Action>({ name, category, isVisible: () => true })
+      const { wrapper } = getWrapper({
+        props: {
+          showBatchActions: true,
+          batchActionItems: [{ id: '1' }] as Item[],
+          batchActions: [action('delete', 'tertiary'), action('rename', 'primary'), action('other')]
+        }
+      })
+      expect(
+        wrapper
+          .findComponent(BatchActions)
+          .props('actions')
+          .map(({ name }) => name)
+      ).toEqual(['rename', 'delete', 'other'])
+    })
+    it('shows a spinner instead of the batch actions while they are loading', () => {
+      const { wrapper } = getWrapper({
+        props: {
+          showBatchActions: true,
+          batchActionItems: [{ id: '1' }] as Item[],
+          batchActionsLoading: true
+        }
+      })
+      expect(wrapper.findComponent(BatchActions).exists()).toBeFalsy()
+      expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
+    })
+  })
+
   describe('selection announcement', () => {
     it('announces that no items are selected', () => {
       const { wrapper } = getWrapper()

@@ -182,19 +182,26 @@ describe('Spaces view', () => {
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeFalsy()
     })
     it('display when one space selected', async () => {
-      const spaces = [{ id: '1', name: 'Some Space' }] as SpaceResource[]
+      const spaces = [{ id: '1', name: 'Some Space', graphPermissions: [] }] as SpaceResource[]
       const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces })
       await flushPromises()
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
     })
     it('display when more than one space selected', async () => {
       const spaces = [
-        { id: '1', name: 'Some Space' },
-        { id: '1', name: 'Some other Space' }
+        { id: '1', name: 'Some Space', graphPermissions: [] },
+        { id: '1', name: 'Some other Space', graphPermissions: [] }
       ] as SpaceResource[]
       const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces })
       await flushPromises()
       expect(wrapper.find(selectors.batchActionsStub).exists()).toBeTruthy()
+    })
+    it('show a spinner while the permissions of the selected spaces are loading', async () => {
+      const spaces = [{ id: '1', name: 'Some Space' }] as SpaceResource[]
+      const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces })
+      await flushPromises()
+      expect(wrapper.find(selectors.batchActionsStub).exists()).toBeFalsy()
+      expect(wrapper.findComponent(AppTemplate).props('batchActionsLoading')).toBeTruthy()
     })
   })
 })

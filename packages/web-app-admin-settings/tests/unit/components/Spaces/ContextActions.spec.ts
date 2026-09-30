@@ -38,10 +38,10 @@ describe('ContextActions', () => {
         items: items.map((item: Action) => item.name)
       }))
     ).toEqual([
-      { name: 'primaryActions', items: ['rename'] },
-      { name: 'secondaryActions', items: ['edit-description', 'edit-quota'] },
-      { name: 'tertiaryActions', items: ['disable', 'restore'] },
-      { name: 'quaternaryActions', items: ['details'] }
+      { name: 'primary', items: ['rename'] },
+      { name: 'secondary', items: ['edit-description', 'edit-quota'] },
+      { name: 'tertiary', items: ['disable', 'restore'] },
+      { name: 'quaternary', items: ['details'] }
     ])
   })
 
@@ -54,7 +54,7 @@ describe('ContextActions', () => {
     ]
     const { wrapper } = getWrapper({ actions, items: [space] })
 
-    expect(getMenuSections(wrapper).map(({ name }) => name)).toEqual(['primaryActions'])
+    expect(getMenuSections(wrapper).map(({ name }) => name)).toEqual(['primary'])
     expect(isVisible).toHaveBeenCalledWith({ resources: [space], space: undefined })
   })
 })

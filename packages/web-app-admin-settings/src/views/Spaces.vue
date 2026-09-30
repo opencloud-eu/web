@@ -6,6 +6,7 @@
     :side-bar-panel-context="sideBarPanelContext"
     :show-batch-actions="!!selectedSpaces.length"
     :batch-actions="batchActions"
+    :batch-actions-loading="batchActionsLoading"
     :batch-action-items="selectedSpaces"
     :show-view-options="true"
     @clear-selection="spaceSettingsStore.setSelectedSpaces([])"
@@ -134,12 +135,15 @@ const extensionBatchActions = computed(() =>
 )
 
 const batchActions = computed((): SpaceAction[] => {
-  return unref(extensionBatchActions).filter(
-    (item) =>
-      item.category === 'tertiary' &&
-      item.isVisible({ resources: unref(selectedSpaces), space: undefined })
+  return unref(extensionBatchActions).filter((item) =>
+    item.isVisible({ resources: unref(selectedSpaces), space: undefined })
   )
 })
+
+// the actions depend on the permissions of the user in the selected spaces
+const batchActionsLoading = computed(() =>
+  unref(selectedSpaces).some(({ graphPermissions }) => graphPermissions === undefined)
+)
 
 const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, SpaceResource>>(() => {
   return {

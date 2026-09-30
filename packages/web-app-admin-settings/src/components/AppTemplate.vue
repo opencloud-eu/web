@@ -14,6 +14,7 @@
               class="py-1 px-4 top-0 z-20 rounded-t-xl bg-role-surface"
               :class="{ sticky: isSticky }"
             >
+              <h1 class="sr-only" v-text="pageTitle" />
               <oc-hidden-announcer :announcement="selectedItemsAnnouncement" level="polite" />
               <div class="flex justify-between items-center h-12">
                 <oc-breadcrumb
@@ -46,11 +47,14 @@
                   :class="{ 'bg-role-surface-container': batchActionItems.length }"
                 >
                   <BatchActions
-                    v-if="showBatchActions"
-                    :actions="batchActions"
+                    v-if="!batchActionsLoading"
+                    :actions="sortedBatchActions"
                     :action-options="{ resources: batchActionItems }"
                     :limited-screen-space="limitedScreenSpace"
                   />
+                  <div v-else>
+                    <oc-spinner :aria-label="$gettext('Loading actions')" />
+                  </div>
                   <div v-if="batchActionItems.length" class="flex items-center gap-1">
                     <oc-button
                       v-oc-tooltip="$gettext('Clear selection')"
@@ -121,7 +125,8 @@ const {
   showViewOptions = false,
   showBatchActions = false,
   batchActionItems = [],
-  batchActions = []
+  batchActions = [],
+  batchActionsLoading = false
 } = defineProps<{
   breadcrumbs: BreadcrumbItem[]
   sideBarAvailablePanels?: SideBarPanel<unknown, unknown, unknown>[]
@@ -132,6 +137,7 @@ const {
   showBatchActions?: boolean
   batchActionItems?: Item[]
   batchActions?: Action[]
+  batchActionsLoading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -153,7 +159,24 @@ const { isSticky } = useIsTopBarSticky()
 const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
 const limitedScreenSpace = ref(false)
 
-// like the app bar of the files app, so screen reader users know about the batch actions
+// the last breadcrumb is the title of the admin settings page
+const pageTitle = computed(() => breadcrumbs.at(-1)?.text || '')
+
+const categoryOrder: Record<string, number> = {
+  primary: 0,
+  secondary: 1,
+  tertiary: 2,
+  quaternary: 3
+}
+const sortedBatchActions = computed(() =>
+  [...batchActions].sort(
+    (a, b) =>
+      (categoryOrder[a.category ?? 'tertiary'] ?? 2) -
+      (categoryOrder[b.category ?? 'tertiary'] ?? 2)
+  )
+)
+
+// so screen reader users know about the batch actions
 const selectedItemsAnnouncement = computed(() => {
   if (batchActionItems.length === 0) {
     return $gettext('No items selected.')
