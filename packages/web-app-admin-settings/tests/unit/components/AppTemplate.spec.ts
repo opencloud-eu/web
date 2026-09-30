@@ -7,7 +7,6 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import {
-  Action,
   AppLoadingSpinner,
   BatchActions,
   SideBar,
@@ -88,23 +87,6 @@ describe('AppTemplate', () => {
         props: { breadcrumbs: [{ text: 'Administration Settings' }, { text: 'Spaces' }] }
       })
       expect(wrapper.find('h1.sr-only').text()).toBe('Spaces')
-    })
-    it('sorts the batch actions by category', () => {
-      const action = (name: string, category?: Action['category']) =>
-        mock<Action>({ name, category, isVisible: () => true })
-      const { wrapper } = getWrapper({
-        props: {
-          showBatchActions: true,
-          batchActionItems: [{ id: '1' }] as Item[],
-          batchActions: [action('delete', 'tertiary'), action('rename', 'primary'), action('other')]
-        }
-      })
-      expect(
-        wrapper
-          .findComponent(BatchActions)
-          .props('actions')
-          .map(({ name }) => name)
-      ).toEqual(['rename', 'delete', 'other'])
     })
     it('shows a spinner instead of the batch actions while they are loading', () => {
       const { wrapper } = getWrapper({

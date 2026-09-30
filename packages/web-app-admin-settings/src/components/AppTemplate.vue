@@ -48,7 +48,7 @@
                 >
                   <BatchActions
                     v-if="!batchActionsLoading"
-                    :actions="sortedBatchActions"
+                    :actions="batchActions"
                     :action-options="{ resources: batchActionItems }"
                     :limited-screen-space="limitedScreenSpace"
                   />
@@ -161,20 +161,6 @@ const limitedScreenSpace = ref(false)
 
 // the last breadcrumb is the title of the admin settings page
 const pageTitle = computed(() => breadcrumbs.at(-1)?.text || '')
-
-const categoryOrder: Record<string, number> = {
-  primary: 0,
-  secondary: 1,
-  tertiary: 2,
-  quaternary: 3
-}
-const sortedBatchActions = computed(() =>
-  [...batchActions].sort(
-    (a, b) =>
-      (categoryOrder[a.category ?? 'tertiary'] ?? 2) -
-      (categoryOrder[b.category ?? 'tertiary'] ?? 2)
-  )
-)
 
 // so screen reader users know about the batch actions
 const selectedItemsAnnouncement = computed(() => {
