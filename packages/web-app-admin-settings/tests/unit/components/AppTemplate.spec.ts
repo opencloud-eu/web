@@ -106,17 +106,6 @@ describe('AppTemplate', () => {
           .map(({ name }) => name)
       ).toEqual(['rename', 'delete', 'other'])
     })
-    it('shows a spinner instead of the batch actions while they are loading', () => {
-      const { wrapper } = getWrapper({
-        props: {
-          showBatchActions: true,
-          batchActionItems: [{ id: '1' }] as Item[],
-          batchActionsLoading: true
-        }
-      })
-      expect(wrapper.findComponent(BatchActions).exists()).toBeFalsy()
-      expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
-    })
   })
 
   describe('selection announcement', () => {

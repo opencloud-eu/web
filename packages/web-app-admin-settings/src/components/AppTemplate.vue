@@ -47,14 +47,10 @@
                   :class="{ 'bg-role-surface-container': batchActionItems.length }"
                 >
                   <BatchActions
-                    v-if="!batchActionsLoading"
                     :actions="sortedBatchActions"
                     :action-options="{ resources: batchActionItems }"
                     :limited-screen-space="limitedScreenSpace"
                   />
-                  <div v-else>
-                    <oc-spinner :aria-label="$gettext('Loading actions')" />
-                  </div>
                   <div v-if="batchActionItems.length" class="flex items-center gap-1">
                     <oc-button
                       v-oc-tooltip="$gettext('Clear selection')"
@@ -125,8 +121,7 @@ const {
   showViewOptions = false,
   showBatchActions = false,
   batchActionItems = [],
-  batchActions = [],
-  batchActionsLoading = false
+  batchActions = []
 } = defineProps<{
   breadcrumbs: BreadcrumbItem[]
   sideBarAvailablePanels?: SideBarPanel<unknown, unknown, unknown>[]
@@ -137,7 +132,6 @@ const {
   showBatchActions?: boolean
   batchActionItems?: Item[]
   batchActions?: Action[]
-  batchActionsLoading?: boolean
 }>()
 
 const emit = defineEmits<{
