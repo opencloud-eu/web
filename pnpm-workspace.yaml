@@ -78,5 +78,7 @@ overrides:
   'epubjs>@xmldom/xmldom': ^0.9.12
   # lowlight pins its own highlight.js, which would install a second copy
   highlight.js: ^11.12.0
-  '@module-federation/dts-plugin>axios': ^1.6.0
+  # module federation overwrites because we're using an older version of it
   axios: 1.20.0
+  adm-zip: ^0.6.1
+  ws: ^8.21.2
