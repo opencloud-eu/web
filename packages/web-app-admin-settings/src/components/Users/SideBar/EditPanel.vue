@@ -1,12 +1,11 @@
 <template>
-  <div id="user-edit-panel">
-    <UserInfoBox :user="user" />
-    <form id="user-edit-form" class="bg-role-surface-container p-4 rounded-sm" autocomplete="off">
-      <div>
+  <div id="user-edit-panel" class="flex-1 flex flex-col p-2">
+    <form id="user-edit-form" class="flex-1 flex flex-col" autocomplete="off">
+      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1">
+        <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Profile')" />
         <oc-text-input
           id="userName-input"
           v-model="editUser.onPremisesSamAccountName"
-          class="mb-2"
           :label="$gettext('User name')"
           :error-message="formData.userName.errorMessage"
           :fix-message-line="true"
@@ -17,7 +16,6 @@
         <oc-text-input
           id="displayName-input"
           v-model="editUser.displayName"
-          class="mb-2"
           :label="$gettext('First and last name')"
           :error-message="formData.displayName.errorMessage"
           :fix-message-line="true"
@@ -28,7 +26,6 @@
         <oc-text-input
           id="email-input"
           v-model="editUser.mail"
-          class="mb-2"
           :label="$gettext('Email')"
           :error-message="formData.email.errorMessage"
           :error-message-debounced-time="1000"
@@ -38,10 +35,12 @@
           required-mark
           @update:model-value="validateEmail"
         />
+      </section>
+      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1 mt-4">
+        <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Access')" />
         <oc-text-input
           id="password-input"
           :model-value="editUser.passwordProfile?.password"
-          class="mb-2"
           :label="$gettext('Password')"
           type="password"
           :fix-message-line="true"
@@ -49,40 +48,31 @@
           :read-only="isInputFieldReadOnly('user.passwordProfile')"
           @update:model-value="onUpdatePassword"
         />
-        <div class="mb-2">
-          <oc-select
-            id="role-input"
-            :model-value="selectedRoleValue"
-            :label="$gettext('Role')"
-            option-label="displayName"
-            :options="translatedRoleOptions"
-            :clearable="false"
-            :read-only="isInputFieldReadOnly('user.appRoleAssignments')"
-            required-mark
-            @update:model-value="onUpdateRole"
-          />
-          <div class="oc-text-input-message"></div>
-        </div>
-        <div v-if="!graphUsersEditLoginAllowedDisabled" class="mb-2">
-          <oc-select
-            id="login-input"
-            :disabled="isLoginInputDisabled"
-            :model-value="selectedLoginValue"
-            :label="$gettext('Login')"
-            :options="loginOptions"
-            :clearable="false"
-            :read-only="isInputFieldReadOnly('user.accountEnabled')"
-            required-mark
-            @update:model-value="onUpdateLogin"
-          />
-
-          <div class="oc-text-input-message"></div>
-        </div>
+        <oc-switch
+          v-if="!graphUsersEditLoginAllowedDisabled"
+          id="login-input"
+          class="flex justify-between mb-5"
+          :checked="loginAllowed"
+          :label="$gettext('Login allowed')"
+          :disabled="isLoginInputDisabled || isInputFieldReadOnly('user.accountEnabled')"
+          @update:checked="onUpdateLogin"
+        />
+        <oc-select
+          id="role-input"
+          :model-value="selectedRoleValue"
+          :label="$gettext('Role')"
+          option-label="displayName"
+          :options="translatedRoleOptions"
+          :clearable="false"
+          :fix-message-line="true"
+          :read-only="isInputFieldReadOnly('user.appRoleAssignments')"
+          required-mark
+          @update:model-value="onUpdateRole"
+        />
         <quota-select
           id="quota-select-form"
           :key="'quota-select-' + user.id"
           :disabled="isQuotaInputDisabled"
-          class="mb-2"
           :label="$gettext('Personal quota')"
           :total-quota="editUser.drive?.quota?.total || 0"
           :max-quota="maxQuota"
@@ -96,17 +86,20 @@
           required-mark
           @selected-option-change="changeSelectedQuotaOption"
         />
+      </section>
+      <section class="bg-role-surface-container rounded-xl px-4 pt-3 pb-1 mt-4">
+        <h3 class="font-semibold text-sm mt-0 mb-1" v-text="$gettext('Membership')" />
         <group-select
-          class="mb-2"
           :read-only="isInputFieldReadOnly('user.memberOf')"
           :selected-groups="editUser.memberOf"
           :group-options="groupOptions"
           @selected-option-change="changeSelectedGroupOption"
         />
-      </div>
+      </section>
       <compare-save-dialog
-        class="mb-6"
-        :original-object="compareSaveDialogOriginalObject"
+        v-model:saved="saved"
+        class="mt-auto pt-4"
+        :original-object="user"
         :compare-object="editUser"
         :confirm-button-disabled="invalidFormData"
         @revert="revertChanges"
@@ -123,7 +116,6 @@ import {
   QuotaSelect,
   useUserStore,
   useCapabilityStore,
-  useEventBus,
   useMessages,
   useSpacesStore,
   useAuthService
@@ -154,12 +146,12 @@ const clientService = useClientService()
 const userStore = useUserStore()
 const userSettingsStore = useUserSettingsStore()
 const spacesStore = useSpacesStore()
-const eventBus = useEventBus()
 const { showErrorMessage } = useMessages()
 const { $gettext } = useGettext()
 const authService = useAuthService()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 const editUser: MaybeRef<User> = ref()
+const saved = ref(false)
 const formData = ref({
   displayName: {
     errorMessage: '',
@@ -272,7 +264,7 @@ const onEditUser = async ({ user, editUser }: { user: User; editUser: User }) =>
     const updatedUser = await client.users.getUser(user.id)
     userSettingsStore.upsertUser(updatedUser)
 
-    eventBus.publish('sidebar.entity.saved')
+    saved.value = true
 
     if (userStore.user.id === updatedUser.id) {
       userStore.setUser(updatedUser)
@@ -290,24 +282,8 @@ const onEditUser = async ({ user, editUser }: { user: User; editUser: User }) =>
 
 const maxQuota = computed(() => capabilityStore.spacesMaxQuota)
 
-const loginOptions = computed(() => [
-  {
-    label: $gettext('Allowed'),
-    value: true
-  },
-  {
-    label: $gettext('Forbidden'),
-    value: false
-  }
-])
-
-const selectedLoginValue = computed(() => {
-  return unref(loginOptions).find((option) =>
-    !('accountEnabled' in editUser.value)
-      ? option.value === true
-      : editUser.value.accountEnabled === option.value
-  )
-})
+// accountEnabled is not always set, a missing value means that login is allowed
+const loginAllowed = computed(() => unref(editUser).accountEnabled !== false)
 
 const translatedRoleOptions = computed(() => {
   return unref(roles).map((role) => {
@@ -321,9 +297,7 @@ const selectedRoleValue = computed(() => {
 })
 
 const invalidFormData = computed(() => {
-  return Object.values(unref(formData))
-    .map((v) => !!v.valid)
-    .includes(false)
+  return Object.values(unref(formData)).some((v) => !v.valid)
 })
 
 const showQuota = computed(() => {
@@ -332,10 +306,6 @@ const showQuota = computed(() => {
 
 const isQuotaInputDisabled = computed(() => {
   return typeof unref(showQuota) === 'undefined'
-})
-
-const compareSaveDialogOriginalObject = computed(() => {
-  return cloneDeep(unref(user))
 })
 
 const changeSelectedQuotaOption = (option: { value: number; displayValue: string }) => {
@@ -447,7 +417,7 @@ const onUpdatePassword = (password: string) => {
   }
 }
 
-const onUpdateLogin = ({ value }: { value: boolean }) => {
+const onUpdateLogin = (value: boolean) => {
   /**
    * Property accountEnabled won't be always set, but this still means, that login is allowed.
    * So we actually don't need to change the property if missing and not set to forbidden in the UI.
@@ -466,5 +436,12 @@ watch(
     editUser.value = cloneDeep(user)
   },
   { deep: true, immediate: true }
+)
+
+watch(
+  () => user?.id,
+  () => {
+    saved.value = false
+  }
 )
 </script>

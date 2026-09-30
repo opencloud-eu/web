@@ -77,7 +77,6 @@
 import { computed, onMounted, ref, toRef, unref, VNodeRef, watch } from 'vue'
 import {
   createLocationCommon,
-  eventBus,
   useAuthStore,
   useClientService,
   useMessages,
@@ -196,7 +195,6 @@ const save = async (e: TagOption[] | string[]) => {
 
     updateResourceField({ id: id, field: 'tags', value: [...selectedTagLabels] })
 
-    eventBus.publish('sidebar.entity.saved')
     if (unref(tagSelect) !== null) {
       unref(tagSelect).$refs.search.focus()
     }

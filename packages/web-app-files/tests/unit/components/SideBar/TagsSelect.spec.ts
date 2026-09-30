@@ -26,17 +26,6 @@ describe('Tag Select', () => {
     ).toEqual([{ label: 'a' }, { label: 'b' }, { label: 'c' }])
   })
 
-  describe('save method', () => {
-    it('publishes the "save"-event', async () => {
-      const eventStub = vi.spyOn(eventBus, 'publish')
-      const tags = ['a', 'b']
-      const resource = mock<Resource>({ tags: tags })
-      const { wrapper } = createWrapper(resource, mockDeep<ClientService>(), false)
-      await (wrapper.vm as any).save(tags)
-      expect(eventStub).toHaveBeenCalled()
-    })
-  })
-
   test.each<[string[], { label: string }[], string[]]>([
     [['a', 'b'], [{ label: 'c' }], ['c']],
     [['a', 'b'], [{ label: 'a' }, { label: 'b' }, { label: 'c' }], ['c']],

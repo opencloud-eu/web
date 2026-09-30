@@ -28,6 +28,10 @@
       <dd>{{ user.displayName }}</dd>
       <dt>{{ $gettext('Email') }}</dt>
       <dd>{{ user.mail }}</dd>
+      <template v-if="!graphUsersEditLoginAllowedDisabled">
+        <dt>{{ $gettext('Login') }}</dt>
+        <dd>{{ loginDisplayValue }}</dd>
+      </template>
       <dt>{{ $gettext('Role') }}</dt>
       <dd>
         <span v-if="user.appRoleAssignments" v-text="roleDisplayName" />
@@ -44,12 +48,7 @@
         </span>
       </dd>
 
-      <template v-if="!graphUsersEditLoginAllowedDisabled">
-        <dt>{{ $gettext('Login') }}</dt>
-        <dd>{{ loginDisplayValue }}</dd>
-      </template>
-
-      <dt>{{ $gettext('Quota') }}</dt>
+      <dt>{{ $gettext('Personal quota') }}</dt>
       <dd>
         <space-quota v-if="showUserQuota" :space-quota="user.drive.quota" />
         <span v-else>
@@ -60,7 +59,7 @@
                 'User quota becomes available once the user has logged in for the first time.'
               )
             "
-            :title="$gettext('Quota')"
+            :title="$gettext('Personal quota')"
           />
         </span>
       </dd>

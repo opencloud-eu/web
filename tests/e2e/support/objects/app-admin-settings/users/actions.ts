@@ -10,9 +10,7 @@ const editActionBtnQuickActions =
 const editPanel = '.sidebar-panel__body-EditPanel:visible'
 const closeEditPanel = '.sidebar-panel__header .header__close'
 const deleteActionBtn = '.oc-users-actions-delete-trigger'
-const loginDropDown = '.vs__dropdown-menu'
-const dropdownOption = '.vs__dropdown-option'
-const loginInput = '#login-input'
+const loginSwitch = '#login-input [role="switch"]'
 const compareDialogConfirm = '.compare-save-dialog-confirm-btn'
 const addToGroupsBatchAction = '.oc-users-actions-add-to-groups-trigger'
 const removeFromGroupsBatchAction = '.oc-users-actions-remove-from-groups-trigger'
@@ -78,14 +76,11 @@ export const changeAccountEnabled = async (args: {
   value: boolean
 }): Promise<void> => {
   const { page, value, uuid } = args
-  await page.locator(loginInput).waitFor()
-  await page.locator(loginInput).click()
-  await page.locator(loginDropDown).waitFor()
-
-  await page
-    .locator(dropdownOption)
-    .getByText(value === false ? 'Forbidden' : 'Allowed')
-    .click()
+  const loginSwitchLocator = page.locator(loginSwitch)
+  await loginSwitchLocator.waitFor()
+  if ((await loginSwitchLocator.getAttribute('aria-checked')) !== value.toString()) {
+    await loginSwitchLocator.click()
+  }
 
   await Promise.all([
     page.waitForResponse(
