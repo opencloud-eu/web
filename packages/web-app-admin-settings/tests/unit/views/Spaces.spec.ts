@@ -1,10 +1,11 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
-import { mockDeep } from 'vitest-mock-extended'
+import { mock, mockDeep } from 'vitest-mock-extended'
 import {
   AppLoadingSpinner,
   ClientService,
   useAppDefaults,
+  useSpacesStore,
   ViewOptions
 } from '@opencloud-eu/web-pkg'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
@@ -16,6 +17,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import Spaces from '../../../src/views/Spaces.vue'
 import SpacesList from '../../../src/components/Spaces/SpacesList.vue'
+import { useSpaceSettingsStore } from '../../../src/composables'
 import { flushPromises } from '@vue/test-utils'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -32,6 +34,32 @@ const selectors = {
 }
 
 describe('Spaces view', () => {
+  describe('spaces created via the FAB', () => {
+    it('are added and loaded again including their members', async () => {
+      // the store actions have to run for the view to see the upsert of the spaces store
+      const { wrapper, mocks } = getWrapper({ stubActions: false })
+      await flushPromises()
+      const createdSpace = mock<SpaceResource>({ id: '2', name: 'new', driveType: 'project' })
+      const spaceWithMembers = mock<SpaceResource>({ id: '2', name: 'new', driveType: 'project' })
+      mocks.$clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue([
+        spaceWithMembers
+      ])
+
+      useSpacesStore().upsertSpace(createdSpace)
+      await flushPromises()
+
+      const { upsertSpace } = useSpaceSettingsStore()
+      expect(upsertSpace).toHaveBeenNthCalledWith(1, createdSpace)
+      expect(mocks.$clientService.graphAuthenticated.drives.listAllDrives).toHaveBeenLastCalledWith(
+        {
+          filter: "id eq '2'",
+          expand: 'root($expand=permissions)'
+        }
+      )
+      expect(upsertSpace).toHaveBeenNthCalledWith(2, spaceWithMembers)
+      wrapper.unmount()
+    })
+  })
   describe('loading states', () => {
     it('should show loading spinner if loading', () => {
       const { wrapper } = getWrapper()
@@ -105,8 +133,9 @@ function getWrapper({
       name: 'space'
     } as SpaceResource
   ],
-  selectedSpaces = []
-}: { spaces?: SpaceResource[]; selectedSpaces?: SpaceResource[] } = {}) {
+  selectedSpaces = [],
+  stubActions = true
+}: { spaces?: SpaceResource[]; selectedSpaces?: SpaceResource[]; stubActions?: boolean } = {}) {
   const $clientService = mockDeep<ClientService>()
   $clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue(spaces)
   const mocks = {
@@ -115,11 +144,13 @@ function getWrapper({
   }
 
   return {
+    mocks,
     wrapper: mount(Spaces, {
       global: {
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions,
               spaceSettingsStore: {
                 spaces,
                 selectedSpaces
