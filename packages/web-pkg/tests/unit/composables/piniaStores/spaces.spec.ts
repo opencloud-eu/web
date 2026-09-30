@@ -172,6 +172,83 @@ describe('spaces', () => {
       })
     })
   })
+  describe('"allProjectSpaces" (admin settings)', () => {
+    const projectSpace = (data: Partial<SpaceResource>) =>
+      ({ driveType: 'project', ...data }) as SpaceResource
+
+    it('is not loaded by default and not touched by upserts then', () => {
+      const store = useSpacesStore()
+      store.upsertSpace(projectSpace({ id: '1' }))
+      expect(store.allProjectSpaces).toBeUndefined()
+      expect(store.spaces.map(({ id }) => id)).toEqual(['1'])
+    })
+    it('keeps the spaces of the current user separate', () => {
+      const store = useSpacesStore()
+      store.setAllProjectSpaces([projectSpace({ id: '1' }), projectSpace({ id: '2' })])
+      expect(store.spaces).toEqual([])
+    })
+    it('adds upserted project spaces, e.g. when created via the FAB', () => {
+      const store = useSpacesStore()
+      store.setAllProjectSpaces([projectSpace({ id: '1' })])
+      store.upsertSpace(projectSpace({ id: '2' }))
+      store.upsertSpace(mock<SpaceResource>({ id: '3', driveType: 'personal' }))
+      expect(store.allProjectSpaces.map(({ id }) => id)).toEqual(['1', '2'])
+    })
+    it('keeps the members of a space when the upserted space comes without them', () => {
+      const store = useSpacesStore()
+      const permissions = [{ id: 'permission' }] as SpaceResource['root']['permissions']
+      store.setAllProjectSpaces([projectSpace({ id: '1', name: 'foo', root: { permissions } })])
+      store.upsertSpace(projectSpace({ id: '1', name: 'bar', root: {} }))
+      expect(store.allProjectSpaces[0].name).toBe('bar')
+      expect(store.allProjectSpaces[0].root.permissions).toEqual(permissions)
+    })
+    it('updates fields in both lists', () => {
+      const store = useSpacesStore()
+      store.addSpaces([projectSpace({ id: '1', name: 'foo' })])
+      store.setAllProjectSpaces([projectSpace({ id: '1', name: 'foo' })])
+      store.updateSpaceField({ id: '1', field: 'name', value: 'bar' })
+      expect(store.spaces[0].name).toBe('bar')
+      expect(store.allProjectSpaces[0].name).toBe('bar')
+    })
+    it('removes spaces from both lists', () => {
+      const store = useSpacesStore()
+      store.addSpaces([projectSpace({ id: '1' })])
+      store.setAllProjectSpaces([projectSpace({ id: '1' }), projectSpace({ id: '2' })])
+      store.removeSpace(projectSpace({ id: '1' }))
+      expect(store.spaces).toEqual([])
+      expect(store.allProjectSpaces.map(({ id }) => id)).toEqual(['2'])
+    })
+    it('loads the permissions of spaces the user is not a member of as none', async () => {
+      const store = useSpacesStore()
+      store.setAllProjectSpaces([projectSpace({ id: '1' }), projectSpace({ id: '2' })])
+      const graphClient = mockDeep<Graph>()
+      graphClient.permissions.listPermissions.mockImplementation((id) =>
+        id === '1'
+          ? Promise.resolve({ allowedActions: ['libre.graph/driveItem/permissions/delete'] } as any)
+          : Promise.reject({ response: { status: 404 } })
+      )
+
+      await store.loadGraphPermissions({ ids: ['1', '2'], graphClient })
+
+      expect(store.allProjectSpaces[0].graphPermissions).toEqual([
+        'libre.graph/driveItem/permissions/delete'
+      ])
+      expect(store.allProjectSpaces[1].graphPermissions).toEqual([])
+    })
+    it('can load permissions again after a failed request', async () => {
+      const store = useSpacesStore()
+      store.setAllProjectSpaces([projectSpace({ id: '1' })])
+      const graphClient = mockDeep<Graph>()
+      graphClient.permissions.listPermissions.mockRejectedValueOnce(new Error('network'))
+
+      await expect(store.loadGraphPermissions({ ids: ['1'], graphClient })).rejects.toThrow()
+
+      graphClient.permissions.listPermissions.mockResolvedValueOnce({ allowedActions: [] } as any)
+      await store.loadGraphPermissions({ ids: ['1'], graphClient })
+      expect(graphClient.permissions.listPermissions).toHaveBeenCalledTimes(2)
+      expect(store.allProjectSpaces[0].graphPermissions).toEqual([])
+    })
+  })
   describe('method "loadSpaces"', () => {
     it('correctly loads personal and project spaces', () => {
       getWrapper({
