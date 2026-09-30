@@ -1,87 +1,66 @@
 import DetailsPanel from '../../../../../src/components/Groups/SideBar/DetailsPanel.vue'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import { Group } from '@opencloud-eu/web-client/graph/generated'
+import { SideBarNoSelection } from '@opencloud-eu/web-pkg'
+
+const selectors = {
+  groupDetails: '#oc-group-details-sidebar',
+  multipleGroups: '#oc-groups-details-multiple-sidebar'
+}
 
 describe('DetailsPanel', () => {
-  describe('computed method "group"', () => {
-    it('should be set if only one group is given', () => {
-      const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group' }] }
-      })
-      expect(wrapper.vm.group).toEqual({ displayName: 'group' })
+  describe('no groups given', () => {
+    it('renders the no selection info', () => {
+      const { wrapper } = getWrapper({ groups: [] })
+      expect(wrapper.findComponent(SideBarNoSelection).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.groupDetails).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.multipleGroups).exists()).toBeFalsy()
     })
-    it('should not be set if no groups are given', () => {
-      const { wrapper } = getWrapper({
-        propsData: { groups: [] }
-      })
-      expect(wrapper.vm.group).toEqual(null)
-    })
-    it('should not be set if multiple groups are given', () => {
-      const { wrapper } = getWrapper({
-        propsData: {
-          groups: [{ displayName: 'group1' }, { displayName: 'group2' }]
-        }
-      })
-      expect(wrapper.vm.group).toEqual(null)
-    })
-  })
-
-  describe('computed method "noGroups"', () => {
-    it('should be true if no groups are given', () => {
-      const { wrapper } = getWrapper({
-        propsData: { groups: [] }
-      })
-      expect(wrapper.vm.noGroups).toBeTruthy()
-    })
-    it('should be false if groups are given', () => {
-      const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group' }] }
-      })
-      expect(wrapper.vm.noGroups).toBeFalsy()
-    })
-  })
-
-  describe('computed method "noSelectionDetails"', () => {
     it.each([
       [0, '0 groups'],
       [1, '1 group'],
       [9, '9 groups']
-    ])('should show %s as "%s"', (groupsCount, definition) => {
-      const { wrapper } = getWrapper({ propsData: { groups: [], groupsCount } })
-      expect(wrapper.vm.noSelectionDetails).toEqual([{ term: 'Items', definition }])
+    ])('shows a groups count of %s as "%s"', (groupsCount, definition) => {
+      const { wrapper } = getWrapper({ groups: [], groupsCount })
+      expect(wrapper.findComponent(SideBarNoSelection).props('details')).toEqual([
+        { term: 'Items', definition }
+      ])
     })
   })
 
-  describe('computed method "multipleGroups"', () => {
-    it('should be false if no groups are given', () => {
-      const { wrapper } = getWrapper({ propsData: { groups: [] } })
-      expect(wrapper.vm.multipleGroups).toBeFalsy()
+  describe('one group given', () => {
+    it('renders the group details', () => {
+      const { wrapper } = getWrapper({ groups: [{ id: '1', displayName: 'group' }] })
+      expect(wrapper.find(selectors.groupDetails).text()).toContain('group')
+      expect(wrapper.findComponent(SideBarNoSelection).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.multipleGroups).exists()).toBeFalsy()
     })
-    it('should be false if one group is given', () => {
+  })
+
+  describe('multiple groups given', () => {
+    it('renders the multiple selection info', () => {
       const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group' }] }
+        groups: [
+          { id: '1', displayName: 'group1' },
+          { id: '2', displayName: 'group2' }
+        ]
       })
-      expect(wrapper.vm.multipleGroups).toBeFalsy()
-    })
-    it('should be true if multiple groups are given', () => {
-      const { wrapper } = getWrapper({
-        propsData: { groups: [{ displayName: 'group1' }, { displayName: 'group2' }] }
-      })
-      expect(wrapper.vm.multipleGroups).toBeTruthy()
+      expect(wrapper.find(selectors.multipleGroups).text()).toContain('2 groups selected')
+      expect(wrapper.find(selectors.groupDetails).exists()).toBeFalsy()
+      expect(wrapper.findComponent(SideBarNoSelection).exists()).toBeFalsy()
     })
   })
 })
 
-function getWrapper({ propsData = {} } = {}) {
+function getWrapper({ groups = [], groupsCount = 0 }: { groups?: Group[]; groupsCount?: number }) {
   return {
     wrapper: mount(DetailsPanel, {
-      props: {
-        groups: [],
-        ...propsData
-      },
+      props: { groups, groupsCount },
       global: {
         stubs: {
           'avatar-image': true,
-          'oc-icon': true
+          'oc-icon': true,
+          'inline-svg': true
         },
         plugins: [...defaultPlugins()]
       }
