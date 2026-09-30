@@ -23,35 +23,13 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import { useCapabilityStore, useThemeStore, VersionCheck } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  name: 'InfoSection',
-  components: { VersionCheck },
-  setup() {
-    const capabilityStore = useCapabilityStore()
-    const { currentTheme } = useThemeStore()
+const capabilityStore = useCapabilityStore()
+const { currentTheme } = useThemeStore()
 
-    let backendProductName = ''
-    let backendVersion = ''
-    let backendEdition = ''
-
-    const backendStatus = capabilityStore.status
-
-    if (backendStatus && backendStatus.versionstring) {
-      backendProductName = backendStatus.product || 'OpenCloud'
-      backendVersion = backendStatus.productversion || backendStatus.versionstring
-      backendEdition = backendStatus.edition
-    }
-
-    return {
-      backendProductName,
-      backendVersion,
-      backendEdition,
-      currentTheme
-    }
-  }
-})
+const backendStatus = capabilityStore.status?.versionstring ? capabilityStore.status : undefined
+const backendVersion = backendStatus?.productversion || backendStatus?.versionstring || ''
+const backendEdition = backendStatus?.edition || ''
 </script>

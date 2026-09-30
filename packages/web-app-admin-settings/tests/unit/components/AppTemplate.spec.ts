@@ -6,14 +6,19 @@ import {
   RouteLocation,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { SideBar, SideBarPanel, useIsTopBarSticky, useSideBar } from '@opencloud-eu/web-pkg'
+import {
+  AppLoadingSpinner,
+  SideBar,
+  SideBarPanel,
+  useIsTopBarSticky,
+  useSideBar
+} from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const stubSelectors = {
   ocBreadcrumb: 'oc-breadcrumb-stub',
-  appLoadingSpinner: 'app-loading-spinner-stub',
   sideBar: 'side-bar-stub'
 }
 
@@ -39,7 +44,7 @@ describe('AppTemplate', () => {
   describe('loading is true', () => {
     it('should show app loading spinner component', () => {
       const { wrapper } = getWrapper({ props: { loading: true } })
-      expect(wrapper.find(stubSelectors.appLoadingSpinner).exists()).toBeTruthy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeTruthy()
     })
     it('should not show side bar component', () => {
       const { wrapper } = getWrapper({ props: { loading: true } })
@@ -53,7 +58,7 @@ describe('AppTemplate', () => {
   describe('loading is false', () => {
     it('should not show app loading spinner component', () => {
       const { wrapper } = getWrapper({ props: { loading: false } })
-      expect(wrapper.find(stubSelectors.appLoadingSpinner).exists()).toBeFalsy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeFalsy()
     })
     it('should show side bar component', () => {
       const { wrapper } = getWrapper({ props: { loading: false } })

@@ -44,7 +44,7 @@
                   class="flex flex-1 justify-between items-center px-3 h-9 rounded-xl peer-[:not(:empty)]:absolute peer-[:not(:empty)]:inset-x-0 peer-[:not(:empty)]:top-1/2 peer-[:not(:empty)]:-translate-y-1/2"
                   :class="{ 'bg-role-surface-container': batchActionItems.length }"
                 >
-                  <batch-actions
+                  <BatchActions
                     v-if="showBatchActions"
                     :actions="batchActions"
                     :action-options="{ resources: batchActionItems }"
@@ -57,7 +57,7 @@
                       appearance="raw"
                       gap-size="small"
                       class="p-1 clear-selection-btn"
-                      @click="$emit('clearSelection')"
+                      @click="emit('clearSelection')"
                     >
                       <span
                         class="text-sm"
@@ -91,123 +91,85 @@
   </main>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { perPageDefault, paginationOptions } from '../defaults'
 import {
-  AppLoadingSpinner,
-  SideBar,
-  BatchActions,
-  SideBarPanelContext,
   Action,
+  AppLoadingSpinner,
+  BatchActions,
+  SideBar,
+  SideBarPanel,
+  SideBarPanelContext,
+  useAppDefaults,
   useIsTopBarSticky,
-  useSideBar
+  useSideBar,
+  ViewOptions
 } from '@opencloud-eu/web-pkg'
-import { defineComponent, onBeforeUnmount, PropType, ref, unref, useTemplateRef, watch } from 'vue'
-import { useIsMobile } from '@opencloud-eu/design-system/composables'
-import { useAppDefaults } from '@opencloud-eu/web-pkg'
-import { SideBarPanel } from '@opencloud-eu/web-pkg'
+import { onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
-import { ViewOptions } from '@opencloud-eu/web-pkg'
 import { Item } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 
-export default defineComponent({
-  components: {
-    SideBar,
-    AppLoadingSpinner,
-    BatchActions,
-    ViewOptions
-  },
-  props: {
-    breadcrumbs: {
-      required: true,
-      type: Array as PropType<BreadcrumbItem[]>
-    },
-    sideBarAvailablePanels: {
-      required: false,
-      type: Array as PropType<SideBarPanel<unknown, unknown, unknown>[]>,
-      default: (): SideBarPanel<unknown, unknown, unknown>[] => []
-    },
-    sideBarPanelContext: {
-      required: false,
-      type: Object as PropType<SideBarPanelContext<unknown, unknown, unknown>>,
-      default: (): SideBarPanelContext<unknown, unknown, unknown> => ({})
-    },
-    loading: {
-      required: false,
-      type: Boolean,
-      default: false
-    },
-    sideBarLoading: {
-      required: false,
-      type: Boolean,
-      default: false
-    },
-    showViewOptions: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    showBatchActions: {
-      type: Boolean,
-      required: false,
-      default: false
-    },
-    batchActionItems: {
-      type: Array as PropType<Item[]>,
-      required: false,
-      default: (): Item[] => []
-    },
-    batchActions: {
-      type: Array as PropType<Action[]>,
-      required: false,
-      default: (): Action[] => []
+const {
+  breadcrumbs,
+  sideBarAvailablePanels = [],
+  sideBarPanelContext = {},
+  loading = false,
+  sideBarLoading = false,
+  showViewOptions = false,
+  showBatchActions = false,
+  batchActionItems = [],
+  batchActions = []
+} = defineProps<{
+  breadcrumbs: BreadcrumbItem[]
+  sideBarAvailablePanels?: SideBarPanel<unknown, unknown, unknown>[]
+  sideBarPanelContext?: SideBarPanelContext<unknown, unknown, unknown>
+  loading?: boolean
+  sideBarLoading?: boolean
+  showViewOptions?: boolean
+  showBatchActions?: boolean
+  batchActionItems?: Item[]
+  batchActions?: Action[]
+}>()
+
+const emit = defineEmits<{
+  (e: 'clearSelection'): void
+}>()
+
+defineSlots<{
+  actions?: (props: { limitedScreenSpace: boolean }) => unknown
+  mainContent?: () => unknown
+  sideBarHeader?: () => unknown
+}>()
+
+// sets the document title
+useAppDefaults({ applicationId: 'admin-settings' })
+
+const { isSideBarOpen } = storeToRefs(useSideBar())
+const { isSticky } = useIsTopBarSticky()
+const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
+const limitedScreenSpace = ref(false)
+
+function onResize() {
+  limitedScreenSpace.value = unref(isSideBarOpen)
+    ? window.innerWidth <= 1600
+    : window.innerWidth <= 1200
+}
+const resizeObserver = new ResizeObserver(onResize)
+
+watch(
+  appBarRef,
+  (el) => {
+    if (el) {
+      resizeObserver.observe(el)
     }
   },
-  emits: ['clearSelection'],
-  setup() {
-    const sidebarStore = useSideBar()
-    const { isSideBarOpen } = storeToRefs(sidebarStore)
-    const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
-    const limitedScreenSpace = ref(false)
-    const { isSticky } = useIsTopBarSticky()
-    const { isMobile } = useIsMobile()
+  { immediate: true }
+)
 
-    const onResize = () => {
-      limitedScreenSpace.value = unref(isSideBarOpen)
-        ? window.innerWidth <= 1600
-        : window.innerWidth <= 1200
-    }
-    const resizeObserver = new ResizeObserver(onResize)
-
-    watch(
-      appBarRef,
-      (ref) => {
-        if (ref) {
-          resizeObserver.observe(unref(appBarRef))
-        }
-      },
-      { immediate: true }
-    )
-
-    onBeforeUnmount(() => {
-      if (unref(appBarRef)) {
-        resizeObserver.unobserve(unref(appBarRef))
-      }
-    })
-
-    return {
-      isMobile,
-      appBarRef,
-      limitedScreenSpace,
-      isSideBarOpen,
-      ...useAppDefaults({
-        applicationId: 'admin-settings'
-      }),
-      perPageDefault,
-      paginationOptions,
-      isSticky
-    }
+onBeforeUnmount(() => {
+  if (unref(appBarRef)) {
+    resizeObserver.unobserve(unref(appBarRef))
   }
 })
 </script>

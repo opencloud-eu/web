@@ -1,7 +1,7 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { mockDeep } from 'vitest-mock-extended'
-import { ClientService, useAppDefaults } from '@opencloud-eu/web-pkg'
+import { AppLoadingSpinner, ClientService, useAppDefaults } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   defaultPlugins,
@@ -20,7 +20,6 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock({}))
 
 const selectors = {
-  loadingSpinnerStub: 'app-loading-spinner-stub',
   spacesListStub: 'spaces-list-stub',
   noContentMessageStub: 'no-content-message-stub',
   batchActionsStub: 'batch-actions-stub'
@@ -30,7 +29,7 @@ describe('Spaces view', () => {
   describe('loading states', () => {
     it('should show loading spinner if loading', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.find(selectors.loadingSpinnerStub).exists()).toBeTruthy()
+      expect(wrapper.findComponent(AppLoadingSpinner).exists()).toBeTruthy()
     })
     it('should render spaces list after loading has been finished', async () => {
       const spaces = [{ id: '1', name: 'Some Space' }] as SpaceResource[]
