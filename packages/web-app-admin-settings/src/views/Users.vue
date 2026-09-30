@@ -149,7 +149,7 @@ import {
 import { computed, ref, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import { omit } from 'lodash-es'
+import { isEqual, omit } from 'lodash-es'
 import { storeToRefs } from 'pinia'
 import { useUserSettingsStore } from '../composables/stores/userSettings'
 import { call } from '@opencloud-eu/web-client'
@@ -364,7 +364,12 @@ function updateSpaceQuota({ spaceId, quota }: { spaceId: string; quota: Quota })
 
 watch(
   () => unref(selectedUsers).map(({ id }) => id),
-  async () => {
+  async (selectedIds, previousSelectedIds) => {
+    // the quick action buttons select the user and the click also reaches the row,
+    // which sets the same selection again
+    if (isEqual(selectedIds, previousSelectedIds)) {
+      return
+    }
     sideBarLoading.value = true
     await Promise.all(unref(selectedUsers).map((user) => loadAdditionalUserDataTask.perform(user)))
     sideBarLoading.value = false

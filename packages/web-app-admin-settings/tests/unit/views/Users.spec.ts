@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import Users from '../../../src/views/Users.vue'
 import { ItemFilter, OptionsConfig, useAppDefaults } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
@@ -13,6 +14,7 @@ import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { flushPromises } from '@vue/test-utils'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import AppTemplate from '../../../src/components/AppTemplate.vue'
+import { useUserSettingsStore } from '../../../src/composables/stores/userSettings'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -144,6 +146,39 @@ describe('Users view', () => {
           .find(({ name }) => name === 'EditPanel')
           .isVisible({ items: [{ id: '1' }, { id: '2' }] as User[] })
       ).toBeFalsy()
+    })
+  })
+
+  describe('additional user data', () => {
+    it('loads the selected user once when the same selection is set again while loading', async () => {
+      const clientService = getClientService()
+      getMountedWrapper({ mountType: mount, clientService })
+      await flushPromises()
+      const userSettingsStore = useUserSettingsStore()
+      const user = { ...getDefaultUser(), id: '2' }
+      let resolveUser: (user: User) => void
+      clientService.graphAuthenticated.users.getUser.mockReturnValue(
+        new Promise<User>((resolve) => {
+          resolveUser = resolve
+        }) as ReturnType<typeof clientService.graphAuthenticated.users.getUser>
+      )
+
+      // the quick action button selects the user, then the row click handler
+      // resets the selection and selects the same user again
+      userSettingsStore.selectedUsers.push(user)
+      await nextTick()
+      userSettingsStore.selectedUsers = []
+      userSettingsStore.selectedUsers.push(user)
+      await nextTick()
+      resolveUser(mock<User>(user))
+      await flushPromises()
+
+      expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledTimes(1)
+      expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledWith(
+        '2',
+        {},
+        expect.anything()
+      )
     })
   })
 
