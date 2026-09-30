@@ -428,6 +428,7 @@ const spaceDetailsLabel = computed(() => {
   return $gettext('Show details')
 })
 const showDetailsForSpace = (space: SpaceResource) => {
+  unselectAllSpaces()
   selectSpace(space)
   openSideBar()
 }

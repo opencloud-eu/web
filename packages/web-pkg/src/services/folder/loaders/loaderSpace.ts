@@ -108,6 +108,10 @@ export class FolderLoaderSpace implements FolderLoader {
         if (isShareSpaceResource(space)) {
           // TODO: remove when server returns share id for federated shares in propfind response
           resources.forEach((r) => (r.remoteItemId = space.id))
+          // needed to resolve the share space for sub folders, e.g. as location picker target
+          if (!currentFolder.remoteItemId) {
+            currentFolder.remoteItemId = space.id
+          }
 
           // load graph permissions if not already loaded
           if (space.graphPermissions === undefined) {

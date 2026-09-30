@@ -6,7 +6,7 @@
       :max="100"
       size="small"
       :color="quotaProgressColor"
-      background-color="var(--oc-role-surface)"
+      background-color="var(--oc-role-surface-container)"
     />
   </div>
 </template>
