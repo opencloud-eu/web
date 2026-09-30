@@ -1,194 +1,152 @@
 import CreateUserModal from '../../../../src/components/Users/CreateUserModal.vue'
-import {
-  defaultComponentMocks,
-  defaultPlugins,
-  mockAxiosReject,
-  shallowMount
-} from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { Modal, eventBus, useMessages } from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
+import { Modal, useMessages } from '@opencloud-eu/web-pkg'
+import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
+const selectors = {
+  userName: 'create-user-input-user-name',
+  displayName: 'create-user-input-display-name',
+  email: 'create-user-input-email',
+  password: 'create-user-input-password'
+}
+
 describe('CreateUserModal', () => {
-  describe('computed method "isFormInvalid"', () => {
-    it('should be true if any data set is invalid', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.formData.userName.valid = false
-      expect(wrapper.vm.isFormInvalid).toBeTruthy()
-    })
-  })
-  it('should be false if no data set is invalid', () => {
+  it('disables the confirm button initially', () => {
     const { wrapper } = getWrapper()
-    Object.keys(wrapper.vm.formData).forEach((key) => {
-      wrapper.vm.formData[key].valid = true
-    })
-    expect(wrapper.vm.isFormInvalid).toBeFalsy()
+    expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
   })
 
-  describe('method "validateUserName"', () => {
-    it('should be false when userName is empty', async () => {
+  describe('user name validation', () => {
+    it.each([
+      { userName: ' ', error: 'User name cannot be empty' },
+      { userName: 'n'.repeat(256), error: 'User name cannot exceed 255 characters' },
+      { userName: 'jan openCloud', error: 'User name cannot contain white spaces' },
+      { userName: '1moretry', error: 'User name cannot start with a number' },
+      { userName: 'jan(', error: 'User name cannot contain special characters' }
+    ])('shows "$error" for "$userName"', async ({ userName, error }) => {
       const { wrapper } = getWrapper()
-      wrapper.vm.user.onPremisesSamAccountName = ''
-      expect(await wrapper.vm.validateUserName()).toBeFalsy()
+      await setInput(wrapper, selectors.userName, userName)
+      expect(getInput(wrapper, selectors.userName).props('errorMessage')).toBe(error)
     })
-    it('should be false when userName is longer than 255 characters', async () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.onPremisesSamAccountName = 'n'.repeat(256)
-      expect(await wrapper.vm.validateUserName()).toBeFalsy()
-    })
-    it('should be false when userName contains white spaces', async () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.onPremisesSamAccountName = 'jan owncCloud'
-      expect(await wrapper.vm.validateUserName()).toBeFalsy()
-    })
-    it('should be false when userName starts with a numeric value', async () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.onPremisesSamAccountName = '1moretry'
-      expect(await wrapper.vm.validateUserName()).toBeFalsy()
-    })
-    it('should be false when userName is already existing', async () => {
+    it('shows an error when the user already exists', async () => {
       const { wrapper, mocks } = getWrapper()
-      const graphMock = mocks.$clientService.graphAuthenticated
-      const getUserStub = graphMock.users.getUser.mockResolvedValue(
-        mock<User>({ onPremisesSamAccountName: 'jan' })
+      const { getUser } = mocks.$clientService.graphAuthenticated.users
+      getUser.mockResolvedValue(mock<User>({ onPremisesSamAccountName: 'jan' }))
+      await setInput(wrapper, selectors.userName, 'jan')
+      expect(getUser).toHaveBeenCalledWith('jan')
+      expect(getInput(wrapper, selectors.userName).props('errorMessage')).toBe(
+        'User "jan" already exists'
       )
-      wrapper.vm.user.onPremisesSamAccountName = 'jan'
-      expect(await wrapper.vm.validateUserName()).toBeFalsy()
-      expect(getUserStub).toHaveBeenCalled()
     })
-    it('should be true when userName is valid', async () => {
+    it.each(['jana', 'sk@domain.tld'])('accepts "%s" as user name', async (userName) => {
       const { wrapper, mocks } = getWrapper()
-      const graphMock = mocks.$clientService.graphAuthenticated
-      const getUserStub = graphMock.users.getUser.mockRejectedValue(() => mockAxiosReject())
-      wrapper.vm.user.onPremisesSamAccountName = 'jana'
-      expect(await wrapper.vm.validateUserName()).toBeTruthy()
-      expect(getUserStub).toHaveBeenCalled()
+      mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValue(new Error(''))
+      await setInput(wrapper, selectors.userName, userName)
+      expect(getInput(wrapper, selectors.userName).props('errorMessage')).toBe('')
     })
-    it('should be true when userName is an email address', async () => {
+  })
+
+  describe('display name validation', () => {
+    it.each([
+      { displayName: ' ', error: 'First and last name cannot be empty' },
+      { displayName: 'n'.repeat(256), error: 'First and last name cannot exceed 255 characters' },
+      { displayName: 'jana', error: '' }
+    ])('shows "$error" for "$displayName"', async ({ displayName, error }) => {
+      const { wrapper } = getWrapper()
+      await setInput(wrapper, selectors.displayName, displayName)
+      expect(getInput(wrapper, selectors.displayName).props('errorMessage')).toBe(error)
+    })
+  })
+
+  describe('email validation', () => {
+    it.each([
+      { email: 'jana@', error: 'Please enter a valid email' },
+      { email: 'jana@opencloud.eu', error: '' }
+    ])('shows "$error" for "$email"', async ({ email, error }) => {
+      const { wrapper } = getWrapper()
+      await setInput(wrapper, selectors.email, email)
+      expect(getInput(wrapper, selectors.email).props('errorMessage')).toBe(error)
+    })
+  })
+
+  describe('password validation', () => {
+    it.each([
+      { password: ' ', error: 'Password cannot be empty' },
+      { password: 'asecret', error: '' }
+    ])('shows "$error" for "$password"', async ({ password, error }) => {
+      const { wrapper } = getWrapper()
+      await setInput(wrapper, selectors.password, password)
+      expect(getInput(wrapper, selectors.password).props('errorMessage')).toBe(error)
+    })
+  })
+
+  describe('onConfirm', () => {
+    it('does not create a user if the form is invalid', async () => {
       const { wrapper, mocks } = getWrapper()
-      const graphMock = mocks.$clientService.graphAuthenticated
-      const getUserStub = graphMock.users.getUser.mockRejectedValue(() => mockAxiosReject())
-      wrapper.vm.user.onPremisesSamAccountName = 'sk@domain.tld'
-      expect(await wrapper.vm.validateUserName()).toBeTruthy()
-      expect(getUserStub).toHaveBeenCalled()
+      await expect(wrapper.vm.onConfirm()).rejects.toBeUndefined()
+      expect(mocks.$clientService.graphAuthenticated.users.createUser).not.toHaveBeenCalled()
     })
-  })
-
-  describe('method "validateDisplayName"', () => {
-    it('should be false when displayName is empty', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.displayName = ''
-      expect(wrapper.vm.validateDisplayName()).toBeFalsy()
-    })
-    it('should be false when displayName is longer than 255 characters', async () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.displayName = 'n'.repeat(256)
-      expect(await wrapper.vm.validateDisplayName()).toBeFalsy()
-    })
-    it('should be true when displayName is valid', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.displayName = 'jana'
-      expect(wrapper.vm.validateDisplayName()).toBeTruthy()
-    })
-  })
-
-  describe('method "validateEmail"', () => {
-    it('should be false when email is invalid', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.mail = 'jana@'
-      expect(wrapper.vm.validateEmail()).toBeFalsy()
-    })
-
-    it('should be true when email is valid', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.mail = 'jana@opencloud.eu'
-      expect(wrapper.vm.validateEmail()).toBeTruthy()
-    })
-  })
-
-  describe('method "validatePassword"', () => {
-    it('should be false when password is empty', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.passwordProfile.password = ''
-      expect(wrapper.vm.validatePassword()).toBeFalsy()
-    })
-
-    it('should be true when password is valid', () => {
-      const { wrapper } = getWrapper()
-      wrapper.vm.user.passwordProfile.password = 'asecret'
-      expect(wrapper.vm.validatePassword()).toBeTruthy()
-    })
-  })
-  describe('method "onConfirm"', () => {
-    it('should not create user if form is invalid', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      const { wrapper } = getWrapper()
-
-      const eventSpy = vi.spyOn(eventBus, 'publish')
-      try {
-        await wrapper.vm.onConfirm()
-      } catch {}
-
-      const { showMessage } = useMessages()
-      expect(showMessage).not.toHaveBeenCalled()
-      expect(eventSpy).not.toHaveBeenCalled()
-    })
-    it('should create user on success', async () => {
+    it('enables the confirm button and creates the user when the form is valid', async () => {
       const { wrapper, mocks } = getWrapper()
-      mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValueOnce(new Error(''))
+      const { users } = mocks.$clientService.graphAuthenticated
+      users.getUser.mockRejectedValueOnce(new Error(''))
+      await fillForm(wrapper)
+      expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([false])
 
-      wrapper.vm.user.onPremisesSamAccountName = 'foo'
-      await wrapper.vm.validateUserName()
-      wrapper.vm.user.displayName = 'foo bar'
-      wrapper.vm.validateDisplayName()
-      wrapper.vm.user.mail = 'foo@bar.com'
-      wrapper.vm.validateEmail()
-      wrapper.vm.user.passwordProfile.password = 'asecret'
-      wrapper.vm.validatePassword()
-
-      mocks.$clientService.graphAuthenticated.users.createUser.mockResolvedValue(
-        mock<User>({ id: 'e3515ffb-d264-4dfc-8506-6c239f6673b5' })
-      )
-      mocks.$clientService.graphAuthenticated.users.getUser.mockResolvedValueOnce(
-        mock<User>({ id: 'e3515ffb-d264-4dfc-8506-6c239f6673b5' })
-      )
-
+      users.createUser.mockResolvedValue(mock<User>({ id: '1' }))
+      users.getUser.mockResolvedValueOnce(mock<User>({ id: '1' }))
       await wrapper.vm.onConfirm()
 
+      expect(users.createUser).toHaveBeenCalledWith({
+        onPremisesSamAccountName: 'foo',
+        displayName: 'foo bar',
+        mail: 'foo@bar.com',
+        passwordProfile: { password: 'asecret' }
+      })
       const { upsertUser } = useUserSettingsStore()
       expect(upsertUser).toHaveBeenCalled()
       const { showMessage } = useMessages()
       expect(showMessage).toHaveBeenCalled()
     })
-
-    it('should show message on error', async () => {
+    it('shows an error message on failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
-
       const { wrapper, mocks } = getWrapper()
-      mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValue(new Error(''))
+      const { users } = mocks.$clientService.graphAuthenticated
+      users.getUser.mockRejectedValue(new Error(''))
+      await fillForm(wrapper)
 
-      wrapper.vm.user.onPremisesSamAccountName = 'foo'
-      await wrapper.vm.validateUserName()
-      wrapper.vm.user.displayName = 'foo bar'
-      wrapper.vm.validateDisplayName()
-      wrapper.vm.user.mail = 'foo@bar.com'
-      wrapper.vm.validateEmail()
-      wrapper.vm.user.passwordProfile.password = 'asecret'
-      wrapper.vm.validatePassword()
-
-      mocks.$clientService.graphAuthenticated.users.createUser.mockResolvedValue(
-        mock<User>({ id: 'e3515ffb-d264-4dfc-8506-6c239f6673b5' })
-      )
-      const eventSpy = vi.spyOn(eventBus, 'publish')
+      users.createUser.mockResolvedValue(mock<User>({ id: '1' }))
       await wrapper.vm.onConfirm()
 
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
-      expect(eventSpy).not.toHaveBeenCalled()
+      const { upsertUser } = useUserSettingsStore()
+      expect(upsertUser).not.toHaveBeenCalled()
     })
   })
 })
+
+type Wrapper = ReturnType<typeof getWrapper>['wrapper']
+
+function getInput(wrapper: Wrapper, id: string) {
+  return wrapper.findAllComponents(OcTextInput).find((input) => input.attributes('id') === id)
+}
+
+async function setInput(wrapper: Wrapper, id: string, value: string) {
+  getInput(wrapper, id).vm.$emit('update:modelValue', value)
+  await flushPromises()
+}
+
+async function fillForm(wrapper: Wrapper) {
+  await setInput(wrapper, selectors.userName, 'foo')
+  await setInput(wrapper, selectors.displayName, 'foo bar')
+  await setInput(wrapper, selectors.email, 'foo@bar.com')
+  await setInput(wrapper, selectors.password, 'asecret')
+}
 
 function getWrapper() {
   const mocks = defaultComponentMocks()
