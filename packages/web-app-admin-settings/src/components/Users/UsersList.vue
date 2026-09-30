@@ -4,7 +4,7 @@
     <slot v-if="!users.length" name="noResults" />
     <oc-table
       v-else
-      class="users-table"
+      class="users-table [&_tbody_tr]:select-none"
       :class="{ 'users-table-squashed': isSideBarOpen }"
       :sort-by="sortBy"
       :sort-dir="sortDir"

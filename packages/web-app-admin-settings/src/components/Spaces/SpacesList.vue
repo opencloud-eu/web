@@ -13,7 +13,7 @@
   </no-content-message>
   <oc-table
     v-else
-    class="settings-spaces-table"
+    class="settings-spaces-table [&_tbody_tr]:select-none"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :fields="fields"

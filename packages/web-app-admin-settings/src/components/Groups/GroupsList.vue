@@ -13,6 +13,7 @@
   </no-content-message>
   <oc-table
     v-else
+    class="[&_tbody_tr]:select-none"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :fields="fields"
