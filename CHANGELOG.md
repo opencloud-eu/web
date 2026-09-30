@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: show breadcrumb context menu on mobile [[#3497](https://github.com/opencloud-eu/web/pull/3497)]
 - feat: redesign admin user and group edit panels [[#3489](https://github.com/opencloud-eu/web/pull/3489)]
 - feat: show used quota in admin user details [[#3492](https://github.com/opencloud-eu/web/pull/3492)]
 - feat: mute verbs and lighten highlighted values in activities panel [[#3494](https://github.com/opencloud-eu/web/pull/3494)]
