@@ -235,6 +235,11 @@ export default defineWebApplication({
         icon: 'add',
         label: () => $gettext('New'),
         mode: () => 'handler',
+        tooltip: () => {
+          if (unref(currentRoute).name === 'admin-settings-extensions') {
+            return $gettext('To add apps, use the App Store')
+          }
+        },
         handler: () => {
           if (unref(currentRoute).name === 'admin-settings-spaces') {
             return unref(createSpaceAction)!.handler()

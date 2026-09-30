@@ -25,6 +25,14 @@ export const parseTusHeaders = (headers: Headers) => {
   return result
 }
 
+function displaynameTagParser(path: string, value: string) {
+  // keep displayname as string, e.g. '2024.10' must not become 2024.1
+  if (path.endsWith('propstat.prop.displayname')) {
+    return
+  }
+  return value
+}
+
 export const parseMultiStatus = async (xmlBody: string) => {
   const parseFileName = (name: string) => {
     const decoded = decodeURIComponent(name)
@@ -39,7 +47,13 @@ export const parseMultiStatus = async (xmlBody: string) => {
     return decoded
   }
 
-  const parsedXML = await parseXML(xmlBody)
+  const parsedXML = await parseXML(xmlBody, {
+    attributeNamePrefix: '@',
+    attributeParsers: [],
+    tagParsers: [displaynameTagParser],
+    // decodes numeric char refs like &#39;
+    entityDecoder: {}
+  })
 
   return parsedXML.multistatus.response.map(({ href, propstat }) => {
     const data = {
