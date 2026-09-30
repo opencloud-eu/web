@@ -114,8 +114,8 @@ export const useSpacesStore = defineStore('spaces', () => {
   }
 
   /**
-   * Updates a space of `allProjectSpaces` (if loaded). Responses like the one of `getDrive` don't
-   * contain the members of the space, so the ones loaded by the admin settings are kept.
+   * Updates a space of `allProjectSpaces` (if loaded). The spaces of both lists are separate
+   * objects, so updating the spaces of the current user doesn't overwrite the admin data.
    */
   const upsertAllProjectSpace = (space: SpaceResource) => {
     if (!unref(allProjectSpaces) || !isProjectSpaceResource(space)) {
@@ -123,12 +123,12 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
     const existingSpace = unref(allProjectSpaces).find(({ id }) => id === space.id)
     if (!existingSpace) {
-      markSpaceVaultStatus(extensionRegistry, [space])
-      unref(allProjectSpaces).push(space)
+      const newSpace = { ...space }
+      markSpaceVaultStatus(extensionRegistry, [newSpace])
+      unref(allProjectSpaces).push(newSpace)
       return
     }
-    const permissions = space.root?.permissions ?? existingSpace.root?.permissions
-    Object.assign(existingSpace, space, { root: { ...space.root, permissions } })
+    Object.assign(existingSpace, space)
     markSpaceVaultStatus(extensionRegistry, [existingSpace])
   }
 

@@ -194,13 +194,19 @@ describe('spaces', () => {
       store.upsertSpace(mock<SpaceResource>({ id: '3', driveType: 'personal' }))
       expect(store.allProjectSpaces.map(({ id }) => id)).toEqual(['1', '2'])
     })
-    it('keeps the members of a space when the upserted space comes without them', () => {
+    it('keeps the spaces of both lists separate objects', () => {
       const store = useSpacesStore()
+      store.setAllProjectSpaces([])
+      store.upsertSpace(projectSpace({ id: '1', name: 'foo' }))
+      expect(store.spaces[0]).not.toBe(store.allProjectSpaces[0])
+
       const permissions = [{ id: 'permission' }] as SpaceResource['root']['permissions']
-      store.setAllProjectSpaces([projectSpace({ id: '1', name: 'foo', root: { permissions } })])
+      store.allProjectSpaces[0].root = { permissions }
       store.upsertSpace(projectSpace({ id: '1', name: 'bar', root: {} }))
+      // the admin settings loads the members again if an update comes without them
       expect(store.allProjectSpaces[0].name).toBe('bar')
-      expect(store.allProjectSpaces[0].root.permissions).toEqual(permissions)
+      expect(store.allProjectSpaces[0].root.permissions).toBeUndefined()
+      expect(store.spaces[0].name).toBe('bar')
     })
     it('updates fields in both lists', () => {
       const store = useSpacesStore()

@@ -65,6 +65,37 @@ describe('Spaces view', () => {
     })
   })
 
+  describe('spaces updated without their members', () => {
+    it('are loaded again once more if they change while being loaded', async () => {
+      const { wrapper, mocks } = getWrapper({ stubActions: false })
+      await flushPromises()
+      const { listAllDrives } = mocks.$clientService.graphAuthenticated.drives
+      const space = (permissions?: unknown[]) =>
+        ({ id: '2', name: 'new', driveType: 'project', root: { permissions } }) as SpaceResource
+      let resolveFirstLoad: (spaces: SpaceResource[]) => void
+      listAllDrives.mockReturnValueOnce(
+        new Promise((resolve) => {
+          resolveFirstLoad = resolve
+        }) as ReturnType<typeof listAllDrives>
+      )
+      listAllDrives.mockResolvedValueOnce([space(['admin', 'new member'])])
+
+      // e.g. created via the FAB, then members are added and the space is read again
+      const spacesStore = useSpacesStore()
+      spacesStore.upsertSpace(space())
+      await flushPromises()
+      spacesStore.upsertSpace(space())
+      await flushPromises()
+      resolveFirstLoad([space(['admin'])])
+      await flushPromises()
+
+      expect(listAllDrives).toHaveBeenCalledTimes(3)
+      const loaded = spacesStore.allProjectSpaces.find(({ id }) => id === '2')
+      expect(loaded.root.permissions).toEqual(['admin', 'new member'])
+      wrapper.unmount()
+    })
+  })
+
   describe('selection', () => {
     it('loads the permissions of the selected spaces', async () => {
       const { wrapper } = getWrapper()

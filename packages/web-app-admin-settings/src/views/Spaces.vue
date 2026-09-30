@@ -205,30 +205,57 @@ const sideBarAvailablePanels = [
   }
 ] satisfies SideBarPanel<unknown, unknown, SpaceResource>[]
 
-// spaces created via the FAB come without their members, so they are loaded again with them
-const spacesLoadedWithPermissions = new Set<string>()
-async function loadSpaceWithPermissions(spaceId: string) {
-  spacesLoadedWithPermissions.add(spaceId)
+/**
+ * Spaces coming from other requests than the list (e.g. created via the FAB or updated by an
+ * action) don't contain their members, so they are loaded again with them. A space that changes
+ * while it is being loaded is loaded once more afterwards, the first result might be outdated.
+ */
+const spacesLoadingPermissions = new Set<string>()
+const spacesToReloadPermissions = new Set<string>()
+async function loadSpaceWithPermissions(spaceId: string): Promise<void> {
+  if (spacesLoadingPermissions.has(spaceId)) {
+    spacesToReloadPermissions.add(spaceId)
+    return
+  }
+  spacesLoadingPermissions.add(spaceId)
   try {
     const [space] = await clientService.graphAuthenticated.drives.listAllDrives({
       filter: `id eq '${spaceId}'`,
       expand: spacePermissionsExpand
     })
     if (space) {
-      spacesStore.upsertSpace(space)
+      // no members at all shouldn't lead to loading the space over and over again
+      spacesStore.upsertSpace({
+        ...space,
+        root: { ...space.root, permissions: space.root?.permissions ?? [] }
+      })
     }
   } catch (error) {
     console.error(error)
+  } finally {
+    spacesLoadingPermissions.delete(spaceId)
+    if (spacesToReloadPermissions.delete(spaceId)) {
+      loadSpaceWithPermissions(spaceId)
+    }
   }
 }
 
+// every update of a space assigns a new `root`, so a new root without members means new data
+// without members. comparing the roots also avoids reloading the same data over and over again
 watch(
   () =>
     unref(spaces)
       .filter((space) => !space.root?.permissions)
-      .map(({ id }) => id),
-  (spaceIds) => {
-    spaceIds.filter((id) => !spacesLoadedWithPermissions.has(id)).forEach(loadSpaceWithPermissions)
+      .map(({ id, root }) => ({ id, root })),
+  (spacesWithoutMembers, previousSpacesWithoutMembers = []) => {
+    spacesWithoutMembers
+      .filter(
+        ({ id, root }) =>
+          !previousSpacesWithoutMembers.some(
+            (previous) => previous.id === id && previous.root === root
+          )
+      )
+      .forEach(({ id }) => loadSpaceWithPermissions(id))
   }
 )
 
