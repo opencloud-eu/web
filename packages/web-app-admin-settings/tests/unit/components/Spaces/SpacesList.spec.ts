@@ -181,8 +181,14 @@ describe('SpacesList', () => {
       expect(wrapper.findAllComponents(OcStatusIndicators)).toHaveLength(spaceMocks.length)
     })
     it('renders the total amount of spaces in the footer', () => {
+      const { wrapper } = getWrapper({ spaces: [spaceMocks[0]] })
+      expect(wrapper.find('.oc-table-footer').text()).toContain('1 space in total')
+    })
+    it('renders the amount of disabled spaces in the footer', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
-      expect(wrapper.find('.oc-table-footer').text()).toContain('2 spaces in total')
+      expect(wrapper.find('.oc-table-footer').text()).toContain(
+        '2 spaces in total (including 1 disabled)'
+      )
     })
     it('renders the empty message if there are no spaces', () => {
       const { wrapper } = getWrapper({ spaces: [] })

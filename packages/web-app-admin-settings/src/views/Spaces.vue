@@ -11,13 +11,7 @@
     @clear-selection="spaceSettingsStore.setSelectedSpaces([])"
   >
     <template #sideBarHeader>
-      <div v-if="selectedSpaces.length === 1" class="flex items-center min-w-0 pl-2">
-        <oc-icon name="layout-grid" size-class="size-4" class="mr-2 shrink-0" />
-        <h2
-          class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
-          v-text="selectedSpaces[0].name"
-        />
-      </div>
+      <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
     </template>
     <template #actions>
       <div class="flex justify-end w-full my-2 items-center">
@@ -74,6 +68,7 @@ import {
   SpaceAction,
   SpaceDetails,
   SpaceDetailsMultiple,
+  SpaceInfo,
   SpaceNoSelection,
   useClientService,
   useFileActions,
@@ -154,8 +149,8 @@ const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, Space
 })
 const sideBarAvailablePanels = [
   {
-    name: 'SpaceNoSelection',
-    icon: 'layout-grid',
+    name: 'no-selection',
+    icon: 'questionnaire-line',
     title: () => $gettext('Details'),
     component: SpaceNoSelection,
     componentAttrs: () => ({ spacesCount: unref(spaces).length }),
@@ -163,8 +158,8 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length === 0
   },
   {
-    name: 'SpaceDetails',
-    icon: 'layout-grid',
+    name: 'details-space',
+    icon: 'questionnaire-line',
     title: () => $gettext('Details'),
     component: SpaceDetails,
     componentAttrs: () => ({
@@ -174,8 +169,8 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length === 1
   },
   {
-    name: 'SpaceDetailsMultiple',
-    icon: 'layout-grid',
+    name: 'details-space-multiple',
+    icon: 'questionnaire-line',
     title: () => $gettext('Details'),
     component: SpaceDetailsMultiple,
     componentAttrs: ({ items }) => ({
@@ -185,11 +180,12 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length > 1
   },
   {
-    name: 'SpaceMembers',
+    name: 'space-share',
     icon: 'group',
+    iconFillType: 'line',
     title: () => $gettext('Members'),
     component: MembersPanel,
-    isVisible: ({ items }) => items.length === 1
+    isVisible: ({ items }) => items.length === 1 && !items[0].disabled
   }
 ] satisfies SideBarPanel<unknown, unknown, SpaceResource>[]
 

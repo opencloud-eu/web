@@ -6,7 +6,8 @@ import {
   ClientService,
   useAppDefaults,
   useSpacesStore,
-  ViewOptions
+  ViewOptions,
+  SideBarPanel
 } from '@opencloud-eu/web-pkg'
 import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
 import {
@@ -17,6 +18,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import Spaces from '../../../src/views/Spaces.vue'
 import SpacesList from '../../../src/components/Spaces/SpacesList.vue'
+import AppTemplate from '../../../src/components/AppTemplate.vue'
 import { useSpaceSettingsStore } from '../../../src/composables'
 import { flushPromises } from '@vue/test-utils'
 
@@ -120,6 +122,17 @@ describe('Spaces view', () => {
     })
   })
 
+  describe('side bar', () => {
+    it('hides the members panel for disabled spaces', () => {
+      const { wrapper } = getWrapper()
+      const membersPanel = getSideBarPanels(wrapper).find(({ name }) => name === 'space-share')
+      expect(membersPanel.isVisible({ items: [{ id: '1' } as SpaceResource] })).toBeTruthy()
+      expect(
+        membersPanel.isVisible({ items: [{ id: '1', disabled: true } as SpaceResource] })
+      ).toBeFalsy()
+    })
+  })
+
   describe('loading states', () => {
     it('should show loading spinner if loading', () => {
       const { wrapper } = getWrapper()
@@ -185,6 +198,14 @@ describe('Spaces view', () => {
     })
   })
 })
+
+function getSideBarPanels(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
+  return wrapper.findComponent(AppTemplate).props('sideBarAvailablePanels') as SideBarPanel<
+    unknown,
+    unknown,
+    SpaceResource
+  >[]
+}
 
 function getWrapper({
   spaces = [

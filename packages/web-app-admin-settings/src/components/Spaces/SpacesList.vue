@@ -40,9 +40,6 @@
     <template #iconHeader>
       <span class="sr-only">{{ $gettext('Icon') }}</span>
     </template>
-    <template #avatarHeader>
-      <span class="sr-only">{{ $gettext('Avatar') }}</span>
-    </template>
     <template #select="{ item }">
       <oc-checkbox
         size="large"
@@ -74,10 +71,7 @@
     <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
     <template #indicators="{ item }">
-      <oc-status-indicators
-        :indicators="getIndicators({ space: item, resource: item })"
-        :resource="item"
-      />
+      <resource-status-indicators :space="item" :resource="item" />
     </template>
     <template #mdate="{ item }">
       <span
@@ -134,14 +128,11 @@ import {
   NoContentMessage,
   createVirtualCursorElement,
   ProcessorType,
+  ResourceStatusIndicators,
   SpaceImage,
   useLoadPreview
 } from '@opencloud-eu/web-pkg'
-import {
-  OcDrop,
-  OcFilterHighlight,
-  OcStatusIndicators
-} from '@opencloud-eu/design-system/components'
+import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import { ComponentPublicInstance, computed, onBeforeUnmount, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Fuse from 'fuse.js'
@@ -153,14 +144,12 @@ import {
   useRoute,
   useRouter,
   usePagination,
-  useResourceIndicators,
   useSort,
   spaceTilesSortFields,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
-import { findIndex } from 'lodash-es'
 import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
@@ -172,7 +161,7 @@ import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 const router = useRouter()
 const route = useRoute()
 const language = useGettext()
-const { $gettext } = language
+const { $gettext, $ngettext } = language
 const { isSticky } = useIsTopBarSticky()
 const sharesStore = useSharesStore()
 const { openSideBar } = useSideBar()
@@ -182,7 +171,6 @@ const { filterTerm = '' } = defineProps<{ filterTerm?: string }>()
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
-const lastSelectedSpaceIndex = ref(0)
 const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
@@ -190,8 +178,6 @@ const { selectedSpaces } = storeToRefs(spaceSettingsStore)
 const spacesStore = useSpacesStore()
 const { allProjectSpaces } = storeToRefs(spacesStore)
 const spaces = computed(() => unref(allProjectSpaces) || [])
-
-const { getIndicators } = useResourceIndicators()
 
 function filter(spaces: SpaceResource[], filterTerm: string) {
   if (!(filterTerm || '').trim()) {
@@ -211,9 +197,28 @@ const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
 
 const highlighted = computed(() => unref(selectedSpaces).map((s) => s.id))
 const footerTextTotal = computed(() => {
-  return $gettext('%{spaceCount} spaces in total', {
-    spaceCount: unref(spaces).length.toString()
-  })
+  const disabledSpaces = unref(spaces).filter((space) => space.disabled === true)
+
+  if (!disabledSpaces.length) {
+    return $ngettext(
+      '%{spaceCount} space in total',
+      '%{spaceCount} spaces in total',
+      unref(spaces).length,
+      {
+        spaceCount: unref(spaces).length.toString()
+      }
+    )
+  }
+
+  return $ngettext(
+    '%{spaceCount} space in total (including %{disabledSpaceCount} disabled)',
+    '%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)',
+    unref(spaces).length,
+    {
+      spaceCount: unref(spaces).length.toString(),
+      disabledSpaceCount: disabledSpaces.length.toString()
+    }
+  )
 })
 const footerTextFilter = computed(() => {
   return $gettext('%{spaceCount} matching spaces', {
@@ -227,20 +232,8 @@ const {
 } = usePagination({ items, perPageDefault, perPageStoragePrefix })
 
 const keyActions = useKeyboardActions()
-useKeyboardTableNavigation(
-  keyActions,
-  paginatedItems,
-  selectedSpaces,
-  lastSelectedSpaceIndex,
-  lastSelectedSpaceId
-)
-useKeyboardTableMouseActions(
-  keyActions,
-  paginatedItems,
-  selectedSpaces,
-  lastSelectedSpaceIndex,
-  lastSelectedSpaceId
-)
+useKeyboardTableNavigation(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)
+useKeyboardTableMouseActions(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)
 
 const { loadPreview } = useLoadPreview()
 
@@ -440,14 +433,11 @@ function fileClicked([resource, eventData]: [SpaceResource, MouseEvent | Keyboar
   if (contextActionClicked) {
     return
   }
-  if (!eventData?.shiftKey && !eventData?.metaKey && !eventData?.ctrlKey) {
-    eventBus.publish('app.files.shiftAnchor.reset')
-  }
   if (eventData?.metaKey) {
-    return eventBus.publish('app.resources.list.clicked.meta', resource)
+    return eventBus.publish('app.files.list.clicked.meta', resource)
   }
   if (eventData?.shiftKey) {
-    return eventBus.publish('app.resources.list.clicked.shift', {
+    return eventBus.publish('app.files.list.clicked.shift', {
       resource,
       skipTargetSelection: isCheckboxClicked
     })
@@ -482,7 +472,6 @@ function showDetailsForSpace(space: SpaceResource) {
 }
 
 function selectSpace(selectedSpace: SpaceResource) {
-  lastSelectedSpaceIndex.value = findIndex(unref(spaces), (g) => g.id === selectedSpace.id)
   lastSelectedSpaceId.value = selectedSpace.id
   keyActions.resetSelectionCursor()
 

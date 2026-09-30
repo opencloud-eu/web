@@ -7,7 +7,6 @@ export function useKeyboardTableNavigation(
   keyActions: KeyboardActions,
   paginatedResources: Ref<Item[]>,
   selectedRows: Ref<Item[]>,
-  lastSelectedRowIndex: Ref<number>,
   lastSelectedRowId: Ref<string | null>
 ) {
   const { scrollToResource } = useScrollTo()
@@ -39,7 +38,6 @@ export function useKeyboardTableNavigation(
 
   function moveCursorTo(resource: Item) {
     focusCheckbox(resource.id)
-    lastSelectedRowIndex.value = getResourceIndex(resource.id)
     lastSelectedRowId.value = String(resource.id)
     scrollToResource(resource.id, { topbarElement: 'admin-settings-app-bar' })
   }

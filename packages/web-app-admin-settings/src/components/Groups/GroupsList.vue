@@ -143,7 +143,6 @@ import {
 } from '../../composables/keyboardActions'
 import { useGroupSettingsStore } from '../../composables/stores/groupSettings'
 import { storeToRefs } from 'pinia'
-import { findIndex } from 'lodash-es'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
@@ -161,7 +160,6 @@ const route = useRoute()
 const { isSticky } = useIsTopBarSticky()
 const { openSideBar, openSideBarPanel } = useSideBar()
 
-const lastSelectedGroupIndex = ref(0)
 const lastSelectedGroupId = ref<string>()
 
 const groupSettingsStore = useGroupSettingsStore()
@@ -188,20 +186,8 @@ const {
 } = usePagination({ items, perPageDefault, perPageStoragePrefix })
 
 const keyActions = useKeyboardActions()
-useKeyboardTableNavigation(
-  keyActions,
-  paginatedItems,
-  selectedGroups,
-  lastSelectedGroupIndex,
-  lastSelectedGroupId
-)
-useKeyboardTableMouseActions(
-  keyActions,
-  paginatedItems,
-  selectedGroups,
-  lastSelectedGroupIndex,
-  lastSelectedGroupId
-)
+useKeyboardTableNavigation(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)
+useKeyboardTableMouseActions(keyActions, paginatedItems, selectedGroups, lastSelectedGroupId)
 
 const readOnlyLabel = computed(() => $gettext("This group is read-only and can't be edited"))
 const allGroupsSelected = computed(
@@ -251,7 +237,6 @@ function isGroupSelected(group: Group) {
 }
 
 function selectGroup(group: Group) {
-  lastSelectedGroupIndex.value = findIndex(unref(groups), (g) => g.id === group.id)
   lastSelectedGroupId.value = group.id
   keyActions.resetSelectionCursor()
 
@@ -297,10 +282,10 @@ function rowClicked([group, event]: [Group, MouseEvent | KeyboardEvent]) {
   }
 
   if (event?.metaKey) {
-    return eventBus.publish('app.resources.list.clicked.meta', group)
+    return eventBus.publish('app.files.list.clicked.meta', group)
   }
   if (event?.shiftKey) {
-    return eventBus.publish('app.resources.list.clicked.shift', {
+    return eventBus.publish('app.files.list.clicked.shift', {
       resource: group,
       skipTargetSelection: isCheckboxClicked
     })

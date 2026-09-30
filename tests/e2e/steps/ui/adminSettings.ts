@@ -502,7 +502,7 @@ When(
   async ({ world }: { world: World }, stepUser: string, key: string): Promise<void> => {
     const spacesObject = pageObjectFor(world, stepUser, objects.applicationAdminSettings.Spaces)
     await spacesObject.openPanel({ key })
-    await spacesObject.openActionSideBarPanel({ action: 'SpaceMembers' })
+    await spacesObject.openActionSideBarPanel({ action: 'space-share' })
   }
 )
 
