@@ -129,6 +129,7 @@ import {
   useKeyboardActions,
   useIsTopBarSticky,
   useSharesStore,
+  useSpacesStore,
   useSideBar,
   NoContentMessage,
   createVirtualCursorElement,
@@ -183,7 +184,9 @@ const lastSelectedSpaceIndex = ref(0)
 const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
-const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+const { selectedSpaces } = storeToRefs(spaceSettingsStore)
+const { allProjectSpaces } = storeToRefs(useSpacesStore())
+const spaces = computed(() => unref(allProjectSpaces) || [])
 
 const { getIndicators } = useResourceIndicators()
 

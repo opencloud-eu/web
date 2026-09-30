@@ -47,7 +47,6 @@ export type PiniaMockOptions = {
   messagesState?: { messages?: Message[] }
   modalsState?: { modals?: Modal[] }
   spaceSettingsStore?: {
-    spaces?: SpaceResource[]
     selectedSpaces?: SpaceResource[]
   }
   groupSettingsStore?: {
@@ -172,7 +171,7 @@ export function createMockStore({
       spaces: { spaces: [], ...spacesState },
       userSettings: { users: [], selectedUsers: [], ...userSettingsStore },
       groupSettings: { groups: [], selectedGroups: [], ...groupSettingsStore },
-      spaceSettings: { spaces: [], selectedSpaces: [], ...spaceSettingsStore },
+      spaceSettings: { selectedSpaces: [], ...spaceSettingsStore },
       user: { user: { ...mock<User>({ id: '1' }), ...(userState?.user && { ...userState.user }) } },
       capabilities: {
         isInitialized: capabilityState?.isInitialized ? capabilityState.isInitialized : true,

@@ -1,6 +1,6 @@
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
-import { mock, mockDeep } from 'vitest-mock-extended'
+import { mockDeep } from 'vitest-mock-extended'
 import {
   AppLoadingSpinner,
   ClientService,
@@ -35,12 +35,17 @@ const selectors = {
 
 describe('Spaces view', () => {
   describe('spaces created via the FAB', () => {
-    it('are added and loaded again including their members', async () => {
-      // the store actions have to run for the view to see the upsert of the spaces store
+    it('are loaded again including their members', async () => {
+      // the store actions have to run for the view to react on the new space
       const { wrapper, mocks } = getWrapper({ stubActions: false })
       await flushPromises()
-      const createdSpace = mock<SpaceResource>({ id: '2', name: 'new', driveType: 'project' })
-      const spaceWithMembers = mock<SpaceResource>({ id: '2', name: 'new', driveType: 'project' })
+      const createdSpace = { id: '2', name: 'new', driveType: 'project', root: {} } as SpaceResource
+      const spaceWithMembers = {
+        id: '2',
+        name: 'new',
+        driveType: 'project',
+        root: { permissions: [] }
+      } as SpaceResource
       mocks.$clientService.graphAuthenticated.drives.listAllDrives.mockResolvedValue([
         spaceWithMembers
       ])
@@ -48,18 +53,42 @@ describe('Spaces view', () => {
       useSpacesStore().upsertSpace(createdSpace)
       await flushPromises()
 
-      const { upsertSpace } = useSpaceSettingsStore()
-      expect(upsertSpace).toHaveBeenNthCalledWith(1, createdSpace)
       expect(mocks.$clientService.graphAuthenticated.drives.listAllDrives).toHaveBeenLastCalledWith(
         {
           filter: "id eq '2'",
           expand: 'root($expand=permissions)'
         }
       )
-      expect(upsertSpace).toHaveBeenNthCalledWith(2, spaceWithMembers)
+      const space = useSpacesStore().allProjectSpaces.find(({ id }) => id === '2')
+      expect(space.root.permissions).toEqual([])
       wrapper.unmount()
     })
   })
+
+  describe('selection', () => {
+    it('loads the permissions of the selected spaces', async () => {
+      const { wrapper } = getWrapper()
+      await flushPromises()
+      useSpaceSettingsStore().selectedSpaces = [{ id: '1' } as SpaceResource]
+      await flushPromises()
+      const { loadGraphPermissions } = useSpacesStore()
+      expect(loadGraphPermissions).toHaveBeenCalledWith(expect.objectContaining({ ids: ['1'] }))
+      wrapper.unmount()
+    })
+    it('removes deleted spaces from the selection', async () => {
+      const spaces = [
+        { id: '1', name: 'one' },
+        { id: '2', name: 'two' }
+      ] as SpaceResource[]
+      const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces, stubActions: false })
+      await flushPromises()
+      useSpacesStore().removeSpace(spaces[0])
+      await flushPromises()
+      expect(useSpaceSettingsStore().selectedSpaces.map(({ id }) => id)).toEqual(['2'])
+      wrapper.unmount()
+    })
+  })
+
   describe('loading states', () => {
     it('should show loading spinner if loading', () => {
       const { wrapper } = getWrapper()
@@ -151,10 +180,8 @@ function getWrapper({
           ...defaultPlugins({
             piniaOptions: {
               stubActions,
-              spaceSettingsStore: {
-                spaces,
-                selectedSpaces
-              }
+              spacesState: { allProjectSpaces: spaces },
+              spaceSettingsStore: { selectedSpaces }
             }
           })
         ],

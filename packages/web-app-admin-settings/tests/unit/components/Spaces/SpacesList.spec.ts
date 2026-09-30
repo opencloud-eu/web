@@ -252,7 +252,8 @@ function getWrapper({
           ...defaultPlugins({
             piniaOptions: {
               stubActions,
-              spaceSettingsStore: { spaces, selectedSpaces }
+              spacesState: { allProjectSpaces: spaces },
+              spaceSettingsStore: { selectedSpaces }
             }
           })
         ],

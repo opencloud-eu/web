@@ -75,7 +75,6 @@ import {
   SpaceDetails,
   SpaceDetailsMultiple,
   SpaceNoSelection,
-  eventBus,
   queryItemAsString,
   useClientService,
   useFileActions,
@@ -84,13 +83,12 @@ import {
   useSpacesStore,
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
-import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
+import { call, SpaceResource } from '@opencloud-eu/web-client'
+import { computed, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
 import { storeToRefs } from 'pinia'
-import { Quota } from '@opencloud-eu/web-client/graph/generated'
 import { spacesBatchActionsExtensionPoint } from '../extensionPoints'
 
 const clientService = useClientService()
@@ -100,10 +98,10 @@ const { isSideBarOpen } = storeToRefs(sidebarStore)
 const spacesStore = useSpacesStore()
 const { getExtensionActions } = useFileActions()
 
-let loadResourcesEventToken: string
-let updateQuotaForSpaceEventToken: string
 const spaceSettingsStore = useSpaceSettingsStore()
-const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+const { selectedSpaces } = storeToRefs(spaceSettingsStore)
+const { allProjectSpaces } = storeToRefs(spacesStore)
+const spaces = computed(() => unref(allProjectSpaces) || [])
 
 const filterTerm = ref('')
 
@@ -131,7 +129,7 @@ const loadResourcesTask = useTask(function* (signal) {
       { signal }
     )
   )
-  spaceSettingsStore.setSpaces(drives)
+  spacesStore.setAllProjectSpaces(drives)
 })
 
 const isLoading = computed(() => {
@@ -207,68 +205,69 @@ const sideBarAvailablePanels = [
   }
 ] satisfies SideBarPanel<unknown, unknown, SpaceResource>[]
 
-// keep the list in sync with spaces created via the FAB
-spacesStore.$onAction(({ name, args, after }) => {
-  if (name !== 'upsertSpace') {
-    return
-  }
-  after(() => {
-    const [space] = args
-    const loadedSpaceIds = spaceSettingsStore.spaces.map(({ id }) => id)
-    if (isProjectSpaceResource(space) && !loadedSpaceIds.includes(space.id)) {
-      spaceSettingsStore.upsertSpace(space)
-      loadSpaceWithPermissions(space.id)
-    }
-  })
-})
-
-// the created space from the FAB comes without its members, so it is loaded again with them
+// spaces created via the FAB come without their members, so they are loaded again with them
+const spacesLoadedWithPermissions = new Set<string>()
 async function loadSpaceWithPermissions(spaceId: string) {
+  spacesLoadedWithPermissions.add(spaceId)
   try {
     const [space] = await clientService.graphAuthenticated.drives.listAllDrives({
       filter: `id eq '${spaceId}'`,
       expand: spacePermissionsExpand
     })
     if (space) {
-      spaceSettingsStore.upsertSpace(space)
+      spacesStore.upsertSpace(space)
     }
   } catch (error) {
     console.error(error)
   }
 }
 
-onMounted(async () => {
-  await loadResourcesTask.perform()
+watch(
+  () =>
+    unref(spaces)
+      .filter((space) => !space.root?.permissions)
+      .map(({ id }) => id),
+  (spaceIds) => {
+    spaceIds.filter((id) => !spacesLoadedWithPermissions.has(id)).forEach(loadSpaceWithPermissions)
+  }
+)
 
-  loadResourcesEventToken = eventBus.subscribe('app.admin-settings.list.load', async () => {
-    await loadResourcesTask.perform()
-    selectedSpaces.value = []
+// actions like setting the image of a space check the permissions of the user in that space
+watch(
+  () => unref(selectedSpaces).map(({ id }) => id),
+  async (ids) => {
+    try {
+      await spacesStore.loadGraphPermissions({ ids, graphClient: clientService.graphAuthenticated })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+)
 
-    const pageCount = Math.ceil(unref(spaces).length / unref(itemsPerPage))
-    if (unref(currentPage) > 1 && unref(currentPage) > pageCount) {
-      // reset pagination to avoid empty lists (happens when deleting all items on the last page)
+// e.g. after deleting spaces: drop them from the selection and avoid an empty last page
+watch(
+  () => unref(spaces).length,
+  () => {
+    const spaceIds = unref(spaces).map(({ id }) => id)
+    const selection = unref(selectedSpaces).filter(({ id }) => spaceIds.includes(id))
+    if (selection.length !== unref(selectedSpaces).length) {
+      spaceSettingsStore.setSelectedSpaces(selection)
+    }
+
+    const pageCount = Math.max(1, Math.ceil(spaceIds.length / unref(itemsPerPage)))
+    if (unref(currentPage) > pageCount) {
       currentPageQuery.value = pageCount.toString()
     }
-  })
+  }
+)
 
-  updateQuotaForSpaceEventToken = eventBus.subscribe(
-    'app.admin-settings.spaces.space.quota.updated',
-    ({ spaceId, quota }: { spaceId: string; quota: Quota }) => {
-      const space = unref(spaces).find((s) => s.id === spaceId)
-      if (space) {
-        space.spaceQuota = quota
-      }
-    }
-  )
+onMounted(async () => {
+  await loadResourcesTask.perform()
 })
 
 onBeforeUnmount(() => {
   spaceSettingsStore.reset()
-  eventBus.unsubscribe('app.admin-settings.list.load', loadResourcesEventToken)
-  eventBus.unsubscribe(
-    'app.admin-settings.spaces.space.quota.updated',
-    updateQuotaForSpaceEventToken
-  )
+  spacesStore.setAllProjectSpaces(undefined)
 })
 
 provide(
