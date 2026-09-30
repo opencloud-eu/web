@@ -28,7 +28,7 @@
                 />
               </template>
             </oc-avatars>
-            <span v-html="getHtmlFromActivity(activity)" />
+            <span class="text-role-on-surface-variant" v-html="getHtmlFromActivity(activity)" />
           </div>
         </li>
       </oc-list>
@@ -139,7 +139,10 @@ const getHtmlFromActivity = (activity: Activity) => {
   for (const [key, value] of Object.entries(activity.template.variables)) {
     const escapedValue = escape(value.displayName || value.name)
 
-    message = message.replace(`{${key}}`, `<strong>${escapedValue}</strong>`)
+    message = message.replace(
+      `{${key}}`,
+      `<span class="font-medium text-role-on-surface">${escapedValue}</span>`
+    )
   }
   return message
 }
