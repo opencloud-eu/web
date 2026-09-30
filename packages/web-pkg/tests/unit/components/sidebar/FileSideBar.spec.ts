@@ -164,15 +164,9 @@ describe('FileSideBar', () => {
       ).toHaveBeenCalledTimes(2)
     })
 
-    it.each([
-      [
-        'on the search page',
-        { currentRouteName: 'files-common-search', currentFolder: mock<Resource>() }
-      ],
-      ['when the current folder is not loaded', { currentFolder: null }]
-    ])('loads ancestor meta data for indirect shares %s', async (_, options) => {
+    it('loads ancestor meta data when the current folder is not loaded', async () => {
       const resource = mock<Resource>()
-      const { wrapper, mocks } = createWrapper(options)
+      const { wrapper, mocks } = createWrapper({ currentFolder: null })
       const { loadAncestorMetaData } = useResourcesStore()
 
       mocks.$clientService.graphAuthenticated.permissions.listPermissions.mockResolvedValue({

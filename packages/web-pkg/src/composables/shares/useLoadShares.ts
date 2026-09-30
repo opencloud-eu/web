@@ -163,11 +163,7 @@ export const useLoadShares = () => {
       })
     }
 
-    if (
-      includeInheritedShares ||
-      isLocationCommonActive(router, 'files-common-search') ||
-      !resourcesStore.currentFolder
-    ) {
+    if (includeInheritedShares || !resourcesStore.currentFolder) {
       yield resourcesStore.loadAncestorMetaData({
         folder: unref(resource),
         space,
@@ -197,7 +193,7 @@ export const useLoadShares = () => {
       .map(({ id }) => id)
 
     if (
-      (includeInheritedShares || unref(isFlatFileList)) &&
+      (includeInheritedShares || !resourcesStore.currentFolder) &&
       isProjectSpaceResource(space) &&
       !isProjectSpaceResource(resource)
     ) {
