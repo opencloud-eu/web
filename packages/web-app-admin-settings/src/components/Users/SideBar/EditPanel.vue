@@ -123,7 +123,7 @@ import {
 import GroupSelect from '../GroupSelect.vue'
 import { cloneDeep, isEmpty, isEqual, omit } from 'lodash-es'
 import { AppRole, AppRoleAssignment, Group, User } from '@opencloud-eu/web-client/graph/generated'
-import { MaybeRef, useClientService } from '@opencloud-eu/web-pkg'
+import { useClientService } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { diff } from 'deep-object-diff'
 import { useUserSettingsStore } from '../../../composables/stores/userSettings'
@@ -150,7 +150,7 @@ const { showErrorMessage } = useMessages()
 const { $gettext } = useGettext()
 const authService = useAuthService()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
-const editUser: MaybeRef<User> = ref()
+const editUser = ref<User>()
 const saved = ref(false)
 const formData = ref({
   displayName: {
@@ -176,11 +176,11 @@ const groupOptions = computed(() => {
   )
 })
 const isLoginInputDisabled = computed(() => userStore.user.id === (user as User).id)
-const isInputFieldReadOnly = (key: string) => {
+function isInputFieldReadOnly(key: string) {
   return capabilityStore.graphUsersReadOnlyAttributes.includes(key)
 }
 
-const onUpdateUserAppRoleAssignments = (user: User, editUser: User) => {
+function onUpdateUserAppRoleAssignments(user: User, editUser: User) {
   const client = clientService.graphAuthenticated
   return client.users.createUserAppRoleAssignment(user.id, {
     appRoleId: editUser.appRoleAssignments[0].appRoleId,
@@ -188,7 +188,7 @@ const onUpdateUserAppRoleAssignments = (user: User, editUser: User) => {
     principalId: editUser.id
   })
 }
-const onUpdateUserGroupAssignments = (user: User, editUser: User) => {
+function onUpdateUserGroupAssignments(user: User, editUser: User) {
   const client = clientService.graphAuthenticated
   const groupsToAdd = editUser.memberOf.filter(
     (editUserGroup) => !user.memberOf.some((g) => g.id === editUserGroup.id)
@@ -208,7 +208,7 @@ const onUpdateUserGroupAssignments = (user: User, editUser: User) => {
   return Promise.all(requests)
 }
 
-const onUpdateUserDrive = async (editUser: User) => {
+async function onUpdateUserDrive(editUser: User) {
   const client = clientService.graphAuthenticated
   const updateSpace = await client.drives.updateDrive(editUser.drive.id, {
     quota: { total: editUser.drive.quota.total }
@@ -224,15 +224,16 @@ const onUpdateUserDrive = async (editUser: User) => {
   }
 }
 
-const onEditUser = async ({ user, editUser }: { user: User; editUser: User }) => {
+function getGraphEditUserPayload(user: User) {
+  return omit(user, ['drive', 'appRoleAssignments', 'memberOf'])
+}
+
+async function onEditUser({ user, editUser }: { user: User; editUser: User }) {
   try {
     const client = clientService.graphAuthenticated
-    const graphEditUserPayloadExtractor = (user: User) => {
-      return omit(user, ['drive', 'appRoleAssignments', 'memberOf'])
-    }
     const graphEditUserPayload = diff(
-      graphEditUserPayloadExtractor(user),
-      graphEditUserPayloadExtractor(editUser)
+      getGraphEditUserPayload(user),
+      getGraphEditUserPayload(editUser)
     ) as User
 
     if (!isEmpty(graphEditUserPayload)) {
@@ -286,7 +287,7 @@ const maxQuota = computed(() => capabilityStore.spacesMaxQuota)
 const loginAllowed = computed(() => unref(editUser).accountEnabled !== false)
 
 const translatedRoleOptions = computed(() => {
-  return unref(roles).map((role) => {
+  return roles.map((role) => {
     return { ...role, displayName: $gettext(role.displayName) }
   })
 })
@@ -308,47 +309,47 @@ const isQuotaInputDisabled = computed(() => {
   return typeof unref(showQuota) === 'undefined'
 })
 
-const changeSelectedQuotaOption = (option: { value: number; displayValue: string }) => {
+function changeSelectedQuotaOption(option: { value: number; displayValue: string }) {
   editUser.value.drive.quota.total = option.value
 }
 
-const changeSelectedGroupOption = (option: Group[]) => {
+function changeSelectedGroupOption(option: Group[]) {
   editUser.value.memberOf = option
 }
 
-const validateUserName = async () => {
+async function validateUserName() {
   formData.value.userName.valid = false
 
-  if (editUser.value.onPremisesSamAccountName.trim() === '') {
+  if (unref(editUser).onPremisesSamAccountName.trim() === '') {
     formData.value.userName.errorMessage = $gettext('User name cannot be empty')
     return false
   }
 
-  if (editUser.value.onPremisesSamAccountName.includes(' ')) {
+  if (unref(editUser).onPremisesSamAccountName.includes(' ')) {
     formData.value.userName.errorMessage = $gettext('User name cannot contain white spaces')
     return false
   }
 
   if (
-    editUser.value.onPremisesSamAccountName.length &&
-    !isNaN(parseInt(editUser.value.onPremisesSamAccountName[0]))
+    unref(editUser).onPremisesSamAccountName.length &&
+    !isNaN(parseInt(unref(editUser).onPremisesSamAccountName[0]))
   ) {
     formData.value.userName.errorMessage = $gettext('User name cannot start with a number')
     return false
   }
 
-  if (editUser.value.onPremisesSamAccountName.length > 255) {
+  if (unref(editUser).onPremisesSamAccountName.length > 255) {
     formData.value.userName.errorMessage = $gettext('User name cannot exceed 255 characters')
     return false
   }
 
-  if (user.onPremisesSamAccountName !== editUser.value.onPremisesSamAccountName) {
+  if (user.onPremisesSamAccountName !== unref(editUser).onPremisesSamAccountName) {
     try {
       // Validate username by fetching the user. If the request succeeds, we throw a validation error
       const client = clientService.graphAuthenticated
-      await client.users.getUser(editUser.value.onPremisesSamAccountName)
+      await client.users.getUser(unref(editUser).onPremisesSamAccountName)
       formData.value.userName.errorMessage = $gettext('User "%{userName}" already exists', {
-        userName: editUser.value.onPremisesSamAccountName
+        userName: unref(editUser).onPremisesSamAccountName
       })
       return false
     } catch {}
@@ -359,15 +360,15 @@ const validateUserName = async () => {
   return true
 }
 
-const validateDisplayName = () => {
+function validateDisplayName() {
   formData.value.displayName.valid = false
 
-  if (editUser.value.displayName.trim() === '') {
+  if (unref(editUser).displayName.trim() === '') {
     formData.value.displayName.errorMessage = $gettext('First and last name cannot be empty')
     return false
   }
 
-  if (editUser.value.displayName.length > 255) {
+  if (unref(editUser).displayName.length > 255) {
     formData.value.displayName.errorMessage = $gettext(
       'First and last name cannot exceed 255 characters'
     )
@@ -379,10 +380,10 @@ const validateDisplayName = () => {
   return true
 }
 
-const validateEmail = () => {
+function validateEmail() {
   formData.value.email.valid = false
 
-  if (!EmailValidator.validate(editUser.value.mail)) {
+  if (!EmailValidator.validate(unref(editUser).mail)) {
     formData.value.email.errorMessage = $gettext('Please enter a valid email')
     return false
   }
@@ -392,7 +393,7 @@ const validateEmail = () => {
   return true
 }
 
-const revertChanges = () => {
+function revertChanges() {
   editUser.value = cloneDeep(unref(user))
   Object.values(unref(formData)).forEach((formDataValue) => {
     formDataValue.valid = true
@@ -400,7 +401,7 @@ const revertChanges = () => {
   })
 }
 
-const onUpdateRole = (role: AppRoleAssignment) => {
+function onUpdateRole(role: AppRoleAssignment) {
   if (!unref(editUser).appRoleAssignments.length) {
     // FIXME: Add resourceId and principalId to be able to remove type cast
     unref(editUser).appRoleAssignments.push({
@@ -411,13 +412,13 @@ const onUpdateRole = (role: AppRoleAssignment) => {
   unref(editUser).appRoleAssignments[0].appRoleId = role.id
 }
 
-const onUpdatePassword = (password: string) => {
+function onUpdatePassword(password: string) {
   unref(editUser).passwordProfile = {
     password
   }
 }
 
-const onUpdateLogin = (value: boolean) => {
+function onUpdateLogin(value: boolean) {
   /**
    * Property accountEnabled won't be always set, but this still means, that login is allowed.
    * So we actually don't need to change the property if missing and not set to forbidden in the UI.
