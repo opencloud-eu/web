@@ -25,12 +25,13 @@ const { actions: userEditActions } = useUserActionsEdit()
 const { actions: userDeleteActions } = useUserActionsDelete()
 
 const menuItemsPrimaryActions = computed(() =>
-  [...unref(userEditActions), ...unref(userDeleteActions)].filter((item) =>
-    item.isVisible(unref(filterParams))
-  )
+  unref(userEditActions).filter((item) => item.isVisible(unref(filterParams)))
 )
 const menuItemsSecondaryActions = computed(() =>
   unref(editQuotaActions).filter((item) => item.isVisible(unref(filterParams)))
+)
+const menuItemsTertiaryActions = computed(() =>
+  unref(userDeleteActions).filter((item) => item.isVisible(unref(filterParams)))
 )
 const menuItemsQuaternaryActions = computed(() =>
   unref(showDetailsActions).filter((item) => item.isVisible(unref(filterParams)))
@@ -49,6 +50,12 @@ const menuSections = computed(() => {
     sections.push({
       name: 'secondary',
       items: unref(menuItemsSecondaryActions)
+    })
+  }
+  if (unref(menuItemsTertiaryActions).length) {
+    sections.push({
+      name: 'tertiary',
+      items: unref(menuItemsTertiaryActions)
     })
   }
   if (unref(menuItemsQuaternaryActions).length) {
