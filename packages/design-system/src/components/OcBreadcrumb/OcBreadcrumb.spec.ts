@@ -36,8 +36,15 @@ describe('OcBreadcrumb', () => {
     it('is rendered for the last list item if enabled via property', () => {
       const { wrapper } = getWrapper({ showContextActions: true })
       const lastItem = wrapper.findAll('.oc-breadcrumb-list-item').at(-1)
-      expect(wrapper.findAllComponents(OcBreadcrumbContextMenu).length).toBe(1)
+      expect(
+        wrapper.find('.oc-breadcrumb-list').findAllComponents(OcBreadcrumbContextMenu).length
+      ).toBe(1)
       expect(lastItem.findComponent(OcBreadcrumbContextMenu).exists()).toBe(true)
+    })
+    it('is rendered for the mobile current item if enabled via property', () => {
+      const { wrapper } = getWrapper({ showContextActions: true })
+      const current = wrapper.find('.oc-breadcrumb-mobile-current')
+      expect(current.findComponent(OcBreadcrumbContextMenu).exists()).toBe(true)
     })
     it('is not rendered if not enabled via property', () => {
       const { wrapper } = getWrapper({ showContextActions: false })

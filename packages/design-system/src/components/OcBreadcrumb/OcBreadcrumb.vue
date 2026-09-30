@@ -128,6 +128,9 @@
       class="flex items-center min-w-0"
       text-class="block min-w-0 truncate"
     />
+    <oc-breadcrumb-context-menu v-if="showContextActions" :padding-size="contextMenuPadding">
+      <slot name="contextMenu" />
+    </oc-breadcrumb-context-menu>
   </div>
 </template>
 
