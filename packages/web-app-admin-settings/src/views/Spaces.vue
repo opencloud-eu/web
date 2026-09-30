@@ -1,7 +1,6 @@
 <template>
   <app-template
-    ref="template"
-    :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
+    :loading="isLoading"
     :breadcrumbs="breadcrumbs"
     :side-bar-available-panels="sideBarAvailablePanels"
     :side-bar-panel-context="sideBarPanelContext"
@@ -86,16 +85,7 @@ import {
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import {
-  ComponentPublicInstance,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  provide,
-  ref,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
@@ -112,7 +102,6 @@ const { getExtensionActions } = useFileActions()
 
 let loadResourcesEventToken: string
 let updateQuotaForSpaceEventToken: string
-const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
 
@@ -128,13 +117,16 @@ const itemsPerPage = computed(() => {
   return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
 })
 
+// the members of a space (incl. its managers) are only part of the response with this expansion
+const spacePermissionsExpand = 'root($expand=permissions)'
+
 const loadResourcesTask = useTask(function* (signal) {
   const drives = yield* call(
     clientService.graphAuthenticated.drives.listAllDrives(
       {
         orderBy: 'name asc',
         filter: 'driveType eq project',
-        expand: 'root($expand=permissions)'
+        expand: spacePermissionsExpand
       },
       { signal }
     )
@@ -225,9 +217,25 @@ spacesStore.$onAction(({ name, args, after }) => {
     const loadedSpaceIds = spaceSettingsStore.spaces.map(({ id }) => id)
     if (isProjectSpaceResource(space) && !loadedSpaceIds.includes(space.id)) {
       spaceSettingsStore.upsertSpace(space)
+      loadSpaceWithPermissions(space.id)
     }
   })
 })
+
+// the created space from the FAB comes without its members, so it is loaded again with them
+async function loadSpaceWithPermissions(spaceId: string) {
+  try {
+    const [space] = await clientService.graphAuthenticated.drives.listAllDrives({
+      filter: `id eq '${spaceId}'`,
+      expand: spacePermissionsExpand
+    })
+    if (space) {
+      spaceSettingsStore.upsertSpace(space)
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 onMounted(async () => {
   await loadResourcesTask.perform()

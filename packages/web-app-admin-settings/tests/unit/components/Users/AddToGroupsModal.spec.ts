@@ -11,6 +11,20 @@ describe('AddToGroupsModal', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('group-select-stub').exists()).toBeTruthy()
   })
+  it('disables the confirm button until a group is selected', async () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
+    await selectGroups(wrapper, [mock<Group>()])
+    expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([false])
+  })
+  it('passes the selected groups to the input', async () => {
+    const groups = [mock<Group>()]
+    const { wrapper } = getWrapper()
+    await selectGroups(wrapper, groups)
+    expect(
+      wrapper.findComponent<typeof GroupSelect>('group-select-stub').props('selectedGroups')
+    ).toEqual(groups)
+  })
 
   describe('available groups', () => {
     it('lists all available groups if user is not assigned to any', () => {
@@ -38,7 +52,7 @@ describe('AddToGroupsModal', () => {
     })
   })
 
-  describe('method "onConfirm"', () => {
+  describe('onConfirm', () => {
     it('adds all users to the given groups', async () => {
       const users = [mock<User>({ memberOf: [] }), mock<User>({ memberOf: [] })]
       const groups = [mock<Group>(), mock<Group>()]
@@ -47,7 +61,7 @@ describe('AddToGroupsModal', () => {
       mocks.$clientService.graphAuthenticated.users.getUser.mockResolvedValue(
         mock<User>({ id: 'e3515ffb-d264-4dfc-8506-6c239f6673b5' })
       )
-      ;(wrapper.vm as any).selectedOptions = groups
+      await selectGroups(wrapper, groups)
 
       await wrapper.vm.onConfirm()
       const { showMessage } = useMessages()
@@ -64,7 +78,7 @@ describe('AddToGroupsModal', () => {
       const { wrapper, mocks } = getWrapper({ users, groups })
       mocks.$clientService.graphAuthenticated.groups.addMember.mockRejectedValue(new Error(''))
       mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValue(new Error(''))
-      ;(wrapper.vm as any).selectedOptions = groups
+      await selectGroups(wrapper, groups)
 
       await wrapper.vm.onConfirm()
       const { showErrorMessage } = useMessages()
@@ -74,6 +88,13 @@ describe('AddToGroupsModal', () => {
     })
   })
 })
+
+async function selectGroups(wrapper: ReturnType<typeof getWrapper>['wrapper'], groups: Group[]) {
+  wrapper
+    .findComponent<typeof GroupSelect>('group-select-stub')
+    .vm.$emit('selectedOptionChange', groups)
+  await wrapper.vm.$nextTick()
+}
 
 function getWrapper({ users = [mock<User>({ memberOf: [] })], groups = [mock<Group>()] } = {}) {
   const mocks = defaultComponentMocks()

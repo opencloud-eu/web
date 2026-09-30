@@ -13,7 +13,7 @@
   </no-content-message>
   <oc-table
     v-else
-    class="settings-spaces-table"
+    class="settings-spaces-table [&_tbody_tr]:select-none"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :fields="fields"
@@ -187,7 +187,7 @@ const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
 
 const { getIndicators } = useResourceIndicators()
 
-const filter = (spaces: SpaceResource[], filterTerm: string) => {
+function filter(spaces: SpaceResource[], filterTerm: string) {
   if (!(filterTerm || '').trim()) {
     return spaces
   }
@@ -243,7 +243,7 @@ watch(currentPage, () => {
 const allSpacesSelected = computed(() => {
   return unref(paginatedItems).length === unref(selectedSpaces).length
 })
-const isSpaceSelected = (space: SpaceResource) => {
+function isSpaceSelected(space: SpaceResource) {
   return unref(selectedSpaces).some((s) => s.id === space.id)
 }
 
@@ -325,7 +325,7 @@ const fields = computed<FieldType[]>(() => [
   }
 ])
 
-const getManagerNames = (space: SpaceResource) => {
+function getManagerNames(space: SpaceResource) {
   const allManagers = getSpaceManagers(space, sharesStore.graphRoles)
   if (!allManagers?.length) {
     return '-'
@@ -339,26 +339,26 @@ const getManagerNames = (space: SpaceResource) => {
   }
   return managerStr
 }
-const formatDate = (date: string) => {
+function formatDate(date: string) {
   return formatDateFromJSDate(new Date(date), language.current)
 }
-const formatDateRelative = (date: string) => {
+function formatDateRelative(date: string) {
   return formatRelativeDateFromJSDate(new Date(date), language.current)
 }
-const getTotalQuota = (space: SpaceResource) => {
+function getTotalQuota(space: SpaceResource) {
   if (space.spaceQuota.total === 0) {
     return $gettext('Unrestricted')
   }
 
   return formatFileSize(space.spaceQuota.total, language.current)
 }
-const getUsedQuota = (space: SpaceResource) => {
+function getUsedQuota(space: SpaceResource) {
   if (space.spaceQuota.used === undefined) {
     return '-'
   }
   return formatFileSize(space.spaceQuota.used, language.current)
 }
-const getRemainingQuota = (space: SpaceResource) => {
+function getRemainingQuota(space: SpaceResource) {
   if (space.spaceQuota.total === 0) {
     return $gettext('Unrestricted')
   }
@@ -367,11 +367,11 @@ const getRemainingQuota = (space: SpaceResource) => {
   }
   return formatFileSize(space.spaceQuota.remaining, language.current)
 }
-const getMemberCount = (space: SpaceResource) => {
+function getMemberCount(space: SpaceResource) {
   return space.root.permissions?.length || 1
 }
 
-const getSelectSpaceLabel = (space: SpaceResource) => {
+function getSelectSpaceLabel(space: SpaceResource) {
   return $gettext('Select %{ space }', { space: space.name })
 }
 
@@ -382,17 +382,14 @@ watch(
   }
 )
 
-const fileClicked = (data: [SpaceResource, MouseEvent | KeyboardEvent]) => {
-  const resource = data[0]
-  const eventData = data[1]
-  const isCheckboxClicked = (eventData?.target as HTMLElement).getAttribute('type') === 'checkbox'
-
-  const contextActionClicked =
-    (eventData?.target as HTMLElement)?.closest('div')?.id === 'oc-files-context-menu'
+function fileClicked([resource, eventData]: [SpaceResource, MouseEvent | KeyboardEvent]) {
+  const target = eventData?.target as HTMLElement
+  const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
+  const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
   if (contextActionClicked) {
     return
   }
-  if (!eventData.shiftKey && !eventData.metaKey && !eventData.ctrlKey) {
+  if (!eventData?.shiftKey && !eventData?.metaKey && !eventData?.ctrlKey) {
     eventBus.publish('app.files.shiftAnchor.reset')
   }
   if (eventData?.metaKey) {
@@ -412,10 +409,10 @@ const fileClicked = (data: [SpaceResource, MouseEvent | KeyboardEvent]) => {
   selectSpace(resource)
 }
 
-const showContextMenuOnBtnClick = (event: MouseEvent | KeyboardEvent, space: SpaceResource) => {
+function showContextMenuOnBtnClick(event: MouseEvent | KeyboardEvent, space: SpaceResource) {
   unref(contextMenuDrops)[space.id]?.show({ event })
 }
-const showContextMenuOnRightClick = (event: MouseEvent, space: SpaceResource) => {
+function showContextMenuOnRightClick(event: MouseEvent, space: SpaceResource) {
   event.preventDefault()
   if (!isSpaceSelected(space)) {
     spaceSettingsStore.setSelectedSpaces([space])
@@ -427,13 +424,13 @@ const showContextMenuOnRightClick = (event: MouseEvent, space: SpaceResource) =>
 const spaceDetailsLabel = computed(() => {
   return $gettext('Show details')
 })
-const showDetailsForSpace = (space: SpaceResource) => {
+function showDetailsForSpace(space: SpaceResource) {
   unselectAllSpaces()
   selectSpace(space)
   openSideBar()
 }
 
-const selectSpace = (selectedSpace: SpaceResource) => {
+function selectSpace(selectedSpace: SpaceResource) {
   lastSelectedSpaceIndex.value = findIndex(unref(spaces), (g) => g.id === selectedSpace.id)
   lastSelectedSpaceId.value = selectedSpace.id
   keyActions.resetSelectionCursor()
@@ -448,11 +445,11 @@ const selectSpace = (selectedSpace: SpaceResource) => {
   )
 }
 
-const unselectAllSpaces = () => {
+function unselectAllSpaces() {
   spaceSettingsStore.setSelectedSpaces([])
 }
 
-const selectSpaces = (spaces: SpaceResource[]) => {
+function selectSpaces(spaces: SpaceResource[]) {
   spaceSettingsStore.setSelectedSpaces(spaces)
 }
 </script>

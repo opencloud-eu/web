@@ -11,6 +11,20 @@ describe('RemoveFromGroupsModal', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find('group-select-stub').exists()).toBeTruthy()
   })
+  it('disables the confirm button until a group is selected', async () => {
+    const { wrapper } = getWrapper()
+    expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([true])
+    await selectGroups(wrapper, [mock<Group>()])
+    expect(wrapper.emitted('update:confirmDisabled').at(-1)).toEqual([false])
+  })
+  it('passes the selected groups to the input', async () => {
+    const groups = [mock<Group>()]
+    const { wrapper } = getWrapper()
+    await selectGroups(wrapper, groups)
+    expect(
+      wrapper.findComponent<typeof GroupSelect>('group-select-stub').props('selectedGroups')
+    ).toEqual(groups)
+  })
 
   describe('available groups', () => {
     it('lists only groups the user is assigned to', () => {
@@ -35,7 +49,7 @@ describe('RemoveFromGroupsModal', () => {
     })
   })
 
-  describe('method "onConfirm"', () => {
+  describe('onConfirm', () => {
     it('removes all users from the given groups', async () => {
       const users = [
         mock<User>({ memberOf: [{ id: '1' }] }),
@@ -47,7 +61,7 @@ describe('RemoveFromGroupsModal', () => {
       mocks.$clientService.graphAuthenticated.users.getUser.mockResolvedValue(
         mock<User>({ id: 'e3515ffb-d264-4dfc-8506-6c239f6673b5' })
       )
-      ;(wrapper.vm as any).selectedOptions = groups
+      await selectGroups(wrapper, groups)
 
       await wrapper.vm.onConfirm()
       const { showMessage } = useMessages()
@@ -67,7 +81,7 @@ describe('RemoveFromGroupsModal', () => {
       const { wrapper, mocks } = getWrapper({ users, groups })
       mocks.$clientService.graphAuthenticated.groups.deleteMember.mockRejectedValue(new Error(''))
       mocks.$clientService.graphAuthenticated.users.getUser.mockRejectedValue(new Error(''))
-      ;(wrapper.vm as any).selectedOptions = groups
+      await selectGroups(wrapper, groups)
 
       await wrapper.vm.onConfirm()
       const { showErrorMessage } = useMessages()
@@ -77,6 +91,13 @@ describe('RemoveFromGroupsModal', () => {
     })
   })
 })
+
+async function selectGroups(wrapper: ReturnType<typeof getWrapper>['wrapper'], groups: Group[]) {
+  wrapper
+    .findComponent<typeof GroupSelect>('group-select-stub')
+    .vm.$emit('selectedOptionChange', groups)
+  await wrapper.vm.$nextTick()
+}
 
 function getWrapper({ users = [mock<User>({ memberOf: [] })], groups = [mock<Group>()] } = {}) {
   const mocks = defaultComponentMocks()

@@ -2,7 +2,7 @@ import { Action, useSideBar } from '@opencloud-eu/web-pkg'
 import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
-export const useActionsShowDetails = () => {
+export function useActionsShowDetails() {
   const { $gettext } = useGettext()
   const { openSideBar } = useSideBar()
 

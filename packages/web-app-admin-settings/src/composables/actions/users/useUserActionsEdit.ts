@@ -2,7 +2,7 @@ import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
 import { UserAction, useSideBar } from '@opencloud-eu/web-pkg'
 
-export const useUserActionsEdit = () => {
+export function useUserActionsEdit() {
   const { $gettext } = useGettext()
   const { openSideBarPanel } = useSideBar()
 

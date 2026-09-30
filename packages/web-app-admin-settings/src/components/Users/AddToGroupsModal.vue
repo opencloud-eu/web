@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, Ref, ref, unref, watch } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import GroupSelect from './GroupSelect.vue'
@@ -37,8 +37,9 @@ const clientService = useClientService()
 const { $gettext, $ngettext } = useGettext()
 const userSettingsStore = useUserSettingsStore()
 
-const selectedOptions: Ref<Group[]> = ref([])
-const changeSelectedGroupOption = (options: Group[]) => {
+const selectedOptions = ref<Group[]>([])
+
+function changeSelectedGroupOption(options: Group[]) {
   selectedOptions.value = options
 }
 
@@ -60,20 +61,20 @@ watch(
   { immediate: true }
 )
 
-const onConfirm = async () => {
+async function onConfirm() {
   const client = clientService.graphAuthenticated
   const usersToFetch: string[] = []
-  const promises = unref(selectedOptions).reduce((acc, group) => {
+  const promises: Promise<unknown>[] = []
+  for (const group of unref(selectedOptions)) {
     for (const user of users) {
       if (!user.memberOf.find((userGroup) => userGroup.id === group.id)) {
-        acc.push(client.groups.addMember(group.id, user.id))
+        promises.push(client.groups.addMember(group.id, user.id))
         if (!usersToFetch.includes(user.id)) {
           usersToFetch.push(user.id)
         }
       }
     }
-    return acc
-  }, [])
+  }
 
   if (!promises.length) {
     const title = $ngettext(

@@ -26,7 +26,7 @@ const { $gettext, current: currentLanguage } = useGettext()
 
 const spaceStorageDetailsLabel = computed(() => {
   if (spaceQuota.total) {
-    return $gettext('%{used} of %{total} used (%{percentage}% used)', {
+    return $gettext('%{used} of %{total} used (%{percentage}%)', {
       used: unref(quotaUsed),
       total: unref(quotaTotal),
       percentage: unref(quotaUsagePercent).toString()

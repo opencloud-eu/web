@@ -1,114 +1,144 @@
 import EditPanel from '../../../../../src/components/Groups/SideBar/EditPanel.vue'
-import {
-  defaultComponentMocks,
-  defaultPlugins,
-  mockAxiosReject,
-  mount
-} from '@opencloud-eu/web-test-helpers'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { useMessages } from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
+import { CompareSaveDialog, useMessages } from '@opencloud-eu/web-pkg'
+import { OcTextInput } from '@opencloud-eu/design-system/components'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
+import { useGroupSettingsStore } from '../../../../../src/composables'
 
 describe('EditPanel', () => {
-  it('renders all available inputs', () => {
+  it('renders the display name input with the current group name', () => {
     const { wrapper } = getWrapper()
-    expect(wrapper.html()).toMatchSnapshot()
-  })
-  describe('method "revertChanges"', () => {
-    it('should revert changes on property editGroup', () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).editGroup.displayName = 'users'
-      ;(wrapper.vm as any).revertChanges()
-      expect((wrapper.vm as any).editGroup.displayName).toEqual('group')
-    })
-    it('should revert changes on property formData', () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).formData.displayName.valid = false
-      ;(wrapper.vm as any).formData.displayName.errorMessage = 'error'
-      ;(wrapper.vm as any).revertChanges()
-      expect((wrapper.vm as any).formData.displayName.valid).toBeTruthy()
-      expect((wrapper.vm as any).formData.displayName.errorMessage).toEqual('')
-    })
+    const input = getDisplayNameInput(wrapper)
+    expect(input.props('label')).toBe('Group name')
+    expect(input.props('modelValue')).toBe('group')
+    expect(input.props('errorMessage')).toBe('')
   })
 
-  describe('method "validateDisplayName"', () => {
-    it('should return true if displayName is valid', async () => {
+  describe('display name validation', () => {
+    it('ignores the result of a name check that finished after the name changed', async () => {
       const { wrapper, mocks } = getWrapper()
-      ;(wrapper.vm as any).editGroup.displayName = 'users'
-      const graphMock = mocks.$clientService.graphAuthenticated
-      const getGroupStub = graphMock.groups.getGroup.mockRejectedValue(() => mockAxiosReject())
-      expect(await (wrapper.vm as any).validateDisplayName()).toBeTruthy()
-      expect(getGroupStub).toHaveBeenCalled()
-    })
-    it('should return false if displayName is longer than 255 characters', async () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).editGroup.displayName = 'n'.repeat(256)
-      expect(await (wrapper.vm as any).validateDisplayName()).toBeFalsy()
-    })
-    it('should return false if displayName is empty', async () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).editGroup.displayName = ''
-      expect(await (wrapper.vm as any).validateDisplayName()).toBeFalsy()
-    })
-    it('should return false if displayName is already existing', async () => {
-      const { wrapper, mocks } = getWrapper()
-      ;(wrapper.vm as any).editGroup.displayName = 'users'
-      const graphMock = mocks.$clientService.graphAuthenticated
-      const getGroupStub = graphMock.groups.getGroup.mockResolvedValue(
-        mock<Group>({ displayName: 'group' })
+      let rejectLookup: (error: Error) => void
+      mocks.$clientService.graphAuthenticated.groups.getGroup.mockReturnValueOnce(
+        new Promise((_, reject) => {
+          rejectLookup = reject
+        }) as ReturnType<typeof mocks.$clientService.graphAuthenticated.groups.getGroup>
       )
-      expect(await (wrapper.vm as any).validateDisplayName()).toBeFalsy()
-      expect(getGroupStub).toHaveBeenCalled()
+      getDisplayNameInput(wrapper).vm.$emit('update:modelValue', 'ab')
+      await setDisplayName(wrapper, '')
+      rejectLookup(new Error(''))
+      await flushPromises()
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('Group name cannot be empty')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toEqual(true)
+    })
+    it('accepts a display name that is not taken yet', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getGroup } = mocks.$clientService.graphAuthenticated.groups
+      getGroup.mockRejectedValue(new Error(''))
+      await setDisplayName(wrapper, 'users')
+      expect(getGroup).toHaveBeenCalledWith('users')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
+    })
+    it('shows an error if the display name is longer than 255 characters', async () => {
+      const { wrapper } = getWrapper()
+      await setDisplayName(wrapper, 'n'.repeat(256))
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe(
+        'Group name cannot exceed 255 characters'
+      )
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeTruthy()
+    })
+    it('shows an error if the display name is empty', async () => {
+      const { wrapper } = getWrapper()
+      await setDisplayName(wrapper, '')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('Group name cannot be empty')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeTruthy()
+    })
+    it('shows an error if the display name is already taken', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { getGroup } = mocks.$clientService.graphAuthenticated.groups
+      getGroup.mockResolvedValue(mock<Group>({ displayName: 'users' }))
+      await setDisplayName(wrapper, 'users')
+      expect(getGroup).toHaveBeenCalledWith('users')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe(
+        'Group "users" already exists'
+      )
+    })
+    it('does not look up the group if the display name is unchanged', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await setDisplayName(wrapper, 'group')
+      expect(mocks.$clientService.graphAuthenticated.groups.getGroup).not.toHaveBeenCalled()
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('')
     })
   })
 
-  describe('method "onEditGroup"', () => {
-    it('should mark the changes as saved on success', async () => {
-      const { wrapper, mocks } = getWrapper()
+  describe('reverting changes', () => {
+    it('resets the display name and the validation state', async () => {
+      const { wrapper } = getWrapper()
+      await setDisplayName(wrapper, '')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).not.toBe('')
 
-      const clientService = mocks.$clientService
-      clientService.graphAuthenticated.groups.editGroup.mockResolvedValue()
-      clientService.graphAuthenticated.groups.getGroup.mockResolvedValue(
-        mock<Group>({ id: '1', displayName: 'administrators' })
-      )
+      getCompareSaveDialog(wrapper).vm.$emit('revert')
+      await flushPromises()
 
-      const editGroup = {
-        id: '1',
-        name: 'administrators'
-      }
-
-      const updatedGroup = await (wrapper.vm as any).onEditGroup(editGroup)
-
-      expect(updatedGroup.id).toEqual('1')
-      expect(updatedGroup.displayName).toEqual('administrators')
-      expect((wrapper.vm as any).saved).toBe(true)
+      expect(getDisplayNameInput(wrapper).props('modelValue')).toBe('group')
+      expect(getDisplayNameInput(wrapper).props('errorMessage')).toBe('')
+      expect(getCompareSaveDialog(wrapper).props('confirmButtonDisabled')).toBeFalsy()
     })
+  })
 
-    it('should show message on error', async () => {
+  describe('saving', () => {
+    it('edits the group and marks the changes as saved on success', async () => {
+      const { wrapper, mocks } = getWrapper()
+      const { groups } = mocks.$clientService.graphAuthenticated
+      groups.getGroup.mockRejectedValueOnce(new Error(''))
+      await setDisplayName(wrapper, 'administrators')
+
+      const updatedGroup = mock<Group>({ id: '1', displayName: 'administrators' })
+      groups.editGroup.mockResolvedValue(undefined)
+      groups.getGroup.mockResolvedValue(updatedGroup)
+
+      getCompareSaveDialog(wrapper).vm.$emit('confirm')
+      await flushPromises()
+
+      expect(groups.editGroup).toHaveBeenCalledWith(
+        '1',
+        expect.objectContaining({ id: '1', displayName: 'administrators' })
+      )
+      const { upsertGroup } = useGroupSettingsStore()
+      expect(upsertGroup).toHaveBeenCalledWith(updatedGroup)
+      expect(getCompareSaveDialog(wrapper).props('saved')).toBe(true)
+    })
+    it('shows an error message on failure', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper, mocks } = getWrapper()
-      const clientService = mocks.$clientService
-      clientService.graphAuthenticated.groups.editGroup.mockRejectedValue(undefined)
-      await (wrapper.vm as any).onEditGroup({})
+      mocks.$clientService.graphAuthenticated.groups.editGroup.mockRejectedValue(new Error(''))
+
+      getCompareSaveDialog(wrapper).vm.$emit('confirm')
+      await flushPromises()
 
       const { showErrorMessage } = useMessages()
       expect(showErrorMessage).toHaveBeenCalled()
-    })
-  })
-
-  describe('computed method "invalidFormData"', () => {
-    it('should be false if formData is invalid', () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).formData.displayName.valid = true
-      expect((wrapper.vm as any).invalidFormData).toBeFalsy()
-    })
-    it('should be true if formData is valid', () => {
-      const { wrapper } = getWrapper()
-      ;(wrapper.vm as any).formData.displayName.valid = false
-      expect((wrapper.vm as any).invalidFormData).toBeTruthy()
+      expect(getCompareSaveDialog(wrapper).props('saved')).toBe(false)
     })
   })
 })
+
+type Wrapper = ReturnType<typeof getWrapper>['wrapper']
+
+function getDisplayNameInput(wrapper: Wrapper) {
+  return wrapper.findComponent(OcTextInput)
+}
+
+function getCompareSaveDialog(wrapper: Wrapper) {
+  return wrapper.findComponent(CompareSaveDialog)
+}
+
+async function setDisplayName(wrapper: Wrapper, value: string) {
+  getDisplayNameInput(wrapper).vm.$emit('update:modelValue', value)
+  await flushPromises()
+}
 
 function getWrapper() {
   const mocks = defaultComponentMocks()
@@ -117,14 +147,14 @@ function getWrapper() {
     mocks,
     wrapper: mount(EditPanel, {
       props: {
-        group: { displayName: 'group', members: [] }
+        group: { id: '1', displayName: 'group', members: [] }
       },
       global: {
         mocks,
         provide: mocks,
         plugins: [...defaultPlugins()],
         stubs: {
-          'oc-text-input': true,
+          OcTextInput: true,
           'avatar-image': true,
           'oc-button': true,
           translate: true

@@ -4,8 +4,8 @@
     <slot v-if="!users.length" name="noResults" />
     <oc-table
       v-else
-      ref="tableRef"
-      class="users-table"
+      class="users-table [&_tbody_tr]:select-none"
+      :class="{ 'users-table-squashed': isSideBarOpen }"
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :fields="fields"
@@ -105,23 +105,16 @@
   </template>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { useGettext } from 'vue3-gettext'
-import {
-  ComponentPublicInstance,
-  computed,
-  defineComponent,
-  PropType,
-  ref,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { ComponentPublicInstance, computed, ref, unref } from 'vue'
 import {
   AppLoadingSpinner,
   ContextMenuQuickAction,
   eventBus,
   Pagination,
   queryItemAsString,
+  useCapabilityStore,
   useFileListHeaderPosition,
   useIsTopBarSticky,
   useKeyboardActions,
@@ -142,300 +135,232 @@ import {
   useKeyboardTableNavigation
 } from '../../composables/keyboardActions'
 import { findIndex } from 'lodash-es'
-import { OcDrop, OcFilterHighlight, OcTable } from '@opencloud-eu/design-system/components'
+import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
 
-export default defineComponent({
-  name: 'UsersList',
-  components: {
-    OcFilterHighlight,
-    UserAvatar,
-    AppLoadingSpinner,
-    ContextMenuQuickAction,
-    Pagination
+const { roles, isLoading = false } = defineProps<{ roles: AppRole[]; isLoading?: boolean }>()
+
+defineSlots<{
+  noResults?: () => unknown
+  contextMenu?: (props: { user: User }) => unknown
+}>()
+
+const { $gettext } = useGettext()
+const { isSticky } = useIsTopBarSticky()
+const sideBarStore = useSideBar()
+const { openSideBar, openSideBarPanel } = sideBarStore
+const { isSideBarOpen } = storeToRefs(sideBarStore)
+
+const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
+const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
+
+const lastSelectedUserIndex = ref(0)
+const lastSelectedUserId = ref<string>()
+const capabilityStore = useCapabilityStore()
+const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
+const userSettingsStore = useUserSettingsStore()
+const { users, selectedUsers } = storeToRefs(userSettingsStore)
+
+const displayNameQuery = useRouteQuery('q_displayName')
+const filterTerm = computed(() => queryItemAsString(unref(displayNameQuery)))
+
+function getRoleDisplayName(appRoleAssignments: AppRoleAssignment[]) {
+  const assignedRole = appRoleAssignments?.[0]
+  const role = roles.find(({ id }) => id === assignedRole?.appRoleId)
+  return $gettext(role?.displayName || '') || '-'
+}
+
+const sortFields: SortField[] = [
+  { name: 'onPremisesSamAccountName', sortable: true, sortDir: SortDir.Asc },
+  { name: 'displayName', sortable: true, sortDir: SortDir.Asc },
+  { name: 'mail', sortable: true, sortDir: SortDir.Asc },
+  {
+    name: 'role',
+    prop: 'appRoleAssignments',
+    sortable: getRoleDisplayName,
+    sortDir: SortDir.Asc
   },
-  props: {
-    roles: {
-      type: Array as PropType<AppRole[]>,
-      required: true
-    },
-    isLoading: {
-      type: Boolean,
-      default: false
-    }
+  {
+    name: 'accountEnabled',
+    sortable: (accountEnabled?: boolean) => (accountEnabled ?? true).toString(),
+    sortDir: SortDir.Asc
+  }
+]
+const { sortBy, sortDir, items, handleSort } = useSort<User>({
+  items: users,
+  fields: sortFields
+})
+
+const {
+  items: paginatedItems,
+  page: currentPage,
+  total: totalPages
+} = usePagination({ items, perPageDefault, perPageStoragePrefix })
+
+const keyActions = useKeyboardActions()
+useKeyboardTableNavigation(
+  keyActions,
+  paginatedItems,
+  selectedUsers,
+  lastSelectedUserIndex,
+  lastSelectedUserId
+)
+useKeyboardTableMouseActions(
+  keyActions,
+  paginatedItems,
+  selectedUsers,
+  lastSelectedUserIndex,
+  lastSelectedUserId
+)
+
+const allUsersSelected = computed(
+  () => unref(paginatedItems).length === unref(selectedUsers).length
+)
+const highlighted = computed(() => unref(selectedUsers).map((user) => user.id))
+const footerTextTotal = computed(() =>
+  $gettext('%{userCount} users in total', { userCount: unref(users).length.toString() })
+)
+
+const fields = computed<FieldType[]>(() => [
+  {
+    name: 'select',
+    title: '',
+    type: 'slot',
+    width: 'shrink',
+    headerType: 'slot'
   },
-  setup(props) {
-    const { $gettext } = useGettext()
-    const { isSticky } = useIsTopBarSticky()
-    const { openSideBar, openSideBarPanel } = useSideBar()
-
-    const tableRef = useTemplateRef<ComponentPublicInstance<typeof OcTable>>('tableRef')
-    const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
-    const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
-
-    const lastSelectedUserIndex = ref(0)
-    const lastSelectedUserId = ref<string>()
-    const capabilityStore = useCapabilityStore()
-    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
-    const userSettingsStore = useUserSettingsStore()
-    const { users, selectedUsers } = storeToRefs(userSettingsStore)
-
-    const isUserSelected = (user: User) => {
-      return unref(selectedUsers).some((s) => s.id === user.id)
-    }
-    const selectUser = (selectedUser: User) => {
-      lastSelectedUserIndex.value = findIndex(unref(users), (u) => u.id === selectedUser.id)
-      lastSelectedUserId.value = selectedUser.id
-      keyActions.resetSelectionCursor()
-
-      const isUserSelected = unref(selectedUsers).find((user) => user.id === selectedUser.id)
-      if (!isUserSelected) {
-        return userSettingsStore.addSelectedUser(selectedUser)
-      }
-
-      userSettingsStore.setSelectedUsers(
-        unref(selectedUsers).filter((user) => user.id !== selectedUser.id)
-      )
-    }
-
-    const unselectAllUsers = () => {
-      userSettingsStore.setSelectedUsers([])
-    }
-
-    const selectUsers = (users: User[]) => {
-      userSettingsStore.setSelectedUsers(users)
-    }
-
-    const showDetails = (user: User) => {
-      if (!isUserSelected(user)) {
-        selectUser(user)
-      }
-      openSideBar()
-    }
-
-    const showEditPanel = (user: User) => {
-      if (!isUserSelected(user)) {
-        selectUser(user)
-      }
-      openSideBarPanel('EditPanel')
-    }
-
-    const showUserAssigmentPanel = (user: User) => {
-      if (!isUserSelected(user)) {
-        selectUser(user)
-      }
-      openSideBarPanel('UserAssignmentsPanel')
-    }
-
-    const rowClicked = (data: [User, MouseEvent | KeyboardEvent]) => {
-      const resource = data[0]
-      const eventData = data[1]
-      const isCheckboxClicked =
-        (eventData?.target as HTMLElement).getAttribute('type') === 'checkbox'
-
-      const contextActionClicked =
-        (eventData?.target as HTMLElement)?.closest('div')?.id === 'oc-files-context-menu'
-      if (contextActionClicked) {
-        return
-      }
-
-      if (eventData?.metaKey) {
-        return eventBus.publish('app.resources.list.clicked.meta', resource)
-      }
-      if (eventData?.shiftKey) {
-        return eventBus.publish('app.resources.list.clicked.shift', {
-          resource,
-          skipTargetSelection: isCheckboxClicked
-        })
-      }
-      if (isCheckboxClicked) {
-        return
-      }
-      unselectAllUsers()
-      selectUser(resource)
-    }
-    const showContextMenuOnBtnClick = (event: MouseEvent | KeyboardEvent, user: User) => {
-      unref(contextMenuDrops)[user.id]?.show({ event })
-    }
-    const showContextMenuOnRightClick = (event: MouseEvent, user: User) => {
-      event.preventDefault()
-      if (!isUserSelected(user)) {
-        userSettingsStore.setSelectedUsers([user])
-      }
-      const anchorElement = createVirtualCursorElement(event as MouseEvent)
-      unref(contextMenuDrops)[user.id]?.show({ anchorElement })
-    }
-
-    const getRoleDisplayName = (appRoleAssignments: AppRoleAssignment[]) => {
-      const assignedRole = appRoleAssignments?.[0]
-
-      return (
-        $gettext(
-          props.roles.find((role) => role.id === assignedRole?.appRoleId)?.displayName || ''
-        ) || '-'
-      )
-    }
-
-    const getRoleDisplayNameByUser = (user: User) => {
-      return getRoleDisplayName(user.appRoleAssignments)
-    }
-
-    const sortFields: SortField[] = [
-      { name: 'onPremisesSamAccountName', sortable: true, sortDir: SortDir.Asc },
-      { name: 'displayName', sortable: true, sortDir: SortDir.Asc },
-      { name: 'mail', sortable: true, sortDir: SortDir.Asc },
-      {
-        name: 'role',
-        prop: 'appRoleAssignments',
-        sortable: getRoleDisplayName,
-        sortDir: SortDir.Asc
-      },
-      {
-        name: 'accountEnabled',
-        sortable: (accountEnabled?: boolean) => (accountEnabled ?? true).toString(),
-        sortDir: SortDir.Asc
-      }
-    ]
-    const { sortBy, sortDir, items, handleSort } = useSort<User>({
-      items: users,
-      fields: sortFields
-    })
-
-    const {
-      items: paginatedItems,
-      page: currentPage,
-      total: totalPages
-    } = usePagination({ items, perPageDefault, perPageStoragePrefix })
-
-    const keyActions = useKeyboardActions()
-    useKeyboardTableNavigation(
-      keyActions,
-      paginatedItems,
-      selectedUsers,
-      lastSelectedUserIndex,
-      lastSelectedUserId
-    )
-    useKeyboardTableMouseActions(
-      keyActions,
-      paginatedItems,
-      selectedUsers,
-      lastSelectedUserIndex,
-      lastSelectedUserId
-    )
-
-    const fields = computed<FieldType[]>(() => {
-      const cols: FieldType[] = [
+  {
+    name: 'avatar',
+    title: '',
+    type: 'slot',
+    width: 'shrink',
+    headerType: 'slot',
+    sortable: false
+  },
+  {
+    name: 'onPremisesSamAccountName',
+    title: $gettext('User name'),
+    sortable: true
+  },
+  {
+    name: 'displayName',
+    title: $gettext('First and last name'),
+    type: 'slot',
+    sortable: true
+  },
+  {
+    name: 'mail',
+    title: $gettext('Email'),
+    sortable: true
+  },
+  {
+    name: 'role',
+    title: $gettext('Role'),
+    type: 'slot',
+    sortable: true
+  },
+  ...(unref(graphUsersEditLoginAllowedDisabled)
+    ? []
+    : [
         {
-          name: 'select',
-          title: '',
-          type: 'slot',
-          width: 'shrink',
-          headerType: 'slot'
-        },
-        {
-          name: 'avatar',
-          title: '',
-          type: 'slot',
-          width: 'shrink',
-          headerType: 'slot',
-          sortable: false
-        },
-        {
-          name: 'onPremisesSamAccountName',
-          title: $gettext('User name'),
-          sortable: true
-        },
-        {
-          name: 'displayName',
-          title: $gettext('First and last name'),
-          type: 'slot',
-          sortable: true
-        },
-        {
-          name: 'mail',
-          title: $gettext('Email'),
-          sortable: true
-        },
-        {
-          name: 'role',
-          title: $gettext('Role'),
-          type: 'slot',
-          sortable: true
-        }
-      ]
-
-      if (!graphUsersEditLoginAllowedDisabled.value) {
-        cols.push({
           name: 'accountEnabled',
           title: $gettext('Login'),
           type: 'slot',
           sortable: true
-        })
-      }
-
-      cols.push({
-        name: 'actions',
-        title: $gettext('Actions'),
-        sortable: false,
-        type: 'slot',
-        alignH: 'right'
-      })
-
-      return cols
-    })
-
-    const displayNameQuery = useRouteQuery('q_displayName')
-    const filterTerm = computed(() => queryItemAsString(unref(displayNameQuery)))
-
-    return {
-      filterTerm,
-      showDetails,
-      showEditPanel,
-      showUserAssigmentPanel,
-      isUserSelected,
-      rowClicked,
-      contextMenuDrops,
-      showContextMenuOnBtnClick,
-      showContextMenuOnRightClick,
-      fileListHeaderY,
-      getRoleDisplayNameByUser,
-      items,
-      sortBy,
-      sortDir,
-      paginatedItems,
-      currentPage,
-      totalPages,
-      handleSort,
-      selectedUsers,
-      selectUser,
-      selectUsers,
-      unselectAllUsers,
-      users,
-      isSticky,
-      tableRef,
-      fields
-    }
-  },
-  computed: {
-    allUsersSelected() {
-      return this.paginatedItems.length === this.selectedUsers.length
-    },
-    footerTextTotal() {
-      return this.$gettext('%{userCount} users in total', {
-        userCount: this.users.length.toString()
-      })
-    },
-    highlighted() {
-      return this.selectedUsers.map((user) => user.id)
-    }
-  },
-  methods: {
-    getSelectUserLabel(user: User) {
-      return this.$gettext('Select %{ user }', { user: user.displayName })
-    }
+        } satisfies FieldType
+      ]),
+  {
+    name: 'actions',
+    title: $gettext('Actions'),
+    sortable: false,
+    type: 'slot',
+    alignH: 'right'
   }
-})
+])
+
+function isUserSelected(user: User) {
+  return unref(selectedUsers).some((s) => s.id === user.id)
+}
+
+function selectUser(user: User) {
+  lastSelectedUserIndex.value = findIndex(unref(users), (u) => u.id === user.id)
+  lastSelectedUserId.value = user.id
+  keyActions.resetSelectionCursor()
+
+  if (!isUserSelected(user)) {
+    return userSettingsStore.addSelectedUser(user)
+  }
+
+  userSettingsStore.setSelectedUsers(unref(selectedUsers).filter((u) => u.id !== user.id))
+}
+
+function selectUsers(users: User[]) {
+  userSettingsStore.setSelectedUsers(users)
+}
+
+function unselectAllUsers() {
+  userSettingsStore.setSelectedUsers([])
+}
+
+function getSelectUserLabel(user: User) {
+  return $gettext('Select %{ user }', { user: user.displayName })
+}
+
+function getRoleDisplayNameByUser(user: User) {
+  return getRoleDisplayName(user.appRoleAssignments)
+}
+
+function showDetails(user: User) {
+  if (!isUserSelected(user)) {
+    selectUser(user)
+  }
+  openSideBar()
+}
+
+function showEditPanel(user: User) {
+  if (!isUserSelected(user)) {
+    selectUser(user)
+  }
+  openSideBarPanel('EditPanel')
+}
+
+function rowClicked([user, event]: [User, MouseEvent | KeyboardEvent]) {
+  const target = event?.target as HTMLElement
+  const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
+  const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
+  if (contextActionClicked) {
+    return
+  }
+
+  if (event?.metaKey) {
+    return eventBus.publish('app.resources.list.clicked.meta', user)
+  }
+  if (event?.shiftKey) {
+    return eventBus.publish('app.resources.list.clicked.shift', {
+      resource: user,
+      skipTargetSelection: isCheckboxClicked
+    })
+  }
+  if (isCheckboxClicked) {
+    return
+  }
+
+  unselectAllUsers()
+  selectUser(user)
+}
+
+function showContextMenuOnBtnClick(event: MouseEvent | KeyboardEvent, user: User) {
+  unref(contextMenuDrops)[user.id]?.show({ event })
+}
+
+function showContextMenuOnRightClick(event: MouseEvent, user: User) {
+  event.preventDefault()
+  if (!isUserSelected(user)) {
+    userSettingsStore.setSelectedUsers([user])
+  }
+  const anchorElement = createVirtualCursorElement(event)
+  unref(contextMenuDrops)[user.id]?.show({ anchorElement })
+}
 </script>
 <style>
 @reference '@opencloud-eu/design-system/tailwind';

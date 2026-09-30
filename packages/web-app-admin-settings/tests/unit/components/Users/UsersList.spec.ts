@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import UsersList from '../../../../src/components/Users/UsersList.vue'
 import {
   defaultComponentMocks,
@@ -9,6 +10,7 @@ import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
 import { useUserSettingsStore } from '../../../../src/composables/stores/userSettings'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 
 const getUserMocks = () => [{ id: '1', displayName: 'jan' }] as User[]
@@ -18,20 +20,22 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('UsersList', () => {
-  describe('computed method "allUsersSelected"', () => {
-    it('should be true if all users are selected', () => {
+  describe('select all checkbox', () => {
+    it('is checked if all users are selected', () => {
       const { wrapper } = getWrapper({
+        mountType: mount,
         users: getUserMocks(),
         selectedUsers: getUserMocks()
       })
-      expect(wrapper.vm.allUsersSelected).toBeTruthy()
+      expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeTruthy()
     })
-    it('should be false if not every user is selected', () => {
+    it('is not checked if not every user is selected', () => {
       const { wrapper } = getWrapper({
+        mountType: mount,
         users: getUserMocks(),
         selectedUsers: []
       })
-      expect(wrapper.vm.allUsersSelected).toBeFalsy()
+      expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeFalsy()
     })
   })
 
@@ -43,7 +47,10 @@ describe('UsersList', () => {
           { onPremisesSamAccountName: 'admin' }
         ] as User[]
       })
-      expect(wrapper.vm.items.map((u) => u.onPremisesSamAccountName)).toEqual(['admin', 'user'])
+      expect(getTableData(wrapper).map((u) => u.onPremisesSamAccountName)).toEqual([
+        'admin',
+        'user'
+      ])
     })
     it.each([
       { sortDir: SortDir.Asc, expected: ['admin', 'user'] },
@@ -53,7 +60,7 @@ describe('UsersList', () => {
         users: [{ displayName: 'user' }, { displayName: 'admin' }] as User[],
         query: { 'sort-by': 'displayName', 'sort-dir': sortDir }
       })
-      expect(wrapper.vm.items.map((u) => u.displayName)).toEqual(expected)
+      expect(getTableData(wrapper).map((u) => u.displayName)).toEqual(expected)
     })
     it.each([
       { sortDir: SortDir.Asc, expected: ['1', '2'] },
@@ -66,18 +73,18 @@ describe('UsersList', () => {
         ] as User[],
         query: { 'sort-by': 'role', 'sort-dir': sortDir }
       })
-      expect(wrapper.vm.items.map((u) => u.id)).toEqual(expected)
+      expect(getTableData(wrapper).map((u) => u.id)).toEqual(expected)
     })
     it('treats users without "accountEnabled" as enabled when sorting by login', () => {
       const { wrapper } = getWrapper({
         users: [{ id: '1' }, { id: '2', accountEnabled: false }] as User[],
         query: { 'sort-by': 'accountEnabled', 'sort-dir': SortDir.Asc }
       })
-      expect(wrapper.vm.items.map((u) => u.id)).toEqual(['2', '1'])
+      expect(getTableData(wrapper).map((u) => u.id)).toEqual(['2', '1'])
     })
-    it('writes the sort parameters to the route query when calling "handleSort"', () => {
-      const { wrapper, mocks } = getWrapper()
-      wrapper.vm.handleSort({ sortBy: 'mail', sortDir: SortDir.Desc })
+    it('writes the sort parameters to the route query when the table emits "sort"', () => {
+      const { wrapper, mocks } = getWrapper({ users: getUserMocks() })
+      wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'mail', sortDir: SortDir.Desc })
       expect(mocks.$router.replace).toHaveBeenCalledWith({
         query: expect.objectContaining({ 'sort-by': 'mail', 'sort-dir': SortDir.Desc })
       })
@@ -99,51 +106,66 @@ describe('UsersList', () => {
     await wrapper.find('.users-table-btn-edit').trigger('click')
     expect(openSideBarPanel).toHaveBeenCalledWith('EditPanel')
   })
+  describe('squashed table', () => {
+    it.each([true, false])(
+      'sets the squashed class depending on the side bar being open (%s)',
+      async (isSideBarOpen) => {
+        const { wrapper } = getWrapper({ users: getUserMocks() })
+        useSideBar().isSideBarOpen = isSideBarOpen
+        await nextTick()
+        expect(wrapper.findComponent(OcTable).classes('users-table-squashed')).toBe(isSideBarOpen)
+      }
+    )
+  })
   describe('toggle selection', () => {
-    describe('selectUsers method', () => {
-      it('selects all users', () => {
-        const users = getUserMocks()
-        const { wrapper } = getWrapper({ mountType: shallowMount, users })
-        wrapper.vm.selectUsers(users)
-        const { setSelectedUsers } = useUserSettingsStore()
-        expect(setSelectedUsers).toHaveBeenCalledWith(users)
-      })
+    it('selects all users via the header checkbox', () => {
+      const users = getUserMocks()
+      const { wrapper } = getWrapper({ mountType: mount, users })
+      getSelectAllCheckbox(wrapper).vm.$emit('update:modelValue', true)
+      const { setSelectedUsers } = useUserSettingsStore()
+      expect(setSelectedUsers).toHaveBeenCalledWith(users)
     })
-    describe('selectUsers method', () => {
-      it('selects a user', () => {
-        const users = getUserMocks()
-        const { wrapper } = getWrapper({ mountType: shallowMount, users: [users[0]] })
-        wrapper.vm.selectUser(users[0])
-        const { addSelectedUser } = useUserSettingsStore()
-        expect(addSelectedUser).toHaveBeenCalledWith(users[0])
-      })
-      it('de-selects a selected user', () => {
-        const users = getUserMocks()
-        const { wrapper } = getWrapper({
-          mountType: shallowMount,
-          users: [users[0]],
-          selectedUsers: [users[0]]
-        })
-        wrapper.vm.selectUser(users[0])
-        const { setSelectedUsers } = useUserSettingsStore()
-        expect(setSelectedUsers).toHaveBeenCalledWith([])
-      })
+    it('de-selects all users via the header checkbox if all are selected', () => {
+      const users = getUserMocks()
+      const { wrapper } = getWrapper({ mountType: mount, users, selectedUsers: users })
+      getSelectAllCheckbox(wrapper).vm.$emit('update:modelValue', false)
+      const { setSelectedUsers } = useUserSettingsStore()
+      expect(setSelectedUsers).toHaveBeenCalledWith([])
     })
-    describe('unselectAllUsers method', () => {
-      it('de-selects all selected users', () => {
-        const users = getUserMocks()
-        const { wrapper } = getWrapper({
-          mountType: shallowMount,
-          users: [users[0]],
-          selectedUsers: [users[0]]
-        })
-        wrapper.vm.unselectAllUsers()
-        const { setSelectedUsers } = useUserSettingsStore()
-        expect(setSelectedUsers).toHaveBeenCalledWith([])
-      })
+    it('selects a user via its checkbox', () => {
+      const users = getUserMocks()
+      const { wrapper } = getWrapper({ mountType: mount, users })
+      getUserCheckbox(wrapper, users[0]).vm.$emit('update:modelValue', true)
+      const { addSelectedUser } = useUserSettingsStore()
+      expect(addSelectedUser).toHaveBeenCalledWith(users[0])
+    })
+    it('de-selects a selected user via its checkbox', () => {
+      const users = getUserMocks()
+      const { wrapper } = getWrapper({ mountType: mount, users, selectedUsers: users })
+      getUserCheckbox(wrapper, users[0]).vm.$emit('update:modelValue', false)
+      const { setSelectedUsers } = useUserSettingsStore()
+      expect(setSelectedUsers).toHaveBeenCalledWith([])
     })
   })
 })
+
+type Wrapper = ReturnType<typeof getWrapper>['wrapper']
+
+function getTableData(wrapper: Wrapper) {
+  return wrapper.findComponent(OcTable).props('data') as User[]
+}
+
+function getSelectAllCheckbox(wrapper: Wrapper) {
+  return wrapper
+    .findAllComponents(OcCheckbox)
+    .find((checkbox) => checkbox.props('label') === 'Select all users')
+}
+
+function getUserCheckbox(wrapper: Wrapper, user: User) {
+  return wrapper
+    .findAllComponents(OcCheckbox)
+    .find((checkbox) => checkbox.props('label') === `Select ${user.displayName}`)
+}
 
 function getWrapper({
   mountType = shallowMount,
@@ -182,8 +204,7 @@ function getWrapper({
             displayName: 'User',
             id: '4'
           }
-        ],
-        headerPosition: 0
+        ]
       },
       global: {
         plugins: [

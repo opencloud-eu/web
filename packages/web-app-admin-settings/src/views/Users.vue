@@ -1,6 +1,5 @@
 <template>
   <app-template
-    ref="template"
     :breadcrumbs="breadcrumbs"
     :side-bar-available-panels="sideBarAvailablePanels"
     :side-bar-panel-context="sideBarPanelContext"
@@ -88,11 +87,7 @@
       </div>
     </template>
     <template #mainContent>
-      <users-list
-        :is-loading="isLoading"
-        :roles="roles"
-        :class="{ 'users-table-squashed': isSideBarOpen }"
-      >
+      <users-list :is-loading="isLoading" :roles="roles">
         <template #contextMenu>
           <context-actions :items="selectedUsers" />
         </template>
@@ -122,7 +117,7 @@
   </app-template>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import AppTemplate from '../components/AppTemplate.vue'
 import UsersList from '../components/Users/UsersList.vue'
 import ContextActions from '../components/Users/ContextActions.vue'
@@ -145,365 +140,255 @@ import {
   useRoute,
   useRouteQuery,
   useRouter,
-  useSideBar,
   SideBarPanel,
   SideBarPanelContext,
   useCapabilityStore,
   useConfigStore,
   QueryValue
 } from '@opencloud-eu/web-pkg'
-import {
-  computed,
-  defineComponent,
-  ref,
-  onBeforeUnmount,
-  onMounted,
-  unref,
-  watch,
-  Ref,
-  ComponentPublicInstance,
-  useTemplateRef
-} from 'vue'
+import { computed, ref, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import { format } from 'util'
-import { omit } from 'lodash-es'
+import { isEqual, omit } from 'lodash-es'
 import { storeToRefs } from 'pinia'
-
 import { useUserSettingsStore } from '../composables/stores/userSettings'
 import { call } from '@opencloud-eu/web-client'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-export default defineComponent({
-  name: 'UsersView',
-  components: {
-    OcFilterHighlight,
-    NoContentMessage,
-    AppTemplate,
-    UsersList,
-    ContextActions,
-    ItemFilter
-  },
-  setup() {
-    const { $gettext } = useGettext()
-    const router = useRouter()
-    const route = useRoute()
-    const capabilityStore = useCapabilityStore()
-    const capabilityRefs = storeToRefs(capabilityStore)
-    const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
-    const clientService = useClientService()
-    const configStore = useConfigStore()
-    const sidebarStore = useSideBar()
-    const { isSideBarOpen } = storeToRefs(sidebarStore)
+const { $gettext } = useGettext()
+const router = useRouter()
+const route = useRoute()
+const { graphUsersEditLoginAllowedDisabled } = storeToRefs(useCapabilityStore())
+const clientService = useClientService()
+const configStore = useConfigStore()
 
-    const userSettingsStore = useUserSettingsStore()
-    const { users, selectedUsers } = storeToRefs(userSettingsStore)
+const userSettingsStore = useUserSettingsStore()
+const { users, selectedUsers } = storeToRefs(userSettingsStore)
 
-    const writableGroups = computed<Group[]>(() => {
-      return unref(groups).filter((g) => !g.groupTypes?.includes('ReadOnly'))
-    })
+const groups = ref<Group[]>([])
+const roles = ref<AppRole[]>([])
+const applicationId = ref<string>()
+const additionalUserDataLoadedForUserIds = ref<string[]>([])
+const sideBarLoading = ref(false)
+const isFilteringMandatory = configStore.options.userListRequiresFilter
 
-    const { actions: deleteActions } = useUserActionsDelete()
-    const { actions: removeFromGroupsActions } = useUserActionsRemoveFromGroups({
-      groups: writableGroups
-    })
-    const { actions: addToGroupsActions } = useUserActionsAddToGroups({
-      groups: writableGroups
-    })
-    const { actions: editLoginActions } = useUserActionsEditLogin()
-    const { actions: editQuotaActions } = useUserActionsEditQuota()
+const writableGroups = computed(() =>
+  unref(groups).filter((g) => !g.groupTypes?.includes('ReadOnly'))
+)
 
-    const groups = ref([])
-    const roles = ref([])
-    const additionalUserDataLoadedForUserIds = ref([])
-    const applicationId = ref<string>()
-    const selectedUserIds = computed(() =>
-      unref(selectedUsers).map((selectedUser) => selectedUser.id)
+const { actions: deleteActions } = useUserActionsDelete()
+const { actions: removeFromGroupsActions } = useUserActionsRemoveFromGroups({
+  groups: writableGroups
+})
+const { actions: addToGroupsActions } = useUserActionsAddToGroups({ groups: writableGroups })
+const { actions: editLoginActions } = useUserActionsEditLogin()
+const { actions: editQuotaActions } = useUserActionsEditQuota()
+
+function parseIdsQuery(value: QueryValue) {
+  return queryItemAsString(value)?.split('+') || []
+}
+
+const displayNameQuery = useRouteQuery('q_displayName')
+const filterGroupIds = ref(parseIdsQuery(unref(useRouteQuery('q_groups'))))
+const filterRoleIds = ref(parseIdsQuery(unref(useRouteQuery('q_roles'))))
+const filterTermDisplayName = ref(queryItemAsString(unref(displayNameQuery)) || '')
+const appliedDisplayNameFilter = ref(unref(filterTermDisplayName))
+
+const isFilteringActive = computed(
+  () =>
+    !!unref(filterGroupIds).length ||
+    !!unref(filterRoleIds).length ||
+    !!unref(appliedDisplayNameFilter)
+)
+
+function anyOf(ids: string[], condition: (id: string) => string) {
+  return ids.length ? `(${ids.map(condition).join(' or ')})` : ''
+}
+
+const usersFilter = computed(() =>
+  [
+    anyOf(unref(filterGroupIds), (id) => `memberOf/any(m:m/id eq '${id}')`),
+    anyOf(unref(filterRoleIds), (id) => `appRoleAssignments/any(m:m/appRoleId eq '${id}')`),
+    unref(appliedDisplayNameFilter) && `contains(displayName,'${unref(appliedDisplayNameFilter)}')`
+  ]
+    .filter(Boolean)
+    .join(' and ')
+)
+
+const loadGroupsTask = useTask(function* (signal) {
+  groups.value = yield* call(
+    clientService.graphAuthenticated.groups.listGroups({ orderBy: ['displayName'] }, { signal })
+  )
+}).restartable()
+
+const loadAppRolesTask = useTask(function* (signal) {
+  const applications = yield* call(
+    clientService.graphAuthenticated.applications.listApplications({ signal })
+  )
+  roles.value = applications[0].appRoles
+  applicationId.value = applications[0].id
+})
+
+const loadUsersTask = useTask(function* (signal) {
+  if (isFilteringMandatory && !unref(isFilteringActive)) {
+    return userSettingsStore.setUsers([])
+  }
+
+  const usersResponse = yield* call(
+    clientService.graphAuthenticated.users.listUsers(
+      { orderBy: ['displayName'], filter: unref(usersFilter), expand: ['appRoleAssignments'] },
+      { signal }
     )
-    const isFilteringMandatory = ref(configStore.options.userListRequiresFilter)
+  )
+  userSettingsStore.setUsers(usersResponse || [])
+})
 
-    const sideBarLoading = ref(false)
-    const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
-    const displayNameQuery = useRouteQuery('q_displayName')
-    const filterTermDisplayName = ref(queryItemAsString(unref(displayNameQuery)) || '')
+const loadResourcesTask = useTask(function* () {
+  yield Promise.all([loadUsersTask.perform(), loadGroupsTask.perform(), loadAppRolesTask.perform()])
+})
 
-    let editQuotaActionEventToken: string
+const isLoading = computed(
+  () =>
+    loadUsersTask.isRunning ||
+    !loadUsersTask.last ||
+    loadResourcesTask.isRunning ||
+    !loadResourcesTask.last
+)
 
-    const loadGroupsTask = useTask(function* (signal) {
-      groups.value = yield* call(
-        clientService.graphAuthenticated.groups.listGroups({ orderBy: ['displayName'] }, { signal })
-      )
-    }).restartable()
+/**
+ * Reloads the user with all attributes, which are not loaded
+ * while listing the users for performance reasons.
+ */
+const loadAdditionalUserDataTask = useTask(function* (signal, user: User) {
+  if (unref(additionalUserDataLoadedForUserIds).includes(user.id)) {
+    return
+  }
 
-    const loadAppRolesTask = useTask(function* (signal) {
-      const applications = yield* call(
-        clientService.graphAuthenticated.applications.listApplications({ signal })
-      )
-      roles.value = applications[0].appRoles
-      applicationId.value = applications[0].id
-    })
+  const data = yield* call(clientService.graphAuthenticated.users.getUser(user.id, {}, { signal }))
+  additionalUserDataLoadedForUserIds.value.push(user.id)
+  Object.assign(user, data)
+})
 
-    const loadUsersTask = useTask(function* (signal) {
-      if (unref(isFilteringMandatory) && !unref(isFilteringActive)) {
-        return userSettingsStore.setUsers([])
-      }
+function reloadFilteredUsers() {
+  loadUsersTask.perform()
+  if (unref(selectedUsers).length) {
+    // only reset the selection if there is one because it messes with the focus otherwise
+    userSettingsStore.setSelectedUsers([])
+  }
+  additionalUserDataLoadedForUserIds.value = []
+  return router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+}
 
-      const filter = Object.values(filters)
-        .reduce((acc, f) => {
-          if ('value' in f) {
-            if (unref(f.value)) {
-              acc.push(format(f.query, unref(f.value)))
-            }
-            return acc
-          }
+function filterGroups(groups: Group[]) {
+  filterGroupIds.value = groups.map((g) => g.id)
+  return reloadFilteredUsers()
+}
 
-          const str = unref(f.ids)
-            .map((id) => format(f.query, id))
-            .join(' or ')
-          if (str) {
-            acc.push(`(${str})`)
-          }
-          return acc
-        }, [])
-        .filter(Boolean)
-        .join(' and ')
+function filterRoles(roles: AppRole[]) {
+  filterRoleIds.value = roles.map((r) => r.id)
+  return reloadFilteredUsers()
+}
 
-      const usersResponse = yield clientService.graphAuthenticated.users.listUsers(
-        {
-          orderBy: ['displayName'],
-          filter,
-          expand: ['appRoleAssignments']
-        },
-        { signal }
-      )
-      userSettingsStore.setUsers(usersResponse || [])
-    })
-
-    const isLoading = computed(() => {
-      return (
-        loadUsersTask.isRunning ||
-        !loadUsersTask.last ||
-        loadResourcesTask.isRunning ||
-        !loadResourcesTask.last
-      )
-    })
-
-    const loadResourcesTask = useTask(function* () {
-      yield Promise.all([
-        loadUsersTask.perform(),
-        loadGroupsTask.perform(),
-        loadAppRolesTask.perform()
-      ])
-    })
-
-    /**
-     * This function reloads the user with expanded attributes,
-     * this is necessary as we don't load all the data while listing the users
-     * for performance reasons
-     */
-    const loadAdditionalUserDataTask = useTask(function* (signal, user, forceReload = false) {
-      /**
-       * Prevent load additional user data multiple times if not needed
-       */
-      if (!forceReload && unref(additionalUserDataLoadedForUserIds).includes(user.id)) {
-        return
-      }
-
-      const data = yield clientService.graphAuthenticated.users.getUser(user.id, {}, { signal })
-      unref(additionalUserDataLoadedForUserIds).push(user.id)
-
-      Object.assign(user, data)
-    })
-
-    const resetPagination = () => {
-      return router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+async function filterDisplayName() {
+  await router.push({
+    ...unref(route),
+    query: {
+      ...omit(unref(route).query, 'q_displayName'),
+      ...(unref(filterTermDisplayName) && { q_displayName: unref(filterTermDisplayName) })
     }
+  })
+  appliedDisplayNameFilter.value = unref(filterTermDisplayName)
+  return reloadFilteredUsers()
+}
 
-    const filters: Record<
-      string,
-      { param: Ref<QueryValue>; query: string; ids?: Ref<string[]>; value?: Ref<string> }
-    > = {
-      groups: {
-        param: useRouteQuery('q_groups'),
-        query: `memberOf/any(m:m/id eq '%s')`,
-        ids: ref([])
-      },
-      roles: {
-        param: useRouteQuery('q_roles'),
-        query: `appRoleAssignments/any(m:m/appRoleId eq '%s')`,
-        ids: ref([])
-      },
-      displayName: {
-        param: useRouteQuery('q_displayName'),
-        query: `contains(displayName,'%s')`,
-        value: ref('')
-      }
-    }
+const batchActions = computed(() =>
+  [
+    ...unref(deleteActions),
+    ...unref(editQuotaActions),
+    ...unref(addToGroupsActions),
+    ...unref(removeFromGroupsActions),
+    ...(unref(graphUsersEditLoginAllowedDisabled) ? [] : unref(editLoginActions))
+  ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
+)
 
-    const isFilteringActive = computed(() => {
-      return (
-        unref(filters.groups.ids)?.length ||
-        unref(filters.roles.ids)?.length ||
-        unref(filters.displayName.value)?.length
-      )
-    })
-    const filterGroups = (groups: Group[]) => {
-      filters.groups.ids.value = groups.map((g) => g.id)
-      loadUsersTask.perform()
-      if (userSettingsStore.selectedUsers.length) {
-        // only reset selection if there are selected users because is messes with the focus otherwise
-        userSettingsStore.setSelectedUsers([])
-      }
-      additionalUserDataLoadedForUserIds.value = []
-      return resetPagination()
-    }
-    const filterRoles = (roles: AppRole[]) => {
-      filters.roles.ids.value = roles.map((r) => r.id)
-      loadUsersTask.perform()
-      if (userSettingsStore.selectedUsers.length) {
-        // only reset selection if there are selected users because is messes with the focus otherwise
-        userSettingsStore.setSelectedUsers([])
-      }
-      additionalUserDataLoadedForUserIds.value = []
-      return resetPagination()
-    }
-    const filterDisplayName = async () => {
-      await router.push({
-        ...unref(route),
-        query: {
-          ...omit(unref(route).query, 'q_displayName'),
-          ...(unref(filterTermDisplayName) && { q_displayName: unref(filterTermDisplayName) })
-        }
-      })
-      filters.displayName.value.value = unref(filterTermDisplayName)
-      loadUsersTask.perform()
+const breadcrumbs = computed(() => [
+  {
+    text: $gettext('Users'),
+    onClick: () => {
       userSettingsStore.setSelectedUsers([])
-      additionalUserDataLoadedForUserIds.value = []
-      return resetPagination()
-    }
-
-    watch(selectedUserIds, async () => {
-      sideBarLoading.value = true
-      await Promise.all(
-        unref(selectedUsers).map((user) => loadAdditionalUserDataTask.perform(user))
-      )
-      sideBarLoading.value = false
-    })
-
-    const batchActions = computed(() => {
-      return [
-        ...unref(deleteActions),
-        ...unref(editQuotaActions),
-        ...unref(addToGroupsActions),
-        ...unref(removeFromGroupsActions),
-        ...(!graphUsersEditLoginAllowedDisabled.value ? unref(editLoginActions) : [])
-      ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
-    })
-
-    const updateSpaceQuota = ({ spaceId, quota }: { spaceId: string; quota: Quota }) => {
-      const user = unref(users).find((u) => u.drive?.id === spaceId)
-      user.drive.quota = quota
-      userSettingsStore.upsertUser(user)
-    }
-
-    onMounted(async () => {
-      for (const f in filters) {
-        if (unref(filters[f]).hasOwnProperty('ids')) {
-          filters[f].ids.value = queryItemAsString(unref(filters[f].param))?.split('+') || []
-        }
-        if (unref(filters[f]).hasOwnProperty('value')) {
-          filters[f].value.value = queryItemAsString(unref(filters[f].param))
-        }
-      }
-
-      await loadResourcesTask.perform()
-
-      editQuotaActionEventToken = eventBus.subscribe(
-        'app.admin-settings.users.user.quota.updated',
-        updateSpaceQuota
-      )
-    })
-
-    onBeforeUnmount(() => {
-      userSettingsStore.reset()
-
-      eventBus.unsubscribe('app.admin-settings.users.user.quota.updated', editQuotaActionEventToken)
-    })
-
-    const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, User>>(() => {
-      return {
-        parent: null,
-        items: unref(selectedUsers)
-      }
-    })
-    const sideBarAvailablePanels = [
-      {
-        name: 'DetailsPanel',
-        icon: 'user',
-        title: () => $gettext('Details'),
-        component: DetailsPanel,
-        componentAttrs: ({ items }) => ({
-          user: items.length === 1 ? items[0] : null,
-          users: items,
-          usersCount: unref(users).length,
-          roles: unref(roles)
-        }),
-        isRoot: () => true,
-        isVisible: () => true
-      },
-      {
-        name: 'EditPanel',
-        icon: 'pencil',
-        title: () => $gettext('Edit user'),
-        component: EditPanel,
-        isVisible: ({ items }) => items.length === 1,
-        componentAttrs: ({ items }) => ({
-          user: items.length === 1 ? items[0] : null,
-          roles: unref(roles),
-          groups: unref(groups),
-          applicationId: unref(applicationId)
-        })
-      }
-    ] satisfies SideBarPanel<unknown, unknown, User>[]
-
-    return {
-      maxQuota: capabilityRefs.spacesMaxQuota,
-      template,
-      selectedUsers,
-      sideBarLoading,
-      users,
-      roles,
-      groups,
-      isLoading,
-      loadResourcesTask,
-      loadAdditionalUserDataTask,
-      clientService,
-      batchActions,
-      filterGroups,
-      filterRoles,
-      filterDisplayName,
-      filterTermDisplayName,
-      writableGroups,
-      isFilteringActive,
-      isFilteringMandatory,
-      sideBarPanelContext,
-      sideBarAvailablePanels,
-      userSettingsStore,
-      isSideBarOpen
-    }
-  },
-  computed: {
-    breadcrumbs() {
-      return [
-        {
-          text: this.$gettext('Users'),
-          onClick: () => {
-            this.userSettingsStore.setSelectedUsers([])
-            this.loadResourcesTask.perform()
-          }
-        }
-      ]
+      loadResourcesTask.perform()
     }
   }
+])
+
+const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, User>>(() => ({
+  parent: null,
+  items: unref(selectedUsers)
+}))
+
+const sideBarAvailablePanels = [
+  {
+    name: 'DetailsPanel',
+    icon: 'user',
+    title: () => $gettext('Details'),
+    component: DetailsPanel,
+    componentAttrs: ({ items }) => ({
+      user: items.length === 1 ? items[0] : null,
+      users: items,
+      usersCount: unref(users).length,
+      roles: unref(roles)
+    }),
+    isRoot: () => true,
+    isVisible: () => true
+  },
+  {
+    name: 'EditPanel',
+    icon: 'pencil',
+    title: () => $gettext('Edit user'),
+    component: EditPanel,
+    isVisible: ({ items }) => items.length === 1,
+    componentAttrs: ({ items }) => ({
+      user: items.length === 1 ? items[0] : null,
+      roles: unref(roles),
+      groups: unref(groups),
+      applicationId: unref(applicationId)
+    })
+  }
+] satisfies SideBarPanel<unknown, unknown, User>[]
+
+function updateSpaceQuota({ spaceId, quota }: { spaceId: string; quota: Quota }) {
+  const user = unref(users).find((u) => u.drive?.id === spaceId)
+  user.drive.quota = quota
+  userSettingsStore.upsertUser(user)
+}
+
+watch(
+  () => unref(selectedUsers).map(({ id }) => id),
+  async (selectedIds, previousSelectedIds) => {
+    // the quick action buttons select the user and the click also reaches the row,
+    // which sets the same selection again
+    if (isEqual(selectedIds, previousSelectedIds)) {
+      return
+    }
+    sideBarLoading.value = true
+    await Promise.all(unref(selectedUsers).map((user) => loadAdditionalUserDataTask.perform(user)))
+    sideBarLoading.value = false
+  }
+)
+
+let editQuotaActionEventToken: string
+
+onMounted(async () => {
+  await loadResourcesTask.perform()
+
+  editQuotaActionEventToken = eventBus.subscribe(
+    'app.admin-settings.users.user.quota.updated',
+    updateSpaceQuota
+  )
+})
+
+onBeforeUnmount(() => {
+  userSettingsStore.reset()
+  eventBus.unsubscribe('app.admin-settings.users.user.quota.updated', editQuotaActionEventToken)
 })
 </script>
