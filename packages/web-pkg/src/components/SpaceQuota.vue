@@ -2,6 +2,7 @@
   <div class="space-quota">
     <p class="mb-2 mt-0" v-text="spaceStorageDetailsLabel" />
     <oc-progress
+      v-if="spaceQuota.total"
       :value="quotaUsagePercent"
       :max="100"
       size="small"

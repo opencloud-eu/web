@@ -1,7 +1,7 @@
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import DetailsPanel from '../../../../../src/components/Users/SideBar/DetailsPanel.vue'
 import { PartialComponentProps, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { SideBarNoSelection } from '@opencloud-eu/web-pkg'
+import { SideBarNoSelection, SpaceQuota } from '@opencloud-eu/web-pkg'
 
 const defaultUser = { displayName: 'user', memberOf: [] } as User
 
@@ -65,6 +65,19 @@ describe('DetailsPanel', () => {
         props: { user: null, users: [defaultUser, { displayName: 'user2' } as User] }
       })
       expect(wrapper.find('#oc-users-details-multiple-sidebar').exists()).toBeTruthy()
+    })
+  })
+
+  describe('quota', () => {
+    it('shows the quota usage if the user has a drive', () => {
+      const quota = { total: 10, used: 1, remaining: 9, state: 'normal' }
+      const user = { ...defaultUser, drive: { quota } } as User
+      const { wrapper } = getWrapper({ props: { user, users: [user] } })
+      expect(wrapper.findComponent(SpaceQuota).props('spaceQuota')).toEqual(quota)
+    })
+    it('does not show the quota usage if the user has no drive yet', () => {
+      const { wrapper } = getWrapper({ props: { user: defaultUser, users: [defaultUser] } })
+      expect(wrapper.findComponent(SpaceQuota).exists()).toBeFalsy()
     })
   })
 })

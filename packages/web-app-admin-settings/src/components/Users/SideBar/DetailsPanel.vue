@@ -51,7 +51,7 @@
 
       <dt>{{ $gettext('Quota') }}</dt>
       <dd>
-        <span v-if="showUserQuota" v-text="quotaDisplayValue" />
+        <space-quota v-if="showUserQuota" :space-quota="user.drive.quota" />
         <span v-else>
           <span class="mr-1">-</span>
           <oc-contextual-helper
@@ -84,8 +84,8 @@ import { AppRole, User } from '@opencloud-eu/web-client/graph/generated'
 import {
   SideBarMultipleSelection,
   SideBarNoSelection,
+  SpaceQuota,
   UserAvatar,
-  formatFileSize,
   useCapabilityStore
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -103,7 +103,7 @@ const {
   user?: User
 }>()
 
-const { current: currentLanguage, $gettext, $ngettext } = useGettext()
+const { $gettext, $ngettext } = useGettext()
 const capabilityStore = useCapabilityStore()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 
@@ -140,11 +140,6 @@ const groupsDisplayValue = computed(() => {
 })
 
 const showUserQuota = computed(() => 'total' in (user.drive?.quota || {}))
-const quotaDisplayValue = computed(() => {
-  return user.drive.quota.total === 0
-    ? $gettext('No restriction')
-    : formatFileSize(user.drive.quota.total, currentLanguage)
-})
 
 const loginDisplayValue = computed(() => {
   return user.accountEnabled === false ? $gettext('Forbidden') : $gettext('Allowed')
