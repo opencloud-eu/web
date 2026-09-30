@@ -250,8 +250,6 @@ async function loadSpaceImage(space: SpaceResource) {
   }
 }
 
-// load the images of the spaces showing up on the current page, and again after an image was set
-// (e.g. via the "Customize" menu)
 watch(
   () => unref(paginatedItems).map(({ id }) => id),
   (spaceIds, previousSpaceIds = []) => {

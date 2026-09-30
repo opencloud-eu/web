@@ -20,10 +20,6 @@ import { storeToRefs } from 'pinia'
 import ResourceIcon from '../FilesList/ResourceIcon.vue'
 import { useSpacesStore } from '../../composables/piniaStores'
 
-/**
- * Small space image for lists and tables. Shows a spinner while the image is loading
- * and falls back to the space icon if the space has no image.
- */
 const { space } = defineProps<{ space: SpaceResource }>()
 
 const { imagesLoading } = storeToRefs(useSpacesStore())

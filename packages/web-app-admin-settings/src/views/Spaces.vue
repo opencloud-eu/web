@@ -259,7 +259,6 @@ watch(
   }
 )
 
-// e.g. after deleting spaces: drop them from the selection
 watch(
   () => unref(spaces).length,
   () => {

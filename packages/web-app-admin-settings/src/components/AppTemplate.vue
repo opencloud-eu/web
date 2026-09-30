@@ -159,10 +159,8 @@ const { isSticky } = useIsTopBarSticky()
 const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
 const limitedScreenSpace = ref(false)
 
-// the last breadcrumb is the title of the admin settings page
 const pageTitle = computed(() => breadcrumbs.at(-1)?.text || '')
 
-// so screen reader users know about the batch actions
 const selectedItemsAnnouncement = computed(() => {
   if (batchActionItems.length === 0) {
     return $gettext('No items selected.')

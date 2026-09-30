@@ -56,7 +56,6 @@ const performAction = async (args: {
       contextMenuActionButtonSelector += util.format(contextMenuActionButton, action)
       break
     case 'edit-description':
-      // the subtitle can be edited via the "Customize" submenu
       await page.locator(customizeMenuTrigger).click()
       contextMenuActionButtonSelector = util.format(contextMenuActionButton, action)
       break
