@@ -98,7 +98,8 @@ export const useSpaceActions = (): ActionExtension[] => {
       extensionPointIds: [
         contextActionsExtensionPoint.id,
         batchActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesBatchActionsExtensionPointId
       ],
       type: 'action',
       action: {
