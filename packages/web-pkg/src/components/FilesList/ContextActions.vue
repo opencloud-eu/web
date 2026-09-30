@@ -37,11 +37,11 @@ const menuItemsPrimaryDrop = computed(() => {
 })
 
 const menuItemsSecondary = computed(() =>
-  unref(extensionContextActions).filter((a) => a.category === 'secondary')
+  unref(extensionContextActions).filter((a) => !a.category || a.category === 'secondary')
 )
 
 const menuItemsTertiary = computed(() =>
-  unref(extensionContextActions).filter((a) => !a.category || a.category === 'tertiary')
+  unref(extensionContextActions).filter((a) => a.category === 'tertiary')
 )
 
 const menuItemsQuaternary = computed(() =>
