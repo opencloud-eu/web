@@ -5,5 +5,12 @@
     "description": "The padding size of the context menu dropdown.",
     "default": "medium",
     "type": "SizeType | 'remove'"
+  },
+  {
+    "name": "title",
+    "required": false,
+    "description": "The title of the context menu dropdown, only displayed in the bottom drawer in the mobile view.",
+    "default": "",
+    "type": "string"
   }
 ]
