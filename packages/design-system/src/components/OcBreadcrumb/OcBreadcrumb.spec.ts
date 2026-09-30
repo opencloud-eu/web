@@ -46,6 +46,11 @@ describe('OcBreadcrumb', () => {
       const current = wrapper.find('.oc-breadcrumb-mobile-current')
       expect(current.findComponent(OcBreadcrumbContextMenu).exists()).toBe(true)
     })
+    it('uses the current folder name as title', () => {
+      const { wrapper } = getWrapper({ showContextActions: true })
+      const menus = wrapper.findAllComponents(OcBreadcrumbContextMenu)
+      expect(menus.map((menu) => menu.props('title'))).toEqual([items[3].text, items[3].text])
+    })
     it('is not rendered if not enabled via property', () => {
       const { wrapper } = getWrapper({ showContextActions: false })
       expect(wrapper.findComponent(OcBreadcrumbContextMenu).exists()).toBe(false)
