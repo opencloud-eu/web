@@ -6,6 +6,7 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import {
+  eventBus,
   ProcessorType,
   queryItemAsString,
   useLoadPreview,
@@ -110,35 +111,16 @@ describe('SpacesList', () => {
         value: 'blob:preview'
       })
     })
-    it('loads the image of a space again when it changes', async () => {
-      // plain spaces, filled and changed via the store like in the app. the table rows aren't
-      // rendered (shallowMount), they would need the methods of real space resources
-      const spaces = ['1', '2'].map((id) => ({
-        id,
-        name: `space ${id}`,
-        driveType: 'project',
-        root: { permissions: [] as Permission[] },
-        spaceQuota: { total: 1, used: 0, remaining: 1 },
-        spaceImageData: { eTag: '1' }
-      }))
-      const { loadPreview } = getWrapper({ mountType: shallowMount, stubActions: false })
-      const spacesStore = useSpacesStore()
-      spacesStore.setAllProjectSpaces(spaces as SpaceResource[])
+    it('loads the image of a space again after it was set', async () => {
+      const { loadPreview } = getWrapper({ spaces: spaceMocks })
       await flushPromises()
-      expect(loadPreview).toHaveBeenCalledTimes(spaces.length)
       loadPreview.mockClear()
 
-      spacesStore.updateSpaceField({
-        id: spaces[1].id,
-        field: 'spaceImageData',
-        value: { id: 'image', eTag: '2' }
-      })
+      eventBus.publish('app.files.spaces.uploaded-image', spaceMocks[1])
       await flushPromises()
 
       expect(loadPreview).toHaveBeenCalledTimes(1)
-      expect(loadPreview).toHaveBeenCalledWith(
-        expect.objectContaining({ space: expect.objectContaining({ id: spaces[1].id }) })
-      )
+      expect(loadPreview).toHaveBeenCalledWith(expect.objectContaining({ space: spaceMocks[1] }))
     })
   })
 

@@ -142,7 +142,7 @@ import {
   OcFilterHighlight,
   OcStatusIndicators
 } from '@opencloud-eu/design-system/components'
-import { ComponentPublicInstance, computed, ref, unref, watch } from 'vue'
+import { ComponentPublicInstance, computed, onBeforeUnmount, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -257,17 +257,25 @@ async function loadSpaceImage(space: SpaceResource) {
   }
 }
 
-// (re)load the images of the visible spaces, also when an image is set or changed later on,
-// e.g. via the "Customize" menu or the image chosen when creating a space
+// like the spaces list of the files app: load the images of the spaces showing up on the current
+// page, and again after an image was set (e.g. via the "Customize" menu)
 watch(
-  () => unref(paginatedItems).map((space) => `${space.id}:${space.spaceImageData?.eTag}`),
-  (imageKeys, previousImageKeys = []) => {
+  () => unref(paginatedItems).map(({ id }) => id),
+  (spaceIds, previousSpaceIds = []) => {
     unref(paginatedItems)
-      .filter((_, index) => !previousImageKeys.includes(imageKeys[index]))
+      .filter(({ id }) => !previousSpaceIds.includes(id))
       .forEach(loadSpaceImage)
   },
   { immediate: true }
 )
+
+const uploadedImageToken = eventBus.subscribe(
+  'app.files.spaces.uploaded-image',
+  (space: SpaceResource) => loadSpaceImage(space)
+)
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.spaces.uploaded-image', uploadedImageToken)
+})
 
 watch(currentPage, () => {
   unselectAllSpaces()
