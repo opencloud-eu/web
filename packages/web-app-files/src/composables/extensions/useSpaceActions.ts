@@ -136,20 +136,6 @@ export const useSpaceActions = (): ActionExtension[] => {
       }
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.batch-action.delete',
-      extensionPointIds: [
-        contextActionsExtensionPoint.id,
-        batchActionsExtensionPoint.id,
-        adminSettingsSpacesContextActionsExtensionPointId,
-        adminSettingsSpacesBatchActionsExtensionPointId
-      ],
-      type: 'action',
-      action: {
-        ...unref(deleteActions)[0],
-        category: 'tertiary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.spaces.batch-action.disable',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
@@ -160,6 +146,20 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(disableActions)[0],
+        category: 'tertiary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.batch-action.delete',
+      extensionPointIds: [
+        contextActionsExtensionPoint.id,
+        batchActionsExtensionPoint.id,
+        adminSettingsSpacesContextActionsExtensionPointId,
+        adminSettingsSpacesBatchActionsExtensionPointId
+      ],
+      type: 'action',
+      action: {
+        ...unref(deleteActions)[0],
         category: 'tertiary'
       }
     }
