@@ -354,7 +354,8 @@ onMounted(async () => {
   loadPreviewToken = eventBus.subscribe(
     'app.files.spaces.uploaded-image',
     (space: SpaceResource) => {
-      loadPreview({ space, resource: space })
+      // same processor as for the initial load of the space images
+      loadPreview({ space, resource: space, processor: ProcessorType.enum.fit })
     }
   )
   scrollToResourceFromRoute(unref(items), 'files-app-bar')
