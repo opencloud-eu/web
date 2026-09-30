@@ -87,11 +87,7 @@
       </div>
     </template>
     <template #mainContent>
-      <users-list
-        :is-loading="isLoading"
-        :roles="roles"
-        :class="{ 'users-table-squashed': isSideBarOpen }"
-      >
+      <users-list :is-loading="isLoading" :roles="roles">
         <template #contextMenu>
           <context-actions :items="selectedUsers" />
         </template>
@@ -144,7 +140,6 @@ import {
   useRoute,
   useRouteQuery,
   useRouter,
-  useSideBar,
   SideBarPanel,
   SideBarPanelContext,
   useCapabilityStore,
@@ -166,7 +161,6 @@ const route = useRoute()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(useCapabilityStore())
 const clientService = useClientService()
 const configStore = useConfigStore()
-const { isSideBarOpen } = storeToRefs(useSideBar())
 
 const userSettingsStore = useUserSettingsStore()
 const { users, selectedUsers } = storeToRefs(userSettingsStore)

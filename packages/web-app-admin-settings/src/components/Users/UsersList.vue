@@ -5,6 +5,7 @@
     <oc-table
       v-else
       class="users-table"
+      :class="{ 'users-table-squashed': isSideBarOpen }"
       :sort-by="sortBy"
       :sort-dir="sortDir"
       :fields="fields"
@@ -146,7 +147,9 @@ defineSlots<{
 
 const { $gettext } = useGettext()
 const { isSticky } = useIsTopBarSticky()
-const { openSideBar, openSideBarPanel } = useSideBar()
+const sideBarStore = useSideBar()
+const { openSideBar, openSideBarPanel } = sideBarStore
+const { isSideBarOpen } = storeToRefs(sideBarStore)
 
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')

@@ -1,3 +1,4 @@
+import { nextTick } from 'vue'
 import UsersList from '../../../../src/components/Users/UsersList.vue'
 import {
   defaultComponentMocks,
@@ -104,6 +105,17 @@ describe('UsersList', () => {
     const { openSideBarPanel } = useSideBar()
     await wrapper.find('.users-table-btn-edit').trigger('click')
     expect(openSideBarPanel).toHaveBeenCalledWith('EditPanel')
+  })
+  describe('squashed table', () => {
+    it.each([true, false])(
+      'sets the squashed class depending on the side bar being open (%s)',
+      async (isSideBarOpen) => {
+        const { wrapper } = getWrapper({ users: getUserMocks() })
+        useSideBar().isSideBarOpen = isSideBarOpen
+        await nextTick()
+        expect(wrapper.findComponent(OcTable).classes('users-table-squashed')).toBe(isSideBarOpen)
+      }
+    )
   })
   describe('toggle selection', () => {
     it('selects all users via the header checkbox', () => {
