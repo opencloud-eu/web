@@ -1,7 +1,6 @@
 <template>
   <app-template
-    ref="template"
-    :loading="loadResourcesTask.isRunning || !loadResourcesTask.last"
+    :loading="isLoading"
     :breadcrumbs="breadcrumbs"
     :side-bar-available-panels="sideBarAvailablePanels"
     :side-bar-panel-context="sideBarPanelContext"
@@ -86,16 +85,7 @@ import {
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import {
-  ComponentPublicInstance,
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  provide,
-  ref,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
@@ -112,7 +102,6 @@ const { getExtensionActions } = useFileActions()
 
 let loadResourcesEventToken: string
 let updateQuotaForSpaceEventToken: string
-const template = useTemplateRef<ComponentPublicInstance<typeof AppTemplate>>('template')
 const spaceSettingsStore = useSpaceSettingsStore()
 const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
 

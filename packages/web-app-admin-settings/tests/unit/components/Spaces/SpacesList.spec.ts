@@ -11,6 +11,7 @@ import { mock } from 'vitest-mock-extended'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
 import { Permission } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { OcCheckbox, OcStatusIndicators, OcTable } from '@opencloud-eu/design-system/components'
 
 const spaceMocks = [
   mock<SpaceResource>({
@@ -83,48 +84,78 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 describe('SpacesList', () => {
-  it('should render all spaces in a table', () => {
-    const { wrapper } = getWrapper({ spaces: spaceMocks })
-    expect(wrapper.html()).toMatchSnapshot()
+  describe('rendering', () => {
+    it('renders a row per space', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      expect(getColumn(wrapper, 'name')).toEqual(['1 Some space', '2 Another space'])
+    })
+    it('renders the first two managers and the amount of further managers', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      expect(getColumn(wrapper, 'manager')).toEqual(['user1, user2... +1', 'user1, user2... +1'])
+    })
+    it('renders the member count', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      expect(getColumn(wrapper, 'members')).toEqual(['3', '5'])
+    })
+    it('renders the quota', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      expect(getColumn(wrapper, 'totalQuota')).toEqual(['1 GB', '2 GB'])
+      expect(getColumn(wrapper, 'usedQuota')).toEqual(['0 B', '500 MB'])
+      expect(getColumn(wrapper, 'remainingQuota')).toEqual(['1 GB', '1.5 GB'])
+    })
+    it('renders an unrestricted quota', () => {
+      const space = mock<SpaceResource>({
+        ...spaceMocks[0],
+        spaceQuota: { total: 0, used: undefined, remaining: undefined }
+      })
+      const { wrapper } = getWrapper({ spaces: [space] })
+      expect(getColumn(wrapper, 'totalQuota')).toEqual(['Unrestricted'])
+      expect(getColumn(wrapper, 'usedQuota')).toEqual(['-'])
+      expect(getColumn(wrapper, 'remainingQuota')).toEqual(['Unrestricted'])
+    })
+    it('renders the status indicators of each space', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      expect(wrapper.findAllComponents(OcStatusIndicators)).toHaveLength(spaceMocks.length)
+    })
+    it('renders the total amount of spaces in the footer', () => {
+      const { wrapper } = getWrapper({ spaces: spaceMocks })
+      expect(wrapper.find('.oc-table-footer').text()).toContain('2 spaces in total')
+    })
+    it('renders the empty message if there are no spaces', () => {
+      const { wrapper } = getWrapper({ spaces: [] })
+      expect(wrapper.find('#admin-settings-spaces-empty').exists()).toBeTruthy()
+      expect(wrapper.findComponent(OcTable).exists()).toBeFalsy()
+    })
   })
-  it.each(['name', 'members', 'totalQuota', 'usedQuota', 'remainingQuota'])(
-    'sorts by property "%s"',
-    async (prop) => {
-      const { wrapper, mocks } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
-      ;(wrapper.vm as any).handleSort({ sortBy: prop, sortDir: SortDir.Asc })
-      await wrapper.vm.$nextTick()
-      expect(mocks.$router.replace).toHaveBeenCalledWith({
-        query: expect.objectContaining({
-          'sort-by': prop,
-          'sort-dir': SortDir.Asc
+  describe('sorting', () => {
+    it.each(['name', 'members', 'totalQuota', 'usedQuota', 'remainingQuota'])(
+      'writes the sort parameters for property "%s" to the route query',
+      (prop) => {
+        const { wrapper, mocks } = getWrapper({ mountType: shallowMount, spaces: spaceMocks })
+        const table = wrapper.findComponent(OcTable)
+        table.vm.$emit('sort', { sortBy: prop, sortDir: SortDir.Asc })
+        expect(mocks.$router.replace).toHaveBeenCalledWith({
+          query: expect.objectContaining({ 'sort-by': prop, 'sort-dir': SortDir.Asc })
         })
-      })
-      ;(wrapper.vm as any).handleSort({ sortBy: prop, sortDir: SortDir.Desc })
-      await wrapper.vm.$nextTick()
-      expect(mocks.$router.replace).toHaveBeenCalledWith({
-        query: expect.objectContaining({
-          'sort-by': prop,
-          'sort-dir': SortDir.Desc
+        table.vm.$emit('sort', { sortBy: prop, sortDir: SortDir.Desc })
+        expect(mocks.$router.replace).toHaveBeenCalledWith({
+          query: expect.objectContaining({ 'sort-by': prop, 'sort-dir': SortDir.Desc })
         })
-      })
-    }
-  )
-  it('should set the sort parameters accordingly when calling "handleSort"', () => {
-    const { wrapper, mocks } = getWrapper({ spaces: [spaceMocks[0]] })
-    const sortBy = 'members'
-    const sortDir = SortDir.Desc
-    ;(wrapper.vm as any).handleSort({ sortBy, sortDir })
-    expect(mocks.$router.replace).toHaveBeenCalledWith({
-      query: expect.objectContaining({
-        'sort-by': sortBy,
-        'sort-dir': sortDir
+      }
+    )
+    it('writes the sort parameters to the route query when the table emits "sort"', () => {
+      const { wrapper, mocks } = getWrapper({ spaces: [spaceMocks[0]] })
+      wrapper.findComponent(OcTable).vm.$emit('sort', { sortBy: 'members', sortDir: SortDir.Desc })
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        query: expect.objectContaining({ 'sort-by': 'members', 'sort-dir': SortDir.Desc })
       })
     })
   })
   it('shows only filtered spaces if filter applied', async () => {
     const { wrapper } = getWrapper({ spaces: spaceMocks })
     await wrapper.setProps({ filterTerm: 'Another' })
-    expect((wrapper.vm as any).items).toEqual([spaceMocks[1]])
+    expect(wrapper.findComponent(OcTable).props('data')).toEqual([spaceMocks[1]])
+    expect(wrapper.find('.oc-table-footer').text()).toContain('1 matching spaces')
   })
   it('should show the space details on details button click', async () => {
     const { wrapper } = getWrapper({ spaces: spaceMocks })
@@ -146,45 +177,57 @@ describe('SpacesList', () => {
     }
   )
   describe('toggle selection', () => {
-    describe('selectSpaces method', () => {
-      it('selects all spaces', () => {
-        const spaces = [
-          mock<SpaceResource>({ id: '1', name: 'Some Space' }),
-          mock<SpaceResource>({ id: '2', name: 'Some other Space' })
-        ]
-        const { wrapper } = getWrapper({ mountType: shallowMount, spaces })
-        ;(wrapper.vm as any).selectSpaces(spaces)
-        const { setSelectedSpaces } = useSpaceSettingsStore()
-        expect(setSelectedSpaces).toHaveBeenCalledWith(spaces)
-      })
+    const spaces = [
+      mock<SpaceResource>({ id: '1', name: 'Some Space' }),
+      mock<SpaceResource>({ id: '2', name: 'Some other Space' })
+    ]
+
+    it('selects all spaces via the header checkbox', () => {
+      const { wrapper } = getWrapper({ spaces })
+      getSelectAllCheckbox(wrapper).vm.$emit('update:modelValue', true)
+      const { setSelectedSpaces } = useSpaceSettingsStore()
+      // selects the spaces in the order they are displayed, which is sorted by name
+      expect(setSelectedSpaces).toHaveBeenCalledWith([spaces[1], spaces[0]])
     })
-    describe('selectSpace ', () => {
-      it('selects a space', () => {
-        const spaces = [mock<SpaceResource>({ id: '1', name: 'Some Space' })]
-        const { wrapper } = getWrapper({ mountType: shallowMount, spaces })
-        ;(wrapper.vm as any).selectSpace(spaces[0])
-        const { addSelectedSpace } = useSpaceSettingsStore()
-        expect(addSelectedSpace).toHaveBeenCalledWith(spaces[0])
-      })
-      it('de-selects a selected space', () => {
-        const spaces = [mock<SpaceResource>({ id: '1', name: 'Some Space' })]
-        const { wrapper } = getWrapper({ mountType: shallowMount, spaces, selectedSpaces: spaces })
-        ;(wrapper.vm as any).selectSpace(spaces[0])
-        const { setSelectedSpaces } = useSpaceSettingsStore()
-        expect(setSelectedSpaces).toHaveBeenCalledWith([])
-      })
+    it('de-selects all spaces via the header checkbox if all are selected', () => {
+      const { wrapper } = getWrapper({ spaces, selectedSpaces: spaces })
+      expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeTruthy()
+      getSelectAllCheckbox(wrapper).vm.$emit('update:modelValue', false)
+      const { setSelectedSpaces } = useSpaceSettingsStore()
+      expect(setSelectedSpaces).toHaveBeenCalledWith([])
     })
-    describe('unselectAllSpaces method', () => {
-      it('de-selects all selected spaces', () => {
-        const spaces = [mock<SpaceResource>({ id: '1', name: 'Some Space' })]
-        const { wrapper } = getWrapper({ mountType: shallowMount, spaces })
-        ;(wrapper.vm as any).unselectAllSpaces()
-        const { setSelectedSpaces } = useSpaceSettingsStore()
-        expect(setSelectedSpaces).toHaveBeenCalledWith([])
-      })
+    it('selects a space via its checkbox', () => {
+      const { wrapper } = getWrapper({ spaces: [spaces[0]] })
+      getSpaceCheckbox(wrapper, spaces[0]).vm.$emit('update:modelValue', true)
+      const { addSelectedSpace } = useSpaceSettingsStore()
+      expect(addSelectedSpace).toHaveBeenCalledWith(spaces[0])
+    })
+    it('de-selects a selected space via its checkbox', () => {
+      const { wrapper } = getWrapper({ spaces: [spaces[0]], selectedSpaces: [spaces[0]] })
+      getSpaceCheckbox(wrapper, spaces[0]).vm.$emit('update:modelValue', false)
+      const { setSelectedSpaces } = useSpaceSettingsStore()
+      expect(setSelectedSpaces).toHaveBeenCalledWith([])
     })
   })
 })
+
+type Wrapper = ReturnType<typeof getWrapper>['wrapper']
+
+function getColumn(wrapper: Wrapper, name: string) {
+  return wrapper.findAll(`.oc-table-data-cell-${name}`).map((cell) => cell.text())
+}
+
+function getSelectAllCheckbox(wrapper: Wrapper) {
+  return wrapper
+    .findAllComponents(OcCheckbox)
+    .find((checkbox) => checkbox.props('label') === 'Select all spaces')
+}
+
+function getSpaceCheckbox(wrapper: Wrapper, space: SpaceResource) {
+  return wrapper
+    .findAllComponents(OcCheckbox)
+    .find((checkbox) => checkbox.props('label') === `Select ${space.name}`)
+}
 
 function getWrapper({
   mountType = mount,
@@ -204,9 +247,6 @@ function getWrapper({
   return {
     mocks,
     wrapper: mountType(SpacesList, {
-      props: {
-        headerPosition: 0
-      },
       global: {
         plugins: [
           ...defaultPlugins({
