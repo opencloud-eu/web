@@ -10,7 +10,7 @@
     <oc-icon name="more-2" color="var(--oc-role-on-surface)" class="align-middle" />
   </oc-button>
   <oc-drop
-    drop-id="oc-breadcrumb-contextmenu"
+    :drop-id="dropId"
     :toggle="`#${triggerId}`"
     mode="click"
     close-on-click
@@ -49,6 +49,7 @@ defineSlots<Slots>()
 const { $gettext } = useGettext()
 
 const triggerId = uniqueId('oc-breadcrumb-contextmenu-trigger-')
+const dropId = uniqueId('oc-breadcrumb-contextmenu-')
 
 const label = computed(() => $gettext('Show actions for current folder'))
 </script>
