@@ -253,4 +253,45 @@ Feature: Copy
       | resource            |
       | new-folder/test.txt |
     And "Alice" logs out
+
+  
+  Scenario: copy/move resources in received shares
+    Given "Admin" creates following users using API
+      | id    |
+      | Alice |
+      | Brian |
+    And "Alice" creates the following folder in personal space using API
+      | name     |
+      | f1/f2/f3 |
+      | a1       |
+    And "Alice" creates the following file into personal space using API
+      | pathToFile       | content     |
+      | f1/f2/f3/foo.txt | lorem ipsum |
+    And "Alice" shares the following resource using API
+      | resource | recipient | type  | role     |
+      | f1       | Brian     | user  | Can edit |
+      | a1       | Brian     | user  | Can edit |
+
+    And "Brian" logs in
+    And "Brian" navigates to the shared with me page
+    # move within the received share, up into the share root
+    And "Brian" moves the following resource using dropdown-menu
+      | resource         | to        |
+      | f1/f2/f3/foo.txt | Shares/f1 |
+    # move within the received share, into a sub folder. (regression #3374)
+    And "Brian" navigates to the shared with me page
+    And "Brian" moves the following resource using dropdown-menu
+      | resource   | to           |
+      | f1/foo.txt | Shares/f1/f2 |
+    # move between two different received shares -> not possible, expect copy instead
+    And "Brian" navigates to the shared with me page
+    And "Brian" moves the following resource using dropdown-menu
+      | resource      | to        | option       |
+      | f1/f2/foo.txt | Shares/a1 | copy instead |
+    # move from a received share into own personal space -> not possible, expect copy instead
+    And "Brian" navigates to the shared with me page
+    And "Brian" moves the following resource using dropdown-menu
+      | resource   | to       | option       |
+      | a1/foo.txt | Personal | copy instead |
+    And "Brian" logs out
     
