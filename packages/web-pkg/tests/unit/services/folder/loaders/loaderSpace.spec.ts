@@ -9,8 +9,7 @@ import {
   useSharesStore,
   useSpacesStore,
   useUserStore,
-  type AuthServiceInterface,
-  type ExtensionRegistry
+  type AuthServiceInterface
 } from '../../../../../src/composables'
 
 describe('FolderLoaderSpace', () => {
@@ -68,8 +67,7 @@ async function loadFolder({ space, path }: { space: SpaceResource; path: string 
         configStore: useConfigStore(),
         userStore: useUserStore(),
         capabilityStore: useCapabilityStore(),
-        authService: mock<AuthServiceInterface>(),
-        extensionRegistry: mock<ExtensionRegistry>()
+        authService: mock<AuthServiceInterface>()
       }
       task = new FolderLoaderSpace().getTask(context)
     },
