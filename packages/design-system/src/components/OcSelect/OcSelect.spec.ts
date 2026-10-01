@@ -23,6 +23,14 @@ describe('OcSelect', () => {
       wrapper.findComponent<typeof OcSelect>(selectors.ocSelect).props('options' as any)
     ).toEqual(options)
   })
+  it('lets consumers override the default vue-select handlers', () => {
+    const mapKeydown = vi.fn()
+    const dropdownShouldOpen = vi.fn(() => false)
+    const wrapper = getWrapper({ mapKeydown, dropdownShouldOpen } as any)
+    const vueSelect = wrapper.findComponent<typeof OcSelect>(selectors.ocSelect)
+    expect(vueSelect.props('mapKeydown' as any)).toBe(mapKeydown)
+    expect(vueSelect.props('dropdownShouldOpen' as any)).toBe(dropdownShouldOpen)
+  })
   it('shows ocSpinner component when loading', () => {
     const wrapper = getWrapper({ loading: true })
     expect(wrapper.find(selectors.ocSpinner).exists()).toBeTruthy()

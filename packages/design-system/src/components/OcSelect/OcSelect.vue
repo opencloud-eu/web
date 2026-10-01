@@ -17,42 +17,52 @@
     />
     <vue-select
       ref="selectRef"
+      :input-id="id"
+      :label="optionLabel"
+      :get-option-label="resolveOptionLabel"
       :disabled="disabled || readOnly"
       :filter="filter"
       :loading="loading"
       :searchable="searchable"
       :clearable="clearable"
       :multiple="multiple"
-      class="oc-select bg-transparent"
+      class="oc-select"
       :class="{
         'oc-select-position-fixed': positionFixed,
-        'oc-select-no-border': !hasBorder
+        'oc-select-no-border': !hasBorder,
+        'oc-select-keyboard-navigation': keyboardNavigation
       }"
-      :dropdown-should-open="selectDropdownShouldOpen"
-      :map-keydown="selectMapKeydown"
-      v-bind="additionalAttributes"
+      :dropdown-should-open="dropdownShouldOpen"
+      :map-keydown="mapKeydown"
+      v-bind="$attrs"
       @update:model-value="emit('update:modelValue', $event)"
-      @click="onSelectClick()"
-      @search:blur="onSelectBlur()"
-      @keydown="onSelectKeyDown($event)"
+      @click="dropdownEnabled = true"
+      @search:blur="dropdownEnabled = false"
+      @keydown="onKeydown"
+      @mousemove="keyboardNavigation = false"
     >
       <template #search="{ attributes, events }">
-        <input class="vs__search" v-bind="attributes" @input="userInput" v-on="events" />
+        <input
+          class="vs__search"
+          v-bind="attributes"
+          @input="emit('search:input', ($event.target as HTMLInputElement).value)"
+          v-on="events"
+        />
       </template>
-      <template v-for="(index, name) in $slots" #[name]="data">
-        <slot v-if="name.toString() !== 'search'" :name="name" v-bind="data" />
+      <template v-for="(_, name) in $slots" #[name]="data">
+        <slot v-if="name !== 'search'" :name="name" v-bind="data" />
       </template>
       <template #no-options>
         <div v-text="$gettext('No options available.')" />
       </template>
-      <template #spinner="{ loading: loadingSpinner }">
-        <oc-spinner v-if="loadingSpinner" />
+      <template #spinner="{ loading: isLoading }">
+        <oc-spinner v-if="isLoading" />
       </template>
       <template #selected-option-container="{ option, deselect }">
         <span class="vs__selected" :class="{ 'vs__selected-readonly': option.readonly }">
           <slot name="selected-option" v-bind="option">
             <oc-icon v-if="readOnly" name="lock" class="mr-1" size-class="size-4" />
-            {{ getOptionLabel(option) }}
+            {{ resolveOptionLabel(option) }}
           </slot>
           <span v-if="multiple" class="flex items-center ml-2 mr-1">
             <oc-icon
@@ -64,8 +74,8 @@
             <oc-button
               v-else
               appearance="raw"
-              :title="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
-              :aria-label="$gettext('Deselect %{label}', { label: getOptionLabel(option) })"
+              :title="$gettext('Deselect %{label}', { label: resolveOptionLabel(option) })"
+              :aria-label="$gettext('Deselect %{label}', { label: resolveOptionLabel(option) })"
               class="vs__deselect mx-0"
               no-hover
               @mousedown.stop.prevent
@@ -82,7 +92,7 @@
     </vue-select>
 
     <div
-      v-if="showMessageLine"
+      v-if="fixMessageLine || errorMessage || descriptionMessage"
       class="oc-text-input-message text-sm mt-1 min-h-4.5"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
@@ -90,21 +100,20 @@
       }"
     >
       <oc-icon
-        v-if="!!errorMessage"
+        v-if="errorMessage"
         name="error-warning"
         size-class="size-4"
         fill-type="line"
         aria-hidden="true"
         class="mr-1"
       />
-
       <span
-        :id="messageId"
+        :id="`${id}-message`"
         :class="{
           'oc-text-input-description': !!descriptionMessage,
           'oc-text-input-danger': !!errorMessage
         }"
-        v-text="messageText"
+        v-text="errorMessage || descriptionMessage"
       />
     </div>
   </div>
@@ -112,21 +121,11 @@
 
 <script setup lang="ts">
 import Fuse from 'fuse.js'
-import { uniqueId } from '../../helpers'
-import {
-  ref,
-  unref,
-  nextTick,
-  watch,
-  computed,
-  onMounted,
-  onBeforeUnmount,
-  useAttrs,
-  useTemplateRef
-} from 'vue'
+import { ref, unref, nextTick, watch, computed, onMounted, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { useEventListener } from '@vueuse/core'
 import 'vue-select/dist/vue-select.css'
-import { ContextualHelper } from '../../helpers'
+import { ContextualHelper, uniqueId } from '../../helpers'
 // @ts-ignore
 import VueSelect from 'vue-select'
 
@@ -251,30 +250,19 @@ export interface Slots {
   [dynamicSlot: string]: any
 }
 
-// the keycode property is deprecated in the JS event API, vue-select still works with it though
-enum KeyCode {
-  Enter = 13,
-  ArrowDown = 40,
-  ArrowUp = 38
-}
-
 const {
   id = uniqueId('oc-select-'),
   filter = (items: unknown[], search: string, { label }: { label?: string }) => {
-    if (items.length < 1) {
-      return []
+    if (!search.length) {
+      return items
     }
 
     const fuse = new Fuse(items, {
       ...(label && { keys: [label] }),
-      shouldSort: true,
       threshold: 0,
-      ignoreLocation: true,
-      distance: 100,
-      minMatchCharLength: 1
+      ignoreLocation: true
     })
-
-    return search.length ? fuse.search(search).map(({ item }) => item) : items
+    return fuse.search(search).map(({ item }) => item)
   },
   disabled = false,
   label,
@@ -302,332 +290,167 @@ defineSlots<Slots>()
 const { $gettext } = useGettext()
 const selectRef = useTemplateRef<typeof VueSelect>('selectRef')
 
-const setComboBoxAriaLabel = () => {
-  const comboBoxElement = unref(selectRef).$el.querySelector('div:first-child')
-  comboBoxElement?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
+function resolveOptionLabel(option: string | Record<string, unknown>): string {
+  if (getOptionLabelProp) {
+    return getOptionLabelProp(option)
+  }
+  return typeof option === 'object' ? ((option[optionLabel] as string) ?? '') : option
 }
 
-const userInput = (event: Event) => {
-  emit('search:input', (event.target as HTMLInputElement).value)
-}
-
+// the dropdown only opens on explicit user interaction, not when the select gets focused
 const dropdownEnabled = ref(false)
-const setDropdownEnabled = (enabled: boolean) => {
-  dropdownEnabled.value = enabled
-}
+const dropdownOpen = computed<boolean>(() => unref(selectRef)?.dropdownOpen)
 
-const selectDropdownShouldOpen = ({
-  noDrop,
-  open,
-  mutableLoading
-}: {
-  noDrop?: boolean
-  open?: boolean
-  mutableLoading?: boolean
-}) => {
+function dropdownShouldOpen({ noDrop, open, mutableLoading }: Record<string, boolean>) {
   return !noDrop && open && !mutableLoading && unref(dropdownEnabled)
 }
 
-const onSelectClick = () => {
-  setDropdownEnabled(true)
-}
+// highlights the active option with an outline while navigating via arrow keys
+const keyboardNavigation = ref(false)
 
-const onSelectBlur = () => {
-  setDropdownEnabled(false)
-}
+// vue-select still maps keydown handlers by the deprecated keyCode
+const enterKeyCode = 13
 
-const setKeyboardOutline = async () => {
-  const optionEls = (unref(selectRef).$refs.dropdownMenu as HTMLElement).querySelectorAll('li')
-  const highlightedOption = optionEls[unref(selectRef).typeAheadPointer]
-  if (highlightedOption) {
-    await nextTick()
-    highlightedOption.classList.add('outline')
-    highlightedOption.classList.add('outline-role-outline-variant')
-  }
-}
-
-const selectMapKeydown = (map: Record<number, (e: KeyboardEvent) => void>) => {
+function mapKeydown(map: Record<number, (e: KeyboardEvent) => void>) {
   return {
     ...map,
-    [KeyCode.Enter]: (e: KeyboardEvent) => {
+    [enterKeyCode]: (e: KeyboardEvent) => {
       if (!unref(dropdownEnabled)) {
-        setDropdownEnabled(true)
+        dropdownEnabled.value = true
         return
       }
-      map[KeyCode.Enter](e)
+      map[enterKeyCode](e)
       unref(selectRef).searchEl.focus()
-    },
-    [KeyCode.ArrowDown]: async (e: KeyboardEvent) => {
-      e.preventDefault()
-      unref(selectRef).typeAheadDown()
-
-      if (unref(dropdownOpen)) {
-        await setKeyboardOutline()
-      }
-    },
-    [KeyCode.ArrowUp]: async (e: KeyboardEvent) => {
-      e.preventDefault()
-      unref(selectRef).typeAheadUp()
-
-      if (unref(dropdownOpen)) {
-        await setKeyboardOutline()
-      }
     }
   }
 }
 
-const onSelectKeyDown = async (e: KeyboardEvent) => {
-  if (e.key === 'Enter' || e.key === 'Tab') {
-    if (unref(dropdownOpen)) {
-      await setKeyboardOutline()
-    }
-    return
+function onKeydown(e: KeyboardEvent) {
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    keyboardNavigation.value = true
   }
-  setDropdownEnabled(true)
+  if (e.key !== 'Enter' && e.key !== 'Tab') {
+    dropdownEnabled.value = true
+  }
 }
 
-const setDropdownPosition = () => {
-  const dropdownMenu = unref(selectRef).$refs.dropdownMenu
-  if (!dropdownMenu) {
+function setDropdownPosition() {
+  const menu: HTMLElement = unref(selectRef)?.$refs.dropdownMenu
+  if (!menu) {
     return
   }
 
-  const toggleClientRect = unref(selectRef).$refs.toggle.getBoundingClientRect()
-  const dropdownMenuBottomOffset = 25
-  const dropdownMenuMaxHeight = Math.min(
-    window.innerHeight - toggleClientRect.bottom - dropdownMenuBottomOffset,
-    window.innerHeight
-  )
-
-  dropdownMenu.style.maxHeight = `${dropdownMenuMaxHeight}px`
-  dropdownMenu.style.width = `${toggleClientRect.width}px`
-  dropdownMenu.style.top = `${toggleClientRect.top + toggleClientRect.height + 1}px`
-  dropdownMenu.style.left = `${toggleClientRect.left}px`
+  const { bottom, left, width } = unref(selectRef).$refs.toggle.getBoundingClientRect()
+  Object.assign(menu.style, {
+    top: `${bottom + 1}px`,
+    left: `${left}px`,
+    width: `${width}px`,
+    maxHeight: `${window.innerHeight - bottom - 25}px`
+  })
 }
 
-const dropdownOpen = computed(() => {
-  return unref(selectRef)?.dropdownOpen
-})
-
-watch(dropdownOpen, async () => {
-  if (positionFixed && unref(dropdownOpen)) {
+watch(dropdownOpen, async (open) => {
+  if (positionFixed && open) {
     await nextTick()
     setDropdownPosition()
   }
 })
 
-const getOptionLabel = computed(() => {
-  return (
-    getOptionLabelProp ||
-    ((option: string | Record<string, unknown>): string => {
-      if (typeof option === 'object') {
-        const key = optionLabel || label
-        if (!Object.hasOwn(option, key)) {
-          console.warn(
-            `[vue-select warn]: Label key "option.${key}" does not` +
-              ` exist in options object ${JSON.stringify(option)}.\n` +
-              'https://vue-select.org/api/html#getoptionlabel'
-          )
-          return ''
-        }
-        return option[key] as string
-      }
-      return option
-    })
-  )
-})
+if (positionFixed) {
+  useEventListener(window, 'resize', setDropdownPosition)
+}
 
 onMounted(() => {
-  setComboBoxAriaLabel()
-
-  if (positionFixed) {
-    window.addEventListener('resize', setDropdownPosition)
-  }
-})
-
-onBeforeUnmount(() => {
-  if (positionFixed) {
-    window.removeEventListener('resize', setDropdownPosition)
-  }
-})
-
-const attrs = useAttrs()
-const additionalAttributes = computed(() => {
-  const additionalAttrs: Record<string, unknown> = {}
-  additionalAttrs['input-id'] = id
-  additionalAttrs['getOptionLabel'] = unref(getOptionLabel)
-  additionalAttrs['label'] = optionLabel
-
-  return { ...attrs, ...additionalAttrs }
-})
-
-const showMessageLine = computed(() => {
-  return fixMessageLine || !!errorMessage || !!descriptionMessage
-})
-
-const messageText = computed(() => {
-  if (errorMessage) {
-    return errorMessage
-  }
-
-  return descriptionMessage
-})
-
-const messageId = computed(() => {
-  return `${id}-message`
+  unref(selectRef)
+    .$el.querySelector('div:first-child')
+    ?.setAttribute('aria-label', `${label} - ${$gettext('Search for option')}`)
 })
 </script>
 
-<style scoped>
+<style>
 @reference '@opencloud-eu/design-system/tailwind';
 
-@layer components {
-  .oc-select {
-    @apply py-[1px] normal-case text-role-on-surface;
-  }
-}
-</style>
-<style>
-.vs--disabled {
-  cursor: not-allowed;
-}
+/* not layered on purpose, otherwise the unlayered vue-select styles would always win */
+.oc-select {
+  --vs-font-size: inherit;
+  --vs-line-height: inherit;
+  --vs-controls-color: var(--oc-role-on-surface);
+  --vs-controls--deselect-text-shadow: none;
+  --vs-search-input-color: var(--oc-role-on-surface);
+  --vs-search-input-placeholder-color: var(--oc-role-outline);
+  --vs-selected-bg: var(--oc-role-surface-container);
+  --vs-selected-color: var(--oc-role-on-surface);
+  --vs-selected-border-color: var(--oc-role-outline-variant);
+  --vs-border-radius: var(--radius-sm);
+  --vs-dropdown-bg: var(--oc-role-surface);
+  --vs-dropdown-color: var(--oc-role-on-surface);
+  --vs-dropdown-option-padding: 6px 0.6rem;
+  --vs-dropdown-option--active-bg: var(--oc-role-surface-container);
+  --vs-dropdown-option--active-color: var(--oc-role-on-surface);
+  --vs-disabled-bg: var(--oc-role-surface-container);
+  --vs-disabled-color: var(--oc-role-on-surface);
+  --vs-actions-padding: 0 4px;
 
-.vs--disabled
-  :is(.vs__clear, .vs__dropdown-toggle, .vs__open-indicator, .vs__search, .vs__selected) {
-  background-color: var(--oc-role-surface-container) !important;
-  color: var(--oc-role-on-surface) !important;
-  pointer-events: none;
-}
-
-.vs--disabled .vs__actions {
-  opacity: 0.3;
-}
-
-.oc-select-no-border .vs__dropdown-toggle {
-  border: none !important;
-  outline: none !important;
-  background-color: transparent !important;
-}
-
-.oc-select .vs__search,
-.oc-select .vs__search:focus {
-  z-index: 0;
-}
-
-.oc-select-position-fixed .vs__dropdown-menu {
-  position: fixed;
-  overflow-y: auto;
-}
-
-/* overwrite vue-select styles */
-.oc-select .vs__search {
-  color: var(--oc-role-on-surface);
-}
-
-.oc-select .vs__search::placeholder {
-  color: var(--oc-role-outline);
+  @apply text-role-on-surface;
 }
 
 .oc-select :is(.vs__dropdown-toggle, .vs__dropdown-menu) {
-  min-height: 36px;
-  -webkit-appearance: none;
-  color: var(--oc-role-on-surface);
-  background-color: var(--oc-role-surface);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--oc-role-outline-variant);
-  box-sizing: border-box;
-  line-height: inherit;
-  max-width: 100%;
-  outline: none;
-  padding: 4px;
-  transition-duration: 0.2s;
-  transition-timing-function: ease-in-out;
-  transition-property: color, background-color;
-  width: 100%;
-  margin-top: -1px;
+  @apply min-h-9 p-1 -mt-px rounded-sm border border-role-outline-variant bg-role-surface;
 }
 
-.oc-select .vs__selected-readonly {
-  background-color: var(--oc-role-surface-container-low) !important;
-}
-
-.oc-select .vs__search,
-.oc-select .vs__search:focus {
-  padding: 0 5px;
-}
-
-.oc-select :is(.vs__clear, .vs__open-indicator, .vs__deselect) {
-  fill: var(--oc-role-on-surface);
-}
-
-.oc-select :is(.vs__dropdown-option, .vs__no-options) {
-  color: var(--oc-role-on-surface);
-  white-space: normal;
-  padding: 6px 0.6rem;
-  border-radius: var(--radius-sm);
-}
-
-.oc-select
-  :is(
-    .vs__dropdown-option--highlight,
-    .vs__dropdown-option--selected,
-    .vs__no-options--highlight,
-    .vs__no-options--selected
-  ) {
-  background-color: var(--oc-role-surface-container);
-  color: var(--oc-role-on-surface);
-}
-
-.oc-select :is(.vs__dropdown-option--selected, .vs__no-options--selected) {
-  background-color: var(--oc-role-secondary-container);
-}
-
-.oc-select .vs__actions {
-  flex-flow: row wrap;
-  justify-content: center;
-  gap: var(--spacing);
-  cursor: pointer;
-  padding: 0 4px 0 4px;
-}
-
-.oc-select .vs__actions svg {
-  overflow: visible;
-}
-
-.oc-select .vs__clear svg {
-  max-width: var(--spacing);
+.oc-select:focus-within :is(.vs__dropdown-toggle, .vs__dropdown-menu) {
+  @apply border-role-outline;
 }
 
 .oc-select .vs__selected-options {
-  flex: auto;
-  padding: 0;
+  @apply p-0;
 }
 
 .oc-select .vs__selected-options > * {
-  margin: 2px 2px 2px 1px;
-  color: var(--oc-role-on-surface);
+  @apply m-0.5;
 }
 
-.oc-select .vs__selected-options > *:not(input) {
-  padding-left: 3px;
-  background-color: var(--oc-role-surface-container);
-  fill: var(--oc-role-on-surface);
+.oc-select :is(.vs__search, .vs__search:focus) {
+  @apply z-0 px-1;
 }
 
-.oc-select.vs--multiple .vs__selected-options > *:not(input) {
-  color: var(--oc-role-on-surface);
-  background-color: var(--oc-role-surface-container);
+.oc-select .vs__actions {
+  @apply gap-1 cursor-pointer;
 }
 
-.oc-select:focus-within :is(.vs__dropdown-menu, .vs__dropdown-toggle) {
-  border: 1px solid var(--oc-role-outline);
+.oc-select .vs__selected-readonly {
+  @apply bg-role-surface-container-low;
 }
 
-.vs--single.vs--open .vs__selected {
-  opacity: 0.8 !important;
+.oc-select :is(.vs__dropdown-option, .vs__no-options) {
+  @apply whitespace-normal rounded-sm;
 }
 
-.vs--single .vs__selected-options > *:not(input) {
-  background-color: transparent !important;
+.oc-select .vs__dropdown-option--selected {
+  @apply bg-role-secondary-container;
+}
+
+.oc-select-keyboard-navigation .vs__dropdown-option--highlight {
+  @apply outline outline-role-outline-variant;
+}
+
+.oc-select.vs--single.vs--open .vs__selected {
+  @apply opacity-80;
+}
+
+.oc-select.vs--disabled .vs__dropdown-toggle {
+  @apply bg-role-surface-container;
+}
+
+.oc-select.vs--disabled .vs__actions {
+  @apply opacity-30;
+}
+
+.oc-select-no-border .vs__dropdown-toggle {
+  @apply border-none bg-transparent;
+}
+
+.oc-select-position-fixed .vs__dropdown-menu {
+  @apply fixed;
 }
 </style>
