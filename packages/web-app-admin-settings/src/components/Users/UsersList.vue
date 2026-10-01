@@ -48,11 +48,18 @@
             :user-name="item.displayName"
             :width="32"
           />
-          <span class="pl-2 truncate" v-text="item.onPremisesSamAccountName" />
+          <oc-filter-highlight
+            class="pl-2 truncate"
+            :text="item.onPremisesSamAccountName"
+            :term="filterTerm"
+          />
         </div>
       </template>
       <template #displayName="{ item }">
         <oc-filter-highlight :text="item.displayName" :term="filterTerm" />
+      </template>
+      <template #mail="{ item }">
+        <oc-filter-highlight :text="item.mail" :term="filterTerm" />
       </template>
       <template #role="{ item }">
         <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
@@ -236,6 +243,7 @@ const fields = computed<FieldType[]>(() => [
   {
     name: 'mail',
     title: $gettext('Email'),
+    type: 'slot',
     sortable: true
   },
   {
