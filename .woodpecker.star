@@ -5,7 +5,7 @@ ALPINE_GIT = "alpine/git:latest"
 APACHE_TIKA = "apache/tika:2.8.0.0"
 COLLABORA_CODE = "collabora/code:26.04.1.4.1"
 KEYCLOAK = "quay.io/keycloak/keycloak:26.6.1"
-MINIO_MC = "minio/mc:RELEASE.2021-10-07T04-19-58Z"
+MINIO_MC = "quay.io/opencloudeu/minio-mc-ci:1.0"
 OC_CI_BAZEL_BUILDIFIER = "quay.io/opencloudeu/bazel-buildifier-ci:latest"
 OC_CI_GOLANG = "quay.io/opencloudeu/golang-ci:1.25"
 OC_CI_NODEJS = "quay.io/opencloudeu/nodejs-ci:24"
@@ -1274,7 +1274,7 @@ def purgeCache(name, flush_path, flush_age):
                 "environment": minio_mc_environment,
                 "commands": [
                     "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                    "to_delete=$(mc find s3/%s/ --older-than %sd)" % (flush_path, flush_age),
+                    "to_delete=$(mc find s3/%s/ --older-than %sd 2>/dev/null || true)" % (flush_path, flush_age),
                     'if [ -z "$to_delete" ]; then exit 0; fi',
                     "mc rm $to_delete",
                 ],
