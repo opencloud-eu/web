@@ -68,7 +68,7 @@ describe('Spaces view', () => {
   })
 
   describe('spaces updated without their members', () => {
-    it('are loaded again once more if they change while being loaded', async () => {
+    it('ignore outdated responses of earlier requests', async () => {
       const { wrapper, mocks } = getWrapper({ stubActions: false })
       await flushPromises()
       const { listAllDrives } = mocks.$clientService.graphAuthenticated.drives
@@ -82,7 +82,7 @@ describe('Spaces view', () => {
       )
       listAllDrives.mockResolvedValueOnce([space(['admin', 'new member'])])
 
-      // e.g. created via the FAB, then members are added and the space is read again
+      // e.g. created via the FAB, then members are added before the first request is done
       const spacesStore = useSpacesStore()
       spacesStore.upsertSpace(space())
       await flushPromises()

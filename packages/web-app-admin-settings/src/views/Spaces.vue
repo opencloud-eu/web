@@ -77,7 +77,7 @@ import {
   useSpacesStore,
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
-import { call, SpaceResource } from '@opencloud-eu/web-client'
+import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { computed, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
@@ -193,59 +193,37 @@ const sideBarAvailablePanels = [
   }
 ] satisfies SideBarPanel<unknown, unknown, SpaceResource>[]
 
-/**
- * Spaces coming from other requests than the list (e.g. created via the FAB or updated by an
- * action) don't contain their members, so they are loaded again with them. A space that changes
- * while it is being loaded is loaded once more afterwards, the first result might be outdated.
- */
-const spacesLoadingPermissions = new Set<string>()
-const spacesToReloadPermissions = new Set<string>()
-async function loadSpaceWithPermissions(spaceId: string): Promise<void> {
-  if (spacesLoadingPermissions.has(spaceId)) {
-    spacesToReloadPermissions.add(spaceId)
-    return
-  }
-  spacesLoadingPermissions.add(spaceId)
+// spaces from other requests than the list (e.g. created via the FAB or updated after member
+// changes) come without their members, so the members are loaded again
+const latestMembersRequests: Record<string, number> = {}
+async function loadSpaceMembers(spaceId: string) {
+  const request = (latestMembersRequests[spaceId] ?? 0) + 1
+  latestMembersRequests[spaceId] = request
   try {
     const [space] = await clientService.graphAuthenticated.drives.listAllDrives({
       filter: `id eq '${spaceId}'`,
       expand: spacePermissionsExpand
     })
-    if (space) {
-      // no members at all shouldn't lead to loading the space over and over again
-      spacesStore.upsertSpace({
-        ...space,
-        root: { ...space.root, permissions: space.root?.permissions ?? [] }
-      })
+    // the response of an earlier request might be outdated
+    if (space && latestMembersRequests[spaceId] === request) {
+      spacesStore.updateSpaceField({ id: spaceId, field: 'root', value: space.root })
     }
   } catch (error) {
     console.error(error)
-  } finally {
-    spacesLoadingPermissions.delete(spaceId)
-    if (spacesToReloadPermissions.delete(spaceId)) {
-      loadSpaceWithPermissions(spaceId)
-    }
   }
 }
 
-// every update of a space assigns a new `root`, so a new root without members means new data
-// without members. comparing the roots also avoids reloading the same data over and over again
-watch(
-  () =>
-    unref(spaces)
-      .filter((space) => !space.root?.permissions)
-      .map(({ id, root }) => ({ id, root })),
-  (spacesWithoutMembers, previousSpacesWithoutMembers = []) => {
-    spacesWithoutMembers
-      .filter(
-        ({ id, root }) =>
-          !previousSpacesWithoutMembers.some(
-            (previous) => previous.id === id && previous.root === root
-          )
-      )
-      .forEach(({ id }) => loadSpaceWithPermissions(id))
+spacesStore.$onAction(({ name, args, after }) => {
+  if (name !== 'upsertSpace') {
+    return
   }
-)
+  after(() => {
+    const [space] = args
+    if (isProjectSpaceResource(space) && !space.root?.permissions) {
+      loadSpaceMembers(space.id)
+    }
+  })
+})
 
 // actions like setting the image of a space check the permissions of the user in that space
 watch(
