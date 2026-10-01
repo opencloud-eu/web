@@ -37,9 +37,6 @@
         @update:model-value="allSpacesSelected ? unselectAllSpaces() : selectSpaces(paginatedItems)"
       />
     </template>
-    <template #iconHeader>
-      <span class="sr-only">{{ $gettext('Icon') }}</span>
-    </template>
     <template #select="{ item }">
       <oc-checkbox
         size="large"
@@ -51,15 +48,13 @@
         @click.stop="fileClicked([item, $event])"
       />
     </template>
-    <template #icon="{ item }">
-      <div class="flex items-center justify-center">
-        <space-image :space="item" />
-      </div>
-    </template>
     <template #name="{ item }">
-      <span :data-test-space-name="item.name">
-        <oc-filter-highlight :text="item.name" :term="filterTerm" />
-      </span>
+      <div class="flex items-center">
+        <space-image class="shrink-0" :space="item" />
+        <span class="pl-2 truncate" :data-test-space-name="item.name">
+          <oc-filter-highlight :text="item.name" :term="filterTerm" />
+        </span>
+      </div>
     </template>
     <template #manager="{ item }">
       {{ getManagerNames(item) }}
@@ -293,14 +288,6 @@ const fields = computed<FieldType[]>(() => [
     type: 'slot',
     width: 'shrink',
     headerType: 'slot'
-  },
-  {
-    name: 'icon',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot',
-    sortable: false
   },
   {
     name: 'name',
