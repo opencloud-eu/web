@@ -178,7 +178,7 @@ import AccountLabel from '../../components/Account/AccountLabel.vue'
 import EditPasswordModal from '../../components/EditPasswordModal.vue'
 import { computed, markRaw, onMounted, ref, unref } from 'vue'
 import { LanguageOption, SettingsBundle, SettingsValue } from '../../helpers/settings'
-import { loadAppTranslations, setCurrentLanguage } from '../../helpers/language'
+import { setCurrentLanguage } from '../../helpers/language'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 import { SSEAdapter } from '@opencloud-eu/web-client/sse'
 import { supportedLanguages } from '../../defaults'
@@ -324,17 +324,15 @@ const loadGraphUserTask = useTask(function* (signal) {
 
 const updateSelectedLanguage = async (option: LanguageOption) => {
   try {
-    loadAppTranslations({
-      apps: appsStore.apps,
-      gettext: language,
-      lang: option.value
-    })
-
-    selectedLanguageValue.value = option
-    setCurrentLanguage({
+    const applied = await setCurrentLanguage({
       language,
-      languageSetting: option.value
+      languageSetting: option.value,
+      apps: appsStore.apps
     })
+    if (!applied) {
+      return
+    }
+    selectedLanguageValue.value = option
 
     if (authStore.userContextReady) {
       await clientService.graphAuthenticated.users.editMe({

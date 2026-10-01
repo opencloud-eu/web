@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
-import { AppConfigObject, ApplicationInformation, ApplicationFileExtension } from '../../apps'
-import { Translations } from 'vue3-gettext'
+import {
+  AppConfigObject,
+  ApplicationInformation,
+  ApplicationFileExtension,
+  ApplicationTranslationLoaders,
+  ApplicationTranslations
+} from '../../apps'
 
 export const useAppsStore = defineStore('apps', () => {
   const apps = ref<Record<string, ApplicationInformation>>({})
@@ -11,7 +16,10 @@ export const useAppsStore = defineStore('apps', () => {
 
   const appIds = computed(() => Object.keys(unref(apps)))
 
-  const registerApp = (appInfo: ApplicationInformation, translations?: Translations) => {
+  const registerApp = (
+    appInfo: ApplicationInformation,
+    translations?: ApplicationTranslations | ApplicationTranslationLoaders
+  ) => {
     if (!appInfo.id) {
       return
     }

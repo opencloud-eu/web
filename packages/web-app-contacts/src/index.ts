@@ -1,4 +1,4 @@
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-contacts'
 import { useGettext } from 'vue3-gettext'
 import Contacts from './views/Contacts.vue'
 import LayoutContainer from './LayoutContainer.vue'

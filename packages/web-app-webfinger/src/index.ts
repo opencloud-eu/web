@@ -1,5 +1,5 @@
 import { useGettext } from 'vue3-gettext'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-webfinger'
 import { defineWebApplication } from '@opencloud-eu/web-pkg'
 import { RouteRecordRaw } from 'vue-router'
 import Resolve from './views/Resolve.vue'

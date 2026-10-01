@@ -3,7 +3,7 @@ import {
   AppWrapperRoute,
   defineWebApplication
 } from '@opencloud-eu/web-pkg'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-preview'
 import * as app from './App.vue'
 import { useGettext } from 'vue3-gettext'
 import { mimeTypes } from './mimeTypes'

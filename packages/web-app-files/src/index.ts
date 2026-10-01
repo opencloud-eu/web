@@ -7,7 +7,7 @@ import SharedViaLink from './views/shares/SharedViaLink.vue'
 import SpaceDriveResolver from './views/spaces/DriveResolver.vue'
 import SpaceProjects from './views/spaces/Projects.vue'
 import TrashOverview from './views/trash/Overview.vue'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-files'
 import {
   ApplicationInformation,
   ClassicApplicationScript,
