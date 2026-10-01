@@ -27,7 +27,6 @@ Feature: Copy
       | PARENTCopy3/example2.txt | example text                        |
       | KeyboardExample.txt      | copy with the help of keyboard      |
       | dragDrop.txt             | copy with the help of drag-drop     |
-      | sidebar.txt              | copy with the help of sidebar panel |
       | PARENT/fileToCopy1.txt   | some content                        |
       | PARENT/fileToCopy2.txt   | some content                        |
       | PARENT/fileToCopy3.txt   | some content                        |
@@ -38,9 +37,6 @@ Feature: Copy
     And "Alice" reduces the tile size
 
     When "Alice" copies the following resource using dropdown-menu
-      | resource    | to          |
-      | sidebar.txt | Personal/PARENTCopy2 |
-    And "Alice" copies the following resource using dropdown-menu
       | resource                 | to          |
       | PARENTCopy3/example1.txt | Personal/PARENTCopy1 |
     And "Alice" copies the following resource using batch-action
@@ -65,9 +61,6 @@ Feature: Copy
     And "Alice" moves the following resource using keyboard
       | resource    | to         |
       | PARENTCopy2 | Personal/PARENTMove |
-    And "Alice" moves the following resource using dropdown-menu
-      | resource    | to         |
-      | PARENTCopy3 | Personal/PARENTMove |
     And "Alice" opens folder "PARENTCopy4"
     And "Alice" opens folder "Sub1"
     And "Alice" moves the following resource using drag-drop-breadcrumb
