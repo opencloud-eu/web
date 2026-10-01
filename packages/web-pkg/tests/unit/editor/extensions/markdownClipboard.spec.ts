@@ -4,11 +4,13 @@ import { AllSelection } from '@tiptap/pm/state'
 import StarterKit from '@tiptap/starter-kit'
 import { Marked } from 'marked'
 import type { marked as markedDefault } from 'marked'
-import { describe, expect, it } from 'vitest'
+import Image from '@tiptap/extension-image'
+import { describe, expect, it, vi } from 'vitest'
+import { imageFileHandlerExtension } from '../../../../src/editor/extensions/imageFileHandler'
 import { createLinkExtension } from '../../../../src/editor/extensions/link'
 import { createMarkdownClipboardExtension } from '../../../../src/editor/extensions/markdownClipboard'
 
-function createEditor(): Editor {
+function createEditor({ withImages = false } = {}): Editor {
   const marked = new Marked() as unknown as typeof markedDefault
 
   return new Editor({
@@ -16,7 +18,10 @@ function createEditor(): Editor {
       StarterKit.configure({ link: false }),
       Markdown.configure({ marked }),
       createMarkdownClipboardExtension(),
-      createLinkExtension()
+      createLinkExtension(),
+      ...(withImages
+        ? [Image.configure({ inline: false, allowBase64: true }), imageFileHandlerExtension()]
+        : [])
     ]
   })
 }
@@ -25,11 +30,12 @@ function copySelectionAsText(editor: Editor) {
   return editor.view.serializeForClipboard(editor.state.selection.content()).text
 }
 
-function createClipboardEvent(text: string, html: string): ClipboardEvent {
+function createClipboardEvent(text: string, html: string, files: File[] = []): ClipboardEvent {
   const event = new Event('paste', { bubbles: true, cancelable: true }) as ClipboardEvent
 
   Object.defineProperty(event, 'clipboardData', {
     value: {
+      files,
       getData: (type: string) => {
         if (type === 'text/plain') {
           return text
@@ -222,6 +228,23 @@ describe('markdown clipboard extension', () => {
       expect(editor.state.doc.firstChild?.type.name).toBe('heading')
       expect(editor.markdown?.serialize(editor.getJSON())).toContain('# Heading')
       expect(editor.markdown?.serialize(editor.getJSON())).toContain('**bold**')
+    } finally {
+      editor.destroy()
+    }
+  })
+
+  it('pastes image files as embedded images instead of their text payload', async () => {
+    const editor = createEditor({ withImages: true })
+    const file = new File(['image'], 'image.png', { type: 'image/png' })
+    const event = createClipboardEvent('image.png', '', [file])
+
+    try {
+      pasteClipboardEvent(editor, event)
+
+      await vi.waitFor(() =>
+        expect(editor.markdown?.serialize(editor.getJSON())).toContain('![](data:image/png;base64,')
+      )
+      expect(editor.state.doc.textContent).not.toContain('image.png')
     } finally {
       editor.destroy()
     }
