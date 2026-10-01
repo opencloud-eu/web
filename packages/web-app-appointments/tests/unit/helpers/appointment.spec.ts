@@ -16,6 +16,7 @@ describe('appointment normalization', () => {
       expect.objectContaining({
         id: 'event-1',
         calendarId: 'c',
+        calendarIds: ['c'],
         title: 'Planning',
         start: '2026-06-25T08:00:00.000Z',
         end: '2026-06-25T09:00:00.000Z',
@@ -66,7 +67,7 @@ describe('appointment normalization', () => {
           roles: { attendee: true }
         }
       },
-      recurrenceRules: [{ '@type': 'RecurrenceRule', frequency: 'weekly' }],
+      recurrenceRule: { '@type': 'RecurrenceRule', frequency: 'weekly' },
       alerts: { reminder: { action: 'display' } }
     })
 
@@ -93,6 +94,17 @@ describe('appointment normalization', () => {
     })
 
     expect(appointment.organizer?.name).toBe('Grace')
+  })
+
+  it('preserves every calendar membership', () => {
+    const appointment = normalizeAppointment({
+      id: 'shared-event',
+      calendarIds: { personal: true, team: true, disabled: false },
+      start: '2026-06-25T09:00:00.000Z'
+    })
+
+    expect(appointment.calendarId).toBe('personal')
+    expect(appointment.calendarIds).toEqual(['personal', 'team'])
   })
 })
 

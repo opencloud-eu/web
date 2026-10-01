@@ -156,7 +156,7 @@ describe('MonthView', () => {
     expect(wrapper.emitted('select-appointment')?.[0]).toEqual([occurrence.id])
   })
 
-  it('truncates the occurrences of a day and counts the hidden ones', () => {
+  it('reveals and hides additional occurrences of a day', async () => {
     const { wrapper } = getWrapper({
       occurrencesByDay: occurrencesByDay([
         appointment({ id: '1', title: 'First' }),
@@ -171,6 +171,17 @@ describe('MonthView', () => {
     expect(dayCell.findAll('[data-testid^="calendar-appointment-"]')).toHaveLength(3)
     expect(dayCell.text()).toContain('+2 more')
     expect(dayCell.text()).not.toContain('Fourth')
+
+    await dayCell.get('[data-testid="calendar-day-more-2026-06-25"]').trigger('click')
+
+    expect(dayCell.findAll('[data-testid^="calendar-appointment-"]')).toHaveLength(5)
+    expect(dayCell.text()).toContain('Fourth')
+    expect(dayCell.text()).toContain('Show fewer')
+    expect(wrapper.emitted('select-date')).toBeUndefined()
+
+    await dayCell.get('[data-testid="calendar-day-more-2026-06-25"]').trigger('click')
+
+    expect(dayCell.findAll('[data-testid^="calendar-appointment-"]')).toHaveLength(3)
   })
 
   it('hints that the month has no appointments at all', () => {
@@ -228,6 +239,7 @@ const occurrencesByDay = (appointments: Appointment[]): Record<string, Appointme
 const appointment = (overrides: Partial<Appointment>): Appointment => ({
   id: 'appointment',
   calendarId: 'personal',
+  calendarIds: ['personal'],
   title: 'Planning',
   start: '2026-06-25T08:00:00.000Z',
   end: '2026-06-25T09:00:00.000Z',
