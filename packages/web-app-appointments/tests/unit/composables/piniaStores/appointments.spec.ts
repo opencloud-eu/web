@@ -15,7 +15,12 @@ describe('appointments store', () => {
     store.setAppointments([
       appointment({ id: '1', calendarId: 'c', start: '2026-06-25T08:00:00.000Z' }),
       appointment({ id: '2', calendarId: 'c', start: '2026-06-25T10:00:00.000Z' }),
-      appointment({ id: '3', calendarId: 'hidden', start: '2026-06-26T10:00:00.000Z' })
+      appointment({
+        id: '3',
+        calendarId: 'hidden',
+        calendarIds: ['hidden'],
+        start: '2026-06-26T10:00:00.000Z'
+      })
     ])
 
     expect(store.appointments).toHaveLength(3)
@@ -33,6 +38,25 @@ describe('appointments store', () => {
     ])
 
     expect(store.visibleAppointments.map(({ id }) => id)).toEqual(['visible'])
+  })
+
+  it('keeps an appointment visible through any selected calendar membership', () => {
+    const store = useAppointmentsStore()
+    store.setCurrentMonth(new Date(2026, 5, 1))
+    store.setCalendars([calendar({ id: 'personal' }), calendar({ id: 'team' })])
+    store.setAppointments([
+      appointment({
+        id: 'shared',
+        calendarId: 'personal',
+        calendarIds: ['personal', 'team']
+      })
+    ])
+
+    store.setCalendarSelected('personal', false)
+
+    expect(store.visibleAppointments).toEqual([
+      expect.objectContaining({ id: 'shared', calendarId: 'team' })
+    ])
   })
 
   it('exposes the month grid range of the current month', () => {
@@ -128,6 +152,7 @@ const calendar = (overrides: Partial<Calendar>): Calendar => ({
 const appointment = (overrides: Partial<Appointment>): Appointment => ({
   id: 'appointment',
   calendarId: 'c',
+  calendarIds: ['c'],
   title: 'Planning',
   start: '2026-06-25T08:00:00.000Z',
   end: '2026-06-25T09:00:00.000Z',

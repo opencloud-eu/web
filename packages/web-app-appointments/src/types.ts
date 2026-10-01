@@ -65,7 +65,7 @@ export const CalendarEventSchema = z.object({
   visibility: optionalString,
   status: optionalString,
   freeBusyStatus: optionalString,
-  recurrenceRule: optionalString,
+  recurrenceRule: RecurrenceRuleSchema.nullish().transform((value) => value ?? undefined),
   recurrenceRules: z.array(RecurrenceRuleSchema).nullish(),
   recurrenceId: optionalString,
   recurrenceOverrides: z.record(z.string(), z.unknown()).nullish(),
@@ -145,6 +145,7 @@ export type Appointment = {
   id: string
   uid?: string
   calendarId?: string
+  calendarIds: string[]
   accountId?: string
   title: string
   description?: string
@@ -188,20 +189,33 @@ export type AppointmentDateRange = {
   end: string
 }
 
-export const parseCalendarEventsResponse = (data: unknown): CalendarEvent[] => {
+export type CalendarEventsPage = {
+  events: CalendarEvent[]
+  total?: number
+}
+
+export function parseCalendarEventsPage(data: unknown): CalendarEventsPage {
   const arrayResponse = CalendarEventsArrayResponseSchema.safeParse(data)
   if (arrayResponse.success) {
-    return arrayResponse.data
+    return { events: arrayResponse.data }
   }
 
   // JMAP `/get` envelope.
   const listResponse = CalendarEventListResponseSchema.safeParse(data)
   if (listResponse.success) {
-    return listResponse.data.list
+    return { events: listResponse.data.list }
   }
 
   // JMAP `/query` envelope, which is what the events endpoint returns.
-  return CalendarEventSearchResultsSchema.parse(data).results
+  const queryResponse = CalendarEventSearchResultsSchema.parse(data)
+  return {
+    events: queryResponse.results,
+    total: queryResponse.total ?? undefined
+  }
+}
+
+export function parseCalendarEventsResponse(data: unknown): CalendarEvent[] {
+  return parseCalendarEventsPage(data).events
 }
 
 export const parseCalendarsResponse = (data: unknown): RawCalendar[] => {

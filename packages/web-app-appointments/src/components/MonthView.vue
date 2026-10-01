@@ -111,37 +111,12 @@
           />
         </div>
 
-        <div class="flex min-h-0 flex-col gap-1">
-          <button
-            v-for="occurrence in getVisibleOccurrences(day.key)"
-            :key="occurrence.id"
-            type="button"
-            class="grid w-full grid-cols-[1fr_auto] gap-2 truncate rounded border-l-4 bg-role-surface-container px-2 py-1 text-left text-xs text-role-on-surface hover:bg-role-surface-container-highest"
-            :style="{
-              borderColor: resolveAppointmentColor(
-                occurrence.appointment,
-                calendarColorById[occurrence.calendarId || '']
-              )
-            }"
-            :title="occurrence.appointment.title"
-            :data-testid="`calendar-appointment-${occurrence.id}`"
-            @click.stop="$emit('select-appointment', occurrence.id)"
-          >
-            <span
-              class="truncate"
-              v-text="occurrence.appointment.title || $gettext('Untitled appointment')"
-            />
-            <span
-              class="truncate text-role-on-surface-variant"
-              v-text="formatOccurrenceTime(occurrence)"
-            />
-          </button>
-          <div
-            v-if="getHiddenOccurrenceCount(day.key)"
-            class="truncate px-2 py-1 text-xs text-role-on-surface-variant"
-            v-text="$gettext('+%{count} more', { count: getHiddenOccurrenceCount(day.key) })"
-          />
-        </div>
+        <MonthDayAppointments
+          :day-key="day.key"
+          :occurrences="occurrencesByDay[day.key] || []"
+          :calendar-color-by-id="calendarColorById"
+          @select-appointment="$emit('select-appointment', $event)"
+        />
       </div>
     </div>
 
@@ -162,12 +137,11 @@ import { computed, nextTick, ref, unref, useId, useTemplateRef, watch } from 'vu
 import { useGettext } from 'vue3-gettext'
 import { AppLoadingSpinner, NoContentMessage, formatDateFromJSDate } from '@opencloud-eu/web-pkg'
 import { DateTime, Info } from 'luxon'
-import { resolveAppointmentColor } from '../helpers/color'
-import { formatOccurrenceTimeRange, type CalendarDay } from '../helpers/date'
+import MonthDayAppointments from './MonthDayAppointments.vue'
+import type { CalendarDay } from '../helpers/date'
 import type { AppointmentOccurrence } from '../types'
 
 const DAYS_PER_WEEK = 7
-const MAX_OCCURRENCES_PER_DAY = 3
 
 const {
   days,
@@ -214,22 +188,6 @@ const monthLabel = computed(() => {
     year: 'numeric'
   })
 })
-
-const getVisibleOccurrences = (dateKey: string) => {
-  return (occurrencesByDay[dateKey] || []).slice(0, MAX_OCCURRENCES_PER_DAY)
-}
-
-const getHiddenOccurrenceCount = (dateKey: string) => {
-  return Math.max((occurrencesByDay[dateKey] || []).length - MAX_OCCURRENCES_PER_DAY, 0)
-}
-
-const formatOccurrenceTime = (occurrence: AppointmentOccurrence) => {
-  if (occurrence.appointment.allDay) {
-    return $gettext('All day')
-  }
-
-  return formatOccurrenceTimeRange(occurrence, currentLanguage)
-}
 
 const formatDayLabel = (date: Date) => {
   return formatDateFromJSDate(date, currentLanguage, DateTime.DATE_FULL)

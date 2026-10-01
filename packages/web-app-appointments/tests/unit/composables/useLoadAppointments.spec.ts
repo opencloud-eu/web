@@ -74,6 +74,7 @@ const getComposable = async () => {
 const appointment = (overrides: Partial<Appointment>): Appointment => ({
   id: 'appointment',
   calendarId: 'personal',
+  calendarIds: ['personal'],
   title: 'Planning',
   start: '2026-06-25T08:00:00.000Z',
   end: '2026-06-25T09:00:00.000Z',

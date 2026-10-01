@@ -98,6 +98,7 @@ describe('calendar date helpers', () => {
 function appointment(overrides: Partial<Appointment>): Appointment {
   return {
     id: 'appointment',
+    calendarIds: [],
     title: 'Planning',
     start: '2026-06-25T08:00:00.000Z',
     end: '2026-06-25T09:00:00.000Z',

@@ -68,6 +68,59 @@ describe('calendar api composable', () => {
     const [result] = await api.loadAppointments('e', visibleRange, ['personal'], signal)
 
     expect(result.calendarId).toBe('personal')
+    expect(result.calendarIds).toEqual(['personal'])
+  })
+
+  it('reloads a truncated event collection with the reported total as limit', async () => {
+    const client = {
+      get: vi
+        .fn()
+        .mockResolvedValueOnce({
+          data: {
+            results: [calendarEvent({ id: 'event-1' })],
+            position: 0,
+            total: 2
+          }
+        })
+        .mockResolvedValueOnce({
+          data: {
+            results: [calendarEvent({ id: 'event-1' }), calendarEvent({ id: 'event-2' })],
+            position: 0,
+            total: 2
+          }
+        })
+    }
+    const { api, signal } = getApi(client)
+
+    const result = await api.loadAppointments('e', visibleRange, ['c'], signal)
+
+    expect(result.map(({ id }) => id)).toEqual(['event-1', 'event-2'])
+    expect(client.get).toHaveBeenNthCalledWith(
+      2,
+      `${GROUPWARE_URL}/accounts/e/calendars/c/events`,
+      { signal, params: { limit: 2 } }
+    )
+  })
+
+  it('rejects an event collection that remains incomplete', async () => {
+    const incompleteResponse = {
+      data: {
+        results: [calendarEvent({ id: 'event-1' })],
+        position: 0,
+        total: 2
+      }
+    }
+    const client = {
+      get: vi
+        .fn()
+        .mockResolvedValueOnce(incompleteResponse)
+        .mockResolvedValueOnce(incompleteResponse)
+    }
+    const { api, signal } = getApi(client)
+
+    await expect(api.loadAppointments('e', visibleRange, ['c'], signal)).rejects.toThrow(
+      'Groupware API returned an incomplete event collection for c'
+    )
   })
 
   it('loads events from every requested calendar', async () => {
@@ -103,9 +156,10 @@ describe('calendar api composable', () => {
     }
     const { api, signal } = getApi(client)
 
-    const result = await api.loadAppointments('e', visibleRange, ['personal', 'personal'], signal)
+    const result = await api.loadAppointments('e', visibleRange, ['personal', 'team'], signal)
 
     expect(result).toHaveLength(1)
+    expect(result[0].calendarIds).toEqual(['personal', 'team'])
   })
 
   it('does not request anything when no calendar is given', async () => {

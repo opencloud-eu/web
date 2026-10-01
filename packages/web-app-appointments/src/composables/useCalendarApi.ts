@@ -3,7 +3,7 @@ import { useClientService, useConfigStore, type HttpClient } from '@opencloud-eu
 import { normalizeAppointments, normalizeCalendars } from '../helpers/appointment'
 import { isAppointmentInRange } from '../helpers/date'
 import {
-  parseCalendarEventsResponse,
+  parseCalendarEventsPage,
   parseCalendarsResponse,
   type Appointment,
   type AppointmentDateRange,
@@ -46,7 +46,12 @@ export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions):
     return normalizeCalendars(parseCalendarsResponse(data))
   }
 
-  const loadEvents = async (accountId: string, calendarId: string, signal: AbortSignal) => {
+  const loadEventPage = async (
+    accountId: string,
+    calendarId: string,
+    signal: AbortSignal,
+    limit?: number
+  ) => {
     const { data } = await client.get(
       urlJoin(
         groupwareUrl(),
@@ -56,12 +61,29 @@ export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions):
         encodeURIComponent(calendarId),
         'events'
       ),
-      { signal }
+      limit === undefined ? { signal } : { signal, params: { limit } }
     )
 
-    return normalizeAppointments(parseCalendarEventsResponse(data)).map((appointment) => ({
+    return parseCalendarEventsPage(data)
+  }
+
+  const loadEvents = async (accountId: string, calendarId: string, signal: AbortSignal) => {
+    let page = await loadEventPage(accountId, calendarId, signal)
+
+    if (page.total !== undefined && page.events.length < page.total) {
+      page = await loadEventPage(accountId, calendarId, signal, page.total)
+    }
+
+    if (page.total !== undefined && page.events.length < page.total) {
+      throw new Error(`Groupware API returned an incomplete event collection for ${calendarId}`)
+    }
+
+    return normalizeAppointments(page.events).map((appointment) => ({
       ...appointment,
-      calendarId: appointment.calendarId || calendarId
+      calendarId: appointment.calendarId || calendarId,
+      calendarIds: appointment.calendarIds.includes(calendarId)
+        ? appointment.calendarIds
+        : [...appointment.calendarIds, calendarId]
     }))
   }
 
@@ -95,15 +117,22 @@ export const createCalendarApi = ({ client, groupwareUrl }: CalendarApiOptions):
 }
 
 const deduplicateAppointments = (appointments: Appointment[]) => {
-  const seen = new Set<string>()
+  const appointmentsById = new Map<string, Appointment>()
 
-  return appointments.filter((appointment) => {
-    const key = `${appointment.calendarId || ''}:${appointment.id}:${appointment.recurrenceId || appointment.start}`
-    if (seen.has(key)) {
-      return false
+  for (const appointment of appointments) {
+    const key = `${appointment.id}:${appointment.recurrenceId || appointment.start}`
+    const existingAppointment = appointmentsById.get(key)
+
+    if (!existingAppointment) {
+      appointmentsById.set(key, appointment)
+      continue
     }
 
-    seen.add(key)
-    return true
-  })
+    appointmentsById.set(key, {
+      ...existingAppointment,
+      calendarIds: [...new Set([...existingAppointment.calendarIds, ...appointment.calendarIds])]
+    })
+  }
+
+  return [...appointmentsById.values()]
 }

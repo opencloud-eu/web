@@ -45,12 +45,16 @@ export const useAppointmentsStore = defineStore('appointments', () => {
 
     const range = unref(currentMonthRange)
 
-    return unref(appointments).filter((appointment) => {
-      if (!appointment.calendarId || !selectedIds.has(appointment.calendarId)) {
-        return false
+    return unref(appointments).flatMap((appointment) => {
+      const calendarId =
+        (appointment.calendarId && selectedIds.has(appointment.calendarId)
+          ? appointment.calendarId
+          : undefined) || appointment.calendarIds.find((id) => selectedIds.has(id))
+      if (!calendarId || !isAppointmentInRange(appointment, range)) {
+        return []
       }
 
-      return isAppointmentInRange(appointment, range)
+      return [{ ...appointment, calendarId }]
     })
   })
 

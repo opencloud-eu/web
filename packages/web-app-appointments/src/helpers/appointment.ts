@@ -16,9 +16,10 @@ export const normalizeAppointments = (events: CalendarEvent[]): Appointment[] =>
 }
 
 export const normalizeAppointment = (event: CalendarEvent): Appointment => {
-  const calendarId =
-    event.calendarId ||
-    Object.entries(event.calendarIds || {}).find(([, isMember]) => isMember)?.[0]
+  const calendarIds = Object.entries(event.calendarIds || {})
+    .filter(([, isMember]) => isMember)
+    .map(([id]) => id)
+  const calendarId = event.calendarId || calendarIds[0]
   const participants = normalizeParticipants(event.participants)
   const recurrenceRules: AppointmentRecurrenceRule[] = [
     ...(event.recurrenceRule ? [event.recurrenceRule] : []),
@@ -29,6 +30,8 @@ export const normalizeAppointment = (event: CalendarEvent): Appointment => {
     id: event.id,
     uid: event.uid,
     calendarId,
+    calendarIds:
+      calendarId && !calendarIds.includes(calendarId) ? [calendarId, ...calendarIds] : calendarIds,
     accountId: event.accountId,
     title: event.title || event.name || event.summary || '',
     description: event.description,
