@@ -6,6 +6,31 @@
 
 @AlexAndBear, @JammingBen, @flimmy, @fredrikblau, @kulmann, @pascalwengerter, @tammi-23, @v-scharf
 
+### 🐛 Bug Fixes
+
+- fix(web-pkg): show resource table columns if any resource has the field [[#3512](https://github.com/opencloud-eu/web/pull/3512)]
+- fix: load indirect shares in editors [[#3313](https://github.com/opencloud-eu/web/pull/3313)]
+- fix: make current breadcrumb item clickable on mobile [[#3476](https://github.com/opencloud-eu/web/pull/3476)]
+- fix(yjs): let the server grant stale recovery to one client [[#3433](https://github.com/opencloud-eu/web/pull/3433)]
+- fix: reload favorites and shares when clicking the current breadcrumb or shares tab [[#3477](https://github.com/opencloud-eu/web/pull/3477)]
+- fix: select only the clicked space when opening admin space details [[#3487](https://github.com/opencloud-eu/web/pull/3487)]
+- fix: show space quota progress bar background in sidebar [[#3491](https://github.com/opencloud-eu/web/pull/3491)]
+- fix: move rename action below download in context menu [[#3485](https://github.com/opencloud-eu/web/pull/3485)]
+- fix: use full width search inputs on mobile screens [[#3474](https://github.com/opencloud-eu/web/pull/3474)]
+- fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
+- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
+- fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
+- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
+- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
+- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
+- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
+- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
+- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
+- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
+- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
+- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
+- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
+
 ### 📈 Enhancement
 
 - feat(admin-settings): use the web-pkg spaces store, add the customize menu and space images [[#3501](https://github.com/opencloud-eu/web/pull/3501)]
@@ -56,30 +81,6 @@
 - e2e: create space with options [[#3458](https://github.com/opencloud-eu/web/pull/3458)]
 - refactor(e2e): clean up test structure [[#3425](https://github.com/opencloud-eu/web/pull/3425)]
 - e2e: mentioning collaborator in file [[#3389](https://github.com/opencloud-eu/web/pull/3389)]
-
-### 🐛 Bug Fixes
-
-- fix: load indirect shares in editors [[#3313](https://github.com/opencloud-eu/web/pull/3313)]
-- fix: make current breadcrumb item clickable on mobile [[#3476](https://github.com/opencloud-eu/web/pull/3476)]
-- fix(yjs): let the server grant stale recovery to one client [[#3433](https://github.com/opencloud-eu/web/pull/3433)]
-- fix: reload favorites and shares when clicking the current breadcrumb or shares tab [[#3477](https://github.com/opencloud-eu/web/pull/3477)]
-- fix: select only the clicked space when opening admin space details [[#3487](https://github.com/opencloud-eu/web/pull/3487)]
-- fix: show space quota progress bar background in sidebar [[#3491](https://github.com/opencloud-eu/web/pull/3491)]
-- fix: move rename action below download in context menu [[#3485](https://github.com/opencloud-eu/web/pull/3485)]
-- fix: use full width search inputs on mobile screens [[#3474](https://github.com/opencloud-eu/web/pull/3474)]
-- fix: respect file extension setting and validate file name in save as dialog [[#3468](https://github.com/opencloud-eu/web/pull/3468)]
-- fix: shift-click multi select in favorites, shares and trash views [[#3472](https://github.com/opencloud-eu/web/pull/3472)]
-- fix: prevent truncated resource names from overflowing into adjacent elements [[#3469](https://github.com/opencloud-eu/web/pull/3469)]
-- fix: hide announcement banner in embed mode [[#3467](https://github.com/opencloud-eu/web/pull/3467)]
-- fix(files): apply the picked member role when creating a space [[#3459](https://github.com/opencloud-eu/web/pull/3459)]
-- ci: fix error when trying to delete nonexisting cache [[#3455](https://github.com/opencloud-eu/web/pull/3455)]
-- fix: keep editor drops inside the create space modal's focus trap [[#3450](https://github.com/opencloud-eu/web/pull/3450)]
-- Lock an encrypted space when it gets disabled [[#3408](https://github.com/opencloud-eu/web/pull/3408)]
-- Remove the vault unlock actions and hide the lock action for disabled spaces [[#3404](https://github.com/opencloud-eu/web/pull/3404)]
-- Show the action title in mobile text editor toolbar drops [[#3399](https://github.com/opencloud-eu/web/pull/3399)]
-- fix: keep editor open when saving fails on close [[#3396](https://github.com/opencloud-eu/web/pull/3396)]
-- Fix nested mobile drops in overflow menus [[#3392](https://github.com/opencloud-eu/web/pull/3392)]
-- fix(web-pkg): keep full folder names when file extensions are hidden [[#3369](https://github.com/opencloud-eu/web/pull/3369)]
 
 ### 📦️ Dependencies
 
