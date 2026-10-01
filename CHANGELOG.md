@@ -84,6 +84,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update devdependencies (non-major) to v5.0.3 [[#3510](https://github.com/opencloud-eu/web/pull/3510)]
 - chore(deps): update apache/tika docker tag to v4.2.0 [[#3514](https://github.com/opencloud-eu/web/pull/3514)]
 - chore(deps): update pnpm to v11.28.3 [[#3511](https://github.com/opencloud-eu/web/pull/3511)]
 - chore(deps): update devdependencies (non-major) [[#3446](https://github.com/opencloud-eu/web/pull/3446)]
