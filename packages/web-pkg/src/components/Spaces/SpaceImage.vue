@@ -5,7 +5,7 @@
   />
   <img
     v-else-if="space.thumbnail"
-    class="rounded-xs object-cover size-6"
+    class="rounded-xs object-cover size-6 max-w-none"
     :class="{ 'opacity-80 grayscale': space.disabled }"
     :src="space.thumbnail"
     alt=""
