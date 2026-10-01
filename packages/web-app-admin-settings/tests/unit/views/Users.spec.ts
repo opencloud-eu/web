@@ -9,7 +9,7 @@ import {
   shallowMount,
   useAppDefaultsMock
 } from '@opencloud-eu/web-test-helpers'
-import { ClientService, SideBarPanel } from '@opencloud-eu/web-pkg'
+import { Action, ClientService, SideBarPanel } from '@opencloud-eu/web-pkg'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { flushPromises } from '@vue/test-utils'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -195,6 +195,16 @@ describe('Users view', () => {
       })
       await flushPromises()
       expect(wrapper.find('batch-actions-stub').exists()).toBeTruthy()
+    })
+    it('show the delete action last', async () => {
+      const { wrapper } = getMountedWrapper({
+        mountType: mount,
+        selectedUsers: [{ id: '1' }] as User[]
+      })
+      await flushPromises()
+      const batchActions = wrapper.findComponent(AppTemplate).props('batchActions') as Action[]
+      expect(batchActions.length).toBeGreaterThan(1)
+      expect(batchActions.at(-1).name).toBe('delete')
     })
     it('display when more than one users selected', async () => {
       const { wrapper } = getMountedWrapper({

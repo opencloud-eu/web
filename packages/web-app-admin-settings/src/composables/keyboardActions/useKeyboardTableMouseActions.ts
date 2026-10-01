@@ -7,7 +7,6 @@ export function useKeyboardTableMouseActions(
   keyActions: KeyboardActions,
   paginatedResources: Ref<Item[]>,
   selectedRows: Ref<Item[]>,
-  lastSelectedRowIndex: Ref<number>,
   lastSelectedRowId: Ref<string | null>
 ) {
   let resourceListClickedMetaEvent: string
@@ -22,7 +21,6 @@ export function useKeyboardTableMouseActions(
     }
     keyActions.resetSelectionCursor()
 
-    lastSelectedRowIndex.value = rowIndex >= 0 ? rowIndex : unref(selectedRows).length - 1
     lastSelectedRowId.value = String(resource.id)
   }
 
@@ -61,24 +59,23 @@ export function useKeyboardTableMouseActions(
       }
     }
 
-    lastSelectedRowIndex.value = findIndex(unref(paginatedResources), { id: resource.id })
     lastSelectedRowId.value = String(resource.id)
     keyActions.resetSelectionCursor()
   }
 
   onMounted(() => {
     resourceListClickedMetaEvent = eventBus.subscribe(
-      'app.resources.list.clicked.meta',
+      'app.admin-settings.list.clicked.meta',
       handleCtrlClickAction
     )
     resourceListClickedShiftEvent = eventBus.subscribe(
-      'app.resources.list.clicked.shift',
+      'app.admin-settings.list.clicked.shift',
       handleShiftClickAction
     )
   })
 
   onBeforeUnmount(() => {
-    eventBus.unsubscribe('app.resources.list.clicked.meta', resourceListClickedMetaEvent)
-    eventBus.unsubscribe('app.resources.list.clicked.shift', resourceListClickedShiftEvent)
+    eventBus.unsubscribe('app.admin-settings.list.clicked.meta', resourceListClickedMetaEvent)
+    eventBus.unsubscribe('app.admin-settings.list.clicked.shift', resourceListClickedShiftEvent)
   })
 }

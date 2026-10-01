@@ -1,4 +1,4 @@
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { SpaceResource, isProjectSpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -10,7 +10,6 @@ import {
   useClientService,
   useMessages,
   useModals,
-  useRoute,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -21,7 +20,6 @@ export const useSpaceActionsRestore = () => {
   const { $gettext, $ngettext } = useGettext()
   const ability = useAbility()
   const clientService = useClientService()
-  const route = useRoute()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
 
@@ -40,10 +38,6 @@ export const useSpaceActionsRestore = () => {
       client.drives
         .updateDrive(space.id, { name: space.name }, { headers: { Restore: 'true' } })
         .then((updatedSpace) => {
-          if (unref(route).name === 'admin-settings-spaces') {
-            space.disabled = false
-            space.spaceQuota = updatedSpace.spaceQuota
-          }
           spacesStore.upsertSpace(updatedSpace)
           return space.id
         })

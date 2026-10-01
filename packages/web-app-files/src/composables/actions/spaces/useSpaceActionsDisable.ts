@@ -48,11 +48,13 @@ export const useSpaceActionsDisable = () => {
         if (currentRoute.name === 'files-spaces-generic') {
           router.push({ name: 'files-spaces-projects' })
         }
-        if (currentRoute.name === 'admin-settings-spaces') {
-          space.disabled = true
-          space.spaceQuota = { total: space.spaceQuota.total }
-        }
         spacesStore.updateSpaceField({ id: space.id, field: 'disabled', value: true })
+        // a disabled space doesn't report its usage anymore
+        spacesStore.updateSpaceField({
+          id: space.id,
+          field: 'spaceQuota',
+          value: { total: space.spaceQuota.total }
+        })
         if (getSpaceVaultClaim(extensionRegistry, space)) {
           vaultStore.clearEngine(space.id, SPACE_VAULT_ROOT)
         }

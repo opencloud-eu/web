@@ -303,11 +303,11 @@ async function filterDisplayName() {
 
 const batchActions = computed(() =>
   [
-    ...unref(deleteActions),
     ...unref(editQuotaActions),
     ...unref(addToGroupsActions),
     ...unref(removeFromGroupsActions),
-    ...(unref(graphUsersEditLoginAllowedDisabled) ? [] : unref(editLoginActions))
+    ...(unref(graphUsersEditLoginAllowedDisabled) ? [] : unref(editLoginActions)),
+    ...unref(deleteActions)
   ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
 )
 

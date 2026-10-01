@@ -144,7 +144,7 @@ Feature: Accessibility checks
     And "Brian" selects the space "my_space"
     And "Brian" checks the accessibility of the DOM selector "#admin-settings-view-wrapper" on the "admin settings->spaces"
     And "Brian" lists the members of project space "my_space" using a sidebar panel
-    And "Brian" checks the accessibility of the DOM selector "#sidebar-panel-SpaceMembers" on the "admin settings->spaces->members sidebar panel"
+    And "Brian" checks the accessibility of the DOM selector "#sidebar-panel-space-share" on the "admin settings->spaces->members sidebar panel"
 
 
     ## 6. space page

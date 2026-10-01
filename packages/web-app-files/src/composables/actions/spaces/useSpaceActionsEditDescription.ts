@@ -1,4 +1,4 @@
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -8,7 +8,6 @@ import {
   useClientService,
   useMessages,
   useModals,
-  useRoute,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -19,7 +18,6 @@ export const useSpaceActionsEditDescription = () => {
   const { $gettext } = useGettext()
   const ability = useAbility()
   const clientService = useClientService()
-  const route = useRoute()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
 
@@ -29,9 +27,6 @@ export const useSpaceActionsEditDescription = () => {
       .updateDrive(space.id, { name: space.name, description })
       .then(() => {
         spacesStore.updateSpaceField({ id: space.id, field: 'description', value: description })
-        if (unref(route).name === 'admin-settings-spaces') {
-          space.description = description
-        }
         showMessage({ title: $gettext('Space subtitle was changed successfully') })
       })
       .catch((error) => {

@@ -134,7 +134,6 @@ import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
 } from '../../composables/keyboardActions'
-import { findIndex } from 'lodash-es'
 import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 
@@ -154,7 +153,6 @@ const { isSideBarOpen } = storeToRefs(sideBarStore)
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 
-const lastSelectedUserIndex = ref(0)
 const lastSelectedUserId = ref<string>()
 const capabilityStore = useCapabilityStore()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
@@ -198,23 +196,12 @@ const {
 } = usePagination({ items, perPageDefault, perPageStoragePrefix })
 
 const keyActions = useKeyboardActions()
-useKeyboardTableNavigation(
-  keyActions,
-  paginatedItems,
-  selectedUsers,
-  lastSelectedUserIndex,
-  lastSelectedUserId
-)
-useKeyboardTableMouseActions(
-  keyActions,
-  paginatedItems,
-  selectedUsers,
-  lastSelectedUserIndex,
-  lastSelectedUserId
-)
+useKeyboardTableNavigation(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
+useKeyboardTableMouseActions(keyActions, paginatedItems, selectedUsers, lastSelectedUserId)
 
+// the selection is kept across pages, so only the users of the current page count
 const allUsersSelected = computed(
-  () => unref(paginatedItems).length === unref(selectedUsers).length
+  () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isUserSelected)
 )
 const highlighted = computed(() => unref(selectedUsers).map((user) => user.id))
 const footerTextTotal = computed(() =>
@@ -283,7 +270,6 @@ function isUserSelected(user: User) {
 }
 
 function selectUser(user: User) {
-  lastSelectedUserIndex.value = findIndex(unref(users), (u) => u.id === user.id)
   lastSelectedUserId.value = user.id
   keyActions.resetSelectionCursor()
 
@@ -333,10 +319,10 @@ function rowClicked([user, event]: [User, MouseEvent | KeyboardEvent]) {
   }
 
   if (event?.metaKey) {
-    return eventBus.publish('app.resources.list.clicked.meta', user)
+    return eventBus.publish('app.admin-settings.list.clicked.meta', user)
   }
   if (event?.shiftKey) {
-    return eventBus.publish('app.resources.list.clicked.shift', {
+    return eventBus.publish('app.admin-settings.list.clicked.shift', {
       resource: user,
       skipTargetSelection: isCheckboxClicked
     })

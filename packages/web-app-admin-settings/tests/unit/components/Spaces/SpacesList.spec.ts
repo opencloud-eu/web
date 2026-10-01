@@ -1,3 +1,4 @@
+import { RouteLocationNormalizedLoaded } from 'vue-router'
 import SpacesList from '../../../../src/components/Spaces/SpacesList.vue'
 import {
   defaultComponentMocks,
@@ -5,7 +6,15 @@ import {
   mount,
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
-import { queryItemAsString, useSideBar } from '@opencloud-eu/web-pkg'
+import {
+  eventBus,
+  ProcessorType,
+  queryItemAsString,
+  useLoadPreview,
+  useSideBar,
+  useSpacesStore
+} from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
 import { useSpaceSettingsStore } from '../../../../src/composables'
 import { mock } from 'vitest-mock-extended'
 import { GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
@@ -80,10 +89,64 @@ const spaceMocks = [
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
-  queryItemAsString: vi.fn()
+  queryItemAsString: vi.fn(),
+  useLoadPreview: vi.fn()
 }))
 
 describe('SpacesList', () => {
+  describe('space images', () => {
+    it('loads the images of the visible spaces and stores them on the spaces', async () => {
+      const { loadPreview } = getWrapper({ spaces: spaceMocks })
+      await flushPromises()
+      expect(loadPreview).toHaveBeenCalledTimes(spaceMocks.length)
+      expect(loadPreview).toHaveBeenCalledWith({
+        space: spaceMocks[0],
+        resource: spaceMocks[0],
+        processor: ProcessorType.enum.fit,
+        updateStore: false
+      })
+      const { updateSpaceField } = useSpacesStore()
+      expect(updateSpaceField).toHaveBeenCalledWith({
+        id: spaceMocks[0].id,
+        field: 'thumbnail',
+        value: 'blob:preview'
+      })
+    })
+    it('loads the image of a space again after it was set', async () => {
+      const { loadPreview } = getWrapper({ spaces: spaceMocks })
+      await flushPromises()
+      loadPreview.mockClear()
+
+      eventBus.publish('app.files.spaces.uploaded-image', spaceMocks[1])
+      await flushPromises()
+
+      expect(loadPreview).toHaveBeenCalledTimes(1)
+      expect(loadPreview).toHaveBeenCalledWith(expect.objectContaining({ space: spaceMocks[1] }))
+    })
+  })
+
+  describe('pagination', () => {
+    it('shows the new last page if the current page gets empty, e.g. after deleting spaces', async () => {
+      const { mocks } = getWrapper({
+        mountType: shallowMount,
+        stubActions: false,
+        page: '2',
+        perPage: '1'
+      })
+      const spacesStore = useSpacesStore()
+      spacesStore.setAllProjectSpaces(spaceMocks.map((space) => ({ ...space })) as SpaceResource[])
+      await flushPromises()
+      expect(mocks.$router.push).not.toHaveBeenCalled()
+
+      spacesStore.removeSpace(spaceMocks[1])
+      await flushPromises()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+      )
+    })
+  })
+
   describe('rendering', () => {
     it('renders a row per space', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
@@ -118,8 +181,14 @@ describe('SpacesList', () => {
       expect(wrapper.findAllComponents(OcStatusIndicators)).toHaveLength(spaceMocks.length)
     })
     it('renders the total amount of spaces in the footer', () => {
+      const { wrapper } = getWrapper({ spaces: [spaceMocks[0]] })
+      expect(wrapper.find('.oc-table-footer').text()).toContain('1 space in total')
+    })
+    it('renders the amount of disabled spaces in the footer', () => {
       const { wrapper } = getWrapper({ spaces: spaceMocks })
-      expect(wrapper.find('.oc-table-footer').text()).toContain('2 spaces in total')
+      expect(wrapper.find('.oc-table-footer').text()).toContain(
+        '2 spaces in total (including 1 disabled)'
+      )
     })
     it('renders the empty message if there are no spaces', () => {
       const { wrapper } = getWrapper({ spaces: [] })
@@ -182,6 +251,13 @@ describe('SpacesList', () => {
       mock<SpaceResource>({ id: '2', name: 'Some other Space' })
     ]
 
+    it('does not check the header checkbox if only spaces of another page are selected', () => {
+      const { wrapper } = getWrapper({
+        spaces: [spaces[0]],
+        selectedSpaces: [mock<SpaceResource>({ id: 'other-page' })]
+      })
+      expect(getSelectAllCheckbox(wrapper).props('modelValue')).toBeFalsy()
+    })
     it('selects all spaces via the header checkbox', () => {
       const { wrapper } = getWrapper({ spaces })
       getSelectAllCheckbox(wrapper).vm.$emit('update:modelValue', true)
@@ -233,26 +309,42 @@ function getWrapper({
   mountType = mount,
   spaces = [],
   selectedSpaces = [],
-  stubActions = true
+  stubActions = true,
+  page,
+  perPage
 }: {
   mountType?: typeof mount
   spaces?: SpaceResource[]
   selectedSpaces?: SpaceResource[]
   stubActions?: boolean
+  page?: string
+  perPage?: string
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
-  const mocks = defaultComponentMocks()
+  const query: Record<string, string> = {
+    ...(page && { page }),
+    ...(perPage && { 'items-per-page': perPage })
+  }
+  const mocks = defaultComponentMocks({
+    currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
+  })
+  const loadPreview = vi.fn().mockResolvedValue('blob:preview')
+  vi.mocked(useLoadPreview).mockReturnValue(
+    mock<ReturnType<typeof useLoadPreview>>({ loadPreview })
+  )
 
   return {
     mocks,
+    loadPreview,
     wrapper: mountType(SpacesList, {
       global: {
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
               stubActions,
-              spaceSettingsStore: { spaces, selectedSpaces }
+              spacesState: { allProjectSpaces: spaces },
+              spaceSettingsStore: { selectedSpaces }
             }
           })
         ],

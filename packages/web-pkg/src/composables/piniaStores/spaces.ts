@@ -51,6 +51,12 @@ export const useSpacesStore = defineStore('spaces', () => {
   const extensionRegistry = useExtensionRegistry()
 
   const spaces = ref<SpaceResource[]>([])
+  /**
+   * All project spaces of the server, including the ones the current user isn't a member of.
+   * Only loaded by the admin settings, `undefined` otherwise. Kept apart from `spaces`, which holds
+   * the spaces of the current user only and is used as such throughout the app.
+   */
+  const allProjectSpaces = ref<SpaceResource[]>()
   const currentSpace = ref<SpaceResource>()
   const spacesInitialized = ref(false)
   const mountPointsInitialized = ref(false)
@@ -92,8 +98,41 @@ export const useSpacesStore = defineStore('spaces', () => {
     unref(spaces).push(...s)
   }
 
-  const removeSpace = (space: SpaceResource) => {
+  /**
+   * Removes a space from the spaces of the current user. Only a deleted space is removed from
+   * `allProjectSpaces` too, a space the user just lost access to (`deleted: false`) stays there.
+   */
+  const removeSpace = (space: SpaceResource, { deleted = true }: { deleted?: boolean } = {}) => {
     spaces.value = unref(spaces).filter(({ id }) => id !== space.id)
+    if (deleted && unref(allProjectSpaces)) {
+      allProjectSpaces.value = unref(allProjectSpaces).filter(({ id }) => id !== space.id)
+    }
+  }
+
+  const setAllProjectSpaces = (s: SpaceResource[] | undefined) => {
+    if (s) {
+      markSpaceVaultStatus(extensionRegistry, s)
+    }
+    allProjectSpaces.value = s
+  }
+
+  /**
+   * Updates a space of `allProjectSpaces` (if loaded). The spaces of both lists are separate
+   * objects, so updating the spaces of the current user doesn't overwrite the admin data.
+   */
+  const upsertAllProjectSpace = (space: SpaceResource) => {
+    if (!unref(allProjectSpaces) || !isProjectSpaceResource(space)) {
+      return
+    }
+    const existingSpace = unref(allProjectSpaces).find(({ id }) => id === space.id)
+    if (!existingSpace) {
+      const newSpace = { ...space }
+      markSpaceVaultStatus(extensionRegistry, [newSpace])
+      unref(allProjectSpaces).push(newSpace)
+      return
+    }
+    Object.assign(existingSpace, space)
+    markSpaceVaultStatus(extensionRegistry, [existingSpace])
   }
 
   const getSpace = (id: string) => {
@@ -141,6 +180,7 @@ export const useSpacesStore = defineStore('spaces', () => {
   }
 
   const upsertSpace = (space: SpaceResource) => {
+    upsertAllProjectSpace(space)
     const existingSpace = unref(spaces).find(({ id }) => id === space.id)
     if (existingSpace) {
       Object.assign(existingSpace, space)
@@ -159,8 +199,10 @@ export const useSpacesStore = defineStore('spaces', () => {
     field: keyof T
     value: T[keyof T]
   }) => {
-    const space = unref(spaces).find((space) => id === space.id) as T
-    if (space) {
+    const matchingSpaces = [...unref(spaces), ...(unref(allProjectSpaces) || [])].filter(
+      (space) => id === space.id
+    ) as T[]
+    for (const space of matchingSpaces) {
       space[field] = value
     }
   }
@@ -270,7 +312,9 @@ export const useSpacesStore = defineStore('spaces', () => {
     graphClient: Graph
     useCache?: boolean
   }) => {
-    const spacesToLoad = unref(spaces).filter(
+    // `spaces` and `allProjectSpaces` can hold the same space, its copy is skipped below while
+    // the request is pending
+    const spacesToLoad = [...unref(spaces), ...(unref(allProjectSpaces) || [])].filter(
       (s) => ids.includes(s.id) && (s.graphPermissions === undefined || !useCache)
     )
 
@@ -296,6 +340,16 @@ export const useSpacesStore = defineStore('spaces', () => {
         })
         .then(({ allowedActions }) => {
           updateSpaceField({ id, field: 'graphPermissions', value: allowedActions })
+        })
+        .catch((error) => {
+          // the permissions of spaces the user isn't a member of can't be read (admin settings)
+          if (error?.response?.status === 404) {
+            updateSpaceField({ id, field: 'graphPermissions', value: [] })
+            return
+          }
+          throw error
+        })
+        .finally(() => {
           delete spacePermissionsLoading.value[id]
         })
     }
@@ -305,6 +359,7 @@ export const useSpacesStore = defineStore('spaces', () => {
 
   return {
     spaces,
+    allProjectSpaces,
     spacesInitialized,
     mountPointsInitialized,
     spacesLoading,
@@ -323,6 +378,7 @@ export const useSpacesStore = defineStore('spaces', () => {
     getMountPointForSpace,
 
     addSpaces,
+    setAllProjectSpaces,
     removeSpace,
     upsertSpace,
     updateSpaceField,

@@ -100,7 +100,8 @@ describe('shares events', () => {
       await onSSESpaceMemberRemovedEvent({ sseData, ...mocks })
       expect(mocks.clientService.graphAuthenticated.drives.getDrive).not.toHaveBeenCalled()
       expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
-      expect(mocks.spacesStore.removeSpace).toHaveBeenCalled()
+      // the space itself still exists, e.g. for the admin settings
+      expect(mocks.spacesStore.removeSpace).toHaveBeenCalledWith(space, { deleted: false })
       expect(mocks.messageStore.showMessage).not.toHaveBeenCalled()
     })
     it('calls "showMessage" when space member has been removed and current user is affected and navigated to space', async () => {

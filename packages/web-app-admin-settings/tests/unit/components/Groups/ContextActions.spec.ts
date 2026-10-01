@@ -40,7 +40,7 @@ describe('ContextActions', () => {
     const { wrapper } = getWrapper({ resources: [] })
 
     const sections = getMenuSections(wrapper)
-    expect(sections.map(({ name }) => name)).toEqual(['primaryActions'])
+    expect(sections.map(({ name }) => name)).toEqual(['primary'])
     expect(sections[0].items.map(({ name }) => name)).toEqual(['edit', 'delete'])
   })
 
@@ -48,7 +48,7 @@ describe('ContextActions', () => {
     const { wrapper } = getWrapper({ resources: [mock<Group>()] })
 
     const sections = getMenuSections(wrapper)
-    expect(sections.map(({ name }) => name)).toEqual(['quaternaryActions'])
+    expect(sections.map(({ name }) => name)).toEqual(['quaternary'])
     expect(sections[0].items.map(({ name }) => name)).toEqual(['show-details'])
   })
 

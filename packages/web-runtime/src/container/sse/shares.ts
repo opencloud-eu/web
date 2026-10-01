@@ -71,7 +71,7 @@ export const onSSESpaceMemberRemovedEvent = async ({
 
   const { $gettext } = language
 
-  spacesStore.removeSpace(removedSpace)
+  spacesStore.removeSpace(removedSpace, { deleted: false })
 
   if (
     isLocationSpacesActive(router, 'files-spaces-generic') &&

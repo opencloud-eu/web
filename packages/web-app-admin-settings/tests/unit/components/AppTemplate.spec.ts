@@ -8,13 +8,15 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import {
   AppLoadingSpinner,
+  BatchActions,
   SideBar,
   SideBarPanel,
   useIsTopBarSticky,
   useSideBar
 } from '@opencloud-eu/web-pkg'
 import { mock } from 'vitest-mock-extended'
-import { OcBreadcrumb } from '@opencloud-eu/design-system/components'
+import { OcBreadcrumb, OcHiddenAnnouncer } from '@opencloud-eu/design-system/components'
+import { Item } from '@opencloud-eu/web-client'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const stubSelectors = {
@@ -79,6 +81,43 @@ describe('AppTemplate', () => {
       expect(wrapper.find(stubSelectors.sideBar).exists()).toBeFalsy()
     })
   })
+  describe('app bar', () => {
+    it('renders the last breadcrumb as page title for screen readers', () => {
+      const { wrapper } = getWrapper({
+        props: { breadcrumbs: [{ text: 'Administration Settings' }, { text: 'Spaces' }] }
+      })
+      expect(wrapper.find('h1.sr-only').text()).toBe('Spaces')
+    })
+    it('shows a spinner instead of the batch actions while they are loading', () => {
+      const { wrapper } = getWrapper({
+        props: {
+          showBatchActions: true,
+          batchActionItems: [{ id: '1' }] as Item[],
+          batchActionsLoading: true
+        }
+      })
+      expect(wrapper.findComponent(BatchActions).exists()).toBeFalsy()
+      expect(wrapper.find('oc-spinner-stub').exists()).toBeTruthy()
+    })
+  })
+
+  describe('selection announcement', () => {
+    it('announces that no items are selected', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.findComponent(OcHiddenAnnouncer).props('announcement')).toBe(
+        'No items selected.'
+      )
+    })
+    it('announces the selected items and the batch actions', () => {
+      const { wrapper } = getWrapper({
+        props: { batchActionItems: [{ id: '1' }, { id: '2' }] as Item[] }
+      })
+      expect(wrapper.findComponent(OcHiddenAnnouncer).props('announcement')).toBe(
+        '2 items selected. Actions are available above the table.'
+      )
+    })
+  })
+
   describe('property propagation', () => {
     describe('oc breadcrumb component', () => {
       it('receives correct props', () => {
