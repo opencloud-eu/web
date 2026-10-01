@@ -3,12 +3,9 @@
     <oc-floating-action-button
       v-oc-tooltip="floatingActionButton.tooltip?.()"
       :button-id="getButtonId(floatingActionButton.id)"
-      :color-role="currentTheme.isDark ? 'primaryContainer' : 'primary'"
+      color-role="primary"
       class="oc-app-floating-action-button"
-      :class="{
-        'bottom-[70px]': isEmbedModeEnabled,
-        'is-dark-mode': currentTheme.isDark
-      }"
+      :class="{ 'bottom-[70px]': isEmbedModeEnabled }"
       mode="action"
       :handler="floatingActionButton.handler"
     />
@@ -22,14 +19,12 @@
 </template>
 
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
 import { computed, unref } from 'vue'
 import {
   FloatingActionButtonExtension,
   useActiveApp,
   useEmbedMode,
-  useExtensionRegistry,
-  useThemeStore
+  useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
@@ -37,9 +32,6 @@ const { requestExtensions } = useExtensionRegistry()
 const { isTablet } = useIsMobile()
 const activeApp = useActiveApp()
 const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
-
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({
@@ -52,19 +44,3 @@ function getButtonId(extensionId: string): string {
   return `mobile-app-floating-action-button-${extensionId.replace(/\./g, '-')}`
 }
 </script>
-
-<style>
-@reference '@opencloud-eu/design-system/tailwind';
-
-.oc-app-floating-action-button [id^='mobile-app-floating-action-button-'] {
-  @apply bg-gradient-to-r from-role-secondary to-role-primary shadow-md transition-[filter,box-shadow] duration-150 ease-out;
-}
-
-.oc-app-floating-action-button.is-dark-mode [id^='mobile-app-floating-action-button-'] {
-  @apply from-role-secondary-container to-role-primary-container;
-}
-
-.oc-app-floating-action-button [id^='mobile-app-floating-action-button-']:hover {
-  @apply brightness-110 shadow-lg;
-}
-</style>

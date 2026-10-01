@@ -11,11 +11,8 @@
             v-oc-tooltip="floatingActionButton.tooltip?.()"
             :disabled="isFloatingActionButtonDisabled"
             appearance="filled"
-            :color-role="currentTheme.isDark ? 'primaryContainer' : 'primary'"
-            class="oc-app-floating-action-button w-full !bg-gradient-to-r !from-role-secondary !to-role-primary shadow-md transition-[filter,box-shadow] duration-150 ease-out hover:brightness-110 shadow-md"
-            :class="{
-              '!from-role-secondary-container !to-role-primary-container': currentTheme.isDark
-            }"
+            color-role="primary"
+            class="oc-app-floating-action-button w-full"
             @click="floatingActionButton.handler?.()"
           >
             <oc-icon :name="floatingActionButton.icon" />
@@ -81,7 +78,6 @@ import {
   useActiveApp,
   useExtensionRegistry,
   FloatingActionButtonExtension,
-  useThemeStore,
   useConfigStore
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -95,9 +91,6 @@ const activeApp = useActiveApp()
 const { requestExtensions } = useExtensionRegistry()
 
 const { isTablet } = useIsMobile()
-
-const themeStore = useThemeStore()
-const { currentTheme } = storeToRefs(themeStore)
 
 const configStore = useConfigStore()
 const { options } = storeToRefs(configStore)
