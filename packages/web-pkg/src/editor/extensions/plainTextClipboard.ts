@@ -24,6 +24,11 @@ export function createPlainTextClipboardExtension() {
               // This runs as a DOM event handler because `handlePaste` only receives the
               // already parsed html slice, and calling `pasteText` from there would re-enter it.
               paste(view, event) {
+                // DOM event handlers run before ProseMirror's own editable check
+                if (!view.editable) {
+                  return false
+                }
+
                 const text = event.clipboardData?.getData('text/plain')
                 if (!text || !view.pasteText(text, event)) {
                   // no text payload (e.g. html only): fall back to the default paste handling

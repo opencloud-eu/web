@@ -119,6 +119,25 @@ describe('plain text clipboard extension', () => {
     }
   })
 
+  it('does not paste into a read-only editor', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('pasted', '')
+
+    try {
+      editor.commands.setContent({
+        type: 'doc',
+        content: [{ type: 'paragraph', content: [{ type: 'text', text: 'original' }] }]
+      })
+      editor.setEditable(false)
+      editor.view.dom.dispatchEvent(event)
+
+      expect(event.defaultPrevented).toBe(false)
+      expect(getLines(editor)).toEqual(['original'])
+    } finally {
+      editor.destroy()
+    }
+  })
+
   it('copies one line per paragraph, including empty ones and hard breaks', () => {
     const editor = createEditor()
 
