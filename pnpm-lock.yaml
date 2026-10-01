@@ -1095,6 +1095,9 @@ importers:
       fuse.js:
         specifier: ^7.1.0
         version: 7.5.0
+      hash-wasm:
+        specifier: ^4.12.0
+        version: 4.12.0
       highlight.js:
         specifier: ^11.12.0
         version: 11.12.0
@@ -3463,6 +3466,9 @@ packages:
   hash-base@3.1.2:
     resolution: {integrity: sha512-Bb33KbowVTIj5s7Ked1OsqHUeCpz//tPwR+E2zJgJKo9Z5XolZ9b6bdUgjmYlwnWhoOQKoTd1TYToZGn5mAYOg==}
     engines: {node: '>= 0.8'}
+
+  hash-wasm@4.12.0:
+    resolution: {integrity: sha512-+/2B2rYLb48I/evdOIhP+K/DD2ca2fgBjp6O+GBEnCDk2e4rpeXIK8GvIyRPjTezgmWn9gmKwkQjjx6BtqDHVQ==}
 
   hash.js@1.1.7:
     resolution: {integrity: sha512-taOaskGt4z4SOANNseOviYDvjEJinIkRgmp7LbKP2YTTmVxWBl87s/uzK9r+44BclBSp2X7K1hqeNfz9JbBeXA==}
@@ -7503,6 +7509,8 @@ snapshots:
       readable-stream: 2.3.8
       safe-buffer: 5.2.1
       to-buffer: 1.2.2
+
+  hash-wasm@4.12.0: {}
 
   hash.js@1.1.7:
     dependencies:

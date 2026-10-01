@@ -43,6 +43,15 @@ export function useUpload(options: UploadOptions) {
     return headers
   }
 
+  // the checksum meta field is '<algorithm> <hex>', a PUT carries it as 'OC-Checksum: <ALGORITHM>:<hex>'
+  function getChecksumHeader(file: OcUppyFile): Record<string, string> {
+    const [algorithm, checksum] = file?.meta?.checksum?.split(' ') ?? []
+    if (!algorithm || !checksum) {
+      return {}
+    }
+    return { 'OC-Checksum': `${algorithm.toUpperCase()}:${checksum}` }
+  }
+
   const tusOptions = computed<OcTusOptions>(() => {
     const options: OcTusOptions = {
       onBeforeRequest: (req, file) =>
@@ -82,6 +91,7 @@ export function useUpload(options: UploadOptions) {
       endpoint: '',
       headers: (file) => ({
         'x-oc-mtime': ((file?.data as File)?.lastModified / 1000).toFixed(0),
+        ...getChecksumHeader(file),
         ...getHeaders()
       })
     }
