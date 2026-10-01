@@ -28,9 +28,11 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 				// the prototype chain is already prepared when the implementation
 				// is registered, but a consumed \`mockImplementationOnce\` can change
 				// which implementation this construction uses
-				if (prototypeMembers.length === 0)
- // eslint-disable-next-line ts/no-use-before-define
-				reparentMockPrototype(mock, implementation === noopImplementation ? void 0 : implementation);
+				if (prototypeMembers.length === 0) reparentMockPrototype(
+					// oxlint-disable-next-line typescript/no-use-before-define
+					mock,
+					implementation === noopImplementation ? void 0 : implementation
+				);
 				returnValue = Reflect.construct(implementation, args, new.target);
 				// jest calls this before the implementation, but we have to resolve this _after_
 				// because we cannot do it before the \`Reflect.construct\` called the custom implementation.
@@ -39,7 +41,7 @@ exports[`ContextMenuQuickAction component > renders component 1`] = `
 				for (const prop of prototypeMembers) {
 					const prototypeMock = returnValue[prop];
 					// the method was overridden because of inheritance, ignore it
-					// eslint-disable-next-line ts/no-use-before-define
+					// oxlint-disable-next-line typescript/no-use-before-define
 					if (prototypeMock !== mock.prototype[prop]) continue;
 					const isMock = isMockFunction(prototypeMock);
 					const prototypeState = isMock ? prototypeMock.mock : void 0;
