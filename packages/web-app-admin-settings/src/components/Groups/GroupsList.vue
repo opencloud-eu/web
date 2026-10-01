@@ -36,9 +36,6 @@
         @update:model-value="allGroupsSelected ? unselectAllGroups() : selectGroups(paginatedItems)"
       />
     </template>
-    <template #avatarHeader>
-      <span class="sr-only">{{ $gettext('Avatar') }}</span>
-    </template>
     <template #select="rowData">
       <oc-checkbox
         size="large"
@@ -50,16 +47,15 @@
         @click.stop="rowClicked([rowData.item, $event])"
       />
     </template>
-    <template #avatar="rowData">
-      <OcAvatar
-        :width="32"
-        :userid="rowData.item.id"
-        :user-name="rowData.item.displayName"
-        background-color="var(--oc-role-secondary)"
-      />
-    </template>
     <template #displayName="rowData">
       <div class="flex items-center">
+        <OcAvatar
+          class="shrink-0 mr-2"
+          :width="32"
+          :userid="rowData.item.id"
+          :user-name="rowData.item.displayName"
+          background-color="var(--oc-role-secondary)"
+        />
         <oc-filter-highlight :text="rowData.item.displayName" :term="filterTerm" />
         <oc-icon
           v-if="rowData.item.groupTypes?.includes('ReadOnly')"
@@ -209,14 +205,6 @@ const fields = computed<FieldType[]>(() => [
     type: 'slot',
     width: 'shrink',
     headerType: 'slot'
-  },
-  {
-    name: 'avatar',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot',
-    sortable: false
   },
   {
     name: 'displayName',
