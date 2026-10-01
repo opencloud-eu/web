@@ -40,11 +40,16 @@
           @click.stop="rowClicked([item, $event])"
         />
       </template>
-      <template #avatarHeader>
-        <span class="sr-only">{{ $gettext('Avatar') }}</span>
-      </template>
-      <template #avatar="{ item }">
-        <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
+      <template #onPremisesSamAccountName="{ item }">
+        <div class="flex items-center">
+          <user-avatar
+            class="shrink-0"
+            :user-id="item.id"
+            :user-name="item.displayName"
+            :width="32"
+          />
+          <span class="pl-2 truncate" v-text="item.onPremisesSamAccountName" />
+        </div>
       </template>
       <template #displayName="{ item }">
         <oc-filter-highlight :text="item.displayName" :term="filterTerm" />
@@ -217,16 +222,9 @@ const fields = computed<FieldType[]>(() => [
     headerType: 'slot'
   },
   {
-    name: 'avatar',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot',
-    sortable: false
-  },
-  {
     name: 'onPremisesSamAccountName',
     title: $gettext('User name'),
+    type: 'slot',
     sortable: true
   },
   {
