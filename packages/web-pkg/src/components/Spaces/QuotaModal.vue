@@ -123,12 +123,6 @@ const onConfirm = async () => {
       name: space.name,
       quota: { total: unref(selectedOption) }
     })
-    if (unref(router.currentRoute).name === 'admin-settings-spaces') {
-      eventBus.publish('app.admin-settings.spaces.space.quota.updated', {
-        spaceId: space.id,
-        quota: updatedSpace.spaceQuota
-      })
-    }
     if (unref(router.currentRoute).name === 'admin-settings-users') {
       eventBus.publish('app.admin-settings.users.user.quota.updated', {
         spaceId: space.id,

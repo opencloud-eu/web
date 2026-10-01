@@ -1,4 +1,4 @@
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -9,7 +9,6 @@ import {
   useIsResourceNameValid,
   useMessages,
   useModals,
-  useRoute,
   useSpacesStore,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -20,7 +19,6 @@ export const useSpaceActionsRename = () => {
   const { $gettext } = useGettext()
   const ability = useAbility()
   const clientService = useClientService()
-  const route = useRoute()
   const { isSpaceNameValid } = useIsResourceNameValid()
   const { dispatchModal } = useModals()
   const spacesStore = useSpacesStore()
@@ -30,9 +28,6 @@ export const useSpaceActionsRename = () => {
     return graphClient.drives
       .updateDrive(space.id, { name })
       .then(() => {
-        if (unref(route).name === 'admin-settings-spaces') {
-          space.name = name
-        }
         spacesStore.updateSpaceField({ id: space.id, field: 'name', value: name })
         showMessage({ title: $gettext('Space name was changed successfully') })
       })

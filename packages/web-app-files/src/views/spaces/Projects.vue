@@ -111,27 +111,7 @@
                   :class="{ 'rounded-sm': isResourceInSelection(resource) }"
                 />
               </template>
-              <template v-else>
-                <oc-spinner
-                  v-if="imagesLoading.includes(resource.id)"
-                  :aria-label="$gettext('Space image is loading')"
-                  class="mr-2"
-                />
-                <img
-                  v-else-if="resource.thumbnail"
-                  class="table-preview mr-2 rounded-xs object-cover w-[24px] h-[24px]"
-                  :class="{ 'opacity-80 grayscale': resource.disabled }"
-                  :src="resource.thumbnail"
-                  alt=""
-                  decoding="async"
-                />
-                <resource-icon
-                  v-else
-                  class="mr-2 rounded-xs"
-                  :resource="resource"
-                  size-class="size-6"
-                />
-              </template>
+              <space-image v-else :space="resource" class="mr-2" />
             </template>
             <template #actions="{ resource }">
               <oc-button
@@ -209,7 +189,7 @@ import {
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { spaceTilesSortFields, translateSortFields } from '@opencloud-eu/web-pkg'
-import { defaultFuseOptions, formatFileSize, ResourceIcon } from '@opencloud-eu/web-pkg'
+import { defaultFuseOptions, formatFileSize, ResourceIcon, SpaceImage } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { useKeyboardActions } from '@opencloud-eu/web-pkg'
 import {
@@ -374,7 +354,8 @@ onMounted(async () => {
   loadPreviewToken = eventBus.subscribe(
     'app.files.spaces.uploaded-image',
     (space: SpaceResource) => {
-      loadPreview({ space, resource: space })
+      // same processor as for the initial load of the space images
+      loadPreview({ space, resource: space, processor: ProcessorType.enum.fit })
     }
   )
   scrollToResourceFromRoute(unref(items), 'files-app-bar')

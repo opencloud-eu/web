@@ -22,7 +22,7 @@ describe('Tag Select', () => {
     const { wrapper } = createWrapper(resource, clientService)
     await flushPromises()
     expect(
-      (wrapper.findComponent<typeof OcSelect>('vue-select-stub').props() as any).options
+      (wrapper.findComponent(OcSelect).findComponent({ ref: 'selectRef' }).props() as any).options
     ).toEqual([{ label: 'a' }, { label: 'b' }, { label: 'c' }])
   })
 
@@ -40,7 +40,7 @@ describe('Tag Select', () => {
       const resource = mock<Resource>({ tags: resourceTags })
       const clientService = mockDeep<ClientService>()
       const stub = clientService.graphAuthenticated.tags.assignTags.mockResolvedValue(undefined)
-      const { wrapper } = createWrapper(resource, clientService, false)
+      const { wrapper } = createWrapper(resource, clientService)
 
       ;(wrapper.vm as any).selectedTags = selectedTags
 
@@ -68,7 +68,7 @@ describe('Tag Select', () => {
       const resource = mock<Resource>({ tags: resourceTags })
       const clientService = mockDeep<ClientService>()
       const stub = clientService.graphAuthenticated.tags.unassignTags.mockResolvedValue(undefined)
-      const { wrapper } = createWrapper(resource, clientService, false)
+      const { wrapper } = createWrapper(resource, clientService)
 
       ;(wrapper.vm as any).selectedTags = selectedTags
 
@@ -111,11 +111,7 @@ describe('Tag Select', () => {
   })
 })
 
-function createWrapper(
-  resource: Resource,
-  clientService = mockDeep<ClientService>(),
-  stubVueSelect = true
-) {
+function createWrapper(resource: Resource, clientService = mockDeep<ClientService>()) {
   const mocks = { ...defaultComponentMocks(), $clientService: clientService }
   mocks.$clientService.graphAuthenticated.tags.listTags.mockResolvedValue([])
   return {
@@ -124,7 +120,7 @@ function createWrapper(
         plugins: [...defaultPlugins()],
         mocks,
         provide: { ...mocks },
-        stubs: { VueSelect: stubVueSelect, CompareSaveDialog: true }
+        stubs: { CompareSaveDialog: true }
       },
       props: {
         resource

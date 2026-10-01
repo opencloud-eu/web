@@ -40,9 +40,6 @@
     <template #iconHeader>
       <span class="sr-only">{{ $gettext('Icon') }}</span>
     </template>
-    <template #avatarHeader>
-      <span class="sr-only">{{ $gettext('Avatar') }}</span>
-    </template>
     <template #select="{ item }">
       <oc-checkbox
         size="large"
@@ -56,7 +53,7 @@
     </template>
     <template #icon="{ item }">
       <div class="flex items-center justify-center">
-        <resource-icon :resource="item" size-class="size-6" class="rounded-sm" />
+        <space-image :space="item" />
       </div>
     </template>
     <template #name="{ item }">
@@ -74,10 +71,7 @@
     <template #usedQuota="{ item }"> {{ getUsedQuota(item) }}</template>
     <template #remainingQuota="{ item }"> {{ getRemainingQuota(item) }}</template>
     <template #indicators="{ item }">
-      <oc-status-indicators
-        :indicators="getIndicators({ space: item, resource: item })"
-        :resource="item"
-      />
+      <resource-status-indicators :space="item" :resource="item" />
     </template>
     <template #mdate="{ item }">
       <span
@@ -129,17 +123,17 @@ import {
   useKeyboardActions,
   useIsTopBarSticky,
   useSharesStore,
+  useSpacesStore,
   useSideBar,
   NoContentMessage,
   createVirtualCursorElement,
-  ResourceIcon
+  ProcessorType,
+  ResourceStatusIndicators,
+  SpaceImage,
+  useLoadPreview
 } from '@opencloud-eu/web-pkg'
-import {
-  OcDrop,
-  OcFilterHighlight,
-  OcStatusIndicators
-} from '@opencloud-eu/design-system/components'
-import { ComponentPublicInstance, computed, ref, unref, watch } from 'vue'
+import { OcDrop, OcFilterHighlight } from '@opencloud-eu/design-system/components'
+import { ComponentPublicInstance, computed, onBeforeUnmount, ref, unref, watch } from 'vue'
 import { getSpaceManagers, SpaceResource } from '@opencloud-eu/web-client'
 import Fuse from 'fuse.js'
 import { useGettext } from 'vue3-gettext'
@@ -150,14 +144,12 @@ import {
   useRoute,
   useRouter,
   usePagination,
-  useResourceIndicators,
   useSort,
   spaceTilesSortFields,
   translateSortFields
 } from '@opencloud-eu/web-pkg'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { perPageDefault, perPageStoragePrefix } from '../../defaults'
-import { findIndex } from 'lodash-es'
 import {
   useKeyboardTableMouseActions,
   useKeyboardTableNavigation
@@ -169,7 +161,7 @@ import { FieldType, SortDir } from '@opencloud-eu/design-system/helpers'
 const router = useRouter()
 const route = useRoute()
 const language = useGettext()
-const { $gettext } = language
+const { $gettext, $ngettext } = language
 const { isSticky } = useIsTopBarSticky()
 const sharesStore = useSharesStore()
 const { openSideBar } = useSideBar()
@@ -179,13 +171,13 @@ const { filterTerm = '' } = defineProps<{ filterTerm?: string }>()
 const { y: fileListHeaderY } = useFileListHeaderPosition('#admin-settings-app-bar')
 const contextMenuDrops = ref<Record<string, ComponentPublicInstance<typeof OcDrop>>>({})
 
-const lastSelectedSpaceIndex = ref(0)
 const lastSelectedSpaceId = ref<string>()
 
 const spaceSettingsStore = useSpaceSettingsStore()
-const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
-
-const { getIndicators } = useResourceIndicators()
+const { selectedSpaces } = storeToRefs(spaceSettingsStore)
+const spacesStore = useSpacesStore()
+const { allProjectSpaces } = storeToRefs(spacesStore)
+const spaces = computed(() => unref(allProjectSpaces) || [])
 
 function filter(spaces: SpaceResource[], filterTerm: string) {
   if (!(filterTerm || '').trim()) {
@@ -205,9 +197,28 @@ const { sortBy, sortDir, items, handleSort } = useSort<SpaceResource>({
 
 const highlighted = computed(() => unref(selectedSpaces).map((s) => s.id))
 const footerTextTotal = computed(() => {
-  return $gettext('%{spaceCount} spaces in total', {
-    spaceCount: unref(spaces).length.toString()
-  })
+  const disabledSpaces = unref(spaces).filter((space) => space.disabled === true)
+
+  if (!disabledSpaces.length) {
+    return $ngettext(
+      '%{spaceCount} space in total',
+      '%{spaceCount} spaces in total',
+      unref(spaces).length,
+      {
+        spaceCount: unref(spaces).length.toString()
+      }
+    )
+  }
+
+  return $ngettext(
+    '%{spaceCount} space in total (including %{disabledSpaceCount} disabled)',
+    '%{spaceCount} spaces in total (including %{disabledSpaceCount} disabled)',
+    unref(spaces).length,
+    {
+      spaceCount: unref(spaces).length.toString(),
+      disabledSpaceCount: disabledSpaces.length.toString()
+    }
+  )
 })
 const footerTextFilter = computed(() => {
   return $gettext('%{spaceCount} matching spaces', {
@@ -221,28 +232,56 @@ const {
 } = usePagination({ items, perPageDefault, perPageStoragePrefix })
 
 const keyActions = useKeyboardActions()
-useKeyboardTableNavigation(
-  keyActions,
-  paginatedItems,
-  selectedSpaces,
-  lastSelectedSpaceIndex,
-  lastSelectedSpaceId
-)
-useKeyboardTableMouseActions(
-  keyActions,
-  paginatedItems,
-  selectedSpaces,
-  lastSelectedSpaceIndex,
-  lastSelectedSpaceId
+useKeyboardTableNavigation(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)
+useKeyboardTableMouseActions(keyActions, paginatedItems, selectedSpaces, lastSelectedSpaceId)
+
+const { loadPreview } = useLoadPreview()
+
+async function loadSpaceImage(space: SpaceResource) {
+  // spaces aren't resources of the resources store, the preview is stored on the space instead
+  const thumbnail = await loadPreview({
+    space,
+    resource: space,
+    processor: ProcessorType.enum.fit,
+    updateStore: false
+  })
+  if (thumbnail) {
+    spacesStore.updateSpaceField({ id: space.id, field: 'thumbnail', value: thumbnail })
+  }
+}
+
+watch(
+  () => unref(paginatedItems).map(({ id }) => id),
+  (spaceIds, previousSpaceIds = []) => {
+    unref(paginatedItems)
+      .filter(({ id }) => !previousSpaceIds.includes(id))
+      .forEach(loadSpaceImage)
+  },
+  { immediate: true }
 )
 
-watch(currentPage, () => {
-  unselectAllSpaces()
+const uploadedImageToken = eventBus.subscribe(
+  'app.files.spaces.uploaded-image',
+  (space: SpaceResource) => loadSpaceImage(space)
+)
+onBeforeUnmount(() => {
+  eventBus.unsubscribe('app.files.spaces.uploaded-image', uploadedImageToken)
 })
 
-const allSpacesSelected = computed(() => {
-  return unref(paginatedItems).length === unref(selectedSpaces).length
+// e.g. after deleting all spaces of the last page: show the new last page instead of an empty one
+watch(totalPages, async (pageCount) => {
+  if (pageCount > 0 && unref(currentPage) > pageCount) {
+    await router.push({
+      ...unref(route),
+      query: { ...unref(route).query, page: String(pageCount) }
+    })
+  }
 })
+
+// the selection is kept across pages, so only the spaces of the current page count
+const allSpacesSelected = computed(
+  () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isSpaceSelected)
+)
 function isSpaceSelected(space: SpaceResource) {
   return unref(selectedSpaces).some((s) => s.id === space.id)
 }
@@ -389,14 +428,11 @@ function fileClicked([resource, eventData]: [SpaceResource, MouseEvent | Keyboar
   if (contextActionClicked) {
     return
   }
-  if (!eventData?.shiftKey && !eventData?.metaKey && !eventData?.ctrlKey) {
-    eventBus.publish('app.files.shiftAnchor.reset')
-  }
   if (eventData?.metaKey) {
-    return eventBus.publish('app.resources.list.clicked.meta', resource)
+    return eventBus.publish('app.admin-settings.list.clicked.meta', resource)
   }
   if (eventData?.shiftKey) {
-    return eventBus.publish('app.resources.list.clicked.shift', {
+    return eventBus.publish('app.admin-settings.list.clicked.shift', {
       resource,
       skipTargetSelection: isCheckboxClicked
     })
@@ -431,7 +467,6 @@ function showDetailsForSpace(space: SpaceResource) {
 }
 
 function selectSpace(selectedSpace: SpaceResource) {
-  lastSelectedSpaceIndex.value = findIndex(unref(spaces), (g) => g.id === selectedSpace.id)
   lastSelectedSpaceId.value = selectedSpace.id
   keyActions.resetSelectionCursor()
 

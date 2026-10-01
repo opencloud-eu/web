@@ -14,6 +14,8 @@
               class="py-1 px-4 top-0 z-20 rounded-t-xl bg-role-surface"
               :class="{ sticky: isSticky }"
             >
+              <h1 class="sr-only" v-text="pageTitle" />
+              <oc-hidden-announcer :announcement="selectedItemsAnnouncement" level="polite" />
               <div class="flex justify-between items-center h-12">
                 <oc-breadcrumb
                   id="admin-settings-breadcrumb"
@@ -45,11 +47,14 @@
                   :class="{ 'bg-role-surface-container': batchActionItems.length }"
                 >
                   <BatchActions
-                    v-if="showBatchActions"
+                    v-if="!batchActionsLoading"
                     :actions="batchActions"
                     :action-options="{ resources: batchActionItems }"
                     :limited-screen-space="limitedScreenSpace"
                   />
+                  <div v-else>
+                    <oc-spinner :aria-label="$gettext('Loading actions')" />
+                  </div>
                   <div v-if="batchActionItems.length" class="flex items-center gap-1">
                     <oc-button
                       v-oc-tooltip="$gettext('Clear selection')"
@@ -105,7 +110,8 @@ import {
   useSideBar,
   ViewOptions
 } from '@opencloud-eu/web-pkg'
-import { onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, unref, useTemplateRef, watch } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { BreadcrumbItem } from '@opencloud-eu/design-system/helpers'
 import { Item } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
@@ -119,7 +125,8 @@ const {
   showViewOptions = false,
   showBatchActions = false,
   batchActionItems = [],
-  batchActions = []
+  batchActions = [],
+  batchActionsLoading = false
 } = defineProps<{
   breadcrumbs: BreadcrumbItem[]
   sideBarAvailablePanels?: SideBarPanel<unknown, unknown, unknown>[]
@@ -130,6 +137,7 @@ const {
   showBatchActions?: boolean
   batchActionItems?: Item[]
   batchActions?: Action[]
+  batchActionsLoading?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -145,10 +153,25 @@ defineSlots<{
 // sets the document title
 useAppDefaults({ applicationId: 'admin-settings' })
 
+const { $gettext, $ngettext } = useGettext()
 const { isSideBarOpen } = storeToRefs(useSideBar())
 const { isSticky } = useIsTopBarSticky()
 const appBarRef = useTemplateRef<HTMLElement>('appBarRef')
 const limitedScreenSpace = ref(false)
+
+const pageTitle = computed(() => breadcrumbs.at(-1)?.text || '')
+
+const selectedItemsAnnouncement = computed(() => {
+  if (batchActionItems.length === 0) {
+    return $gettext('No items selected.')
+  }
+  return $ngettext(
+    '%{ amount } item selected. Actions are available above the table.',
+    '%{ amount } items selected. Actions are available above the table.',
+    batchActionItems.length,
+    { amount: batchActionItems.length.toString() }
+  )
+})
 
 function onResize() {
   limitedScreenSpace.value = unref(isSideBarOpen)

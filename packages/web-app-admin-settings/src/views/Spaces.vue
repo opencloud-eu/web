@@ -6,18 +6,13 @@
     :side-bar-panel-context="sideBarPanelContext"
     :show-batch-actions="!!selectedSpaces.length"
     :batch-actions="batchActions"
+    :batch-actions-loading="batchActionsLoading"
     :batch-action-items="selectedSpaces"
     :show-view-options="true"
     @clear-selection="spaceSettingsStore.setSelectedSpaces([])"
   >
     <template #sideBarHeader>
-      <div v-if="selectedSpaces.length === 1" class="flex items-center min-w-0 pl-2">
-        <oc-icon name="layout-grid" size-class="size-4" class="mr-2 shrink-0" />
-        <h2
-          class="m-0 text-base font-semibold min-w-0 flex-1 truncate"
-          v-text="selectedSpaces[0].name"
-        />
-      </div>
+      <space-info v-if="selectedSpaces.length === 1" :space-resource="selectedSpaces[0]" />
     </template>
     <template #actions>
       <div class="flex justify-end w-full my-2 items-center">
@@ -74,23 +69,20 @@ import {
   SpaceAction,
   SpaceDetails,
   SpaceDetailsMultiple,
+  SpaceInfo,
   SpaceNoSelection,
-  eventBus,
-  queryItemAsString,
   useClientService,
   useFileActions,
-  useRouteQuery,
   useSideBar,
   useSpacesStore,
   AppLoadingSpinner
 } from '@opencloud-eu/web-pkg'
 import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, onBeforeUnmount, onMounted, provide, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
 import { storeToRefs } from 'pinia'
-import { Quota } from '@opencloud-eu/web-client/graph/generated'
 import { spacesBatchActionsExtensionPoint } from '../extensionPoints'
 
 const clientService = useClientService()
@@ -100,22 +92,12 @@ const { isSideBarOpen } = storeToRefs(sidebarStore)
 const spacesStore = useSpacesStore()
 const { getExtensionActions } = useFileActions()
 
-let loadResourcesEventToken: string
-let updateQuotaForSpaceEventToken: string
 const spaceSettingsStore = useSpaceSettingsStore()
-const { spaces, selectedSpaces } = storeToRefs(spaceSettingsStore)
+const { selectedSpaces } = storeToRefs(spaceSettingsStore)
+const { allProjectSpaces } = storeToRefs(spacesStore)
+const spaces = computed(() => unref(allProjectSpaces) || [])
 
 const filterTerm = ref('')
-
-const currentPageQuery = useRouteQuery('page', '1')
-const currentPage = computed(() => {
-  return parseInt(queryItemAsString(unref(currentPageQuery)))
-})
-
-const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
-const itemsPerPage = computed(() => {
-  return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
-})
 
 // the members of a space (incl. its managers) are only part of the response with this expansion
 const spacePermissionsExpand = 'root($expand=permissions)'
@@ -131,7 +113,7 @@ const loadResourcesTask = useTask(function* (signal) {
       { signal }
     )
   )
-  spaceSettingsStore.setSpaces(drives)
+  spacesStore.setAllProjectSpaces(drives)
 })
 
 const isLoading = computed(() => {
@@ -153,12 +135,15 @@ const extensionBatchActions = computed(() =>
 )
 
 const batchActions = computed((): SpaceAction[] => {
-  return unref(extensionBatchActions).filter(
-    (item) =>
-      item.category === 'tertiary' &&
-      item.isVisible({ resources: unref(selectedSpaces), space: undefined })
+  return unref(extensionBatchActions).filter((item) =>
+    item.isVisible({ resources: unref(selectedSpaces), space: undefined })
   )
 })
+
+// the actions depend on the permissions of the user in the selected spaces
+const batchActionsLoading = computed(() =>
+  unref(selectedSpaces).some(({ graphPermissions }) => graphPermissions === undefined)
+)
 
 const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, SpaceResource>>(() => {
   return {
@@ -168,8 +153,8 @@ const sideBarPanelContext = computed<SideBarPanelContext<unknown, unknown, Space
 })
 const sideBarAvailablePanels = [
   {
-    name: 'SpaceNoSelection',
-    icon: 'layout-grid',
+    name: 'no-selection',
+    icon: 'questionnaire-line',
     title: () => $gettext('Details'),
     component: SpaceNoSelection,
     componentAttrs: () => ({ spacesCount: unref(spaces).length }),
@@ -177,8 +162,8 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length === 0
   },
   {
-    name: 'SpaceDetails',
-    icon: 'layout-grid',
+    name: 'details-space',
+    icon: 'questionnaire-line',
     title: () => $gettext('Details'),
     component: SpaceDetails,
     componentAttrs: () => ({
@@ -188,8 +173,8 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length === 1
   },
   {
-    name: 'SpaceDetailsMultiple',
-    icon: 'layout-grid',
+    name: 'details-space-multiple',
+    icon: 'questionnaire-line',
     title: () => $gettext('Details'),
     component: SpaceDetailsMultiple,
     componentAttrs: ({ items }) => ({
@@ -199,76 +184,90 @@ const sideBarAvailablePanels = [
     isVisible: ({ items }) => items.length > 1
   },
   {
-    name: 'SpaceMembers',
+    name: 'space-share',
     icon: 'group',
+    iconFillType: 'line',
     title: () => $gettext('Members'),
     component: MembersPanel,
-    isVisible: ({ items }) => items.length === 1
+    isVisible: ({ items }) => items.length === 1 && !items[0].disabled
   }
 ] satisfies SideBarPanel<unknown, unknown, SpaceResource>[]
 
-// keep the list in sync with spaces created via the FAB
-spacesStore.$onAction(({ name, args, after }) => {
-  if (name !== 'upsertSpace') {
-    return
-  }
-  after(() => {
-    const [space] = args
-    const loadedSpaceIds = spaceSettingsStore.spaces.map(({ id }) => id)
-    if (isProjectSpaceResource(space) && !loadedSpaceIds.includes(space.id)) {
-      spaceSettingsStore.upsertSpace(space)
-      loadSpaceWithPermissions(space.id)
-    }
-  })
-})
-
-// the created space from the FAB comes without its members, so it is loaded again with them
-async function loadSpaceWithPermissions(spaceId: string) {
+// spaces from other requests than the list (e.g. created via the FAB or updated after member
+// changes) come without their members, so the members are loaded again
+const latestMembersRequests: Record<string, number> = {}
+async function loadSpaceMembers(spaceId: string) {
+  const request = (latestMembersRequests[spaceId] ?? 0) + 1
+  latestMembersRequests[spaceId] = request
   try {
     const [space] = await clientService.graphAuthenticated.drives.listAllDrives({
       filter: `id eq '${spaceId}'`,
       expand: spacePermissionsExpand
     })
-    if (space) {
-      spaceSettingsStore.upsertSpace(space)
+    // the response of an earlier request might be outdated
+    if (space && latestMembersRequests[spaceId] === request) {
+      spacesStore.updateSpaceField({ id: spaceId, field: 'root', value: space.root })
     }
   } catch (error) {
     console.error(error)
   }
 }
 
+spacesStore.$onAction(({ name, args, after }) => {
+  if (name === 'upsertSpace') {
+    after(() => {
+      const [space] = args
+      if (isProjectSpaceResource(space) && !space.root?.permissions) {
+        loadSpaceMembers(space.id)
+      }
+    })
+  }
+  // the current user lost access to the space, which changes its members and permissions
+  if (name === 'removeSpace' && args[1]?.deleted === false) {
+    after(() => {
+      const [space] = args
+      loadSpaceMembers(space.id)
+      spacesStore
+        .loadGraphPermissions({
+          ids: [space.id],
+          graphClient: clientService.graphAuthenticated,
+          useCache: false
+        })
+        .catch(console.error)
+    })
+  }
+})
+
+// actions like setting the image of a space check the permissions of the user in that space
+watch(
+  () => unref(selectedSpaces).map(({ id }) => id),
+  async (ids) => {
+    try {
+      await spacesStore.loadGraphPermissions({ ids, graphClient: clientService.graphAuthenticated })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+)
+
+watch(
+  () => unref(spaces).length,
+  () => {
+    const spaceIds = unref(spaces).map(({ id }) => id)
+    const selection = unref(selectedSpaces).filter(({ id }) => spaceIds.includes(id))
+    if (selection.length !== unref(selectedSpaces).length) {
+      spaceSettingsStore.setSelectedSpaces(selection)
+    }
+  }
+)
+
 onMounted(async () => {
   await loadResourcesTask.perform()
-
-  loadResourcesEventToken = eventBus.subscribe('app.admin-settings.list.load', async () => {
-    await loadResourcesTask.perform()
-    selectedSpaces.value = []
-
-    const pageCount = Math.ceil(unref(spaces).length / unref(itemsPerPage))
-    if (unref(currentPage) > 1 && unref(currentPage) > pageCount) {
-      // reset pagination to avoid empty lists (happens when deleting all items on the last page)
-      currentPageQuery.value = pageCount.toString()
-    }
-  })
-
-  updateQuotaForSpaceEventToken = eventBus.subscribe(
-    'app.admin-settings.spaces.space.quota.updated',
-    ({ spaceId, quota }: { spaceId: string; quota: Quota }) => {
-      const space = unref(spaces).find((s) => s.id === spaceId)
-      if (space) {
-        space.spaceQuota = quota
-      }
-    }
-  )
 })
 
 onBeforeUnmount(() => {
   spaceSettingsStore.reset()
-  eventBus.unsubscribe('app.admin-settings.list.load', loadResourcesEventToken)
-  eventBus.unsubscribe(
-    'app.admin-settings.spaces.space.quota.updated',
-    updateQuotaForSpaceEventToken
-  )
+  spacesStore.setAllProjectSpaces(undefined)
 })
 
 provide(

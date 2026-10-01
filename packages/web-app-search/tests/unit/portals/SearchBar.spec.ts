@@ -103,7 +103,7 @@ describe('Search Bar portal component', () => {
   test('updates the search term on input', () => {
     const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('alice')
-    expect(wrapper.vm.term).toBe('alice')
+    expect((wrapper.vm as any).term).toBe('alice')
   })
   test('shows message if no results are available', async () => {
     const { wrapper } = getMountedWrapper()
@@ -162,9 +162,9 @@ describe('Search Bar portal component', () => {
     expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
   test('sets the search term according to route value on mount', async () => {
-    const { wrapper } = getMountedWrapper({ mocks: { $route: { query: { term: 'alice' } } } })
+    const { wrapper } = getMountedWrapper({ term: 'alice' })
     await nextTick()
-    expect(wrapper.vm.term).toBe('alice')
+    expect((wrapper.vm as any).term).toBe('alice')
     expect(wrapper.get('input').element.value).toBe('alice')
   })
   test('navigates to files-common-search route on key press enter if search term is given', async () => {
@@ -226,7 +226,7 @@ describe('Search Bar portal component', () => {
     document.body.appendChild(nonEditableTarget)
     nonEditableTarget.focus()
 
-    wrapper.vm.onSearchShortcut()
+    ;(wrapper.vm as any).onSearchShortcut()
     nonEditableTarget.remove()
   })
   test('focuses search input when pressing "/"', () => {
@@ -235,7 +235,7 @@ describe('Search Bar portal component', () => {
     document.body.appendChild(nonEditableTarget)
     nonEditableTarget.focus()
 
-    wrapper.vm.onSearchShortcut()
+    ;(wrapper.vm as any).onSearchShortcut()
     nonEditableTarget.remove()
   })
   test('does not focus search input when editable element is already focused', () => {
@@ -244,7 +244,7 @@ describe('Search Bar portal component', () => {
     document.body.appendChild(textInput)
     textInput.focus()
 
-    wrapper.vm.onSearchShortcut()
+    ;(wrapper.vm as any).onSearchShortcut()
     textInput.remove()
   })
   test('clears search term on key press esc while input has focus', async () => {
@@ -252,7 +252,7 @@ describe('Search Bar portal component', () => {
     wrapper.find(selectors.searchInput).setValue('albert')
     await flushPromises()
     wrapper.find(selectors.searchInput).trigger('keyup.esc')
-    expect(wrapper.vm.term).toBe('')
+    expect((wrapper.vm as any).term).toBe('')
   })
   test('clears search term and hides options on app.search.term.clear event', async () => {
     const { wrapper } = getMountedWrapper()
@@ -260,7 +260,7 @@ describe('Search Bar portal component', () => {
     await flushPromises()
     eventBus.publish('app.search.term.clear')
     await nextTick()
-    expect(wrapper.vm.term).toBe('')
+    expect((wrapper.vm as any).term).toBe('')
     expect(ocDropStub.methods.hide).toHaveBeenCalled()
   })
 })
@@ -270,14 +270,15 @@ function getMountedWrapper({
   userContextReady = true,
   providers = [providerFiles, providerContacts],
   route = 'files-spaces-generic',
-  store = {}
+  store = {},
+  term = ''
 } = {}) {
   vi.mocked(useAvailableProviders).mockReturnValue(ref(providers))
 
   const currentRoute = mock<RouteLocation>({
     name: route,
     query: {
-      term: '',
+      term,
       provider: ''
     }
   })
