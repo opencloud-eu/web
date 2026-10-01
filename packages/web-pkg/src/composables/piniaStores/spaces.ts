@@ -312,7 +312,8 @@ export const useSpacesStore = defineStore('spaces', () => {
     graphClient: Graph
     useCache?: boolean
   }) => {
-    // a space can be in both lists, the second one is skipped below while its request is pending
+    // `spaces` and `allProjectSpaces` can hold the same space, its copy is skipped below while
+    // the request is pending
     const spacesToLoad = [...unref(spaces), ...(unref(allProjectSpaces) || [])].filter(
       (s) => ids.includes(s.id) && (s.graphPermissions === undefined || !useCache)
     )
