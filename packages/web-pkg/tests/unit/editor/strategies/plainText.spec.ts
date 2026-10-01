@@ -25,10 +25,10 @@ describe('useStrategyPlainText', () => {
   })
 
   describe('extensions', () => {
-    it('returns a starter kit extension', () => {
+    it('returns the starter kit, find and replace and clipboard extensions', () => {
       const strategy = createStrategy()
       const names = strategy.extensions().map((e) => e.name)
-      expect(names).toEqual(['starterKit', 'findAndReplace'])
+      expect(names).toEqual(['starterKit', 'findAndReplace', 'plainTextClipboard'])
       expect(names).not.toContain('link')
     })
 
