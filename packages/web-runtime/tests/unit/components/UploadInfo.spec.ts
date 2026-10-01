@@ -242,6 +242,23 @@ describe('UploadInfo component', () => {
       expect(infoMessages.at(0).text()).toBe('Unknown error')
       expect(infoMessages.at(1).text()).toBe('Unknown error')
     })
+    it('should show that a file is being prepared while its checksum is calculated', async () => {
+      const { wrapper, mocks } = getShallowWrapper()
+      const file = { name: 'file', path: '/', type: 'file', meta: { uploadId: '1' } }
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = { '1': file as unknown as OcUppyFile }
+      const subscriber = (topic: string) =>
+        mocks.$uppyService.subscribe.mock.calls.find(([t]) => t === topic)[1]
+
+      subscriber('preprocess-progress')({ file, progress: { value: 0.5 } })
+      await nextTick()
+      expect(wrapper.find(selectors.message).text()).toBe('Calculating checksum...')
+
+      subscriber('preprocess-complete')(file)
+      await nextTick()
+      expect(wrapper.find(selectors.message).exists()).toBeFalsy()
+    })
     it('folder is clickable', async () => {
       const { wrapper } = getShallowWrapper()
       ;(wrapper.vm as any).showInfo = true
