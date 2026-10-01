@@ -298,22 +298,45 @@ describe('Users view', () => {
         )
       })
     })
-    describe('displayName', () => {
-      it('does filter initially if displayName is given via query param', async () => {
-        const displayNameFilterQueryParam = 'Albert'
+    describe('search term', () => {
+      it('searches initially if a search term is given via query param', async () => {
+        const clientService = getClientService()
+        getMountedWrapper({ mountType: mount, clientService, displayNameFilterQuery: 'Albert' })
+        await flushPromises()
+        // the server search covers the display name, the user name and the email
+        expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledWith(
+          {
+            orderBy: ['displayName'],
+            filter: '',
+            search: '"Albert"',
+            expand: ['appRoleAssignments']
+          },
+          expect.anything()
+        )
+      })
+      it('combines the search with the group filter', async () => {
         const clientService = getClientService()
         getMountedWrapper({
           mountType: mount,
           clientService,
-          displayNameFilterQuery: displayNameFilterQueryParam
+          displayNameFilterQuery: 'alice-1db',
+          groupFilterQuery: '1'
         })
         await flushPromises()
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledWith(
-          {
-            orderBy: ['displayName'],
-            filter: "contains(displayName,'Albert')",
-            expand: ['appRoleAssignments']
-          },
+          expect.objectContaining({
+            filter: "(memberOf/any(m:m/id eq '1'))",
+            search: '"alice-1db"'
+          }),
+          expect.anything()
+        )
+      })
+      it('removes double quotes from the search term', async () => {
+        const clientService = getClientService()
+        getMountedWrapper({ mountType: mount, clientService, displayNameFilterQuery: 'Al"bert' })
+        await flushPromises()
+        expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledWith(
+          expect.objectContaining({ search: '"Albert"' }),
           expect.anything()
         )
       })
