@@ -1,4 +1,8 @@
-import { parseCalendarEventsResponse, parseCalendarsResponse } from '../../src/types'
+import {
+  parseCalendarEventsPage,
+  parseCalendarEventsResponse,
+  parseCalendarsResponse
+} from '../../src/types'
 
 describe('groupware response parsing', () => {
   describe('parseCalendarEventsResponse', () => {
@@ -30,6 +34,31 @@ describe('groupware response parsing', () => {
 
     it('reads an empty query result that omits the results property', () => {
       expect(parseCalendarEventsResponse({ position: 0, total: 0 })).toEqual([])
+    })
+
+    it('accepts the object-valued recurrence rule returned by Stalwart', () => {
+      const [event] = parseCalendarEventsResponse({
+        results: [
+          {
+            ...calendarEvent({ id: 'recurring-event' }),
+            recurrenceRule: { frequency: 'weekly', count: 4 }
+          }
+        ],
+        position: 0,
+        total: 1
+      })
+
+      expect(event.recurrenceRule).toEqual({ frequency: 'weekly', count: 4 })
+    })
+
+    it('preserves the total of a paginated query result', () => {
+      expect(
+        parseCalendarEventsPage({
+          results: [calendarEvent({ id: 'event-1' })],
+          position: 0,
+          total: 2
+        })
+      ).toEqual({ events: [calendarEvent({ id: 'event-1' })], total: 2 })
     })
 
     it('rejects a response that matches none of the known shapes', () => {
