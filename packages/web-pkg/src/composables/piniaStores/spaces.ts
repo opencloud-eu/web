@@ -1,4 +1,3 @@
-import { uniqBy } from 'lodash-es'
 import { defineStore } from 'pinia'
 import { computed, ref, unref } from 'vue'
 import {
@@ -99,9 +98,13 @@ export const useSpacesStore = defineStore('spaces', () => {
     unref(spaces).push(...s)
   }
 
-  const removeSpace = (space: SpaceResource) => {
+  /**
+   * Removes a space from the spaces of the current user. Only a deleted space is removed from
+   * `allProjectSpaces` too, a space the user just lost access to (`deleted: false`) stays there.
+   */
+  const removeSpace = (space: SpaceResource, { deleted = true }: { deleted?: boolean } = {}) => {
     spaces.value = unref(spaces).filter(({ id }) => id !== space.id)
-    if (unref(allProjectSpaces)) {
+    if (deleted && unref(allProjectSpaces)) {
       allProjectSpaces.value = unref(allProjectSpaces).filter(({ id }) => id !== space.id)
     }
   }
@@ -309,10 +312,10 @@ export const useSpacesStore = defineStore('spaces', () => {
     graphClient: Graph
     useCache?: boolean
   }) => {
-    const spacesToLoad = uniqBy(
-      [...unref(spaces), ...(unref(allProjectSpaces) || [])],
-      'id'
-    ).filter((s) => ids.includes(s.id) && (s.graphPermissions === undefined || !useCache))
+    // a space can be in both lists, the second one is skipped below while its request is pending
+    const spacesToLoad = [...unref(spaces), ...(unref(allProjectSpaces) || [])].filter(
+      (s) => ids.includes(s.id) && (s.graphPermissions === undefined || !useCache)
+    )
 
     if (!spacesToLoad.length) {
       return

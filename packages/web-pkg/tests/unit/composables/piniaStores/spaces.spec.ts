@@ -224,6 +224,26 @@ describe('spaces', () => {
       expect(store.spaces).toEqual([])
       expect(store.allProjectSpaces.map(({ id }) => id)).toEqual(['2'])
     })
+    it('keeps spaces the current user only lost access to', () => {
+      const store = useSpacesStore()
+      store.addSpaces([projectSpace({ id: '1' })])
+      store.setAllProjectSpaces([projectSpace({ id: '1' })])
+      store.removeSpace(projectSpace({ id: '1' }), { deleted: false })
+      expect(store.spaces).toEqual([])
+      expect(store.allProjectSpaces.map(({ id }) => id)).toEqual(['1'])
+    })
+    it('loads the permissions of spaces whose copy of the current user has them already', async () => {
+      const store = useSpacesStore()
+      // e.g. the space was opened in the files app before
+      store.addSpaces([projectSpace({ id: '1', graphPermissions: [] })])
+      store.setAllProjectSpaces([projectSpace({ id: '1' })])
+      const graphClient = mockDeep<Graph>()
+      graphClient.permissions.listPermissions.mockResolvedValue({ allowedActions: [] } as any)
+
+      await store.loadGraphPermissions({ ids: ['1'], graphClient })
+
+      expect(store.allProjectSpaces[0].graphPermissions).toEqual([])
+    })
     it('loads the permissions of spaces the user is not a member of as none', async () => {
       const store = useSpacesStore()
       store.setAllProjectSpaces([projectSpace({ id: '1' }), projectSpace({ id: '2' })])

@@ -214,15 +214,28 @@ async function loadSpaceMembers(spaceId: string) {
 }
 
 spacesStore.$onAction(({ name, args, after }) => {
-  if (name !== 'upsertSpace') {
-    return
+  if (name === 'upsertSpace') {
+    after(() => {
+      const [space] = args
+      if (isProjectSpaceResource(space) && !space.root?.permissions) {
+        loadSpaceMembers(space.id)
+      }
+    })
   }
-  after(() => {
-    const [space] = args
-    if (isProjectSpaceResource(space) && !space.root?.permissions) {
+  // the current user lost access to the space, which changes its members and permissions
+  if (name === 'removeSpace' && args[1]?.deleted === false) {
+    after(() => {
+      const [space] = args
       loadSpaceMembers(space.id)
-    }
-  })
+      spacesStore
+        .loadGraphPermissions({
+          ids: [space.id],
+          graphClient: clientService.graphAuthenticated,
+          useCache: false
+        })
+        .catch(console.error)
+    })
+  }
 })
 
 // actions like setting the image of a space check the permissions of the user in that space

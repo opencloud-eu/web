@@ -122,6 +122,30 @@ describe('Spaces view', () => {
     })
   })
 
+  describe('spaces the current user lost access to', () => {
+    it('are kept and their members and permissions are loaded again', async () => {
+      const spaces = [{ id: '1', name: 'one', driveType: 'project' }] as SpaceResource[]
+      const { wrapper, mocks } = getWrapper({ spaces, stubActions: false })
+      await flushPromises()
+      const spacesStore = useSpacesStore()
+      const loadGraphPermissions = vi
+        .spyOn(spacesStore, 'loadGraphPermissions')
+        .mockResolvedValue(undefined)
+      const { listAllDrives } = mocks.$clientService.graphAuthenticated.drives
+      listAllDrives.mockClear()
+
+      spacesStore.removeSpace(spaces[0], { deleted: false })
+      await flushPromises()
+
+      expect(spacesStore.allProjectSpaces.map(({ id }) => id)).toEqual(['1'])
+      expect(listAllDrives).toHaveBeenCalledWith(expect.objectContaining({ filter: "id eq '1'" }))
+      expect(loadGraphPermissions).toHaveBeenCalledWith(
+        expect.objectContaining({ ids: ['1'], useCache: false })
+      )
+      wrapper.unmount()
+    })
+  })
+
   describe('side bar', () => {
     it('hides the members panel for disabled spaces', () => {
       const { wrapper } = getWrapper()
