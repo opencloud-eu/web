@@ -656,6 +656,33 @@ describe('ResourceTable', () => {
     })
   })
 
+  describe('quota fields', () => {
+    it('are displayed if the first space comes without the used quota', () => {
+      const space = (id: string, spaceQuota: SpaceResource['spaceQuota']) =>
+        ({
+          id,
+          name: id,
+          path: '/',
+          type: 'space',
+          spaceQuota,
+          getDomSelector: () => extractDomSelector(id),
+          canDownload: () => true,
+          canRename: () => false
+        }) as SpaceResource
+      const { wrapper } = getMountedWrapper({
+        props: { resourceType: 'space' },
+        resources: [
+          // disabled spaces come without the used and remaining quota
+          space('disabled', { total: 10 }),
+          space('enabled', { total: 10, used: 5, remaining: 5 })
+        ]
+      })
+      for (const field of ['totalQuota', 'usedQuota', 'remainingQuota']) {
+        expect(wrapper.find('.oc-table-header-cell-' + field).exists()).toBeTruthy()
+      }
+    })
+  })
+
   describe('"shared with" field', () => {
     it('only displays authenticated shares', () => {
       const resource = mock<OutgoingShareResource>({ id: '1' })

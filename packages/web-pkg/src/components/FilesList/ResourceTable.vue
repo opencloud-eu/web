@@ -618,12 +618,13 @@ const fields = computed(() => {
           return true
         }
 
-        let hasField: boolean
-        if (field.prop) {
-          hasField = get(firstResource, field.prop) !== undefined
-        } else {
-          hasField = Object.prototype.hasOwnProperty.call(firstResource, field.name)
-        }
+        // resources of the same type can still differ, e.g. disabled spaces come without the used quota
+        const hasField = resources.some((resource) => {
+          if (field.prop) {
+            return get(resource, field.prop) !== undefined
+          }
+          return Object.prototype.hasOwnProperty.call(resource, field.name)
+        })
         if (!fieldsDisplayed) {
           return hasField
         }
