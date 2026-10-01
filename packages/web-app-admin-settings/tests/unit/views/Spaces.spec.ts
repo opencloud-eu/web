@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
 import { mockDeep } from 'vitest-mock-extended'
@@ -26,7 +27,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn(),
   useAppDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn()
+  useRouteQueryPersisted: vi.fn(),
+  useRouteQueryFilterTerm: vi.fn(() => ref(''))
 }))
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock({}))
 

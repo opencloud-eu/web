@@ -102,7 +102,8 @@ import {
   useAppsStore,
   useResourcesStore,
   UserAvatar,
-  useKeyboardActions
+  useKeyboardActions,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import { AppBar, ItemFilterInline } from '@opencloud-eu/web-pkg'
@@ -144,7 +145,7 @@ const {
 const { $gettext } = useGettext()
 
 const areHiddenFilesShown = ref(false)
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 
 const breadcrumbs = computed(() => {
   return [

@@ -34,8 +34,13 @@
 <script setup lang="ts">
 import AppTemplate from '../components/AppTemplate.vue'
 import ExtensionsList from '../components/Extensions/ExtensionsList.vue'
-import { NoContentMessage, useAppsStore, useConfigStore } from '@opencloud-eu/web-pkg'
-import { computed, ref, unref } from 'vue'
+import {
+  NoContentMessage,
+  useAppsStore,
+  useConfigStore,
+  useRouteQueryFilterTerm
+} from '@opencloud-eu/web-pkg'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 
@@ -44,7 +49,7 @@ const appsStore = useAppsStore()
 const configStore = useConfigStore()
 const { apps, appLoadingFailure } = storeToRefs(appsStore)
 
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 
 interface ExtensionInfo {
   name: string

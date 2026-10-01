@@ -110,7 +110,8 @@ import {
   ContextActions,
   ItemFilter,
   useKeyboardActions,
-  eventBus
+  eventBus,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import { uniq } from 'lodash-es'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
@@ -120,7 +121,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, unref, ref, onBeforeUnmount, onMounted } from 'vue'
+import { computed, unref, onBeforeUnmount, onMounted } from 'vue'
 import SharesNavigation from '../../components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource, ShareTypes } from '@opencloud-eu/web-client'
 import { useGettext } from 'vue3-gettext'
@@ -191,7 +192,7 @@ const shareTypes = computed(() => {
   })
 })
 const selectedShareTypesQuery = useRouteQuery('q_shareType')
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 const filteredItems = computed(() => {
   let items = unref(paginatedResources)
   if (unref(filterTerm)) {

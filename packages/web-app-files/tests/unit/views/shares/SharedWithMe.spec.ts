@@ -21,7 +21,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useSort: vi.fn().mockImplementation(() => useSortMock()),
   queryItemAsString: vi.fn(),
-  useRouteQuery: vi.fn()
+  useRouteQuery: vi.fn(),
+  useRouteQueryFilterTerm: vi.fn(() => ref(''))
 }))
 
 const AppBarStub = defineComponent({

@@ -124,7 +124,8 @@ import {
   useSpacesStore,
   useUserStore,
   ResourceIndicator,
-  ResourceStatusIndicators
+  ResourceStatusIndicators,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
 import {
@@ -161,7 +162,7 @@ const { areEmptyTrashesShown } = storeToRefs(resourcesStore)
 
 const sortBy = ref<keyof SpaceResource>('name')
 const sortDir = ref<SortDir>(SortDir.Asc)
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 
 const spaces = computed(() =>
   spacesStore.spaces.filter(

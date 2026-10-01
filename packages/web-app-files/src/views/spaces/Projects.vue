@@ -158,7 +158,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, unref, ref, watch, onBeforeUnmount } from 'vue'
+import { onMounted, computed, unref, watch, onBeforeUnmount } from 'vue'
 import { useTask } from 'vue-concurrency'
 import Fuse from 'fuse.js'
 
@@ -179,7 +179,8 @@ import {
   Pagination,
   FileSideBar,
   NoContentMessage,
-  useSideBar
+  useSideBar,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import {
   isProjectSpaceResource,
@@ -207,7 +208,7 @@ const route = useRoute()
 const clientService = useClientService()
 const language = useGettext()
 const { $gettext, $ngettext } = language
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 const resourcesStore = useResourcesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
 const { openSideBarPanel } = useSideBar()

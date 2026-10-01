@@ -171,8 +171,8 @@ const { graphUsersEditLoginAllowedDisabled } = storeToRefs(capabilityStore)
 const userSettingsStore = useUserSettingsStore()
 const { users, selectedUsers } = storeToRefs(userSettingsStore)
 
-const displayNameQuery = useRouteQuery('q_displayName')
-const filterTerm = computed(() => queryItemAsString(unref(displayNameQuery)))
+const searchTermQuery = useRouteQuery('q_search_term')
+const filterTerm = computed(() => queryItemAsString(unref(searchTermQuery)))
 
 function getRoleDisplayName(appRoleAssignments: AppRoleAssignment[]) {
   const assignedRole = appRoleAssignments?.[0]
