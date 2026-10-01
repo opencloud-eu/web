@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat(admin-settings): search users by user name and email as well [[#3517](https://github.com/opencloud-eu/web/pull/3517)]
 - refactor(admin-settings): show avatars and space images in the name column [[#3516](https://github.com/opencloud-eu/web/pull/3516)]
 - feat(admin-settings): use the web-pkg spaces store, add the customize menu and space images [[#3501](https://github.com/opencloud-eu/web/pull/3501)]
 - perf: subset and preload inter font [[#3500](https://github.com/opencloud-eu/web/pull/3500)]
