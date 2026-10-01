@@ -2710,6 +2710,9 @@ describe('useYjsSession — external updates', () => {
     // The peer's own keystroke sits inside its debounce window when the flag
     // arrives, so `hasUnsavedChanges` still says clean. Flushing first catches it.
     it('conflicts a peer whose unsaved keystroke is still inside the debounce', async () => {
+      // No real-time auto advance: its sync clock tick could deliver flag and
+      // rewrite back to back, before B's flush settles.
+      vi.useFakeTimers()
       const { a, b } = await twoPeers()
       b.onContentChange.mockImplementation(() => {
         b.hasUnsavedChangesRef.value = true
