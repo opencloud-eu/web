@@ -17,8 +17,8 @@
         'outline-role-secondary',
         'focus-visible:outline',
         'rounded-md',
-        'checked:bg-role-primary',
-        'checked:border-role-primary',
+        'checked:bg-role-secondary',
+        'checked:border-role-secondary',
         'indeterminate:bg-white',
         'bg-transparent',
         'overflow-hidden',
@@ -126,7 +126,7 @@ const keydownEnter = (event: KeyboardEvent) => {
 
 .oc-checkbox-checked::before,
 .oc-checkbox:checked::before {
-  background-color: var(--oc-role-on-primary);
+  background-color: var(--oc-role-on-secondary);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4,12.5 9.5,18 20,6'/%3E%3C/svg%3E");
   mask-size: 90%;
   mask-repeat: no-repeat;
@@ -134,7 +134,7 @@ const keydownEnter = (event: KeyboardEvent) => {
 }
 
 .oc-checkbox:indeterminate::before {
-  background-color: var(--oc-role-on-primary);
+  background-color: var(--oc-role-on-secondary);
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round'%3E%3Cline x1='6' y1='12' x2='18' y2='12'/%3E%3C/svg%3E");
   mask-size: 90%;
   mask-repeat: no-repeat;
