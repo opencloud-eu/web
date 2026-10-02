@@ -18,6 +18,7 @@ import {
   announceCustomStyles,
   announceConfiguration,
   announceUpdates,
+  announceTranslations,
   _resetEmbedConfigCache
 } from '../../../src/container/bootstrap'
 import { buildApplication, loadApplication } from '../../../src/container/application'
@@ -333,5 +334,24 @@ describe('announceClientService', () => {
 
     expect(ClientService).toHaveBeenCalledWith(expect.objectContaining({ configStore, authStore }))
     expect(app.config.globalProperties.$clientService).toBe(clientService)
+  })
+})
+
+describe('announceTranslations', () => {
+  it('loads core and app translations with custom translations taking precedence', async () => {
+    const gettext = { current: 'de', translations: {} } as unknown as Language
+    const appsStore = mock<ReturnType<typeof useAppsStore>>({
+      apps: { app: { translations: { de: { 'App string': 'App-Text', Delete: 'App-Löschen' } } } }
+    })
+
+    await announceTranslations({
+      gettext,
+      appsStore,
+      customTranslations: { de: { Delete: 'Custom' } }
+    })
+
+    expect(Object.keys(gettext.translations.de).length).toBeGreaterThan(2)
+    expect(gettext.translations.de['App string']).toBe('App-Text')
+    expect(gettext.translations.de.Delete).toBe('Custom')
   })
 })

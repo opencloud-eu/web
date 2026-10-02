@@ -1,7 +1,7 @@
 import App from './views/App.vue'
 import Wayf from './views/Wayf.vue'
 import { ApplicationInformation, defineWebApplication, useRouter } from '@opencloud-eu/web-pkg'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-ocm'
 import { extensions } from './extensions'
 import { RouteRecordRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'

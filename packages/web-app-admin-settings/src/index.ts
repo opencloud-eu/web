@@ -1,4 +1,4 @@
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-admin-settings'
 import General from './views/General.vue'
 import Users from './views/Users.vue'
 import Groups from './views/Groups.vue'

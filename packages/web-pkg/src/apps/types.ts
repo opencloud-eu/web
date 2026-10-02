@@ -115,7 +115,7 @@ export interface ApplicationInformation {
   }
   extensions?: ApplicationFileExtension[]
   defaultExtension?: string
-  translations?: Translations
+  translations?: Translations | ApplicationTranslationLoaders
 }
 
 /**
@@ -127,12 +127,19 @@ export interface ApplicationTranslations {
   }
 }
 
+/**
+ * ApplicationTranslationLoaders is a map of language keys to functions lazily loading the translations
+ */
+export interface ApplicationTranslationLoaders {
+  [lang: string]: () => Promise<ApplicationTranslations[string]>
+}
+
 /** ClassicApplicationScript reflects classic application script structure */
 export interface ClassicApplicationScript {
   appInfo?: ApplicationInformation
   routes?: ((args: GlobalProperties) => RouteRecordRaw[]) | RouteRecordRaw[]
   navItems?: ((args: GlobalProperties) => AppNavigationItem[]) | AppNavigationItem[]
-  translations?: ApplicationTranslations
+  translations?: ApplicationTranslations | ApplicationTranslationLoaders
   extensions?: Ref<Extension[]>
   extensionPoints?: Ref<ExtensionPoint<any>[]>
   initialize?: () => void

@@ -1,4 +1,4 @@
-import { loadDesignSystem, pages, loadTranslations, supportedLanguages } from './defaults'
+import { loadDesignSystem, pages, supportedLanguages } from './defaults'
 import { router } from './router'
 import { setupVaultUnlockGuard } from './router/setupVaultUnlockGuard'
 import { abilitiesPlugin } from '@casl/vue'
@@ -33,6 +33,7 @@ import {
 import { applicationStore } from './container/store'
 import { PublicSpaceResource } from '@opencloud-eu/web-client'
 import { loadCustomTranslations } from './helpers/customTranslations'
+import { preloadCoreTranslations } from './helpers/language'
 import { createApp, watch } from 'vue'
 import { createPinia } from 'pinia'
 import { extensionPoints } from './extensionPoints'
@@ -71,6 +72,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   app.use(abilitiesPlugin, createMongoAbility([]), { useGlobalProperties: true })
 
   const gettext = announceGettext({ app, availableLanguages: supportedLanguages })
+  preloadCoreTranslations(gettext.current)
 
   const clientService = announceClientService({ app, configStore, authStore })
 
@@ -107,8 +109,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
   announcePasswordPolicyService({ app })
   announceUppyService({ app })
 
-  const [coreTranslations, customTranslations] = await Promise.all([
-    loadTranslations(),
+  const [customTranslations] = await Promise.all([
     loadCustomTranslations({ configStore }),
     announceTheme({ app, designSystem, configStore }),
     initializeApplications({
@@ -134,7 +135,7 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     })
   }
 
-  announceTranslations({ appsStore, gettext, coreTranslations, customTranslations })
+  await announceTranslations({ appsStore, gettext, customTranslations })
   announceCustomStyles({ configStore })
   announceCustomScripts({ configStore })
   announceDefaults({ appsStore, router, extensionRegistry, configStore })
@@ -301,9 +302,8 @@ export const bootstrapErrorApp = async (err: Error): Promise<void> => {
   } catch {}
 
   console.error(err)
-  const translations = await loadTranslations()
   const gettext = announceGettext({ app, availableLanguages: supportedLanguages })
-  announceTranslations({ gettext, coreTranslations: translations })
+  await announceTranslations({ gettext })
   app.mount('#opencloud')
 }
 ;(window as any).runtimeLoaded({

@@ -55,7 +55,6 @@ import {
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { v4 as uuidV4 } from 'uuid'
-import { merge } from 'lodash-es'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
@@ -87,7 +86,7 @@ import {
   onSSESpaceDeletedEvent,
   onSSESpaceEnabledEvent
 } from './sse'
-import { loadAppTranslations, resolveInitialLanguage } from '../helpers/language'
+import { loadTranslations, resolveInitialLanguage } from '../helpers/language'
 import { urlJoin } from '@opencloud-eu/web-client'
 import { sha256 } from '@noble/hashes/sha2.js'
 import { bytesToHex } from '@noble/hashes/utils.js'
@@ -453,26 +452,22 @@ export const announceGettext = ({
   return gettext
 }
 
-export const announceTranslations = ({
+export const announceTranslations = async ({
   gettext,
-  coreTranslations,
   customTranslations,
   appsStore
 }: {
   gettext: Language
-  coreTranslations: Translations
   customTranslations?: Translations
   appsStore?: AppsStore
 }) => {
-  gettext.translations = merge(coreTranslations, customTranslations || {})
+  gettext.translations = customTranslations || {}
 
-  if (appsStore) {
-    loadAppTranslations({
-      apps: appsStore.apps,
-      gettext,
-      lang: gettext.current
-    })
-  }
+  await loadTranslations({
+    apps: appsStore?.apps || {},
+    gettext,
+    lang: gettext.current
+  })
 }
 
 /**
