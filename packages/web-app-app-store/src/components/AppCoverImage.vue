@@ -1,6 +1,9 @@
 <template>
   <div class="relative">
-    <app-official-badge v-if="isOfficialApp(app)" class="absolute top-2 left-2 z-10" />
+    <app-official-badge
+      v-if="isOfficialApp(app)"
+      class="absolute top-2 left-2 z-10 pointer-events-none"
+    />
     <app-badge-ribbon v-if="app.badge" :badge="app.badge" />
     <div class="app-image w-full">
       <app-preview-image :url="app.coverImage?.url" class="w-full" />

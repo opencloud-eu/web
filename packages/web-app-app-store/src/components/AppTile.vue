@@ -1,14 +1,12 @@
 <template>
   <oc-card
     tag="li"
-    class="app-tile bg-role-surface-container flex flex-col border overflow-hidden shadow-none"
+    class="app-tile relative bg-role-surface-container flex flex-col border overflow-hidden shadow-none"
     header-class="p-0"
     body-class="grow flex flex-col"
   >
     <template #header>
-      <router-link :to="getAppDetailsRoute(app)">
-        <app-cover-image :app="app" />
-      </router-link>
+      <app-cover-image :app="app" />
     </template>
     <div class="app-tile-body flex flex-col grow">
       <app-title :app="app" :term="term" title-class="my-0 app-tile-title" />
@@ -28,7 +26,7 @@
 <script setup lang="ts">
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import { App } from '../types'
-import { getAppDetailsRoute, getAuthorNames } from '../helpers'
+import { getAuthorNames } from '../helpers'
 import AppTags from './AppTags.vue'
 import AppTitle from './AppTitle.vue'
 import AppCoverImage from './AppCoverImage.vue'

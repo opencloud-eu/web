@@ -6,7 +6,7 @@
       data-testid="tag-button"
       rounded
       size="small"
-      class="whitespace-nowrap cursor-pointer"
+      class="relative whitespace-nowrap cursor-pointer"
       type="button"
       @click="emit('click', tag)"
     >

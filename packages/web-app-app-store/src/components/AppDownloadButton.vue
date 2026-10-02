@@ -1,6 +1,6 @@
 <template>
   <oc-button
-    class="app-download-button shrink-0 raw-hover-surface p-1"
+    class="app-download-button relative shrink-0 raw-hover-surface p-1"
     appearance="raw"
     :aria-label="label"
     @click="downloadAppAction.handler({ app, version })"
