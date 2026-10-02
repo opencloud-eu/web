@@ -1,15 +1,23 @@
 <template>
-  <div class="app-view-mode-switch oc-button-group shrink-0">
+  <div
+    class="app-view-mode-switch oc-button-group shrink-0"
+    role="group"
+    :aria-label="$gettext('View mode')"
+  >
     <oc-button
       v-for="mode in viewModes"
       :key="mode.name"
+      v-oc-tooltip="mode.label"
       :class="`app-view-mode-${mode.name}`"
-      :appearance="modelValue === mode.name ? 'filled' : 'outline'"
+      :appearance="modelValue === mode.name ? 'filled' : 'raw'"
+      :color-role="modelValue === mode.name ? 'secondaryContainer' : 'secondary'"
+      :no-hover="modelValue === mode.name"
       :aria-label="mode.label"
       :aria-pressed="modelValue === mode.name"
+      class="p-2"
       @click="emit('update:modelValue', mode.name)"
     >
-      <oc-icon :name="mode.icon.name" :fill-type="mode.icon.fillType" size-class="size-5" />
+      <oc-icon :name="mode.icon.name" :fill-type="mode.icon.fillType" />
     </oc-button>
   </div>
 </template>
