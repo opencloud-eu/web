@@ -4,6 +4,7 @@ import StarterKit from '@tiptap/starter-kit'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { useGettext } from 'vue3-gettext'
 import { EditorActionGroup, useEditorActions } from '../useEditorActions'
+import { createPlainTextClipboardExtension } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 import { TextEditorState } from '../../types'
 
@@ -57,7 +58,8 @@ export const useStrategyPlainText = (editorState: TextEditorState): ContentTypeS
         orderedList: false,
         strike: false
       }),
-      FindAndReplace
+      FindAndReplace,
+      createPlainTextClipboardExtension()
     ]
   }
 
