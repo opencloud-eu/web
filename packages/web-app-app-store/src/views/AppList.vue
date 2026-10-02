@@ -25,6 +25,13 @@
       </div>
     </div>
     <app-tag-filter class="mb-6" :apps="apps" :active-tag="filterTerm" @select="setFilterTerm" />
+    <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
+      <h2 class="app-list-results-title my-0 text-base" v-text="$gettext('All Apps')" />
+      <span
+        class="app-list-results-count text-sm text-role-on-surface-variant"
+        v-text="resultCountText"
+      />
+    </div>
     <no-content-message
       v-if="!filteredApps.length"
       id="app-store-empty-filtered"
@@ -59,7 +66,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, unref, watch } from 'vue'
+import { computed, ref, unref, watch } from 'vue'
+import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { useAppsStore } from '../piniaStores'
@@ -75,6 +83,12 @@ const { apps } = storeToRefs(appsStore)
 
 const { filterTerm, filteredApps, setFilterTerm } = useAppFilter(apps)
 const { viewMode } = useAppViewMode()
+const { $ngettext } = useGettext()
+
+const resultCountText = computed(() => {
+  const count = unref(filteredApps).length
+  return $ngettext('%{count} App', '%{count} Apps', count, { count: count.toString() })
+})
 
 // decoupled from the route query, otherwise trimming the term would swallow typed whitespace
 const filterTermInput = ref(unref(filterTerm))

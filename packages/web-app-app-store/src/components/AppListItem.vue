@@ -1,6 +1,6 @@
 <template>
   <li
-    class="app-list-item bg-role-surface-container flex items-center gap-4 border rounded-lg p-2 overflow-hidden"
+    class="app-list-item bg-role-surface-container flex items-center gap-4 border rounded-lg p-3 overflow-hidden"
   >
     <router-link :to="getAppDetailsRoute(app)" class="relative shrink-0">
       <app-official-badge v-if="isOfficialApp(app)" class="absolute top-1 left-1 z-10" />

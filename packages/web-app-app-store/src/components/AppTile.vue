@@ -11,8 +11,8 @@
       </router-link>
     </template>
     <div class="app-tile-body flex flex-col grow">
-      <app-title :app="app" :term="term" title-class="my-2 app-tile-title" />
-      <p class="my-2"><oc-filter-highlight :text="app.subtitle" :term="term" /></p>
+      <app-title :app="app" :term="term" title-class="my-0 app-tile-title" />
+      <p class="mt-1 mb-3"><oc-filter-highlight :text="app.subtitle" :term="term" /></p>
       <app-tags :app="app" :term="term" @click="emit('search', $event)" />
       <div class="app-tile-footer flex items-center justify-between gap-2 mt-auto pt-4">
         <span
