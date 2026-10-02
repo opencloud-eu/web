@@ -3,7 +3,6 @@
     <oc-button
       v-for="mode in viewModes"
       :key="mode.name"
-      v-oc-tooltip="mode.label"
       :class="`app-view-mode-${mode.name}`"
       :appearance="modelValue === mode.name ? 'filled' : 'outline'"
       :aria-label="mode.label"

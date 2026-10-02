@@ -1,6 +1,5 @@
 <template>
   <oc-button
-    v-oc-tooltip="label"
     class="app-download-button shrink-0 raw-hover-surface p-1"
     appearance="raw"
     :aria-label="label"
