@@ -15,6 +15,11 @@ export function createMarkdownClipboardExtension() {
           props: {
             handleDOMEvents: {
               paste(view, event) {
+                // DOM event handlers run before ProseMirror's own editable check
+                if (!view.editable) {
+                  return false
+                }
+
                 const text =
                   event.clipboardData?.getData('text/plain') ||
                   event.clipboardData?.getData('Text') ||
