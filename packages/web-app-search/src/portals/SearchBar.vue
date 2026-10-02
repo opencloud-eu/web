@@ -210,7 +210,7 @@ function updateLocationFilterInputPadding() {
   }
 
   if (!unref(locationFilterAvailable)) {
-    inputElement.style.paddingRight = ''
+    inputElement.style.paddingInlineEnd = ''
     return
   }
 
@@ -218,16 +218,16 @@ function updateLocationFilterInputPadding() {
     '#files-global-search-filter'
   ) as HTMLElement
   if (!locationFilterElement) {
-    inputElement.style.paddingRight = ''
+    inputElement.style.paddingInlineEnd = ''
     return
   }
 
   if (locationFilterElement.offsetWidth <= 0) {
-    inputElement.style.paddingRight = ''
+    inputElement.style.paddingInlineEnd = ''
     return
   }
 
-  inputElement.style.paddingRight = `${Math.ceil(locationFilterElement.offsetWidth) + 32}px`
+  inputElement.style.paddingInlineEnd = `${Math.ceil(locationFilterElement.offsetWidth) + 32}px`
 }
 
 watch(isMobile, () => {

@@ -37,7 +37,7 @@
                 'font-bold bg-role-secondary-container text-role-on-secondary-container':
                   item.id === activeId
               }"
-              :style="{ paddingLeft: `${0.5 + (item.level - 1) * 0.75}rem` }"
+              :style="{ paddingInlineStart: `${0.5 + (item.level - 1) * 0.75}rem` }"
               :title="item.textContent"
               :aria-current="item.id === activeId ? 'location' : undefined"
               @click="scrollToHeading(item)"
