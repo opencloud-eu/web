@@ -995,6 +995,29 @@ describe('useYjsSession — read-only clients', () => {
 })
 
 describe('useYjsSession — content reporting', () => {
+  it('flags a pending change and reports it right away on flush', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({ currentContent: 'seed' })
+    await flushPromises()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+    s.onContentChange.mockClear()
+
+    s.ydoc!.getText(SHARED_TEXT_KEY).insert(4, ' edit')
+    expect(unref(s.session.hasPendingContent)).toBe(true)
+
+    await s.session.flushContent()
+
+    expect(s.onContentChange).toHaveBeenLastCalledWith('seed edit')
+    expect(unref(s.session.hasPendingContent)).toBe(false)
+
+    // the debounced report doesn't fire a second time
+    s.onContentChange.mockClear()
+    vi.advanceTimersByTime(500)
+    await flushPromises()
+    expect(s.onContentChange).not.toHaveBeenCalled()
+  })
+
   it('reports debounced after a user-origin Y.Doc update', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({ currentContent: 'seed' })
