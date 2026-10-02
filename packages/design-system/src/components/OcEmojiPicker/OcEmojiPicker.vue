@@ -42,7 +42,7 @@ const emojiPickerRef = useTemplateRef<HTMLElement>('emojiPickerRef')
 const isLoading = ref(true)
 
 watch(
-  [() => theme, language.current],
+  [() => theme, () => language.current],
   async () => {
     isLoading.value = true
 
