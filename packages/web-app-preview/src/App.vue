@@ -113,13 +113,11 @@ import {
   isLocationSharesActive,
   Key,
   Modifier,
-  ProcessorType,
   queryItemAsString,
   sortHelper,
   useAppNavigation,
   useGetMatchingSpace,
   useKeyboardActions,
-  usePreviewService,
   useRoute,
   useRouteQuery,
   useRouter
@@ -135,7 +133,7 @@ import {
   useFileTypes,
   useFullScreenMode,
   useImageControls,
-  usePreviewDimensions
+  useMediaFileLoader
 } from './composables'
 import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
@@ -163,8 +161,6 @@ const contextRouteQuery = useRouteQuery('contextRouteQuery') as unknown as Ref<
 >
 
 const { isFileTypeAudio, isFileTypeImage, isFileTypeVideo } = useFileTypes()
-const previewService = usePreviewService()
-const { dimensions } = usePreviewDimensions()
 const { getMatchingSpace } = useGetMatchingSpace()
 const { closeApp } = useAppNavigation({ router, currentFileContext })
 const { bindKeyAction, removeKeyAction } = useKeyboardActions()
@@ -187,8 +183,13 @@ const photoRollEnabled = ref(true)
 const preview = useTemplateRef<HTMLElement>('preview')
 const motionPlayer = useTemplateRef<{ isPlaying: boolean; toggle: () => void }>('motionPlayer')
 const keyBindings: string[] = []
-let loadPreviewImageController: AbortController = null
 let reloadUrlController: AbortController = null
+
+const { loadPreviewImage, cancelStaleLoads, preloadNeighbors } = useMediaFileLoader({
+  mediaFiles,
+  activeIndex,
+  getUrlForResource
+})
 
 const space = computed(() => {
   if (!unref(activeMediaFile)) {
@@ -270,61 +271,6 @@ const loading = computed(() => {
   }
   return unref(file.isLoading)
 })
-
-const loadPreviewImage = async (mediaFile: MediaFile) => {
-  if (mediaFile.url) {
-    return
-  }
-
-  if (loadPreviewImageController) {
-    loadPreviewImageController.abort()
-  }
-
-  loadPreviewImageController = new AbortController()
-
-  try {
-    // Vault images can't be thumbnailed server-side (the server only holds
-    // the ciphertext blob), so skip the preview service and fetch the full
-    // image instead - `getUrlForResource` is vault-aware and returns a blob
-    // URL with cleartext bytes. Gate strictly on the vault flag: every other
-    // image keeps the normal preview-service path, including the legacy
-    // no-thumbnail behaviour (do NOT key this off hasPreview(), or plain
-    // images the server has no thumbnail for would download the full
-    // original on every open).
-    const useFullImage =
-      mediaFile.isImage && (mediaFile.resource.isInVault || mediaFile.mimeType === 'image/svg+xml')
-
-    if (mediaFile.isImage && !useFullImage) {
-      mediaFile.url = await previewService.loadPreview(
-        {
-          space: unref(space),
-          resource: mediaFile.resource,
-          dimensions: unref(dimensions),
-          processor: ProcessorType.enum.fit
-        },
-        false,
-        false,
-        loadPreviewImageController.signal
-      )
-    } else {
-      mediaFile.url = await getUrlForResource(unref(space), mediaFile.resource, {
-        signal: loadPreviewImageController.signal
-      })
-    }
-
-    mediaFile.isLoading = false
-  } catch (e) {
-    if (e.name === 'CanceledError') {
-      return
-    }
-
-    console.error(e)
-    mediaFile.isError = true
-    mediaFile.isLoading = false
-  } finally {
-    loadPreviewImageController = null
-  }
-}
 
 /** Signed URLs expire, so fetch a fresh one on demand. */
 async function reloadMediaFileUrl(mediaFile: MediaFile) {
@@ -465,12 +411,14 @@ watch(
   { immediate: true }
 )
 
-watch(activeMediaFile, (newValue, oldValue) => {
-  if (!unref(activeMediaFile)) {
+watch(activeMediaFile, async (newValue, oldValue) => {
+  if (!newValue) {
     return
   }
 
-  loadPreviewImage(unref(activeMediaFile))
+  // drop loads that are neither the active file nor one of its neighbors
+  cancelStaleLoads()
+  const load = loadPreviewImage(newValue)
   currentImageRotation.value = 0
 
   if (oldValue !== null) {
@@ -481,7 +429,16 @@ watch(activeMediaFile, (newValue, oldValue) => {
     }
   }
 
-  emit('update:resource', unref(activeMediaFile).resource)
+  emit('update:resource', newValue.resource)
+
+  // preload the neighbors only once this file is in, and only if the user
+  // hasn't navigated on in the meantime
+  await load
+  if (newValue !== unref(activeMediaFile)) {
+    return
+  }
+
+  preloadNeighbors()
 })
 
 watch(
@@ -513,7 +470,6 @@ onBeforeUnmount(() => {
     removeKeyAction(keyBindingId)
   })
 
-  loadPreviewImageController?.abort()
   reloadUrlController?.abort()
 
   Object.values(unref(mediaFiles)).forEach((cachedFile) => {
