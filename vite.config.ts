@@ -20,6 +20,11 @@ import fetch from 'node-fetch'
 import { Agent } from 'https'
 import { federationRegistrationHost } from './dev/vite-plugins/federationRegistrationHost.ts'
 import { lazyChunks } from './dev/vite-plugins/lazyChunks.ts'
+import {
+  l10nChunkGroups,
+  l10nChunks,
+  stubDesignSystemTranslations
+} from './dev/vite-plugins/l10nChunks.ts'
 
 const dist = process.env.DIST_DIR || 'dist'
 
@@ -105,6 +110,8 @@ export default defineConfig(({ mode, command }) => {
   const configUrl =
     process.env.OPENCLOUD_WEB_CONFIG_URL || 'https://host.docker.internal:9200/config.json'
 
+  const l10nGroups = l10nChunkGroups()
+
   const config: UserConfig = {
     ...(!production && {
       server: {
@@ -150,14 +157,7 @@ export default defineConfig(({ mode, command }) => {
                   // tailwind needs to come first to ensure correct CSS layer cascade
                   priority: 10000
                 },
-                {
-                  name: 'pkg-translations',
-                  test: /packages\/web-pkg\/l10n.*/
-                },
-                {
-                  name: 'files-translations',
-                  test: /packages\/web-app-files\/l10n.*/
-                },
+                ...l10nGroups,
                 {
                   // split yjs from tiptap because it's required for the initial load,
                   // while tiptap can be loaded lazily.
@@ -242,7 +242,9 @@ export default defineConfig(({ mode, command }) => {
           })()
         }),
         registrationHost,
-        lazyChunks(['tiptap-vendor']),
+        l10nChunks(),
+        stubDesignSystemTranslations(),
+        lazyChunks(['tiptap-vendor', ...l10nGroups.map(({ name }) => name)]),
         {
           name: '@opencloud-eu/vite-plugin-runtime-config',
           configureServer(server: ViteDevServer) {

@@ -1,5 +1,5 @@
 import { defineWebApplication, SidebarNavExtension } from '@opencloud-eu/web-pkg'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-office-settings'
 import { useGettext } from 'vue3-gettext'
 import { computed } from 'vue'
 import App from './App.vue'

@@ -1,6 +1,6 @@
 import App from './App.vue'
 import List from './views/List.vue'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-search'
 import { defineWebApplication } from '@opencloud-eu/web-pkg'
 import { extensions } from './extensions'
 import { extensionPoints } from './extensionPoints'

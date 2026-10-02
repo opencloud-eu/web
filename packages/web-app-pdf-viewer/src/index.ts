@@ -1,5 +1,5 @@
 import { useGettext } from 'vue3-gettext'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-pdf-viewer'
 import { AppWrapperRoute, defineWebApplication } from '@opencloud-eu/web-pkg'
 import PdfViewer from './App.vue'
 
