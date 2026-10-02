@@ -64,10 +64,7 @@
             <oc-icon v-if="readOnly && !multiple" name="lock" class="mr-1" size-class="size-4" />
             {{ resolveOptionLabel(option) }}
           </slot>
-          <span
-            v-if="multiple && (option.readonly || readOnly || !disabled)"
-            class="flex items-center ml-2 mr-1"
-          >
+          <span v-if="multiple" class="flex items-center ml-2 mr-1 empty:hidden">
             <oc-icon
               v-if="option.readonly || readOnly"
               class="vs__deselect-lock"
@@ -75,7 +72,7 @@
               size-class="size-4"
             />
             <oc-button
-              v-else
+              v-else-if="!disabled"
               appearance="raw"
               :title="$gettext('Deselect %{label}', { label: resolveOptionLabel(option) })"
               :aria-label="$gettext('Deselect %{label}', { label: resolveOptionLabel(option) })"
