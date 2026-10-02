@@ -73,8 +73,8 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: A wrong passphrase is rejected
     When "Alice" logs in
     And "Alice" creates the following resource
-      | resource | type  | password |
-      | my.vault | vault | 123      |
+      | resource | type  | password       |
+      | my.vault | vault | Vault-Pa55word |
     And "Alice" navigates to the personal space page
     And "Alice" fails to enter the vault "my.vault" with the wrong passphrase "definitely-wrong"
     And "Alice" logs out
