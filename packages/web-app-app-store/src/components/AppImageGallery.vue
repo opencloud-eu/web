@@ -1,5 +1,6 @@
 <template>
   <div class="relative">
+    <app-official-badge v-if="isOfficialApp(app)" class="absolute top-2 left-2 z-10" />
     <div
       v-if="app.badge"
       class="app-image-ribbon z-10 text-right size-[7rem] overflow-hidden absolute top-0 right-0"
@@ -49,6 +50,8 @@
 import { computed, ref, unref } from 'vue'
 import { App, AppImage } from '../types'
 import AppPreviewImage from './AppPreviewImage.vue'
+import AppOfficialBadge from './AppOfficialBadge.vue'
+import { isOfficialApp } from '../helpers'
 
 const { app, showPagination = false } = defineProps<{
   app: App
