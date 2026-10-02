@@ -1,66 +1,74 @@
 <template>
-  <oc-table class="w-full" :data="data" :fields="fields" padding-x="remove">
-    <template #version="{ item }">
-      v{{ item.version }}
-      <oc-tag v-if="item.version === app.mostRecentVersion.version" size="small" class="ml-2">
-        {{ $gettext('most recent') }}
-      </oc-tag>
-    </template>
-    <template #actions="{ item }">
-      <app-actions :app="app" :version="item" />
-    </template>
-  </oc-table>
+  <section v-if="versions.length" class="app-versions">
+    <div class="flex items-baseline justify-between gap-4 mb-2">
+      <h3 class="my-0 text-base" v-text="$gettext('Versions')" />
+      <span class="text-sm text-role-on-surface-variant" v-text="versionCountText" />
+    </div>
+    <ul class="m-0 p-0">
+      <li
+        v-for="(version, index) in visibleVersions"
+        :key="version.version"
+        :data-item-id="version.version"
+        class="app-version flex items-center gap-2 h-10 border-b border-role-surface-container-highest last:border-b-0"
+      >
+        <span class="app-version-number text-sm font-semibold" v-text="`v${version.version}`" />
+        <oc-tag v-if="index === 0" size="small" rounded class="app-version-latest">
+          {{ $gettext('Latest') }}
+        </oc-tag>
+        <span class="flex items-center gap-2 ml-auto">
+          <span
+            v-if="version.minOpenCloud"
+            class="app-version-min-opencloud text-sm text-role-on-surface-variant"
+            v-text="$gettext('OpenCloud %{version}+', { version: version.minOpenCloud })"
+          />
+          <app-download-button
+            :app="app"
+            :version="version"
+            :label="$gettext('Download version %{version}', { version: version.version })"
+          />
+        </span>
+      </li>
+    </ul>
+    <oc-button
+      v-if="versions.length > collapsedCount"
+      appearance="raw"
+      class="app-versions-toggle mt-2 text-sm"
+      @click="expanded = !expanded"
+    >
+      {{
+        expanded
+          ? $gettext('Show less')
+          : $gettext('Show all %{count} versions', { count: versions.length.toString() })
+      }}
+    </oc-button>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { App } from '../types'
+import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import AppActions from './AppActions.vue'
+import { App } from '../types'
 import { isValidUrl } from '../helpers'
-import { FieldType } from '@opencloud-eu/design-system/helpers'
+import AppDownloadButton from './AppDownloadButton.vue'
 
 const { app } = defineProps<{
   app: App
 }>()
 
-const { $gettext } = useGettext()
+const { $ngettext } = useGettext()
 
-const data = computed(() => {
-  return (app.versions || [])
-    .filter((version) => version.version && isValidUrl(version.url))
-    .map((version) => {
-      return {
-        ...version,
-        minOpenCloud: version.minOpenCloud ? `v${version.minOpenCloud}` : '-',
-        id: version.version
-      }
-    })
+const collapsedCount = 3
+const expanded = ref(false)
+
+// versions are expected to be sorted from newest to oldest
+const versions = computed(() => {
+  return (app.versions || []).filter((version) => version.version && isValidUrl(version.url))
 })
-const fields = computed<FieldType[]>(() => {
-  return [
-    {
-      name: 'version',
-      type: 'slot',
-      width: 'expand',
-      wrap: 'truncate',
-      title: $gettext('App Version')
-    },
-    {
-      name: 'minOpenCloud',
-      type: 'raw',
-      width: 'shrink',
-      wrap: 'nowrap',
-      title: $gettext('OpenCloud Version')
-    },
-    {
-      name: 'actions',
-      type: 'slot',
-      alignH: 'right',
-      width: 'shrink',
-      wrap: 'nowrap',
-      title: ''
-    }
-  ]
+const visibleVersions = computed(() => {
+  return unref(expanded) ? unref(versions) : unref(versions).slice(0, collapsedCount)
+})
+const versionCountText = computed(() => {
+  const count = unref(versions).length
+  return $ngettext('%{count} version', '%{count} versions', count, { count: count.toString() })
 })
 </script>

@@ -17,13 +17,18 @@ import { useGettext } from 'vue3-gettext'
 import { App, AppVersion } from '../types'
 import { useAppActionsDownload } from '../composables'
 
-const { app, version = undefined } = defineProps<{
+const {
+  app,
+  version = undefined,
+  label: labelProp = ''
+} = defineProps<{
   app: App
   version?: AppVersion
+  label?: string
 }>()
 
 const { $gettext } = useGettext()
 const { downloadAppAction } = useAppActionsDownload()
 
-const label = computed(() => $gettext('Download'))
+const label = computed(() => labelProp || $gettext('Download'))
 </script>

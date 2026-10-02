@@ -7,7 +7,7 @@
   >
     <template #header>
       <router-link :to="getAppDetailsRoute(app)">
-        <app-image-gallery :app="app" />
+        <app-cover-image :app="app" />
       </router-link>
     </template>
     <div class="app-tile-body flex flex-col grow">
@@ -31,7 +31,7 @@ import { App } from '../types'
 import { getAppDetailsRoute, getAuthorNames } from '../helpers'
 import AppTags from './AppTags.vue'
 import AppTitle from './AppTitle.vue'
-import AppImageGallery from './AppImageGallery.vue'
+import AppCoverImage from './AppCoverImage.vue'
 import AppDownloadButton from './AppDownloadButton.vue'
 
 const { app, term = '' } = defineProps<{

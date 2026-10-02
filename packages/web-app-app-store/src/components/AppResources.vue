@@ -5,16 +5,19 @@
         :href="resource.url"
         data-testid="resource-link"
         target="_blank"
-        class="inline-flex items-center"
+        class="flex items-center justify-between gap-2"
       >
-        <oc-icon
-          v-if="resource.icon"
-          data-testid="resource-icon"
-          :name="resource.icon"
-          size-class="size-5"
-          class="mr-1"
-        />
-        <span data-testid="resource-label">{{ resource.label }}</span>
+        <span class="inline-flex items-center min-w-0">
+          <oc-icon
+            v-if="resource.icon"
+            data-testid="resource-icon"
+            :name="resource.icon"
+            size-class="size-5"
+            class="mr-1"
+          />
+          <span data-testid="resource-label" class="truncate">{{ resource.label }}</span>
+        </span>
+        <oc-icon name="external-link" fill-type="line" size-class="size-4" class="shrink-0" />
       </a>
     </li>
   </ul>

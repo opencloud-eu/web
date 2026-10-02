@@ -1,5 +1,5 @@
 <template>
-  <main id="app-store" class="p-4 overflow-auto">
+  <main id="app-store" class="p-4 md:px-8 overflow-auto">
     <app-loading-spinner v-if="areAppsLoading" />
     <router-view v-else data-testid="app-store-router-view" />
   </main>
