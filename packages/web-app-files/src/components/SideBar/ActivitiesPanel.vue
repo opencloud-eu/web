@@ -28,7 +28,12 @@
                 />
               </template>
             </oc-avatars>
-            <span class="text-role-on-surface-variant" v-html="getHtmlFromActivity(activity)" />
+            <!-- activity texts come from the server in their own language -->
+            <span
+              class="text-role-on-surface-variant"
+              dir="auto"
+              v-html="getHtmlFromActivity(activity)"
+            />
           </div>
         </li>
       </oc-list>

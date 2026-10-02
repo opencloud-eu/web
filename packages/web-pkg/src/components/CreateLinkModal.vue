@@ -43,7 +43,7 @@
     />
     <div v-else-if="password.value" class="text-sm text-role-on-surface-variant">
       <span v-text="$gettext('Password:')" />
-      <span v-text="password.value" />
+      <span dir="ltr" v-text="password.value" />
     </div>
     <oc-datepicker
       v-if="isAdvancedMode"

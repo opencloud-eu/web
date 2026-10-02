@@ -9,7 +9,7 @@
   >
     <!-- file names keep their left-to-right order in right-to-left layouts -->
     <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0">
-      <span v-if="truncateName" class="truncate leading-4"
+      <span v-if="truncateName" class="truncate min-w-0 leading-4"
         ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
           ><oc-filter-highlight :text="displayName" :term="term" /></span></span
       ><span v-else class="oc-resource-basename break-normal text-role-on-surface leading-4"

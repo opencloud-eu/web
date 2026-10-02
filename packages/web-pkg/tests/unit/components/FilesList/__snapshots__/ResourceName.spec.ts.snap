@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`OcResourceName > does not show the name as HTML title if the path is being displayed 1`] = `
-"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="folder" data-test-resource-name="folder" data-test-resource-type="folder"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">folder</span></span></span>
+"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="folder" data-test-resource-name="folder" data-test-resource-type="folder"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate min-w-0 leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">folder</span></span></span>
 <!--v-if--></span>
 <!--v-if--></span>"
 `;
@@ -13,25 +13,25 @@ exports[`OcResourceName > does not truncate a very long name when disabled 1`] =
 `;
 
 exports[`OcResourceName > doesn't add extension to hidden folder 1`] = `
-"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path=".hidden" data-test-resource-name=".hidden" data-test-resource-type="folder" title=".hidden"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">.hidden</span></span></span>
+"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path=".hidden" data-test-resource-name=".hidden" data-test-resource-type="folder" title=".hidden"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate min-w-0 leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">.hidden</span></span></span>
 <!--v-if--></span>
 <!--v-if--></span>"
 `;
 
 exports[`OcResourceName > renders folder names with dots completely in the basename 1`] = `
-"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="folder.with.dots" data-test-resource-name="folder.with.dots" data-test-resource-type="folder" title="folder.with.dots"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">folder.with.dots</span></span></span>
+"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="folder.with.dots" data-test-resource-name="folder.with.dots" data-test-resource-type="folder" title="folder.with.dots"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate min-w-0 leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">folder.with.dots</span></span></span>
 <!--v-if--></span>
 <!--v-if--></span>"
 `;
 
 exports[`OcResourceName > shows the name as HTML title if the path is not displayed 1`] = `
-"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="folder" data-test-resource-name="folder" data-test-resource-type="folder" title="folder"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">folder</span></span></span>
+"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="folder" data-test-resource-name="folder" data-test-resource-type="folder" title="folder"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate min-w-0 leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">folder</span></span></span>
 <!--v-if--></span>
 <!--v-if--></span>"
 `;
 
 exports[`OcResourceName > truncates very long name per default 1`] = `
-"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt" data-test-resource-name=".super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt" data-test-resource-type="file" title=".super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt.txt"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">.super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt</span></span></span>
+"<span class="oc-resource-name flex items-center min-w-0" data-test-resource-path="super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt" data-test-resource-name=".super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt" data-test-resource-type="file" title=".super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt.txt"><!-- file names keep their left-to-right order in right-to-left layouts --> <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0"><span class="truncate min-w-0 leading-4"><span class="oc-resource-basename whitespace-pre text-role-on-surface"><span class="oc-filter-highlight">.super-long-file-name-which-will-be-truncated-when-exceeding-the-screen-space-while-still-preserving-the-file-extension-at-the-end.txt</span></span></span>
 <!--v-if--></span>
 <!--v-if--></span>"
 `;
