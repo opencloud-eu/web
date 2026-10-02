@@ -25,9 +25,16 @@
       </div>
     </div>
     <app-tag-filter class="mb-6" :apps="apps" :active-tag="filterTerm" @select="setFilterTerm" />
-    <no-content-message v-if="!filteredApps.length" icon="store">
+    <no-content-message
+      v-if="!filteredApps.length"
+      id="app-store-empty-filtered"
+      img-src="images/illustrations/extensions.svg"
+    >
       <template #message>
         <span v-text="$gettext('No apps found matching your search')" />
+      </template>
+      <template #callToAction>
+        <span v-text="$gettext('Try refining the search term or filters to get results')" />
       </template>
     </no-content-message>
     <oc-list v-else-if="viewMode === 'list'" class="flex flex-col gap-2">

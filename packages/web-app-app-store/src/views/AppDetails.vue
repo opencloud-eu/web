@@ -1,5 +1,9 @@
 <template>
-  <no-content-message v-if="!app" icon="store">
+  <no-content-message
+    v-if="!app"
+    id="app-store-app-not-found"
+    img-src="images/illustrations/extensions.svg"
+  >
     <template #message>
       <span v-text="$gettext('App not found')" />
     </template>
