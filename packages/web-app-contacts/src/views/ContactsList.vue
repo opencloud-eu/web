@@ -47,7 +47,7 @@
         >
           <div class="flex min-w-0 items-stretch">
             <oc-button
-              class="min-w-0 flex-1 px-4 py-4 text-left"
+              class="min-w-0 flex-1 px-4 py-4 text-start"
               justify-content="left"
               appearance="raw"
               gap-size="none"
@@ -57,7 +57,7 @@
               <ContactsListItem :contact="contact" :term="normalizedSearchTerm" />
             </oc-button>
 
-            <div class="flex items-center pr-2">
+            <div class="flex items-center pe-2">
               <oc-button
                 :id="`contact-actions-toggle-${contact.id}`"
                 class="h-10 w-10 shrink-0"

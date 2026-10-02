@@ -20,7 +20,7 @@
       <oc-button
         v-if="icon"
         :aria-label="$gettext('Search')"
-        class="absolute top-[50%] transform-[translateY(-50%)] right-0 mx-4 mb-4 mt-0"
+        class="absolute top-[50%] transform-[translateY(-50%)] inset-e-0 mx-4 mb-4 mt-0"
         appearance="raw"
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
@@ -35,7 +35,7 @@
     </div>
     <div class="oc-search-button-wrapper" :class="{ 'sr-only': buttonHidden }">
       <oc-button
-        class="oc-search-button z-0 ml-4 rounded-l-none transform-[translateX(-1px)]"
+        class="oc-search-button z-0 ms-4 rounded-s-none transform-[translateX(-1px)] rtl:transform-[translateX(1px)]"
         appearance="filled"
         :size="small ? 'small' : 'medium'"
         :disabled="loading || model.length < 1"
@@ -48,7 +48,7 @@
       v-if="showCancelButton"
       :appearance="cancelButtonAppearance"
       :color-role="cancelButtonColorRole"
-      class="ml-4"
+      class="ms-4"
       no-hover
       @click="onCancel"
     >
@@ -209,7 +209,7 @@ const inputClass = computed(() => {
     'focus:outline focus:outline-offset-2 focus:outline-white'
   ]
   if (!buttonHidden) {
-    classes.push(...['oc-search-input-button', 'rounded-r-none'])
+    classes.push(...['oc-search-input-button', 'rounded-e-none'])
   }
   if (small) {
     classes.push(...['leading-7', 'h-8'])

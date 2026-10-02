@@ -45,7 +45,12 @@ import {
   size,
   VirtualElement
 } from '@floating-ui/dom'
-import { getTailwindPaddingClass, SizeType, uniqueId } from '../../helpers'
+import {
+  getDirectionAwarePlacement,
+  getTailwindPaddingClass,
+  SizeType,
+  uniqueId
+} from '../../helpers'
 import {
   computed,
   nextTick,
@@ -253,7 +258,7 @@ const update = async ({
   activeAnchorElement = anchorEl
   resetDropSize()
   const { x, y } = await computePosition(anchorEl, unref(drop), {
-    placement: position,
+    placement: getDirectionAwarePlacement(position),
     middleware: [
       offsetFn(offset),
       flip(),
@@ -331,7 +336,7 @@ const showDrop = async ({
 
   resetDropSize()
   const { x, y } = await computePosition(anchorEl, unref(drop), {
-    placement: position,
+    placement: getDirectionAwarePlacement(position),
     middleware: [
       offsetFn(offset),
       flip(),
@@ -608,7 +613,7 @@ onBeforeUnmount(() => {
 
 @layer components {
   .oc-drop {
-    @apply w-xs absolute top-[-9999px] left-[-9999px] overflow-y-auto;
+    @apply w-xs absolute top-[-9999px] inset-s-[-9999px] overflow-y-auto;
     /* Drops teleport to the body, so they have to outrank the modal layer to
        stay visible when they are opened from within a modal. */
     z-index: calc(var(--z-index-modal) + 1);

@@ -5,7 +5,7 @@
         v-if="isSelectable && !isFilePicker"
         id="tiles-view-select-all"
         v-oc-tooltip="selectAllCheckboxLabel"
-        class="ml-2"
+        class="ms-2"
         size="large"
         :label="selectAllCheckboxLabel"
         :label-hidden="true"
@@ -82,7 +82,7 @@
               :label="getResourceCheckboxLabel(resource)"
               :label-hidden="true"
               size="large"
-              class="size-11 justify-center rounded-tl-sm rounded-br-lg hover:bg-role-on-surface/10"
+              class="size-11 justify-center rounded-ss-sm rounded-ee-lg hover:bg-role-on-surface/10"
               :disabled="isResourceDisabled(resource)"
               :model-value="selected"
               :data-test-selection-resource-name="resource.name"
@@ -97,7 +97,7 @@
             <slot name="indicators" :resource="resource">
               <resource-status-indicators
                 :space="space"
-                class="ml-2"
+                class="ms-2"
                 :resource="resource"
                 :filter="(indicator) => ['system', 'sharing'].includes(indicator.category)"
                 :disable-handler="isResourceDisabled(resource)"

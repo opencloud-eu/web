@@ -4,7 +4,7 @@
     :class="{ flex: !imageExpanded && !isMobile, 'space-header-squashed': isSideBarOpen }"
   >
     <div
-      class="space-header-image mr-6 aspect-[16/9]"
+      class="space-header-image me-6 aspect-[16/9]"
       :class="{
         'space-header-image-expanded w-full max-w-full max-h-full mb-4': imageExpanded || isMobile,
         'w-[180px] max-h-[100px] shrink-0': !imageExpanded,
@@ -33,7 +33,7 @@
             v-oc-tooltip="$gettext('Show context menu')"
             :aria-label="$gettext('Show context menu')"
             appearance="raw"
-            class="ml-2 p-1"
+            class="ms-2 p-1"
           >
             <oc-icon name="more-2" />
           </oc-button>

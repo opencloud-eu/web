@@ -10,13 +10,13 @@
     />
   </div>
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
-    <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onCancel">
+    <oc-button class="oc-modal-body-actions-cancel ms-2" @click="onCancel">
       {{ $gettext('Skip') }}
     </oc-button>
-    <oc-button class="oc-modal-body-actions-secondary ml-2" @click="onConfirmSecondary">
+    <oc-button class="oc-modal-body-actions-secondary ms-2" @click="onConfirmSecondary">
       {{ confirmSecondaryText }}
     </oc-button>
-    <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="onConfirm">
+    <oc-button class="oc-modal-body-actions-confirm ms-2" appearance="filled" @click="onConfirm">
       {{ $gettext('Keep both') }}
     </oc-button>
   </teleport>

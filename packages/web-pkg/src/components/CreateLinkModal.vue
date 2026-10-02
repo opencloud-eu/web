@@ -1,7 +1,7 @@
 <template>
   <div class="flex justify-between pb-2">
     <div v-if="isAdvancedMode" class="flex items-center">
-      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
+      <oc-icon class="me-2" :name="selectedTypeIcon" fill-type="line" />
       <link-role-dropdown
         :model-value="selectedType"
         :available-link-type-options="availableLinkTypes"
@@ -9,7 +9,7 @@
       />
     </div>
     <div v-else class="flex items-center">
-      <oc-icon class="mr-2" :name="selectedTypeIcon" fill-type="line" />
+      <oc-icon class="me-2" :name="selectedTypeIcon" fill-type="line" />
       <div class="flex flex-col">
         <span class="font-semibold" v-text="selectedTypeDisplayName" />
         <span class="text-sm" v-text="selectedTypeDescription" />
@@ -27,7 +27,7 @@
       <span v-text="$gettext('Options')" />
     </oc-button>
   </div>
-  <div class="mb-4 ml-[30px]">
+  <div class="mb-4 ms-[30px]">
     <oc-text-input
       v-if="isAdvancedMode"
       :key="passwordInputKey"
@@ -55,7 +55,7 @@
     />
   </div>
   <teleport defer :to="`#${modalActionsTarget(modal)}`">
-    <div class="ml-2" :class="{ 'oc-button-group': password.value }">
+    <div class="ms-2" :class="{ 'oc-button-group': password.value }">
       <oc-button
         class="link-modal-confirm oc-modal-body-actions-confirm"
         appearance="filled"

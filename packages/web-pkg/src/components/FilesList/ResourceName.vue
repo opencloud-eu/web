@@ -20,7 +20,7 @@
     <oc-icon
       v-if="isFavoriteDisplayed && isFavorite"
       name="star"
-      class="oc-resource-favorite ml-1"
+      class="oc-resource-favorite ms-1"
       :accessible-label="$gettext('Favorite')"
     />
   </span>

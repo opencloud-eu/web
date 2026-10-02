@@ -14,7 +14,7 @@
       <template v-for="(group, groupIndex) in tableActionGroups" :key="group.id">
         <div
           class="inline-flex items-center gap-1"
-          :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+          :class="{ 'border-s border-s-role-border ps-1': groupIndex > 0 }"
         >
           <oc-button
             v-for="action in group.actions"

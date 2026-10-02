@@ -77,7 +77,7 @@ const isReadonly = computed(() => props.editor.isEditable === false)
 <style scoped>
 .text-editor-code-block-language {
   position: absolute;
-  right: 12px;
+  inset-inline-end: 12px;
   top: 4px;
   display: inline-flex;
   align-items: center;
@@ -90,8 +90,8 @@ const isReadonly = computed(() => props.editor.isEditable === false)
 }
 
 .text-editor-code-block-select {
-  text-align: right;
-  text-align-last: right;
+  text-align: end;
+  text-align-last: end;
   field-sizing: content;
   width: auto;
   min-width: 0;

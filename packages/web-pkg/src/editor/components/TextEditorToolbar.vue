@@ -13,7 +13,7 @@
         class="text-editor-toolbar-group items-stretch gap-1"
         :class="
           group.hasVisibleActions
-            ? { 'inline-flex': true, 'border-l border-l-role-border pl-1': group.showSeparator }
+            ? { 'inline-flex': true, 'border-s border-s-role-border ps-1': group.showSeparator }
             : 'contents'
         "
       >
@@ -28,7 +28,7 @@
       </div>
       <div
         class="text-editor-toolbar-group items-stretch"
-        :class="hasOverflow ? 'inline-flex border-l border-l-role-border pl-1' : 'contents'"
+        :class="hasOverflow ? 'inline-flex border-s border-s-role-border ps-1' : 'contents'"
       >
         <oc-button
           id="toolbar-overflow-trigger"
@@ -37,7 +37,7 @@
           appearance="raw"
           class="text-editor-toolbar-btn text-editor-toolbar-overflow-trigger min-w-[42px] inline-flex items-center justify-center p-2"
           :class="{
-            'absolute left-0 top-0 invisible pointer-events-none': !hasOverflow,
+            'absolute inset-s-0 top-0 invisible pointer-events-none': !hasOverflow,
             'bg-role-secondary-container': isOverflowMenuOpen
           }"
           :aria-label="moreActionsLabel"
@@ -74,7 +74,7 @@
               v-for="(group, groupIndex) in overflowGroups"
               :key="`toolbar-overflow-group-${group.id}`"
               class="inline-flex items-stretch gap-1"
-              :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+              :class="{ 'border-s border-s-role-border ps-1': groupIndex > 0 }"
             >
               <text-editor-toolbar-item
                 v-for="item in group.actions"
@@ -92,7 +92,7 @@
     </div>
     <div
       v-if="hasVisibleYjsStatus(yjsStatus) || collaborators.length"
-      class="text-editor-toolbar-status flex shrink-0 items-center gap-2 px-4 ml-4"
+      class="text-editor-toolbar-status flex shrink-0 items-center gap-2 px-4 ms-4"
     >
       <yjs-collaborators
         v-if="collaborators.length"

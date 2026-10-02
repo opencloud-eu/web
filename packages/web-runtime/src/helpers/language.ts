@@ -35,6 +35,12 @@ function storeLanguage(language: string): void {
   window.localStorage.setItem(currentLanguageLocalStorageKey, language)
 }
 
+const rtlLanguages = ['ar', 'ckb', 'dv', 'fa', 'he', 'ps', 'sd', 'ug', 'ur', 'yi']
+
+export function isRtlLanguage(languageSetting: string): boolean {
+  return rtlLanguages.includes(normalizeLanguage(languageSetting))
+}
+
 function setDocumentLanguage(languageSetting: string): void {
   const currentLanguage = normalizeLanguage(languageSetting)
   if (!currentLanguage) {
@@ -42,6 +48,7 @@ function setDocumentLanguage(languageSetting: string): void {
   }
 
   document.documentElement.lang = currentLanguage
+  document.documentElement.dir = isRtlLanguage(currentLanguage) ? 'rtl' : 'ltr'
 }
 
 export const resolveInitialLanguage = ({

@@ -9,7 +9,7 @@
 
     <template v-else>
       <div class="flex w-full items-center justify-center md:justify-normal">
-        <h2 class="text-lg ml-4" v-text="currentMailbox.name" />
+        <h2 class="text-lg ms-4" v-text="currentMailbox.name" />
       </div>
 
       <no-content-message
@@ -31,7 +31,7 @@
           :class="{ 'bg-role-secondary-container': currentMail?.id === mail.id }"
         >
           <oc-button
-            class="px-4 py-4 text-left w-full"
+            class="px-4 py-4 text-start w-full"
             justify-content="left"
             appearance="raw"
             gap-size="none"

@@ -9,7 +9,7 @@
     <span class="oc-text-input-warning" v-text="warningMessage" />
     <oc-contextual-helper
       v-if="warningMessageContextualHelperData"
-      class="pl-1"
+      class="ps-1"
       v-bind="warningMessageContextualHelperData"
     />
   </div>

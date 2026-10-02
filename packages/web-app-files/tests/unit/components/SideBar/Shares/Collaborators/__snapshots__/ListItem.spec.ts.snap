@@ -7,7 +7,7 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
       <div>
         <user-avatar-stub userid="3" username="einstein" width="36" class="files-collaborators-collaborator-indicator"></user-avatar-stub>
       </div>
-      <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
+      <div class="files-collaborators-collaborator-name-wrapper ps-2 max-w-full">
         <div class="truncate"><span aria-hidden="true" class="files-collaborators-collaborator-name"><span class="oc-filter-highlight">einstein</span></span> <span class="sr-only">Share receiver name: einstein</span>
           <!--v-if-->
         </div>
@@ -20,8 +20,8 @@ exports[`Collaborator ListItem component > share inheritance indicators > show w
     </div>
     <div class="flex items-center justify-end">
       <!--v-if-->
-      <oc-icon-stub name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ml-1 p-1"></oc-icon-stub>
-      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" islocked="false" sharedparentroute="[object Object]" class="ml-1" data-testid="collaborator-edit"></edit-dropdown-stub>
+      <oc-icon-stub name="folder-shared" fill-type="line" class="files-collaborators-collaborator-shared-via ms-1 p-1"></oc-icon-stub>
+      <edit-dropdown-stub accessdetails="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" sharecategory="user" canedit="true" canremove="false" islocked="false" sharedparentroute="[object Object]" class="ms-1" data-testid="collaborator-edit"></edit-dropdown-stub>
     </div>
   </div>
 </div>"

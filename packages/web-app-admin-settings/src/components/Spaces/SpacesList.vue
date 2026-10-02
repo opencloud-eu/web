@@ -51,7 +51,7 @@
     <template #name="{ item }">
       <div class="flex items-center">
         <space-image class="shrink-0" :space="item" />
-        <span class="pl-2 truncate" :data-test-space-name="item.name">
+        <span class="ps-2 truncate" :data-test-space-name="item.name">
           <oc-filter-highlight :text="item.name" :term="filterTerm" />
         </span>
       </div>
@@ -81,7 +81,7 @@
           v-oc-tooltip="spaceDetailsLabel"
           :aria-label="spaceDetailsLabel"
           appearance="raw"
-          class="ml-1 quick-action-button p-1 spaces-table-btn-details"
+          class="ms-1 quick-action-button p-1 spaces-table-btn-details"
           @click.stop.prevent="showDetailsForSpace(item)"
         >
           <oc-icon name="information" fill-type="line" />

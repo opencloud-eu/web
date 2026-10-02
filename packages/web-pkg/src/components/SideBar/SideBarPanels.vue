@@ -85,7 +85,7 @@
             :data-testid="`sidebar-panel-${panelSelect.name}-select`"
             appearance="raw-inverse"
             color-role="surface"
-            class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full h-12"
+            class="!grid !grid-cols-[auto_1fr_auto] text-start px-2 w-full h-12"
             @click="openPanel(panelSelect.name)"
           >
             <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
@@ -226,8 +226,11 @@ const closePanel = () => {
       transform 0.4s ease,
       visibility 0.4s 0s;
   }
+  [dir='rtl'] .sidebar-panel {
+    transform: translateX(-100%);
+  }
   .sidebar-panel.is-root-panel {
-    right: 100px;
+    inset-inline-end: 100px;
   }
 
   .sidebar-panel__header-info :deep(*) {
@@ -241,7 +244,7 @@ const closePanel = () => {
 
 @layer utilities {
   .sidebar-panel.is-active-root-panel {
-    @apply right-0;
+    @apply inset-e-0;
   }
   .sidebar-panel.is-active-root-panel,
   .sidebar-panel.is-active-sub-panel,

@@ -2,7 +2,7 @@
   <div class="w-full flex flex-row flex-wrap justify-between items-center">
     <span v-if="showSaved" class="flex items-center">
       <oc-icon name="check" />
-      <span class="ml-2" v-text="$gettext('Changes saved')" />
+      <span class="ms-2" v-text="$gettext('Changes saved')" />
     </span>
     <span v-else>{{ unsavedChangesText }}</span>
     <div>

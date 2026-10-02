@@ -2,7 +2,7 @@
   <div v-if="attachments.length" class="mail-attachment-list">
     <oc-card
       title="mail-attachments"
-      header-class="items-start pl-0"
+      header-class="items-start ps-0"
       :body-class="['bg-role-surface', 'rounded-xl', 'mt-2', collapsed ? 'hidden' : '']"
       appearance="outlined"
     >
@@ -13,7 +13,7 @@
               class="font-bold"
               v-text="$ngettext('Attachment', 'Attachments', attachments.length)"
             />
-            <oc-tag class="ml-2" :rounded="true" appearance="filled">
+            <oc-tag class="ms-2" :rounded="true" appearance="filled">
               <span v-text="attachments.length" />
             </oc-tag>
           </div>
@@ -34,7 +34,7 @@
         <li
           v-for="attachment in attachments"
           :key="getKey(attachment)"
-          class="mail-attachment-item w-full rounded-xl bg-role-surface-container pl-2 pr-4 py-2"
+          class="mail-attachment-item w-full rounded-xl bg-role-surface-container ps-2 pe-4 py-2"
         >
           <MailAttachmentItem
             :attachment="attachment"

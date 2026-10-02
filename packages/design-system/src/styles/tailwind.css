@@ -96,17 +96,17 @@
 
   @keyframes loading-bar {
     0% {
-      left: 0;
+      inset-inline-start: 0;
       width: 0;
     }
 
     50% {
-      left: 0;
+      inset-inline-start: 0;
       width: 66%;
     }
 
     100% {
-      left: 100%;
+      inset-inline-start: 100%;
       width: 10%;
     }
   }

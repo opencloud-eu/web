@@ -13,6 +13,22 @@ describe('OcIcon', () => {
       expect(wrapper.find('button').classes()).toContain('min-h-0')
     })
   })
+  describe('text direction', () => {
+    it.each(['arrow-left-s', 'arrow-right', 'arrow-drop-right', 'arrow-go-back', 'share-forward'])(
+      'mirrors the directional icon "%s" in right-to-left layouts',
+      (name) => {
+        const { wrapper } = getWrapper({ name })
+        expect(wrapper.find('span').classes()).toContain('rtl:-scale-x-100')
+      }
+    )
+    it.each(['info', 'arrow-up-s', 'align-left'])(
+      'does not mirror the icon "%s" in right-to-left layouts',
+      (name) => {
+        const { wrapper } = getWrapper({ name })
+        expect(wrapper.find('span').classes()).not.toContain('rtl:-scale-x-100')
+      }
+    )
+  })
   describe('src', () => {
     it('should use the provided name to render the correct fill svg icon', () => {
       const { wrapper } = getWrapper({ name: 'settings' })

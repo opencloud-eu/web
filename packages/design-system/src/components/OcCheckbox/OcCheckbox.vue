@@ -41,7 +41,7 @@
       v-if="!labelHidden"
       :for="id"
       :class="{ 'cursor-pointer': !disabled }"
-      class="ml-1"
+      class="ms-1"
       v-text="label"
     />
   </span>

@@ -6,7 +6,7 @@
     :style="{ '--oc-progress-pie-fill': fill }"
   >
     <div
-      class="oc-progress-pie-container absolute left-0 top-0 after:absolute after:left-0 after:top-0 before:block after:block size-full after:size-full after:content-[''] before:content-['']"
+      class="oc-progress-pie-container absolute inset-s-0 top-0 after:absolute after:inset-s-0 after:top-0 before:block after:block size-full after:size-full after:content-[''] before:content-['']"
     />
     <label
       v-if="showLabel"

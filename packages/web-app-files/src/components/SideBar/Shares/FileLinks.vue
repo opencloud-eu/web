@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center">
       <div class="flex items-center">
         <h3 class="font-semibold text-base m-0" v-text="$gettext('Public links')" />
-        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="viaLinkHelp" />
+        <oc-contextual-helper v-if="helpersEnabled" class="ps-1" v-bind="viaLinkHelp" />
       </div>
       <oc-button
         v-if="canCreateLinks"
@@ -51,7 +51,7 @@
       <hr class="my-4" />
       <h4 class="font-semibold text-base m-0">
         {{ indirectLinksHeading }}
-        <oc-contextual-helper v-if="helpersEnabled" class="pl-1" v-bind="indirectLinkHelp" />
+        <oc-contextual-helper v-if="helpersEnabled" class="ps-1" v-bind="indirectLinkHelp" />
       </h4>
       <div
         class="grid transition-all duration-250 ease-out"

@@ -15,7 +15,7 @@
       <motion-photo-overlay
         class="mx-auto w-fit"
         :resource="item.resource"
-        badge-class="top-0 right-0 m-1"
+        badge-class="top-0 inset-e-0 m-1"
         video-class="rounded-md"
       >
         <img

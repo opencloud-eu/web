@@ -46,7 +46,7 @@
         />
       </resource-link>
     </motion-photo-overlay>
-    <div class="oc-resource-details block truncate" :class="{ 'pl-2': isIconDisplayed }">
+    <div class="oc-resource-details block truncate" :class="{ 'ps-2': isIconDisplayed }">
       <resource-link
         :resource="resource"
         :is-resource-clickable="isResourceClickable"
@@ -74,10 +74,10 @@
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
-          class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
+          class="parent-folder flex items-center truncate px-0.5 me-2 -ms-0.5 hover:bg-transparent"
           :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >
-          <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" size-class="size-4" />
+          <oc-icon v-bind="parentFolderLinkIconAttrs" class="me-1" size-class="size-4" />
           <span class="text truncate text-sm hover:underline" v-text="parentFolderName" />
         </component>
       </div>

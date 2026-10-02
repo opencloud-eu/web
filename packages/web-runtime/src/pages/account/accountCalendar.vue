@@ -13,7 +13,7 @@
         "
       />
       <span v-if="!isCalDavAvailable" class="flex flex-row items-center">
-        <oc-icon name="information" size-class="size-4" fill-type="line" class="mr-1" />
+        <oc-icon name="information" size-class="size-4" fill-type="line" class="me-1" />
 
         <span
           class="calendar-not-configured-message"
@@ -25,7 +25,7 @@
         />
         <oc-button
           no-hover
-          class="ml-1"
+          class="ms-1"
           appearance="raw"
           type="a"
           target="_blank"
@@ -55,7 +55,7 @@
                 @click="copyCalDavUrlToClipboard"
               >
                 <oc-icon :name="copyCalDavUrlIcon" size-class="size-4" />
-                <span class="ml-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
+                <span class="ms-0.5">{{ $gettext('Copy CalDAV URL') }}</span>
               </oc-button>
             </oc-table-td>
           </oc-table-tr>
@@ -75,7 +75,7 @@
                 @click="copyCalDavUsernameToClipboard"
               >
                 <oc-icon :name="copyCalDavUsernameIcon" size-class="size-4" />
-                <span class="ml-0.5">{{ $gettext('Copy CalDAV username') }}</span>
+                <span class="ms-0.5">{{ $gettext('Copy CalDAV username') }}</span>
               </oc-button>
             </oc-table-td>
           </oc-table-tr>

@@ -3,7 +3,7 @@
     <slot name="label">
       <label
         class="inline-block"
-        :class="{ 'mr-2': inlineLabel, 'mb-0.5': !inlineLabel }"
+        :class="{ 'me-2': inlineLabel, 'mb-0.5': !inlineLabel }"
         :for="id"
       >
         {{ label }}
@@ -11,7 +11,7 @@
       </label>
     </slot>
     <div class="relative" :class="{ 'grow-1': inlineLabel }">
-      <oc-icon v-if="readOnly" name="lock" size-class="size-4" class="mt-2 ml-2 absolute" />
+      <oc-icon v-if="readOnly" name="lock" size-class="size-4" class="mt-2 ms-2 absolute" />
       <component
         :is="inputComponent"
         :id="id"
@@ -21,8 +21,8 @@
         class="oc-text-input oc-input h-9"
         :class="{
           'oc-text-input-danger border-role-error': !!showErrorMessage,
-          'pl-6': !!readOnly,
-          'pr-6': showClearButton,
+          'ps-6': !!readOnly,
+          'pe-6': showClearButton,
           'border-none outline-none bg-transparent': !hasBorder
         }"
         :type="type"
@@ -39,7 +39,7 @@
       <oc-button
         v-if="showClearButton"
         :aria-label="clearButtonAccessibleLabelValue"
-        class="pr-2 absolute top-[50%] transform-[translateY(-50%)] right-0 oc-text-input-btn-clear"
+        class="pe-2 absolute top-[50%] transform-[translateY(-50%)] inset-e-0 oc-text-input-btn-clear"
         appearance="raw"
         no-hover
         @click="onClear"
@@ -63,7 +63,7 @@
           size-class="size-4"
           fill-type="line"
           aria-hidden="true"
-          class="mr-1"
+          class="me-1"
         />
         <span
           v-if="showErrorMessage"

@@ -44,7 +44,7 @@
     <oc-button
       v-oc-tooltip="$gettext('Display search bar')"
       :aria-label="$gettext('Click to display and focus the search bar')"
-      class="inline-flex sm:hidden mr-6"
+      class="inline-flex sm:hidden me-6"
       appearance="raw-inverse"
       color-role="chrome"
       no-hover
@@ -71,7 +71,7 @@
           class="flex justify-center items-center text-role-on-surface-variant py-1 px-2 text-sm"
         >
           <oc-spinner size="small" :aria-hidden="true" aria-label="" />
-          <span class="ml-2">{{ $gettext('Searching ...') }}</span>
+          <span class="ms-2">{{ $gettext('Searching ...') }}</span>
         </li>
         <li v-else-if="showNoResults" id="no-results" class="flex justify-center py-1 px-2 text-sm">
           {{ $gettext('No results') }}

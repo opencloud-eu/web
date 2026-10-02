@@ -10,10 +10,10 @@
             color="var(--oc-role-error)"
           />
         </span>
-        <oc-avatar class="ml-1" :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
+        <oc-avatar class="ms-1" :user-name="mail.from[0]?.name || mail.sender[0]?.name" />
       </div>
     </div>
-    <div class="mail-list-item-content ml-5 min-w-0 w-full">
+    <div class="mail-list-item-content ms-5 min-w-0 w-full">
       <div class="mail-list-item-header">
         <div class="mail-list-item-sender flex items-center justify-between gap-2">
           <span class="font-bold text-lg truncate flex-1" v-text="fromText"></span>

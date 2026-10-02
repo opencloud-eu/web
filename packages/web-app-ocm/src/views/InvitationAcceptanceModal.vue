@@ -17,7 +17,7 @@
 
         <div v-else class="p-4">
           <div class="flex items-center mb-4">
-            <oc-icon name="user-received" size-class="size-8" class="mr-4" />
+            <oc-icon name="user-received" size-class="size-8" class="me-4" />
             <div>
               <h3 v-text="$gettext('You have received an invitation')" />
               <p
@@ -30,11 +30,11 @@
           <div class="invitation-details p-4 rounded-lg border bg-role-surface-container-highest">
             <div class="mb-2">
               <strong v-text="$gettext('From Institution:')" />
-              <span class="ml-2" v-text="provider" />
+              <span class="ms-2" v-text="provider" />
             </div>
             <div class="text-sm text-muted">
               <span v-text="$gettext('Token:')" />
-              <span class="ml-2 font-mono" v-text="token" />
+              <span class="ms-2 font-mono" v-text="token" />
             </div>
           </div>
         </div>

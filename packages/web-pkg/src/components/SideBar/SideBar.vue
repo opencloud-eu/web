@@ -76,8 +76,8 @@ const sidebarProps = computed(() => {
   }
 
   const classes = [
-    'border-l',
-    'rounded-r-xl',
+    'border-s',
+    'rounded-e-xl',
     'focus:outline-0',
     'focus-visible:outline-0',
     'w-[360px]',

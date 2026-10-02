@@ -7,7 +7,7 @@
       class="oc-avatars inline-flex w-fit flex-nowrap flex-row"
       :aria-label="avatarsAriaLabel"
       :class="{
-        'oc-avatars-stacked [&>*]:not-first:-ml-3': stacked,
+        'oc-avatars-stacked [&>*]:not-first:-ms-3': stacked,
         'oc-avatars-hover-effect [&>*]:hover:!z-1000 [&>*]:hover:transform-[scale(1.1)] [&>*]:transition-transform [&>*]:duration-200 [&>*]:ease-out':
           hasHoverEffect,
         ...getTailwindGapClass(gapSize)
