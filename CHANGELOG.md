@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(web-pkg): embed pasted images in rich text editors [[#3527](https://github.com/opencloud-eu/web/pull/3527)]
 - fix(design-system): don't break icons if process is not defined [[#3525](https://github.com/opencloud-eu/web/pull/3525)]
 - fix(web-pkg): show resource table columns if any resource has the field [[#3512](https://github.com/opencloud-eu/web/pull/3512)]
 - fix: load indirect shares in editors [[#3313](https://github.com/opencloud-eu/web/pull/3313)]
