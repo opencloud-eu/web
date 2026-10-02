@@ -21,11 +21,7 @@
             class="app-version-min-opencloud text-sm text-role-on-surface-variant"
             v-text="$gettext('OpenCloud %{version}+', { version: version.minOpenCloud })"
           />
-          <app-download-button
-            :app="app"
-            :version="version"
-            :label="$gettext('Download version %{version}', { version: version.version })"
-          />
+          <app-download-button :app="app" :version="version" />
         </span>
       </li>
     </ul>

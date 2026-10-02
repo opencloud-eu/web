@@ -3,12 +3,8 @@
     class="app-list-item relative bg-role-surface-container flex items-center gap-4 border rounded-lg p-3 overflow-hidden"
   >
     <div class="relative shrink-0 pointer-events-none">
-      <app-official-badge v-if="isOfficialApp(app)" class="absolute top-1 left-1" />
-      <app-preview-image
-        :url="app.coverImage?.url"
-        icon-size-class="size-8"
-        class="w-24 rounded-sm"
-      />
+      <app-official-badge :app="app" class="absolute top-1 left-1" />
+      <app-preview-image :app="app" icon-size-class="size-8" class="w-24 rounded-sm" />
     </div>
     <div class="app-list-item-content flex flex-col min-w-0 grow gap-1">
       <app-title :app="app" :term="term" title-class="m-0 text-base app-list-item-title" />
@@ -26,7 +22,7 @@
 <script setup lang="ts">
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import { App } from '../types'
-import { getAuthorNames, isOfficialApp } from '../helpers'
+import { getAuthorNames } from '../helpers'
 import AppTags from './AppTags.vue'
 import AppTitle from './AppTitle.vue'
 import AppActions from './AppActions.vue'

@@ -3,8 +3,8 @@
     <div
       class="app-details-gallery-image relative flex items-center justify-center w-full aspect-16/10 rounded-lg overflow-hidden bg-role-surface-container"
     >
-      <app-official-badge v-if="isOfficialApp(app)" class="absolute top-2 left-2 z-10" />
-      <app-badge-ribbon v-if="app.badge" :badge="app.badge" />
+      <app-official-badge :app="app" class="absolute top-2 left-2 z-10" />
+      <app-badge-ribbon :app="app" />
       <oc-image
         v-if="currentImage"
         :src="currentImage.url"
@@ -55,7 +55,6 @@ import { computed, ref, unref, watch } from 'vue'
 import { App } from '../types'
 import AppBadgeRibbon from './AppBadgeRibbon.vue'
 import AppOfficialBadge from './AppOfficialBadge.vue'
-import { isOfficialApp } from '../helpers'
 
 const { app } = defineProps<{
   app: App
