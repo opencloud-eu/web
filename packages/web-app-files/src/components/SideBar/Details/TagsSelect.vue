@@ -32,7 +32,7 @@
           <span class="truncate">{{ option.label }}</span>
         </component>
 
-        <span class="flex items-center mr-1">
+        <span v-if="option.readonly || !readonly" class="flex items-center mr-1">
           <oc-icon
             v-if="option.readonly"
             class="vs__deselect-lock"

@@ -20,7 +20,7 @@
       :input-id="id"
       :label="optionLabel"
       :get-option-label="resolveOptionLabel"
-      :disabled="disabled || readOnly"
+      :disabled="isDisabled"
       :filter="filter"
       :loading="loading"
       :searchable="searchable"
@@ -61,12 +61,15 @@
       <template #selected-option-container="{ option, deselect }">
         <span class="vs__selected" :class="{ 'vs__selected-readonly': option.readonly }">
           <slot name="selected-option" v-bind="option">
-            <oc-icon v-if="readOnly" name="lock" class="mr-1" size-class="size-4" />
+            <oc-icon v-if="readOnly && !multiple" name="lock" class="mr-1" size-class="size-4" />
             {{ resolveOptionLabel(option) }}
           </slot>
-          <span v-if="multiple" class="flex items-center ml-2 mr-1">
+          <span
+            v-if="multiple && (option.readonly || readOnly || !disabled)"
+            class="flex items-center ml-2 mr-1"
+          >
             <oc-icon
-              v-if="option.readonly"
+              v-if="option.readonly || readOnly"
               class="vs__deselect-lock"
               name="lock"
               size-class="size-4"
@@ -288,6 +291,7 @@ const emit = defineEmits<Emits>()
 defineSlots<Slots>()
 
 const { $gettext } = useGettext()
+const isDisabled = computed(() => disabled || readOnly)
 const selectRef = useTemplateRef<typeof VueSelect>('selectRef')
 
 function resolveOptionLabel(option: string | Record<string, unknown>): string {
@@ -439,7 +443,7 @@ onMounted(() => {
 }
 
 .oc-select.vs--disabled .vs__dropdown-toggle {
-  @apply bg-role-surface-container;
+  @apply bg-role-surface-container cursor-not-allowed;
 }
 
 .oc-select.vs--disabled .vs__actions {

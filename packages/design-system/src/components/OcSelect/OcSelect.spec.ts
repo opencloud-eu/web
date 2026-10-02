@@ -83,6 +83,16 @@ describe('OcSelect', () => {
       expect(wrapper.find(selectors.deselectBtn).exists()).toBeTruthy()
       expect(wrapper.find(selectors.deselectLockIcon).exists()).toBeFalsy()
     })
+    it.each([
+      { props: { disabled: true }, lock: false },
+      { props: { readOnly: true }, lock: true }
+    ])('can not be deselected if the select is $props', ({ props, lock }) => {
+      const options = [{ label: 'label1' }, { label: 'label2' }]
+      const wrapper = getWrapper({ options, modelValue: options[0], multiple: true, ...props })
+      expect(wrapper.find(selectors.deselectBtn).exists()).toBeFalsy()
+      expect(wrapper.findAll(`${selectors.selectedOptions} .oc-icon`).length).toBe(lock ? 1 : 0)
+      expect(wrapper.find(selectors.deselectLockIcon).exists()).toBe(lock)
+    })
     it('can not be cleared if readonly', () => {
       const options = [{ label: 'label1', readonly: true }, { label: 'label2' }]
       const wrapper = getWrapper({ options, modelValue: options[0], multiple: true })
