@@ -12,6 +12,7 @@ vi.mock('vue3-gettext', () => ({
 import { makeTiptapYjsAdapter } from '../../../src/editor/yjsAdapter'
 import { useStrategyMarkdown } from '../../../src/editor/composables/strategies/markdown'
 import { useStrategyPlainText } from '../../../src/editor/composables/strategies/plainText'
+import { useStrategyTiptapJson } from '../../../src/editor/composables/strategies/tiptapJson'
 import type { ContentTypeStrategy } from '../../../src/editor/composables/strategies/types'
 import { DEFAULT_YDOC_FRAGMENT } from '../../../src/editor/types'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
@@ -134,6 +135,24 @@ describe('makeTiptapYjsAdapter', () => {
       adapter.hydrate(ydoc, MARKDOWN)
 
       expect(adapter.serialize(ydoc)).toBe(MARKDOWN)
+      ydoc.destroy()
+    })
+  })
+
+  describe('hydrate', () => {
+    it('throws instead of hydrating an empty doc when the content does not fit the schema', () => {
+      const adapter = makeTiptapYjsAdapter(useStrategyTiptapJson(createState()))
+      const ydoc = new Y.Doc()
+      const content = JSON.stringify({
+        type: 'doc',
+        content: [
+          { type: 'unknownNode', content: [{ type: 'text', text: 'from a newer version' }] },
+          { type: 'paragraph', content: [{ type: 'text', text: 'known' }] }
+        ]
+      })
+
+      expect(() => adapter.hydrate(ydoc, content)).toThrow()
+      expect(adapter.hasContent(ydoc)).toBe(false)
       ydoc.destroy()
     })
   })
