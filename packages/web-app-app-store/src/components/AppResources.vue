@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { App } from '../types'
-import { isEmpty } from 'lodash-es'
+import { isValidUrl } from '../helpers'
 
 const { app } = defineProps<{
   app: App
@@ -30,15 +30,7 @@ const { app } = defineProps<{
 
 const resources = computed(() => {
   return (app.resources || []).filter((resource) => {
-    if (isEmpty(resource.url) || isEmpty(resource.label)) {
-      return false
-    }
-    try {
-      new URL(resource.url)
-    } catch {
-      return false
-    }
-    return true
+    return resource.label && isValidUrl(resource.url)
   })
 })
 </script>

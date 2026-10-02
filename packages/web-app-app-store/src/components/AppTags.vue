@@ -1,13 +1,14 @@
 <template>
-  <div class="flex gap-1">
+  <div class="flex flex-wrap gap-1">
     <oc-tag
       v-for="tag in app.tags"
       :key="`app-tag-${app.id}-${tag}`"
       data-testid="tag-button"
+      rounded
       size="small"
       class="whitespace-nowrap cursor-pointer"
       type="button"
-      @click="emitClick(tag)"
+      @click="emit('click', tag)"
     >
       <oc-filter-highlight :text="tag" :term="term" />
     </oc-tag>
@@ -25,8 +26,4 @@ const { app, term = '' } = defineProps<{
 const emit = defineEmits<{
   (e: 'click', tagName: string): void
 }>()
-
-const emitClick = (tagName: string) => {
-  emit('click', tagName)
-}
 </script>

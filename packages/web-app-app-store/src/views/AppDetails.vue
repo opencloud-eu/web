@@ -1,13 +1,16 @@
 <template>
+  <no-content-message v-if="!app" icon="store">
+    <template #message>
+      <span v-text="$gettext('App not found')" />
+    </template>
+  </no-content-message>
   <oc-card
+    v-else
     class="app-details mx-auto bg-role-surface-container border max-w-2xl shadow-none"
     header-class="p-0 items-start"
   >
     <template #header>
-      <router-link
-        :to="{ name: `${APPID}-list` }"
-        class="flex flex-row items-center app-details-back p-1"
-      >
+      <router-link :to="getAppListRoute()" class="flex flex-row items-center app-details-back p-1">
         <oc-icon name="arrow-left-s" fill-type="line" />
         <span v-text="$gettext('Back to list')" />
       </router-link>
@@ -25,20 +28,20 @@
         <h3>{{ $gettext('Details') }}</h3>
         <TextEditorViewer class="my-2" :content="app.description" />
       </div>
-      <div v-if="app.tags">
+      <div v-if="app.tags.length">
         <h3>{{ $gettext('Tags') }}</h3>
         <app-tags :app="app" @click="onTagClicked" />
       </div>
-      <div v-if="app.authors">
+      <div v-if="app.authors.length">
         <h3>{{ $gettext('Author') }}</h3>
         <app-authors :app="app" />
       </div>
-      <div v-if="app.resources">
+      <div v-if="app.resources.length">
         <h3>{{ $gettext('Resources') }}</h3>
         <app-resources :app="app" />
       </div>
-      <div v-if="app.versions">
-        <h3>
+      <div v-if="app.versions.length">
+        <h3 class="flex items-center gap-1">
           {{ $gettext('Releases') }}
           <app-contextual-helper />
         </h3>
@@ -51,8 +54,8 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { App } from '../types'
-import { APPID } from '../appid'
-import { TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { getAppListRoute } from '../helpers'
+import { NoContentMessage, TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { useAppsStore } from '../piniaStores'
 import AppResources from '../components/AppResources.vue'
 import AppTags from '../components/AppTags.vue'
@@ -68,11 +71,9 @@ const appId = computed(() => {
 const appsStore = useAppsStore()
 const router = useRouter()
 
-const app = computed<App>(() => {
-  return appsStore.getById(unref(appId))
-})
+const app = computed<App>(() => appsStore.getById(unref(appId)))
 
-const onTagClicked = (tag: string) => {
-  router.push({ name: `${APPID}-list`, query: { filter: tag } })
+function onTagClicked(tag: string) {
+  router.push(getAppListRoute(tag))
 }
 </script>

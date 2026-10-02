@@ -12,7 +12,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { App } from '../types'
-import { isEmpty } from 'lodash-es'
+import { isValidUrl } from '../helpers'
 
 const { app } = defineProps<{
   app: App
@@ -20,17 +20,7 @@ const { app } = defineProps<{
 
 const authors = computed(() => {
   return (app.authors || []).filter((author) => {
-    if (isEmpty(author.name)) {
-      return false
-    }
-    if (!isEmpty(author.url)) {
-      try {
-        new URL(author.url)
-      } catch {
-        return false
-      }
-    }
-    return true
+    return author.name && (!author.url || isValidUrl(author.url))
   })
 })
 </script>

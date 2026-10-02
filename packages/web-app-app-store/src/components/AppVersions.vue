@@ -17,7 +17,7 @@ import { computed } from 'vue'
 import { App } from '../types'
 import { useGettext } from 'vue3-gettext'
 import AppActions from './AppActions.vue'
-import { isEmpty } from 'lodash-es'
+import { isValidUrl } from '../helpers'
 import { FieldType } from '@opencloud-eu/design-system/helpers'
 
 const { app } = defineProps<{
@@ -28,17 +28,7 @@ const { $gettext } = useGettext()
 
 const data = computed(() => {
   return (app.versions || [])
-    .filter((version) => {
-      if (isEmpty(version.version) || isEmpty(version.url)) {
-        return false
-      }
-      try {
-        new URL(version.url)
-      } catch {
-        return false
-      }
-      return true
-    })
+    .filter((version) => version.version && isValidUrl(version.url))
     .map((version) => {
       return {
         ...version,

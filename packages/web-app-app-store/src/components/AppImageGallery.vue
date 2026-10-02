@@ -12,14 +12,7 @@
       >
     </div>
     <div class="app-image w-full">
-      <oc-image
-        v-if="currentImage?.url"
-        :src="currentImage?.url"
-        class="w-full max-w-full object-cover aspect-3/2"
-      />
-      <div v-else class="fallback-icon bg-white flex items-center justify-center w-full aspect-3/2">
-        <oc-icon name="computer" size-class="size-22" />
-      </div>
+      <app-preview-image :url="currentImage?.url" class="w-full" />
     </div>
     <ul
       v-if="hasPagination"
@@ -55,6 +48,7 @@
 <script setup lang="ts">
 import { computed, ref, unref } from 'vue'
 import { App, AppImage } from '../types'
+import AppPreviewImage from './AppPreviewImage.vue'
 
 const { app, showPagination = false } = defineProps<{
   app: App
@@ -68,21 +62,22 @@ const images = computed(() => {
 const currentImageIndex = ref<number>(0)
 const currentImage = computed<AppImage>(() => unref(images)[unref(currentImageIndex)])
 const hasPagination = computed(() => showPagination && unref(images).length > 1)
-const nextImage = () => {
+
+function nextImage() {
   currentImageIndex.value = (unref(currentImageIndex) + 1) % unref(images).length
 }
-const previousImage = () => {
+
+function previousImage() {
   currentImageIndex.value =
     (unref(currentImageIndex) - 1 + unref(images).length) % unref(images).length
 }
-const setImageIndex = (index: number) => {
+
+function setImageIndex(index: number) {
   currentImageIndex.value = index
 }
 
 const ribbonColorClasses = computed(() => {
   switch (app.badge?.color) {
-    case 'primary':
-      return ['bg-role-primary', 'text-role-on-primary']
     case 'danger':
       return ['bg-role-error', 'text-role-on-error']
     default:
