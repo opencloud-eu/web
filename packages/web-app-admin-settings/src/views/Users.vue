@@ -353,6 +353,7 @@ const sideBarAvailablePanels = [
   {
     name: 'EditPanel',
     icon: 'pencil',
+    iconFillType: 'line',
     title: () => $gettext('Edit user'),
     component: EditPanel,
     isVisible: ({ items }) => items.length === 1,
