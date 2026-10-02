@@ -39,6 +39,7 @@ const sharerAvatarSelector =
 const recipientAvatarSelector =
   '//*[@data-test-resource-name="%s"]/ancestor::tr//td[contains(@class, "oc-table-data-cell-sharedWith")]//img'
 const userAvatarInActivitypanelSelector = '[data-test-user-name="%s"]'
+const viewModeSwitch = '#viewmode-switch'
 const mobileViewmodeSwitchBtn = '#viewmode-switch-toggle'
 const mobileViewmodeSwitchDropdown = '#viewmode-switch-drop'
 const fileDetailsSidebar = '#oc-file-details-sidebar'
@@ -113,7 +114,7 @@ export const createFileFromTemplate = async ({
 
 export interface switchViewModeArgs {
   page: Page
-  target: 'table' | 'tiles' | 'table-condensed'
+  target: 'table' | 'tiles'
 }
 
 export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<void> => {
@@ -125,20 +126,18 @@ export const clickViewModeToggle = async (args: switchViewModeArgs): Promise<voi
 
     const mobileTexts = {
       table: 'List',
-      tiles: 'Grid',
-      'table-condensed': 'Condensed list'
+      tiles: 'Grid'
     }
     await page.getByText(mobileTexts[target], { exact: true }).first().click()
-  } else {
-    const webSelectors = {
-      table: 'resource-table',
-      tiles: 'resource-tiles',
-      'table-condensed': 'resource-table-condensed'
-    }
-    await page.locator('#viewmode-switch-toggle').click()
-    await page.locator(`#viewmode-switch-drop .${webSelectors[target]}`).click()
+    await expect(page.locator(mobileViewmodeSwitchDropdown)).toBeHidden()
+    return
   }
-  await expect(page.locator(mobileViewmodeSwitchDropdown)).toBeHidden()
+
+  const viewModeNames = {
+    table: 'resource-table',
+    tiles: 'resource-tiles'
+  }
+  await page.locator(`${viewModeSwitch} .${viewModeNames[target]}`).click()
 }
 
 export const expectThatResourcesAreDisplayedAs = async (args: {
@@ -148,8 +147,7 @@ export const expectThatResourcesAreDisplayedAs = async (args: {
   const { page, viewMode } = args
   const viewSelectors = {
     table: '#files-view .oc-table',
-    tiles: '#files-view .oc-tiles',
-    'table-condensed': '#files-view .oc-table.oc-table-condensed'
+    tiles: '#files-view .oc-tiles'
   }
 
   const selector = viewSelectors[viewMode as keyof typeof viewSelectors]

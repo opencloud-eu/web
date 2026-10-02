@@ -8,6 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import ViewOptions from '../../../src/components/ViewOptions.vue'
+import ViewModeSwitch from '../../../src/components/ViewModeSwitch.vue'
 import {
   FolderViewModeConstants,
   useResourcesStore,
@@ -27,7 +28,7 @@ const selectors = {
   pageSizeSelect: '.oc-page-size',
   hiddenFilesSwitch: '[data-testid="files-switch-hidden-files"]',
   fileExtensionsSwitch: '[data-testid="files-switch-files-extensions-files"]',
-  viewModeSwitchBtns: '#viewmode-switch-toggle',
+  viewModeSwitch: 'view-mode-switch-stub',
   tileSizeSlider: '[data-testid="files-tiles-size-slider"]'
 }
 
@@ -100,7 +101,7 @@ describe('ViewOptions component', () => {
   describe('view mode switcher', () => {
     it('does not show initially', () => {
       const { wrapper } = getWrapper()
-      expect(wrapper.find(selectors.viewModeSwitchBtns).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.viewModeSwitch).exists()).toBeFalsy()
     })
     it('shows if more than one viewModes are passed', () => {
       const { wrapper } = getWrapper({
@@ -108,7 +109,15 @@ describe('ViewOptions component', () => {
           viewModes: getTileViewModes()
         }
       })
-      expect(wrapper.find(selectors.viewModeSwitchBtns).exists()).toBeTruthy()
+      expect(wrapper.find(selectors.viewModeSwitch).exists()).toBeTruthy()
+    })
+    it('updates the view mode query when a view mode gets selected', () => {
+      const { wrapper, mocks } = getWrapper({
+        props: { viewModes: getTileViewModes() },
+        viewMode: FolderViewModeConstants.name.tiles
+      })
+      wrapper.findComponent(ViewModeSwitch).vm.$emit('select', getTileViewModes()[1])
+      expect(unref(mocks.viewModeQueryMock)).toBe(FolderViewModeConstants.name.table)
     })
   })
   describe('view mode and tile size queries', () => {
@@ -194,9 +203,10 @@ function getWrapper({
   currentPage?: string
 } = {}) {
   vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => ref(perPage))
+  const viewModeQueryMock = ref(viewMode)
   const tileSizeQueryMock = ref(tileSize)
   if (props.viewModes?.length) {
-    vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => ref(viewMode))
+    vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => viewModeQueryMock)
     vi.mocked(useRouteQueryPersisted).mockImplementationOnce(() => tileSizeQueryMock)
   }
   vi.mocked(useRouteQuery).mockImplementationOnce(() => ref(currentPage))
@@ -205,6 +215,7 @@ function getWrapper({
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files', path: '/files' })
     }),
+    viewModeQueryMock,
     tileSizeQueryMock
   }
   return {
@@ -217,7 +228,13 @@ function getWrapper({
       global: {
         mocks,
         provide: mocks,
-        stubs: { OcButton: true, OcPageSize: false, OcSelect: true, OcDrop: true },
+        stubs: {
+          OcButton: true,
+          OcPageSize: false,
+          OcSelect: true,
+          OcDrop: true,
+          ViewModeSwitch: true
+        },
         plugins: [...defaultPlugins()],
         renderStubDefaultSlot: true
       }

@@ -1,59 +1,11 @@
 <template>
   <div class="flex items-center">
-    <template v-if="viewModes.length > 1">
-      <oc-button
-        id="viewmode-switch-toggle"
-        v-oc-tooltip="$gettext('Switch view mode')"
-        :aria-label="$gettext('Switch view mode')"
-        appearance="raw"
-        class="my-2 mx-1 p-1 align-middle"
-      >
-        <oc-icon
-          v-if="currentViewMode"
-          :name="currentViewMode.icon.name"
-          :fill-type="currentViewMode.icon.fillType"
-        />
-      </oc-button>
-      <oc-drop
-        :title="$gettext('View mode')"
-        drop-id="viewmode-switch-drop"
-        toggle="#viewmode-switch-toggle"
-        class="w-auto"
-        padding-size="small"
-        close-on-click
-      >
-        <oc-list>
-          <li v-for="viewMode in viewModes" :key="viewMode.name">
-            <oc-button
-              :appearance="viewModeQuery === viewMode.name ? 'filled' : 'raw'"
-              :color-role="viewModeQuery === viewMode.name ? 'secondaryContainer' : 'secondary'"
-              :no-hover="viewModeQuery === viewMode.name"
-              :class="[viewMode.name]"
-              justify-content="left"
-              class="p-1.5"
-              @click="setViewMode(viewMode)"
-            >
-              <div class="flex justify-between w-full">
-                <span class="flex items-center gap-2">
-                  <oc-icon
-                    :name="viewMode.icon.name"
-                    :fill-type="viewMode.icon.fillType"
-                    size-class="size-5"
-                  />
-                  <span v-text="$gettext(viewMode.label)" />
-                </span>
-                <oc-icon
-                  v-if="viewModeQuery === viewMode.name"
-                  name="check"
-                  size-class="size-5"
-                  class="ml-1"
-                />
-              </div>
-            </oc-button>
-          </li>
-        </oc-list>
-      </oc-drop>
-    </template>
+    <view-mode-switch
+      v-if="viewModes.length > 1"
+      :view-modes="viewModes"
+      :current-view-mode="queryItemAsString(viewModeQuery)"
+      @select="setViewMode"
+    />
     <oc-button
       id="files-view-options-btn"
       key="files-view-options-btn"
@@ -158,6 +110,7 @@ import { FolderView } from '../ui/types'
 import { storeToRefs } from 'pinia'
 import { isLocationSpacesActive, isLocationTrashActive } from '../router'
 import { PageSizeOption } from '@opencloud-eu/design-system/helpers'
+import ViewModeSwitch from './ViewModeSwitch.vue'
 
 const {
   perPageStoragePrefix,
@@ -226,10 +179,6 @@ const viewModeQuery = unref(hasViewModes)
       defaultValue: viewModeDefault
     })
   : ref<QueryValue>()
-
-const currentViewMode = computed(() => {
-  return viewModes.find((viewMode) => viewMode.name === queryItemAsString(unref(viewModeQuery)))
-})
 
 const viewSizeQuery = unref(hasViewModes)
   ? useRouteQueryPersisted({
