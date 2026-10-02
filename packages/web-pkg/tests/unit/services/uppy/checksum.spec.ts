@@ -78,6 +78,34 @@ describe('upload checksums', () => {
     })
   })
 
+  describe('when WebAssembly is blocked, e.g. by the Content-Security-Policy', () => {
+    beforeEach(() => {
+      const blocked = () => {
+        throw new Error('Compiling or instantiating WebAssembly module violates the CSP')
+      }
+      vi.stubGlobal('WebAssembly', {
+        compile: () => Promise.reject(new Error('blocked by CSP')),
+        instantiate: () => Promise.reject(new Error('blocked by CSP')),
+        Module: blocked,
+        Instance: blocked,
+        Memory: blocked
+      })
+      vi.spyOn(console, 'info').mockImplementation(() => undefined)
+    })
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('computes the same SHA1 with the JavaScript implementation', async () => {
+      const data = new Uint8Array(randomBytes(3 * 1024 + 17))
+
+      const checksum = await computeSha1(new Blob([data]), { chunkSize: 1024 })
+
+      expect(checksum).toBe(sha1Hex(data))
+      expect(console.info).toHaveBeenCalledWith(expect.stringContaining('JavaScript SHA1'))
+    })
+  })
+
   describe('UploadChecksumPlugin', () => {
     it('sets the checksum meta field before the upload starts', async () => {
       const { uppy, uploader } = createUppy()
