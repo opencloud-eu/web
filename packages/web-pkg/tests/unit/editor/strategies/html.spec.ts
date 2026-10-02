@@ -28,7 +28,6 @@ describe('useStrategyHtml', () => {
     it('includes rich text extensions', () => {
       const strategy = createStrategy()
       const names = strategy.extensions().map((e) => e.name)
-      expect(names).toContain('underline')
       expect(names).toContain('image')
       expect(names).toContain('fileHandler')
       expect(names).toContain('link')

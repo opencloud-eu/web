@@ -77,7 +77,6 @@
     "@tiptap/extension-text": "catalog:tiptap",
     "@tiptap/extension-text-align": "catalog:tiptap",
     "@tiptap/extension-text-style": "catalog:tiptap",
-    "@tiptap/extension-underline": "catalog:tiptap",
     "@tiptap/markdown": "catalog:tiptap",
     "@tiptap/pm": "catalog:tiptap",
     "@tiptap/starter-kit": "catalog:tiptap",
