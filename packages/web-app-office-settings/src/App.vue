@@ -67,7 +67,8 @@ import {
   AppLoadingSpinner,
   useMessages,
   useIsTopBarSticky,
-  NoContentMessage
+  NoContentMessage,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import { useAsyncState } from '@vueuse/core'
 import { computed, onBeforeUnmount, ref, unref, watch } from 'vue'
@@ -148,7 +149,7 @@ watch(fontsData, (fonts) => {
 
 onBeforeUnmount(revokePreviewUrls)
 
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 
 const files = ref<FileList>(null)
 watch(files, async (newFiles) => {

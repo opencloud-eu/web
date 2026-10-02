@@ -9,13 +9,17 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { ResourceTable } from '@opencloud-eu/web-pkg'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { flushPromises } from '@vue/test-utils'
 
 vi.mock('../../../../src/composables')
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useRouteQueryFilterTerm: vi.fn(() => ref(''))
+}))
 
 const spaceMocks = [
   {

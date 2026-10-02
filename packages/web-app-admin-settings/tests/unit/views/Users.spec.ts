@@ -372,7 +372,7 @@ function getMountedWrapper({
   selectedUsers?: User[]
 } = {}) {
   const query: Record<string, string> = {
-    ...(displayNameFilterQuery && { q_displayName: displayNameFilterQuery }),
+    ...(displayNameFilterQuery && { q_search_term: displayNameFilterQuery }),
     ...(groupFilterQuery && { q_groups: groupFilterQuery }),
     ...(roleFilterQuery && { q_roles: roleFilterQuery })
   }

@@ -75,10 +75,11 @@ import {
   useFileActions,
   useSideBar,
   useSpacesStore,
-  AppLoadingSpinner
+  AppLoadingSpinner,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import { call, isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, onBeforeUnmount, onMounted, provide, ref, unref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { useSpaceSettingsStore } from '../composables'
@@ -97,7 +98,7 @@ const { selectedSpaces } = storeToRefs(spaceSettingsStore)
 const { allProjectSpaces } = storeToRefs(spacesStore)
 const spaces = computed(() => unref(allProjectSpaces) || [])
 
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 
 // the members of a space (incl. its managers) are only part of the response with this expansion
 const spacePermissionsExpand = 'root($expand=permissions)'

@@ -79,10 +79,11 @@ import {
   NoContentMessage,
   SideBarPanel,
   SideBarPanelContext,
-  useClientService
+  useClientService,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import { Group } from '@opencloud-eu/web-client/graph/generated'
-import { computed, ref, unref, onBeforeUnmount, onMounted, provide } from 'vue'
+import { computed, unref, onBeforeUnmount, onMounted, provide } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -92,7 +93,7 @@ const groupSettingsStore = useGroupSettingsStore()
 const { selectedGroups, groups } = storeToRefs(groupSettingsStore)
 const clientService = useClientService()
 const { $gettext } = useGettext()
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 
 provide(
   'group',

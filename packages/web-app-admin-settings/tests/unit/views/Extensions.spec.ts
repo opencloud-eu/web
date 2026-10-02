@@ -1,13 +1,14 @@
 import Extensions from '../../../src/views/Extensions.vue'
 import ExtensionsList from '../../../src/components/Extensions/ExtensionsList.vue'
-import { nextTick } from 'vue'
+import { nextTick, ref } from 'vue'
 import { defaultPlugins, mount, useAppDefaultsMock } from '@opencloud-eu/web-test-helpers'
 import { useAppDefaults, useAppsStore, useConfigStore } from '@opencloud-eu/web-pkg'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   useAppDefaults: vi.fn(),
-  useRouteQueryPersisted: vi.fn()
+  useRouteQueryPersisted: vi.fn(),
+  useRouteQueryFilterTerm: vi.fn(() => ref(''))
 }))
 vi.mocked(useAppDefaults).mockImplementation(() => useAppDefaultsMock())
 

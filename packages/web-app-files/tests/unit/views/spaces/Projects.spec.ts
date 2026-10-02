@@ -26,7 +26,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   queryItemAsString: vi.fn(),
   appDefaults: vi.fn(),
   useRouteQueryPersisted: vi.fn().mockImplementation(() => ref('resource-table')),
-  useFileActions: vi.fn()
+  useFileActions: vi.fn(),
+  useRouteQueryFilterTerm: vi.fn(() => ref(''))
 }))
 
 const spacesResources = [

@@ -82,7 +82,8 @@ import {
   useGetMatchingSpace,
   ContextActions,
   useKeyboardActions,
-  eventBus
+  eventBus,
+  useRouteQueryFilterTerm
 } from '@opencloud-eu/web-pkg'
 import ListInfo from '../../components/FilesList/ListInfo.vue'
 import FilesViewWrapper from '../../components/FilesViewWrapper.vue'
@@ -91,7 +92,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, unref } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
@@ -133,7 +134,7 @@ const { triggerDefaultAction } = useFileActions()
 
 const { loadPreview, dropPreview } = useLoadPreview(viewMode)
 
-const filterTerm = ref('')
+const filterTerm = useRouteQueryFilterTerm()
 const filteredItems = computed(() => {
   if (unref(filterTerm)) {
     const searchEngine = new Fuse(unref(paginatedResources), {

@@ -188,7 +188,7 @@ function parseIdsQuery(value: QueryValue) {
   return queryItemAsString(value)?.split('+') || []
 }
 
-const searchTermQuery = useRouteQuery('q_displayName')
+const searchTermQuery = useRouteQuery('q_search_term')
 const filterGroupIds = ref(parseIdsQuery(unref(useRouteQuery('q_groups'))))
 const filterRoleIds = ref(parseIdsQuery(unref(useRouteQuery('q_roles'))))
 const searchTerm = ref(queryItemAsString(unref(searchTermQuery)) || '')
@@ -302,8 +302,8 @@ async function searchUsers() {
   await router.push({
     ...unref(route),
     query: {
-      ...omit(unref(route).query, 'q_displayName'),
-      ...(unref(searchTerm) && { q_displayName: unref(searchTerm) })
+      ...omit(unref(route).query, 'q_search_term'),
+      ...(unref(searchTerm) && { q_search_term: unref(searchTerm) })
     }
   })
   appliedSearchTerm.value = unref(searchTerm)
