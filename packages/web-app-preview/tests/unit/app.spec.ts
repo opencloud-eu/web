@@ -1,5 +1,6 @@
 import App from '../../src/App.vue'
 import { nextTick, ref } from 'vue'
+import { flushPromises, VueWrapper } from '@vue/test-utils'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
@@ -97,77 +98,63 @@ const activeFiles = [
   }
 ]
 
+// visible files: bear.png, elephant.png, lonely_sloth_very_sad.gif, happy_hippo.gif,
+// sleeping_dog.gif, cat_murr_murr.gif, labrador.gif
+const wrappers: VueWrapper[] = []
+
 describe('Preview app', () => {
-  describe('Method "loadPreviewImage"', () => {
-    it('should load the preview image if active file changes', async () => {
+  beforeEach(() => {
+    vi.mocked(queryItemAsString).mockReturnValue('1')
+  })
+
+  afterEach(() => {
+    while (wrappers.length) {
+      wrappers.pop().unmount()
+    }
+  })
+
+  describe('Preloading', () => {
+    // files are sorted by name: bear.png, cat_murr_murr.gif, elephant.png, happy_hippo.gif,
+    // labrador.gif, lonely_sloth_very_sad.gif, sleeping_dog.gif
+    it('loads the active file and then its forward and backward neighbors', async () => {
+      const { mocks } = createShallowMountWrapper()
+      await flushPromises()
+
+      expect(requestedNames(mocks)).toEqual(['bear.png', 'cat_murr_murr.gif', 'sleeping_dog.gif'])
+    })
+
+    it('does not load a preloaded file again when navigating to it', async () => {
       const { wrapper, mocks } = createShallowMountWrapper()
-      await nextTick()
+      await flushPromises()
+
       ;(wrapper.vm as any).goToNext()
-      await nextTick()
+      await flushPromises()
 
-      expect(mocks.$previewService.loadPreview).toHaveBeenCalledWith(
-        expect.objectContaining({
-          resource: expect.objectContaining({
-            name: 'cat_murr_murr.gif'
-          })
-        }),
-        expect.anything(),
-        expect.anything(),
-        expect.anything()
-      )
+      // cat_murr_murr.gif was preloaded, only its new forward neighbor is left to load
+      expect(requestedNames(mocks)).toEqual([
+        'bear.png',
+        'cat_murr_murr.gif',
+        'sleeping_dog.gif',
+        'elephant.png'
+      ])
     })
 
-    it('uses the preview service for a non-vault image even when the server reports no thumbnail', async () => {
-      const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
-      await nextTick()
-      // ignore the implicit load for the active file on mount
-      mocks.$previewService.loadPreview.mockClear()
-      getUrlForResource.mockClear()
+    it('does not load anything again while walking back and forth', async () => {
+      const { wrapper, mocks } = createShallowMountWrapper()
+      await flushPromises()
 
-      const mediaFile = {
-        isImage: true,
-        mimeType: 'image/png',
-        resource: mock<Resource>({ isInVault: false, hasPreview: () => false })
-      }
-      await (wrapper.vm as any).loadPreviewImage(mediaFile)
+      ;(wrapper.vm as any).goToNext()
+      await flushPromises()
+      ;(wrapper.vm as any).goToPrev()
+      await flushPromises()
 
-      // must NOT download the full original just because there's no thumbnail
-      expect(mocks.$previewService.loadPreview).toHaveBeenCalled()
-      expect(getUrlForResource).not.toHaveBeenCalled()
-    })
-
-    it('fetches the full (decrypted) image via getUrlForResource for a vault image', async () => {
-      const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
-      await nextTick()
-      mocks.$previewService.loadPreview.mockClear()
-      getUrlForResource.mockClear()
-
-      const mediaFile = {
-        isImage: true,
-        mimeType: 'image/png',
-        resource: mock<Resource>({ isInVault: true, hasPreview: () => false })
-      }
-      await (wrapper.vm as any).loadPreviewImage(mediaFile)
-
-      expect(getUrlForResource).toHaveBeenCalled()
-      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
-    })
-
-    it('fetches SVG files via getUrlForResource instead of the preview service', async () => {
-      const { wrapper, mocks, getUrlForResource } = createShallowMountWrapper()
-      await nextTick()
-      mocks.$previewService.loadPreview.mockClear()
-      getUrlForResource.mockClear()
-
-      const mediaFile = {
-        isImage: true,
-        mimeType: 'image/svg+xml',
-        resource: mock<Resource>({ isInVault: false, hasPreview: () => true })
-      }
-      await (wrapper.vm as any).loadPreviewImage(mediaFile)
-
-      expect(getUrlForResource).toHaveBeenCalled()
-      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+      // bear.png is back in the focus and so are its preloaded neighbors
+      expect(requestedNames(mocks)).toEqual([
+        'bear.png',
+        'cat_murr_murr.gif',
+        'sleeping_dog.gif',
+        'elephant.png'
+      ])
     })
   })
 
@@ -271,37 +258,46 @@ describe('Preview app', () => {
   })
 })
 
+const requestedNames = (mocks: ReturnType<typeof defaultComponentMocks>) =>
+  mocks.$previewService.loadPreview.mock.calls.map(([{ resource }]) => resource.name)
+
 function createShallowMountWrapper({
   currentFileContext
 }: {
   currentFileContext?: Partial<FileContext>
 } = {}) {
   const mocks = defaultComponentMocks()
-  mocks.$previewService.loadPreview.mockResolvedValue('')
-  vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
+  // blob urls mirror what the preview service returns for private spaces and keep the
+  // browser cache warm-up out of the way, it has its own tests
+  mocks.$previewService.loadPreview.mockImplementation(({ resource }) =>
+    Promise.resolve(`blob:preview-${resource.name}`)
+  )
 
   const getUrlForResource = vi.fn()
   const revokeUrl = vi.fn()
 
+  const wrapper = shallowMount(App, {
+    props: {
+      currentFileContext: mock<FileContext>({
+        path: 'personal/admin/bear.png',
+        ...currentFileContext
+      }),
+      activeFiles,
+      isFolderLoading: true,
+      revokeUrl,
+      getUrlForResource,
+      loadFolderForFileContext: vi.fn()
+    },
+    global: {
+      plugins: [...defaultPlugins()],
+      mocks,
+      provide: mocks
+    }
+  })
+  wrappers.push(wrapper)
+
   return {
-    wrapper: shallowMount(App, {
-      props: {
-        currentFileContext: mock<FileContext>({
-          path: 'personal/admin/bear.png',
-          ...currentFileContext
-        }),
-        activeFiles,
-        isFolderLoading: true,
-        revokeUrl,
-        getUrlForResource,
-        loadFolderForFileContext: vi.fn()
-      },
-      global: {
-        plugins: [...defaultPlugins()],
-        mocks,
-        provide: mocks
-      }
-    }),
+    wrapper,
     mocks,
     getUrlForResource,
     revokeUrl
