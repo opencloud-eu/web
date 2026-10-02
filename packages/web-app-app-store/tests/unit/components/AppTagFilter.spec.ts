@@ -41,6 +41,11 @@ describe('AppTagFilter.vue', () => {
     await wrapper.findAll(selectors.button)[0].trigger('click')
     expect(wrapper.emitted('select')).toEqual([['foo']])
   })
+  it('emits an empty string on click of the active tag', async () => {
+    const { wrapper } = getWrapper('foo')
+    await wrapper.findAll(selectors.button)[0].trigger('click')
+    expect(wrapper.emitted('select')).toEqual([['']])
+  })
   it('emits an empty string on "All" click', async () => {
     const { wrapper } = getWrapper('foo')
     await wrapper.find(selectors.all).trigger('click')

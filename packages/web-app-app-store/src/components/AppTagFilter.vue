@@ -20,7 +20,7 @@
       class="whitespace-nowrap cursor-pointer"
       :appearance="isActive(tag.name) ? 'filled' : 'outline'"
       :aria-pressed="isActive(tag.name)"
-      @click="emit('select', tag.name)"
+      @click="toggleTag(tag.name)"
     >
       {{ tag.name }} ({{ tag.count }})
     </oc-tag>
@@ -53,7 +53,7 @@
             class="whitespace-nowrap cursor-pointer"
             :appearance="isActive(tag.name) ? 'filled' : 'outline'"
             :aria-pressed="isActive(tag.name)"
-            @click="emit('select', tag.name)"
+            @click="toggleTag(tag.name)"
           >
             {{ tag.name }} ({{ tag.count }})
           </oc-tag>
@@ -109,6 +109,10 @@ const hiddenTags = computed(() => unref(tags).slice(unref(visibleCount)))
 
 function isActive(tag: string) {
   return tag.toLowerCase() === activeTag.toLowerCase()
+}
+
+function toggleTag(tag: string) {
+  emit('select', isActive(tag) ? '' : tag)
 }
 
 function getTagElements() {

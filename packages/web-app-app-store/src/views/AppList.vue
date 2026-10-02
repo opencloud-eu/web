@@ -50,7 +50,7 @@
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
         :term="filterTerm"
-        @search="setFilterTerm"
+        @search="toggleTagFilter"
       />
     </oc-list>
     <oc-list v-else class="grid [grid-template-columns:repeat(auto-fill,minmax(240px,1fr))] gap-4">
@@ -59,7 +59,7 @@
         :key="`app-${app.repository.name}-${app.id}`"
         :app="app"
         :term="filterTerm"
-        @search="setFilterTerm"
+        @search="toggleTagFilter"
       />
     </oc-list>
   </div>
@@ -83,6 +83,11 @@ const { apps } = storeToRefs(appsStore)
 
 const { filterTerm, filteredApps, setFilterTerm } = useAppFilter(apps)
 const { viewMode } = useAppViewMode()
+
+// clicking the tag that is currently filtered by resets the filter
+function toggleTagFilter(tag: string) {
+  setFilterTerm(tag.toLowerCase() === unref(filterTerm).toLowerCase() ? '' : tag)
+}
 const { $ngettext } = useGettext()
 
 const resultCountText = computed(() => {
