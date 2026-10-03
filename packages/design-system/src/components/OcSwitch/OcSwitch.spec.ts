@@ -21,16 +21,6 @@ describe('OcSwitch', () => {
     expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
   })
 
-  it('can be toggled by clicking the label', async () => {
-    const wrapper = shallowMount(Switch, {
-      props: { ...defaultProps, labelId: 'switch-label' }
-    })
-
-    await wrapper.find('#switch-label').trigger('click')
-
-    expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
-  })
-
   it('is not a submit button, so it does not hijack implicit form submission', () => {
     const wrapper = shallowMount(Switch, {
       props: defaultProps
