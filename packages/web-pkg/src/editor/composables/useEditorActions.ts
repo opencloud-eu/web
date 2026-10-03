@@ -771,6 +771,7 @@ export function useEditorActions(state: TextEditorState) {
       dispatchModal({
         title: $gettext('Insert emoji'),
         customComponent: markRaw(EmojiPickerModal),
+        elementClass: 'sm:max-w-100!',
         hideActions: true,
         onConfirm: (emoji: string) => {
           editor.chain().focus().insertContent(emoji).run()

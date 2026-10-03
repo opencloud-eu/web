@@ -44,6 +44,7 @@ function openIconPicker() {
     title: $gettext('Set icon'),
     hideActions: true,
     customComponent: markRaw(EmojiPickerModal),
+    elementClass: 'sm:max-w-100!',
     focusTrapInitial: false,
     onConfirm: async (emoji: string) => {
       image.value = (await emojiToImage(emoji)) as ArrayBuffer
