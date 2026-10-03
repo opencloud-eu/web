@@ -78,6 +78,7 @@ import {
   modalActionsTarget,
   useClientService,
   useMessages,
+  useModals,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -85,13 +86,14 @@ import { useClipboard } from '@vueuse/core'
 import { AppToken } from '../../helpers/appTokens'
 import { storeToRefs } from 'pinia'
 
-defineProps<{ modal: Modal }>()
+const { modal } = defineProps<{ modal: Modal }>()
 defineEmits(['confirm', 'cancel'])
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
 const { showErrorMessage } = useMessages()
+const { updateModal } = useModals()
 const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
 
@@ -121,6 +123,11 @@ const createAppToken = async () => {
     return
   }
   isCreating.value = true
+  // This modal is dispatched with hidden actions, so the only other way out is the
+  // modal's cancel button. Mark it loading to disable that button while the token
+  // is being created - cancelling here would complete the request without ever
+  // showing the resulting token.
+  updateModal(unref(modal).id, 'isLoading', true)
   try {
     const label = unref(tokenLabel)
     const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
@@ -136,6 +143,7 @@ const createAppToken = async () => {
     })
   } finally {
     isCreating.value = false
+    updateModal(unref(modal).id, 'isLoading', false)
   }
 }
 </script>

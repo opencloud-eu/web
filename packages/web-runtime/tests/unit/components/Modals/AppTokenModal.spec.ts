@@ -6,10 +6,12 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { ClientService, Modal, useMessages } from '@opencloud-eu/web-pkg'
+import { ClientService, Modal, useMessages, useModals } from '@opencloud-eu/web-pkg'
 import { OcButton, OcDatepicker, OcTextInput } from '@opencloud-eu/design-system/components'
 import { DateTime } from 'luxon'
 import { VueWrapper, flushPromises } from '@vue/test-utils'
+
+const MODAL_ID = 'modal-id'
 
 const copyMock = vi.fn()
 vi.mock('@vueuse/core', async (importOriginal) => ({
@@ -75,24 +77,25 @@ describe('AppTokenModal component', () => {
       const { wrapper } = getWrapper({ pendingPost: true })
       emitNoteInput(wrapper, 'someNote')
       emitDateInput(wrapper, DateTime.now())
-      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       await wrapper.vm.$nextTick()
-      expect(btn.props('disabled')).toBeFalsy()
-      await btn.trigger('click')
-      expect(btn.props('disabled')).toBeTruthy()
-      expect(btn.props('showSpinner')).toBeTruthy()
+      // the actions row is teleported with `defer`, so the button instance is replaced
+      // on re-render - always look it up again instead of holding on to a wrapper
+      expect(findConfirmButton(wrapper).props('disabled')).toBeFalsy()
+      await findConfirmButton(wrapper).trigger('click')
+      await flushPromises()
+      expect(findConfirmButton(wrapper).props('disabled')).toBeTruthy()
+      expect(findConfirmButton(wrapper).props('showSpinner')).toBeTruthy()
     })
     it('should re-enable the confirm button after creating the token failed', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const { wrapper, mocks } = getWrapper({ postRejects: true })
       emitNoteInput(wrapper, 'someNote')
       emitDateInput(wrapper, DateTime.now())
-      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       await wrapper.vm.$nextTick()
-      await btn.trigger('click')
+      await findConfirmButton(wrapper).trigger('click')
       await flushPromises()
-      expect(btn.props('disabled')).toBeFalsy()
-      expect(btn.props('showSpinner')).toBeFalsy()
+      expect(findConfirmButton(wrapper).props('disabled')).toBeFalsy()
+      expect(findConfirmButton(wrapper).props('showSpinner')).toBeFalsy()
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledTimes(1)
     })
   })
@@ -110,6 +113,30 @@ describe('AppTokenModal component', () => {
       expect.objectContaining({ title: 'An error occurred while creating the app token.' })
     )
     expect(wrapper.find('.created-token').exists()).toBeFalsy()
+  })
+  // the modal is dispatched with hidden actions, so its cancel button is the only
+  // other way out. It has to be disabled while creating, otherwise the request
+  // completes into a closed modal and the token is never shown
+  it('should mark the modal as loading while creating the token', async () => {
+    const { wrapper } = getWrapper({ pendingPost: true })
+    const { updateModal } = useModals()
+    emitNoteInput(wrapper, 'someNote')
+    emitDateInput(wrapper, DateTime.now())
+    const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
+    await wrapper.vm.$nextTick()
+    await btn.trigger('click')
+    expect(updateModal).toHaveBeenCalledWith(MODAL_ID, 'isLoading', true)
+  })
+  it('should reset the modal loading state once the request settled', async () => {
+    const { wrapper } = getWrapper()
+    const { updateModal } = useModals()
+    emitNoteInput(wrapper, 'someNote')
+    emitDateInput(wrapper, DateTime.now())
+    const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
+    await wrapper.vm.$nextTick()
+    await btn.trigger('click')
+    await flushPromises()
+    expect(updateModal).toHaveBeenCalledWith(MODAL_ID, 'isLoading', false)
   })
   it('should display the created token', async () => {
     const { wrapper } = getWrapper()
@@ -131,6 +158,9 @@ describe('AppTokenModal component', () => {
     expect(copyMock).toHaveBeenCalled()
   })
 })
+
+const findConfirmButton = (wrapper: VueWrapper<typeof AppTokenModal.vm>) =>
+  wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
 
 const emitNoteInput = (wrapper: VueWrapper<typeof AppTokenModal.vm>, note: string) => {
   wrapper
@@ -161,11 +191,15 @@ const getWrapper = ({
   return {
     mocks,
     wrapper: shallowMount(AppTokenModal, {
-      props: { modal: mock<Modal>({ id: 'modal-id' }) },
+      props: { modal: mock<Modal>({ id: MODAL_ID }) },
       global: {
         mocks,
         provide: mocks,
-        plugins: [...defaultPlugins()],
+        plugins: [
+          ...defaultPlugins({
+            piniaOptions: { modalsState: { modals: [{ id: MODAL_ID } as Modal] } }
+          })
+        ],
         // the actions row only exists inside OcModal, so render them in place
         stubs: { teleport: true }
       }
