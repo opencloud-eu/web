@@ -35,6 +35,15 @@ describe('useModals', () => {
         }
       })
     })
+    it('does not throw when the modal has been removed in the meantime', () => {
+      getWrapper({
+        setup: (instance) => {
+          const modal = instance.dispatchModal({ title: 'test' })
+          instance.removeModal(modal.id)
+          expect(() => instance.updateModal(modal.id, 'isLoading', true)).not.toThrow()
+        }
+      })
+    })
   })
   describe('method "removeModal"', () => {
     it('removes an existing modal and sets another existing modal active', () => {
