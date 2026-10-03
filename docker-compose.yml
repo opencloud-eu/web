@@ -217,7 +217,7 @@ services:
 
   # generates the WOPI proof key on first start and keeps it in a named volume
   collabora-proof-key:
-    image: alpine/openssl:3.5.8
+    image: alpine/openssl:3.5.9
     entrypoint: ['/bin/sh']
     command:
       - -ec
