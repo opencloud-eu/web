@@ -69,3 +69,6 @@ export type App = z.infer<typeof AppSchema>
 export const RawAppListSchema = z.object({
   apps: z.array(RawAppSchema)
 })
+
+export const APP_VIEW_MODES = ['tiles', 'list'] as const
+export type AppViewMode = (typeof APP_VIEW_MODES)[number]

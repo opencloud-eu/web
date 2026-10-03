@@ -1,78 +1,76 @@
 <template>
-  <oc-card
-    class="app-details mx-auto bg-role-surface-container border max-w-2xl shadow-none"
-    header-class="p-0 items-start"
+  <no-content-message
+    v-if="!app"
+    id="app-store-app-not-found"
+    img-src="images/illustrations/extensions.svg"
   >
-    <template #header>
-      <router-link
-        :to="{ name: `${APPID}-list` }"
-        class="flex flex-row items-center app-details-back p-1"
-      >
-        <oc-icon name="arrow-left-s" fill-type="line" />
-        <span v-text="$gettext('Back to list')" />
-      </router-link>
-      <app-image-gallery :app="app" :show-pagination="true" class="w-full" />
+    <template #message>
+      <span v-text="$gettext('App not found')" />
     </template>
-    <div class="app-content bg-role-surface-container flex flex-col">
-      <div class="flex items-center">
-        <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
-        <span class="ml-2 text-role-on-surface-variant text-sm mt-2">
-          v{{ app.mostRecentVersion.version }}
-        </span>
+  </no-content-message>
+  <div v-else class="app-details mx-auto mt-2 max-w-256 flex flex-col gap-6">
+    <router-link
+      :to="backRoute"
+      class="app-details-back self-start inline-flex items-center gap-1 text-sm text-role-secondary"
+    >
+      <oc-icon name="arrow-left-s" fill-type="line" size-class="size-4" />
+      <span v-text="$gettext('Back to App Store')" />
+    </router-link>
+    <app-details-header :app="app" @tag-click="onTagClicked" />
+    <hr class="m-0 border-t border-role-surface-container-highest" />
+    <div class="grid md:grid-cols-[3fr_2fr] gap-8">
+      <div class="flex flex-col gap-6 min-w-0">
+        <app-details-gallery :app="app" />
+        <section class="app-details-description">
+          <h3 class="my-0 mb-2 text-base" v-text="$gettext('Description')" />
+          <text-editor-viewer
+            v-if="app.description"
+            class="max-w-[70ch]"
+            :content="app.description"
+          />
+          <p v-else class="my-0 max-w-[70ch]" v-text="app.subtitle" />
+        </section>
       </div>
-      <p class="my-0">{{ app.subtitle }}</p>
-      <div v-if="app.description">
-        <h3>{{ $gettext('Details') }}</h3>
-        <TextEditorViewer class="my-2" :content="app.description" />
-      </div>
-      <div v-if="app.tags">
-        <h3>{{ $gettext('Tags') }}</h3>
-        <app-tags :app="app" @click="onTagClicked" />
-      </div>
-      <div v-if="app.authors">
-        <h3>{{ $gettext('Author') }}</h3>
-        <app-authors :app="app" />
-      </div>
-      <div v-if="app.resources">
-        <h3>{{ $gettext('Resources') }}</h3>
-        <app-resources :app="app" />
-      </div>
-      <div v-if="app.versions">
-        <h3>
-          {{ $gettext('Releases') }}
-          <app-contextual-helper />
-        </h3>
+      <aside class="flex flex-col gap-6 min-w-0">
+        <app-details-info :app="app" />
         <app-versions :app="app" />
-      </div>
+      </aside>
     </div>
-  </oc-card>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, unref } from 'vue'
+import { RouteLocationRaw } from 'vue-router'
+import { NoContentMessage, TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { App } from '../types'
 import { APPID } from '../appid'
-import { TextEditorViewer, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
+import { getAppListRoute } from '../helpers'
 import { useAppsStore } from '../piniaStores'
-import AppResources from '../components/AppResources.vue'
-import AppTags from '../components/AppTags.vue'
+import AppDetailsHeader from '../components/AppDetailsHeader.vue'
+import AppDetailsGallery from '../components/AppDetailsGallery.vue'
+import AppDetailsInfo from '../components/AppDetailsInfo.vue'
 import AppVersions from '../components/AppVersions.vue'
-import AppAuthors from '../components/AppAuthors.vue'
-import AppImageGallery from '../components/AppImageGallery.vue'
-import AppContextualHelper from '../components/AppContextualHelper.vue'
 
 const appIdRouteParam = useRouteParam('appId')
-const appId = computed(() => {
-  return decodeURIComponent(unref(appIdRouteParam))
-})
+const appId = computed(() => decodeURIComponent(unref(appIdRouteParam)))
 const appsStore = useAppsStore()
 const router = useRouter()
 
-const app = computed<App>(() => {
-  return appsStore.getById(unref(appId))
-})
+const app = computed<App>(() => appsStore.getById(unref(appId)))
 
-const onTagClicked = (tag: string) => {
-  router.push({ name: `${APPID}-list`, query: { filter: tag } })
+// return to the list including its filters if we came from there
+const backRoute = getBackRoute()
+
+function getBackRoute(): RouteLocationRaw {
+  const { back } = router.options.history.state
+  if (typeof back === 'string' && router.resolve(back).name === `${APPID}-list`) {
+    return back
+  }
+  return getAppListRoute()
+}
+
+function onTagClicked(tag: string) {
+  router.push(getAppListRoute(tag))
 }
 </script>

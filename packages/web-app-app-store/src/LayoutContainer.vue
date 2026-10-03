@@ -1,24 +1,22 @@
 <template>
-  <main id="app-store" class="p-4 overflow-auto">
+  <main id="app-store" class="p-4 md:px-8 overflow-auto">
     <app-loading-spinner v-if="areAppsLoading" />
-    <template v-else>
-      <router-view data-testid="app-store-router-view" />
-    </template>
+    <router-view v-else data-testid="app-store-router-view" />
   </main>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useAppsStore } from './piniaStores'
 import { AppLoadingSpinner } from '@opencloud-eu/web-pkg'
+import { useAppsStore } from './piniaStores'
 
 const appsStore = useAppsStore()
 
 const areAppsLoading = ref(true)
-const appsLoadingPromise = appsStore.loadApps()
+
 onMounted(async () => {
   try {
-    await appsLoadingPromise
+    await appsStore.loadApps()
   } catch (e) {
     console.error(e)
   } finally {

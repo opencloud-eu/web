@@ -1,53 +1,39 @@
 import { defineStore } from 'pinia'
-import { App, AppStoreRepository, RawAppListSchema } from '../types'
 import { ref, unref } from 'vue'
+import { App, AppStoreRepository, RawAppListSchema } from '../types'
 import { APPID } from '../appid'
 import { useRepositoriesStore } from './repositories'
 
-export const useAppsStore = () => {
+export const useAppsStore = defineStore(`${APPID}-apps`, () => {
   const repositoriesStore = useRepositoriesStore()
 
-  return defineStore(`${APPID}-apps`, () => {
-    const apps = ref<App[]>([])
+  const apps = ref<App[]>([])
 
-    const getById = (id: string) => {
-      return unref(apps).find((app) => app.id === id)
+  function getById(id: string) {
+    return unref(apps).find((app) => app.id === id)
+  }
+
+  async function loadAppsByRepo(repo: AppStoreRepository): Promise<App[]> {
+    try {
+      const response = await fetch(repo.url)
+      const { apps } = RawAppListSchema.parse(await response.json())
+      return apps
+        .map((app) => ({ ...app, repository: repo, mostRecentVersion: app.versions[0] }))
+        .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
+    } catch (e) {
+      console.error(e)
+      return []
     }
+  }
 
-    const loadApps = async () => {
-      const loadAppsByRepo = async (repo: AppStoreRepository): Promise<App[]> => {
-        try {
-          const data = await fetch(repo.url)
-          const appsListData = await data.json()
-          const appsList = RawAppListSchema.parse(appsListData)
-          return appsList.apps
-            .map((app) => {
-              return {
-                ...app,
-                repository: repo,
-                mostRecentVersion: app.versions[0]
-              }
-            })
-            .sort((a, b) => {
-              return a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-            })
-        } catch (e) {
-          console.error(e)
-          return []
-        }
-      }
+  async function loadApps() {
+    const appsByRepo = await Promise.all(repositoriesStore.repositories.map(loadAppsByRepo))
+    apps.value = appsByRepo.flat()
+  }
 
-      const loadAppsPromises: Promise<App[]>[] = []
-      for (const repo of repositoriesStore.repositories) {
-        loadAppsPromises.push(loadAppsByRepo(repo))
-      }
-      apps.value = (await Promise.all(loadAppsPromises)).flat()
-    }
-
-    return {
-      apps,
-      getById,
-      loadApps
-    }
-  })()
-}
+  return {
+    apps,
+    getById,
+    loadApps
+  }
+})

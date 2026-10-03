@@ -1,45 +1,36 @@
 <template>
   <oc-card
     tag="li"
-    class="app-tile bg-role-surface-container flex flex-col border overflow-hidden shadow-none"
+    class="app-tile relative bg-role-surface-container flex flex-col border overflow-hidden shadow-none"
     header-class="p-0"
+    body-class="grow flex flex-col"
   >
     <template #header>
-      <router-link
-        :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
-      >
-        <app-image-gallery :app="app" />
-      </router-link>
+      <app-cover-image :app="app" />
     </template>
-    <div class="app-tile-body flex flex-col justify-between h-full">
-      <div class="app-tile-content">
-        <div class="flex items-center">
-          <h3 class="my-2 truncate app-tile-title">
-            <router-link
-              :to="{ name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }"
-            >
-              <oc-filter-highlight :text="app.name" :term="term" />
-            </router-link>
-          </h3>
-          <span class="ml-2 text-role-on-surface-variant text-sm mt-1">
-            v{{ app.mostRecentVersion.version }}
-          </span>
-        </div>
-        <p class="my-2"><oc-filter-highlight :text="app.subtitle" :term="term" /></p>
+    <div class="app-tile-body flex flex-col grow">
+      <app-title :app="app" :term="term" title-class="my-0 app-tile-title" />
+      <p class="mt-1 mb-3"><oc-filter-highlight :text="app.subtitle" :term="term" /></p>
+      <app-tags :app="app" :term="term" @click="emit('search', $event)" />
+      <div class="app-tile-footer flex items-center justify-between gap-2 mt-auto pt-4">
+        <span
+          class="app-tile-authors truncate text-sm text-role-on-surface-variant"
+          v-text="getAuthorNames(app)"
+        />
+        <app-download-button :app="app" />
       </div>
-      <app-tags :app="app" :term="term" @click="emitSearchTerm" />
-      <app-actions :app="app" class="mt-4" />
     </div>
   </oc-card>
 </template>
 
 <script setup lang="ts">
-import { App } from '../types'
-import { APPID } from '../appid'
-import AppTags from './AppTags.vue'
-import AppActions from './AppActions.vue'
-import AppImageGallery from './AppImageGallery.vue'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
+import { App } from '../types'
+import { getAuthorNames } from '../helpers'
+import AppTags from './AppTags.vue'
+import AppTitle from './AppTitle.vue'
+import AppCoverImage from './AppCoverImage.vue'
+import AppDownloadButton from './AppDownloadButton.vue'
 
 const { app, term = '' } = defineProps<{
   app: App
@@ -49,8 +40,4 @@ const { app, term = '' } = defineProps<{
 const emit = defineEmits<{
   (e: 'search', term: string): void
 }>()
-
-const emitSearchTerm = (searchTerm: string) => {
-  emit('search', searchTerm)
-}
 </script>
