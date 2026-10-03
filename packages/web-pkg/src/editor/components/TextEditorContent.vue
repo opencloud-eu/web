@@ -4,7 +4,8 @@
     ref="contentRef"
     class="text-editor-content h-full"
     :style="{
-      '--text-editor-zoom-factor': zoomFactor
+      '--text-editor-zoom-factor': zoomFactor,
+      '--text-editor-handle-width': handleWidth
     }"
     @mousemove="scrolledAway = false"
   >
@@ -106,6 +107,12 @@ const hasSlashCommands = computed(() => {
     return false
   }
   return editor.extensionManager.extensions.some((ext) => ext.name === 'slashCommands')
+})
+
+// space next to the content for the hover controls, each button is 20px plus a 4px gap
+const handleWidth = computed(() => {
+  const buttonCount = Number(unref(hasSlashCommands)) + Number(!unref(isMobile))
+  return `${buttonCount * 1.5}rem`
 })
 
 const onDragHandleNodeChange = ({ node, pos }: { node: ProseMirrorNode | null; pos: number }) => {

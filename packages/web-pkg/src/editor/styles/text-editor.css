@@ -203,9 +203,10 @@
   margin: 12px 0;
 }
 
-/* Reduce max-width to make room for drag handle + plus button when container is narrow */
+/* Make room for the hover controls (plus button, drag handle) left of the content when the container is narrow */
 @container (max-width: 840px) {
   .text-editor-provider .text-editor-content .ProseMirror {
-    max-width: calc(100% - 6rem);
+    max-width: 100%;
+    padding-left: calc(1rem + var(--text-editor-handle-width, 3rem));
   }
 }
