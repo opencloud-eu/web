@@ -32,9 +32,8 @@ const hintId = `frontmatter-hint-${uuidV4()}`
 
 <style scoped>
 .text-editor-frontmatter-label {
-  position: absolute;
-  right: 8px;
-  top: 4px;
+  float: right;
+  margin: -4px -4px 0 8px;
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;

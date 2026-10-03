@@ -17,7 +17,7 @@
   >
     <slot />
   </component>
-  <span v-else class="inline-flex">
+  <span v-else class="inline-flex max-w-full">
     <slot />
   </span>
 </template>

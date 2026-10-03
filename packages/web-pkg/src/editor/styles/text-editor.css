@@ -162,6 +162,15 @@
 }
 
 /* Table styles */
+.text-editor-content .ProseMirror .tableWrapper {
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.text-editor-content .ProseMirror .tableWrapper table {
+  margin: 0;
+}
+
 .text-editor-content .ProseMirror table {
   border-collapse: collapse;
   margin: 8px 0;

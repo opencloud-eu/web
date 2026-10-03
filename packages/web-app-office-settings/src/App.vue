@@ -16,7 +16,9 @@
                   v-text="$gettext('Fonts available in the office documents editor.')"
                 />
               </div>
-              <div class="flex justify-between items-center my-6 gap-4">
+              <div
+                class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center my-6 gap-4"
+              >
                 <oc-file-input
                   v-model="files"
                   file-types=".ttf,.otf"
@@ -26,7 +28,7 @@
                 />
                 <oc-search-bar
                   v-model="filterTerm"
-                  class="w-3xs"
+                  class="w-full sm:w-3xs"
                   :label="$gettext('Search')"
                   :placeholder="$gettext('Search for fonts')"
                   button-hidden
