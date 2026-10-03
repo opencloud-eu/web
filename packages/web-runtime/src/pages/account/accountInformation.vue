@@ -57,7 +57,12 @@
       <oc-table-tr class="account-page-info-groups">
         <oc-table-td>{{ $gettext('Group memberships') }}</oc-table-td>
         <oc-table-td data-testid="group-names">
-          <span v-if="groupNames">{{ groupNames }}</span>
+          <oc-spinner
+            v-if="loadGroupNamesTask.isRunning"
+            size="small"
+            :aria-label="$gettext('Loading group memberships')"
+          />
+          <span v-else-if="groupNames">{{ groupNames }}</span>
           <span
             v-else
             data-testid="group-names-empty"
@@ -89,6 +94,7 @@ import {
   AVATAR_UPLOAD_MAX_FILE_SIZE_MB,
   AvatarUpload,
   useAuthStore,
+  useClientService,
   useConfigStore,
   useSpacesStore,
   useUserStore
@@ -97,8 +103,10 @@ import AccountTable from '../../components/Account/AccountTable.vue'
 import AccountHeading from '../../components/Account/AccountHeading.vue'
 import AccountLabel from '../../components/Account/AccountLabel.vue'
 import QuotaInformation from '../../components/Account/QuotaInformation.vue'
-import { computed, unref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useTask } from 'vue-concurrency'
+import { call } from '@opencloud-eu/web-client'
 
 const { $gettext } = useGettext()
 const configStore = useConfigStore()
@@ -113,9 +121,24 @@ const logoutUrl = computed(() => configStore.options.logoutUrl)
 const quota = computed(() => {
   return spacesStore.personalSpace?.spaceQuota
 })
-const groupNames = computed(() => {
-  return unref(user)
-    .memberOf.map((group) => group.displayName)
-    .join(', ')
+const clientService = useClientService()
+const groupNames = ref('')
+
+// group memberships are only shown here, so they're not loaded during bootstrap
+const loadGroupNamesTask = useTask(function* (signal) {
+  try {
+    const { memberOf = [] } = yield* call(
+      clientService.graphAuthenticated.users.getMe({ expand: ['memberOf'] }, { signal })
+    )
+    groupNames.value = memberOf.map((group) => group.displayName).join(', ')
+  } catch (e) {
+    console.error(e)
+  }
+})
+
+onMounted(() => {
+  if (authStore.userContextReady) {
+    loadGroupNamesTask.perform()
+  }
 })
 </script>
