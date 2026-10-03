@@ -180,9 +180,6 @@ onBeforeUnmount(() => {
   .oc-modal.save-as-modal {
     @apply overflow-hidden max-w-[90vw] max-sm:h-dvh max-sm:max-h-none max-sm:max-w-none max-sm:rounded-none max-sm:border-0;
   }
-  .oc-modal.save-as-modal .oc-modal-title {
-    @apply hidden;
-  }
   .oc-modal.save-as-modal .oc-modal-body {
     @apply p-0;
   }
