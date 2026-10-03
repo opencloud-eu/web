@@ -167,6 +167,42 @@ describe('buildResource', () => {
     })
   })
 
+  describe('livePhoto facet', () => {
+    it('maps the live photo facet and camel-cases its keys', () => {
+      const webDavResponse = mockDeep<WebDavResponseResource>({
+        props: {
+          [DavProperty.LivePhoto]: {
+            'content-id': 'A1B2C3D4-0000-1111-2222-333344445555',
+            'still-image-time-us': 1250000,
+            auto: true,
+            'vitality-score': 0.75,
+            'vitality-scoring-version': 4
+          } as never,
+          [DavProperty.Tags]: undefined
+        }
+      })
+      const resource = buildResource(webDavResponse)
+      expect(resource.livePhoto).toEqual({
+        contentId: 'A1B2C3D4-0000-1111-2222-333344445555',
+        stillImageTimeUs: 1250000,
+        auto: true,
+        vitalityScore: 0.75,
+        vitalityScoringVersion: 4
+      })
+    })
+
+    it('leaves livePhoto undefined when the facet is absent', () => {
+      const webDavResponse = mockDeep<WebDavResponseResource>({
+        props: {
+          [DavProperty.LivePhoto]: undefined,
+          [DavProperty.Tags]: undefined
+        }
+      })
+      const resource = buildResource(webDavResponse)
+      expect(resource.livePhoto).toBeUndefined()
+    })
+  })
+
   it('handles extraProps', () => {
     const webDavResponse = mockDeep<WebDavResponseResource>({
       props: {
