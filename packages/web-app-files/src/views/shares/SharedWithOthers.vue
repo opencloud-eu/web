@@ -27,7 +27,7 @@
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
             </div>

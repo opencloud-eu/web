@@ -61,7 +61,7 @@
       >
         <oc-icon
           size-class="size-4"
-          class="mr-1"
+          class="me-1"
           :name="testedRule.verified ? 'checkbox-circle' : 'close-circle'"
           :color="testedRule.verified ? 'var(--oc-role-on-surface)' : 'var(--oc-role-error)'"
         />

@@ -21,7 +21,7 @@
               <oc-filter-highlight :text="app.name" :term="term" />
             </router-link>
           </h3>
-          <span class="ml-2 text-role-on-surface-variant text-sm mt-1">
+          <span class="ms-2 text-role-on-surface-variant text-sm mt-1">
             v{{ app.mostRecentVersion.version }}
           </span>
         </div>

@@ -24,7 +24,7 @@
           <div
             id="sidebar-nav-mobile-panel"
             tabindex="-1"
-            class="fixed inset-y-0 left-0 sm:max-w-[85%] w-[85%] xs:w-[320px] bg-role-surface-container overflow-x-hidden"
+            class="fixed inset-y-0 inset-s-0 sm:max-w-[85%] w-[85%] xs:w-[320px] bg-role-surface-container overflow-x-hidden"
           >
             <div class="flex flex-col h-full">
               <div class="flex items-center justify-between p-4">
@@ -127,6 +127,6 @@ watch(isTablet, () => {
 
 .mobile-nav-enter-from #sidebar-nav-mobile-panel,
 .mobile-nav-leave-to #sidebar-nav-mobile-panel {
-  @apply -translate-x-full;
+  @apply -translate-x-full rtl:translate-x-full;
 }
 </style>

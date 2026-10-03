@@ -24,7 +24,7 @@
             )
           "
           :title="$gettext('Webpage or file')"
-          class="ml-1"
+          class="ms-1"
         />
       </div>
     </template>
@@ -65,7 +65,7 @@
       </li>
       <template v-if="searchResult?.values?.length">
         <li
-          class="create-shortcut-modal-search-separator text-role-on-surface-variant text-sm pl-1"
+          class="create-shortcut-modal-search-separator text-role-on-surface-variant text-sm ps-1"
         >
           <span v-text="$gettext('Link to a file')" />
         </li>
@@ -107,7 +107,7 @@
           <oc-contextual-helper
             :text="$gettext('Shortcut name as it will appear in the file list.')"
             :title="$gettext('Shortcut name')"
-            class="ml-1"
+            class="ms-1"
           />
         </div>
       </template>

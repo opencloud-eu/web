@@ -8,7 +8,7 @@
       :gap-size="filterActive ? 'small' : 'none'"
       class="oc-filter-chip-button oc-pill py-1 rounded-md h-[32px] max-w-40 focus:z-90 transition-[gap]"
       :class="{
-        'oc-filter-chip-button-selected rounded-l-md rounded-r-none pr-2 pl-3': filterActive,
+        'oc-filter-chip-button-selected rounded-s-md rounded-e-none pe-2 ps-3': filterActive,
         'px-3': !filterActive
       }"
       :appearance="buttonAppearance"
@@ -36,7 +36,7 @@
         name="arrow-down-s"
         size-class="size-4"
         fill-type="line"
-        class="ml-1"
+        class="ms-1"
       />
     </oc-button>
     <oc-drop
@@ -56,7 +56,7 @@
     <oc-button
       v-if="filterActive"
       v-oc-tooltip="$gettext('Clear filter')"
-      class="oc-filter-chip-clear px-1 rounded-l-none rounded-r-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ml-[1px] focus:z-90"
+      class="oc-filter-chip-clear px-1 rounded-s-none rounded-e-md h-[32px] not-[.oc-filter-chip-toggle_.oc-filter-chip-clear]:ms-[1px] focus:z-90"
       appearance="filled"
       color-role="secondaryContainer"
       :aria-label="$gettext('Clear filter')"

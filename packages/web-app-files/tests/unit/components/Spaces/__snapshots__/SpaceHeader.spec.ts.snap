@@ -2,7 +2,7 @@
 
 exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opened 1`] = `
 "<div class="space-header py-4 flex space-header-squashed">
-  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0 hidden lg:block"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
+  <div class="space-header-image me-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0 hidden lg:block"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -14,7 +14,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
   <div class="flex-1">
     <div class="flex items-center justify-between max-w-full">
       <div class="flex items-center max-w-full">
-        <h2 class="break-all my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
+        <h2 class="break-all my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ms-2 p-1" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
@@ -53,7 +53,7 @@ exports[`SpaceHeader > should add the "squashed"-class when the sidebar is opene
 
 exports[`SpaceHeader > space description > should show the description 1`] = `
 "<div class="space-header py-4 flex">
-  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
+  <div class="space-header-image me-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-full oc-resource-icon inline-flex items-center overflow-hidden rounded-lg"><svg data-testid="inline-svg-stub" src="icons/resource-type-space-vault-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -65,7 +65,7 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
   <div class="flex-1">
     <div class="flex items-center justify-between max-w-full">
       <div class="flex items-center max-w-full">
-        <h2 class="break-all my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
+        <h2 class="break-all my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ms-2 p-1" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
@@ -106,11 +106,11 @@ exports[`SpaceHeader > space description > should show the description 1`] = `
 
 exports[`SpaceHeader > space image > should show the set image 1`] = `
 "<div class="space-header py-4 flex">
-  <div class="space-header-image mr-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image" decoding="async"></div>
+  <div class="space-header-image me-6 aspect-[16/9] w-[180px] max-h-[100px] shrink-0"><img class="cursor-pointer rounded-lg size-full max-h-full object-cover" alt="" src="blob:image" decoding="async"></div>
   <div class="flex-1">
     <div class="flex items-center justify-between max-w-full">
       <div class="flex items-center max-w-full">
-        <h2 class="break-all my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ml-2 p-1" id="space-context-btn">
+        <h2 class="break-all my-1">space</h2> <button type="button" aria-label="Show context menu" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default ms-2 p-1" id="space-context-btn">
           <!--v-if-->
           <!-- @slot Content of the button --> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-5"><svg data-testid="inline-svg-stub" src="icons/more-2-fill.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {

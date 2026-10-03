@@ -36,7 +36,7 @@
 
 .text-editor-content .ProseMirror p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
-  float: left;
+  float: inline-start;
   color: var(--oc-role-outline-variant, rgba(0, 0, 0, 0.4));
   pointer-events: none;
   user-select: none;
@@ -80,13 +80,13 @@
 
 .text-editor-content .ProseMirror ul:not(.vs__dropdown-menu) {
   list-style-type: disc;
-  padding-left: 20px;
+  padding-inline-start: 20px;
   margin: 4px 0 8px;
 }
 
 .text-editor-content .ProseMirror ol {
   list-style-type: decimal;
-  padding-left: 20px;
+  padding-inline-start: 20px;
   margin: 4px 0 8px;
 }
 
@@ -107,8 +107,8 @@
 }
 
 .text-editor-content .ProseMirror blockquote {
-  border-left: 2px solid var(--oc-role-outline-variant);
-  padding-left: 12px;
+  border-inline-start: 2px solid var(--oc-role-outline-variant);
+  padding-inline-start: 12px;
   margin: 4px 0 8px;
   font-style: italic;
   opacity: 0.9;
@@ -172,7 +172,7 @@
 .text-editor-content .ProseMirror td {
   border: 1px solid var(--oc-role-outline-variant);
   padding: 6px 10px;
-  text-align: left;
+  text-align: start;
 }
 
 .text-editor-content .ProseMirror th {
@@ -183,7 +183,7 @@
 /* Task list styles */
 .text-editor-content .ProseMirror ul[data-type='taskList'] {
   list-style-type: none;
-  padding-left: 4px;
+  padding-inline-start: 4px;
 }
 
 .text-editor-content .ProseMirror ul[data-type='taskList'] li {

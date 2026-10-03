@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="flex w-full">
     <files-view-wrapper>
       <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes">
         <template #actions>
@@ -11,7 +11,7 @@
               :filter-label="$gettext('Type')"
               :filterable-attributes="['label']"
               :items="availableMediaTypeValues"
-              class="mr-2"
+              class="me-2"
               display-name-attribute="label"
               filter-name="mediaType"
             >
@@ -23,7 +23,7 @@
                   <resource-icon
                     :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
                   />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ms-2">{{ item.label }}</span>
                 </div>
               </template>
             </item-filter>
@@ -36,14 +36,14 @@
               :items="availableTags"
               :option-filter-label="$gettext('Filter tags')"
               :show-option-filter="true"
-              class="files-search-filter-tags mr-2"
+              class="files-search-filter-tags me-2"
               display-name-attribute="label"
               filter-name="tags"
             >
               <template #image="{ item, term }">
                 <div class="flex items-center">
                   <oc-icon name="price-tag-3" size-class="size-4" />
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </div>
               </template>
             </item-filter>
@@ -55,7 +55,7 @@
               :items="availableLastModifiedValues"
               :show-option-filter="false"
               :close-on-click="true"
-              class="files-search-filter-last-modified mr-2"
+              class="files-search-filter-last-modified me-2"
               display-name-attribute="label"
               filter-name="lastModified"
             >
@@ -68,7 +68,7 @@
               v-if="fullTextSearchEnabled"
               :filter-label="$gettext('Title only')"
               filter-name="titleOnly"
-              class="files-search-filter-title-only mr-2"
+              class="files-search-filter-title-only me-2"
             />
           </div>
         </template>

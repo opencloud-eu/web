@@ -172,7 +172,7 @@ const onClick = (event: MouseEvent) => {
     @apply inline-flex flex-row flex-wrap rounded-sm outline outline-role-secondary outline-offset-[-1px];
   }
   .oc-button-group .oc-button {
-    @apply rounded-none first:rounded-l-sm last:rounded-r-sm outline-0;
+    @apply rounded-none first:rounded-s-sm last:rounded-e-sm outline-0;
   }
 
   /* The color role classes only map their two role colors onto these custom properties,

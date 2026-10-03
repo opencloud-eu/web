@@ -1,6 +1,6 @@
 <template>
   <div
-    class="z-[var(--z-index-modal)] absolute top-[50%] transform-[translateY(-50%)] right-0 ml-4 mb-4 mt-0 mr-[34px] float-right"
+    class="z-[var(--z-index-modal)] absolute top-[50%] transform-[translateY(-50%)] inset-e-0 ms-4 mb-4 mt-0 me-[34px] float-end"
     data-testid="search-bar-filter"
     @click.stop
   >

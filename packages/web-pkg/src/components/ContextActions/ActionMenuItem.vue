@@ -33,7 +33,7 @@
         class="oc-files-context-action-label flex flex-col"
         data-testid="action-label"
       >
-        <span class="text-left" v-text="action.label(actionOptions)" />
+        <span class="text-start" v-text="action.label(actionOptions)" />
       </span>
       <span
         v-if="action.shortcut && shortcutHint"

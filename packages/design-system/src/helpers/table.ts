@@ -4,19 +4,19 @@ import { FieldType, SizeType } from './types'
 export const getTailwindXPadding = (paddingX: SizeType | 'remove', side: 'right' | 'left') => {
   switch (paddingX) {
     case 'remove':
-      return side === 'right' ? 'pr-0' : 'pl-0'
+      return side === 'right' ? 'pe-0' : 'ps-0'
     case 'xsmall':
-      return side === 'right' ? 'pr-1' : 'pl-1'
+      return side === 'right' ? 'pe-1' : 'ps-1'
     case 'small':
-      return side === 'right' ? 'pr-2' : 'pl-2'
+      return side === 'right' ? 'pe-2' : 'ps-2'
     case 'medium':
-      return side === 'right' ? 'pr-4' : 'pl-4'
+      return side === 'right' ? 'pe-4' : 'ps-4'
     case 'large':
-      return side === 'right' ? 'pr-6' : 'pl-6'
+      return side === 'right' ? 'pe-6' : 'ps-6'
     case 'xlarge':
-      return side === 'right' ? 'pr-12' : 'pl-12'
+      return side === 'right' ? 'pe-12' : 'ps-12'
     case 'xxlarge':
-      return side === 'right' ? 'pr-24' : 'pl-24'
+      return side === 'right' ? 'pe-24' : 'ps-24'
   }
 }
 

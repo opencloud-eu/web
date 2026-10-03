@@ -16,7 +16,7 @@
     </account-heading>
     <p
       v-if="authAppServiceDisabled"
-      class="ml-2"
+      class="ms-2"
       data-testid="auth-service-unavailable"
       v-text="
         $gettext(

@@ -25,14 +25,14 @@
         <div class="shrink-0">
           <oc-avatar :user-name="currentMail.from[0]?.name || currentMail.sender[0]?.name" />
         </div>
-        <div class="mail-details-userinfo flex-1 min-w-0 ml-4">
+        <div class="mail-details-userinfo flex-1 min-w-0 ms-4">
           <div class="font-bold text-lg truncate flex-1" v-text="fromName" />
           <div class="truncate" v-text="fromEmail" />
         </div>
-        <span class="mail-details-received-at shrink-0 ml-2" v-text="receivedAtRelativeDate" />
+        <span class="mail-details-received-at shrink-0 ms-2" v-text="receivedAtRelativeDate" />
       </div>
       <div class="mail-details-to mt-4">
-        <span class="mr-4" v-text="$gettext('To:')" />
+        <span class="me-4" v-text="$gettext('To:')" />
         <span class="truncate" v-text="sendToNames" />
       </div>
       <mail-appointment-list

@@ -4,7 +4,7 @@
       <li v-if="isPrevPageAvailable" class="oc-pagination-list-item">
         <component
           :is="routerLinkComponent"
-          class="oc-pagination-list-item-prev flex mr-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary [&_svg]:hover:!fill-role-on-secondary"
+          class="oc-pagination-list-item-prev flex me-2 rounded-sm hover:bg-role-secondary hover:text-role-on-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the previous page')"
           :to="previousPageLink"
         >
@@ -24,7 +24,7 @@
       <li v-if="isNextPageAvailable" class="oc-pagination-list-item">
         <component
           :is="routerLinkComponent"
-          class="oc-pagination-list-item-next flex ml-2 rounded-sm hover:bg-role-secondary [&_svg]:hover:!fill-role-on-secondary"
+          class="oc-pagination-list-item-next flex ms-2 rounded-sm hover:bg-role-secondary [&_svg]:hover:!fill-role-on-secondary"
           :aria-label="$gettext('Go to the next page')"
           :to="nextPageLink"
         >

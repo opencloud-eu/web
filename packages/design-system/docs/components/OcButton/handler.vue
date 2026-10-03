@@ -1,6 +1,6 @@
 <template>
   <oc-button @click="increaseCounter">Increase counter</oc-button>
-  <oc-button class="ml-4" @click="resetCounter">Reset counter</oc-button>
+  <oc-button class="ms-4" @click="resetCounter">Reset counter</oc-button>
   <div class="mt-4">Current count: {{ counter }}</div>
 </template>
 

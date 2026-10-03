@@ -2,7 +2,7 @@
   <div class="w-full flex items-center justify-between p-2 rounded-xl bg-role-surface-container">
     <div class="flex items-center">
       <oc-avatar-item :width="36" icon-size="medium" icon="link" name="link" />
-      <div class="grid pl-2">
+      <div class="grid ps-2">
         <span class="files-links-name truncate" v-text="linkShare.displayName" />
         <div class="flex flex-nowrap items-center">
           <link-role-dropdown
@@ -26,7 +26,7 @@
           v-if="linkShare.hasPassword"
           v-oc-tooltip="$gettext('This link is password-protected')"
           name="lock-password"
-          class="oc-files-file-link-has-password ml-1 p-1"
+          class="oc-files-file-link-has-password ms-1 p-1"
           fill-type="line"
           :aria-label="$gettext('This link is password-protected')"
         />
@@ -34,15 +34,15 @@
       <expiration-date-indicator
         v-if="linkShare.expirationDateTime"
         :expiration-date="DateTime.fromISO(linkShare.expirationDateTime)"
-        class="ml-1"
+        class="ms-1"
       />
-      <copy-link :link-share="linkShare" class="ml-1" />
+      <copy-link :link-share="linkShare" class="ms-1" />
       <edit-dropdown
         :can-rename="canRename"
         :is-modifiable="isModifiable"
         :is-password-removable="isPasswordRemovable"
         :link-share="linkShare"
-        class="ml-1"
+        class="ms-1"
         @remove-public-link="$emit('removePublicLink', $event)"
         @update-link="$emit('updateLink', $event)"
         @show-password-modal="showPasswordModal"

@@ -5,7 +5,7 @@
     :data-test-context-menu-resource-name="item.name"
     :aria-label="contextMenuLabel"
     appearance="raw"
-    class="quick-action-button ml-1 p-1"
+    class="quick-action-button ms-1 p-1"
     :class="$attrs.class"
     @click="$emit('quickActionClicked', $event)"
   >

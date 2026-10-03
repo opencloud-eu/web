@@ -18,7 +18,7 @@
           <h4 class="font-semibold my-0" v-text="$gettext('Members')" />
           <oc-button
             v-oc-tooltip="$gettext('Filter members')"
-            class="open-filter-btn ml-2"
+            class="open-filter-btn ms-2"
             :aria-label="$gettext('Filter members')"
             appearance="raw"
             :aria-expanded="isFilterOpen"
@@ -38,7 +38,7 @@
         <oc-text-input
           ref="filterInput"
           v-model="filterTerm"
-          class="space-members-filter mr-2 w-full overflow-hidden [&_label]:text-sm"
+          class="space-members-filter me-2 w-full overflow-hidden [&_label]:text-sm"
           :label="$gettext('Filter members')"
           :clear-button-enabled="true"
         />

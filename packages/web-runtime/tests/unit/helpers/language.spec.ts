@@ -3,6 +3,7 @@ import { nextTick } from 'vue'
 import type { Language, Translations } from 'vue3-gettext'
 import {
   currentLanguageLocalStorageKey,
+  isRtlLanguage,
   loadTranslations,
   resolveInitialLanguage,
   setCurrentLanguage
@@ -16,6 +17,35 @@ describe('language helpers', () => {
   beforeEach(() => {
     window.localStorage.clear()
     document.documentElement.lang = ''
+    document.documentElement.dir = ''
+  })
+
+  describe('text direction', () => {
+    it.each(['ar', 'fa', 'he', 'ur', 'ar-SA'])('treats "%s" as right-to-left', (lang) => {
+      expect(isRtlLanguage(lang)).toBe(true)
+    })
+
+    it.each(['en', 'de', 'fr-FR', ''])('treats "%s" as left-to-right', (lang) => {
+      expect(isRtlLanguage(lang)).toBe(false)
+    })
+
+    it('sets the document direction for the initial language', () => {
+      window.localStorage.setItem(currentLanguageLocalStorageKey, 'ar')
+
+      resolveInitialLanguage({ browserLanguage: 'en-US' })
+
+      expect(document.documentElement.dir).toBe('rtl')
+    })
+
+    it('updates the document direction when the language changes', async () => {
+      const language = { current: 'en', translations: {} } as unknown as Language
+
+      await setCurrentLanguage({ language, languageSetting: 'he' })
+      expect(document.documentElement.dir).toBe('rtl')
+
+      await setCurrentLanguage({ language, languageSetting: 'de' })
+      expect(document.documentElement.dir).toBe('ltr')
+    })
   })
 
   it('prefers stored language over browser language', () => {

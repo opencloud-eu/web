@@ -169,7 +169,7 @@ const triggerId = computed(() => `${idPrefix}-dropdown-trigger-${item.id}`)
 
 const rootClasses = computed(() => ({
   'bg-role-secondary-container': isItemActive(item),
-  'absolute left-0 top-0 invisible pointer-events-none': measureOnly
+  'absolute inset-s-0 top-0 invisible pointer-events-none': measureOnly
 }))
 
 const dropRefs: Record<string, ComponentPublicInstance<typeof OcDrop>> = {}

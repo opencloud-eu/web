@@ -6,21 +6,21 @@
       v-if="chooseFileName"
       ref="fileNameInputRef"
       v-model="fileName"
-      class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 [&_input]:w-auto md:[&_input]:w-sm"
+      class="flex flex-row items-center ms-0 md:ms-[230px] gap-2 [&_input]:w-auto md:[&_input]:w-sm"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
       :error-message="fileNameErrorMessage"
       :fix-message-line="true"
     />
 
-    <div class="flex items-center ml-auto">
-      <oc-button class="mr-4" data-testid="button-cancel" appearance="outline" @click="emitCancel">
+    <div class="flex items-center ms-auto">
+      <oc-button class="me-4" data-testid="button-cancel" appearance="outline" @click="emitCancel">
         {{ $gettext('Cancel') }}
       </oc-button>
       <oc-button
         v-if="!isLocationPicker && !isFilePicker"
         key="btn-share"
-        class="mr-4"
+        class="me-4"
         data-testid="button-share"
         appearance="filled"
         :disabled="isShareLinksButtonDisabled"

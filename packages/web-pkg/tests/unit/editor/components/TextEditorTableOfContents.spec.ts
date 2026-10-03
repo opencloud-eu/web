@@ -73,9 +73,9 @@ describe('TextEditorTableOfContents', () => {
     const entries = wrapper.findAll('.text-editor-table-of-contents-item')
 
     expect(entries.map((entry) => entry.text())).toEqual(['Title', 'Section', 'Other', 'Deep'])
-    expect(entries[0].attributes('style')).toContain('padding-left: 0.5rem')
-    expect(entries[1].attributes('style')).toContain('padding-left: 1.25rem')
-    expect(entries[3].attributes('style')).toContain('padding-left: 2rem')
+    expect(entries[0].attributes('style')).toContain('padding-inline-start: 0.5rem')
+    expect(entries[1].attributes('style')).toContain('padding-inline-start: 1.25rem')
+    expect(entries[3].attributes('style')).toContain('padding-inline-start: 2rem')
   })
 
   it('follows changes to the headings', async () => {
