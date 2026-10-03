@@ -42,7 +42,7 @@ Then(
   '{string} should see the motion photo control in the media viewer',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
-    // the bundled Chromium cannot decode the H.264 clip, so only the control is asserted
+    // the bundled Chromium cannot decode the H.264 video, so only the control is asserted
     await expect(resourceObject.getMotionPhotoViewerControlLocator()).toBeVisible()
   }
 )
@@ -57,7 +57,7 @@ When(
 )
 
 Then(
-  '{string} should see the motion photo clip loaded in the sidebar',
+  '{string} should see the motion photo video loaded in the sidebar',
   async ({ world }: { world: World }, stepUser: string): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await expect

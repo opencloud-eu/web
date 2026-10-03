@@ -4,6 +4,7 @@ import {
   GeoCoordinates,
   Identity,
   Image,
+  LivePhoto,
   MotionPhoto,
   Photo,
   User
@@ -55,6 +56,7 @@ export interface Resource {
   image?: Image
   photo?: Photo
   motionPhoto?: MotionPhoto
+  livePhoto?: LivePhoto
   path: string
   webDavPath?: string
   downloadURL?: string

@@ -156,7 +156,13 @@
 <script setup lang="ts">
 import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { ActionOptions, isMacOs, useFileActions, useGetMatchingSpace } from '@opencloud-eu/web-pkg'
+import {
+  ActionOptions,
+  isLivePhoto,
+  isMacOs,
+  useFileActions,
+  useGetMatchingSpace
+} from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../helpers/types'
 import { previewToolbarActionsExtensionPoint } from '../extensionPoints'
 
@@ -271,7 +277,10 @@ const imageRotateRightDescription = computed(() =>
 )
 const previousDescription = computed(() => $gettext('Show previous media file in folder'))
 const nextDescription = computed(() => $gettext('Show next media file in folder'))
-const motionDescription = computed(() =>
-  isMotionPlaying ? $gettext('Pause motion photo') : $gettext('Play motion photo')
-)
+const motionDescription = computed(() => {
+  if (isLivePhoto(files[activeIndex]?.resource)) {
+    return isMotionPlaying ? $gettext('Pause Live Photo') : $gettext('Play Live Photo')
+  }
+  return isMotionPlaying ? $gettext('Pause Motion Photo') : $gettext('Play Motion Photo')
+})
 </script>

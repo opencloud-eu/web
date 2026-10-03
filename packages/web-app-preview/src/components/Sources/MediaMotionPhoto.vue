@@ -20,16 +20,16 @@
         v-if="isLoading && !isPlaying"
         class="absolute inset-0 m-auto"
         size="large"
-        :aria-label="$gettext('Loading motion photo')"
+        :aria-label="loadingLabel"
       />
     </template>
   </media-image>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue'
+import { computed, onMounted, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { useGetMatchingSpace, useMotionPhotoPlayback } from '@opencloud-eu/web-pkg'
+import { isLivePhoto, useGetMatchingSpace, useMotionPhotoPlayback } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../../helpers/types'
 import MediaImage from './MediaImage.vue'
 
@@ -45,6 +45,12 @@ const { isPlaying, isLoading, videoUrl, play, stop, seekToStill } = useMotionPho
   () => file.resource,
   () => getMatchingSpace(file.resource)
 )
+
+const loadingLabel = computed(() => {
+  return isLivePhoto(file.resource)
+    ? $gettext('Loading Live Photo')
+    : $gettext('Loading Motion Photo')
+})
 
 // auto-play on open runs once, playback started from the controls loops
 const looping = ref(false)
