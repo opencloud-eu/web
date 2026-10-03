@@ -55,9 +55,11 @@
         <p
           class="mt-2 mb-0 text-role-on-surface-variant"
           v-text="
-            $gettext(
-              'Drop files here to upload or click the button below to select files or folders.'
-            )
+            isMobile
+              ? $gettext('Tap the button below to select files or folders.')
+              : $gettext(
+                  'Drop files here to upload or click the button below to select files or folders.'
+                )
           "
         />
         <resource-upload
@@ -140,9 +142,11 @@ import { useGettext } from 'vue3-gettext'
 import { HandleUpload } from '../HandleUpload'
 import { PublicSpaceResource, SharePermissionBit } from '@opencloud-eu/web-client'
 import { OcButton } from '@opencloud-eu/design-system/components'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const uppyService = useService<UppyService>('$uppyService')
 const { $gettext, $ngettext } = useGettext()
+const { isMobile } = useIsMobile()
 const userStore = useUserStore()
 const messageStore = useMessages()
 const themeStore = useThemeStore()
