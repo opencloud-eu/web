@@ -38,7 +38,6 @@ export const useSpaceActionsSetIcon = () => {
       title: $gettext('Set icon for »%{space}«', { space: resources[0].name }),
       hideActions: true,
       customComponent: markRaw(EmojiPickerModal),
-      elementClass: 'sm:max-w-100!',
       focusTrapInitial: false,
       onConfirm: (emoji: string) => setIconSpace(resources[0], emoji)
     })
