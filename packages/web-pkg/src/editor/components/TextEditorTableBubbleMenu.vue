@@ -2,6 +2,7 @@
   <BubbleMenu
     v-if="textEditor?.editor.value && !textEditor.readonly.value"
     :editor="textEditor.editor.value"
+    :plugin-key="pluginKey"
     :should-show="shouldShow"
     :get-referenced-virtual-element="getReferencedVirtualElement"
     :options="bubbleMenuOptions"
@@ -40,9 +41,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, unref } from 'vue'
+import { computed, inject, nextTick, unref } from 'vue'
 import { BubbleMenu } from '@tiptap/vue-3/menus'
 import type { Editor } from '@tiptap/core'
+import { PluginKey } from '@tiptap/pm/state'
 import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction } from '../composables'
@@ -54,11 +56,20 @@ const shouldShow = ({ editor }: { editor: Editor }) => editor.isActive('table')
 const menuOffsetPx = 16
 const menuHeightPx = 42
 
+const pluginKey = new PluginKey('textEditorTableBubbleMenu')
+
 const bubbleMenuOptions: BubbleMenuPluginProps['options'] = {
   placement: 'bottom',
   offset: menuOffsetPx,
   flip: false,
-  shift: false
+  shift: { padding: 8 },
+  // the actions render after the menu has been positioned, so position it again once they are in place
+  onShow: () => {
+    nextTick(() => {
+      const editor = unref(textEditor?.editor)
+      editor?.view.dispatch(editor.state.tr.setMeta(pluginKey, 'updatePosition'))
+    })
+  }
 }
 
 const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualElement'] = () => {
