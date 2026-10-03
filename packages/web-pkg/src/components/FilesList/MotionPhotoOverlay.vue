@@ -2,7 +2,7 @@
   <div class="relative" @mouseenter="player?.hoverPlay?.()" @mouseleave="player?.stop?.()">
     <slot />
     <motion-photo-player
-      v-if="isMotionPhoto"
+      v-if="showPlayer"
       ref="player"
       :resource="resource"
       :space="space"
@@ -15,9 +15,9 @@
 
 <script setup lang="ts">
 import { computed, useTemplateRef } from 'vue'
-import isEmpty from 'lodash-es/isEmpty'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import MotionPhotoPlayer from './MotionPhotoPlayer.vue'
+import { isMotionOrLivePhoto } from '../../composables'
 
 const {
   resource,
@@ -34,5 +34,5 @@ const {
 }>()
 
 const player = useTemplateRef<InstanceType<typeof MotionPhotoPlayer>>('player')
-const isMotionPhoto = computed(() => !isEmpty(resource?.motionPhoto))
+const showPlayer = computed(() => isMotionOrLivePhoto(resource))
 </script>

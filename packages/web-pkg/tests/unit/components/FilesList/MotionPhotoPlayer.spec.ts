@@ -16,6 +16,26 @@ const motionPhotoResource = (motionPhoto: unknown = { videoSize: 120000 }) =>
     motionPhoto
   }) as unknown as Resource
 
+const livePhotoStill = (contentId: string) =>
+  ({
+    id: `still-${contentId}`,
+    fileId: `still-${contentId}`,
+    path: '/IMG_0001.HEIC',
+    mimeType: 'image/heic',
+    size: 200000,
+    livePhoto: { contentId }
+  }) as unknown as Resource
+
+const livePhotoVideo = (contentId: string) =>
+  ({
+    id: `video-${contentId}`,
+    fileId: `video-${contentId}`,
+    path: '/IMG_0001.MOV',
+    mimeType: 'video/quicktime',
+    size: 300000,
+    livePhoto: { contentId, stillImageTimeUs: 1250000 }
+  }) as unknown as Resource
+
 function stubMatchMedia(hover = true) {
   window.matchMedia = vi.fn().mockImplementation((query: string) => ({
     matches: query.includes('hover: hover') ? hover : false,
@@ -45,16 +65,16 @@ describe('MotionPhotoPlayer', () => {
     const { wrapper } = getWrapper()
     const badge = wrapper.find('.motion-photo-badge')
     expect(badge.element.tagName).toBe('BUTTON')
-    expect(badge.attributes('aria-label')).toBe('Play motion photo')
+    expect(badge.attributes('aria-label')).toBe('Play Motion Photo')
     expect(wrapper.find('video').exists()).toBe(false)
   })
 
-  it('greys the badge out and explains when the clip is not playable', async () => {
+  it('greys the badge out and explains when the video is not playable', async () => {
     const { wrapper, mocks } = getWrapper({ resource: motionPhotoResource({ videoSize: 500000 }) })
     const badge = wrapper.find('.motion-photo-badge')
     expect(badge.element.tagName).toBe('SPAN')
     expect(badge.classes()).toContain('opacity-50')
-    expect(badge.attributes('aria-label')).toBe('Motion photo (clip not available)')
+    expect(badge.attributes('aria-label')).toBe('Motion Photo (video not available)')
 
     ;(wrapper.vm as unknown as { hoverPlay: () => void }).hoverPlay()
     await flushPromises()
@@ -72,7 +92,7 @@ describe('MotionPhotoPlayer', () => {
       expect.objectContaining({ headers: { Range: 'bytes=80000-' } })
     )
     expect(wrapper.find('video').attributes('src')).toBe('blob:player-video')
-    expect(wrapper.find('.motion-photo-badge').attributes('aria-label')).toBe('Pause motion photo')
+    expect(wrapper.find('.motion-photo-badge').attributes('aria-label')).toBe('Pause Motion Photo')
 
     await wrapper.find('.motion-photo-badge').trigger('click')
     expect(wrapper.find('video').exists()).toBe(false)
@@ -95,7 +115,49 @@ describe('MotionPhotoPlayer', () => {
     expect(wrapper.find('video').exists()).toBe(false)
   })
 
-  function getWrapper({ resource = motionPhotoResource() }: { resource?: Resource } = {}) {
+  describe('live photo', () => {
+    it('labels the badge as a live photo and plays the paired video', async () => {
+      const still = livePhotoStill('player-play')
+      const { wrapper, mocks } = getWrapper({
+        resource: still,
+        resources: [still, livePhotoVideo('player-play')]
+      })
+      const badge = wrapper.find('.motion-photo-badge')
+      expect(badge.element.tagName).toBe('BUTTON')
+      expect(badge.attributes('aria-label')).toBe('Play Live Photo')
+
+      await badge.trigger('click')
+      await flushPromises()
+
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledWith(
+        space,
+        { fileId: 'video-player-play' },
+        expect.anything()
+      )
+      expect(wrapper.find('video').attributes('src')).toBe('blob:player-video')
+      expect(wrapper.find('.motion-photo-badge').attributes('aria-label')).toBe('Pause Live Photo')
+    })
+
+    it('greys the badge out and explains when the paired video cannot be found', async () => {
+      const still = livePhotoStill('player-missing')
+      const { wrapper, mocks } = getWrapper({ resource: still, resources: [still] })
+      mocks.$clientService.webdav.search.mockResolvedValue({ resources: [], totalResults: 0 })
+
+      await wrapper.find('.motion-photo-badge').trigger('click')
+      await flushPromises()
+
+      const badge = wrapper.find('.motion-photo-badge')
+      expect(badge.element.tagName).toBe('SPAN')
+      expect(badge.classes()).toContain('opacity-50')
+      expect(badge.attributes('aria-label')).toBe('Live Photo (video not available)')
+      expect(wrapper.find('video').exists()).toBe(false)
+    })
+  })
+
+  function getWrapper({
+    resource = motionPhotoResource(),
+    resources = []
+  }: { resource?: Resource; resources?: Resource[] } = {}) {
     const mocks = defaultComponentMocks()
     mocks.$clientService.webdav.getFileContents.mockResolvedValue({
       response: { status: 206 },
@@ -106,7 +168,7 @@ describe('MotionPhotoPlayer', () => {
       wrapper: mount(MotionPhotoPlayer, {
         props: { resource, space },
         global: {
-          plugins: [...defaultPlugins()],
+          plugins: [...defaultPlugins({ piniaOptions: { resourcesStore: { resources } } })],
           mocks,
           provide: mocks
         }
