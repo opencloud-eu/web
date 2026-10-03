@@ -146,6 +146,16 @@ export interface YjsSession {
    * room and conflicts.
    */
   applyExternalUpdate: (update: { content: string; etag: string }) => Promise<ExternalUpdateResult>
+  /**
+   * True while a doc change waits for its debounced report, so the caller's
+   * content and dirty state don't include it yet.
+   */
+  hasPendingContent: ShallowRef<boolean>
+  /**
+   * Report a pending doc change right away. Call it before deciding about
+   * unsaved work, e.g. before saving or leaving, so the last keystrokes count.
+   */
+  flushContent: () => Promise<void>
 }
 
 const META_KEY = '_oc_meta'
@@ -318,6 +328,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   const isLockedForReload = ref(false)
   const isConflicted = shallowRef(false)
   const error = shallowRef<Error | null>(null)
+  const hasPendingContent = shallowRef(false)
 
   const effectiveReadOnly = computed(() => toValue(isReadOnly) || unref(isLockedForReload))
 
@@ -917,8 +928,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     function onDocUpdate() {
       if (!canReportContent()) return
       if (timer !== undefined) window.clearTimeout(timer)
+      hasPendingContent.value = true
       timer = window.setTimeout(() => {
         timer = undefined
+        hasPendingContent.value = false
         void report()
       }, SERIALIZE_DEBOUNCE_MS)
     }
@@ -931,11 +944,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       if (timer === undefined) return inFlight ?? Promise.resolve()
       window.clearTimeout(timer)
       timer = undefined
+      hasPendingContent.value = false
       return report()
     }
     function cancel() {
       if (timer !== undefined) window.clearTimeout(timer)
       timer = undefined
+      hasPendingContent.value = false
     }
     return { onDocUpdate, flush, cancel }
   }
@@ -1207,6 +1222,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     return Boolean(etag) && sessionMeta(doc).get('etag') === etag
   }
 
+  /** See {@link YjsSession.flushContent}. */
+  async function flushContent() {
+    // Before that, the doc only holds what hydration put there, nothing typed.
+    if (!unref(isReady)) return
+    await activeReporter?.flush()
+  }
+
   /** See {@link YjsSession.adoptEtag}. */
   function adoptEtag(etag: string) {
     const doc = unref(ydoc)
@@ -1408,6 +1430,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     serializeMerged,
     isRoomWrite,
     adoptEtag,
-    applyExternalUpdate
+    applyExternalUpdate,
+    hasPendingContent,
+    flushContent
   }
 }
