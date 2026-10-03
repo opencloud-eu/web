@@ -141,6 +141,11 @@
   position: relative;
 }
 
+/* reserve a row for the language selector so it never covers the code */
+.text-editor-content .ProseMirror .code-block pre {
+  padding-top: 28px;
+}
+
 /* Frontmatter styles */
 .text-editor-content .ProseMirror .text-editor-frontmatter {
   position: relative;
