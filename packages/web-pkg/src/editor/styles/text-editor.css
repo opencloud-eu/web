@@ -150,7 +150,8 @@
 .text-editor-content .ProseMirror .text-editor-frontmatter {
   position: relative;
   margin: 0 0 1.5rem;
-  padding: 8px 12px;
+  /* reserve a row for the label so it never covers the content */
+  padding: 28px 12px 8px;
   border: 1px dashed var(--oc-role-outline-variant);
   border-radius: 6px;
   background: var(--oc-role-surface-container-high);
