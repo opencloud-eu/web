@@ -129,6 +129,26 @@ export function useMotionPhoto() {
     return { resource: listed, space: isSameSpace ? space : getMatchingSpace(listed) }
   }
 
+  // FIXME: remove once the search REPORT returns the facets of its hits
+  // (opencloud-eu/opencloud#3652), the hit then carries the still image time
+  async function loadVideoFacets(
+    space: SpaceResource,
+    video: Resource,
+    signal?: AbortSignal
+  ): Promise<Resource> {
+    if (video.livePhoto) {
+      return video
+    }
+    try {
+      return await clientService.webdav.getFileInfo(space, { fileId: video.fileId }, { signal })
+    } catch (error) {
+      if (signal?.aborted) {
+        throw error
+      }
+      return video
+    }
+  }
+
   async function searchPairedVideo(
     resource: Resource,
     signal?: AbortSignal
@@ -142,7 +162,8 @@ export function useMotionPhoto() {
       if (!hit) {
         return null
       }
-      return { resource: hit, space: getMatchingSpace(hit) }
+      const space = getMatchingSpace(hit)
+      return { resource: await loadVideoFacets(space, hit, signal), space }
     } catch (error) {
       if (signal?.aborted) {
         throw error

@@ -307,9 +307,31 @@ describe('useMotionPhoto', () => {
       expect(fileSpace.id).toBe('other-space')
       expect(file).toEqual({ fileId: 'video-search' })
       expect(instance.getStillTimestampSeconds(still)).toBeCloseTo(1.25)
+      expect(mocks.$clientService.webdav.getFileInfo).not.toHaveBeenCalled()
     })
 
-    it('plays a video found by the search even when the hit carries no facet', async () => {
+    it('loads the facet of a search hit that comes without one', async () => {
+      const still = buildLivePhotoStill('search-facet')
+      const video = buildLivePhotoVideo('search-facet')
+      const { instance, mocks } = getWrapper({ resources: [still] })
+      mocks.$clientService.webdav.search.mockResolvedValue({
+        resources: [{ ...video, livePhoto: undefined }],
+        totalResults: 1
+      } as SearchResult)
+      mocks.$clientService.webdav.getFileInfo.mockResolvedValue(video)
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      await instance.loadVideoUrl(space, still)
+
+      const [, file] = mocks.$clientService.webdav.getFileInfo.mock.calls[0]
+      expect(file).toEqual({ fileId: 'video-search-facet' })
+      expect(instance.getStillTimestampSeconds(still)).toBeCloseTo(1.25)
+    })
+
+    it('plays a video found by the search even when its facet cannot be loaded', async () => {
       const still = buildLivePhotoStill('search-no-facet')
       const video = buildLivePhotoVideo('search-no-facet', { livePhoto: undefined })
       const { instance, mocks } = getWrapper({ resources: [still] })
@@ -317,6 +339,7 @@ describe('useMotionPhoto', () => {
         resources: [video],
         totalResults: 1
       } as SearchResult)
+      mocks.$clientService.webdav.getFileInfo.mockRejectedValue(new Error('gone'))
       mocks.$clientService.webdav.getFileContents.mockResolvedValue({
         response: { status: 200 },
         body: mp4Blob()
