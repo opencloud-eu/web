@@ -173,7 +173,7 @@ const props = defineProps<{
 const router = useRouter()
 const userStore = useUserStore()
 const { $gettext, $ngettext } = useGettext()
-const { isMobile, isTablet } = useIsMobile()
+const { isTablet } = useIsMobile()
 const { showMessage } = useMessages()
 const extensionRegistry = useExtensionRegistry()
 const clientService = useClientService()
@@ -507,13 +507,10 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
   })
 }
 
-// below the tablet breakpoint the "New" button is replaced by the floating "+" button, phones have no drag & drop
+// below the tablet breakpoint the "New" button is replaced by the floating "+" button
 const uploadHint = computed(() => {
-  if (unref(isMobile)) {
-    return $gettext('Use the "+" button to add files')
-  }
   if (unref(isTablet)) {
-    return $gettext('Drag files and folders here or use the "+" button to add files')
+    return $gettext('Use the "+" button to add files')
   }
   return $gettext('Drag files and folders here or use the "New" button to add files')
 })
