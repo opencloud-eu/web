@@ -1,5 +1,5 @@
 <template>
-  <div class="min-w-[352px]">
+  <div class="min-w-[352px] flex justify-center">
     <div v-if="isLoading" class="flex justify-center">
       <oc-spinner size="large" />
     </div>

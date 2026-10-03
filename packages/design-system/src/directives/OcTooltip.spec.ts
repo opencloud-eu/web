@@ -23,4 +23,24 @@ describe('OcTooltip', () => {
     OcTooltip.unmounted(second)
     expect(removeEventListener).toHaveBeenCalledTimes(1)
   })
+
+  it('does not show tooltips after touch input', async () => {
+    const el = document.createElement('button')
+    document.body.appendChild(el)
+    OcTooltip.beforeMount(el, { value: 'tooltip' } as DirectiveBinding<string>)
+
+    const touch = new Event('pointerdown')
+    Object.defineProperty(touch, 'pointerType', { value: 'touch' })
+    document.dispatchEvent(touch)
+    el.dispatchEvent(new Event('focus'))
+    await new Promise((resolve) => setTimeout(resolve))
+    expect(document.querySelector('[role="tooltip"]')).toBeNull()
+
+    document.dispatchEvent(new Event('keydown'))
+    el.dispatchEvent(new Event('focus'))
+    await vi.waitFor(() => expect(document.querySelector('[role="tooltip"]')).not.toBeNull())
+
+    OcTooltip.unmounted(el)
+    el.remove()
+  })
 })
