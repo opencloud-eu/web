@@ -26,7 +26,7 @@ vi.mock('@tiptap/vue-3', async (importOriginal) => {
   }
 })
 
-function mountCodeBlock(isEditable: boolean) {
+function mountCodeBlock(isEditable: boolean, language: string | null = null) {
   const updateAttributes = vi.fn()
 
   const wrapper = mount(CodeBlockComponent, {
@@ -34,7 +34,7 @@ function mountCodeBlock(isEditable: boolean) {
       view: {} as any,
       selected: false,
       editor: { isEditable } as any,
-      node: { attrs: { language: null } } as any,
+      node: { attrs: { language } } as any,
       decorations: [],
       innerDecorations: {} as any,
       extension: {
@@ -72,5 +72,12 @@ describe('CodeBlockComponent', () => {
     await select.setValue('typescript')
 
     expect(updateAttributes).toHaveBeenCalledWith({ language: 'typescript' })
+  })
+
+  it('selects languages that are not part of the list, like aliases', () => {
+    const { wrapper } = mountCodeBlock(true, 'js')
+    const select = wrapper.find<HTMLSelectElement>('.text-editor-code-block-select')
+
+    expect(select.element.value).toBe('js')
   })
 })
