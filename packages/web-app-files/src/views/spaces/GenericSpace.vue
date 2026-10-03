@@ -161,6 +161,7 @@ import { storeToRefs } from 'pinia'
 import { folderViewsFolderExtensionPoint } from '../../extensionPoints'
 import ListHeader from '../../components/FilesList/ListHeader.vue'
 import { useEventListener } from '@vueuse/core'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { RouteLocationRaw } from 'vue-router'
 
 const props = defineProps<{
@@ -172,6 +173,7 @@ const props = defineProps<{
 const router = useRouter()
 const userStore = useUserStore()
 const { $gettext, $ngettext } = useGettext()
+const { isMobile, isTablet } = useIsMobile()
 const { showMessage } = useMessages()
 const extensionRegistry = useExtensionRegistry()
 const clientService = useClientService()
@@ -505,9 +507,16 @@ const fileDropped = async (fileTarget: string | RouteLocationRaw) => {
   })
 }
 
-const uploadHint = computed(() =>
-  $gettext('Drag files and folders here or use the "New" button to add files')
-)
+// below the tablet breakpoint the "New" button is replaced by the floating "+" button, phones have no drag & drop
+const uploadHint = computed(() => {
+  if (unref(isMobile)) {
+    return $gettext('Use the "+" button to add files')
+  }
+  if (unref(isTablet)) {
+    return $gettext('Drag files and folders here or use the "+" button to add files')
+  }
+  return $gettext('Drag files and folders here or use the "New" button to add files')
+})
 
 const displayResourceAsSingleResource = computed(() => {
   if (unref(paginatedResources).length !== 1) {
