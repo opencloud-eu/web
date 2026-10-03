@@ -6,7 +6,7 @@ import {
   shallowMount
 } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { ClientService, Modal } from '@opencloud-eu/web-pkg'
+import { ClientService, Modal, useMessages } from '@opencloud-eu/web-pkg'
 import { OcButton, OcDatepicker, OcTextInput } from '@opencloud-eu/design-system/components'
 import { DateTime } from 'luxon'
 import { VueWrapper, flushPromises } from '@vue/test-utils'
@@ -95,6 +95,21 @@ describe('AppTokenModal component', () => {
       expect(btn.props('showSpinner')).toBeFalsy()
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledTimes(1)
     })
+  })
+  it('should show an error message when creating the token failed', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper } = getWrapper({ postRejects: true })
+    const { showErrorMessage } = useMessages()
+    emitNoteInput(wrapper, 'someNote')
+    emitDateInput(wrapper, DateTime.now())
+    const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
+    await wrapper.vm.$nextTick()
+    await btn.trigger('click')
+    await flushPromises()
+    expect(showErrorMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'An error occurred while creating the app token.' })
+    )
+    expect(wrapper.find('.created-token').exists()).toBeFalsy()
   })
   it('should display the created token', async () => {
     const { wrapper } = getWrapper()

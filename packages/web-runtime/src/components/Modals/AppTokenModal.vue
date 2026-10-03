@@ -77,6 +77,7 @@ import {
   Modal,
   modalActionsTarget,
   useClientService,
+  useMessages,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -90,6 +91,7 @@ defineEmits(['confirm', 'cancel'])
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
+const { showErrorMessage } = useMessages()
 const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
 
@@ -128,6 +130,10 @@ const createAppToken = async () => {
     createdToken.value = data.token
   } catch (error) {
     console.error(error)
+    showErrorMessage({
+      title: $gettext('An error occurred while creating the app token.'),
+      errors: [error]
+    })
   } finally {
     isCreating.value = false
   }
