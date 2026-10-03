@@ -201,6 +201,14 @@ Given(
 )
 
 Given(
+  '{string} waits for the live photo facet of file {string} using API',
+  async ({ world }: { world: World }, stepUser: string, pathToFile: string): Promise<void> => {
+    const user = world.usersEnvironment.getCreatedUser({ key: stepUser })
+    await api.dav.waitForLivePhotoFacet({ user, pathToFile })
+  }
+)
+
+Given(
   '{string} creates {int} file(s) in personal space using API',
   async ({ world }: { world: World }, stepUser: string, numberOfFiles: number): Promise<void> => {
     const user = world.usersEnvironment.getCreatedUser({ key: stepUser })

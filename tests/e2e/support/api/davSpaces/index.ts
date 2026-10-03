@@ -6,5 +6,6 @@ export {
   uploadFileInsideSpaceBySpaceName,
   addTagToResource,
   deleteFileInPersonalSpace,
-  waitForMotionPhotoFacet
+  waitForMotionPhotoFacet,
+  waitForLivePhotoFacet
 } from './spaces'
