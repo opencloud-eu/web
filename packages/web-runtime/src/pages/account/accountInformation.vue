@@ -103,7 +103,7 @@ import AccountTable from '../../components/Account/AccountTable.vue'
 import AccountHeading from '../../components/Account/AccountHeading.vue'
 import AccountLabel from '../../components/Account/AccountLabel.vue'
 import QuotaInformation from '../../components/Account/QuotaInformation.vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useTask } from 'vue-concurrency'
 import { call } from '@opencloud-eu/web-client'
@@ -122,7 +122,9 @@ const quota = computed(() => {
   return spacesStore.personalSpace?.spaceQuota
 })
 const clientService = useClientService()
-const groupNames = ref('')
+const groupNames = computed(() => {
+  return (unref(user).memberOf || []).map((group) => group.displayName).join(', ')
+})
 
 // group memberships are only shown here, so they're not loaded during bootstrap
 const loadGroupNamesTask = useTask(function* (signal) {
@@ -130,7 +132,7 @@ const loadGroupNamesTask = useTask(function* (signal) {
     const { memberOf = [] } = yield* call(
       clientService.graphAuthenticated.users.getMe({ expand: ['memberOf'] }, { signal })
     )
-    groupNames.value = memberOf.map((group) => group.displayName).join(', ')
+    userStore.setUser({ ...unref(user), memberOf })
   } catch (e) {
     console.error(e)
   }

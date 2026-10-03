@@ -6,7 +6,8 @@ import {
   Extension,
   ExtensionPoint,
   OptionsConfig,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
@@ -82,11 +83,20 @@ describe('account information page', () => {
         const groupNamesEmpty = wrapper.find(selectors.groupNamesEmpty)
         expect(groupNamesEmpty.exists()).toBeTruthy()
       })
-      it('displays group names', async () => {
-        const { wrapper } = getWrapper({
-          memberOf: [{ displayName: 'one' }, { displayName: 'two' }, { displayName: 'three' }]
-        })
+      it('stores the loaded group memberships in the user store', async () => {
+        const memberOf = [{ displayName: 'one' }, { displayName: 'two' }]
+        getWrapper({ memberOf })
         await flushPromises()
+
+        const userStore = useUserStore()
+        expect(userStore.setUser).toHaveBeenCalledWith(expect.objectContaining({ memberOf }))
+      })
+      it('displays group names', () => {
+        const { wrapper } = getWrapper({
+          user: mock<User>({
+            memberOf: [{ displayName: 'one' }, { displayName: 'two' }, { displayName: 'three' }]
+          })
+        })
 
         expect(wrapper.find(selectors.groupNames).text()).toBe('one, two, three')
       })
