@@ -1,9 +1,9 @@
 <template>
-  <div class="min-w-[352px]">
+  <div class="min-w-[min(352px,calc(100vw-2rem))]">
     <div v-if="isLoading" class="flex justify-center">
       <oc-spinner size="large" />
     </div>
-    <div v-else ref="emojiPickerRef"></div>
+    <div v-else ref="emojiPickerRef" class="[&_em-emoji-picker]:w-full"></div>
   </div>
 </template>
 
@@ -85,6 +85,7 @@ watch(
       i18n,
       data,
       autoFocus: true,
+      dynamicWidth: true,
       theme
     }
 
