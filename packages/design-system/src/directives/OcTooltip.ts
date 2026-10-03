@@ -12,6 +12,26 @@ interface TooltipData {
 const tooltipMap = new WeakMap<HTMLElement, TooltipData>()
 const tooltipElements = new Set<HTMLElement>()
 
+// touch devices emulate mouseenter/focus on tap and restore focus after closing menus,
+// which would leave tooltips open. track the last input type to skip tooltips after touch.
+let lastInputWasTouch = false
+if (typeof document !== 'undefined') {
+  document.addEventListener(
+    'pointerdown',
+    (event: PointerEvent) => {
+      lastInputWasTouch = event.pointerType === 'touch'
+    },
+    { capture: true, passive: true }
+  )
+  document.addEventListener(
+    'keydown',
+    () => {
+      lastInputWasTouch = false
+    },
+    { capture: true, passive: true }
+  )
+}
+
 const documentEscapeHandler = (event: KeyboardEvent) => {
   if (event.code !== 'Escape') {
     return
@@ -22,7 +42,7 @@ const documentEscapeHandler = (event: KeyboardEvent) => {
 
 const showTooltip = async (el: HTMLElement) => {
   const data = tooltipMap.get(el)
-  if (!data || data.tooltipEl) {
+  if (!data || data.tooltipEl || lastInputWasTouch) {
     return
   }
 

@@ -294,7 +294,8 @@ const fields = computed<FieldType[]>(() => [
     title: $gettext('Name'),
     type: 'slot',
     sortable: true,
-    width: 'expand'
+    width: 'expand',
+    wrap: 'truncate'
   },
   {
     name: 'manager',
@@ -347,7 +348,9 @@ const fields = computed<FieldType[]>(() => [
     title: $gettext('Actions'),
     sortable: false,
     type: 'slot',
-    alignH: 'right'
+    alignH: 'right',
+    width: 'shrink',
+    wrap: 'nowrap'
   }
 ])
 

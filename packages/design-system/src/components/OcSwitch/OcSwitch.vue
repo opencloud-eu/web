@@ -3,7 +3,12 @@
     <span class="inline-flex items-center gap-1">
       <!-- dim only the label + toggle when disabled, not the slot: an opacity on the whole
            switch would create a stacking context that traps slotted popovers (e.g. a helper) -->
-      <span :id="labelId" :class="{ 'opacity-40': disabled }" v-text="label" />
+      <span
+        :id="labelId"
+        :class="{ 'opacity-40': disabled, 'cursor-pointer': !disabled }"
+        @click="toggle"
+        v-text="label"
+      />
       <!-- @slot content rendered next to the label, e.g. a contextual helper -->
       <slot />
     </span>

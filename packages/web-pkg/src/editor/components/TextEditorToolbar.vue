@@ -127,6 +127,7 @@ import { YjsCollaborators, YjsStatusIndicator } from '../../components/Yjs'
 import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 import { hasVisibleYjsStatus } from '../../composables/yjs'
+import { useModals } from '../../composables/piniaStores'
 
 const { actionsToDisplay = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -369,6 +370,17 @@ watch(hasOverflow, (value) => {
     isOverflowMenuOpen.value = false
   }
 })
+
+// entries of nested drops (e.g. insert image) can open modals, the overflow drop must not stay on top of them
+const modalStore = useModals()
+watch(
+  () => modalStore.activeModal,
+  (modal) => {
+    if (modal) {
+      unref(overflowDropRef)?.hide?.()
+    }
+  }
+)
 
 watch(toolbarGroups, async () => {
   await nextTick()

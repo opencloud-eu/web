@@ -232,7 +232,9 @@ const fields = computed<FieldType[]>(() => [
     name: 'onPremisesSamAccountName',
     title: $gettext('User name'),
     type: 'slot',
-    sortable: true
+    sortable: true,
+    width: 'expand',
+    wrap: 'truncate'
   },
   {
     name: 'displayName',
@@ -267,7 +269,9 @@ const fields = computed<FieldType[]>(() => [
     title: $gettext('Actions'),
     sortable: false,
     type: 'slot',
-    alignH: 'right'
+    alignH: 'right',
+    width: 'shrink',
+    wrap: 'nowrap'
   }
 ])
 
