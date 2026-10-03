@@ -25,9 +25,9 @@
       <resource-icon v-else :resource="space" size-class="size-full" class="rounded-lg" />
     </div>
     <div class="flex-1">
-      <div class="flex items-center justify-between max-w-full">
-        <div class="flex items-center max-w-full">
-          <h2 class="break-all my-1">{{ space.name }}</h2>
+      <div class="flex flex-wrap items-center justify-between gap-x-4 max-w-full">
+        <div class="flex items-center min-w-0 max-w-full">
+          <h2 class="break-words min-w-0 my-1">{{ space.name }}</h2>
           <oc-button
             :id="`space-context-btn`"
             v-oc-tooltip="$gettext('Show context menu')"

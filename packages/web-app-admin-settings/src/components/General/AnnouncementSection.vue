@@ -41,7 +41,7 @@
         </text-editor-provider>
       </div>
     </div>
-    <div class="flex items-center justify-between gap-2">
+    <div class="flex flex-wrap items-center justify-between gap-2">
       <oc-switch
         :checked="enabled"
         :label="$gettext('Show banner')"
@@ -58,7 +58,7 @@
           "
         />
       </oc-switch>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 ml-auto">
         <oc-button appearance="outline" :disabled="!canPreview || isBusy" @click="preview">
           {{ $gettext('Preview') }}
         </oc-button>

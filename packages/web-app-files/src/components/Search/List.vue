@@ -3,7 +3,7 @@
     <files-view-wrapper>
       <app-bar :breadcrumbs="breadcrumbs" :has-bulk-actions="true" :view-modes="viewModes">
         <template #actions>
-          <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap my-2">
+          <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap gap-2 my-2">
             <item-filter
               v-if="availableMediaTypeValues.length"
               ref="mediaTypeFilter"
@@ -11,7 +11,6 @@
               :filter-label="$gettext('Type')"
               :filterable-attributes="['label']"
               :items="availableMediaTypeValues"
-              class="mr-2"
               display-name-attribute="label"
               filter-name="mediaType"
             >
@@ -36,7 +35,7 @@
               :items="availableTags"
               :option-filter-label="$gettext('Filter tags')"
               :show-option-filter="true"
-              class="files-search-filter-tags mr-2"
+              class="files-search-filter-tags"
               display-name-attribute="label"
               filter-name="tags"
             >
@@ -55,7 +54,7 @@
               :items="availableLastModifiedValues"
               :show-option-filter="false"
               :close-on-click="true"
-              class="files-search-filter-last-modified mr-2"
+              class="files-search-filter-last-modified"
               display-name-attribute="label"
               filter-name="lastModified"
             >
@@ -68,7 +67,7 @@
               v-if="fullTextSearchEnabled"
               :filter-label="$gettext('Title only')"
               filter-name="titleOnly"
-              class="files-search-filter-title-only mr-2"
+              class="files-search-filter-title-only"
             />
           </div>
         </template>

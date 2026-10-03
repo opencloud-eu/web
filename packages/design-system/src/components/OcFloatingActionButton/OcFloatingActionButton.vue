@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="fixed flex flex-col items-end bottom-[20px] right-[20px] z-[calc(var(--z-index-modal)-1)]"
-  >
+  <div class="fixed flex flex-col items-end bottom-[20px] right-[20px] z-99">
     <template v-if="expanded">
       <oc-button
         v-for="item in items"
