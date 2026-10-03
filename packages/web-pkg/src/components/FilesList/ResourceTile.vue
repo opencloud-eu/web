@@ -85,7 +85,7 @@
           </div>
         </resource-link>
         <motion-photo-player
-          v-if="resource.motionPhoto"
+          v-if="isMotionOrLivePhoto(resource)"
           ref="motionPlayer"
           :resource="resource"
           :space="space"
@@ -142,6 +142,7 @@ import { isSpaceResource } from '@opencloud-eu/web-client'
 import { useIsVisible } from '@opencloud-eu/design-system/composables'
 import { OcCard } from '@opencloud-eu/design-system/components'
 import {
+  isMotionOrLivePhoto,
   useFilesViewScrollContainer,
   useFolderLink,
   useResourceLink,
@@ -204,7 +205,7 @@ const resourcesStore = useResourcesStore()
 const isResourceSelected = computed(() => resourcesStore.selectedIdsSet.has(resource.id))
 // the preview is inset while selected or hovered (the whole media area, badge
 // included, so that hovering the badge does not pop the still back out) and the
-// clip follows that inset; the badge keeps the checkbox's fixed edge distance
+// video follows that inset; the badge keeps the checkbox's fixed edge distance
 const isMediaHovered = ref(false)
 const motionInset = computed(() => isResourceSelected.value || isMediaHovered.value)
 const motionVideoClass = computed(() =>

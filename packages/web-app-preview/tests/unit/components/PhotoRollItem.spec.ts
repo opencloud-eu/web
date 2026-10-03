@@ -18,7 +18,7 @@ describe('PhotoRoll component', () => {
   })
 
   it('wraps the thumbnail in a motion photo overlay for the resource', () => {
-    const item = mock<MediaFile>({ isMotionPhoto: true })
+    const item = mock<MediaFile>({ isMotionOrLivePhoto: true })
     const { wrapper } = getWrapper({ item })
     const overlay = wrapper.findComponent(MotionPhotoOverlay)
     expect(overlay.exists()).toBe(true)

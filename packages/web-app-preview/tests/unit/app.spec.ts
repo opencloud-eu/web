@@ -256,6 +256,29 @@ describe('Preview app', () => {
   })
 
   describe('Generated "mediaFiles"', () => {
+    it('flags the still of a live photo as a motion or live photo', () => {
+      const file = (name: string, extra: Partial<Resource> = {}) =>
+        ({
+          id: name,
+          fileId: name,
+          name,
+          mimeType: 'image/jpeg',
+          path: `personal/admin/${name}`,
+          hidden: false,
+          canDownload: () => true,
+          ...extra
+        }) as unknown as Resource
+      const { wrapper } = createShallowMountWrapper({
+        files: [file('live.jpg', { livePhoto: { contentId: 'preview-live' } }), file('plain.jpg')]
+      })
+      const mediaFiles = (wrapper.vm as any).mediaFiles as {
+        name: string
+        isMotionOrLivePhoto: boolean
+      }[]
+      expect(mediaFiles.find(({ name }) => name === 'live.jpg').isMotionOrLivePhoto).toBe(true)
+      expect(mediaFiles.find(({ name }) => name === 'plain.jpg').isMotionOrLivePhoto).toBe(false)
+    })
+
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {
       const { wrapper } = createShallowMountWrapper()
       expect((wrapper.vm as any).mediaFiles.length).toStrictEqual(7)
@@ -272,9 +295,11 @@ describe('Preview app', () => {
 })
 
 function createShallowMountWrapper({
-  currentFileContext
+  currentFileContext,
+  files = activeFiles
 }: {
   currentFileContext?: Partial<FileContext>
+  files?: unknown[]
 } = {}) {
   const mocks = defaultComponentMocks()
   mocks.$previewService.loadPreview.mockResolvedValue('')
@@ -290,7 +315,7 @@ function createShallowMountWrapper({
           path: 'personal/admin/bear.png',
           ...currentFileContext
         }),
-        activeFiles,
+        activeFiles: files as Resource[],
         isFolderLoading: true,
         revokeUrl,
         getUrlForResource,

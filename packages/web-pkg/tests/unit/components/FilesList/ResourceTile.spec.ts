@@ -58,6 +58,18 @@ describe('OcTile component', () => {
     ).toBeFalsy()
   })
 
+  it('mounts the motion photo player for the still of a live photo, not for its video half', () => {
+    const livePhoto = { contentId: 'tile-live' }
+    const still = { ...getSpaceMock(), mimeType: 'image/heic', livePhoto } as unknown as Resource
+    const video = {
+      ...getSpaceMock(),
+      mimeType: 'video/quicktime',
+      livePhoto
+    } as unknown as Resource
+    expect(getWrapper({ resource: still }).find('motion-photo-player-stub').exists()).toBeTruthy()
+    expect(getWrapper({ resource: video }).find('motion-photo-player-stub').exists()).toBeFalsy()
+  })
+
   it('keeps the player outside the media link and drives it from the media area hover', async () => {
     const hoverPlay = vi.fn()
     const stop = vi.fn()

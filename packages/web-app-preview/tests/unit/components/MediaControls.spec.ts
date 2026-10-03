@@ -129,6 +129,33 @@ describe('MediaControls component', () => {
   })
 })
 
+describe('motion control', () => {
+  const motionToggle = '[data-testid="motion-photo-toggle"]'
+
+  it('is labelled for a motion photo', () => {
+    const { wrapper } = getWrapper({
+      showMotionControl: true,
+      files: [{ resource: { motionPhoto: { videoSize: 120000 } } } as unknown as MediaFile]
+    })
+    expect(wrapper.find(motionToggle).attributes('aria-label')).toBe('Play Motion Photo')
+  })
+
+  it('is labelled for a live photo', async () => {
+    const { wrapper } = getWrapper({
+      showMotionControl: true,
+      files: [
+        {
+          resource: { mimeType: 'image/heic', livePhoto: { contentId: 'controls-live' } }
+        } as unknown as MediaFile
+      ]
+    })
+    expect(wrapper.find(motionToggle).attributes('aria-label')).toBe('Play Live Photo')
+
+    await wrapper.setProps({ isMotionPlaying: true })
+    expect(wrapper.find(motionToggle).attributes('aria-label')).toBe('Pause Live Photo')
+  })
+})
+
 function getWrapper(props: PartialComponentProps<typeof MediaControls> = {}) {
   const mocks = defaultComponentMocks()
 
