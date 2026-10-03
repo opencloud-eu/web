@@ -158,6 +158,7 @@ import { FolderView } from '../ui/types'
 import { storeToRefs } from 'pinia'
 import { isLocationSpacesActive, isLocationTrashActive } from '../router'
 import { PageSizeOption } from '@opencloud-eu/design-system/helpers'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const {
   perPageStoragePrefix,
@@ -231,10 +232,12 @@ const currentViewMode = computed(() => {
   return viewModes.find((viewMode) => viewMode.name === queryItemAsString(unref(viewModeQuery)))
 })
 
+// on phones the default tile size results in one huge tile per row, so default to the smallest size
+const { isMobile } = useIsMobile()
 const viewSizeQuery = unref(hasViewModes)
   ? useRouteQueryPersisted({
       name: FolderViewModeConstants.tilesSizeQueryName,
-      defaultValue: FolderViewModeConstants.tilesSizeDefault.toString()
+      defaultValue: unref(isMobile) ? '1' : FolderViewModeConstants.tilesSizeDefault.toString()
     })
   : ref<QueryValue>()
 
