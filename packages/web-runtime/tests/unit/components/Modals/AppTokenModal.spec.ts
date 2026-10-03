@@ -9,7 +9,7 @@ import { mock, mockDeep } from 'vitest-mock-extended'
 import { ClientService, Modal } from '@opencloud-eu/web-pkg'
 import { OcButton, OcDatepicker, OcTextInput } from '@opencloud-eu/design-system/components'
 import { DateTime } from 'luxon'
-import { VueWrapper } from '@vue/test-utils'
+import { VueWrapper, flushPromises } from '@vue/test-utils'
 
 const copyMock = vi.fn()
 vi.mock('@vueuse/core', async (importOriginal) => ({
@@ -61,6 +61,40 @@ describe('AppTokenModal component', () => {
       await btn.trigger('click')
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalled()
     })
+    it('should not create a second token when confirm is clicked twice in a row', async () => {
+      const { wrapper, mocks } = getWrapper({ pendingPost: true })
+      emitNoteInput(wrapper, 'someNote')
+      emitDateInput(wrapper, DateTime.now())
+      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
+      await wrapper.vm.$nextTick()
+      await btn.trigger('click')
+      await btn.trigger('click')
+      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledTimes(1)
+    })
+    it('should disable the confirm button while the token is being created', async () => {
+      const { wrapper } = getWrapper({ pendingPost: true })
+      emitNoteInput(wrapper, 'someNote')
+      emitDateInput(wrapper, DateTime.now())
+      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
+      await wrapper.vm.$nextTick()
+      expect(btn.props('disabled')).toBeFalsy()
+      await btn.trigger('click')
+      expect(btn.props('disabled')).toBeTruthy()
+      expect(btn.props('showSpinner')).toBeTruthy()
+    })
+    it('should re-enable the confirm button after creating the token failed', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const { wrapper, mocks } = getWrapper({ postRejects: true })
+      emitNoteInput(wrapper, 'someNote')
+      emitDateInput(wrapper, DateTime.now())
+      const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
+      await wrapper.vm.$nextTick()
+      await btn.trigger('click')
+      await flushPromises()
+      expect(btn.props('disabled')).toBeFalsy()
+      expect(btn.props('showSpinner')).toBeFalsy()
+      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledTimes(1)
+    })
   })
   it('should display the created token', async () => {
     const { wrapper } = getWrapper()
@@ -94,9 +128,19 @@ const emitDateInput = (wrapper: VueWrapper<typeof AppTokenModal.vm>, date: DateT
     .vm.$emit('dateChanged', { date, error: null })
 }
 
-const getWrapper = () => {
+const getWrapper = ({
+  pendingPost = false,
+  postRejects = false
+}: { pendingPost?: boolean; postRejects?: boolean } = {}) => {
   const clientService = mockDeep<ClientService>()
-  clientService.httpAuthenticated.post.mockResolvedValue(mockAxiosResolve({ token: 'token' }))
+  if (pendingPost) {
+    // a promise that never settles on its own, so the request stays in flight for the whole test
+    clientService.httpAuthenticated.post.mockReturnValue(new Promise(() => undefined))
+  } else if (postRejects) {
+    clientService.httpAuthenticated.post.mockRejectedValue(new Error('failed to create token'))
+  } else {
+    clientService.httpAuthenticated.post.mockResolvedValue(mockAxiosResolve({ token: 'token' }))
+  }
   const mocks = { ...defaultComponentMocks(), $clientService: clientService }
 
   return {

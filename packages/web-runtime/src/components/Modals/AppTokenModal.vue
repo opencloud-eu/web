@@ -18,8 +18,9 @@
     <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         :disabled="isConfirmDisabled"
+        :show-spinner="isCreating"
+        :appearance="isCreating ? 'outline' : 'filled'"
         class="oc-modal-body-actions-confirm ml-2"
-        appearance="filled"
         @click="createAppToken"
       >
         {{ $gettext('Confirm') }}
@@ -105,13 +106,19 @@ const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
 }
 
 const isConfirmDisabled = computed<boolean>(() => {
-  return !unref(tokenLabel) || !unref(expiryDate)
+  return !unref(tokenLabel) || !unref(expiryDate) || unref(isCreating)
 })
 const createdToken = ref('')
+// Guards against a second click while a request is in flight. Creating a token is
+// not idempotent: every request mints a new one, and only the last response is ever
+// displayed. The ref is set before awaiting, so the guard also covers clicks that
+// land before the re-render disables the button.
+const isCreating = ref(false)
 const createAppToken = async () => {
   if (unref(isConfirmDisabled)) {
     return
   }
+  isCreating.value = true
   try {
     const label = unref(tokenLabel)
     const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
@@ -121,6 +128,8 @@ const createAppToken = async () => {
     createdToken.value = data.token
   } catch (error) {
     console.error(error)
+  } finally {
+    isCreating.value = false
   }
 }
 </script>
