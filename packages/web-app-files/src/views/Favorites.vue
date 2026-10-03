@@ -28,6 +28,25 @@
               </template>
             </item-filter>
             <item-filter
+              v-if="availableTags.length"
+              :allow-multiple="true"
+              :filter-label="$gettext('Tags')"
+              :filterable-attributes="['label']"
+              :items="availableTags"
+              :option-filter-label="$gettext('Filter tags')"
+              :show-option-filter="true"
+              class="files-favorites-filter-tags mr-2"
+              display-name-attribute="label"
+              filter-name="tags"
+            >
+              <template #image="{ item, term }">
+                <div class="flex items-center">
+                  <oc-icon name="price-tag-3" size-class="size-4" />
+                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                </div>
+              </template>
+            </item-filter>
+            <item-filter
               v-if="availableLastModifiedValues.length"
               ref="lastModifiedFilter"
               :filter-label="$gettext('Last Modified')"
@@ -110,11 +129,14 @@ import {
   computed,
   onBeforeUnmount,
   onMounted,
+  ref,
   unref,
   useTemplateRef,
   watch
 } from 'vue'
-import { isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { useTask } from 'vue-concurrency'
+import { call, isProjectSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 import {
   useClientService,
   useSpacesStore,
@@ -167,6 +189,13 @@ const lastModifiedFilter =
 
 const lastModifiedParam = useRouteQuery('q_lastModified')
 const mediaTypeParam = useRouteQuery('q_mediaType')
+const tagParam = useRouteQuery('q_tags')
+
+const availableTags = ref<{ id: string; label: string }[]>([])
+const loadAvailableTagsTask = useTask(function* (signal) {
+  const tags = yield* call(clientService.graphAuthenticated.tags.listTags({ signal }))
+  availableTags.value = tags.map((tag) => ({ id: tag, label: tag }))
+})
 
 const availableLastModifiedValues = computed(() =>
   getLastModifiedFilterOptions(capabilityStore.searchLastMofifiedDate.keywords, $gettext)
@@ -182,12 +211,14 @@ function getFakeResourceForIcon(item: SearchMediaTypeFilterOption) {
 
 const displayFilter = computed(() => {
   return (
-    unref(availableLastModifiedValues).length || capabilityStore.searchMediaType.keywords?.length
+    unref(availableLastModifiedValues).length ||
+    capabilityStore.searchMediaType.keywords?.length ||
+    unref(availableTags).length
   )
 })
 
 const emptyStateDescription = computed(() => {
-  if (unref(lastModifiedParam) || unref(mediaTypeParam)) {
+  if (unref(lastModifiedParam) || unref(mediaTypeParam) || unref(tagParam)) {
     return $gettext('Try refining the search term or filters to get results')
   }
   return $gettext('All your favorites will show up here')
@@ -246,6 +277,10 @@ onMounted(async () => {
     }
   )
 
+  if (capabilityStore.filesTags) {
+    loadAvailableTagsTask.perform()
+  }
+
   await loadResourcesTask.perform()
   scrollToResourceFromRoute(unref(paginatedResources), 'files-app-bar')
 })
@@ -273,7 +308,7 @@ watch(selectedResourcesIds, async (ids) => {
 })
 
 watch(
-  [lastModifiedParam, mediaTypeParam],
+  [lastModifiedParam, mediaTypeParam, tagParam],
   async () => {
     await loadResourcesTask.perform()
   },
