@@ -1,5 +1,5 @@
 <template>
-  <span :id="`files-role-${(role as ShareRole).id}`" class="roles-select-role-item text-left">
+  <span :id="`files-role-${(role as ShareRole).id}`" class="roles-select-role-item text-start">
     <span
       class="font-semibold block w-full leading-4"
       v-text="$gettext((role as ShareRole).displayName)"

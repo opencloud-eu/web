@@ -2,7 +2,7 @@
   <div
     v-if="showInfo"
     id="upload-info"
-    class="rounded-xl shadow-sm/10 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg [&_.oc-resource-details]:pl-1 border"
+    class="rounded-xl shadow-sm/10 bg-role-surface mx-auto sm:m-0 w-full sm:w-md max-w-lg [&_.oc-resource-details]:ps-1 border"
   >
     <div class="upload-info-title flex justify-between items-center px-4 py-2 rounded-t-xl">
       <p v-oc-tooltip="uploadDetails" class="my-1 font-bold" v-text="uploadInfoTitle" />
@@ -38,8 +38,8 @@
         }"
       >
         <div v-if="runningUploads" class="flex items-center">
-          <oc-icon v-if="uploadsPaused" name="pause" size-class="size-4" class="mr-1" />
-          <oc-spinner v-else size="small" class="mr-1" />
+          <oc-icon v-if="uploadsPaused" name="pause" size-class="size-4" class="me-1" />
+          <oc-spinner v-else size="small" class="me-1" />
           <span class="text-sm text-role-on-surface-variant leading-7" v-text="remainingTime" />
         </div>
         <div
@@ -64,7 +64,7 @@
           <oc-button
             v-if="!runningUploads && Object.keys(errors).length && !disableActions"
             v-oc-tooltip="$gettext('Retry all failed uploads')"
-            class="ml-1 p-1"
+            class="ms-1 p-1"
             appearance="raw"
             :aria-label="$gettext('Retry all failed uploads')"
             @click="retryUploads"
@@ -82,7 +82,7 @@
             "
             id="pause-upload-info-btn"
             v-oc-tooltip="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
-            class="ml-1 p-1"
+            class="ms-1 p-1"
             appearance="raw"
             :aria-label="uploadsPaused ? $gettext('Resume upload') : $gettext('Pause upload')"
             @click="togglePauseUploads"
@@ -93,7 +93,7 @@
             v-if="runningUploads && !inPreparation && !inFinalization && !disableActions"
             id="cancel-upload-info-btn"
             v-oc-tooltip="$gettext('Cancel upload')"
-            class="ml-1 p-1"
+            class="ms-1 p-1"
             appearance="raw"
             :aria-label="$gettext('Cancel upload')"
             @click="cancelAllUploads"
@@ -131,7 +131,7 @@
               <resource-list-item
                 v-if="displayFileAsResource(item)"
                 :key="item.path"
-                class="ml-2"
+                class="ms-2"
                 :resource="item as Resource"
                 :is-path-displayed="true"
                 :is-resource-clickable="isResourceClickable(item)"
@@ -156,7 +156,7 @@
             </span>
             <span
               v-if="getUploadItemMessage(item)"
-              class="upload-info-message ml-1 text-sm"
+              class="upload-info-message ms-1 text-sm"
               :class="getUploadItemClass(item)"
               v-text="getUploadItemMessage(item)"
             ></span>

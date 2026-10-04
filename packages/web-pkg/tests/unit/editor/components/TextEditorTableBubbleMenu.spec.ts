@@ -69,9 +69,9 @@ describe('TextEditorTableBubbleMenu', () => {
     const groups = wrapper.findAll('[data-testid="bubble-menu"] > div > div')
 
     expect(groups).toHaveLength(3)
-    expect(groups[0].classes()).not.toContain('border-l')
-    expect(groups[1].classes()).toContain('border-l')
-    expect(groups[2].classes()).toContain('border-l')
+    expect(groups[0].classes()).not.toContain('border-s')
+    expect(groups[1].classes()).toContain('border-s')
+    expect(groups[2].classes()).toContain('border-s')
   })
 
   it('renders delete table as the right-most standalone group action', () => {

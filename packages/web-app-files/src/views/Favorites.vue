@@ -11,7 +11,7 @@
               :filter-label="$gettext('Type')"
               :filterable-attributes="['label']"
               :items="availableMediaTypeValues"
-              class="mr-2"
+              class="me-2"
               display-name-attribute="label"
               filter-name="mediaType"
             >
@@ -23,7 +23,7 @@
                   <resource-icon
                     :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
                   />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ms-2">{{ item.label }}</span>
                 </div>
               </template>
             </item-filter>
@@ -35,7 +35,7 @@
               :items="availableLastModifiedValues"
               :show-option-filter="false"
               :close-on-click="true"
-              class="files-favorites-filter-last-modified mr-2"
+              class="files-favorites-filter-last-modified me-2"
               display-name-attribute="label"
               filter-name="lastModified"
             >

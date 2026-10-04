@@ -2,7 +2,7 @@
   <oc-table class="w-full" :data="data" :fields="fields" padding-x="remove">
     <template #version="{ item }">
       v{{ item.version }}
-      <oc-tag v-if="item.version === app.mostRecentVersion.version" size="small" class="ml-2">
+      <oc-tag v-if="item.version === app.mostRecentVersion.version" size="small" class="ms-2">
         {{ $gettext('most recent') }}
       </oc-tag>
     </template>

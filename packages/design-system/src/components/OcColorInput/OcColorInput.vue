@@ -29,7 +29,7 @@
           />
           <oc-button
             v-if="showClearButton"
-            class="oc-color-input-btn-clear ml-1 pointer-events-auto"
+            class="oc-color-input-btn-clear ms-1 pointer-events-auto"
             appearance="raw"
             no-hover
             @click.stop="onClear"
@@ -53,7 +53,7 @@
             size-class="size-4"
             fill-type="line"
             aria-hidden="true"
-            class="mr-1"
+            class="me-1"
           />
 
           <span

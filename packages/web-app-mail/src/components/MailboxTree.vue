@@ -26,14 +26,14 @@
         >
           <div class="flex items-center justify-between w-full">
             <div class="flex items-center truncate">
-              <oc-icon name="folder" class="mr-2" fill-type="line" />
+              <oc-icon name="folder" class="me-2" fill-type="line" />
               <span class="truncate font-bold" v-text="mailbox.name" />
             </div>
             <oc-tag
               v-if="mailbox.unreadEmails"
               v-oc-tooltip="$gettext('Unread emails')"
               :rounded="true"
-              class="ml-2"
+              class="ms-2"
               appearance="filled"
               size="small"
               ><span v-text="mailbox.unreadEmails"

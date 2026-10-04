@@ -41,7 +41,7 @@
 
   ol,
   ul {
-    @apply pl-5 my-2;
+    @apply ps-5 my-2;
   }
 
   a {
@@ -81,6 +81,7 @@
   }
 
   [role="tooltip"] {
+    /* physical on purpose: the position is set via the left style */
     @apply rounded px-2 py-1 w-max max-w-xs absolute top-0 left-0 break-all z-[10000] pointer-events-none;
     background-color: var(--oc-role-inverse-surface);
     color: var(--oc-role-inverse-on-surface);

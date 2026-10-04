@@ -9,31 +9,31 @@ exports[`account information page > account information section > displays basic
     </colgroup>
     <thead class="oc-thead border-b sr-only">
       <tr data-v-98c4aba8="">
-        <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information name</th>
-        <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information value</th>
+        <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-start align-middle oc-th aria-[sort]:cursor-pointer">Information name</th>
+        <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-start align-middle oc-th aria-[sort]:cursor-pointer">Information value</th>
       </tr>
     </thead>
     <tbody>
       <tr data-v-98c4aba8="" class="account-page-info-username">
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Username</td>
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">some-username</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Username</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">some-username</td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-info-displayname">
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">First and last name</td>
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">some-displayname</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">First and last name</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">some-displayname</td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-info-email">
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Email</td>
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">some-email</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Email</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">some-email</td>
       </tr>
       <!--v-if-->
       <tr data-v-98c4aba8="" class="account-page-info-groups">
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Group memberships</td>
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Group memberships</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
       </tr>
       <tr data-v-98c4aba8="" class="account-page-logout-all-devices">
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Logout from active devices</td>
-        <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Logout from active devices</td>
+        <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="logout"><a href="https://account-manager/logout" target="_blank" class="oc-button-secondary oc-button-raw oc-button-secondary-raw gap-2 justify-center text-base min-h-4 no-hover oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-logout-url-btn">
             <!--v-if-->
             <!-- @slot Content of the button --> <span>Show devices</span>
           </a></td>
@@ -43,7 +43,7 @@ exports[`account information page > account information section > displays basic
 </div>"
 `;
 
-exports[`account information page > account information section > group membership > displays group names 1`] = `"<td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
+exports[`account information page > account information section > group membership > displays group names 1`] = `"<td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="group-names"><span>one, two, three</span></td>"`;
 
 exports[`account information page > header section > edit url button > should be displayed if defined via config 1`] = `
 "<a href="/" target="_blank" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-center text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default" data-testid="account-page-edit-url-btn">
@@ -71,7 +71,7 @@ exports[`account information page > public link context > should render a limite
   <div class="account-page-avatar bg-role-surface-container rounded-xl p-4"><input class="hidden avatar-file-input" type="file" accept="image/jpeg, image/png">
     <div class="flex flex-col md:flex-row items-center gap-6"><span class="vue-avatar--wrapper oc-avatar flex justify-center items-center shrink-0 text-center rounded-[50%] select-none" style="width: 128px; height: 128px; line-height: 128px; background-color: #b82015; font-size: 51px; font-family: Helvetica, Arial, sans-serif; color: white;" width="128" aria-hidden="true" focusable="false" data-test-user-name=""><span class="avatar-initials" style="color: white;"></span></span>
       <div class="flex flex-col items-center md:items-start gap-4">
-        <div class="text-center md:text-left">
+        <div class="text-center md:text-start">
           <div>Profile picture</div>
           <div class="text-sm text-role-on-surface-variant">Max. 10MB, JPG, PNG</div>
         </div>
@@ -108,27 +108,27 @@ exports[`account information page > public link context > should render a limite
       </colgroup>
       <thead class="oc-thead border-b sr-only">
         <tr data-v-98c4aba8="">
-          <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information name</th>
-          <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-left align-middle oc-th aria-[sort]:cursor-pointer">Information value</th>
+          <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-start align-middle oc-th aria-[sort]:cursor-pointer">Information name</th>
+          <th data-v-27e13406="" data-v-c53469a5="" class="oc-table-cell text-start align-middle oc-th aria-[sort]:cursor-pointer">Information value</th>
         </tr>
       </thead>
       <tbody>
         <tr data-v-98c4aba8="" class="account-page-info-username">
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Username</td>
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td"></td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Username</td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td"></td>
         </tr>
         <tr data-v-98c4aba8="" class="account-page-info-displayname">
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">First and last name</td>
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td"></td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">First and last name</td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td"></td>
         </tr>
         <tr data-v-98c4aba8="" class="account-page-info-email">
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Email</td>
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td"><span>No email has been set up</span></td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Email</td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td"><span>No email has been set up</span></td>
         </tr>
         <!--v-if-->
         <tr data-v-98c4aba8="" class="account-page-info-groups">
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td">Group memberships</td>
-          <td data-v-27e13406="" class="oc-table-cell text-left align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td">Group memberships</td>
+          <td data-v-27e13406="" class="oc-table-cell text-start align-middle oc-td" data-testid="group-names"><span data-testid="group-names-empty">You are not part of any group</span></td>
         </tr>
         <!--v-if-->
       </tbody>

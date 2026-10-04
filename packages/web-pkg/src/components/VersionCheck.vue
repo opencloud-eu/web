@@ -2,12 +2,12 @@
   <div v-if="isEnabled">
     <div v-if="isLoading" class="version-check-loading flex items-center">
       <span v-text="$gettext('Checking for updates')" />
-      <oc-spinner class="ml-1" size="xsmall" />
+      <oc-spinner class="ms-1" size="xsmall" />
     </div>
     <template v-else>
       <div v-if="!updateAvailable" class="version-check-no-updates flex items-center">
         <span v-text="$gettext('Up to date')" />
-        <oc-icon class="ml-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
+        <oc-icon class="ms-0.5" name="checkbox-circle" size-class="size-3" fill-type="line" />
       </div>
       <oc-button
         v-else
@@ -28,7 +28,7 @@
       </oc-button>
       <oc-tag
         v-if="showCritical"
-        class="version-check-critical !bg-red-200 !text-red-900 border-0 ml-1"
+        class="version-check-critical !bg-red-200 !text-red-900 border-0 ms-1"
         size="small"
       >
         <span v-text="$gettext('Critical')" />

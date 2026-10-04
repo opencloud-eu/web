@@ -4,7 +4,7 @@
       <div class="flex items-center px-4 pt-2">
         <oc-icon name="user-shared" />
         <h2 class="px-2" v-text="$gettext('Invite users')"></h2>
-        <oc-contextual-helper class="pl-1" v-bind="helperContent" />
+        <oc-contextual-helper class="ps-1" v-bind="helperContent" />
       </div>
       <div class="flex items-center justify-center p-4">
         <oc-button
@@ -72,7 +72,7 @@
                 v-oc-tooltip="$gettext('Copy plain token')"
                 :aria-label="$gettext('Copy plain token')"
                 appearance="raw"
-                class="ml-1"
+                class="ms-1"
                 @click="copyPlainToken(rowData)"
               >
                 <oc-icon name="file-copy" size-class="size-4" />
@@ -82,7 +82,7 @@
                 v-oc-tooltip="$gettext('Copy base64 token')"
                 :aria-label="$gettext('Copy base64 token')"
                 appearance="raw"
-                class="ml-1"
+                class="ms-1"
                 @click="copyToken(rowData)"
               >
                 <oc-icon name="code" size-class="size-4" />
@@ -92,7 +92,7 @@
                 v-oc-tooltip="$gettext('Copy Invite link')"
                 :aria-label="$gettext('Copy Invite link')"
                 appearance="raw"
-                class="ml-1"
+                class="ms-1"
                 @click="copyWayfLink(rowData)"
               >
                 <oc-icon name="link" size-class="size-4" />

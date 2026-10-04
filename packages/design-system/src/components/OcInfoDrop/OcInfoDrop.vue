@@ -26,7 +26,7 @@
             v-for="(item, index) in listItems"
             :key="index"
             :class="{
-              'ml-0': !item.headline,
+              'ms-0': !item.headline,
               'first:mt-0': item.headline,
               'font-bold': item.headline
             }"

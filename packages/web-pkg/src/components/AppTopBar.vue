@@ -6,7 +6,7 @@
       id="app-top-bar-close"
       appearance="raw-inverse"
       color-role="chrome"
-      class="mr-2"
+      class="me-2"
       :aria-label="$gettext('Close')"
       no-hover
       @click="$emit('close')"
@@ -14,7 +14,7 @@
       <oc-icon name="close" fill-type="line" />
     </oc-button>
     <div
-      class="pr-1 my-2 mx-auto sm:m-0 inline-flex items-center bg-role-chrome rounded-lg h-10 gap-2 w-full sm:w-fit"
+      class="pe-1 my-2 mx-auto sm:m-0 inline-flex items-center bg-role-chrome rounded-lg h-10 gap-2 w-full sm:w-fit"
     >
       <div class="open-file-bar flex">
         <resource-list-item

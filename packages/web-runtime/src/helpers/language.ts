@@ -1,4 +1,5 @@
 import { ApplicationInformation } from '@opencloud-eu/web-pkg'
+import { isRtlLanguage } from '@opencloud-eu/design-system/helpers'
 import { merge } from 'lodash-es'
 import { Language } from 'vue3-gettext'
 import runtimeTranslations from 'virtual:l10n/web-runtime'
@@ -35,6 +36,8 @@ function storeLanguage(language: string): void {
   window.localStorage.setItem(currentLanguageLocalStorageKey, language)
 }
 
+export { isRtlLanguage }
+
 function setDocumentLanguage(languageSetting: string): void {
   const currentLanguage = normalizeLanguage(languageSetting)
   if (!currentLanguage) {
@@ -42,6 +45,7 @@ function setDocumentLanguage(languageSetting: string): void {
   }
 
   document.documentElement.lang = currentLanguage
+  document.documentElement.dir = isRtlLanguage(currentLanguage) ? 'rtl' : 'ltr'
 }
 
 export const resolveInitialLanguage = ({

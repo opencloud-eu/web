@@ -31,7 +31,7 @@
           no-hover
           @click="onChapterClick(chapter)"
         >
-          <span v-oc-tooltip="chapter.label" class="truncate mr-2" v-text="chapter.label" />
+          <span v-oc-tooltip="chapter.label" class="truncate me-2" v-text="chapter.label" />
         </oc-button>
       </li>
       <li

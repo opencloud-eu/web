@@ -22,7 +22,7 @@
       <div
         v-show="isDraggable"
         ref="controlsRef"
-        class="drag-handle-controls flex items-center gap-1 mr-1 mt-[0.125rem]"
+        class="drag-handle-controls flex items-center gap-1 me-1 mt-[0.125rem]"
       >
         <oc-button
           v-if="hasSlashCommands"

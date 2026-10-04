@@ -12,7 +12,7 @@
         :name="copied ? 'checkbox-circle' : 'file-copy'"
         fill-type="line"
       />
-      <span class="ml-1" v-text="$gettext('Permanent link')" />
+      <span class="ms-1" v-text="$gettext('Permanent link')" />
     </oc-button>
   </div>
 </template>

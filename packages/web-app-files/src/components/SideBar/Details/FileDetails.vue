@@ -9,7 +9,7 @@
             :resource="resource"
             :space="space"
             badge-size-class="size-5"
-            badge-class="top-1 right-1"
+            badge-class="top-1 inset-e-1"
           >
             <img
               key="file-thumbnail"
@@ -46,7 +46,7 @@
       <div class="relative">
         <div
           v-if="versionsLoading || versionsError"
-          class="absolute top-0 right-0 z-20 flex items-center"
+          class="absolute top-0 inset-e-0 z-20 flex items-center"
         >
           <oc-spinner
             v-if="versionsLoading"
@@ -145,7 +145,7 @@
           <oc-contextual-helper
             v-if="contextualHelper?.isEnabled"
             v-bind="contextualHelper?.data"
-            class="pl-1"
+            class="ps-1"
           />
         </div>
         <div data-testid="tags">

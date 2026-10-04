@@ -34,7 +34,7 @@
                 <oc-checkbox
                   v-if="allowMultiple"
                   size="large"
-                  class="mr-2"
+                  class="me-2"
                   :label="$gettext('Toggle selection')"
                   :model-value="isItemSelected(item)"
                   :label-hidden="true"

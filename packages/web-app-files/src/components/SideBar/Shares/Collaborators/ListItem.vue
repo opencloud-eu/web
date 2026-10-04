@@ -23,7 +23,7 @@
             class="files-collaborators-collaborator-indicator"
           />
         </div>
-        <div class="files-collaborators-collaborator-name-wrapper pl-2 max-w-full">
+        <div class="files-collaborators-collaborator-name-wrapper ps-2 max-w-full">
           <div class="truncate">
             <span aria-hidden="true" class="files-collaborators-collaborator-name">
               <oc-filter-highlight :text="shareDisplayName" :term="filterTerm" />
@@ -55,7 +55,7 @@
             <div v-else-if="share.role">
               <span
                 v-oc-tooltip="$gettext(share.role.description)"
-                class="mr-1"
+                class="me-1"
                 v-text="$gettext(share.role.displayName)"
               />
             </div>
@@ -65,7 +65,7 @@
       <div class="flex items-center justify-end">
         <expiration-date-indicator
           v-if="hasExpirationDate"
-          class="ml-1 p-1"
+          class="ms-1 p-1"
           data-testid="recipient-info-expiration-date"
           :expiration-date="DateTime.fromISO(share.expirationDateTime)"
         />
@@ -74,10 +74,10 @@
           v-oc-tooltip="sharedViaTooltip"
           name="folder-shared"
           fill-type="line"
-          class="files-collaborators-collaborator-shared-via ml-1 p-1"
+          class="files-collaborators-collaborator-shared-via ms-1 p-1"
         />
         <edit-dropdown
-          class="ml-1"
+          class="ms-1"
           data-testid="collaborator-edit"
           :expiration-date="share.expirationDateTime ? share.expirationDateTime : null"
           :share-category="shareCategory"

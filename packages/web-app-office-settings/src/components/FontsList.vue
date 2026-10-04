@@ -98,8 +98,8 @@ const fields = computed(() => [
     title: $gettext('Name'),
     type: 'slot',
     sortable: true,
-    thClass: 'pl-4',
-    tdClass: 'pl-4'
+    thClass: 'ps-4',
+    tdClass: 'ps-4'
   },
   {
     name: 'preview',
@@ -131,8 +131,8 @@ const fields = computed(() => [
     type: 'slot',
     alignH: 'right' as const,
     width: 'shrink' as const,
-    thClass: 'pr-4',
-    tdClass: 'pr-4'
+    thClass: 'pe-4',
+    tdClass: 'pe-4'
   }
 ])
 </script>

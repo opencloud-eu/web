@@ -1,7 +1,7 @@
 <template>
   <div class="text-editor-table-of-contents sticky top-0 z-10 h-0 self-end">
     <nav
-      class="absolute top-4 right-4 flex max-h-[60vh] flex-col rounded-md border border-role-border bg-role-surface shadow-lg"
+      class="absolute top-4 inset-e-4 flex max-h-[60vh] flex-col rounded-md border border-role-border bg-role-surface shadow-lg"
       :class="{ 'w-64': !collapsed }"
       :aria-label="$gettext('Table of contents')"
     >
@@ -32,12 +32,12 @@
             <oc-button
               appearance="raw"
               justify-content="left"
-              class="text-editor-table-of-contents-item w-full rounded-sm py-1 pr-2 text-sm hover:bg-role-surface-container-highest"
+              class="text-editor-table-of-contents-item w-full rounded-sm py-1 pe-2 text-sm hover:bg-role-surface-container-highest"
               :class="{
                 'font-bold bg-role-secondary-container text-role-on-secondary-container':
                   item.id === activeId
               }"
-              :style="{ paddingLeft: `${0.5 + (item.level - 1) * 0.75}rem` }"
+              :style="{ paddingInlineStart: `${0.5 + (item.level - 1) * 0.75}rem` }"
               :title="item.textContent"
               :aria-current="item.id === activeId ? 'location' : undefined"
               @click="scrollToHeading(item)"

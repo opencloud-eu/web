@@ -11,7 +11,7 @@ exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
 				svg.insertBefore(title, svg.firstChild);
 			};
 			return svg;
-		}" aria-hidden="true" focusable="false" class="size-5"></svg></span> <span class="flex oc-files-context-action-label"><span>Actions</span></span></span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" unique-ids="false" transform-source="(svg) => {
+		}" aria-hidden="true" focusable="false" class="size-5"></svg></span> <span class="flex oc-files-context-action-label"><span>Actions</span></span></span> <span class="oc-icon box-content inline-block align-baseline [&amp;_svg]:block size-4 rtl:-scale-x-100"><svg data-testid="inline-svg-stub" src="icons/arrow-right-s-line.svg" unique-ids="false" transform-source="(svg) => {
 			if (__props.accessibleLabel !== &quot;&quot;) {
 				const title = document.createElement(&quot;title&quot;);
 				title.setAttribute(&quot;id&quot;, svgTitleId.value);
@@ -26,13 +26,13 @@ exports[`ActionMenuDropItem component > renders drop menu with actions 1`] = `
       <li><button type="button" aria-label="Copy" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
           <!--v-if-->
           <!-- @slot Content of the button -->
-          <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span class="text-left">Copy</span></span>
+          <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span class="text-start">Copy</span></span>
           <!--v-if-->
         </button></li>
       <li><button type="button" aria-label="Paste" class="oc-button-secondary oc-button-outline oc-button-secondary-outline gap-2 justify-start text-base min-h-4 oc-button cursor-pointer disabled:opacity-60 disabled:cursor-default action-menu-item align-middle w-full" data-testid="action-handler">
           <!--v-if-->
           <!-- @slot Content of the button -->
-          <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span class="text-left">Paste</span></span>
+          <!--v-if--> <span class="oc-files-context-action-label flex flex-col" data-testid="action-label"><span class="text-start">Paste</span></span>
           <!--v-if-->
         </button></li>
     </ul>

@@ -63,7 +63,7 @@
           </li>
         </template>
         <template v-else>
-          <li class="flex items-center pl-2 min-h-10.5 gap-4">
+          <li class="flex items-center ps-2 min-h-10.5 gap-4">
             <user-avatar
               :user-id="user.id"
               :user-name="user.displayName"

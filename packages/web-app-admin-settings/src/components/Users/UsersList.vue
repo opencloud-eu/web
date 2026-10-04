@@ -49,7 +49,7 @@
             :width="32"
           />
           <oc-filter-highlight
-            class="pl-2 truncate"
+            class="ps-2 truncate"
             :text="item.onPremisesSamAccountName"
             :term="filterTerm"
           />
@@ -66,12 +66,12 @@
       </template>
       <template #accountEnabled="{ item }">
         <span v-if="item.accountEnabled === false" class="flex items-center">
-          <oc-icon name="stop-circle" fill-type="line" class="mr-2" /><span
+          <oc-icon name="stop-circle" fill-type="line" class="me-2" /><span
             v-text="$gettext('Forbidden')"
           />
         </span>
         <span v-else class="flex items-center">
-          <oc-icon name="play-circle" fill-type="line" class="mr-2" /><span
+          <oc-icon name="play-circle" fill-type="line" class="me-2" /><span
             v-text="$gettext('Allowed')"
           />
         </span>
@@ -81,7 +81,7 @@
           v-oc-tooltip="$gettext('Show details')"
           :aria-label="$gettext('Show details')"
           appearance="raw"
-          class="ml-1 quick-action-button p-1 users-table-btn-details"
+          class="ms-1 quick-action-button p-1 users-table-btn-details"
           @click="showDetails(item)"
         >
           <oc-icon name="information" fill-type="line" />
@@ -90,7 +90,7 @@
           v-oc-tooltip="$gettext('Edit')"
           :aria-label="$gettext('Edit')"
           appearance="raw"
-          class="ml-1 quick-action-button p-1 users-table-btn-edit"
+          class="ms-1 quick-action-button p-1 users-table-btn-edit"
           @click="showEditPanel(item)"
         >
           <oc-icon name="pencil" fill-type="line" />

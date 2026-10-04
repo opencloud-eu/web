@@ -6,7 +6,7 @@
   >
     <user-avatar
       v-if="isAnyUserShareType"
-      class="mr-2"
+      class="me-2"
       :user-id="item.id"
       :user-name="item.displayName"
     />
@@ -16,7 +16,7 @@
       :name="shareTypeKey"
       :icon="shareTypeIcon"
       icon-size="medium"
-      class="mr-2"
+      class="me-2"
     />
     <div class="truncate">
       <span class="files-collaborators-autocomplete-username">

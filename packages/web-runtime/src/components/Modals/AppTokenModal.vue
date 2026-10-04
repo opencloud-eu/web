@@ -18,7 +18,7 @@
     <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         :disabled="isConfirmDisabled"
-        class="oc-modal-body-actions-confirm ml-2"
+        class="oc-modal-body-actions-confirm ms-2"
         appearance="filled"
         @click="createAppToken"
       >
@@ -43,14 +43,14 @@
           <oc-button
             v-oc-tooltip="$gettext('Copy app token to clipboard')"
             appearance="raw"
-            class="copy-app-token-btn ml-2 p-1"
+            class="copy-app-token-btn ms-2 p-1"
             :aria-label="$gettext('Copy app token to clipboard')"
             @click="copy(createdToken)"
           >
             <oc-icon :name="copied ? 'check' : 'file-copy'" fill-type="line" />
           </oc-button>
         </div>
-        <div class="text-sm text-right mt-2">
+        <div class="text-sm text-end mt-2">
           <span v-text="$gettext('Expires on:')" />
           <span v-text="formatDateFromDateTime(expiryDate, currentLanguage)" />
         </div>
@@ -58,7 +58,7 @@
     </div>
     <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
-        class="oc-modal-body-actions-confirm ml-2"
+        class="oc-modal-body-actions-confirm ms-2"
         appearance="filled"
         @click="$emit('confirm')"
       >
