@@ -2,7 +2,7 @@
   <no-content-message
     v-if="!filteredExtensions.length"
     id="admin-settings-extensions-empty-filtered"
-    img-src="images/illustrations/extensions.svg"
+    img-src="images/illustrations/apps.svg"
   >
     <template #message>
       <span v-text="$gettext('No apps found')" />
