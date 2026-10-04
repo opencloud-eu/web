@@ -28,9 +28,33 @@ describe('useSearch', () => {
       expect(withTerm.values.map((r) => r.data)[0].id).toEqual('2')
     })
   })
+  describe('method "buildSearchTerm"', () => {
+    it('matches the term against names, contents and tags', () => {
+      const wrapper = createWrapper({ searchProperties: { content: true, tag: true } })
+      expect(wrapper.vm.buildSearchTerm({ term: 'test' })).toBe(
+        '(name:"*test*" OR content:"test" OR tag:"*test*")'
+      )
+    })
+    it('does not match tags if the server does not support searching them', () => {
+      const wrapper = createWrapper({ searchProperties: { content: true, tag: false } })
+      expect(wrapper.vm.buildSearchTerm({ term: 'test' })).toBe('(name:"*test*" OR content:"test")')
+    })
+    it('only matches names in a title only search', () => {
+      const wrapper = createWrapper({ searchProperties: { content: true, tag: true } })
+      expect(wrapper.vm.buildSearchTerm({ term: 'test', isTitleOnlySearch: true })).toBe(
+        'name:"*test*"'
+      )
+    })
+  })
 })
 
-const createWrapper = ({ resources = [] }: { resources?: SearchResource[] } = {}) => {
+const createWrapper = ({
+  resources = [],
+  searchProperties = { content: false, tag: false }
+}: {
+  resources?: SearchResource[]
+  searchProperties?: { content: boolean; tag: boolean }
+} = {}) => {
   const spaces = [
     {
       id: '1',
@@ -48,7 +72,13 @@ const createWrapper = ({ resources = [] }: { resources?: SearchResource[] } = {}
 
   const mocks = defaultComponentMocks({})
   const capabilities = {
-    spaces: { projects: true }
+    spaces: { projects: true },
+    search: {
+      property: {
+        content: { enabled: searchProperties.content },
+        tag: { enabled: searchProperties.tag }
+      }
+    }
   } satisfies Partial<CapabilityStore['capabilities']>
 
   mocks.$clientService.webdav.search.mockResolvedValue({
@@ -58,10 +88,11 @@ const createWrapper = ({ resources = [] }: { resources?: SearchResource[] } = {}
 
   return getComposableWrapper(
     () => {
-      const { search } = useSearch()
+      const { search, buildSearchTerm } = useSearch()
 
       return {
-        search
+        search,
+        buildSearchTerm
       }
     },
     {

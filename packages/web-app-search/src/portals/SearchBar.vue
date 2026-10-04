@@ -134,14 +134,13 @@ import {
   isLocationSpacesActive,
   queryItemAsString,
   useAuthStore,
-  useCapabilityStore,
   useIsAppActive,
   useKeyboardActions,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { storeToRefs } from 'pinia'
 import { debounce } from 'lodash-es'
-import { useRouteQuery, useRouter } from '@opencloud-eu/web-pkg'
+import { useRouteQuery, useRouter, useSearch } from '@opencloud-eu/web-pkg'
 import { eventBus } from '@opencloud-eu/web-pkg'
 import {
   ComponentPublicInstance,
@@ -163,8 +162,8 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useGettext } from 'vue3-gettext'
 
 const router = useRouter()
+const { buildSearchTerm } = useSearch()
 const { $gettext, $ngettext } = useGettext()
-const capabilityStore = useCapabilityStore()
 const showCancelButton = ref(false)
 const { isMobile } = useIsMobile()
 const scopeQueryValue = useRouteQuery('scope')
@@ -191,8 +190,6 @@ const searchResults = ref<
 >([])
 const loading = ref(false)
 const currentFolderAvailable = ref(false)
-
-const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
 
 const listProviderAvailable = computed(() => unref(availableProviders).some((p) => !!p.listSearch))
 
@@ -277,18 +274,11 @@ async function search() {
     return
   }
 
-  const terms: string[] = []
-
-  let nameQuery = `name:"*${unref(term)}*"`
-  if (unref(fullTextSearchEnabled)) {
-    nameQuery = `(name:"*${unref(term)}*" OR content:"${unref(term)}")`
-  }
-
-  terms.push(nameQuery)
-
-  if (unref(useScope)) {
-    terms.push(`scope:${unref(scope)}`)
-  }
+  const query = buildSearchTerm({
+    term: unref(term),
+    scope: unref(scope),
+    useScope: unref(useScope)
+  })
 
   loading.value = true
 
@@ -296,7 +286,7 @@ async function search() {
     if (availableProvider.previewSearch?.available) {
       searchResults.value.push({
         providerId: availableProvider.id,
-        result: await availableProvider.previewSearch.search(terms.join(' '))
+        result: await availableProvider.previewSearch.search(query)
       })
     }
   }
