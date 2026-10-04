@@ -125,12 +125,19 @@ describe('List component', () => {
   describe('filter', () => {
     describe('general', () => {
       it('should not be rendered if no filtering is available', async () => {
-        const { wrapper } = getWrapper({ fullTextSearchEnabled: false, availableTags: [] })
+        const { wrapper } = getWrapper({ fullTextSearchEnabled: false, filesTags: false })
         await flushPromises()
         expect(wrapper.find(selectors.filter).exists()).toBeFalsy()
       })
     })
     describe('tags', () => {
+      it('shows the tag filter with a hint if no tags exist yet', async () => {
+        const { wrapper } = getWrapper({ availableTags: [] })
+        await flushPromises()
+        const tagFilter = wrapper.findComponent<typeof ItemFilter>(selectors.tagFilter)
+        expect(tagFilter.exists()).toBeTruthy()
+        expect(tagFilter.props('noItemsMessage')).toBeTruthy()
+      })
       it('should show all available tags', async () => {
         const tag = 'tag1'
         const { wrapper } = getWrapper({ availableTags: [tag] })
@@ -238,6 +245,7 @@ function getWrapper({
   tagFilterQuery = null,
   titleOnlyFilterQuery = null,
   fullTextSearchEnabled = true,
+  filesTags = true,
   availableLastModifiedValues = {},
   lastModifiedFilterQuery = null,
   mocks = {},
@@ -250,6 +258,7 @@ function getWrapper({
   tagFilterQuery?: string
   titleOnlyFilterQuery?: string
   fullTextSearchEnabled?: boolean
+  filesTags?: boolean
   availableLastModifiedValues?: Record<string, string[]>
   lastModifiedFilterQuery?: string
   mocks?: Record<string, unknown>
@@ -280,7 +289,7 @@ function getWrapper({
   localMocks.$clientService.graphAuthenticated.tags.listTags.mockResolvedValue(availableTags)
 
   const capabilities = {
-    files: { tags: true },
+    files: { tags: filesTags },
     search: {
       property: {
         mtime: availableLastModifiedValues,

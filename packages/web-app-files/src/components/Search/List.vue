@@ -27,7 +27,7 @@
               </template>
             </item-filter>
             <item-filter
-              v-if="availableTags.length"
+              v-if="capabilityStore.filesTags"
               ref="tagFilter"
               :allow-multiple="true"
               :filter-label="$gettext('Tags')"
@@ -35,6 +35,11 @@
               :items="availableTags"
               :option-filter-label="$gettext('Filter tags')"
               :show-option-filter="true"
+              :no-items-message="
+                $gettext(
+                  'No tags yet. Add tags to files and folders in the details panel to filter by them.'
+                )
+              "
               class="files-search-filter-tags"
               display-name-attribute="label"
               filter-name="tags"
@@ -294,7 +299,7 @@ const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enab
 const displayFilter = computed(() => {
   return (
     unref(fullTextSearchEnabled) ||
-    unref(availableTags).length ||
+    capabilityStore.filesTags ||
     capabilityStore.searchLastMofifiedDate?.enabled
   )
 })

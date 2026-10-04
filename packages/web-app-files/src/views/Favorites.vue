@@ -28,13 +28,18 @@
               </template>
             </item-filter>
             <item-filter
-              v-if="availableTags.length"
+              v-if="capabilityStore.filesTags"
               :allow-multiple="true"
               :filter-label="$gettext('Tags')"
               :filterable-attributes="['label']"
               :items="availableTags"
               :option-filter-label="$gettext('Filter tags')"
               :show-option-filter="true"
+              :no-items-message="
+                $gettext(
+                  'No tags yet. Add tags to files and folders in the details panel to filter by them.'
+                )
+              "
               class="files-favorites-filter-tags mr-2"
               display-name-attribute="label"
               filter-name="tags"
@@ -213,7 +218,7 @@ const displayFilter = computed(() => {
   return (
     unref(availableLastModifiedValues).length ||
     capabilityStore.searchMediaType.keywords?.length ||
-    unref(availableTags).length
+    capabilityStore.filesTags
   )
 })
 

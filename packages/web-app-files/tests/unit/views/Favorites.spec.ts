@@ -131,6 +131,20 @@ describe('Favorites view', () => {
         { id: 'private', label: 'private' }
       ])
     })
+    it('shows the tag filter with a hint if no tags exist yet', async () => {
+      const { wrapper } = getMountedWrapper({
+        capabilities: { files: { tags: true } } as Partial<Capabilities['capabilities']>,
+        tags: []
+      })
+      await flushPromises()
+
+      const tagFilter = wrapper
+        .findAllComponents<typeof ItemFilter>('item-filter-stub')
+        .find((component) => component.props('filterName') === 'tags')
+
+      expect(tagFilter.props('items')).toEqual([])
+      expect(tagFilter.props('noItemsMessage')).toBeTruthy()
+    })
     it('does not load tags if tags are not supported', async () => {
       const { wrapper, mocks } = getMountedWrapper({
         capabilities: { files: { tags: false } } as Partial<Capabilities['capabilities']>,
