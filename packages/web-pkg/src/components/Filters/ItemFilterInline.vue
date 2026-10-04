@@ -8,7 +8,7 @@
         v-for="(option, index) in filterOptions"
         :id="option.name"
         :key="index"
-        class="item-inline-filter-option py-1 px-2 first:rounded-l-md last:rounded-r-md h-[32px]"
+        class="item-inline-filter-option py-1 px-2 first:rounded-s-md last:rounded-e-md h-[32px]"
         :class="{
           'item-inline-filter-option-selected': activeOption === option.name
         }"

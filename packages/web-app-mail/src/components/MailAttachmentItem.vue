@@ -2,7 +2,7 @@
   <div class="mail-attachment-item flex justify-between items-center">
     <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
       <oc-icon :icon="icon" size-class="size-8" class="inline-flex items-center" />
-      <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
+      <div class="mail-attachment-item-details flex ms-2 flex-col min-w-0">
         <span
           class="mail-attachment-item-filename truncate"
           :title="attachment.name"
@@ -11,7 +11,7 @@
         <span class="mail-attachment-item-size mt-1" v-text="readableFileSize" />
       </div>
     </div>
-    <div class="mail-attachment-item-actions ml-1 flex items-center">
+    <div class="mail-attachment-item-actions ms-1 flex items-center">
       <oc-button
         v-if="mode === 'compose'"
         appearance="raw"

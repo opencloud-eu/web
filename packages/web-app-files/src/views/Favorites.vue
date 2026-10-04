@@ -11,7 +11,7 @@
               :filter-label="$gettext('Type')"
               :filterable-attributes="['label']"
               :items="availableMediaTypeValues"
-              class="mr-2"
+              class="me-2"
               display-name-attribute="label"
               filter-name="mediaType"
             >
@@ -23,7 +23,7 @@
                   <resource-icon
                     :resource="getFakeResourceForIcon(item as SearchMediaTypeFilterOption)"
                   />
-                  <span class="ml-2">{{ item.label }}</span>
+                  <span class="ms-2">{{ item.label }}</span>
                 </div>
               </template>
             </item-filter>
@@ -41,7 +41,7 @@
                   'No tags yet. Add tags to files and folders in the details panel to filter by them.'
                 )
               "
-              class="files-favorites-filter-tags mr-2"
+              class="files-favorites-filter-tags me-2"
               display-name-attribute="label"
               filter-name="tags"
             >
@@ -49,7 +49,7 @@
                 <oc-icon name="price-tag-3" size-class="size-4" class="flex" />
               </template>
               <template #item="{ item, term }">
-                <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
               </template>
             </item-filter>
             <item-filter
@@ -60,7 +60,7 @@
               :items="availableLastModifiedValues"
               :show-option-filter="false"
               :close-on-click="true"
-              class="files-favorites-filter-last-modified mr-2"
+              class="files-favorites-filter-last-modified me-2"
               display-name-attribute="label"
               filter-name="lastModified"
             >

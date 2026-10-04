@@ -29,12 +29,12 @@ p {
 
 ul,
 ol {
-  padding-left: 1.5em;
+  padding-inline-start: 1.5em;
 }
 
 ul[data-type='taskList'] {
   list-style: none;
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 ul[data-type='taskList'] li {
@@ -59,8 +59,8 @@ ul[data-type='taskList'] li > div > p {
 
 blockquote {
   margin: 1em 0;
-  padding-left: 1em;
-  border-left: 3px solid #ccc;
+  padding-inline-start: 1em;
+  border-inline-start: 3px solid #ccc;
 }
 
 pre {
@@ -102,7 +102,7 @@ th,
 td {
   padding: 0.5em;
   border: 1px solid #ccc;
-  text-align: left;
+  text-align: start;
 }
 
 th {

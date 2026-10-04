@@ -31,7 +31,7 @@
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
               <item-filter
@@ -56,7 +56,7 @@
                   <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
                 </template>
                 <template #item="{ item, term }">
-                  <span class="ml-2"
+                  <span class="ms-2"
                     ><oc-filter-highlight :text="item.displayName" :term="term"
                   /></span>
                 </template>

@@ -7,30 +7,35 @@
     :data-test-resource-type="type"
     :title="htmlTitle"
   >
-    <template v-if="truncateName">
-      <span class="truncate leading-snug"
-        ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
-          ><oc-filter-highlight :text="displayName" :term="term" /></span></span
-      ><span
-        v-if="showExtension"
-        class="oc-resource-extension shrink-0 whitespace-pre text-role-on-surface leading-snug"
-        ><oc-filter-highlight :text="displayExtension" :term="term"
-      /></span>
-    </template>
-    <span v-else class="min-w-0 leading-snug"
-      ><span class="oc-resource-basename wrap-anywhere text-role-on-surface"
-        ><template v-if="showExtension"
-          ><oc-filter-highlight :text="displayNameHead" :term="term" /><span
-            class="whitespace-nowrap"
-            ><oc-filter-highlight :text="displayNameTail" :term="term" /><span
-              class="oc-resource-extension text-role-on-surface"
-              ><oc-filter-highlight :text="displayExtension" :term="term" /></span></span></template
-        ><oc-filter-highlight v-else :text="displayName" :term="term" /></span
-    ></span>
+    <!-- file names keep their left-to-right order in right-to-left layouts -->
+    <span dir="ltr" class="oc-resource-full-name flex items-center min-w-0">
+      <template v-if="truncateName">
+        <span class="truncate min-w-0 leading-snug"
+          ><span class="oc-resource-basename whitespace-pre text-role-on-surface"
+            ><oc-filter-highlight :text="displayName" :term="term" /></span></span
+        ><span
+          v-if="showExtension"
+          class="oc-resource-extension shrink-0 whitespace-pre text-role-on-surface leading-snug"
+          ><oc-filter-highlight :text="displayExtension" :term="term"
+        /></span>
+      </template>
+      <span v-else class="min-w-0 leading-snug"
+        ><span class="oc-resource-basename wrap-anywhere text-role-on-surface"
+          ><template v-if="showExtension"
+            ><oc-filter-highlight :text="displayNameHead" :term="term" /><span
+              class="whitespace-nowrap"
+              ><oc-filter-highlight :text="displayNameTail" :term="term" /><span
+                class="oc-resource-extension text-role-on-surface"
+                ><oc-filter-highlight
+                  :text="displayExtension"
+                  :term="term" /></span></span></template
+          ><oc-filter-highlight v-else :text="displayName" :term="term" /></span
+      ></span>
+    </span>
     <oc-icon
       v-if="isFavoriteDisplayed && isFavorite"
       name="star"
-      class="oc-resource-favorite ml-1"
+      class="oc-resource-favorite ms-1"
       :accessible-label="$gettext('Favorite')"
     />
   </span>

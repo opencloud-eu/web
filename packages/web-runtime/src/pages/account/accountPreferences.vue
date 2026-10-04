@@ -33,7 +33,7 @@
               class="mt-1 inline-flex items-center"
             >
               <span v-text="$gettext('Help to translate')" />
-              <oc-icon class="ml-1" size-class="size-4" fill-type="line" name="service" />
+              <oc-icon class="ms-1" size-class="size-4" fill-type="line" name="service" />
             </a>
           </oc-table-td>
         </oc-table-tr>

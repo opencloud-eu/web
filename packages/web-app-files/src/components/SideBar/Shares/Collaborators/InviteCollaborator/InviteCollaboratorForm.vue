@@ -13,7 +13,7 @@
           <oc-contextual-helper
             v-if="contextualHelper?.isEnabled"
             v-bind="contextualHelper?.data"
-            class="pl-1"
+            class="ps-1"
           />
         </div>
         <copy-private-link :resource="resource" />
@@ -66,7 +66,7 @@
           <oc-filter-chip
             v-if="showShareTypeFilter"
             :filter-label="$gettext('Share type')"
-            class="invite-form-share-role-type [&_.oc-filter-chip-button]:py-0 [&_.oc-filter-chip-button]:h-6 [&_.oc-filter-chip-button]:pr-0 [&_.oc-drop]:w-3xs"
+            class="invite-form-share-role-type [&_.oc-filter-chip-button]:py-0 [&_.oc-filter-chip-button]:h-6 [&_.oc-filter-chip-button]:pe-0 [&_.oc-drop]:w-3xs"
             raw
             close-on-click
             size="small"
@@ -109,12 +109,12 @@
         <expiration-date-indicator
           v-if="expirationDate"
           :expiration-date="DateTime.fromISO(expirationDate)"
-          class="ml-1 p-1"
+          class="ms-1 p-1"
           data-testid="recipient-info-expiration-date"
         />
         <oc-button
           id="show-more-share-options-btn"
-          class="ml-1 p-1"
+          class="ms-1 p-1"
           :aria-label="$gettext('Show more actions')"
           appearance="raw"
         >
@@ -145,7 +145,7 @@
         <oc-button
           id="new-collaborators-form-create-button"
           key="new-collaborator-save-button"
-          class="ml-2 px-7"
+          class="ms-2 px-7"
           data-testid="new-collaborators-form-create-button"
           :disabled="!isValid || saving"
           :appearance="saving ? 'outline' : 'filled'"

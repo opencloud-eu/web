@@ -13,7 +13,7 @@
           <oc-image
             :src="logoWithVersion"
             :alt="sidebarLogoAlt"
-            class="oc-logo-image align-middle ml-1 h-[28px] md:h-[36px] w-auto select-none"
+            class="oc-logo-image align-middle ms-1 h-[28px] md:h-[36px] w-auto select-none"
           />
         </picture>
       </router-link>

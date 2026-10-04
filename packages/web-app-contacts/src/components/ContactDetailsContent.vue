@@ -26,7 +26,7 @@
           <span class="font-bold" v-text="section.title" />
         </div>
         <oc-button
-          class="ml-auto"
+          class="ms-auto"
           appearance="raw"
           no-hover
           :aria-label="collapsed[section.key] ? $gettext('Expand') : $gettext('Collapse')"

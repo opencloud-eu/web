@@ -28,7 +28,7 @@
       <div class="relative flex w-full" @mouseenter="onMediaEnter" @mouseleave="onMediaLeave">
         <!-- a sibling of the link, interactive elements must not be nested inside it -->
         <div
-          class="z-10 absolute top-0 left-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface"
+          class="z-10 absolute top-0 inset-s-0 [&_input]:not-[.oc-checkbox-checked]:bg-role-surface"
         >
           <div v-if="isLoading" class="oc-tile-card-loading-spinner z-990 m-2">
             <oc-spinner :aria-label="$gettext('File is being processed')" />
@@ -92,7 +92,7 @@
           :resource="resource"
           :space="space"
           badge-size-class="size-5"
-          badge-class="top-0 right-0 m-2.5"
+          badge-class="top-0 inset-e-0 m-2.5"
           :video-class="motionVideoClass"
         />
       </div>
@@ -123,7 +123,7 @@
             <slot name="contextMenu" :item="resource" />
           </div>
         </div>
-        <p v-if="resourceDescription" class="text-left my-0 truncate" :title="resourceDescription">
+        <p v-if="resourceDescription" class="text-start my-0 truncate" :title="resourceDescription">
           <span class="text-sm" v-text="resourceDescription" />
         </p>
         <slot name="additionalResourceContent" :item="resource" />

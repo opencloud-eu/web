@@ -15,7 +15,7 @@
             data-testid="resource-icon"
             :name="resource.icon"
             size-class="size-5"
-            class="mr-1"
+            class="me-1"
           />
           <span
             data-testid="resource-label"

@@ -46,7 +46,7 @@
     <div
       class="oc-resource-details block"
       :class="[
-        { 'pl-2': isIconDisplayed },
+        { 'ps-2': isIconDisplayed },
         $slots.nameAppend ? 'min-w-0 whitespace-nowrap' : 'truncate'
       ]"
     >
@@ -80,10 +80,10 @@
           :is="parentFolderComponentType"
           v-if="isPathDisplayed"
           :to="parentFolderLink"
-          class="parent-folder flex items-center truncate px-0.5 mr-2 -ml-0.5 hover:bg-transparent"
+          class="parent-folder flex items-center truncate px-0.5 me-2 -ms-0.5 hover:bg-transparent"
           :class="{ 'cursor-pointer': parentFolderLink, 'cursor-default': !parentFolderLink }"
         >
-          <oc-icon v-bind="parentFolderLinkIconAttrs" class="mr-1" size-class="size-4" />
+          <oc-icon v-bind="parentFolderLinkIconAttrs" class="me-1" size-class="size-4" />
           <span
             class="text truncate text-sm hover:underline"
             :title="parentFolderName"
