@@ -28,11 +28,12 @@ The component provides a default slot that can be filled with the content that s
 
 ### Sizes
 
-These sizes are available: `small`, `medium`, `large`.
+These sizes are available: `xsmall`, `small`, `medium`, `large`.
 
 ::: livecode
 
 ```html
+<oc-tag size="xsmall">Tag</oc-tag>
 <oc-tag size="small">Folder</oc-tag>
 <oc-tag size="medium">File</oc-tag>
 <oc-tag size="large">Space</oc-tag>

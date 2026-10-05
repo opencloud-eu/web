@@ -1,3 +1,8 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Preview component > should render preview component 1`] = `"<resource-list-item-stub resource="[object Object]" pathprefix="Spaces/New space" ispathdisplayed="true" parentfolderlink="[object Object]" parentfoldername="New space" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="true" isresourceclickable="true" isfavoritedisplayed="true" term=""></resource-list-item-stub>"`;
+exports[`Preview component > should render preview component 1`] = `
+"<div class="min-w-0 max-w-full">
+  <resource-list-item-stub resource="undefined" pathprefix="Spaces/New space" ispathdisplayed="true" parentfolderlink="[object Object]" parentfoldername="New space" parentfolderlinkiconadditionalattributes="[object Object]" isextensiondisplayed="true" isthumbnaildisplayed="true" isicondisplayed="true" isresourceclickable="true" isfavoritedisplayed="true" term=""></resource-list-item-stub>
+  <search-highlights-stub resource="undefined" term="" class="pl-8"></search-highlights-stub>
+</div>"
+`;

@@ -1,17 +1,20 @@
 <template>
-  <resource-list-item
-    ref="resourceListItem"
-    :resource="resource"
-    :path-prefix="pathPrefix"
-    :is-path-displayed="true"
-    :link="resourceLink"
-    :is-extension-displayed="areFileExtensionsShown"
-    :parent-folder-link-icon-additional-attributes="parentFolderLinkIconAdditionalAttributes"
-    :parent-folder-name="parentFolderName"
-    :is-thumbnail-displayed="!!previewData"
-    :term="term"
-    v-bind="additionalAttrs"
-  />
+  <div class="min-w-0 max-w-full">
+    <resource-list-item
+      ref="resourceListItem"
+      :resource="resource"
+      :path-prefix="pathPrefix"
+      :is-path-displayed="true"
+      :link="resourceLink"
+      :is-extension-displayed="areFileExtensionsShown"
+      :parent-folder-link-icon-additional-attributes="parentFolderLinkIconAdditionalAttributes"
+      :parent-folder-name="parentFolderName"
+      :is-thumbnail-displayed="!!previewData"
+      :term="term"
+      v-bind="additionalAttrs"
+    />
+    <search-highlights class="pl-8" :resource="searchResult.data as SearchResource" :term="term" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -27,8 +30,9 @@ import {
   useLoadPreview,
   useResourceLink
 } from '../../composables'
-import { isSpaceResource, Resource } from '@opencloud-eu/web-client'
+import { isSpaceResource, Resource, SearchResource } from '@opencloud-eu/web-client'
 import ResourceListItem from '../FilesList/ResourceListItem.vue'
+import SearchHighlights from './SearchHighlights.vue'
 import { SearchResultValue } from './types'
 import { RouteLocationPathRaw } from 'vue-router'
 
