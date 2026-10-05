@@ -222,7 +222,6 @@ const generateToken = async () => {
   if (unref(descriptionErrorMessage) || unref(isGenerating)) {
     return
   }
-  // Generating an invite token is not idempotent: every request mints a new one.
   // The ref is set before awaiting so the guard also covers a second click or
   // submit that lands before the re-render disables the confirm button.
   isGenerating.value = true
