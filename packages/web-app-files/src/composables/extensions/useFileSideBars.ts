@@ -143,6 +143,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       panel: {
         name: 'exif',
         icon: 'image',
+        iconFillType: 'line',
         title: () => $gettext('Image Info'),
         component: markRaw(ExifPanel),
         isVisible: ({ items }) => {
@@ -164,6 +165,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       panel: {
         name: 'audio-meta',
         icon: 'music',
+        iconFillType: 'line',
         title: () => $gettext('Audio Info'),
         component: markRaw(AudioMetaPanel),
         isVisible: ({ items }) => {
