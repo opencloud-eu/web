@@ -536,6 +536,10 @@ function retryUploads() {
 }
 
 function getUploadItemMessage(item: UploadResult) {
+  if (item.status === 'preparing') {
+    return $gettext('Calculating checksum...')
+  }
+
   const error = unref(errors)[item.meta.uploadId]
 
   if (!error) {
@@ -621,6 +625,19 @@ uppyService.subscribe('addedForUpload', (files: OcUppyFile[]) => {
     if (!file.meta.isFolder && !isTopLevelItem && uploads.value[topLevelFolderId]) {
       uploads.value[topLevelFolderId].filesCount += 1
     }
+  }
+})
+// the upload checksum is computed before a file is uploaded, which can take a while for big files
+uppyService.subscribe('preprocess-progress', ({ file }: { file: OcUppyFile }) => {
+  const item = unref(uploads)[file?.meta.uploadId]
+  if (item && !item.status) {
+    item.status = 'preparing'
+  }
+})
+uppyService.subscribe('preprocess-complete', (file: OcUppyFile) => {
+  const item = unref(uploads)[file?.meta.uploadId]
+  if (item?.status === 'preparing') {
+    item.status = undefined
   }
 })
 uppyService.subscribe('uploadCompleted', () => {

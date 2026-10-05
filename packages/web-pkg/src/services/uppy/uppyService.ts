@@ -7,6 +7,7 @@ import { eventBus } from '../eventBus'
 import DropTarget from './DropTarget/plugin'
 import { Resource, urlJoin } from '@opencloud-eu/web-client'
 import { generateFileID, Body, MinimalRequiredUppyFile } from '@uppy/utils'
+import { UploadChecksumPlugin } from './checksum'
 
 type UppyServiceTopics =
   | 'uploadStarted'
@@ -21,6 +22,8 @@ type UppyServiceTopics =
   | 'drag-over'
   | 'drag-out'
   | 'drop'
+  | 'preprocess-progress'
+  | 'preprocess-complete'
 
 export type uppyHeaders = {
   [name: string]: string | number
@@ -45,6 +48,8 @@ type FileWithPath = File & {
 export type OcUppyMeta = {
   name?: string
   mtime?: number
+  // whole-file checksum as '<algorithm> <hex>', set by the UploadChecksum plugin
+  checksum?: string
   // current space & folder
   spaceId: string
   spaceName: string
@@ -70,8 +75,10 @@ export type OcUppyMeta = {
 export type OcUppyBody = Body
 
 // Meta fields safe to put in the tus `Upload-Metadata` header. This should
-// only include fields that are part of the TUS spec.
-export const TUS_ALLOWED_META_FIELDS: (keyof OcUppyMeta)[] = ['name', 'mtime']
+// only include fields that are part of the TUS spec, or that the server needs.
+// `checksum` is a hash of the transmitted bytes (the ciphertext for vault uploads),
+// so it does not reveal any path or cleartext information.
+export const TUS_ALLOWED_META_FIELDS: (keyof OcUppyMeta)[] = ['name', 'mtime', 'checksum']
 
 export type OcUppyFile = UppyFile<OcUppyMeta, OcUppyBody>
 type OcUppyPlugin = typeof BasePlugin<any, OcUppyMeta, OcUppyBody>
@@ -126,6 +133,9 @@ export class UppyService {
         }
       }
     })
+
+    // compute a whole-file checksum before every upload, see UploadChecksumPlugin
+    this.uppy.use(UploadChecksumPlugin)
 
     this.setUpEvents()
   }
@@ -268,6 +278,12 @@ export class UppyService {
     })
     this.uppy.on('upload-progress', (file, progress) => {
       this.publish('upload-progress', { file, progress })
+    })
+    this.uppy.on('preprocess-progress', (file, progress) => {
+      this.publish('preprocess-progress', { file, progress })
+    })
+    this.uppy.on('preprocess-complete', (file) => {
+      this.publish('preprocess-complete', file)
     })
     this.uppy.on('cancel-all', () => {
       this.publish('uploadCancelled')
