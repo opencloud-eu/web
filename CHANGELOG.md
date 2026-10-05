@@ -1,5 +1,25 @@
 # Changelog
 
+## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-05
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear
+
+### 🐛 Bug Fixes
+
+- fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+
+### 📈 Enhancement
+
+- chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
+- feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
+- feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency focus-trap to v8.2.3 [[#3560](https://github.com/opencloud-eu/web/pull/3560)]
+
 ## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-10-05
 
 ### ❤️ Thanks to all contributors! ❤️
