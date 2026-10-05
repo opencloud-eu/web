@@ -60,7 +60,10 @@ export function makeTiptapYjsAdapter(
   }
 
   function setContentOptions(): Record<string, unknown> {
-    const opts: Record<string, unknown> = { emitUpdate: false }
+    // Without `errorOnInvalidContent`, tiptap silently drops content its schema can't represent
+    // (e.g. a node type from a newer version) and hydrates an empty, editable doc. The next save
+    // would then overwrite the file. Throwing lets the session lock the editor instead.
+    const opts: Record<string, unknown> = { emitUpdate: false, errorOnInvalidContent: true }
     const editorContentType = toValue(strategy).editorContentType
     if (editorContentType) {
       opts.contentType = editorContentType()

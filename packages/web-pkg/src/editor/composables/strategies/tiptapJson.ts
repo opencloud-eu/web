@@ -1,7 +1,6 @@
 import type { Extension } from '@tiptap/core'
 import type { Node as ProseMirrorNode } from '@tiptap/pm/model'
 import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
 import Subscript from '@tiptap/extension-subscript'
 import Superscript from '@tiptap/extension-superscript'
 import Image from '@tiptap/extension-image'
@@ -75,7 +74,6 @@ export const useStrategyTiptapJson = (editorState: TextEditorState): ContentType
       }),
       FontFamily,
       TextStyle,
-      Underline,
       Subscript,
       Superscript,
       Color,

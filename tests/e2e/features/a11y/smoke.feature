@@ -48,7 +48,7 @@ Feature: Accessibility checks
     # personal space
     And "Alice" opens the "files" app
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
-    And "Alice" switches to the "table-condensed" view
+    And "Alice" switches to the "table" view
     And "Alice" checks the accessibility of the DOM selector ".files-view-wrapper" on the "personal space"
     # check empty page
     And "Brian" opens the "files" app

@@ -94,7 +94,7 @@ When(
   async (
     { world }: { world: World },
     stepUser: string,
-    viewMode: 'table' | 'tiles' | 'table-condensed'
+    viewMode: 'table' | 'tiles'
   ): Promise<void> => {
     const resourceObject = pageObjectFor(world, stepUser, objects.applicationFiles.Resource)
     await resourceObject.switchViewMode(viewMode)
