@@ -3,7 +3,7 @@ import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
-import { createMemoryHistory, createRouter } from 'vue-router'
+import { createMemoryHistory, createRouter, onBeforeRouteLeave } from 'vue-router'
 import {
   defaultPlugins,
   defaultComponentMocks,
@@ -15,7 +15,7 @@ import {
 import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContext } from '../../../../src/composables/appDefaults'
-import { useMessages } from '../../../../src/composables/piniaStores'
+import { useMessages, useModals } from '../../../../src/composables/piniaStores'
 
 const { useAppDefaultsSpy, useYjsSessionSpy } = vi.hoisted(() => ({
   useAppDefaultsSpy: vi.fn(),
@@ -92,6 +92,8 @@ function setup({
   const isRoomWrite = vi.fn().mockReturnValue(roomWrite)
   const adoptEtag = vi.fn()
   const applyExternalUpdate = vi.fn().mockResolvedValue('recovered')
+  const hasPendingContent = ref(false)
+  const flushContent = vi.fn().mockResolvedValue(undefined)
   const isLockedForReload = ref(false)
   const isConflicted = ref(false)
   const markConflicted = vi.fn(() => {
@@ -141,7 +143,9 @@ function setup({
       serializeMerged,
       isRoomWrite,
       adoptEtag,
-      applyExternalUpdate
+      applyExternalUpdate,
+      hasPendingContent: hasPendingContent as any,
+      flushContent
     })
   })
 
@@ -211,6 +215,8 @@ function setup({
     isRoomWrite,
     adoptEtag,
     applyExternalUpdate,
+    hasPendingContent,
+    flushContent,
     sseListeners,
     /** The server announces a write to the open file by another tab. */
     async emitFileEvent(data: Record<string, unknown> = {}) {
@@ -275,6 +281,77 @@ describe('AppWrapper — ESC close behavior', () => {
   })
 })
 
+describe('AppWrapper — changes still pending in the session', () => {
+  async function openFileWithPendingChange(content: string) {
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    // the session only reports the change once it is flushed
+    s.hasPendingContent.value = true
+    s.flushContent.mockImplementation(async () => {
+      s.hasPendingContent.value = false
+      s.session().onContentChange(content)
+      await nextTick()
+    })
+    return s
+  }
+
+  function leaveRoute() {
+    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
+    return (guard as any)({}, {}) as Promise<boolean>
+  }
+
+  it('saves the last keystrokes on Ctrl+S', async () => {
+    const s = await openFileWithPendingChange('typed just now')
+
+    await s.pressCtrlS()
+
+    expect(s.flushContent).toHaveBeenCalled()
+    expect(s.putFileContents).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ content: 'typed just now' })
+    )
+  })
+
+  it('asks before the route leaves', async () => {
+    const s = await openFileWithPendingChange('typed just now')
+    const { dispatchModal } = useModals()
+
+    void leaveRoute()
+    await flushPromises()
+
+    expect(s.flushContent).toHaveBeenCalled()
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Unsaved changes' })
+    )
+  })
+
+  it('does not guard the tab against unload for a read-only user receiving remote edits', async () => {
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(
+      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+    )
+    await s.resolveContent('content of a')
+
+    s.hasPendingContent.value = true
+    await nextTick()
+
+    expect(addEventListenerSpy).not.toHaveBeenCalledWith('beforeunload', expect.anything())
+    addEventListenerSpy.mockRestore()
+  })
+
+  it('lets the route leave when nothing is pending', async () => {
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    expect(await leaveRoute()).toBe(true)
+  })
+})
+
 describe('AppWrapper — save callback', () => {
   it('runs the registered callback after the file was saved', async () => {
     const callback = vi.fn()
@@ -308,6 +385,7 @@ describe('AppWrapper — save callback', () => {
     s.registerSaveCallback(callback)
 
     const saving = s.pressCtrlS()
+    await vi.waitFor(() => expect(s.putFileContents).toHaveBeenCalled())
     // an edit lands while the PUT is still in flight - it is not on disk yet
     await s.edit('content added while saving')
     resolvePut({ etag: 'new-etag' })

@@ -78,9 +78,6 @@ catalogs:
     '@tiptap/extension-text-style':
       specifier: ^3.30.3
       version: 3.31.4
-    '@tiptap/extension-underline':
-      specifier: ^3.30.3
-      version: 3.31.4
     '@tiptap/markdown':
       specifier: ^3.30.3
       version: 3.31.4
@@ -1036,9 +1033,6 @@ importers:
         specifier: catalog:tiptap
         version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
       '@tiptap/extension-text-style':
-        specifier: catalog:tiptap
-        version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
-      '@tiptap/extension-underline':
         specifier: catalog:tiptap
         version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
       '@tiptap/markdown':

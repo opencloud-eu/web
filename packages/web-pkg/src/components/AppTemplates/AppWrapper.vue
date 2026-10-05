@@ -276,7 +276,21 @@ const isLoading = computed(() => {
   return unref(loading) || !unref(isSessionReady)
 })
 
-watch(isDirty, (dirty) => {
+/**
+ * The Yjs session reports doc changes debounced, so `isDirty` and `currentContent` lag behind
+ * the last keystrokes. Let it catch up before deciding about unsaved work.
+ */
+async function flushPendingContent() {
+  await yjsSession?.flushContent()
+}
+
+// `beforeunload` can't wait for a flush, so a pending change counts as unsaved there.
+// Remote edits leave changes pending for read-only users too, which they can't save anyway.
+const hasUnsavedWork = computed(
+  () => unref(isDirty) || (!unref(isReadOnly) && unref(yjsSession?.hasPendingContent))
+)
+
+watch(hasUnsavedWork, (dirty) => {
   // Prevent reload if there are changes
   if (dirty) {
     window.addEventListener('beforeunload', preventUnload)
@@ -625,6 +639,7 @@ async function runSaveCallback(content: unknown): Promise<void> {
 }
 
 const save = async () => {
+  await flushPendingContent()
   const saved = await saveFileTask.perform()
   if (!saved) {
     return false
@@ -666,6 +681,7 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
+        await flushPendingContent()
         if (!unref(isDirty) || unref(isConflicted)) {
           return
         }
@@ -697,7 +713,8 @@ onBeforeUnmount(() => {
 })
 
 const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
-bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
+bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, async () => {
+  await flushPendingContent()
   if (!unref(isDirty)) {
     return
   }
@@ -717,6 +734,7 @@ const downloadFileActionInterceptor = async (
   args: FileActionOptions,
   originalAction: Action<FileActionOptions>['handler']
 ) => {
+  await flushPendingContent()
   if (unref(isDirty)) {
     if (unref(isConflicted)) {
       showMessage({
@@ -816,8 +834,16 @@ const dropDownMenuSections = computed(() => {
   return sections
 })
 
-onBeforeRouteLeave((_to, _from, next) => {
-  if (unref(isDirty)) {
+// Returns instead of calling `next`: the guard has to await the flush first, and an async guard
+// that also takes `next` is rejected by the router.
+onBeforeRouteLeave(async () => {
+  await flushPendingContent()
+  if (!unref(isDirty)) {
+    unregisterExtensions([topBarExtensionId])
+    return true
+  }
+
+  return new Promise<boolean>((resolve) => {
     dispatchModal({
       title: $gettext('Unsaved changes'),
       customComponent: markRaw(UnsavedChangesModal),
@@ -828,23 +854,23 @@ onBeforeRouteLeave((_to, _from, next) => {
         return {
           closeCallback: () => {
             unregisterExtensions([topBarExtensionId])
-            next()
+            resolve(true)
           }
         }
       },
       async onConfirm() {
         if (!(await save())) {
-          next(false)
+          resolve(false)
           return
         }
         unregisterExtensions([topBarExtensionId])
-        next()
+        resolve(true)
+      },
+      onCancel() {
+        resolve(false)
       }
     })
-  } else {
-    unregisterExtensions([topBarExtensionId])
-    next()
-  }
+  })
 })
 
 const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => ({
