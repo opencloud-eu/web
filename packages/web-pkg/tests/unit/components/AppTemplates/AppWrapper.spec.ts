@@ -327,6 +327,22 @@ describe('AppWrapper — changes still pending in the session', () => {
     )
   })
 
+  it('does not guard the tab against unload for a read-only user receiving remote edits', async () => {
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener')
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(
+      mock<Resource>({ id: 'storage$space!ro', name: 'ro.md', etag: 'e', permissions: 'R' })
+    )
+    await s.resolveContent('content of a')
+
+    s.hasPendingContent.value = true
+    await nextTick()
+
+    expect(addEventListenerSpy).not.toHaveBeenCalledWith('beforeunload', expect.anything())
+    addEventListenerSpy.mockRestore()
+  })
+
   it('lets the route leave when nothing is pending', async () => {
     const s = setup()
     await nextTick()

@@ -284,8 +284,11 @@ async function flushPendingContent() {
   await yjsSession?.flushContent()
 }
 
-// `beforeunload` can't wait for a flush, so a pending change counts as unsaved there
-const hasUnsavedWork = computed(() => unref(isDirty) || unref(yjsSession?.hasPendingContent))
+// `beforeunload` can't wait for a flush, so a pending change counts as unsaved there.
+// Remote edits leave changes pending for read-only users too, which they can't save anyway.
+const hasUnsavedWork = computed(
+  () => unref(isDirty) || (!unref(isReadOnly) && unref(yjsSession?.hasPendingContent))
+)
 
 watch(hasUnsavedWork, (dirty) => {
   // Prevent reload if there are changes
