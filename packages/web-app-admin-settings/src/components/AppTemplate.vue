@@ -7,7 +7,10 @@
           id="admin-settings-view-wrapper"
           class="relative grid grid-cols-1 flex-1 focus:outline-0 h-full overflow-y-auto gap-0"
         >
-          <div id="admin-settings-view" class="outline-0 z-0 flex flex-col">
+          <div
+            id="admin-settings-view"
+            class="outline-0 z-0 flex flex-col pb-(--oc-floating-action-button-space)"
+          >
             <div
               id="admin-settings-app-bar"
               ref="appBarRef"

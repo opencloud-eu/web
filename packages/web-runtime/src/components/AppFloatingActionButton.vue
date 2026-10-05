@@ -56,6 +56,11 @@ function getButtonId(extensionId: string): string {
 <style>
 @reference '@opencloud-eu/design-system/tailwind';
 
+/* space that scrollable app content keeps at its end, so the floating button doesn't cover the last entries */
+#web-content:has([id^='mobile-app-floating-action-button-']) {
+  --oc-floating-action-button-space: 5rem;
+}
+
 .oc-app-floating-action-button [id^='mobile-app-floating-action-button-'] {
   @apply bg-gradient-to-r from-role-secondary to-role-primary shadow-md transition-[filter,box-shadow] duration-150 ease-out;
 }
