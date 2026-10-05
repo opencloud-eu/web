@@ -13,16 +13,16 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: create and upload a file into a vault encrypts it on the server
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource                   | type     | content             | password |
-      | my.vault                   | vault    |                     | foobar   |
-      | my.vault/sub               | folder   |                     | foobar   |
-      | my.vault/sub/nested.ocnote | noteFile | nested file content | foobar   |
-      | my.vault/hello.ocnote      | noteFile | hello world         | foobar   |
+      | resource                   | type     | content             | password       |
+      | my.vault                   | vault    |                     | Vault-Pa55word |
+      | my.vault/sub               | folder   |                     | Vault-Pa55word |
+      | my.vault/sub/nested.ocnote | noteFile | nested file content | Vault-Pa55word |
+      | my.vault/hello.ocnote      | noteFile | hello world         | Vault-Pa55word |
     And "Alice" uploads the following resource
-      | resource          | to           | password |
-      | PARENT/parent.txt | my.vault/sub | foobar   |
-      | testavatar.png    | my.vault/sub | foobar   |
-    And "Alice" enters the vault "my.vault" with passphrase "foobar"
+      | resource          | to           | password       |
+      | PARENT/parent.txt | my.vault/sub | Vault-Pa55word |
+      | testavatar.png    | my.vault/sub | Vault-Pa55word |
+    And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     Then following resources should be displayed in the files list for user "Alice"
       | resource     |
       | hello.ocnote |
@@ -73,8 +73,8 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: A wrong passphrase is rejected
     When "Alice" logs in
     And "Alice" creates the following resource
-      | resource | type  | password |
-      | my.vault | vault | 123      |
+      | resource | type  | password       |
+      | my.vault | vault | Vault-Pa55word |
     And "Alice" navigates to the personal space page
     And "Alice" fails to enter the vault "my.vault" with the wrong passphrase "definitely-wrong"
     And "Alice" logs out
@@ -86,16 +86,16 @@ Feature: Work with an rclone-crypt encrypted vault
       | Brian |
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource                 | type     | content     | password |
-      | share.vault              | vault    |             | foobar   |
-      | share.vault/hello.ocnote | noteFile | hello world | foobar   |
+      | resource                 | type     | content     | password       |
+      | share.vault              | vault    |             | Vault-Pa55word |
+      | share.vault/hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" shares the following resource using the sidebar panel
       | resource    | recipient | type | role     | resourceType |
       | share.vault | Brian     | user | Can edit | folder       |
     And "Alice" logs out
     When "Brian" logs in
     And "Brian" navigates to the shared with me page
-    And "Brian" enters the vault "share.vault" with passphrase "foobar"
+    And "Brian" enters the vault "share.vault" with passphrase "Vault-Pa55word"
     And following resource should be displayed in the files list for user "Brian"
       | resource     |
       | hello.ocnote |
@@ -109,14 +109,14 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: Rename and download a vault file
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource              | type     | content     | password |
-      | my.vault              | vault    |             | foobar   |
-      | my.vault/hello.ocnote | noteFile | hello world | foobar   |
+      | resource              | type     | content     | password       |
+      | my.vault              | vault    |             | Vault-Pa55word |
+      | my.vault/hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" navigates to the personal space page
     When "Alice" renames the following resource
       | resource | as            |
       | my.vault | renamed.vault |
-    And "Alice" enters the vault "renamed.vault" with passphrase "foobar"
+    And "Alice" enters the vault "renamed.vault" with passphrase "Vault-Pa55word"
     Then following resource should be displayed in the files list for user "Alice"
       | resource     |
       | hello.ocnote |
@@ -132,10 +132,10 @@ Feature: Work with an rclone-crypt encrypted vault
       | resource | type   |
       | my.vault | folder |
     And "Alice" opens folder "my.vault"
-    And "Alice" sets the vault password "foobar"
+    And "Alice" sets the vault password "Vault-Pa55word"
     And "Alice" navigates to the personal space page
     And "Alice" locks the vault "my.vault"
-    And "Alice" enters the vault "my.vault" with passphrase "foobar"
+    And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
       | resource | type   |
       | lorem    | folder |
@@ -145,10 +145,10 @@ Feature: Work with an rclone-crypt encrypted vault
   Scenario: Vault with content but no integrity token
     When "Alice" logs in
     And "Alice" creates the following resources
-      | resource       | type   | password |
-      | vaultOne.vault | vault  | foobar   |
-      | vaultTwo       | folder |          |
-    And "Alice" enters the vault "vaultOne.vault" with passphrase "foobar"
+      | resource       | type   | password       |
+      | vaultOne.vault | vault  | Vault-Pa55word |
+      | vaultTwo       | folder |                |
+    And "Alice" enters the vault "vaultOne.vault" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
       | resource     | type     | content       |
       | lorem.ocnote | noteFile | hello content |
@@ -166,7 +166,7 @@ Feature: Work with an rclone-crypt encrypted vault
     And "Alice" renames the following resource
       | resource | as             |
       | vaultTwo | vaultTwo.vault |
-    And "Alice" enters the vault "vaultTwo.vault" with passphrase "foobar"
+    And "Alice" enters the vault "vaultTwo.vault" with passphrase "Vault-Pa55word"
     And "Alice" opens the following file in texteditor
       | resource     |
       | lorem.ocnote |
@@ -186,15 +186,15 @@ Feature: Work with an rclone-crypt encrypted vault
     When "Alice" logs in
     And "Alice" navigates to the project space "ourspace"
     And "Alice" creates the following resources
-      | resource              | type     | content     | password |
-      | my.vault              | vault    |             | foobar   |
-      | my.vault/sub          | folder   |             | foobar   |
-      | my.vault/hello.ocnote | noteFile | hello world | foobar   |
+      | resource              | type     | content     | password       |
+      | my.vault              | vault    |             | Vault-Pa55word |
+      | my.vault/sub          | folder   |             | Vault-Pa55word |
+      | my.vault/hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" uploads the following resource
-      | resource          | to           | password |
-      | PARENT/parent.txt | my.vault/sub | foobar   |
-      | testavatar.png    | my.vault/sub | foobar   |
-    And "Alice" enters the vault "my.vault" with passphrase "foobar"
+      | resource          | to           | password       |
+      | PARENT/parent.txt | my.vault/sub | Vault-Pa55word |
+      | testavatar.png    | my.vault/sub | Vault-Pa55word |
+    And "Alice" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     Then following resources should be displayed in the files list for user "Alice"
       | resource     |
       | hello.ocnote |
@@ -228,7 +228,7 @@ Feature: Work with an rclone-crypt encrypted vault
     # check vault by space member
     When "Brian" logs in
     And "Brian" navigates to the project space "ourspace"
-    And "Brian" enters the vault "my.vault" with passphrase "foobar"
+    And "Brian" enters the vault "my.vault" with passphrase "Vault-Pa55word"
     And "Brian" opens the following file in texteditor
       | resource     |
       | hello.ocnote |

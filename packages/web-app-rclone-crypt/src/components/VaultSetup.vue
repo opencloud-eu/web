@@ -25,11 +25,11 @@
       v-model="passphrase"
       class="mt-4"
       type="password"
+      :password-policy="passwordPolicy"
+      :generate-password-method="generatePassword"
       :label="$gettext('Password')"
       required-mark
       :error-message="errorMessage"
-      :fix-message-line="true"
-      autocomplete="new-password"
     />
   </div>
 </template>
@@ -41,6 +41,7 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   ResourceIcon,
   useClientService,
+  usePasswordPolicyService,
   useResourcesStore,
   withoutExtension,
   type VaultFinalize
@@ -68,6 +69,14 @@ const emit = defineEmits<{
 const { $gettext } = useGettext()
 const clientService = useClientService()
 const resourcesStore = useResourcesStore()
+const passwordPolicyService = usePasswordPolicyService()
+
+// the passphrase never reaches the server, so only the client side rules of the policy apply
+const passwordPolicy = passwordPolicyService.getPolicy({ enforcePassword: true })
+
+function generatePassword() {
+  return passwordPolicyService.generatePassword()
+}
 
 const iconResource = computed<Resource>(() =>
   isSpace
@@ -108,7 +117,7 @@ const passphraseHelper = computed(() => ({
 watch(
   passphrase,
   () => {
-    emit('update:valid', !!unref(passphrase))
+    emit('update:valid', passwordPolicy.check(unref(passphrase)))
   },
   { immediate: true }
 )

@@ -17,14 +17,14 @@ Feature: Work with an rclone-crypt encrypted vault space
   Scenario: Create a vault space, work with its files and share it with a space member
     When "Alice" logs in
     And "Alice" navigates to the projects space page
-    And "Alice" creates the vault space "vaultspace" with password "foobar"
-    And "Alice" enters the vault space "vaultspace" with passphrase "foobar"
+    And "Alice" creates the vault space "vaultspace" with password "Vault-Pa55word"
+    And "Alice" enters the vault space "vaultspace" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
-      | resource     | type     | content     | password |
-      | hello.ocnote | noteFile | hello world | foobar   |
+      | resource     | type     | content     | password       |
+      | hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" uploads the following resource
-      | resource       | password |
-      | testavatar.png | foobar   |
+      | resource       | password       |
+      | testavatar.png | Vault-Pa55word |
     Then following resources should be displayed in the files list for user "Alice"
       | resource       |
       | hello.ocnote   |
@@ -50,7 +50,7 @@ Feature: Work with an rclone-crypt encrypted vault space
     And "Alice" logs out
 
     When "Brian" logs in
-    And "Brian" enters the vault space "vaultspace" with passphrase "foobar"
+    And "Brian" enters the vault space "vaultspace" with passphrase "Vault-Pa55word"
     Then following resources should be displayed in the files list for user "Brian"
       | resource       |
       | hello.ocnote   |
@@ -75,14 +75,14 @@ Feature: Work with an rclone-crypt encrypted vault space
   Scenario: Reloading an unlocked vault space locks it again
     When "Alice" logs in
     And "Alice" navigates to the projects space page
-    And "Alice" creates the vault space "vaultspace" with password "foobar"
-    And "Alice" enters the vault space "vaultspace" with passphrase "foobar"
+    And "Alice" creates the vault space "vaultspace" with password "Vault-Pa55word"
+    And "Alice" enters the vault space "vaultspace" with passphrase "Vault-Pa55word"
     And "Alice" creates the following resources
-      | resource     | type     | content     | password |
-      | hello.ocnote | noteFile | hello world | foobar   |
+      | resource     | type     | content     | password       |
+      | hello.ocnote | noteFile | hello world | Vault-Pa55word |
     And "Alice" reloads the page
     Then "Alice" should see the unlock page of the vault space "vaultspace"
-    When "Alice" unlocks the vault space with passphrase "foobar"
+    When "Alice" unlocks the vault space with passphrase "Vault-Pa55word"
     Then following resource should be displayed in the files list for user "Alice"
       | resource     |
       | hello.ocnote |
