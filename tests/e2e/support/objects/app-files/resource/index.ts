@@ -265,7 +265,7 @@ export class Resource {
     await po.clickResourceFromBreadcrumb({ page: this.#page, resource })
   }
 
-  async switchViewMode(viewMode: 'table' | 'tiles' | 'table-condensed'): Promise<void> {
+  async switchViewMode(viewMode: 'table' | 'tiles'): Promise<void> {
     await po.clickViewModeToggle({ page: this.#page, target: viewMode })
   }
 
