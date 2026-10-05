@@ -127,7 +127,7 @@ const createAppToken = async () => {
   // modal's cancel button. Mark it loading to disable that button while the token
   // is being created - cancelling here would complete the request without ever
   // showing the resulting token.
-  updateModal(unref(modal).id, 'isLoading', true)
+  updateModal(modal.id, 'isLoading', true)
   try {
     const label = unref(tokenLabel)
     const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
