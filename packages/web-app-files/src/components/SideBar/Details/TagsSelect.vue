@@ -32,7 +32,7 @@
           <span class="truncate">{{ option.label }}</span>
         </component>
 
-        <span class="flex items-center mr-1">
+        <span class="flex items-center mr-1 empty:hidden">
           <oc-icon
             v-if="option.readonly"
             class="vs__deselect-lock"
@@ -40,7 +40,7 @@
             size-class="size-4"
           />
           <oc-button
-            v-else
+            v-else-if="!readonly"
             appearance="raw"
             :title="$gettext('Deselect %{label}', { label: option.label })"
             :aria-label="$gettext('Deselect %{label}', { label: option.label })"

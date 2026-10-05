@@ -103,6 +103,19 @@ describe('Tag Select', () => {
     expect(showErrorMessage).toHaveBeenCalledTimes(1)
   })
 
+  it.each([
+    { locked: false, deselectable: true },
+    { locked: true, deselectable: false }
+  ])(
+    'renders deselect buttons only if tags are editable (%o)',
+    async ({ locked, deselectable }) => {
+      const { wrapper } = createWrapper(mock<Resource>({ tags: ['a', 'b'], locked }))
+      await flushPromises()
+      expect(wrapper.findAll('.tags-select-tag').length).toBe(2)
+      expect(wrapper.findAll('.vs__deselect').length).toBe(deselectable ? 2 : 0)
+    }
+  )
+
   it('does not accept tags consisting of blanks only', () => {
     const { wrapper } = createWrapper(mock<Resource>({ tags: [] }))
     const option = (wrapper.vm as any).createOption(' ')
