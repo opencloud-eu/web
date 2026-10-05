@@ -100,6 +100,7 @@
           :key="`resource-table-action-${item.id}-${action.name}`"
           v-oc-tooltip="getResourceTableLabel(action, item)"
           class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
+          :class="{ 'self-start': arePathsDisplayed }"
           appearance="raw"
           :aria-label="getResourceTableLabel(action, item)"
           @click.stop="
