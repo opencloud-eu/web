@@ -34,6 +34,13 @@ describe('ItemFilter', () => {
     const { wrapper } = getWrapper()
     expect(wrapper.html()).toMatchSnapshot()
   })
+  it('shows the no items message instead of the list if there are no items', () => {
+    const { wrapper } = getWrapper({
+      props: { items: [], noItemsMessage: 'Nothing here yet', showOptionFilter: true }
+    })
+    expect(wrapper.find('.item-filter-no-items').text()).toBe('Nothing here yet')
+    expect(wrapper.find('.item-filter-input').exists()).toBeFalsy()
+  })
   it('can use a custom attribute as display name', () => {
     const filterItems = [
       { id: '1', displayName: 'Albert Einstein' },

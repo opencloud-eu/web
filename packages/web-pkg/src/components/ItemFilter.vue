@@ -8,15 +8,20 @@
       @show-drop="showDrop"
     >
       <template #default>
+        <p
+          v-if="!items.length && noItemsMessage"
+          class="item-filter-no-items text-sm text-role-on-surface-variant my-2"
+          v-text="noItemsMessage"
+        />
         <oc-text-input
-          v-if="canFilterOptions"
+          v-if="canFilterOptions && items.length"
           ref="filterInputRef"
           v-model="filterTerm"
           class="item-filter-input mb-4 mt-2"
           autocomplete="off"
           :label="optionFilterLabel === '' ? $gettext('Filter list') : optionFilterLabel"
         />
-        <oc-list class="item-filter-list">
+        <oc-list v-if="displayedItems.length" class="item-filter-list">
           <li v-for="(item, index) in displayedItems" :key="index" class="my-1">
             <oc-button
               class="item-filter-list-item flex items-center w-full"
@@ -100,7 +105,8 @@ const {
   idAttribute = 'id',
   displayNameAttribute = 'name',
   filterableAttributes = [],
-  closeOnClick = false
+  closeOnClick = false,
+  noItemsMessage = ''
 } = defineProps<{
   filterLabel: string
   filterName: string
@@ -112,6 +118,10 @@ const {
   displayNameAttribute?: string
   filterableAttributes?: FuseOptionKey<Item>[]
   closeOnClick?: boolean
+  /**
+   * Shown instead of the list if there are no items to choose from.
+   */
+  noItemsMessage?: string
 }>()
 
 const emit = defineEmits<{
