@@ -113,10 +113,7 @@ const isConfirmDisabled = computed<boolean>(() => {
   return !unref(tokenLabel) || !unref(expiryDate) || unref(isCreating)
 })
 const createdToken = ref('')
-// Guards against a second click while a request is in flight. Creating a token is
-// not idempotent: every request mints a new one, and only the last response is ever
-// displayed. The ref is set before awaiting, so the guard also covers clicks that
-// land before the re-render disables the button.
+// Guards against requesting a second token while a request is still in flight.
 const isCreating = ref(false)
 const createAppToken = async () => {
   if (unref(isConfirmDisabled)) {
