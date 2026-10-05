@@ -109,6 +109,7 @@
           :sort-fields="sortFields"
           :view-mode="viewMode"
           :view-size="viewSize"
+          :term="searchTerm"
           @file-click="triggerDefaultAction"
           @item-visible="
             loadPreview({
