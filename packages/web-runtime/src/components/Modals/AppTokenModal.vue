@@ -143,7 +143,7 @@ const createAppToken = async () => {
     })
   } finally {
     isCreating.value = false
-    updateModal(unref(modal).id, 'isLoading', false)
+    updateModal(modal.id, 'isLoading', false)
   }
 }
 </script>
