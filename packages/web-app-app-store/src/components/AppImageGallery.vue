@@ -2,11 +2,11 @@
   <div class="relative">
     <div
       v-if="app.badge"
-      class="app-image-ribbon z-10 text-right size-[7rem] overflow-hidden absolute top-0 right-0"
+      class="app-image-ribbon z-10 text-end size-[7rem] overflow-hidden absolute top-0 inset-e-0"
       :class="[`app-image-ribbon-${app.badge.color}`]"
     >
       <span
-        class="text-xs font-bold text-center leading-6 w-[10rem] block absolute top-[1.8rem] right-[-2.2rem] transform-[rotate(45deg)]"
+        class="text-xs font-bold text-center leading-6 w-[10rem] block absolute top-[1.8rem] inset-e-[-2.2rem] transform-[rotate(45deg)]"
         :class="ribbonColorClasses"
         >{{ app.badge.label }}</span
       >

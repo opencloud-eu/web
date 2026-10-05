@@ -46,7 +46,7 @@
                   v-if="viewModeQuery === viewMode.name"
                   name="check"
                   size-class="size-5"
-                  class="ml-1"
+                  class="ms-1"
                 />
               </div>
             </oc-button>

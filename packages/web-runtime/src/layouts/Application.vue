@@ -35,7 +35,7 @@
       <div id="app-runtime-footer" class="w-full" />
     </div>
     <div
-      class="snackbars absolute inset-x-[20px] sm:left-auto z-[calc(var(--z-index-modal)+1)]"
+      class="snackbars absolute inset-x-[20px] sm:inset-s-auto z-[calc(var(--z-index-modal)+1)]"
       :class="{ 'bottom-[70px]': isEmbedModeEnabled, 'bottom-[20px]': !isEmbedModeEnabled }"
     >
       <message-bar />

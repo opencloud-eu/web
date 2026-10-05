@@ -19,10 +19,10 @@
               <oc-contextual-helper
                 :list="spacesHelpList"
                 :title="$gettext('Spaces')"
-                class="ml-1"
+                class="ms-1"
               />
             </div>
-            <div class="flex justify-end flex-wrap items-end w-full sm:w-auto ml-auto">
+            <div class="flex justify-end flex-wrap items-end w-full sm:w-auto ms-auto">
               <oc-search-bar
                 v-model="filterTerm"
                 class="w-full sm:w-3xs"
@@ -111,7 +111,7 @@
                   :class="{ 'rounded-sm': isResourceInSelection(resource) }"
                 />
               </template>
-              <space-image v-else :space="resource" class="mr-2" />
+              <space-image v-else :space="resource" class="me-2" />
             </template>
             <template #actions="{ resource }">
               <oc-button

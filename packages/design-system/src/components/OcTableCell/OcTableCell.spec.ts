@@ -16,7 +16,7 @@ describe('OcTableCell', () => {
     })
 
     expect(wrapper.element.tagName).toBe('TH')
-    expect(wrapper.attributes('class')).toContain('text-right')
+    expect(wrapper.attributes('class')).toContain('text-end')
     expect(wrapper.attributes('class')).toContain('align-bottom')
     expect(wrapper.attributes('class')).toContain('w-px')
     expect(wrapper.html()).toMatchSnapshot()

@@ -16,7 +16,7 @@
     <div class="app-content bg-role-surface-container flex flex-col">
       <div class="flex items-center">
         <h2 class="my-2 truncate app-details-title">{{ app.name }}</h2>
-        <span class="ml-2 text-role-on-surface-variant text-sm mt-2">
+        <span class="ms-2 text-role-on-surface-variant text-sm mt-2">
           v{{ app.mostRecentVersion.version }}
         </span>
       </div>

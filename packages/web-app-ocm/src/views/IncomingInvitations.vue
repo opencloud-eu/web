@@ -4,7 +4,7 @@
       <div class="flex items-center px-4 pt-2">
         <oc-icon name="user-received" />
         <h2 class="px-2" v-text="$gettext('Accept invitations')" />
-        <oc-contextual-helper class="pl-1" v-bind="helperContent" />
+        <oc-contextual-helper class="ps-1" v-bind="helperContent" />
       </div>
       <div class="flex flex-col items-center justify-center p-4">
         <div class="w-[50%]">

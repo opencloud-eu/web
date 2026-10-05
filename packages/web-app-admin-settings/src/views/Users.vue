@@ -13,7 +13,7 @@
     <template #sideBarHeader>
       <div v-if="selectedUsers.length === 1" class="flex items-center min-w-0">
         <oc-avatar
-          class="mr-2 shrink-0"
+          class="me-2 shrink-0"
           :width="24"
           :userid="selectedUsers[0].id"
           :user-name="selectedUsers[0].displayName"
@@ -35,7 +35,7 @@
             :items="groups"
             :option-filter-label="$gettext('Filter groups')"
             :show-option-filter="true"
-            class="mr-2"
+            class="me-2"
             display-name-attribute="displayName"
             filter-name="groups"
             @selection-change="filterGroups"
@@ -44,7 +44,7 @@
               <oc-avatar :width="32" :userid="item.id" :user-name="item.displayName" />
             </template>
             <template #item="{ item, term }">
-              <div class="ml-2"><oc-filter-highlight :text="item.displayName" :term="term" /></div>
+              <div class="ms-2"><oc-filter-highlight :text="item.displayName" :term="term" /></div>
             </template>
           </item-filter>
           <item-filter
@@ -63,7 +63,7 @@
               <oc-avatar :width="32" :userid="item.id" :user-name="$gettext(item.displayName)" />
             </template>
             <template #item="{ item, term }">
-              <div class="ml-2">
+              <div class="ms-2">
                 <oc-filter-highlight :text="$gettext(item.displayName)" :term="term" />
               </div>
             </template>

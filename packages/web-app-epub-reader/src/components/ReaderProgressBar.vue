@@ -17,7 +17,7 @@
       <span
         v-oc-tooltip="progressTooltip"
         :aria-label="progressTooltip"
-        class="epub-reader-progress-label min-w-[3.5rem] text-right text-xs text-role-on-surface-variant"
+        class="epub-reader-progress-label min-w-[3.5rem] text-end text-xs text-role-on-surface-variant"
       >
         {{ progressLabel }}
       </span>

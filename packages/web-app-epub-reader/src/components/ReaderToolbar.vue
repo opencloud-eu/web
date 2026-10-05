@@ -5,7 +5,7 @@
       :selected-chapter="selectedChapter"
       @update:selected-chapter="onChapterUpdate"
     />
-    <oc-bubble-menu class="ml-auto shrink-0">
+    <oc-bubble-menu class="ms-auto shrink-0">
       <oc-button
         v-oc-tooltip="$gettext('Navigate to previous page')"
         :aria-label="$gettext('Navigate to previous page')"

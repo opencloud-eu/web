@@ -11,7 +11,7 @@
       <div class="flex">
         <div v-if="showCopied" class="flex items-center">
           <oc-icon name="checkbox-circle" />
-          <p class="oc-error-log-content-copied ml-2 my-0" v-text="$gettext('Copied')" />
+          <p class="oc-error-log-content-copied ms-2 my-0" v-text="$gettext('Copied')" />
         </div>
       </div>
       <oc-button size="small" appearance="filled" @click="copyContentToClipboard">

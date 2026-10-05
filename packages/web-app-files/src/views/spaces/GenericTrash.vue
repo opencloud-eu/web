@@ -15,7 +15,7 @@
             :class="emptyTrashBinAction.class"
             size="medium"
             appearance="filled"
-            class="mr-2"
+            class="me-2"
             @click="emptyTrashBinAction.handler({ resources: [space] })"
           >
             <oc-icon :name="emptyTrashBinActionIcon" size-class="size-5" />

@@ -17,7 +17,7 @@
     </account-heading>
     <avatar-upload class="account-page-avatar bg-role-surface-container rounded-xl p-4">
       <account-label
-        class="text-center md:text-left"
+        class="text-center md:text-start"
         :label="$gettext('Profile picture')"
         :description="
           $gettext('Max. %{size}MB, JPG, PNG', { size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString() })

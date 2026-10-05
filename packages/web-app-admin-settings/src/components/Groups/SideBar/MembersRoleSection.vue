@@ -6,7 +6,7 @@
       class="flex items-center mb-2"
       data-testid="group-members-list"
     >
-      <user-avatar :user-id="member.id" :user-name="member.displayName" class="mr-2" />
+      <user-avatar :user-id="member.id" :user-name="member.displayName" class="me-2" />
       <span class="truncate" :title="member.displayName">
         <oc-filter-highlight :text="member.displayName" :term="term" />
       </span>

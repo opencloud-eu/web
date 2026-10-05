@@ -1,5 +1,5 @@
 <template>
-  <div class="mail-indicators ml-2 flex items-center">
+  <div class="mail-indicators ms-2 flex items-center">
     <oc-tag
       v-if="mail.threadSize > 1"
       v-oc-tooltip="$gettext('Thread')"

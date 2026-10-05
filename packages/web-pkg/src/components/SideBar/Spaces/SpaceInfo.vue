@@ -1,6 +1,6 @@
 <template>
-  <div v-if="currentSpace" class="flex items-center min-w-0 ml-2">
-    <resource-icon :resource="currentSpace" size-class="size-4" class="mr-2 shrink-0 rounded-xs" />
+  <div v-if="currentSpace" class="flex items-center min-w-0 ms-2">
+    <resource-icon :resource="currentSpace" size-class="size-4" class="me-2 shrink-0 rounded-xs" />
     <h2
       data-testid="space-info-name"
       class="font-semibold m-0 text-base min-w-0 flex-1 truncate"

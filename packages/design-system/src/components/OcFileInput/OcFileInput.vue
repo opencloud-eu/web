@@ -14,7 +14,7 @@
         @focus="onFocus"
       />
       <div
-        class="size-16 shrink-0 rounded-full bg-role-surface-container-highest flex items-center justify-center overflow-hidden mr-4"
+        class="size-16 shrink-0 rounded-full bg-role-surface-container-highest flex items-center justify-center overflow-hidden me-4"
       >
         <oc-image
           v-if="hasImagePreview"
@@ -49,7 +49,7 @@
             v-if="!!errorMessage"
             name="error-warning"
             size-class="size-4"
-            class="mr-1"
+            class="me-1"
             fill-type="line"
             aria-hidden="true"
           />
@@ -82,7 +82,7 @@
             class="oc-file-input-button oc-text-input-btn"
             @click="addFiles"
           >
-            <oc-icon name="upload-cloud" fill-type="line" size-class="size-4" class="mr-1" />
+            <oc-icon name="upload-cloud" fill-type="line" size-class="size-4" class="me-1" />
             {{ $ngettext('Upload file', 'Upload files', multiple ? 2 : 1) }}
           </oc-button>
           <oc-button

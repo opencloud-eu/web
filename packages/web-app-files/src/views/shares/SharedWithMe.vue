@@ -22,12 +22,12 @@
                 :option-filter-label="$gettext('Filter share types')"
                 :show-option-filter="true"
                 id-attribute="key"
-                class="share-type-filter ml-2"
+                class="share-type-filter ms-2"
                 display-name-attribute="label"
                 filter-name="shareType"
               >
                 <template #item="{ item, term }">
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
+                  <span class="ms-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
                 </template>
               </item-filter>
               <item-filter
@@ -38,7 +38,7 @@
                 :option-filter-label="$gettext('Filter shared by')"
                 :show-option-filter="true"
                 id-attribute="id"
-                class="shared-by-filter ml-2"
+                class="shared-by-filter ms-2"
                 display-name-attribute="displayName"
                 filter-name="sharedBy"
               >
@@ -46,7 +46,7 @@
                   <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
                 </template>
                 <template #item="{ item, term }">
-                  <span class="ml-2"
+                  <span class="ms-2"
                     ><oc-filter-highlight :text="item.displayName" :term="term"
                   /></span>
                 </template>

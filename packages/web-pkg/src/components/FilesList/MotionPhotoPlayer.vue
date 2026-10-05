@@ -38,7 +38,7 @@ const {
   resource,
   space = undefined,
   badgeSizeClass = 'size-4',
-  badgeClass = 'top-0 right-0',
+  badgeClass = 'top-0 inset-e-0',
   videoClass = ''
 } = defineProps<{
   resource: Resource

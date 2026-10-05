@@ -33,7 +33,7 @@
               @click="toggleItemSelection(item)"
             >
               <div class="flex items-center truncate">
-                <div class="truncate ml-2">
+                <div class="truncate ms-2">
                   <slot name="item" :item="item" />
                 </div>
               </div>
@@ -54,7 +54,7 @@
               @click="dateRangeClicked = true"
             >
               <div class="flex items-center truncate">
-                <div class="truncate ml-2">
+                <div class="truncate ms-2">
                   <span v-text="$gettext('Custom date range')" />
                 </div>
               </div>
@@ -68,7 +68,8 @@
           class="date-filter-range-panel absolute top-0 p-2 bg-role-surface"
           :class="{
             'transform-[translateX(0)] visible': dateRangeClicked,
-            'transform-[translateX(100%)] invisible': !dateRangeClicked
+            'transform-[translateX(100%)] rtl:transform-[translateX(-100%)] invisible':
+              !dateRangeClicked
           }"
         >
           <div class="flex items-center justify-between mb-4">

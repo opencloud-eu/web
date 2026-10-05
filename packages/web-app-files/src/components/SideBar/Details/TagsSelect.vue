@@ -18,7 +18,7 @@
     <template #selected-option-container="{ option, deselect }">
       <oc-tag
         v-oc-tooltip="getTagToolTip(option.label)"
-        class="tags-select-tag ml-1"
+        class="tags-select-tag ms-1"
         :rounded="true"
         size="small"
       >
@@ -28,11 +28,11 @@
           class="flex items-center max-w-50"
           @click="closeSideBar()"
         >
-          <oc-icon name="price-tag-3" class="mr-1" size-class="size-4" />
+          <oc-icon name="price-tag-3" class="me-1" size-class="size-4" />
           <span class="truncate">{{ option.label }}</span>
         </component>
 
-        <span class="flex items-center mr-1">
+        <span class="flex items-center me-1">
           <oc-icon
             v-if="option.readonly"
             class="vs__deselect-lock"
@@ -56,7 +56,7 @@
     <template #option="{ label, error }">
       <div class="flex test">
         <span class="flex justify-center">
-          <oc-tag class="tags-select-tag ml-1 max-w-50" :rounded="true" size="small">
+          <oc-tag class="tags-select-tag ms-1 max-w-50" :rounded="true" size="small">
             <oc-icon name="price-tag-3" size-class="size-4" />
             <span class="truncate">{{ label }}</span>
           </oc-tag>

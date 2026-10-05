@@ -5,14 +5,14 @@
         <div class="flex items-center px-4 py-2">
           <oc-icon name="contacts-book" />
           <h2 class="px-2" v-text="$gettext('Federated connections')" />
-          <oc-contextual-helper class="pl-1" v-bind="helperContent" />
+          <oc-contextual-helper class="ps-1" v-bind="helperContent" />
         </div>
-        <div id="shares-links" class="flex items-center flex-wrap mr-4 invisible md:visible">
-          <label class="mr-2" v-text="$gettext('Federated shares:')" />
+        <div id="shares-links" class="flex items-center flex-wrap me-4 invisible md:visible">
+          <label class="me-2" v-text="$gettext('Federated shares:')" />
           <oc-button
             :aria-current="$gettext('Federated shares with me')"
             appearance="raw"
-            class="p-2 mr-2"
+            class="p-2 me-2"
             @click="toSharedWithMe"
           >
             <oc-icon name="share-forward" />
