@@ -90,6 +90,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update alpine/openssl docker tag to v3.5.9 [[#3552](https://github.com/opencloud-eu/web/pull/3552)]
 - chore(deps): update tiptap monorepo to v3.31.4 [[#3513](https://github.com/opencloud-eu/web/pull/3513)]
 - chore(deps): update devdependencies (non-major) to v5.0.3 [[#3510](https://github.com/opencloud-eu/web/pull/3510)]
 - chore(deps): update apache/tika docker tag to v4.2.0 [[#3514](https://github.com/opencloud-eu/web/pull/3514)]
