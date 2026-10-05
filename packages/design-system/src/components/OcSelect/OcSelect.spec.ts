@@ -23,6 +23,14 @@ describe('OcSelect', () => {
       wrapper.findComponent<typeof OcSelect>(selectors.ocSelect).props('options' as any)
     ).toEqual(options)
   })
+  it('lets consumers override the default vue-select handlers', () => {
+    const mapKeydown = vi.fn()
+    const dropdownShouldOpen = vi.fn(() => false)
+    const wrapper = getWrapper({ mapKeydown, dropdownShouldOpen } as any)
+    const vueSelect = wrapper.findComponent<typeof OcSelect>(selectors.ocSelect)
+    expect(vueSelect.props('mapKeydown' as any)).toBe(mapKeydown)
+    expect(vueSelect.props('dropdownShouldOpen' as any)).toBe(dropdownShouldOpen)
+  })
   it('shows ocSpinner component when loading', () => {
     const wrapper = getWrapper({ loading: true })
     expect(wrapper.find(selectors.ocSpinner).exists()).toBeTruthy()
@@ -74,6 +82,16 @@ describe('OcSelect', () => {
       const wrapper = getWrapper({ options, modelValue: options[0], multiple: true })
       expect(wrapper.find(selectors.deselectBtn).exists()).toBeTruthy()
       expect(wrapper.find(selectors.deselectLockIcon).exists()).toBeFalsy()
+    })
+    it.each([
+      { props: { disabled: true }, lock: false },
+      { props: { readOnly: true }, lock: true }
+    ])('can not be deselected if the select is $props', ({ props, lock }) => {
+      const options = [{ label: 'label1' }, { label: 'label2' }]
+      const wrapper = getWrapper({ options, modelValue: options[0], multiple: true, ...props })
+      expect(wrapper.find(selectors.deselectBtn).exists()).toBeFalsy()
+      expect(wrapper.findAll(`${selectors.selectedOptions} .oc-icon`).length).toBe(lock ? 1 : 0)
+      expect(wrapper.find(selectors.deselectLockIcon).exists()).toBe(lock)
     })
     it('can not be cleared if readonly', () => {
       const options = [{ label: 'label1', readonly: true }, { label: 'label2' }]
