@@ -28,6 +28,7 @@
 
 ### 📦️ Dependencies
 
+- [full-ci] chore: bump opencloud for tests to v8.1.0 [[#3565](https://github.com/opencloud-eu/web/pull/3565)]
 - chore(deps): update dependency focus-trap to v8.2.3 [[#3560](https://github.com/opencloud-eu/web/pull/3560)]
 
 ## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-10-05
