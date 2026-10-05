@@ -181,7 +181,6 @@ export class UserManager extends OidcUserManager {
       onPremisesSamAccountName: graphUser.onPremisesSamAccountName,
       displayName: graphUser.displayName,
       mail: graphUser.mail,
-      memberOf: graphUser.memberOf,
       appRoleAssignments: role ? [role as any] : [], // FIXME
       preferredLanguage: graphUser.preferredLanguage || ''
     })

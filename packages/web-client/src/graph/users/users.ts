@@ -68,7 +68,7 @@ export const UsersFactory = ({ axiosClient, config }: GraphFactoryOptions): Grap
 
     async getMe(options, requestOptions) {
       const { data } = await meUserApiFactory.getOwnUser(
-        options?.expand ? new Set([...options.expand]) : new Set(['memberOf']),
+        options?.expand ? new Set([...options.expand]) : null,
         requestOptions
       )
       return data

@@ -1,11 +1,13 @@
 import AccountInformation from '../../../../src/pages/account/accountInformation.vue'
+import { flushPromises } from '@vue/test-utils'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import {
   Extension,
   ExtensionPoint,
   OptionsConfig,
-  useExtensionRegistry
+  useExtensionRegistry,
+  useUserStore
 } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
@@ -57,8 +59,7 @@ describe('account information page', () => {
         user: mock<User>({
           onPremisesSamAccountName: 'some-username',
           displayName: 'some-displayname',
-          mail: 'some-email',
-          memberOf: []
+          mail: 'some-email'
         })
       })
 
@@ -67,11 +68,28 @@ describe('account information page', () => {
     })
 
     describe('group membership', () => {
-      it('displays message if not member of any groups', () => {
+      it('loads the group memberships of the current user', () => {
+        const { mocks } = getWrapper()
+
+        expect(mocks.$clientService.graphAuthenticated.users.getMe).toHaveBeenCalledWith(
+          { expand: ['memberOf'] },
+          expect.anything()
+        )
+      })
+      it('displays message if not member of any groups', async () => {
         const { wrapper } = getWrapper()
+        await flushPromises()
 
         const groupNamesEmpty = wrapper.find(selectors.groupNamesEmpty)
         expect(groupNamesEmpty.exists()).toBeTruthy()
+      })
+      it('stores the loaded group memberships in the user store', async () => {
+        const memberOf = [{ displayName: 'one' }, { displayName: 'two' }]
+        getWrapper({ memberOf })
+        await flushPromises()
+
+        const userStore = useUserStore()
+        expect(userStore.setUser).toHaveBeenCalledWith(expect.objectContaining({ memberOf }))
       })
       it('displays group names', () => {
         const { wrapper } = getWrapper({
@@ -80,8 +98,7 @@ describe('account information page', () => {
           })
         })
 
-        const groupNames = wrapper.find(selectors.groupNames)
-        expect(groupNames.html()).toMatchSnapshot()
+        expect(wrapper.find(selectors.groupNames).text()).toBe('one, two, three')
       })
     })
 
@@ -108,7 +125,8 @@ describe('account information page', () => {
 })
 
 function getWrapper({
-  user = mock<User>({ memberOf: [] }),
+  user = mock<User>(),
+  memberOf = [],
   accountEditLink = undefined,
   isPublicLinkContext = false,
   isUserContext = true,
@@ -116,6 +134,7 @@ function getWrapper({
   extensions = []
 }: {
   user?: User
+  memberOf?: User['memberOf']
   accountEditLink?: OptionsConfig['accountEditLink']
   isPublicLinkContext?: boolean
   isUserContext?: boolean
@@ -147,7 +166,9 @@ function getWrapper({
     $route
   }
 
-  mocks.$clientService.graphAuthenticated.users.getMe.mockResolvedValue(mock<User>({ id: '1' }))
+  mocks.$clientService.graphAuthenticated.users.getMe.mockResolvedValue(
+    mock<User>({ id: '1', memberOf })
+  )
 
   return {
     mocks,
