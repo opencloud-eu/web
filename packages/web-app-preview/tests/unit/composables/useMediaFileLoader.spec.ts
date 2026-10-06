@@ -356,6 +356,67 @@ describe('useMediaFileLoader', () => {
       expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
       wrapper.unmount()
     })
+
+    it('does not preload the backward neighbor after the active index changed', async () => {
+      const { wrapper, loader, mocks, activeIndex } = createWrapper({
+        files: createFiles([
+          { name: 'a.png' },
+          { name: 'b.png' },
+          { name: 'c.png' },
+          { name: 'd.png' }
+        ]),
+        activeIndex: 1
+      })
+      let resolvePreview: (url: string) => void
+      mocks.$previewService.loadPreview.mockImplementationOnce(
+        () => new Promise((resolve) => (resolvePreview = resolve))
+      )
+
+      loader.preloadNeighbors()
+      await flushPromises()
+      expect(requestedNames(mocks)).toEqual(['c.png'])
+
+      // the user jumped elsewhere while the forward neighbor was still loading
+      activeIndex.value = 3
+      resolvePreview('preview-url-c.png')
+      await flushPromises()
+
+      expect(requestedNames(mocks)).toEqual(['c.png'])
+      wrapper.unmount()
+    })
+
+    it('does not preload the backward neighbor after the file list was rebuilt', async () => {
+      const { wrapper, loader, mocks, mediaFiles } = createWrapper({
+        files: createFiles([
+          { name: 'a.png' },
+          { name: 'b.png' },
+          { name: 'c.png' },
+          { name: 'd.png' }
+        ]),
+        activeIndex: 1
+      })
+      let resolvePreview: (url: string) => void
+      mocks.$previewService.loadPreview.mockImplementationOnce(
+        () => new Promise((resolve) => (resolvePreview = resolve))
+      )
+
+      loader.preloadNeighbors()
+      await flushPromises()
+      expect(requestedNames(mocks)).toEqual(['c.png'])
+
+      // a rebuilt list means the captured neighbors are orphans, even at the same index
+      mediaFiles.value = createFiles([
+        { name: 'a.png' },
+        { name: 'b.png' },
+        { name: 'c.png' },
+        { name: 'd.png' }
+      ])
+      resolvePreview('preview-url-c.png')
+      await flushPromises()
+
+      expect(requestedNames(mocks)).toEqual(['c.png'])
+      wrapper.unmount()
+    })
   })
 
   describe('method "cancelStaleLoads"', () => {
