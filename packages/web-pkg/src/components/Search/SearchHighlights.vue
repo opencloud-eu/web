@@ -1,44 +1,39 @@
 <template>
   <div
     v-if="resource.highlights || matchingTags.length"
-    class="search-highlights flex gap-1 mt-1 [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
+    class="search-highlights mt-1 [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
   >
-    <!-- centered on the first line, which is either the found content or the tags -->
-    <span class="flex items-center shrink-0" :class="resource.highlights ? 'h-5' : 'h-4.5'">
-      <oc-icon name="search" fill-type="line" size="xsmall" />
-    </span>
-    <div class="min-w-0 grow">
-      <!-- eslint-disable vue/no-v-html -->
-      <span v-if="resource.highlights" class="search-highlights-content flex text-sm">
-        <!-- the text before the match is cut off at its start, so the match stays visible.
-             a longer text keeps a bit of width, so there is still some context before the match -->
-        <span
-          v-if="snippet.before"
-          dir="rtl"
-          class="search-highlights-content-before truncate grow basis-0 max-w-fit"
-          :class="{ 'min-w-[min(25%,84px)]': snippet.hasLongBefore }"
-        >
-          <span dir="ltr" v-html="snippet.before" />
-        </span>
-        <span class="search-highlights-content-match truncate" v-html="snippet.match" />
-      </span>
-      <!--eslint-enable-->
-      <div
-        v-if="matchingTags.length"
-        class="search-highlights-tags flex flex-wrap gap-1"
-        :class="{ 'mt-1': resource.highlights }"
+    <!-- eslint-disable vue/no-v-html -->
+    <span v-if="resource.highlights" class="search-highlights-content flex text-sm">
+      <!-- the text before the match is cut off at its start, so the match stays visible.
+           a longer text keeps a bit of width, so there is still some context before the match -->
+      <span
+        v-if="snippet.before"
+        dir="rtl"
+        class="search-highlights-content-before truncate grow basis-0 max-w-fit"
+        :class="{ 'min-w-[min(25%,84px)]': snippet.hasLongBefore }"
       >
-        <oc-tag
-          v-for="tag in matchingTags"
-          :key="tag"
-          class="search-highlights-tag max-w-[min(160px,100%)]"
-          :rounded="true"
-          size="xsmall"
-        >
-          <oc-icon name="price-tag-3" size="xsmall" />
-          <oc-filter-highlight class="truncate" :text="tag" :term="term" />
-        </oc-tag>
-      </div>
+        <span dir="ltr" v-html="snippet.before" />
+      </span>
+      <span class="search-highlights-content-match truncate" v-html="snippet.match" />
+    </span>
+    <!--eslint-enable-->
+    <!-- tags fill their whole line height, unlike text, so they get the bottom spacing a text line has -->
+    <div
+      v-if="matchingTags.length"
+      class="search-highlights-tags flex flex-wrap gap-1 mb-1"
+      :class="{ 'mt-1': resource.highlights }"
+    >
+      <oc-tag
+        v-for="tag in matchingTags"
+        :key="tag"
+        class="search-highlights-tag max-w-[min(160px,100%)]"
+        :rounded="true"
+        size="xsmall"
+      >
+        <oc-icon name="price-tag-3" size="xsmall" />
+        <oc-filter-highlight class="truncate" :text="tag" :term="term" />
+      </oc-tag>
     </div>
   </div>
 </template>
