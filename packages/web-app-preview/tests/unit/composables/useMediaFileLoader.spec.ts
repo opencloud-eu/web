@@ -397,6 +397,69 @@ describe('useMediaFileLoader', () => {
       expect(signalsOf(mocks).every((signal) => !signal.aborted)).toBe(true)
       wrapper.unmount()
     })
+
+    it('settles and stops a warm-up download when its load becomes stale', async () => {
+      MockImage.autoLoad = false
+      const { wrapper, loader, mocks, mediaFiles } = createWrapper({
+        files: createFiles([
+          { name: 'a.png' },
+          { name: 'b.png' },
+          { name: 'c.png' },
+          { name: 'd.png' }
+        ]),
+        activeIndex: 1
+      })
+      // public-link style: loadPreview resolves a remote url, the warm-up downloads
+      mocks.$previewService.loadPreview.mockResolvedValue('https://example.org/d.jpg')
+
+      // index 3 is no neighbor of the active index 1, its load is stale by definition
+      const staleFile = unref(mediaFiles)[3]
+      const load = loader.loadPreviewImage(staleFile)
+      await flushPromises()
+      expect(MockImage.instances).toHaveLength(1)
+
+      loader.cancelStaleLoads()
+
+      // the abort listener clears src synchronously: the download is stopped
+      expect(MockImage.instances[0].src).toBe('')
+      await load
+
+      expect(staleFile.url).toBeUndefined()
+      expect(staleFile.isLoading).toBe(true)
+      // the abort must not be misread as a stale url: no second resolution
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
+      wrapper.unmount()
+    })
+
+    it('does not start a warm-up when the url resolved after the load was aborted', async () => {
+      const { wrapper, loader, mocks, mediaFiles } = createWrapper({
+        files: createFiles([
+          { name: 'a.png' },
+          { name: 'b.png' },
+          { name: 'c.png' },
+          { name: 'd.png' }
+        ]),
+        activeIndex: 1
+      })
+      let resolvePreview: (url: string) => void
+      mocks.$previewService.loadPreview.mockImplementationOnce(
+        () => new Promise((resolve) => (resolvePreview = resolve))
+      )
+
+      const staleFile = unref(mediaFiles)[3]
+      const load = loader.loadPreviewImage(staleFile)
+      await flushPromises()
+
+      // not every url resolver is signal-aware: a resolution may arrive after abort
+      loader.cancelStaleLoads()
+      resolvePreview('https://example.org/d.jpg')
+      await load
+
+      expect(MockImage.instances).toHaveLength(0)
+      expect(staleFile.url).toBeUndefined()
+      expect(staleFile.isLoading).toBe(true)
+      wrapper.unmount()
+    })
   })
 
   describe('unmount', () => {
@@ -442,6 +505,8 @@ describe('useMediaFileLoader', () => {
       await load
 
       expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
+      // unmount must stop the download too, not just settle the promise
+      expect(MockImage.instances[0].src).toBe('')
     })
   })
 
