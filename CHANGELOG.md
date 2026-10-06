@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @v-scharf
+@AlexAndBear, @BloomyInDev, @v-scharf
 
 ### 📈 Enhancement
 
+- feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
 - feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
 - feat: remove condensed list view and switch view modes with toggle buttons [[#3538](https://github.com/opencloud-eu/web/pull/3538)]
 - perf: load group memberships only on the account page [[#3553](https://github.com/opencloud-eu/web/pull/3553)]
