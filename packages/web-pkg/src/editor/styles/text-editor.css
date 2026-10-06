@@ -141,11 +141,17 @@
   position: relative;
 }
 
+/* reserve a row for the language selector so it never covers the code */
+.text-editor-content .ProseMirror .code-block pre {
+  padding-top: 28px;
+}
+
 /* Frontmatter styles */
 .text-editor-content .ProseMirror .text-editor-frontmatter {
   position: relative;
   margin: 0 0 1.5rem;
-  padding: 8px 12px;
+  /* reserve a row for the label so it never covers the content */
+  padding: 28px 12px 8px;
   border: 1px dashed var(--oc-role-outline-variant);
   border-radius: 6px;
   background: var(--oc-role-surface-container-high);
@@ -162,6 +168,15 @@
 }
 
 /* Table styles */
+.text-editor-content .ProseMirror .tableWrapper {
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.text-editor-content .ProseMirror .tableWrapper table {
+  margin: 0;
+}
+
 .text-editor-content .ProseMirror table {
   border-collapse: collapse;
   margin: 8px 0;

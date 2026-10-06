@@ -7,7 +7,7 @@
     <template v-else>
       <div class="flex h-full">
         <div
-          class="min-w-0 w-full overflow-y-auto md:w-[22rem] md:shrink-0 md:border-r-2 md:border-role-outline-variant"
+          class="min-w-0 w-full overflow-y-auto pb-(--oc-floating-action-button-space) md:w-[22rem] md:shrink-0 md:border-r-2 md:border-role-outline-variant"
           :class="{ 'hidden md:block': currentContact }"
         >
           <ContactsList />

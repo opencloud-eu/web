@@ -64,30 +64,6 @@ export const useFolderViews = (): FolderViewExtension[] => {
         },
         component: markRaw(ResourceTable)
       }
-    },
-    {
-      id: 'com.github.opencloud-eu.web.files.folder-view.resource-table-condensed',
-      type: 'folderView',
-      extensionPointIds: [
-        folderViewsFolderExtensionPoint.id,
-        folderViewsFavoritesExtensionPoint.id,
-        folderViewsTrashExtensionPoint.id,
-        folderViewsTrashOverviewExtensionPoint.id,
-        folderViewsProjectSpacesExtensionPoint.id,
-        folderViewsSharedWithMeExtensionPoint.id,
-        folderViewsSharedViaLinkExtensionPoint.id,
-        folderViewsSharedWithOthersExtensionPoint.id,
-        folderViewsSearchExtensionPoint.id
-      ],
-      folderView: {
-        name: 'resource-table-condensed',
-        label: $gettext('Condensed list'),
-        icon: {
-          name: 'menu-line-condensed',
-          fillType: 'none'
-        },
-        component: markRaw(ResourceTable)
-      }
     }
   ]
 }

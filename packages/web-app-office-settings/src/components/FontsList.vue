@@ -2,8 +2,7 @@
   <no-content-message
     v-if="!filteredFonts.length"
     id="office-settings-fonts-empty-filtered"
-    icon="font-size"
-    icon-fill-type="none"
+    img-src="images/illustrations/fonts.svg"
   >
     <template #message>
       <span v-text="$gettext('No fonts found')" />

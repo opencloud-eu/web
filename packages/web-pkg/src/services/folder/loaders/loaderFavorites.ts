@@ -44,6 +44,12 @@ export class FolderLoaderFavorites implements FolderLoader {
         query.push(`mediatype:(${mediatypes.join(' OR ')})`)
       }
 
+      const tags = queryItemAsString(currentRoute.query.q_tags)
+      if (tags) {
+        const tagList = tags.split('+').map((t) => `"${t}"`)
+        query.push(`tag:(${tagList.join(' OR ')})`)
+      }
+
       query.push('is:favorite')
 
       const searchQuery = query.join(' AND ')

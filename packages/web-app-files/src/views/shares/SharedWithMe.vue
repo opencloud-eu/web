@@ -7,7 +7,7 @@
         </template>
         <template #actions>
           <div class="flex flex-wrap gap-2 justify-between w-full mt-2 mb-4 items-center">
-            <div class="flex flex-wrap">
+            <div class="flex flex-wrap gap-2">
               <item-filter-inline
                 class="share-visibility-filter"
                 filter-name="share-visibility"
@@ -22,7 +22,7 @@
                 :option-filter-label="$gettext('Filter share types')"
                 :show-option-filter="true"
                 id-attribute="key"
-                class="share-type-filter ml-2"
+                class="share-type-filter"
                 display-name-attribute="label"
                 filter-name="shareType"
               >
@@ -38,7 +38,7 @@
                 :option-filter-label="$gettext('Filter shared by')"
                 :show-option-filter="true"
                 id-attribute="id"
-                class="shared-by-filter ml-2"
+                class="shared-by-filter"
                 display-name-attribute="displayName"
                 filter-name="sharedBy"
               >

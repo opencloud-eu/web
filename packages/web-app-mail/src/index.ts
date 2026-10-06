@@ -1,4 +1,4 @@
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-mail'
 import { useGettext } from 'vue3-gettext'
 import Inbox from './views/Inbox.vue'
 import LayoutContainer from './LayoutContainer.vue'

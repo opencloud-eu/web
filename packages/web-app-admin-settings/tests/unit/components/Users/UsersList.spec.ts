@@ -114,6 +114,26 @@ describe('UsersList', () => {
     await wrapper.find('.users-table-btn-edit').trigger('click')
     expect(openSideBarPanel).toHaveBeenCalledWith('EditPanel')
   })
+  describe('search term', () => {
+    it('is highlighted in the user name, the display name and the email', () => {
+      const users = [
+        {
+          id: '1',
+          onPremisesSamAccountName: 'alex',
+          displayName: 'Alex Dragan',
+          mail: 'alex@x.org'
+        }
+      ] as User[]
+      const { wrapper } = getWrapper({ mountType: mount, users, searchTerm: 'ALEX' })
+      const matches = (cell: string) =>
+        wrapper
+          .findAll(`.oc-table-data-cell-${cell} .oc-filter-highlight-match`)
+          .map((m) => m.text())
+      expect(matches('onPremisesSamAccountName')).toEqual(['alex'])
+      expect(matches('displayName')).toEqual(['Alex'])
+      expect(matches('mail')).toEqual(['alex'])
+    })
+  })
   describe('squashed table', () => {
     it.each([true, false])(
       'sets the squashed class depending on the side bar being open (%s)',
@@ -179,13 +199,20 @@ function getWrapper({
   mountType = shallowMount,
   users = [],
   selectedUsers = [],
-  query = {}
+  query = {},
+  searchTerm
 }: {
   mountType?: typeof mount
   users?: User[]
   selectedUsers?: User[]
   query?: Record<string, string>
+  searchTerm?: string
 } = {}) {
+  if (searchTerm) {
+    // the search term is the first query value read, drop the values left over by other tests
+    vi.mocked(queryItemAsString).mockReset()
+    vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
+  }
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
   const mocks = defaultComponentMocks({

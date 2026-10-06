@@ -40,14 +40,26 @@
           @click.stop="rowClicked([item, $event])"
         />
       </template>
-      <template #avatarHeader>
-        <span class="sr-only">{{ $gettext('Avatar') }}</span>
-      </template>
-      <template #avatar="{ item }">
-        <user-avatar :user-id="item.id" :user-name="item.displayName" :width="32" />
+      <template #onPremisesSamAccountName="{ item }">
+        <div class="flex items-center">
+          <user-avatar
+            class="shrink-0"
+            :user-id="item.id"
+            :user-name="item.displayName"
+            :width="32"
+          />
+          <oc-filter-highlight
+            class="pl-2 truncate"
+            :text="item.onPremisesSamAccountName"
+            :term="filterTerm"
+          />
+        </div>
       </template>
       <template #displayName="{ item }">
         <oc-filter-highlight :text="item.displayName" :term="filterTerm" />
+      </template>
+      <template #mail="{ item }">
+        <oc-filter-highlight :text="item.mail" :term="filterTerm" />
       </template>
       <template #role="{ item }">
         <template v-if="item.appRoleAssignments">{{ getRoleDisplayNameByUser(item) }}</template>
@@ -217,16 +229,9 @@ const fields = computed<FieldType[]>(() => [
     headerType: 'slot'
   },
   {
-    name: 'avatar',
-    title: '',
-    type: 'slot',
-    width: 'shrink',
-    headerType: 'slot',
-    sortable: false
-  },
-  {
     name: 'onPremisesSamAccountName',
     title: $gettext('User name'),
+    type: 'slot',
     sortable: true
   },
   {
@@ -238,6 +243,7 @@ const fields = computed<FieldType[]>(() => [
   {
     name: 'mail',
     title: $gettext('Email'),
+    type: 'slot',
     sortable: true
   },
   {

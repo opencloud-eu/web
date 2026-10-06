@@ -22,7 +22,8 @@
         :title="$gettext('Generate new invitation')"
         :button-cancel-text="$gettext('Cancel')"
         :button-confirm-text="$gettext('Generate')"
-        :button-confirm-disabled="!!descriptionErrorMessage"
+        :button-confirm-disabled="!!descriptionErrorMessage || isGenerating"
+        :is-loading="isGenerating"
         focus-trap-initial="#invite_token_description"
         @cancel="resetGenerateInviteToken"
         @confirm="generateToken"
@@ -160,6 +161,7 @@ const formInput = ref({
 })
 const tokens = ref<Token[]>([])
 const loading = ref(true)
+const isGenerating = ref(false)
 const descriptionErrorMessage = ref<string>()
 const fields = computed<FieldType[]>(() => {
   const haveLinks = unref(sortedTokens)[0]?.link
@@ -217,9 +219,12 @@ const generateWayfLink = (token: string) => {
 const generateToken = async () => {
   const { description } = unref(formInput)
 
-  if (unref(descriptionErrorMessage)) {
+  if (unref(descriptionErrorMessage) || unref(isGenerating)) {
     return
   }
+  // The ref is set before awaiting so the guard also covers a second click or
+  // submit that lands before the re-render disables the confirm button.
+  isGenerating.value = true
   try {
     const { data: tokenInfo } = await clientService.httpAuthenticated.post(
       '/sciencemesh/generate-invite',
@@ -260,6 +265,7 @@ const generateToken = async () => {
     lastCreatedToken.value = ''
     errorPopup(error)
   } finally {
+    isGenerating.value = false
     resetGenerateInviteToken()
   }
 }

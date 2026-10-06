@@ -70,7 +70,7 @@
           </item-filter>
         </div>
         <oc-search-bar
-          v-model="filterTermDisplayName"
+          v-model="searchTerm"
           class="w-full sm:w-3xs"
           :label="$gettext('Search')"
           :placeholder="$gettext('Search for users')"
@@ -78,11 +78,11 @@
           button-hidden
           @search="
             (term) => {
-              filterTermDisplayName = term
-              filterDisplayName()
+              searchTerm = term
+              searchUsers()
             }
           "
-          @advanced-search="filterDisplayName"
+          @advanced-search="searchUsers"
         />
       </div>
     </template>
@@ -188,17 +188,15 @@ function parseIdsQuery(value: QueryValue) {
   return queryItemAsString(value)?.split('+') || []
 }
 
-const displayNameQuery = useRouteQuery('q_displayName')
+const searchTermQuery = useRouteQuery('q_displayName')
 const filterGroupIds = ref(parseIdsQuery(unref(useRouteQuery('q_groups'))))
 const filterRoleIds = ref(parseIdsQuery(unref(useRouteQuery('q_roles'))))
-const filterTermDisplayName = ref(queryItemAsString(unref(displayNameQuery)) || '')
-const appliedDisplayNameFilter = ref(unref(filterTermDisplayName))
+const searchTerm = ref(queryItemAsString(unref(searchTermQuery)) || '')
+const appliedSearchTerm = ref(unref(searchTerm))
 
 const isFilteringActive = computed(
   () =>
-    !!unref(filterGroupIds).length ||
-    !!unref(filterRoleIds).length ||
-    !!unref(appliedDisplayNameFilter)
+    !!unref(filterGroupIds).length || !!unref(filterRoleIds).length || !!unref(appliedSearchTerm)
 )
 
 function anyOf(ids: string[], condition: (id: string) => string) {
@@ -208,12 +206,18 @@ function anyOf(ids: string[], condition: (id: string) => string) {
 const usersFilter = computed(() =>
   [
     anyOf(unref(filterGroupIds), (id) => `memberOf/any(m:m/id eq '${id}')`),
-    anyOf(unref(filterRoleIds), (id) => `appRoleAssignments/any(m:m/appRoleId eq '${id}')`),
-    unref(appliedDisplayNameFilter) && `contains(displayName,'${unref(appliedDisplayNameFilter)}')`
+    anyOf(unref(filterRoleIds), (id) => `appRoleAssignments/any(m:m/appRoleId eq '${id}')`)
   ]
     .filter(Boolean)
     .join(' and ')
 )
+
+// the server searches the display name, the user name and the email. Quoted, the term may contain
+// spaces and special characters, but no double quotes
+const usersSearch = computed(() => {
+  const term = unref(appliedSearchTerm).replaceAll('"', '')
+  return term ? `"${term}"` : undefined
+})
 
 const loadGroupsTask = useTask(function* (signal) {
   groups.value = yield* call(
@@ -236,7 +240,12 @@ const loadUsersTask = useTask(function* (signal) {
 
   const usersResponse = yield* call(
     clientService.graphAuthenticated.users.listUsers(
-      { orderBy: ['displayName'], filter: unref(usersFilter), expand: ['appRoleAssignments'] },
+      {
+        orderBy: ['displayName'],
+        filter: unref(usersFilter),
+        ...(unref(usersSearch) && { search: unref(usersSearch) }),
+        expand: ['appRoleAssignments']
+      },
       { signal }
     )
   )
@@ -289,15 +298,15 @@ function filterRoles(roles: AppRole[]) {
   return reloadFilteredUsers()
 }
 
-async function filterDisplayName() {
+async function searchUsers() {
   await router.push({
     ...unref(route),
     query: {
       ...omit(unref(route).query, 'q_displayName'),
-      ...(unref(filterTermDisplayName) && { q_displayName: unref(filterTermDisplayName) })
+      ...(unref(searchTerm) && { q_displayName: unref(searchTerm) })
     }
   })
-  appliedDisplayNameFilter.value = unref(filterTermDisplayName)
+  appliedSearchTerm.value = unref(searchTerm)
   return reloadFilteredUsers()
 }
 
@@ -344,6 +353,7 @@ const sideBarAvailablePanels = [
   {
     name: 'EditPanel',
     icon: 'pencil',
+    iconFillType: 'line',
     title: () => $gettext('Edit user'),
     component: EditPanel,
     isVisible: ({ items }) => items.length === 1,

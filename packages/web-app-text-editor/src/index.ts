@@ -1,6 +1,6 @@
 import { useGettext } from 'vue3-gettext'
 import { defineAsyncComponent, type Component } from 'vue'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-text-editor'
 import {
   ApplicationFileExtension,
   ApplicationInformation,

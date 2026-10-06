@@ -1,7 +1,7 @@
 import { useGettext } from 'vue3-gettext'
 import { ref } from 'vue'
 import { ApplicationInformation, defineWebApplication, Extension } from '@opencloud-eu/web-pkg'
-import translations from '../l10n/translations.json'
+import translations from 'virtual:l10n/web-app-rclone-crypt'
 import { vaultSchemeExtension } from './extensions/vault'
 import { VAULT_EXTENSION } from './vaultLocation'
 import UnlockVault from './views/UnlockVault.vue'

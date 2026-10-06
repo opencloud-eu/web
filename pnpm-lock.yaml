@@ -78,9 +78,6 @@ catalogs:
     '@tiptap/extension-text-style':
       specifier: ^3.30.3
       version: 3.31.4
-    '@tiptap/extension-underline':
-      specifier: ^3.30.3
-      version: 3.31.4
     '@tiptap/markdown':
       specifier: ^3.30.3
       version: 3.31.4
@@ -265,10 +262,10 @@ importers:
         version: 5.6.0
       focus-trap:
         specifier: ^8.0.0
-        version: 8.2.2
+        version: 8.2.3
       focus-trap-vue:
         specifier: ^4.1.0
-        version: 4.1.0(focus-trap@8.2.2)(vue@3.5.43(typescript@6.0.3))
+        version: 4.1.0(focus-trap@8.2.3)(vue@3.5.43(typescript@6.0.3))
       fuse.js:
         specifier: ^7.1.0
         version: 7.5.0
@@ -718,6 +715,10 @@ importers:
       zod:
         specifier: 4.6.5
         version: 4.6.5
+    devDependencies:
+      '@opencloud-eu/web-test-helpers':
+        specifier: workspace:*
+        version: link:../web-test-helpers
 
   packages/web-app-office-settings:
     dependencies:
@@ -1036,9 +1037,6 @@ importers:
         specifier: catalog:tiptap
         version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
       '@tiptap/extension-text-style':
-        specifier: catalog:tiptap
-        version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
-      '@tiptap/extension-underline':
         specifier: catalog:tiptap
         version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
       '@tiptap/markdown':
@@ -3346,8 +3344,8 @@ packages:
       focus-trap: ^7.0.0
       vue: ^3.0.0
 
-  focus-trap@8.2.2:
-    resolution: {integrity: sha512-qV0g8hRYBqgACcFOH3f9wXc4zPKhr/0z9RI2a6ZijZ72EeBi4g8oBy8zAWuUR1TsMpOzwpUMFvjdasrC41Joug==}
+  focus-trap@8.2.3:
+    resolution: {integrity: sha512-LTNHZwcFM7bSdU1cG1ExoaTEzoGmdjw+EzDotolZmLTCbm0ll2k6J3NL+WfqP14nGLxAp+XDJgwlT2DtNhcukA==}
 
   follow-redirects@1.16.0:
     resolution: {integrity: sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==}
@@ -6527,14 +6525,14 @@ snapshots:
       '@vueuse/shared': 14.4.0(vue@3.5.43(typescript@6.0.3))
       vue: 3.5.43(typescript@6.0.3)
 
-  '@vueuse/integrations@14.4.0(axios@1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0))(focus-trap@8.2.2)(fuse.js@7.5.0)(jwt-decode@4.0.0)(vue@3.5.43(typescript@6.0.3))':
+  '@vueuse/integrations@14.4.0(axios@1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0))(focus-trap@8.2.3)(fuse.js@7.5.0)(jwt-decode@4.0.0)(vue@3.5.43(typescript@6.0.3))':
     dependencies:
       '@vueuse/core': 14.4.0(vue@3.5.43(typescript@6.0.3))
       '@vueuse/shared': 14.4.0(vue@3.5.43(typescript@6.0.3))
       vue: 3.5.43(typescript@6.0.3)
     optionalDependencies:
       axios: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
-      focus-trap: 8.2.2
+      focus-trap: 8.2.3
       fuse.js: 7.5.0
       jwt-decode: 4.0.0
 
@@ -7354,12 +7352,12 @@ snapshots:
 
   flatted@3.4.4: {}
 
-  focus-trap-vue@4.1.0(focus-trap@8.2.2)(vue@3.5.43(typescript@6.0.3)):
+  focus-trap-vue@4.1.0(focus-trap@8.2.3)(vue@3.5.43(typescript@6.0.3)):
     dependencies:
-      focus-trap: 8.2.2
+      focus-trap: 8.2.3
       vue: 3.5.43(typescript@6.0.3)
 
-  focus-trap@8.2.2:
+  focus-trap@8.2.3:
     dependencies:
       tabbable: 6.5.0
 
@@ -9065,8 +9063,8 @@ snapshots:
       '@vue/devtools-api': 8.2.1
       '@vue/shared': 3.5.43
       '@vueuse/core': 14.4.0(vue@3.5.43(typescript@6.0.3))
-      '@vueuse/integrations': 14.4.0(axios@1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0))(focus-trap@8.2.2)(fuse.js@7.5.0)(jwt-decode@4.0.0)(vue@3.5.43(typescript@6.0.3))
-      focus-trap: 8.2.2
+      '@vueuse/integrations': 14.4.0(axios@1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0))(focus-trap@8.2.3)(fuse.js@7.5.0)(jwt-decode@4.0.0)(vue@3.5.43(typescript@6.0.3))
+      focus-trap: 8.2.3
       mark.js: 8.11.1
       minisearch: 7.2.0
       shiki: 4.4.3

@@ -44,3 +44,10 @@ function getButtonId(extensionId: string): string {
   return `mobile-app-floating-action-button-${extensionId.replace(/\./g, '-')}`
 }
 </script>
+
+<style>
+/* space that scrollable app content keeps at its end, so the floating button doesn't cover the last entries */
+#web-content:has([id^='mobile-app-floating-action-button-']) {
+  --oc-floating-action-button-space: 5rem;
+}
+</style>

@@ -29,16 +29,19 @@ export const selectTagFilter = async ({
   page: Page
 }): Promise<void> => {
   const dropdown = page.locator(selectTagDropdownSelector)
+  const tagOption = page.locator(util.format(tagFilterChipSelector, tag))
+  // the filter is always visible, but its tags are only fetched on page load
+  // and a freshly added tag might not be indexed yet
   let attempt = 0
   await expect(async () => {
     if (attempt++ > 0) {
       await page.reload()
     }
-    await expect(dropdown).toBeVisible({ timeout: 5000 })
+    await dropdown.click({ timeout: 5000 })
+    await expect(tagOption).toBeVisible({ timeout: 5000 })
   }).toPass({ timeout: 30000 })
 
-  await dropdown.click()
-  await page.locator(util.format(tagFilterChipSelector, tag)).click()
+  await tagOption.click()
 }
 
 export const selectMediaTypeFilter = async ({

@@ -226,4 +226,21 @@ describe('markdown clipboard extension', () => {
       editor.destroy()
     }
   })
+
+  it('does not paste into a read-only editor', () => {
+    const editor = createEditor()
+    const event = createClipboardEvent('# Heading', '')
+
+    try {
+      editor.commands.setContent('original', { contentType: 'markdown' })
+      editor.setEditable(false)
+
+      const handled = pasteClipboardEvent(editor, event)
+
+      expect(handled).toBe(false)
+      expect(editor.markdown?.serialize(editor.getJSON()).trim()).toBe('original')
+    } finally {
+      editor.destroy()
+    }
+  })
 })

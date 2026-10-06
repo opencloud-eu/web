@@ -4,7 +4,6 @@
     id="files-space-table"
     :class="[
       {
-        condensed: viewMode === FolderViewModeConstants.name.condensedTable,
         'files-table': resourceType === 'file',
         'files-table-squashed': resourceType === 'file' && isSideBarOpen,
 
@@ -100,6 +99,7 @@
           :key="`resource-table-action-${item.id}-${action.name}`"
           v-oc-tooltip="getResourceTableLabel(action, item)"
           class="resource-table-edit-name inline-flex raw-hover-surface p-1 ml-1"
+          :class="{ 'self-start': arePathsDisplayed }"
           appearance="raw"
           :aria-label="getResourceTableLabel(action, item)"
           @click.stop="
@@ -293,7 +293,6 @@ import {
 
 import {
   Action,
-  FolderViewModeConstants,
   useAuthStore,
   useCapabilityStore,
   useEmbedMode,
@@ -337,7 +336,6 @@ const {
   headerPosition = 0,
   isSelectable = true,
   dragDrop = false,
-  viewMode = FolderViewModeConstants.defaultModeName,
   hover = true,
   sortBy = undefined,
   fieldsDisplayed = undefined,
@@ -356,8 +354,6 @@ const {
   headerPosition?: number
   isSelectable?: boolean
   dragDrop?: boolean
-  viewMode?:
-    typeof FolderViewModeConstants.name.condensedTable | typeof FolderViewModeConstants.name.table
   hover?: boolean
   sortBy?: string
   fieldsDisplayed?: string[]
@@ -916,10 +912,6 @@ const getSharedWithAvatarItems = (resource: Resource) => {
 
   .resource-table-resource-wrapper-limit-max-width {
     max-width: calc(100% - 4 * var(--spacing));
-  }
-
-  .oc-table.condensed > tbody > tr {
-    @apply h-8;
   }
 }
 </style>

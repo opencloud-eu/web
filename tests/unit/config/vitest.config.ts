@@ -2,13 +2,14 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import { compilerOptions } from '../../../vite.config.common.ts'
+import { l10nChunks } from '../../../dev/vite-plugins/l10nChunks.ts'
 
 const root = path.resolve(import.meta.dirname, '../../../')
 
 process.env.TZ = 'UTC'
 
 export default defineConfig({
-  plugins: [vue({ template: { compilerOptions } })],
+  plugins: [vue({ template: { compilerOptions } }), l10nChunks()],
   test: {
     root,
     globals: true,

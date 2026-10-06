@@ -2,6 +2,7 @@ import Favorites from '../../../src/views/Favorites.vue'
 import { useResourcesViewDefaults } from '../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../tests/mocks/useResourcesViewDefaultsMock'
 import { defineComponent, h, ref } from 'vue'
+import { flushPromises } from '@vue/test-utils'
 import { mockDeep, mock } from 'vitest-mock-extended'
 import { Resource } from '@opencloud-eu/web-client'
 import {
@@ -113,6 +114,60 @@ describe('Favorites view', () => {
         { id: 'folder', label: 'Folder', icon: 'folder' }
       ])
     })
+    it('shows a tag filter with the available tags if tags are supported', async () => {
+      const { wrapper, mocks } = getMountedWrapper({
+        capabilities: { files: { tags: true } } as Partial<Capabilities['capabilities']>,
+        tags: ['work', 'private']
+      })
+      await flushPromises()
+
+      const tagFilter = wrapper
+        .findAllComponents<typeof ItemFilter>('item-filter-stub')
+        .find((component) => component.props('filterName') === 'tags')
+
+      expect(mocks.$clientService.graphAuthenticated.tags.listTags).toHaveBeenCalled()
+      expect(tagFilter.props('items')).toEqual([
+        { id: 'work', label: 'work' },
+        { id: 'private', label: 'private' }
+      ])
+    })
+    it('shows the tag filter with a hint if no tags exist yet', async () => {
+      const { wrapper } = getMountedWrapper({
+        capabilities: { files: { tags: true } } as Partial<Capabilities['capabilities']>,
+        tags: []
+      })
+      await flushPromises()
+
+      const tagFilter = wrapper
+        .findAllComponents<typeof ItemFilter>('item-filter-stub')
+        .find((component) => component.props('filterName') === 'tags')
+
+      expect(tagFilter.props('items')).toEqual([])
+      expect(tagFilter.props('noItemsMessage')).toBeTruthy()
+    })
+    it('does not load tags if tags are not supported', async () => {
+      const { wrapper, mocks } = getMountedWrapper({
+        capabilities: { files: { tags: false } } as Partial<Capabilities['capabilities']>,
+        tags: ['work']
+      })
+      await flushPromises()
+
+      const tagFilter = wrapper
+        .findAllComponents<typeof ItemFilter>('item-filter-stub')
+        .find((component) => component.props('filterName') === 'tags')
+
+      expect(mocks.$clientService.graphAuthenticated.tags.listTags).not.toHaveBeenCalled()
+      expect(tagFilter).toBeUndefined()
+    })
+    it('loads resources again when the tag filter changes', async () => {
+      const tagParam = ref<string | null>(null)
+      const { resourcesViewDefaults } = getMountedWrapper({ tagParam })
+
+      tagParam.value = 'work'
+      await Promise.resolve()
+
+      expect(resourcesViewDefaults.loadResourcesTask.perform).toHaveBeenCalledTimes(2)
+    })
     it('loads resources again when filter query changes', async () => {
       const lastModifiedParam = ref<string | null>(null)
       const { resourcesViewDefaults } = getMountedWrapper({
@@ -135,7 +190,9 @@ function getMountedWrapper({
   loading = false,
   capabilities = {},
   lastModifiedParam = ref<string | null>(null),
-  mediaTypeParam = ref<string | null>(null)
+  mediaTypeParam = ref<string | null>(null),
+  tagParam = ref<string | null>(null),
+  tags = []
 }: {
   mocks?: Record<string, unknown>
   files?: Resource[]
@@ -143,11 +200,14 @@ function getMountedWrapper({
   capabilities?: Partial<Capabilities['capabilities']>
   lastModifiedParam?: ReturnType<typeof ref<string | null>>
   mediaTypeParam?: ReturnType<typeof ref<string | null>>
+  tagParam?: ReturnType<typeof ref<string | null>>
+  tags?: string[]
 } = {}) {
   const plugins = defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })
 
   vi.mocked(useRouteQuery).mockImplementationOnce(() => lastModifiedParam)
   vi.mocked(useRouteQuery).mockImplementationOnce(() => mediaTypeParam)
+  vi.mocked(useRouteQuery).mockImplementationOnce(() => tagParam)
 
   const resourcesViewDefaults = useResourcesViewDefaultsMock({
     paginatedResources: ref(files),
@@ -164,6 +224,8 @@ function getMountedWrapper({
     }),
     ...(mocks && mocks)
   }
+  defaultMocks.$clientService.graphAuthenticated.tags.listTags.mockReset()
+  defaultMocks.$clientService.graphAuthenticated.tags.listTags.mockResolvedValue(tags)
 
   return {
     wrapper: mount(Favorites, {
@@ -178,6 +240,7 @@ function getMountedWrapper({
         }
       }
     }),
+    mocks: defaultMocks,
     resourcesViewDefaults
   }
 }

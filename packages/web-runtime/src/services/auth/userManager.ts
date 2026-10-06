@@ -10,7 +10,7 @@ import { AuthStore, UserStore, CapabilityStore, ConfigStore } from '@opencloud-e
 import { ClientService } from '@opencloud-eu/web-pkg'
 import { Ability, urlJoin } from '@opencloud-eu/web-client'
 import { Language } from 'vue3-gettext'
-import { loadAppTranslations, setCurrentLanguage } from '../../helpers/language'
+import { setCurrentLanguage } from '../../helpers/language'
 import { SSEAdapter } from '@opencloud-eu/web-client/sse'
 import { User as OcUser } from '@opencloud-eu/web-client/graph/generated'
 import { SettingsBundle } from '../../helpers/settings'
@@ -181,7 +181,6 @@ export class UserManager extends OidcUserManager {
       onPremisesSamAccountName: graphUser.onPremisesSamAccountName,
       displayName: graphUser.displayName,
       mail: graphUser.mail,
-      memberOf: graphUser.memberOf,
       appRoleAssignments: role ? [role as any] : [], // FIXME
       preferredLanguage: graphUser.preferredLanguage || ''
     })
@@ -191,15 +190,10 @@ export class UserManager extends OidcUserManager {
     if (graphUser.preferredLanguage) {
       const appsStore = useAppsStore()
 
-      loadAppTranslations({
-        apps: appsStore.apps,
-        gettext: this.language,
-        lang: graphUser.preferredLanguage
-      })
-
-      setCurrentLanguage({
+      await setCurrentLanguage({
         language: this.language,
-        languageSetting: graphUser.preferredLanguage
+        languageSetting: graphUser.preferredLanguage,
+        apps: appsStore.apps
       })
     }
   }

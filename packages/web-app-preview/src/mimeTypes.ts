@@ -13,7 +13,9 @@ export const mimeTypes = [
   'image/bmp',
   'image/webp',
   'image/x-ms-bmp',
+  'video/matroska',
   'video/mp4',
   'video/quicktime',
-  'video/webm'
+  'video/webm',
+  'video/x-matroska'
 ]

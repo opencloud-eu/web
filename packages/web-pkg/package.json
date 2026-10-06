@@ -1,6 +1,6 @@
 {
   "name": "@opencloud-eu/web-pkg",
-  "version": "8.0.0",
+  "version": "8.1.0",
   "description": "OpenCloud web pkg",
   "license": "AGPL-3.0",
   "main": "src/index.ts",
@@ -77,7 +77,6 @@
     "@tiptap/extension-text": "catalog:tiptap",
     "@tiptap/extension-text-align": "catalog:tiptap",
     "@tiptap/extension-text-style": "catalog:tiptap",
-    "@tiptap/extension-underline": "catalog:tiptap",
     "@tiptap/markdown": "catalog:tiptap",
     "@tiptap/pm": "catalog:tiptap",
     "@tiptap/starter-kit": "catalog:tiptap",
