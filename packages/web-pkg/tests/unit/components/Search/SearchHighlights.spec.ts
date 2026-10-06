@@ -13,6 +13,15 @@ describe('SearchHighlights component', () => {
     const { wrapper } = getWrapper({ highlights: 'some <mark>found</mark> content' })
     expect(wrapper.find(selectors.content).html()).toContain('<mark>found</mark>')
   })
+  it('splits the found content at the match, so the text before it can be cut off', () => {
+    const { wrapper } = getWrapper({
+      highlights: 'a long text before the <mark>match</mark> and after'
+    })
+    expect(wrapper.find('.search-highlights-content-before').text()).toBe('a long text before the')
+    expect(wrapper.find('.search-highlights-content-match').html()).toContain(
+      '<mark>match</mark> and after'
+    )
+  })
   it('renders only the tags matching the term with the term highlighted', () => {
     const { wrapper } = getWrapper({ tags: ['Invoice', 'private'], term: 'voice' })
     const tags = wrapper.findAll(selectors.tag)
