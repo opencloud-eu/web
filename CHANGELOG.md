@@ -32,6 +32,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update typescript-eslint monorepo to v8.71.1 [[#3566](https://github.com/opencloud-eu/web/pull/3566)]
 - chore(deps): update devdependencies (non-major) [[#3528](https://github.com/opencloud-eu/web/pull/3528)]
 - [full-ci] chore: bump opencloud for tests to v8.1.0 [[#3565](https://github.com/opencloud-eu/web/pull/3565)]
 - chore(deps): update dependency focus-trap to v8.2.3 [[#3560](https://github.com/opencloud-eu/web/pull/3560)]
