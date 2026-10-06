@@ -35,6 +35,7 @@
 import AppTemplate from '../components/AppTemplate.vue'
 import ExtensionsList from '../components/Extensions/ExtensionsList.vue'
 import { NoContentMessage, useAppsStore, useConfigStore } from '@opencloud-eu/web-pkg'
+import { FillType } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
@@ -49,6 +50,7 @@ const filterTerm = ref('')
 interface ExtensionInfo {
   name: string
   icon?: string
+  iconFillType?: FillType
   version?: string
   loaded: boolean
 }
