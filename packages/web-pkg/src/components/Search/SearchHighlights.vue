@@ -16,7 +16,7 @@
           v-if="snippet.before"
           dir="rtl"
           class="search-highlights-content-before truncate grow basis-0 max-w-fit"
-          :class="{ 'min-w-[min(25%,6em)]': snippet.hasLongBefore }"
+          :class="{ 'min-w-[min(25%,84px)]': snippet.hasLongBefore }"
         >
           <span dir="ltr" v-html="snippet.before" />
         </span>
@@ -31,7 +31,7 @@
         <oc-tag
           v-for="tag in matchingTags"
           :key="tag"
-          class="search-highlights-tag max-w-40"
+          class="search-highlights-tag max-w-[min(160px,100%)]"
           :rounded="true"
           size="xsmall"
         >
