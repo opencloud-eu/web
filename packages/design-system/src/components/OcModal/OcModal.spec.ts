@@ -94,6 +94,33 @@ describe('OcModal', () => {
     })
   })
 
+  describe('cancelling', () => {
+    const mountModal = (props: Record<string, unknown> = {}) =>
+      mount(Modal, {
+        global: {
+          renderStubDefaultSlot: true,
+          plugins: [...defaultPlugins()],
+          stubs: { 'focus-trap': true }
+        },
+        props: { ...defaultProps, ...props }
+      })
+
+    it('emits cancel when pressing escape', async () => {
+      const wrapper = mountModal()
+      await wrapper.find('[role="dialog"]').trigger('keydown.esc')
+      expect(wrapper.emitted('cancel')).toBeTruthy()
+    })
+
+    // the cancel button is disabled while loading, so escape has to be blocked as
+    // well. Otherwise an in-flight handler gets discarded without its result ever
+    // reaching the user.
+    it('does not emit cancel while loading', async () => {
+      const wrapper = mountModal({ isLoading: true })
+      await wrapper.find('[role="dialog"]').trigger('keydown.esc')
+      expect(wrapper.emitted('cancel')).toBeFalsy()
+    })
+  })
+
   it('displays loading state', async () => {
     const waitForSpinnerToShow = async () => {
       await wrapper.vm.$nextTick()

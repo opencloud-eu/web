@@ -351,6 +351,9 @@ watch(
 )
 
 const cancelModalAction = () => {
+  if (isLoading) {
+    return
+  }
   emit('cancel')
 }
 

@@ -76,6 +76,11 @@ export const useModals = defineStore('modals', () => {
     value: T[K]
   ) => {
     const modal = getModal(id)
+    if (!modal) {
+      // the modal has been removed in the meantime, e.g. because it got cancelled
+      // while an async handler was still in flight
+      return
+    }
     modal[key] = value
   }
 
