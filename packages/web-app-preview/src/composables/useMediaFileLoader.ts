@@ -68,7 +68,11 @@ export const useMediaFileLoader = ({
 
     const url = mediaFile.url
 
-    if (!url || url.startsWith('blob:')) {
+    // only the preview-service path yields bytes worth preloading: videos and audio
+    // stream through their own element, svg files render via a document fetch and an
+    // Image can't decode any of their urls - the failed decode would be misread as
+    // a stale url and trigger a pointless re-resolution
+    if (!isPreloadable(mediaFile) || !url || url.startsWith('blob:')) {
       return Promise.resolve(true)
     }
 
