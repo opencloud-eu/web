@@ -62,13 +62,11 @@ describe('AppDetails', () => {
   describe('back link', () => {
     it('returns to the previous list including its filters', () => {
       const { wrapper, mocks } = getWrapper(app, {
-        back: '/app-store/list?filter=viewer',
+        back: '/app-store/list?q_tag=viewer',
         resolvedRouteName: `${APPID}-list`
       })
-      expect(mocks.$router.resolve).toHaveBeenCalledWith('/app-store/list?filter=viewer')
-      expect(wrapper.findComponent(RouterLinkStub).props('to')).toBe(
-        '/app-store/list?filter=viewer'
-      )
+      expect(mocks.$router.resolve).toHaveBeenCalledWith('/app-store/list?q_tag=viewer')
+      expect(wrapper.findComponent(RouterLinkStub).props('to')).toBe('/app-store/list?q_tag=viewer')
     })
     it('falls back to the unfiltered list if the previous page was no list', () => {
       const { wrapper } = getWrapper(app, {
@@ -85,7 +83,7 @@ describe('AppDetails', () => {
     await wrapper.findComponent(AppDetailsHeader).vm.$emit('tagClick', 'viewer')
     expect(mocks.$router.push).toHaveBeenCalledWith({
       name: `${APPID}-list`,
-      query: { filter: 'viewer' }
+      query: { q_tag: 'viewer' }
     })
   })
 })

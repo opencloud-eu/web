@@ -24,9 +24,14 @@
         <app-view-mode-switch v-model="viewMode" />
       </div>
     </div>
-    <app-tag-filter class="mb-6" :apps="apps" :active-tag="filterTerm" @select="setFilterTerm" />
+    <app-tag-filter
+      class="mb-6"
+      :apps="searchedApps"
+      :active-tag="activeTag"
+      @select="setActiveTag"
+    />
     <div v-if="filteredApps.length" class="flex items-center justify-between gap-4 mb-2">
-      <h2 class="app-list-results-title my-0 text-base" v-text="$gettext('All Apps')" />
+      <h2 class="app-list-results-title my-0 text-base capitalize" v-text="resultsTitle" />
       <span
         class="app-list-results-count text-sm text-role-on-surface-variant"
         v-text="resultCountText"
@@ -81,14 +86,17 @@ import AppViewModeSwitch from '../components/AppViewModeSwitch.vue'
 const appsStore = useAppsStore()
 const { apps } = storeToRefs(appsStore)
 
-const { filterTerm, filteredApps, setFilterTerm } = useAppFilter(apps)
+const { filterTerm, activeTag, searchedApps, filteredApps, setFilterTerm, setActiveTag } =
+  useAppFilter(apps)
 const { viewMode } = useAppViewMode()
 
 // clicking the tag that is currently filtered by resets the filter
 function toggleTagFilter(tag: string) {
-  setFilterTerm(tag.toLowerCase() === unref(filterTerm).toLowerCase() ? '' : tag)
+  setActiveTag(tag.toLowerCase() === unref(activeTag).toLowerCase() ? '' : tag)
 }
-const { $ngettext } = useGettext()
+const { $gettext, $ngettext } = useGettext()
+
+const resultsTitle = computed(() => unref(activeTag) || $gettext('All'))
 
 const resultCountText = computed(() => {
   const count = unref(filteredApps).length

@@ -2,8 +2,8 @@ import { RouteLocationRaw } from 'vue-router'
 import { APPID } from '../appid'
 import { App } from '../types'
 
-export function getAppListRoute(filter?: string): RouteLocationRaw {
-  return { name: `${APPID}-list`, ...(filter && { query: { filter } }) }
+export function getAppListRoute(tag?: string): RouteLocationRaw {
+  return { name: `${APPID}-list`, ...(tag && { query: { q_tag: tag } }) }
 }
 
 export function getAppDetailsRoute(app: App): RouteLocationRaw {

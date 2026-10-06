@@ -98,6 +98,10 @@ const tags = computed(() => {
       counts.set(tag, (counts.get(tag) || 0) + 1)
     }
   }
+  // keep the active tag selectable even if the search term excludes all of its apps
+  if (activeTag && ![...counts.keys()].some(isActive)) {
+    counts.set(activeTag, 0)
+  }
   return [...counts.entries()]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count || a.name.toLowerCase().localeCompare(b.name.toLowerCase()))

@@ -13,7 +13,8 @@ Feature: discovery
     Then "Admin" should see the following apps
       | app     |
       | Draw.io |
-    When "Admin" clicks on the tag "viewer" of the app "Draw.io"
+    When "Admin" enters the search term ""
+    And "Admin" clicks on the tag "viewer" of the app "Draw.io"
     Then "Admin" should see the following apps
       | app         |
       | JSON Viewer |

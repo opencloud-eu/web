@@ -12,14 +12,16 @@ import { App } from '../types'
 export function useAppFilter(apps: Ref<App[]>) {
   const router = useRouter()
   const filterTermQuery = useRouteQuery('filter', '')
+  const tagQuery = useRouteQuery('q_tag', '')
 
   const filterTerm = computed(() => queryItemAsString(unref(filterTermQuery)))
+  const activeTag = computed(() => queryItemAsString(unref(tagQuery)))
 
   const searchEngine = computed(() => {
     return new Fuse(unref(apps), { ...defaultFuseOptions, keys: ['name', 'subtitle', 'tags'] })
   })
 
-  const filteredApps = computed(() => {
+  const searchedApps = computed(() => {
     const term = unref(filterTerm).trim()
     if (!term) {
       return unref(apps)
@@ -29,14 +31,30 @@ export function useAppFilter(apps: Ref<App[]>) {
       .map((result) => result.item)
   })
 
-  function setFilterTerm(term: string) {
+  const filteredApps = computed(() => {
+    const tag = unref(activeTag).toLowerCase()
+    if (!tag) {
+      return unref(searchedApps)
+    }
+    return unref(searchedApps).filter((app) => app.tags.some((t) => t.toLowerCase() === tag))
+  })
+
+  function updateQuery(key: string, value: string) {
     return router.replace({
       query: {
-        ...omit(unref(router.currentRoute).query, 'filter'),
-        ...(term && { filter: term.trim() })
+        ...omit(unref(router.currentRoute).query, key),
+        ...(value && { [key]: value })
       }
     })
   }
 
-  return { filterTerm, filteredApps, setFilterTerm }
+  function setFilterTerm(term: string) {
+    return updateQuery('filter', term.trim())
+  }
+
+  function setActiveTag(tag: string) {
+    return updateQuery('q_tag', tag)
+  }
+
+  return { filterTerm, activeTag, searchedApps, filteredApps, setFilterTerm, setActiveTag }
 }

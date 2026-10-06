@@ -36,6 +36,10 @@ describe('AppTagFilter.vue', () => {
       .filter((b) => b.attributes('aria-pressed') === 'true')
     expect(active.map((b) => b.text())).toEqual(['foo (2)'])
   })
+  it('keeps the active tag even if no app has it', () => {
+    const { wrapper } = getWrapper('missing')
+    expect(wrapper.findAll(selectors.button).map((b) => b.text())).toContain('missing (0)')
+  })
   it('emits the tag on click', async () => {
     const { wrapper } = getWrapper()
     await wrapper.findAll(selectors.button)[0].trigger('click')

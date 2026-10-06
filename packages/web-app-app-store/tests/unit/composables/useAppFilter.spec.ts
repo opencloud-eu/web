@@ -17,7 +17,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 const apps: App[] = [
   { ...mock<App>(), name: 'Calculator', subtitle: 'Search provider', tags: ['search'] },
-  { ...mock<App>(), name: 'Draw.io', subtitle: 'Diagrams', tags: ['viewer', 'editor'] }
+  { ...mock<App>(), name: 'Draw.io', subtitle: 'Diagrams', tags: ['viewer', 'editor'] },
+  { ...mock<App>(), name: 'Presentation Viewer', subtitle: 'Slides', tags: ['markdown'] }
 ]
 
 describe('useAppFilter', () => {
@@ -26,8 +27,17 @@ describe('useAppFilter', () => {
     expect(filteredApps.value).toEqual(apps)
   })
   it('filters apps by the filter term', () => {
-    const { filteredApps } = getWrapper('viewer')
+    const { filteredApps } = getWrapper('diagrams')
     expect(filteredApps.value.map((app) => app.name)).toEqual(['Draw.io'])
+  })
+  it('filters apps by exact tag match only', () => {
+    const { filteredApps } = getWrapper('', {}, 'Viewer')
+    expect(filteredApps.value.map((app) => app.name)).toEqual(['Draw.io'])
+  })
+  it('combines the filter term and the tag', () => {
+    const { searchedApps, filteredApps } = getWrapper('calculator', {}, 'viewer')
+    expect(searchedApps.value.map((app) => app.name)).toEqual(['Calculator'])
+    expect(filteredApps.value).toEqual([])
   })
   it('keeps other query params when setting the filter term', () => {
     const { setFilterTerm, mocks } = getWrapper('', { 'view-mode': 'list', filter: 'old' })
@@ -41,14 +51,21 @@ describe('useAppFilter', () => {
     setFilterTerm('')
     expect(mocks.$router.replace).toHaveBeenCalledWith({ query: { 'view-mode': 'list' } })
   })
+  it('keeps the filter term when setting the tag', () => {
+    const { setActiveTag, mocks } = getWrapper('', { filter: 'draw', q_tag: 'old' })
+    setActiveTag('viewer')
+    expect(mocks.$router.replace).toHaveBeenCalledWith({
+      query: { filter: 'draw', q_tag: 'viewer' }
+    })
+  })
 })
 
-function getWrapper(filterTerm: string, query: Record<string, string> = {}) {
+function getWrapper(filterTerm: string, query: Record<string, string> = {}, tag = '') {
   const mocks = defaultComponentMocks({
     currentRoute: { query, path: '/', meta: {} } as unknown as RouteLocation
   })
   vi.mocked(useRouter).mockReturnValue(mocks.$router)
-  vi.mocked(useRouteQuery).mockReturnValue(ref(filterTerm))
+  vi.mocked(useRouteQuery).mockImplementation((name) => ref(name === 'q_tag' ? tag : filterTerm))
 
   let result: ReturnType<typeof useAppFilter>
   getComposableWrapper(() => {
