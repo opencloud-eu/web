@@ -20,6 +20,12 @@ describe('SearchHighlights component', () => {
     expect(tags[0].text()).toBe('Invoice')
     expect(tags[0].find('.oc-filter-highlight-match').text()).toBe('voice')
   })
+  it('renders the tags selected in the tag filter', () => {
+    const { wrapper } = getWrapper({ tags: ['Invoice', 'private'], filterTags: ['private'] })
+    const tags = wrapper.findAll(selectors.tag)
+    expect(tags.length).toBe(1)
+    expect(tags[0].text()).toBe('private')
+  })
   it('renders nothing without found content or matching tags', () => {
     const { wrapper } = getWrapper({ tags: ['private'], term: 'voice' })
     expect(wrapper.find('.search-highlights').exists()).toBeFalsy()
@@ -29,11 +35,12 @@ describe('SearchHighlights component', () => {
 function getWrapper({
   highlights = '',
   tags = [],
-  term = ''
-}: { highlights?: string; tags?: string[]; term?: string } = {}) {
+  term = '',
+  filterTags = []
+}: { highlights?: string; tags?: string[]; term?: string; filterTags?: string[] } = {}) {
   return {
     wrapper: mount(SearchHighlights, {
-      props: { resource: mock<SearchResource>({ highlights, tags }), term },
+      props: { resource: mock<SearchResource>({ highlights, tags }), term, filterTags },
       global: { plugins: [...defaultPlugins()] }
     })
   }

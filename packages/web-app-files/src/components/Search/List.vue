@@ -128,7 +128,11 @@
           @update:selected-ids="selectedResourcesIds = $event"
         >
           <template #additionalResourceContent="{ resource }">
-            <search-highlights :resource="resource as SearchResource" :term="searchTerm" />
+            <search-highlights
+              :resource="resource as SearchResource"
+              :term="searchTerm"
+              :filter-tags="selectedTags"
+            />
           </template>
           <template #contextMenu="{ resource }">
             <context-actions
@@ -285,6 +289,7 @@ const mediaTypeFilter =
   useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('mediaTypeFilter')
 
 const tagParam = useRouteQuery('q_tags')
+const selectedTags = computed(() => queryItemAsString(unref(tagParam))?.split('+') || [])
 const lastModifiedParam = useRouteQuery('q_lastModified')
 const mediaTypeParam = useRouteQuery('q_mediaType')
 const titleOnlyParam = useRouteQuery('q_titleOnly')

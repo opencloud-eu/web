@@ -30,18 +30,22 @@ import { computed } from 'vue'
 import { SearchResource } from '@opencloud-eu/web-client'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
-const { resource, term = '' } = defineProps<{
+const {
+  resource,
+  term = '',
+  filterTags = []
+} = defineProps<{
   resource: SearchResource
   term?: string
+  filterTags?: string[]
 }>()
 
 const highlights = computed(() => resource.highlights)
 
 const matchingTags = computed(() => {
   const needle = term.trim().toLowerCase()
-  if (!needle) {
-    return []
-  }
-  return (resource.tags || []).filter((tag) => tag.toLowerCase().includes(needle))
+  return (resource.tags || []).filter(
+    (tag) => filterTags.includes(tag) || (needle && tag.toLowerCase().includes(needle))
+  )
 })
 </script>
