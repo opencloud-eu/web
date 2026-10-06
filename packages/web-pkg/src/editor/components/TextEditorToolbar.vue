@@ -59,8 +59,8 @@
         :teleport="dropTeleport"
         mode="click"
         position="bottom"
-        class="text-editor-toolbar-overflow-drop !w-auto !overflow-visible !border-none !bg-transparent !shadow-none"
-        :max-width="availableWidth"
+        class="text-editor-toolbar-overflow-drop !w-max !overflow-visible !border-none !bg-transparent !shadow-none"
+        :max-width="Infinity"
         enforce-drop-on-mobile
         :close-on-click="false"
         @show-drop="isOverflowMenuOpen = true"
@@ -68,13 +68,17 @@
       >
         <template #special>
           <OcBubbleMenu
+            ref="overflowMenu"
             class="text-editor-toolbar-overflow-menu max-w-full flex-wrap justify-center gap-1 px-3"
           >
             <div
               v-for="(group, groupIndex) in overflowGroups"
               :key="`toolbar-overflow-group-${group.id}`"
               class="inline-flex items-stretch gap-1"
-              :class="{ 'border-l border-l-role-border pl-1': groupIndex > 0 }"
+              :class="{
+                'border-l border-l-role-border pl-1':
+                  groupIndex > 0 && !overflowRowStarts.includes(groupIndex)
+              }"
             >
               <text-editor-toolbar-item
                 v-for="item in group.actions"
@@ -127,6 +131,7 @@ import { YjsCollaborators, YjsStatusIndicator } from '../../components/Yjs'
 import { isEditorActionEnabled } from '../helpers'
 import { Key, Modifier, useKeyboardActions } from '../../composables/keyboardActions'
 import { hasVisibleYjsStatus } from '../../composables/yjs'
+import { useModals } from '../../composables/piniaStores'
 
 const { actionsToDisplay = undefined } = defineProps<{
   actionsToDisplay?: string[]
@@ -142,8 +147,10 @@ const groupActionGapWidth = 4
 
 const itemsRowRef = useTemplateRef('itemsRow')
 const overflowDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('overflowDrop')
+const overflowMenuRef = useTemplateRef<ComponentPublicInstance>('overflowMenu')
 const availableWidth = ref(0)
 const isOverflowMenuOpen = ref(false)
+const overflowRowStarts = ref<number[]>([])
 const itemWidths = ref<Record<string, number>>({})
 
 const keyActionIds: string[] = []
@@ -179,46 +186,30 @@ const allActions = computed(() => unref(toolbarGroups).flatMap((group) => group.
 const visibleItemIds = computed<string[]>(() => {
   const widths = unref(itemWidths)
   const available = unref(availableWidth)
-  const groups = unref(toolbarGroups)
   const allIds = unref(allActions).map((action) => action.id)
 
   if (!available || !Object.keys(widths).length) {
     return allIds
   }
 
-  const getWidth = (id: string) => widths[id] ?? 0
-  const totalWidth = groups.reduce((total, group, index) => {
-    const actionsWidth = group.actions.reduce((sum, action, actionIndex) => {
-      return sum + getWidth(action.id) + (actionIndex > 0 ? groupActionGapWidth : 0)
-    }, 0)
-    return total + actionsWidth + (index > 0 ? groupSeparatorWidth : 0)
-  }, 0)
+  // the space each action takes, including the gap or group separator in front of it
+  const actionWidths = unref(toolbarGroups).flatMap((group, groupIndex) =>
+    group.actions.map((action, actionIndex) => {
+      const spacing =
+        actionIndex > 0 ? groupActionGapWidth : groupIndex > 0 ? groupSeparatorWidth : 0
+      return (widths[action.id] ?? 0) + spacing
+    })
+  )
 
+  const totalWidth = actionWidths.reduce((sum, width) => sum + width, 0)
   if (totalWidth <= available) {
     return allIds
   }
 
-  const budget = available - getWidth('overflow-trigger') - groupSeparatorWidth
-  const ids: string[] = []
+  // otherwise keep as many actions as fit next to the overflow trigger
+  const budget = available - (widths['overflow-trigger'] ?? 0) - groupSeparatorWidth
   let usedWidth = 0
-
-  for (const group of groups) {
-    let isFirstOfGroup = true
-    for (const action of group.actions) {
-      const width =
-        getWidth(action.id) +
-        (!isFirstOfGroup ? groupActionGapWidth : 0) +
-        (isFirstOfGroup && ids.length ? groupSeparatorWidth : 0)
-      if (usedWidth + width > budget) {
-        return ids
-      }
-      usedWidth += width
-      isFirstOfGroup = false
-      ids.push(action.id)
-    }
-  }
-
-  return ids
+  return allIds.filter((_, index) => (usedWidth += actionWidths[index]) <= budget)
 })
 
 const hasOverflow = computed(() => unref(visibleItemIds).length < unref(allActions).length)
@@ -363,12 +354,44 @@ onMounted(async () => {
 
 onUpdated(() => observeItems())
 
+/**
+ * Keeps the open overflow menu attached to its trigger when the toolbar gets resized, and hides
+ * the group separators at the start of a wrapped row.
+ */
+async function updateOverflowMenu() {
+  if (!unref(isOverflowMenuOpen)) {
+    return
+  }
+
+  overflowRowStarts.value = []
+  await nextTick()
+  await unref(overflowDropRef)?.update?.()
+
+  const groups = Array.from<HTMLElement>(unref(overflowMenuRef)?.$el.children ?? [])
+  overflowRowStarts.value = [...groups.keys()].filter(
+    (index) => index > 0 && groups[index].offsetTop !== groups[index - 1].offsetTop
+  )
+}
+
+watch([isOverflowMenuOpen, availableWidth, overflowGroups], updateOverflowMenu)
+
 // the overflow drop unmounts without emitting `hide-drop`, so reset the state manually
 watch(hasOverflow, (value) => {
   if (!value) {
     isOverflowMenuOpen.value = false
   }
 })
+
+// entries of nested drops (e.g. insert image) can open modals, the overflow drop must not stay on top of them
+const modalStore = useModals()
+watch(
+  () => modalStore.activeModal,
+  (modal) => {
+    if (modal) {
+      unref(overflowDropRef)?.hide?.()
+    }
+  }
+)
 
 watch(toolbarGroups, async () => {
   await nextTick()

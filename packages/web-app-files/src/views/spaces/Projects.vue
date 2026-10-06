@@ -200,6 +200,7 @@ import {
 import { useResourcesViewDefaults } from '../../composables'
 import { folderViewsProjectSpacesExtensionPoint } from '../../extensionPoints'
 import { storeToRefs } from 'pinia'
+import { useIsMobile } from '@opencloud-eu/design-system/composables'
 
 const spacesStore = useSpacesStore()
 const router = useRouter()
@@ -207,6 +208,7 @@ const route = useRoute()
 const clientService = useClientService()
 const language = useGettext()
 const { $gettext, $ngettext } = language
+const { isTablet } = useIsMobile()
 const filterTerm = ref('')
 const resourcesStore = useResourcesStore()
 const { imagesLoading } = storeToRefs(spacesStore)
@@ -429,7 +431,11 @@ const showSpaceMemberLabel = computed(() => {
   return $gettext('Show members')
 })
 
+// below the tablet breakpoint the "New" button is replaced by the floating "+" button
 const noSpacesDescription = computed(() => {
+  if (unref(isTablet)) {
+    return $gettext('Use the "+" button to create a space or ask an Administrator to do so')
+  }
   return $gettext('Use the "New" button to create a space or ask an Administrator to do so')
 })
 

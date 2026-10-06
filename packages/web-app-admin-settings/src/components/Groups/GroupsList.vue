@@ -56,7 +56,7 @@
           :user-name="rowData.item.displayName"
           background-color="var(--oc-role-secondary)"
         />
-        <oc-filter-highlight :text="rowData.item.displayName" :term="filterTerm" />
+        <oc-filter-highlight class="truncate" :text="rowData.item.displayName" :term="filterTerm" />
         <oc-icon
           v-if="rowData.item.groupTypes?.includes('ReadOnly')"
           v-oc-tooltip="readOnlyLabel"
@@ -210,14 +210,18 @@ const fields = computed<FieldType[]>(() => [
     name: 'displayName',
     title: $gettext('Group name'),
     type: 'slot',
-    sortable: true
+    sortable: true,
+    width: 'expand',
+    wrap: 'truncate'
   },
   {
     name: 'actions',
     title: $gettext('Actions'),
     sortable: false,
     type: 'slot',
-    alignH: 'right'
+    alignH: 'right',
+    width: 'shrink',
+    wrap: 'nowrap'
   }
 ])
 
