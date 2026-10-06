@@ -4,7 +4,15 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @BloomyInDev, @v-scharf
+@AlexAndBear, @BloomyInDev, @eriktews, @v-scharf
+
+### 🐛 Bug Fixes
+
+- fix: prevent app token from being generated more than once [[#3541](https://github.com/opencloud-eu/web/pull/3541)]
+- fix: text editor bugs found during exploratory testing [[#3533](https://github.com/opencloud-eu/web/pull/3533)]
+- fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
+- fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
+- fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
 
 ### 📈 Enhancement
 
@@ -19,13 +27,6 @@
 ### ✅ Tests
 
 - test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
-
-### 🐛 Bug Fixes
-
-- fix: text editor bugs found during exploratory testing [[#3533](https://github.com/opencloud-eu/web/pull/3533)]
-- fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
-- fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
-- fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
 
 ### 📦️ Dependencies
 
