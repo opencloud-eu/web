@@ -1,7 +1,7 @@
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
 import AppCoverImage from '../../../src/components/AppCoverImage.vue'
-import { App, AppAuthor, AppBadge, AppImage, BADGE_COLORS } from '../../../src/types'
+import { App, AppBadge, AppImage, BADGE_COLORS } from '../../../src/types'
 
 const coverImageWithUrl: AppImage = { url: 'https://example.com/cover.jpg', caption: 'Cover image' }
 const coverImageWithoutUrl: AppImage = { url: '', caption: 'Trololo' }
@@ -25,11 +25,8 @@ describe('AppCoverImage.vue', () => {
       expect(wrapper.find(selectors.badge).text()).toBe(badge.label)
       expect(wrapper.find(selectors.badge).classes()).toContain(`app-image-ribbon-${badge.color}`)
     })
-    it.each([
-      { authors: [{ name: 'OpenCloud GmbH' }], official: true },
-      { authors: [{ name: 'John Doe' }], official: false }
-    ])('renders the official badge only for official apps (%o)', ({ authors, official }) => {
-      const { wrapper } = getWrapper({ authors })
+    it.each([true, false])('renders the official badge only for official apps (%s)', (official) => {
+      const { wrapper } = getWrapper({ official })
       expect(wrapper.find(selectors.official).exists()).toBe(official)
     })
   })
@@ -53,13 +50,13 @@ describe('AppCoverImage.vue', () => {
 function getWrapper({
   badge,
   coverImage,
-  authors = []
+  official = false
 }: {
   badge?: AppBadge
   coverImage?: AppImage
-  authors?: AppAuthor[]
+  official?: boolean
 }) {
-  const app = { ...mock<App>({}), badge, coverImage, authors }
+  const app = { ...mock<App>({}), badge, coverImage, official }
   return {
     wrapper: mount(AppCoverImage, {
       props: { app },
