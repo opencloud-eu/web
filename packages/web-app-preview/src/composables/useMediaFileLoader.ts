@@ -50,17 +50,6 @@ export const useMediaFileLoader = ({
     )
   }
 
-  const neighborOf = (offset: number) => {
-    const files = unref(mediaFiles)
-    const index = unref(activeIndex)
-
-    if (!files.length || index === null || index === undefined) {
-      return undefined
-    }
-
-    return files[(index + offset + files.length) % files.length]
-  }
-
   /**
    * Pull a remote image into the browser cache so displaying it later is instant. Blob
    * urls already hold the bytes, there's nothing to warm up for them.
@@ -228,15 +217,16 @@ export const useMediaFileLoader = ({
    * likely heading for.
    */
   const preloadNeighbors = () => {
+    const files = unref(mediaFiles)
     const index = unref(activeIndex)
-    if (unref(mediaFiles).length < 2 || index === null || index === undefined) {
+    if (files.length < 2 || index === null || index === undefined) {
       return
     }
 
     // both neighbors are resolved up front so they belong to the position we preload for
-    const forward = neighborOf(1)
-    const backward = neighborOf(-1)
-    const seen = new Set<MediaFile>([unref(mediaFiles)[index]])
+    const forward = files[(index + 1) % files.length]
+    const backward = files[(index - 1 + files.length) % files.length]
+    const seen = new Set<MediaFile>([files[index]])
 
     const preload = (mediaFile: MediaFile) => {
       if (!mediaFile || seen.has(mediaFile) || !isPreloadable(mediaFile)) {
@@ -249,6 +239,12 @@ export const useMediaFileLoader = ({
 
     const forwardLoad = preload(forward)
     void Promise.resolve(forwardLoad).finally(() => {
+      // the user may have moved on while the forward neighbor was loading: the
+      // backward neighbor of the position we started from is irrelevant then
+      if (unref(activeIndex) !== index || unref(mediaFiles) !== files) {
+        return
+      }
+
       preload(backward)
     })
   }
