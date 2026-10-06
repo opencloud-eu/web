@@ -97,8 +97,8 @@ catalogs:
       specifier: ^3.0.9
       version: 3.0.9
     marked:
-      specifier: ^17.0.1
-      version: 17.0.6
+      specifier: ^18.0.0
+      version: 18.1.0
 
 overrides:
   epubjs>@xmldom/xmldom: ^0.9.12
@@ -1103,7 +1103,7 @@ importers:
         version: 3.7.2
       marked:
         specifier: catalog:tiptap
-        version: 17.0.6
+        version: 18.1.0
       oidc-client-ts:
         specifier: ^3.5.0
         version: 3.5.0
@@ -3954,6 +3954,11 @@ packages:
 
   marked@17.0.6:
     resolution: {integrity: sha512-gB0gkNafnonOw0obSTEGZTT86IuhILt2Wfx0mWH/1Au83kybTayroZ/V6nS25mN7u8ASy+5fMhgB3XPNrOZdmA==}
+    engines: {node: '>= 20'}
+    hasBin: true
+
+  marked@18.1.0:
+    resolution: {integrity: sha512-PamYXWWWg2nboG3oX5Ffzpy3EFZROqZJK9hSlMmUnekp7TxPs5DcT95vwd46m73/exfKCRVMtgXoPMI4FEJL6w==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -7934,6 +7939,8 @@ snapshots:
   markdown-it-container@4.0.0: {}
 
   marked@17.0.6: {}
+
+  marked@18.1.0: {}
 
   marks-pane@1.0.9: {}
 
