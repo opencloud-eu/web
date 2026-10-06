@@ -11,6 +11,7 @@ import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { Awareness } from 'y-protocols/awareness'
 import * as Y from 'yjs'
 import { withSetup } from '../composables/helpers'
+import { Modal, useModals } from '../../../../src/composables/piniaStores'
 
 vi.mock('vue3-gettext', () => ({
   createGettext: (): { install: () => void } => ({ install: () => undefined }),
@@ -25,7 +26,9 @@ function mountToolbar(
   collaborators: YjsCollaborator[] = [],
   actionsOverride?: EditorAction[]
 ) {
+  createTestingPinia()
   const showSpy = vi.fn()
+  const hideSpy = vi.fn()
   const collaborationStatusRef = ref(collaborationStatus)
   const collaboratorsRef = ref(collaborators)
 
@@ -85,7 +88,7 @@ function mountToolbar(
       stubs: {
         'oc-drop': defineComponent({
           setup(_, { expose }) {
-            expose({ show: showSpy, hide: vi.fn() })
+            expose({ show: showSpy, hide: hideSpy })
             return {}
           },
           template: '<div><slot /></div>'
@@ -103,7 +106,15 @@ function mountToolbar(
     }
   })
 
-  return { wrapper, textEditor, isFocusedRef, showSpy, collaborationStatusRef, collaboratorsRef }
+  return {
+    wrapper,
+    textEditor,
+    isFocusedRef,
+    showSpy,
+    hideSpy,
+    collaborationStatusRef,
+    collaboratorsRef
+  }
 }
 
 /**
@@ -161,6 +172,21 @@ describe('TextEditorToolbar', () => {
     wrapper
       .findAll('button:not(.text-editor-toolbar-overflow-trigger)')
       .forEach((button) => expect(button.attributes('aria-hidden')).toBe('true'))
+    wrapper.unmount()
+  })
+
+  it('closes the overflow menu when a modal opens', async () => {
+    mockWidths(60, 100)
+    const { wrapper, hideSpy } = mountToolbar()
+
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+    expect(hideSpy).not.toHaveBeenCalled()
+
+    useModals().modals.push({ id: 'modal' } as Modal)
+    await wrapper.vm.$nextTick()
+
+    expect(hideSpy).toHaveBeenCalled()
     wrapper.unmount()
   })
 

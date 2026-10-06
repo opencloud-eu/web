@@ -56,10 +56,18 @@ const selectedLanguage = computed<string | null>({
 })
 
 const languageOptions = computed<LanguageOption[]>(() => {
-  return [
+  const options = [
     { label: 'auto', value: '' },
     ...languages.value.map((language) => ({ label: language, value: language }))
   ]
+
+  // languages from the markdown source can be aliases like "js" that are not part of the list
+  const language = selectedLanguage.value
+  if (language && !languages.value.includes(language)) {
+    options.push({ label: language, value: language })
+  }
+
+  return options
 })
 
 const selectedLanguageValue = computed<string>({

@@ -4,7 +4,8 @@
     ref="contentRef"
     class="text-editor-content h-full"
     :style="{
-      '--text-editor-zoom-factor': zoomFactor
+      '--text-editor-zoom-factor': zoomFactor,
+      '--text-editor-handle-width': handleWidth
     }"
     @mousemove="scrolledAway = false"
   >
@@ -43,7 +44,7 @@
         </oc-button>
       </div>
     </DragHandle>
-    <TextEditorTableBubbleMenu v-show="!isSourceMode" />
+    <TextEditorTableBubbleMenu v-show="!isSourceMode" :scroll-target="contentRef" />
     <TextEditorLinkBubbleMenu v-show="!isSourceMode" />
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <TextEditorSourceView v-if="isSourceMode" :editor="textEditor" />
@@ -106,6 +107,12 @@ const hasSlashCommands = computed(() => {
     return false
   }
   return editor.extensionManager.extensions.some((ext) => ext.name === 'slashCommands')
+})
+
+// space next to the content for the hover controls, each button is 20px plus a 4px gap
+const handleWidth = computed(() => {
+  const buttonCount = Number(unref(hasSlashCommands)) + Number(!unref(isMobile))
+  return `${buttonCount * 1.5}rem`
 })
 
 const onDragHandleNodeChange = ({ node, pos }: { node: ProseMirrorNode | null; pos: number }) => {

@@ -1,11 +1,13 @@
 <template>
   <BubbleMenu
-    v-if="textEditor?.editor.value && !textEditor.readonly.value"
+    v-if="textEditor?.editor.value && !textEditor.readonly.value && scrollTarget"
     :editor="textEditor.editor.value"
+    :plugin-key="pluginKey"
     :should-show="shouldShow"
     :get-referenced-virtual-element="getReferencedVirtualElement"
     :options="bubbleMenuOptions"
     :update-delay="0"
+    :resize-delay="0"
     class="text-editor-table-bubble-menu"
   >
     <div
@@ -40,12 +42,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, unref } from 'vue'
+import { computed, inject, nextTick, unref } from 'vue'
 import { BubbleMenu } from '@tiptap/vue-3/menus'
 import type { Editor } from '@tiptap/core'
+import { PluginKey } from '@tiptap/pm/state'
 import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction } from '../composables'
+
+const { scrollTarget = null } = defineProps<{
+  scrollTarget?: HTMLElement | null
+}>()
 
 const textEditor = inject<TextEditorInstance | undefined>('textEditor')
 
@@ -54,12 +61,26 @@ const shouldShow = ({ editor }: { editor: Editor }) => editor.isActive('table')
 const menuOffsetPx = 16
 const menuHeightPx = 42
 
-const bubbleMenuOptions: BubbleMenuPluginProps['options'] = {
+const pluginKey = new PluginKey('textEditorTableBubbleMenu')
+
+function updatePosition() {
+  const editor = unref(textEditor?.editor)
+  editor?.view.dispatch(editor.state.tr.setMeta(pluginKey, 'updatePosition'))
+}
+
+// the bubble menu only reads its options on mount, so it gets rendered once the scroll target is known
+const bubbleMenuOptions = computed<BubbleMenuPluginProps['options']>(() => ({
   placement: 'bottom',
   offset: menuOffsetPx,
   flip: false,
-  shift: false
-}
+  shift: { padding: 8 },
+  // the editor content scrolls inside its own container, not the window, so keep the menu attached while scrolling
+  scrollTarget,
+  onShow: () => {
+    // the actions render after the menu has been positioned, so position it again once they are in place
+    nextTick(updatePosition)
+  }
+}))
 
 const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualElement'] = () => {
   const editor = unref(textEditor?.editor)
@@ -74,22 +95,57 @@ const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualEl
 
   if (tableElement) {
     const tableRect = tableElement.getBoundingClientRect()
+    const cellRect = (
+      tableElement.querySelector('.selectedCell') ??
+      getCellElement(node) ??
+      tableElement
+    ).getBoundingClientRect()
+
     const viewportHeight = window.innerHeight
     const maxVisibleAnchorY = viewportHeight - (menuHeightPx + menuOffsetPx * 2)
-    const anchorY = Math.min(tableRect.bottom, maxVisibleAnchorY)
+    let anchorY = Math.min(tableRect.bottom, maxVisibleAnchorY)
+    // when the menu gets pinned to the bottom of the viewport, it must not cover the active cell
+    const menuTop = anchorY + menuOffsetPx
+    if (menuTop < cellRect.bottom && menuTop + menuHeightPx > cellRect.top) {
+      anchorY = cellRect.top - menuHeightPx - menuOffsetPx * 2
+    }
+
+    // keep the menu centered in the visible editor area, wide tables would push it off to the side otherwise
+    const { left, right } = getVisibleHorizontalRange(tableElement)
 
     return {
       getBoundingClientRect: () =>
         DOMRect.fromRect({
-          x: tableRect.left,
+          x: left,
           y: anchorY,
-          width: tableRect.width,
+          width: right - left,
           height: 0
         })
     }
   }
 
   return null
+}
+
+function getCellElement(node: Node) {
+  return node instanceof Element ? node.closest('td, th') : node.parentElement?.closest('td, th')
+}
+
+// the area that is actually visible horizontally, i.e. the viewport minus everything clipped by scroll containers
+function getVisibleHorizontalRange(element: Element) {
+  let left = 0
+  let right = window.innerWidth
+
+  for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
+    if (getComputedStyle(ancestor).overflowX === 'visible') {
+      continue
+    }
+    const rect = ancestor.getBoundingClientRect()
+    left = Math.max(left, rect.left)
+    right = Math.min(right, rect.right)
+  }
+
+  return { left, right }
 }
 
 const groupDefinitions = [

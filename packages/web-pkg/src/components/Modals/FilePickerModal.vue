@@ -85,18 +85,15 @@ onBeforeUnmount(() => {
 @reference '@opencloud-eu/design-system/tailwind';
 
 @layer utilities {
+  /* full screen on phones, the embedded files UI needs all the space it can get */
   .file-picker-modal {
-    @apply overflow-hidden;
-    max-width: 90vw;
-  }
-  .file-picker-modal .oc-modal-title {
-    @apply hidden;
+    @apply overflow-hidden max-w-[90vw] max-sm:h-dvh max-sm:max-h-none max-sm:max-w-none max-sm:rounded-none max-sm:border-0;
   }
   .file-picker-modal .oc-modal-body {
     @apply p-0;
   }
   .file-picker-modal .oc-modal-body-message {
-    @apply m-0 h-[70vh];
+    @apply m-0 h-[70vh] max-sm:h-full;
   }
 }
 </style>
