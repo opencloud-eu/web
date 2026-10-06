@@ -13,6 +13,7 @@ export const AppStoreConfigSchema = z.object({
 export const AppVersionSchema = z.object({
   version: z.string(),
   minOpenCloud: z.string().optional(),
+  maxOpenCloud: z.string().optional(),
   url: z.string(),
   filename: z.string().optional()
 })

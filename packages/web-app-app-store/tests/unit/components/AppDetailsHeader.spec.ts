@@ -31,6 +31,12 @@ describe('AppDetailsHeader', () => {
     expect(wrapper.find(selectors.meta).exists()).toBeFalsy()
     expect(wrapper.text()).not.toContain('Requires OpenCloud')
   })
+  it('renders the maximum OpenCloud version if present', () => {
+    const { wrapper } = getWrapper({
+      mostRecentVersion: { ...mostRecentVersion, maxOpenCloud: '7.5.0' }
+    })
+    expect(wrapper.text()).toContain('Requires OpenCloud 6.0.0 to 7.5.0')
+  })
   it('downloads the most recent version', async () => {
     const { wrapper } = getWrapper()
     expect(wrapper.find(selectors.download).text()).toBe('Download v2.0.0')

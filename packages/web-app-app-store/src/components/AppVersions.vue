@@ -17,9 +17,9 @@
         </oc-tag>
         <span class="flex items-center gap-2 ml-auto">
           <span
-            v-if="version.minOpenCloud"
-            class="app-version-min-opencloud text-sm text-role-on-surface-variant"
-            v-text="$gettext('OpenCloud %{version}+', { version: version.minOpenCloud })"
+            v-if="getVersionRange(version)"
+            class="app-version-opencloud-range text-sm text-role-on-surface-variant"
+            v-text="getVersionRange(version)"
           />
           <app-download-button :app="app" :version="version" />
         </span>
@@ -46,12 +46,14 @@ import { useGettext } from 'vue3-gettext'
 import { App } from '../types'
 import { isValidUrl } from '../helpers'
 import AppDownloadButton from './AppDownloadButton.vue'
+import { useOpenCloudRequirement } from '../composables'
 
 const { app } = defineProps<{
   app: App
 }>()
 
 const { $ngettext } = useGettext()
+const { getVersionRange } = useOpenCloudRequirement()
 
 const collapsedCount = 3
 const expanded = ref(false)
