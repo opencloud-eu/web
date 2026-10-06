@@ -6,11 +6,11 @@
       ...appearanceClasses,
       {
         // rounded
-        'rounded-full px-2': rounded,
+        'rounded-full': rounded,
+        'px-2': rounded && size !== 'xsmall',
         'rounded-lg': !rounded,
         // size
-        'py-0.5 text-xs min-h-5': size === 'xsmall',
-        'px-1.5': size === 'xsmall' && !rounded,
+        'px-1.5 py-0 text-xs/4 min-h-4': size === 'xsmall',
         'p-1 text-xs': size === 'small',
         'py-1 px-2 text-sm min-h-6': size === 'medium',
         'py-2 px-4 text-lg min-h-8': size === 'large',
