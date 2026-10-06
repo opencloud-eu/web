@@ -18,8 +18,9 @@
     <teleport defer :to="`#${modalActionsTarget(modal)}`">
       <oc-button
         :disabled="isConfirmDisabled"
+        :show-spinner="isCreating"
+        :appearance="isCreating ? 'outline' : 'filled'"
         class="oc-modal-body-actions-confirm ml-2"
-        appearance="filled"
         @click="createAppToken"
       >
         {{ $gettext('Confirm') }}
@@ -76,6 +77,8 @@ import {
   Modal,
   modalActionsTarget,
   useClientService,
+  useMessages,
+  useModals,
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
@@ -83,12 +86,14 @@ import { useClipboard } from '@vueuse/core'
 import { AppToken } from '../../helpers/appTokens'
 import { storeToRefs } from 'pinia'
 
-defineProps<{ modal: Modal }>()
+const { modal } = defineProps<{ modal: Modal }>()
 defineEmits(['confirm', 'cancel'])
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
 const { copy, copied } = useClipboard({ legacy: true, copiedDuring: 1500 })
+const { showErrorMessage } = useMessages()
+const { updateModal } = useModals()
 const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
 
@@ -105,13 +110,21 @@ const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
 }
 
 const isConfirmDisabled = computed<boolean>(() => {
-  return !unref(tokenLabel) || !unref(expiryDate)
+  return !unref(tokenLabel) || !unref(expiryDate) || unref(isCreating)
 })
 const createdToken = ref('')
+// Guards against requesting a second token while a request is still in flight.
+const isCreating = ref(false)
 const createAppToken = async () => {
   if (unref(isConfirmDisabled)) {
     return
   }
+  isCreating.value = true
+  // This modal is dispatched with hidden actions, so the only other way out is the
+  // modal's cancel button. Mark it loading to disable that button while the token
+  // is being created - cancelling here would complete the request without ever
+  // showing the resulting token.
+  updateModal(modal.id, 'isLoading', true)
   try {
     const label = unref(tokenLabel)
     const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
@@ -121,6 +134,13 @@ const createAppToken = async () => {
     createdToken.value = data.token
   } catch (error) {
     console.error(error)
+    showErrorMessage({
+      title: $gettext('An error occurred while creating the app token.'),
+      errors: [error]
+    })
+  } finally {
+    isCreating.value = false
+    updateModal(modal.id, 'isLoading', false)
   }
 }
 </script>
