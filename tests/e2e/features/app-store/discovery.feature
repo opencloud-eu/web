@@ -14,6 +14,7 @@ Feature: discovery
       | app     |
       | Draw.io |
     When "Admin" clicks on the tag "viewer" of the app "Draw.io"
+    And "Admin" enters the search term ""
     Then "Admin" should see the following apps
       | app         |
       | JSON Viewer |
