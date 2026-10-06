@@ -44,7 +44,7 @@
         </oc-button>
       </div>
     </DragHandle>
-    <TextEditorTableBubbleMenu v-show="!isSourceMode" />
+    <TextEditorTableBubbleMenu v-show="!isSourceMode" :scroll-target="contentRef" />
     <TextEditorLinkBubbleMenu v-show="!isSourceMode" />
     <EditorContent v-show="!isSourceMode" :editor="textEditor.editor.value" class="h-full" />
     <TextEditorSourceView v-if="isSourceMode" :editor="textEditor" />

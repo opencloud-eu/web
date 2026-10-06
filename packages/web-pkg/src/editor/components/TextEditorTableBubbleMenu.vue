@@ -1,12 +1,13 @@
 <template>
   <BubbleMenu
-    v-if="textEditor?.editor.value && !textEditor.readonly.value"
+    v-if="textEditor?.editor.value && !textEditor.readonly.value && scrollTarget"
     :editor="textEditor.editor.value"
     :plugin-key="pluginKey"
     :should-show="shouldShow"
     :get-referenced-virtual-element="getReferencedVirtualElement"
     :options="bubbleMenuOptions"
     :update-delay="0"
+    :resize-delay="0"
     class="text-editor-table-bubble-menu"
   >
     <div
@@ -49,6 +50,10 @@ import type { BubbleMenuPluginProps } from '@tiptap/extension-bubble-menu'
 import type { TextEditorInstance } from '../types'
 import type { EditorAction } from '../composables'
 
+const { scrollTarget = null } = defineProps<{
+  scrollTarget?: HTMLElement | null
+}>()
+
 const textEditor = inject<TextEditorInstance | undefined>('textEditor')
 
 const shouldShow = ({ editor }: { editor: Editor }) => editor.isActive('table')
@@ -63,35 +68,19 @@ function updatePosition() {
   editor?.view.dispatch(editor.state.tr.setMeta(pluginKey, 'updatePosition'))
 }
 
-// the editor content scrolls inside its own container, not the window, so keep the menu attached while scrolling
-let scrollFrame: number | undefined
-function onScroll() {
-  if (scrollFrame) {
-    return
-  }
-  scrollFrame = requestAnimationFrame(() => {
-    scrollFrame = undefined
-    updatePosition()
-  })
-}
-
-function removeScrollListener() {
-  document.removeEventListener('scroll', onScroll, { capture: true })
-}
-
-const bubbleMenuOptions: BubbleMenuPluginProps['options'] = {
+// the bubble menu only reads its options on mount, so it gets rendered once the scroll target is known
+const bubbleMenuOptions = computed<BubbleMenuPluginProps['options']>(() => ({
   placement: 'bottom',
   offset: menuOffsetPx,
   flip: false,
   shift: { padding: 8 },
+  // the editor content scrolls inside its own container, not the window, so keep the menu attached while scrolling
+  scrollTarget,
   onShow: () => {
-    document.addEventListener('scroll', onScroll, { capture: true, passive: true })
     // the actions render after the menu has been positioned, so position it again once they are in place
     nextTick(updatePosition)
-  },
-  onHide: removeScrollListener,
-  onDestroy: removeScrollListener
-}
+  }
+}))
 
 const getReferencedVirtualElement: BubbleMenuPluginProps['getReferencedVirtualElement'] = () => {
   const editor = unref(textEditor?.editor)

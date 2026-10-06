@@ -50,6 +50,7 @@ function mountTableBubbleMenu() {
   } as unknown as TextEditorInstance
 
   return mount(TextEditorTableBubbleMenu, {
+    props: { scrollTarget: document.createElement('div') },
     global: {
       provide: { textEditor },
       directives: { 'oc-tooltip': () => {}, ocTooltip: () => {} },
