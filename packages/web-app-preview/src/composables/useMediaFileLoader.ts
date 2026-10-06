@@ -66,9 +66,17 @@ export const useMediaFileLoader = ({
    * urls already hold the bytes, there's nothing to warm up for them.
    *
    * Resolves to `false` if the url turned out to be stale (signed urls expire while the
-   * viewer sits on a file), which the caller recovers from by resolving it again.
+   * viewer sits on a file) or the load was aborted on the way. The caller re-resolves
+   * stale urls and drops aborted loads.
    */
-  const warmImageCache = (mediaFile: MediaFile) => {
+  const warmImageCache = (mediaFile: MediaFile, signal: AbortSignal): Promise<boolean> => {
+    // url resolution may settle after the signal was aborted (not every resolver is
+    // signal-aware, e.g. the `downloadURL` shortcut in `getFileUrl`), an abandoned
+    // load must not start downloading anything
+    if (signal.aborted) {
+      return Promise.resolve(false)
+    }
+
     const url = mediaFile.url
 
     if (!url || url.startsWith('blob:')) {
@@ -83,6 +91,19 @@ export const useMediaFileLoader = ({
         warmUps.delete(image)
         resolve(isUsable)
       }
+
+      // on public links `image.src = url` is what downloads the preview, not the
+      // url-resolving requests the signal already covers: aborting must be able
+      // to stop this download too
+      signal.addEventListener(
+        'abort',
+        () => {
+          settle(false)
+          // reassigning src is the only way to cancel an in-flight image fetch
+          image.src = ''
+        },
+        { once: true }
+      )
 
       warmUps.set(image, settle)
       image.onload = () => settle(true)
@@ -130,15 +151,21 @@ export const useMediaFileLoader = ({
         // a file that recovered from an error must not keep rendering the error state
         mediaFile.isError = false
 
-        const isUsable = await warmImageCache(mediaFile)
+        const isUsable = await warmImageCache(mediaFile, controller.signal)
         // the warm-up is an optimization, the resolved url still renders the file
         if (isUsable || isDisposed || attempt === maxLoadAttempts) {
           return
         }
 
-        // the url went stale, resolve a fresh one
+        // the warm-up couldn't use the url: either the load was aborted on the way -
+        // then the url is dead weight and the file reloads once it becomes relevant
+        // again - or the url went stale and is resolved again on the next attempt
         mediaFile.url = undefined
         mediaFile.isLoading = true
+
+        if (controller.signal.aborted) {
+          return
+        }
       }
     } catch (e) {
       if (e.name === 'CanceledError') {
