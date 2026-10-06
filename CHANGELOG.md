@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
 - feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
 - feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
 - feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
