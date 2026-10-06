@@ -5,7 +5,7 @@
       :key="`app-action-${action.name}`"
       size="small"
       :action="action"
-      :action-options="{ app, version }"
+      :action-options="{ app }"
       :button-classes="['raw-hover-surface']"
     />
   </oc-list>
@@ -14,11 +14,10 @@
 import { computed } from 'vue'
 import { ActionMenuItem } from '@opencloud-eu/web-pkg'
 import { useAppActionsDownload } from '../composables'
-import { App, AppVersion } from '../types'
+import { App } from '../types'
 
-const { app, version = undefined } = defineProps<{
+const { app } = defineProps<{
   app: App
-  version?: AppVersion
 }>()
 
 const { downloadAppAction } = useAppActionsDownload()
