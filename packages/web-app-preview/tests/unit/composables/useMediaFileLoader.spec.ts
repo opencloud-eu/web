@@ -654,5 +654,38 @@ describe('useMediaFileLoader', () => {
       expect(mediaFile.isLoading).toBe(false)
       wrapper.unmount()
     })
+
+    it('does not warm the cache for videos, audio or svg files', async () => {
+      const { wrapper, loader, mocks, getUrlForResource } = createWrapper()
+
+      const video = createFile({
+        name: 'clip.mp4',
+        mimeType: 'video/mp4',
+        isVideo: true,
+        isImage: false
+      })
+      const audio = createFile({
+        name: 'song.mp3',
+        mimeType: 'audio/mpeg',
+        isAudio: true,
+        isImage: false
+      })
+      const svg = createFile({ name: 'logo.svg', mimeType: 'image/svg+xml' })
+
+      await loader.loadPreviewImage(video)
+      await loader.loadPreviewImage(audio)
+      await loader.loadPreviewImage(svg)
+
+      expect(MockImage.instances).toHaveLength(0)
+      // one resolution each, no decode-failure retry loop
+      expect(getUrlForResource).toHaveBeenCalledTimes(3)
+      // skipping the warm-up must not break the load itself
+      expect(mocks.$previewService.loadPreview).not.toHaveBeenCalled()
+      for (const file of [video, audio, svg]) {
+        expect(file.url).toBe('full-url')
+        expect(file.isLoading).toBe(false)
+      }
+      wrapper.unmount()
+    })
   })
 })
