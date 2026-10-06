@@ -1,6 +1,6 @@
 import ExtensionsList from '../../../../src/components/Extensions/ExtensionsList.vue'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
-import { OcTable } from '@opencloud-eu/design-system/components'
+import { OcIcon, OcTable } from '@opencloud-eu/design-system/components'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 
@@ -89,6 +89,31 @@ describe('ExtensionsList', () => {
     expect(highlight.exists()).toBeTruthy()
     expect(highlight.text().toLowerCase()).toBe('fi')
   })
+
+  it.each([
+    { iconFillType: undefined, expected: 'line' },
+    { iconFillType: 'fill' as const, expected: 'fill' }
+  ])('renders the app icon with the fill type "$expected"', ({ iconFillType, expected }) => {
+    const ocTableStub = {
+      props: ['data'],
+      template: `
+        <div class="oc-table-stub">
+          <div v-for="item in data" :key="item.name">
+            <slot name="name" :item="item" />
+          </div>
+        </div>
+      `
+    }
+
+    const { wrapper } = getWrapper({
+      extensions: [{ name: 'Calendar', icon: 'calendar', iconFillType, loaded: true }],
+      stubs: {
+        OcTable: ocTableStub
+      }
+    })
+
+    expect(wrapper.findComponent(OcIcon).props('fillType')).toBe(expected)
+  })
 })
 
 function getTableData(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
@@ -101,7 +126,13 @@ function getWrapper({
   stubs = {},
   query = {}
 }: {
-  extensions?: { name: string; version?: string; loaded: boolean }[]
+  extensions?: {
+    name: string
+    icon?: string
+    iconFillType?: 'fill' | 'line'
+    version?: string
+    loaded: boolean
+  }[]
   filterTerm?: string
   stubs?: Record<string, any>
   query?: Record<string, string>
