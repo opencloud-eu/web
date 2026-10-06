@@ -45,18 +45,16 @@ export class Search {
   }
 
   getFoundContentMatch(
-    args: Omit<Parameters<typeof po.getFoundContentMatch>[0], 'page'>
+    args: Omit<po.searchResultArgs, 'page'>
   ): Promise<{ match: string; isFullyVisible: boolean }> {
     return po.getFoundContentMatch({ ...args, page: this.#page })
   }
 
-  getMatchingTags(args: Omit<Parameters<typeof po.getMatchingTags>[0], 'page'>): Promise<string[]> {
+  getMatchingTags(args: Omit<po.searchResultArgs, 'page'>): Promise<string[]> {
     return po.getMatchingTags({ ...args, page: this.#page })
   }
 
-  getFoundContentAndMatchingTagsCount(
-    args: Omit<Parameters<typeof po.getFoundContentAndMatchingTagsCount>[0], 'page'>
-  ): Promise<number> {
+  getFoundContentAndMatchingTagsCount(args: Omit<po.searchResultArgs, 'page'>): Promise<number> {
     return po.getFoundContentAndMatchingTagsCount({ ...args, page: this.#page })
   }
 }

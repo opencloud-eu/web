@@ -26,6 +26,12 @@ const matchingTagSelector = '.search-highlights-tag'
 
 export type searchResultLocation = 'search results' | 'search preview'
 
+export interface searchResultArgs {
+  page: Page
+  resource: string
+  location: searchResultLocation
+}
+
 export const getSearchResultMessage = ({ page }: { page: Page }): Promise<string> => {
   return page.locator(searchResultMessageSelector).innerText()
 }
@@ -118,15 +124,7 @@ export const openLocationSearchPanel = async ({ page }: { page: Page }): Promise
   await page.locator(locationSearchPanelSelector).click()
 }
 
-const getSearchResultItem = ({
-  page,
-  resource,
-  location
-}: {
-  page: Page
-  resource: string
-  location: searchResultLocation
-}): Locator => {
+const getSearchResultItem = ({ page, resource, location }: searchResultArgs): Locator => {
   const selector =
     location === 'search preview' ? searchPreviewItemSelector : searchResultItemSelector
   return page.locator(util.format(selector, resource))
@@ -136,11 +134,7 @@ export const getFoundContentMatch = async ({
   page,
   resource,
   location
-}: {
-  page: Page
-  resource: string
-  location: searchResultLocation
-}): Promise<{ match: string; isFullyVisible: boolean }> => {
+}: searchResultArgs): Promise<{ match: string; isFullyVisible: boolean }> => {
   const item = getSearchResultItem({ page, resource, location })
   const match = item.locator(foundContentMatchSelector).first()
   await expect(match).toBeVisible()
@@ -161,11 +155,7 @@ export const getMatchingTags = ({
   page,
   resource,
   location
-}: {
-  page: Page
-  resource: string
-  location: searchResultLocation
-}): Promise<string[]> => {
+}: searchResultArgs): Promise<string[]> => {
   return getSearchResultItem({ page, resource, location })
     .locator(matchingTagSelector)
     .allInnerTexts()
@@ -175,11 +165,7 @@ export const getFoundContentAndMatchingTagsCount = ({
   page,
   resource,
   location
-}: {
-  page: Page
-  resource: string
-  location: searchResultLocation
-}): Promise<number> => {
+}: searchResultArgs): Promise<number> => {
   return getSearchResultItem({ page, resource, location })
     .locator(`${foundContentSelector}, ${matchingTagSelector}`)
     .count()

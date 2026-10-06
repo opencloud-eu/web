@@ -1,11 +1,12 @@
 <template>
   <div
-    v-if="highlights || matchingTags.length"
+    v-if="resource.highlights || matchingTags.length"
     class="search-highlights [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
   >
     <!-- eslint-disable vue/no-v-html -->
-    <span v-if="highlights" class="search-highlights-content flex text-sm">
-      <!-- the text before the match is cut off at its start, so the match stays visible -->
+    <span v-if="resource.highlights" class="search-highlights-content flex text-sm">
+      <!-- the text before the match is cut off at its start, so the match stays visible.
+           a longer text keeps a bit of width, so there is still some context before the match -->
       <span
         v-if="snippet.before"
         dir="rtl"
@@ -33,9 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import { SearchResource } from '@opencloud-eu/web-client'
-import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 
 const {
   resource,
@@ -47,10 +47,8 @@ const {
   filterTags?: string[]
 }>()
 
-const highlights = computed(() => resource.highlights)
-
 const snippet = computed(() => {
-  const text = (unref(highlights) || '').replace(/\s+/g, ' ').trim()
+  const text = (resource.highlights || '').replace(/\s+/g, ' ').trim()
   const matchIndex = text.indexOf('<mark>')
   if (matchIndex <= 0) {
     return { before: '', match: text, hasLongBefore: false }
