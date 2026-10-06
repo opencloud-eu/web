@@ -6,6 +6,7 @@ import { pageObjectFor } from '../../environment/pageObject'
 import { expect } from '@playwright/test'
 import { appConfig } from '../../playwright.config'
 import { searchFilter, SearchShortcutType } from '../../support/objects/app-files/resource/actions'
+import { searchResultLocation } from '../../support/objects/app-files/search/actions'
 
 const searchIndexTimeout = 40 * 1000
 
@@ -134,6 +135,55 @@ Then(
       } else {
         await expect(resourceObject.getResourceSearchItemLocator(info.resource)).not.toBeVisible()
       }
+    }
+  }
+)
+
+Then(
+  /^the following found content should be displayed in the (search results|search preview) for user "([^"]*)"$/,
+  async (
+    { world }: { world: World },
+    location: searchResultLocation,
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const searchObject = pageObjectFor(world, stepUser, objects.applicationFiles.Search)
+    for (const { resource, match } of stepTable.hashes()) {
+      const foundMatch = await searchObject.getFoundContentMatch({ resource, location })
+      expect(foundMatch.match).toBe(match)
+      expect(foundMatch.isFullyVisible).toBe(true)
+    }
+  }
+)
+
+Then(
+  /^the following matching tags should be displayed in the (search results|search preview) for user "([^"]*)"$/,
+  async (
+    { world }: { world: World },
+    location: searchResultLocation,
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const searchObject = pageObjectFor(world, stepUser, objects.applicationFiles.Search)
+    for (const { resource, tags } of stepTable.hashes()) {
+      await expect
+        .poll(() => searchObject.getMatchingTags({ resource, location }))
+        .toEqual(tags.split(',').map((tag) => tag.trim()))
+    }
+  }
+)
+
+Then(
+  /^no found content or matching tags should be displayed for the following resources? in the (search results|search preview) for user "([^"]*)"$/,
+  async (
+    { world }: { world: World },
+    location: searchResultLocation,
+    stepUser: string,
+    stepTable: DataTable
+  ): Promise<void> => {
+    const searchObject = pageObjectFor(world, stepUser, objects.applicationFiles.Search)
+    for (const { resource } of stepTable.hashes()) {
+      expect(await searchObject.getFoundContentAndMatchingTagsCount({ resource, location })).toBe(0)
     }
   }
 )
