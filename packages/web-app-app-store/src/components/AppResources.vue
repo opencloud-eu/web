@@ -1,5 +1,5 @@
 <template>
-  <ul class="mb-0 p-0">
+  <ul class="mb-0 p-0 flex flex-col gap-2">
     <li v-for="resource in resources" :key="resource.label">
       <a
         :href="resource.url"
