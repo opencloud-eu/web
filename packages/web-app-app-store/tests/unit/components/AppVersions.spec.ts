@@ -6,7 +6,12 @@ import { mock } from 'vitest-mock-extended'
 const validVersions: AppVersion[] = [
   { url: 'https://wololo.com/download-1.3.0.zip', version: '1.3.0', minOpenCloud: '6.5.0' },
   { url: 'https://wololo.com/download-1.2.0.zip', version: '1.2.0' },
-  { url: 'https://wololo.com/download-1.1.0.zip', version: '1.1.0', minOpenCloud: '6.0.0' },
+  {
+    url: 'https://wololo.com/download-1.1.0.zip',
+    version: '1.1.0',
+    minOpenCloud: '6.0.0',
+    maxOpenCloud: '6.4.0'
+  },
   { url: 'https://wololo.com/download-1.0.0.zip', version: '1.0.0' }
 ]
 const invalidVersions: AppVersion[] = [
@@ -18,7 +23,7 @@ const selectors = {
   row: '.app-version',
   number: '.app-version-number',
   latest: '.app-version-latest',
-  minOpenCloud: '.app-version-min-opencloud',
+  openCloudRange: '.app-version-opencloud-range',
   downloadButton: '.app-download-button',
   toggle: '.app-versions-toggle'
 }
@@ -47,11 +52,12 @@ describe('AppVersions.vue', () => {
     expect(rows[0].find(selectors.latest).exists()).toBeTruthy()
     expect(wrapper.findAll(selectors.latest)).toHaveLength(1)
   })
-  it('renders the minimum required OpenCloud version if present', () => {
+  it('renders the supported OpenCloud versions if present', () => {
     const { wrapper } = getWrapper()
     const rows = wrapper.findAll(selectors.row)
-    expect(rows[0].find(selectors.minOpenCloud).text()).toBe('OpenCloud 6.5.0+')
-    expect(rows[1].find(selectors.minOpenCloud).exists()).toBeFalsy()
+    expect(rows[0].find(selectors.openCloudRange).text()).toBe('OpenCloud 6.5.0+')
+    expect(rows[1].find(selectors.openCloudRange).exists()).toBeFalsy()
+    expect(rows[2].find(selectors.openCloudRange).text()).toBe('OpenCloud 6.0.0 – 6.4.0')
   })
   it('renders a download button per version', () => {
     const { wrapper } = getWrapper()

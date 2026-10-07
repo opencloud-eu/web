@@ -42,13 +42,24 @@ export interface Props {
    * @docs Text to be displayed.
    */
   text?: string
+  /**
+   * @docs Teleport the drop to a different DOM element. This can be useful to prevent overflow issues, e.g. inside tables.
+   */
+  teleport?: string
 }
 
-const { title, endText = '', list = [], readMoreLink = '', text = '' } = defineProps<Props>()
+const {
+  title,
+  endText = '',
+  list = [],
+  readMoreLink = '',
+  text = '',
+  teleport = ''
+} = defineProps<Props>()
 
 const dropId = ref(uniqueId('oc-contextual-helper-'))
 
 const buttonId = computed(() => `${dropId.value}-button`)
 const toggleId = computed(() => `#${buttonId.value}`)
-const props = computed(() => ({ title, text, list, endText, readMoreLink }))
+const props = computed(() => ({ title, text, list, endText, readMoreLink, teleport }))
 </script>

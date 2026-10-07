@@ -8,8 +8,8 @@
       <app-details-info-row :label="$gettext('Version')">
         {{ app.mostRecentVersion.version }}
       </app-details-info-row>
-      <app-details-info-row v-if="minOpenCloud" :label="$gettext('Requires')">
-        {{ $gettext('OpenCloud %{version}+', { version: minOpenCloud }) }}
+      <app-details-info-row v-if="versionRange" :label="$gettext('Requires')">
+        {{ versionRange }}
       </app-details-info-row>
       <app-details-info-row v-if="app.resources.length" :label="$gettext('Resources')" stacked>
         <app-resources :app="app" />
@@ -24,10 +24,13 @@ import { App } from '../types'
 import AppAuthors from './AppAuthors.vue'
 import AppResources from './AppResources.vue'
 import AppDetailsInfoRow from './AppDetailsInfoRow.vue'
+import { useOpenCloudRequirement } from '../composables'
 
 const { app } = defineProps<{
   app: App
 }>()
 
-const minOpenCloud = computed(() => app.mostRecentVersion.minOpenCloud)
+const { getVersionRange } = useOpenCloudRequirement()
+
+const versionRange = computed(() => getVersionRange(app.mostRecentVersion))
 </script>

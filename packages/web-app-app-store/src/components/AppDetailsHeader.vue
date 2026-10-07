@@ -24,13 +24,9 @@
         />
       </oc-button>
       <span
-        v-if="app.mostRecentVersion.minOpenCloud"
-        class="text-sm text-role-on-surface-variant"
-        v-text="
-          $gettext('Requires OpenCloud %{version} or newer', {
-            version: app.mostRecentVersion.minOpenCloud
-          })
-        "
+        v-if="requirementText"
+        class="app-details-requirement text-sm text-role-on-surface-variant"
+        v-text="requirementText"
       />
     </div>
   </div>
@@ -41,7 +37,7 @@ import { computed } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { App } from '../types'
 import { getAuthorNames } from '../helpers'
-import { useAppActionsDownload } from '../composables'
+import { useAppActionsDownload, useOpenCloudRequirement } from '../composables'
 import AppTags from './AppTags.vue'
 
 const { app } = defineProps<{
@@ -54,6 +50,8 @@ const emit = defineEmits<{
 
 const { $gettext } = useGettext()
 const { downloadAppAction } = useAppActionsDownload()
+const { getRequirementText } = useOpenCloudRequirement()
 
 const authorNames = computed(() => getAuthorNames(app))
+const requirementText = computed(() => getRequirementText(app.mostRecentVersion))
 </script>

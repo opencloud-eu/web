@@ -105,7 +105,6 @@ export interface ApplicationInformation {
   id?: string
   name?: string
   icon?: string
-  /** @deprecated use the iconFillType on ApplicationFileExtension instead */
   iconFillType?: IconFillType
   /** @deprecated use the iconColor on ApplicationFileExtension instead */
   iconColor?: string

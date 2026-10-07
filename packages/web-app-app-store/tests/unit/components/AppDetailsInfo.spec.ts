@@ -13,6 +13,17 @@ describe('AppDetailsInfo', () => {
       ['Resources', 'GitHub']
     ])
   })
+  it('renders the supported OpenCloud version range', () => {
+    const { wrapper } = getWrapper({
+      mostRecentVersion: {
+        version: '2.0.0',
+        url: 'https://example.com/app.zip',
+        minOpenCloud: '6.0.0',
+        maxOpenCloud: '7.5.0'
+      }
+    })
+    expect(getRows(wrapper)).toContainEqual(['Requires', 'OpenCloud 6.0.0 – 7.5.0'])
+  })
   it('omits rows without a value', () => {
     const { wrapper } = getWrapper({
       authors: [],
