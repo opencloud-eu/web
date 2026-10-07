@@ -351,13 +351,13 @@ export const announceApplicationsReady = async ({
 
     const getIconDefinition = (): Icon => {
       const icon = fileExtensions.icon || app.icon
-      if (isImageIcon(icon) || !app.color) {
+      const takesAppColor = !!app.color && !isImageIcon(icon)
+      if (!takesAppColor) {
         return icon
       }
-      if (typeof icon === 'string') {
-        return { name: icon, color: app.color }
-      }
-      return { color: app.color, ...icon }
+
+      const namedIcon = typeof icon === 'string' ? { name: icon } : icon
+      return { color: app.color, ...namedIcon }
     }
 
     if (fileExtensions.mimeType) {
