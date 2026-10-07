@@ -1,14 +1,11 @@
 <template>
-  <no-content-message class="h-full" img-src="images/illustrations/404.svg">
-    <template v-if="message" #message>
-      <span v-text="message" />
-    </template>
-  </no-content-message>
+  <div class="text-center flex justify-center items-center h-full">
+    <oc-icon size-class="size-22" name="error-warning" fill-type="line" />
+    <p v-if="message" class="text-xl">{{ message }}</p>
+  </div>
 </template>
 
 <script setup lang="ts">
-import NoContentMessage from '../../NoContentMessage.vue'
-
 const { message = '' } = defineProps<{
   message?: string
 }>()
