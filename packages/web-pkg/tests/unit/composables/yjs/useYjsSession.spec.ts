@@ -694,6 +694,59 @@ describe('useYjsSession — remote mode (yjsServerUrl set)', () => {
     expect(yText.toString()).toBe('')
   })
 
+  // Mid-session the caller's content is the serialized doc, not a fresh fetch,
+  // so a reconnect must not recover the room from it.
+  it('does not run the drift check on a mid-session reconnect', async () => {
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'the file body'
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    s.ydoc!.getMap('_oc_meta').set('etag', 'etag-moved-on')
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    expect(providerInstances[0].sendStateless).toHaveBeenCalledTimes(1)
+    expect(s.ydoc!.getMap('_oc_meta').get('isStale')).toBeUndefined()
+    expect(s.ydoc!.getText(SHARED_TEXT_KEY).toString()).toBe('the file body')
+  })
+
+  // A reconnect must not reset the save baseline to the whole doc: peer edits
+  // that just synced in were never reported, so stamping them as saved would
+  // let the peer drop its dirty flag with the edit unwritten.
+  it('keeps the reported baseline across a mid-session reconnect', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = setupSession({
+      yjsServerUrl: 'wss://example.test/yjs',
+      currentContent: 'seed',
+      resource: makeResource({ etag: 'a' })
+    })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    s.ydoc!.getText(SHARED_TEXT_KEY).insert(4, ' ours')
+    vi.advanceTimersByTime(400)
+    await flushPromises()
+
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
+    peer.getText(SHARED_TEXT_KEY).insert(0, 'theirs ')
+    const peerClock = Y.decodeStateVector(Y.encodeStateVector(peer)).get(peer.clientID)
+    Y.applyUpdate(s.ydoc!, Y.encodeStateAsUpdate(peer, Y.encodeStateVector(s.ydoc!)))
+    providerInstances[0].triggerSynced()
+    await flushPromises()
+
+    s.resourceRef.value = makeResource({ etag: 'b' })
+    await flushPromises()
+
+    const stamped = s.ydoc!.getMap('_oc_meta').get('savedStateVector') as Uint8Array
+    expect(Y.decodeStateVector(stamped).get(peer.clientID) ?? 0).toBeLessThan(peerClock)
+  })
+
   it('does not hydrate until onSynced fires (remote waits for the server)', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
