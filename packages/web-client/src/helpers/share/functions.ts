@@ -59,7 +59,7 @@ export const getShareResourceRoles = ({
   )
 
   // multiple shares (e.g. user + group) come in random order, show the highest role first
-  return roles?.sort((a, b) => (b['@libre.graph.weight'] ?? 0) - (a['@libre.graph.weight'] ?? 0))
+  return roles?.sort((a, b) => (b['@libre.graph.weight'] || 0) - (a['@libre.graph.weight'] || 0))
 }
 
 export const getShareResourcePermissions = ({
