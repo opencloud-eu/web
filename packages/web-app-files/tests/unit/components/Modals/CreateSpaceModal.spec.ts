@@ -1,4 +1,5 @@
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import CreateSpaceModal from '../../../../src/components/Modals/CreateSpaceModal.vue'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
@@ -7,6 +8,7 @@ import {
   Modal,
   SpaceImageModal,
   useCreateSpace,
+  useMessages,
   useModals
 } from '@opencloud-eu/web-pkg'
 import { AbilityRule, SpaceResource } from '@opencloud-eu/web-client'
@@ -18,6 +20,8 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 }))
 
 window.URL.createObjectURL = vi.fn(() => 'blob:preview')
+const createImageBitmap = vi.fn(() => Promise.resolve({ close: vi.fn() }))
+vi.stubGlobal('createImageBitmap', createImageBitmap)
 window.URL.revokeObjectURL = vi.fn()
 
 const addNewSpace = vi.fn()
@@ -285,6 +289,7 @@ describe('CreateSpaceModal', () => {
       await revealOptions(wrapper)
 
       await pickImage(wrapper, new File([''], 'logo.png'))
+      await flushPromises()
 
       const { dispatchModal } = useModals()
       expect(dispatchModal).toHaveBeenCalledWith(
@@ -301,6 +306,22 @@ describe('CreateSpaceModal', () => {
         'New space',
         expect.objectContaining({ image: imageContent })
       )
+    })
+
+    it('show an error instead of the crop modal for an image that cannot be decoded', async () => {
+      createImageBitmap.mockRejectedValueOnce(new Error('broken'))
+      const { wrapper } = getWrapper()
+      await revealOptions(wrapper)
+
+      await pickImage(wrapper, new File([''], 'broken.png'))
+      await flushPromises()
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'The selected image is not supported or damaged' })
+      )
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).not.toHaveBeenCalled()
     })
 
     it('keep the description out of an encrypted space', async () => {

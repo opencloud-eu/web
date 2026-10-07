@@ -3,7 +3,9 @@ import { isProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   SpaceAction,
   SpaceActionOptions,
+  isDecodableImage,
   SpaceImageModal,
+  useMessages,
   useModals,
   useUserStore
 } from '@opencloud-eu/web-pkg'
@@ -14,6 +16,7 @@ export const useSpaceActionsUploadImage = () => {
   const userStore = useUserStore()
   const { $gettext } = useGettext()
   const { dispatchModal } = useModals()
+  const { showErrorMessage } = useMessages()
   const { saveSpaceImage } = useSpaceImage()
 
   let selectedSpace: SpaceResource = null
@@ -28,12 +31,17 @@ export const useSpaceActionsUploadImage = () => {
     fileInput = null
   }
 
-  const onFileSelected = (event: Event) => {
+  const onFileSelected = async (event: Event) => {
     const input = event.currentTarget as HTMLInputElement
     const file = input.files?.[0]
     removeFileInput()
 
     if (!file || !selectedSpace) {
+      return
+    }
+
+    if (!(await isDecodableImage(file))) {
+      showErrorMessage({ title: $gettext('The selected image is not supported or damaged') })
       return
     }
 

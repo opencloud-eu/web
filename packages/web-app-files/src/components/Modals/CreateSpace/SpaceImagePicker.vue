@@ -29,12 +29,20 @@
 <script setup lang="ts">
 import { markRaw, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
-import { EmojiPickerModal, emojiToImage, SpaceImageModal, useModals } from '@opencloud-eu/web-pkg'
+import {
+  EmojiPickerModal,
+  emojiToImage,
+  isDecodableImage,
+  SpaceImageModal,
+  useMessages,
+  useModals
+} from '@opencloud-eu/web-pkg'
 
 const image = defineModel<ArrayBuffer>({ default: null })
 
 const { $gettext } = useGettext()
 const { dispatchModal } = useModals()
+const { showErrorMessage } = useMessages()
 
 const fileInputRef = useTemplateRef<HTMLInputElement>('fileInputRef')
 
@@ -51,13 +59,18 @@ function openIconPicker() {
   })
 }
 
-function onFileSelected(event: Event) {
+async function onFileSelected(event: Event) {
   const input = event.currentTarget as HTMLInputElement
   const file = input.files?.[0]
   // Reset, so picking the same file again opens the cropper once more.
   input.value = ''
 
   if (!file) {
+    return
+  }
+
+  if (!(await isDecodableImage(file))) {
+    showErrorMessage({ title: $gettext('The selected image is not supported or damaged') })
     return
   }
 
