@@ -92,3 +92,62 @@ Feature: Search
       | withTag.txt                   |
       | spaceFolder/spaceTextfile.txt |
     And "Brian" logs out
+
+
+  Scenario: search shows why a resource was found
+    Given "Admin" creates following user using API
+      | id    |
+      | Alice |
+    And "Alice" creates the following files into personal space using API
+      | pathToFile      | content                                                                                                                                                 |
+      | offer.txt       | This long introduction is far wider than a single tile and mentions many other things before it finally talks about Apollo and its roadmap in detail. |
+      | notes.txt       | meeting notes                                                                                                                                           |
+      | apollo-plan.txt | plan                                                                                                                                                    |
+    And "Alice" adds the following tag for the following resource using API
+      | resource  | tags   |
+      | notes.txt | Apollo |
+    And "Alice" logs in
+
+    # search preview
+    When "Alice" searches "apollo" using the global search and the "all files" filter
+    Then following resources should be displayed in the search list for user "Alice"
+      | resource        |
+      | offer.txt       |
+      | notes.txt       |
+      | apollo-plan.txt |
+    And the following found content should be displayed in the search preview for user "Alice"
+      | resource  | match  |
+      | offer.txt | Apollo |
+    And the following matching tags should be displayed in the search preview for user "Alice"
+      | resource  | tags   |
+      | notes.txt | Apollo |
+    And no found content or matching tags should be displayed for the following resource in the search preview for user "Alice"
+      | resource        |
+      | apollo-plan.txt |
+
+    # search results
+    When "Alice" searches "apollo" using the global search and the "all files" filter and presses enter
+    Then the following found content should be displayed in the search results for user "Alice"
+      | resource  | match  |
+      | offer.txt | Apollo |
+    And the following matching tags should be displayed in the search results for user "Alice"
+      | resource  | tags   |
+      | notes.txt | Apollo |
+    And no found content or matching tags should be displayed for the following resource in the search results for user "Alice"
+      | resource        |
+      | apollo-plan.txt |
+
+    # the found content is cut off to one line in small tiles, the match must stay visible
+    When "Alice" switches to the "tiles" view
+    And "Alice" reduces the tile size
+    Then the following found content should be displayed in the search results for user "Alice"
+      | resource  | match  |
+      | offer.txt | Apollo |
+
+    # tags selected in the tag filter are shown as matching tags
+    When "Alice" searches "" using the global search and the "all files" filter and presses enter
+    And "Alice" selects tag "Apollo" from the search result filter chip
+    Then the following matching tags should be displayed in the search results for user "Alice"
+      | resource  | tags   |
+      | notes.txt | Apollo |
+    And "Alice" logs out

@@ -1,4 +1,4 @@
-import { expect, Page } from '@playwright/test'
+import { expect, Locator, Page } from '@playwright/test'
 import util from 'util'
 
 const searchResultMessageSelector = '//p[@class="text-role-on-surface-variant"]'
@@ -16,6 +16,21 @@ const enableSearchTitleOnlySelector =
 const disableSearchTitleOnlySelector =
   '//div[contains(@class,"files-search-filter-title-only")]//button[contains(@class,"oc-filter-chip-clear")]'
 const locationSearchPanelSelector = '//*[@data-testid="search-bar-filter"]'
+const searchResultItemSelector =
+  '//*[@data-test-resource-name="%s"]/ancestor::*[self::tr or contains(@class, "oc-tile-card")][1]'
+const searchPreviewItemSelector =
+  '//div[@id="files-global-search-options"]//*[@data-test-resource-name="%s"]/ancestor::li[contains(@class, "preview")]'
+const foundContentSelector = '.search-highlights-content'
+const foundContentMatchSelector = '.search-highlights-content mark'
+const matchingTagSelector = '.search-highlights-tag'
+
+export type searchResultLocation = 'search results' | 'search preview'
+
+export interface searchResultArgs {
+  page: Page
+  resource: string
+  location: searchResultLocation
+}
 
 export const getSearchResultMessage = ({ page }: { page: Page }): Promise<string> => {
   return page.locator(searchResultMessageSelector).innerText()
@@ -107,4 +122,51 @@ export const toggleSearchTitleOnly = async ({
 
 export const openLocationSearchPanel = async ({ page }: { page: Page }): Promise<void> => {
   await page.locator(locationSearchPanelSelector).click()
+}
+
+const getSearchResultItem = ({ page, resource, location }: searchResultArgs): Locator => {
+  const selector =
+    location === 'search preview' ? searchPreviewItemSelector : searchResultItemSelector
+  return page.locator(util.format(selector, resource))
+}
+
+export const getFoundContentMatch = async ({
+  page,
+  resource,
+  location
+}: searchResultArgs): Promise<{ match: string; isFullyVisible: boolean }> => {
+  const item = getSearchResultItem({ page, resource, location })
+  const match = item.locator(foundContentMatchSelector).first()
+  await expect(match).toBeVisible()
+  // the found content is cut off to one line, the match must neither be clipped nor covered by the ellipsis
+  const isFullyVisible = await match.evaluate((mark, contentSelector) => {
+    const markRect = mark.getBoundingClientRect()
+    const content = mark.closest(contentSelector).getBoundingClientRect()
+    const matchPart = mark.parentElement
+    const matchPartRect = matchPart.getBoundingClientRect()
+    const ellipsisWidth = matchPart.scrollWidth > matchPart.clientWidth ? 14 : 0
+    const visibleRight = Math.min(content.right, matchPartRect.right) - ellipsisWidth
+    return markRect.left >= content.left - 0.5 && markRect.right <= visibleRight + 0.5
+  }, foundContentSelector)
+  return { match: await match.innerText(), isFullyVisible }
+}
+
+export const getMatchingTags = ({
+  page,
+  resource,
+  location
+}: searchResultArgs): Promise<string[]> => {
+  return getSearchResultItem({ page, resource, location })
+    .locator(matchingTagSelector)
+    .allInnerTexts()
+}
+
+export const getFoundContentAndMatchingTagsCount = ({
+  page,
+  resource,
+  location
+}: searchResultArgs): Promise<number> => {
+  return getSearchResultItem({ page, resource, location })
+    .locator(`${foundContentSelector}, ${matchingTagSelector}`)
+    .count()
 }

@@ -43,4 +43,18 @@ export class Search {
   async openLocationSearchPanel(): Promise<void> {
     await po.openLocationSearchPanel({ page: this.#page })
   }
+
+  getFoundContentMatch(
+    args: Omit<po.searchResultArgs, 'page'>
+  ): Promise<{ match: string; isFullyVisible: boolean }> {
+    return po.getFoundContentMatch({ ...args, page: this.#page })
+  }
+
+  getMatchingTags(args: Omit<po.searchResultArgs, 'page'>): Promise<string[]> {
+    return po.getMatchingTags({ ...args, page: this.#page })
+  }
+
+  getFoundContentAndMatchingTagsCount(args: Omit<po.searchResultArgs, 'page'>): Promise<number> {
+    return po.getFoundContentAndMatchingTagsCount({ ...args, page: this.#page })
+  }
 }

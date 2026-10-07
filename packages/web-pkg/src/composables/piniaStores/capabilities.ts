@@ -137,6 +137,7 @@ export const useCapabilityStore = defineStore('capabilities', () => {
   const searchLastMofifiedDate = computed(() => unref(capabilities).search.property?.mtime)
   const searchMediaType = computed(() => unref(capabilities).search.property?.mediatype)
   const searchContent = computed(() => unref(capabilities).search.property?.content)
+  const searchTag = computed(() => unref(capabilities).search.property?.tag)
 
   return {
     isInitialized,
@@ -181,7 +182,8 @@ export const useCapabilityStore = defineStore('capabilities', () => {
     passwordPolicy,
     searchLastMofifiedDate,
     searchMediaType,
-    searchContent
+    searchContent,
+    searchTag
   }
 })
 

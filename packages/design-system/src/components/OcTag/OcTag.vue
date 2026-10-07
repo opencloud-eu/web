@@ -6,9 +6,11 @@
       ...appearanceClasses,
       {
         // rounded
-        'rounded-full px-2': rounded,
+        'rounded-full': rounded,
+        'px-2': rounded && size !== 'xsmall',
         'rounded-lg': !rounded,
         // size
+        'px-1.5 py-0 text-xs/4 min-h-4': size === 'xsmall',
         'p-1 text-xs': size === 'small',
         'py-1 px-2 text-sm min-h-6': size === 'medium',
         'py-2 px-4 text-lg min-h-8': size === 'large',
@@ -43,7 +45,7 @@ export interface Props {
    * @docs The size of the tag.
    * @default medium
    */
-  size?: 'small' | 'medium' | 'large'
+  size?: 'xsmall' | 'small' | 'medium' | 'large'
   /**
    * @docs Determines if the tag should be rounded.
    * @default false

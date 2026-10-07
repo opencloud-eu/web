@@ -70,15 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onMounted,
-  ref,
-  unref,
-  useTemplateRef
-} from 'vue'
+import { ComponentPublicInstance, computed, nextTick, ref, unref, useTemplateRef, watch } from 'vue'
 import Fuse, { FuseOptionKey } from 'fuse.js'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter } from '../composables'
@@ -239,7 +231,6 @@ const setSelectedItemsBasedOnQuery = () => {
 
 defineExpose({ setSelectedItemsBasedOnQuery })
 
-onMounted(() => {
-  setSelectedItemsBasedOnQuery()
-})
+// items can arrive after mount (e.g. loaded tags), the selection from the query needs them
+watch(() => items, setSelectedItemsBasedOnQuery, { immediate: true })
 </script>

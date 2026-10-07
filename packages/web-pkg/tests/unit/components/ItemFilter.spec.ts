@@ -183,6 +183,12 @@ describe('ItemFilter', () => {
       const { wrapper } = getWrapper({ initialQuery: '1' })
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
     })
+    it('sets the selected items from the query param when the items arrive after mount', async () => {
+      const { wrapper } = getWrapper({ initialQuery: '1', props: { items: [] } })
+      expect((wrapper.vm as any).selectedItems).toEqual([])
+      await wrapper.setProps({ items: filterItems })
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+    })
   })
 
   describe('label prop', () => {

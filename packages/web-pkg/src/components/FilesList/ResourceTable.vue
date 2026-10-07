@@ -122,7 +122,10 @@
           />
         </oc-button>
       </div>
-      <slot name="additionalResourceContent" :resource="item" />
+      <!-- aligned with the name, next to the icon -->
+      <div v-if="$slots.additionalResourceContent" :class="{ 'pl-8': !$slots['image'] }">
+        <slot name="additionalResourceContent" :resource="item" />
+      </div>
     </template>
     <template #syncEnabled="{ item }">
       <slot name="syncEnabled" :resource="item" />
