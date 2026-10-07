@@ -1,5 +1,5 @@
 import App from '../../src/App.vue'
-import { nextTick, ref } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { flushPromises, VueWrapper } from '@vue/test-utils'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
@@ -242,6 +242,60 @@ describe('Preview app', () => {
     })
   })
 
+  describe('Swipe', () => {
+    const swipe = async (element: Element, fromX: number, toX: number) => {
+      const touchAt = (x: number) => ({ clientX: x, clientY: 300 }) as Touch
+      element.dispatchEvent(
+        new TouchEvent('touchstart', { bubbles: true, touches: [touchAt(fromX)] })
+      )
+      element.dispatchEvent(new TouchEvent('touchmove', { bubbles: true, touches: [touchAt(toX)] }))
+      element.dispatchEvent(new TouchEvent('touchend', { bubbles: true, touches: [] }))
+      await nextTick()
+    }
+    const getStage = async ({ isZoomed = false } = {}) => {
+      const MediaImage = defineComponent({
+        setup(_, { expose }) {
+          expose({ isZoomed: () => isZoomed })
+          return () => h('div')
+        }
+      })
+      const { wrapper } = createShallowMountWrapper({ stubs: { MediaImage } })
+      await wrapper.setProps({ isFolderLoading: false })
+      await flushPromises()
+      return { wrapper, stage: wrapper.find('.stage_media').element }
+    }
+
+    it('goes to the next file on a swipe to the left and back on a swipe to the right', async () => {
+      const { wrapper, stage } = await getStage()
+      await swipe(stage, 300, 100)
+      expect((wrapper.vm as any).activeIndex).toBe(1)
+      await swipe(stage, 100, 300)
+      expect((wrapper.vm as any).activeIndex).toBe(0)
+    })
+
+    it('ignores swipes on a zoomed image, it is panned instead', async () => {
+      const { wrapper, stage } = await getStage({ isZoomed: true })
+      await swipe(stage, 300, 100)
+      expect((wrapper.vm as any).activeIndex).toBe(0)
+    })
+
+    it('ignores swipes shorter than the threshold', async () => {
+      const { wrapper, stage } = await getStage()
+      await swipe(stage, 300, 270)
+      expect((wrapper.vm as any).activeIndex).toBe(0)
+    })
+
+    it.each(['<audio></audio>', '<video controls></video>'])(
+      'ignores swipes that start on the native media controls of %s',
+      async (html) => {
+        const { wrapper, stage } = await getStage()
+        stage.insertAdjacentHTML('beforeend', html)
+        await swipe(stage.lastElementChild, 300, 100)
+        expect((wrapper.vm as any).activeIndex).toBe(0)
+      }
+    )
+  })
+
   describe('Generated "mediaFiles"', () => {
     it('should hide hidden shares if the share visibility query is not set to "hidden"', () => {
       const { wrapper } = createShallowMountWrapper()
@@ -262,9 +316,11 @@ const requestedNames = (mocks: ReturnType<typeof defaultComponentMocks>) =>
   mocks.$previewService.loadPreview.mock.calls.map(([{ resource }]) => resource.name)
 
 function createShallowMountWrapper({
-  currentFileContext
+  currentFileContext,
+  stubs = {}
 }: {
   currentFileContext?: Partial<FileContext>
+  stubs?: Record<string, unknown>
 } = {}) {
   const mocks = defaultComponentMocks()
   // blob urls mirror what the preview service returns for private spaces and keep the
@@ -291,7 +347,8 @@ function createShallowMountWrapper({
     global: {
       plugins: [...defaultPlugins()],
       mocks,
-      provide: mocks
+      provide: mocks,
+      stubs
     }
   })
   wrappers.push(wrapper)

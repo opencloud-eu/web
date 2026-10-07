@@ -49,13 +49,14 @@
             v-if="!!errorMessage"
             name="error-warning"
             size-class="size-4"
-            class="mr-1"
+            class="mr-1 shrink-0"
             fill-type="line"
             aria-hidden="true"
           />
 
           <span
             :id="messageId"
+            class="min-w-0 wrap-anywhere"
             :class="{
               'oc-file-input-description text-role-on-surface-variant': !!descriptionMessage,
               'oc-file-input-danger text-role-error focus:text-role-error': !!errorMessage

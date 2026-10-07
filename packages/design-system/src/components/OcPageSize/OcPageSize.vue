@@ -17,6 +17,7 @@
       :options="options"
       :clearable="false"
       :searchable="false"
+      :position-fixed="true"
       @update:model-value="emitChange"
     />
   </div>

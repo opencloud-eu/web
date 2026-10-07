@@ -1,5 +1,5 @@
 <template>
-  <media-image :file="file" :current-image-rotation="currentImageRotation">
+  <media-image ref="image" :file="file" :current-image-rotation="currentImageRotation">
     <template #overlay>
       <video
         v-if="isPlaying"
@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue'
+import { onMounted, ref, unref, useTemplateRef } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { useGetMatchingSpace, useMotionPhotoPlayback } from '@opencloud-eu/web-pkg'
 import { MediaFile } from '../../helpers/types'
@@ -39,6 +39,7 @@ const { file, currentImageRotation } = defineProps<{
 }>()
 
 const { $gettext } = useGettext()
+const image = useTemplateRef<{ isZoomed: () => boolean }>('image')
 const { getMatchingSpace } = useGetMatchingSpace()
 
 const { isPlaying, isLoading, videoUrl, play, stop, seekToStill } = useMotionPhotoPlayback(
@@ -70,5 +71,9 @@ onMounted(() => {
   play()
 })
 
-defineExpose({ isPlaying, toggle: togglePlayback })
+defineExpose({
+  isPlaying,
+  toggle: togglePlayback,
+  isZoomed: () => !!unref(image)?.isZoomed()
+})
 </script>

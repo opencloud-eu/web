@@ -14,8 +14,9 @@
       id="web-content-main"
       class="flex flex-col items-start justify-start grow shrink basis-auto px-2 pb-2 overflow-y-hidden"
     >
+      <!-- relative for the floating action button, so it stays inside the app content, e.g. above the embed actions -->
       <div
-        class="app-container flex bg-role-surface-container rounded-xl size-full overflow-hidden"
+        class="app-container relative flex bg-role-surface-container rounded-xl size-full overflow-hidden"
       >
         <app-loading-spinner v-if="isLoading" />
         <template v-else>

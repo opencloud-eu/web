@@ -4,8 +4,7 @@
       v-oc-tooltip="floatingActionButton.tooltip?.()"
       :button-id="getButtonId(floatingActionButton.id)"
       color-role="primary"
-      class="oc-app-floating-action-button"
-      :class="{ 'bottom-[70px]': isEmbedModeEnabled }"
+      class="oc-app-floating-action-button !absolute"
       mode="action"
       :handler="floatingActionButton.handler"
     />
@@ -23,7 +22,6 @@ import { computed, unref } from 'vue'
 import {
   FloatingActionButtonExtension,
   useActiveApp,
-  useEmbedMode,
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
@@ -31,7 +29,6 @@ import { useIsMobile } from '@opencloud-eu/design-system/composables'
 const { requestExtensions } = useExtensionRegistry()
 const { isTablet } = useIsMobile()
 const activeApp = useActiveApp()
-const { isEnabled: isEmbedModeEnabled } = useEmbedMode()
 
 const floatingActionButton = computed(() => {
   return requestExtensions<FloatingActionButtonExtension>({
