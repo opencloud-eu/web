@@ -53,7 +53,6 @@ export function useFileActionsSave({
     icon: 'save-2',
     label: () => $gettext('Save as'),
     handler: saveAsHandler,
-    // visitors of a read-only public link can't write anywhere, so there is no place for a copy
     isVisible: ({ space }) =>
       unref(isEditor) && !(isPublicSpaceResource(space) && unref(isReadOnly)),
     class: 'oc-files-actions-save-as-trigger'
