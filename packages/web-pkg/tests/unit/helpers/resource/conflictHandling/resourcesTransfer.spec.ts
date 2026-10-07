@@ -77,6 +77,24 @@ describe('resourcesTransfer', () => {
     expect(result.length).toBe(0)
   })
 
+  it.each([
+    { targetPath: '/a/b', expected: true },
+    { targetPath: '/a/b/c', expected: true },
+    { targetPath: '/ab', expected: false }
+  ])('detects recursion for target "$targetPath"', ({ targetPath, expected }) => {
+    const resourcesTransfer = new ResourceTransfer(
+      sourceSpace,
+      [resourcesToMove[0]],
+      targetSpace,
+      mock<Resource>({ path: targetPath }),
+      computed(() => mock<Resource>()),
+      clientServiceMock,
+      vi.fn(),
+      vi.fn()
+    )
+    expect(resourcesTransfer.hasRecursion()).toBe(expected)
+  })
+
   describe('copyMoveResource without conflicts', () => {
     it.each([TransferType.COPY, TransferType.MOVE])(
       'should copy / move files without renaming them if no conflicts exist',
