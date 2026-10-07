@@ -1,5 +1,5 @@
 <template>
-  <div id="account-information">
+  <div v-if="user" id="account-information">
     <account-heading
       :title="$gettext('Profile')"
       :subtitle="$gettext('Your picture and account details.')"
