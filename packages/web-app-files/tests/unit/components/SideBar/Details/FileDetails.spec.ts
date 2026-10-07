@@ -8,7 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { SpaceResource } from '@opencloud-eu/web-client'
-import { AncestorMetaData } from '@opencloud-eu/web-pkg/'
+import { AncestorMetaData, ImageDimension, ProcessorType } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 const getResourceMock = ({
@@ -71,6 +71,21 @@ describe('Details SideBar Panel', () => {
       const resource = getResourceMock()
       const { wrapper } = createWrapper({ resource })
       expect(wrapper.find(selectors.previewLoading).exists()).toBeTruthy()
+    })
+    it('requests the whole image instead of a cropped thumbnail', async () => {
+      const resource = getResourceMock()
+      const { mocks, wrapper } = createWrapper({ resource })
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledWith(
+        expect.objectContaining({
+          dimensions: ImageDimension.Medium,
+          processor: ProcessorType.enum.fit
+        }),
+        expect.anything(),
+        expect.anything(),
+        expect.anything()
+      )
     })
   })
   describe('status indicators', () => {
@@ -214,6 +229,7 @@ function createWrapper({
   })
   const capabilities = { files: { tags: tagsEnabled } }
   return {
+    mocks,
     wrapper: mount(FileDetails, {
       global: {
         stubs: { 'router-link': true, 'resource-icon': true, CustomComponentTarget: true },
