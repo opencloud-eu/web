@@ -61,6 +61,31 @@ describe('OcIcon', () => {
       expect(inlineSvg.attributes('style')).toContain('fill: blue')
     })
   })
+  describe('dark variant', () => {
+    it('renders the dark variant of an icon that has one when the dark state is active', () => {
+      const { wrapper } = getWrapper({ icon: 'resource-type-pdf' }, { isDark: ref(true) })
+      const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
+      expect(inlineSvg.attributes('src')).toEqual('icons/resource-type-pdf-dark-fill.svg')
+    })
+    it('renders the regular icon when the dark state is not active', () => {
+      const { wrapper } = getWrapper({ icon: 'resource-type-pdf' })
+      const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
+      expect(inlineSvg.attributes('src')).toEqual('icons/resource-type-pdf-fill.svg')
+    })
+    it('renders the regular icon in dark state for an icon without dark variant', () => {
+      const { wrapper } = getWrapper({ icon: 'settings' }, { isDark: ref(true) })
+      const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
+      expect(inlineSvg.attributes('src')).toEqual('icons/settings-fill.svg')
+    })
+    it('renders the regular icon in dark state for another fill type than fill', () => {
+      const { wrapper } = getWrapper(
+        { icon: 'resource-type-pdf', fillType: 'line' },
+        { isDark: ref(true) }
+      )
+      const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
+      expect(inlineSvg.attributes('src')).toEqual('icons/resource-type-pdf-line.svg')
+    })
+  })
   describe('image icon', () => {
     it('renders an image instead of an inline svg', () => {
       const { wrapper } = getWrapper({ icon: { src: 'https://example.org/logo.png' } })

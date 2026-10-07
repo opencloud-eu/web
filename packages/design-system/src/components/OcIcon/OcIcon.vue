@@ -43,6 +43,7 @@ import {
   FillType,
   Icon,
   SizeType,
+  hasDarkIconVariant,
   iconIsDarkInjectionKey,
   isImageIcon,
   uniqueId,
@@ -159,6 +160,10 @@ const nameWithFillType = computed(() => {
   const prefix = getIconUrlPrefix()
   const { name: iconName, fillType: iconFillType } = unref(namedIcon)
   const lowerFillType = iconFillType.toLowerCase()
+
+  if (lowerFillType === 'fill' && toValue(isDark) && hasDarkIconVariant(iconName)) {
+    return addVersionToAssetUrl(`${prefix}icons/${iconName}-dark-fill.svg`)
+  }
 
   const filename = lowerFillType === 'none' ? `${iconName}.svg` : `${iconName}-${lowerFillType}.svg`
 

@@ -39,3 +39,26 @@ export function isImageIcon(icon: Icon | undefined): icon is ImageIcon {
 }
 
 export const iconIsDarkInjectionKey = 'oc-icon-is-dark'
+
+const iconsWithDarkVariant = new Set([
+  'resource-type-book',
+  'resource-type-code',
+  'resource-type-csv',
+  'resource-type-document',
+  'resource-type-file',
+  'resource-type-file-upload',
+  'resource-type-folder-upload',
+  'resource-type-html',
+  'resource-type-jupyter',
+  'resource-type-markdown',
+  'resource-type-pdf',
+  'resource-type-presentation',
+  'resource-type-spreadsheet',
+  'resource-type-sticky-note',
+  'resource-type-svg',
+  'resource-type-text'
+])
+
+export function hasDarkIconVariant(name: string) {
+  return iconsWithDarkVariant.has(name)
+}

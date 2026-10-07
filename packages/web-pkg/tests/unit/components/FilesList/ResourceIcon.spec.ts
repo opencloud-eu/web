@@ -9,22 +9,16 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 
 const resourceIconMapping: ResourceIconMapping = {
   extension: {
-    'not-a-real-extension': {
-      name: 'resource-type-madeup-extension'
-    }
+    'not-a-real-extension': 'resource-type-madeup-extension'
   },
   mimeType: {
-    'not-a-real-mimetype': {
-      name: 'resource-type-file'
-    },
+    'not-a-real-mimetype': 'resource-type-file',
     'image-icon-mimetype': {
       src: 'https://example.org/logo.png'
     }
   },
   folderExtension: {
-    vault: {
-      name: 'resource-type-vault'
-    }
+    vault: 'resource-type-vault'
   }
 }
 
@@ -59,7 +53,7 @@ describe('OcResourceIcon', () => {
       resource: { type: 'folder', isFolder: true, extension: 'txt' } as Partial<Resource>,
       size: 'medium'
     })
-    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-folder')
+    expect(wrapper.find('oc-icon-stub').attributes('icon')).toBe('resource-type-folder')
   })
 
   it('renders the folder icon for a folder whose extension an app claims for files', () => {
@@ -71,7 +65,7 @@ describe('OcResourceIcon', () => {
       } as Partial<Resource>,
       size: 'medium'
     })
-    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-folder')
+    expect(wrapper.find('oc-icon-stub').attributes('icon')).toBe('resource-type-folder')
   })
 
   it('renders the app icon for a folder whose extension an app claims for folders', () => {
@@ -79,7 +73,7 @@ describe('OcResourceIcon', () => {
       resource: { type: 'folder', isFolder: true, extension: 'vault' } as Partial<Resource>,
       size: 'medium'
     })
-    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-vault')
+    expect(wrapper.find('oc-icon-stub').attributes('icon')).toBe('resource-type-vault')
   })
 
   it('renders the text icon for a file with a text extension', () => {
@@ -87,7 +81,7 @@ describe('OcResourceIcon', () => {
       resource: { type: 'file', extension: 'txt' } as Partial<Resource>,
       size: 'medium'
     })
-    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-text')
+    expect(wrapper.find('oc-icon-stub').attributes('icon')).toBe('resource-type-text')
   })
 
   it('passes the image icon of a file type an app claims on to the icon', () => {
@@ -104,7 +98,7 @@ describe('OcResourceIcon', () => {
       resource: { type: 'space', driveType: 'project', isInVault: true } as Partial<Resource>,
       size: 'medium'
     })
-    expect(wrapper.find('oc-icon-stub').attributes('name')).toBe('resource-type-space-vault')
+    expect(wrapper.find('oc-icon-stub').attributes('icon')).toBe('resource-type-space-vault')
   })
 })
 
