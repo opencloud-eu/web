@@ -202,8 +202,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       ])
 
       const previewService = app.config.globalProperties.$previewService
-      const passwordPolicyService = app.config.globalProperties.passwordPolicyService
-      passwordPolicyService.initialize(capabilityStore)
 
       // Register SSE event listeners
       if (capabilityStore.supportSSE) {
