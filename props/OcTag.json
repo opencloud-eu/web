@@ -18,7 +18,7 @@
     "required": false,
     "description": "The size of the tag.",
     "default": "medium",
-    "type": "'small' | 'medium' | 'large'"
+    "type": "'xsmall' | 'small' | 'medium' | 'large'"
   },
   {
     "name": "rounded",
