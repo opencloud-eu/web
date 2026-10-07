@@ -1,17 +1,18 @@
 <template>
   <oc-spinner
     v-if="imagesLoading.includes(space.id)"
+    class="shrink-0"
     :aria-label="$gettext('Space image is loading')"
   />
   <img
     v-else-if="space.thumbnail"
-    class="rounded-xs object-cover size-6"
+    class="rounded-xs object-cover size-6 shrink-0"
     :class="{ 'opacity-80 grayscale': space.disabled }"
     :src="space.thumbnail"
     alt=""
     decoding="async"
   />
-  <resource-icon v-else class="rounded-xs" :resource="space" size-class="size-6" />
+  <resource-icon v-else class="rounded-xs shrink-0" :resource="space" size-class="size-6" />
 </template>
 
 <script setup lang="ts">

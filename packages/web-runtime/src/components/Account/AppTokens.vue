@@ -198,14 +198,18 @@ const tableFields = computed<FieldType[]>(() => {
       type: 'slot',
       wrap: 'truncate',
       title: $gettext('Created at'),
-      sortable: true
+      sortable: true,
+      thClass: 'hidden md:table-cell',
+      tdClass: 'hidden md:table-cell'
     },
     {
       name: 'expirationDate',
       type: 'slot',
       wrap: 'truncate',
       title: $gettext('Expires at'),
-      sortable: true
+      sortable: true,
+      thClass: 'hidden md:table-cell',
+      tdClass: 'hidden md:table-cell'
     },
     {
       name: 'actions',

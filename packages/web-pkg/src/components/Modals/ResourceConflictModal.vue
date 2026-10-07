@@ -1,5 +1,5 @@
 <template>
-  <span class="inline-block mb-4" v-text="message" />
+  <span class="inline-block mb-4 wrap-anywhere" v-text="message" />
   <div class="my-4">
     <oc-checkbox
       v-if="conflictCount > 1"

@@ -131,7 +131,7 @@
               <resource-list-item
                 v-if="displayFileAsResource(item)"
                 :key="item.path"
-                class="ml-2"
+                class="ml-2 min-w-0"
                 :resource="item as Resource"
                 :is-path-displayed="true"
                 :is-resource-clickable="isResourceClickable(item)"

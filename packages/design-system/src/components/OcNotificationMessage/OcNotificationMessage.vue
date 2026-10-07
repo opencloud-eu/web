@@ -7,7 +7,7 @@
       <div class="flex items-center justify-between w-full">
         <div class="flex items-center">
           <oc-icon v-if="showInfoIcon" name="information" fill-type="line" class="mr-2" />
-          <div class="oc-notification-message-title text-lg">
+          <div class="oc-notification-message-title text-lg wrap-anywhere">
             {{ title }}
           </div>
         </div>

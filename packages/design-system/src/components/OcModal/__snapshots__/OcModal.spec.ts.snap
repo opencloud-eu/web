@@ -47,7 +47,7 @@ exports[`OcModal > displays loading state 1`] = `
           </button></div>
       </div> <!-- focusable so that the keyboard can scroll the content -->
       <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
-        <p class="oc-modal-body-message mt-0 mb-0">Example message</p>
+        <p class="oc-modal-body-message mt-0 wrap-anywhere mb-0">Example message</p>
         <!--v-if-->
         <!--v-if-->
       </div>
@@ -72,7 +72,7 @@ exports[`OcModal > matches snapshot 1`] = `
         </div>
       </div> <!-- focusable so that the keyboard can scroll the content -->
       <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
-        <p class="oc-modal-body-message mt-0 mb-0">Example message</p>
+        <p class="oc-modal-body-message mt-0 wrap-anywhere mb-0">Example message</p>
         <!--v-if-->
         <!--v-if-->
       </div>
@@ -99,7 +99,7 @@ exports[`OcModal > overrides props message with slot 1`] = `
         </div>
       </div> <!-- focusable so that the keyboard can scroll the content -->
       <div class="oc-modal-body min-h-0 flex-auto overflow-auto px-4 pt-4 focus:outline-0" tabindex="0">
-        <div class="oc-modal-body-message mt-2 mb-4">
+        <div class="oc-modal-body-message mt-2 mb-4 wrap-anywhere">
           <p>Slot message</p>
         </div>
       </div>
