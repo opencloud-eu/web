@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): stop raw buttons from filling stroke-only shapes in resource icons [[#3575](https://github.com/opencloud-eu/web/pull/3575)]
 - fix: mobile layout fixes for long names, search fields and space icons [[#3573](https://github.com/opencloud-eu/web/pull/3573)]
 - fix: improve mobile usability of tooltips, switches, editor menus and admin tables [[#3550](https://github.com/opencloud-eu/web/pull/3550)]
 - fix(admin-settings): respect the app icon fill type in the apps list [[#3567](https://github.com/opencloud-eu/web/pull/3567)]
