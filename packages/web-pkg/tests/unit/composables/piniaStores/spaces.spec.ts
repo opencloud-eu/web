@@ -2,12 +2,19 @@ import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import {
   useSpacesStore,
   sortSpaceMembers,
-  useSharesStore
+  useSharesStore,
+  useUserStore
 } from '../../../../src/composables/piniaStores'
 import { createPinia, setActivePinia } from 'pinia'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { CollaboratorShare, GraphSharePermission, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  CollaboratorShare,
+  GraphSharePermission,
+  ShareRole,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { Graph } from '@opencloud-eu/web-client/graph'
+import { User } from '@opencloud-eu/web-client/graph/generated'
 
 describe('spaces', () => {
   beforeEach(() => {
@@ -260,6 +267,45 @@ describe('spaces', () => {
         'libre.graph/driveItem/permissions/delete'
       ])
       expect(store.allProjectSpaces[1].graphPermissions).toEqual([])
+    })
+    it('derives the permissions of disabled spaces from the role of the current user', async () => {
+      const store = useSpacesStore()
+      useUserStore().setUser({ id: 'user', memberOf: [{ id: 'group' }] } as User)
+      useSharesStore().graphRoles = {
+        manager: {
+          id: 'manager',
+          rolePermissions: [
+            { condition: 'exists @Resource.Root', allowedResourceActions: ['manage'] }
+          ]
+        } as ShareRole
+      }
+      store.addSpaces([projectSpace({ id: '1', disabled: true })])
+      const graphClient = mockDeep<Graph>()
+      graphClient.drives.listMyDrives.mockResolvedValue([
+        {
+          root: { permissions: [{ grantedToV2: { group: { id: 'group' } }, roles: ['manager'] }] }
+        }
+      ] as SpaceResource[])
+
+      await store.loadGraphPermissions({ ids: ['1'], graphClient })
+
+      expect(graphClient.drives.listMyDrives).toHaveBeenCalledWith({
+        filter: "id eq '1'",
+        expand: 'root($expand=permissions)'
+      })
+      expect(graphClient.permissions.listPermissions).not.toHaveBeenCalled()
+      expect(store.spaces[0].graphPermissions).toEqual(['manage'])
+    })
+    it('loads no permissions for disabled spaces the user has no role in', async () => {
+      const store = useSpacesStore()
+      useUserStore().setUser({ id: 'user' } as User)
+      store.addSpaces([projectSpace({ id: '1', disabled: true })])
+      const graphClient = mockDeep<Graph>()
+      graphClient.drives.listMyDrives.mockResolvedValue([{ root: {} }] as SpaceResource[])
+
+      await store.loadGraphPermissions({ ids: ['1'], graphClient })
+
+      expect(store.spaces[0].graphPermissions).toEqual([])
     })
     it('can load permissions again after a failed request', async () => {
       const store = useSpacesStore()

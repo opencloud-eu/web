@@ -37,12 +37,6 @@ describe('buildSpace', () => {
         userCan: false,
         permissions: [GraphSharePermission.deletePermissions],
         disabled: true,
-        expectedResult: true
-      },
-      {
-        userCan: false,
-        permissions: [],
-        disabled: true,
         expectedResult: false
       },
       {
