@@ -208,12 +208,16 @@ const fields = computed(() => [
   {
     name: 'minOpenCloud',
     title: $gettext('Min. OpenCloud'),
-    type: 'slot'
+    type: 'slot',
+    thClass: 'hidden md:table-cell',
+    tdClass: 'hidden md:table-cell'
   },
   {
     name: 'maxOpenCloud',
     title: $gettext('Max. OpenCloud'),
-    type: 'slot'
+    type: 'slot',
+    thClass: 'hidden md:table-cell',
+    tdClass: 'hidden md:table-cell'
   },
   {
     name: 'status',
