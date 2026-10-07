@@ -64,6 +64,32 @@ describe('AppTokens component', () => {
         expect(table.props('sortDir')).toBe(SortDir.Asc)
         expect(table.props('data').map(({ token }: AppToken) => token)).toEqual(['2', '3', '1'])
       })
+      it('sorts active tokens before expired ones by status', async () => {
+        const { wrapper } = getWrapper({
+          appTokens: [
+            {
+              token: 'expired',
+              label: 'a',
+              created_date: '2021-01-01',
+              expiration_date: '2021-01-02'
+            },
+            {
+              token: 'active',
+              label: 'b',
+              created_date: '2021-01-01',
+              expiration_date: '2999-01-01'
+            }
+          ],
+          query: { 'sort-by': 'status', 'sort-dir': SortDir.Asc }
+        })
+        await flushPromises()
+        const table = wrapper.findComponent<typeof OcTable>(selectors.appTokensTable)
+
+        expect(table.props('data').map(({ token }: AppToken) => token)).toEqual([
+          'active',
+          'expired'
+        ])
+      })
       it('stores the sort parameters in the route query on sort', async () => {
         const { wrapper, mocks } = getWrapper({ appTokens })
         await flushPromises()
