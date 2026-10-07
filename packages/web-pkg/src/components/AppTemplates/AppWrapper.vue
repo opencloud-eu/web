@@ -240,7 +240,8 @@ const {
   revokeUrl,
   activeFiles,
   loadFolderForFileContext,
-  isFolderLoading
+  isFolderLoading,
+  folderLoadingError
 } = useAppDefaults({
   applicationId
 })
@@ -917,6 +918,7 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   currentFileContext: unref(currentFileContext),
   currentContent: unref(currentContent) as string,
   isFolderLoading: unref(isFolderLoading),
+  folderLoadingError: unref(folderLoadingError),
 
   // Non-null by the time a collaborative app renders: `isLoading` covers the
   // session being synced and hydrated. Always null for other apps.

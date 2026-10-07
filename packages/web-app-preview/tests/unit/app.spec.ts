@@ -3,7 +3,7 @@ import { defineComponent, h, nextTick, ref } from 'vue'
 import { flushPromises, VueWrapper } from '@vue/test-utils'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import { createFileRouteOptions, FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
+import { HttpError, Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 
 vi.mock('@panzoom/panzoom')
@@ -111,6 +111,29 @@ describe('Preview app', () => {
     while (wrappers.length) {
       wrappers.pop().unmount()
     }
+  })
+
+  describe('Loading error', () => {
+    it('shows the not found message when the file does not exist', async () => {
+      const { wrapper } = createShallowMountWrapper()
+      await wrapper.setProps({
+        isFolderLoading: false,
+        folderLoadingError: new HttpError('Resource not found', undefined, 404)
+      })
+
+      expect(wrapper.find('#preview-not-found-message').exists()).toBe(true)
+      expect(wrapper.find('.stage').exists()).toBe(false)
+    })
+    it('shows other errors with their message', async () => {
+      const { wrapper } = createShallowMountWrapper()
+      await wrapper.setProps({
+        isFolderLoading: false,
+        folderLoadingError: new HttpError('Something went wrong', undefined, 500)
+      })
+
+      expect(wrapper.find('#preview-not-found-message').exists()).toBe(false)
+      expect(wrapper.find('#preview-loading-error').text()).toBe('Something went wrong')
+    })
   })
 
   describe('Preloading', () => {

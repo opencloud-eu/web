@@ -1,7 +1,7 @@
 import { mock } from 'vitest-mock-extended'
 import { ref } from 'vue'
 import { FileContext, useAppDefaults, AppConfigObject } from '@opencloud-eu/web-pkg'
-import { FileResource, Resource } from '@opencloud-eu/web-client'
+import { FileResource, HttpError, Resource } from '@opencloud-eu/web-client'
 import { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 
 export const useAppDefaultsMock = (
@@ -19,6 +19,7 @@ export const useAppDefaultsMock = (
     getFileContents: vi.fn().mockImplementation(() => mock<GetFileContentsResponse>({ body: '' })),
     putFileContents: vi.fn().mockImplementation(() => mock<FileResource>()),
     isFolderLoading: ref(false),
+    folderLoadingError: ref<HttpError>(),
     activeFiles: ref([]),
     loadFolderForFileContext: vi.fn(),
     makeRequest: vi.fn().mockResolvedValue({ status: 200 }),

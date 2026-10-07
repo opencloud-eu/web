@@ -1,4 +1,4 @@
-import { Resource, SpaceResource } from '@opencloud-eu/web-client'
+import { HttpError, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { AppConfigObject } from '../../apps/types'
 import { Ref } from 'vue'
 import type * as Y from 'yjs'
@@ -54,6 +54,7 @@ export interface AppWrapperSlotProps {
   isReadOnly: boolean
   activeFiles: Resource[]
   isFolderLoading: boolean
+  folderLoadingError?: HttpError
   /** Set once the Yjs session is synced and hydrated, else null. */
   ydoc: Y.Doc | null
   /** Set once the Yjs session is synced and hydrated, else null. */
@@ -99,6 +100,6 @@ export type ViewerSlotProps = Pick<AppWrapperSlotProps, 'resource' | 'url'>
 /** Apps that browse the whole folder and build their own URLs per file. */
 export type FolderViewerSlotProps = Pick<
   AppWrapperSlotProps,
-  'currentFileContext' | 'activeFiles' | 'isFolderLoading'
+  'currentFileContext' | 'activeFiles' | 'isFolderLoading' | 'folderLoadingError'
 > &
   Pick<AppWrapperSlotHandlers, 'loadFolderForFileContext' | 'getUrlForResource' | 'revokeUrl'>

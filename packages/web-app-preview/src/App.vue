@@ -4,6 +4,32 @@
       <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
     </div>
   </div>
+  <no-content-message
+    v-else-if="folderLoadingError?.statusCode === 404"
+    id="preview-not-found-message"
+    class="w-full"
+    img-src="images/illustrations/404.svg"
+  >
+    <template #message>
+      <span v-text="$gettext('Resource not found')" />
+    </template>
+    <template #callToAction>
+      <p
+        class="mt-0"
+        v-text="
+          $gettext('We went looking everywhere, but were unable to find the selected resource.')
+        "
+      />
+    </template>
+  </no-content-message>
+  <div
+    v-else-if="folderLoadingError"
+    id="preview-loading-error"
+    class="w-full flex flex-col items-center justify-center text-center"
+  >
+    <oc-icon size-class="size-22" name="error-warning" fill-type="line" />
+    <p class="text-xl" v-text="folderLoadingError.message" />
+  </div>
   <div
     v-else
     ref="preview"
@@ -119,6 +145,7 @@ import {
   Modifier,
   queryItemAsString,
   sortHelper,
+  NoContentMessage,
   useAppNavigation,
   useGetMatchingSpace,
   useKeyboardActions,
@@ -150,7 +177,8 @@ const {
   loadFolderForFileContext,
   getUrlForResource,
   revokeUrl,
-  isFolderLoading
+  isFolderLoading,
+  folderLoadingError
 } = defineProps<FolderViewerSlotProps>()
 
 const emit = defineEmits<{
@@ -479,7 +507,7 @@ watch(
   async (loading) => {
     if (!loading) {
       await nextTick()
-      unref(preview).focus()
+      unref(preview)?.focus()
     }
   },
   { immediate: true }
