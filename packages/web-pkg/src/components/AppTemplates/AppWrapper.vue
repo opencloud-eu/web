@@ -171,7 +171,7 @@ const url = ref('')
 const loading = ref(!unref(noResourceLoading))
 const loadingError: Ref<Error> = ref()
 // apps that load their files themselves (e.g. the preview) report errors via the folder loading
-const error = computed(() => unref(loadingError) ?? unref(folderLoadingError))
+const error = computed(() => unref(loadingError) || unref(folderLoadingError))
 const isNotFoundError = computed(() => (unref(error) as HttpError)?.statusCode === 404)
 const isReadOnly = ref(false)
 const serverContent = ref<unknown>()
