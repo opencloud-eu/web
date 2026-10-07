@@ -12,6 +12,7 @@ import {
   SpaceResource
 } from '../helpers'
 import { urlJoin } from '../utils'
+import { DavHttpError } from '../errors'
 import { DAV, DAVRequestOptions } from './client'
 import { GetPathForFileIdFactory } from './getPathForFileId'
 import { WebDavOptions } from './types'
@@ -115,6 +116,10 @@ export const ListFilesFactory = (
 
       const listFilesCorrectedPath = async () => {
         const correctPath = await pathForFileIdFactory.getPathForFileId(fileId)
+        if (!correctPath) {
+          // an empty path means the resource doesn't exist (anymore) or isn't accessible
+          throw new DavHttpError('Resource not found', undefined, undefined, 404)
+        }
         return this.listFiles(space, { path: correctPath }, { depth, davProperties, extraProps })
       }
 

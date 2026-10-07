@@ -2,7 +2,7 @@ import App from '../../src/App.vue'
 import { defineComponent, h, nextTick, ref } from 'vue'
 import { flushPromises, VueWrapper } from '@vue/test-utils'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
-import { FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
+import { createFileRouteOptions, FileContext, queryItemAsString } from '@opencloud-eu/web-pkg'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 
@@ -294,6 +294,25 @@ describe('Preview app', () => {
         expect((wrapper.vm as any).activeIndex).toBe(0)
       }
     )
+  })
+
+  describe('Deleting the active file', () => {
+    it('points the URL to the file that is shown next', async () => {
+      const { wrapper, mocks } = createShallowMountWrapper()
+      await flushPromises()
+      const [[onDeleteResourceCallback]] = wrapper.emitted('register:onDeleteResourceCallback') as [
+        [() => Promise<void>]
+      ]
+
+      await wrapper.setProps({ activeFiles: activeFiles.filter(({ id }) => id !== '1') })
+      await onDeleteResourceCallback()
+
+      expect(vi.mocked(createFileRouteOptions)).toHaveBeenLastCalledWith(
+        undefined,
+        expect.objectContaining({ name: 'cat_murr_murr.gif' })
+      )
+      expect(mocks.$router.replace).toHaveBeenCalled()
+    })
   })
 
   describe('Generated "mediaFiles"', () => {

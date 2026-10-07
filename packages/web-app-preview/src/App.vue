@@ -373,6 +373,8 @@ const onDeleteResourceCallback = async () => {
   if (!unref(mediaFiles).length) {
     return closeApp()
   }
+  // point the URL to the file that is shown now instead of the deleted one
+  updateLocalHistory()
 }
 
 const updateLocalHistory = () => {

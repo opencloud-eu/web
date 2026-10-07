@@ -492,6 +492,9 @@ watch(
       loadingError.value = undefined
 
       await loadResourceTask.perform()
+      if (unref(loadingError)) {
+        return
+      }
 
       if (unref(fileSizeLimit) && toNumber(unref(resource).size) > unref(fileSizeLimit)) {
         dispatchModal({
