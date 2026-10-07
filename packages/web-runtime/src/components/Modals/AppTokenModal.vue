@@ -12,6 +12,7 @@
       class="mt-2"
       type="date"
       :min-date="minDate"
+      :max-date="DateTime.now().plus({ years: 100 })"
       required-mark
       @date-changed="onDateChanged"
     />

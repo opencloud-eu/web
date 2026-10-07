@@ -5,6 +5,7 @@
     :label="label"
     type="date"
     :min="minDate?.toISODate()"
+    :max="maxDate?.toISODate()"
     :fix-message-line="true"
     :error-message="errorMessage"
     :clear-button-enabled="isClearable"
@@ -38,6 +39,10 @@ export interface Props {
    */
   minDate?: DateTime
   /**
+   * @docs Maximum date that can be selected. Dates after this date will be disabled.
+   */
+  maxDate?: DateTime
+  /**
    * @docs Dark theme for the date picker.
    * Dark theme is only available for Chromium-like browsers and Safari, Firefox is not supported.
    */
@@ -61,6 +66,7 @@ const {
   currentDate,
   isClearable = true,
   minDate,
+  maxDate,
   isDark = false,
   requiredMark = false
 } = defineProps<Props>()
@@ -82,10 +88,22 @@ const isMinDateUndercut = computed(() => {
   return unref(date) < minDate
 })
 
+const isMaxDateExceeded = computed(() => {
+  if (!maxDate || !unref(date)) {
+    return false
+  }
+  return unref(date) > maxDate.endOf('day')
+})
+
 const errorMessage = computed(() => {
   if (unref(isMinDateUndercut)) {
     return $gettext('The date must be after %{date}', {
       date: minDate.minus({ day: 1 }).setLocale(current).toLocaleString(DateTime.DATE_SHORT)
+    })
+  }
+  if (unref(isMaxDateExceeded)) {
+    return $gettext('The date must be before %{date}', {
+      date: maxDate.plus({ day: 1 }).setLocale(current).toLocaleString(DateTime.DATE_SHORT)
     })
   }
   return ''
@@ -107,7 +125,10 @@ watch(
 watch(
   date,
   () => {
-    emit('dateChanged', { date: unref(date), error: unref(isMinDateUndercut) })
+    emit('dateChanged', {
+      date: unref(date),
+      error: unref(isMinDateUndercut) || unref(isMaxDateExceeded)
+    })
   },
   { deep: true }
 )
