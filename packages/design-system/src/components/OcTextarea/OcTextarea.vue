@@ -15,6 +15,7 @@
     <div v-if="showMessageLine" class="oc-textarea-message flex items-center mt-1 min-h-4.5">
       <span
         :id="messageId"
+        class="min-w-0 wrap-anywhere"
         :class="{
           'oc-textarea-description text-role-on-surface-variant': !!descriptionMessage,
           'oc-textarea-danger text-role-error focus:text-role-error border-role-error':

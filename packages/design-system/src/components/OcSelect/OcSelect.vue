@@ -93,7 +93,7 @@
 
     <div
       v-if="fixMessageLine || errorMessage || descriptionMessage"
-      class="oc-text-input-message text-sm mt-1 min-h-4.5"
+      class="oc-text-input-message text-sm mt-1 min-h-4.5 wrap-anywhere"
       :class="{
         'oc-text-input-description': !!descriptionMessage,
         'oc-text-input-danger': !!errorMessage
