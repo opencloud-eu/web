@@ -132,13 +132,13 @@ describe('initialize applications', () => {
       })
       expect(mapping.extension.drawio).toEqual({ name: 'pencil', color: 'green' })
     })
-    it('prefers the deprecated color of a file extension over the color of the app icon', async () => {
+    it('does not apply the deprecated color of a file extension to the icon of the app', async () => {
       const mapping = await getMapping({
         id: 'draw',
         icon: { name: 'brush', color: 'blue' },
         extensions: [{ extension: 'drawio', iconColor: 'red' }]
       })
-      expect(mapping.extension.drawio).toEqual({ name: 'brush', color: 'red' })
+      expect(mapping.extension.drawio).toEqual({ name: 'brush', color: 'blue' })
     })
     it('maps the image icon of a file extension', async () => {
       const mapping = await getMapping({

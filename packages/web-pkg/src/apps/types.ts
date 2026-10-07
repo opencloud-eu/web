@@ -75,20 +75,15 @@ export interface ApplicationFileExtension {
    */
   icon?: Icon
   /**
-   * Defines the color of the icon in the file list.
-   * In the "New"- and "Open with..."-menu, colors are not used, so this will be ignored.
-   * Defaults to the `color` property of the application if not specified.
-   *
-   * Note that in the file list, the icon might be overridden if there is a
-   * default icon defined for the given file type.
+   * Defines the color of the `icon` of this file type. Only applies if the `icon` is
+   * specified here and is not an image icon.
    *
    * @deprecated use a named icon for the `icon` instead
    */
   iconColor?: string
   /**
-   * Defines the fill type of the icon in the "Open with..."-menu.
-   * In the file list and the "New"-menu, the fill type is always `fill`, so this will be ignored.
-   * Defaults to `line` in the "Open with..."-menu if not specified.
+   * Defines the fill type of the `icon` of this file type. Only applies if the `icon` is
+   * specified here and is not an image icon.
    *
    * @deprecated use a named icon for the `icon` instead
    */

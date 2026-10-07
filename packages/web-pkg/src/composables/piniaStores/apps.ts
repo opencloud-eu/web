@@ -11,16 +11,14 @@ import { Icon, isImageIcon, NamedIcon } from '@opencloud-eu/design-system/helper
 
 function mergeDeprecatedIconFields(
   icon: Icon,
-  { fillType, color }: Pick<NamedIcon, 'fillType' | 'color'>,
-  { fieldsTakePrecedence = false }: { fieldsTakePrecedence?: boolean } = {}
+  { fillType, color }: Pick<NamedIcon, 'fillType' | 'color'>
 ): Icon {
   if (isImageIcon(icon) || (!fillType && !color)) {
     return icon
   }
 
   const namedIcon = typeof icon === 'string' ? { name: icon } : icon
-  const fields = { ...(fillType && { fillType }), ...(color && { color }) }
-  return fieldsTakePrecedence ? { ...namedIcon, ...fields } : { ...fields, ...namedIcon }
+  return { ...(fillType && { fillType }), ...(color && { color }), ...namedIcon }
 }
 
 export const useAppsStore = defineStore('apps', () => {
@@ -63,12 +61,12 @@ export const useAppsStore = defineStore('apps', () => {
     appId: string
     data: ApplicationFileExtension
   }) => {
-    const deprecatedIconFields = { fillType: data.iconFillType, color: data.iconColor }
-    const appIcon = unref(apps)[appId]?.icon
     const icon = data.icon
-      ? mergeDeprecatedIconFields(data.icon, deprecatedIconFields)
-      : appIcon &&
-        mergeDeprecatedIconFields(appIcon, deprecatedIconFields, { fieldsTakePrecedence: true })
+      ? mergeDeprecatedIconFields(data.icon, {
+          fillType: data.iconFillType,
+          color: data.iconColor
+        })
+      : unref(apps)[appId]?.icon
 
     unref(fileExtensions).push({
       ...data,
