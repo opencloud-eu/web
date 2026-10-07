@@ -25,7 +25,7 @@
         no-hover
         @click.prevent.stop="$emit('advancedSearch', $event)"
       >
-        <oc-icon v-show="!loading" :name="icon" size-class="size-4" fill-type="line" />
+        <oc-icon v-show="!loading" :icon="icon" size-class="size-4" fill-type="line" />
         <oc-spinner
           v-show="loading"
           :size="small ? 'xsmall' : 'medium'"
@@ -63,13 +63,13 @@ import { useGettext } from 'vue3-gettext'
 import OcButton, { Props as OcButtonProps } from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcSpinner from '../OcSpinner/OcSpinner.vue'
-import { AppearanceType } from '../../helpers'
+import { AppearanceType, Icon } from '../../helpers'
 
 export interface Props {
   /**
-   * @docs The name of the icon to be displayed in the search bar. Please refer to the `OcIcon` component to see how to use icon names.
+   * @docs The icon to be displayed in the search bar.
    */
-  icon?: string
+  icon?: Icon
   /**
    * @docs The placeholder text of the search bar input.
    */

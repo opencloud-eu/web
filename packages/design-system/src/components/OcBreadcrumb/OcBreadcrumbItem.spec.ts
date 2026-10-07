@@ -46,7 +46,7 @@ describe('OcBreadcrumbItem', () => {
       item: { text: 'Vault', icon: 'resource-type-vault', iconAccessibleLabel: 'Encrypted vault' }
     })
     const icon = wrapper.findComponent({ name: 'OcIcon' })
-    expect(icon.props('name')).toBe('resource-type-vault')
+    expect(icon.props('icon')).toBe('resource-type-vault')
     expect(icon.props('accessibleLabel')).toBe('Encrypted vault')
   })
 })

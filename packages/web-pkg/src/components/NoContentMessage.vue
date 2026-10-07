@@ -11,7 +11,7 @@
     />
     <oc-icon
       v-if="icon"
-      :name="icon"
+      :icon="icon"
       type="div"
       size-class="size-22"
       :fill-type="iconFillType"
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import InlineSvg from 'vue-inline-svg'
-import { FillType, addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
+import { FillType, Icon, addVersionToAssetUrl } from '@opencloud-eu/design-system/helpers'
 
 InlineSvg.name = 'inline-svg'
 
@@ -38,7 +38,8 @@ const {
   iconFillType = 'fill',
   imgSrc = ''
 } = defineProps<{
-  icon?: string
+  icon?: Icon
+  /** @deprecated use a named icon for the `icon` instead */
   iconFillType?: FillType
   imgSrc?: string
 }>()
