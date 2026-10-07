@@ -68,7 +68,7 @@ export function useGroupActionsDelete() {
       })
     }
 
-    groupSettingsStore.removeGroups(groups)
+    groupSettingsStore.removeGroups(groups.filter((_, i) => isPromiseFulfilled(results[i])))
     groupSettingsStore.setSelectedGroups([])
 
     const pageCount = Math.ceil(groupSettingsStore.groups.length / unref(itemsPerPage))

@@ -3,6 +3,7 @@ import {
   queryItemAsString,
   useCapabilityStore,
   useMessages,
+  useUserStore,
   useModals,
   useRouteQuery,
   isPromiseFulfilled,
@@ -21,6 +22,7 @@ export function useUserActionsDelete() {
   const clientService = useClientService()
   const { dispatchModal } = useModals()
   const userSettingsStore = useUserSettingsStore()
+  const userStore = useUserStore()
 
   const currentPageQuery = useRouteQuery('page', '1')
   const currentPage = computed(() => {
@@ -70,7 +72,7 @@ export function useUserActionsDelete() {
       })
     }
 
-    userSettingsStore.removeUsers(users)
+    userSettingsStore.removeUsers(users.filter((_, i) => isPromiseFulfilled(results[i])))
     userSettingsStore.setSelectedUsers([])
 
     const pageCount = Math.ceil(userSettingsStore.users.length / unref(itemsPerPage))
@@ -113,7 +115,11 @@ export function useUserActionsDelete() {
       },
       handler,
       isVisible: ({ resources }) => {
-        return !!resources.length && !capabilityStore.graphUsersDeleteDisabled
+        return (
+          !!resources.length &&
+          !capabilityStore.graphUsersDeleteDisabled &&
+          !resources.some(({ id }) => id === userStore.user?.id)
+        )
       },
       class: 'oc-users-actions-delete-trigger'
     }
