@@ -479,7 +479,7 @@ watch(
   async (loading) => {
     if (!loading) {
       await nextTick()
-      unref(preview)?.focus()
+      unref(preview).focus()
     }
   },
   { immediate: true }
