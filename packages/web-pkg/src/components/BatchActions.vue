@@ -9,8 +9,8 @@
       }"
     >
       <action-menu-item
-        v-for="(action, index) in actions"
-        :key="`action-${index}`"
+        v-for="action in actions"
+        :key="action.name"
         :action="action"
         :action-options="actionOptions"
         appearance="raw"
