@@ -341,12 +341,16 @@ function setDropdownPosition() {
     return
   }
 
-  const { bottom, left, width } = unref(selectRef).$refs.toggle.getBoundingClientRect()
+  const { top, bottom, left, width } = unref(selectRef).$refs.toggle.getBoundingClientRect()
+  const spaceBelow = window.innerHeight - bottom - 25
+  // opens upwards if the menu doesn't fit below, e.g. for a select at the bottom of the screen
+  const openUpwards = menu.scrollHeight > spaceBelow && top > spaceBelow
   Object.assign(menu.style, {
-    top: `${bottom + 1}px`,
+    top: openUpwards ? 'auto' : `${bottom + 1}px`,
+    bottom: openUpwards ? `${window.innerHeight - top + 1}px` : 'auto',
     left: `${left}px`,
     width: `${width}px`,
-    maxHeight: `${window.innerHeight - bottom - 25}px`
+    maxHeight: `${openUpwards ? top - 25 : spaceBelow}px`
   })
 }
 
