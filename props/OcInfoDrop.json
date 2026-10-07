@@ -54,5 +54,12 @@
     "description": "CSS selector for the element to be used as toggle. By default, the preceding element is used.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "teleport",
+    "required": false,
+    "description": "Teleport the info drop to a different DOM element. This can be useful to prevent overflow issues.",
+    "default": "",
+    "type": "string"
   }
 ]

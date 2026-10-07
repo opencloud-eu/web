@@ -33,5 +33,12 @@
     "description": "Text to be displayed.",
     "default": "",
     "type": "string"
+  },
+  {
+    "name": "teleport",
+    "required": false,
+    "description": "Teleport the drop to a different DOM element. This can be useful to prevent overflow issues, e.g. inside tables.",
+    "default": "",
+    "type": "string"
   }
 ]
