@@ -76,6 +76,24 @@ describe('useAppsStore', () => {
       })
       expect(fileExtension.icon).toEqual({ name: 'brush', color: 'red' })
     })
+    it('merges the deprecated fill type of the app into its own named icon', () => {
+      const { fileExtension } = registerApp({
+        id: 'draw',
+        icon: 'brush',
+        iconFillType: 'fill',
+        extensions: [{ extension: 'drawio', icon: 'pencil' }]
+      })
+      expect(fileExtension.icon).toEqual({ name: 'pencil', fillType: 'fill' })
+    })
+    it('prefers its deprecated fill type over the deprecated fill type of the app', () => {
+      const { fileExtension } = registerApp({
+        id: 'draw',
+        icon: 'brush',
+        iconFillType: 'fill',
+        extensions: [{ extension: 'drawio', icon: 'pencil', iconFillType: 'none' }]
+      })
+      expect(fileExtension.icon).toEqual({ name: 'pencil', fillType: 'none' })
+    })
     it('falls back to the image icon of the app regardless of deprecated fields', () => {
       const { fileExtension } = registerApp({
         id: 'draw',
