@@ -2,18 +2,21 @@ import ErrorScreen from '../../../../src/components/AppTemplates/PartialViews/Er
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 
 describe('The external app error screen component', () => {
-  test('displays an icon and a paragraph', () => {
+  test('displays the no content message with the error', () => {
     const wrapper = mount(ErrorScreen, {
       props: {
         message: 'Error when loading the application'
       },
       global: {
         stubs: {
-          OcIcon: true
+          InlineSvg: true
         },
         plugins: [...defaultPlugins()]
       }
     })
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(wrapper.findComponent({ name: 'NoContentMessage' }).props('imgSrc')).toBe(
+      'images/illustrations/404.svg'
+    )
+    expect(wrapper.text()).toContain('Error when loading the application')
   })
 })

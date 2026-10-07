@@ -2,7 +2,6 @@ import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource } from '@opencloud-eu/web-client'
-import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { createMemoryHistory, createRouter, onBeforeRouteLeave } from 'vue-router'
 import {
@@ -304,15 +303,6 @@ describe('AppWrapper — loading a file that does not exist', () => {
 
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
     expect(s.getFileContents).not.toHaveBeenCalled()
-  })
-
-  it('shows the not found message when the server answers with 404', async () => {
-    const s = setup({ yjsEnabled: false })
-    await nextTick()
-    await s.rejectResource(new HttpError('Resource not found', undefined, 404))
-
-    expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
-    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
   })
 })
 

@@ -2,23 +2,6 @@
   <main :id="applicationId" class="app-wrapper h-full rounded-xl" @keydown.esc.stop="closeApp">
     <h1 class="sr-only" v-text="pageTitle" />
     <app-loading-spinner v-if="isLoading" />
-    <no-content-message
-      v-else-if="isNotFoundError"
-      id="app-wrapper-not-found-message"
-      img-src="images/illustrations/404.svg"
-    >
-      <template #message>
-        <span v-text="$gettext('Resource not found')" />
-      </template>
-      <template #callToAction>
-        <p
-          class="mt-0"
-          v-text="
-            $gettext('We went looking everywhere, but were unable to find the selected resource.')
-          "
-        />
-      </template>
-    </no-content-message>
     <error-screen v-else-if="loadingError" :message="loadingError.message" />
     <div v-else class="flex size-full">
       <slot
@@ -50,7 +33,6 @@ import { onBeforeRouteLeave, useRouter } from 'vue-router'
 
 import AppTopBar from '../AppTopBar.vue'
 import ErrorScreen from './PartialViews/ErrorScreen.vue'
-import NoContentMessage from '../NoContentMessage.vue'
 import AppLoadingSpinner from '../AppLoadingSpinner.vue'
 import FileSideBar from '../SideBar/FileSideBar.vue'
 import {
@@ -168,7 +150,6 @@ const currentETag = ref('')
 const url = ref('')
 const loading = ref(!unref(noResourceLoading))
 const loadingError: Ref<Error> = ref()
-const isNotFoundError = computed(() => (unref(loadingError) as HttpError)?.statusCode === 404)
 const isReadOnly = ref(false)
 const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
