@@ -106,6 +106,18 @@ describe('resourceContents', () => {
       })
     })
   })
+  it('should sum up the resources instead of using the possibly stale size of the current folder', () => {
+    getWrapper({
+      currentFolder: mock<Resource>({ size: 3 }),
+      resources: [
+        mock<Resource>({ isFolder: false, size: 3, type: 'file', name: 'file1' }),
+        mock<Resource>({ isFolder: false, size: 2000000, type: 'file', name: 'file2' })
+      ],
+      setup: ({ resourceContentsText }) => {
+        expect(unref(resourceContentsText)).toBe('2 items with 2 MB in total (2 files, 0 folders)')
+      }
+    })
+  })
   it.each`
     size              | expectedSize
     ${1}              | ${'1 B'}
@@ -162,10 +174,12 @@ describe('resourceContents', () => {
 function getWrapper({
   areHiddenFilesShown = true,
   currentRouteName = 'files-spaces-generic',
+  currentFolder = null,
   resources = [],
   setup
 }: {
   areHiddenFilesShown?: boolean
+  currentFolder?: Resource
   currentRouteName?: string
   resources: Resource[]
   setup: (instance: ReturnType<typeof useResourceContents>) => void
@@ -186,7 +200,7 @@ function getWrapper({
         mocks,
         pluginOptions: {
           piniaOptions: {
-            resourcesStore: { resources, areHiddenFilesShown }
+            resourcesStore: { resources, areHiddenFilesShown, currentFolder }
           }
         },
         provide: mocks

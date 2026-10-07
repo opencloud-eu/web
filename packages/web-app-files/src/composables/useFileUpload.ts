@@ -81,9 +81,9 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
       path: unref(currentFolder).path
     })
 
-    const existingIds = new Set(resourcesStore.resources.map((r) => r.id))
-    const newResources = children.filter((child) => !existingIds.has(child.id))
-    resourcesStore.upsertResources(newResources)
+    const existingEtags = new Map(resourcesStore.resources.map((r) => [r.id, r.etag]))
+    const changedResources = children.filter((child) => existingEtags.get(child.id) !== child.etag)
+    resourcesStore.upsertResources(changedResources)
   }
 
   onMounted(() => {
