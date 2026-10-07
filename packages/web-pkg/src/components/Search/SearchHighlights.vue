@@ -40,6 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import DOMPurify from 'dompurify'
 import { SearchResource } from '@opencloud-eu/web-client'
 
 const {
@@ -53,7 +54,13 @@ const {
 }>()
 
 const snippet = computed(() => {
-  const text = (resource.highlights || '').replace(/\s+/g, ' ').trim()
+  // the snippet is rendered via v-html, only the <mark> of the match is allowed
+  const text = DOMPurify.sanitize(resource.highlights || '', {
+    ALLOWED_TAGS: ['mark'],
+    ALLOWED_ATTR: []
+  })
+    .replace(/\s+/g, ' ')
+    .trim()
   const matchIndex = text.indexOf('<mark>')
   if (matchIndex <= 0) {
     return { before: '', match: text, hasLongBefore: false }

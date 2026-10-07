@@ -2,6 +2,10 @@ import { mock } from 'vitest-mock-extended'
 import { SearchResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import SearchHighlights from '../../../../src/components/Search/SearchHighlights.vue'
+import DOMPurify from 'dompurify'
+
+// DOMPurify doesn't sanitize correctly in happy-dom, the sanitizing itself is DOMPurify's job
+vi.mock('dompurify', () => ({ default: { sanitize: vi.fn((html: string) => html) } }))
 
 const selectors = {
   content: '.search-highlights-content',
@@ -21,6 +25,13 @@ describe('SearchHighlights component', () => {
     expect(wrapper.find('.search-highlights-content-match').html()).toContain(
       '<mark>match</mark> and after'
     )
+  })
+  it('sanitizes the found content and only allows the mark of the match', () => {
+    getWrapper({ highlights: 'some <mark>found</mark> content' })
+    expect(DOMPurify.sanitize).toHaveBeenCalledWith('some <mark>found</mark> content', {
+      ALLOWED_TAGS: ['mark'],
+      ALLOWED_ATTR: []
+    })
   })
   it('renders only the tags matching the term with the term highlighted', () => {
     const { wrapper } = getWrapper({ tags: ['Invoice', 'private'], term: 'voice' })
