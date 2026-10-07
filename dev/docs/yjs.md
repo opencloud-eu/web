@@ -408,8 +408,9 @@ While the wrapper cannot act - loading, a PUT in flight, the room disconnected, 
 events are dropped. Nothing is lost by that: the conflicted, locked and read-only states end in a reload that fetches
 the file anew, a write during a PUT fails that PUT with a 412, and the load itself fetches the current etag. A
 disconnect is the one gap: the SSE stream shares the network with the room, so a write during an outage is announced
-to nobody, and the reconnect's drift check compares the room's etag against this client's, which the server never saw
-change. Such a write surfaces on the next 412, as it did before SSE events were wired in. Accepted as an edge case.
+to nobody, and a reconnect does not re-run the join-time drift check. Even if it did, it would compare the room's etag
+against this client's, which the server never saw change. Such a write surfaces on the next 412, as it did before SSE
+events were wired in. Accepted as an edge case.
 
 ### `_oc_meta`
 

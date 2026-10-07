@@ -715,10 +715,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
 
     if (current.hasContent(doc)) return
 
-    // Seeding is a first-entry decision. Mid-session this is a reconnect, and
-    // an empty doc here is one the user emptied - the room takes it as is.
-    if (unref(isReady)) return
-
     // Read-only client in an empty room: hydrate a private copy so the file
     // is not shown blank. It never reaches the room (the server rejects
     // read-only writes); `hasLocalOnlyContent` lets the meta observer drop it
@@ -872,9 +868,11 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * local-mode call): flips `isReady` once the hydration decision has
    * settled, so the editor mount is gated on one signal. The
    * `ydoc.value === doc` guard keeps a stale invocation from clearing the
-   * loading state of the next session.
+   * loading state of the next session. Runs on first entry only: on a
+   * reconnect the meta observer handles whatever the room did meanwhile.
    */
   async function onProviderSynced(doc: Y.Doc, prov: HocuspocusProvider | null) {
+    if (unref(isReady)) return
     try {
       await runInitialHydration(doc, prov)
     } catch (e) {
@@ -1006,7 +1004,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         // *opening* connect. Mid-session the document is already live and
         // populated; re-running the hydration checks there could plant a
         // stale flag against a room this client has just left.
-        if (unref(isReady)) return
         void onProviderSynced(doc, null)
       },
       onStateless({ payload }) {
