@@ -14,4 +14,4 @@ export abstract class ImageType {
 
 export const AVATAR_UPLOAD_MAX_FILE_SIZE_MB = 10
 
-export const RESOURCE_NAME_MAX_BYTES = 256
+export const RESOURCE_NAME_MAX_BYTES = 255
