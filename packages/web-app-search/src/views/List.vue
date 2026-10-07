@@ -1,6 +1,7 @@
 <template>
   <component
     :is="listSearch.component"
+    v-if="listSearch"
     :search-result="searchResult"
     :loading="loading"
     @search="search"
@@ -16,10 +17,11 @@ const availableProviders = useAvailableProviders()
 const providerId = useRouteQuery('provider')
 
 const listSearch = computed(() => {
-  const { listSearch } = unref(availableProviders).find(
-    (provider) => provider.id === queryItemAsString(unref(providerId))
-  )
-  return listSearch
+  const providers = unref(availableProviders).filter((provider) => !!provider.listSearch)
+  // fall back to the first provider if the requested one is missing or unknown
+  const provider =
+    providers.find(({ id }) => id === queryItemAsString(unref(providerId))) || providers[0]
+  return provider?.listSearch
 })
 
 // The resources always have to be loaded from the server first.
