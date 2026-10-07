@@ -11,14 +11,24 @@
       { 'bg-transparent min-h-0': type === 'button' }
     ]"
   >
+    <img
+      v-if="imageSrc !== undefined"
+      :src="imageSrc"
+      :alt="accessibleLabel"
+      :aria-hidden="accessibleLabel === '' ? 'true' : null"
+      :class="['block object-contain', tailwindSize, { 'opacity-0': hasImageError }]"
+      @load="emit('loaded')"
+      @error="onImageError"
+    />
     <inline-svg
+      v-else
       :src="nameWithFillType"
       :unique-ids="uniqueIds"
       :transform-source="transformSvgElement"
       :aria-hidden="accessibleLabel === '' ? 'true' : null"
       :aria-labelledby="accessibleLabel === '' ? null : svgTitleId"
       :focusable="accessibleLabel === '' ? 'false' : null"
-      :style="color !== '' ? { fill: color } : {}"
+      :style="namedIcon.color !== '' ? { fill: namedIcon.color } : {}"
       :class="tailwindSize"
       @loaded="emit('loaded')"
       @error="emit('error')"
@@ -27,9 +37,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, inject, MaybeRefOrGetter, ref, toValue, unref, watch } from 'vue'
 import InlineSvg from 'vue-inline-svg'
-import { FillType, SizeType, uniqueId, getIconUrlPrefix, addVersionToAssetUrl } from '../../helpers'
+import {
+  FillType,
+  Icon,
+  SizeType,
+  iconIsDarkInjectionKey,
+  isImageIcon,
+  uniqueId,
+  getIconUrlPrefix,
+  addVersionToAssetUrl
+} from '../../helpers'
 
 InlineSvg.name = 'inline-svg'
 
@@ -47,6 +66,10 @@ export interface Props {
    * @default fill
    */
   fillType?: FillType
+  /**
+   * @docs Icon to display. Takes precedence over `name`.
+   */
+  icon?: Icon
   /**
    * @docs Name of the icon. Please refer to `Remixicon` for a list of available icons.
    */
@@ -77,11 +100,11 @@ export interface Props {
 
 export interface Emits {
   /**
-   * @docs Emitted when the SVG has been loaded.
+   * @docs Emitted when the SVG or the image has been loaded.
    */
   (e: 'loaded'): void
   /**
-   * @docs Emitted when the SVG could not be loaded, e.g. because the icon does not exist.
+   * @docs Emitted when the SVG or the image could not be loaded, e.g. because the icon does not exist.
    */
   (e: 'error'): void
 }
@@ -90,6 +113,7 @@ const {
   accessibleLabel = '',
   color = '',
   fillType = 'fill',
+  icon = undefined,
   name = 'info',
   size = undefined,
   sizeClass = 'size-5',
@@ -101,11 +125,42 @@ const emit = defineEmits<Emits>()
 
 const svgTitleId = computed(() => uniqueId('oc-icon-title-'))
 
+const isDark = inject<MaybeRefOrGetter<boolean>>(iconIsDarkInjectionKey, false)
+
+const imageSrc = computed(() => {
+  if (!isImageIcon(icon)) {
+    return undefined
+  }
+  return (toValue(isDark) && icon.srcDark) || icon.src
+})
+
+const hasImageError = ref(false)
+watch(imageSrc, () => {
+  hasImageError.value = false
+})
+
+function onImageError() {
+  hasImageError.value = true
+  emit('error')
+}
+
+const namedIcon = computed(() => {
+  if (typeof icon === 'string') {
+    return { name: icon, fillType, color }
+  }
+  return {
+    name: icon?.name ?? name,
+    fillType: icon?.fillType ?? fillType,
+    color: icon?.color ?? color
+  }
+})
+
 const nameWithFillType = computed(() => {
   const prefix = getIconUrlPrefix()
-  const lowerFillType = fillType.toLowerCase()
+  const { name: iconName, fillType: iconFillType } = unref(namedIcon)
+  const lowerFillType = iconFillType.toLowerCase()
 
-  const filename = lowerFillType === 'none' ? `${name}.svg` : `${name}-${lowerFillType}.svg`
+  const filename = lowerFillType === 'none' ? `${iconName}.svg` : `${iconName}-${lowerFillType}.svg`
 
   const url = `${prefix}icons/${filename}`
   return addVersionToAssetUrl(url)
