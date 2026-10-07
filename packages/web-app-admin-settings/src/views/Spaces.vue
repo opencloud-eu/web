@@ -185,8 +185,7 @@ const sideBarAvailablePanels = [
   },
   {
     name: 'space-share',
-    icon: 'group',
-    iconFillType: 'line',
+    icon: { name: 'group', fillType: 'line' },
     title: () => $gettext('Members'),
     component: MembersPanel,
     isVisible: ({ items }) => items.length === 1 && !items[0].disabled

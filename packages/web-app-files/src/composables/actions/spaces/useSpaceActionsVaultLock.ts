@@ -24,7 +24,6 @@ export const useSpaceActionsLockVault = (): { actions: Ref<SpaceAction[]> } => {
     {
       name: 'lock-vault',
       icon: 'lock',
-      iconFillType: 'line',
       label: () => $gettext('Lock space'),
       category: 'tertiary',
       handler: ({ resources }: SpaceActionOptions) => {
