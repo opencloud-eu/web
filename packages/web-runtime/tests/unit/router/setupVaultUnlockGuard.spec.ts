@@ -151,7 +151,7 @@ describe('setupVaultUnlockGuard', () => {
   })
 
   it('keeps the public link context, so anonymous visitors are not sent to the login', async () => {
-    const publicSpace = { id: 'token', driveAlias: 'public/token' }
+    const publicSpace = { id: 'token', driveAlias: 'public/token', driveType: 'public' }
     const guard = installGuard({
       spaces: [publicSpace],
       claim: { vaultRoot: '/my.vault', unlockRoute },

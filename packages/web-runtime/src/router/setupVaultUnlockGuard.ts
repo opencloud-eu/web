@@ -11,7 +11,7 @@ import {
   useSpacesStore,
   VaultClaim
 } from '@opencloud-eu/web-pkg'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { isPublicSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 
 /** Space-relative, absolute path a `driveAliasAndItem` points at within `space`. */
 function spaceRelativePath(driveAliasAndItem: string, space: SpaceResource): string {
@@ -130,14 +130,12 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     // Where the user set off from, so cancelling the unlock returns them there
     // instead of somewhere merely adjacent to the vault.
     const cancelUrl = getCancelUrl(from, space, claim)
-    const isPublicLink =
-      driveAliasAndItem.startsWith('public/') || driveAliasAndItem.startsWith('ocm/')
 
     return {
       ...claim.unlockRoute,
       query: {
         ...(claim.unlockRoute.query || {}),
-        ...(isPublicLink && routeToContextQuery(to)),
+        ...(isPublicSpaceResource(space) && routeToContextQuery(to)),
         redirectUrl: to.fullPath,
         ...(cancelUrl && { cancelUrl })
       }
