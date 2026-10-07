@@ -1,5 +1,6 @@
 import { computed, markRaw, unref, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { isPublicSpaceResource } from '@opencloud-eu/web-client'
 import { FileAction, FileActionOptions } from './types'
 import { useModals } from '../piniaStores'
 import SaveAsModal from '../../components/Modals/SaveAsModal.vue'
@@ -52,7 +53,9 @@ export function useFileActionsSave({
     icon: 'save-2',
     label: () => $gettext('Save as'),
     handler: saveAsHandler,
-    isVisible: () => unref(isEditor),
+    // a read-only public link offers no folder to save a copy to
+    isVisible: ({ space }) =>
+      unref(isEditor) && !(isPublicSpaceResource(space) && unref(isReadOnly)),
     class: 'oc-files-actions-save-as-trigger'
   }))
 

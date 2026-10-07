@@ -49,6 +49,25 @@ describe('useFileActionsCreateNewFile', () => {
     })
   })
 
+  describe('isVisible', () => {
+    it.each([
+      { permissions: 'CKZ', visible: false },
+      { permissions: 'DNVCKZ', visible: true }
+    ])(
+      'visible: $visible in a public link with folder permissions "$permissions"',
+      ({ permissions, visible }) => {
+        const space = mock<SpaceResource>({ id: '1', driveType: 'public' })
+        getWrapper({
+          space,
+          currentFolder: mock<Resource>({ id: '1', path: '/', permissions, canUpload: () => true }),
+          setup: ({ actions }) => {
+            expect(unref(actions)[0].isVisible()).toBe(visible)
+          }
+        })
+      }
+    )
+  })
+
   describe('isDisabled / disabledTooltip', () => {
     it('disables external editor app actions inside a vault', () => {
       const space = mock<SpaceResource>({ id: '1' })

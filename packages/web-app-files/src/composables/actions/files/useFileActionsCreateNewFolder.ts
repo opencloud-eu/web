@@ -1,4 +1,8 @@
-import { isShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
+import {
+  isPublicSpaceResource,
+  isShareSpaceResource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { join } from 'path'
 import { computed, markRaw, nextTick, Ref, unref } from 'vue'
@@ -34,8 +38,8 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
   // The registered vault extension, or undefined when there is none - which
   // is what hides the encryption switch.
   const vaultCreator = computed(() => {
-    if (unref(currentFolder)?.isInVault) {
-      // Cannot create a vault inside another vault.
+    if (unref(currentFolder)?.isInVault || isPublicSpaceResource(unref(space))) {
+      // Cannot create a vault inside another vault or via a public link.
       return undefined
     }
     return getVaultCreator(extensionRegistry)
