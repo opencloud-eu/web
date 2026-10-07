@@ -5,6 +5,7 @@ import {
   getVaultClaim,
   queryItemAsString,
   resolveVaultEngine,
+  routeToContextQuery,
   useExtensionRegistry,
   useSpacesLoading,
   useSpacesStore,
@@ -129,11 +130,14 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
     // Where the user set off from, so cancelling the unlock returns them there
     // instead of somewhere merely adjacent to the vault.
     const cancelUrl = getCancelUrl(from, space, claim)
+    const isPublicLink =
+      driveAliasAndItem.startsWith('public/') || driveAliasAndItem.startsWith('ocm/')
 
     return {
       ...claim.unlockRoute,
       query: {
         ...(claim.unlockRoute.query || {}),
+        ...(isPublicLink && routeToContextQuery(to)),
         redirectUrl: to.fullPath,
         ...(cancelUrl && { cancelUrl })
       }
