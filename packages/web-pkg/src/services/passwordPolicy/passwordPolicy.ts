@@ -4,6 +4,7 @@ import {
   AtLeastDigitsRule,
   AtLeastLowercaseCharactersRule,
   AtLeastUppercaseCharactersRule,
+  AtMostCharactersRule,
   MustContainRule,
   MustNotBeEmptyRule
 } from './rules'
@@ -54,13 +55,16 @@ export class PasswordPolicyService {
     const DEFAULT_MIN_DIGITS = 2
 
     this.generatePasswordRules = {
-      length: Math.max(
-        this.capability.min_characters || 0,
-        (this.capability.min_lowercase_characters || 0) +
-          (this.capability.min_uppercase_characters || 0) +
-          (this.capability.min_digits || 0) +
-          (this.capability.min_special_characters || 0),
-        DEFAULT_LENGTH
+      length: Math.min(
+        Math.max(
+          this.capability.min_characters || 0,
+          (this.capability.min_lowercase_characters || 0) +
+            (this.capability.min_uppercase_characters || 0) +
+            (this.capability.min_digits || 0) +
+            (this.capability.min_special_characters || 0),
+          DEFAULT_LENGTH
+        ),
+        this.capability.max_characters || Infinity
       ),
       minLowercaseCharacters: Math.max(
         this.capability.min_lowercase_characters || 0,
@@ -81,6 +85,7 @@ export class PasswordPolicyService {
   private buildPolicy({ enforcePassword = false } = {}): void {
     const ruleset = {
       atLeastCharacters: new AtLeastCharactersRule({ ...this.language }),
+      atMostCharacters: new AtMostCharactersRule({ ...this.language }),
       mustNotBeEmpty: new MustNotBeEmptyRule({ ...this.language }),
       atLeastUppercaseCharacters: new AtLeastUppercaseCharactersRule({ ...this.language }),
       atLeastLowercaseCharacters: new AtLeastLowercaseCharactersRule({ ...this.language }),
@@ -95,6 +100,10 @@ export class PasswordPolicyService {
 
     if (this.capability.min_characters) {
       rules.atLeastCharacters = { minLength: this.capability.min_characters }
+    }
+
+    if (this.capability.max_characters) {
+      rules.atMostCharacters = { maxLength: this.capability.max_characters }
     }
 
     if (this.capability.min_uppercase_characters) {
