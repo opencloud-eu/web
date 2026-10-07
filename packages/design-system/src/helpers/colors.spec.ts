@@ -60,6 +60,14 @@ describe('generateHashedColorForString', () => {
     expect(generateHashedColorForString('opencloud')).toBe('#60162B')
     expect(generateHashedColorForString('example')).toMatch('#25116A')
   })
+
+  it.each([
+    ['key', '#019E5F'],
+    ['upload', '#040E01'],
+    ['at', '#000C33']
+  ])('pads the color of "%s" to six digits', (name, color) => {
+    expect(generateHashedColorForString(name)).toBe(color)
+  })
 })
 
 describe('setDesiredContrastRatio', () => {
@@ -70,6 +78,14 @@ describe('setDesiredContrastRatio', () => {
     expect(setDesiredContrastRatio(targetColor, associatedColor, desiredRatio)).toEqual([
       142, 142, 142
     ])
+  })
+
+  it('returns a dark color it cannot brighten any further instead of recursing forever', () => {
+    expect(setDesiredContrastRatio([4, 14, 1], [255, 255, 255], 4)).toEqual([4, 14, 1])
+  })
+
+  it('stops once the only channel that still moves has reached its limit', () => {
+    expect(setDesiredContrastRatio([46, 35, 225], [255, 255, 255], 4)).toEqual([46, 35, 255])
   })
 })
 
