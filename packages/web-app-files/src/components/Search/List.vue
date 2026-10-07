@@ -44,11 +44,11 @@
               display-name-attribute="label"
               filter-name="tags"
             >
-              <template #image="{ item, term }">
-                <div class="flex items-center">
-                  <oc-icon name="price-tag-3" size-class="size-4" />
-                  <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
-                </div>
+              <template #image>
+                <oc-icon name="price-tag-3" size-class="size-4" class="flex" />
+              </template>
+              <template #item="{ item, term }">
+                <span class="ml-2"><oc-filter-highlight :text="item.label" :term="term" /></span>
               </template>
             </item-filter>
             <item-filter

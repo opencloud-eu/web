@@ -217,7 +217,9 @@ const inputClass = computed(() => {
     classes.push('h-9')
   }
   if (isRounded) {
-    classes.push(...['rounded-4xl', 'p-4'])
+    classes.push(...['rounded-4xl', 'pl-4', icon ? 'pr-10' : 'pr-4', 'py-4'])
+  } else if (icon) {
+    classes.push('pr-10')
   }
   return classes
 })

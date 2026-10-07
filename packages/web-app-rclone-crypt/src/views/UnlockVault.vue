@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center h-full overflow-y-auto p-8">
+  <div class="flex justify-center h-full overflow-y-auto p-2 sm:p-8">
     <div v-if="areSpacesLoading" class="my-auto flex justify-center">
       <oc-spinner size="large" :aria-label="$gettext('Loading vault')" />
     </div>
@@ -13,8 +13,8 @@
     </no-content-message>
     <oc-card
       v-else
-      body-class="p-8"
-      class="rounded-xl bg-role-surface-container w-xl my-auto border"
+      body-class="p-4 sm:p-8"
+      class="rounded-xl bg-role-surface-container w-full max-w-xl my-auto border"
     >
       <h2 v-if="needsSetup !== null" class="mt-0 mb-6 text-xl font-semibold" v-text="cardTitle" />
       <div v-if="needsSetup === null" class="flex justify-center py-8">
