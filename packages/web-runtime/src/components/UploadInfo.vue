@@ -117,7 +117,7 @@
       >
         <ul class="oc-list">
           <li v-for="(item, idx) in uploads" :key="idx">
-            <span class="flex items-center min-w-0">
+            <span class="flex items-center">
               <oc-icon
                 v-if="item.status === 'error'"
                 name="close"

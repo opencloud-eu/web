@@ -3,15 +3,15 @@
     class="flex flex-wrap oc-notification-message shadow-sm/10 rounded-xl border break-keep bg-role-surface motion-safe:animate-fade-in relative"
     :class="classes"
   >
-    <div class="flex flex-wrap items-center flex-1 min-w-0" :role="role" :aria-live="ariaLive">
+    <div class="flex flex-wrap items-center flex-1" :role="role" :aria-live="ariaLive">
       <div class="flex items-center justify-between w-full">
-        <div class="flex items-center min-w-0">
+        <div class="flex items-center">
           <oc-icon v-if="showInfoIcon" name="information" fill-type="line" class="mr-2" />
-          <div class="oc-notification-message-title text-lg min-w-0 wrap-anywhere">
+          <div class="oc-notification-message-title text-lg wrap-anywhere">
             {{ title }}
           </div>
         </div>
-        <oc-button appearance="raw" class="shrink-0" :aria-label="$gettext('Close')" @click="close">
+        <oc-button appearance="raw" :aria-label="$gettext('Close')" @click="close">
           <oc-icon name="close" />
         </oc-button>
       </div>
