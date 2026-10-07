@@ -38,6 +38,10 @@ export function isImageIcon(icon: Icon | undefined): icon is ImageIcon {
   return typeof icon === 'object' && icon !== null && typeof icon.src === 'string'
 }
 
+export function toNamedIcon(icon: string | NamedIcon): NamedIcon {
+  return typeof icon === 'string' ? { name: icon } : icon
+}
+
 export const iconIsDarkInjectionKey = 'oc-icon-is-dark'
 
 const iconsWithDarkVariant = new Set([

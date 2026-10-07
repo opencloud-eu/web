@@ -57,7 +57,12 @@ import { v4 as uuidV4 } from 'uuid'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
-import { Icon, iconIsDarkInjectionKey, isImageIcon } from '@opencloud-eu/design-system/helpers'
+import {
+  Icon,
+  iconIsDarkInjectionKey,
+  isImageIcon,
+  toNamedIcon
+} from '@opencloud-eu/design-system/helpers'
 import {
   onSSEFileLockingEvent,
   onSSEItemRenamedEvent,
@@ -356,8 +361,7 @@ export const announceApplicationsReady = async ({
         return icon
       }
 
-      const namedIcon = typeof icon === 'string' ? { name: icon } : icon
-      return { color: app.color, ...namedIcon }
+      return { color: app.color, ...toNamedIcon(icon) }
     }
 
     if (fileExtensions.mimeType) {

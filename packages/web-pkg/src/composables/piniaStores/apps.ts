@@ -7,7 +7,7 @@ import {
   ApplicationTranslationLoaders,
   ApplicationTranslations
 } from '../../apps'
-import { Icon, isImageIcon, NamedIcon } from '@opencloud-eu/design-system/helpers'
+import { Icon, isImageIcon, NamedIcon, toNamedIcon } from '@opencloud-eu/design-system/helpers'
 
 function mergeDeprecatedIconFields(
   icon: Icon,
@@ -17,8 +17,7 @@ function mergeDeprecatedIconFields(
     return icon
   }
 
-  const namedIcon = typeof icon === 'string' ? { name: icon } : icon
-  return { ...(fillType && { fillType }), ...(color && { color }), ...namedIcon }
+  return { ...(fillType && { fillType }), ...(color && { color }), ...toNamedIcon(icon) }
 }
 
 export const useAppsStore = defineStore('apps', () => {
@@ -61,12 +60,17 @@ export const useAppsStore = defineStore('apps', () => {
     appId: string
     data: ApplicationFileExtension
   }) => {
+    const app = unref(apps)[appId]
+    if (!app) {
+      return
+    }
+
     const icon = data.icon
       ? mergeDeprecatedIconFields(data.icon, {
           fillType: data.iconFillType,
           color: data.iconColor
         })
-      : unref(apps)[appId]?.icon
+      : app.icon
 
     unref(fileExtensions).push({
       ...data,

@@ -33,6 +33,12 @@ describe('useAppsStore', () => {
     })
   })
 
+  it('ignores a file extension of an app that is not registered', () => {
+    const appsStore = useAppsStore()
+    appsStore.registerFileExtension({ appId: 'unknown', data: { extension: 'drawio' } })
+    expect(appsStore.fileExtensions).toEqual([])
+  })
+
   describe('icon of a file extension', () => {
     it('merges the deprecated fill type and color into its named icon', () => {
       const { fileExtension } = registerApp({
