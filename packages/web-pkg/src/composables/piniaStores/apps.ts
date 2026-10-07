@@ -63,12 +63,8 @@ export const useAppsStore = defineStore('apps', () => {
     appId: string
     data: ApplicationFileExtension
   }) => {
-    const app = unref(apps)[appId]
-    const appIcon = app?.icon
-    const deprecatedIconFields = {
-      fillType: data.iconFillType || app?.iconFillType,
-      color: data.iconColor
-    }
+    const deprecatedIconFields = { fillType: data.iconFillType, color: data.iconColor }
+    const appIcon = unref(apps)[appId]?.icon
     const icon = data.icon
       ? mergeDeprecatedIconFields(data.icon, deprecatedIconFields)
       : appIcon &&
