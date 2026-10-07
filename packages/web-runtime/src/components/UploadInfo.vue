@@ -117,7 +117,7 @@
       >
         <ul class="oc-list">
           <li v-for="(item, idx) in uploads" :key="idx">
-            <span class="flex items-center">
+            <span class="flex items-center min-w-0">
               <oc-icon
                 v-if="item.status === 'error'"
                 name="close"
@@ -131,7 +131,7 @@
               <resource-list-item
                 v-if="displayFileAsResource(item)"
                 :key="item.path"
-                class="ml-2"
+                class="ml-2 min-w-0"
                 :resource="item as Resource"
                 :is-path-displayed="true"
                 :is-resource-clickable="isResourceClickable(item)"
