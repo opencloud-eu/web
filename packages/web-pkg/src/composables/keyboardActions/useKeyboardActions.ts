@@ -52,8 +52,9 @@ export interface KeyboardAction {
   callback: (event: KeyboardEvent) => void
 }
 
-const areCustomKeyBindingsDisabled = () => {
-  const activeElement = document.activeElement
+const areCustomKeyBindingsDisabled = (event: KeyboardEvent) => {
+  // the event target stays reliable even if a handler (e.g. vue-select on Escape) blurred it meanwhile
+  const activeElement = event.target instanceof Element ? event.target : document.activeElement
 
   if (
     (activeElement instanceof HTMLInputElement && activeElement.type !== 'checkbox') ||
@@ -72,7 +73,7 @@ const areCustomKeyBindingsDisabled = () => {
     return true
   }
 
-  const closestSelectionEl = document.activeElement
+  const closestSelectionEl = activeElement
   if (!closestSelectionEl) {
     return false
   }
@@ -97,7 +98,7 @@ export const useKeyboardActions = (options?: KeyboardActionsOptions): KeyboardAc
   const selectionCursor = ref(0)
 
   const listener = (event: KeyboardEvent): void => {
-    if (!options?.skipDisabledKeyBindingsCheck && areCustomKeyBindingsDisabled()) {
+    if (!options?.skipDisabledKeyBindingsCheck && areCustomKeyBindingsDisabled(event)) {
       return
     }
 
