@@ -36,6 +36,14 @@ describe('OcIcon', () => {
     expect(wrapper.emitted('loaded')).toBeTruthy()
     expect(wrapper.emitted('loaded')).toHaveLength(1)
   })
+  it('should emit the error event when the svg could not be loaded', async () => {
+    const { wrapper } = getWrapper()
+    const inlineSvg = wrapper.findComponent({ name: 'inline-svg' })
+
+    await inlineSvg.vm.$emit('error', new Error('not found'))
+
+    expect(wrapper.emitted('error')).toHaveLength(1)
+  })
 })
 
 const getWrapper = (props: PartialComponentProps<typeof OcIcon> = {}) => {

@@ -26,7 +26,29 @@
           <span v-text="$gettext('Install an app and it will show up here')" />
         </template>
       </no-content-message>
-      <extensions-list v-else :extensions="extensions" :filter-term="filterTerm" />
+      <template v-else>
+        <p
+          v-if="compatibilityLoadingFailed"
+          class="extensions-compatibility-error flex items-center gap-1 text-role-error mx-4 mt-2"
+          role="alert"
+        >
+          <oc-icon name="error-warning" fill-type="line" size-class="size-4" class="shrink-0" />
+          <span
+            v-text="
+              $gettext(
+                'Compatibility information could not be loaded. Make sure %{url} is reachable and allowed by the content security policy.',
+                { url: APP_STORE_URL }
+              )
+            "
+          />
+        </p>
+        <extensions-list
+          :extensions="extensions"
+          :filter-term="filterTerm"
+          :server-version="serverVersion"
+          :loading-compatibility="compatibilityLoading"
+        />
+      </template>
     </template>
   </app-template>
 </template>
@@ -35,39 +57,55 @@
 import AppTemplate from '../components/AppTemplate.vue'
 import ExtensionsList from '../components/Extensions/ExtensionsList.vue'
 import { NoContentMessage, useAppsStore, useConfigStore } from '@opencloud-eu/web-pkg'
-import { FillType } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
+import { APP_STORE_URL, useAppCompatibility } from '../composables'
+import { ExtensionInfo, ExtensionStatus } from '../components/Extensions/types'
 
 const { $gettext } = useGettext()
 const appsStore = useAppsStore()
 const configStore = useConfigStore()
 const { apps, appLoadingFailure } = storeToRefs(appsStore)
 
+const {
+  serverVersion,
+  loading: compatibilityLoading,
+  loadingFailed: compatibilityLoadingFailed,
+  loadAppStoreApps,
+  getAppStoreName,
+  getVersionConstraints,
+  isCompatible
+} = useAppCompatibility()
+
 const filterTerm = ref('')
 
-interface ExtensionInfo {
-  name: string
-  icon?: string
-  iconFillType?: FillType
-  version?: string
-  loaded: boolean
+// incompatibility is the most likely cause for a failed app, so it takes precedence
+function getStatus(loaded: boolean, compatible: boolean): ExtensionStatus {
+  if (!compatible) {
+    return 'incompatible'
+  }
+  return loaded ? 'active' : 'failed'
 }
 
 const extensions = computed<ExtensionInfo[]>(() => {
   return configStore.externalApps.map(({ id, version }) => {
     const app = unref(apps)[id]
-    const failure = unref(appLoadingFailure)[id]
+    const loaded = !unref(appLoadingFailure)[id]
+    const constraints = getVersionConstraints(id, version)
 
     return {
       ...app,
+      ...constraints,
       version,
-      name: app?.name || id,
-      loaded: !failure
+      name: app?.name || getAppStoreName(id) || id,
+      status: getStatus(loaded, isCompatible(constraints)),
+      loaded
     }
   })
 })
+
+loadAppStoreApps()
 
 const breadcrumbs = computed(() => [
   {

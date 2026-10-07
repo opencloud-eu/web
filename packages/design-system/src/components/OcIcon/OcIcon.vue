@@ -21,6 +21,7 @@
       :style="color !== '' ? { fill: color } : {}"
       :class="tailwindSize"
       @loaded="emit('loaded')"
+      @error="emit('error')"
     />
   </component>
 </template>
@@ -79,6 +80,10 @@ export interface Emits {
    * @docs Emitted when the SVG has been loaded.
    */
   (e: 'loaded'): void
+  /**
+   * @docs Emitted when the SVG could not be loaded, e.g. because the icon does not exist.
+   */
+  (e: 'error'): void
 }
 
 const {

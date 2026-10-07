@@ -46,6 +46,10 @@ describe('OcInfoDrop', () => {
       expect(attributes['href']).toBe('opencloud.design')
       expect(attributes['target']).toBe('_blank')
     })
+    it('should pass the teleport target to the drop', () => {
+      const wrapper = getWrapperWithProps({ teleport: '#app-runtime-drop' })
+      expect(wrapper.findComponent(OcDrop).props('teleport')).toBe('#app-runtime-drop')
+    })
     it('should set end-text prop', () => {
       const wrapper = getWrapperWithProps({ endText: 'test-my-text' })
       expect(wrapper.find('.info-text-end').text()).toBe('test-my-text')

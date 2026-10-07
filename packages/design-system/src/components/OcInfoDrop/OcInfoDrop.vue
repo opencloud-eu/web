@@ -5,6 +5,7 @@
     :drop-id="dropId"
     :toggle="toggle"
     :mode="mode"
+    :teleport="teleport"
     close-on-click
     enforce-drop-on-mobile
     :is-menu="false"
@@ -93,6 +94,10 @@ export interface Props {
    * @docs CSS selector for the element to be used as toggle. By default, the preceding element is used.
    */
   toggle?: string
+  /**
+   * @docs Teleport the info drop to a different DOM element. This can be useful to prevent overflow issues.
+   */
+  teleport?: string
 }
 
 const {
@@ -103,7 +108,8 @@ const {
   mode = 'click',
   readMoreLink = '',
   text = '',
-  toggle = ''
+  toggle = '',
+  teleport = ''
 } = defineProps<Props>()
 
 const dropOpen = ref(false)
