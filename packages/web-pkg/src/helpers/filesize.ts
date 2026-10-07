@@ -10,7 +10,7 @@ export const formatFileSize = (size: number | string, currentLanguage: string) =
     return '--'
   }
 
-  if (isNaN(parsedSize)) {
+  if (!Number.isFinite(parsedSize)) {
     return '?'
   }
 

@@ -242,6 +242,28 @@ describe('UploadInfo component', () => {
       expect(infoMessages.at(0).text()).toBe('Unknown error')
       expect(infoMessages.at(1).text()).toBe('Unknown error')
     })
+    it('shows the message of an XML error response', async () => {
+      const { wrapper } = getShallowWrapper()
+      ;(wrapper.vm as any).showInfo = true
+      ;(wrapper.vm as any).infoExpanded = true
+      ;(wrapper.vm as any).uploads = {
+        '1': {
+          name: 'file',
+          path: '/',
+          type: 'file',
+          meta: { uploadId: '1' }
+        } as unknown as OcUppyFile
+      }
+      ;(wrapper.vm as any).errors = {
+        1: new HttpError(
+          'tus: unexpected response while creating upload, originated from request (method: POST, url: x, response code: 400, response text: <?xml version="1.0" encoding="UTF-8"?><d:error xmlns:d="DAV:" xmlns:s="http://sabredav.org/ns"><s:exception>Sabre\\DAV\\Exception\\BadRequest</s:exception><s:message>name too long</s:message></d:error>, request id: n/a)',
+          undefined
+        )
+      }
+      await nextTick()
+
+      expect(wrapper.find(selectors.message).text()).toBe('name too long')
+    })
     it('folder is clickable', async () => {
       const { wrapper } = getShallowWrapper()
       ;(wrapper.vm as any).showInfo = true
@@ -263,6 +285,22 @@ describe('UploadInfo component', () => {
         `${selectors.info.item} resource-list-item-stub`
       )
       expect(resourceStub.props().isResourceClickable).toBeTruthy()
+    })
+  })
+  describe('pause and resume', () => {
+    it('does not count the paused duration as upload time', () => {
+      vi.useFakeTimers()
+      const { wrapper } = getShallowWrapper()
+      const vm = wrapper.vm as any
+      const start = Date.now()
+      vm.timeStarted = new Date(start)
+
+      vm.togglePauseUploads()
+      vi.advanceTimersByTime(10000)
+      vm.togglePauseUploads()
+
+      expect(vm.timeStarted.getTime()).toBe(start + 10000)
+      vi.useRealTimers()
     })
   })
   describe('getRemainingTime method', () => {
