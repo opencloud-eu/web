@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: search for tags in the global search and enhance the visually reasoning for matching results [[#3558](https://github.com/opencloud-eu/web/pull/3558)]
 - feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
 - feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
 - feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
