@@ -23,18 +23,45 @@ describe('OcSidebarNav', () => {
     const { wrapper } = getWrapper(true)
     expect(wrapper.html()).toMatchSnapshot()
   })
+
+  describe('icon', () => {
+    it('renders a named icon in the given fill type regardless of its own fill type', () => {
+      const { wrapper } = getWrapper(false, {
+        icon: { name: 'folder', fillType: 'fill', color: 'red' },
+        fillType: 'line'
+      })
+      expect(wrapper.findComponent({ name: 'OcIcon' }).props('icon')).toEqual({
+        name: 'folder',
+        fillType: 'line',
+        color: 'red'
+      })
+    })
+    it('renders an icon name in the given fill type', () => {
+      const { wrapper } = getWrapper(false, { icon: 'folder', fillType: 'line' })
+      expect(wrapper.findComponent({ name: 'OcIcon' }).props('icon')).toEqual({
+        name: 'folder',
+        fillType: 'line'
+      })
+    })
+    it('renders an image icon as declared', () => {
+      const { wrapper } = getWrapper(false, { icon: { src: 'logo.png' }, fillType: 'line' })
+      expect(wrapper.findComponent({ name: 'OcIcon' }).props('icon')).toEqual({ src: 'logo.png' })
+    })
+  })
 })
 
-function getWrapper(collapsed: boolean) {
+function getWrapper(collapsed: boolean, props: Record<string, unknown> = {}) {
   return {
     wrapper: mount(SidebarNavItem, {
       props: {
         ...propsData,
-        collapsed
+        collapsed,
+        ...props
       },
       global: {
         plugins: [...defaultPlugins()],
-        stubs: { 'router-link': true }
+        stubs: { 'router-link': true },
+        renderStubDefaultSlot: 'icon' in props
       }
     })
   }
