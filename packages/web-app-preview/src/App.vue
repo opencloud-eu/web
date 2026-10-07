@@ -25,7 +25,10 @@
       class="stage size-full flex flex-col text-center"
       :class="{ lightbox: isFullScreenModeActivated }"
     >
-      <div class="stage_media size-full flex justify-center items-center grow overflow-hidden">
+      <div
+        ref="stageMedia"
+        class="stage_media size-full flex justify-center items-center grow overflow-hidden"
+      >
         <div v-if="!activeMediaFile || activeMediaFile.isLoading" class="w-full">
           <div class="absolute top-[50%] left-[50%]">
             <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
@@ -49,6 +52,7 @@
         />
         <media-image
           v-else-if="activeMediaFile.isImage"
+          ref="imageViewer"
           :file="activeMediaFile"
           :current-image-rotation="currentImageRotation"
         />
@@ -138,6 +142,7 @@ import {
 import { mimeTypes } from './mimeTypes'
 import { RouteLocationRaw } from 'vue-router'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { useSwipe } from '@vueuse/core'
 
 const {
   activeFiles,
@@ -181,7 +186,13 @@ const isAutoPlayEnabled = ref(true)
 const isAutoAdvancing = ref(false)
 const photoRollEnabled = ref(true)
 const preview = useTemplateRef<HTMLElement>('preview')
-const motionPlayer = useTemplateRef<{ isPlaying: boolean; toggle: () => void }>('motionPlayer')
+const motionPlayer = useTemplateRef<{
+  isPlaying: boolean
+  toggle: () => void
+  isZoomed: () => boolean
+}>('motionPlayer')
+const imageViewer = useTemplateRef<{ isZoomed: () => boolean }>('imageViewer')
+const stageMedia = useTemplateRef<HTMLElement>('stageMedia')
 const keyBindings: string[] = []
 let reloadUrlController: AbortController = null
 
@@ -326,6 +337,26 @@ const goToPrev = () => {
   activeIndex.value = unref(activeIndex) - 1
   updateLocalHistory()
 }
+
+// a swipe goes to the next or previous file. it is ignored on the native video and audio
+// controls (their seek bars are dragged) and on zoomed images, which are panned instead
+let isSwipeIgnored = false
+useSwipe(stageMedia, {
+  onSwipeStart(event) {
+    isSwipeIgnored = !!(event.target as HTMLElement).closest('video[controls], audio')
+  },
+  onSwipeEnd(_, direction) {
+    if (isSwipeIgnored || unref(imageViewer)?.isZoomed() || unref(motionPlayer)?.isZoomed()) {
+      return
+    }
+    if (direction === 'left') {
+      goToNext()
+    }
+    if (direction === 'right') {
+      goToPrev()
+    }
+  }
+})
 
 const onAudioEnded = () => {
   if (unref(activeIndex) + 1 >= unref(mediaFiles).length) {

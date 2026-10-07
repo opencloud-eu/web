@@ -53,11 +53,12 @@
             size-class="size-4"
             fill-type="line"
             aria-hidden="true"
-            class="mr-1"
+            class="mr-1 shrink-0"
           />
 
           <span
             :id="messageId"
+            class="min-w-0 wrap-anywhere"
             :class="{
               'oc-color-input-description text-role-on-surface-variant flex items-center':
                 !!descriptionMessage,

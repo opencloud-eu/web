@@ -63,19 +63,19 @@
           size-class="size-4"
           fill-type="line"
           aria-hidden="true"
-          class="mr-1"
+          class="mr-1 shrink-0"
         />
         <span
           v-if="showErrorMessage"
           :id="messageId"
-          class="oc-text-input-danger text-role-error focus:text-role-error border-role-error"
+          class="oc-text-input-danger text-role-error focus:text-role-error border-role-error min-w-0 wrap-anywhere"
           v-text="errorMessage"
         />
       </template>
       <span
         v-else-if="showDescriptionMessage"
         :id="messageId"
-        class="oc-text-input-description text-role-on-surface-variant flex items-center relative"
+        class="oc-text-input-description text-role-on-surface-variant flex items-center relative min-w-0 wrap-anywhere"
         v-text="descriptionMessage"
       />
     </div>

@@ -132,12 +132,20 @@ const initPanzoom = async () => {
     animate: false,
     duration: 300,
     overflow: 'auto',
+    // an unzoomed image can't be dragged out of view, a swipe switches the file instead
+    panOnlyWhenZoomed: true,
     minScale: 0.5,
     maxScale: 10,
     setTransform: (_, { scale, x, y }) => setTransform({ scale, x, y })
   } as PanzoomOptions)
   unref(img).addEventListener('wheel', onWheelEvent, { passive: false })
 }
+
+function isZoomed() {
+  return !!unref(panzoom) && unref(panzoom).getScale() !== 1
+}
+
+defineExpose({ isZoomed })
 
 watch(() => file, initPanzoom, { immediate: true, deep: true })
 
