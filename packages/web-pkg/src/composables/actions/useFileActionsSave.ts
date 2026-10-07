@@ -53,8 +53,15 @@ export function useFileActionsSave({
     icon: 'save-2',
     label: () => $gettext('Save as'),
     handler: saveAsHandler,
-    isVisible: ({ space }) =>
-      unref(isEditor) && !(isPublicSpaceResource(space) && unref(isReadOnly)),
+    isVisible: ({ space }) => {
+      if (!unref(isEditor)) {
+        return false
+      }
+      if (isPublicSpaceResource(space) && unref(isReadOnly)) {
+        return false
+      }
+      return true
+    },
     class: 'oc-files-actions-save-as-trigger'
   }))
 
