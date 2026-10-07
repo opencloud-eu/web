@@ -243,13 +243,13 @@ responsible for converting between the native file format and the Y.Doc's shared
 
 ```ts
 interface YjsAdapter {
-  hydrate(ydoc: Y.Doc, content: string): void | Promise<void>
+  hydrate(ydoc: Y.Doc, content: string): void
 
-  serialize(ydoc: Y.Doc): string | Promise<string>
+  serialize(ydoc: Y.Doc): string
 
   hasContent(ydoc: Y.Doc): boolean
 
-  reset?(ydoc: Y.Doc): void
+  reset(ydoc: Y.Doc): void
 }
 ```
 

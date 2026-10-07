@@ -88,12 +88,12 @@ function setup({
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
-  const serializeMerged = vi.fn().mockResolvedValue(mergedContent)
+  const serializeMerged = vi.fn().mockReturnValue(mergedContent)
   const isRoomWrite = vi.fn().mockReturnValue(roomWrite)
   const adoptEtag = vi.fn()
   const applyExternalUpdate = vi.fn().mockResolvedValue('recovered')
   const hasPendingContent = ref(false)
-  const flushContent = vi.fn().mockResolvedValue(undefined)
+  const flushContent = vi.fn()
   const isLockedForReload = ref(false)
   const isConflicted = ref(false)
   const markConflicted = vi.fn(() => {
@@ -289,10 +289,9 @@ describe('AppWrapper — changes still pending in the session', () => {
     await s.resolveContent('content of a')
     // the session only reports the change once it is flushed
     s.hasPendingContent.value = true
-    s.flushContent.mockImplementation(async () => {
+    s.flushContent.mockImplementation(() => {
       s.hasPendingContent.value = false
       s.session().onContentChange(content)
-      await nextTick()
     })
     return s
   }

@@ -1059,7 +1059,7 @@ describe('useYjsSession — content reporting', () => {
     s.ydoc!.getText(SHARED_TEXT_KEY).insert(4, ' edit')
     expect(unref(s.session.hasPendingContent)).toBe(true)
 
-    await s.session.flushContent()
+    s.session.flushContent()
 
     expect(s.onContentChange).toHaveBeenLastCalledWith('seed edit')
     expect(unref(s.session.hasPendingContent)).toBe(false)
@@ -1659,13 +1659,12 @@ describe('useYjsSession — stale-state recovery', () => {
    * plus a peer doc that already carries every one of its ops - the state the
    * room needs in order to be able to delete them.
    */
-  async function syncedPeerHoldingOurOps(adapter: YjsAdapter = testAdapter) {
+  async function syncedPeerHoldingOurOps() {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     const s = setupSession({
       yjsServerUrl,
       currentContent: 'seed',
-      hasUnsavedChanges: true,
-      adapter
+      hasUnsavedChanges: true
     })
     await flushPromises()
     providerInstances[0].triggerSynced()
@@ -1773,8 +1772,15 @@ describe('useYjsSession — stale-state recovery', () => {
   // report alone left the rewritten body reaching the caller as our own.
   it('locks when the dropped work cannot be restored', async () => {
     silenceConsoleError()
-    const { reset: _reset, ...resetlessAdapter } = testAdapter
-    const { s, peer } = await syncedPeerHoldingOurOps(resetlessAdapter)
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    // Unsaved, but never reported: there is no content to restore from.
+    const s = setupSession({ yjsServerUrl, currentContent: 'seed', hasUnsavedChanges: true })
+    await flushPromises()
+    providerInstances[0].triggerSynced()
+    vi.advanceTimersByTime(200)
+    await flushPromises()
+    const peer = new Y.Doc()
+    Y.applyUpdate(peer, Y.encodeStateAsUpdate(s.ydoc!))
     providerInstances[0].triggerStatus('disconnected')
 
     rewriteRoom(peer, 'body from a desktop client')
@@ -1964,7 +1970,7 @@ describe('useYjsSession — etag mirror', () => {
     // The conflict retry publishes the merged body, so the stamp has to cover
     // the peer this time - otherwise it would stay dirty over content that is
     // demonstrably on disk.
-    await expect(s.session.serializeMerged()).resolves.toBe('theirs seed')
+    expect(s.session.serializeMerged()).toBe('theirs seed')
 
     s.resourceRef.value = makeResource({ etag: 'b' })
     await flushPromises()
@@ -1979,7 +1985,7 @@ describe('useYjsSession — etag mirror', () => {
     s.enabledRef.value = false
     await flushPromises()
 
-    await expect(s.session.serializeMerged()).resolves.toBeNull()
+    expect(s.session.serializeMerged()).toBeNull()
   })
 })
 
@@ -2786,9 +2792,6 @@ describe('useYjsSession — external updates', () => {
     // The peer's own keystroke sits inside its debounce window when the flag
     // arrives, so `hasUnsavedChanges` still says clean. Flushing first catches it.
     it('conflicts a peer whose unsaved keystroke is still inside the debounce', async () => {
-      // No real-time auto advance: its sync clock tick could deliver flag and
-      // rewrite back to back, before B's flush settles.
-      vi.useFakeTimers()
       const { a, b } = await twoPeers()
       b.onContentChange.mockImplementation(() => {
         b.hasUnsavedChangesRef.value = true
@@ -2803,6 +2806,29 @@ describe('useYjsSession — external updates', () => {
       await vi.advanceTimersByTimeAsync(1_000)
 
       expect(result).toBe('recovered')
+      expect(unref(b.session.isConflicted)).toBe(true)
+      expect(text(b)).toBe('typed seed')
+    })
+
+    // Flag and rewrite land in one tick, so the flag's flush must settle before
+    // the rewrite is applied.
+    it('conflicts a peer whose keystroke is in the debounce when flag and rewrite arrive together', async () => {
+      const { a, b } = await twoPeers()
+      b.onContentChange.mockImplementation(() => {
+        b.hasUnsavedChangesRef.value = true
+      })
+      relay.enabled = false
+      const fromA: Uint8Array[] = []
+      a.ydoc!.on('update', (update: Uint8Array) => fromA.push(update))
+
+      expect(await apply(a)).toBe('recovered')
+      b.ydoc!.getText(SHARED_TEXT_KEY).insert(0, 'typed ')
+      const bProvider = providerInstances[1]
+      for (const update of fromA) {
+        if (bProvider.stopped) break
+        Y.applyUpdate(b.ydoc!, update, bProvider)
+      }
+
       expect(unref(b.session.isConflicted)).toBe(true)
       expect(text(b)).toBe('typed seed')
     })
