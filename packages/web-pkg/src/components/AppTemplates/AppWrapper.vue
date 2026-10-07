@@ -19,7 +19,7 @@
         />
       </template>
     </no-content-message>
-    <error-screen v-else-if="loadingError" :message="loadingError.message" />
+    <error-screen v-else-if="error" :message="error.message" />
     <div v-else class="flex size-full">
       <slot
         class="app-wrapper-content size-full"
@@ -170,7 +170,9 @@ const currentETag = ref('')
 const url = ref('')
 const loading = ref(!unref(noResourceLoading))
 const loadingError: Ref<Error> = ref()
-const isNotFoundError = computed(() => (unref(loadingError) as HttpError)?.statusCode === 404)
+// apps that load their files themselves (e.g. the preview) report errors via the folder loading
+const error = computed(() => unref(loadingError) ?? unref(folderLoadingError))
+const isNotFoundError = computed(() => (unref(error) as HttpError)?.statusCode === 404)
 const isReadOnly = ref(false)
 const serverContent = ref<unknown>()
 const currentContent = ref<unknown>()
@@ -294,7 +296,7 @@ const {
 // failure short-circuits: it leaves the session disabled, so waiting on it
 // would keep the error screen from ever showing.
 const isLoading = computed(() => {
-  if (unref(loadingError)) return false
+  if (unref(error)) return false
   return unref(loading) || !unref(isSessionReady)
 })
 
@@ -918,7 +920,6 @@ const slotAttrs = computed<AppWrapperSlotProps & AppWrapperSlotHandlers>(() => (
   currentFileContext: unref(currentFileContext),
   currentContent: unref(currentContent) as string,
   isFolderLoading: unref(isFolderLoading),
-  folderLoadingError: unref(folderLoadingError),
 
   // Non-null by the time a collaborative app renders: `isLoading` covers the
   // session being synced and hydrated. Always null for other apps.
