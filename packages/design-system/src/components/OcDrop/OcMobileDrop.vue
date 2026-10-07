@@ -15,16 +15,16 @@
           <oc-button
             v-if="drawers.length > 1"
             appearance="raw"
-            class="raw-hover-surface oc-bottom-drawer-back-button"
+            class="raw-hover-surface oc-bottom-drawer-back-button shrink-0"
             :aria-label="$gettext('Open the parent context menu')"
             @click="hide()"
           >
             <oc-icon name="arrow-left" fill-type="line" />
           </oc-button>
-          <span class="font-semibold" v-text="title" />
+          <span class="font-semibold min-w-0 truncate" v-text="title" />
           <oc-button
             appearance="raw"
-            class="raw-hover-surface oc-bottom-drawer-close-button"
+            class="raw-hover-surface oc-bottom-drawer-close-button shrink-0"
             :aria-label="$gettext('Close the context menu')"
             @click="onClose"
           >

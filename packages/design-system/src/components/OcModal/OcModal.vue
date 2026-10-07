@@ -40,7 +40,7 @@
           <div
             v-if="$slots.content"
             key="modal-slot-content"
-            class="oc-modal-body-message mt-2 mb-4"
+            class="oc-modal-body-message mt-2 mb-4 wrap-anywhere"
           >
             <slot name="content" />
           </div>
@@ -48,7 +48,7 @@
             <p
               v-if="message"
               key="modal-message"
-              class="oc-modal-body-message mt-0"
+              class="oc-modal-body-message mt-0 wrap-anywhere"
               :class="{ 'mb-0': !hasInput || contextualHelperData }"
               v-text="message"
             />

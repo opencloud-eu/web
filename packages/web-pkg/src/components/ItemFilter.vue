@@ -39,7 +39,7 @@
                 <oc-checkbox
                   v-if="allowMultiple"
                   size="large"
-                  class="mr-2"
+                  class="mr-2 shrink-0"
                   :label="$gettext('Toggle selection')"
                   :model-value="isItemSelected(item)"
                   :label-hidden="true"
@@ -49,7 +49,7 @@
                 <div>
                   <slot name="image" :item="item" :term="filterTerm || ''" />
                 </div>
-                <div class="truncate">
+                <div class="truncate [&>*]:truncate">
                   <slot name="item" :item="item" :term="filterTerm || ''" />
                 </div>
               </div>
