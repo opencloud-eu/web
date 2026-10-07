@@ -6,7 +6,7 @@
       v-if="chooseFileName"
       ref="fileNameInputRef"
       v-model="fileName"
-      class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 [&_input]:w-auto md:[&_input]:w-sm"
+      class="flex flex-row items-center ml-0 md:ml-[230px] gap-2 w-full md:w-auto [&>div:has(input)]:flex-1 [&_input]:w-full md:[&_input]:w-sm"
       :selection-range="fileNameInputSelectionRange"
       :label="$gettext('File name')"
       :error-message="fileNameErrorMessage"
