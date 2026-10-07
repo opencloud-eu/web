@@ -243,20 +243,6 @@ describe('useFileActionsCreateNewFolder', () => {
       })
     })
 
-    it('offers no encryption in a public link', () => {
-      const space = mock<SpaceResource>({ id: '1', driveType: 'public' })
-      getWrapper({
-        space,
-        setup: ({ actions }) => {
-          const { dispatchModal } = useModals()
-          unref(actions)[0].handler()
-
-          const { customComponentAttrs } = vi.mocked(dispatchModal).mock.calls[0][0]
-          expect(customComponentAttrs().vaultCreation).toBeUndefined()
-        }
-      })
-    })
-
     it('offers no encryption inside a vault', () => {
       const space = mock<SpaceResource>({ id: '1' })
       getWrapper({

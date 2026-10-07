@@ -123,6 +123,9 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     ...(configStore.apps.includes('external') ? [appProviderService.loadData()] : [])
   ])
 
+  // capabilities are public, so anonymous visitors (e.g. of public links) get the password policy too
+  app.config.globalProperties.passwordPolicyService.initialize(capabilityStore)
+
   // Important: has to happen AFTER native applications are loaded.
   // Reason: the `external` app serves as a blueprint for creating the app provider apps.
   if (applicationStore.has('web-app-external')) {
