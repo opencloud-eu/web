@@ -1,4 +1,3 @@
-import { IconFillType } from '@opencloud-eu/web-pkg'
 import type { Icon } from '@opencloud-eu/design-system/helpers'
 
 export type ExtensionStatus = 'active' | 'incompatible' | 'failed'
@@ -6,7 +5,6 @@ export type ExtensionStatus = 'active' | 'incompatible' | 'failed'
 export interface ExtensionInfo {
   name: string
   icon?: Icon
-  iconFillType?: IconFillType
   version?: string
   minOpenCloud?: string
   maxOpenCloud?: string

@@ -7,6 +7,21 @@ import {
   ApplicationTranslationLoaders,
   ApplicationTranslations
 } from '../../apps'
+import { Icon, isImageIcon, NamedIcon } from '@opencloud-eu/design-system/helpers'
+
+function mergeDeprecatedIconFields(
+  icon: Icon,
+  { fillType, color }: Pick<NamedIcon, 'fillType' | 'color'>,
+  { fieldsTakePrecedence = false }: { fieldsTakePrecedence?: boolean } = {}
+): Icon {
+  if (isImageIcon(icon) || (!fillType && !color)) {
+    return icon
+  }
+
+  const namedIcon = typeof icon === 'string' ? { name: icon } : icon
+  const fields = { ...(fillType && { fillType }), ...(color && { color }) }
+  return fieldsTakePrecedence ? { ...namedIcon, ...fields } : { ...fields, ...namedIcon }
+}
 
 export const useAppsStore = defineStore('apps', () => {
   const apps = ref<Record<string, ApplicationInformation>>({})
@@ -24,18 +39,20 @@ export const useAppsStore = defineStore('apps', () => {
       return
     }
 
+    unref(apps)[appInfo.id] = {
+      defaultExtension: appInfo.defaultExtension || '',
+      name: appInfo.name || appInfo.id,
+      translations,
+      ...appInfo,
+      icon: mergeDeprecatedIconFields(appInfo.icon || 'puzzle', {
+        fillType: appInfo.iconFillType
+      })
+    }
+
     if (appInfo.extensions) {
       appInfo.extensions.forEach((extension) => {
         registerFileExtension({ appId: appInfo.id, data: extension })
       })
-    }
-
-    unref(apps)[appInfo.id] = {
-      defaultExtension: appInfo.defaultExtension || '',
-      icon: 'puzzle',
-      name: appInfo.name || appInfo.id,
-      translations,
-      ...appInfo
     }
   }
 
@@ -46,8 +63,16 @@ export const useAppsStore = defineStore('apps', () => {
     appId: string
     data: ApplicationFileExtension
   }) => {
+    const deprecatedIconFields = { fillType: data.iconFillType, color: data.iconColor }
+    const appIcon = unref(apps)[appId]?.icon
+    const icon = data.icon
+      ? mergeDeprecatedIconFields(data.icon, deprecatedIconFields)
+      : appIcon &&
+        mergeDeprecatedIconFields(appIcon, deprecatedIconFields, { fieldsTakePrecedence: true })
+
     unref(fileExtensions).push({
       ...data,
+      ...(icon && { icon }),
       app: appId,
       hasPriority:
         data.hasPriority ||

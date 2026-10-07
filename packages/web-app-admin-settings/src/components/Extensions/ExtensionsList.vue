@@ -27,7 +27,7 @@
       <div class="flex items-center gap-2">
         <oc-icon
           :icon="getIcon(item)"
-          :fill-type="getIconFillType(item)"
+          fill-type="line"
           size-class="size-5"
           @error="onIconError(item)"
         />
@@ -76,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { IconFillType, NoContentMessage, SortField, useSort } from '@opencloud-eu/web-pkg'
+import { NoContentMessage, SortField, useSort } from '@opencloud-eu/web-pkg'
 import { Icon, SortDir } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
@@ -120,13 +120,6 @@ function getIcon({ icon }: ExtensionInfo) {
     return fallbackIcon
   }
   return icon
-}
-
-function getIconFillType(item: ExtensionInfo): IconFillType {
-  if (getIcon(item) === fallbackIcon) {
-    return 'line'
-  }
-  return item.iconFillType || 'line'
 }
 
 function onIconError(item: ExtensionInfo) {

@@ -206,8 +206,7 @@ describe('ExtensionsList', () => {
         extensions: [
           {
             name: 'Presentation Viewer',
-            icon: 'resource-type-presentation',
-            iconFillType: 'fill',
+            icon: { name: 'resource-type-presentation', fillType: 'fill' },
             status: 'active',
             loaded: true
           }
@@ -215,8 +214,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('icon')).toBe('resource-type-presentation')
-      expect(icon.props('fillType')).toBe('fill')
+      expect(icon.props('icon')).toEqual({ name: 'resource-type-presentation', fillType: 'fill' })
     })
 
     it('falls back to the puzzle icon if the app has no icon', () => {
