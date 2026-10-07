@@ -1,8 +1,10 @@
 <template>
   <oc-icon
-    :key="`resource-icon-${iconName}`"
+    :key="`resource-icon-${imageIcon?.src ?? iconName}`"
+    :icon="imageIcon"
     :name="iconName"
-    :color="icon.color"
+    :fill-type="namedIcon?.fillType"
+    :color="namedIcon?.color"
     :size="size ? size : sizeClass ? undefined : 'medium'"
     :size-class="sizeClass"
     :unique-ids="uniqueIds"
@@ -22,7 +24,7 @@
 import { computed, inject, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { ImageIcon, isImageIcon, SizeType } from '@opencloud-eu/design-system/helpers'
 import {
   createDefaultFileIconMapping,
   getResourceIconName,
@@ -104,7 +106,7 @@ const mimeType = computed(() => {
   return resource.mimeType?.toLowerCase()
 })
 
-const icon = computed((): IconType => {
+const icon = computed((): IconType | ImageIcon => {
   if (unref(hasProjectSpaceIcon)) {
     if (unref(hasVaultSpaceIcon)) {
       return vaultSpaceIcon
@@ -127,11 +129,24 @@ const icon = computed((): IconType => {
   return typeIconOrUndefined ?? unref(fallbackIcon)
 })
 
-const iconName = computed(() => {
-  return getResourceIconName(unref(icon), !!unref(currentTheme)?.isDark)
+const imageIcon = computed(() => {
+  const value = unref(icon)
+  return isImageIcon(value) ? value : undefined
 })
 
-const fillsBox = computed(() => unref(icon).fillsBox === true)
+const namedIcon = computed(() => {
+  const value = unref(icon)
+  return isImageIcon(value) ? undefined : value
+})
 
-const uniqueIds = computed(() => unref(icon).uniqueIds === true)
+const iconName = computed(() => {
+  if (!unref(namedIcon)) {
+    return undefined
+  }
+  return getResourceIconName(unref(namedIcon), !!unref(currentTheme)?.isDark)
+})
+
+const fillsBox = computed(() => unref(namedIcon)?.fillsBox === true)
+
+const uniqueIds = computed(() => unref(namedIcon)?.uniqueIds === true)
 </script>

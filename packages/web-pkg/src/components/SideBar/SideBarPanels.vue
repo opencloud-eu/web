@@ -88,7 +88,7 @@
             class="!grid !grid-cols-[auto_1fr_auto] text-left px-2 w-full h-12"
             @click="openPanel(panelSelect.name)"
           >
-            <oc-icon :name="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
+            <oc-icon :icon="panelSelect.icon" :fill-type="panelSelect.iconFillType" />
             {{ panelSelect.title(panelContext) }}
             <oc-icon name="arrow-right-s" fill-type="line" />
           </oc-button>

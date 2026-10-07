@@ -27,7 +27,7 @@
       v-bind="attrs"
     >
       <span class="flex">
-        <oc-icon :name="icon" :fill-type="fillType" />
+        <oc-icon :icon="icon" :fill-type="fillType" />
         <span
           class="ml-4 font-bold"
           :class="{ 'text-invisible opacity-0': collapsed }"
@@ -38,7 +38,7 @@
   </li>
 </template>
 <script setup lang="ts">
-import { FillType } from '@opencloud-eu/design-system/helpers'
+import { FillType, Icon } from '@opencloud-eu/design-system/helpers'
 import { useRouter } from '@opencloud-eu/web-pkg'
 import { computed, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
@@ -53,7 +53,7 @@ const {
   handler = undefined
 } = defineProps<{
   name: string
-  icon: string
+  icon: Icon
   active?: boolean
   target?: RouteLocationRaw
   fillType?: FillType

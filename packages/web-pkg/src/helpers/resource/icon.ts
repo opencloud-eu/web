@@ -1,11 +1,7 @@
-import { FillType } from '@opencloud-eu/design-system/helpers'
+import { FillType, ImageIcon, NamedIcon } from '@opencloud-eu/design-system/helpers'
 
 export type IconFillType = FillType
-export type IconType = {
-  name: string
-  color?: string
-  /** @deprecated this property is not supported anymore */
-  fillType?: IconFillType
+export type IconType = NamedIcon & {
   hasDarkVariant?: boolean
   /** artwork fills its box entirely and therefore needs clipping */
   fillsBox?: boolean
@@ -14,9 +10,9 @@ export type IconType = {
 }
 
 export type ResourceIconMapping = {
-  mimeType: Record<string, IconType>
-  extension: Record<string, IconType>
-  folderExtension?: Record<string, IconType>
+  mimeType: Record<string, IconType | ImageIcon>
+  extension: Record<string, IconType | ImageIcon>
+  folderExtension?: Record<string, IconType | ImageIcon>
 }
 export const resourceIconMappingInjectionKey = 'oc-resource-icon-mapping'
 

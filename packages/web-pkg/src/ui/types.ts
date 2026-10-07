@@ -1,13 +1,10 @@
-import { IconFillType } from '../helpers/resource'
+import type { Icon } from '@opencloud-eu/design-system/helpers'
 import { Component } from 'vue'
 
 export type FolderView = {
   name: string
   label: string
-  icon: {
-    name: string
-    fillType: IconFillType
-  }
+  icon: Icon
   component: Component
   componentAttrs?: () => Record<string, unknown>
 }

@@ -26,7 +26,7 @@
     <template #name="{ item }">
       <div class="flex items-center gap-2">
         <oc-icon
-          :name="getIcon(item)"
+          :icon="getIcon(item)"
           :fill-type="getIconFillType(item)"
           size-class="size-5"
           @error="onIconError(item)"
@@ -77,7 +77,7 @@
 
 <script setup lang="ts">
 import { IconFillType, NoContentMessage, SortField, useSort } from '@opencloud-eu/web-pkg'
-import { SortDir } from '@opencloud-eu/design-system/helpers'
+import { Icon, SortDir } from '@opencloud-eu/design-system/helpers'
 import { computed, ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
@@ -113,7 +113,7 @@ const filteredExtensions = computed(() => {
 })
 
 const fallbackIcon = 'puzzle'
-const brokenIcons = ref<string[]>([])
+const brokenIcons = ref<Icon[]>([])
 
 function getIcon({ icon }: ExtensionInfo) {
   if (!icon || unref(brokenIcons).includes(icon)) {

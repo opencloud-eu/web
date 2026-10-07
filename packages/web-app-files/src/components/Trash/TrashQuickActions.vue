@@ -11,7 +11,7 @@
       :disabled="action.isDisabled({ resources: [space], space: undefined })"
       @click="action.handler({ resources: [space], space: undefined })"
     >
-      <oc-icon :name="getActionIcon(action)" fill-type="line" />
+      <oc-icon :icon="getActionIcon(action)" fill-type="line" />
     </oc-button>
   </div>
 </template>

@@ -61,7 +61,7 @@
           :disabled="isActionDisabled(action)"
           @click="() => action.handler()"
         >
-          <oc-icon :name="getActionIcon(action)" fill-type="line" />
+          <oc-icon :icon="getActionIcon(action)" fill-type="line" />
           <span v-text="action.label()"
         /></oc-button>
       </li>

@@ -58,7 +58,7 @@ import { v4 as uuidV4 } from 'uuid'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
-import { iconIsDarkInjectionKey } from '@opencloud-eu/design-system/helpers'
+import { iconIsDarkInjectionKey, ImageIcon, isImageIcon } from '@opencloud-eu/design-system/helpers'
 import {
   onSSEFileLockingEvent,
   onSSEItemRenamedEvent,
@@ -350,11 +350,20 @@ export const announceApplicationsReady = async ({
   appsStore.fileExtensions.forEach((fileExtensions) => {
     const app = appsStore.apps[fileExtensions.app]
 
-    const getIconDefinition = (): IconType => {
-      return {
-        name: fileExtensions.icon || app.icon,
-        color: fileExtensions.iconColor || app.color
+    const getIconDefinition = (): IconType | ImageIcon => {
+      const icon = fileExtensions.icon || app.icon
+      if (isImageIcon(icon)) {
+        return icon
       }
+
+      const color = fileExtensions.iconColor || app.color
+      if (typeof icon === 'string') {
+        return { name: icon, color }
+      }
+      if (fileExtensions.icon) {
+        return { color, ...icon }
+      }
+      return { ...icon, color: fileExtensions.iconColor || icon.color || app.color }
     }
 
     if (fileExtensions.mimeType) {

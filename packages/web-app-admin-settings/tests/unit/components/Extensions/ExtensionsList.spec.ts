@@ -197,7 +197,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('grid')
+      expect(icon.props('icon')).toBe('grid')
       expect(icon.props('fillType')).toBe('line')
     })
 
@@ -215,7 +215,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('resource-type-presentation')
+      expect(icon.props('icon')).toBe('resource-type-presentation')
       expect(icon.props('fillType')).toBe('fill')
     })
 
@@ -225,7 +225,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('puzzle')
+      expect(icon.props('icon')).toBe('puzzle')
       expect(icon.props('fillType')).toBe('line')
     })
 
@@ -243,7 +243,7 @@ describe('ExtensionsList', () => {
       })
       await wrapper.findComponent({ name: 'OcIcon' }).vm.$emit('error')
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('puzzle')
+      expect(icon.props('icon')).toBe('puzzle')
       expect(icon.props('fillType')).toBe('line')
     })
   })

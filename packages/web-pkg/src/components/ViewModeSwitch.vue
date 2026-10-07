@@ -7,11 +7,7 @@
       appearance="raw"
       class="my-2 mx-1 p-1 align-middle"
     >
-      <oc-icon
-        v-if="activeViewMode"
-        :name="activeViewMode.icon.name"
-        :fill-type="activeViewMode.icon.fillType"
-      />
+      <oc-icon v-if="activeViewMode" :icon="activeViewMode.icon" />
     </oc-button>
     <oc-drop
       :title="$gettext('View mode')"
@@ -34,11 +30,7 @@
           >
             <div class="flex justify-between w-full">
               <span class="flex items-center gap-2">
-                <oc-icon
-                  :name="viewMode.icon.name"
-                  :fill-type="viewMode.icon.fillType"
-                  size-class="size-5"
-                />
+                <oc-icon :icon="viewMode.icon" size-class="size-5" />
                 <span v-text="$gettext(viewMode.label)" />
               </span>
               <oc-icon
@@ -73,7 +65,7 @@
       class="p-1"
       @click="emit('select', viewMode)"
     >
-      <oc-icon :name="viewMode.icon.name" :fill-type="viewMode.icon.fillType" />
+      <oc-icon :icon="viewMode.icon" />
     </oc-button>
   </div>
 </template>

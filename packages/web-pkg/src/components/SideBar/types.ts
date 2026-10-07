@@ -1,6 +1,7 @@
 import { defineComponent } from 'vue'
 import { IconFillType } from '../../helpers/resource'
 import { Item } from '@opencloud-eu/web-client'
+import type { Icon } from '@opencloud-eu/design-system/helpers'
 
 export interface SideBarPanelContext<R extends Item, P extends Item, T extends Item> {
   root?: R
@@ -10,7 +11,8 @@ export interface SideBarPanelContext<R extends Item, P extends Item, T extends I
 
 export interface SideBarPanel<R extends Item, P extends Item, T extends Item> {
   name: string
-  icon: string
+  icon: Icon
+  /** @deprecated use a named icon for the `icon` instead */
   iconFillType?: IconFillType
   title(context: SideBarPanelContext<R, P, T>): string
   isVisible(context: SideBarPanelContext<R, P, T>): boolean

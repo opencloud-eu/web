@@ -59,7 +59,7 @@ export default defineWebApplication({
         return {
           extension: mimeType.ext,
           label: () => provider.name,
-          icon: provider.icon,
+          ...(provider.icon && { icon: { src: provider.icon } }),
           name: provider.name,
           mimeType: mimeType.mime_type,
           secureView: provider.secure_view,

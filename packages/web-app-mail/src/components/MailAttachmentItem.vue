@@ -2,7 +2,9 @@
   <div class="mail-attachment-item flex justify-between items-center">
     <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
       <oc-icon
+        :icon="imageIcon"
         :name="iconName"
+        :fill-type="icon?.fillType"
         :color="icon?.color"
         size-class="size-8"
         class="inline-flex items-center"
@@ -40,7 +42,7 @@
 
 <script setup lang="ts">
 import { urlJoin } from '@opencloud-eu/web-client'
-import { computed, inject } from 'vue'
+import { computed, inject, unref } from 'vue'
 import { storeToRefs } from 'pinia'
 import type { MailBodyPart } from '../types'
 import type { MailComposeAttachment } from './MailComposeForm.vue'
@@ -57,6 +59,7 @@ import {
   useThemeStore
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
+import { isImageIcon } from '@opencloud-eu/design-system/helpers'
 import { hasBlobId, hasId } from '../helpers/mailAttachmentGuards'
 
 type Attachment = MailBodyPart | MailComposeAttachment
@@ -102,11 +105,17 @@ const icon = computed(() => {
   )
 })
 
+const imageIcon = computed(() => {
+  const value = unref(icon)
+  return value && isImageIcon(value) ? value : undefined
+})
+
 const iconName = computed(() => {
-  if (!icon.value) {
+  const value = unref(icon)
+  if (!value || isImageIcon(value)) {
     return 'file-2'
   }
-  return getResourceIconName(icon.value, !!currentTheme.value?.isDark)
+  return getResourceIconName(value, !!unref(currentTheme)?.isDark)
 })
 
 const attachmentBlobId = computed(() => {
