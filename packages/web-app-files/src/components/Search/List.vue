@@ -128,13 +128,11 @@
           @update:selected-ids="selectedResourcesIds = $event"
         >
           <template #additionalResourceContent="{ resource }">
-            <!-- eslint-disable vue/no-v-html -->
-            <span
-              v-if="resource.highlights"
-              class="truncate block text-sm [&_mark]:bg-yellow-200 [&_mark]:font-semibold"
-              v-html="resource.highlights"
+            <search-highlights
+              :resource="resource as SearchResource"
+              :term="searchTerm"
+              :filter-tags="selectedTags"
             />
-            <!--eslint-enable-->
           </template>
           <template #contextMenu="{ resource }">
             <context-actions
@@ -162,6 +160,7 @@
 import { useResourcesViewDefaults } from '../../composables'
 import {
   AppLoadingSpinner,
+  SearchHighlights,
   SearchResult,
   useCapabilityStore,
   useSpacesStore,
@@ -290,6 +289,7 @@ const mediaTypeFilter =
   useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('mediaTypeFilter')
 
 const tagParam = useRouteQuery('q_tags')
+const selectedTags = computed(() => queryItemAsString(unref(tagParam))?.split('+') || [])
 const lastModifiedParam = useRouteQuery('q_lastModified')
 const mediaTypeParam = useRouteQuery('q_mediaType')
 const titleOnlyParam = useRouteQuery('q_titleOnly')

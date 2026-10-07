@@ -29,6 +29,7 @@ export const useSearch = () => {
   const findSpaceById = (storageId: string) => spacesStore.spaces.find((s) => s.id === storageId)
 
   const fullTextSearchEnabled = computed(() => capabilityStore.searchContent?.enabled)
+  const tagSearchEnabled = computed(() => capabilityStore.searchTag?.enabled)
   const areHiddenFilesShown = computed(() => resourcesStore.areHiddenFilesShown)
   const projectSpaces = computed(() => spacesStore.spaces.filter(isProjectSpaceResource))
   const getProjectSpace = (id: string) => {
@@ -108,17 +109,17 @@ export const useSearch = () => {
   }) => {
     const query: string[] = []
 
-    const humanSearchTerm = term
-    const useFullTextSearch = unref(fullTextSearchEnabled) && !isTitleOnlySearch
-
-    if (!!humanSearchTerm) {
-      let nameQuery = `name:"*${humanSearchTerm}*"`
-
-      if (useFullTextSearch) {
-        nameQuery = `(name:"*${humanSearchTerm}*" OR content:"${humanSearchTerm}")`
+    if (term) {
+      // the term matches names, and unless only titles are searched also contents and tags
+      const conditions = [`name:"*${term}*"`]
+      if (!isTitleOnlySearch && unref(fullTextSearchEnabled)) {
+        conditions.push(`content:"${term}"`)
+      }
+      if (!isTitleOnlySearch && unref(tagSearchEnabled)) {
+        conditions.push(`tag:"*${term}*"`)
       }
 
-      query.push(nameQuery)
+      query.push(conditions.length > 1 ? `(${conditions.join(' OR ')})` : conditions[0])
     }
 
     if (useScope && scope) {
