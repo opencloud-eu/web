@@ -19,7 +19,7 @@ export class FolderLoaderSharedViaLink implements FolderLoader {
   }
 
   public getTask(context: TaskContext): FolderLoaderTask {
-    const { userStore, clientService, configStore, resourcesStore } = context
+    const { userStore, clientService, configStore, resourcesStore, spacesStore } = context
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return useTask(function* (signal1, signal2) {
@@ -35,13 +35,23 @@ export class FolderLoaderSharedViaLink implements FolderLoader {
 
       const resources = value
         .filter((s) => s.permissions.some(({ link }) => !!link))
-        .map((driveItem) =>
-          buildOutgoingShareResource({
+        .map((driveItem) => {
+          const resource = buildOutgoingShareResource({
             driveItem,
             user: userStore.user,
             serverUrl: configStore.serverUrl
           })
-        )
+          const space =
+            driveItem.root &&
+            spacesStore.spaces.find(({ id }) => id === driveItem.parentReference?.driveId)
+          if (!space) {
+            return resource
+          }
+
+          // a link on a space root is listed as the space, so it looks and opens like in the spaces list
+          const { sharedWith, sharedBy, sdate, shareTypes, outgoing } = resource
+          return { ...space, sharedWith, sharedBy, sdate, shareTypes, outgoing }
+        })
 
       resourcesStore.initResourceList({ currentFolder: null, resources })
     })
