@@ -4,20 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @BloomyInDev, @eriktews, @tammi-23, @v-scharf
-
-### 🐛 Bug Fixes
-
-- fix: improve mobile usability of tooltips, switches, editor menus and admin tables [[#3550](https://github.com/opencloud-eu/web/pull/3550)]
-- fix(admin-settings): respect the app icon fill type in the apps list [[#3567](https://github.com/opencloud-eu/web/pull/3567)]
-- fix: prevent app token from being generated more than once [[#3541](https://github.com/opencloud-eu/web/pull/3541)]
-- fix: text editor bugs found during exploratory testing [[#3533](https://github.com/opencloud-eu/web/pull/3533)]
-- fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
-- fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
-- fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+@AlexAndBear, @BloomyInDev, @JammingBen, @eriktews, @tammi-23, @v-scharf
 
 ### 📈 Enhancement
 
+- feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
 - feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
 - feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
 - feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
@@ -28,6 +19,16 @@
 - chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
 - feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
 - feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
+
+### 🐛 Bug Fixes
+
+- fix: improve mobile usability of tooltips, switches, editor menus and admin tables [[#3550](https://github.com/opencloud-eu/web/pull/3550)]
+- fix(admin-settings): respect the app icon fill type in the apps list [[#3567](https://github.com/opencloud-eu/web/pull/3567)]
+- fix: prevent app token from being generated more than once [[#3541](https://github.com/opencloud-eu/web/pull/3541)]
+- fix: text editor bugs found during exploratory testing [[#3533](https://github.com/opencloud-eu/web/pull/3533)]
+- fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
+- fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
+- fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
 
 ### ✅ Tests
 
