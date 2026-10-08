@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: public link actions and the password policy for anonymous visitors [[#3591](https://github.com/opencloud-eu/web/pull/3591)]
+- fix(web-runtime): keep the public link context when unlocking a vault [[#3606](https://github.com/opencloud-eu/web/pull/3606)]
 - fix: limit expiration dates to 100 years in the future [[#3601](https://github.com/opencloud-eu/web/pull/3601)]
 - fix: update the sidebar preview when switching to a resource with the same mdate [[#3615](https://github.com/opencloud-eu/web/pull/3615)]
 - fix: handle deep links to deleted or missing files [[#3590](https://github.com/opencloud-eu/web/pull/3590)]
@@ -31,6 +33,7 @@
 
 ### 📈 Enhancement
 
+- feat(web-runtime): show the status of app tokens [[#3607](https://github.com/opencloud-eu/web/pull/3607)]
 - feat(external): close the app via the collabora back button [[#3612](https://github.com/opencloud-eu/web/pull/3612)]
 - feat: support image icons for apps and extensions [[#3580](https://github.com/opencloud-eu/web/pull/3580)]
 - feat: add whiteboard icon for excalidraw files [[#3584](https://github.com/opencloud-eu/web/pull/3584)]
