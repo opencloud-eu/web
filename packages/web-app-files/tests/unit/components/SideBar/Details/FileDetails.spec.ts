@@ -7,6 +7,7 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
+import { reactive } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { AncestorMetaData, ImageDimension, ProcessorType } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
@@ -82,6 +83,25 @@ describe('Details SideBar Panel', () => {
           dimensions: ImageDimension.Medium,
           processor: ProcessorType.enum.fit
         }),
+        expect.anything(),
+        expect.anything(),
+        expect.anything()
+      )
+    })
+    it('loads the preview again when the etag changes but the modification date stays the same', async () => {
+      const resource = reactive({ ...getResourceMock(), etag: 'initial-etag' }) as Resource
+      const { mocks, wrapper } = createWrapper({ resource })
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
+
+      resource.etag = 'changed-etag'
+      await wrapper.vm.$nextTick()
+      await wrapper.vm.$nextTick()
+
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(2)
+      expect(mocks.$previewService.loadPreview).toHaveBeenLastCalledWith(
+        expect.objectContaining({ resource: expect.objectContaining({ etag: 'changed-etag' }) }),
         expect.anything(),
         expect.anything(),
         expect.anything()
