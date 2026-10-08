@@ -5,12 +5,13 @@ import {
   getVaultClaim,
   queryItemAsString,
   resolveVaultEngine,
+  routeToContextQuery,
   useExtensionRegistry,
   useSpacesLoading,
   useSpacesStore,
   VaultClaim
 } from '@opencloud-eu/web-pkg'
-import { SpaceResource } from '@opencloud-eu/web-client'
+import { isPublicSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 
 /** Space-relative, absolute path a `driveAliasAndItem` points at within `space`. */
 function spaceRelativePath(driveAliasAndItem: string, space: SpaceResource): string {
@@ -134,6 +135,7 @@ export const setupVaultUnlockGuard = (router: Router, clientService: ClientServi
       ...claim.unlockRoute,
       query: {
         ...(claim.unlockRoute.query || {}),
+        ...(isPublicSpaceResource(space) && routeToContextQuery(to)),
         redirectUrl: to.fullPath,
         ...(cancelUrl && { cancelUrl })
       }
