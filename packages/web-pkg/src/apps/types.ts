@@ -68,8 +68,8 @@ export interface ApplicationFileExtension {
    * and the "Open with..."-menu.
    * Defaults to the `icon` property of the application if not specified.
    *
-   * Note that in the file list, the icon might be overridden if there is a
-   * default icon defined for the given file type.
+   * Note that in the file list and the "New"-menu, the icon is overridden if
+   * there is a default icon defined for the given file type.
    */
   icon?: string
   /**
