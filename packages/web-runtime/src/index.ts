@@ -123,6 +123,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     ...(configStore.apps.includes('external') ? [appProviderService.loadData()] : [])
   ])
 
+  app.config.globalProperties.passwordPolicyService.initialize(capabilityStore)
+
   // Important: has to happen AFTER native applications are loaded.
   // Reason: the `external` app serves as a blueprint for creating the app provider apps.
   if (applicationStore.has('web-app-external')) {
@@ -199,8 +201,6 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
       ])
 
       const previewService = app.config.globalProperties.$previewService
-      const passwordPolicyService = app.config.globalProperties.passwordPolicyService
-      passwordPolicyService.initialize(capabilityStore)
 
       // Register SSE event listeners
       if (capabilityStore.supportSSE) {

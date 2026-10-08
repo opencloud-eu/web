@@ -38,9 +38,10 @@
     </no-content-message>
     <div v-else>
       <oc-table
-        class="app-token-table [&_td]:px-0 [&_th]:px-0 [&_.oc-table-data-cell-creationDate]:w-1/4 [&_.oc-table-data-cell-expirationDate]:w-1/4"
+        class="app-token-table [&_.oc-table-data-cell-creationDate]:w-1/4 [&_.oc-table-data-cell-expirationDate]:w-1/4"
         :data="visibleAppTokens"
         :fields="tableFields"
+        padding-x="remove"
         :sort-by="sortBy"
         :sort-dir="sortDir"
         @sort="handleSort"
@@ -59,6 +60,24 @@
           <div class="w-full truncate">
             <span v-text="formatDateFromISO(item.expiration_date, currentLanguage)" />
           </div>
+        </template>
+        <template #status="{ item }">
+          <oc-tag
+            v-if="isExpired(item.expiration_date)"
+            appearance="filled"
+            size="small"
+            class="border-0 !rounded-sm !bg-red-200 !text-red-900"
+          >
+            <span v-text="$gettext('Expired')" />
+          </oc-tag>
+          <oc-tag
+            v-else
+            appearance="filled"
+            size="small"
+            class="border-0 !rounded-sm !bg-green-200 !text-green-900"
+          >
+            <span v-text="$gettext('Active')" />
+          </oc-tag>
         </template>
         <template #actions="{ item }">
           <oc-button
@@ -163,9 +182,20 @@ const openDeleteAppTokenModal = (appToken: AppToken) => {
   })
 }
 
+function isExpired(expirationDate: string) {
+  return new Date(expirationDate) <= new Date()
+}
+
 const sortFields = [
   { name: 'creationDate', prop: 'created_date', sortable: true, sortDir: SortDir.Desc },
-  { name: 'expirationDate', prop: 'expiration_date', sortable: true, sortDir: SortDir.Desc }
+  { name: 'expirationDate', prop: 'expiration_date', sortable: true, sortDir: SortDir.Desc },
+  {
+    name: 'status',
+    prop: 'expiration_date',
+    // active tokens come first in ascending order
+    sortable: (expirationDate: string) => (isExpired(expirationDate) ? 1 : 0),
+    sortDir: SortDir.Asc
+  }
 ]
 const {
   items: sortedAppTokens,
@@ -210,6 +240,13 @@ const tableFields = computed<FieldType[]>(() => {
       sortable: true,
       thClass: 'hidden md:table-cell',
       tdClass: 'hidden md:table-cell'
+    },
+    {
+      name: 'status',
+      type: 'slot',
+      title: $gettext('Status'),
+      sortable: true,
+      width: 'shrink'
     },
     {
       name: 'actions',

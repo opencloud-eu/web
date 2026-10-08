@@ -32,7 +32,7 @@ export class PasswordPolicyService {
   }
 
   public initialize(capabilityStore: CapabilityStore) {
-    this.capability = capabilityStore.passwordPolicy
+    this.capability = capabilityStore.passwordPolicy || {}
     this.buildGeneratePasswordRules()
   }
 

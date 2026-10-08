@@ -10,11 +10,12 @@ import {
 vi.mock('@opencloud-eu/web-pkg', async () => {
   const { getSpaceForDriveAliasAndItem } =
     await import('../../../../web-pkg/src/helpers/spaces/driveAlias')
-  const { queryItemAsString } =
+  const { queryItemAsString, routeToContextQuery } =
     await import('../../../../web-pkg/src/composables/appDefaults/useAppNavigation')
   return {
     getSpaceForDriveAliasAndItem,
     queryItemAsString,
+    routeToContextQuery,
     getVaultClaim: vi.fn(),
     resolveVaultEngine: vi.fn(),
     useExtensionRegistry: vi.fn(() => ({})),
@@ -145,6 +146,32 @@ describe('setupVaultUnlockGuard', () => {
         spaceId: 'space-1',
         vaultRoot: '/my.vault',
         redirectUrl: '/files/personal/admin/my.vault'
+      }
+    })
+  })
+
+  it('keeps the public link context, so anonymous visitors are not sent to the login', async () => {
+    const publicSpace = { id: 'token', driveAlias: 'public/token', driveType: 'public' }
+    const guard = installGuard({
+      spaces: [publicSpace],
+      claim: { vaultRoot: '/my.vault', unlockRoute },
+      engine: null
+    })
+
+    const result = await guard(
+      {
+        name: 'files-public-link',
+        params: { driveAliasAndItem: 'public/token/my.vault' },
+        query: {},
+        fullPath: '/files/link/public/token/my.vault'
+      },
+      coldStart
+    )
+
+    expect(result).toMatchObject({
+      query: {
+        contextRouteName: 'files-public-link',
+        contextRouteParams: { driveAliasAndItem: 'public/token/my.vault' }
       }
     })
   })
