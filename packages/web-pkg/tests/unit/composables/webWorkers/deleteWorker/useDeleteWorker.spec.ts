@@ -27,16 +27,37 @@ describe('useDeleteWorker', () => {
         }
       })
     })
+
+    it.each([true, false])('posts withCredentials %s to the worker', (guestContextReady) => {
+      getWrapper({
+        guestContextReady,
+        setup: ({ startWorker }, { workerMock }) => {
+          startWorker(
+            {
+              topic: 'fileListDelete',
+              space: mock<SpaceResource>(),
+              resources: [mock<Resource>()]
+            },
+            () => undefined
+          )
+          const { data } = JSON.parse(vi.mocked(workerMock.post).mock.calls[0][0] as string)
+          expect(data.withCredentials).toBe(guestContextReady)
+        }
+      })
+    })
   })
 })
 
 function getWrapper({
-  setup
+  setup,
+  guestContextReady = false
 }: {
+  guestContextReady?: boolean
   setup: (
     instance: ReturnType<typeof useDeleteWorker>,
     {
-      webWorkersStore
+      webWorkersStore,
+      workerMock
     }: { webWorkersStore: WebWorkersStore; workerMock: WebWorker; mocks: Record<string, unknown> }
   ) => void
 }) {
@@ -52,7 +73,11 @@ function getWrapper({
 
         setup(instance, { webWorkersStore, workerMock, mocks })
       },
-      { mocks, provide: mocks }
+      {
+        mocks,
+        provide: mocks,
+        pluginOptions: { piniaOptions: { authState: { guestContextReady } } }
+      }
     )
   }
 }

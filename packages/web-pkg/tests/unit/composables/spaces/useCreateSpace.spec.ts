@@ -215,6 +215,33 @@ describe('useCreateSpace', () => {
       })
     })
 
+    it('invites guest members by email address alone', () => {
+      return getWrapper({
+        setup: async ({ addNewSpace }, { $clientService }) => {
+          await addNewSpace('Team', {
+            members: [
+              {
+                id: 'guest@example.com',
+                displayName: 'guest@example.com',
+                shareType: ShareTypes.guest.value,
+                roleId: 'role-1'
+              }
+            ]
+          })
+
+          expect($clientService.graphAuthenticated.permissions.createInvite).toHaveBeenCalledWith(
+            '1',
+            '1',
+            expect.objectContaining({
+              roles: ['role-1'],
+              recipients: [{ email: 'guest@example.com' }]
+            }),
+            expect.anything()
+          )
+        }
+      })
+    })
+
     it('keeps the space and summarizes what could not be applied', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       return getWrapper({

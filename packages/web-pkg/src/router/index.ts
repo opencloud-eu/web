@@ -6,6 +6,12 @@ import {
   createLocationCommon
 } from './common'
 import {
+  buildRoutes as buildGuestRoutes,
+  createLocationGuest,
+  isLocationGuestActive,
+  locationGuestLink
+} from './guest'
+import {
   buildRoutes as buildPublicRoutes,
   createLocationPublic,
   isLocationPublicActive,
@@ -48,6 +54,7 @@ const buildRoutes = (components: RouteComponents): RouteRecordRaw[] => [
   ...buildCommonRoutes(components),
   ...buildSharesRoutes(components),
   ...buildPublicRoutes(components),
+  ...buildGuestRoutes(components),
   ...buildSpacesRoutes(components),
   ...buildTrashRoutes(components)
 ]
@@ -58,16 +65,19 @@ export {
   createLocationShares,
   createLocationSpaces,
   createLocationPublic,
+  createLocationGuest,
   isLocationCommonActive,
   isLocationSharesActive,
   isLocationSpacesActive,
   isLocationPublicActive,
+  isLocationGuestActive,
   isLocationActive,
   isLocationActiveDirector,
   isLocationTrashActive,
   createLocationTrash,
   locationPublicLink,
   locationPublicUpload,
+  locationGuestLink,
   locationSpacesGeneric,
   locationSharesViaLink,
   locationSharesWithMe,

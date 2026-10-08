@@ -1,10 +1,17 @@
 import { mock } from 'vitest-mock-extended'
+import { flushPromises } from '@vue/test-utils'
 import { CollaboratorAutoCompleteItem, ShareRole, ShareTypes } from '@opencloud-eu/web-client'
+import { User } from '@opencloud-eu/web-client/graph/generated'
 import { SpaceMemberInvite } from '@opencloud-eu/web-pkg'
 import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import SpaceMemberSelect from '../../../../../src/components/Modals/CreateSpace/SpaceMemberSelect.vue'
 import RoleDropdown from '../../../../../src/components/SideBar/Shares/Collaborators/RoleDropdown.vue'
 import RecipientContainer from '../../../../../src/components/SideBar/Shares/Collaborators/InviteCollaborator/RecipientContainer.vue'
+
+vi.mock('lodash-es', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('lodash-es')>()),
+  debounce: (fn: unknown) => fn
+}))
 
 const spaceRole = mock<ShareRole>({
   id: 'space-viewer',
@@ -120,7 +127,90 @@ describe('SpaceMemberSelect', () => {
   })
 })
 
+describe('SpaceMemberSelect guest invites', () => {
+  it('offers a valid email address as a guest', async () => {
+    const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'someone@else.com' } as User] })
+
+    await search(wrapper, 'guest@example.com')
+
+    expect(autocompleteResults(wrapper)).toContainEqual({
+      id: 'guest@example.com',
+      displayName: 'guest@example.com',
+      shareType: ShareTypes.guest.value
+    })
+  })
+
+  it('does not offer a guest without the guest invite permission', async () => {
+    const { wrapper } = getWrapper({ canInviteGuests: false })
+
+    await search(wrapper, 'guest@example.com')
+
+    expect(guestOptions(wrapper)).toEqual([])
+  })
+
+  it('does not offer a guest for an email that belongs to a known account', async () => {
+    const { wrapper } = getWrapper({ users: [{ id: '2', mail: 'guest@example.com' } as User] })
+
+    await search(wrapper, 'guest@example.com')
+
+    expect(guestOptions(wrapper)).toEqual([])
+  })
+
+  it('does not offer a guest that is already selected', async () => {
+    const { wrapper } = getWrapper()
+    await selectCollaborators(wrapper, [
+      mock<CollaboratorAutoCompleteItem>({
+        id: 'guest@example.com',
+        displayName: 'guest@example.com',
+        shareType: ShareTypes.guest.value
+      })
+    ])
+
+    await search(wrapper, 'guest@example.com')
+
+    expect(guestOptions(wrapper)).toEqual([])
+  })
+
+  it('adds a selected guest as a member', async () => {
+    const { wrapper } = getWrapper()
+
+    await selectCollaborators(wrapper, [
+      mock<CollaboratorAutoCompleteItem>({
+        id: 'guest@example.com',
+        displayName: 'guest@example.com',
+        shareType: ShareTypes.guest.value
+      })
+    ])
+
+    expect(wrapper.emitted('update:modelValue').at(-1)).toEqual([
+      [
+        {
+          id: 'guest@example.com',
+          displayName: 'guest@example.com',
+          shareType: ShareTypes.guest.value,
+          roleId: 'space-viewer'
+        }
+      ]
+    ])
+  })
+})
+
 type Wrapper = ReturnType<typeof getWrapper>['wrapper']
+
+async function search(wrapper: Wrapper, query: string) {
+  memberSelect(wrapper).vm.$emit('search:input', query)
+  await flushPromises()
+}
+
+function autocompleteResults(wrapper: Wrapper): CollaboratorAutoCompleteItem[] {
+  return (wrapper.vm as any).autocompleteResults
+}
+
+function guestOptions(wrapper: Wrapper) {
+  return autocompleteResults(wrapper).filter(
+    ({ shareType }) => shareType === ShareTypes.guest.value
+  )
+}
 
 function collaborator({ id = 'user-1', group = false } = {}) {
   return mock<CollaboratorAutoCompleteItem>({
@@ -146,9 +236,13 @@ function getWrapper({
     [fileRole.id]: fileRole
   },
   modelValue = [] as SpaceMemberInvite[],
-  roleId = ''
+  roleId = '',
+  users = [] as User[],
+  canInviteGuests = true
 } = {}) {
   const mocks = defaultComponentMocks()
+  mocks.$clientService.graphAuthenticated.users.listUsers.mockResolvedValue(users)
+  mocks.$clientService.graphAuthenticated.groups.listGroups.mockResolvedValue([])
 
   const wrapper = mount(SpaceMemberSelect, {
     props: {
@@ -157,7 +251,15 @@ function getWrapper({
       'onUpdate:roleId': (id: string) => wrapper.setProps({ roleId: id })
     },
     global: {
-      plugins: [...defaultPlugins({ piniaOptions: { sharesState: { graphRoles } } })],
+      plugins: [
+        ...defaultPlugins({
+          abilities: canInviteGuests ? [{ action: 'create-all', subject: 'GuestInvite' }] : [],
+          piniaOptions: {
+            sharesState: { graphRoles },
+            userState: { user: mock<User>({ id: 'me' }) }
+          }
+        })
+      ],
       mocks,
       provide: mocks
     }

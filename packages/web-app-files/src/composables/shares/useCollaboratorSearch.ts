@@ -1,11 +1,13 @@
 import { computed, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
+import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
+import { useAbility, useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
 
 export const useCollaboratorSearch = () => {
   const clientService = useClientService()
+  const { can } = useAbility()
 
   /**
    * Users and groups matching `query`, each tagged with the share type it would
@@ -40,7 +42,38 @@ export const useCollaboratorSearch = () => {
     ] as CollaboratorAutoCompleteItem[]
   }
 
-  return { searchCollaborators }
+  /**
+   * A guest invite for `query` if it is a mail address that doesn't belong to
+   * one of the `collaborators` found for it.
+   */
+  function getGuestCandidates(
+    query: string,
+    collaborators: CollaboratorAutoCompleteItem[]
+  ): CollaboratorAutoCompleteItem[] {
+    const trimmedQuery = (query || '').trim()
+    if (
+      !can('create-all', 'GuestInvite') ||
+      !EmailValidator.validate(trimmedQuery) ||
+      emailBelongsToAccount(trimmedQuery, collaborators)
+    ) {
+      return []
+    }
+    return [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.guest.value }]
+  }
+
+  function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    if (users.length === 1 && !users[0].mail) {
+      return true
+    }
+    return collaborators.some((c) =>
+      [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
+        email.toLowerCase()
+      )
+    )
+  }
+
+  return { searchCollaborators, getGuestCandidates }
 }
 
 /**

@@ -6,6 +6,7 @@ type MessageData = {
   baseUrl?: string
   accessToken?: string
   headers?: Record<string, string>
+  withCredentials?: boolean
   space?: SpaceResource
   resources?: Resource[]
   concurrentRequests?: number
@@ -32,10 +33,14 @@ self.onmessage = async (e: MessageEvent) => {
     return
   }
 
-  const { baseUrl, headers, space, resources, concurrentRequests } = data
+  const { baseUrl, headers, withCredentials, space, resources, concurrentRequests } = data
 
   storedHeaders = headers
-  const webdav = _webdav(baseUrl, () => storedHeaders)
+  const webdav = _webdav(
+    baseUrl,
+    () => storedHeaders,
+    () => withCredentials
+  )
 
   const successful: DeleteWorkerReturnData['successful'] = []
   const failed: DeleteWorkerReturnData['failed'] = []

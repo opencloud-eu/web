@@ -27,18 +27,27 @@ export * from './types'
 export type { ListFilesOptions, ListFilesResult } from './listFiles'
 export type { GetFileContentsResponse } from './getFileContents'
 
-export const webdav = (baseURI: string, headers?: () => Headers): WebDAV => {
+export const webdav = (
+  baseURI: string,
+  headers?: () => Headers,
+  withCredentials?: () => boolean
+): WebDAV => {
   const axiosClient = axios.create()
-  if (headers) {
+  if (headers || withCredentials) {
     axiosClient.interceptors.request.use((config) => {
-      Object.assign(config.headers, headers())
+      if (headers) {
+        Object.assign(config.headers, headers())
+      }
+      if (withCredentials?.()) {
+        config.withCredentials = true
+      }
       return config
     })
   }
 
   const options = { axiosClient, baseUrl: baseURI, headers }
 
-  const dav = new DAV({ baseUrl: baseURI, headers })
+  const dav = new DAV({ baseUrl: baseURI, headers, withCredentials })
   const registerExtraProp = (name: string) => {
     dav.extraProps.push(name)
   }
