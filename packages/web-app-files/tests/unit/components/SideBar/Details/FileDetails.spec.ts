@@ -88,20 +88,20 @@ describe('Details SideBar Panel', () => {
         expect.anything()
       )
     })
-    it('loads the preview of another resource with the same modification date', async () => {
-      const resource = reactive({ ...getResourceMock() }) as Resource
+    it('loads the preview again when the etag changes but the modification date stays the same', async () => {
+      const resource = reactive({ ...getResourceMock(), etag: '1' }) as Resource
       const { mocks, wrapper } = createWrapper({ resource })
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
       expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
 
-      resource.id = '2'
+      resource.etag = '2'
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(2)
       expect(mocks.$previewService.loadPreview).toHaveBeenLastCalledWith(
-        expect.objectContaining({ resource: expect.objectContaining({ id: '2' }) }),
+        expect.objectContaining({ resource: expect.objectContaining({ etag: '2' }) }),
         expect.anything(),
         expect.anything(),
         expect.anything()
