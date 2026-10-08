@@ -26,31 +26,39 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 describe('paste', () => {
   it('reports a move for cut & paste although the clipboard is cleared before the worker finishes', async () => {
-    const space = mock<SpaceResource>({ id: 'space-1' })
-    let workerCallback: (result: { successful: Resource[]; failed: unknown[] }) => void
-    vi.mocked(usePasteWorker).mockReturnValue({
-      startWorker: vi.fn((_, callback) => {
-        workerCallback = callback
-      })
-    } as unknown as ReturnType<typeof usePasteWorker>)
-    vi.mocked(useGetMatchingSpace).mockImplementation(() =>
-      useGetMatchingSpaceMock({ getMatchingSpace: () => space })
-    )
-    vi.mocked(ResourceTransfer).mockImplementation(
-      class {
-        getTransferData = vi.fn().mockResolvedValue([{}])
-        showResultMessage = showResultMessage
-      } as unknown as typeof ResourceTransfer
-    )
-
-    const resource = mock<Resource>({ id: 'r1', storageId: 'space-1', path: '/a/file.txt' })
-    const { actions } = getWrapper()
-    await unref(actions)[0].handler({ space, resources: [resource] })
-
-    workerCallback({ successful: [], failed: [] })
+    await pasteWithTransferType(TransferType.MOVE)
     expect(showResultMessage).toHaveBeenCalledWith([], [], TransferType.MOVE)
   })
+  it('reports a copy when a cut resource is copied into another space', async () => {
+    await pasteWithTransferType(TransferType.COPY)
+    expect(showResultMessage).toHaveBeenCalledWith([], [], TransferType.COPY)
+  })
 })
+
+async function pasteWithTransferType(transferType: TransferType) {
+  const space = mock<SpaceResource>({ id: 'space-1' })
+  let workerCallback: (result: { successful: Resource[]; failed: unknown[] }) => void
+  vi.mocked(usePasteWorker).mockReturnValue({
+    startWorker: vi.fn((_, callback) => {
+      workerCallback = callback
+    })
+  } as unknown as ReturnType<typeof usePasteWorker>)
+  vi.mocked(useGetMatchingSpace).mockImplementation(() =>
+    useGetMatchingSpaceMock({ getMatchingSpace: () => space })
+  )
+  vi.mocked(ResourceTransfer).mockImplementation(
+    class {
+      getTransferData = vi.fn().mockResolvedValue([{ transferType }])
+      showResultMessage = showResultMessage
+    } as unknown as typeof ResourceTransfer
+  )
+
+  const resource = mock<Resource>({ id: 'r1', storageId: 'space-1', path: '/a/file.txt' })
+  const { actions } = getWrapper()
+  await unref(actions)[0].handler({ space, resources: [resource] })
+
+  workerCallback({ successful: [], failed: [] })
+}
 
 function getWrapper() {
   const mocks = defaultComponentMocks()

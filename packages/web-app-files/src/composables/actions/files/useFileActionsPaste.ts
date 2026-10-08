@@ -73,8 +73,7 @@ export const useFileActionsPaste = () => {
       $ngettext
     )
 
-    const type = unref(transferType)
-    const transferData = await resourceTransfer.getTransferData(type)
+    const transferData = await resourceTransfer.getTransferData(unref(transferType))
     if (!transferData.length) {
       return
     }
@@ -82,7 +81,7 @@ export const useFileActionsPaste = () => {
     const originalCurrentFolderId = unref(currentFolder)?.id
 
     startWorker(transferData, async ({ successful, failed }) => {
-      resourceTransfer.showResultMessage(failed, successful, type)
+      resourceTransfer.showResultMessage(failed, successful, transferData[0].transferType)
 
       if (!successful.length) {
         return
