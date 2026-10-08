@@ -13,9 +13,9 @@ import {
   createRouter,
   createWebHashHistory,
   createWebHistory,
-  LocationQuery,
   RouteLocationNamedRaw,
-  RouteRecordRaw
+  RouteRecordRaw,
+  RouterOptions
 } from 'vue-router'
 import qs from 'qs'
 import AccountCalendar from '../pages/account/accountCalendar.vue'
@@ -158,7 +158,7 @@ export const router = patchRouter(
     parseQuery(query) {
       return qs.parse(query, {
         allowDots: true
-      }) as LocationQuery
+      }) as ReturnType<RouterOptions['parseQuery']>
     },
     stringifyQuery(obj) {
       return qs.stringify(obj, {
