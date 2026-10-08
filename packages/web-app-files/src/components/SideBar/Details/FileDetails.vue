@@ -365,8 +365,9 @@ const capitalizedTimestamp = computed(() => {
   return upperFirst(displayDate)
 })
 
+// TODO: ... or simply watch etag instead?
 watch(
-  () => unref(resource)?.mdate,
+  [() => unref(resource)?.id, () => unref(resource)?.mdate],
   async () => {
     if (unref(resource)) {
       preview.value = await loadPreview({
