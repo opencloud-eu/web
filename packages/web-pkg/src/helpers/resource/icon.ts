@@ -1,9 +1,9 @@
-import { FillType, Icon, NamedIcon } from '@opencloud-eu/design-system/helpers'
+import { FillType, hasDarkIconVariant, Icon, NamedIcon } from '@opencloud-eu/design-system/helpers'
 
 export type IconFillType = FillType
 /** @deprecated use `Icon` from the design system instead */
 export type IconType = NamedIcon & {
-  /** @deprecated has no effect, `OcIcon` resolves dark variants by icon name */
+  /** @deprecated `OcIcon` resolves dark variants by icon name */
   hasDarkVariant?: boolean
   /** @deprecated has no effect */
   fillsBox?: boolean
@@ -254,8 +254,10 @@ const fileIcon = {
 }
 
 /** @deprecated `OcIcon` resolves dark variants by icon name */
-export function getResourceIconName(icon: IconType, isDark: boolean) {
-  return icon.hasDarkVariant && isDark ? `${icon.name}-dark` : icon.name
+export function getResourceIconName(icon: string | IconType, isDark: boolean) {
+  const { name, hasDarkVariant = hasDarkIconVariant(name) }: IconType =
+    typeof icon === 'string' ? { name: icon } : icon
+  return hasDarkVariant && isDark ? `${name}-dark` : name
 }
 
 export function createDefaultFileIconMapping() {
