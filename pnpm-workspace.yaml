@@ -18,6 +18,7 @@ catalogs:
     '@tiptap/extension-hard-break': ^3.30.3
     '@tiptap/extension-image': ^3.30.3
     '@tiptap/extension-link': ^3.30.3
+    '@tiptap/extension-list': ^3.30.3
     '@tiptap/extension-node-range': ^3.30.3
     '@tiptap/extension-paragraph': ^3.30.3
     '@tiptap/extension-placeholder': ^3.30.3
