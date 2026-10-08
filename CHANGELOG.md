@@ -41,6 +41,7 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update dependency cropperjs to v2.3.0 [[#3608](https://github.com/opencloud-eu/web/pull/3608)]
 - chore(deps): update traefik docker tag to v3.7.14 [[#3576](https://github.com/opencloud-eu/web/pull/3576)]
 - chore(deps): update uppy monorepo [[#3515](https://github.com/opencloud-eu/web/pull/3515)]
 - chore(deps): update dependency vite to v8.3.3 [[#3570](https://github.com/opencloud-eu/web/pull/3570)]
