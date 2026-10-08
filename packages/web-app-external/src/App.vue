@@ -81,7 +81,10 @@ import { useCollaboraPostMessages } from './composables'
 const { space, resource, isReadOnly } =
   defineProps<Pick<AppWrapperSlotProps, 'space' | 'resource' | 'isReadOnly'>>()
 
-const emit = defineEmits(['save', 'close']) // these are inherited from the AppWrapper.vue
+const emit = defineEmits<{
+  (e: 'save'): void
+  (e: 'close'): void
+}>()
 
 const language = useGettext()
 const { $gettext } = language
