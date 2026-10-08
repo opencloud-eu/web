@@ -78,7 +78,7 @@ export function generateHashedColorForString(name: string): string {
   for (let i = 0; i < name.length; i++) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash)
   }
-  return `#${(hash & 0x00ffffff).toString(16).toUpperCase()}`
+  return `#${(hash & 0x00ffffff).toString(16).toUpperCase().padStart(6, '0')}`
 }
 
 /**
@@ -97,18 +97,15 @@ export function setDesiredContrastRatio(
   if (Math.abs(desiredRatio - ratio) <= 0.3) {
     return targetColorRgb
   }
-  if (ratio < desiredRatio) {
-    return setDesiredContrastRatio(
-      hexToRgb(calculateShadeColor(targetColorRgb, -1)),
-      associatedColorRgb,
-      desiredRatio
-    )
-  }
-  return setDesiredContrastRatio(
-    hexToRgb(calculateShadeColor(targetColorRgb, 1)),
-    associatedColorRgb,
-    desiredRatio
+  const shadedColorRgb = hexToRgb(
+    calculateShadeColor(targetColorRgb, ratio < desiredRatio ? -1 : 1)
   )
+  // A channel at its limit, or too small for one percent to change it, does not move. Once no
+  // channel moves the ratio cannot get any closer, so the color is returned as it is.
+  if (shadedColorRgb.every((value, index) => value === targetColorRgb[index])) {
+    return targetColorRgb
+  }
+  return setDesiredContrastRatio(shadedColorRgb, associatedColorRgb, desiredRatio)
 }
 
 /**
