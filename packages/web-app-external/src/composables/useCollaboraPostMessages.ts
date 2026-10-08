@@ -23,11 +23,13 @@ interface CollaboraMessage {
 export function useCollaboraPostMessages({
   space,
   resource,
-  appIframeRef
+  appIframeRef,
+  onClose
 }: {
   space: Ref<SpaceResource>
   resource: Ref<Resource>
   appIframeRef: Ref<HTMLIFrameElement | null>
+  onClose: () => void
 }) {
   const { $gettext } = useGettext()
   const route = useRoute()
@@ -76,6 +78,7 @@ export function useCollaboraPostMessages({
 
   function handleUiClose(): void {
     notifyMentionedUsers()
+    onClose()
   }
 
   function handleUiSaveAs(message: CollaboraMessage): void {
