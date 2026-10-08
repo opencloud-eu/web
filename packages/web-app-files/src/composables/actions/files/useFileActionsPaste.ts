@@ -81,7 +81,7 @@ export const useFileActionsPaste = () => {
     const originalCurrentFolderId = unref(currentFolder)?.id
 
     startWorker(transferData, async ({ successful, failed }) => {
-      resourceTransfer.showResultMessage(failed, successful, unref(transferType))
+      resourceTransfer.showResultMessage(failed, successful, transferData[0].transferType)
 
       if (!successful.length) {
         return

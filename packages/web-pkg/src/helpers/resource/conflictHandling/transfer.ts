@@ -28,7 +28,9 @@ export class ResourceTransfer extends ConflictDialog {
       return false
     }
     return this.resourcesToMove.some(
-      (resource: Resource) => this.targetFolder.path === resource.path
+      (resource: Resource) =>
+        this.targetFolder.path === resource.path ||
+        this.targetFolder.path.startsWith(`${resource.path}/`)
     )
   }
 
