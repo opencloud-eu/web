@@ -6,25 +6,9 @@
 
 @AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @tammi-23, @tbsbdr, @v-scharf
 
-### 📈 Enhancement
-
-- feat: support image icons for apps and extensions [[#3580](https://github.com/opencloud-eu/web/pull/3580)]
-- feat: add whiteboard icon for excalidraw files [[#3584](https://github.com/opencloud-eu/web/pull/3584)]
-- feat: search for tags in the global search and enhance the visually reasoning for matching results [[#3558](https://github.com/opencloud-eu/web/pull/3558)]
-- feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
-- feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
-- feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
-- feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
-- feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
-- feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
-- feat: remove condensed list view and switch view modes with toggle buttons [[#3538](https://github.com/opencloud-eu/web/pull/3538)]
-- perf: load group memberships only on the account page [[#3553](https://github.com/opencloud-eu/web/pull/3553)]
-- chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
-- feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
-- feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
-
 ### 🐛 Bug Fixes
 
+- fix: handle deep links to deleted or missing files [[#3590](https://github.com/opencloud-eu/web/pull/3590)]
 - fix: show the whole image in the file details preview [[#3609](https://github.com/opencloud-eu/web/pull/3609)]
 - fix(files): report moved files after cut & paste and block pasting into own subfolders [[#3588](https://github.com/opencloud-eu/web/pull/3588)]
 - fix(web-runtime): keep upload progress sane after resume and show failed upload details [[#3586](https://github.com/opencloud-eu/web/pull/3586)]
@@ -42,6 +26,23 @@
 - fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
 - fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
 - fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+
+### 📈 Enhancement
+
+- feat: support image icons for apps and extensions [[#3580](https://github.com/opencloud-eu/web/pull/3580)]
+- feat: add whiteboard icon for excalidraw files [[#3584](https://github.com/opencloud-eu/web/pull/3584)]
+- feat: search for tags in the global search and enhance the visually reasoning for matching results [[#3558](https://github.com/opencloud-eu/web/pull/3558)]
+- feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
+- feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
+- feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
+- feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
+- feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
+- feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
+- feat: remove condensed list view and switch view modes with toggle buttons [[#3538](https://github.com/opencloud-eu/web/pull/3538)]
+- perf: load group memberships only on the account page [[#3553](https://github.com/opencloud-eu/web/pull/3553)]
+- chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
+- feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
+- feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
 
 ### ✅ Tests
 
