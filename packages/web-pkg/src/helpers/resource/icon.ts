@@ -2,7 +2,14 @@ import { FillType, Icon, NamedIcon } from '@opencloud-eu/design-system/helpers'
 
 export type IconFillType = FillType
 /** @deprecated use `Icon` from the design system instead */
-export type IconType = NamedIcon
+export type IconType = NamedIcon & {
+  /** @deprecated has no effect, `OcIcon` resolves dark variants by icon name */
+  hasDarkVariant?: boolean
+  /** @deprecated has no effect */
+  fillsBox?: boolean
+  /** @deprecated has no effect, use the `uniqueIds` prop of `OcIcon` instead */
+  uniqueIds?: boolean
+}
 
 export type ResourceIconMapping = {
   mimeType: Record<string, Icon>
@@ -244,6 +251,11 @@ const fileIcon = {
     icon: 'resource-type-note',
     extensions: ['note', 'ocnote']
   }
+}
+
+/** @deprecated `OcIcon` resolves dark variants by icon name */
+export function getResourceIconName(icon: IconType, isDark: boolean) {
+  return icon.hasDarkVariant && isDark ? `${icon.name}-dark` : icon.name
 }
 
 export function createDefaultFileIconMapping() {
