@@ -89,19 +89,19 @@ describe('Details SideBar Panel', () => {
       )
     })
     it('loads the preview again when the etag changes but the modification date stays the same', async () => {
-      const resource = reactive({ ...getResourceMock(), etag: '1' }) as Resource
+      const resource = reactive({ ...getResourceMock(), etag: 'initial-etag' }) as Resource
       const { mocks, wrapper } = createWrapper({ resource })
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
       expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
 
-      resource.etag = '2'
+      resource.etag = 'changed-etag'
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
 
       expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(2)
       expect(mocks.$previewService.loadPreview).toHaveBeenLastCalledWith(
-        expect.objectContaining({ resource: expect.objectContaining({ etag: '2' }) }),
+        expect.objectContaining({ resource: expect.objectContaining({ etag: 'changed-etag' }) }),
         expect.anything(),
         expect.anything(),
         expect.anything()
