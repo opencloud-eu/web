@@ -19,6 +19,7 @@ import {
   createMarkdownClipboardExtension,
   Frontmatter,
   imageFileHandlerExtension,
+  MarkdownParagraph,
   MarkdownTaskList,
   registerFrontmatterTokenizer
 } from '../../extensions'
@@ -95,8 +96,10 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         link: false,
         codeBlock: false,
         document: false,
+        paragraph: false,
         undoRedo: options?.yjs ? false : undefined
       }),
+      MarkdownParagraph,
       // Frontmatter is metadata about the document, it only ever belongs at the
       // top. Spelled as an alternation rather than `frontmatter? block+` so that
       // a document holding nothing but metadata is valid too. `block+` has to
