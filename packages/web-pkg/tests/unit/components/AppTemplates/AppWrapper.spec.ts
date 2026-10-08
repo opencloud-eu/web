@@ -2,6 +2,7 @@ import { mock } from 'vitest-mock-extended'
 import { defineComponent, h, nextTick, ref, unref } from 'vue'
 import { flushPromises } from '@vue/test-utils'
 import type { Resource } from '@opencloud-eu/web-client'
+import { HttpError } from '@opencloud-eu/web-client'
 import type { GetFileContentsResponse } from '@opencloud-eu/web-client/webdav'
 import { createMemoryHistory, createRouter, onBeforeRouteLeave } from 'vue-router'
 import {
@@ -84,7 +85,8 @@ function setup({
   // Whether the room recognises an announced write as one of its own.
   roomWrite = false,
   // Whether the runtime has an authenticated SSE stream for this user.
-  sse = true
+  sse = true,
+  fileSizeLimit = undefined as number | undefined
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -103,10 +105,17 @@ function setup({
   const currentFileContext = ref(mock<FileContext>({ space: mock<any>(), path: '/a.md' }))
   // Deferred so the test controls when each half of the load completes.
   let resolveInfo: (r: Resource) => void
+  let rejectInfo: (e: Error) => void
   let resolveContents: (c: GetFileContentsResponse) => void
   let rejectContents: (e: Error) => void
 
-  const getFileInfo = vi.fn().mockImplementation(() => new Promise((r) => (resolveInfo = r)))
+  const getFileInfo = vi.fn().mockImplementation(
+    () =>
+      new Promise((resolve, reject) => {
+        resolveInfo = resolve
+        rejectInfo = reject
+      })
+  )
   const getFileContents = vi.fn().mockImplementation(
     () =>
       new Promise((resolve, reject) => {
@@ -183,7 +192,9 @@ function setup({
       plugins: [
         ...defaultPlugins({
           piniaOptions: {
-            appsState: { apps: { 'test-app': { id: 'test-app', name: 'Test App' } } },
+            appsState: {
+              apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
+            },
             authState: { accessToken: sse ? 'token' : undefined },
             capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
           }
@@ -250,6 +261,10 @@ function setup({
       resolveInfo(resource)
       await flushPromises()
     },
+    async rejectResource(error: Error) {
+      rejectInfo(error)
+      await flushPromises()
+    },
     async resolveContent(body: string) {
       resolveContents(
         mock<GetFileContentsResponse>({ body, headers: { 'OC-ETag': 'etag' } as any })
@@ -278,6 +293,26 @@ describe('AppWrapper — ESC close behavior', () => {
     } finally {
       document.removeEventListener('keydown', documentKeydownSpy)
     }
+  })
+})
+
+describe('AppWrapper — loading a file that does not exist', () => {
+  it('shows the error without checking the file size of the missing resource', async () => {
+    const s = setup({ yjsEnabled: false, fileSizeLimit: 1000 })
+    await nextTick()
+    await s.rejectResource(new Error('not found'))
+
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(true)
+    expect(s.getFileContents).not.toHaveBeenCalled()
+  })
+
+  it('shows the not found message when the server answers with 404', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.rejectResource(new HttpError('Resource not found', undefined, 404))
+
+    expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
+    expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
   })
 })
 
