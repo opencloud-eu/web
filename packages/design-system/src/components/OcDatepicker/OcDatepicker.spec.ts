@@ -28,6 +28,24 @@ describe('OcDatePicker', () => {
     const inputEl = wrapper.find('.oc-text-input')
     expect(inputEl.attributes('min')).toEqual(DateTime.now().toISODate())
   })
+  it('sets the maximum date correctly', async () => {
+    const maxDate = DateTime.now().plus({ years: 100 })
+    const wrapper = getWrapper({ label: 'Datepicker label', maxDate, isDark: false })
+    await nextTick()
+    const inputEl = wrapper.find('.oc-text-input')
+    expect(inputEl.attributes('max')).toEqual(maxDate.toISODate())
+  })
+  it('emits an error for a date after the maximum date', async () => {
+    const maxDate = DateTime.fromISO('2100-01-01')
+    const wrapper = getWrapper({ label: 'Datepicker label', maxDate, isDark: false })
+    const inputEl = wrapper.find('.oc-text-input')
+
+    await inputEl.setValue('2100-01-01')
+    expect(wrapper.emitted<{ error: boolean }[]>('dateChanged').at(-1)[0].error).toBe(false)
+
+    await inputEl.setValue('2300-01-01')
+    expect(wrapper.emitted<{ error: boolean }[]>('dateChanged').at(-1)[0].error).toBe(true)
+  })
   it('emits event on date change', async () => {
     const wrapper = getWrapper({ label: 'Datepicker label', isDark: false })
     const inputEl = wrapper.find('.oc-text-input')

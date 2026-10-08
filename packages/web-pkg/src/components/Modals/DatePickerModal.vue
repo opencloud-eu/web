@@ -3,6 +3,7 @@
     :label="$gettext('Expiration date')"
     type="date"
     :min-date="minDate"
+    :max-date="DateTime.now().plus({ years: 100 })"
     :current-date="currentDate"
     :is-clearable="isClearable"
     :is-dark="currentTheme.isDark"
