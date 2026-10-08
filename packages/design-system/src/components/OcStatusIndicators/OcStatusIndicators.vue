@@ -36,7 +36,7 @@
           no-hover
           @click="(e: MouseEvent) => indicator.handler?.(resource, e)"
         >
-          <oc-icon :name="indicator.icon" size-class="size-4" :fill-type="indicator.fillType" />
+          <oc-icon :icon="indicator.icon" size-class="size-4" :fill-type="indicator.fillType" />
         </oc-button>
         <oc-icon
           v-else
@@ -47,7 +47,7 @@
           size-class="size-4"
           class="oc-status-indicators-indicator"
           :class="{ 'ml-1': index > 0 }"
-          :name="indicator.icon"
+          :icon="indicator.icon"
           :fill-type="indicator.fillType"
           :accessible-label="$gettext(indicator.label)"
           :aria-describedby="getIndicatorDescriptionId(indicator)"
@@ -68,7 +68,7 @@
 
 <script setup lang="ts">
 import { ref, unref } from 'vue'
-import { FillType, uniqueId } from '../../helpers'
+import { FillType, Icon, uniqueId } from '../../helpers'
 import { useGettext } from 'vue3-gettext'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcButton from '../OcButton/OcButton.vue'
@@ -77,11 +77,12 @@ export type Indicator = IndicatorIcon | IndicatorTag
 
 export interface IndicatorIcon {
   id: string
-  icon: string
+  icon: Icon
   label: string
   handler?: (...args: any) => void
   accessibleDescription?: string
   type?: string
+  /** @deprecated use a named icon for the `icon` instead */
   fillType?: FillType
   kind: 'icon'
 }

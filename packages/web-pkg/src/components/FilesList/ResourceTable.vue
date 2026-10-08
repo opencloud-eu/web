@@ -115,7 +115,7 @@
           "
         >
           <oc-icon
-            :name="getResourceTableActionIcon(action, item)"
+            :icon="getResourceTableActionIcon(action, item)"
             fill-type="line"
             size-class="size-4"
             color="var(--oc-role-on-surface)"

@@ -48,12 +48,12 @@ describe('OcFileInput', () => {
   describe('preview', () => {
     it('should show the default preview icon', () => {
       const wrapper = getWrapper()
-      expect(wrapper.find(selectors.previewIcon).attributes('name')).toBe('file')
+      expect(wrapper.find(selectors.previewIcon).attributes('icon')).toBe('file')
     })
 
     it('should allow setting a custom preview icon', () => {
       const wrapper = getWrapper({ previewIcon: 'image' })
-      expect(wrapper.find(selectors.previewIcon).attributes('name')).toBe('image')
+      expect(wrapper.find(selectors.previewIcon).attributes('icon')).toBe('image')
     })
 
     it('should show an image preview for image files', () => {

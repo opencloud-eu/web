@@ -12,6 +12,7 @@ import {
 import { useInterceptModifierClick } from '../keyboardActions'
 import { useExtensionRegistry, useResourcesStore, useSideBar, useUserStore } from '../piniaStores'
 import { IconFillType } from '../../helpers'
+import type { Icon } from '@opencloud-eu/design-system/helpers'
 import { resourceIndicatorExtensionPoint } from '../../extensionPoints'
 
 export type ResourceIndicatorCategory = 'system' | 'sharing' | 'space'
@@ -20,8 +21,9 @@ export interface ResourceIndicatorIcon {
   id: string
   accessibleDescription: string
   label: string
-  icon: string
-  fillType: IconFillType
+  icon: Icon
+  /** @deprecated use a named icon for the `icon` instead */
+  fillType?: IconFillType
   type: string
   category: ResourceIndicatorCategory
   handler?: (resource: Resource, event?: MouseEvent) => void

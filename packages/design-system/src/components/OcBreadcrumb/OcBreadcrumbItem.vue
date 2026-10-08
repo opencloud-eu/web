@@ -8,7 +8,7 @@
     <span :class="[textClass, { 'hover:underline': isInteractive }]">
       <oc-icon
         v-if="item.icon"
-        :name="item.icon"
+        :icon="item.icon"
         :accessible-label="item.iconAccessibleLabel || ''"
         fill-type="line"
         class="align-sub"

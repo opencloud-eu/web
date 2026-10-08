@@ -14,17 +14,10 @@
       justify-content="left"
       v-on="componentListeners"
     >
-      <oc-image
-        v-if="hasExternalImageIcon"
-        data-testid="action-img"
-        :src="actionIcon"
-        alt=""
-        class="oc-icon oc-icon-m w-[22px]"
-      />
       <oc-icon
-        v-else-if="actionIcon"
+        v-if="actionIcon"
         data-testid="action-icon"
-        :name="actionIcon"
+        :icon="actionIcon"
         :fill-type="action.iconFillType || 'line'"
         :size="size"
       />
@@ -124,10 +117,6 @@ const componentProps = computed(() => {
 
 const actionIcon = computed(() => {
   return typeof action.icon === 'function' ? action.icon(actionOptions) : action.icon
-})
-
-const hasExternalImageIcon = computed(() => {
-  return actionIcon.value && /^https?:\/\//i.test(actionIcon.value)
 })
 
 const componentListeners = computed(() => {

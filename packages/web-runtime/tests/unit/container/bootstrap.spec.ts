@@ -2,10 +2,12 @@ import { mock, mockDeep } from 'vitest-mock-extended'
 import { createApp, defineComponent, App } from 'vue'
 import { Language } from 'vue3-gettext'
 import {
+  ApplicationInformation,
   AuthStore,
   CapabilityStore,
   ClientService,
   ConfigStore,
+  ResourceIconMapping,
   useAppsStore,
   useConfigStore,
   useUpdatesStore
@@ -91,6 +93,69 @@ describe('initialize applications', () => {
       applications
     })
     expect(ready).toHaveBeenCalledTimes(2)
+  })
+
+  describe('resource icon mapping', () => {
+    async function getMapping(appInfo: ApplicationInformation) {
+      createTestingPinia({ stubActions: false })
+      const appsStore = useAppsStore()
+      appsStore.registerApp(appInfo)
+      const app = mock<App>()
+
+      await announceApplicationsReady({ app, appsStore, applications: [] })
+
+      return vi.mocked(app.provide).mock.calls[0][1] as ResourceIconMapping
+    }
+
+    it('maps the named icon of a file extension with its deprecated color', async () => {
+      const mapping = await getMapping({
+        id: 'draw',
+        extensions: [{ extension: 'drawio', icon: 'pencil', iconColor: 'red' }]
+      })
+      expect(mapping.extension.drawio).toEqual({ name: 'pencil', color: 'red' })
+    })
+    it('falls back to the icon and color of the app', async () => {
+      const mapping = await getMapping({
+        id: 'draw',
+        icon: 'brush',
+        color: 'blue',
+        extensions: [{ extension: 'drawio' }]
+      })
+      expect(mapping.extension.drawio).toEqual({ name: 'brush', color: 'blue' })
+    })
+    it('prefers the color of a named icon over the deprecated color', async () => {
+      const mapping = await getMapping({
+        id: 'draw',
+        extensions: [
+          { extension: 'drawio', icon: { name: 'pencil', color: 'green' }, iconColor: 'red' }
+        ]
+      })
+      expect(mapping.extension.drawio).toEqual({ name: 'pencil', color: 'green' })
+    })
+    it('does not apply the deprecated color of a file extension to the icon of the app', async () => {
+      const mapping = await getMapping({
+        id: 'draw',
+        icon: { name: 'brush', color: 'blue' },
+        extensions: [{ extension: 'drawio', iconColor: 'red' }]
+      })
+      expect(mapping.extension.drawio).toEqual({ name: 'brush', color: 'blue' })
+    })
+    it('maps the image icon of a file extension', async () => {
+      const mapping = await getMapping({
+        id: 'draw',
+        color: 'blue',
+        extensions: [{ mimeType: 'application/drawio', icon: { src: 'draw.png' } }]
+      })
+      expect(mapping.mimeType['application/drawio']).toEqual({ src: 'draw.png' })
+    })
+    it('falls back to the image icon of the app', async () => {
+      const mapping = await getMapping({
+        id: 'draw',
+        icon: { src: 'draw.png', srcDark: 'draw-dark.png' },
+        extensions: [{ extension: 'drawio' }]
+      })
+      expect(mapping.extension.drawio).toEqual({ src: 'draw.png', srcDark: 'draw-dark.png' })
+    })
   })
 
   it('tracks loading failures for all applications', async () => {

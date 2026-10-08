@@ -40,4 +40,26 @@ A primary color can be passed to the component. Note that colors need to be in h
 
 :::
 
+### Image icons
+
+The `icon` also accepts a named icon or an image icon. An image icon fills the whole tile and gets no background, which suits images that bring their own shape. If a primary color is passed, the image is displayed in icon size on the colored tile instead, which suits images with a transparent background.
+
+::: livecode
+
+```vue
+<oc-application-icon
+  :icon="{
+    src: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22 fill=%22%23e2725b%22/%3E%3C/svg%3E'
+  }"
+/>
+<oc-application-icon
+  :icon="{
+    src: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22 fill=%22%23e2725b%22/%3E%3C/svg%3E'
+  }"
+  color-primary="#e2baff"
+/>
+```
+
+:::
+
 ::: component-api

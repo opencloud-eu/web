@@ -1,3 +1,5 @@
+import { FillType } from './types'
+
 let iconUrlPrefix = ''
 
 export const setIconUrlPrefix = (prefix: string) => {
@@ -6,4 +8,61 @@ export const setIconUrlPrefix = (prefix: string) => {
 
 export const getIconUrlPrefix = () => {
   return iconUrlPrefix
+}
+
+export type NamedIcon = {
+  name: string
+  fillType?: FillType
+  color?: string
+  src?: never
+  srcDark?: never
+}
+
+export type ImageIcon = {
+  src: string
+  srcDark?: string
+  name?: never
+  fillType?: never
+  color?: never
+}
+
+/**
+ * An icon as apps, extensions and components pass it around: the name of an icon from the icon
+ * set, a named icon or an image icon. A string is always a name. A named icon carries its own
+ * `fillType` and `color`, which take precedence over what the rendering component would use.
+ * An image icon is rendered as an image and has neither. Its `srcDark` is used in dark mode.
+ */
+export type Icon = string | NamedIcon | ImageIcon
+
+export function isImageIcon(icon: Icon | undefined): icon is ImageIcon {
+  return typeof icon === 'object' && icon !== null && typeof icon.src === 'string'
+}
+
+export function toNamedIcon(icon: string | NamedIcon): NamedIcon {
+  return typeof icon === 'string' ? { name: icon } : icon
+}
+
+export const iconIsDarkInjectionKey = 'oc-icon-is-dark'
+
+const iconsWithDarkVariant = new Set([
+  'resource-type-book',
+  'resource-type-code',
+  'resource-type-csv',
+  'resource-type-document',
+  'resource-type-file',
+  'resource-type-file-upload',
+  'resource-type-folder-upload',
+  'resource-type-html',
+  'resource-type-jupyter',
+  'resource-type-markdown',
+  'resource-type-pdf',
+  'resource-type-presentation',
+  'resource-type-spreadsheet',
+  'resource-type-sticky-note',
+  'resource-type-svg',
+  'resource-type-text'
+])
+
+export function hasDarkIconVariant(name: string) {
+  return iconsWithDarkVariant.has(name)
 }

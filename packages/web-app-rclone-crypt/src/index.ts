@@ -21,8 +21,7 @@ export default defineWebApplication({
         {
           extension: VAULT_EXTENSION,
           type: 'folder',
-          icon: 'resource-type-vault',
-          iconFillType: 'fill'
+          icon: { name: 'resource-type-vault', fillType: 'fill' }
         }
       ]
     }

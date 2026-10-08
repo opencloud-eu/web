@@ -2,7 +2,7 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { RouteLocationRaw } from 'vue-router'
 import { IconFillType } from '../../helpers'
-import { AppearanceType } from '@opencloud-eu/design-system/helpers'
+import { AppearanceType, Icon } from '@opencloud-eu/design-system/helpers'
 
 export type ActionOptions = Record<string, unknown | unknown[]>
 
@@ -32,13 +32,15 @@ export interface Action<T = ActionOptions> {
    */
   category?: ActionCategory
   /**
-   * The name of an icon from the OpenCloud icon set or a function
-   * that returns the icon name based on the given options.
+   * The icon of the action or a function that returns it based on the given options.
+   * Such a function is called on every render and should return predefined icons
+   * instead of creating new ones.
    */
-  icon: string | ((options?: ActionOptions) => string)
+  icon: Icon | ((options?: ActionOptions) => Icon)
   /**
    * Determines the fill type of the icon in the UI.
    * @default line
+   * @deprecated use a named icon for the `icon` instead
    */
   iconFillType?: IconFillType
   /**

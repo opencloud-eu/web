@@ -142,8 +142,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: ['global.files.sidebar'],
       panel: {
         name: 'exif',
-        icon: 'image',
-        iconFillType: 'line',
+        icon: { name: 'image', fillType: 'line' },
         title: () => $gettext('Image Info'),
         component: markRaw(ExifPanel),
         isVisible: ({ items }) => {
@@ -164,8 +163,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: ['global.files.sidebar'],
       panel: {
         name: 'audio-meta',
-        icon: 'music',
-        iconFillType: 'line',
+        icon: { name: 'music', fillType: 'line' },
         title: () => $gettext('Audio Info'),
         component: markRaw(AudioMetaPanel),
         isVisible: ({ items }) => {
@@ -186,8 +184,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: [fileSideBarExtensionPoint.id],
       panel: {
         name: 'sharing',
-        icon: 'user-add',
-        iconFillType: 'line',
+        icon: { name: 'user-add', fillType: 'line' },
         title: () => $gettext('Shares'),
         component: markRaw(SharesPanel),
         componentAttrs: () => ({
@@ -214,8 +211,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: [fileSideBarExtensionPoint.id],
       panel: {
         name: 'versions',
-        icon: 'git-branch',
-        iconFillType: 'line',
+        icon: { name: 'git-branch', fillType: 'line' },
         title: () => $gettext('Versions'),
         component: markRaw(FileVersions),
         componentAttrs: () => ({
@@ -292,8 +288,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: [fileSideBarExtensionPoint.id],
       panel: {
         name: 'space-share',
-        icon: 'group',
-        iconFillType: 'line',
+        icon: { name: 'group', fillType: 'line' },
         title: () => $gettext('Members'),
         component: markRaw(SharesPanel),
         componentAttrs: () => ({
@@ -313,8 +308,7 @@ export const useSideBarPanels = (): SidebarPanelExtension<SpaceResource, Resourc
       extensionPointIds: [fileSideBarExtensionPoint.id],
       panel: {
         name: 'activities',
-        icon: 'time',
-        iconFillType: 'line',
+        icon: { name: 'time', fillType: 'line' },
         title: () => $gettext('Activities'),
         component: markRaw(ActivitiesPanel),
         isVisible: ({ items }) => {

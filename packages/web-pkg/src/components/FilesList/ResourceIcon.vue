@@ -1,18 +1,17 @@
 <template>
   <oc-icon
-    :key="`resource-icon-${iconName}`"
-    :name="iconName"
-    :color="icon.color"
+    :key="`resource-icon-${iconKey}`"
+    :icon="icon"
     :size="size ? size : sizeClass ? undefined : 'medium'"
     :size-class="sizeClass"
-    :unique-ids="uniqueIds"
+    :unique-ids="icon === defaultSpaceIcon"
     :class="[
       'oc-resource-icon',
       'inline-flex',
       'items-center',
       {
         'opacity-80 grayscale': hasDisabledSpaceIcon,
-        'overflow-hidden': fillsBox
+        'overflow-hidden': hasProjectSpaceIcon
       }
     ]"
   />
@@ -20,38 +19,19 @@
 
 <script setup lang="ts">
 import { computed, inject, unref } from 'vue'
-import { storeToRefs } from 'pinia'
 import { isProjectSpaceResource, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { SizeType } from '@opencloud-eu/design-system/helpers'
+import { Icon, isImageIcon, SizeType } from '@opencloud-eu/design-system/helpers'
 import {
   createDefaultFileIconMapping,
-  getResourceIconName,
-  IconType,
   isVaultSpaceResource,
   ResourceIconMapping,
   resourceIconMappingInjectionKey
 } from '../../helpers'
-import { useThemeStore } from '../../composables'
 
-const defaultFolderIcon: IconType = {
-  name: 'resource-type-folder'
-}
-
-const defaultSpaceIcon: IconType = {
-  name: 'resource-type-space',
-  fillsBox: true,
-  uniqueIds: true
-}
-
-const vaultSpaceIcon: IconType = {
-  name: 'resource-type-space-vault',
-  fillsBox: true
-}
-
-const defaultFileIcon: IconType = {
-  name: 'resource-type-file',
-  hasDarkVariant: true
-}
+const defaultFolderIcon = 'resource-type-folder'
+const defaultSpaceIcon = 'resource-type-space'
+const vaultSpaceIcon = 'resource-type-space-vault'
+const defaultFileIcon = 'resource-type-file'
 
 const defaultFileIconMapping = createDefaultFileIconMapping()
 
@@ -67,8 +47,6 @@ const {
 }>()
 
 const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
-
-const { currentTheme } = storeToRefs(useThemeStore())
 
 const hasSpaceIcon = computed(() => {
   return resource.type === 'space'
@@ -104,7 +82,7 @@ const mimeType = computed(() => {
   return resource.mimeType?.toLowerCase()
 })
 
-const icon = computed((): IconType => {
+const icon = computed((): Icon => {
   if (unref(hasProjectSpaceIcon)) {
     if (unref(hasVaultSpaceIcon)) {
       return vaultSpaceIcon
@@ -127,11 +105,11 @@ const icon = computed((): IconType => {
   return typeIconOrUndefined ?? unref(fallbackIcon)
 })
 
-const iconName = computed(() => {
-  return getResourceIconName(unref(icon), !!unref(currentTheme)?.isDark)
+const iconKey = computed(() => {
+  const value = unref(icon)
+  if (typeof value === 'string') {
+    return value
+  }
+  return isImageIcon(value) ? value.src : value.name
 })
-
-const fillsBox = computed(() => unref(icon).fillsBox === true)
-
-const uniqueIds = computed(() => unref(icon).uniqueIds === true)
 </script>

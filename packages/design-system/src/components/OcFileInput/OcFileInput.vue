@@ -24,7 +24,7 @@
         />
         <oc-icon
           v-else
-          :name="previewIcon"
+          :icon="previewIcon"
           :fill-type="previewIconFillType"
           size-class="size-8"
           color="var(--oc-role-on-surface-variant)"
@@ -113,7 +113,7 @@ import {
   watch,
   HTMLAttributes
 } from 'vue'
-import { uniqueId } from '../../helpers'
+import { Icon, uniqueId } from '../../helpers'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
 import OcImage from '../OcImage/OcImage.vue'
@@ -177,10 +177,11 @@ export interface Props {
    * @docs The icon that should be shown as preview placeholder.
    * @default file
    */
-  previewIcon?: string
+  previewIcon?: Icon
   /**
    * @docs The fill type of the preview icon.
    * @default line
+   * @deprecated use a named icon for the `previewIcon` instead
    */
   previewIconFillType?: 'line' | 'fill'
 }

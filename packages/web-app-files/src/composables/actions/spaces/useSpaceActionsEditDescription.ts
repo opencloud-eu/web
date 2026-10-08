@@ -56,8 +56,7 @@ export const useSpaceActionsEditDescription = () => {
   const actions = computed((): SpaceAction[] => [
     {
       name: 'editDescription',
-      icon: 'h-2',
-      iconFillType: 'none',
+      icon: { name: 'h-2', fillType: 'none' },
       label: () => {
         return $gettext('Edit subtitle')
       },

@@ -1,4 +1,5 @@
 import { RouteLocationRaw } from 'vue-router'
+import type { Icon } from './icons'
 
 export interface ContextualHelperDataListItem {
   text: string
@@ -74,7 +75,7 @@ export interface BreadcrumbItem {
   onClick?: () => void
   isTruncationPlaceholder?: boolean
   isStaticNav?: boolean
-  icon?: string
+  icon?: Icon
   iconAccessibleLabel?: string
 }
 

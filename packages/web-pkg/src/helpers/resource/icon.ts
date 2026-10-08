@@ -1,28 +1,26 @@
-import { FillType } from '@opencloud-eu/design-system/helpers'
+import { FillType, hasDarkIconVariant, Icon, NamedIcon } from '@opencloud-eu/design-system/helpers'
 
 export type IconFillType = FillType
-export type IconType = {
-  name: string
-  color?: string
-  /** @deprecated this property is not supported anymore */
-  fillType?: IconFillType
+/** @deprecated use `Icon` from the design system instead */
+export type IconType = NamedIcon & {
+  /** @deprecated `OcIcon` resolves dark variants by icon name */
   hasDarkVariant?: boolean
-  /** artwork fills its box entirely and therefore needs clipping */
+  /** @deprecated has no effect */
   fillsBox?: boolean
-  /** artwork references IDs internally (e.g. gradients) and therefore needs unique IDs per instance */
+  /** @deprecated has no effect, use the `uniqueIds` prop of `OcIcon` instead */
   uniqueIds?: boolean
 }
 
 export type ResourceIconMapping = {
-  mimeType: Record<string, IconType>
-  extension: Record<string, IconType>
-  folderExtension?: Record<string, IconType>
+  mimeType: Record<string, Icon>
+  extension: Record<string, Icon>
+  folderExtension?: Record<string, Icon>
 }
 export const resourceIconMappingInjectionKey = 'oc-resource-icon-mapping'
 
 const fileIcon = {
   archive: {
-    icon: { name: 'resource-type-archive' },
+    icon: 'resource-type-archive',
     extensions: [
       '7z',
       'apk',
@@ -41,7 +39,7 @@ const fileIcon = {
     ]
   },
   audio: {
-    icon: { name: 'resource-type-audio' },
+    icon: 'resource-type-audio',
     extensions: [
       '3gp',
       '8svx',
@@ -89,11 +87,11 @@ const fileIcon = {
     ]
   },
   bpmn: {
-    icon: { name: 'resource-type-bpmn' },
+    icon: 'resource-type-bpmn',
     extensions: ['bpmn']
   },
   code: {
-    icon: { name: 'resource-type-code', hasDarkVariant: true },
+    icon: 'resource-type-code',
     extensions: [
       'bash',
       'c++',
@@ -123,43 +121,43 @@ const fileIcon = {
     ]
   },
   csv: {
-    icon: { name: 'resource-type-csv', hasDarkVariant: true },
+    icon: 'resource-type-csv',
     extensions: ['csv']
   },
   html: {
-    icon: { name: 'resource-type-html', hasDarkVariant: true },
+    icon: 'resource-type-html',
     extensions: ['htm', 'html']
   },
   svg: {
-    icon: { name: 'resource-type-svg', hasDarkVariant: true },
+    icon: 'resource-type-svg',
     extensions: ['svg']
   },
   default: {
-    icon: { name: 'resource-type-file', hasDarkVariant: true },
+    icon: 'resource-type-file',
     extensions: ['accdb', 'rss', 'swf']
   },
   dicom: {
-    icon: { name: 'resource-type-dicom' },
+    icon: 'resource-type-dicom',
     extensions: ['dcm']
   },
   drawio: {
-    icon: { name: 'resource-type-drawio' },
+    icon: 'resource-type-drawio',
     extensions: ['drawio']
   },
   document: {
-    icon: { name: 'resource-type-document', hasDarkVariant: true },
+    icon: 'resource-type-document',
     extensions: ['doc', 'docm', 'docx', 'dot', 'dotx', 'lwp', 'odt', 'one', 'vsd', 'wpd']
   },
   ifc: {
-    icon: { name: 'resource-type-ifc' },
+    icon: 'resource-type-ifc',
     extensions: ['ifc']
   },
   ipynb: {
-    icon: { name: 'resource-type-jupyter', hasDarkVariant: true },
+    icon: 'resource-type-jupyter',
     extensions: ['ipynb']
   },
   image: {
-    icon: { name: 'resource-type-image' },
+    icon: 'resource-type-image',
     extensions: [
       'ai',
       'cdr',
@@ -180,31 +178,31 @@ const fileIcon = {
     ]
   },
   form: {
-    icon: { name: 'resource-type-form' },
+    icon: 'resource-type-form',
     extensions: ['docf', 'docxf', 'oform']
   },
   markdown: {
-    icon: { name: 'resource-type-markdown', hasDarkVariant: true },
+    icon: 'resource-type-markdown',
     extensions: ['md', 'markdown']
   },
   game: {
-    icon: { name: 'resource-type-game' },
+    icon: 'resource-type-game',
     extensions: ['gb', 'gbc', 'gba', 'nds', '3ds', 'nes', 'snes', 'sfc', 'smc', 'n64', 'v64', 'z64']
   },
   graphic: {
-    icon: { name: 'resource-type-graphic' },
+    icon: 'resource-type-graphic',
     extensions: ['odg']
   },
   whiteboard: {
-    icon: { name: 'resource-type-whiteboard' },
+    icon: 'resource-type-whiteboard',
     extensions: ['excalidraw']
   },
   pdf: {
-    icon: { name: 'resource-type-pdf', hasDarkVariant: true },
+    icon: 'resource-type-pdf',
     extensions: ['pdf']
   },
   presentation: {
-    icon: { name: 'resource-type-presentation', hasDarkVariant: true },
+    icon: 'resource-type-presentation',
     extensions: [
       'odp',
       'otp',
@@ -222,47 +220,48 @@ const fileIcon = {
     ]
   },
   root: {
-    icon: { name: 'resource-type-root' },
+    icon: 'resource-type-root',
     extensions: ['root']
   },
   spreadsheet: {
-    icon: { name: 'resource-type-spreadsheet', hasDarkVariant: true },
+    icon: 'resource-type-spreadsheet',
     extensions: ['ods', 'xla', 'xlam', 'xls', 'xlsb', 'xlsm', 'xlsx', 'xlt', 'xltm', 'xltx']
   },
   text: {
-    icon: { name: 'resource-type-text', hasDarkVariant: true },
+    icon: 'resource-type-text',
     extensions: ['cb7', 'cba', 'cbr', 'cbt', 'cbtc', 'cbz', 'cvbdl', 'eml', 'mdb', 'tex', 'txt']
   },
   url: {
-    icon: { name: 'resource-type-url' },
+    icon: 'resource-type-url',
     extensions: ['url']
   },
   video: {
-    icon: {
-      name: 'resource-type-video'
-    },
+    icon: 'resource-type-video',
     extensions: ['mov', 'mp4', 'webm', 'wmv']
   },
   epub: {
-    icon: { name: 'resource-type-book', hasDarkVariant: true },
+    icon: 'resource-type-book',
     extensions: ['epub']
   },
   board: {
-    icon: { name: 'resource-type-board' },
+    icon: 'resource-type-board',
     extensions: ['ggs']
   },
   note: {
-    icon: { name: 'resource-type-note' },
+    icon: 'resource-type-note',
     extensions: ['note', 'ocnote']
   }
 }
 
-export function getResourceIconName(icon: IconType, isDark: boolean) {
-  return icon.hasDarkVariant && isDark ? `${icon.name}-dark` : icon.name
+/** @deprecated `OcIcon` resolves dark variants by icon name */
+export function getResourceIconName(icon: string | IconType, isDark: boolean) {
+  const { name, hasDarkVariant = hasDarkIconVariant(name) }: IconType =
+    typeof icon === 'string' ? { name: icon } : icon
+  return hasDarkVariant && isDark ? `${name}-dark` : name
 }
 
 export function createDefaultFileIconMapping() {
-  const fileIconMapping: Record<string, IconType> = {}
+  const fileIconMapping: Record<string, Icon> = {}
 
   Object.values(fileIcon).forEach((value) => {
     value.extensions.forEach((extension) => {

@@ -16,7 +16,7 @@
     >
       <oc-icon
         v-if="hasIcon"
-        :name="icon"
+        :icon="icon"
         :color="iconColor"
         :size="iconSize"
         :fill-type="iconFillType"
@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
-import { FillType, SizeType } from '../../helpers'
+import { FillType, Icon, SizeType } from '../../helpers'
 
 export interface Props {
   /**
@@ -45,17 +45,19 @@ export interface Props {
    */
   background?: string
   /**
-   * @docs The icon to be displayed in the avatar item. Please refer to the `OcIcon` component to see how to use icon names.
+   * @docs The icon to be displayed in the avatar item.
    */
-  icon?: string
+  icon?: Icon
   /**
    * @docs The color of the icon.
    * @default var(--oc-role-on-secondary)
+   * @deprecated use a named icon for the `icon` instead
    */
   iconColor?: string
   /**
    * @docs The fill type of the icon.
    * @default 'fill'
+   * @deprecated use a named icon for the `icon` instead
    */
   iconFillType?: FillType
   /**
