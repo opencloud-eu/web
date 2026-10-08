@@ -19,9 +19,12 @@ import {
   createMarkdownClipboardExtension,
   Frontmatter,
   imageFileHandlerExtension,
+  MarkdownListItem,
+  MarkdownOrderedList,
   MarkdownParagraph,
   MarkdownTaskList,
-  registerFrontmatterTokenizer
+  registerFrontmatterTokenizer,
+  registerMarkdownListTokenizer
 } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 
@@ -38,6 +41,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   // only touches `use`, `setOptions`, `Lexer`, `lexer` and `defaults`.
   const marked = new Marked() as unknown as typeof markedDefault
   registerFrontmatterTokenizer(marked)
+  registerMarkdownListTokenizer(marked)
 
   const editorContentType = () => {
     return 'markdown'
@@ -97,9 +101,13 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         codeBlock: false,
         document: false,
         paragraph: false,
+        listItem: false,
+        orderedList: false,
         undoRedo: options?.yjs ? false : undefined
       }),
       MarkdownParagraph,
+      MarkdownListItem,
+      MarkdownOrderedList,
       // Frontmatter is metadata about the document, it only ever belongs at the
       // top. Spelled as an alternation rather than `frontmatter? block+` so that
       // a document holding nothing but metadata is valid too. `block+` has to
