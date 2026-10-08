@@ -20,6 +20,37 @@ describe('useIsResourceNameValid', () => {
       })
     })
 
+    it.each(['x'.repeat(255), 'ä'.repeat(127) + 'x'])(
+      'should accept a name with 255 bytes',
+      (newName) => {
+        getWrapper({
+          setup: ({ isFileNameValid }) => {
+            const { isValid } = isFileNameValid(
+              { name: 'currentName', path: '/currentName' } as Resource,
+              newName
+            )
+            expect(isValid).toBe(true)
+          }
+        })
+      }
+    )
+
+    it.each(['x'.repeat(256), 'ä'.repeat(128)])(
+      'should reject a name with 256 bytes',
+      (newName) => {
+        getWrapper({
+          setup: ({ isFileNameValid }) => {
+            const { isValid, error } = isFileNameValid(
+              { name: 'currentName', path: '/currentName' } as Resource,
+              newName
+            )
+            expect(isValid).toBe(false)
+            expect(error).toEqual('The name is too long')
+          }
+        })
+      }
+    )
+
     it('should not show an error if new name already exists but in different folder', () => {
       getWrapper({
         setup: ({ isFileNameValid }) => {
