@@ -49,6 +49,7 @@
       v-if="isAdvancedMode"
       class="mt-2"
       :min-date="DateTime.now()"
+      :max-date="DateTime.now().plus({ years: 100 })"
       :label="$gettext('Expiration date')"
       :is-dark="currentTheme.isDark"
       @date-changed="onExpiryDateChanged"
