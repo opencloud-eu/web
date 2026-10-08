@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show the whole image in the file details preview [[#3609](https://github.com/opencloud-eu/web/pull/3609)]
 - fix(files): report moved files after cut & paste and block pasting into own subfolders [[#3588](https://github.com/opencloud-eu/web/pull/3588)]
 - fix(web-runtime): keep upload progress sane after resume and show failed upload details [[#3586](https://github.com/opencloud-eu/web/pull/3586)]
 - fix(tests): authenticate basic auth requests with the username [[#3318](https://github.com/opencloud-eu/web/pull/3318)]
