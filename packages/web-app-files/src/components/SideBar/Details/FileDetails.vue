@@ -161,6 +161,7 @@ import { storeToRefs } from 'pinia'
 import { computed, inject, Ref, ref, unref, watch } from 'vue'
 import {
   ImageDimension,
+  ProcessorType,
   useAuthStore,
   useUserStore,
   useCapabilityStore,
@@ -372,6 +373,7 @@ watch(
         space: unref(space),
         resource: unref(resource),
         dimensions: ImageDimension.Medium,
+        processor: ProcessorType.enum.fit,
         cancelRunning: true,
         updateStore: false
       })
