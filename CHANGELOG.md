@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(web-runtime): keep upload progress sane after resume and show failed upload details [[#3586](https://github.com/opencloud-eu/web/pull/3586)]
 - fix(tests): authenticate basic auth requests with the username [[#3318](https://github.com/opencloud-eu/web/pull/3318)]
 - fix(design-system): derive a valid color for every icon name [[#3585](https://github.com/opencloud-eu/web/pull/3585)]
 - fix(web-pkg): limit resource names to 255 bytes [[#3589](https://github.com/opencloud-eu/web/pull/3589)]
