@@ -32,7 +32,8 @@ describe('formatFileSize', () => {
     it.each([
       [-1, '--'],
       ['nonNumericInput', '?'],
-      [NaN, '?']
+      [NaN, '?'],
+      [Infinity, '?']
     ])('input "%s"', (input: any, expected: string) => {
       expect(formatFileSize(input, '')).toEqual(expected)
     })

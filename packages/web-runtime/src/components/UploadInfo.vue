@@ -220,6 +220,7 @@ const bytesUploaded = ref(0)
 const uploadSpeed = ref(0)
 const filesInEstimation = ref<Record<string, number>>({})
 const timeStarted = ref<Date>(null)
+let timePaused: number
 const remainingTime = ref<string>(undefined)
 const disableActions = ref(false) // disables the following actions: pause, resume, retry
 
@@ -496,9 +497,12 @@ function toggleBodyCollapsed() {
 function togglePauseUploads() {
   if (unref(uploadsPaused)) {
     uppyService.resumeAllUploads()
-    timeStarted.value = null
+    if (unref(timeStarted)) {
+      timeStarted.value = new Date(unref(timeStarted).getTime() + Date.now() - timePaused)
+    }
   } else {
     uppyService.pauseAllUploads()
+    timePaused = Date.now()
   }
 
   uploadsPaused.value = !unref(uploadsPaused)
@@ -545,9 +549,15 @@ function getUploadItemMessage(item: UploadResult) {
   // TODO: Remove extraction code as soon as https://github.com/tus/tus-js-client/issues/448 is solved
   const formatErrorMessageToObject = (errorMessage: string) => {
     const responseCode = errorMessage.match(/response code: (\d+)/)?.[1]
-    const errorBody = JSON.parse(
-      errorMessage.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
-    )
+    const responseText = errorMessage.match(/response text: ([\s\S]+?), request id/)?.[1] || '{}'
+    let errorBody: { error?: { code?: string; message?: string } }
+    try {
+      errorBody = JSON.parse(responseText)
+    } catch {
+      errorBody = {
+        error: { message: responseText.match(/<s:message>([\s\S]*?)<\/s:message>/)?.[1] }
+      }
+    }
 
     return {
       responseCode: responseCode ? parseInt(responseCode) : null,
