@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: limit expiration dates to 100 years in the future [[#3601](https://github.com/opencloud-eu/web/pull/3601)]
 - fix: update the sidebar preview when switching to a resource with the same mdate [[#3615](https://github.com/opencloud-eu/web/pull/3615)]
 - fix: handle deep links to deleted or missing files [[#3590](https://github.com/opencloud-eu/web/pull/3590)]
 - fix: show the whole image in the file details preview [[#3609](https://github.com/opencloud-eu/web/pull/3609)]
