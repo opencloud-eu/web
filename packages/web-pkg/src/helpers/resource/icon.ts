@@ -193,7 +193,11 @@ const fileIcon = {
   },
   graphic: {
     icon: { name: 'resource-type-graphic' },
-    extensions: ['odg', 'excalidraw']
+    extensions: ['odg']
+  },
+  whiteboard: {
+    icon: { name: 'resource-type-whiteboard' },
+    extensions: ['excalidraw']
   },
   pdf: {
     icon: { name: 'resource-type-pdf', hasDarkVariant: true },
