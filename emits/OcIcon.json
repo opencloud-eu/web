@@ -1,12 +1,12 @@
 [
   {
     "name": "loaded",
-    "description": "Emitted when the SVG has been loaded.",
+    "description": "Emitted when the SVG or the image has been loaded.",
     "type": "(e: 'loaded'): void"
   },
   {
     "name": "error",
-    "description": "Emitted when the SVG could not be loaded, e.g. because the icon does not exist.",
+    "description": "Emitted when the SVG or the image could not be loaded, e.g. because the icon does not exist.",
     "type": "(e: 'error'): void"
   }
 ]

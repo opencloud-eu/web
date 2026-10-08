@@ -2,9 +2,9 @@
   {
     "name": "icon",
     "required": true,
-    "description": "Name of the icon to display. Please refer to the `OcIcon` component to see how to use icon names.",
+    "description": "Icon to display. An image icon fills the whole tile unless `colorPrimary` is set, in which case it is displayed in icon size on the colored tile.",
     "default": "",
-    "type": "string"
+    "type": "Icon"
   },
   {
     "name": "colorPrimary",

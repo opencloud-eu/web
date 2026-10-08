@@ -2,9 +2,9 @@
   {
     "name": "icon",
     "required": false,
-    "description": "The name of the icon to be displayed in the search bar. Please refer to the `OcIcon` component to see how to use icon names.",
+    "description": "The icon to be displayed in the search bar.",
     "default": "",
-    "type": "string"
+    "type": "Icon"
   },
   {
     "name": "placeholder",

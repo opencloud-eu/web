@@ -23,9 +23,9 @@
   {
     "name": "icon",
     "required": false,
-    "description": "The icon to be displayed in the avatar item. Please refer to the `OcIcon` component to see how to use icon names.",
+    "description": "The icon to be displayed in the avatar item.",
     "default": "",
-    "type": "string"
+    "type": "Icon"
   },
   {
     "name": "iconColor",

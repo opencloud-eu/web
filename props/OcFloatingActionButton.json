@@ -46,7 +46,7 @@
     "required": false,
     "description": "The menu items of the floating action button element.",
     "default": "",
-    "type": "{\n    icon: string\n    label: string\n    handler?: () => void\n    to?: RouteLocationRaw\n  }[]"
+    "type": "{\n    icon: Icon\n    label: string\n    handler?: () => void\n    to?: RouteLocationRaw\n  }[]"
   },
   {
     "name": "routerLinkComponent",

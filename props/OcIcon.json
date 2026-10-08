@@ -21,6 +21,13 @@
     "type": "FillType"
   },
   {
+    "name": "icon",
+    "required": false,
+    "description": "Icon to display. Takes precedence over `name`.",
+    "default": "",
+    "type": "Icon"
+  },
+  {
     "name": "name",
     "required": false,
     "description": "Name of the icon. Please refer to `Remixicon` for a list of available icons.",

@@ -16,9 +16,9 @@
   {
     "name": "icon",
     "required": false,
-    "description": "The name of the icon shown in front of the title. The content gets indented to align with the title.",
+    "description": "The icon shown in front of the title. The content gets indented to align with the title.",
     "default": "",
-    "type": "string"
+    "type": "Icon"
   },
   {
     "name": "expandable",
