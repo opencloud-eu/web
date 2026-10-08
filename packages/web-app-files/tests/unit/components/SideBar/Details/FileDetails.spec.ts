@@ -7,13 +7,12 @@ import {
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { ref, Ref } from 'vue'
+import { reactive } from 'vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
 import { AncestorMetaData, ImageDimension, ProcessorType } from '@opencloud-eu/web-pkg'
 import { User } from '@opencloud-eu/web-client/graph/generated'
 
 const getResourceMock = ({
-  id = '1',
   type = 'file',
   mimeType = 'image/jpeg',
   tags = [],
@@ -25,7 +24,7 @@ const getResourceMock = ({
   sharedBy = undefined
 } = {}) =>
   mock<ShareResource>({
-    id,
+    id: '1',
     type,
     isFolder: type === 'folder',
     isInVault: false,
@@ -90,13 +89,17 @@ describe('Details SideBar Panel', () => {
       )
     })
     it('loads the preview of another resource with the same modification date', async () => {
-      const resource = ref<Resource>(getResourceMock({ id: '1' }))
+      const resource = reactive({ ...getResourceMock() }) as Resource
       const { mocks, wrapper } = createWrapper({ resource })
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
-      resource.value = getResourceMock({ id: '2' })
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(1)
+
+      resource.id = '2'
       await wrapper.vm.$nextTick()
       await wrapper.vm.$nextTick()
+
+      expect(mocks.$previewService.loadPreview).toHaveBeenCalledTimes(2)
       expect(mocks.$previewService.loadPreview).toHaveBeenLastCalledWith(
         expect.objectContaining({ resource: expect.objectContaining({ id: '2' }) }),
         expect.anything(),
@@ -233,7 +236,7 @@ function createWrapper({
   versions = [],
   tagsEnabled = true
 }: {
-  resource?: Resource | Ref<Resource>
+  resource?: Resource
   isPublicLinkContext?: boolean
   ancestorMetaData?: AncestorMetaData
   user?: User
