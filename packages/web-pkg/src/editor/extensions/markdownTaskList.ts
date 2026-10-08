@@ -43,10 +43,10 @@ function isFenceClose(line: string, marker: string): boolean {
 
 /**
  * Tiptap counts tabs as one character of indentation and strips a fixed two
- * characters from every line nested in a task item. Leading tabs are expanded,
- * except in fenced code beyond the fence's indentation. Lines indented less
- * than the item's content column are moved to it, so no characters get cut.
- * Unlike markdown, such lines then belong to the item.
+ * characters from every line nested in a task item. Leading tabs are expanded up
+ * to the item's content column, in fenced code up to the fence's indentation.
+ * Lines indented less than the item's content column are moved to it, so no
+ * characters get cut. Unlike markdown, such lines then belong to the item.
  *
  * FIXME: see https://github.com/ueberdosis/tiptap/issues/7909. `MarkdownTaskList`
  * can go once tiptap handles tabs and under indented lines.
@@ -82,12 +82,16 @@ function normalizeTaskListIndentation(lines: string[]): string[] {
     }
 
     const ownerIndent = itemIndents.findLast((itemIndent) => itemIndent < indent)
-    const contentIndent = ownerIndent === undefined ? indent : Math.max(indent, ownerIndent + 2)
+    const contentIndent = ownerIndent === undefined ? indent : ownerIndent + 2
+    const shift = Math.max(contentIndent - indent, 0)
     const marker = fenceOpenPattern.exec(expanded.trimStart())?.[1]
     if (marker) {
-      fence = { marker, indent, shift: contentIndent - indent }
+      fence = { marker, indent, shift }
     }
-    return ' '.repeat(contentIndent) + expanded.trimStart()
+    // Tabs past the content column belong to the content, e.g. an indented code block
+    return shift
+      ? ' '.repeat(contentIndent) + expanded.trimStart()
+      : expandLeadingTabs(line, contentIndent)
   })
 }
 

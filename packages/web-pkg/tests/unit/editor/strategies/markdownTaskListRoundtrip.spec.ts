@@ -173,6 +173,16 @@ describe('markdown task list and code block roundtrip', () => {
     })
 
     it.each([
+      ['- [ ] a\n\n      \tx\n', '\tx'],
+      ['- [ ] a\n\n  \t\tx\n', '\tx'],
+      ['- [ ] a\n  - [ ] b\n\n        \tx\n', '\tx']
+    ])('keeps tabs in the indented code block %j in a task item', (markdown, code) => {
+      const { editor } = expectStableRoundtrip(markdown)
+
+      expect(codeBlockTexts(toJSON(editor))).toEqual([code])
+    })
+
+    it.each([
       ['directly below the item', '- [ ] a\n ```\n code\n   x\n ```\n', 'code\n  x'],
       ['after a blank line', '- [ ] a\n\n ~~~\n code\n ~~~\n', 'code'],
       ['after a nested item', '- [ ] a\n  - [ ] b\n ```\n code\n ```\n', 'code']
