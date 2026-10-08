@@ -150,6 +150,13 @@ describe('useCollaboraPostMessages', () => {
 
       expect(mockMentionUsers.notifyMentionedUsers).toHaveBeenCalledOnce()
     })
+    it('closes the app, e.g. via the back button of the mobile toolbar', async () => {
+      const { instance, onClose } = getWrapper()
+
+      await instance.handlePostMessagesCollabora(createMessageEvent({ MessageId: 'UI_Close' }))
+
+      expect(onClose).toHaveBeenCalledOnce()
+    })
   })
 
   describe('page leave / refresh', () => {
@@ -461,10 +468,11 @@ function getWrapper({
   mocks?: ReturnType<typeof defaultComponentMocks>
 } = {}) {
   let instance!: ReturnType<typeof useCollaboraPostMessages>
+  const onClose = vi.fn()
 
   const wrapper = getComposableWrapper(
     () => {
-      instance = useCollaboraPostMessages({ space, resource, appIframeRef })
+      instance = useCollaboraPostMessages({ space, resource, appIframeRef, onClose })
     },
     {
       mocks,
@@ -477,5 +485,5 @@ function getWrapper({
     }
   )
 
-  return { wrapper, instance, mocks }
+  return { wrapper, instance, mocks, onClose }
 }

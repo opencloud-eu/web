@@ -81,7 +81,10 @@ import { useCollaboraPostMessages } from './composables'
 const { space, resource, isReadOnly } =
   defineProps<Pick<AppWrapperSlotProps, 'space' | 'resource' | 'isReadOnly'>>()
 
-defineEmits(['save', 'close']) // these are inherited from the AppWrapper.vue
+const emit = defineEmits<{
+  (e: 'save'): void
+  (e: 'close'): void
+}>()
 
 const language = useGettext()
 const { $gettext } = language
@@ -254,7 +257,8 @@ const appIframeRef = useTemplateRef<HTMLIFrameElement>('appIframe')
 const { handlePostMessagesCollabora, resetMentionState } = useCollaboraPostMessages({
   space: toRef(() => space),
   resource: toRef(() => resource),
-  appIframeRef
+  appIframeRef,
+  onClose: () => emit('close')
 })
 
 onMounted(() => {
