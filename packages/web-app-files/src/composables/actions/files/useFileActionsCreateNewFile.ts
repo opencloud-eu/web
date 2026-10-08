@@ -1,5 +1,10 @@
-import { extractNameWithoutExtension, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { WebDAV } from '@opencloud-eu/web-client/webdav'
+import {
+  extractNameWithoutExtension,
+  isPublicSpaceResource,
+  Resource,
+  SpaceResource
+} from '@opencloud-eu/web-client'
+import { DavPermission, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { storeToRefs } from 'pinia'
 import { join } from 'path'
 import { computed, Ref, unref } from 'vue'
@@ -167,7 +172,16 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
         icon: 'add',
         handler: (args) => handler(args, appFileExtension.extension, appFileExtension),
         label: () => $gettext(appFileExtension.newFileMenu.menuTitle()),
-        isVisible: () => unref(currentFolder)?.canUpload({ user: userStore.user }),
+        isVisible: () => {
+          // files created via an upload-only link couldn't be edited afterwards
+          if (
+            isPublicSpaceResource(unref(space)) &&
+            !unref(currentFolder)?.permissions?.includes(DavPermission.Updateable)
+          ) {
+            return false
+          }
+          return unref(currentFolder)?.canUpload({ user: userStore.user })
+        },
         isDisabled: () => isExternalActionInVault,
         disabledTooltip: () => {
           if (isExternalActionInVault) {

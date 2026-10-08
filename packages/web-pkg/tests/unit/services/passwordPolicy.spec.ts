@@ -6,6 +6,15 @@ import { useCapabilityStore } from '../../../src/composables/piniaStores'
 import { describe } from 'vitest'
 
 describe('PasswordPolicyService', () => {
+  it('works without a password policy capability, e.g. for anonymous visitors', () => {
+    const { passwordPolicyService, store } = getWrapper(undefined)
+    passwordPolicyService.initialize(store)
+
+    expect(Object.keys(passwordPolicyService.getPolicy({ enforcePassword: true }).rules)).toEqual([
+      'mustNotBeEmpty'
+    ])
+    expect(passwordPolicyService.generatePassword()).toHaveLength(12)
+  })
   describe('policy', () => {
     describe('mustNotBeEmpty rule', () => {
       it('is present when "enforcePassword" is set', () => {

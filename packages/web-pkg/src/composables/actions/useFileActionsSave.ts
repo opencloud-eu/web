@@ -1,5 +1,6 @@
 import { computed, markRaw, unref, Ref } from 'vue'
 import { useGettext } from 'vue3-gettext'
+import { isPublicSpaceResource, SharePermissionBit } from '@opencloud-eu/web-client'
 import { FileAction, FileActionOptions } from './types'
 import { useModals } from '../piniaStores'
 import SaveAsModal from '../../components/Modals/SaveAsModal.vue'
@@ -52,7 +53,19 @@ export function useFileActionsSave({
     icon: 'save-2',
     label: () => $gettext('Save as'),
     handler: saveAsHandler,
-    isVisible: () => unref(isEditor),
+    isVisible: ({ space }) => {
+      if (!unref(isEditor)) {
+        return false
+      }
+      if (!isPublicSpaceResource(space)) {
+        return true
+      }
+      // a single file link has no folder the copy could be saved to
+      if (!space.fileId || space.fileId === space.id) {
+        return false
+      }
+      return !!(space.publicLinkPermission & SharePermissionBit.Create)
+    },
     class: 'oc-files-actions-save-as-trigger'
   }))
 
