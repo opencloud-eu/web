@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(web-pkg): limit resource names to 255 bytes [[#3589](https://github.com/opencloud-eu/web/pull/3589)]
 - fix: mobile fixes for form messages, the page size select, the floating action button, batch icons, preview swiping and Save as [[#3578](https://github.com/opencloud-eu/web/pull/3578)]
 - fix(yjs): run initial hydration only on the first sync [[#3581](https://github.com/opencloud-eu/web/pull/3581)]
 - fix(design-system): stop raw buttons from filling stroke-only shapes in resource icons [[#3575](https://github.com/opencloud-eu/web/pull/3575)]
