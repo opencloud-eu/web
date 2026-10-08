@@ -1,12 +1,7 @@
 <template>
   <div class="mail-attachment-item flex justify-between items-center">
     <div class="mail-attachment-item-info flex items-center flex-1 min-w-0">
-      <oc-icon
-        :name="iconName"
-        :color="icon?.color"
-        size-class="size-8"
-        class="inline-flex items-center"
-      />
+      <oc-icon :icon="icon" size-class="size-8" class="inline-flex items-center" />
       <div class="mail-attachment-item-details flex ml-2 flex-col min-w-0">
         <span
           class="mail-attachment-item-filename truncate"
@@ -41,7 +36,6 @@
 <script setup lang="ts">
 import { urlJoin } from '@opencloud-eu/web-client'
 import { computed, inject } from 'vue'
-import { storeToRefs } from 'pinia'
 import type { MailBodyPart } from '../types'
 import type { MailComposeAttachment } from './MailComposeForm.vue'
 import {
@@ -49,12 +43,10 @@ import {
   useConfigStore,
   formatFileSize,
   useMessages,
-  getResourceIconName,
   ResourceIconMapping,
   resourceIconMappingInjectionKey,
   createDefaultFileIconMapping,
-  triggerDownloadWithFilename,
-  useThemeStore
+  triggerDownloadWithFilename
 } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { hasBlobId, hasId } from '../helpers/mailAttachmentGuards'
@@ -83,8 +75,6 @@ const { current: currentLanguage, $gettext } = useGettext()
 const iconMappingInjection = inject<ResourceIconMapping>(resourceIconMappingInjectionKey)
 const defaultFileIconMapping = createDefaultFileIconMapping()
 
-const { currentTheme } = storeToRefs(useThemeStore())
-
 const mimeType = computed(() => {
   return attachment.type ?? ''
 })
@@ -98,15 +88,9 @@ const icon = computed(() => {
   return (
     (extension && defaultFileIconMapping[extension as keyof typeof defaultFileIconMapping]) ||
     (mimeType.value && iconMappingInjection?.mimeType?.[mimeType.value]) ||
-    (extension && iconMappingInjection?.extension?.[extension])
+    (extension && iconMappingInjection?.extension?.[extension]) ||
+    'file-2'
   )
-})
-
-const iconName = computed(() => {
-  if (!icon.value) {
-    return 'file-2'
-  }
-  return getResourceIconName(icon.value, !!currentTheme.value?.isDark)
 })
 
 const attachmentBlobId = computed(() => {

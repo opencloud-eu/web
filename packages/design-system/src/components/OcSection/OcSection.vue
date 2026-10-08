@@ -10,7 +10,7 @@
         <span class="flex flex-row items-center gap-4">
           <oc-icon
             v-if="icon"
-            :name="icon"
+            :icon="icon"
             fill-type="line"
             size-class="size-5"
             color="var(--oc-role-on-surface)"
@@ -48,7 +48,7 @@
 import { computed, unref } from 'vue'
 import OcButton from '../OcButton/OcButton.vue'
 import OcIcon from '../OcIcon/OcIcon.vue'
-import { uniqueId } from '../../helpers'
+import { Icon, uniqueId } from '../../helpers'
 
 export interface Props {
   /**
@@ -60,9 +60,9 @@ export interface Props {
    */
   subtitle?: string
   /**
-   * @docs The name of the icon shown in front of the title. The content gets indented to align with the title.
+   * @docs The icon shown in front of the title. The content gets indented to align with the title.
    */
-  icon?: string
+  icon?: Icon
   /**
    * @docs Determines if the content can be collapsed and expanded by clicking the header. Use `v-model:expanded` to control or observe the state.
    * @default false

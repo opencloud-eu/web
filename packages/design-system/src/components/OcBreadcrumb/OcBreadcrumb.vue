@@ -59,7 +59,7 @@
               >
                 <oc-icon
                   v-if="truncationItem.icon"
-                  :name="truncationItem.icon"
+                  :icon="truncationItem.icon"
                   :accessible-label="truncationItem.iconAccessibleLabel || ''"
                   fill-type="line"
                   class="align-middle"

@@ -53,7 +53,7 @@ describe('QuickActions', () => {
       expect(actionButton.exists()).toBeTruthy()
       expect(actionButton.attributes().class).toContain('files-quick-action-show-shares')
       expect(iconEl.exists()).toBeTruthy()
-      expect(iconEl.attributes().name).toBe('group-add')
+      expect(iconEl.attributes().icon).toBe('group-add')
       expect(actionButton.attributes('aria-label')).toBe('Add people')
     })
 

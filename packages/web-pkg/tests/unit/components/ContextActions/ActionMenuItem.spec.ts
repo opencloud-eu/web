@@ -5,7 +5,6 @@ import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-help
 const selectors = {
   handler: '[data-testid="action-handler"]',
   icon: '[data-testid="action-icon"]',
-  img: '[data-testid="action-img"]',
   label: '[data-testid="action-label"]',
   srHint: '[data-testid="action-sr-hint"]',
   ariaLabel: '[aria-label="foo"]'
@@ -40,7 +39,37 @@ describe('ActionMenuItem component', () => {
     const action = fileActions.download
     const { wrapper } = getWrapper(action)
     expect(wrapper.find(selectors.icon).exists()).toBeTruthy()
-    expect(wrapper.find(selectors.icon).attributes().name).toBe(action.icon)
+    expect(wrapper.find(selectors.icon).attributes().icon).toBe(action.icon)
+  })
+  it('renders the icon returned by an icon function', () => {
+    const action = { ...fileActions.download, icon: () => 'star' } as unknown as FileAction
+    const { wrapper } = getWrapper(action)
+    expect(wrapper.find(selectors.icon).attributes().icon).toBe('star')
+  })
+  it('renders an image for an image icon', () => {
+    const action = {
+      ...fileActions.download,
+      icon: { src: 'https://example.org/logo.png' }
+    } as unknown as FileAction
+    const { wrapper } = getWrapper(action, mount)
+    expect(wrapper.find(`${selectors.icon} img`).attributes().src).toBe(
+      'https://example.org/logo.png'
+    )
+  })
+  it('treats a string icon as a name even if it looks like a url', () => {
+    const action = {
+      ...fileActions.download,
+      icon: 'https://example.org/logo.png'
+    } as unknown as FileAction
+    const { wrapper } = getWrapper(action, mount)
+    expect(wrapper.find('img').exists()).toBeFalsy()
+  })
+  it('falls back to the deprecated icon fill type of the action', () => {
+    const action = { ...fileActions.download, iconFillType: 'fill' } as unknown as FileAction
+    const { wrapper } = getWrapper(action, mount)
+    expect(
+      wrapper.find(selectors.icon).findComponent({ name: 'inline-svg' }).attributes().src
+    ).toBe('icons/file-download-fill.svg')
   })
   it('renders the action label', () => {
     const action = fileActions.download

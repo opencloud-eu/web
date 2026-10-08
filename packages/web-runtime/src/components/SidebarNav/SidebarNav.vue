@@ -15,7 +15,7 @@
             class="oc-app-floating-action-button w-full"
             @click="floatingActionButton.handler?.()"
           >
-            <oc-icon :name="floatingActionButton.icon" />
+            <oc-icon :icon="floatingActionButton.icon" />
             <span v-text="floatingActionButton.label()" />
           </oc-button>
           <template

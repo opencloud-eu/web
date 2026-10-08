@@ -143,8 +143,7 @@ const sideBarAvailablePanels = [
   },
   {
     name: 'EditPanel',
-    icon: 'pencil',
-    iconFillType: 'line',
+    icon: { name: 'pencil', fillType: 'line' },
     title: () => $gettext('Edit group'),
     component: EditPanel,
     componentAttrs: ({ items }) => ({
@@ -154,8 +153,7 @@ const sideBarAvailablePanels = [
   },
   {
     name: 'GroupMembers',
-    icon: 'group',
-    iconFillType: 'line',
+    icon: { name: 'group', fillType: 'line' },
     title: () => $gettext('Members'),
     component: MembersPanel,
     isVisible: ({ items }) => items.length === 1

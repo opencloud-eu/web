@@ -13,7 +13,7 @@
           action.handler({ space, resources: [item], event: e } as FileActionOptionsWithEvent)
       "
     >
-      <oc-icon :name="getIconFromAction(action)" fill-type="line" />
+      <oc-icon :icon="getIconFromAction(action)" fill-type="line" />
     </oc-button>
   </div>
 </template>

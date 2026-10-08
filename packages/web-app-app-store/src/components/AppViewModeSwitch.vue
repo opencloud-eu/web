@@ -17,7 +17,7 @@
       class="p-2"
       @click="emit('update:modelValue', mode.name)"
     >
-      <oc-icon :name="mode.icon.name" :fill-type="mode.icon.fillType" />
+      <oc-icon :icon="mode.icon" />
     </oc-button>
   </div>
 </template>

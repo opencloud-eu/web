@@ -14,7 +14,7 @@
       @click="triggerUpload"
     >
       <slot :label-id="uploadLabelId" :label="buttonLabel">
-        <oc-icon :name="uploadIcon" size-class="size-5" />
+        <oc-icon :icon="uploadIcon" size-class="size-5" />
         <span :id="uploadLabelId">{{ buttonLabel }}</span>
       </slot>
     </oc-button>
@@ -34,13 +34,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onBeforeUnmount, ref, unref, useTemplateRef } from 'vue'
-import { storeToRefs } from 'pinia'
-import {
-  useService,
-  getResourceIconName,
-  useThemeStore,
-  convertToMinimalUppyFile
-} from '@opencloud-eu/web-pkg'
+import { useService, convertToMinimalUppyFile } from '@opencloud-eu/web-pkg'
 import type { UppyService } from '@opencloud-eu/web-pkg'
 import type {
   AppearanceType,
@@ -75,11 +69,8 @@ const isRemoteUploadInProgress = ref(uppyService.isRemoteUploadInProgress())
 let uploadStartedSub: string
 let uploadCompletedSub: string
 
-const { currentTheme } = storeToRefs(useThemeStore())
-
 const uploadIcon = computed(() => {
-  const name = isFolder ? 'resource-type-folder-upload' : 'resource-type-file-upload'
-  return getResourceIconName({ name, hasDarkVariant: true }, !!unref(currentTheme)?.isDark)
+  return isFolder ? 'resource-type-folder-upload' : 'resource-type-file-upload'
 })
 
 const onUploadStarted = () =>

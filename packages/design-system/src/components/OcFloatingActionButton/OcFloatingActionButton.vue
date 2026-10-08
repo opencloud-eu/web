@@ -11,7 +11,7 @@
         :to="item.to"
         @click="onChildButtonClicked(item)"
       >
-        <oc-icon :name="item.icon" />
+        <oc-icon :icon="item.icon" />
         <span v-text="item.label" />
       </oc-button>
     </template>
@@ -33,7 +33,7 @@
 import { computed, ref, unref } from 'vue'
 import { RouteLocationRaw } from 'vue-router'
 import { useGettext } from 'vue3-gettext'
-import { ColorRoleType } from '../../helpers'
+import { ColorRoleType, Icon } from '../../helpers'
 
 export interface Props {
   /**
@@ -68,7 +68,7 @@ export interface Props {
    * @docs The menu items of the floating action button element.
    */
   items?: {
-    icon: string
+    icon: Icon
     label: string
     handler?: () => void
     to?: RouteLocationRaw

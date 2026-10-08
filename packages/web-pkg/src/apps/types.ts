@@ -2,6 +2,7 @@ import type { App, ComponentCustomProperties, Ref } from 'vue'
 import type { RouteLocationRaw, Router, RouteRecordRaw } from 'vue-router'
 import type { Extension, ExtensionPoint } from '../composables/piniaStores'
 import type { IconFillType } from '../helpers'
+import type { Icon } from '@opencloud-eu/design-system/helpers'
 import type { Ability, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import type { Language, Translations } from 'vue3-gettext'
 import type { Pinia } from 'pinia'
@@ -41,8 +42,9 @@ export interface AppNavigationItem {
   isActive?: () => boolean
   activeFor?: { name?: string; path?: string }[]
   isVisible?: () => boolean
+  /** @deprecated use a named icon for the `icon` instead */
   fillType?: IconFillType
-  icon?: string
+  icon?: Icon
   name: string | (() => string)
   route?: RouteLocationRaw
   handler?: () => void
@@ -71,20 +73,19 @@ export interface ApplicationFileExtension {
    * Note that in the file list and the "New"-menu, the icon is overridden if
    * there is a default icon defined for the given file type.
    */
-  icon?: string
+  icon?: Icon
   /**
-   * Defines the color of the icon in the file list.
-   * In the "New"- and "Open with..."-menu, colors are not used, so this will be ignored.
-   * Defaults to the `color` property of the application if not specified.
+   * Defines the color of the `icon` of this file type. Only applies if the `icon` is
+   * specified here and is not an image icon.
    *
-   * Note that in the file list, the icon might be overridden if there is a
-   * default icon defined for the given file type.
+   * @deprecated use a named icon for the `icon` instead
    */
   iconColor?: string
   /**
-   * Defines the fill type of the icon in the "Open with..."-menu.
-   * In the file list and the "New"-menu, the fill type is always `fill`, so this will be ignored.
-   * Defaults to `line` in the "Open with..."-menu if not specified.
+   * Defines the fill type of the `icon` of this file type. Only applies if the `icon` is
+   * specified here and is not an image icon.
+   *
+   * @deprecated use a named icon for the `icon` instead
    */
   iconFillType?: IconFillType
   mimeType?: string
@@ -104,10 +105,12 @@ export interface ApplicationInformation {
   color?: string
   id?: string
   name?: string
-  icon?: string
+  icon?: Icon
+  /** @deprecated use a named icon for the `icon` instead */
   iconFillType?: IconFillType
-  /** @deprecated use the iconColor on ApplicationFileExtension instead */
+  /** @deprecated use a named icon for the `icon` instead */
   iconColor?: string
+  /** @deprecated use an image icon for the `icon` instead */
   img?: string
   meta?: {
     fileSizeLimit?: number

@@ -9,7 +9,7 @@
       aria-expanded="false"
     >
       <span class="inline-flex gap-2">
-        <oc-icon :name="menuSectionDrop.icon" size-class="size-5" fill-type="line" />
+        <oc-icon :icon="menuSectionDrop.icon" size-class="size-5" fill-type="line" />
         <span class="flex oc-files-context-action-label">
           <span v-text="menuSectionDrop.label" />
         </span>

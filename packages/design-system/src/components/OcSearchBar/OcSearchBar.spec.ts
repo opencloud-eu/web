@@ -46,14 +46,14 @@ describe('OcSearchBar', () => {
     describe('when icon prop is not false', () => {
       const wrapper = getWrapper({ icon: 'mdi-icon' })
       it('should render icon', () => {
-        const iconStub = wrapper.find('oc-icon-stub[name="mdi-icon"]')
+        const iconStub = wrapper.find('oc-icon-stub[icon="mdi-icon"]')
         expect(iconStub.exists()).toBeTruthy()
-        expect(iconStub.attributes('name')).toBe('mdi-icon')
+        expect(iconStub.attributes('icon')).toBe('mdi-icon')
       })
     })
     it('should not render icon if false', () => {
       const wrapper = getWrapper({ icon: false })
-      const iconStub = wrapper.find('oc-icon-stub[name="mdi-icon"]')
+      const iconStub = wrapper.find('oc-icon-stub[icon="mdi-icon"]')
       expect(iconStub.exists()).toBeFalsy()
     })
   })

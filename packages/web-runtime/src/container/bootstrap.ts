@@ -50,14 +50,19 @@ import {
   LoadingService,
   getExtensionNavItems,
   getBackendVersion,
-  getWebVersion,
-  IconType
+  getWebVersion
 } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
 import { v4 as uuidV4 } from 'uuid'
 import { MESSAGE_TYPE } from '@opencloud-eu/web-client/sse'
 import { getQueryParam } from '../helpers/url'
 import PQueue from 'p-queue'
+import {
+  Icon,
+  iconIsDarkInjectionKey,
+  isImageIcon,
+  toNamedIcon
+} from '@opencloud-eu/design-system/helpers'
 import {
   onSSEFileLockingEvent,
   onSSEItemRenamedEvent,
@@ -349,11 +354,14 @@ export const announceApplicationsReady = async ({
   appsStore.fileExtensions.forEach((fileExtensions) => {
     const app = appsStore.apps[fileExtensions.app]
 
-    const getIconDefinition = (): IconType => {
-      return {
-        name: fileExtensions.icon || app.icon,
-        color: fileExtensions.iconColor || app.color
+    const getIconDefinition = (): Icon => {
+      const icon = fileExtensions.icon || app.icon
+      const takesAppColor = !!app.color && !isImageIcon(icon)
+      if (!takesAppColor) {
+        return icon
       }
+
+      return { color: app.color, ...toNamedIcon(icon) }
     }
 
     if (fileExtensions.mimeType) {
@@ -396,6 +404,7 @@ export const announceTheme = async ({
 
   initializeThemes(webTheme)
 
+  app.provide(iconIsDarkInjectionKey, () => !!themeStore.currentTheme?.isDark)
   app.use(designSystem)
 }
 

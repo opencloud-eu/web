@@ -50,7 +50,6 @@ export const useFileActionsLockVault = (): { actions: Ref<FileAction[]> } => {
     {
       name: 'lock-vault',
       icon: 'lock',
-      iconFillType: 'line',
       label: () => $gettext('Lock vault'),
       category: 'tertiary',
       handler: ({ resources }: FileActionOptions) => {

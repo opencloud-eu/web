@@ -7,7 +7,7 @@
           class="flex size-11 shrink-0 items-center justify-center rounded-lg bg-role-secondary-container"
         >
           <oc-icon
-            :name="icon"
+            :icon="icon"
             :fill-type="iconFillType"
             size-class="size-5"
             color="var(--oc-role-on-secondary-container)"
@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { FillType } from '@opencloud-eu/design-system/helpers'
+import { FillType, Icon } from '@opencloud-eu/design-system/helpers'
 // import ods components explicitly, ods is not initialized on all pages using this component
 import { OcCard, OcIcon } from '@opencloud-eu/design-system/components'
 
@@ -36,7 +36,8 @@ const {
 } = defineProps<{
   title: string
   description?: string
-  icon?: string
+  icon?: Icon
+  /** @deprecated use a named icon for the `icon` instead */
   iconFillType?: FillType
 }>()
 

@@ -197,7 +197,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('grid')
+      expect(icon.props('icon')).toBe('grid')
       expect(icon.props('fillType')).toBe('line')
     })
 
@@ -206,8 +206,7 @@ describe('ExtensionsList', () => {
         extensions: [
           {
             name: 'Presentation Viewer',
-            icon: 'resource-type-presentation',
-            iconFillType: 'fill',
+            icon: { name: 'resource-type-presentation', fillType: 'fill' },
             status: 'active',
             loaded: true
           }
@@ -215,8 +214,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('resource-type-presentation')
-      expect(icon.props('fillType')).toBe('fill')
+      expect(icon.props('icon')).toEqual({ name: 'resource-type-presentation', fillType: 'fill' })
     })
 
     it('falls back to the puzzle icon if the app has no icon', () => {
@@ -225,7 +223,7 @@ describe('ExtensionsList', () => {
         stubs: { OcTable: ocTableStub }
       })
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('puzzle')
+      expect(icon.props('icon')).toBe('puzzle')
       expect(icon.props('fillType')).toBe('line')
     })
 
@@ -243,7 +241,7 @@ describe('ExtensionsList', () => {
       })
       await wrapper.findComponent({ name: 'OcIcon' }).vm.$emit('error')
       const icon = wrapper.findComponent({ name: 'OcIcon' })
-      expect(icon.props('name')).toBe('puzzle')
+      expect(icon.props('icon')).toBe('puzzle')
       expect(icon.props('fillType')).toBe('line')
     })
   })

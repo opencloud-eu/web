@@ -8,7 +8,7 @@ describe('NoContentMessage', () => {
 
       const iconEl = wrapper.find('oc-icon-stub')
       expect(iconEl.exists()).toBeTruthy()
-      expect(iconEl.attributes().name).toBe('mdi-test-icon')
+      expect(iconEl.attributes().icon).toBe('mdi-test-icon')
     })
   })
 

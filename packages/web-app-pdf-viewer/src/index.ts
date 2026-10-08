@@ -36,7 +36,7 @@ export default defineWebApplication({
           {
             extension: 'pdf',
             routeName: 'pdf-viewer',
-            iconFillType: 'fill'
+            icon: { name: 'resource-type-pdf', fillType: 'fill' }
           }
         ]
       },

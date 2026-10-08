@@ -4,6 +4,7 @@ import { AppNavigationItem } from '../../../apps'
 import { Item, Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { FolderView } from '../../../ui'
 import { Component, Slot } from 'vue'
+import type { Icon } from '@opencloud-eu/design-system/helpers'
 import { RouteLocationNamedRaw } from 'vue-router'
 import { StringUnionOrAnyString } from '../../../utils'
 import type { ResourceIndicator } from '../../resources/useResourceIndicators'
@@ -70,7 +71,7 @@ export interface AccountExtension extends Extension {
   type: 'accountExtension'
   content: Slot | Component
   label: () => string
-  icon: string
+  icon: Icon
 }
 
 export type FloatingActionButtonExtensionMode = 'drop' | 'handler'
@@ -82,7 +83,7 @@ export interface FloatingActionButtonExtension extends Extension {
   isVisible?: () => boolean
   isDisabled?: () => boolean
   color?: string
-  icon?: string
+  icon?: Icon
   mode: () => FloatingActionButtonExtensionMode
   handler?: () => Promise<void> | void
   dropComponent?: Component
@@ -93,7 +94,7 @@ export interface AppMenuItemExtension extends Extension {
   label: () => string
   color?: string
   handler?: () => Promise<void> | void
-  icon?: string
+  icon?: Icon
   path?: string
   priority?: number
   url?: string
