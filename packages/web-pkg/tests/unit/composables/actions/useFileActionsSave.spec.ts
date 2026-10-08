@@ -7,31 +7,40 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 describe('useFileActionsSave', () => {
   describe('saveAsAction isVisible', () => {
     it.each([
-      { driveType: 'public', isReadOnly: true, visible: false },
-      { driveType: 'public', isReadOnly: false, visible: true },
-      { driveType: 'personal', isReadOnly: true, visible: true }
-    ])(
-      'visible: $visible in a $driveType space with isReadOnly: $isReadOnly',
-      ({ driveType, isReadOnly, visible }) => {
-        getWrapper({
-          isReadOnly,
-          setup: ({ saveAsAction }) => {
-            const space = mock<SpaceResource>({ id: '1', driveType })
-            expect(unref(saveAsAction).isVisible({ space, resources: [mock<Resource>()] })).toBe(
-              visible
-            )
-          }
-        })
+      { name: 'personal space', space: { driveType: 'personal' }, visible: true },
+      {
+        name: 'folder link with create permission',
+        space: { driveType: 'public', fileId: 'folder', publicLinkPermission: 15 },
+        visible: true
+      },
+      {
+        name: 'read-only folder link',
+        space: { driveType: 'public', fileId: 'folder', publicLinkPermission: 1 },
+        visible: false
+      },
+      {
+        name: 'single file link',
+        space: { driveType: 'public', fileId: undefined, publicLinkPermission: 3 },
+        visible: false
       }
-    )
+    ])('visible: $visible in a $name', ({ space, visible }) => {
+      getWrapper({
+        setup: ({ saveAsAction }) => {
+          expect(
+            unref(saveAsAction).isVisible({
+              space: mock<SpaceResource>({ id: '1', ...space }),
+              resources: [mock<Resource>()]
+            })
+          ).toBe(visible)
+        }
+      })
+    })
   })
 })
 
 function getWrapper({
-  isReadOnly,
   setup
 }: {
-  isReadOnly: boolean
   setup: (instance: ReturnType<typeof useFileActionsSave>) => void
 }) {
   const mocks = defaultComponentMocks()
@@ -41,7 +50,7 @@ function getWrapper({
         content: ref(''),
         isDirty: ref(false),
         isEditor: ref(true),
-        isReadOnly: ref(isReadOnly),
+        isReadOnly: ref(false),
         onSave: vi.fn()
       })
       setup(instance)

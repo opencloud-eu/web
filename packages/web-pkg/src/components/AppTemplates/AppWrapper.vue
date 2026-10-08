@@ -76,7 +76,9 @@ import {
   call,
   isPersonalSpaceResource,
   isProjectSpaceResource,
-  isShareSpaceResource
+  isPublicSpaceResource,
+  isShareSpaceResource,
+  PublicSpaceResource
 } from '@opencloud-eu/web-client'
 import { DavPermission } from '@opencloud-eu/web-client/webdav'
 import { HttpError } from '@opencloud-eu/web-client'
@@ -360,12 +362,39 @@ const addMissingDriveAliasAndItem = async () => {
   })
 }
 
+/**
+ * The public space only knows its link permission and file id if the link got resolved
+ * beforehand, which isn't the case when the app is opened directly (e.g. on page reload).
+ */
+async function loadPublicLinkDetails(signal: AbortSignal) {
+  const { id } = unref(space)
+  try {
+    const { fileId, publicLinkPermission } = (await clientService.webdav.getFileInfo(
+      unref(space),
+      {},
+      { signal }
+    )) as PublicSpaceResource
+    spacesStore.updateSpaceField<PublicSpaceResource>({ id, field: 'fileId', value: fileId })
+    spacesStore.updateSpaceField<PublicSpaceResource>({
+      id,
+      field: 'publicLinkPermission',
+      value: publicLinkPermission
+    })
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 const loadResourceTask = useTask(function* (signal) {
   try {
     if (!unref(driveAliasAndItem)) {
       yield addMissingDriveAliasAndItem()
     }
     space.value = unref(unref(currentFileContext).space)
+    const currentSpace = unref(space)
+    if (isPublicSpaceResource(currentSpace) && currentSpace.publicLinkPermission === undefined) {
+      yield loadPublicLinkDetails(signal)
+    }
     const fileInfo = yield getFileInfo(unref(currentFileContext), { signal })
     resource.value = fileInfo
 
