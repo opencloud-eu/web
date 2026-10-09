@@ -187,6 +187,17 @@ const vaultTarget = computed<VaultTarget>(() => ({
   vaultRoot: unref(vaultRoot)
 }))
 
+// Replace instead of push, so "back" skips this page and returns to where the user came from.
+async function openVault() {
+  if (unref(redirectUrl)) {
+    await router.replace(unref(redirectUrl))
+    return
+  }
+  // Without a redirect the vault root is the destination - which for a vault
+  // space is the space itself.
+  await router.replace(spaceLocation(unref(isSpaceVault) ? '/' : unref(vaultRoot)))
+}
+
 async function onSubmit() {
   errorMessage.value = null
   verifying.value = true
@@ -198,14 +209,7 @@ async function onSubmit() {
     }
 
     vaultStore.setEngine(unref(spaceId), unref(vaultRoot), result.engine)
-
-    if (unref(redirectUrl)) {
-      await router.push(unref(redirectUrl))
-      return
-    }
-    // Without a redirect the vault root is the destination - which for a vault
-    // space is the space itself.
-    await router.push(spaceLocation(unref(isSpaceVault) ? '/' : unref(vaultRoot)))
+    await openVault()
   } catch (e) {
     console.error(e)
     errorMessage.value = $gettext('Unlocking failed. Please try again')
@@ -216,6 +220,11 @@ async function onSubmit() {
 
 onMounted(async () => {
   await waitForSpaces()
+
+  if (unref(space) && vaultStore.isUnlocked(unref(spaceId), unref(vaultRoot))) {
+    await openVault()
+    return
+  }
 
   // Probe once to pick between the "set up" and the "unlock" UI. We don't gate
   // the submit button on this - onSubmit re-reads the live state.

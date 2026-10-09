@@ -138,7 +138,7 @@ describe('UnlockVault', () => {
 
       expect((wrapper.vm as any).errorMessage).toBeNull()
       expect(vaultStore.setEngine).toHaveBeenCalledWith(spaceId, vaultRoot, expect.anything())
-      expect(mocks.$router.push).toHaveBeenCalledWith({
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
         path: `/files/spaces/personal/admin${vaultRoot}`
       })
     })
@@ -148,7 +148,7 @@ describe('UnlockVault', () => {
       const { wrapper, mocks } = await mountProbed({ query: { spaceId, vaultRoot, redirectUrl } })
       await submit(wrapper)
 
-      expect(mocks.$router.push).toHaveBeenCalledWith(redirectUrl)
+      expect(mocks.$router.replace).toHaveBeenCalledWith(redirectUrl)
     })
 
     it('blames the passphrase only when it is cryptographically ruled out', async () => {
@@ -158,7 +158,7 @@ describe('UnlockVault', () => {
 
       expect((wrapper.vm as any).errorMessage).toBe('Incorrect password.')
       expect(vaultStore.setEngine).not.toHaveBeenCalled()
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
     })
 
     it('offers a retry when unlocking fails for any other reason', async () => {
@@ -169,7 +169,18 @@ describe('UnlockVault', () => {
 
       expect((wrapper.vm as any).errorMessage).toBe('Unlocking failed. Please try again')
       expect(vaultStore.setEngine).not.toHaveBeenCalled()
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).not.toHaveBeenCalled()
+    })
+
+    it('skips the unlock page if the vault is already unlocked', async () => {
+      const { mocks, vaultStore } = mountUnlockVault()
+      vi.mocked(vaultStore.isUnlocked).mockReturnValue(true)
+      await flushPromises()
+
+      expect(probeVaultNeedsSetup).not.toHaveBeenCalled()
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
+        path: `/files/spaces/personal/admin${vaultRoot}`
+      })
     })
 
     it('keeps the submit button disabled until a password is entered', async () => {
@@ -279,7 +290,7 @@ describe('UnlockVault', () => {
       const { wrapper, mocks } = await vaultSpace()
       await submit(wrapper)
 
-      expect(mocks.$router.push).toHaveBeenCalledWith({
+      expect(mocks.$router.replace).toHaveBeenCalledWith({
         path: '/files/spaces/project/secrets',
         query: { fileId: spaceId }
       })
