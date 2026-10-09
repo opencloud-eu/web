@@ -8,7 +8,11 @@ import {
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { computed, onMounted, onBeforeUnmount, unref, watch, Ref } from 'vue'
-import { SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'
+import {
+  SpaceResource,
+  isPublicSpaceResource,
+  isShareSpaceResource
+} from '@opencloud-eu/web-client'
 import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../HandleUpload'
 import { useGettext } from 'vue3-gettext'
@@ -80,6 +84,11 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
     const { children } = await clientService.webdav.listFiles(unref(space), {
       path: unref(currentFolder).path
     })
+
+    if (isShareSpaceResource(unref(space))) {
+      // TODO: remove when server returns share id for federated shares in propfind response
+      children.forEach((r) => (r.remoteItemId = unref(space).id))
+    }
 
     const existingEtags = new Map(resourcesStore.resources.map((r) => [r.id, r.etag]))
     const changedResources = children.filter((child) => existingEtags.get(child.id) !== child.etag)

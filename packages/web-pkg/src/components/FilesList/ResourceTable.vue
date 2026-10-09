@@ -20,6 +20,7 @@
     :drag-drop="dragDrop"
     :hover="hover"
     :item-dom-selector="resourceDomSelector"
+    :item-key="resourceKey"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :lazy="lazy"
@@ -392,6 +393,11 @@ defineSlots<{
   indicators?: (props: { resource: Resource }) => unknown
   footer?: () => unknown
 }>()
+
+// re-render a row when its resource changed, so its preview gets loaded again
+function resourceKey(resource: Resource) {
+  return `${resourceDomSelector(resource)}-${resource.etag}`
+}
 
 const router = useRouter()
 const { getExtensionActions } = useFileActions()

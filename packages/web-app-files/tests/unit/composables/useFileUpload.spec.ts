@@ -12,43 +12,76 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
 
 describe('useFileUpload', () => {
   it('updates existing resources that were replaced by the upload', async () => {
-    const space = mock<SpaceResource>({ id: 'space-1' })
-    const currentFolder = mock<Resource>({ id: 'folder', path: '/folder' })
     const existing = { id: 'file', path: '/folder/file.txt', etag: 'old', size: 20 } as Resource
     const replaced = { id: 'file', path: '/folder/file.txt', etag: 'new', size: 50 } as Resource
-
-    const mocks = defaultComponentMocks()
-    mocks.$clientService.webdav.listFiles.mockResolvedValue({
-      resource: currentFolder,
+    const { resourcesStore, completeUpload } = setup({
+      space: mock<SpaceResource>({ id: 'space-1', driveType: 'personal' }),
+      existing: [existing],
       children: [replaced]
     })
-    let onUploadComplete: (result: UploadResult) => Promise<void>
-    mocks.$uppyService.subscribe.mockImplementation((_, callback) => {
-      onUploadComplete = callback as typeof onUploadComplete
-      return 'sub'
-    })
 
-    let resourcesStore: ReturnType<typeof useResourcesStore>
-    getComposableWrapper(
-      () => {
-        resourcesStore = useResourcesStore()
-        useFileUpload(ref(space))
-      },
-      {
-        mocks,
-        provide: mocks,
-        pluginOptions: {
-          piniaOptions: { resourcesStore: { currentFolder, resources: [existing] } }
-        }
-      }
-    )
-
-    await onUploadComplete(
-      mock<UploadResult>({
-        successful: [{ meta: { spaceId: 'space-1', driveType: 'personal' } }]
-      })
-    )
+    await completeUpload()
 
     expect(resourcesStore.upsertResources).toHaveBeenCalledWith([replaced])
   })
+
+  it('keeps the share id of resources in a share space', async () => {
+    const replaced = { id: 'file', path: '/folder/file.txt', etag: 'new' } as Resource
+    const { resourcesStore, completeUpload } = setup({
+      space: mock<SpaceResource>({ id: 'space-1', driveType: 'share' }),
+      existing: [{ id: 'file', path: '/folder/file.txt', etag: 'old' } as Resource],
+      children: [replaced]
+    })
+
+    await completeUpload()
+
+    expect(resourcesStore.upsertResources).toHaveBeenCalledWith([
+      expect.objectContaining({ id: 'file', remoteItemId: 'space-1' })
+    ])
+  })
 })
+
+function setup({
+  space,
+  existing,
+  children
+}: {
+  space: SpaceResource
+  existing: Resource[]
+  children: Resource[]
+}) {
+  const currentFolder = mock<Resource>({ id: 'folder', path: '/folder' })
+
+  const mocks = defaultComponentMocks()
+  mocks.$clientService.webdav.listFiles.mockResolvedValue({ resource: currentFolder, children })
+  let onUploadComplete: (result: UploadResult) => Promise<void>
+  mocks.$uppyService.subscribe.mockImplementation((_, callback) => {
+    onUploadComplete = callback as typeof onUploadComplete
+    return 'sub'
+  })
+
+  let resourcesStore: ReturnType<typeof useResourcesStore>
+  getComposableWrapper(
+    () => {
+      resourcesStore = useResourcesStore()
+      useFileUpload(ref(space))
+    },
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: { resourcesStore: { currentFolder, resources: existing } }
+      }
+    }
+  )
+
+  return {
+    resourcesStore,
+    completeUpload: () =>
+      onUploadComplete(
+        mock<UploadResult>({
+          successful: [{ meta: { spaceId: space.id, driveType: space.driveType } }]
+        })
+      )
+  }
+}
