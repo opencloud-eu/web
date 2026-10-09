@@ -84,6 +84,13 @@
     "type": "(item: Item) => string"
   },
   {
+    "name": "itemKey",
+    "required": false,
+    "description": "A function to get the key for each row. The row is re-rendered when its key changes. Falls back to the dom selector.",
+    "default": "",
+    "type": "(item: Item) => string"
+  },
+  {
     "name": "lazy",
     "required": false,
     "description": "Determines if the table should be lazy loaded.",
