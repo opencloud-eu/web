@@ -1,7 +1,7 @@
 import type { JSONContent, MarkdownToken } from '@tiptap/core'
 import { ListItem, OrderedList } from '@tiptap/extension-list'
 import { Tokenizer } from 'marked'
-import type { marked } from 'marked'
+import type { Marked } from 'marked'
 
 function isEmptySubItemUnderline(token?: MarkdownToken): boolean {
   // `- text` followed by `  -` lexes as a setext heading, not as an empty sub item
@@ -118,7 +118,7 @@ const emptyFirstItemPattern = /^( {0,3}(?:[-+*]|\d{1,9}[.)]))[ \t]+(?=\n|$)/
  *
  * Takes the instance as an argument for the same reason as `registerFrontmatterTokenizer`.
  */
-export function registerMarkdownListTokenizer(instance: typeof marked): void {
+export function registerMarkdownListTokenizer(instance: Marked): void {
   instance.use({
     tokenizer: {
       list(src) {
