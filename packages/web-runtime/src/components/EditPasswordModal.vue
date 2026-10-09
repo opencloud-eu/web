@@ -51,8 +51,8 @@ const confirmButtonDisabled = computed(() => {
   return (
     !unref(currentPassword).trim().length ||
     !unref(newPassword).trim().length ||
-    unref(newPassword).trim() !== unref(newPasswordConfirm).trim() ||
-    unref(currentPassword).trim() === unref(newPassword).trim()
+    unref(newPassword) !== unref(newPasswordConfirm) ||
+    unref(currentPassword) === unref(newPassword)
   )
 })
 
@@ -67,8 +67,8 @@ watch(
 const onConfirm = () => {
   return clientService.graphAuthenticated.users
     .changeOwnPassword({
-      currentPassword: unref(currentPassword).trim(),
-      newPassword: unref(newPassword).trim()
+      currentPassword: unref(currentPassword),
+      newPassword: unref(newPassword)
     })
     .then(() => {
       showMessage({ title: $gettext('Password was changed successfully') })
@@ -79,6 +79,8 @@ const onConfirm = () => {
         title: $gettext('Failed to change password'),
         errors: [error]
       })
+      // keeps the modal open, e.g. for correcting a wrong current password
+      throw error
     })
 }
 
@@ -89,7 +91,7 @@ watch([currentPassword, newPassword], () => {
   if (!unref(currentPassword).trim().length || !unref(newPassword).trim().length) {
     return
   }
-  if (unref(currentPassword).trim() != unref(newPassword).trim()) {
+  if (unref(currentPassword) !== unref(newPassword)) {
     return
   }
   newPasswordErrorMessage.value = $gettext('New password must be different from current password')

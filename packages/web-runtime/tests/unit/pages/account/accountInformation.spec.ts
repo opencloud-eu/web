@@ -26,6 +26,14 @@ const selectors = {
 }
 
 describe('account information page', () => {
+  it('should not throw when the user gets reset, e.g. on logout', async () => {
+    const { wrapper } = getWrapper()
+    await flushPromises()
+    useUserStore().user = null
+    await flushPromises()
+    expect(wrapper.find('#account-information').exists()).toBeFalsy()
+  })
+
   describe('public link context', () => {
     it('should render a limited view', () => {
       const { wrapper } = getWrapper({ isUserContext: false, isPublicLinkContext: true })
