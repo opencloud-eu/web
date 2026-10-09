@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix(search): fall back to the first provider on the search list [[#3594](https://github.com/opencloud-eu/web/pull/3594)]
+- fix(rclone-crypt): skip the unlock page in the browser history [[#3593](https://github.com/opencloud-eu/web/pull/3593)]
 - fix: public link actions and the password policy for anonymous visitors [[#3591](https://github.com/opencloud-eu/web/pull/3591)]
 - fix(web-runtime): keep the public link context when unlocking a vault [[#3606](https://github.com/opencloud-eu/web/pull/3606)]
 - fix: limit expiration dates to 100 years in the future [[#3601](https://github.com/opencloud-eu/web/pull/3601)]
