@@ -136,46 +136,6 @@ describe('markdown list roundtrip', () => {
     )
 
     it.each([
-      '- # Title\n  [l](http://x) **b** y\n',
-      '1. ```\n   x\n   ```\n   *em* [l](http://x)\n'
-    ])('keeps the inline formatting of text after a block in %j', (markdown) => {
-      const { editor, serialized } = expectStableRoundtrip(markdown)
-
-      expect(serialized).not.toContain('\\')
-      const marks = toJSON(editor)
-        .content[0].content[0].content.at(-1)
-        .content.flatMap(({ marks = [] }) => marks.map(({ type }) => type))
-      expect(marks).toContain('link')
-    })
-
-    it.each(['- &amp;nbsp;\n', '- &amp;nbsp;\n  - x\n', 'a. &amp;nbsp;\nb. two\n'])(
-      'keeps the literal text "&nbsp;" in %j',
-      (markdown) => {
-        const { editor } = expectStableRoundtrip(markdown)
-
-        expect(toJSON(editor).content[0].content[0].content[0]).toEqual({
-          type: 'paragraph',
-          content: [{ type: 'text', text: '&nbsp;' }]
-        })
-      }
-    )
-
-    it.each([
-      ['- ![a](http://x/a.png)\n', '- ![a](http://x/a.png)'],
-      ['- a\n- ![a](http://x/a.png)\n', '- a\n- ![a](http://x/a.png)'],
-      ['1. ![a](http://x/a.png)\n', '1. ![a](http://x/a.png)'],
-      ['- ![a](http://x/a.png)\n  - sub\n', '- ![a](http://x/a.png)\n  - sub'],
-      ['- a\n\n  ![a](http://x/a.png)\n', '- a\n\n  ![a](http://x/a.png)']
-    ])('keeps the image in %j', (markdown, expected) => {
-      const { editor, serialized } = expectStableRoundtrip(markdown)
-
-      expect(serialized).toBe(expected)
-      expect(toJSON(editor).content[0].content.at(-1).content).toContainEqual(
-        expect.objectContaining({ type: 'image' })
-      )
-    })
-
-    it.each([
       ['- \n', '-'],
       ['- \n- b\n', '-\n- b'],
       ['1. \n2. b\n', '1.\n2. b'],
@@ -224,30 +184,10 @@ describe('markdown list roundtrip', () => {
       expect(editor.getText()).toContain('[x] b')
     })
 
-    const rightAligned = Array.from(
-      { length: 10 },
-      (_, index) => `${String(index + 1).padStart(2)}. item ${index + 1}`
-    ).join('\n')
-
-    it('keeps every item of a right aligned list', () => {
-      const { editor } = expectStableRoundtrip(`${rightAligned}\n`)
-
-      const [list] = toJSON(editor).content
-      expect(list.type).toBe('orderedList')
-      expect(list.content).toHaveLength(10)
-      expect(list.content[9].content[0].content[0].text).toBe('item 10')
-    })
-
     it('starts a list numbered from 0 at 1', () => {
       const { editor } = expectStableRoundtrip('0. a\n1. b\n')
 
       expect(toJSON(editor).content[0].attrs.start).toBe(1)
-    })
-
-    it('keeps the start number', () => {
-      const { editor } = expectStableRoundtrip('3. a\n4. b\n')
-
-      expect(toJSON(editor).content[0]).toMatchObject({ type: 'orderedList', attrs: { start: 3 } })
     })
 
     it.each([
@@ -277,33 +217,6 @@ describe('markdown list roundtrip', () => {
           { type: 'listItem', content: [{ type: 'paragraph' }] },
           { type: 'listItem', content: [{ type: 'paragraph', content: [{ text: 'three' }] }] }
         ]
-      })
-    })
-
-    it('keeps every item of a right aligned nested list', () => {
-      const nested = rightAligned
-        .split('\n')
-        .map((line) => `   ${line}`)
-        .join('\n')
-      const { editor } = expectStableRoundtrip(`1. parent\n${nested}\n2. next\n`)
-
-      const [list] = toJSON(editor).content
-      expect(list.content).toHaveLength(2)
-      expect(list.content[0].content[1].type).toBe('orderedList')
-      expect(list.content[0].content[1].content).toHaveLength(10)
-    })
-  })
-
-  describe('task lists', () => {
-    it.each([
-      ['a bullet', '- [ ] a\n  - b\n\n    ```\n    code\n    ```\n', 'bulletList'],
-      ['an ordered', '- [ ] a\n  1. b\n\n     ```js\n     code\n     ```\n', 'orderedList']
-    ])('keeps a code block in %s list item in a task item', (_, markdown, type) => {
-      const { editor } = expectStableRoundtrip(markdown)
-
-      expect(toJSON(editor).content[0].content[0].content[1]).toMatchObject({
-        type,
-        content: [{ type: 'listItem', content: [{ type: 'paragraph' }, { type: 'codeBlock' }] }]
       })
     })
   })

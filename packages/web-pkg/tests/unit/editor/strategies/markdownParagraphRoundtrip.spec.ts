@@ -121,16 +121,6 @@ describe('markdown paragraph roundtrip', () => {
       expect(serialized).toContain('| -   | 1. x |')
     })
 
-    it('keeps escaped list markers as text', () => {
-      const { editor } = expectStableRoundtrip('\\- dash\n\n1\\. text\n\n1. \\-\n')
-
-      expect(toJSON(editor).content.map(({ type }) => type)).toEqual([
-        'paragraph',
-        'paragraph',
-        'orderedList'
-      ])
-    })
-
     it('keeps an alert marker in a blockquote', () => {
       const { serialized } = expectStableRoundtrip('> [!NOTE]\n> hint\n')
 
@@ -176,15 +166,7 @@ describe('markdown paragraph roundtrip', () => {
       ])
     })
 
-    it('escapes ordered list markers after a soft line break', () => {
-      const { editor, serialized } = expectStableRoundtrip('- a\n  2\\. b\n  Dr\\. Smith\n')
-
-      expect(serialized).toBe('- a\n2\\. b\nDr\\. Smith')
-      expect(toJSON(editor).content[0].content).toHaveLength(1)
-    })
-
     it.each([
-      ['12345678901. b', '12345678901\\. b'],
       ['B.\u00a0b', 'B\\.\u00a0b'],
       ['2.\u00a0b', '2\\.\u00a0b'],
       ['-\u00a0b', '\\-\u00a0b'],

@@ -61,14 +61,11 @@ describe('markdown task list and code block roundtrip', () => {
   })
 
   describe('code blocks', () => {
-    it.each([
-      [' ```\n code\n ```\n', 'code'],
-      ['  ~~~\n   code\n    x\n  ~~~\n', ' code\n  x'],
-      ['- a\n ```\n code\n ```\n', 'code']
-    ])('keeps the indented code block %j', (markdown, code) => {
-      const { editor } = expectStableRoundtrip(markdown)
+    // marked keeps the indentation of tilde fenced code, so no fixture
+    it('keeps the code of an indented tilde fence', () => {
+      const { editor } = expectStableRoundtrip('  ~~~\n   code\n    x\n  ~~~\n')
 
-      expect(codeBlockTexts(toJSON(editor))).toEqual([code])
+      expect(codeBlockTexts(toJSON(editor))).toEqual([' code\n  x'])
     })
   })
 
@@ -110,16 +107,14 @@ describe('markdown task list and code block roundtrip', () => {
       })
     })
 
-    it.each([
-      ['a paragraph', '- [ ] a\n\tb\n', 'paragraph'],
-      ['a task item', '- [ ] a\n\t- [ ] b\n', 'taskList']
-    ])('keeps a tab indented line as %s in the task item', (_, markdown, type) => {
-      const { editor } = expectStableRoundtrip(markdown)
+    it('keeps a tab indented line as a paragraph in the task item', () => {
+      const { editor } = expectStableRoundtrip('- [ ] a\n\tb\n')
 
       expect(toJSON(editor).content).toHaveLength(1)
-      expect(toJSON(editor).content[0].content[0].content[1]).toMatchObject({ type })
+      expect(toJSON(editor).content[0].content[0].content[1]).toMatchObject({ type: 'paragraph' })
     })
 
+    // The fixtures cannot guard these: marked expands tabs in list items to spaces
     it.each([
       ['directly below the item', '- [ ] run\n  ```make\n  build:\n  \tgo build\n  ```\n'],
       ['after a blank line', '- [ ] run\n\n  ```make\n  build:\n  \tgo build\n  ```\n']
@@ -134,49 +129,35 @@ describe('markdown task list and code block roundtrip', () => {
     })
 
     it.each([
-      ['without a blank line', '- [ ] a\n  - [ ] b\n  ```\n  \tx\n  ```\n'],
-      ['with a tilde fence', '- [ ] a\n  - [ ] b\n\n  ~~~\n  \tx\n  ~~~\n'],
-      ['three levels deep', '- [ ] a\n  - [ ] b\n    - [ ] c\n\n    ```\n    \tx\n    ```\n']
-    ])('keeps tabs in a code block after a nested task item %s', (_, markdown) => {
-      const { editor } = expectStableRoundtrip(markdown)
-
-      expect(codeBlockTexts(toJSON(editor))).toEqual(['\tx'])
-    })
-
-    it('keeps a code block after a nested task item in the outer item', () => {
-      const { editor } = expectStableRoundtrip('- [ ] a\n  - [ ] b\n  ```\n  x\n  ```\n')
-
-      expect(toJSON(editor).content[0].content[0].content.map(({ type }) => type)).toEqual([
-        'paragraph',
-        'taskList',
-        'codeBlock'
-      ])
-    })
-
-    it.each([
-      ['- [ ] a\n  ```md\n  - [ ] example\n  more text\n  ```\n', '- [ ] example\nmore text'],
-      ['- [ ] a\n  ```md\n    - [ ] nested example\n  \tx\n  ```\n', '  - [ ] nested example\n\tx']
-    ])('keeps task item syntax in a code block %j as code', (markdown, code) => {
-      const { editor } = expectStableRoundtrip(markdown)
-
-      expect(codeBlockTexts(toJSON(editor))).toEqual([code])
-    })
-
-    it.each([
-      ['- [ ] a\n\t```js\n\tconst x = 1\n\t```\n', 'const x = 1'],
-      ['- [ ] a\n\n\t```\n\tcode\n\t```\n- [ ] b\n\nafter\n', 'code'],
-      ['- [ ] a\n\t- [ ] b\n\t\t```\n\t\tcode\n\t\t\tindented\n\t\t```\n', 'code\n\tindented']
-    ])('keeps a tab indented code block %j in a task item', (markdown, code) => {
-      const { editor } = expectStableRoundtrip(markdown)
-
-      expect(codeBlockTexts(toJSON(editor))).toEqual([code])
-    })
-
-    it.each([
-      ['- [ ] a\n\n      \tx\n', '\tx'],
-      ['- [ ] a\n\n  \t\tx\n', '\tx'],
-      ['- [ ] a\n  - [ ] b\n\n        \tx\n', '\tx']
-    ])('keeps tabs in the indented code block %j in a task item', (markdown, code) => {
+      ['after a nested item', '- [ ] a\n  - [ ] b\n  ```\n  \tx\n  ```\n', '\tx'],
+      [
+        'in a tilde fence after a nested item',
+        '- [ ] a\n  - [ ] b\n\n  ~~~\n  \tx\n  ~~~\n',
+        '\tx'
+      ],
+      [
+        'three levels deep',
+        '- [ ] a\n  - [ ] b\n    - [ ] c\n\n    ```\n    \tx\n    ```\n',
+        '\tx'
+      ],
+      [
+        'with task item syntax',
+        '- [ ] a\n  ```md\n    - [ ] nested example\n  \tx\n  ```\n',
+        '  - [ ] nested example\n\tx'
+      ],
+      [
+        'with a tab indented fence',
+        '- [ ] a\n\t- [ ] b\n\t\t```\n\t\tcode\n\t\t\tindented\n\t\t```\n',
+        'code\n\tindented'
+      ],
+      ['in an indented code block', '- [ ] a\n\n      \tx\n', '\tx'],
+      ['in a tab indented code block', '- [ ] a\n\n  \t\tx\n', '\tx'],
+      [
+        'in an indented code block after a nested item',
+        '- [ ] a\n  - [ ] b\n\n        \tx\n',
+        '\tx'
+      ]
+    ])('keeps tabs in a code block in a task item %s', (_, markdown, code) => {
       const { editor } = expectStableRoundtrip(markdown)
 
       expect(codeBlockTexts(toJSON(editor))).toEqual([code])
