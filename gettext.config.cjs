@@ -34,6 +34,7 @@ module.exports = {
       'lv',
       'ms',
       'nl',
+      'nn',
       'no',
       'pl',
       'pt',
