@@ -25,6 +25,13 @@ describe('search result List view', () => {
     const { wrapper } = getWrapper()
     expect((wrapper.vm as any).listSearch).toMatchObject(mockProvider.listSearch)
   })
+  it.each([undefined, 'unknown'])(
+    'falls back to the first provider with a listSearch for provider "%s"',
+    (providerId) => {
+      const { wrapper } = getWrapper({ providerId })
+      expect((wrapper.vm as any).listSearch).toMatchObject(mockProvider.listSearch)
+    }
+  )
   it('by default loading is true', () => {
     const { wrapper } = getWrapper()
     expect((wrapper.vm as any).loading).toBeTruthy()
@@ -36,9 +43,10 @@ describe('search result List view', () => {
   })
 })
 
-const getWrapper = () => {
-  vi.mocked(useAvailableProviders).mockReturnValue(ref([mockProvider]))
-  vi.mocked(queryItemAsString).mockReturnValue('p1')
+const getWrapper = ({ providerId = 'p1' }: { providerId?: string } = {}) => {
+  const providerWithoutList = mock<SearchProvider>({ id: 'p0', available: true, listSearch: null })
+  vi.mocked(useAvailableProviders).mockReturnValue(ref([providerWithoutList, mockProvider]))
+  vi.mocked(queryItemAsString).mockReturnValue(providerId)
   const mocks = { ...defaultComponentMocks() }
   return {
     wrapper: mount(List, {
