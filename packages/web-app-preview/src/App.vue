@@ -44,7 +44,7 @@
           </p>
         </div>
         <media-motion-photo
-          v-else-if="activeMediaFile.isMotionPhoto"
+          v-else-if="activeMediaFile.isMotionOrLivePhoto"
           ref="motionPlayer"
           :key="activeMediaFile.id"
           :file="activeMediaFile"
@@ -76,7 +76,7 @@
         :is-full-screen-mode-activated="isFullScreenModeActivated"
         :is-folder-loading="isFolderLoading"
         :show-image-controls="activeMediaFile?.isImage && !activeMediaFile?.isError"
-        :show-motion-control="activeMediaFile?.isMotionPhoto && !activeMediaFile?.isError"
+        :show-motion-control="activeMediaFile?.isMotionOrLivePhoto && !activeMediaFile?.isError"
         :is-motion-playing="motionPlayer?.isPlaying"
         :current-image-rotation="currentImageRotation"
         :photo-roll-enabled="photoRollEnabled"
@@ -108,13 +108,13 @@ import {
   watch
 } from 'vue'
 import omit from 'lodash-es/omit'
-import isEmpty from 'lodash-es/isEmpty'
 import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   createFileRouteOptions,
   determineResourceTableSortFields,
   FolderViewerSlotProps,
   isLocationSharesActive,
+  isMotionOrLivePhoto,
   Key,
   Modifier,
   queryItemAsString,
@@ -260,7 +260,7 @@ const buildMediaFiles = () => {
       isVideo: isFileTypeVideo(file),
       isImage: isFileTypeImage(file),
       isAudio: isFileTypeAudio(file),
-      isMotionPhoto: isFileTypeImage(file) && !isEmpty(file.motionPhoto),
+      isMotionOrLivePhoto: isMotionOrLivePhoto(file),
       isLoading: true,
       isError: false,
       resource: file

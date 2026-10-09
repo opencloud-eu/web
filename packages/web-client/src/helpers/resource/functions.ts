@@ -72,7 +72,7 @@ export const isShareRoot = (resource: Resource) => {
   return typeof resource.isShareRoot === 'function' && resource.isShareRoot()
 }
 
-const convertObjectToCamelCaseKeys = (data: Record<string, any>) => {
+const convertObjectToCamelCaseKeys = <T extends Record<string, any>>(data: T): T => {
   if (!data) {
     return data
   }
@@ -80,7 +80,7 @@ const convertObjectToCamelCaseKeys = (data: Record<string, any>) => {
   Object.keys(data).forEach((key) => {
     converted[camelCase(key)] = data[key]
   })
-  return converted
+  return converted as T
 }
 
 export function buildResource(
@@ -174,6 +174,7 @@ export function buildResource(
     image: convertObjectToCamelCaseKeys(resource.props[DavProperty.Image]),
     photo: convertObjectToCamelCaseKeys(resource.props[DavProperty.Photo]),
     motionPhoto: convertObjectToCamelCaseKeys(resource.props[DavProperty.MotionPhoto]),
+    livePhoto: convertObjectToCamelCaseKeys(resource.props[DavProperty.LivePhoto]),
     extraProps,
     hasPreview: () => resource.props[DavProperty.HasPreview] === 1,
     canUpload: function () {

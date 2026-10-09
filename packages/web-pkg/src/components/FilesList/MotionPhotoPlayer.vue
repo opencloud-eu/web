@@ -20,6 +20,7 @@
       :loading="isLoading"
       :icon="isPlaying ? 'pause-circle' : 'play-circle'"
       :label="badgeLabel"
+      :loading-label="badgeLoadingLabel"
       @click.stop.prevent="toggle"
     />
   </div>
@@ -30,7 +31,7 @@ import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import MotionPhotoBadge from './MotionPhotoBadge.vue'
-import { useGetMatchingSpace, useMotionPhotoPlayback } from '../../composables'
+import { isLivePhoto, useGetMatchingSpace, useMotionPhotoPlayback } from '../../composables'
 
 // Owns the playback state, so mount it only for motion photos. Pointer-transparent
 // apart from the badge; the parent drives hover-to-play via hoverPlay/stop.
@@ -58,10 +59,20 @@ const { isPlaying, isLoading, videoUrl, canPlay, hoverPlay, stop, toggle, seekTo
   )
 
 const badgeLabel = computed(() => {
-  if (!unref(canPlay)) {
-    return $gettext('Motion photo (clip not available)')
+  if (isLivePhoto(resource)) {
+    if (!unref(canPlay)) {
+      return $gettext('Live Photo (video not available)')
+    }
+    return unref(isPlaying) ? $gettext('Pause Live Photo') : $gettext('Play Live Photo')
   }
-  return unref(isPlaying) ? $gettext('Pause motion photo') : $gettext('Play motion photo')
+  if (!unref(canPlay)) {
+    return $gettext('Motion Photo (video not available)')
+  }
+  return unref(isPlaying) ? $gettext('Pause Motion Photo') : $gettext('Play Motion Photo')
+})
+
+const badgeLoadingLabel = computed(() => {
+  return isLivePhoto(resource) ? $gettext('Loading Live Photo') : $gettext('Loading Motion Photo')
 })
 
 defineExpose({ isPlaying, hoverPlay, stop, toggle })

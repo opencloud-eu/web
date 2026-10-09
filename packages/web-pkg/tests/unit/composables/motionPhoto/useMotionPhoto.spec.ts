@@ -1,7 +1,15 @@
 import { mock } from 'vitest-mock-extended'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { useMotionPhoto } from '../../../../src/composables/motionPhoto/useMotionPhoto'
+import type { WebDAV } from '@opencloud-eu/web-client/webdav'
+import {
+  isLivePhoto,
+  isMotionOrLivePhoto,
+  isMotionPhoto,
+  useMotionPhoto
+} from '../../../../src/composables/motionPhoto/useMotionPhoto'
+
+type SearchResult = Awaited<ReturnType<WebDAV['search']>>
 
 const space = mock<SpaceResource>()
 
@@ -17,14 +25,45 @@ const buildResource = (overrides: Partial<Resource> = {}) =>
     ...overrides
   }) as unknown as Resource
 
-function getWrapper() {
+const buildLivePhotoStill = (contentId: string, overrides: Partial<Resource> = {}) =>
+  ({
+    id: `still-${contentId}`,
+    fileId: `still-${contentId}`,
+    path: '/IMG_0001.HEIC',
+    mimeType: 'image/heic',
+    size: 200000,
+    livePhoto: { contentId },
+    ...overrides
+  }) as unknown as Resource
+
+const buildLivePhotoVideo = (contentId: string, overrides: Partial<Resource> = {}) =>
+  ({
+    id: `video-${contentId}`,
+    fileId: `video-${contentId}`,
+    path: '/IMG_0001.MOV',
+    mimeType: 'video/quicktime',
+    size: 300000,
+    livePhoto: { contentId, stillImageTimeUs: 1250000 },
+    ...overrides
+  }) as unknown as Resource
+
+function getWrapper({
+  resources = [],
+  spaces = []
+}: { resources?: Resource[]; spaces?: SpaceResource[] } = {}) {
   const mocks = { ...defaultComponentMocks() }
   let instance: ReturnType<typeof useMotionPhoto>
   const wrapper = getComposableWrapper(
     () => {
       instance = useMotionPhoto()
     },
-    { mocks, provide: mocks }
+    {
+      mocks,
+      provide: mocks,
+      pluginOptions: {
+        piniaOptions: { resourcesStore: { resources }, spacesState: { spaces } }
+      }
+    }
   )
   return { instance, mocks, wrapper }
 }
@@ -40,6 +79,34 @@ describe('useMotionPhoto', () => {
       const { instance } = getWrapper()
       expect(instance.isMotionPhoto(buildResource())).toBe(true)
       expect(instance.isMotionPhoto(buildResource({ motionPhoto: undefined }))).toBe(false)
+    })
+    it('is false for both halves of a live photo', () => {
+      expect(isMotionPhoto(buildLivePhotoStill('detect'))).toBe(false)
+      expect(isMotionPhoto(buildLivePhotoVideo('detect'))).toBe(false)
+    })
+  })
+
+  describe('isMotionOrLivePhoto', () => {
+    it('is true for a motion photo and for the still of a live photo', () => {
+      expect(isMotionOrLivePhoto(buildResource())).toBe(true)
+      expect(isMotionOrLivePhoto(buildLivePhotoStill('either'))).toBe(true)
+    })
+    it('is false for the video half of a live photo and for a plain image', () => {
+      expect(isMotionOrLivePhoto(buildLivePhotoVideo('either'))).toBe(false)
+      expect(isMotionOrLivePhoto(buildResource({ motionPhoto: undefined }))).toBe(false)
+    })
+  })
+
+  describe('isLivePhoto', () => {
+    it('is true only for a still that relies on a paired video', () => {
+      expect(isLivePhoto(buildLivePhotoStill('kind'))).toBe(true)
+      expect(isLivePhoto(buildLivePhotoVideo('kind'))).toBe(false)
+      expect(isLivePhoto(buildResource())).toBe(false)
+    })
+    it('is false when the still also embeds a video, which wins over the paired one', () => {
+      expect(isLivePhoto(buildLivePhotoStill('kind', { motionPhoto: { videoSize: 120000 } }))).toBe(
+        false
+      )
     })
   })
 
@@ -145,6 +212,140 @@ describe('useMotionPhoto', () => {
       await expect(
         instance.loadVideoUrl(space, buildResource({ motionPhoto: undefined }))
       ).rejects.toThrow()
+    })
+  })
+
+  describe('loadVideoUrl for a live photo', () => {
+    it('loads the whole paired video found in the current folder, without searching', async () => {
+      const still = buildLivePhotoStill('folder')
+      const video = buildLivePhotoVideo('folder')
+      const { instance, mocks } = getWrapper({ resources: [still, video] })
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      const url = await instance.loadVideoUrl(space, still)
+
+      expect(url).toBe('blob:mock-url')
+      expect(mocks.$clientService.webdav.getFileContents).toHaveBeenCalledTimes(1)
+      const [fileSpace, file, options] = mocks.$clientService.webdav.getFileContents.mock.calls[0]
+      expect(fileSpace).toBe(space)
+      expect(file).toEqual({ fileId: 'video-folder' })
+      expect(options.responseType).toBe('blob')
+      expect(options.headers).toBeUndefined()
+      expect(mocks.$clientService.webdav.search).not.toHaveBeenCalled()
+    })
+
+    it('loads a listed video from its own space when it lives in another space than the still', async () => {
+      const still = buildLivePhotoStill('listed', { storageId: 'still-space' })
+      const otherSpace = mock<SpaceResource>({ id: 'other-space', driveType: 'project' })
+      const video = buildLivePhotoVideo('listed', { storageId: 'other-space' })
+      const { instance, mocks } = getWrapper({ resources: [still, video], spaces: [otherSpace] })
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      await instance.loadVideoUrl(space, still)
+
+      const [fileSpace] = mocks.$clientService.webdav.getFileContents.mock.calls[0]
+      expect(fileSpace.id).toBe('other-space')
+      expect(mocks.$clientService.webdav.search).not.toHaveBeenCalled()
+    })
+
+    it('does not search in a public link, where only the listed resources count', async () => {
+      const still = buildLivePhotoStill('public')
+      const publicSpace = mock<SpaceResource>({ driveType: 'public' })
+      const { instance, mocks } = getWrapper({ resources: [still] })
+
+      await expect(instance.loadVideoUrl(publicSpace, still)).rejects.toThrow()
+
+      expect(mocks.$clientService.webdav.search).not.toHaveBeenCalled()
+      expect(instance.canPlay(still)).toBe(false)
+    })
+
+    it('loads the listed video by its path in a public link, which has no id based access', async () => {
+      const still = buildLivePhotoStill('public-listed')
+      const publicSpace = mock<SpaceResource>({ driveType: 'public' })
+      const { instance, mocks } = getWrapper({
+        resources: [still, buildLivePhotoVideo('public-listed')]
+      })
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      await instance.loadVideoUrl(publicSpace, still)
+
+      const [, file] = mocks.$clientService.webdav.getFileContents.mock.calls[0]
+      expect(file).toEqual({ path: '/IMG_0001.MOV' })
+    })
+
+    it('falls back to a search by content id and loads the video hit from its own space', async () => {
+      const still = buildLivePhotoStill('search')
+      const otherSpace = mock<SpaceResource>({ id: 'other-space', driveType: 'project' })
+      const video = buildLivePhotoVideo('search', { storageId: 'other-space' })
+      const { instance, mocks } = getWrapper({ resources: [still], spaces: [otherSpace] })
+      mocks.$clientService.webdav.search.mockResolvedValue({
+        resources: [still, video],
+        totalResults: 2
+      } as SearchResult)
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      const url = await instance.loadVideoUrl(space, still)
+
+      expect(url).toBe('blob:mock-url')
+      expect(mocks.$clientService.webdav.search).toHaveBeenCalledWith(
+        'livePhoto.contentId:"search"',
+        expect.objectContaining({ searchLimit: expect.any(Number) })
+      )
+      const [fileSpace, file] = mocks.$clientService.webdav.getFileContents.mock.calls[0]
+      expect(fileSpace.id).toBe('other-space')
+      expect(file).toEqual({ fileId: 'video-search' })
+      expect(instance.getStillTimestampSeconds(still)).toBeCloseTo(1.25)
+      expect(mocks.$clientService.webdav.getFileInfo).not.toHaveBeenCalled()
+    })
+
+    it('loads the facet of a search hit that comes without one', async () => {
+      const still = buildLivePhotoStill('search-facet')
+      const video = buildLivePhotoVideo('search-facet')
+      const { instance, mocks } = getWrapper({ resources: [still] })
+      mocks.$clientService.webdav.search.mockResolvedValue({
+        resources: [{ ...video, livePhoto: undefined }],
+        totalResults: 1
+      } as SearchResult)
+      mocks.$clientService.webdav.getFileInfo.mockResolvedValue(video)
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      await instance.loadVideoUrl(space, still)
+
+      const [, file] = mocks.$clientService.webdav.getFileInfo.mock.calls[0]
+      expect(file).toEqual({ fileId: 'video-search-facet' })
+      expect(instance.getStillTimestampSeconds(still)).toBeCloseTo(1.25)
+    })
+
+    it('plays a video found by the search even when its facet cannot be loaded', async () => {
+      const still = buildLivePhotoStill('search-no-facet')
+      const video = buildLivePhotoVideo('search-no-facet', { livePhoto: undefined })
+      const { instance, mocks } = getWrapper({ resources: [still] })
+      mocks.$clientService.webdav.search.mockResolvedValue({
+        resources: [video],
+        totalResults: 1
+      } as SearchResult)
+      mocks.$clientService.webdav.getFileInfo.mockRejectedValue(new Error('gone'))
+      mocks.$clientService.webdav.getFileContents.mockResolvedValue({
+        response: { status: 200 },
+        body: mp4Blob()
+      })
+
+      await expect(instance.loadVideoUrl(space, still)).resolves.toBe('blob:mock-url')
     })
   })
 

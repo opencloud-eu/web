@@ -1,4 +1,4 @@
-import { Audio, GeoCoordinates, Image, MotionPhoto, Photo } from '../../graph/generated'
+import { Audio, GeoCoordinates, Image, LivePhoto, MotionPhoto, Photo } from '../../graph/generated'
 
 export abstract class DavPermission {
   static readonly Shared: string = 'S'
@@ -80,6 +80,10 @@ const DavPropertyMapping = {
   MotionPhoto: {
     value: 'motion-photo',
     type: null as MotionPhoto
+  },
+  LivePhoto: {
+    value: 'live-photo',
+    type: null as LivePhoto
   },
   ETag: defString('getetag' as const),
   MimeType: defString('getcontenttype' as const),
@@ -169,6 +173,7 @@ export abstract class DavProperties {
     DavProperty.Image,
     DavProperty.Photo,
     DavProperty.MotionPhoto,
+    DavProperty.LivePhoto,
     DavProperty.HasPreview
   ]
 
