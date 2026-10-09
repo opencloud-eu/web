@@ -47,7 +47,7 @@
     <oc-list class="oc-tiles grid justify-start gap-3">
       <li
         v-for="resource in resources"
-        :key="resource.id"
+        :key="`${resource.id}-${resource.etag}`"
         class="oc-tiles-item has-item-context-menu"
       >
         <resource-tile

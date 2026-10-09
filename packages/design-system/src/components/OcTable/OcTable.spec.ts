@@ -233,6 +233,23 @@ describe('OcTable', () => {
     })
   })
 
+  it('re-renders a row when its itemKey changes', async () => {
+    const wrapper = mount(Table, {
+      props: {
+        fields,
+        data,
+        itemKey: (item: { id: string; doubled: number }) => `${item.id}-${item.doubled}`
+      },
+      global: { plugins: defaultPlugins() }
+    })
+    const row = wrapper.find(`[data-item-id="${data[0].id}"]`).element
+
+    await wrapper.setProps({ data: [{ ...data[0], doubled: 4 }, ...data.slice(1)] })
+
+    expect(wrapper.find(`[data-item-id="${data[0].id}"]`).element).not.toBe(row)
+    expect(wrapper.find(`[data-item-id="${data[1].id}"]`).exists()).toBe(true)
+  })
+
   it('emits contextmenu-clicked event upon right click on table row', async () => {
     const wrapper = shallowMount(Table, {
       props: {

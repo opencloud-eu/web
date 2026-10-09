@@ -55,7 +55,7 @@
     <oc-tbody class="has-item-context-menu">
       <oc-table-row
         v-for="(item, trIndex) in data"
-        :key="`oc-tbody-tr-${domSelector(item) || trIndex}`"
+        :key="`oc-tbody-tr-${itemKey?.(item) || domSelector(item) || trIndex}`"
         :ref="`row-${trIndex}`"
         :item="item"
         :fields="fields"
@@ -189,6 +189,10 @@ export interface Props {
    */
   itemDomSelector?: (item: Item) => string
   /**
+   * @docs A function to get the key for each row. The row is re-rendered when its key changes. Falls back to the dom selector.
+   */
+  itemKey?: (item: Item) => string
+  /**
    * @docs Determines if the table should be lazy loaded.
    * @default false
    */
@@ -294,6 +298,7 @@ const {
   hover = false,
   idKey = 'id',
   itemDomSelector,
+  itemKey,
   lazy = false,
   scrollContainer = undefined,
   paddingX = 'small',
