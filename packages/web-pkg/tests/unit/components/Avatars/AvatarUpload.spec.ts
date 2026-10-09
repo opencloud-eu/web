@@ -8,6 +8,10 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { useMessages } from '../../../../src'
 import { describe } from 'vitest'
+import { flushPromises } from '@vue/test-utils'
+
+const createImageBitmap = vi.fn(() => Promise.resolve({ close: vi.fn() }))
+vi.stubGlobal('createImageBitmap', createImageBitmap)
 
 vi.mock('cropperjs', () => {
   const mockCanvas = {
@@ -104,6 +108,28 @@ describe('AvatarUpload', () => {
       )
     })
 
+    it('should show an error and no crop modal for an image that cannot be decoded', async () => {
+      createImageBitmap.mockRejectedValueOnce(new Error('broken'))
+      const { wrapper } = getWrapper()
+      const file = createMockFile('broken.png', 1024, 'image/png')
+      const input = wrapper.find(selectors.avatarFileInput).element as HTMLInputElement
+      const event = new Event('change')
+
+      Object.defineProperty(event, 'target', {
+        writable: false,
+        value: { files: [file] }
+      })
+
+      input.dispatchEvent(event)
+      await nextTicks(2)
+
+      const { showErrorMessage } = useMessages()
+      expect(showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'The selected image is not supported or damaged' })
+      )
+      expect(wrapper.find(selectors.modalConfirm).exists()).toBe(false)
+    })
+
     it('should show message on successful upload', async () => {
       const { wrapper } = getWrapper()
       const file = createMockFile('file.png', 9 * 1024 * 1024, 'image/png')
@@ -116,7 +142,7 @@ describe('AvatarUpload', () => {
       })
 
       input.dispatchEvent(event)
-      await nextTicks(2)
+      await flushPromises()
       ;(wrapper.vm as any).imageCropperRef = {
         getCroppedCanvas: vi.fn(() =>
           Promise.resolve({
@@ -152,7 +178,7 @@ describe('AvatarUpload', () => {
       })
 
       input.dispatchEvent(event)
-      await nextTicks(2)
+      await flushPromises()
       ;(wrapper.vm as any).imageCropperRef = {
         getCroppedCanvas: vi.fn(() =>
           Promise.resolve({
