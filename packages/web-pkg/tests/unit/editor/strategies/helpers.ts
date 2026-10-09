@@ -46,7 +46,11 @@ export function load(markdown: string): LoadedMarkdown {
   return { editor, serialized: strategy.serialize(editor.state.doc) }
 }
 
-export function expectStableRoundtrip(markdown: string): LoadedMarkdown {
+export interface StableRoundtrip extends LoadedMarkdown {
+  reserialized: string
+}
+
+export function expectStableRoundtrip(markdown: string): StableRoundtrip {
   const { editor, serialized } = load(markdown)
   expect(() => editor.state.doc.check()).not.toThrow()
 
@@ -54,5 +58,5 @@ export function expectStableRoundtrip(markdown: string): LoadedMarkdown {
   expect(() => reloaded.editor.state.doc.check()).not.toThrow()
   expect(toJSON(reloaded.editor)).toEqual(toJSON(editor))
 
-  return { editor, serialized }
+  return { editor, serialized, reserialized: reloaded.serialized }
 }

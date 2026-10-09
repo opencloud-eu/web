@@ -11,30 +11,57 @@ vi.mock('vue3-gettext', () => ({
 
 const fixturesDir = join(import.meta.dirname, 'fixtures', 'markdown')
 
-function loadFixtures(dir: string): [string, string][] {
-  return readdirSync(dir)
-    .filter((name) => name.endsWith('.md'))
-    .sort()
-    .map((name) => {
-      const markdown = readFileSync(join(dir, name), 'utf8')
-      // an empty fixture would pass silently
-      if (!markdown.trim()) {
-        throw new Error(`Empty fixture ${name}`)
+interface Fixture {
+  name: string
+  markdown: string
+  expected: string
+}
+
+const outputSuffix = '.out.md'
+
+function readFixture(dir: string, name: string): string {
+  const content = readFileSync(join(dir, name), 'utf8')
+  // an empty fixture would pass silently
+  if (!content.trim()) {
+    throw new Error(`Empty fixture ${name}`)
+  }
+  return content
+}
+
+function trimFinalNewline(markdown: string): string {
+  return markdown.endsWith('\n') ? markdown.slice(0, -1) : markdown
+}
+
+/**
+ * Loads the `<name>.md` fixtures. The editor must save a fixture unchanged, or as
+ * `<name>.out.md` where that exists. A single final newline is ignored.
+ */
+function loadFixtures(dir: string): Fixture[] {
+  const names = readdirSync(dir).sort()
+  names
+    .filter((name) => name.endsWith(outputSuffix))
+    .forEach((name) => {
+      if (!names.includes(name.replace(outputSuffix, '.md'))) {
+        throw new Error(`Output ${name} without fixture`)
       }
-      return [name, markdown]
+    })
+
+  return names
+    .filter((name) => name.endsWith('.md') && !name.endsWith(outputSuffix))
+    .map((name) => {
+      const markdown = readFixture(dir, name)
+      const output = name.replace(/\.md$/, outputSuffix)
+      const expected = names.includes(output) ? readFixture(dir, output) : markdown
+      return { name, markdown, expected }
     })
 }
 
-function save(markdown: string): string {
-  return expectStableRoundtrip(markdown).serialized
-}
-
 // Reference renderer for both the original and the saved markdown. The list tokenizer
-// makes marked read a lone `- ` as an empty item, as CommonMark does. Since the editor
-// uses the same tokenizer, empty items need inline tests with exact output.
-// The render check is weak where marked differs from the editor, which needs inline
-// tests as well: marked reads letter or roman lists and frontmatter as paragraphs,
-// expands tabs in list items to spaces, and normalize() folds nbsp into a space.
+// makes marked read a lone `- ` as an empty item, as CommonMark does.
+// The render check is weak where marked differs from the editor, which the exact
+// output check covers: marked reads letter or roman lists and frontmatter as
+// paragraphs, expands tabs in list items to spaces, and normalize() folds nbsp into
+// a space.
 const marked = new Marked()
 registerMarkdownListTokenizer(marked)
 
@@ -97,11 +124,12 @@ function render(markdown: string): string {
   return normalize(marked.parse(markdown) as string)
 }
 
-function expectRoundtrip(markdown: string) {
-  const saved = save(markdown)
+function expectSaved({ markdown, expected }: Fixture): string {
+  const { serialized, reserialized } = expectStableRoundtrip(markdown)
 
-  expect(render(saved), saved).toBe(render(markdown))
-  expect(save(saved)).toBe(saved)
+  expect(trimFinalNewline(serialized)).toBe(trimFinalNewline(expected))
+  expect(reserialized).toBe(serialized)
+  return serialized
 }
 
 describe('markdown fixture roundtrip', () => {
@@ -113,7 +141,9 @@ describe('markdown fixture roundtrip', () => {
     destroyEditors()
   })
 
-  it.each(loadFixtures(fixturesDir))('keeps %s', (_, markdown) => {
-    expectRoundtrip(markdown)
+  it.each(loadFixtures(fixturesDir))('keeps $name', (fixture) => {
+    const saved = expectSaved(fixture)
+
+    expect(render(saved), saved).toBe(render(fixture.markdown))
   })
 })
