@@ -2,7 +2,12 @@ import { Ref, ref, unref, MaybeRef } from 'vue'
 import { dirname } from 'path'
 import { ClientService, folderService } from '../../services'
 import { useAppFileHandling } from './useAppFileHandling'
-import { isSearchResource, isShareSpaceResource, Resource } from '@opencloud-eu/web-client'
+import {
+  HttpError,
+  isSearchResource,
+  isShareSpaceResource,
+  Resource
+} from '@opencloud-eu/web-client'
 import { FileContext } from './types'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { useFileRouteReplace } from '../router/useFileRouteReplace'
@@ -21,6 +26,7 @@ interface AppFolderHandlingOptions {
 
 export interface AppFolderHandlingResult {
   isFolderLoading: Ref<boolean>
+  folderLoadingError: Ref<HttpError>
   activeFiles: Ref<Array<Resource>>
 
   loadFolderForFileContext(context: MaybeRef<FileContext>): Promise<void>
@@ -31,6 +37,7 @@ export function useAppFolderHandling({
   clientService
 }: AppFolderHandlingOptions): AppFolderHandlingResult {
   const isFolderLoading = ref(false)
+  const folderLoadingError = ref<HttpError>()
   const { webdav } = clientService
   const { replaceInvalidFileRoute } = useFileRouteReplace()
   const { getFileInfo } = useAppFileHandling({ clientService })
@@ -44,6 +51,7 @@ export function useAppFolderHandling({
 
   const loadFolderForFileContext = async (context: MaybeRef<FileContext>) => {
     isFolderLoading.value = true
+    folderLoadingError.value = undefined
 
     try {
       context = unref(context)
@@ -122,6 +130,7 @@ export function useAppFolderHandling({
         return authService.handleAuthError(unref(currentRoute))
       }
       resourcesStore.setCurrentFolder(null)
+      folderLoadingError.value = error
       console.error(error)
     }
     isFolderLoading.value = false
@@ -129,6 +138,7 @@ export function useAppFolderHandling({
 
   return {
     isFolderLoading,
+    folderLoadingError,
     loadFolderForFileContext,
     activeFiles: activeResources
   }
