@@ -10,6 +10,11 @@ vi.mock('vue3-gettext', () => ({
 }))
 
 const fixturesDir = join(import.meta.dirname, 'fixtures', 'markdown')
+// The editor reads these differently from marked on purpose, so they skip the render
+// check: an empty item below text, task syntax in ordered lists, under or tab
+// indented content below a task item, an indented tilde fence (marked keeps its
+// indentation) and a list starting at 0 (the editor starts it at 1).
+const unlikeMarkedDir = join(fixturesDir, 'unlike-marked')
 
 interface Fixture {
   name: string
@@ -145,5 +150,9 @@ describe('markdown fixture roundtrip', () => {
     const saved = expectSaved(fixture)
 
     expect(render(saved), saved).toBe(render(fixture.markdown))
+  })
+
+  it.each(loadFixtures(unlikeMarkedDir))('keeps unlike-marked/$name', (fixture) => {
+    expectSaved(fixture)
   })
 })
