@@ -59,6 +59,7 @@ describe('PasswordPolicyService', () => {
         [{ min_digits: 2 } as PasswordPolicyCapability, ['atLeastDigits']],
         [{ min_digits: 2 } as PasswordPolicyCapability, ['atLeastDigits']],
         [{ min_special_characters: 2 } as PasswordPolicyCapability, ['mustContain']],
+        [{ max_characters: 72 } as PasswordPolicyCapability, ['atMostCharacters']],
         [
           {
             min_characters: 2,
@@ -117,6 +118,12 @@ describe('PasswordPolicyService', () => {
             [false, false, false, true]
           ],
           [
+            { max_characters: 72 } as PasswordPolicyCapability,
+            ['a'.repeat(72), 'a'.repeat(73), 'ä'.repeat(36), 'ä'.repeat(37)],
+            false,
+            [true, false, true, false]
+          ],
+          [
             {
               min_characters: 8,
               min_lowercase_characters: 2,
@@ -149,6 +156,14 @@ describe('PasswordPolicyService', () => {
     })
   })
   describe('generating password', () => {
+    it('does not exceed the maximum length', () => {
+      const { passwordPolicyService, store } = getWrapper({ max_characters: 8 })
+      passwordPolicyService.initialize(store)
+      const generatedPw = passwordPolicyService.generatePassword()
+
+      expect(generatedPw.length).toBe(8)
+      expect(passwordPolicyService.getPolicy().check(generatedPw)).toBeTruthy()
+    })
     it('generates a password that meets the policy requirements', () => {
       {
         const capability: PasswordPolicyCapability = {
