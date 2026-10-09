@@ -1,0 +1,67 @@
+{
+  "calendars": {
+    "accountId": "e",
+    "state": "sai",
+    "list": [
+      {
+        "id": "b",
+        "name": "Stalwart Calendar (alan@example.org)",
+        "isSubscribed": false,
+        "isVisible": false,
+        "isDefault": true,
+        "myRights": {
+          "mayReadFreeBusy": true,
+          "mayReadItems": true,
+          "mayWriteAll": true,
+          "mayWriteOwn": true,
+          "mayUpdatePrivate": true,
+          "mayRSVP": true,
+          "mayAdmin": false,
+          "mayDelete": true
+        }
+      }
+    ]
+  },
+  "events": {
+    "results": [
+      {
+        "id": "b",
+        "calendarIds": {
+          "b": true
+        },
+        "isOrigin": true,
+        "uid": "",
+        "title": "Tagesplanung",
+        "description": "Review mit dem Team",
+        "locations": {
+          "main": {
+            "name": "OpenCloud Office"
+          }
+        },
+        "privacy": "public",
+        "timeZone": "Europe/Berlin",
+        "start": "2026-09-15T09:00:00",
+        "duration": "PT45M",
+        "status": "confirmed"
+      },
+      {
+        "id": "c",
+        "calendarIds": {
+          "b": true
+        },
+        "isOrigin": true,
+        "uid": "",
+        "title": "Konferenz",
+        "showWithoutTime": true,
+        "start": "2026-09-17T00:00:00",
+        "duration": "P2D"
+      }
+    ],
+    "position": 0,
+    "total": 2
+  },
+  "noEvents": {
+    "position": 0,
+    "total": 0
+  }
+}
