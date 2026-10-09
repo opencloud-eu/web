@@ -301,8 +301,8 @@ const isLoading = computed(() => {
  * The Yjs session reports doc changes debounced, so `isDirty` and `currentContent` lag behind
  * the last keystrokes. Let it catch up before deciding about unsaved work.
  */
-async function flushPendingContent() {
-  await yjsSession?.flushContent()
+function flushPendingContent() {
+  yjsSession?.flushContent()
 }
 
 // `beforeunload` can't wait for a flush, so a pending change counts as unsaved there.
@@ -672,7 +672,7 @@ async function runSaveCallback(content: unknown): Promise<void> {
 }
 
 const save = async () => {
-  await flushPendingContent()
+  flushPendingContent()
   const saved = await saveFileTask.perform()
   if (!saved) {
     return false
@@ -714,7 +714,7 @@ onMounted(() => {
   if (editorOptions.autosaveEnabled && !disableAutoSave) {
     autosaveIntervalId = setInterval(
       async () => {
-        await flushPendingContent()
+        flushPendingContent()
         if (!unref(isDirty) || unref(isConflicted)) {
           return
         }
@@ -746,8 +746,8 @@ onBeforeUnmount(() => {
 })
 
 const { bindKeyAction } = useKeyboardActions({ skipDisabledKeyBindingsCheck: true })
-bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, async () => {
-  await flushPendingContent()
+bindKeyAction({ modifier: Modifier.Ctrl, primary: Key.S }, () => {
+  flushPendingContent()
   if (!unref(isDirty)) {
     return
   }
@@ -767,7 +767,7 @@ const downloadFileActionInterceptor = async (
   args: FileActionOptions,
   originalAction: Action<FileActionOptions>['handler']
 ) => {
-  await flushPendingContent()
+  flushPendingContent()
   if (unref(isDirty)) {
     if (unref(isConflicted)) {
       showMessage({
@@ -867,10 +867,9 @@ const dropDownMenuSections = computed(() => {
   return sections
 })
 
-// Returns instead of calling `next`: the guard has to await the flush first, and an async guard
-// that also takes `next` is rejected by the router.
-onBeforeRouteLeave(async () => {
-  await flushPendingContent()
+// Returns instead of calling `next`: the unsaved changes modal resolves the navigation later.
+onBeforeRouteLeave(() => {
+  flushPendingContent()
   if (!unref(isDirty)) {
     unregisterExtensions([topBarExtensionId])
     return true
