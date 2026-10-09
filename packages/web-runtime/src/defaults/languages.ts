@@ -31,6 +31,7 @@ export const supportedLanguages = {
   lv: 'Latviešu - Latvian',
   ms: 'Bahasa Melayu - Malay',
   nl: 'Nederlands - Dutch',
+  nn: 'Norsk nynorsk - Norwegian Nynorsk',
   no: 'Norsk - Norwegian',
   pl: 'Polski - Polish',
   pt: 'Português - Portuguese',
