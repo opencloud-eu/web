@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(admin-settings): keep users and groups whose deletion failed [[#3596](https://github.com/opencloud-eu/web/pull/3596)]
 - fix: let space managers enable disabled spaces [[#3602](https://github.com/opencloud-eu/web/pull/3602)]
 - fix(web-pkg): check the event target for disabled key bindings [[#3595](https://github.com/opencloud-eu/web/pull/3595)]
 - fix(search): fall back to the first provider on the search list [[#3594](https://github.com/opencloud-eu/web/pull/3594)]
