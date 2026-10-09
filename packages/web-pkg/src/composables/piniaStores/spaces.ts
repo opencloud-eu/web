@@ -323,32 +323,14 @@ export const useSpacesStore = defineStore('spaces', () => {
     }
 
     for (const { id, disabled } of spacesToLoad) {
-      if (unref(spacePermissionsLoading)[id]) {
-        // permissions are already being loaded for this space, we just need to await it
+      if (disabled) {
+        // can't load permissions for disabled spaces
+        updateSpaceField({ id, field: 'graphPermissions', value: [] })
         continue
       }
 
-      if (disabled) {
-        // the permissions endpoint doesn't work for disabled spaces, derive them from the member role
-        spacePermissionsLoading.value[id] = graphClient.drives
-          .listMyDrives({ filter: `id eq '${id}'`, expand: 'root($expand=permissions)' })
-          .then(([space]) => {
-            const { user } = userStore
-            const permission = space?.root.permissions?.find(
-              ({ grantedToV2 }) =>
-                grantedToV2?.user?.id === user.id ||
-                user.memberOf?.some(({ id }) => id === grantedToV2?.group?.id)
-            )
-            const role = sharesStore.graphRoles[permission?.roles?.[0]]
-            const actions = role?.rolePermissions.find(
-              ({ condition }) => condition === 'exists @Resource.Root'
-            )?.allowedResourceActions
-            updateSpaceField({ id, field: 'graphPermissions', value: actions || [] })
-          })
-          .catch(() => updateSpaceField({ id, field: 'graphPermissions', value: [] }))
-          .finally(() => {
-            delete spacePermissionsLoading.value[id]
-          })
+      if (unref(spacePermissionsLoading)[id]) {
+        // permissions are already being loaded for this space, we just need to await it
         continue
       }
 

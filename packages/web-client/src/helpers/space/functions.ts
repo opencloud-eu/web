@@ -241,15 +241,9 @@ export function buildSpace(
       // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
-    canRestore: function ({ ability }: { user?: User; ability?: Ability } = {}) {
-      if (!this.disabled) {
-        return false
-      }
-      if (ability?.can('update-all', 'Drive')) {
-        return true
-      }
-      // FIXME: server permissions are a mess currently: https://github.com/opencloud-eu/opencloud/issues/10
-      return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
+    canRestore: function () {
+      // the server only lists disabled spaces to their managers and to users who may manage all spaces
+      return !!this.disabled
     },
     canDisable: function ({ ability }: { user?: User; ability?: Ability } = {}) {
       if (this.disabled) {
