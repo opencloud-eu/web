@@ -45,15 +45,6 @@ export const useSpaceActions = (): ActionExtension[] => {
       action: unref(createSpaceActions)[0]
     },
     {
-      id: 'com.github.opencloud-eu.web.files.spaces.context-action.show-members',
-      extensionPointIds: [contextActionsExtensionPoint.id],
-      type: 'action',
-      action: {
-        ...unref(showMembersActions)[0],
-        category: 'secondary'
-      }
-    },
-    {
       id: 'com.github.opencloud-eu.web.files.spaces.context-action.rename',
       extensionPointIds: [
         contextActionsExtensionPoint.id,
@@ -104,6 +95,15 @@ export const useSpaceActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(duplicateActions)[0],
+        category: 'secondary'
+      }
+    },
+    {
+      id: 'com.github.opencloud-eu.web.files.spaces.context-action.show-members',
+      extensionPointIds: [contextActionsExtensionPoint.id],
+      type: 'action',
+      action: {
+        ...unref(showMembersActions)[0],
         category: 'secondary'
       }
     },

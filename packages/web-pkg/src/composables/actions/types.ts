@@ -28,7 +28,7 @@ export interface Action<T = ActionOptions> {
    * - tertiary: action will appear in tertiary action sections.
    * - quaternary:  action will appear in quaternary action sections.
    *
-   * @default tertiary
+   * @default secondary
    */
   category?: ActionCategory
   /**

@@ -71,7 +71,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(downloadFileActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -84,7 +84,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(downloadArchiveActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -97,7 +97,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(renameActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -111,7 +111,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...deleteAction,
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -124,7 +124,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...deletePermanentAction,
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -137,7 +137,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(restoreActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -150,7 +150,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(copyActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -163,7 +163,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(moveActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -181,7 +181,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(showSharesActions)[0],
-        category: 'secondary'
+        category: 'tertiary'
       }
     },
     {
@@ -190,7 +190,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(permanentLinkActions)[0],
-        category: 'secondary'
+        category: 'tertiary'
       }
     },
     {
@@ -199,7 +199,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(createSpaceFromResourceActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -212,7 +212,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(enableSyncActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -225,7 +225,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(disableSyncActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -248,7 +248,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(setSpaceImageActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -273,7 +273,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(toggleHideShareActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -282,7 +282,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(lockVaultActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {
@@ -291,7 +291,7 @@ export const useFileActions = (): ActionExtension[] => {
       type: 'action',
       action: {
         ...unref(fallbackToDownloadActions)[0],
-        category: 'tertiary'
+        category: 'secondary'
       }
     },
     {

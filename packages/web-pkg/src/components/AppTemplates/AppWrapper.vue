@@ -828,11 +828,11 @@ const downloadAction = computed(() => {
   }
 })
 const menuItemsSecondary = computed(() =>
-  unref(extensionContextActions).filter((action) => action.category === 'secondary')
+  // only show download and delete actions to reduce clutter in the secondary menu
+  [unref(downloadAction), unref(deleteAction)].filter(Boolean)
 )
 const menuItemsTertiary = computed(() =>
-  // only show download and delete actions to reduce clutter in the tertiary menu
-  [unref(downloadAction), unref(deleteAction)].filter(Boolean)
+  unref(extensionContextActions).filter((action) => action.category === 'tertiary')
 )
 const menuItemsQuaternary = computed(() =>
   unref(extensionContextActions).filter((action) => action.category === 'quaternary')

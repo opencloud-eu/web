@@ -183,8 +183,8 @@ const batchActions = computed(() => {
       item.isVisible({ space: unref(space), resources: resourcesStore.selectedResources })
     )
     .sort((a, b) => {
-      const aOrder = categoryOrder[a.category ?? 'tertiary'] ?? 2
-      const bOrder = categoryOrder[b.category ?? 'tertiary'] ?? 2
+      const aOrder = categoryOrder[a.category ?? 'secondary'] ?? 1
+      const bOrder = categoryOrder[b.category ?? 'secondary'] ?? 1
       return aOrder - bOrder
     })
 })
