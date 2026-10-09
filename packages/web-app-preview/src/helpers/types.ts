@@ -9,7 +9,7 @@ export type MediaFile = {
   isVideo: boolean
   isImage: boolean
   isAudio: boolean
-  isMotionPhoto: boolean
+  isMotionOrLivePhoto: boolean
   isLoading: boolean
   isError: boolean
   resource: Resource

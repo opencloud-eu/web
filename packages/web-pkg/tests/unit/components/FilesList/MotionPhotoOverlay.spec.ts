@@ -41,18 +41,31 @@ describe('MotionPhotoOverlay', () => {
     expect(wrapper.find('.still').exists()).toBe(true)
     const badge = wrapper.find('.motion-photo-badge')
     expect(badge.exists()).toBe(true)
-    expect(badge.attributes('aria-label')).toBe('Play motion photo')
+    expect(badge.attributes('aria-label')).toBe('Play Motion Photo')
     expect(wrapper.find('video').exists()).toBe(false)
   })
 
   it('renders the still but no badge when the resource has no motion photo facet', () => {
-    const { wrapper } = getWrapper({ resource: mock<Resource>({ motionPhoto: undefined }) })
+    const { wrapper } = getWrapper({
+      resource: mock<Resource>({ motionPhoto: undefined, livePhoto: undefined })
+    })
     expect(wrapper.find('.still').exists()).toBe(true)
     expect(wrapper.find('.motion-photo-badge').exists()).toBe(false)
   })
 
+  it('renders the badge for the still of a live photo, not for its video half', () => {
+    const livePhoto = { contentId: 'overlay-live' }
+    const still = { id: 'still', mimeType: 'image/heic', livePhoto } as Resource
+    const video = { id: 'video', mimeType: 'video/quicktime', livePhoto } as Resource
+
+    const badge = getWrapper({ resource: still }).wrapper.find('.motion-photo-badge')
+    expect(badge.exists()).toBe(true)
+    expect(badge.attributes('aria-label')).toBe('Play Live Photo')
+    expect(getWrapper({ resource: video }).wrapper.find('.motion-photo-badge').exists()).toBe(false)
+  })
+
   it('renders a muted, non-interactive badge when the facet is unusable', () => {
-    // videoSize larger than the file -> no playable clip, but still a motion photo
+    // videoSize larger than the file -> no playable video, but still a motion photo
     const { wrapper } = getWrapper({
       resource: { ...motionPhotoResource(), motionPhoto: { videoSize: 500000 } } as Resource
     })
@@ -60,10 +73,10 @@ describe('MotionPhotoOverlay', () => {
     expect(badge.exists()).toBe(true)
     expect(badge.element.tagName).toBe('SPAN')
     expect(badge.classes()).toContain('opacity-50')
-    expect(badge.attributes('aria-label')).toBe('Motion photo (clip not available)')
+    expect(badge.attributes('aria-label')).toBe('Motion Photo (video not available)')
   })
 
-  it('renders the badge as a real button when the clip is playable', () => {
+  it('renders the badge as a real button when the video is playable', () => {
     const { wrapper } = getWrapper()
     const badge = wrapper.find('.motion-photo-badge')
     expect(badge.element.tagName).toBe('BUTTON')
@@ -101,7 +114,7 @@ describe('MotionPhotoOverlay', () => {
     const video = wrapper.find('video')
     expect(video.exists()).toBe(true)
     expect(video.attributes('src')).toBe('blob:overlay-video')
-    expect(wrapper.find('.motion-photo-badge').attributes('aria-label')).toBe('Pause motion photo')
+    expect(wrapper.find('.motion-photo-badge').attributes('aria-label')).toBe('Pause Motion Photo')
 
     await wrapper.trigger('mouseleave')
     await flushPromises()

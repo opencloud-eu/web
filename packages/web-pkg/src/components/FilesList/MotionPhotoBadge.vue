@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 const {
@@ -41,7 +41,8 @@ const {
   muted = false,
   loading = false,
   icon = 'play-circle',
-  label: labelProp
+  label: labelProp,
+  loadingLabel: loadingLabelProp = undefined
 } = defineProps<{
   sizeClass?: string
   interactive?: boolean
@@ -49,13 +50,15 @@ const {
   loading?: boolean
   icon?: string
   label?: string
+  loadingLabel?: string
 }>()
 
 const isPause = computed(() => icon.includes('pause'))
 
 const { $gettext } = useGettext()
-const label = computed(() => labelProp ?? $gettext('Motion photo'))
-const tooltip = computed(() => (loading ? $gettext('Loading motion photo') : label.value))
+const label = computed(() => labelProp ?? $gettext('Motion Photo'))
+const loadingLabel = computed(() => loadingLabelProp ?? $gettext('Loading Motion Photo'))
+const tooltip = computed(() => (loading ? unref(loadingLabel) : unref(label)))
 const showTooltip = computed(() => !interactive)
 </script>
 

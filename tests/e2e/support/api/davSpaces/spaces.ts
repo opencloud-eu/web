@@ -156,20 +156,24 @@ export const uploadFileInsideSpaceBySpaceName = async ({
 
 // the facet is written asynchronously after the upload, once tika has extracted
 // the file; a fresh tika takes a few seconds for its first file
-export const waitForMotionPhotoFacet = async ({
+const waitForFacet = async ({
   user,
   pathToFile,
+  facet,
+  property,
   timeoutMs = 30000
 }: {
   user: User
   pathToFile: string
+  facet: string
+  property: string
   timeoutMs?: number
 }): Promise<void> => {
   const body =
     '<?xml version="1.0"?>\n' +
     '<d:propfind xmlns:d="DAV:" xmlns:oc="http://owncloud.org/ns">\n' +
     '  <d:prop>\n' +
-    '    <oc:motion-photo />\n' +
+    `    <oc:${facet} />\n` +
     '  </d:prop>\n' +
     '</d:propfind>'
   const path = urlJoin(
@@ -182,13 +186,29 @@ export const waitForMotionPhotoFacet = async ({
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     const response = await request({ method: 'PROPFIND', path, body, user })
-    checkResponseStatus(response, `Failed while getting the motion photo facet of ${pathToFile}`)
-    if ((await response.text()).includes('<oc:video-size>')) {
+    checkResponseStatus(response, `Failed while getting the ${facet} facet of ${pathToFile}`)
+    if ((await response.text()).includes(`<oc:${property}>`)) {
       return
     }
     await new Promise((resolve) => setTimeout(resolve, 500))
   }
-  throw new Error(`Timed out waiting for the motion photo facet of ${pathToFile}`)
+  throw new Error(`Timed out waiting for the ${facet} facet of ${pathToFile}`)
+}
+
+export const waitForMotionPhotoFacet = async (args: {
+  user: User
+  pathToFile: string
+  timeoutMs?: number
+}): Promise<void> => {
+  await waitForFacet({ ...args, facet: 'motion-photo', property: 'video-size' })
+}
+
+export const waitForLivePhotoFacet = async (args: {
+  user: User
+  pathToFile: string
+  timeoutMs?: number
+}): Promise<void> => {
+  await waitForFacet({ ...args, facet: 'live-photo', property: 'content-id' })
 }
 
 export const getDataOfFileInsideSpace = async ({

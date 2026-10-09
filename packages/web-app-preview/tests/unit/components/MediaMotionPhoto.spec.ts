@@ -20,7 +20,7 @@ const mediaFile = (motionPhoto: unknown = { videoSize: 120000, presentationTimes
     isVideo: false,
     isImage: true,
     isAudio: false,
-    isMotionPhoto: true,
+    isMotionOrLivePhoto: true,
     isLoading: false,
     isError: false,
     resource: {

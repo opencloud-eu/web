@@ -1,7 +1,7 @@
 Feature: Motion photo indicator
   As a user
   I want motion photos to be visually marked and playable
-  So that I can distinguish them from ordinary photos and watch their clip
+  So that I can distinguish them from ordinary photos and watch their video
 
   Background:
     Given "Admin" creates following user using API
@@ -47,5 +47,5 @@ Feature: Motion photo indicator
   @motion-photo
   Scenario: motion photo can be played inline from the sidebar
     When "Alice" plays the motion photo inline from the sidebar for resource "motionphoto-playable.jpg"
-    Then "Alice" should see the motion photo clip loaded in the sidebar
+    Then "Alice" should see the motion photo video loaded in the sidebar
     And "Alice" logs out

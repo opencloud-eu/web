@@ -92,9 +92,10 @@ export function useMotionPhotoPlayback(
   }
 
   const seekToStill = (event: Event): void => {
-    const timestamp = getStillTimestampSeconds(toValue(resource))
+    const video = event.target as HTMLVideoElement
+    const timestamp = getStillTimestampSeconds(toValue(resource), video.duration)
     if (timestamp !== null) {
-      ;(event.target as HTMLVideoElement).currentTime = timestamp
+      video.currentTime = timestamp
     }
   }
 
