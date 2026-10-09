@@ -15,17 +15,13 @@ export const useResourceContents = ({
   const { current: currentLanguage, $gettext, $ngettext } = useGettext()
   const router = useRouter()
 
-  const { resources, totalResourcesCount, areHiddenFilesShown, currentFolder } =
-    storeToRefs(resourcesStore)
+  const { resources, totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
   const itemSize = computed(() => {
-    if (!unref(currentFolder)?.size || unref(currentFolder)?.size === '0') {
-      const accumulatedSize = unref(resources)
-        .map((r) => (r.size ? parseInt(r.size.toString()) : 0))
-        .reduce((x, y) => x + y, 0)
-      return formatFileSize(accumulatedSize, currentLanguage)
-    }
-    return formatFileSize(unref(currentFolder).size, currentLanguage)
+    const accumulatedSize = unref(resources)
+      .map((r) => (r.size ? parseInt(r.size.toString()) : 0))
+      .reduce((x, y) => x + y, 0)
+    return formatFileSize(accumulatedSize, currentLanguage)
   })
 
   const resourceContentsText = computed(() => {

@@ -8,7 +8,11 @@ import {
   useExtensionRegistry
 } from '@opencloud-eu/web-pkg'
 import { computed, onMounted, onBeforeUnmount, unref, watch, Ref } from 'vue'
-import { SpaceResource, isPublicSpaceResource } from '@opencloud-eu/web-client'
+import {
+  SpaceResource,
+  isPublicSpaceResource,
+  isShareSpaceResource
+} from '@opencloud-eu/web-client'
 import { useService, useUpload, UppyService, UploadResult } from '@opencloud-eu/web-pkg'
 import { HandleUpload } from '../HandleUpload'
 import { useGettext } from 'vue3-gettext'
@@ -81,9 +85,14 @@ export const useFileUpload = (space: Ref<SpaceResource>) => {
       path: unref(currentFolder).path
     })
 
-    const existingIds = new Set(resourcesStore.resources.map((r) => r.id))
-    const newResources = children.filter((child) => !existingIds.has(child.id))
-    resourcesStore.upsertResources(newResources)
+    if (isShareSpaceResource(unref(space))) {
+      // TODO: remove when server returns share id for federated shares in propfind response
+      children.forEach((r) => (r.remoteItemId = unref(space).id))
+    }
+
+    const existingEtags = new Map(resourcesStore.resources.map((r) => [r.id, r.etag]))
+    const changedResources = children.filter((child) => existingEtags.get(child.id) !== child.etag)
+    resourcesStore.upsertResources(changedResources)
   }
 
   onMounted(() => {
