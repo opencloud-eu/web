@@ -281,6 +281,38 @@ describe('EmbedActions', () => {
 
       expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
     })
+
+    it.each([
+      { isFilePicker: true, isLocationPicker: false },
+      { isFilePicker: false, isLocationPicker: true },
+      { isFilePicker: false, isLocationPicker: false }
+    ])('should emit cancel event on Escape (%o)', (options) => {
+      const { mocks } = getWrapper(options)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+
+      expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
+    })
+
+    it('should not emit cancel event on Escape while a modal is open', () => {
+      const { mocks } = getWrapper()
+      const modal = document.createElement('div')
+      modal.setAttribute('aria-modal', 'true')
+      document.body.append(modal)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+      modal.remove()
+    })
+
+    it('should not emit cancel event on other keys', () => {
+      const { mocks } = getWrapper()
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+
+      expect(mocks.postMessageMock).not.toHaveBeenCalled()
+    })
   })
 
   describe('share action', () => {
