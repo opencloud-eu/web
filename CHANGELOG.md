@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep spaces in changed passwords and log out from the profile page without errors [[#3597](https://github.com/opencloud-eu/web/pull/3597)]
 - fix(admin-settings): keep users and groups whose deletion failed [[#3596](https://github.com/opencloud-eu/web/pull/3596)]
 - fix: let space managers enable disabled spaces [[#3602](https://github.com/opencloud-eu/web/pull/3602)]
 - fix(web-pkg): check the event target for disabled key bindings [[#3595](https://github.com/opencloud-eu/web/pull/3595)]
