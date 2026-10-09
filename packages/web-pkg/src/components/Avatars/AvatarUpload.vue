@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="user">
     <input
       ref="fileInputRef"
       class="hidden avatar-file-input"

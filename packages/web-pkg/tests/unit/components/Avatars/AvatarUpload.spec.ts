@@ -6,7 +6,7 @@ import {
   mount,
   nextTicks
 } from '@opencloud-eu/web-test-helpers'
-import { useMessages } from '../../../../src'
+import { useMessages, useUserStore } from '../../../../src'
 import { describe } from 'vitest'
 
 vi.mock('cropperjs', () => {
@@ -46,6 +46,12 @@ const selectors = {
 }
 
 describe('AvatarUpload', () => {
+  it('should not throw when the user gets reset, e.g. on logout', async () => {
+    const { wrapper } = getWrapper()
+    useUserStore().user = null
+    await nextTicks(2)
+    expect(wrapper.html()).not.toContain('avatar-file-input')
+  })
   describe('removeButton', () => {
     it('should exist when user has avatar', () => {
       const { wrapper } = getWrapper()
