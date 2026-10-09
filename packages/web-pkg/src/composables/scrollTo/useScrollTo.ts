@@ -81,7 +81,8 @@ export const useScrollTo = (): ScrollToResult => {
 
     const resource = unref(resources).find((r) => {
       if (isIncomingShareResource(r)) {
-        return r.remoteItemId === unref(scrollTo)
+        // notifications link to the share (permission) id, which is the suffix of the resource id
+        return r.remoteItemId === unref(scrollTo) || r.id.endsWith(`!${unref(scrollTo)}`)
       }
       return r.id === unref(scrollTo)
     })

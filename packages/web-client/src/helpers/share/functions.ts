@@ -44,16 +44,22 @@ export const getShareResourceRoles = ({
   driveItem: DriveItem
   graphRoles: Record<string, ShareRole>
 }) => {
-  return driveItem.remoteItem?.permissions.reduce<UnifiedRoleDefinition[]>((acc, permission) => {
-    permission.roles?.forEach((roleId) => {
-      const role = graphRoles[roleId]
-      if (role && !acc.some(({ id }) => id === role.id)) {
-        acc.push(role)
-      }
-    })
+  const roles = driveItem.remoteItem?.permissions.reduce<UnifiedRoleDefinition[]>(
+    (acc, permission) => {
+      permission.roles?.forEach((roleId) => {
+        const role = graphRoles[roleId]
+        if (role && !acc.some(({ id }) => id === role.id)) {
+          acc.push(role)
+        }
+      })
 
-    return acc
-  }, [])
+      return acc
+    },
+    []
+  )
+
+  // multiple shares (e.g. user + group) come in random order, show the highest role first
+  return roles?.sort((a, b) => (b['@libre.graph.weight'] || 0) - (a['@libre.graph.weight'] || 0))
 }
 
 export const getShareResourcePermissions = ({

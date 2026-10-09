@@ -1,6 +1,6 @@
 import { mock } from 'vitest-mock-extended'
 import { useScrollTo } from '../../../../src/composables/scrollTo'
-import { Resource } from '@opencloud-eu/web-client'
+import { IncomingShareResource, Resource } from '@opencloud-eu/web-client'
 import {
   getComposableWrapper,
   RouteLocation,
@@ -154,6 +154,29 @@ describe('useScrollTo', () => {
             store
           }
         }
+      )
+    })
+    it('finds an incoming share by its share id', () => {
+      const shareId = 'storage:space:share'
+      const mocks = defaultComponentMocks({
+        currentRoute: mock<RouteLocation>({ query: { scrollTo: shareId } })
+      })
+
+      getComposableWrapper(
+        () => {
+          const resource = mock<IncomingShareResource>({
+            id: `shares$shares!${shareId}`,
+            remoteItemId: 'storage$space!item',
+            sharedWith: [],
+            outgoing: false,
+            processing: false
+          })
+          const { scrollToResourceFromRoute } = useScrollTo()
+          const querySelectorAllSpy = vi.spyOn(document, 'querySelectorAll')
+          scrollToResourceFromRoute([resource], 'files-app-bar')
+          expect(querySelectorAllSpy).toHaveBeenCalled()
+        },
+        { mocks, provide: mocks }
       )
     })
     it('opens the sidebar when a resource is found and the "details" param is given', () => {
