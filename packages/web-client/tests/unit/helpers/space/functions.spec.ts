@@ -37,12 +37,6 @@ describe('buildSpace', () => {
         userCan: false,
         permissions: [GraphSharePermission.deletePermissions],
         disabled: true,
-        expectedResult: true
-      },
-      {
-        userCan: false,
-        permissions: [],
-        disabled: true,
         expectedResult: false
       },
       {
@@ -146,41 +140,13 @@ describe('buildSpace', () => {
 
   describe('canRestore', () => {
     it.each([
-      {
-        userCan: false,
-        permissions: [GraphSharePermission.deletePermissions],
-        disabled: true,
-        expectedResult: true
-      },
-      {
-        userCan: false,
-        permissions: [],
-        disabled: true,
-        expectedResult: false
-      },
-      {
-        userCan: true,
-        permissions: [],
-        disabled: true,
-        expectedResult: true
-      },
-      {
-        userCan: true,
-        permissions: [],
-        disabled: false,
-        expectedResult: false
-      }
-    ])(
-      'behaves accordingly to the given role, permissions, abilities and disabled state',
-      ({ permissions, expectedResult, userCan, disabled }) => {
-        const ability = mock<Ability>({ can: () => userCan })
-        const space = getSpace({ permissions })
-        space.disabled = disabled
-        expect(space.canRestore({ user: mock<User>({ id, memberOf: [] }), ability })).toBe(
-          expectedResult
-        )
-      }
-    )
+      { disabled: true, expectedResult: true },
+      { disabled: false, expectedResult: false }
+    ])('is $expectedResult if the space is disabled: $disabled', ({ disabled, expectedResult }) => {
+      const space = getSpace({ permissions: [] })
+      space.disabled = disabled
+      expect(space.canRestore()).toBe(expectedResult)
+    })
   })
 
   describe('canDisable', () => {
