@@ -1,12 +1,9 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { ref } from 'vue'
-import { Editor } from '@tiptap/vue-3'
 import { Marked } from 'marked'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
-import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
 import { registerMarkdownListTokenizer } from '../../../../src/editor/extensions'
-import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
+import { destroyEditors, expectStableRoundtrip } from './helpers'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
@@ -29,21 +26,7 @@ function loadFixtures(dir: string): [string, string][] {
 }
 
 function save(markdown: string): string {
-  const state: TextEditorState = {
-    sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-    editorZoom: ref(100)
-  }
-  const strategy = useStrategyMarkdown(state)
-  const editor = new Editor({
-    extensions: strategy.extensions(),
-    content: strategy.deserialize(markdown),
-    contentType: 'markdown'
-  })
-  expect(() => editor.state.doc.check()).not.toThrow()
-  const saved = strategy.serialize(editor.state.doc)
-  editor.destroy()
-  return saved
+  return expectStableRoundtrip(markdown).serialized
 }
 
 // Reference renderer for both the original and the saved markdown. The list tokenizer
@@ -124,6 +107,10 @@ function expectRoundtrip(markdown: string) {
 describe('markdown fixture roundtrip', () => {
   beforeEach(() => {
     createTestingPinia()
+  })
+
+  afterEach(() => {
+    destroyEditors()
   })
 
   it.each(loadFixtures(fixturesDir))('keeps %s', (_, markdown) => {

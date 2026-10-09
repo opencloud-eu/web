@@ -1,52 +1,16 @@
-import { ref } from 'vue'
-import { Editor } from '@tiptap/vue-3'
-import type { JSONContent } from '@tiptap/core'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
-import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
-import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
-import type { ContentTypeStrategy } from '../../../../src/editor/composables/strategies/types'
+import {
+  createStrategy,
+  createEditor,
+  toJSON,
+  load,
+  expectStableRoundtrip,
+  destroyEditors
+} from './helpers'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
 }))
-
-function createStrategy(): ContentTypeStrategy {
-  const state: TextEditorState = {
-    sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-    editorZoom: ref(100)
-  }
-  return useStrategyMarkdown(state)
-}
-
-function createEditor(strategy: ContentTypeStrategy, content: string): Editor {
-  return new Editor({
-    extensions: strategy.extensions(),
-    content: strategy.deserialize(content),
-    contentType: 'markdown'
-  })
-}
-
-function toJSON(editor: Editor): JSONContent {
-  return editor.getJSON() as JSONContent
-}
-
-function load(markdown: string) {
-  const strategy = createStrategy()
-  const editor = createEditor(strategy, markdown)
-  return { editor, serialized: strategy.serialize(editor.state.doc) }
-}
-
-function expectStableRoundtrip(markdown: string) {
-  const { editor, serialized } = load(markdown)
-  expect(() => editor.state.doc.check()).not.toThrow()
-
-  const reloaded = load(serialized)
-  expect(() => reloaded.editor.state.doc.check()).not.toThrow()
-  expect(toJSON(reloaded.editor)).toEqual(toJSON(editor))
-
-  return { editor, serialized }
-}
 
 function serializeParagraph(text: string): string {
   const strategy = createStrategy()
@@ -61,6 +25,10 @@ function serializeParagraph(text: string): string {
 describe('markdown paragraph roundtrip', () => {
   beforeEach(() => {
     createTestingPinia()
+  })
+
+  afterEach(() => {
+    destroyEditors()
   })
 
   describe('paragraphs', () => {
