@@ -11,7 +11,7 @@
     <form
       v-else-if="isPasswordRequired"
       class="flex flex-col gap-4"
-      @submit.prevent="resolvePublicLinkTask.perform(true)"
+      @submit.prevent="submitPassword"
     >
       <oc-text-input
         ref="passwordInput"
@@ -128,6 +128,12 @@ const loadPublicSpaceTask = useTask(function* (signal) {
       if (err.errorCode === 'ERR_MISSING_BASIC_AUTH') {
         isPasswordRequired.value = true
       }
+      if (err.errorCode === 'ERR_MISSING_BEARER_AUTH') {
+        // internal links are not supported by the web anymore, the user context is not loaded here
+        throw new Error(
+          $gettext('Internal links are not supported. Please ask the owner for a permanent link.')
+        )
+      }
 
       return
     }
@@ -215,6 +221,14 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
     })
   )
 })
+
+async function submitPassword() {
+  try {
+    await resolvePublicLinkTask.perform(true)
+  } catch {
+    // the error is shown via the task state
+  }
+}
 
 /**
  * A public link to a single file has no file id of its own, while a link to a folder does.
