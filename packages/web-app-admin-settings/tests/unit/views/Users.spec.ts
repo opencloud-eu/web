@@ -197,9 +197,10 @@ describe('Users view', () => {
       expect(wrapper.find('batch-actions-stub').exists()).toBeTruthy()
     })
     it('show the delete action last', async () => {
+      // not the logged in user (id 1), who can't delete their own account
       const { wrapper } = getMountedWrapper({
         mountType: mount,
-        selectedUsers: [{ id: '1' }] as User[]
+        selectedUsers: [{ id: '2' }] as User[]
       })
       await flushPromises()
       const batchActions = wrapper.findComponent(AppTemplate).props('batchActions') as Action[]

@@ -2,7 +2,7 @@ import { useUserActionsDelete } from '../../../../../src/composables/actions/use
 import { mock } from 'vitest-mock-extended'
 import { unref } from 'vue'
 import { User } from '@opencloud-eu/web-client/graph/generated'
-import { useCapabilityStore } from '@opencloud-eu/web-pkg'
+import { useCapabilityStore, useUserStore } from '@opencloud-eu/web-pkg'
 import {
   defaultComponentMocks,
   getComposableWrapper,
@@ -16,7 +16,12 @@ describe('useUserActionsDelete', () => {
       { resources: [], disabledViaCapability: false, isVisible: false },
       { resources: [mock<User>()], disabledViaCapability: false, isVisible: true },
       { resources: [mock<User>(), mock<User>()], disabledViaCapability: false, isVisible: true },
-      { resources: [mock<User>(), mock<User>()], disabledViaCapability: true, isVisible: false }
+      { resources: [mock<User>(), mock<User>()], disabledViaCapability: true, isVisible: false },
+      {
+        resources: [mock<User>(), mock<User>({ id: 'own-id' })],
+        disabledViaCapability: false,
+        isVisible: false
+      }
     ])(
       'should only return true if 1 or more users are selected and not disabled via capability',
       ({ resources, disabledViaCapability, isVisible }) => {
@@ -24,6 +29,8 @@ describe('useUserActionsDelete', () => {
           setup: ({ actions }) => {
             const capabilityStore = useCapabilityStore()
             writable(capabilityStore).graphUsersDeleteDisabled = !!disabledViaCapability
+            const userStore = useUserStore()
+            userStore.user = mock<User>({ id: 'own-id' })
             expect(unref(actions)[0].isVisible({ resources })).toEqual(isVisible)
           }
         })
@@ -42,18 +49,22 @@ describe('useUserActionsDelete', () => {
         }
       })
     })
-    it('should handle errors', () => {
+    it('should only remove the successfully deleted users from the list', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const deleted = mock<User>({ id: '1' })
+      const failed = mock<User>({ id: '2' })
+      let deletion: Promise<void>
       getWrapper({
-        setup: async ({ deleteUsers }, { clientService }) => {
-          clientService.graphAuthenticated.users.deleteUser.mockRejectedValue({})
-          const user = mock<User>({ id: '1' })
-          await deleteUsers([user])
-          expect(clientService.graphAuthenticated.users.deleteUser).toHaveBeenCalledWith(user.id)
-          const { removeUsers } = useUserSettingsStore()
-          expect(removeUsers).toHaveBeenCalled()
+        setup: ({ deleteUsers }, { clientService }) => {
+          clientService.graphAuthenticated.users.deleteUser.mockImplementation((id) =>
+            id === failed.id ? Promise.reject(new Error()) : Promise.resolve(undefined)
+          )
+          deletion = deleteUsers([deleted, failed])
         }
       })
+      await deletion
+      const { removeUsers } = useUserSettingsStore()
+      expect(removeUsers).toHaveBeenCalledWith([deleted])
     })
   })
 })

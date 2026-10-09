@@ -42,18 +42,22 @@ describe('useGroupActionsDelete', () => {
         }
       })
     })
-    it('should handle errors', () => {
+    it('should only remove the successfully deleted groups from the list', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const deleted = mock<Group>({ id: '1' })
+      const failed = mock<Group>({ id: '2' })
+      let deletion: Promise<void>
       getWrapper({
-        setup: async ({ deleteGroups }, { clientService }) => {
-          clientService.graphAuthenticated.groups.deleteGroup.mockRejectedValue({})
-          const group = mock<Group>({ id: '1' })
-          await deleteGroups([group])
-          expect(clientService.graphAuthenticated.groups.deleteGroup).toHaveBeenCalledWith(group.id)
-          const { removeGroups } = useGroupSettingsStore()
-          expect(removeGroups).toHaveBeenCalled()
+        setup: ({ deleteGroups }, { clientService }) => {
+          clientService.graphAuthenticated.groups.deleteGroup.mockImplementation((id) =>
+            id === failed.id ? Promise.reject(new Error()) : Promise.resolve(undefined)
+          )
+          deletion = deleteGroups([deleted, failed])
         }
       })
+      await deletion
+      const { removeGroups } = useGroupSettingsStore()
+      expect(removeGroups).toHaveBeenCalledWith([deleted])
     })
   })
 })
