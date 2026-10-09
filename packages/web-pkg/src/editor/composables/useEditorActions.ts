@@ -6,7 +6,7 @@ import { useGettext } from 'vue3-gettext'
 import { storeToRefs } from 'pinia'
 import type { Resource } from '@opencloud-eu/web-client'
 import { OcEmojiPicker } from '@opencloud-eu/design-system/components'
-import { useModals, useThemeStore } from '../../composables'
+import { useAuthStore, useModals, useThemeStore } from '../../composables'
 import { useClientService, useGetMatchingSpace, useFolderLink } from '../../composables'
 import FilePickerModal from '../../components/Modals/FilePickerModal.vue'
 import EmojiPickerModal from '../../components/Modals/EmojiPickerModal.vue'
@@ -66,6 +66,8 @@ export function useEditorActions(state: TextEditorState) {
   const { dispatchModal } = useModals()
   const themeStore = useThemeStore()
   const { currentTheme } = storeToRefs(themeStore)
+  // On public links, the file picker only shows the shared files.
+  const { publicLinkContextReady: isPublicLinkContext } = storeToRefs(useAuthStore())
   const clientService = useClientService()
   const { getMatchingSpace } = useGetMatchingSpace()
   const { getParentFolderLink } = useFolderLink()
@@ -738,7 +740,7 @@ export function useEditorActions(state: TextEditorState) {
     description: $gettext('Insert an image from your cloud files'),
     icon: 'cloud-line',
     keywords: ['image', 'picture', 'cloud'],
-    showInSlashCommands: true,
+    showInSlashCommands: !unref(isPublicLinkContext),
     showInToolbar: false,
     toolbarAction: (editor) => openCloudImagePicker(editor),
     slashCommandAction: ({ editor, range }) => {
@@ -754,7 +756,11 @@ export function useEditorActions(state: TextEditorState) {
     icon: 'image-line',
     keywords: ['image', 'picture', 'upload', 'url', 'cloud'],
     showInSlashCommands: false,
-    childActions: [imageUpload(), imageUrl(), imageCloud()],
+    childActions: [
+      imageUpload(),
+      imageUrl(),
+      ...(unref(isPublicLinkContext) ? [] : [imageCloud()])
+    ],
     isActive: () => false
   })
 
