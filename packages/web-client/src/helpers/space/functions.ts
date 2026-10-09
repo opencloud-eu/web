@@ -242,7 +242,8 @@ export function buildSpace(
       return this.graphPermissions?.includes(GraphSharePermission.deletePermissions)
     },
     canRestore: function () {
-      // the server only lists disabled spaces to their managers and to users who may manage all spaces
+      // the server returns no permissions or roles for disabled spaces, but only lists them to their
+      // managers and to users who may manage all spaces
       return !!this.disabled
     },
     canDisable: function ({ ability }: { user?: User; ability?: Ability } = {}) {
