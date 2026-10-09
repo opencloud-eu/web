@@ -107,6 +107,30 @@ describe('useKeyboardActions', () => {
 
     wrapper.unmount()
   })
+
+  it('should not execute callback if the event comes from an input that blurred itself', () => {
+    const wrapper = getWrapper()
+    const { keyboardActions } = wrapper.vm
+    const counter = ref(0)
+
+    keyboardActions.bindKeyAction({ primary: Key.Esc }, () => {
+      counter.value += 1
+    })
+
+    const input = document.createElement('input')
+    document.body.appendChild(input)
+    input.focus()
+    input.addEventListener('keydown', () => input.blur())
+
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+    expect(counter.value).toBe(0)
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+    expect(counter.value).toBe(1)
+
+    input.remove()
+    wrapper.unmount()
+  })
 })
 
 function getWrapper() {
