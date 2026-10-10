@@ -9,3 +9,6 @@ pnpm-lock.yaml
 
 **/translations.json
 /CHANGELOG.md
+
+# markdown round trip fixtures, formatting is part of the test
+packages/web-pkg/tests/unit/editor/strategies/fixtures/

@@ -36,12 +36,13 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   // process wide singleton which grows with every editor opened and keeps each
   // manager it ever saw alive. Holding our own instance bounds both to the
   // lifetime of this strategy.
+  const instance = new Marked()
+  registerFrontmatterTokenizer(instance)
+  registerMarkdownListTokenizer(instance)
   // Cast because tiptap types the option as the default export, which carries a
   // `getDefaults` helper a plain instance lacks. The manager never calls it: it
   // only touches `use`, `setOptions`, `Lexer`, `lexer` and `defaults`.
-  const marked = new Marked() as unknown as typeof markedDefault
-  registerFrontmatterTokenizer(marked)
-  registerMarkdownListTokenizer(marked)
+  const marked = instance as unknown as typeof markedDefault
 
   const editorContentType = () => {
     return 'markdown'
