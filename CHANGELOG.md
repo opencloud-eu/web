@@ -1,5 +1,80 @@
 # Changelog
 
+## [8.2.0](https://github.com/opencloud-eu/web/releases/tag/v8.2.0) - 2026-10-10
+
+### ❤️ Thanks to all contributors! ❤️
+
+@AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @kulmann, @tammi-23, @tbsbdr, @v-scharf
+
+### 🐛 Bug Fixes
+
+- fix: keep the file list up to date after uploads [[#3587](https://github.com/opencloud-eu/web/pull/3587)]
+- fix: keep spaces in changed passwords and log out from the profile page without errors [[#3597](https://github.com/opencloud-eu/web/pull/3597)]
+- fix(admin-settings): keep users and groups whose deletion failed [[#3596](https://github.com/opencloud-eu/web/pull/3596)]
+- fix: let space managers enable disabled spaces [[#3602](https://github.com/opencloud-eu/web/pull/3602)]
+- fix(web-pkg): check the event target for disabled key bindings [[#3595](https://github.com/opencloud-eu/web/pull/3595)]
+- fix(search): fall back to the first provider on the search list [[#3594](https://github.com/opencloud-eu/web/pull/3594)]
+- fix(rclone-crypt): skip the unlock page in the browser history [[#3593](https://github.com/opencloud-eu/web/pull/3593)]
+- fix: public link actions and the password policy for anonymous visitors [[#3591](https://github.com/opencloud-eu/web/pull/3591)]
+- fix(web-runtime): keep the public link context when unlocking a vault [[#3606](https://github.com/opencloud-eu/web/pull/3606)]
+- fix: limit expiration dates to 100 years in the future [[#3601](https://github.com/opencloud-eu/web/pull/3601)]
+- fix: update the sidebar preview when switching to a resource with the same mdate [[#3615](https://github.com/opencloud-eu/web/pull/3615)]
+- fix: handle deep links to deleted or missing files [[#3590](https://github.com/opencloud-eu/web/pull/3590)]
+- fix: show the whole image in the file details preview [[#3609](https://github.com/opencloud-eu/web/pull/3609)]
+- fix(files): report moved files after cut & paste and block pasting into own subfolders [[#3588](https://github.com/opencloud-eu/web/pull/3588)]
+- fix(web-runtime): keep upload progress sane after resume and show failed upload details [[#3586](https://github.com/opencloud-eu/web/pull/3586)]
+- fix(tests): authenticate basic auth requests with the username [[#3318](https://github.com/opencloud-eu/web/pull/3318)]
+- fix(design-system): derive a valid color for every icon name [[#3585](https://github.com/opencloud-eu/web/pull/3585)]
+- fix(web-pkg): limit resource names to 255 bytes [[#3589](https://github.com/opencloud-eu/web/pull/3589)]
+- fix: mobile fixes for form messages, the page size select, the floating action button, batch icons, preview swiping and Save as [[#3578](https://github.com/opencloud-eu/web/pull/3578)]
+- fix(yjs): run initial hydration only on the first sync [[#3581](https://github.com/opencloud-eu/web/pull/3581)]
+- fix(design-system): stop raw buttons from filling stroke-only shapes in resource icons [[#3575](https://github.com/opencloud-eu/web/pull/3575)]
+- fix: mobile layout fixes for long names, search fields and space icons [[#3573](https://github.com/opencloud-eu/web/pull/3573)]
+- fix: improve mobile usability of tooltips, switches, editor menus and admin tables [[#3550](https://github.com/opencloud-eu/web/pull/3550)]
+- fix(admin-settings): respect the app icon fill type in the apps list [[#3567](https://github.com/opencloud-eu/web/pull/3567)]
+- fix: prevent app token from being generated more than once [[#3541](https://github.com/opencloud-eu/web/pull/3541)]
+- fix: text editor bugs found during exploratory testing [[#3533](https://github.com/opencloud-eu/web/pull/3533)]
+- fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
+- fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
+- fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+
+### 📈 Enhancement
+
+- [full-ci] feat: support Apple Live Photos [[#3548](https://github.com/opencloud-eu/web/pull/3548)]
+- feat: add norwegian nynorsk [[#3623](https://github.com/opencloud-eu/web/pull/3623)]
+- feat(web-runtime): show the status of app tokens [[#3607](https://github.com/opencloud-eu/web/pull/3607)]
+- feat(external): close the app via the collabora back button [[#3612](https://github.com/opencloud-eu/web/pull/3612)]
+- feat: support image icons for apps and extensions [[#3580](https://github.com/opencloud-eu/web/pull/3580)]
+- feat: add whiteboard icon for excalidraw files [[#3584](https://github.com/opencloud-eu/web/pull/3584)]
+- feat: search for tags in the global search and enhance the visually reasoning for matching results [[#3558](https://github.com/opencloud-eu/web/pull/3558)]
+- feat: add app version compatibility checks [[#3568](https://github.com/opencloud-eu/web/pull/3568)]
+- feat(app-store): redesign the app store [[#3534](https://github.com/opencloud-eu/web/pull/3534)]
+- feat: apply the OpenCloud brand colors to the CTA [[#3521](https://github.com/opencloud-eu/web/pull/3521)]
+- feat(preview): preload next and previous image [[#3529](https://github.com/opencloud-eu/web/pull/3529)]
+- feat(preview): add support for mkv video files [[#3564](https://github.com/opencloud-eu/web/pull/3564)]
+- feat: filter favorites by tags and always show the tag filter [[#3554](https://github.com/opencloud-eu/web/pull/3554)]
+- feat: remove condensed list view and switch view modes with toggle buttons [[#3538](https://github.com/opencloud-eu/web/pull/3538)]
+- perf: load group memberships only on the account page [[#3553](https://github.com/opencloud-eu/web/pull/3553)]
+- chore: use line icons for all sidebar panel actions [[#3539](https://github.com/opencloud-eu/web/pull/3539)]
+- feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
+- feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
+
+### ✅ Tests
+
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
+
+### 📦️ Dependencies
+
+- chore(deps): update dependency cropperjs to v2.3.0 [[#3608](https://github.com/opencloud-eu/web/pull/3608)]
+- chore(deps): update traefik docker tag to v3.7.14 [[#3576](https://github.com/opencloud-eu/web/pull/3576)]
+- chore(deps): update uppy monorepo [[#3515](https://github.com/opencloud-eu/web/pull/3515)]
+- chore(deps): update dependency vite to v8.3.3 [[#3570](https://github.com/opencloud-eu/web/pull/3570)]
+- chore(deps): update pnpm to v11.28.5 [[#3571](https://github.com/opencloud-eu/web/pull/3571)]
+- chore(deps): update typescript-eslint monorepo to v8.71.1 [[#3566](https://github.com/opencloud-eu/web/pull/3566)]
+- chore(deps): update devdependencies (non-major) [[#3528](https://github.com/opencloud-eu/web/pull/3528)]
+- [full-ci] chore: bump opencloud for tests to v8.1.0 [[#3565](https://github.com/opencloud-eu/web/pull/3565)]
+- chore(deps): update dependency focus-trap to v8.2.3 [[#3560](https://github.com/opencloud-eu/web/pull/3560)]
+
 ## [8.1.0](https://github.com/opencloud-eu/web/releases/tag/v8.1.0) - 2026-10-05
 
 ### ❤️ Thanks to all contributors! ❤️
