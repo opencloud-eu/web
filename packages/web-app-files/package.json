@@ -21,7 +21,7 @@
     "p-queue": "^9.0.0",
     "pinia": "4.0.3",
     "qs": "6.16.0",
-    "uuid": "14.0.2",
+    "uuid": "14.0.3",
     "vue-concurrency": "5.0.3",
     "vue-router": "5.3.1",
     "vue3-gettext": "^4.0.0-beta.1",
