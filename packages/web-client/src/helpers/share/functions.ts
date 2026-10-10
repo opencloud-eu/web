@@ -187,7 +187,9 @@ export function buildOutgoingShareResource({
   serverUrl: string
 }): OutgoingShareResource {
   const storageId = extractStorageId(driveItem.id)
-  const path = urlJoin(driveItem.parentReference.path, driveItem.name)
+  const isSpaceRoot = !!driveItem.root
+  const isFolder = isSpaceRoot || !!driveItem.folder
+  const path = isSpaceRoot ? '/' : urlJoin(driveItem.parentReference.path, driveItem.name)
 
   const resource: OutgoingShareResource = {
     id: driveItem.id,
@@ -215,19 +217,19 @@ export function buildOutgoingShareResource({
       return { ...(p.grantedToV2.user || p.grantedToV2.group), shareType }
     }),
     shareTypes: driveItem.permissions.map(getShareTypeFromPermission),
-    isFolder: !!driveItem.folder,
-    type: !!driveItem.folder ? 'folder' : 'file',
+    isFolder,
+    type: isFolder ? 'folder' : 'file',
     mimeType: driveItem.file?.mimeType || 'httpd/unix-directory',
     outgoing: true,
     privateLink: urlJoin(serverUrl, 'f', driveItem.id),
     hasPreview: () => !!driveItem.thumbnails,
-    canRename: () => true,
+    canRename: () => !isSpaceRoot,
     canDownload: () => true,
     canUpload: () => true,
     canCreate: () => true,
-    canBeDeleted: () => true,
+    canBeDeleted: () => !isSpaceRoot,
     canEditTags: () => true,
-    canListVersions: () => !driveItem.folder,
+    canListVersions: () => !isFolder,
     isMounted: () => false,
     isShareRoot: () => false,
     isReceivedShare: () => true,
