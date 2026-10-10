@@ -20,7 +20,7 @@ import { useEditorActions } from '../../../../src/editor/composables/useEditorAc
 import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
 import type { Resource } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
-import { useModals } from '../../../../src/composables/piniaStores'
+import { useAuthStore, useModals } from '../../../../src/composables/piniaStores'
 import { createLinkExtension } from '../../../../src/editor/extensions/link'
 
 function createState(): TextEditorState {
@@ -1088,6 +1088,21 @@ describe('useEditorActions', () => {
       const childIds = action.childActions?.map(({ id }) => id) || []
 
       expect(childIds).toEqual(['image-upload', 'image-url', 'image-cloud'])
+    })
+
+    it('hides the cloud action on public links', () => {
+      const authStore = useAuthStore()
+      authStore.setPublicLinkContext({
+        publicLinkContextReady: true,
+        publicLinkToken: 'token',
+        publicLinkPassword: '',
+        publicLinkType: 'public-link'
+      })
+      const publicLinkActions = useEditorActions(createState())
+
+      const childIds = publicLinkActions.image().childActions?.map(({ id }) => id) || []
+      expect(childIds).toEqual(['image-upload', 'image-url'])
+      expect(publicLinkActions.imageCloud().showInSlashCommands).toBe(false)
     })
 
     it('provides "Insert from cloud" action for current resource', () => {
