@@ -8,7 +8,6 @@ import type { marked as markedDefault } from 'marked'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
-import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import { EditorAction, EditorActionGroup, useEditorActions } from '../useEditorActions'
@@ -20,6 +19,7 @@ import {
   createMarkdownClipboardExtension,
   Frontmatter,
   imageFileHandlerExtension,
+  MarkdownTaskList,
   registerFrontmatterTokenizer
 } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
@@ -112,7 +112,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TableRow,
       TableCell,
       TableHeader,
-      TaskList,
+      MarkdownTaskList,
       TaskItem.configure({ nested: true }),
       markdownImage,
       imageFileHandlerExtension(),
