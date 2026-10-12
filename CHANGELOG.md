@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(design-system): OcSwitch keeps its focus, OcMobileDrop takes it when opened [[#3627](https://github.com/opencloud-eu/web/pull/3627)]
 - fix: show folder loading errors in the app wrapper instead of an endless spinner [[#3603](https://github.com/opencloud-eu/web/pull/3603)]
 - fix: wait for the sidebar resource before rendering the shares panel [[#3639](https://github.com/opencloud-eu/web/pull/3639)]
 - fix(web-pkg): enforce the maximum password length of the password policy [[#3599](https://github.com/opencloud-eu/web/pull/3599)]
