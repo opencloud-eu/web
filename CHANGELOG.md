@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep skipped files out of uploads [[#3689](https://github.com/opencloud-eu/web/pull/3689)]
 - fix: ignore space key in admin settings lists without a selected row [[#3685](https://github.com/opencloud-eu/web/pull/3685)]
 - fix: close embedded pickers with Escape [[#3630](https://github.com/opencloud-eu/web/pull/3630)]
 - fix: list links on space roots as spaces in shared via link [[#3605](https://github.com/opencloud-eu/web/pull/3605)]
