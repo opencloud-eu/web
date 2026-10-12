@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix(web-pkg): enforce the maximum password length of the password policy [[#3599](https://github.com/opencloud-eu/web/pull/3599)]
+- fix: reject images that can't be decoded before cropping [[#3600](https://github.com/opencloud-eu/web/pull/3600)]
 - fix: keep the file list up to date after uploads [[#3587](https://github.com/opencloud-eu/web/pull/3587)]
 - fix: keep spaces in changed passwords and log out from the profile page without errors [[#3597](https://github.com/opencloud-eu/web/pull/3597)]
 - fix(admin-settings): keep users and groups whose deletion failed [[#3596](https://github.com/opencloud-eu/web/pull/3596)]
