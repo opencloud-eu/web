@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: list links on space roots as spaces in shared via link [[#3605](https://github.com/opencloud-eu/web/pull/3605)]
 - fix: no image from the cloud in the text editor on public links [[#3632](https://github.com/opencloud-eu/web/pull/3632)]
 - fix(design-system): OcSwitch keeps its focus, OcMobileDrop takes it when opened [[#3627](https://github.com/opencloud-eu/web/pull/3627)]
 - fix: show folder loading errors in the app wrapper instead of an endless spinner [[#3603](https://github.com/opencloud-eu/web/pull/3603)]
