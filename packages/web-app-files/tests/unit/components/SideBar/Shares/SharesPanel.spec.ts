@@ -1,5 +1,6 @@
 import SharesPanel from '../../../../../src/components/SideBar/Shares/SharesPanel.vue'
 import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { ref } from 'vue'
 
 const ocLoaderStubSelector = 'oc-loader-stub'
 
@@ -21,9 +22,18 @@ describe('SharesPanel', () => {
     })
   })
 
-  function getWrapper({ sharesLoading = false } = {}) {
+  describe('when the sidebar resource is not loaded yet', () => {
+    it('should show the oc loader instead of the panels', () => {
+      const { wrapper } = getWrapper({ resource: null, showSpaceMembers: true })
+      expect(wrapper.find(ocLoaderStubSelector).exists()).toBeTruthy()
+      expect(wrapper.find('space-members-stub').exists()).toBeFalsy()
+    })
+  })
+
+  function getWrapper({ sharesLoading = false, resource = {}, showSpaceMembers = false } = {}) {
     return {
       wrapper: shallowMount(SharesPanel, {
+        props: { showSpaceMembers },
         global: {
           plugins: [
             ...defaultPlugins({ piniaOptions: { sharesState: { loading: sharesLoading } } })
@@ -31,6 +41,7 @@ describe('SharesPanel', () => {
           provide: {
             displayedItem: {},
             displayedSpace: {},
+            resource: ref(resource),
             spaceMembers: { value: [] }
           }
         }
