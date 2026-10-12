@@ -51,37 +51,54 @@ describe('SharedViaLink view', () => {
     })
   })
 
-  it('keeps the selection on the reloaded item when a resource field gets updated', async () => {
-    const paginatedResources = ref([
-      mock<OutgoingShareResource>({ id: 'old-id', fileId: 'file-id' })
-    ])
-    const selectedResourcesIds = ref<string[]>([])
-    const loadResourcesTask = mockDeep<Task<any, any>>({ isRunning: false })
-    getMountedWrapper({
-      viewDefaults: { paginatedResources, selectedResourcesIds, loadResourcesTask }
-    })
-    await flushPromises()
-    selectedResourcesIds.value = ['old-id']
+  describe('resource field updates', () => {
+    async function setup() {
+      const paginatedResources = ref([
+        mock<OutgoingShareResource>({ id: 'old-id', fileId: 'file-id' })
+      ])
+      const selectedResourcesIds = ref<string[]>([])
+      const loadResourcesTask = mockDeep<Task<any, any>>({ isRunning: false })
+      getMountedWrapper({
+        viewDefaults: { paginatedResources, selectedResourcesIds, loadResourcesTask }
+      })
+      await flushPromises()
+      loadResourcesTask.perform.mockClear()
+      selectedResourcesIds.value = ['old-id']
 
-    loadResourcesTask.perform.mockImplementation(() => {
-      // the loaders clear the list and the selection before refilling it
-      selectedResourcesIds.value = []
-      paginatedResources.value = []
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          paginatedResources.value = [
-            mock<OutgoingShareResource>({ id: 'new-id', fileId: 'file-id' })
-          ]
-          resolve(undefined)
-        })
-      }) as unknown as TaskInstance<any>
-    })
-    const resourcesStore = useResourcesStore()
-    resourcesStore.updateResourceField({ id: 'old-id', field: 'name', value: 'foo' })
-    await new Promise((resolve) => setTimeout(resolve))
-    await flushPromises()
+      loadResourcesTask.perform.mockImplementation(() => {
+        // the loaders clear the list and the selection before refilling it
+        selectedResourcesIds.value = []
+        paginatedResources.value = []
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            paginatedResources.value = [
+              mock<OutgoingShareResource>({ id: 'new-id', fileId: 'file-id' })
+            ]
+            resolve(undefined)
+          })
+        }) as unknown as TaskInstance<any>
+      })
+      return { selectedResourcesIds, loadResourcesTask, resourcesStore: useResourcesStore() }
+    }
 
-    expect(selectedResourcesIds.value).toEqual(['new-id'])
+    it('reloads and keeps the selection on the reloaded item when the share types change', async () => {
+      const { selectedResourcesIds, loadResourcesTask, resourcesStore } = await setup()
+      resourcesStore.updateResourceField({ id: 'old-id', field: 'shareTypes', value: [3] })
+      await new Promise((resolve) => setTimeout(resolve))
+      await flushPromises()
+
+      expect(loadResourcesTask.perform).toHaveBeenCalledTimes(1)
+      expect(selectedResourcesIds.value).toEqual(['new-id'])
+    })
+
+    it('does not reload when another field like the thumbnail changes', async () => {
+      const { selectedResourcesIds, loadResourcesTask, resourcesStore } = await setup()
+      resourcesStore.updateResourceField({ id: 'old-id', field: 'thumbnail', value: 'blob:foo' })
+      await flushPromises()
+
+      expect(loadResourcesTask.perform).not.toHaveBeenCalled()
+      expect(selectedResourcesIds.value).toEqual(['old-id'])
+    })
   })
 })
 
