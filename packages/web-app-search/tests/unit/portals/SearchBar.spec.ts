@@ -140,6 +140,17 @@ describe('Search Bar portal component', () => {
     ])
     expect((wrapper.vm as any).searchResults[0].result.values.length).toBe(2)
   })
+  test('stops loading when the term is cleared while a search is running', async () => {
+    const { wrapper } = getMountedWrapper({ providers: [providerFiles] })
+    providerFiles.previewSearch.search.mockImplementationOnce(() => new Promise(() => undefined))
+    wrapper.find(selectors.searchInput).setValue('kiwi')
+    await flushPromises()
+    expect((wrapper.vm as any).loading).toBe(true)
+    const vm = wrapper.vm as any
+    vm.term = ''
+    await vm.search()
+    expect((wrapper.vm as any).loading).toBe(false)
+  })
   test('displays all available providers', async () => {
     const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')

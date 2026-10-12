@@ -273,6 +273,7 @@ async function search() {
   const searchId = ++latestSearchId
   searchResults.value = []
   if (!unref(term)) {
+    loading.value = false
     return
   }
 
