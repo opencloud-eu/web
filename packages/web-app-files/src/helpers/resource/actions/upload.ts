@@ -17,6 +17,7 @@ import {
 interface ConflictedResource {
   name: string
   type: string
+  typeMismatch?: boolean
 }
 
 // renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
@@ -43,7 +44,8 @@ export class UploadResourceConflict extends ConflictDialog {
     resource: Resource,
     conflictCount: number,
     suggestMerge = false,
-    separateSkipHandling = false // separate skip-handling between files and folders
+    separateSkipHandling = false, // separate skip-handling between files and folders
+    typeMismatch = false
   ): Promise<ResolveConflict> {
     const { dispatchModal } = useModals()
 
@@ -62,6 +64,7 @@ export class UploadResourceConflict extends ConflictDialog {
           conflictCount,
           suggestMerge,
           separateSkipHandling,
+          hideSecondaryAction: typeMismatch,
           callbackFn: (conflict: ResolveConflict) => {
             resolve(conflict)
           }
@@ -82,7 +85,7 @@ export class UploadResourceConflict extends ConflictDialog {
           if (conflicts.some((conflict) => conflict.name === rootFolder)) {
             continue
           }
-          conflicts.push({ name: rootFolder, type: 'folder' })
+          conflicts.push({ name: rootFolder, type: 'folder', typeMismatch: !exists.isFolder })
           continue
         }
       }
@@ -91,7 +94,7 @@ export class UploadResourceConflict extends ConflictDialog {
         (f) => f.name === file.name && !file.meta.relativeFolder
       )
       if (exists) {
-        conflicts.push({ name: file.name, type: 'file' })
+        conflicts.push({ name: file.name, type: 'file', typeMismatch: !!exists.isFolder })
       }
     }
     return conflicts
@@ -113,15 +116,19 @@ export class UploadResourceConflict extends ConflictDialog {
     for (const conflict of conflicts) {
       const isFolder = conflict.type === 'folder'
       const conflictArray = isFolder ? resolvedFolderConflicts : resolvedFileConflicts
+      const allStrategy = isFolder ? allConflictsStrategyFolders : allConflictsStrategy
+      const canApplyAllStrategy =
+        !conflict.typeMismatch ||
+        [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].includes(allStrategy)
 
-      if (doForAllConflicts && !isFolder) {
+      if (doForAllConflicts && !isFolder && canApplyAllStrategy) {
         conflictArray.push({
           name: conflict.name,
           strategy: allConflictsStrategy
         })
         continue
       }
-      if (doForAllConflictsFolders && isFolder) {
+      if (doForAllConflictsFolders && isFolder && canApplyAllStrategy) {
         conflictArray.push({
           name: conflict.name,
           strategy: allConflictsStrategyFolders
@@ -137,7 +144,8 @@ export class UploadResourceConflict extends ConflictDialog {
         { name: conflict.name, isFolder } as Resource,
         conflictsLeft,
         isFolder,
-        true
+        true,
+        conflict.typeMismatch
       )
       isFolder ? folderCount++ : fileCount++
       if (resolvedConflict.doForAllConflicts) {

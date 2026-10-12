@@ -13,7 +13,11 @@
     <oc-button class="oc-modal-body-actions-cancel ml-2" @click="onCancel">
       {{ $gettext('Skip') }}
     </oc-button>
-    <oc-button class="oc-modal-body-actions-secondary ml-2" @click="onConfirmSecondary">
+    <oc-button
+      v-if="!hideSecondaryAction"
+      class="oc-modal-body-actions-secondary ml-2"
+      @click="onConfirmSecondary"
+    >
       {{ confirmSecondaryText }}
     </oc-button>
     <oc-button class="oc-modal-body-actions-confirm ml-2" appearance="filled" @click="onConfirm">
@@ -36,6 +40,7 @@ const {
   callbackFn,
   suggestMerge = true,
   separateSkipHandling = false,
+  hideSecondaryAction = false,
   confirmSecondaryTextOverwrite = undefined
 } = defineProps<{
   modal: Modal
@@ -44,6 +49,7 @@ const {
   callbackFn: (resolveConflict: ResolveConflict) => void
   suggestMerge?: boolean
   separateSkipHandling?: boolean
+  hideSecondaryAction?: boolean
   confirmSecondaryTextOverwrite?: string
 }>()
 

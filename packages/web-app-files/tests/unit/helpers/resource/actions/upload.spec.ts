@@ -22,8 +22,8 @@ describe('upload helper', () => {
       const fileName = 'someFile.txt'
       const folderName = 'someFolder'
       const currentFiles = [
-        mockDeep<Resource>({ name: fileName }),
-        mockDeep<Resource>({ name: folderName })
+        mockDeep<Resource>({ name: fileName, isFolder: false }),
+        mockDeep<Resource>({ name: folderName, isFolder: true })
       ]
       const filesToUpload = [
         mockDeep<OcUppyFile>({ name: fileName, meta: { relativePath: '', relativeFolder: '' } }),
@@ -36,8 +36,23 @@ describe('upload helper', () => {
       const conflicts = instance.getConflicts(filesToUpload)
 
       expect(conflicts.length).toBe(2)
-      expect(conflicts).toContainEqual({ name: fileName, type: 'file' })
-      expect(conflicts).toContainEqual({ name: folderName, type: 'folder' })
+      expect(conflicts).toContainEqual({ name: fileName, type: 'file', typeMismatch: false })
+      expect(conflicts).toContainEqual({ name: folderName, type: 'folder', typeMismatch: false })
+    })
+    it('should flag conflicts where the existing resource is of the other type', () => {
+      const currentFiles = [
+        mockDeep<Resource>({ name: 'dup', isFolder: true }),
+        mockDeep<Resource>({ name: 'dupf', isFolder: false })
+      ]
+      const filesToUpload = [
+        mockDeep<OcUppyFile>({ name: 'dup', meta: { relativePath: '', relativeFolder: '' } }),
+        mockDeep<OcUppyFile>({ name: 'file.txt', meta: { relativePath: '/dupf/file.txt' } })
+      ]
+      const instance = getResourceConflictInstance({ currentFiles })
+      const conflicts = instance.getConflicts(filesToUpload)
+
+      expect(conflicts).toContainEqual({ name: 'dup', type: 'file', typeMismatch: true })
+      expect(conflicts).toContainEqual({ name: 'dupf', type: 'folder', typeMismatch: true })
     })
   })
   describe('method "displayOverwriteDialog"', () => {
@@ -416,6 +431,56 @@ describe('upload helper', () => {
       const result = await instance.displayOverwriteDialog([fileInFolder], [conflict])
       expect(result.mergedFolders).toEqual([folderName])
       expect(result.files.length).toBe(1)
+    })
+    it('should hide replace and merge for conflicts with an existing resource of the other type', async () => {
+      const conflicts = [
+        { name: 'dup', type: 'file', typeMismatch: true },
+        { name: 'dupf', type: 'folder', typeMismatch: true }
+      ]
+      const instance = getResourceConflictInstance()
+      instance.resolveFileExists = vi.fn(() =>
+        Promise.resolve({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+      )
+
+      await instance.displayOverwriteDialog([], conflicts)
+
+      expect(instance.resolveFileExists).toHaveBeenNthCalledWith(
+        1,
+        { name: 'dup', isFolder: false },
+        1,
+        false,
+        true,
+        true
+      )
+      expect(instance.resolveFileExists).toHaveBeenNthCalledWith(
+        2,
+        { name: 'dupf', isFolder: true },
+        1,
+        true,
+        true,
+        true
+      )
+    })
+    it('should not apply replace for all to a conflict with an existing resource of the other type', async () => {
+      const fileOne = mockDeep<OcUppyFile>({ name: 'test', meta: { relativeFolder: '' } })
+      const fileTwo = mockDeep<OcUppyFile>({ name: 'dup', meta: { relativeFolder: '' } })
+      const fileThree = mockDeep<OcUppyFile>({ name: 'test2', meta: { relativeFolder: '' } })
+      const conflicts = [
+        { name: 'test', type: 'file', typeMismatch: false },
+        { name: 'dup', type: 'file', typeMismatch: true },
+        { name: 'test2', type: 'file', typeMismatch: false }
+      ]
+
+      const instance = getResourceConflictInstance()
+      instance.resolveFileExists = vi
+        .fn()
+        .mockResolvedValueOnce({ strategy: ResolveStrategy.REPLACE, doForAllConflicts: true })
+        .mockResolvedValueOnce({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+
+      const result = await instance.displayOverwriteDialog([fileOne, fileTwo, fileThree], conflicts)
+
+      expect(instance.resolveFileExists).toHaveBeenCalledTimes(2)
+      expect(result.files).toEqual([fileOne, fileThree])
     })
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
