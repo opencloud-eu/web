@@ -128,6 +128,17 @@ describe('List component', () => {
     await flushPromises()
     expect((tagFilter.vm as any).selectedItems).toEqual([])
   })
+  it('should emit search when the hidden files setting changes', async () => {
+    const { wrapper } = getWrapper()
+    await flushPromises()
+    const searchCount = wrapper.emitted('search').length
+
+    const resourcesStore = useResourcesStore()
+    resourcesStore.areHiddenFilesShown = !resourcesStore.areHiddenFilesShown
+    await flushPromises()
+
+    expect(wrapper.emitted('search').length).toBe(searchCount + 1)
+  })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
       const { wrapper } = getWrapper()

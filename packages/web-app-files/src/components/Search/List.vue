@@ -231,7 +231,7 @@ const { buildSearchTerm } = useSearch()
 
 const resourcesStore = useResourcesStore()
 const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
-const { totalResourcesCount } = storeToRefs(resourcesStore)
+const { totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
 const searchTermQuery = useRouteQuery('term')
 const scopeQuery = useRouteQuery('scope')
@@ -413,6 +413,10 @@ watch(
   },
   { deep: true }
 )
+
+watch(areHiddenFilesShown, () => {
+  emit('search', doSearch())
+})
 
 watch(
   () => searchResult,
