@@ -26,10 +26,34 @@ describe('useKeyboardTableNavigation', () => {
       expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
     })
   })
+  describe('shift + arrow', () => {
+    it('does not add already selected rows again', () => {
+      const { selectedRows, triggerKey } = getWrapper({
+        selectedRows: [...items],
+        lastSelectedRowId: '3'
+      })
+      triggerKey(Key.ArrowUp, Modifier.Shift)
+      expect(selectedRows.value.map(({ id }) => id)).toEqual(['1', '2', '3'])
+    })
+    it('adds the next row to the selection', () => {
+      const { selectedRows, triggerKey } = getWrapper({
+        selectedRows: [items[0]],
+        lastSelectedRowId: '1'
+      })
+      triggerKey(Key.ArrowDown, Modifier.Shift)
+      expect(selectedRows.value.map(({ id }) => id)).toEqual(['1', '2'])
+    })
+  })
 })
 
-function getWrapper({ lastSelectedRowId }: { lastSelectedRowId: string | null }) {
-  const selectedRows = ref<Item[]>([])
+function getWrapper({
+  selectedRows = [],
+  lastSelectedRowId
+}: {
+  selectedRows?: Item[]
+  lastSelectedRowId: string | null
+}) {
+  const selectedRowsRef = ref<Item[]>(selectedRows)
   const callbacks: Record<string, (event?: KeyboardEvent) => void> = {}
   const keyActions = mock<KeyboardActions>({
     selectionCursor: ref(0),
@@ -39,11 +63,11 @@ function getWrapper({ lastSelectedRowId }: { lastSelectedRowId: string | null })
     }
   })
   const wrapper = getComposableWrapper(() => {
-    useKeyboardTableNavigation(keyActions, ref(items), selectedRows, ref(lastSelectedRowId))
+    useKeyboardTableNavigation(keyActions, ref(items), selectedRowsRef, ref(lastSelectedRowId))
   })
   return {
     wrapper,
-    selectedRows,
+    selectedRows: selectedRowsRef,
     triggerKey: (primary: Key, modifier?: Modifier) => callbacks[`${modifier || ''}${primary}`]()
   }
 }
