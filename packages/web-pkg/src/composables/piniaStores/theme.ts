@@ -34,7 +34,9 @@ const DesignTokens = z.object({
   roles: z.record(z.string(), z.string()).optional(),
   /** @deprecated */
   colorPalette: z.record(z.string(), z.string()).optional().meta({ deprecated: true }),
-  fontFamily: z.string().optional()
+  fontFamily: z.string().optional(),
+  fontSource: z.string().optional(),
+  fontSize: z.string().optional()
 })
 
 const WebDefaults = CommonSection.extend({
@@ -88,6 +90,40 @@ export const useThemeStore = defineStore('theme', () => {
 
   // `--oc-` prop keys the active theme set, so the next theme can clear the ones it omits
   let appliedCustomProps: string[] = []
+  let currentFontFace: FontFace | undefined
+  let currentFontFaceKey: string | undefined
+
+  const applyFontFace = (fontFamily: string | undefined, fontSource: string | undefined) => {
+    // family name must match the first entry of --oc-font-family
+    const familyName = fontFamily?.split(',')[0].trim().replace(/['"]/g, '')
+    if (fontSource && !familyName) {
+      console.warn(`Ignoring theme font source "${fontSource}" without a font family`)
+    }
+    const fontFaceKey = familyName && fontSource ? `${familyName}|${fontSource}` : undefined
+    // keep the loaded face when switching between themes sharing the same font
+    if (fontFaceKey === currentFontFaceKey) {
+      return
+    }
+
+    if (currentFontFace) {
+      document.fonts.delete(currentFontFace)
+      currentFontFace = undefined
+    }
+    currentFontFaceKey = fontFaceKey
+    if (!fontFaceKey) {
+      return
+    }
+
+    const escapedSource = fontSource.replace(/[\\']/g, '\\$&')
+    currentFontFace = new FontFace(familyName, `url('${escapedSource}')`, {
+      display: 'swap',
+      weight: '100 900'
+    })
+    document.fonts.add(currentFontFace)
+    currentFontFace
+      .load()
+      .catch((error) => console.warn(`Failed to load theme font "${fontSource}"`, error))
+  }
 
   const initializeThemes = (themeConfig: ThemeConfigType) => {
     const commonThemeConfig = themeConfig.common as WebThemeType
@@ -148,6 +184,14 @@ export const useThemeStore = defineStore('theme', () => {
     }
 
     apply('font-family', theme.designTokens?.fontFamily)
+
+    const fontSize = theme.designTokens?.fontSize
+    if (fontSize && !CSS.supports('font-size', fontSize)) {
+      console.warn(`Ignoring invalid theme font size "${fontSize}"`)
+    } else {
+      apply('font-size', fontSize)
+    }
+    applyFontFace(theme.designTokens?.fontFamily, theme.designTokens?.fontSource)
 
     const customizableDesignTokens = [
       { name: 'roles', prefix: 'role' },
