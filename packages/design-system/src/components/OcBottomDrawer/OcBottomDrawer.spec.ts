@@ -14,6 +14,7 @@ describe('OcBottomDrawer', () => {
 
       expect(addClassMock).toHaveBeenCalled()
       expect(wrapper.find('dialog').attributes('open')).toBeDefined()
+      expect(wrapper.find('dialog').attributes('aria-label')).toBe('Bottom drawer')
     })
     it('does not add the active class when the drawer is not active', async () => {
       const addClassMock = vi.fn()
@@ -25,6 +26,35 @@ describe('OcBottomDrawer', () => {
 
       expect(addClassMock).not.toHaveBeenCalled()
       expect(wrapper.find('dialog').attributes('open')).toBeUndefined()
+    })
+
+    it('opens an active drawer as a named modal dialog', async () => {
+      const { wrapper } = getWrapper({ ariaLabel: 'File actions' })
+      const dialog = wrapper.find('dialog').element as HTMLDialogElement
+      const showModal = vi.fn(() => dialog.setAttribute('open', ''))
+      Object.defineProperty(dialog, 'showModal', { value: showModal })
+
+      await nextTick()
+
+      expect(showModal).toHaveBeenCalledOnce()
+      expect(dialog.getAttribute('aria-label')).toBe('File actions')
+      expect(dialog.querySelector('[autofocus]')).not.toBeNull()
+    })
+
+    it('closes the modal dialog when the drawer becomes inactive', async () => {
+      const { wrapper } = getWrapper()
+      const dialog = wrapper.find('dialog').element as HTMLDialogElement
+      const close = vi.fn(() => dialog.removeAttribute('open'))
+      Object.defineProperty(dialog, 'showModal', {
+        value: vi.fn(() => dialog.setAttribute('open', ''))
+      })
+      Object.defineProperty(dialog, 'close', { value: close })
+
+      await nextTick()
+      await wrapper.setProps({ isDrawerActive: false })
+      await nextTick()
+
+      expect(close).toHaveBeenCalledOnce()
     })
   })
   describe('full height', () => {
