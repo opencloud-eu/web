@@ -6,7 +6,6 @@
     aria-label="Example bottom drawer"
     :is-focus-trap-active="false"
     @clicked="drawerActive = false"
-    @cancel="drawerActive = false"
     @close="drawerActive = false"
   >
     <div class="p-4 bg-role-surface-container">

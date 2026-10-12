@@ -74,7 +74,6 @@ const sidebarProps = computed(() => {
       maxHeight: 'max-h-[80vh]',
       class: 'z-100',
       onClicked: onBottomDrawerClicked,
-      onCancel: closeSideBar,
       onClose: closeSideBar
     }
   }

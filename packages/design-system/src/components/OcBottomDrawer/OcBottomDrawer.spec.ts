@@ -54,14 +54,16 @@ describe('OcBottomDrawer', () => {
       dialog.element.dispatchEvent(close)
 
       expect(cancel.defaultPrevented).toBe(true)
-      expect(wrapper.emitted('cancel')?.[0]).toEqual([cancel])
-      expect(wrapper.emitted('close')?.[0]).toEqual([close])
+      expect(wrapper.emitted('close')).toEqual([[cancel], [close]])
     })
 
     it('closes the modal dialog when the drawer becomes inactive', async () => {
       const { wrapper } = getWrapper()
       const dialog = wrapper.find('dialog').element as HTMLDialogElement
-      const close = vi.fn(() => dialog.removeAttribute('open'))
+      const close = vi.fn(() => {
+        dialog.removeAttribute('open')
+        dialog.dispatchEvent(new Event('close'))
+      })
       Object.defineProperty(dialog, 'showModal', {
         value: vi.fn(() => dialog.setAttribute('open', ''))
       })
@@ -72,6 +74,7 @@ describe('OcBottomDrawer', () => {
       await nextTick()
 
       expect(close).toHaveBeenCalledOnce()
+      expect(wrapper.emitted('close')).toBeUndefined()
     })
   })
   describe('full height', () => {

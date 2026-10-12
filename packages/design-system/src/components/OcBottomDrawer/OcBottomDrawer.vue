@@ -4,8 +4,8 @@
     class="oc-bottom-drawer fixed inset-0 m-0 border-0 p-0 max-w-none max-h-none bg-black/40 size-full"
     :aria-label="accessibleName"
     @click="$emit('clicked', $event)"
-    @cancel.prevent="$emit('cancel', $event)"
-    @close="$emit('close', $event)"
+    @cancel.prevent="$emit('close', $event)"
+    @close="isDrawerActive && $emit('close', $event)"
   >
     <focus-trap :active="isFocusTrapActive">
       <div
@@ -82,11 +82,7 @@ export interface Emits {
    */
   (e: 'clicked', event: MouseEvent): void
   /**
-   * @docs Emitted when the browser requests that the drawer be dismissed, such as when Escape is pressed.
-   */
-  (e: 'cancel', event: Event): void
-  /**
-   * @docs Emitted when the native dialog closes.
+   * @docs Emitted when the browser requests that the drawer be dismissed, such as when Escape is pressed, or when the native dialog closes.
    */
   (e: 'close', event: Event): void
 }
