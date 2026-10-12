@@ -214,7 +214,7 @@ const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, filteredItems, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
-resourcesStore.$onAction((action) => {
+resourcesStore.$onAction(async (action) => {
   if (action.name !== 'updateResourceField') {
     return
   }
@@ -227,7 +227,7 @@ resourcesStore.$onAction((action) => {
   })
   if (!match) return
 
-  loadResourcesTask.perform()
+  await loadResourcesTask.perform()
 
   const matchedNewResource = unref(paginatedResources).find((r) => r.fileId === match.fileId)
   if (!matchedNewResource) return
