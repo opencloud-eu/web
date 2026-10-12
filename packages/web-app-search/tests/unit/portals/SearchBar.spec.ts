@@ -113,6 +113,16 @@ describe('Search Bar portal component', () => {
     await flushPromises()
     expect(wrapper.find(selectors.noResults)).toBeTruthy()
   })
+  test('stops loading and shows the other results if a provider search fails', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper } = getMountedWrapper()
+    providerFiles.previewSearch.search.mockRejectedValueOnce(new Error('500'))
+    wrapper.find(selectors.searchInput).setValue('kiwi\\')
+    await flushPromises()
+    expect((wrapper.vm as any).loading).toBe(false)
+    expect(wrapper.findAll(selectors.providerListItem).length).toEqual(1)
+    expect(consoleErrorSpy).toHaveBeenCalled()
+  })
   test('displays all available providers', async () => {
     const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')

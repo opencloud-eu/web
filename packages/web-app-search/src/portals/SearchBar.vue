@@ -283,12 +283,16 @@ async function search() {
   loading.value = true
 
   for (const availableProvider of unref(availableProviders)) {
-    if (availableProvider.previewSearch?.available) {
-      searchResults.value.push({
-        providerId: availableProvider.id,
-        result: await availableProvider.previewSearch.search(query)
-      })
+    if (!availableProvider.previewSearch?.available) {
+      continue
     }
+    let result: SearchResult = { values: [], totalResults: null }
+    try {
+      result = await availableProvider.previewSearch.search(query)
+    } catch (e) {
+      console.error(e)
+    }
+    searchResults.value.push({ providerId: availableProvider.id, result })
   }
   loading.value = false
 }
