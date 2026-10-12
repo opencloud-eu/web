@@ -2,7 +2,7 @@ import { FolderLoader, FolderLoaderTask, TaskContext } from '../folderService'
 import { Router } from 'vue-router'
 import { useTask } from 'vue-concurrency'
 import { isLocationSharesActive } from '../../../router'
-import { buildOutgoingShareResource, call } from '@opencloud-eu/web-client'
+import { buildOutgoingShareResource, call, LinkSharedSpaceResource } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
 
 export class FolderLoaderSharedViaLink implements FolderLoader {
@@ -19,7 +19,7 @@ export class FolderLoaderSharedViaLink implements FolderLoader {
   }
 
   public getTask(context: TaskContext): FolderLoaderTask {
-    const { userStore, clientService, configStore, resourcesStore } = context
+    const { userStore, clientService, configStore, resourcesStore, spacesStore } = context
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return useTask(function* (signal1, signal2) {
@@ -35,13 +35,28 @@ export class FolderLoaderSharedViaLink implements FolderLoader {
 
       const resources = value
         .filter((s) => s.permissions.some(({ link }) => !!link))
-        .map((driveItem) =>
-          buildOutgoingShareResource({
+        .map((driveItem) => {
+          const resource = buildOutgoingShareResource({
             driveItem,
             user: userStore.user,
             serverUrl: configStore.serverUrl
           })
-        )
+          const space =
+            driveItem.root &&
+            spacesStore.spaces.find(({ id }) => id === driveItem.parentReference?.driveId)
+          if (!space) {
+            return resource
+          }
+
+          // a link on a space root is listed as the space itself, so it looks, opens and
+          // updates like in the spaces list
+          spacesStore.updateSpaceField<LinkSharedSpaceResource>({
+            id: space.id,
+            field: 'sdate',
+            value: resource.sdate
+          })
+          return space
+        })
 
       resourcesStore.initResourceList({ currentFolder: null, resources })
     })
