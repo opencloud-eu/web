@@ -484,7 +484,7 @@ function getWrapper({
             abilities,
             piniaOptions: {
               spacesState: { spaces },
-              capabilityState: { capabilities: { spaces: { max_quota: maxQuota } } as any }
+              capabilityState: { capabilities: { spaces: { max_quota: maxQuota } } }
             }
           })
         ],

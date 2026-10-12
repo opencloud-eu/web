@@ -92,7 +92,6 @@ describe('useCreateSpace', () => {
           await addNewSpace('Secrets', {
             encrypt: true,
             finalizeVault,
-            quota: 1000,
             members: [
               {
                 id: 'user-1',
@@ -104,10 +103,7 @@ describe('useCreateSpace', () => {
           })
 
           // the space exists, so the steps that don't depend on the vault run
-          const { drives, permissions } = $clientService.graphAuthenticated
-          expect(drives.updateDrive).toHaveBeenCalledWith('1', {
-            quota: { total: 1000 }
-          })
+          const { permissions } = $clientService.graphAuthenticated
           expect(permissions.createInvite).toHaveBeenCalled()
 
           expect(useMessages().showMessage).toHaveBeenCalledWith(
@@ -168,9 +164,10 @@ describe('useCreateSpace', () => {
           })
 
           const { drives, permissions } = $clientService.graphAuthenticated
-          expect(drives.updateDrive).toHaveBeenCalledWith('1', {
-            quota: { total: 1000 }
-          })
+          expect(drives.createDrive).toHaveBeenCalledWith(
+            { name: 'Team', quota: { total: 1000 } },
+            { params: { template: 'default' } }
+          )
           expect($clientService.webdav.putFileContents).toHaveBeenCalledWith(
             expect.anything(),
             expect.objectContaining({ fileName: 'readme.md', content: 'What we do here' })
@@ -197,25 +194,15 @@ describe('useCreateSpace', () => {
       })
     })
 
-    it('applies an unlimited quota of 0', () => {
+    it('creates an unlimited space with a quota of 0', () => {
       return getWrapper({
         setup: async ({ addNewSpace }, { $clientService }) => {
           await addNewSpace('Team', { quota: 0 })
 
-          expect($clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith('1', {
-            name: 'space',
-            quota: { total: 0 }
-          })
-        }
-      })
-    })
-
-    it('leaves the server default quota without a quota', () => {
-      return getWrapper({
-        setup: async ({ addNewSpace }, { $clientService }) => {
-          await addNewSpace('Team')
-
-          expect($clientService.graphAuthenticated.drives.updateDrive).not.toHaveBeenCalled()
+          expect($clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith(
+            { name: 'Team', quota: { total: 0 } },
+            { params: { template: 'default' } }
+          )
         }
       })
     })
@@ -271,13 +258,13 @@ describe('useCreateSpace', () => {
             new Error('forbidden')
           )
 
-          const space = await addNewSpace('Team', { quota: 1000 })
+          const space = await addNewSpace('Team', { description: 'What we do here' })
 
           expect(space?.id).toBe('1')
           expect(useMessages().showMessage).toHaveBeenCalledWith(
             expect.objectContaining({
               title: 'Space was created',
-              desc: 'The quota could not be set.',
+              desc: 'The description could not be saved.',
               status: 'warning'
             })
           )

@@ -48,16 +48,22 @@ export const useCreateSpace = () => {
    * `vaultContentType` turns the new space into an end-to-end encrypted one: it
    * lands in the drive's `@libre.graph.contentType`. Such a space must not get the
    * default template, or the server would create a `.space` folder.
+   * Without a `quota` the server applies its default one; 0 means unlimited.
    */
   const createSpace = (
     name: string,
-    { vaultContentType, subtitle }: { vaultContentType?: string; subtitle?: string } = {}
+    {
+      vaultContentType,
+      subtitle,
+      quota
+    }: { vaultContentType?: string; subtitle?: string; quota?: number } = {}
   ) => {
     const { graphAuthenticated } = clientService
     return graphAuthenticated.drives.createDrive(
       {
         name,
         ...(subtitle && { description: subtitle }),
+        ...(typeof quota === 'number' && { quota: { total: quota } }),
         ...(vaultContentType && { '@libre.graph.contentType': vaultContentType })
       },
       { params: { template: vaultContentType ? 'none' : 'default' } }
@@ -75,17 +81,6 @@ export const useCreateSpace = () => {
 
   async function getOrCreateMetaFolder(space: SpaceResource) {
     return (await getDefaultMetaFolder(space)) || (await createDefaultMetaFolder(space))
-  }
-
-  async function applyQuota(space: SpaceResource, quota: number) {
-    const updatedSpace = await clientService.graphAuthenticated.drives.updateDrive(space.id, {
-      quota: { total: quota }
-    })
-    spacesStore.updateSpaceField({
-      id: space.id,
-      field: 'spaceQuota',
-      value: updatedSpace.spaceQuota
-    })
   }
 
   /** Throws, so the caller decides how to report a failure. */
@@ -208,14 +203,8 @@ export const useCreateSpace = () => {
   }
 
   async function applyOptions(space: SpaceResource, options: AddNewSpaceOptions) {
-    const { quota, description, image, members = [] } = options
+    const { description, image, members = [] } = options
     const failures: string[] = []
-
-    if (typeof quota === 'number') {
-      await runStep(failures, $gettext('The quota could not be set.'), () =>
-        applyQuota(space, quota)
-      )
-    }
 
     // A vault space is encrypted all the way down, so a readme or an image
     // would sit there as plain text next to the encrypted files.
@@ -250,7 +239,7 @@ export const useCreateSpace = () => {
   }
 
   const addNewSpace = async (name: string, options: AddNewSpaceOptions = {}) => {
-    const { encrypt = false, finalizeVault, subtitle } = options
+    const { encrypt = false, finalizeVault, subtitle, quota } = options
 
     let createdSpace: SpaceResource
     try {
@@ -262,7 +251,8 @@ export const useCreateSpace = () => {
       }
       createdSpace = await createSpace(name, {
         vaultContentType: encrypt ? creation.vaultContentType : undefined,
-        subtitle
+        subtitle,
+        quota
       })
     } catch (error) {
       console.error(error)
