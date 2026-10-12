@@ -5,6 +5,7 @@ import {
   UnifiedRoleDefinition
 } from '../../graph/generated'
 import { Resource } from '../resource'
+import type { SpaceResource } from '../space/types'
 
 export enum GraphSharePermission {
   createUpload = 'libre.graph/driveItem/upload/create',
@@ -35,6 +36,9 @@ export interface ShareResource extends Resource {
   driveId: string
 }
 export interface OutgoingShareResource extends ShareResource {}
+
+// a space listed in "Shared via link", carrying the creation date of its link
+export interface LinkSharedSpaceResource extends SpaceResource, Pick<ShareResource, 'sdate'> {}
 
 export interface IncomingShareResource extends ShareResource {
   hidden: boolean
