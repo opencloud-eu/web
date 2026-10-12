@@ -11,6 +11,7 @@
       :label="$gettext('File name')"
       :error-message="fileNameErrorMessage"
       :fix-message-line="true"
+      @keydown.esc="emitCancel"
     />
 
     <div class="flex items-center ml-auto">
@@ -57,9 +58,11 @@ import { computed, onMounted, ref, unref, useTemplateRef, watch } from 'vue'
 import {
   embedModeLocationPickMessageData,
   FileAction,
+  Key,
   routeToContextQuery,
   useEmbedMode,
   useIsResourceNameValid,
+  useKeyboardActions,
   useResourcesStore,
   useRouter,
   useSpacesStore,
@@ -208,4 +211,7 @@ const emitSelect = (): void => {
 const emitCancel = (): void => {
   postMessage<null>('opencloud-embed:cancel', null)
 }
+
+const { bindKeyAction } = useKeyboardActions()
+bindKeyAction({ primary: Key.Esc }, emitCancel)
 </script>
