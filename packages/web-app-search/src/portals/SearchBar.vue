@@ -176,7 +176,12 @@ const { userContextReady, publicLinkContextReady } = storeToRefs(authStore)
 const resourcesStore = useResourcesStore()
 const { currentFolder } = storeToRefs(resourcesStore)
 
-const locationFilterId = ref(SearchLocationFilterConstants.allFiles)
+const useScopeQueryValue = useRouteQuery('useScope')
+const locationFilterId = ref(
+  queryItemAsString(unref(useScopeQueryValue)) === 'true'
+    ? SearchLocationFilterConstants.currentFolder
+    : SearchLocationFilterConstants.allFiles
+)
 const optionsDropRef = useTemplateRef<ComponentPublicInstance<typeof OcDrop>>('optionsDropRef')
 const searchBarRef = useTemplateRef<HTMLElement>('searchBar')
 const activePreviewIndex = ref<number | null>(null)

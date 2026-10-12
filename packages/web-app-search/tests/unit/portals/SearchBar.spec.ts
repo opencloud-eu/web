@@ -209,6 +209,17 @@ describe('Search Bar portal component', () => {
       })
     })
   })
+  test('keeps searching in the current folder when useScope is given via route', async () => {
+    const { wrapper } = getMountedWrapper({
+      query: { scope: 'folder-id', useScope: 'true' },
+      store: { resourcesStore: { currentFolder: { fileId: 'folder-id' } } }
+    })
+    wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    expect(providerFiles.previewSearch.search).toHaveBeenLastCalledWith(
+      expect.stringContaining('folder-id')
+    )
+  })
   test('does not execute search if term is empty and route is not common search', () => {
     const { wrapper } = getMountedWrapper()
     wrapper
@@ -271,7 +282,8 @@ function getMountedWrapper({
   providers = [providerFiles, providerContacts],
   route = 'files-spaces-generic',
   store = {},
-  term = ''
+  term = '',
+  query = {} as Record<string, string>
 } = {}) {
   vi.mocked(useAvailableProviders).mockReturnValue(ref(providers))
 
@@ -279,7 +291,8 @@ function getMountedWrapper({
     name: route,
     query: {
       term,
-      provider: ''
+      provider: '',
+      ...query
     }
   })
   const localMocks = {
