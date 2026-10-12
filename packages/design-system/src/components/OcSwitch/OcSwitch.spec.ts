@@ -21,6 +21,17 @@ describe('OcSwitch', () => {
     expect(wrapper.emitted('update:checked')[0][0]).toEqual(true)
   })
 
+  it('keeps its button when toggled, so the button keeps the focus', async () => {
+    const wrapper = shallowMount(Switch, {
+      props: defaultProps
+    })
+    const button = wrapper.find('[data-testid="oc-switch-btn"]').element
+
+    await wrapper.setProps({ checked: true })
+
+    expect(wrapper.find('[data-testid="oc-switch-btn"]').element).toBe(button)
+  })
+
   it('is not a submit button, so it does not hijack implicit form submission', () => {
     const wrapper = shallowMount(Switch, {
       props: defaultProps

@@ -1,5 +1,5 @@
 <template>
-  <span :key="`oc-switch-${checked.toString()}`" class="oc-switch items-center gap-2">
+  <span class="oc-switch items-center gap-2">
     <span class="inline-flex items-center gap-1">
       <!-- dim only the label + toggle when disabled, not the slot: an opacity on the whole
            switch would create a stacking context that traps slotted popovers (e.g. a helper) -->
