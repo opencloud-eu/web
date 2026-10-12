@@ -25,6 +25,19 @@ describe('useFileUpload', () => {
     expect(resourcesStore.upsertResources).toHaveBeenCalledWith([replaced])
   })
 
+  it('updates the resources after an upload has been cancelled', async () => {
+    const uploaded = { id: 'uploaded', path: '/folder/small.txt', etag: 'new' } as Resource
+    const { resourcesStore, cancelUpload } = setup({
+      space: mock<SpaceResource>({ id: 'space-1', driveType: 'personal' }),
+      existing: [],
+      children: [uploaded]
+    })
+
+    await cancelUpload()
+
+    expect(resourcesStore.upsertResources).toHaveBeenCalledWith([uploaded])
+  })
+
   it('keeps the share id of resources in a share space', async () => {
     const replaced = { id: 'file', path: '/folder/file.txt', etag: 'new' } as Resource
     const { resourcesStore, completeUpload } = setup({
@@ -54,9 +67,9 @@ function setup({
 
   const mocks = defaultComponentMocks()
   mocks.$clientService.webdav.listFiles.mockResolvedValue({ resource: currentFolder, children })
-  let onUploadComplete: (result: UploadResult) => Promise<void>
-  mocks.$uppyService.subscribe.mockImplementation((_, callback) => {
-    onUploadComplete = callback as typeof onUploadComplete
+  const subscriptions: Record<string, (result?: UploadResult) => Promise<void>> = {}
+  mocks.$uppyService.subscribe.mockImplementation((topic, callback) => {
+    subscriptions[topic] = callback as (result?: UploadResult) => Promise<void>
     return 'sub'
   })
 
@@ -78,10 +91,11 @@ function setup({
   return {
     resourcesStore,
     completeUpload: () =>
-      onUploadComplete(
+      subscriptions.uploadCompleted(
         mock<UploadResult>({
           successful: [{ meta: { spaceId: space.id, driveType: space.driveType } }]
         })
-      )
+      ),
+    cancelUpload: () => subscriptions.uploadCancelled()
   }
 }
