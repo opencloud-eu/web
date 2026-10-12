@@ -61,7 +61,9 @@ describe('AppTokenModal component', () => {
       const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       await wrapper.vm.$nextTick()
       await btn.trigger('click')
+      await flushPromises()
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalled()
+      expect(wrapper.emitted('created')).toBeTruthy()
     })
     it('should not create a second token when confirm is clicked twice in a row', async () => {
       const { wrapper, mocks } = getWrapper({ pendingPost: true })
