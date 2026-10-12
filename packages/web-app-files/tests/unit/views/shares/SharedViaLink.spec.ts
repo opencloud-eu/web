@@ -1,9 +1,9 @@
 import SharedViaLink from '../../../../src/views/shares/SharedViaLink.vue'
 import { useResourcesViewDefaults } from '../../../../src/composables'
 import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourcesViewDefaultsMock'
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import { mock, mockDeep } from 'vitest-mock-extended'
-import { OutgoingShareResource, SpaceResource } from '@opencloud-eu/web-client'
+import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import {
   defaultPlugins,
   mount,
@@ -11,7 +11,7 @@ import {
   defaultStubs,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { ResourceTable, useResourcesStore, useSpacesStore } from '@opencloud-eu/web-pkg'
+import { ResourceTable } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -48,34 +48,18 @@ describe('SharedViaLink view', () => {
       ).toEqual(mockedFiles.length)
     })
   })
-  it('keeps a listed space in sync with the spaces store', async () => {
-    const space = { id: 'space', name: 'Team' } as SpaceResource
-    const listedSpace = { ...space, sdate: '2026-10-01T10:00:00Z' }
-    getMountedWrapper({ spaces: [space], resources: [listedSpace] })
-
-    useSpacesStore().spaces[0].name = 'Team renamed'
-    await nextTick()
-
-    expect(useResourcesStore().resources[0]).toEqual({ ...listedSpace, name: 'Team renamed' })
-  })
 })
 
 function getMountedWrapper({
   mocks = {},
   files = [],
-  loading = false,
-  spaces = [],
-  resources = []
+  loading = false
 }: {
   mocks?: Record<string, unknown>
   files?: OutgoingShareResource[]
   loading?: boolean
-  spaces?: SpaceResource[]
-  resources?: SpaceResource[]
 } = {}) {
-  const plugins = [
-    ...defaultPlugins({ piniaOptions: { spacesState: { spaces }, resourcesStore: { resources } } })
-  ]
+  const plugins = [...defaultPlugins()]
 
   const defaultMocks = {
     ...defaultComponentMocks({

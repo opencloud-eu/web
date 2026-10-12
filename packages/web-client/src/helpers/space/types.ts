@@ -34,6 +34,9 @@ export interface SpaceResource extends Resource {
   // permissions for the current user. need to be loaded manually at some point via the space store.
   graphPermissions?: string[]
 
+  // creation date of a link on the space, only set when listed in "Shared via link"
+  sdate?: string
+
   canDisable(args?: { user?: User; ability?: Ability }): boolean
   canEditDescription(args?: { user?: User; ability?: Ability }): boolean
   canEditImage(args?: { user?: User }): boolean

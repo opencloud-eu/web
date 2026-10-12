@@ -24,7 +24,7 @@ const link = {
 describe('FolderLoaderSharedViaLink', () => {
   it('lists a link on a space root as the space', async () => {
     const space = { id: 'storage$space', name: 'Team', driveType: 'project' } as SpaceResource
-    const { resources } = await loadLinks(
+    const { resources, spacesStore } = await loadLinks(
       [
         {
           id: 'storage$space!space',
@@ -38,7 +38,12 @@ describe('FolderLoaderSharedViaLink', () => {
     )
 
     expect(resources).toHaveLength(1)
-    expect(resources[0]).toEqual({ ...space, sdate: link.createdDateTime })
+    expect(resources[0]).toStrictEqual(space)
+    expect(spacesStore.updateSpaceField).toHaveBeenCalledWith({
+      id: space.id,
+      field: 'sdate',
+      value: link.createdDateTime
+    })
   })
   it('lists links on files and folders as they are', async () => {
     const { resources } = await loadLinks([
@@ -63,11 +68,12 @@ async function loadLinks(driveItems: DriveItem[], spaces: SpaceResource[] = []) 
 
   let task!: ReturnType<FolderLoaderSharedViaLink['getTask']>
   let resourcesStore!: ReturnType<typeof useResourcesStore>
+  let spacesStore!: ReturnType<typeof useSpacesStore>
 
   getComposableWrapper(
     () => {
       resourcesStore = useResourcesStore()
-      const spacesStore = useSpacesStore()
+      spacesStore = useSpacesStore()
       spacesStore.spaces = spaces
       useUserStore().user = { id: 'user', displayName: 'User' } as User
       const context: TaskContext = {
@@ -89,5 +95,5 @@ async function loadLinks(driveItems: DriveItem[], spaces: SpaceResource[] = []) 
 
   await task.perform(new AbortController().signal)
   const [{ resources }] = vi.mocked(resourcesStore.initResourceList).mock.calls[0]
-  return { resources }
+  return { resources, spacesStore }
 }

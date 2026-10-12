@@ -48,10 +48,10 @@ export class FolderLoaderSharedViaLink implements FolderLoader {
             return resource
           }
 
-          // a link on a space root is listed as the space, so it looks and opens like in the spaces list.
-          // it's a copy with the link date, the view keeps it in sync with the space.
-          // TODO: list the space itself once it carries the link date, see https://github.com/opencloud-eu/opencloud/issues/3698
-          return { ...space, sdate: resource.sdate }
+          // a link on a space root is listed as the space itself, so it looks, opens and
+          // updates like in the spaces list
+          spacesStore.updateSpaceField({ id: space.id, field: 'sdate', value: resource.sdate })
+          return space
         })
 
       resourcesStore.initResourceList({ currentFolder: null, resources })
