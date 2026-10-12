@@ -25,6 +25,16 @@ describe('QuotaSelect', () => {
         value: 3 * Math.pow(10, 9)
       })
     })
+    it('should round decimal values to whole bytes', () => {
+      const { wrapper } = getWrapper()
+      expect((wrapper.vm as any).createOption('4.1').value).toBe(4100000000)
+      expect((wrapper.vm as any).createOption('8,2').value).toBe(8200000000)
+    })
+    it('should contain error property for values below one byte', () => {
+      const { wrapper } = getWrapper()
+      expect((wrapper.vm as any).createOption('0')).toHaveProperty('error')
+      expect((wrapper.vm as any).createOption('0.0000000001')).toHaveProperty('error')
+    })
     it('should contain error property while maxQuota will be exceeded', () => {
       const { wrapper } = getWrapper({ maxQuota: 3 * Math.pow(10, 9) })
       expect((wrapper.vm as any).createOption('2000')).toHaveProperty('error')

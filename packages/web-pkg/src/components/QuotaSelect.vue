@@ -125,7 +125,16 @@ function createOption(option: string) {
       selectable: false
     }
   }
-  const value = parseFloat(option) * Math.pow(10, 9)
+  const value = Math.round(parseFloat(option) * Math.pow(10, 9))
+
+  if (value < 1) {
+    return {
+      displayValue: option,
+      value: option,
+      error: $gettext('Please enter a value greater than 0'),
+      selectable: false
+    }
+  }
 
   if (value > unref(quotaLimit)) {
     return {
