@@ -27,8 +27,7 @@ describe('useKeyboardTableMouseActions', () => {
     it('selects the range between the last selected and the clicked row', () => {
       const { selectedRows } = getWrapper()
       eventBus.publish('app.admin-settings.list.clicked.shift', {
-        resource: items[2],
-        skipTargetSelection: false
+        resource: items[2]
       })
       expect(selectedRows.value.map(({ id }) => id)).toEqual(['1', '2', '3'])
     })
@@ -40,8 +39,7 @@ describe('useKeyboardTableMouseActions', () => {
       ({ anchor, target, keys }) => {
         const { selectedRows, triggerKey } = getWrapper(anchor)
         eventBus.publish('app.admin-settings.list.clicked.shift', {
-          resource: items[target],
-          skipTargetSelection: false
+          resource: items[target]
         })
         keys.forEach((key) => triggerKey(key, Modifier.Shift))
         expect(selectedRows.value.map(({ id }) => id).sort()).toEqual(['1', '2', '3'])

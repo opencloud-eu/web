@@ -44,7 +44,6 @@
         :option="item"
         :label="getSelectSpaceLabel(item)"
         :label-hidden="true"
-        @update:model-value="selectSpace(item)"
         @click.stop="fileClicked([item, $event])"
       />
     </template>
@@ -402,23 +401,27 @@ watch(
 )
 
 function fileClicked([resource, eventData]: [SpaceResource, MouseEvent | KeyboardEvent]) {
-  const target = eventData?.target as HTMLElement
+  const target = eventData?.target as HTMLInputElement
   const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
   const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
   if (contextActionClicked) {
     return
   }
+  if (isCheckboxClicked && (eventData?.metaKey || eventData?.shiftKey)) {
+    // revert the native toggle, the modifier click handles the selection
+    target.checked = isSpaceSelected(resource)
+  }
+
   if (eventData?.metaKey) {
     return eventBus.publish('app.admin-settings.list.clicked.meta', resource)
   }
   if (eventData?.shiftKey) {
     return eventBus.publish('app.admin-settings.list.clicked.shift', {
-      resource,
-      skipTargetSelection: isCheckboxClicked
+      resource
     })
   }
   if (isCheckboxClicked) {
-    return
+    return selectSpace(resource)
   }
 
   unselectAllSpaces()

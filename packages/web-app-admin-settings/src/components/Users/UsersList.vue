@@ -36,7 +36,6 @@
           :option="item"
           :label="getSelectUserLabel(item)"
           :label-hidden="true"
-          @update:model-value="selectUser(item)"
           @click.stop="rowClicked([item, $event])"
         />
       </template>
@@ -321,11 +320,16 @@ function showEditPanel(user: User) {
 }
 
 function rowClicked([user, event]: [User, MouseEvent | KeyboardEvent]) {
-  const target = event?.target as HTMLElement
+  const target = event?.target as HTMLInputElement
   const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
   const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
   if (contextActionClicked) {
     return
+  }
+
+  if (isCheckboxClicked && (event?.metaKey || event?.shiftKey)) {
+    // revert the native toggle, the modifier click handles the selection
+    target.checked = isUserSelected(user)
   }
 
   if (event?.metaKey) {
@@ -333,12 +337,11 @@ function rowClicked([user, event]: [User, MouseEvent | KeyboardEvent]) {
   }
   if (event?.shiftKey) {
     return eventBus.publish('app.admin-settings.list.clicked.shift', {
-      resource: user,
-      skipTargetSelection: isCheckboxClicked
+      resource: user
     })
   }
   if (isCheckboxClicked) {
-    return
+    return selectUser(user)
   }
 
   unselectAllUsers()

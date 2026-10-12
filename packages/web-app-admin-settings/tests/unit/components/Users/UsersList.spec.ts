@@ -12,12 +12,16 @@ import { User } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { enableAutoUnmount } from '@vue/test-utils'
 
 const getUserMocks = () => [{ id: '1', displayName: 'jan' }] as User[]
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn()
 }))
+
+// unmount after each test, otherwise stale lists react to the global click events and key presses
+enableAutoUnmount(afterEach)
 
 describe('UsersList', () => {
   describe('select all checkbox', () => {
@@ -163,19 +167,63 @@ describe('UsersList', () => {
     it('selects a user via its checkbox', () => {
       const users = getUserMocks()
       const { wrapper } = getWrapper({ mountType: mount, users })
-      getUserCheckbox(wrapper, users[0]).vm.$emit('update:modelValue', true)
+      getUserCheckbox(wrapper, users[0]).vm.$emit('click', checkboxClickEvent())
       const { addSelectedUser } = useUserSettingsStore()
       expect(addSelectedUser).toHaveBeenCalledWith(users[0])
     })
     it('de-selects a selected user via its checkbox', () => {
       const users = getUserMocks()
       const { wrapper } = getWrapper({ mountType: mount, users, selectedUsers: users })
-      getUserCheckbox(wrapper, users[0]).vm.$emit('update:modelValue', false)
+      getUserCheckbox(wrapper, users[0]).vm.$emit('click', checkboxClickEvent())
       const { setSelectedUsers } = useUserSettingsStore()
       expect(setSelectedUsers).toHaveBeenCalledWith([])
     })
   })
+
+  describe('row checkbox click', () => {
+    const users = ['a', 'b', 'c'].map((name, i) => ({
+      id: String(i + 1),
+      displayName: name,
+      onPremisesSamAccountName: name
+    })) as User[]
+
+    it('toggles the user on a plain click', async () => {
+      const { wrapper } = getWrapper({ users, selectedUsers: [users[1]], realCheckboxes: true })
+      await getCheckboxInput(wrapper, users[0]).trigger('click')
+      await getCheckboxInput(wrapper, users[1]).trigger('click')
+      expect(getSelectedIds()).toEqual(['1'])
+      expect(getCheckboxInput(wrapper, users[0]).element.checked).toBe(true)
+      expect(getCheckboxInput(wrapper, users[1]).element.checked).toBe(false)
+    })
+    it('selects a range on shift click and keeps it contiguous on shift + arrow', async () => {
+      const { wrapper } = getWrapper({ users, selectedUsers: [users[0]], realCheckboxes: true })
+      await getCheckboxInput(wrapper, users[2]).trigger('click', { shiftKey: true })
+      expect(getSelectedIds()).toEqual(['1', '2', '3'])
+      expect(getCheckboxInput(wrapper, users[2]).element.checked).toBe(true)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', shiftKey: true }))
+      expect(getSelectedIds()).toEqual(['1', '2'])
+    })
+  })
 })
+
+function getSelectedIds() {
+  return useUserSettingsStore()
+    .selectedUsers.map(({ id }) => id)
+    .sort()
+}
+
+function getCheckboxInput(wrapper: Wrapper, user: User) {
+  return wrapper.find<HTMLInputElement>(`[data-item-id="${user.id}"] input[type="checkbox"]`)
+}
+
+function checkboxClickEvent() {
+  const checkbox = document.createElement('input')
+  checkbox.type = 'checkbox'
+  const event = new MouseEvent('click')
+  checkbox.dispatchEvent(event)
+  return event
+}
 
 type Wrapper = ReturnType<typeof getWrapper>['wrapper']
 
@@ -200,13 +248,15 @@ function getWrapper({
   users = [],
   selectedUsers = [],
   query = {},
-  searchTerm
+  searchTerm,
+  realCheckboxes = false
 }: {
   mountType?: typeof mount
   users?: User[]
   selectedUsers?: User[]
   query?: Record<string, string>
   searchTerm?: string
+  realCheckboxes?: boolean
 } = {}) {
   if (searchTerm) {
     // the search term is the first query value read, drop the values left over by other tests
@@ -220,7 +270,8 @@ function getWrapper({
   })
   return {
     mocks,
-    wrapper: mountType(UsersList, {
+    wrapper: (realCheckboxes ? mount : mountType)(UsersList, {
+      ...(realCheckboxes && { attachTo: document.body }),
       props: {
         roles: [
           {
@@ -245,6 +296,7 @@ function getWrapper({
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions: !realCheckboxes,
               userSettingsStore: { users, selectedUsers }
             }
           })
@@ -252,7 +304,7 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          OcCheckbox: true
+          OcCheckbox: !realCheckboxes
         }
       }
     })
