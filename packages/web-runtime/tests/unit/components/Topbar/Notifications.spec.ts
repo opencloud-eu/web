@@ -142,6 +142,25 @@ describe('Notification component', () => {
       await flushPromises()
       expect(wrapper.find(selectors.notificationLink).exists()).toBeTruthy()
     })
+    it('does not trigger the item navigation when clicked', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        computedMessage: undefined,
+        object_type: 'share',
+        messageRichParameters: { share: { id: '1' } },
+        link: 'http://some-link.com'
+      })
+      const navigate = vi.fn()
+      const { wrapper } = getWrapper({
+        notifications: [notification],
+        stubs: {
+          'router-link': { template: '<a @click="navigate"><slot /></a>', methods: { navigate } }
+        }
+      })
+      await flushPromises()
+      await wrapper.find(`${selectors.notificationLink} a`).trigger('click')
+      expect(navigate).not.toHaveBeenCalled()
+    })
     describe('if given via messageRichParameters', () => {
       it('renders notification as link for shares', async () => {
         const notification = mock<Notification>({
@@ -200,9 +219,11 @@ describe('Notification component', () => {
 function getWrapper({
   mocks = {},
   notifications = [],
-  spaces = []
+  spaces = [],
+  stubs = {}
 }: {
   mocks?: Record<string, unknown>
+  stubs?: Record<string, unknown>
   notifications?: Notification[]
   spaces?: SpaceResource[]
 } = {}) {
@@ -219,7 +240,7 @@ function getWrapper({
         plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })],
         mocks: localMocks,
         provide: localMocks,
-        stubs: { 'user-avatar': true, OcButton: false }
+        stubs: { 'user-avatar': true, OcButton: false, ...stubs }
       }
     })
   }
