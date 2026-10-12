@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue'
+import { ref, unref, watch } from 'vue'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter, queryItemAsString } from '../composables'
 
@@ -45,10 +45,11 @@ const toggleFilter = async () => {
   emit('toggleFilter', unref(filterActive))
 }
 
-onMounted(() => {
-  const queryStr = queryItemAsString(unref(currentRouteQuery))
-  if (queryStr === 'true') {
-    filterActive.value = true
-  }
-})
+watch(
+  currentRouteQuery,
+  (value) => {
+    filterActive.value = queryItemAsString(value) === 'true'
+  },
+  { immediate: true }
+)
 </script>

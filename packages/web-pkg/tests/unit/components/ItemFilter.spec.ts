@@ -7,6 +7,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString } from '../../../src/composables/appDefaults'
 import { OcCheckbox } from '@opencloud-eu/design-system/components'
+import { nextTick, reactive } from 'vue'
 
 vi.mock('../../../src/composables/appDefaults')
 
@@ -189,6 +190,15 @@ describe('ItemFilter', () => {
       await wrapper.setProps({ items: filterItems })
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
     })
+    it('clears the selected items when the query param is removed from the route', async () => {
+      const currentRoute = reactive({ query: { q_users: '1' } as Record<string, string> })
+      const { wrapper } = getWrapper({ currentRoute })
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+      delete currentRoute.query.q_users
+      await nextTick()
+      expect((wrapper.vm as any).selectedItems).toEqual([])
+      expect(wrapper.emitted('selectionChange')).toEqual([[[]]])
+    })
   })
 
   describe('label prop', () => {
@@ -220,10 +230,17 @@ describe('ItemFilter', () => {
 
 function getWrapper({
   props = {},
-  initialQuery = ''
-}: { props?: PartialComponentProps<typeof ItemFilter>; initialQuery?: string } = {}) {
-  vi.mocked(queryItemAsString).mockImplementation(() => initialQuery)
-  const mocks = defaultComponentMocks()
+  initialQuery = '',
+  currentRoute = undefined
+}: {
+  props?: PartialComponentProps<typeof ItemFilter>
+  initialQuery?: string
+  currentRoute?: { query: Record<string, string> }
+} = {}) {
+  vi.mocked(queryItemAsString).mockImplementation((value) =>
+    currentRoute ? (value as string) : initialQuery
+  )
+  const mocks = defaultComponentMocks({ currentRoute: currentRoute as any })
   return {
     mocks,
     wrapper: mount(ItemFilter, {
