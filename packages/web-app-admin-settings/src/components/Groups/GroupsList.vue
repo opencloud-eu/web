@@ -310,4 +310,16 @@ watch(
     await router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
   }
 )
+
+// avoids an empty page when the last groups of the last page get deleted
+watch(
+  () => unref(currentPage) > unref(totalPages),
+  async (isPageOutOfRange) => {
+    if (!isPageOutOfRange) {
+      return
+    }
+    const page = unref(totalPages).toString()
+    await router.push({ ...unref(route), query: { ...unref(route).query, page } })
+  }
+)
 </script>

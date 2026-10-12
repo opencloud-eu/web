@@ -1,9 +1,7 @@
-import { computed, unref } from 'vue'
+import { computed } from 'vue'
 import {
-  queryItemAsString,
   useMessages,
   useModals,
-  useRouteQuery,
   isPromiseFulfilled,
   isPromiseRejected
 } from '@opencloud-eu/web-pkg'
@@ -19,16 +17,6 @@ export function useGroupActionsDelete() {
   const clientService = useClientService()
   const { dispatchModal } = useModals()
   const groupSettingsStore = useGroupSettingsStore()
-
-  const currentPageQuery = useRouteQuery('page', '1')
-  const currentPage = computed(() => {
-    return parseInt(queryItemAsString(unref(currentPageQuery)))
-  })
-
-  const itemsPerPageQuery = useRouteQuery('items-per-page', '1')
-  const itemsPerPage = computed(() => {
-    return parseInt(queryItemAsString(unref(itemsPerPageQuery)))
-  })
 
   async function deleteGroups(groups: Group[]) {
     const graphClient = clientService.graphAuthenticated
@@ -70,12 +58,6 @@ export function useGroupActionsDelete() {
 
     groupSettingsStore.removeGroups(groups.filter((_, i) => isPromiseFulfilled(results[i])))
     groupSettingsStore.setSelectedGroups([])
-
-    const pageCount = Math.ceil(groupSettingsStore.groups.length / unref(itemsPerPage))
-    if (unref(currentPage) > 1 && unref(currentPage) > pageCount) {
-      // reset pagination to avoid empty lists (happens when deleting all items on the last page)
-      currentPageQuery.value = pageCount.toString()
-    }
   }
 
   function handler({ resources }: GroupActionOptions) {

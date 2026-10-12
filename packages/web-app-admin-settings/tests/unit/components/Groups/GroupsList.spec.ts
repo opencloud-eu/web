@@ -11,6 +11,7 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { nextTick } from 'vue'
 
 const getGroupMocks = () =>
   [
@@ -69,6 +70,29 @@ describe('GroupsList', () => {
       })
       expect(wrapper.find('#admin-settings-groups-empty').exists()).toBeTruthy()
       expect(wrapper.findComponent(OcTable).exists()).toBeFalsy()
+    })
+  })
+
+  describe('pagination', () => {
+    it('moves to the last page when the current page runs out of filtered groups', async () => {
+      const { wrapper, mocks } = getWrapper({
+        groups: [
+          { id: '1', displayName: 'admins' },
+          { id: '2', displayName: 'admins2' },
+          { id: '3', displayName: 'users' }
+        ] as Group[],
+        filterTerm: 'admins',
+        query: { page: '2', 'items-per-page': '1' }
+      })
+      expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['admins2'])
+
+      const groupSettingsStore = useGroupSettingsStore()
+      groupSettingsStore.groups = groupSettingsStore.groups.filter((g) => g.id !== '2')
+      await nextTick()
+
+      expect(mocks.$router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+      )
     })
   })
 
