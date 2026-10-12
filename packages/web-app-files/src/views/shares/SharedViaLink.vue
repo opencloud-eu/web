@@ -75,6 +75,7 @@ import {
   useFileActions,
   useLoadPreview,
   useResourcesStore,
+  useSpacesStore,
   AppLoadingSpinner,
   NoContentMessage,
   AppBar,
@@ -91,7 +92,7 @@ import {
   useKeyboardFileNavigation,
   useKeyboardFileMouseActions
 } from '../../composables/keyboardActions'
-import { computed, onBeforeUnmount, onMounted, ref, unref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, unref, watch } from 'vue'
 import SharesNavigation from '../../../src/components/AppBar/SharesNavigation.vue'
 import { OutgoingShareResource } from '@opencloud-eu/web-client'
 import { folderViewsSharedViaLinkExtensionPoint } from '../../extensionPoints'
@@ -104,6 +105,7 @@ const { $gettext } = useGettext()
 const { getMatchingSpace } = useGetMatchingSpace()
 
 const resourcesStore = useResourcesStore()
+const spacesStore = useSpacesStore()
 
 const {
   paginatedResources,
@@ -169,6 +171,23 @@ resourcesStore.$onAction((action) => {
 
   selectedResourcesIds.value = [matchedNewResource.id]
 })
+
+// spaces are listed as copies with the link date, space actions only update the spaces store.
+// assigned directly, because upsertResource would accentuate every listed space on each change
+// (e.g. when opening the sidebar) and updateResourceField reloads the list (see $onAction above).
+// TODO: drop once the spaces can be listed themselves, see https://github.com/opencloud-eu/opencloud/issues/3698
+watch(
+  () => spacesStore.spaces,
+  (spaces) => {
+    for (const space of spaces) {
+      const resource = resourcesStore.resources.find(({ id }) => id === space.id)
+      if (resource) {
+        Object.assign(resource, space)
+      }
+    }
+  },
+  { deep: true }
+)
 
 const breadcrumbs = computed(() => {
   return [

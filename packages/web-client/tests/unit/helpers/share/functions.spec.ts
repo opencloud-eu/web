@@ -168,6 +168,7 @@ describe('share helper functions', () => {
   describe('buildOutgoingShareResource', () => {
     const driveItem = mockDeep<DriveItem>({ id: 'driveItemId', name: 'driveItemName' })
     driveItem.parentReference.path = ''
+    driveItem.root = undefined
     const sharedBy = { id: '1', displayName: 'user1' } as Identity
     const sharedWith = { id: '2', displayName: 'user2' } as Identity
     driveItem.permissions = [
@@ -202,6 +203,15 @@ describe('share helper functions', () => {
 
       expect(result.isFolder).toEqual(isFolder)
       expect(result.type).toEqual(isFolder ? 'folder' : 'file')
+    })
+    it('handles the root of a space as a folder that cannot be renamed or deleted', () => {
+      const item: DriveItem = { ...driveItem, name: '.', folder: undefined, root: {} }
+      const result = buildOutgoingShareResource({ driveItem: item, user, serverUrl: '' })
+
+      expect(result.path).toEqual('/')
+      expect(result.isFolder).toBe(true)
+      expect(result.canRename()).toBe(false)
+      expect(result.canBeDeleted()).toBe(false)
     })
     it('constructs a private link', () => {
       const serverUrl = 'https://example.com'
