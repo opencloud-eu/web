@@ -123,6 +123,23 @@ describe('Search Bar portal component', () => {
     expect(wrapper.findAll(selectors.providerListItem).length).toEqual(1)
     expect(consoleErrorSpy).toHaveBeenCalled()
   })
+  test('ignores the results of an outdated search', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper } = getMountedWrapper({ providers: [providerFiles] })
+    let cancelFirstSearch: (e: Error) => void
+    providerFiles.previewSearch.search.mockImplementationOnce(
+      () => new Promise((_, reject) => (cancelFirstSearch = reject))
+    )
+    wrapper.find(selectors.searchInput).setValue('kiwi')
+    await flushPromises()
+    wrapper.find(selectors.searchInput).setValue('kiwis')
+    cancelFirstSearch(new Error('cancel'))
+    await flushPromises()
+    expect((wrapper.vm as any).searchResults).toEqual([
+      { providerId: 'files', result: expect.objectContaining({ values: expect.any(Array) }) }
+    ])
+    expect((wrapper.vm as any).searchResults[0].result.values.length).toBe(2)
+  })
   test('displays all available providers', async () => {
     const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')

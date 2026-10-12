@@ -189,6 +189,7 @@ const searchResults = ref<
   }[]
 >([])
 const loading = ref(false)
+let latestSearchId = 0
 const currentFolderAvailable = ref(false)
 
 const listProviderAvailable = computed(() => unref(availableProviders).some((p) => !!p.listSearch))
@@ -269,6 +270,7 @@ const useScope = computed(() => {
 })
 
 async function search() {
+  const searchId = ++latestSearchId
   searchResults.value = []
   if (!unref(term)) {
     return
@@ -291,6 +293,10 @@ async function search() {
       result = await availableProvider.previewSearch.search(query)
     } catch (e) {
       console.error(e)
+    }
+    if (searchId !== latestSearchId) {
+      // a newer search has started, its results must not be mixed with this one
+      return
     }
     searchResults.value.push({ providerId: availableProvider.id, result })
   }
