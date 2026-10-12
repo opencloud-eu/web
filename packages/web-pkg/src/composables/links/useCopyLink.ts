@@ -81,12 +81,14 @@ export const useCopyLink = () => {
               return blob
             })
             .catch((error) => {
-              reject()
+              reject(error)
               throw error
             })
         })
 
-        navigator.clipboard.write([text])
+        navigator.clipboard.write([text]).catch((e) => {
+          console.warn('Unable to copy link to clipboard', e)
+        })
       })
     } else {
       // edge case for browsers that don't support ClipboardItem (e.g. Firefox)
