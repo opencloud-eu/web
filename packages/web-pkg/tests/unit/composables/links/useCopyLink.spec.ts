@@ -33,4 +33,31 @@ describe('useCopyLink', () => {
     await expect(copyLink({ createLinkHandler: () => Promise.reject(error) })).rejects.toBe(error)
     await new Promise((resolve) => setTimeout(resolve))
   })
+
+  it('rejects with the error of a failing link creation without an unhandled rejection when the clipboard is denied', async () => {
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: {
+        write() {
+          return Promise.reject(new DOMException('denied', 'NotAllowedError'))
+        }
+      }
+    })
+    const onUnhandledRejection = vi.fn()
+    process.on('unhandledRejection', onUnhandledRejection)
+
+    const error = new Error('password is banned')
+    let copyLink: ReturnType<typeof useCopyLink>['copyLink']
+    getComposableWrapper(() => {
+      copyLink = useCopyLink().copyLink
+    })
+
+    try {
+      await expect(copyLink({ createLinkHandler: () => Promise.reject(error) })).rejects.toBe(error)
+      await new Promise((resolve) => setTimeout(resolve))
+      expect(onUnhandledRejection).not.toHaveBeenCalled()
+    } finally {
+      process.off('unhandledRejection', onUnhandledRejection)
+    }
+  })
 })
