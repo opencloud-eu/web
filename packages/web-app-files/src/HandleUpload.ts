@@ -476,8 +476,9 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         }
 
         const result = await conflictHandler.displayOverwriteDialog(filesToUpload, conflicts)
+        const remainingIds = result.files.map(({ id }) => id)
+        this.removeFilesFromUpload(filesToUpload.filter(({ id }) => !remainingIds.includes(id)))
         if (result.files.length === 0) {
-          this.removeFilesFromUpload(filesToUpload)
           return this.uppyService.clearInputs()
         }
 

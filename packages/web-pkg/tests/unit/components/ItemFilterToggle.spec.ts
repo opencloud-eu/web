@@ -1,12 +1,7 @@
 import ItemFilterToggle from '../../../src/components/ItemFilterToggle.vue'
-import {
-  defaultComponentMocks,
-  defaultPlugins,
-  mount,
-  RouteLocation
-} from '@opencloud-eu/web-test-helpers'
-import { nextTick, reactive } from 'vue'
+import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString } from '../../../src/composables/appDefaults'
+import { nextTick, reactive } from 'vue'
 
 vi.mock('../../../src/composables/appDefaults', () => ({
   appDefaults: vi.fn(),
@@ -44,28 +39,30 @@ describe('ItemFilterToggle', () => {
       const { wrapper } = getWrapper({ initialQuery: 'true' })
       expect((wrapper.vm as any).filterActive).toEqual(true)
     })
-    it('follows the query param when the route changes', async () => {
-      const currentRoute = reactive({ name: 'search', query: { q_toggle: 'true' } })
-      vi.mocked(queryItemAsString).mockImplementation((v) => v as string)
-      const mocks = defaultComponentMocks({
-        currentRoute: currentRoute as unknown as RouteLocation
-      })
-      const wrapper = mount(ItemFilterToggle, {
-        props: { filterLabel: 'Toggle', filterName: 'toggle' },
-        global: { plugins: [...defaultPlugins()], mocks, provide: mocks }
-      })
+    it('resets the active state when the query param is removed from the route', async () => {
+      const currentRoute = reactive({ query: { q_toggle: 'true' } as Record<string, string> })
+      const { wrapper } = getWrapper({ currentRoute })
       expect((wrapper.vm as any).filterActive).toEqual(true)
-
-      currentRoute.query = {} as typeof currentRoute.query
+      delete currentRoute.query.q_toggle
       await nextTick()
       expect((wrapper.vm as any).filterActive).toEqual(false)
     })
   })
 })
 
-function getWrapper({ props = {}, initialQuery = '' } = {}) {
-  vi.mocked(queryItemAsString).mockImplementation(() => initialQuery)
-  const mocks = defaultComponentMocks()
+function getWrapper({
+  props = {},
+  initialQuery = '',
+  currentRoute = undefined
+}: {
+  props?: object
+  initialQuery?: string
+  currentRoute?: { query: Record<string, string> }
+} = {}) {
+  vi.mocked(queryItemAsString).mockImplementation((value) =>
+    currentRoute ? (value as string) : initialQuery
+  )
+  const mocks = defaultComponentMocks({ currentRoute: currentRoute as any })
   return {
     mocks,
     wrapper: mount(ItemFilterToggle, {

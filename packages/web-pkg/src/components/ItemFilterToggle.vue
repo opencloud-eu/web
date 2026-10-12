@@ -47,8 +47,8 @@ const toggleFilter = async () => {
 
 watch(
   currentRouteQuery,
-  () => {
-    filterActive.value = queryItemAsString(unref(currentRouteQuery)) === 'true'
+  (value) => {
+    filterActive.value = queryItemAsString(value) === 'true'
   },
   { immediate: true }
 )

@@ -155,7 +155,7 @@ export class UploadResourceConflict extends ConflictDialog {
       .filter((e) => e.strategy === ResolveStrategy.SKIP)
       .map((e) => e.name)
 
-    files = files.filter((e) => !filesToSkip.includes(e.name))
+    files = files.filter((e) => e.meta.relativeFolder || !filesToSkip.includes(e.name))
     files = files.filter(
       (file) =>
         !foldersToSkip.some((folderName) => file.meta.relativeFolder.split('/')[1] === folderName)
