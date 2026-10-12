@@ -73,6 +73,15 @@ describe('ResourceConflictModal', () => {
         doForAllConflicts: false
       })
     })
+    it('is exposed so closing the modal via X or Escape skips the conflict', () => {
+      const callbackFn = vi.fn()
+      const { wrapper } = getWrapper({ props: { callbackFn } })
+      wrapper.vm.$.exposed.onCancel()
+      expect(callbackFn).toHaveBeenCalledWith({
+        strategy: ResolveStrategy.SKIP,
+        doForAllConflicts: false
+      })
+    })
   })
 })
 
