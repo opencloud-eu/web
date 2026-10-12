@@ -117,6 +117,7 @@ async function validateUserName() {
     return setFieldError('userName', error)
   }
 
+  formData.value.userName.valid = false
   // the user name is taken if fetching a user with it succeeds
   const exists = await clientService.graphAuthenticated.users.getUser(userName).then(
     () => true,
@@ -183,6 +184,7 @@ async function onConfirm() {
       title: $gettext('Failed to create user'),
       errors: [error]
     })
+    throw error
   }
 }
 
