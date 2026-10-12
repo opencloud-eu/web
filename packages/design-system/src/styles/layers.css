@@ -2,7 +2,8 @@
 
 @layer theme {
   html {
-    @apply text-sm;
+    font-size: var(--oc-font-size);
+    line-height: var(--text-sm--line-height);
   }
 
   body {
