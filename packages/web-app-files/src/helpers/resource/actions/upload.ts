@@ -126,6 +126,7 @@ export class UploadResourceConflict extends ConflictDialog {
           name: conflict.name,
           strategy: allConflictsStrategy
         })
+        fileCount++
         continue
       }
       if (doForAllConflictsFolders && isFolder && canApplyAllStrategy) {
@@ -133,6 +134,7 @@ export class UploadResourceConflict extends ConflictDialog {
           name: conflict.name,
           strategy: allConflictsStrategyFolders
         })
+        folderCount++
         continue
       }
 

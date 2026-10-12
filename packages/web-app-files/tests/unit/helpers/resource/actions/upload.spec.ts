@@ -482,6 +482,29 @@ describe('upload helper', () => {
       expect(instance.resolveFileExists).toHaveBeenCalledTimes(2)
       expect(result.files).toEqual([fileOne, fileThree])
     })
+    it('should not count conflicts resolved by apply to all as remaining', async () => {
+      const conflicts = [
+        { name: 'test', type: 'file', typeMismatch: false },
+        { name: 'test2', type: 'file', typeMismatch: false },
+        { name: 'dup', type: 'file', typeMismatch: true }
+      ]
+
+      const instance = getResourceConflictInstance()
+      instance.resolveFileExists = vi
+        .fn()
+        .mockResolvedValueOnce({ strategy: ResolveStrategy.REPLACE, doForAllConflicts: true })
+        .mockResolvedValueOnce({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+
+      await instance.displayOverwriteDialog([], conflicts)
+
+      expect(instance.resolveFileExists).toHaveBeenLastCalledWith(
+        { name: 'dup', isFolder: false },
+        1,
+        false,
+        true,
+        true
+      )
+    })
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
       const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'folder' })
