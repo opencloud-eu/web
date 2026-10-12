@@ -175,16 +175,17 @@ const showRenameModal = () => {
     inputLabel: $gettext('Link name'),
     inputRequiredMark: true,
     onInput: (name, setError) => {
-      if (!name.length) {
+      const trimmedName = name.trim()
+      if (!trimmedName.length) {
         return setError($gettext('Link name cannot be empty'))
       }
-      if (name.length > 255) {
+      if (trimmedName.length > 255) {
         return setError($gettext('Link name cannot exceed 255 characters'))
       }
       return setError(null)
     },
     onConfirm: (displayName: string) => {
-      emit('updateLink', { linkShare, options: { displayName } })
+      emit('updateLink', { linkShare, options: { displayName: displayName.trim() } })
     }
   })
 }
