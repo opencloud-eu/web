@@ -27,6 +27,9 @@ export function useKeyboardTableNavigation(
     const lastSelectedRow = unref(paginatedResources).find(
       (resource) => resource.id === unref(lastSelectedRowId)
     )
+    if (!lastSelectedRow) {
+      return
+    }
     const isSelected = unref(selectedRows).some((row) => row.id === unref(lastSelectedRowId))
 
     if (!isSelected) {
