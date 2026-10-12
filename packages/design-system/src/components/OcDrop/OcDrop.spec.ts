@@ -113,6 +113,35 @@ describe('OcDrop', () => {
       })
     })
 
+    it('does not throw when the drop gets hidden while updating its position', async () => {
+      vi.useFakeTimers()
+      vi.mocked(computePosition).mockResolvedValue({ x: 0, y: 0 } as ComputePositionReturn)
+      const wrapper = mount(Drop, {
+        props: { mode: 'manual' },
+        global: { plugins: defaultPlugins(), stubs: { teleport: false } },
+        attachTo: document.body
+      })
+      const anchorElement = document.createElement('div')
+      wrapper.vm.show({ anchorElement, noFocus: true })
+      vi.runAllTimers()
+      await flushPromises()
+
+      let resolvePosition: (value: ComputePositionReturn) => void
+      vi.mocked(computePosition).mockReturnValueOnce(
+        new Promise((resolve) => (resolvePosition = resolve))
+      )
+      const update = wrapper.vm.update({ anchorElement })
+      wrapper.vm.hide()
+      vi.runAllTimers()
+      await flushPromises()
+      resolvePosition({ x: 1, y: 1 } as ComputePositionReturn)
+
+      await expect(update).resolves.toBeUndefined()
+
+      wrapper.unmount()
+      vi.useRealTimers()
+    })
+
     it('does not close when clicking the context of a virtual anchor', async () => {
       vi.useFakeTimers()
       vi.mocked(computePosition).mockResolvedValue({ x: 0, y: 0 } as ComputePositionReturn)
