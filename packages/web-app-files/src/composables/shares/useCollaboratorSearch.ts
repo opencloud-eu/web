@@ -17,7 +17,7 @@ export const useCollaboratorSearch = () => {
     { signal, external = false }: { signal?: AbortSignal; external?: boolean } = {}
   ): Promise<CollaboratorAutoCompleteItem[]> {
     const client = clientService.graphAuthenticated
-    const search = `"${query}"`
+    const search = `"${query.trim()}"`
 
     const userData = await client.users.listUsers(
       {
@@ -74,7 +74,7 @@ export const useCollaboratorAutocomplete = (
     autocompleteResults.value = []
     searchQuery.value = query
 
-    if (query.length < unref(minSearchLength)) {
+    if (query.trim().length < unref(minSearchLength)) {
       searchInProgress.value = false
       return
     }
@@ -89,12 +89,13 @@ export const useCollaboratorAutocomplete = (
    * not by the text typed here.
    */
   function filterRecipients(recipients: CollaboratorAutoCompleteItem[], query: string) {
-    if (!(query || '').trim()) {
+    query = (query || '').trim()
+    if (!query) {
       return recipients
     }
 
     // Allow advanced queries
-    query = query.split(':')[1] || query
+    query = query.split(':')[1]?.trim() || query
 
     return recipients.filter(
       (recipient) =>

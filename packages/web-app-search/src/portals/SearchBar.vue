@@ -272,7 +272,7 @@ const useScope = computed(() => {
 async function search() {
   const searchId = ++latestSearchId
   searchResults.value = []
-  if (!unref(term)) {
+  if (!unref(term)?.trim()) {
     loading.value = false
     return
   }
