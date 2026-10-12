@@ -356,7 +356,7 @@ const doSearch = (manuallyUpdateFilterChip = false) => {
     if (manuallyUpdateFilterChip && unref(v)) {
       /**
        * Handles edge cases where a filter is not being applied via the filter directly,
-       * e.g. when clicking on a tag in the files list.
+       * e.g. when clicking on a tag in the files list or navigating back and forth.
        * We need to manually update the selected items in the ItemFilter component because normally
        * it only does this on mount or when interacting with the filter directly.
        */
@@ -364,17 +364,9 @@ const doSearch = (manuallyUpdateFilterChip = false) => {
     }
   }
 
-  if (tags) {
-    updateFilter(tagFilter)
-  }
-
-  if (lastModified) {
-    updateFilter(lastModifiedFilter)
-  }
-
-  if (mediaType) {
-    updateFilter(mediaTypeFilter)
-  }
+  updateFilter(tagFilter)
+  updateFilter(lastModifiedFilter)
+  updateFilter(mediaTypeFilter)
 
   return query
 }

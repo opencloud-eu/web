@@ -183,6 +183,13 @@ describe('ItemFilter', () => {
       const { wrapper } = getWrapper({ initialQuery: '1' })
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
     })
+    it('clears the selected items when the query param is removed', () => {
+      const { wrapper } = getWrapper({ initialQuery: '1' })
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+      vi.mocked(queryItemAsString).mockImplementation(() => '')
+      ;(wrapper.vm as any).setSelectedItemsBasedOnQuery()
+      expect((wrapper.vm as any).selectedItems).toEqual([])
+    })
     it('sets the selected items from the query param when the items arrive after mount', async () => {
       const { wrapper } = getWrapper({ initialQuery: '1', props: { items: [] } })
       expect((wrapper.vm as any).selectedItems).toEqual([])

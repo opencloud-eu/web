@@ -1,5 +1,11 @@
 import ItemFilterToggle from '../../../src/components/ItemFilterToggle.vue'
-import { defaultComponentMocks, defaultPlugins, mount } from '@opencloud-eu/web-test-helpers'
+import {
+  defaultComponentMocks,
+  defaultPlugins,
+  mount,
+  RouteLocation
+} from '@opencloud-eu/web-test-helpers'
+import { nextTick, reactive } from 'vue'
 import { queryItemAsString } from '../../../src/composables/appDefaults'
 
 vi.mock('../../../src/composables/appDefaults', () => ({
@@ -37,6 +43,22 @@ describe('ItemFilterToggle', () => {
     it('sets the active state initially when given via query param', () => {
       const { wrapper } = getWrapper({ initialQuery: 'true' })
       expect((wrapper.vm as any).filterActive).toEqual(true)
+    })
+    it('follows the query param when the route changes', async () => {
+      const currentRoute = reactive({ name: 'search', query: { q_toggle: 'true' } })
+      vi.mocked(queryItemAsString).mockImplementation((v) => v as string)
+      const mocks = defaultComponentMocks({
+        currentRoute: currentRoute as unknown as RouteLocation
+      })
+      const wrapper = mount(ItemFilterToggle, {
+        props: { filterLabel: 'Toggle', filterName: 'toggle' },
+        global: { plugins: [...defaultPlugins()], mocks, provide: mocks }
+      })
+      expect((wrapper.vm as any).filterActive).toEqual(true)
+
+      currentRoute.query = {} as typeof currentRoute.query
+      await nextTick()
+      expect((wrapper.vm as any).filterActive).toEqual(false)
     })
   })
 })

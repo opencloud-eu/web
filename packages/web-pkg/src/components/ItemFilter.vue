@@ -223,10 +223,12 @@ const showDrop = async () => {
 
 const setSelectedItemsBasedOnQuery = () => {
   const queryStr = queryItemAsString(unref(currentRouteQuery))
-  if (queryStr) {
-    const ids = queryStr.split('+')
-    selectedItems.value = items.filter((s) => ids.includes(getId(s)))
+  if (!queryStr) {
+    selectedItems.value = []
+    return
   }
+  const ids = queryStr.split('+')
+  selectedItems.value = items.filter((s) => ids.includes(getId(s)))
 }
 
 defineExpose({ setSelectedItemsBasedOnQuery })

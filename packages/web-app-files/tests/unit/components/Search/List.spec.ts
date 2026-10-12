@@ -34,6 +34,15 @@ const AppBarStub = defineComponent({
   }
 })
 
+const setSelectedItemsBasedOnQuery = vi.fn()
+const ItemFilterStub = defineComponent({
+  props: ItemFilter.props,
+  setup(_, { expose }) {
+    expose({ setSelectedItemsBasedOnQuery })
+    return () => h('item-filter-stub')
+  }
+})
+
 const selectors = {
   noContentMessageStub: 'no-content-message-stub',
   resourceTableStub: 'resource-table-stub',
@@ -108,6 +117,20 @@ describe('List component', () => {
     await flushPromises()
     expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
+  })
+  it('re-syncs all filter chips with the query when a filter is removed from the route', async () => {
+    const $router = createRouter({
+      routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
+      history: createMemoryHistory()
+    })
+    getWrapper({ mocks: { $router } })
+    await $router.replace({ name: 'files-common-search', query: { q_tags: 'foo' } })
+    await flushPromises()
+    setSelectedItemsBasedOnQuery.mockClear()
+
+    await $router.replace({ name: 'files-common-search', query: {} })
+    await flushPromises()
+    expect(setSelectedItemsBasedOnQuery).toHaveBeenCalled()
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
@@ -307,7 +330,8 @@ function getWrapper({
         provide: localMocks,
         stubs: {
           FilesViewWrapper: false,
-          AppBar: AppBarStub
+          AppBar: AppBarStub,
+          ItemFilter: ItemFilterStub
         },
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
       }
