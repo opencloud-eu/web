@@ -67,7 +67,6 @@ export const useSpaceActionsSetIcon = () => {
         })
 
         const updatedSpace = await graphClient.drives.updateDrive(space.id, {
-          name: space.name,
           special: [{ specialFolder: { name: 'image' }, id: fileId }]
         })
 

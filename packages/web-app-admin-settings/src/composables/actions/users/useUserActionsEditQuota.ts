@@ -38,7 +38,6 @@ export function useUserActionsEditQuota() {
       }
       const spaceResource = {
         id: drive.id,
-        name: user.displayName,
         spaceQuota: drive.quota
       } as SpaceResource
       selectedPersonalDrives.push(spaceResource)

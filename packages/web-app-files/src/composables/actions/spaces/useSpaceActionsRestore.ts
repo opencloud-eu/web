@@ -36,7 +36,7 @@ export const useSpaceActionsRestore = () => {
     const client = clientService.graphAuthenticated
     const promises = spaces.map((space) =>
       client.drives
-        .updateDrive(space.id, { name: space.name }, { headers: { Restore: 'true' } })
+        .updateDrive(space.id, {}, { headers: { Restore: 'true' } })
         .then((updatedSpace) => {
           spacesStore.upsertSpace(updatedSpace)
           return space.id

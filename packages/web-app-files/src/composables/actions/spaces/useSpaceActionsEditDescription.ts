@@ -24,7 +24,7 @@ export const useSpaceActionsEditDescription = () => {
   const editDescriptionSpace = (space: SpaceResource, description: string) => {
     const graphClient = clientService.graphAuthenticated
     return graphClient.drives
-      .updateDrive(space.id, { name: space.name, description })
+      .updateDrive(space.id, { description })
       .then(() => {
         spacesStore.updateSpaceField({ id: space.id, field: 'description', value: description })
         showMessage({ title: $gettext('Space subtitle was changed successfully') })
