@@ -166,6 +166,25 @@ describe('spaces events', () => {
       expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
       expect(mocks.resourcesStore.upsertResource).not.toHaveBeenCalled()
     })
+
+    it.each([403, 404])(
+      'removes the space when it can no longer be fetched (%s)',
+      async (status) => {
+        const space = mock<SpaceResource>({ id: 'space1' })
+        const mocks = getMocks({ spaces: [space], currentRouteFilesSpacesProjects: true })
+        const sseData = mock<EventSchemaType>({ spaceid: space.id })
+        ;(mocks.spacesStore.getSpace as any).mockReturnValue(space)
+        mocks.clientService.graphAuthenticated.drives.getDrive.mockRejectedValue({
+          response: { status }
+        })
+
+        await onSSESpaceDisabledEvent({ sseData, ...mocks })
+
+        expect(mocks.spacesStore.removeSpace).toHaveBeenCalledWith(space)
+        expect(mocks.resourcesStore.removeResources).toHaveBeenCalledWith([space])
+        expect(mocks.spacesStore.upsertSpace).not.toHaveBeenCalled()
+      }
+    )
   })
 
   describe('onSSESpaceDeletedEvent', () => {
