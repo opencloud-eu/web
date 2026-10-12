@@ -1,5 +1,5 @@
 import QuotaSelect from '../../../src/components/QuotaSelect.vue'
-import { defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
+import { defaultPlugins, mount, shallowMount } from '@opencloud-eu/web-test-helpers'
 
 describe('QuotaSelect', () => {
   describe('method "optionSelectable"', () => {
@@ -32,8 +32,21 @@ describe('QuotaSelect', () => {
     })
     it('should contain error property for values below one byte', () => {
       const { wrapper } = getWrapper()
-      expect((wrapper.vm as any).createOption('0')).toHaveProperty('error')
       expect((wrapper.vm as any).createOption('0.0000000001')).toHaveProperty('error')
+    })
+    it.each(['0', '0.0', '0,0'])('should map "%s" to the unlimited option', (input) => {
+      const { wrapper } = getWrapper()
+      expect((wrapper.vm as any).createOption(input)).toEqual({
+        displayValue: 'No restriction',
+        value: 0
+      })
+    })
+    it('should contain error property for 0 when unlimited is not available', () => {
+      const { wrapper } = getWrapper({
+        totalQuota: 2 * Math.pow(10, 9),
+        maxQuota: 4 * Math.pow(10, 9)
+      })
+      expect((wrapper.vm as any).createOption('0')).toHaveProperty('error')
     })
     it('should contain error property while maxQuota will be exceeded', () => {
       const { wrapper } = getWrapper({ maxQuota: 3 * Math.pow(10, 9) })
@@ -44,6 +57,34 @@ describe('QuotaSelect', () => {
       expect((wrapper.vm as any).createOption('lorem ipsum')).toHaveProperty('error')
       expect((wrapper.vm as any).createOption('1,')).toHaveProperty('error')
       expect((wrapper.vm as any).createOption('1.')).toHaveProperty('error')
+    })
+  })
+  describe('typing a value and pressing Enter', () => {
+    it.each(['0', '0.0', '0,0'])('should select unlimited for "%s"', async (input) => {
+      const wrapper = mount(QuotaSelect, {
+        props: { totalQuota: 2 * Math.pow(10, 9) },
+        global: { plugins: [...defaultPlugins()] }
+      })
+      const search = wrapper.find('input.vs__search')
+      await search.trigger('click')
+      await search.setValue(input)
+      await search.trigger('keydown', { key: 'Enter', keyCode: 13 })
+      const emitted = wrapper.emitted('selectedOptionChange')
+      expect(emitted).toHaveLength(1)
+      expect(emitted[0][0]).toEqual({ displayValue: 'No restriction', value: 0 })
+    })
+    it('should select a custom value rounded to whole bytes', async () => {
+      const wrapper = mount(QuotaSelect, {
+        props: { totalQuota: 2 * Math.pow(10, 9) },
+        global: { plugins: [...defaultPlugins()] }
+      })
+      const search = wrapper.find('input.vs__search')
+      await search.trigger('click')
+      await search.setValue('4.1')
+      await search.trigger('keydown', { key: 'Enter', keyCode: 13 })
+      const emitted = wrapper.emitted('selectedOptionChange')
+      expect(emitted).toHaveLength(1)
+      expect((emitted[0][0] as { value: number }).value).toBe(4100000000)
     })
   })
   describe('method "setOptions"', () => {

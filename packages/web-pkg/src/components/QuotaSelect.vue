@@ -9,6 +9,7 @@
       :clearable="false"
       :options="options"
       :create-option="createOption"
+      :filter="filterOptions"
       option-label="displayValue"
       :label="$gettext('Quota')"
       v-bind="$attrs"
@@ -66,6 +67,11 @@ function isValueValidNumber(value: string | number) {
   return optionIsNumberRegex.test(value)
 }
 
+function isZeroInput(input: string) {
+  const normalizedInput = input.replace(',', '.')
+  return isValueValidNumber(normalizedInput) && parseFloat(normalizedInput) === 0
+}
+
 function getFormattedFileSize(value: number) {
   const formattedFilesize = formatFileSize(value, unref(currentLanguage))
   return !isValueValidNumber(value) ? value.toString() : formattedFilesize
@@ -114,7 +120,23 @@ function optionSelectable(option: Option) {
   return option.selectable !== false
 }
 
+function filterOptions(items: Option[], search: string) {
+  // a typed 0 means "No restriction", so it must not match presets like "10 GB"
+  if (isZeroInput(search)) {
+    return items.filter((item) => item.value === 0)
+  }
+  const normalizedSearch = search.toLocaleLowerCase()
+  return items.filter((item) => item.displayValue.toLocaleLowerCase().includes(normalizedSearch))
+}
+
 function createOption(option: string) {
+  if (isZeroInput(option)) {
+    const unlimitedOption = unref(options).find((o) => o.value === 0)
+    if (unlimitedOption) {
+      return unlimitedOption
+    }
+  }
+
   option = option.replace(',', '.')
 
   if (!isValueValidNumber(option)) {
