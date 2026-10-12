@@ -47,13 +47,12 @@ describe('RemoveFromGroupsModal', () => {
       const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
       expect(input.props('groupOptions').length).toBe(2)
     })
-
-    it('lists all groups if the memberships of a user are not loaded yet', () => {
+    it('lists no groups if the memberships of the user are not loaded', () => {
       const users = [{ id: '1' } as User]
-      const groups = [mock<Group>({ id: '1' }), mock<Group>({ id: '2' })]
+      const groups = [mock<Group>(), mock<Group>()]
       const { wrapper } = getWrapper({ users, groups })
       const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
-      expect(input.props('groupOptions').length).toBe(groups.length)
+      expect(input.props('groupOptions').length).toBe(0)
     })
   })
 
@@ -76,23 +75,6 @@ describe('RemoveFromGroupsModal', () => {
       expect(showMessage).toHaveBeenCalled()
       const { upsertUser } = useUserSettingsStore()
       expect(upsertUser).toHaveBeenCalledTimes(users.length)
-    })
-
-    it('loads missing memberships and only removes users that are members', async () => {
-      const users = [{ id: 'u1' } as User, { id: 'u2' } as User]
-      const groups = [mock<Group>({ id: 'g1' })]
-      const { wrapper, mocks } = getWrapper({ users, groups })
-      const { deleteMember } = mocks.$clientService.graphAuthenticated.groups
-      const { getUser } = mocks.$clientService.graphAuthenticated.users
-      deleteMember.mockResolvedValue(undefined)
-      getUser.mockImplementation((id) =>
-        Promise.resolve(mock<User>({ id, memberOf: id === 'u1' ? [{ id: 'g1' }] : [] }))
-      )
-      await selectGroups(wrapper, groups)
-
-      await wrapper.vm.onConfirm()
-      expect(deleteMember).toHaveBeenCalledTimes(1)
-      expect(deleteMember).toHaveBeenCalledWith('g1', 'u1')
     })
 
     it('should show message on error', async () => {

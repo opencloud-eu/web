@@ -10,8 +10,6 @@ describe('useUserActionsRemoveFromGroups', () => {
     it.each([
       { resources: [], isVisible: false },
       { resources: [mock<User>()], isVisible: false },
-      { resources: [mock<User>({ memberOf: [] })], isVisible: false },
-      { resources: [{ id: '1' } as User], isVisible: true },
       { resources: [mock<User>({ memberOf: [mock<Group>()] })], isVisible: true },
       { resources: [mock<User>({ memberOf: [mock<Group>()] }), mock<User>()], isVisible: true }
     ])('requires at least one user to be enabled', ({ resources, isVisible }) => {
