@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @kulmann, @tammi-23, @tbsbdr, @v-scharf
+@AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- fix: wait for the sidebar resource before rendering the shares panel [[#3639](https://github.com/opencloud-eu/web/pull/3639)]
 - fix(web-pkg): enforce the maximum password length of the password policy [[#3599](https://github.com/opencloud-eu/web/pull/3599)]
 - fix: reject images that can't be decoded before cropping [[#3600](https://github.com/opencloud-eu/web/pull/3600)]
 - fix: keep the file list up to date after uploads [[#3587](https://github.com/opencloud-eu/web/pull/3587)]
