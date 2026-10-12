@@ -34,15 +34,6 @@ const AppBarStub = defineComponent({
   }
 })
 
-const setSelectedItemsBasedOnQuery = vi.fn()
-const ItemFilterStub = defineComponent({
-  props: ItemFilter.props,
-  setup(_, { expose }) {
-    expose({ setSelectedItemsBasedOnQuery })
-    return () => h('item-filter-stub')
-  }
-})
-
 const selectors = {
   noContentMessageStub: 'no-content-message-stub',
   resourceTableStub: 'resource-table-stub',
@@ -118,19 +109,24 @@ describe('List component', () => {
     expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
   })
-  it('re-syncs all filter chips with the query when a filter is removed from the route', async () => {
+  it('clears the tag filter chip when the tags are removed from the route', async () => {
     const $router = createRouter({
       routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
       history: createMemoryHistory()
     })
-    getWrapper({ mocks: { $router } })
-    await $router.replace({ name: 'files-common-search', query: { q_tags: 'foo' } })
+    const { wrapper } = getWrapper({
+      availableTags: ['foo'],
+      mocks: { $router },
+      stubs: { ItemFilter: false }
+    })
+    await $router.push({ name: 'files-common-search', query: { q_tags: 'foo' } })
     await flushPromises()
-    setSelectedItemsBasedOnQuery.mockClear()
+    const tagFilter = wrapper.findComponent<typeof ItemFilter>(selectors.tagFilter)
+    expect((tagFilter.vm as any).selectedItems).toEqual([{ id: 'foo', label: 'foo' }])
 
     await $router.replace({ name: 'files-common-search', query: {} })
     await flushPromises()
-    expect(setSelectedItemsBasedOnQuery).toHaveBeenCalled()
+    expect((tagFilter.vm as any).selectedItems).toEqual([])
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
@@ -273,7 +269,8 @@ function getWrapper({
   lastModifiedFilterQuery = null,
   mocks = {},
   sortFields = [],
-  folderViewComponent = undefined
+  folderViewComponent = undefined,
+  stubs = {}
 }: {
   availableTags?: string[]
   resources?: Resource[]
@@ -287,6 +284,7 @@ function getWrapper({
   mocks?: Record<string, unknown>
   sortFields?: SortField[]
   folderViewComponent?: Component
+  stubs?: Record<string, boolean | Component>
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
@@ -331,7 +329,7 @@ function getWrapper({
         stubs: {
           FilesViewWrapper: false,
           AppBar: AppBarStub,
-          ItemFilter: ItemFilterStub
+          ...stubs
         },
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
       }

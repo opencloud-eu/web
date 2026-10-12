@@ -227,8 +227,6 @@ const setSelectedItemsBasedOnQuery = () => {
   selectedItems.value = items.filter((s) => ids.includes(getId(s)))
 }
 
-defineExpose({ setSelectedItemsBasedOnQuery })
-
 // items can arrive after mount (e.g. loaded tags), the selection from the query needs them
 watch(() => items, setSelectedItemsBasedOnQuery, { immediate: true })
 

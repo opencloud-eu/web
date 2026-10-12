@@ -6,7 +6,6 @@
           <div v-if="displayFilter" class="files-search-result-filter flex flex-wrap gap-2 my-2">
             <item-filter
               v-if="availableMediaTypeValues.length"
-              ref="mediaTypeFilter"
               :allow-multiple="true"
               :filter-label="$gettext('Type')"
               :filterable-attributes="['label']"
@@ -28,7 +27,6 @@
             </item-filter>
             <item-filter
               v-if="capabilityStore.filesTags"
-              ref="tagFilter"
               :allow-multiple="true"
               :filter-label="$gettext('Tags')"
               :filterable-attributes="['label']"
@@ -53,7 +51,6 @@
             </item-filter>
             <item-filter
               v-if="availableLastModifiedValues.length"
-              ref="lastModifiedFilter"
               :filter-label="$gettext('Last Modified')"
               :filterable-attributes="['label']"
               :items="availableLastModifiedValues"
@@ -171,17 +168,7 @@ import { NoContentMessage } from '@opencloud-eu/web-pkg'
 import { ContextActions, FileSideBar } from '@opencloud-eu/web-pkg'
 import { useGettext } from 'vue3-gettext'
 import { AppBar } from '@opencloud-eu/web-pkg'
-import {
-  ComponentPublicInstance,
-  computed,
-  nextTick,
-  onMounted,
-  Ref,
-  ref,
-  unref,
-  useTemplateRef,
-  watch
-} from 'vue'
+import { computed, nextTick, onMounted, ref, unref, watch } from 'vue'
 import ListInfo from '../FilesList/ListInfo.vue'
 import { Pagination } from '@opencloud-eu/web-pkg'
 import { useFileActions } from '@opencloud-eu/web-pkg'
@@ -284,9 +271,6 @@ const searchTerm = computed(() => {
 })
 
 const availableTags = ref<Tag[]>([])
-const tagFilter = useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('tagFilter')
-const mediaTypeFilter =
-  useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('mediaTypeFilter')
 
 const tagParam = useRouteQuery('q_tags')
 const selectedTags = computed(() => queryItemAsString(unref(tagParam))?.split('+') || [])
@@ -313,8 +297,6 @@ onBeforeRouteLeave(() => {
   eventBus.publish('app.search.term.clear')
 })
 
-const lastModifiedFilter =
-  useTemplateRef<ComponentPublicInstance<typeof ItemFilter>>('lastModifiedFilter')
 const availableLastModifiedValues = computed(() => {
   return getLastModifiedFilterOptions(capabilityStore.searchLastMofifiedDate.keywords, $gettext)
 })
@@ -336,13 +318,13 @@ const hasFilter = computed(() => {
   )
 })
 
-const doSearch = (manuallyUpdateFilterChip = false) => {
+const doSearch = () => {
   const isTitleOnlySearch = queryItemAsString(unref(titleOnlyParam)) == 'true'
   const tags = queryItemAsString(unref(tagParam))
   const lastModified = queryItemAsString(unref(lastModifiedParam))
   const mediaType = queryItemAsString(unref(mediaTypeParam))
 
-  const query = buildSearchTerm({
+  return buildSearchTerm({
     term: unref(searchTerm),
     isTitleOnlySearch,
     tags,
@@ -351,24 +333,6 @@ const doSearch = (manuallyUpdateFilterChip = false) => {
     scope: queryItemAsString(unref(scopeQuery)),
     useScope: unref(doUseScope) === 'true'
   })
-
-  const updateFilter = (v: Ref<ComponentPublicInstance<typeof ItemFilter>>) => {
-    if (manuallyUpdateFilterChip && unref(v)) {
-      /**
-       * Handles edge cases where a filter is not being applied via the filter directly,
-       * e.g. when clicking on a tag in the files list or navigating back and forth.
-       * We need to manually update the selected items in the ItemFilter component because normally
-       * it only does this on mount or when interacting with the filter directly.
-       */
-      unref(v).setSelectedItemsBasedOnQuery()
-    }
-  }
-
-  updateFilter(tagFilter)
-  updateFilter(lastModifiedFilter)
-  updateFilter(mediaTypeFilter)
-
-  return query
 }
 
 const breadcrumbs = computed(() => {
@@ -445,7 +409,7 @@ watch(
       }
     }
 
-    emit('search', doSearch(true))
+    emit('search', doSearch())
   },
   { deep: true }
 )
