@@ -164,8 +164,9 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
       // Actions for external editor apps (Collabora, …) need to be disabled in vaults
       // because those apps load the file server-side via the WOPI bridge - they'd see the
       // encrypted blob, not the cleartext the user expects.
-      const isExternalActionInVault =
-        appFileExtension.app?.startsWith('external-') && unref(currentFolder)?.isInVault
+      // evaluated lazily so the computed doesn't depend on currentFolder
+      const isExternalActionInVault = () =>
+        appFileExtension.app?.startsWith('external-') && !!unref(currentFolder)?.isInVault
 
       actions.push({
         name: 'create-new-file',
@@ -182,9 +183,9 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
           }
           return unref(currentFolder)?.canUpload({ user: userStore.user })
         },
-        isDisabled: () => isExternalActionInVault,
+        isDisabled: isExternalActionInVault,
         disabledTooltip: () => {
-          if (isExternalActionInVault) {
+          if (isExternalActionInVault()) {
             return $gettext('This file type cannot be created inside vaults')
           }
           return undefined
