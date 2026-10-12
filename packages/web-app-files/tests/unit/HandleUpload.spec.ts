@@ -287,6 +287,30 @@ describe('HandleUpload', () => {
           expect(result).toBe(quotaExceeded)
         }
       )
+      it.each([
+        { remaining: 100, quotaExceeded: true },
+        { remaining: 0, quotaExceeded: true },
+        { remaining: 130, quotaExceeded: false }
+      ])(
+        'sums up the size of all files of a multi-file upload (remaining: $remaining)',
+        ({ remaining, quotaExceeded }) => {
+          const space = mock<SpaceResource>({
+            driveType: 'project',
+            id: '1',
+            spaceQuota: { remaining },
+            isOwner: () => true
+          })
+          const { instance } = getWrapper({ spaces: [space] })
+          const files = ['a', 'b', 'c'].map((name) =>
+            mock<OcUppyFile>({
+              name,
+              meta: { spaceId: '1', routeName: locationSpacesGeneric.name as string },
+              data: { size: 40 } as Blob
+            })
+          )
+          expect(instance.checkQuotaExceeded(files)).toBe(quotaExceeded)
+        }
+      )
       it('does not check quota for share spaces', () => {
         const size = 100
         const remaining = 90
