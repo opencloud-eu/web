@@ -39,6 +39,23 @@ describe('OcBottomDrawer', () => {
       expect(showModal).toHaveBeenCalledOnce()
       expect(dialog.getAttribute('aria-label')).toBe('File actions')
       expect(dialog.querySelector('[autofocus]')).not.toBeNull()
+      expect(dialog.classList.contains('m-0')).toBe(true)
+      expect(dialog.classList.contains('max-w-none')).toBe(true)
+      expect(dialog.classList.contains('max-h-none')).toBe(true)
+    })
+
+    it('forwards native cancel and close events', () => {
+      const { wrapper } = getWrapper()
+      const dialog = wrapper.find('dialog')
+      const cancel = new Event('cancel', { cancelable: true })
+      const close = new Event('close')
+
+      dialog.element.dispatchEvent(cancel)
+      dialog.element.dispatchEvent(close)
+
+      expect(cancel.defaultPrevented).toBe(true)
+      expect(wrapper.emitted('cancel')?.[0]).toEqual([cancel])
+      expect(wrapper.emitted('close')?.[0]).toEqual([close])
     })
 
     it('closes the modal dialog when the drawer becomes inactive', async () => {

@@ -1,9 +1,11 @@
 <template>
   <dialog
     ref="dialog"
-    class="oc-bottom-drawer fixed inset-0 bg-black/40 size-full"
+    class="oc-bottom-drawer fixed inset-0 m-0 border-0 p-0 max-w-none max-h-none bg-black/40 size-full"
     :aria-label="accessibleName"
     @click="$emit('clicked', $event)"
+    @cancel.prevent="$emit('cancel', $event)"
+    @close="$emit('close', $event)"
   >
     <focus-trap :active="isFocusTrapActive">
       <div
@@ -79,6 +81,14 @@ export interface Emits {
    * @docs Emitted when the bottom drawer or its background is clicked.
    */
   (e: 'clicked', event: MouseEvent): void
+  /**
+   * @docs Emitted when the browser requests that the drawer be dismissed, such as when Escape is pressed.
+   */
+  (e: 'cancel', event: Event): void
+  /**
+   * @docs Emitted when the native dialog closes.
+   */
+  (e: 'close', event: Event): void
 }
 
 defineEmits<Emits>()

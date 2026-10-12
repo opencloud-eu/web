@@ -8,8 +8,9 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { SideBarPanelContext } from '../../../../types'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
-import { computed } from 'vue'
+import { computed, nextTick } from 'vue'
 import { OcBottomDrawer } from '@opencloud-eu/design-system/components'
+import { useModals } from '../../../../src/composables'
 
 vi.mock('@opencloud-eu/design-system/composables', async (importOriginal) => ({
   ...(await importOriginal<any>()),
@@ -52,6 +53,13 @@ describe('SideBar', () => {
 
         const clickedEl = document.createElement('a')
         drawer.vm.$emit('clicked', { target: clickedEl })
+        expect(wrapper.emitted('close')).toBeDefined()
+      })
+      it('closes when a modal opens from the mobile sidebar', async () => {
+        const { wrapper } = createWrapper({ isMobile: true })
+        useModals(wrapper.vm.$pinia).modals.push({ id: 'share-link', title: 'Share link' })
+        await nextTick()
+
         expect(wrapper.emitted('close')).toBeDefined()
       })
     })
