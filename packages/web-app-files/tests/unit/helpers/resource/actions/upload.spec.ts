@@ -148,6 +148,38 @@ describe('upload helper', () => {
         `https://example.com/dav/${encodedNewFolderName}/folderInside`
       )
     })
+    it.each(['report (final)', 'x+y'])(
+      'should rename folder "%s" with regex characters when keeping both',
+      async (folderName) => {
+        const currentFiles = [mockDeep<Resource>({ name: folderName })]
+        const file = {
+          id: 'file',
+          name: 'in.txt',
+          meta: {
+            relativeFolder: `/${folderName}`,
+            relativePath: `/${folderName}/in.txt`,
+            tusEndpoint: `https://example.com/dav/${encodeURIComponent(folderName)}`
+          }
+        } as unknown as OcUppyFile
+
+        const instance = getResourceConflictInstance({ currentFiles })
+        instance.resolveFileExists = vi.fn(() =>
+          Promise.resolve({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+        )
+
+        const result = await instance.displayOverwriteDialog(
+          [file],
+          [{ name: folderName, type: 'folder' }]
+        )
+
+        const newFolderName = `${folderName} (1)`
+        expect(result.files[0].meta.relativeFolder).toBe(`/${newFolderName}`)
+        expect(result.files[0].meta.relativePath).toBe(`/${newFolderName}/in.txt`)
+        expect(result.files[0].meta.tusEndpoint).toBe(
+          `https://example.com/dav/${encodeURIComponent(newFolderName)}`
+        )
+      }
+    )
     it('should return merged folder names when user chooses merge', async () => {
       const folderName = 'someFolder'
       const fileInFolder = mockDeep<OcUppyFile>({

@@ -1,4 +1,5 @@
 import { markRaw } from 'vue'
+import { escapeRegExp } from 'lodash-es'
 import { Language } from 'vue3-gettext'
 import { Resource } from '@opencloud-eu/web-client'
 import { extractExtensionFromFile } from '@opencloud-eu/web-client'
@@ -177,7 +178,7 @@ export class UploadResourceConflict extends ConflictDialog {
         file.xhrUpload.endpoint = file.xhrUpload.endpoint
           .toString()
           .replace(
-            new RegExp(`/${encodeURIComponent(fileName)}`),
+            new RegExp(`/${escapeRegExp(encodeURIComponent(fileName))}`),
             `/${encodeURIComponent(file.name)}`
           )
       }
@@ -187,28 +188,28 @@ export class UploadResourceConflict extends ConflictDialog {
       for (const file of filesInFolder) {
         const newFolderName = resolveFileNameDuplicate(folder, '', this.resourcesStore.resources)
         file.meta.relativeFolder = file.meta.relativeFolder.replace(
-          new RegExp(`/${folder}`),
+          new RegExp(`/${escapeRegExp(folder)}`),
           `/${newFolderName}`
         )
         file.meta.relativePath = file.meta.relativePath.replace(
-          new RegExp(`/${folder}/`),
+          new RegExp(`/${escapeRegExp(folder)}/`),
           `/${newFolderName}/`
         )
         file.meta.tusEndpoint = file.meta.tusEndpoint.replace(
-          new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
+          new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
           `/${encodeURIComponent(newFolderName)}$1`
         )
         if (file.xhrUpload?.endpoint) {
           file.xhrUpload.endpoint = file.xhrUpload.endpoint
             .toString()
             .replace(
-              new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
+              new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
               `/${encodeURIComponent(newFolderName)}$1`
             )
         }
         if (file.tus?.endpoint) {
           file.tus.endpoint = file.tus.endpoint.replace(
-            new RegExp(`/${encodeURIComponent(folder)}(/|$)`),
+            new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
             `/${encodeURIComponent(newFolderName)}$1`
           )
         }
