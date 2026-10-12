@@ -59,7 +59,7 @@
           appearance="raw"
           justify-content="left"
           :disabled="isActionDisabled(action)"
-          @click="() => action.handler()"
+          @click="() => action.handler({ space: currentSpace })"
         >
           <oc-icon :icon="getActionIcon(action)" fill-type="line" />
           <span v-text="action.label()"
@@ -86,7 +86,7 @@
           justify-content="left"
           :class="['new-file-btn-' + fileAction.ext]"
           :disabled="isActionDisabled(fileAction)"
-          @click="() => fileAction.handler()"
+          @click="() => fileAction.handler({ space: currentSpace })"
         >
           <resource-icon :resource="getIconResource(fileAction)" />
           <span>{{ fileAction.label() }}</span>
@@ -147,9 +147,9 @@ const { currentSpace } = storeToRefs(spacesStore)
 
 const areFileExtensionsShown = computed(() => unref(resourcesStore.areFileExtensionsShown))
 
-const { actions: createNewFolder } = useFileActionsCreateNewFolder({ space: currentSpace })
+const { actions: createNewFolder } = useFileActionsCreateNewFolder()
 const createNewFolderAction = () => {
-  return unref(createNewFolder)[0].handler()
+  return unref(createNewFolder)[0].handler({ space: unref(currentSpace) })
 }
 
 const { actions: createNewShortcut } = useFileActionsCreateNewShortcut()
@@ -157,7 +157,7 @@ const createNewShortcutAction = () => {
   return unref(createNewShortcut)[0].handler()
 }
 
-const { actions: createNewFileActions } = useFileActionsCreateNewFile({ space: currentSpace })
+const { actions: createNewFileActions } = useFileActionsCreateNewFile()
 
 const { getExtensionActions } = useFileActions()
 const extensionActions = computed(() => {
@@ -191,7 +191,7 @@ const extraExtensionActions = computed(() =>
       action.name !== 'create-folder' &&
       action.name !== 'create-shortcut' &&
       action.name !== 'create-new-file' &&
-      action.isVisible()
+      action.isVisible({ space: unref(currentSpace) })
   )
 )
 
