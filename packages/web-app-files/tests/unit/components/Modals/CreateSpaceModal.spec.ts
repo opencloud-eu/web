@@ -254,6 +254,54 @@ describe('CreateSpaceModal', () => {
       expect(privileged.find('.create-space-quota').exists()).toBeTruthy()
     })
 
+    it('create an unlimited space with the default "No restriction" quota', async () => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }]
+      })
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith('New space', expect.objectContaining({ quota: 0 }))
+    })
+
+    it('hand over the picked quota', async () => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }]
+      })
+      await revealOptions(wrapper)
+      wrapper.findComponent<any>({ name: 'CreateSpaceOptions' }).vm.$emit('update:quota', 1e9)
+      await wrapper.vm.$nextTick()
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith('New space', expect.objectContaining({ quota: 1e9 }))
+    })
+
+    it('leave the quota to the server for users who may not set one', async () => {
+      const { wrapper } = getWrapper()
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith(
+        'New space',
+        expect.objectContaining({ quota: undefined })
+      )
+    })
+
+    it('leave the quota to the server when a maximum rules out an unlimited one', async () => {
+      const { wrapper } = getWrapper({
+        abilities: [{ action: 'set-quota-all', subject: 'Drive' }],
+        maxQuota: 5e9
+      })
+
+      await wrapper.vm.onConfirm()
+
+      expect(addNewSpace).toHaveBeenCalledWith(
+        'New space',
+        expect.objectContaining({ quota: undefined })
+      )
+    })
+
     it('drop the description and the image for an encrypted space', async () => {
       const { wrapper } = getWrapper()
       await revealOptions(wrapper)
@@ -412,7 +460,8 @@ function getWrapper({
   canEncrypt = true,
   isLoading = false,
   abilities = [] as AbilityRule[],
-  spaces = [] as SpaceResource[]
+  spaces = [] as SpaceResource[],
+  maxQuota = 0
 } = {}) {
   const mocks = { ...defaultComponentMocks() }
 
@@ -430,7 +479,15 @@ function getWrapper({
         modal: mock<Modal>({ isLoading })
       },
       global: {
-        plugins: [...defaultPlugins({ abilities, piniaOptions: { spacesState: { spaces } } })],
+        plugins: [
+          ...defaultPlugins({
+            abilities,
+            piniaOptions: {
+              spacesState: { spaces },
+              capabilityState: { capabilities: { spaces: { max_quota: maxQuota } } as any }
+            }
+          })
+        ],
         mocks,
         provide: mocks,
         // the actions row only exists inside OcModal, so render them in place

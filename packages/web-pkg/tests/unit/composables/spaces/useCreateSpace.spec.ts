@@ -197,6 +197,29 @@ describe('useCreateSpace', () => {
       })
     })
 
+    it('applies an unlimited quota of 0', () => {
+      return getWrapper({
+        setup: async ({ addNewSpace }, { $clientService }) => {
+          await addNewSpace('Team', { quota: 0 })
+
+          expect($clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith('1', {
+            name: 'space',
+            quota: { total: 0 }
+          })
+        }
+      })
+    })
+
+    it('leaves the server default quota without a quota', () => {
+      return getWrapper({
+        setup: async ({ addNewSpace }, { $clientService }) => {
+          await addNewSpace('Team')
+
+          expect($clientService.graphAuthenticated.drives.updateDrive).not.toHaveBeenCalled()
+        }
+      })
+    })
+
     it('writes no readme or image into an encrypted space', () => {
       return getWrapper({
         setup: async ({ addNewSpace }, { $clientService }) => {

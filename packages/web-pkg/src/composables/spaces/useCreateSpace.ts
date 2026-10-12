@@ -211,7 +211,7 @@ export const useCreateSpace = () => {
     const { quota, description, image, members = [] } = options
     const failures: string[] = []
 
-    if (quota) {
+    if (typeof quota === 'number') {
       await runStep(failures, $gettext('The quota could not be set.'), () =>
         applyQuota(space, quota)
       )

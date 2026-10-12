@@ -110,6 +110,7 @@
 <script setup lang="ts">
 import { computed, ref, unref, useId, watch } from 'vue'
 import { useObjectUrl } from '@vueuse/core'
+import { storeToRefs } from 'pinia'
 import { useGettext } from 'vue3-gettext'
 import { isProjectSpaceResource, type SpaceResource } from '@opencloud-eu/web-client'
 import {
@@ -117,6 +118,8 @@ import {
   modalActionsTarget,
   ResourceIcon,
   resolveFileNameDuplicate,
+  useAbility,
+  useCapabilityStore,
   useCreateSpace,
   useExtensionRegistry,
   useIsResourceNameValid,
@@ -141,6 +144,8 @@ const { $gettext } = useGettext()
 const { isSpaceNameValid } = useIsResourceNameValid()
 const { updateModal } = useModals()
 const { addNewSpace } = useCreateSpace()
+const { can } = useAbility()
+const { spacesMaxQuota } = storeToRefs(useCapabilityStore())
 const extensionRegistry = useExtensionRegistry()
 
 const vaultCreation = computed(() => getVaultCreator(extensionRegistry)?.creation)
@@ -217,12 +222,23 @@ async function onConfirm() {
   await addNewSpace(unref(spaceName), {
     encrypt: unref(encrypt),
     finalizeVault: unref(setupComponent)?.finalize,
-    quota: unref(quota) || undefined,
+    quota: getQuotaToApply(),
     subtitle: unref(subtitle) || undefined,
     description: (!unref(encrypt) && unref(description)) || undefined,
     image: (!unref(encrypt) && unref(image)) || undefined,
     members: unref(members)
   })
+}
+
+// 0 means unlimited, which a configured maximum quota rules out.
+function getQuotaToApply() {
+  if (!can('set-quota-all', 'Drive')) {
+    return undefined
+  }
+  if (!unref(quota) && unref(spacesMaxQuota)) {
+    return undefined
+  }
+  return unref(quota)
 }
 
 defineExpose({ onConfirm })
