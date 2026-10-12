@@ -337,7 +337,7 @@ def stagePipelines(ctx):
     return unit_test_pipelines + e2e_pipelines + keycloak_pipelines
 
 def afterPipelines(ctx):
-    return publishRelease(ctx) + [purgeBuildArtifactCache(ctx), purgeOpencloudBuildCache(ctx), purgeBrowserCache(ctx), purgeTracingCache(ctx)] + pipelinesDependsOn(notifyMatrixCheckSteps(), stagePipelines(ctx))
+    return publishRelease(ctx) + pipelinesDependsOn(notifyMatrixCheckSteps(), stagePipelines(ctx))
 
 def translation_sync(ctx):
     return [{
@@ -1499,37 +1499,11 @@ def genericCache(name, action, mounts, cache_path):
     }
     return step
 
-def purgeCache(name, flush_path, flush_age):
-    return {
-        "name": name,
-        "skip_clone": True,
-        "when": [
-            dict(event["cron"], status = ["success", "failure"]),
-            dict(event["pull_request"], status = ["success", "failure"]),
-            dict(event["main_branch"], status = ["success", "failure"]),
-        ],
-        "steps": {
-            "purge": {
-                "image": MINIO_MC,
-                "environment": minio_mc_environment,
-                "commands": [
-                    "mc alias set s3 $MC_HOST $AWS_ACCESS_KEY_ID $AWS_SECRET_ACCESS_KEY",
-                    "to_delete=$(mc find s3/%s/ --older-than %sd 2>/dev/null || true)" % (flush_path, flush_age),
-                    'if [ -z "$to_delete" ]; then exit 0; fi',
-                    "mc rm $to_delete",
-                ],
-            },
-        },
-    }
-
 def genericBuildArtifactCache(ctx, name, action, path):
     if action == "rebuild" or action == "restore":
         cache_path = "%s/%s/%s" % ("cache", repo_slug, ctx.build.commit + "-${CI_PIPELINE_NUMBER}")
         name = "%s_build_artifact_cache" % name
         return genericCache(name, action, [path], cache_path)
-
-    if action == "purge":
-        return purgeCache("purge_build_artifact_cache", "cache/opencloud-eu/web", 1)
     return []
 
 def restoreBuildArtifactCache(ctx, name, path):
@@ -1537,18 +1511,6 @@ def restoreBuildArtifactCache(ctx, name, path):
 
 def rebuildBuildArtifactCache(ctx, name, path):
     return [genericBuildArtifactCache(ctx, name, "rebuild", path)]
-
-def purgeBuildArtifactCache(ctx):
-    return genericBuildArtifactCache(ctx, "", "purge", [])
-
-def purgeOpencloudBuildCache(ctx):
-    return purgeCache("purge-opencloud-build-cache", "dev/opencloud-build", 21)
-
-def purgeBrowserCache(ctx):
-    return purgeCache("purge-browser-build-cache", "dev/web", 14)
-
-def purgeTracingCache(ctx):
-    return purgeCache("purge-playwright-tracing-cache", "public/web/tracing", 14)
 
 def pipelineSanityChecks(pipelines):
     """pipelineSanityChecks helps the CI developers to find errors before running it
