@@ -4,6 +4,10 @@
     "value": "Inter, sans-serif"
   },
   {
+    "name": "oc-font-size",
+    "value": "0.875rem"
+  },
+  {
     "name": "oc-role-background",
     "value": "#FFFFFF"
   },
