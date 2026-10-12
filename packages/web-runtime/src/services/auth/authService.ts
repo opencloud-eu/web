@@ -431,10 +431,14 @@ export class AuthService implements AuthServiceInterface {
       return
     }
 
+    if (!event.data.data?.access_token) {
+      return
+    }
+
     console.debug('[authService:handleDelegatedTokenUpdate] - going to update the access_token')
     return this.userManager.updateContext(
-      event.data.data?.access_token,
-      event.data.data?.session_id,
+      event.data.data.access_token,
+      event.data.data.session_id,
       false
     )
   }
