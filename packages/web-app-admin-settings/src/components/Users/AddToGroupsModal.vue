@@ -49,7 +49,7 @@ const availableGroups = computed(() => {
     return groups
   }
   return groups.filter(
-    (group) => !users.some((user) => user.memberOf.some(({ id }) => id === group.id))
+    (group) => !users.some((user) => user.memberOf?.some(({ id }) => id === group.id))
   )
 })
 
@@ -61,13 +61,32 @@ watch(
   { immediate: true }
 )
 
+function loadMemberships(): Promise<Group[][]> {
+  const client = clientService.graphAuthenticated
+  return Promise.all(
+    users.map(async (user) => {
+      if (user.memberOf) {
+        return user.memberOf
+      }
+      try {
+        const { memberOf } = await client.users.getUser(user.id, { expand: ['memberOf'] })
+        return memberOf || []
+      } catch (e) {
+        console.error(e)
+        return undefined
+      }
+    })
+  )
+}
+
 async function onConfirm() {
   const client = clientService.graphAuthenticated
+  const memberships = await loadMemberships()
   const usersToFetch: string[] = []
   const promises: Promise<unknown>[] = []
   for (const group of unref(selectedOptions)) {
-    for (const user of users) {
-      if (!user.memberOf.find((userGroup) => userGroup.id === group.id)) {
+    for (const [index, user] of users.entries()) {
+      if (!memberships[index]?.some((userGroup) => userGroup.id === group.id)) {
         promises.push(client.groups.addMember(group.id, user.id))
         if (!usersToFetch.includes(user.id)) {
           usersToFetch.push(user.id)

@@ -39,7 +39,7 @@ export function useUserActionsRemoveFromGroups({ groups }: { groups: Ref<Group[]
           return false
         }
 
-        if (resources.every(({ memberOf }) => !memberOf?.length)) {
+        if (resources.every(({ memberOf }) => memberOf && !memberOf.length)) {
           return false
         }
 
