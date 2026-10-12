@@ -160,6 +160,7 @@ import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useGettext } from 'vue3-gettext'
+import omit from 'lodash-es/omit'
 
 const router = useRouter()
 const { buildSearchTerm } = useSearch()
@@ -329,7 +330,7 @@ function getSearchResultLocation(providerId: string) {
 
   return createLocationCommon('files-common-search', {
     query: {
-      ...(currentQuery && { ...currentQuery }),
+      ...(currentQuery && omit(currentQuery, 'page')),
       term: unref(term),
       ...(unref(scope) && { scope: unref(scope) }),
       useScope: unref(useScope).toString(),

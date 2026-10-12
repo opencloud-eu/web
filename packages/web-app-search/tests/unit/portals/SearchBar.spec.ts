@@ -179,6 +179,16 @@ describe('Search Bar portal component', () => {
       query: expect.objectContaining({ term: 'albert', provider: 'files.sdk' })
     })
   })
+  test('starts on the first page when navigating to the search results', async () => {
+    const { wrapper } = getMountedWrapper({ query: { page: '2' } })
+    wrapper.find(selectors.searchInput).setValue('albert')
+    await flushPromises()
+    wrapper.find(selectors.searchInput).trigger('keyup.enter')
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
+      name: 'files-common-search',
+      query: expect.not.objectContaining({ page: '2' })
+    })
+  })
   test('does not navigate to the list view if no list provider given', async () => {
     const { wrapper } = getMountedWrapper({ providers: [providerContacts] })
     wrapper.find(selectors.searchInput).setValue('albert')
@@ -271,7 +281,8 @@ function getMountedWrapper({
   providers = [providerFiles, providerContacts],
   route = 'files-spaces-generic',
   store = {},
-  term = ''
+  term = '',
+  query = {} as Record<string, string>
 } = {}) {
   vi.mocked(useAvailableProviders).mockReturnValue(ref(providers))
 
@@ -279,7 +290,8 @@ function getMountedWrapper({
     name: route,
     query: {
       term,
-      provider: ''
+      provider: '',
+      ...query
     }
   })
   const localMocks = {

@@ -179,6 +179,14 @@ describe('ItemFilter', () => {
         })
       )
     })
+    it('resets the page when the selection changes', async () => {
+      const { wrapper, mocks } = getWrapper()
+      mocks.$route.query = { page: '2', term: 'foo' }
+      await wrapper.findAll(selectors.filterListItem).at(0).trigger('click')
+      const { query } = mocks.$router.push.mock.calls[0][0] as { query: Record<string, string> }
+      expect(query).not.toHaveProperty('page')
+      expect(query).toHaveProperty('term', 'foo')
+    })
     it('sets the selected items initially when given via query param', () => {
       const { wrapper } = getWrapper({ initialQuery: '1' })
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
