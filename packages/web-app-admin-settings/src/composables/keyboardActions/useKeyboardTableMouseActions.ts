@@ -60,7 +60,7 @@ export function useKeyboardTableMouseActions(
     }
 
     lastSelectedRowId.value = String(resource.id)
-    keyActions.resetSelectionCursor()
+    keyActions.selectionCursor.value = clickedNodeIndex - latestNodeIndex
   }
 
   onMounted(() => {
