@@ -128,12 +128,6 @@ const loadPublicSpaceTask = useTask(function* (signal) {
       if (err.errorCode === 'ERR_MISSING_BASIC_AUTH') {
         isPasswordRequired.value = true
       }
-      if (err.errorCode === 'ERR_MISSING_BEARER_AUTH') {
-        // internal links are not supported by the web anymore, the user context is not loaded here
-        throw new Error(
-          $gettext('Internal links are not supported. Please ask the owner for a permanent link.')
-        )
-      }
 
       return
     }

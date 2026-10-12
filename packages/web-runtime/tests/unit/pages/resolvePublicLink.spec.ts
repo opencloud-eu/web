@@ -88,18 +88,6 @@ describe('resolvePublicLink', () => {
       })
     })
   })
-  describe('internal link', () => {
-    it('shows an error instead of crashing if the link requires a logged in user', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => undefined)
-      const { wrapper, mocks } = getWrapper({ bearerAuthRequired: true })
-      await flushPromises()
-
-      expect(wrapper.find(selectors.errorMessage).text()).toContain(
-        'Internal links are not supported.'
-      )
-      expect(mocks.$router.push).not.toHaveBeenCalled()
-    })
-  })
   describe('link target', () => {
     it('resolves to the file list for a link pointing to a folder', async () => {
       const { mocks } = getWrapper({ redirectUrl: '' })
@@ -169,14 +157,12 @@ describe('resolvePublicLink', () => {
 
 function getWrapper({
   passwordRequired = false,
-  bearerAuthRequired = false,
   getFileInfoErrorStatusCode = null,
   redirectUrl = 'redirectUrl',
   spaceFileId = 'folder-id',
   children = []
 }: {
   passwordRequired?: boolean
-  bearerAuthRequired?: boolean
   getFileInfoErrorStatusCode?: number
   redirectUrl?: string
   spaceFileId?: string
@@ -197,12 +183,6 @@ function getWrapper({
   if (passwordRequired) {
     $clientService.webdav.getFileInfo.mockRejectedValueOnce(
       new DavHttpError('', 'ERR_MISSING_BASIC_AUTH', undefined, 401)
-    )
-  }
-
-  if (bearerAuthRequired) {
-    $clientService.webdav.getFileInfo.mockRejectedValueOnce(
-      new DavHttpError('', 'ERR_MISSING_BEARER_AUTH', undefined, 401)
     )
   }
 
