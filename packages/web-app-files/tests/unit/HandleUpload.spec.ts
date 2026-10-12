@@ -382,6 +382,20 @@ describe('HandleUpload', () => {
         expect(mocks.opts.uppyService.clearInputs).toHaveBeenCalled()
         expect(removeFilesFromUploadSpy).toHaveBeenCalled()
       })
+      it('removes skipped files from uppy and uploads the remaining ones', async () => {
+        const skippedFile = mock<OcUppyFile>({ id: 'skipped', name: 'one.txt' })
+        const freshFile = mock<OcUppyFile>({ id: 'fresh', name: 'fresh.txt' })
+        const { instance, mocks } = getWrapper({
+          conflicts: [{}],
+          conflictHandlerResult: [freshFile]
+        })
+        vi.spyOn(instance, 'prepareFiles').mockReturnValue([skippedFile, freshFile])
+
+        await instance.handleUpload([skippedFile, freshFile])
+        expect(mocks.uppy.removeFile).toHaveBeenCalledWith('skipped')
+        expect(mocks.uppy.removeFile).not.toHaveBeenCalledWith('fresh')
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
       it('sets the result of the conflict handler as uppy file state', async () => {
         const conflictHandlerResult = [mock<OcUppyFile>({ id: '1' })]
         const { instance, mocks } = getWrapper({ conflicts: [{}], conflictHandlerResult })

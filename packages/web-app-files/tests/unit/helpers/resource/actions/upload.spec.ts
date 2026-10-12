@@ -66,7 +66,7 @@ describe('upload helper', () => {
       }
     )
     it('should return no files if user chooses skip for all', async () => {
-      const OcUppyFile = mockDeep<OcUppyFile>({ name: 'test' })
+      const OcUppyFile = mockDeep<OcUppyFile>({ name: 'test', meta: { relativeFolder: '' } })
       const conflict = { name: OcUppyFile.name, type: 'file' }
 
       const instance = getResourceConflictInstance()
@@ -78,6 +78,22 @@ describe('upload helper', () => {
 
       const result = await instance.displayOverwriteDialog([OcUppyFile], [conflict])
       expect(result.files.length).toBe(0)
+    })
+    it('should keep files with the same name inside folders when skipping a file', async () => {
+      const skippedFile = mockDeep<OcUppyFile>({ name: 'test', meta: { relativeFolder: '' } })
+      const nestedFile = mockDeep<OcUppyFile>({
+        name: 'test',
+        meta: { relativeFolder: '/folder' }
+      })
+      const conflict = { name: skippedFile.name, type: 'file' }
+
+      const instance = getResourceConflictInstance()
+      instance.resolveFileExists = vi.fn(() =>
+        Promise.resolve({ strategy: ResolveStrategy.SKIP, doForAllConflicts: false })
+      )
+
+      const result = await instance.displayOverwriteDialog([skippedFile, nestedFile], [conflict])
+      expect(result.files).toEqual([nestedFile])
     })
     it('should show dialog once if do for all conflicts is ticked', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
