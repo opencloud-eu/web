@@ -86,7 +86,8 @@ function setup({
   roomWrite = false,
   // Whether the runtime has an authenticated SSE stream for this user.
   sse = true,
-  fileSizeLimit = undefined as number | undefined
+  fileSizeLimit = undefined as number | undefined,
+  folderLoadingError = undefined as HttpError
 } = {}) {
   const wasWrittenByRoom = vi.fn().mockResolvedValue(writtenByRoom)
   const beginSave = vi.fn()
@@ -131,7 +132,8 @@ function setup({
       getFileInfo,
       getFileContents,
       putFileContents,
-      closeApp
+      closeApp,
+      folderLoadingError: ref(folderLoadingError)
     })
   )
 
@@ -313,6 +315,18 @@ describe('AppWrapper — loading a file that does not exist', () => {
 
     expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
     expect(s.wrapper.findComponent({ name: 'ErrorScreen' }).exists()).toBe(false)
+  })
+})
+
+describe('AppWrapper — folder loading of apps that load their files themselves', () => {
+  it('shows the not found message when the folder of the file cannot be found', async () => {
+    const s = setup({
+      yjsEnabled: false,
+      folderLoadingError: new HttpError('Resource not found', undefined, 404)
+    })
+    await nextTick()
+
+    expect(s.wrapper.find('#app-wrapper-not-found-message').exists()).toBe(true)
   })
 })
 
