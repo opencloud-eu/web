@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: close embedded pickers with Escape [[#3630](https://github.com/opencloud-eu/web/pull/3630)]
 - fix: list links on space roots as spaces in shared via link [[#3605](https://github.com/opencloud-eu/web/pull/3605)]
 - fix: no image from the cloud in the text editor on public links [[#3632](https://github.com/opencloud-eu/web/pull/3632)]
 - fix(design-system): OcSwitch keeps its focus, OcMobileDrop takes it when opened [[#3627](https://github.com/opencloud-eu/web/pull/3627)]
