@@ -2,12 +2,7 @@ import { FolderLoader, FolderLoaderTask, TaskContext } from '../folderService'
 import { Router } from 'vue-router'
 import { useTask } from 'vue-concurrency'
 import { isLocationSharesActive } from '../../../router'
-import {
-  buildOutgoingShareResource,
-  call,
-  OutgoingShareResource,
-  SpaceResource
-} from '@opencloud-eu/web-client'
+import { buildOutgoingShareResource, call, LinkSharedSpaceResource } from '@opencloud-eu/web-client'
 import { unref } from 'vue'
 
 export class FolderLoaderSharedViaLink implements FolderLoader {
@@ -55,7 +50,7 @@ export class FolderLoaderSharedViaLink implements FolderLoader {
 
           // a link on a space root is listed as the space itself, so it looks, opens and
           // updates like in the spaces list
-          spacesStore.updateSpaceField<SpaceResource & Pick<OutgoingShareResource, 'sdate'>>({
+          spacesStore.updateSpaceField<LinkSharedSpaceResource>({
             id: space.id,
             field: 'sdate',
             value: resource.sdate
