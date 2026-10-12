@@ -150,14 +150,12 @@ describe('Notification component', () => {
         messageRichParameters: { share: { id: '1' } },
         link: 'http://some-link.com'
       })
-      const navigate = vi.fn()
-      const { wrapper } = getWrapper({
-        notifications: [notification],
-        stubs: {
-          'router-link': { template: '<a @click="navigate"><slot /></a>', methods: { navigate } }
-        }
-      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
       await flushPromises()
+      const navigate = vi.fn()
+      wrapper
+        .find(`${selectors.notificationItem} router-link-stub`)
+        .element.addEventListener('click', navigate)
       await wrapper.find(`${selectors.notificationLink} a`).trigger('click')
       expect(navigate).not.toHaveBeenCalled()
     })
@@ -219,11 +217,9 @@ describe('Notification component', () => {
 function getWrapper({
   mocks = {},
   notifications = [],
-  spaces = [],
-  stubs = {}
+  spaces = []
 }: {
   mocks?: Record<string, unknown>
-  stubs?: Record<string, unknown>
   notifications?: Notification[]
   spaces?: SpaceResource[]
 } = {}) {
@@ -240,7 +236,7 @@ function getWrapper({
         plugins: [...defaultPlugins({ piniaOptions: { spacesState: { spaces } } })],
         mocks: localMocks,
         provide: localMocks,
-        stubs: { 'user-avatar': true, OcButton: false, ...stubs }
+        stubs: { 'user-avatar': true, OcButton: false }
       }
     })
   }
