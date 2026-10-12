@@ -30,6 +30,14 @@ describe('OcMobileDrop', () => {
     wrapper.unmount()
   })
 
+  it('takes the focus when opened, so keys like Escape go to the drawer', async () => {
+    const { wrapper } = getWrapper()
+    await wrapper.find(selectors.toggle).trigger('click')
+    await nextTick()
+    expect(document.activeElement).toBe(document.getElementById('button-drawer'))
+    wrapper.unmount()
+  })
+
   it('does not render when toggle is not clicked', async () => {
     const { wrapper } = getWrapper()
     await nextTick()

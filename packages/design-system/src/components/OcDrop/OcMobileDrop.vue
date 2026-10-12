@@ -198,6 +198,9 @@ watch(bottomDrawerCardBodyRef, (dropElement, previousDropElement) => {
     getAnchor: () => document.querySelector<HTMLElement>(toggle),
     hide
   })
+  // Like the drop on larger screens, so keys (e.g. Escape) go to the drawer, not to the page
+  // behind it.
+  document.getElementById(drawerId)?.focus({ preventScroll: true })
 })
 
 onBeforeUnmount(() => {
