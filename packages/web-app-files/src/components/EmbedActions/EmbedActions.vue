@@ -11,6 +11,7 @@
       :label="$gettext('File name')"
       :error-message="fileNameErrorMessage"
       :fix-message-line="true"
+      @keydown.esc="emitCancel"
     />
 
     <div class="flex items-center ml-auto">

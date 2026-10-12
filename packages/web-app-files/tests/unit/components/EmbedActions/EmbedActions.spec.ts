@@ -306,6 +306,19 @@ describe('EmbedActions', () => {
       modal.remove()
     })
 
+    it('should emit cancel event on Escape in the file name input', async () => {
+      const { wrapper, mocks } = getWrapper({
+        currentFolder: { id: '1', path: '/', canCreate: () => true } as Resource,
+        isLocationPicker: true,
+        chooseFileName: true
+      })
+
+      await wrapper.find(selectors.fileNameInput).trigger('keydown', { key: 'Escape' })
+
+      expect(mocks.postMessageMock).toHaveBeenCalledTimes(1)
+      expect(mocks.postMessageMock).toHaveBeenCalledWith('opencloud-embed:cancel', null)
+    })
+
     it('should not emit cancel event on other keys', () => {
       const { mocks } = getWrapper()
 
