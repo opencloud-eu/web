@@ -68,6 +68,7 @@ import { useGettext } from 'vue3-gettext'
 import { AVATAR_UPLOAD_MAX_FILE_SIZE_MB } from '../../constants'
 import UserAvatar from './UserAvatar.vue'
 import ImageCropper from '../ImageCropper.vue'
+import { isDecodableImage } from '../../helpers'
 
 const userStore = useUserStore()
 const avatarsStore = useAvatarsStore()
@@ -91,7 +92,7 @@ const hasAvatar = computed(() => {
   return !!unref(avatarMap)[unref(user).id]
 })
 
-const onFileChange = (event: Event) => {
+const onFileChange = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
   if (!file) {
@@ -104,6 +105,11 @@ const onFileChange = (event: Event) => {
         size: AVATAR_UPLOAD_MAX_FILE_SIZE_MB.toString()
       })
     })
+    return
+  }
+
+  if (!(await isDecodableImage(file))) {
+    showErrorMessage({ title: $gettext('The selected image is not supported or damaged') })
     return
   }
 

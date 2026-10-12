@@ -214,3 +214,41 @@ export class AtLeastDigitsRule extends AtLeastBaseRule {
     return digitCount >= options.minLength
   }
 }
+
+export class AtMostCharactersRule implements PasswordPolicyRule {
+  protected $gettext: Language['$gettext']
+
+  constructor({ $gettext }: Language) {
+    this.$gettext = $gettext
+  }
+
+  explain(options: PasswordPolicyRuleOptions, verified: boolean): PasswordPolicyRuleExplained {
+    return {
+      code: 'atMostCharacters',
+      message: this.$gettext('At most %{param1} characters'),
+      format: [options.maxLength],
+      ...(isBoolean(verified) && { verified })
+    }
+  }
+
+  assert(options: PasswordPolicyRuleOptions, password: string): boolean {
+    // the server hashes passwords with bcrypt, which is limited in bytes, not characters
+    return new TextEncoder().encode(password || '').length <= options.maxLength
+  }
+
+  validate(options: PasswordPolicyRuleOptions): boolean {
+    if (!isObject(options)) {
+      throw new Error('options should be an object')
+    }
+
+    if (!isNumber(options.maxLength) || isNaN(options.maxLength)) {
+      throw new Error('maxLength should be a non-zero number')
+    }
+
+    return true
+  }
+
+  missing(options: PasswordPolicyRuleOptions, password: string): PasswordPolicyRuleExplained {
+    return this.explain(options, this.assert(options, password))
+  }
+}
