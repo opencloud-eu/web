@@ -459,10 +459,8 @@ export const openFileViaContextMenu = async ({
   await openWith.hover()
 
   const editorItem = page.locator(util.format(openWithAction, fileViewer))
-  await expect(async () => {
-    await openWith.hover()
-    await editorItem.click({ timeout: 1000 })
-  }).toPass()
+  await editorItem.hover()
+  await editorItem.click()
 }
 
 export const saveAs = async ({ page, newPath }: { page: Page; newPath: string }): Promise<Page> => {
