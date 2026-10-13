@@ -148,8 +148,8 @@ describe('upload helper', () => {
         `https://example.com/dav/${encodedNewFolderName}/folderInside`
       )
     })
-    it.each(['report (final)', 'x+y'])(
-      'should rename folder "%s" with regex characters when keeping both',
+    it.each(['report (final)', 'x+y', 'cost$$', 'a$&b', 'x$1'])(
+      'should rename folder "%s" with special characters when keeping both',
       async (folderName) => {
         const currentFiles = [mockDeep<Resource>({ name: folderName })]
         const file = {

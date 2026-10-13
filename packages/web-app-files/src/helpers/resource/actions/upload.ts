@@ -179,7 +179,7 @@ export class UploadResourceConflict extends ConflictDialog {
           .toString()
           .replace(
             new RegExp(`/${escapeRegExp(encodeURIComponent(fileName))}`),
-            `/${encodeURIComponent(file.name)}`
+            () => `/${encodeURIComponent(file.name)}`
           )
       }
     }
@@ -189,28 +189,30 @@ export class UploadResourceConflict extends ConflictDialog {
         const newFolderName = resolveFileNameDuplicate(folder, '', this.resourcesStore.resources)
         file.meta.relativeFolder = file.meta.relativeFolder.replace(
           new RegExp(`/${escapeRegExp(folder)}`),
-          `/${newFolderName}`
+          () => `/${newFolderName}`
         )
         file.meta.relativePath = file.meta.relativePath.replace(
           new RegExp(`/${escapeRegExp(folder)}/`),
-          `/${newFolderName}/`
+          () => `/${newFolderName}/`
         )
         file.meta.tusEndpoint = file.meta.tusEndpoint.replace(
           new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
-          `/${encodeURIComponent(newFolderName)}$1`
+          (_match: string, separator: string) => `/${encodeURIComponent(newFolderName)}${separator}`
         )
         if (file.xhrUpload?.endpoint) {
           file.xhrUpload.endpoint = file.xhrUpload.endpoint
             .toString()
             .replace(
               new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
-              `/${encodeURIComponent(newFolderName)}$1`
+              (_match: string, separator: string) =>
+                `/${encodeURIComponent(newFolderName)}${separator}`
             )
         }
         if (file.tus?.endpoint) {
           file.tus.endpoint = file.tus.endpoint.replace(
             new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
-            `/${encodeURIComponent(newFolderName)}$1`
+            (_match: string, separator: string) =>
+              `/${encodeURIComponent(newFolderName)}${separator}`
           )
         }
       }
