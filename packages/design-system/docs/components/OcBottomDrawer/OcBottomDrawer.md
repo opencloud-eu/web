@@ -8,13 +8,15 @@ prev: false
 
 ## Description
 
-The `OcBottomDrawer` component displays content in a modal bottom drawer that slides up from the bottom of the screen. When active, it opens as a dialog marked with `aria-modal`, moves focus into the drawer and traps it there. It is not opened via `showModal()`, so modals, drops and messages of the app can still be shown on top of it.
+The `OcBottomDrawer` component can be used to display content in a bottom drawer that slides up from the bottom of the screen. It is especially useful on mobile devices instead of showing dropdown menus to the user.
 
-You need to handle the opening and closing logic yourself (see example below). The drawer has a translated default accessible name; pass `ariaLabel` to provide a more specific name.
+Note however that this component mainly takes care of the visual representation of the bottom drawer. You will need to handle the opening and closing logic yourself (see example below).
+
+The drawer is announced as a modal dialog. It has a translated default accessible name, pass `ariaLabel` to provide a more specific one.
 
 ## Examples
 
-The component requires an `id`. You usually also want to define a callback on the `clicked` event.
+The component just requires an `id` to be set. But you usually also want to define a callback on the `clicked` event.
 
 Per default, the component traps your focus within the drawer when opened. This however requires at least one tabbable element (like a button or link) to be present within the drawer. Alternatively, you can disable this behavior by setting the `isFocusTrapActive` prop to `false`.
 

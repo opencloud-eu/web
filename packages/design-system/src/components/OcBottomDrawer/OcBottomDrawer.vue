@@ -1,18 +1,15 @@
 <template>
   <dialog
-    ref="dialog"
     class="oc-bottom-drawer fixed inset-0 bg-black/40 size-full"
+    :open="isDrawerActive"
     :aria-label="accessibleName"
     aria-modal="true"
     @click="$emit('clicked', $event)"
-    @cancel.prevent="$emit('close', $event)"
-    @close="isDrawerActive && $emit('close', $event)"
   >
-    <focus-trap :active="isFocusTrapActive">
+    <focus-trap :active="isFocusTrapActive" :initial-focus="getInitialFocus">
       <div
         :id="id"
         tabindex="-1"
-        autofocus
         class="fixed inset-x-0 rounded-t-xl w-full overflow-y-auto transition-all duration-200 -bottom-full overflow-x-hidden"
         :class="[
           {
@@ -30,7 +27,7 @@
 
 <script setup lang="ts">
 import { FocusTrap } from 'focus-trap-vue'
-import { computed, nextTick, unref, useTemplateRef, watch } from 'vue'
+import { computed, nextTick, watch } from 'vue'
 import { useGettext } from 'vue3-gettext'
 
 export interface Props {
@@ -75,17 +72,12 @@ const {
 
 const { $gettext } = useGettext()
 const accessibleName = computed(() => ariaLabel || $gettext('Bottom drawer'))
-const dialog = useTemplateRef<HTMLDialogElement>('dialog')
 
 export interface Emits {
   /**
    * @docs Emitted when the bottom drawer or its background is clicked.
    */
   (e: 'clicked', event: MouseEvent): void
-  /**
-   * @docs Emitted when the browser requests to dismiss the drawer or closes the native dialog.
-   */
-  (e: 'close', event: Event): void
 }
 
 defineEmits<Emits>()
@@ -99,24 +91,19 @@ export interface Slots {
 
 defineSlots<Slots>()
 
+// keeps the focus if it's already inside, e.g. when returning from a nested drawer
+function getInitialFocus() {
+  const drawerEl = document.getElementById(id)
+  return drawerEl?.contains(document.activeElement) ? document.activeElement : drawerEl
+}
+
 watch(
   () => isDrawerActive,
   async () => {
-    await nextTick()
-    const dialogEl = unref(dialog)
-
-    if (!dialogEl) {
-      return
-    }
-
     if (isDrawerActive) {
-      if (!dialogEl.open) {
-        // not showModal(): the top layer would cover modals, drops and snackbars
-        dialogEl.show()
-      }
-      document.getElementById(id)?.classList.add('active')
-    } else if (dialogEl.open) {
-      dialogEl.close()
+      await nextTick()
+      const drawerEl = document.getElementById(id)
+      drawerEl?.classList.add('active')
     }
   },
   { immediate: true }

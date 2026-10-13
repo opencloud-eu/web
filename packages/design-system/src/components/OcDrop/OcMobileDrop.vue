@@ -7,7 +7,6 @@
       :is-focus-trap-active="isCurrentlyOnTop"
       class="oc-mobile-drop z-[calc(var(--z-index-modal)+2)]"
       @clicked="onBackgroundClicked"
-      @close="onClose"
     >
       <oc-card
         class="bg-role-surface-container-high overflow-x-hidden rounded-b-none"

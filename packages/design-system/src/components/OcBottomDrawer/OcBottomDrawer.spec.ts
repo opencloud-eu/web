@@ -1,8 +1,13 @@
 import { defaultPlugins, mount, PartialComponentProps } from '@opencloud-eu/web-test-helpers'
 import OcBottomDrawer from './OcBottomDrawer.vue'
 import { nextTick } from 'vue'
+import { FocusTrap } from 'focus-trap-vue'
 
 describe('OcBottomDrawer', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   describe('active state', () => {
     it('adds the active class when the drawer is active', async () => {
       const addClassMock = vi.fn()
@@ -14,7 +19,6 @@ describe('OcBottomDrawer', () => {
 
       expect(addClassMock).toHaveBeenCalled()
       expect(wrapper.find('dialog').attributes('open')).toBeDefined()
-      expect(wrapper.find('dialog').attributes('aria-label')).toBe('Bottom drawer')
     })
     it('does not add the active class when the drawer is not active', async () => {
       const addClassMock = vi.fn()
@@ -27,55 +31,48 @@ describe('OcBottomDrawer', () => {
       expect(addClassMock).not.toHaveBeenCalled()
       expect(wrapper.find('dialog').attributes('open')).toBeUndefined()
     })
-
-    it('opens an active drawer as a named dialog outside of the top layer', async () => {
+  })
+  describe('accessibility', () => {
+    it('has a default accessible name', () => {
+      const { wrapper } = getWrapper()
+      expect(wrapper.find('dialog').attributes('aria-label')).toBe('Bottom drawer')
+    })
+    it('uses the given accessible name', () => {
       const { wrapper } = getWrapper({ ariaLabel: 'File actions' })
-      const dialog = wrapper.find('dialog').element as HTMLDialogElement
-      const show = vi.fn(() => dialog.setAttribute('open', ''))
-      const showModal = vi.fn()
-      Object.defineProperty(dialog, 'show', { value: show })
-      Object.defineProperty(dialog, 'showModal', { value: showModal })
-
-      await nextTick()
-
-      expect(show).toHaveBeenCalledOnce()
-      expect(showModal).not.toHaveBeenCalled()
-      expect(dialog.getAttribute('aria-label')).toBe('File actions')
-      expect(dialog.getAttribute('aria-modal')).toBe('true')
-      expect(dialog.querySelector('[autofocus]')).not.toBeNull()
+      expect(wrapper.find('dialog').attributes('aria-label')).toBe('File actions')
     })
-
-    it('forwards native cancel and close events', () => {
+    it('is marked as modal', () => {
       const { wrapper } = getWrapper()
-      const dialog = wrapper.find('dialog')
-      const cancel = new Event('cancel', { cancelable: true })
-      const close = new Event('close')
-
-      dialog.element.dispatchEvent(cancel)
-      dialog.element.dispatchEvent(close)
-
-      expect(cancel.defaultPrevented).toBe(true)
-      expect(wrapper.emitted('close')).toEqual([[cancel], [close]])
+      expect(wrapper.find('dialog').attributes('aria-modal')).toBe('true')
     })
-
-    it('closes the dialog when the drawer becomes inactive', async () => {
-      const { wrapper } = getWrapper()
-      const dialog = wrapper.find('dialog').element as HTMLDialogElement
-      const close = vi.fn(() => {
-        dialog.removeAttribute('open')
-        dialog.dispatchEvent(new Event('close'))
+    it('moves the focus into the drawer when the focus trap activates', () => {
+      const { wrapper } = getWrapper({
+        isFocusTrapActive: true,
+        attachTo: document.body,
+        stubs: { FocusTrap: true }
       })
-      Object.defineProperty(dialog, 'show', {
-        value: vi.fn(() => dialog.setAttribute('open', ''))
+      const getInitialFocus = wrapper
+        .findComponent(FocusTrap)
+        .props('initialFocus') as () => Element
+      const drawerEl = wrapper.find('#some-id').element
+
+      expect(getInitialFocus()).toBe(drawerEl)
+      wrapper.unmount()
+    })
+    it('keeps the focus if it is already inside the drawer', () => {
+      const { wrapper } = getWrapper({
+        isFocusTrapActive: true,
+        attachTo: document.body,
+        stubs: { FocusTrap: true }
       })
-      Object.defineProperty(dialog, 'close', { value: close })
+      const getInitialFocus = wrapper
+        .findComponent(FocusTrap)
+        .props('initialFocus') as () => Element
+      const button = wrapper.find('button').element as HTMLButtonElement
+      button.focus()
 
-      await nextTick()
-      await wrapper.setProps({ isDrawerActive: false })
-      await nextTick()
-
-      expect(close).toHaveBeenCalledOnce()
-      expect(wrapper.emitted('close')).toBeUndefined()
+      expect(getInitialFocus()).toBe(button)
+      wrapper.unmount()
     })
   })
   describe('full height', () => {
@@ -96,15 +93,24 @@ describe('OcBottomDrawer', () => {
   })
 })
 
-const getWrapper = (props: PartialComponentProps<typeof OcBottomDrawer> = {}) => {
+const getWrapper = ({
+  attachTo,
+  stubs,
+  ...props
+}: PartialComponentProps<typeof OcBottomDrawer> & {
+  attachTo?: HTMLElement
+  stubs?: Record<string, boolean>
+} = {}) => {
   return {
     wrapper: mount(OcBottomDrawer, {
+      attachTo,
+      slots: { default: '<button>Action</button>' },
       props: {
         id: 'some-id',
         isFocusTrapActive: false,
         ...props
       },
-      global: { renderStubDefaultSlot: true, plugins: [...defaultPlugins()] }
+      global: { renderStubDefaultSlot: true, stubs, plugins: [...defaultPlugins()] }
     })
   }
 }
