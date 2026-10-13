@@ -25,8 +25,11 @@ export interface YjsAdapter {
    * Render the current Y.Doc state to the native file format for WebDAV PUT
    * and the local `isDirty` check in the app wrapper. Runs continuously and
    * on every peer, triggered by Y.Doc/meta changes.
+   *
+   * **Must be synchronous.** The session pairs the result with the doc's
+   * state vector, which must not move while serializing.
    */
-  serialize(ydoc: Y.Doc): string | Promise<string>
+  serialize(ydoc: Y.Doc): string
 
   /**
    * Returns true if the adapter has populated the Y.Doc with app data.
@@ -40,9 +43,6 @@ export interface YjsAdapter {
    * Called when the persisted Y.Doc turns out to be stale (e.g. an external
    * file write happened between sessions); the elected client then
    * re-hydrates from the fresh native content.
-   *
-   * Optional; adapters that omit this won't recover from a stale-state
-   * signal in-place; the session falls back to forcing a full reload.
    */
-  reset?(ydoc: Y.Doc): void
+  reset(ydoc: Y.Doc): void
 }

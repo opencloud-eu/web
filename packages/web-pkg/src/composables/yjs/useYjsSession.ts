@@ -129,7 +129,7 @@ export interface YjsSession {
    * is about to write. Used to retry a conflicted save without dropping the
    * peer edits that caused the conflict.
    */
-  serializeMerged: () => Promise<string | null>
+  serializeMerged: () => string | null
   /**
    * Whether a write announced with this etag came from inside the room, i.e.
    * the room's etag stamp already names it. Always false in local mode.
@@ -155,7 +155,7 @@ export interface YjsSession {
    * Report a pending doc change right away. Call it before deciding about
    * unsaved work, e.g. before saving or leaving, so the last keystrokes count.
    */
-  flushContent: () => Promise<void>
+  flushContent: () => void
 }
 
 const META_KEY = '_oc_meta'
@@ -508,12 +508,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     stopProvider(prov)
   }
 
-  async function serializeDoc(doc: Y.Doc): Promise<string | null> {
+  function serializeDoc(doc: Y.Doc): string | null {
     const current = toValue(adapter)
     if (doc.isDestroyed || !current.hasContent(doc)) return null
-    const value = await Promise.resolve(current.serialize(doc))
-    if (doc.isDestroyed) return null
-    return value
+    return current.serialize(doc)
   }
 
   /** See {@link YjsSession.beginSave}. */
@@ -524,14 +522,12 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /** See {@link YjsSession.serializeMerged}. */
-  async function serializeMerged(): Promise<string | null> {
+  function serializeMerged(): string | null {
     const doc = unref(ydoc)
     if (!doc || doc.isDestroyed) return null
-    // Taken before serializing, for the same reason as in the debounced emit.
-    const vector = Y.encodeStateVector(doc)
-    const value = await serializeDoc(doc)
+    const value = serializeDoc(doc)
     if (value === null) return null
-    pendingSaveStateVector = vector
+    pendingSaveStateVector = Y.encodeStateVector(doc)
     return value
   }
 
@@ -784,15 +780,6 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   ): Promise<boolean> {
     const current = toValue(adapter)
     const meta = sessionMeta(doc)
-    if (typeof current.reset !== 'function') {
-      lockForReload(
-        prov,
-        $gettext(
-          'This file was changed externally and your editor cannot recover in-place. Please reload.'
-        )
-      )
-      return false
-    }
 
     const grant = recoveryGrant(etag)
     let isServerGrant = false
@@ -807,7 +794,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       return false
     }
     // The rewrite would wipe what was typed while waiting for the grant.
-    if (unref(isReady)) await activeReporter?.flush()
+    if (unref(isReady)) activeReporter?.flush()
     if (doc.isDestroyed || unref(ydoc) !== doc) return giveUp()
     if (unref(effectiveReadOnly) || unref(isConflicted)) return giveUp()
     // The rewrite for this etag already landed.
@@ -831,7 +818,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     isRewritingDoc = true
     try {
       doc.transact(() => {
-        current.reset?.(doc)
+        current.reset(doc)
         current.hydrate(doc, content)
       })
 
@@ -895,33 +882,20 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    */
   function createContentReporter(doc: Y.Doc) {
     let timer: number | undefined
-    let inFlight: Promise<void> | null = null
-    function serialize(): Promise<void> {
-      if (doc.isDestroyed) return Promise.resolve()
-      // Vector taken before serializing: adapters may serialize
-      // asynchronously, and a peer update landing in between must not be
-      // counted as part of what we reported.
-      const vectorAtSerialize = Y.encodeStateVector(doc)
-      return serializeDoc(doc).then((value) => {
-        if (value === null) return
-        lastReportedStateVector = vectorAtSerialize
-        lastReportedContent = value
-        onContentChange(value)
-      })
-    }
-    function report(): Promise<void> {
+    function report() {
       // Re-checked: the debounce window can outlive the change that opened it.
-      if (!canReportContent()) return Promise.resolve()
-      // Chained onto a running report: two concurrent serializations could
-      // settle out of order, and the older one would then win.
-      const previous = inFlight
-      const run: Promise<void> = (previous ? previous.then(serialize) : serialize())
-        .catch((e) => console.error('[yjs] serialize for content update failed:', e))
-        .finally(() => {
-          if (inFlight === run) inFlight = null
-        })
-      inFlight = run
-      return run
+      if (!canReportContent()) return
+      let value: string | null
+      try {
+        value = serializeDoc(doc)
+      } catch (e) {
+        console.error('[yjs] serialize for content update failed:', e)
+        return
+      }
+      if (value === null) return
+      lastReportedStateVector = Y.encodeStateVector(doc)
+      lastReportedContent = value
+      onContentChange(value)
     }
     function onDocUpdate() {
       if (!canReportContent()) return
@@ -930,7 +904,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       timer = window.setTimeout(() => {
         timer = undefined
         hasPendingContent.value = false
-        void report()
+        report()
       }, SERIALIZE_DEBOUNCE_MS)
     }
     /**
@@ -938,12 +912,12 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
      * debounce, and a decision about unsaved work must not miss a keystroke
      * from inside that window. A doc with no pending report stays untouched.
      */
-    function flush(): Promise<void> {
-      if (timer === undefined) return inFlight ?? Promise.resolve()
+    function flush() {
+      if (timer === undefined) return
       window.clearTimeout(timer)
       timer = undefined
       hasPendingContent.value = false
-      return report()
+      report()
     }
     function cancel() {
       if (timer !== undefined) window.clearTimeout(timer)
@@ -1070,7 +1044,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     isRewritingDoc = true
     reporter.cancel()
 
-    if (content === null || typeof current.reset !== 'function') {
+    if (content === null) {
       // No conflict toast, there are no changes to be copied - they're gone.
       markConflicted(false)
       console.error('[yjs] the room discarded unsaved work that cannot be restored')
@@ -1092,7 +1066,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       if (doc.isDestroyed) return
       try {
         doc.transact(() => {
-          current.reset?.(doc)
+          current.reset(doc)
           current.hydrate(doc, content)
         })
         isRewritingDoc = false
@@ -1133,9 +1107,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       // Peer-save fan-out. The fresh etag keeps our next If-Match correct.
       // The content only follows when the peer's snapshot covers everything
       // we hold; otherwise our dirty flag would drop over edits that never
-      // reached the peer's PUT and they could leave with the tab. Re-checked
-      // after serializing because a keystroke can land while that runs.
-      // Not on a recovery that costs us our work: the rewriting peer's etag
+      // reached the peer's PUT and they could leave with the tab. Not on a recovery that costs us our work: the rewriting peer's etag
       // would make our next If-Match match, so a manual save would overwrite
       // the body they just put on disk.
       if (isRemoteMetaWrite && !resyncWouldDropOurWork) {
@@ -1155,14 +1127,13 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
         }
         if (event.keysChanged.has('lastSavedAt')) {
           const theirState = meta.get('savedStateVector')
-          if (theirState instanceof Uint8Array) {
-            serializeDoc(doc)
-              .then((value) => {
-                if (value === null || doc.isDestroyed) return
-                if (!peerSaveCoversUs(doc, theirState)) return
-                onServerContentChange(value)
-              })
-              .catch((e) => console.error('[yjs] serialize for peer-save sync failed:', e))
+          if (theirState instanceof Uint8Array && peerSaveCoversUs(doc, theirState)) {
+            try {
+              const value = serializeDoc(doc)
+              if (value !== null) onServerContentChange(value)
+            } catch (e) {
+              console.error('[yjs] serialize for peer-save sync failed:', e)
+            }
           }
         }
       }
@@ -1193,7 +1164,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
       }
 
       if (isRemoteMetaWrite && event.keysChanged.has('isStale') && meta.get('isStale') === true) {
-        void onRemoteStaleFlag(doc, meta, reporter)
+        onRemoteStaleFlag(reporter)
       }
     }
   }
@@ -1204,10 +1175,8 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * peers did at flag time, or we are clean and follow the rewrite
    * (`onExternalUpdate` fires when it lands).
    */
-  async function onRemoteStaleFlag(doc: Y.Doc, meta: SessionMetaMap, reporter: ContentReporter) {
-    await reporter.flush()
-    if (doc.isDestroyed || unref(ydoc) !== doc) return
-    if (meta.get('isStale') !== true) return
+  function onRemoteStaleFlag(reporter: ContentReporter) {
+    reporter.flush()
     if (unref(isConflicted) || unref(isLockedForReload)) return
     if (toValue(hasUnsavedChanges)) markConflicted()
   }
@@ -1220,10 +1189,10 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
   }
 
   /** See {@link YjsSession.flushContent}. */
-  async function flushContent() {
+  function flushContent() {
     // Before that, the doc only holds what hydration put there, nothing typed.
     if (!unref(isReady)) return
-    await activeReporter?.flush()
+    activeReporter?.flush()
   }
 
   /** See {@link YjsSession.adoptEtag}. */
@@ -1247,9 +1216,9 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
    * content and etag all moved. Reports the serialized form: the next
    * debounced report produces the same string, so the file stays clean.
    */
-  async function reportRecovered(doc: Y.Doc, etag: string) {
-    const value = await serializeDoc(doc)
-    if (value === null || doc.isDestroyed || unref(ydoc) !== doc) return
+  function reportRecovered(doc: Y.Doc, etag: string) {
+    const value = serializeDoc(doc)
+    if (value === null) return
     lastReportedStateVector = Y.encodeStateVector(doc)
     lastReportedContent = value
     onContentChange(value)
@@ -1274,8 +1243,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     const meta = sessionMeta(doc)
     if (meta.get('etag') === etag) return 'skipped'
 
-    await activeReporter?.flush()
-    if (doc.isDestroyed || unref(ydoc) !== doc) return 'skipped'
+    activeReporter?.flush()
 
     if (toValue(hasUnsavedChanges)) {
       if (!prov) {
@@ -1298,7 +1266,7 @@ export function useYjsSession(options: YjsSessionOptions): YjsSession {
     // of them through.
     const recovered = await recoverFromStaleState(doc, prov, { content, etag })
     if (!recovered) return unref(isConflicted) ? 'conflicted' : 'skipped'
-    await reportRecovered(doc, etag)
+    reportRecovered(doc, etag)
     onExternalUpdate?.()
     return 'recovered'
   }
