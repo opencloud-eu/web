@@ -14,7 +14,7 @@
     "vue-concurrency": "5.0.3",
     "uuid": "14.0.2",
     "vue-router": "5.4.0",
-    "zod": "4.6.5"
+    "zod": "4.6.7"
   },
   "devDependencies": {
     "@opencloud-eu/web-test-helpers": "workspace:*"
