@@ -1,8 +1,9 @@
+import { dirname } from 'path'
 import { mock, mockDeep } from 'vitest-mock-extended'
 import { Language } from 'vue3-gettext'
 import { UploadResourceConflict } from '../../../../../src/helpers/resource'
 import { ResolveStrategy, OcUppyFile, useResourcesStore } from '@opencloud-eu/web-pkg'
-import { Resource } from '@opencloud-eu/web-client'
+import { Resource, urlJoin } from '@opencloud-eu/web-client'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 
 const getResourceConflictInstance = ({
@@ -284,6 +285,104 @@ describe('upload helper', () => {
         expect(xhrResult.meta.tusEndpoint).toBe(`${baseUrl}/${newFolder}`)
         expect(xhrResult.xhrUpload.endpoint).toBe(`${baseUrl}/${newFolder}`)
       })
+    })
+    describe('keep both endpoints', () => {
+      const folderNames = ['Photos', 'a$$b', "a$&b $' (x)", 'a+b %20', 'Ünï cødé 日本', "a'b!*~"]
+      const baseUrls = [
+        'https://example.com/dav/spaces/abc$def',
+        'https://example.com/dav/public-files/tok'
+      ]
+      const cases = folderNames.flatMap((folder) =>
+        baseUrls.flatMap((baseUrl) =>
+          ['/', `/${folder}`, `/x/${folder}/${folder}`].flatMap((currentFolder) =>
+            [true, false].map((tus) => ({ folder, baseUrl, currentFolder, tus }))
+          )
+        )
+      )
+
+      function getEndpoint(baseUrl: string, currentFolder: string, segments: string[]) {
+        const webDavUrl = urlJoin(
+          baseUrl,
+          currentFolder.split('/').map(encodeURIComponent).join('/')
+        )
+        return urlJoin(webDavUrl, segments.map(encodeURIComponent).join('/'))
+      }
+
+      // builds the file like HandleUpload.prepareFiles does
+      function buildUploadFile(
+        relativePath: string,
+        name: string,
+        type: string,
+        { baseUrl, currentFolder, tus }: { baseUrl: string; currentFolder: string; tus: boolean }
+      ) {
+        const directory = dirname(relativePath)
+        const endpointSegments = directory.split('/').filter(Boolean)
+        if (!tus) {
+          endpointSegments.push(name)
+        }
+        const endpoint = getEndpoint(baseUrl, currentFolder, endpointSegments)
+        return {
+          id: relativePath,
+          name,
+          type,
+          meta: {
+            relativePath,
+            relativeFolder: type === 'directory' ? urlJoin(directory, name) : directory,
+            tusEndpoint: endpoint
+          },
+          [tus ? 'tus' : 'xhrUpload']: { endpoint },
+          endpointSegments
+        }
+      }
+
+      it.each(cases)(
+        'renames only the uploaded folder "$folder" in "$currentFolder" of $baseUrl (tus: $tus)',
+        async (options) => {
+          const { folder } = options
+          const newFolder = `${folder} (1)`
+          const files = [
+            buildUploadFile(`/${folder}`, folder, 'directory', options),
+            buildUploadFile(`/${folder}/${folder}`, folder, 'directory', options),
+            buildUploadFile(
+              `/${folder}/sub/${folder}/${folder}.txt`,
+              `${folder}.txt`,
+              'file',
+              options
+            ),
+            buildUploadFile(`/${folder}/a.txt`, 'a.txt', 'file', options)
+          ]
+          const expected = files.map((file) => ({
+            relativeFolder: `/${newFolder}${file.meta.relativeFolder.slice(folder.length + 1)}`,
+            endpoint: getEndpoint(
+              options.baseUrl,
+              options.currentFolder,
+              file.endpointSegments.map((segment, i) => (i === 0 ? newFolder : segment))
+            )
+          }))
+          const instance = getResourceConflictInstance({
+            currentFiles: [mockDeep<Resource>({ name: folder })]
+          })
+          instance.resolveFileExists = vi.fn(() =>
+            Promise.resolve({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+          )
+
+          const result = await instance.displayOverwriteDialog(files as unknown as OcUppyFile[], [
+            { name: folder, type: 'folder' }
+          ])
+
+          expect(result.files.length).toBe(files.length)
+          for (const [index, file] of result.files.entries()) {
+            expect(file.meta.relativeFolder).toBe(expected[index].relativeFolder)
+            expect(file.meta.tusEndpoint).toBe(expected[index].endpoint)
+            expect(file[options.tus ? 'tus' : 'xhrUpload'].endpoint).toBe(expected[index].endpoint)
+          }
+          expect(result.files[1].meta.relativePath).toBe(`/${newFolder}/${folder}`)
+          expect(result.files[2].meta.relativePath).toBe(
+            `/${newFolder}/sub/${folder}/${folder}.txt`
+          )
+          expect(result.files[3].meta.relativePath).toBe(`/${newFolder}/a.txt`)
+        }
+      )
     })
     it('should return merged folder names when user chooses merge', async () => {
       const folderName = 'someFolder'
