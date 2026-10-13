@@ -184,6 +184,8 @@ const currentContent = ref<unknown>()
  */
 const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
+// Unsaved changes of a deleted file can't be saved anymore, so they don't hold the app open.
+let isResourceDeleted = false
 let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
@@ -804,6 +806,10 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
     return
   }
 
+  isResourceDeleted = true
+  clearInterval(autosaveIntervalId)
+  autosaveIntervalId = null
+
   if (appOnDeleteResourceCallback) {
     return appOnDeleteResourceCallback()
   }
@@ -879,6 +885,11 @@ const dropDownMenuSections = computed(() => {
 
 // Returns instead of calling `next`: the unsaved changes modal resolves the navigation later.
 onBeforeRouteLeave(() => {
+  if (isResourceDeleted) {
+    unregisterAppBarExtension()
+    return true
+  }
+
   flushPendingContent()
   if (!unref(isDirty)) {
     unregisterAppBarExtension()
