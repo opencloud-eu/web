@@ -88,7 +88,7 @@ import { AppToken } from '../../helpers/appTokens'
 import { storeToRefs } from 'pinia'
 
 const { modal } = defineProps<{ modal: Modal }>()
-defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel', 'created'])
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
@@ -133,6 +133,7 @@ const createAppToken = async () => {
       params: { label, expiry }
     })
     createdToken.value = data.token
+    emit('created')
   } catch (error) {
     console.error(error)
     showErrorMessage({

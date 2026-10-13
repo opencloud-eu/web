@@ -139,6 +139,17 @@ describe('AppTokens component', () => {
 
       expect(dispatchModal).toHaveBeenCalled()
     })
+    it('reloads the app tokens when a token has been created', async () => {
+      const { wrapper, mocks } = getWrapper()
+      await flushPromises()
+      await wrapper.find(selectors.createAppTokenBtn).trigger('click')
+      const { dispatchModal } = useModals()
+      const { onCreated } = vi.mocked(dispatchModal).mock.calls[0][0].customComponentAttrs()
+      ;(onCreated as () => void)()
+      await flushPromises()
+
+      expect(mocks.$clientService.httpAuthenticated.get).toHaveBeenCalledTimes(2)
+    })
   })
 })
 
