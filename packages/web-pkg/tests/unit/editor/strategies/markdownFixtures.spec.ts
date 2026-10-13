@@ -12,8 +12,9 @@ vi.mock('vue3-gettext', () => ({
 const fixturesDir = join(import.meta.dirname, 'fixtures', 'markdown')
 // The editor reads these differently from marked on purpose, so they skip the render
 // check: an empty item below text, task syntax in ordered lists, under or tab
-// indented content below a task item, an indented tilde fence (marked keeps its
-// indentation) and a list starting at 0 (the editor starts it at 1).
+// indented content below a task item, content indented two spaces below an ordered
+// item, an indented tilde fence (marked keeps its indentation) and a list starting
+// at 0 (the editor starts it at 1).
 const unlikeMarkedDir = join(fixturesDir, 'unlike-marked')
 
 interface Fixture {
@@ -62,13 +63,14 @@ function loadFixtures(dir: string): Fixture[] {
 }
 
 // Reference renderer for both the original and the saved markdown. The list tokenizer
-// makes marked read a lone `- ` as an empty item, as CommonMark does.
+// makes marked read a lone `- ` as an empty item, as CommonMark does. Content indented
+// two spaces below an ordered item is left to CommonMark.
 // The render check is weak where marked differs from the editor, which the exact
 // output check covers: marked reads letter or roman lists and frontmatter as
 // paragraphs, expands tabs in list items to spaces, and normalize() folds nbsp into
 // a space.
 const marked = new Marked()
-registerMarkdownListTokenizer(marked)
+registerMarkdownListTokenizer(marked, { alignOrderedItemContent: false })
 
 const blockTagPattern = /^(BLOCKQUOTE|H[1-6]|HR|OL|P|PRE|TABLE|UL)$/
 
