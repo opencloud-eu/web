@@ -6,13 +6,10 @@
 
 @AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
-### ✅ Tests
-
-- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
-- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
-
 ### 🐛 Bug Fixes
 
+- fix: keep filter chips in sync with the URL on back and forward [[#3699](https://github.com/opencloud-eu/web/pull/3699)]
+- fix: don't limit the length of vault passwords [[#3727](https://github.com/opencloud-eu/web/pull/3727)]
 - fix: sum up all files in the upload quota check [[#3698](https://github.com/opencloud-eu/web/pull/3698)]
 - fix: keep both on upload for special-character and same-named folders [[#3693](https://github.com/opencloud-eu/web/pull/3693)]
 - fix: wait for user data before showing the user batch actions [[#3733](https://github.com/opencloud-eu/web/pull/3733)]
@@ -77,6 +74,11 @@
 - fix(web-pkg): align the rename button with the name when the path is shown [[#3551](https://github.com/opencloud-eu/web/pull/3551)]
 - fix(web-app-files): highlight the search term in the names of the search results [[#3555](https://github.com/opencloud-eu/web/pull/3555)]
 - fix: improve mobile layouts with css-only adjustments [[#3549](https://github.com/opencloud-eu/web/pull/3549)]
+
+### ✅ Tests
+
+- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
 
 ### 📈 Enhancement
 
