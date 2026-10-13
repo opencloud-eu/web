@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: open external notification links in a new tab [[#3743](https://github.com/opencloud-eu/web/pull/3743)]
 - fix: allow svg and webp images in the editor cloud image picker [[#3707](https://github.com/opencloud-eu/web/pull/3707)]
 - fix: ignore desktop file drops on breadcrumb items [[#3706](https://github.com/opencloud-eu/web/pull/3706)]
 - fix: round custom quotas to whole bytes [[#3695](https://github.com/opencloud-eu/web/pull/3695)]
