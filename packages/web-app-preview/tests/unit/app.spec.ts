@@ -329,6 +329,28 @@ describe('Preview app', () => {
       expect(requestedNames(mocks)).toEqual([])
       expect(wrapper.emitted('update:resource')).toBeUndefined()
     })
+
+    it('passes the requested file on so the top bar can show it with a close button', async () => {
+      vi.mocked(queryItemAsString).mockReturnValue('plain-text-file')
+      const textFile = {
+        id: 'plain-text-file',
+        fileId: 'plain-text-file',
+        name: 'plain.txt',
+        mimeType: 'text/plain',
+        path: 'personal/admin/plain.txt',
+        hidden: false,
+        canDownload: () => true
+      }
+      const { wrapper } = createShallowMountWrapper({
+        currentFileContext: { fileName: 'plain.txt' },
+        files: [...activeFiles, textFile],
+        isFolderLoading: false
+      })
+      await flushPromises()
+
+      expect(wrapper.text()).toContain('Failed to load "plain.txt"')
+      expect(wrapper.emitted('update:resource')).toEqual([[textFile]])
+    })
   })
 
   describe('Generated "mediaFiles"', () => {

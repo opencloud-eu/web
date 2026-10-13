@@ -417,6 +417,12 @@ const setActiveFile = () => {
   // the requested file is no media file (or gone), don't show another file instead
   activeIndex.value = undefined
   isFileNotFound.value = true
+
+  // still show the top bar with the file name and a close button
+  const requestedFile = activeFiles?.find((file) => file[filterAttr] === unref(fileId))
+  if (requestedFile) {
+    emit('update:resource', requestedFile)
+  }
 }
 
 const onSelectPhotoRollItem = (index: number) => {
