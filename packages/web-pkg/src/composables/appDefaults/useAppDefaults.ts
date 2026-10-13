@@ -19,7 +19,7 @@ import { RequestResult, useRequest } from '../authContext'
 import { useClientService } from '../clientService'
 import { MaybeRef } from '../../utils'
 import { useDriveResolver } from '../driveResolver'
-import { urlJoin } from '@opencloud-eu/web-client'
+import { isShareSpaceResource, urlJoin } from '@opencloud-eu/web-client'
 import { useAppsStore, useAuthStore } from '../piniaStores'
 import { storeToRefs } from 'pinia'
 
@@ -58,13 +58,17 @@ export function useAppDefaults(options: AppDefaultsOptions): AppDefaultsResult {
       path = urlJoin(queryItemAsString(unref(currentRoute).params.filePath))
     }
 
+    // a single file shared with the user is the root of its share space, whose path ends with the share id
+    const isFileShareRoot =
+      isShareSpaceResource(unref(space)) && (!unref(item) || unref(item) === '/')
+
     return {
       path,
       driveAliasAndItem: unref(driveAliasAndItem),
       space: unref(space),
       item: unref(item),
       itemId: unref(itemId),
-      fileName: basename(path),
+      fileName: (isFileShareRoot && unref(space).name) || basename(path),
       routeName: queryItemAsString(unref(currentRoute).query[contextRouteNameKey]),
       ...contextQueryToFileContextProps(unref(currentRoute).query)
     }
