@@ -6,8 +6,15 @@
 
 @AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
+### ✅ Tests
+
+- fix(e2e): retry open-with submenu click to fix flaky context menu [[#3757](https://github.com/opencloud-eu/web/pull/3757)]
+- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
+
 ### 🐛 Bug Fixes
 
+- fix: sum up all files in the upload quota check [[#3698](https://github.com/opencloud-eu/web/pull/3698)]
+- fix: keep both on upload for special-character and same-named folders [[#3693](https://github.com/opencloud-eu/web/pull/3693)]
 - fix: wait for user data before showing the user batch actions [[#3733](https://github.com/opencloud-eu/web/pull/3733)]
 - fix: stop the share recipient search spinner when the search fails [[#3717](https://github.com/opencloud-eu/web/pull/3717)]
 - fix: show the file name instead of the share id for single file shares in apps [[#3714](https://github.com/opencloud-eu/web/pull/3714)]
@@ -93,12 +100,11 @@
 - feat: add font and app illustrations to the empty states [[#3556](https://github.com/opencloud-eu/web/pull/3556)]
 - feat(rclone-crypt): use the password generator and policy for vault passwords [[#3537](https://github.com/opencloud-eu/web/pull/3537)]
 
-### ✅ Tests
-
-- test: remove duplicated sidebar/context-menu variant coverage in e2e [[#3520](https://github.com/opencloud-eu/web/pull/3520)]
-
 ### 📦️ Dependencies
 
+- chore(deps): update dependency filesize to v11.0.26 [[#3643](https://github.com/opencloud-eu/web/pull/3643)]
+- chore(deps): update dependency p-queue to v9.3.5 [[#3642](https://github.com/opencloud-eu/web/pull/3642)]
+- fix(deps): update dependency uuid to v14.0.3 [[#3640](https://github.com/opencloud-eu/web/pull/3640)]
 - chore(deps): update hocuspocus monorepo to v4.7.1 [[#3746](https://github.com/opencloud-eu/web/pull/3746)]
 - chore(deps): update dependency dompurify to v3.4.17 [[#3745](https://github.com/opencloud-eu/web/pull/3745)]
 - chore(deps): update collabora/code docker tag to v26.04.5.1.1 [[#3634](https://github.com/opencloud-eu/web/pull/3634)]
