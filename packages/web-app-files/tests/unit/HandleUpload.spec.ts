@@ -387,6 +387,95 @@ describe('HandleUpload', () => {
         expect(result).toBeFalsy()
       })
     })
+    describe('quota check after conflict handling', () => {
+      function setup({
+        remaining,
+        resolvedFiles,
+        mergedFolders = [] as string[],
+        resources = [] as Resource[]
+      }: {
+        remaining: number
+        resolvedFiles: OcUppyFile[]
+        mergedFolders?: string[]
+        resources?: Resource[]
+      }) {
+        const space = mock<SpaceResource>({
+          driveType: 'project',
+          id: '1',
+          spaceQuota: { remaining },
+          isOwner: () => true,
+          getWebDavUrl: () => 'https://localhost/dav/spaces/1'
+        })
+        const { instance, mocks } = getWrapper({
+          spaces: [space],
+          conflicts: [mock<Resource>()],
+          conflictHandlerResult: resolvedFiles,
+          mergedFolders
+        })
+        unref(mocks.opts.route).name = locationSpacesGeneric.name
+        mocks.opts.space.value = space
+        mocks.opts.resourcesStore.currentFolder = mock<Resource>({ path: '/', storageId: '1' })
+        mocks.opts.resourcesStore.resources = resources
+        const showErrorMessageSpy = vi.spyOn(mocks.opts.messageStore, 'showErrorMessage')
+        return { instance, mocks, showErrorMessageSpy }
+      }
+      function uppyFile(name: string, size: number, relativePath?: string) {
+        return {
+          id: name,
+          name,
+          type: 'text/plain',
+          data: { size, lastModified: 0 } as File,
+          meta: { relativePath }
+        } as unknown as OcUppyFile
+      }
+
+      it('does not block files that are uploaded into a merged folder', async () => {
+        const files = [uppyFile('a', 60, '/folder/a'), uppyFile('b', 60, '/folder/b')]
+        const { instance, mocks, showErrorMessageSpy } = setup({
+          remaining: 100,
+          resolvedFiles: files,
+          mergedFolders: ['folder']
+        })
+        await instance.handleUpload(files)
+        expect(showErrorMessageSpy).not.toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
+      it('blocks a folder that is kept as a copy and exceeds the quota', async () => {
+        const files = [uppyFile('a', 60, '/folder/a'), uppyFile('b', 60, '/folder/b')]
+        const { instance, mocks, showErrorMessageSpy } = setup({
+          remaining: 100,
+          resolvedFiles: files
+        })
+        await instance.handleUpload(files)
+        expect(displayOverwriteDialogMock).toHaveBeenCalled()
+        expect(showErrorMessageSpy).toHaveBeenCalled()
+        expect(mocks.uppy.removeFile).toHaveBeenCalledTimes(2)
+        expect(mocks.opts.uppyService.publish).not.toHaveBeenCalledWith('uploadStarted')
+        expect(mocks.opts.uppyService.uploadFiles).not.toHaveBeenCalled()
+      })
+      it('does not count a skipped file', async () => {
+        const skipped = uppyFile('big', 200)
+        const small = uppyFile('small', 10)
+        const { instance, mocks, showErrorMessageSpy } = setup({
+          remaining: 100,
+          resolvedFiles: [small]
+        })
+        await instance.handleUpload([skipped, small])
+        expect(showErrorMessageSpy).not.toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
+      it('subtracts the size of a replaced file', async () => {
+        const replaced = uppyFile('file', 150)
+        const { instance, mocks, showErrorMessageSpy } = setup({
+          remaining: 100,
+          resolvedFiles: [replaced],
+          resources: [mock<Resource>({ name: 'file', size: 100 })]
+        })
+        await instance.handleUpload([replaced])
+        expect(showErrorMessageSpy).not.toHaveBeenCalled()
+        expect(mocks.opts.uppyService.uploadFiles).toHaveBeenCalled()
+      })
+    })
     describe('conflict handling check', () => {
       it('checks for conflicts if check enabled', async () => {
         const { instance } = getWrapper()
