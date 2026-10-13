@@ -109,6 +109,25 @@ describe('List component', () => {
     expect(replacementCounter).toBe(queries.length)
     expect(wrapper.emitted('search').length).toBe(4)
   })
+  it('clears the tag filter chip when the tags are removed from the route', async () => {
+    const $router = createRouter({
+      routes: [{ name: 'files-common-search', path: '/files-common-search', redirect: null }],
+      history: createMemoryHistory()
+    })
+    const { wrapper } = getWrapper({
+      availableTags: ['foo'],
+      mocks: { $router },
+      stubs: { ItemFilter: false }
+    })
+    await $router.push({ name: 'files-common-search', query: { q_tags: 'foo' } })
+    await flushPromises()
+    const tagFilter = wrapper.findComponent<typeof ItemFilter>(selectors.tagFilter)
+    expect((tagFilter.vm as any).selectedItems).toEqual([{ id: 'foo', label: 'foo' }])
+
+    await $router.replace({ name: 'files-common-search', query: {} })
+    await flushPromises()
+    expect((tagFilter.vm as any).selectedItems).toEqual([])
+  })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
       const { wrapper } = getWrapper()
@@ -250,7 +269,8 @@ function getWrapper({
   lastModifiedFilterQuery = null,
   mocks = {},
   sortFields = [],
-  folderViewComponent = undefined
+  folderViewComponent = undefined,
+  stubs = {}
 }: {
   availableTags?: string[]
   resources?: Resource[]
@@ -264,6 +284,7 @@ function getWrapper({
   mocks?: Record<string, unknown>
   sortFields?: SortField[]
   folderViewComponent?: Component
+  stubs?: Record<string, boolean | Component>
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
@@ -307,7 +328,8 @@ function getWrapper({
         provide: localMocks,
         stubs: {
           FilesViewWrapper: false,
-          AppBar: AppBarStub
+          AppBar: AppBarStub,
+          ...stubs
         },
         plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
       }
