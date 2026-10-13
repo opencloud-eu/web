@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix(editor): keep escaped thematic breaks as paragraph text [[#3765](https://github.com/opencloud-eu/web/pull/3765)]
 - fix: open mobile bottom drawers as named modal dialogs [[#3645](https://github.com/opencloud-eu/web/pull/3645)]
 - fix: open external notification links in a new tab [[#3743](https://github.com/opencloud-eu/web/pull/3743)]
 - fix: allow svg and webp images in the editor cloud image picker [[#3707](https://github.com/opencloud-eu/web/pull/3707)]
