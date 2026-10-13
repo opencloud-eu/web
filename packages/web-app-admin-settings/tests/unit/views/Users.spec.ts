@@ -359,6 +359,18 @@ describe('Users view', () => {
         )
         expect(mocks.$router.push).not.toHaveBeenCalled()
       })
+      it('resets the selection when the search term in the route changes', async () => {
+        const { mocks } = getMountedWrapper({
+          mountType: mount,
+          displayNameFilterQuery: 'Albert',
+          selectedUsers: [{ id: '2' }] as User[]
+        })
+        await flushPromises()
+        const userSettingsStore = useUserSettingsStore()
+        delete mocks.$router.currentRoute.value.query.q_displayName
+        await flushPromises()
+        expect(userSettingsStore.setSelectedUsers).toHaveBeenCalledWith([])
+      })
     })
   })
 })

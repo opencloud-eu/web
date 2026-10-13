@@ -278,13 +278,17 @@ const loadAdditionalUserDataTask = useTask(function* (signal, user: User) {
   Object.assign(user, data)
 })
 
-function reloadFilteredUsers() {
-  loadUsersTask.perform()
+function resetSelection() {
   if (unref(selectedUsers).length) {
     // only reset the selection if there is one because it messes with the focus otherwise
     userSettingsStore.setSelectedUsers([])
   }
   additionalUserDataLoadedForUserIds.value = []
+}
+
+function reloadFilteredUsers() {
+  loadUsersTask.perform()
+  resetSelection()
   return router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 }
 
@@ -319,6 +323,7 @@ watch(searchTermQuery, (value) => {
   searchTerm.value = term
   appliedSearchTerm.value = term
   loadUsersTask.perform()
+  resetSelection()
 })
 
 const batchActions = computed(() =>
