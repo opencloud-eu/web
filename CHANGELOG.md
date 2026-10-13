@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: reload app tokens once a token is created [[#3692](https://github.com/opencloud-eu/web/pull/3692)]
+- fix: apply delegated token updates in embed mode [[#3686](https://github.com/opencloud-eu/web/pull/3686)]
 - fix: don't add already selected rows again on shift arrow in admin settings [[#3691](https://github.com/opencloud-eu/web/pull/3691)]
 - fix: stop the search preview from hanging when a provider search fails [[#3690](https://github.com/opencloud-eu/web/pull/3690)]
 - fix(web-runtime): handle wrong passwords on the public link page [[#3592](https://github.com/opencloud-eu/web/pull/3592)]
