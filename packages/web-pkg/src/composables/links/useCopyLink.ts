@@ -16,33 +16,45 @@ export const useCopyLink = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const { copy } = useClipboard()
 
-  const getTextToCopy = ({
+  function getTextToCopy({
     result,
     password
   }: {
     result: PromiseSettledResult<LinkShare>[]
     password?: string
-  }) => {
+  }) {
     const succeeded = result.filter(isPromiseFulfilled)
 
-    let copyToClipboardText = ''
+    // Only copy to clipboard if the user tries to create one single link
+    if (!succeeded.length || result.length !== 1) {
+      return ''
+    }
+
+    if (password) {
+      return $gettext('%{link} Password: %{password}', {
+        link: succeeded[0].value.webUrl,
+        password
+      })
+    }
+
+    return succeeded[0].value.webUrl
+  }
+
+  function showMessages({
+    result,
+    copied
+  }: {
+    result: PromiseSettledResult<LinkShare>[]
+    copied: boolean
+  }) {
+    const succeeded = result.filter(isPromiseFulfilled)
     if (succeeded.length) {
       let successMessage = $gettext('Link has been created successfully')
 
       if (result.length === 1) {
-        // Only copy to clipboard if the user tries to create one single link
-        try {
-          copyToClipboardText = password
-            ? $gettext('%{link} Password: %{password}', {
-                link: succeeded[0].value.webUrl,
-                password
-              })
-            : succeeded[0].value.webUrl
-
-          successMessage = $gettext('The link has been copied to your clipboard.')
-        } catch (e) {
-          console.warn('Unable to copy link to clipboard', e)
-        }
+        successMessage = copied
+          ? $gettext('The link has been copied to your clipboard.')
+          : $gettext("The link has been created, but it couldn't be copied to your clipboard.")
       }
 
       showMessage({
@@ -57,8 +69,6 @@ export const useCopyLink = () => {
         title: $ngettext('Failed to create link', 'Failed to create links', failed.length)
       })
     }
-
-    return copyToClipboardText
   }
 
   const copyLink = async ({
@@ -71,30 +81,35 @@ export const useCopyLink = () => {
     // special handling for Safari because it doesn't allow async clipboard writes. works in most other browsers as well.
     // see https://wolfgangrittner.dev/how-to-use-clipboard-api-in-safari/ and https://developer.apple.com/forums/thread/691873
     if (typeof ClipboardItem && navigator.clipboard.write) {
-      await new Promise<void>((resolve, reject) => {
-        const blobPromise = createLinkHandler().then((result) => {
-          const textToCopy = getTextToCopy({ result, password })
-          const blob = new Blob([textToCopy], { type: 'text/plain' })
-          resolve()
-          return blob
-        })
-        // handle the rejection here, so it doesn't go unhandled if the clipboard write already failed
-        blobPromise.catch(reject)
-
-        const text = new ClipboardItem({ 'text/plain': blobPromise })
-
-        navigator.clipboard.write([text]).catch((e) => {
-          console.warn('Unable to copy link to clipboard', e)
-        })
+      const resultPromise = createLinkHandler()
+      const blobPromise = resultPromise.then((result) => {
+        const textToCopy = getTextToCopy({ result, password })
+        return new Blob([textToCopy], { type: 'text/plain' })
       })
-    } else {
-      // edge case for browsers that don't support ClipboardItem (e.g. Firefox)
-      const result = await createLinkHandler()
-      const textToCopy = getTextToCopy({ result, password })
-      if (textToCopy) {
-        copy(textToCopy)
+      // a failing link creation is handled by awaiting resultPromise below
+      blobPromise.catch((): void => undefined)
+
+      let copied = true
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ 'text/plain': blobPromise })])
+      } catch (e) {
+        copied = false
+        console.warn('Unable to copy link to clipboard', e)
       }
+
+      const result = await resultPromise
+      showMessages({ result, copied })
+      return
     }
+
+    // edge case for browsers that don't support ClipboardItem (e.g. Firefox)
+    const result = await createLinkHandler()
+    const textToCopy = getTextToCopy({ result, password })
+    if (textToCopy) {
+      // copy() falls back to document.execCommand('copy'), which doesn't report failures
+      await copy(textToCopy)
+    }
+    showMessages({ result, copied: true })
   }
 
   return { copyLink }
