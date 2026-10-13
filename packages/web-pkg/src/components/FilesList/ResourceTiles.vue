@@ -47,7 +47,7 @@
     <oc-list class="oc-tiles grid justify-start gap-3">
       <li
         v-for="resource in resources"
-        :key="`${resource.id}-${resource.etag}`"
+        :key="resource.id"
         class="oc-tiles-item has-item-context-menu"
       >
         <resource-tile
@@ -173,6 +173,7 @@ import {
   useEmbedMode,
   useSideBar,
   FileActionOptions,
+  useResourceEtagChange,
   useResourceViewHelpers
 } from '../../composables'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
@@ -230,6 +231,12 @@ defineSlots<{
 }>()
 
 const { $gettext } = useGettext()
+
+// load the preview of a changed resource again
+useResourceEtagChange(
+  () => resources,
+  (resource) => emit('itemVisible', resource)
+)
 const resourcesStore = useResourcesStore()
 const { areFileExtensionsShown } = storeToRefs(resourcesStore)
 const { isLocationPicker, isFilePicker } = useEmbedMode()

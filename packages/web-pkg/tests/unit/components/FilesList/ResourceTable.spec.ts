@@ -550,6 +550,19 @@ describe('ResourceTable', () => {
       ).toBeFalsy()
     })
 
+    it('keeps the row, so an open context menu stays open, when its resource changed', async () => {
+      const resource = { ...resourcesWithAllFields[0], etag: 'old' }
+      const { wrapper } = getMountedWrapper({ resources: [resource] })
+      const row = wrapper.find('.oc-tbody-tr').element
+
+      await wrapper.setProps({ resources: [{ ...resource, etag: 'new' }] })
+
+      expect(wrapper.find('.oc-tbody-tr').element).toBe(row)
+      expect(wrapper.emitted('itemVisible').at(-1)).toEqual([
+        expect.objectContaining({ etag: 'new' })
+      ])
+    })
+
     it('removes invalid chars from item ids for usage in html template', async () => {
       const { wrapper } = getMountedWrapper()
       const contextMenuTriggers = await wrapper.findAll('.resource-table-btn-action-dropdown')
