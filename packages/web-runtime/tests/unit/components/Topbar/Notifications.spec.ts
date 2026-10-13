@@ -142,6 +142,23 @@ describe('Notification component', () => {
       await flushPromises()
       expect(wrapper.find(selectors.notificationLink).exists()).toBeTruthy()
     })
+    it('does not trigger the item navigation when clicked', async () => {
+      const notification = mock<Notification>({
+        messageRich: undefined,
+        computedMessage: undefined,
+        object_type: 'share',
+        messageRichParameters: { share: { id: '1' } },
+        link: 'http://some-link.com'
+      })
+      const { wrapper } = getWrapper({ notifications: [notification] })
+      await flushPromises()
+      const navigate = vi.fn()
+      wrapper
+        .find(`${selectors.notificationItem} router-link-stub`)
+        .element.addEventListener('click', navigate)
+      await wrapper.find(`${selectors.notificationLink} a`).trigger('click')
+      expect(navigate).not.toHaveBeenCalled()
+    })
     describe('if given via messageRichParameters', () => {
       it('renders notification as link for shares', async () => {
         const notification = mock<Notification>({
