@@ -19,6 +19,16 @@ interface ConflictedResource {
   type: string
 }
 
+// renames the first of the relative segments the endpoint ends with, leaving the current folder path untouched
+function renameUploadFolderInEndpoint(endpoint: string, segments: string[], newFolderName: string) {
+  const encodedTail = `/${segments.map(encodeURIComponent).join('/')}`
+  if (!segments.length || !endpoint.endsWith(encodedTail)) {
+    return endpoint
+  }
+  const newTail = [newFolderName, ...segments.slice(1)].map(encodeURIComponent).join('/')
+  return `${endpoint.slice(0, -encodedTail.length)}/${newTail}`
+}
+
 export class UploadResourceConflict extends ConflictDialog {
   resourcesStore: ResourcesStore
 
@@ -187,6 +197,10 @@ export class UploadResourceConflict extends ConflictDialog {
       const filesInFolder = files.filter((e) => e.meta.relativeFolder.split('/')[1] === folder)
       for (const file of filesInFolder) {
         const newFolderName = resolveFileNameDuplicate(folder, '', this.resourcesStore.resources)
+        const folderSegments = file.meta.relativeFolder.split('/').filter(Boolean)
+        // a directory entry's relative folder includes its own name, its tus endpoint doesn't
+        const tusSegments = file.type === 'directory' ? folderSegments.slice(0, -1) : folderSegments
+        const xhrSegments = [...tusSegments, file.name]
         file.meta.relativeFolder = file.meta.relativeFolder.replace(
           new RegExp(`/${escapeRegExp(folder)}`),
           () => `/${newFolderName}`
@@ -195,24 +209,23 @@ export class UploadResourceConflict extends ConflictDialog {
           new RegExp(`/${escapeRegExp(folder)}/`),
           () => `/${newFolderName}/`
         )
-        file.meta.tusEndpoint = file.meta.tusEndpoint.replace(
-          new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
-          (_match: string, separator: string) => `/${encodeURIComponent(newFolderName)}${separator}`
+        file.meta.tusEndpoint = renameUploadFolderInEndpoint(
+          file.meta.tusEndpoint,
+          file.xhrUpload?.endpoint ? xhrSegments : tusSegments,
+          newFolderName
         )
         if (file.xhrUpload?.endpoint) {
-          file.xhrUpload.endpoint = file.xhrUpload.endpoint
-            .toString()
-            .replace(
-              new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
-              (_match: string, separator: string) =>
-                `/${encodeURIComponent(newFolderName)}${separator}`
-            )
+          file.xhrUpload.endpoint = renameUploadFolderInEndpoint(
+            file.xhrUpload.endpoint.toString(),
+            xhrSegments,
+            newFolderName
+          )
         }
         if (file.tus?.endpoint) {
-          file.tus.endpoint = file.tus.endpoint.replace(
-            new RegExp(`/${escapeRegExp(encodeURIComponent(folder))}(/|$)`),
-            (_match: string, separator: string) =>
-              `/${encodeURIComponent(newFolderName)}${separator}`
+          file.tus.endpoint = renameUploadFolderInEndpoint(
+            file.tus.endpoint,
+            tusSegments,
+            newFolderName
           )
         }
       }

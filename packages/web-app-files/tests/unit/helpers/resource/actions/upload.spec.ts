@@ -204,6 +204,87 @@ describe('upload helper', () => {
         )
       }
     )
+    describe('uploaded folder has the same name as the current folder', () => {
+      const baseUrl = 'https://example.com/dav/Photos'
+      const newFolder = encodeURIComponent('Photos (1)')
+
+      async function keepBoth(file: OcUppyFile) {
+        const instance = getResourceConflictInstance({
+          currentFiles: [mockDeep<Resource>({ name: 'Photos' })]
+        })
+        instance.resolveFileExists = vi.fn(() =>
+          Promise.resolve({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+        )
+        const result = await instance.displayOverwriteDialog(
+          [file],
+          [{ name: 'Photos', type: 'folder' }]
+        )
+        return result.files[0]
+      }
+
+      it('should rename the uploaded folder in the endpoints of a nested file', async () => {
+        const file = {
+          id: 'file',
+          name: 'a.txt',
+          meta: {
+            relativeFolder: '/Photos/sub',
+            relativePath: '/Photos/sub/a.txt',
+            tusEndpoint: `${baseUrl}/Photos/sub`
+          },
+          tus: { endpoint: `${baseUrl}/Photos/sub` }
+        } as unknown as OcUppyFile
+
+        const result = await keepBoth(file)
+
+        expect(result.meta.tusEndpoint).toBe(`${baseUrl}/${newFolder}/sub`)
+        expect(result.tus.endpoint).toBe(`${baseUrl}/${newFolder}/sub`)
+      })
+      it('should rename the uploaded folder in the xhr endpoint of a file', async () => {
+        const file = {
+          id: 'file',
+          name: 'a.txt',
+          meta: {
+            relativeFolder: '/Photos',
+            relativePath: '/Photos/a.txt',
+            tusEndpoint: `${baseUrl}/Photos/a.txt`
+          },
+          xhrUpload: { endpoint: `${baseUrl}/Photos/a.txt` }
+        } as unknown as OcUppyFile
+
+        const result = await keepBoth(file)
+
+        expect(result.meta.tusEndpoint).toBe(`${baseUrl}/${newFolder}/a.txt`)
+        expect(result.xhrUpload.endpoint).toBe(`${baseUrl}/${newFolder}/a.txt`)
+      })
+      it('should rename the uploaded folder in the endpoints of its directory entry', async () => {
+        const tusFolder = {
+          id: 'tus-folder',
+          name: 'Photos',
+          type: 'directory',
+          meta: { relativeFolder: '/Photos', relativePath: '/Photos', tusEndpoint: baseUrl },
+          tus: { endpoint: baseUrl }
+        } as unknown as OcUppyFile
+        const xhrFolder = {
+          id: 'xhr-folder',
+          name: 'Photos',
+          type: 'directory',
+          meta: {
+            relativeFolder: '/Photos',
+            relativePath: '/Photos',
+            tusEndpoint: `${baseUrl}/Photos`
+          },
+          xhrUpload: { endpoint: `${baseUrl}/Photos` }
+        } as unknown as OcUppyFile
+
+        const tusResult = await keepBoth(tusFolder)
+        const xhrResult = await keepBoth(xhrFolder)
+
+        expect(tusResult.meta.tusEndpoint).toBe(baseUrl)
+        expect(tusResult.tus.endpoint).toBe(baseUrl)
+        expect(xhrResult.meta.tusEndpoint).toBe(`${baseUrl}/${newFolder}`)
+        expect(xhrResult.xhrUpload.endpoint).toBe(`${baseUrl}/${newFolder}`)
+      })
+    })
     it('should return merged folder names when user chooses merge', async () => {
       const folderName = 'someFolder'
       const fileInFolder = mockDeep<OcUppyFile>({
