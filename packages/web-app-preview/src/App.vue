@@ -4,6 +4,10 @@
       <oc-spinner :aria-label="$gettext('Loading media file')" size="xlarge" />
     </div>
   </div>
+  <div v-else-if="isFileNotFound" class="size-full flex flex-col items-center justify-center">
+    <oc-icon name="file-damage" size-class="size-12" color="var(--oc-role-error)" />
+    <p>{{ $gettext('Failed to load "%{filename}"', { filename: requestedFileName }) }}</p>
+  </div>
   <div
     v-else
     ref="preview"
@@ -182,6 +186,7 @@ const { isFullScreenModeActivated, toggleFullScreenMode } = useFullScreenMode()
 const activeIndex = ref<number>()
 const mediaFiles = ref<MediaFile[]>([])
 const folderLoaded = ref(false)
+const isFileNotFound = ref(false)
 const isAutoPlayEnabled = ref(true)
 const isAutoAdvancing = ref(false)
 const photoRollEnabled = ref(true)
@@ -224,6 +229,7 @@ const sortDir = computed<SortDir>(() => {
 
 const fileIdQuery = useRouteQuery('fileId')
 const fileId = computed(() => queryItemAsString(unref(fileIdQuery)))
+const requestedFileName = computed(() => unref(currentFileContext?.fileName))
 
 const buildMediaFiles = () => {
   if (!activeFiles) {
@@ -394,19 +400,23 @@ const updateLocalHistory = () => {
 }
 
 const setActiveFile = () => {
-  for (let i = 0; i < unref(mediaFiles).length; i++) {
-    const filterAttr = isLocationSharesActive(router, 'files-shares-with-me')
-      ? 'remoteItemId'
-      : 'fileId'
+  const filterAttr = isLocationSharesActive(router, 'files-shares-with-me')
+    ? 'remoteItemId'
+    : 'fileId'
 
-    // match the given file id with the filtered files to get the current index
-    if (unref(mediaFiles)[i].resource[filterAttr] === unref(fileId)) {
-      activeIndex.value = i
-      return
-    }
-
-    activeIndex.value = 0
+  // match the given file id with the filtered files to get the current index
+  const index = unref(mediaFiles).findIndex(
+    ({ resource }) => resource[filterAttr] === unref(fileId)
+  )
+  if (index !== -1 || !unref(fileId)) {
+    isFileNotFound.value = false
+    activeIndex.value = Math.max(index, 0)
+    return
   }
+
+  // the requested file is no media file (or gone), don't show another file instead
+  activeIndex.value = undefined
+  isFileNotFound.value = true
 }
 
 const onSelectPhotoRollItem = (index: number) => {
