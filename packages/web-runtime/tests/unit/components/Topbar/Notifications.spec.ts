@@ -149,7 +149,7 @@ describe('Notification component', () => {
           object_type: 'share',
           messageRichParameters: {
             user: { displayname: 'Albert Einstein' },
-            resource: { name: 'someFile.txt' },
+            resource: { id: 'storage$space!item', name: 'someFile.txt' },
             share: { id: '1' }
           },
           computedMessage: undefined,
@@ -165,7 +165,7 @@ describe('Notification component', () => {
           'files-shares-with-me'
         )
         expect((routerLink.props('to') as RouteLocationNamedRaw).query).toEqual({
-          scrollTo: notification.messageRichParameters.share.id
+          scrollTo: notification.messageRichParameters.resource.id
         })
       })
       it('renders notification as link for spaces', async () => {
