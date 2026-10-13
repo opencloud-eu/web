@@ -254,6 +254,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         (c) => !uppyFile.meta.relativeFolder && c.name === uppyFile.name
       )
       const existingFileSize = existingFile ? Number(existingFile.size) : 0
+      // remote files may have an unknown size, which would turn the sum into NaN
+      const uploadSize = (uppyFile.data.size || 0) - existingFileSize
 
       const matchingMappingRecord = acc.find(
         (mappingRecord) => mappingRecord.space.id === targetUploadSpace.id
@@ -262,12 +264,12 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       if (!matchingMappingRecord) {
         acc.push({
           space: targetUploadSpace,
-          uploadSize: uppyFile.data.size - existingFileSize
+          uploadSize
         })
         return acc
       }
 
-      matchingMappingRecord.uploadSize += uppyFile.data.size - existingFileSize
+      matchingMappingRecord.uploadSize += uploadSize
 
       return acc
     }, [])
