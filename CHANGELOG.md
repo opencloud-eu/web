@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: no error when a drop is hidden while updating its position [[#3702](https://github.com/opencloud-eu/web/pull/3702)]
 - fix(editor): keep escaped thematic breaks as paragraph text [[#3765](https://github.com/opencloud-eu/web/pull/3765)]
 - fix: open mobile bottom drawers as named modal dialogs [[#3645](https://github.com/opencloud-eu/web/pull/3645)]
 - fix: open external notification links in a new tab [[#3743](https://github.com/opencloud-eu/web/pull/3743)]
