@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: allow svg and webp images in the editor cloud image picker [[#3707](https://github.com/opencloud-eu/web/pull/3707)]
+- fix: ignore desktop file drops on breadcrumb items [[#3706](https://github.com/opencloud-eu/web/pull/3706)]
 - fix: round custom quotas to whole bytes [[#3695](https://github.com/opencloud-eu/web/pull/3695)]
 - fix: keep the selection after link changes in shared via link and shared with others [[#3696](https://github.com/opencloud-eu/web/pull/3696)]
 - fix: keep folder and extensionless names intact when renaming with hidden extensions [[#3687](https://github.com/opencloud-eu/web/pull/3687)]
