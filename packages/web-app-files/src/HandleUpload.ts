@@ -49,8 +49,8 @@ export interface HandleUploadOptions {
  * Plugin to handle the file upload with uppy. The process goes through the following steps:
  *
  * 1. convert input files to uppy resources
- * 2. check quota if spaces are enabled
- * 3. handle potential naming conflicts
+ * 2. handle potential naming conflicts
+ * 3. check quota if spaces are enabled
  * 4. create directory tree if needed
  * 5. start upload
  */
@@ -226,13 +226,19 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     return Object.values(filesToUpload)
   }
 
-  checkQuotaExceeded(filesToUpload: OcUppyFile[]): boolean {
+  checkQuotaExceeded(filesToUpload: OcUppyFile[], mergedFolders: string[] = []): boolean {
     let quotaExceeded = false
 
     const uploadSizeSpaceMapping = filesToUpload.reduce((acc, uppyFile) => {
       let targetUploadSpace: SpaceResource
 
-      if (uppyFile.meta.routeName === locationPublicLink.name) {
+      // folder dummies have no size and would turn the summed upload size into NaN
+      if (uppyFile.type === 'directory' || uppyFile.meta.routeName === locationPublicLink.name) {
+        return acc
+      }
+
+      // existing file sizes in merged folders are unknown, the server enforces the quota there
+      if (mergedFolders.some((folder) => uppyFile.meta.relativeFolder.split('/')[1] === folder)) {
         return acc
       }
 
@@ -253,6 +259,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
         (c) => !uppyFile.meta.relativeFolder && c.name === uppyFile.name
       )
       const existingFileSize = existingFile ? Number(existingFile.size) : 0
+      // remote files may have an unknown size, which would turn the sum into NaN
+      const uploadSize = (uppyFile.data.size || 0) - existingFileSize
 
       const matchingMappingRecord = acc.find(
         (mappingRecord) => mappingRecord.space.id === targetUploadSpace.id
@@ -261,19 +269,22 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       if (!matchingMappingRecord) {
         acc.push({
           space: targetUploadSpace,
-          uploadSize: uppyFile.data.size - existingFileSize
+          uploadSize
         })
         return acc
       }
 
-      matchingMappingRecord.uploadSize = uppyFile.data.size - existingFileSize
+      matchingMappingRecord.uploadSize += uploadSize
 
       return acc
     }, [])
 
     const { $gettext } = this.language
     uploadSizeSpaceMapping.forEach(({ space, uploadSize }) => {
-      if (space.spaceQuota.remaining && space.spaceQuota.remaining < uploadSize) {
+      if (
+        typeof space.spaceQuota.remaining === 'number' &&
+        space.spaceQuota.remaining < uploadSize
+      ) {
         let spaceName = space.name
 
         if (space.driveType === 'personal') {
@@ -452,19 +463,11 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
       }
     }
 
-    // quota check
-    if (this.quotaCheckEnabled) {
-      const quotaExceeded = this.checkQuotaExceeded(filesToUpload)
-      if (quotaExceeded) {
-        this.removeFilesFromUpload(filesToUpload)
-        return this.uppyService.clearInputs()
-      }
-    }
-
     // name conflict handling. skipped when uploads target a folder other than the
     // user's current one (caller used setUploadFolder, e.g. unzip extracting into a
     // fresh folder). getConflicts only checks the current folder and would fire
     // false positives in that case.
+    const preparedFiles = filesToUpload
     let mergedFolders: string[] = []
     if (this.conflictHandlingEnabled && this.isCurrentFolder(uploadFolder)) {
       const conflictHandler = new UploadResourceConflict(this.resourcesStore, this.language)
@@ -489,6 +492,15 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
           return acc
         }, {})
         this.uppy.setState({ files: { ...this.uppy.getState().files, ...conflictMap } })
+      }
+    }
+
+    // quota check after the conflict handling, so that only files that will actually be uploaded count
+    if (this.quotaCheckEnabled) {
+      const quotaExceeded = this.checkQuotaExceeded(filesToUpload, mergedFolders)
+      if (quotaExceeded) {
+        this.removeFilesFromUpload(preparedFiles)
+        return this.uppyService.clearInputs()
       }
     }
 
