@@ -607,7 +607,7 @@ importers:
         version: 3.7.2
       p-queue:
         specifier: ^9.0.0
-        version: 9.3.3
+        version: 9.3.5
       pinia:
         specifier: 4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3))
@@ -1119,7 +1119,7 @@ importers:
         version: 3.5.0
       p-queue:
         specifier: ^9.1.0
-        version: 9.3.3
+        version: 9.3.5
       password-sheriff:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1231,7 +1231,7 @@ importers:
         version: 3.5.0
       p-queue:
         specifier: ^9.3.0
-        version: 9.3.3
+        version: 9.3.5
       pinia:
         specifier: 4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3))
@@ -4226,8 +4226,8 @@ packages:
     resolution: {integrity: sha512-I4Prw6ivkd6p8PiYR1tXASOAOBzIJwu0TB7fqaX0c/8c3QAehNYmX57EijyGGGBt3c/BIowGwV03RVBtXvHEVg==}
     engines: {node: '>=18'}
 
-  p-queue@9.3.3:
-    resolution: {integrity: sha512-NXAOdnEe5FsZJfT4oK84lE1Y5cFFdWlRuOo5tww8DyNMxyRXwn39fIkUtNLKppcPC+UYU/bXujNCUGDv01y7CA==}
+  p-queue@9.3.5:
+    resolution: {integrity: sha512-Lki/zhXFVmDhesBUn/yHRLW9Bte7mE7xoFHzTR8sIomV7a2z+LxYAPkGvdfidNiu4fKSfjtawixxSHcZci5QcQ==}
     engines: {node: '>=20'}
 
   p-retry@8.0.1:
@@ -6378,7 +6378,7 @@ snapshots:
       mime-match: 1.0.2
       namespace-emitter: 2.0.1
       nanoid: 6.0.1
-      p-queue: 9.3.3
+      p-queue: 9.3.5
       p-retry: 8.0.1
       preact: 10.29.8
     transitivePeerDependencies:
@@ -8232,7 +8232,7 @@ snapshots:
 
   p-map@7.0.6: {}
 
-  p-queue@9.3.3:
+  p-queue@9.3.5:
     dependencies:
       eventemitter3: 5.0.4
       p-timeout: 7.0.1
