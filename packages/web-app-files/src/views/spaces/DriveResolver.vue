@@ -128,6 +128,12 @@ onMounted(async () => {
         field: 'publicLinkPermission',
         value: publicSpace.publicLinkPermission
       })
+      // a folder link has a file id of its own, a single file link doesn't
+      updateSpaceField<PublicSpaceResource>({
+        id: unref(space).id,
+        field: 'fileId',
+        value: publicSpace.fileId
+      })
 
       // FIXME: check for type when server sends public-link-permission dav property
       if (publicSpace.publicLinkPermission === SharePermissionBit.Create) {
