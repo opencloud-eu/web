@@ -12,6 +12,8 @@ The `OcBottomDrawer` component can be used to display content in a bottom drawer
 
 Note however that this component mainly takes care of the visual representation of the bottom drawer. You will need to handle the opening and closing logic yourself (see example below).
 
+The drawer is announced as a modal dialog. It has a translated default accessible name, pass `ariaLabel` to provide a more specific one.
+
 ## Examples
 
 The component just requires an `id` to be set. But you usually also want to define a callback on the `clicked` event.
