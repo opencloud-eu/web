@@ -9,7 +9,8 @@ import { useAppsStore } from '../../src/piniaStores'
 
 const selectors = {
   loadingSpinner: '#app-loading-spinner',
-  routerView: '[data-testid="app-store-router-view"]'
+  routerView: '[data-testid="app-store-router-view"]',
+  loadingFailed: '#app-store-loading-failed'
 }
 
 describe('LayoutContainer', () => {
@@ -23,13 +24,32 @@ describe('LayoutContainer', () => {
     await nextTicks(2)
     expect(wrapper.find(selectors.loadingSpinner).exists()).toBeFalsy()
     expect(wrapper.find(selectors.routerView).exists()).toBeTruthy()
+    expect(wrapper.find(selectors.loadingFailed).exists()).toBeFalsy()
+  })
+  it('shows an error without a retry instead of the router view when loading apps failed', async () => {
+    const { wrapper } = getWrapper({ loadingFailed: true })
+    await nextTicks(2)
+    expect(wrapper.find(selectors.routerView).exists()).toBeFalsy()
+    expect(wrapper.find(selectors.loadingFailed).exists()).toBeTruthy()
+    expect(wrapper.find(`${selectors.loadingFailed} [role="alert"]`).text()).toBe(
+      'The apps could not be loaded'
+    )
+    expect(wrapper.find(`${selectors.loadingFailed} button`).exists()).toBeFalsy()
   })
 })
 
-function getWrapper({ keepLoadingApps }: { keepLoadingApps?: boolean }) {
+function getWrapper({
+  keepLoadingApps,
+  loadingFailed = false
+}: {
+  keepLoadingApps?: boolean
+  loadingFailed?: boolean
+}) {
   const plugins = defaultPlugins({})
 
-  const { loadApps } = useAppsStore()
+  const appsStore = useAppsStore()
+  appsStore.loadingFailed = loadingFailed
+  const { loadApps } = appsStore
   vi.mocked(loadApps).mockReturnValue(
     new Promise((res) => {
       if (!keepLoadingApps) {
