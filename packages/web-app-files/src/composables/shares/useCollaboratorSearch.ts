@@ -58,7 +58,11 @@ export const useCollaboratorAutocomplete = (
   const minSearchLength = computed(() => capabilityStore.sharingSearchMinLength)
 
   const fetchRecipientsTask = useTask(function* (signal, query: string) {
-    autocompleteResults.value = yield* call(fetchResults(query, signal))
+    try {
+      autocompleteResults.value = yield* call(fetchResults(query, signal))
+    } catch (e) {
+      console.error(e)
+    }
     searchInProgress.value = false
   }).restartable()
 

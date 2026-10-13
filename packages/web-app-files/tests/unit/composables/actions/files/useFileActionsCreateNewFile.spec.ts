@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { ref, unref } from 'vue'
+import { unref } from 'vue'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { RouteLocation } from '@opencloud-eu/web-test-helpers'
@@ -24,7 +24,7 @@ describe('useFileActionsCreateNewFile', () => {
       getWrapper({
         space,
         setup: ({ openFile }) => {
-          openFile(mock<Resource>(), null)
+          openFile(space, mock<Resource>(), null)
 
           const { upsertResource } = useResourcesStore()
           expect(upsertResource).toHaveBeenCalled()
@@ -61,7 +61,7 @@ describe('useFileActionsCreateNewFile', () => {
           space,
           currentFolder: mock<Resource>({ id: '1', path: '/', permissions, canUpload: () => true }),
           setup: ({ actions }) => {
-            expect(unref(actions)[0].isVisible()).toBe(visible)
+            expect(unref(actions)[0].isVisible({ space })).toBe(visible)
           }
         })
       }
@@ -170,7 +170,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useFileActionsCreateNewFile({ space: ref(space) })
+        const instance = useFileActionsCreateNewFile()
         setup(instance)
       },
       {
