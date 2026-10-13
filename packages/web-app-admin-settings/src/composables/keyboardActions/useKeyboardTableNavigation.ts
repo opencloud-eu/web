@@ -70,7 +70,7 @@ export function useKeyboardTableNavigation(
       : unref(keyActions.selectionCursor) < 0
     if (isShrinkingSelection) {
       toggleLastSelectedRow()
-    } else {
+    } else if (!unref(selectedRows).some((row) => row.id === nextResource.id)) {
       selectedRows.value.push(nextResource)
     }
 
