@@ -64,6 +64,60 @@ describe('AuthService', () => {
         })
       }
     )
+
+    it('applies delegated token updates received after sign-in', async () => {
+      const authService = new AuthService()
+      const updateContext = vi.fn()
+
+      Object.defineProperty(authService, 'userManager', {
+        value: {
+          updateContext,
+          getAndClearPostLoginRedirectUrl: () => '/'
+        }
+      })
+
+      const configStore = useConfigStore()
+      configStore.options = { embed: { enabled: true, delegateAuthentication: true } }
+      initAuthService({ authService, configStore, router: createRouter() })
+      await authService.signInCallback('initial-token', 'session-id')
+
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: {
+            name: 'opencloud-embed:update-token',
+            data: { access_token: 'new-token', session_id: 'session-id' }
+          }
+        })
+      )
+
+      expect(updateContext).toHaveBeenLastCalledWith('new-token', 'session-id', false)
+    })
+
+    it('ignores delegated token updates without an access token', async () => {
+      const authService = new AuthService()
+      const updateContext = vi.fn()
+
+      Object.defineProperty(authService, 'userManager', {
+        value: {
+          updateContext,
+          getAndClearPostLoginRedirectUrl: () => '/'
+        }
+      })
+
+      const configStore = useConfigStore()
+      configStore.options = { embed: { enabled: true, delegateAuthentication: true } }
+      initAuthService({ authService, configStore, router: createRouter() })
+      await authService.signInCallback('initial-token', 'session-id')
+      updateContext.mockClear()
+
+      window.dispatchEvent(
+        new MessageEvent('message', {
+          data: { name: 'opencloud-embed:update-token', data: { session_id: 'session-id' } }
+        })
+      )
+
+      expect(updateContext).not.toHaveBeenCalled()
+    })
   })
 
   describe('initializeContext', () => {
