@@ -20,9 +20,19 @@ function createKeyActions(): KeyboardActions {
   return {
     actions,
     selectionCursor: ref(0),
-    bindKeyAction: vi.fn((keys, callback) => {
+    bindKeyAction: vi.fn((keys, callback, { preventDefault = true } = {}) => {
       const id = `action-${actions.value.length}`
-      actions.value.push({ id, ...keys, modifier: keys.modifier ?? null, callback })
+      actions.value.push({
+        id,
+        ...keys,
+        modifier: keys.modifier ?? null,
+        callback: (event: KeyboardEvent) => {
+          if (preventDefault) {
+            event.preventDefault()
+          }
+          callback(event)
+        }
+      })
       return id
     }),
     removeKeyAction: vi.fn(),
@@ -30,9 +40,16 @@ function createKeyActions(): KeyboardActions {
   } as unknown as KeyboardActions
 }
 
-function triggerAction(keyActions: KeyboardActions, key: string, modifier: string | null = null) {
+function triggerAction(
+  keyActions: KeyboardActions,
+  key: string,
+  modifier: string | null = null,
+  target: EventTarget = document.body
+) {
   const action = keyActions.actions.value.find((a) => a.primary === key && a.modifier === modifier)
-  action?.callback(new KeyboardEvent('keydown'))
+  const event = mock<KeyboardEvent>({ target })
+  action?.callback(event)
+  return event
 }
 
 describe('useKeyboardFileNavigation', () => {
@@ -92,6 +109,42 @@ describe('useKeyboardFileNavigation', () => {
 
     expect(store.selectedIds).toEqual(['1'])
     expect(selectionStates.every((state) => state.length > 0)).toBe(true)
+  })
+
+  describe('space', () => {
+    it('toggles the latest selected resource and prevents the default action', () => {
+      const resources = [createResource('1'), createResource('2')]
+      createMockStore({ stubActions: false, resourcesStore: { resources } })
+      const store = useResourcesStore()
+      store.setSelection(['1', '2'])
+      store.setLastSelectedId('2')
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+
+      const event = triggerAction(keyActions, ' ')
+
+      expect(event.preventDefault).toHaveBeenCalled()
+      expect(store.selectedIds).toEqual(['1'])
+    })
+
+    it('leaves a focused checkbox to toggle its own resource', () => {
+      const resources = [createResource('1'), createResource('2')]
+      createMockStore({ stubActions: false, resourcesStore: { resources } })
+      const store = useResourcesStore()
+      store.setSelection(['1', '2'])
+      store.setLastSelectedId('2')
+
+      const keyActions = createKeyActions()
+      useKeyboardFileNavigation(keyActions, ref(resources), ref(FolderViewModeConstants.name.table))
+
+      const checkbox = document.createElement('input')
+      checkbox.type = 'checkbox'
+      const event = triggerAction(keyActions, ' ', null, checkbox)
+
+      expect(event.preventDefault).not.toHaveBeenCalled()
+      expect(store.selectedIds).toEqual(['1', '2'])
+    })
   })
 
   describe('without a selected resource', () => {
