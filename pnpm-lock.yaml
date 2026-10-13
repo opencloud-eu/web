@@ -606,8 +606,8 @@ importers:
         specifier: 3.7.2
         version: 3.7.2
       p-queue:
-        specifier: ^9.0.0
-        version: 9.3.5
+        specifier: ^9.0.0 || ^10.0.0
+        version: 10.0.0
       pinia:
         specifier: 4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3))
@@ -1118,8 +1118,8 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0
       p-queue:
-        specifier: ^9.1.0
-        version: 9.3.5
+        specifier: ^10.0.0
+        version: 10.0.0
       password-sheriff:
         specifier: ^2.0.0
         version: 2.0.0
@@ -1230,8 +1230,8 @@ importers:
         specifier: ^3.5.0
         version: 3.5.0
       p-queue:
-        specifier: ^9.3.0
-        version: 9.3.5
+        specifier: ^10.0.0
+        version: 10.0.0
       pinia:
         specifier: 4.0.3
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3))
@@ -4225,6 +4225,10 @@ packages:
   p-map@7.0.6:
     resolution: {integrity: sha512-I4Prw6ivkd6p8PiYR1tXASOAOBzIJwu0TB7fqaX0c/8c3QAehNYmX57EijyGGGBt3c/BIowGwV03RVBtXvHEVg==}
     engines: {node: '>=18'}
+
+  p-queue@10.0.0:
+    resolution: {integrity: sha512-P2wrCri3bhGLPo3kX7qYVXbo/5GvaVATU0DpO24CbeT53Y4z35t8JUWku04ERpXHUYB5rPMi3TkWE3fmJgx5rA==}
+    engines: {node: '>=22'}
 
   p-queue@9.3.5:
     resolution: {integrity: sha512-Lki/zhXFVmDhesBUn/yHRLW9Bte7mE7xoFHzTR8sIomV7a2z+LxYAPkGvdfidNiu4fKSfjtawixxSHcZci5QcQ==}
@@ -8231,6 +8235,8 @@ snapshots:
       p-limit: 3.1.0
 
   p-map@7.0.6: {}
+
+  p-queue@10.0.0: {}
 
   p-queue@9.3.5:
     dependencies:
