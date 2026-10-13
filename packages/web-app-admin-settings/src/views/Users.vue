@@ -6,6 +6,7 @@
     :side-bar-loading="sideBarLoading"
     :show-batch-actions="!!selectedUsers.length"
     :batch-actions="batchActions"
+    :batch-actions-loading="batchActionsLoading"
     :batch-action-items="selectedUsers"
     :show-view-options="true"
     @clear-selection="userSettingsStore.setSelectedUsers([])"
@@ -320,6 +321,9 @@ const batchActions = computed(() =>
   ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
 )
 
+// the actions depend on the group memberships of the selected users
+const batchActionsLoading = computed(() => loadAdditionalUserDataTask.isRunning)
+
 const breadcrumbs = computed(() => [
   {
     text: $gettext('Users'),
@@ -380,8 +384,15 @@ watch(
       return
     }
     sideBarLoading.value = true
-    await Promise.all(unref(selectedUsers).map((user) => loadAdditionalUserDataTask.perform(user)))
-    sideBarLoading.value = false
+    try {
+      await Promise.all(
+        unref(selectedUsers).map((user) => loadAdditionalUserDataTask.perform(user))
+      )
+    } catch (e) {
+      console.error(e)
+    } finally {
+      sideBarLoading.value = false
+    }
   }
 )
 
