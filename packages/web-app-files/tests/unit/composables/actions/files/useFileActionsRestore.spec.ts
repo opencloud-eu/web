@@ -5,7 +5,8 @@ import {
   getComposableWrapper,
   RouteLocation
 } from '@opencloud-eu/web-test-helpers'
-import { useMessages, useResourcesStore, useRestoreWorker } from '@opencloud-eu/web-pkg'
+import { useMessages, useModals, useResourcesStore, useRestoreWorker } from '@opencloud-eu/web-pkg'
+import { flushPromises } from '@vue/test-utils'
 import { unref } from 'vue'
 import { HttpError, Resource, TrashResource } from '@opencloud-eu/web-client'
 import { ProjectSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
@@ -137,6 +138,30 @@ describe('restore', () => {
         expect(conflicts).toContain(resourceTwo)
       }
     })
+  })
+
+  it('should name the type of the existing resource in the conflict dialog', async () => {
+    let instance: ReturnType<typeof useFileActionsRestore>
+    let space: SpaceResource
+    const { mocks } = getWrapper({
+      setup: (i, { space: s }) => {
+        instance = i
+        space = s
+      }
+    })
+    mocks.$clientService.webdav.listFiles.mockResolvedValue({
+      resource: mock<Resource>(),
+      children: [mock<Resource>({ name: 'dup', isFolder: true })]
+    })
+    const resource = { id: '1', path: '/dup', name: 'dup', type: 'file' } as TrashResource
+
+    unref(instance.actions)[0].handler({ space, resources: [resource] })
+    await flushPromises()
+
+    const { dispatchModal } = useModals()
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Folder already exists' })
+    )
   })
 
   it('should add files without conflict to resolved resources', () => {
