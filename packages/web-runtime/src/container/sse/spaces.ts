@@ -3,7 +3,7 @@ import { createLocationSpaces, isLocationSpacesActive } from '@opencloud-eu/web-
 import { SpaceResource } from '@opencloud-eu/web-client'
 
 function removeSpace(options: SSEEventOptions, getMessage: (space: SpaceResource) => string) {
-  const { sseData, resourcesStore, spacesStore, messageStore, router } = options
+  const { sseData, resourcesStore, spacesStore, router } = options
   const space = spacesStore.getSpace(sseData.spaceid)
 
   if (!space) {
@@ -17,6 +17,14 @@ function removeSpace(options: SSEEventOptions, getMessage: (space: SpaceResource
     return
   }
 
+  return leaveSpace(options, space, getMessage)
+}
+
+function leaveSpace(
+  { resourcesStore, messageStore, router }: SSEEventOptions,
+  space: SpaceResource,
+  getMessage: (space: SpaceResource) => string
+) {
   if (
     !isLocationSpacesActive(router, 'files-spaces-generic') ||
     resourcesStore.currentFolder?.storageId !== space.id
@@ -85,15 +93,17 @@ export const onSSESpaceDisabledEvent = async (options: SSEEventOptions) => {
     return
   }
 
+  function getMessage({ name }: SpaceResource) {
+    return language.$gettext('Space »%{space}« has been disabled', { space: name })
+  }
+
   let space: SpaceResource
   try {
     space = await clientService.graphAuthenticated.drives.getDrive(sseData.spaceid)
   } catch (error) {
     // members who aren't managers can't read a disabled space anymore
     if ([403, 404].includes(error?.response?.status)) {
-      return removeSpace(options, ({ name }) =>
-        language.$gettext('Space »%{space}« has been disabled', { space: name })
-      )
+      return removeSpace(options, getMessage)
     }
     throw error
   }
@@ -106,7 +116,8 @@ export const onSSESpaceDisabledEvent = async (options: SSEEventOptions) => {
   })
 
   if (!isLocationSpacesActive(router, 'files-spaces-projects')) {
-    return
+    // managers keep the space, but can't browse its content while it's disabled
+    return leaveSpace(options, space, getMessage)
   }
 
   resourcesStore.upsertResource(space)

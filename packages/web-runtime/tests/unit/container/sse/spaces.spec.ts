@@ -284,8 +284,24 @@ describe('spaces events', () => {
       }
     )
 
-    it('does not navigate managers who can still read the disabled space', async () => {
+    it('keeps the disabled space for managers but navigates them to the projects overview', async () => {
       const { mocks, sseData, space } = setup({ currentSpaceId: 'space1' })
+      mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
+
+      await onSSESpaceDisabledEvent({ sseData, ...mocks })
+
+      expect(mocks.spacesStore.upsertSpace).toHaveBeenCalledWith(space)
+      expect(mocks.spacesStore.removeSpace).not.toHaveBeenCalled()
+      expect(mocks.messageStore.showMessage).toHaveBeenCalledWith({
+        title: 'Space »%{space}« has been disabled'
+      })
+      expect(mocks.router.push).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'files-spaces-projects' })
+      )
+    })
+
+    it('does not navigate managers who are in another space', async () => {
+      const { mocks, sseData, space } = setup({ currentSpaceId: 'space2' })
       mocks.clientService.graphAuthenticated.drives.getDrive.mockResolvedValue(space)
 
       await onSSESpaceDisabledEvent({ sseData, ...mocks })
