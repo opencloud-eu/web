@@ -23,6 +23,19 @@ describe('useResourcesViewDefaults', () => {
         )
       )
     })
+    it('removes the param when the last selected resource gets removed from the selection', async () => {
+      const { mocks } = getWrapper()
+      const resourcesStore = useResourcesStore()
+      resourcesStore.setSelection(['1'])
+      vi.mocked(mocks.$router.push).mockClear()
+
+      resourcesStore.removeSelection('1')
+      await vi.waitFor(() =>
+        expect(mocks.$router.push).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ scrollTo: undefined }) })
+        )
+      )
+    })
     it('keeps the param when there was no selection to reset', async () => {
       const { mocks } = getWrapper()
       const resourcesStore = useResourcesStore()

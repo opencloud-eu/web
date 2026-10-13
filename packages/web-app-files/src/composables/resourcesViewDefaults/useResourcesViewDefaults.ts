@@ -151,6 +151,11 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
             resetScrollToParam()
           }
           break
+        case 'removeSelection':
+          if (hadSelection && !resourcesStore.selectedIds.length && unref(scrollToParam)) {
+            resetScrollToParam()
+          }
+          break
         case 'setSelection':
           if (action.args[0].length === 0 && unref(scrollToParam)) {
             // selection reset
