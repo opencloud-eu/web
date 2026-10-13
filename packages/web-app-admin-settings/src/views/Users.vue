@@ -145,6 +145,7 @@ import {
   SideBarPanelContext,
   useCapabilityStore,
   useConfigStore,
+  useMessages,
   QueryValue
 } from '@opencloud-eu/web-pkg'
 import { computed, ref, onBeforeUnmount, onMounted, unref, watch } from 'vue'
@@ -162,6 +163,7 @@ const route = useRoute()
 const { graphUsersEditLoginAllowedDisabled } = storeToRefs(useCapabilityStore())
 const clientService = useClientService()
 const configStore = useConfigStore()
+const { showErrorMessage } = useMessages()
 
 const userSettingsStore = useUserSettingsStore()
 const { users, selectedUsers } = storeToRefs(userSettingsStore)
@@ -390,6 +392,7 @@ watch(
       )
     } catch (e) {
       console.error(e)
+      showErrorMessage({ title: $gettext('Failed to load user details'), errors: [e] })
     } finally {
       sideBarLoading.value = false
     }

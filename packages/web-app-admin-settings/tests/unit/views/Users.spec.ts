@@ -9,7 +9,7 @@ import {
   shallowMount,
   useAppDefaultsMock
 } from '@opencloud-eu/web-test-helpers'
-import { Action, ClientService, SideBarPanel } from '@opencloud-eu/web-pkg'
+import { Action, ClientService, SideBarPanel, useMessages } from '@opencloud-eu/web-pkg'
 import { Group, User } from '@opencloud-eu/web-client/graph/generated'
 import { flushPromises } from '@vue/test-utils'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
@@ -174,6 +174,33 @@ describe('Users view', () => {
       await flushPromises()
 
       expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledTimes(1)
+      expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledWith(
+        '2',
+        {},
+        expect.anything()
+      )
+    })
+
+    it('shows an error and loads the user again on reselect if loading fails', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const clientService = getClientService()
+      getMountedWrapper({ mountType: mount, clientService })
+      await flushPromises()
+      const userSettingsStore = useUserSettingsStore()
+      const user = { ...getDefaultUser(), id: '2' }
+      clientService.graphAuthenticated.users.getUser.mockRejectedValueOnce(new Error('failed'))
+
+      userSettingsStore.selectedUsers = [user]
+      await flushPromises()
+      expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
+        expect.objectContaining({ title: 'Failed to load user details' })
+      )
+
+      userSettingsStore.selectedUsers = []
+      await flushPromises()
+      clientService.graphAuthenticated.users.getUser.mockClear()
+      userSettingsStore.selectedUsers = [user]
+      await flushPromises()
       expect(clientService.graphAuthenticated.users.getUser).toHaveBeenCalledWith(
         '2',
         {},
