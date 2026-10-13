@@ -1,4 +1,4 @@
-import { nextTick } from 'vue'
+import { nextTick, reactive } from 'vue'
 import Users from '../../../src/views/Users.vue'
 import { ItemFilter, OptionsConfig, useAppDefaults } from '@opencloud-eu/web-pkg'
 import { mock, mockDeep } from 'vitest-mock-extended'
@@ -341,6 +341,24 @@ describe('Users view', () => {
           expect.anything()
         )
       })
+      it('clears the search term and reloads the users when it is removed from the route', async () => {
+        const clientService = getClientService()
+        const { wrapper, mocks } = getMountedWrapper({
+          mountType: mount,
+          clientService,
+          displayNameFilterQuery: 'Albert'
+        })
+        await flushPromises()
+        delete mocks.$router.currentRoute.value.query.q_displayName
+        await flushPromises()
+        expect((wrapper.vm as any).searchTerm).toBe('')
+        expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(2)
+        expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenLastCalledWith(
+          expect.not.objectContaining({ search: expect.anything() }),
+          expect.anything()
+        )
+        expect(mocks.$router.push).not.toHaveBeenCalled()
+      })
     })
   })
 })
@@ -372,11 +390,11 @@ function getMountedWrapper({
   users?: User[]
   selectedUsers?: User[]
 } = {}) {
-  const query: Record<string, string> = {
+  const query: Record<string, string> = reactive({
     ...(displayNameFilterQuery && { q_displayName: displayNameFilterQuery }),
     ...(groupFilterQuery && { q_groups: groupFilterQuery }),
     ...(roleFilterQuery && { q_roles: roleFilterQuery })
-  }
+  })
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: { name: 'route', path: '/', query, meta: {} } as RouteLocationNormalizedLoaded
