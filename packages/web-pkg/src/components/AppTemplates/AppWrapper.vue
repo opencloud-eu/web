@@ -182,6 +182,8 @@ const currentContent = ref<unknown>()
  */
 const contentResourceId = ref<string>()
 let deleteResourceEventToken = ''
+// Unsaved changes of a deleted file can't be saved anymore, so they don't hold the app open.
+let isResourceDeleted = false
 let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
@@ -796,6 +798,10 @@ const onDeleteResourceCallback = (deletedResources: Resource[]) => {
     return
   }
 
+  isResourceDeleted = true
+  clearInterval(autosaveIntervalId)
+  autosaveIntervalId = null
+
   if (appOnDeleteResourceCallback) {
     return appOnDeleteResourceCallback()
   }
@@ -872,6 +878,11 @@ const dropDownMenuSections = computed(() => {
 // Returns instead of calling `next`: the guard has to await the flush first, and an async guard
 // that also takes `next` is rejected by the router.
 onBeforeRouteLeave(async () => {
+  if (isResourceDeleted) {
+    unregisterAppBarExtension()
+    return true
+  }
+
   await flushPendingContent()
   if (!unref(isDirty)) {
     unregisterAppBarExtension()

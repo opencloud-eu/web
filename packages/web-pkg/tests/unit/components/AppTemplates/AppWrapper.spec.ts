@@ -16,6 +16,7 @@ import {
 import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContext } from '../../../../src/composables/appDefaults'
+import { eventBus } from '../../../../src/services'
 import {
   useExtensionRegistry,
   useMessages,
@@ -420,6 +421,66 @@ describe('AppWrapper — changes still pending in the session', () => {
     await s.resolveContent('content of a')
     expect(await leaveRoute()).toBe(true)
     expect(s.unregisterAppBarExtension).toHaveBeenCalled()
+  })
+})
+
+describe('AppWrapper — deleting the open file with unsaved changes', () => {
+  // Wrappers of earlier tests stay subscribed to the global event bus, so hand
+  // the event to this wrapper's subscription only.
+  async function openEditedFile() {
+    const subscribeSpy = vi.spyOn(eventBus, 'subscribe')
+    const s = setup()
+    await nextTick()
+    await s.resolveResource(FILE_A)
+    await s.resolveContent('content of a')
+    await s.edit('edited content')
+    const [, onDeleted] = subscribeSpy.mock.calls.find(
+      ([topic]) => topic === 'runtime.resource.deleted'
+    )
+    subscribeSpy.mockRestore()
+    return { ...s, deleteResources: (resources: Resource[]) => onDeleted(resources) }
+  }
+
+  function leaveRoute() {
+    const guard = vi.mocked(onBeforeRouteLeave).mock.calls.at(-1)[0]
+    return (guard as any)({}, {}) as Promise<boolean>
+  }
+
+  it('closes the app without asking to save the deleted file', async () => {
+    const s = await openEditedFile()
+    const { dispatchModal } = useModals()
+
+    s.deleteResources([FILE_A])
+
+    expect(s.closeApp).toHaveBeenCalled()
+    const leaving = leaveRoute()
+    await flushPromises()
+    expect(dispatchModal).not.toHaveBeenCalled()
+    expect(await leaving).toBe(true)
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('stops autosaving the deleted file', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openEditedFile()
+
+    s.deleteResources([FILE_A])
+    await vi.advanceTimersByTimeAsync(130_000)
+
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
+  it('still asks to save when another file was deleted', async () => {
+    const s = await openEditedFile()
+    const { dispatchModal } = useModals()
+
+    s.deleteResources([FILE_B])
+    void leaveRoute()
+    await flushPromises()
+
+    expect(dispatchModal).toHaveBeenCalledWith(
+      expect.objectContaining({ title: 'Unsaved changes' })
+    )
   })
 })
 
