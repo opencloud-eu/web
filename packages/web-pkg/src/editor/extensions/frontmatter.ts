@@ -1,6 +1,6 @@
 import { commands as coreCommands, Node, mergeAttributes } from '@tiptap/core'
 import type { CommandProps, JSONContent, MarkdownToken } from '@tiptap/core'
-import type { marked } from 'marked'
+import type { Marked } from 'marked'
 import { TextSelection } from '@tiptap/pm/state'
 import { VueNodeViewRenderer } from '@tiptap/vue-3'
 import FrontmatterComponent from '../components/FrontmatterComponent.vue'
@@ -45,7 +45,7 @@ const frontmatterPattern = /^---[ \t]*\r?\n([\s\S]*?)(?:\r?\n)?---[ \t]*(?:\r?\n
  * given and never removes them, so the singleton would grow for as long as the
  * tab is open and hold on to every manager it ever saw.
  */
-export function registerFrontmatterTokenizer(instance: typeof marked): void {
+export function registerFrontmatterTokenizer(instance: Marked): void {
   instance.use({
     extensions: [
       {

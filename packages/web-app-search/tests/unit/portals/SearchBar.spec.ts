@@ -113,6 +113,44 @@ describe('Search Bar portal component', () => {
     await flushPromises()
     expect(wrapper.find(selectors.noResults)).toBeTruthy()
   })
+  test('stops loading and shows the other results if a provider search fails', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper } = getMountedWrapper()
+    providerFiles.previewSearch.search.mockRejectedValueOnce(new Error('500'))
+    wrapper.find(selectors.searchInput).setValue('kiwi\\')
+    await flushPromises()
+    expect((wrapper.vm as any).loading).toBe(false)
+    expect(wrapper.findAll(selectors.providerListItem).length).toEqual(1)
+    expect(consoleErrorSpy).toHaveBeenCalled()
+  })
+  test('ignores the results of an outdated search', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    const { wrapper } = getMountedWrapper({ providers: [providerFiles] })
+    let cancelFirstSearch: (e: Error) => void
+    providerFiles.previewSearch.search.mockImplementationOnce(
+      () => new Promise((_, reject) => (cancelFirstSearch = reject))
+    )
+    wrapper.find(selectors.searchInput).setValue('kiwi')
+    await flushPromises()
+    wrapper.find(selectors.searchInput).setValue('kiwis')
+    cancelFirstSearch(new Error('cancel'))
+    await flushPromises()
+    expect((wrapper.vm as any).searchResults).toEqual([
+      { providerId: 'files', result: expect.objectContaining({ values: expect.any(Array) }) }
+    ])
+    expect((wrapper.vm as any).searchResults[0].result.values.length).toBe(2)
+  })
+  test('stops loading when the term is cleared while a search is running', async () => {
+    const { wrapper } = getMountedWrapper({ providers: [providerFiles] })
+    providerFiles.previewSearch.search.mockImplementationOnce(() => new Promise(() => undefined))
+    wrapper.find(selectors.searchInput).setValue('kiwi')
+    await flushPromises()
+    expect((wrapper.vm as any).loading).toBe(true)
+    const vm = wrapper.vm as any
+    vm.term = ''
+    await vm.search()
+    expect((wrapper.vm as any).loading).toBe(false)
+  })
   test('displays all available providers', async () => {
     const { wrapper } = getMountedWrapper()
     wrapper.find(selectors.searchInput).setValue('albert')
