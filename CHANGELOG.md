@@ -8,6 +8,10 @@
 
 ### 🐛 Bug Fixes
 
+- fix: stop the share recipient search spinner when the search fails [[#3717](https://github.com/opencloud-eu/web/pull/3717)]
+- fix: show the file name instead of the share id for single file shares in apps [[#3714](https://github.com/opencloud-eu/web/pull/3714)]
+- fix: split pasted tags on commas [[#3713](https://github.com/opencloud-eu/web/pull/3713)]
+- fix: show the new link type only after the link was updated [[#3704](https://github.com/opencloud-eu/web/pull/3704)]
 - fix: no error when a drop is hidden while updating its position [[#3702](https://github.com/opencloud-eu/web/pull/3702)]
 - fix(editor): keep escaped thematic breaks as paragraph text [[#3765](https://github.com/opencloud-eu/web/pull/3765)]
 - fix: open mobile bottom drawers as named modal dialogs [[#3645](https://github.com/opencloud-eu/web/pull/3645)]
