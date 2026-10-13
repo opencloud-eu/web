@@ -191,10 +191,11 @@ describe('Users view', () => {
       await flushPromises()
       const userSettingsStore = useUserSettingsStore()
       const user = { ...getDefaultUser(), id: '2' }
-      const isAddToGroupsDisabled = () =>
-        (wrapper.findComponent(AppTemplate).props('batchActions') as Action[])
-          .find(({ name }) => name === 'add-to-groups')
-          .isDisabled()
+      const getBatchAction = (actionName: string) =>
+        (wrapper.findComponent(AppTemplate).props('batchActions') as Action[]).find(
+          ({ name }) => name === actionName
+        )
+      const isAddToGroupsDisabled = () => getBatchAction('add-to-groups').isDisabled()
       clientService.graphAuthenticated.users.getUser.mockRejectedValueOnce(new Error('failed'))
 
       userSettingsStore.selectedUsers = [user]
@@ -203,6 +204,7 @@ describe('Users view', () => {
         expect.objectContaining({ title: 'Failed to load user details' })
       )
       expect(isAddToGroupsDisabled()).toBe(true)
+      expect(getBatchAction('remove-users-from-groups').isDisabled()).toBe(true)
       expect(
         getSideBarPanels(wrapper)
           .find(({ name }) => name === 'EditPanel')

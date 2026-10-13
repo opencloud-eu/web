@@ -146,7 +146,8 @@ import {
   useCapabilityStore,
   useConfigStore,
   useMessages,
-  QueryValue
+  QueryValue,
+  UserActionOptions
 } from '@opencloud-eu/web-pkg'
 import { computed, ref, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
@@ -160,7 +161,8 @@ import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 const { $gettext } = useGettext()
 const router = useRouter()
 const route = useRoute()
-const { graphUsersEditLoginAllowedDisabled } = storeToRefs(useCapabilityStore())
+const { graphUsersEditLoginAllowedDisabled, graphUsersReadOnlyAttributes } =
+  storeToRefs(useCapabilityStore())
 const clientService = useClientService()
 const configStore = useConfigStore()
 const { showErrorMessage } = useMessages()
@@ -321,6 +323,17 @@ async function searchUsers() {
 const groupActions = computed(() =>
   [...unref(addToGroupsActions), ...unref(removeFromGroupsActions)].map((action) => ({
     ...action,
+    isVisible: (options: UserActionOptions) => {
+      if (unref(selectedUsersDataLoaded)) {
+        return action.isVisible(options)
+      }
+
+      // the memberships are unknown, so show the action disabled instead of hiding it
+      return (
+        !unref(graphUsersReadOnlyAttributes).includes('user.memberOf') &&
+        options.resources.length > 0
+      )
+    },
     isDisabled: () => !unref(selectedUsersDataLoaded),
     disabledTooltip: () => $gettext('The user details could not be loaded')
   }))
