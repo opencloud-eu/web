@@ -13,6 +13,7 @@ import EmojiPickerModal from '../../components/Modals/EmojiPickerModal.vue'
 import { arrayBufferToDataUrl, withoutExtension } from '../../helpers'
 import { TextEditorState } from '../types'
 import { requestLinkPanel, printEditorContent } from '../helpers'
+import { supportedImageMimeTypes } from '../extensions/imageFileHandler'
 import TextEditorSearchAndReplacePanel from '../components/TextEditorSearchAndReplacePanel.vue'
 import TextEditorTableSizeSelector from '../components/TextEditorTableSizeSelector.vue'
 
@@ -690,7 +691,7 @@ export function useEditorActions(state: TextEditorState) {
       customComponent: markRaw(FilePickerModal),
       hideActions: true,
       customComponentAttrs: () => ({
-        allowedFileTypes: ['image/png', 'image/gif', 'image/jpeg', 'image/svg'],
+        allowedFileTypes: supportedImageMimeTypes,
         parentFolderLink: getParentFolderLink(resource),
         callbackFn: async ({ resource }: { resource: Resource }) => {
           if (!resource.mimeType?.startsWith('image/')) {
