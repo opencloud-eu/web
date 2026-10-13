@@ -7,7 +7,7 @@ import {
 import { DavPermission, WebDAV } from '@opencloud-eu/web-client/webdav'
 import { storeToRefs } from 'pinia'
 import { join } from 'path'
-import { computed, Ref, unref } from 'vue'
+import { computed, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   ApplicationFileExtension,
@@ -27,7 +27,7 @@ import {
   useUserStore
 } from '@opencloud-eu/web-pkg'
 
-export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
+export const useFileActionsCreateNewFile = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const userStore = useUserStore()
   const { $gettext } = useGettext()
@@ -48,14 +48,18 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
     appsStore.fileExtensions.filter(({ newFileMenu }) => !!newFileMenu)
   )
 
-  const openFile = (resource: Resource, appFileExtension: ApplicationFileExtension) => {
+  const openFile = (
+    space: SpaceResource,
+    resource: Resource,
+    appFileExtension: ApplicationFileExtension
+  ) => {
     resourcesStore.upsertResource(resource)
 
-    return openEditor(appFileExtension, unref(space), resource)
+    return openEditor(appFileExtension, space, resource)
   }
 
   const handler = (
-    fileActionOptions: FileActionOptions,
+    { space }: FileActionOptions,
     extension: string,
     appFileExtension: ApplicationFileExtension
   ) => {
@@ -95,20 +99,20 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
           if (appFileExtension.createFileHandler) {
             resource = await appFileExtension.createFileHandler({
               fileName,
-              space: unref(space),
+              space,
               currentFolder: unref(currentFolder)
             })
           } else if (appFileExtension.type === 'folder') {
             const path = join(unref(currentFolder).path, fileName)
-            resource = await (clientService.webdav as WebDAV).createFolder(unref(space), { path })
+            resource = await (clientService.webdav as WebDAV).createFolder(space, { path })
           } else {
             const path = join(unref(currentFolder).path, fileName)
-            resource = await (clientService.webdav as WebDAV).putFileContents(unref(space), {
+            resource = await (clientService.webdav as WebDAV).putFileContents(space, {
               path
             })
           }
 
-          markVaultStatus(extensionRegistry, unref(space), [resource])
+          markVaultStatus(extensionRegistry, space, [resource])
 
           resourcesStore.upsertResource(resource)
 
@@ -120,7 +124,7 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
             return
           }
 
-          return openFile(resource, appFileExtension)
+          return openFile(space, resource, appFileExtension)
         } catch (error) {
           console.error(error)
           showErrorMessage({
@@ -173,10 +177,10 @@ export const useFileActionsCreateNewFile = ({ space }: { space?: Ref<SpaceResour
         icon: 'add',
         handler: (args) => handler(args, appFileExtension.extension, appFileExtension),
         label: () => $gettext(appFileExtension.newFileMenu.menuTitle()),
-        isVisible: () => {
+        isVisible: ({ space }) => {
           // files created via an upload-only link couldn't be edited afterwards
           if (
-            isPublicSpaceResource(unref(space)) &&
+            isPublicSpaceResource(space) &&
             !unref(currentFolder)?.permissions?.includes(DavPermission.Updateable)
           ) {
             return false
