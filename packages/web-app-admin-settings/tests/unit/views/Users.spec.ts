@@ -242,13 +242,17 @@ describe('Users view', () => {
     describe('groups', () => {
       it('does filter users by groups when the "selectionChange"-event is triggered', async () => {
         const clientService = getClientService()
-        const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
+        const { wrapper, mocks } = getMountedWrapper({ mountType: mount, clientService })
         await flushPromises()
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(1)
         wrapper
           .findComponent<typeof ItemFilter>(selectors.itemFilterGroupsStub)
           .vm.$emit('selectionChange', [{ id: '1' }])
         await flushPromises()
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+        )
+        expect(mocks.$router.push).not.toHaveBeenCalled()
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(2)
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenNthCalledWith(
           2,

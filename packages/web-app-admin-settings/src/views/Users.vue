@@ -286,7 +286,7 @@ function reloadFilteredUsers() {
     userSettingsStore.setSelectedUsers([])
   }
   additionalUserDataLoadedForUserIds.value = []
-  return router.push({ ...unref(route), query: { ...unref(route).query, page: '1' } })
+  return router.replace({ ...unref(route), query: { ...unref(route).query, page: '1' } })
 }
 
 function filterGroups(groups: Group[]) {
