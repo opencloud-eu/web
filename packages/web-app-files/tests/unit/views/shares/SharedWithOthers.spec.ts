@@ -4,11 +4,13 @@ import { useResourcesViewDefaultsMock } from '../../../../tests/mocks/useResourc
 import { defineComponent, h, ref } from 'vue'
 import { defaultStubs, RouteLocation } from '@opencloud-eu/web-test-helpers'
 import { mock, mockDeep } from 'vitest-mock-extended'
+import { Task, TaskInstance } from 'vue-concurrency'
+import { flushPromises } from '@vue/test-utils'
 import { IncomingShareResource } from '@opencloud-eu/web-client'
 import { defaultPlugins, mount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { ShareTypes } from '@opencloud-eu/web-client'
 import { useSortMock } from '../../../mocks/useSortMock'
-import { AppBar, ResourceTable } from '@opencloud-eu/web-pkg'
+import { AppBar, ResourceTable, useResourcesStore } from '@opencloud-eu/web-pkg'
 
 vi.mock('../../../../src/composables')
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -77,23 +79,76 @@ describe('SharedWithOthers view', () => {
       })
     })
   })
+
+  describe('resource field updates', () => {
+    async function setup() {
+      const paginatedResources = ref([
+        mock<IncomingShareResource>({ id: 'old-id', fileId: 'file-id', shareTypes: [] })
+      ])
+      const selectedResourcesIds = ref<string[]>([])
+      const loadResourcesTask = mockDeep<Task<any, any>>({ isRunning: false })
+      getMountedWrapper({
+        viewDefaults: { paginatedResources, selectedResourcesIds, loadResourcesTask }
+      })
+      await flushPromises()
+      loadResourcesTask.perform.mockClear()
+      selectedResourcesIds.value = ['old-id']
+
+      loadResourcesTask.perform.mockImplementation(() => {
+        // the loaders clear the list and the selection before refilling it
+        selectedResourcesIds.value = []
+        paginatedResources.value = []
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            paginatedResources.value = [
+              mock<IncomingShareResource>({ id: 'new-id', fileId: 'file-id', shareTypes: [] })
+            ]
+            resolve(undefined)
+          })
+        }) as unknown as TaskInstance<any>
+      })
+      return { selectedResourcesIds, loadResourcesTask, resourcesStore: useResourcesStore() }
+    }
+
+    it('reloads and keeps the selection on the reloaded item when the share types change', async () => {
+      const { selectedResourcesIds, loadResourcesTask, resourcesStore } = await setup()
+      resourcesStore.updateResourceField({ id: 'old-id', field: 'shareTypes', value: [3] })
+      await new Promise((resolve) => setTimeout(resolve))
+      await flushPromises()
+
+      expect(loadResourcesTask.perform).toHaveBeenCalledTimes(1)
+      expect(selectedResourcesIds.value).toEqual(['new-id'])
+    })
+
+    it('does not reload when another field like the thumbnail changes', async () => {
+      const { selectedResourcesIds, loadResourcesTask, resourcesStore } = await setup()
+      resourcesStore.updateResourceField({ id: 'old-id', field: 'thumbnail', value: 'blob:foo' })
+      await flushPromises()
+
+      expect(loadResourcesTask.perform).not.toHaveBeenCalled()
+      expect(selectedResourcesIds.value).toEqual(['old-id'])
+    })
+  })
 })
 
 function getMountedWrapper({
   mocks = {},
   files = [],
-  loading = false
+  loading = false,
+  viewDefaults = {}
 }: {
   mocks?: Record<string, unknown>
   files?: IncomingShareResource[]
   loading?: boolean
+  viewDefaults?: Partial<ReturnType<typeof useResourcesViewDefaults>>
 } = {}) {
-  const plugins = [...defaultPlugins()]
+  const plugins = [...defaultPlugins({ piniaOptions: { stubActions: false } })]
 
   vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
     useResourcesViewDefaultsMock({
       paginatedResources: ref(files),
-      areResourcesLoading: ref(loading)
+      areResourcesLoading: ref(loading),
+      ...viewDefaults
     })
   )
 
