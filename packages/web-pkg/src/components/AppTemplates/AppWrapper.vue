@@ -727,7 +727,7 @@ onMounted(() => {
     autosaveIntervalId = setInterval(
       async () => {
         flushPendingContent()
-        if (!unref(isDirty) || unref(isConflicted)) {
+        if (isResourceDeleted || !unref(isDirty) || unref(isConflicted)) {
           return
         }
         await save()
