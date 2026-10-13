@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: wait for user data before showing the user batch actions [[#3733](https://github.com/opencloud-eu/web/pull/3733)]
 - fix: stop the share recipient search spinner when the search fails [[#3717](https://github.com/opencloud-eu/web/pull/3717)]
 - fix: show the file name instead of the share id for single file shares in apps [[#3714](https://github.com/opencloud-eu/web/pull/3714)]
 - fix: split pasted tags on commas [[#3713](https://github.com/opencloud-eu/web/pull/3713)]
