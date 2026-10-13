@@ -317,12 +317,19 @@ async function searchUsers() {
   return reloadFilteredUsers()
 }
 
+// the group actions need the group memberships, which are missing if loading the details failed
+const groupActions = computed(() =>
+  [...unref(addToGroupsActions), ...unref(removeFromGroupsActions)].map((action) => ({
+    ...action,
+    isDisabled: () => !unref(selectedUsersDataLoaded),
+    disabledTooltip: () => $gettext('The user details could not be loaded')
+  }))
+)
+
 const batchActions = computed(() =>
   [
     ...unref(editQuotaActions),
-    ...(unref(selectedUsersDataLoaded)
-      ? [...unref(addToGroupsActions), ...unref(removeFromGroupsActions)]
-      : []),
+    ...unref(groupActions),
     ...(unref(graphUsersEditLoginAllowedDisabled) ? [] : unref(editLoginActions)),
     ...unref(deleteActions)
   ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))

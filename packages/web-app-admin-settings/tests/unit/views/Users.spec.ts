@@ -184,17 +184,17 @@ describe('Users view', () => {
       )
     })
 
-    it('shows an error, hides the group actions and loads the user again on reselect if loading fails', async () => {
+    it('shows an error, disables the group actions and loads the user again on reselect if loading fails', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)
       const clientService = getClientService()
       const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
       await flushPromises()
       const userSettingsStore = useUserSettingsStore()
       const user = { ...getDefaultUser(), id: '2' }
-      const getBatchActionNames = () =>
-        (wrapper.findComponent(AppTemplate).props('batchActions') as Action[]).map(
-          ({ name }) => name
-        )
+      const isAddToGroupsDisabled = () =>
+        (wrapper.findComponent(AppTemplate).props('batchActions') as Action[])
+          .find(({ name }) => name === 'add-to-groups')
+          .isDisabled()
       clientService.graphAuthenticated.users.getUser.mockRejectedValueOnce(new Error('failed'))
 
       userSettingsStore.selectedUsers = [user]
@@ -202,7 +202,7 @@ describe('Users view', () => {
       expect(useMessages().showErrorMessage).toHaveBeenCalledWith(
         expect.objectContaining({ title: 'Failed to load user details' })
       )
-      expect(getBatchActionNames()).not.toContain('add-to-groups')
+      expect(isAddToGroupsDisabled()).toBe(true)
       expect(
         getSideBarPanels(wrapper)
           .find(({ name }) => name === 'EditPanel')
@@ -221,7 +221,7 @@ describe('Users view', () => {
         {},
         expect.anything()
       )
-      expect(getBatchActionNames()).toContain('add-to-groups')
+      expect(isAddToGroupsDisabled()).toBe(false)
     })
   })
 
