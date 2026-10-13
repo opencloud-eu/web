@@ -366,7 +366,9 @@ const sideBarAvailablePanels = [
     icon: { name: 'pencil', fillType: 'line' },
     title: () => $gettext('Edit user'),
     component: EditPanel,
-    isVisible: ({ items }) => items.length === 1,
+    // the form needs the full user data, e.g. the group memberships
+    isVisible: ({ items }) =>
+      items.length === 1 && unref(additionalUserDataLoadedForUserIds).includes(items[0].id),
     componentAttrs: ({ items }) => ({
       user: items.length === 1 ? items[0] : null,
       roles: unref(roles),

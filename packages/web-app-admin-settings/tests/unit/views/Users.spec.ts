@@ -123,13 +123,16 @@ describe('Users view', () => {
   })
 
   describe('side bar panels', () => {
-    it('should contain EditPanel when one user is selected', () => {
+    it('should contain EditPanel when one user is selected and loaded', async () => {
       const { wrapper } = getMountedWrapper()
-      expect(
-        getSideBarPanels(wrapper)
-          .find(({ name }) => name === 'EditPanel')
-          .isVisible({ items: [{ id: '1' } as User] })
-      ).toBeTruthy()
+      await flushPromises()
+      const user = getDefaultUser()
+      const editPanel = getSideBarPanels(wrapper).find(({ name }) => name === 'EditPanel')
+      expect(editPanel.isVisible({ items: [user] })).toBeFalsy()
+
+      useUserSettingsStore().selectedUsers = [user]
+      await flushPromises()
+      expect(editPanel.isVisible({ items: [user] })).toBeTruthy()
     })
     it('should contain DetailsPanel no user is selected', () => {
       const { wrapper } = getMountedWrapper()
@@ -200,6 +203,11 @@ describe('Users view', () => {
         expect.objectContaining({ title: 'Failed to load user details' })
       )
       expect(getBatchActionNames()).not.toContain('add-to-groups')
+      expect(
+        getSideBarPanels(wrapper)
+          .find(({ name }) => name === 'EditPanel')
+          .isVisible({ items: [user] })
+      ).toBeFalsy()
 
       userSettingsStore.selectedUsers = []
       await flushPromises()
