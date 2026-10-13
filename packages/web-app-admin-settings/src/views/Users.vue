@@ -281,6 +281,10 @@ const loadAdditionalUserDataTask = useTask(function* (signal, user: User) {
   Object.assign(user, data)
 })
 
+const selectedUsersDataLoaded = computed(() =>
+  unref(selectedUsers).every(({ id }) => unref(additionalUserDataLoadedForUserIds).includes(id))
+)
+
 function reloadFilteredUsers() {
   loadUsersTask.perform()
   if (unref(selectedUsers).length) {
@@ -316,8 +320,9 @@ async function searchUsers() {
 const batchActions = computed(() =>
   [
     ...unref(editQuotaActions),
-    ...unref(addToGroupsActions),
-    ...unref(removeFromGroupsActions),
+    ...(unref(selectedUsersDataLoaded)
+      ? [...unref(addToGroupsActions), ...unref(removeFromGroupsActions)]
+      : []),
     ...(unref(graphUsersEditLoginAllowedDisabled) ? [] : unref(editLoginActions)),
     ...unref(deleteActions)
   ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
