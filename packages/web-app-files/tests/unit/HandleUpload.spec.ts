@@ -311,6 +311,30 @@ describe('HandleUpload', () => {
           expect(instance.checkQuotaExceeded(files)).toBe(quotaExceeded)
         }
       )
+      it('blocks a folder upload whose files exceed the quota', () => {
+        const space = mock<SpaceResource>({
+          driveType: 'project',
+          id: '1',
+          spaceQuota: { remaining: 100 },
+          isOwner: () => true
+        })
+        const { instance } = getWrapper({ spaces: [space] })
+        const meta = { spaceId: '1', routeName: locationSpacesGeneric.name as string }
+        const folder = mock<OcUppyFile>({
+          name: 'folder',
+          type: 'directory',
+          meta: { ...meta, relativeFolder: 'folder' },
+          data: {} as Blob
+        })
+        const files = ['a', 'b', 'c'].map((name) =>
+          mock<OcUppyFile>({
+            name,
+            meta: { ...meta, relativeFolder: 'folder' },
+            data: { size: 40 } as Blob
+          })
+        )
+        expect(instance.checkQuotaExceeded([folder, ...files])).toBe(true)
+      })
       it('does not check quota for share spaces', () => {
         const size = 100
         const remaining = 90

@@ -232,7 +232,8 @@ export class HandleUpload extends BasePlugin<PluginOpts, OcUppyMeta, OcUppyBody>
     const uploadSizeSpaceMapping = filesToUpload.reduce((acc, uppyFile) => {
       let targetUploadSpace: SpaceResource
 
-      if (uppyFile.meta.routeName === locationPublicLink.name) {
+      // folder dummies have no size and would turn the summed upload size into NaN
+      if (uppyFile.type === 'directory' || uppyFile.meta.routeName === locationPublicLink.name) {
         return acc
       }
 
