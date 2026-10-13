@@ -67,11 +67,16 @@ function getWrapper({
   lastSelectedRowId: string | null
 }) {
   const selectedRowsRef = ref<Item[]>(selectedRows)
-  const callbacks: Record<string, (event?: KeyboardEvent) => void> = {}
+  const callbacks: Record<string, (event: KeyboardEvent) => void> = {}
   const keyActions = mock<KeyboardActions>({
     selectionCursor: ref(0),
-    bindKeyAction: (keys, callback) => {
-      callbacks[`${keys.modifier || ''}${keys.primary}`] = callback
+    bindKeyAction: (keys, callback, { preventDefault = true } = {}) => {
+      callbacks[`${keys.modifier || ''}${keys.primary}`] = (event) => {
+        if (preventDefault) {
+          event.preventDefault()
+        }
+        callback(event)
+      }
       return ''
     }
   })
