@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep folder and extensionless names intact when renaming with hidden extensions [[#3687](https://github.com/opencloud-eu/web/pull/3687)]
 - fix: reload app tokens once a token is created [[#3692](https://github.com/opencloud-eu/web/pull/3692)]
 - fix: apply delegated token updates in embed mode [[#3686](https://github.com/opencloud-eu/web/pull/3686)]
 - fix: don't add already selected rows again on shift arrow in admin settings [[#3691](https://github.com/opencloud-eu/web/pull/3691)]
