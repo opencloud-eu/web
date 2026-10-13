@@ -30,11 +30,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onUnmounted, unref, useAttrs, watch } from 'vue'
+import { computed, onUnmounted, unref, useAttrs } from 'vue'
 import { SideBarPanel, SideBarPanelContext } from './types'
 import SideBarPanels from './SideBarPanels.vue'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
-import { useModals, useSideBar } from '../../composables'
+import { useSideBar } from '../../composables'
 import { storeToRefs } from 'pinia'
 
 const { loading, availablePanels, panelContext } = defineProps<{
@@ -59,8 +59,6 @@ const attrs = useAttrs()
 
 const { isMobile } = useIsMobile()
 const sidebarStore = useSideBar()
-const modalStore = useModals()
-const { modals } = storeToRefs(modalStore)
 const { focusSidebar } = sidebarStore
 const { sideBarActivePanel: activePanel } = storeToRefs(sidebarStore)
 
@@ -117,17 +115,6 @@ const setSidebarPanel = (panel: string) => {
   sidebarStore.openSideBarPanel(panel)
   emit('selectPanel', panel)
 }
-
-watch(
-  () => (unref(isMobile) ? unref(modals).length : 0),
-  (count, previousCount) => {
-    if (count > previousCount) {
-      // App modals use the regular modal layer. Close the native top-layer drawer
-      // so it cannot obscure a modal opened from the mobile sidebar.
-      closeSideBar()
-    }
-  }
-)
 
 onUnmounted(() => {
   if (unref(isMobile)) {

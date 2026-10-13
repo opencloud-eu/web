@@ -1,8 +1,9 @@
 <template>
   <dialog
     ref="dialog"
-    class="oc-bottom-drawer fixed inset-0 m-0 border-0 p-0 max-w-none max-h-none bg-black/40 size-full"
+    class="oc-bottom-drawer fixed inset-0 bg-black/40 size-full"
     :aria-label="accessibleName"
+    aria-modal="true"
     @click="$emit('clicked', $event)"
     @cancel.prevent="$emit('close', $event)"
     @close="isDrawerActive && $emit('close', $event)"
@@ -82,7 +83,7 @@ export interface Emits {
    */
   (e: 'clicked', event: MouseEvent): void
   /**
-   * @docs Emitted when the browser requests that the drawer be dismissed, such as when Escape is pressed, or when the native dialog closes.
+   * @docs Emitted when the browser requests to dismiss the drawer or closes the native dialog.
    */
   (e: 'close', event: Event): void
 }
@@ -110,7 +111,8 @@ watch(
 
     if (isDrawerActive) {
       if (!dialogEl.open) {
-        dialogEl.showModal()
+        // not showModal(): the top layer would cover modals, drops and snackbars
+        dialogEl.show()
       }
       document.getElementById(id)?.classList.add('active')
     } else if (dialogEl.open) {
@@ -126,10 +128,6 @@ watch(
 @layer components {
   .oc-bottom-drawer {
     @apply z-100;
-  }
-
-  .oc-bottom-drawer::backdrop {
-    background: transparent;
   }
 }
 </style>

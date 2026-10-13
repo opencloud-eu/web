@@ -73,6 +73,18 @@ describe('OcMobileDrop', () => {
     wrapper.unmount()
   })
 
+  it('closes when the native dialog gets closed', async () => {
+    const { wrapper } = getWrapper()
+
+    await wrapper.find(selectors.toggle).trigger('click')
+    wrapper.find(selectors.background).element.dispatchEvent(new Event('close'))
+
+    const bottomDrawerStore = useBottomDrawer()
+    expect(bottomDrawerStore.closeAllDrawers).toHaveBeenCalled()
+    expect(wrapper.findComponent(BottomDrawer).emitted('hide')).toBeTruthy()
+    wrapper.unmount()
+  })
+
   it('closes when esc key is pressed', async () => {
     const { wrapper } = getWrapper()
 

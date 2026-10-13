@@ -28,20 +28,21 @@ describe('OcBottomDrawer', () => {
       expect(wrapper.find('dialog').attributes('open')).toBeUndefined()
     })
 
-    it('opens an active drawer as a named modal dialog', async () => {
+    it('opens an active drawer as a named dialog outside of the top layer', async () => {
       const { wrapper } = getWrapper({ ariaLabel: 'File actions' })
       const dialog = wrapper.find('dialog').element as HTMLDialogElement
-      const showModal = vi.fn(() => dialog.setAttribute('open', ''))
+      const show = vi.fn(() => dialog.setAttribute('open', ''))
+      const showModal = vi.fn()
+      Object.defineProperty(dialog, 'show', { value: show })
       Object.defineProperty(dialog, 'showModal', { value: showModal })
 
       await nextTick()
 
-      expect(showModal).toHaveBeenCalledOnce()
+      expect(show).toHaveBeenCalledOnce()
+      expect(showModal).not.toHaveBeenCalled()
       expect(dialog.getAttribute('aria-label')).toBe('File actions')
+      expect(dialog.getAttribute('aria-modal')).toBe('true')
       expect(dialog.querySelector('[autofocus]')).not.toBeNull()
-      expect(dialog.classList.contains('m-0')).toBe(true)
-      expect(dialog.classList.contains('max-w-none')).toBe(true)
-      expect(dialog.classList.contains('max-h-none')).toBe(true)
     })
 
     it('forwards native cancel and close events', () => {
@@ -57,14 +58,14 @@ describe('OcBottomDrawer', () => {
       expect(wrapper.emitted('close')).toEqual([[cancel], [close]])
     })
 
-    it('closes the modal dialog when the drawer becomes inactive', async () => {
+    it('closes the dialog when the drawer becomes inactive', async () => {
       const { wrapper } = getWrapper()
       const dialog = wrapper.find('dialog').element as HTMLDialogElement
       const close = vi.fn(() => {
         dialog.removeAttribute('open')
         dialog.dispatchEvent(new Event('close'))
       })
-      Object.defineProperty(dialog, 'showModal', {
+      Object.defineProperty(dialog, 'show', {
         value: vi.fn(() => dialog.setAttribute('open', ''))
       })
       Object.defineProperty(dialog, 'close', { value: close })
