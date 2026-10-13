@@ -4,10 +4,11 @@
 
 ### ❤️ Thanks to all contributors! ❤️
 
-@AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @kulmann, @tammi-23, @tbsbdr, @v-scharf
+@AlexAndBear, @BloomyInDev, @JammingBen, @dschmidt, @eriktews, @fredrikblau, @jay23606, @kulmann, @tammi-23, @tbsbdr, @v-scharf
 
 ### 🐛 Bug Fixes
 
+- fix: open mobile bottom drawers as named modal dialogs [[#3645](https://github.com/opencloud-eu/web/pull/3645)]
 - fix: open external notification links in a new tab [[#3743](https://github.com/opencloud-eu/web/pull/3743)]
 - fix: allow svg and webp images in the editor cloud image picker [[#3707](https://github.com/opencloud-eu/web/pull/3707)]
 - fix: ignore desktop file drops on breadcrumb items [[#3706](https://github.com/opencloud-eu/web/pull/3706)]
