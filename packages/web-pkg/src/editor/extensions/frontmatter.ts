@@ -51,7 +51,6 @@ export function registerFrontmatterTokenizer(instance: Marked): void {
       {
         name: 'frontmatter',
         level: 'block',
-        start: (src: string) => (src.startsWith('---') ? 0 : -1),
         tokenizer(src, tokens) {
           // Frontmatter opens the document, nothing else.
           if (tokens !== this.lexer.tokens || tokens.length) {
