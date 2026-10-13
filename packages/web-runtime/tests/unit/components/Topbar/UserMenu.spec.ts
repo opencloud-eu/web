@@ -139,6 +139,20 @@ describe('User Menu component', () => {
         'files-public-link'
       )
     })
+    it('should pass the public link token to account-preferences when user is not logged in', () => {
+      const wrapper = getMountedWrapper({}, noEmail, true)
+      const button = wrapper.findComponent<typeof OcButton>('#oc-topbar-account-manage')
+
+      expect((button.props('to') as RouteLocation).query.contextRouteParams).toEqual({
+        driveAliasAndItem: 'public/token'
+      })
+    })
+    it('should not pass any context to account-information when user is logged in', () => {
+      const wrapper = getMountedWrapper({}, email)
+      const button = wrapper.findComponent<typeof OcButton>('#oc-topbar-account-manage')
+
+      expect((button.props('to') as RouteLocation).query).toEqual({})
+    })
   })
 })
 
@@ -191,7 +205,8 @@ const getMountedWrapper = (
             },
             authState: {
               userContextReady: !noUser,
-              publicLinkContextReady: noUser
+              publicLinkContextReady: noUser,
+              publicLinkToken: noUser ? 'token' : null
             }
           }
         })
