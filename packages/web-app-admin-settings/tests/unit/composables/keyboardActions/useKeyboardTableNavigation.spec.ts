@@ -25,6 +25,19 @@ describe('useKeyboardTableNavigation', () => {
       triggerKey(Key.Space)
       expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
     })
+    it('prevents the default action when the focus is not on a checkbox', () => {
+      const { triggerKey } = getWrapper({ lastSelectedRowId: '2' })
+      const event = triggerKey(Key.Space)
+      expect(event.preventDefault).toHaveBeenCalled()
+    })
+    it('leaves a focused checkbox to toggle its own row', () => {
+      const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
+      const checkbox = document.createElement('input')
+      checkbox.type = 'checkbox'
+      const event = triggerKey(Key.Space, undefined, checkbox)
+      expect(event.preventDefault).not.toHaveBeenCalled()
+      expect(selectedRows.value).toEqual([])
+    })
   })
   describe('shift + arrow', () => {
     it('does not add already selected rows again', () => {
@@ -68,6 +81,10 @@ function getWrapper({
   return {
     wrapper,
     selectedRows: selectedRowsRef,
-    triggerKey: (primary: Key, modifier?: Modifier) => callbacks[`${modifier || ''}${primary}`]()
+    triggerKey: (primary: Key, modifier?: Modifier, target: EventTarget = document.body) => {
+      const event = mock<KeyboardEvent>({ target })
+      callbacks[`${modifier || ''}${primary}`](event)
+      return event
+    }
   }
 }
