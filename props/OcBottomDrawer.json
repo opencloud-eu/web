@@ -7,6 +7,13 @@
     "type": "string"
   },
   {
+    "name": "ariaLabel",
+    "required": false,
+    "description": "The accessible name announced when the bottom drawer opens.",
+    "default": "",
+    "type": "string"
+  },
+  {
     "name": "isDrawerActive",
     "required": false,
     "description": "Determines if the bottom drawer is active and should be displayed.",
