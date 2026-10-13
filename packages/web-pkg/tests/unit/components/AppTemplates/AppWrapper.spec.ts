@@ -470,6 +470,22 @@ describe('AppWrapper — deleting the open file with unsaved changes', () => {
     expect(s.putFileContents).not.toHaveBeenCalled()
   })
 
+  it('drops an autosave that was flushing when the file got deleted', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    const s = await openEditedFile()
+    let finishFlush: () => void
+    s.flushContent.mockImplementationOnce(
+      () => new Promise<void>((resolve) => (finishFlush = resolve))
+    )
+
+    await vi.advanceTimersByTimeAsync(120_000)
+    s.deleteResources([FILE_A])
+    finishFlush()
+    await flushPromises()
+
+    expect(s.putFileContents).not.toHaveBeenCalled()
+  })
+
   it('still asks to save when another file was deleted', async () => {
     const s = await openEditedFile()
     const { dispatchModal } = useModals()
