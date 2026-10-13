@@ -1,22 +1,11 @@
-import { ref } from 'vue'
 import { Editor } from '@tiptap/vue-3'
 import { MarkdownManager } from '@tiptap/markdown'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
-import { useStrategyMarkdown } from '../../../../src/editor/composables/strategies/markdown'
-import type { TextEditorLinkPanelRequest, TextEditorState } from '../../../../src/editor/types'
+import { createStrategy } from './helpers'
 
 vi.mock('vue3-gettext', () => ({
   useGettext: () => ({ $gettext: (text: string) => text })
 }))
-
-function createStrategy() {
-  const state: TextEditorState = {
-    sourceMode: ref(false),
-    linkPanel: ref<TextEditorLinkPanelRequest | null>(null),
-    editorZoom: ref(100)
-  }
-  return useStrategyMarkdown(state)
-}
 
 /**
  * How many block tokenizers marked's process wide singleton carries. Every

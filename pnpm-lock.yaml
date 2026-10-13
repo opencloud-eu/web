@@ -42,6 +42,9 @@ catalogs:
     '@tiptap/extension-link':
       specifier: ^3.30.3
       version: 3.31.4
+    '@tiptap/extension-list':
+      specifier: ^3.30.3
+      version: 3.31.4
     '@tiptap/extension-node-range':
       specifier: ^3.30.3
       version: 3.31.4
@@ -1001,6 +1004,9 @@ importers:
         specifier: catalog:tiptap
         version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))
       '@tiptap/extension-link':
+        specifier: catalog:tiptap
+        version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4)
+      '@tiptap/extension-list':
         specifier: catalog:tiptap
         version: 3.31.4(@tiptap/core@3.31.4(@tiptap/pm@3.31.4))(@tiptap/pm@3.31.4)
       '@tiptap/extension-node-range':
