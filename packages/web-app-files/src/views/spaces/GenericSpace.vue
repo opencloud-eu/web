@@ -356,7 +356,8 @@ const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {
 
   activeBreadcrumb.append(invisibleHint)
   if (sameRoute) {
-    activeBreadcrumbItem.focus()
+    // don't scroll back up to the breadcrumb when the list scrolls to a resource from the route
+    activeBreadcrumbItem.focus({ preventScroll: !!unref(route).query?.scrollTo })
   }
 }
 
