@@ -209,7 +209,8 @@ const filteredItems = computed(() => {
 
 const { sortBy, sortDir, items, handleSort } = useSort({
   items: filteredItems,
-  fields: sortFields
+  fields: sortFields,
+  foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
 })
 
 const keyActions = useKeyboardActions()

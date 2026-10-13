@@ -33,6 +33,51 @@ describe('useSort', () => {
     })
   })
 
+  describe('folders first', () => {
+    const resources = [
+      { id: '1', name: 'b.txt', type: 'file' },
+      { id: '2', name: 'c', type: 'folder' },
+      { id: '3', name: 'a.txt', type: 'file' },
+      { id: '4', name: 'd', type: 'folder' }
+    ] as (SortableItem & { id: string; name: string })[]
+    const fields = [{ name: 'name', sortable: true }]
+
+    it.each([
+      { foldersFirst: undefined, expected: ['c', 'd', 'a.txt', 'b.txt'] },
+      { foldersFirst: true, expected: ['c', 'd', 'a.txt', 'b.txt'] },
+      { foldersFirst: false, expected: ['a.txt', 'b.txt', 'c', 'd'] }
+    ])('sorts by name with foldersFirst $foldersFirst', ({ foldersFirst, expected }) => {
+      getComposableWrapper(() => {
+        const { items } = useSort({
+          items: resources,
+          fields,
+          sortBy: ref('name'),
+          sortDir: ref(SortDir.Asc),
+          foldersFirst
+        })
+
+        expect(unref(items).map(({ name }) => name)).toEqual(expected)
+      })
+    })
+
+    it('reacts to foldersFirst changes', () => {
+      getComposableWrapper(() => {
+        const foldersFirst = ref(true)
+        const { items } = useSort({
+          items: resources,
+          fields,
+          sortBy: ref('name'),
+          sortDir: ref(SortDir.Asc),
+          foldersFirst
+        })
+
+        expect(unref(items).map(({ name }) => name)).toEqual(['c', 'd', 'a.txt', 'b.txt'])
+        foldersFirst.value = false
+        expect(unref(items).map(({ name }) => name)).toEqual(['a.txt', 'b.txt', 'c', 'd'])
+      })
+    })
+  })
+
   describe('sorting spaces by status', () => {
     const spaces = [
       { id: '1', disabled: true },

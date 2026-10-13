@@ -28,6 +28,7 @@ export interface SortOptions<T extends object> {
   sortDir?: MaybeRef<SortDir>
   sortDirQueryName?: MaybeRef<string>
   routeName?: MaybeRef<string>
+  foldersFirst?: MaybeRef<boolean>
 }
 
 export interface SortResult<T> {
@@ -61,7 +62,13 @@ export function useSort<T extends object>(options: SortOptions<T>): SortResult<T
       return sortItems
     }
 
-    return sortHelper(sortItems, unref(fields), unref(sortBy), unref(sortDir))
+    return sortHelper(
+      sortItems,
+      unref(fields),
+      unref(sortBy),
+      unref(sortDir),
+      unref(options.foldersFirst) ?? true
+    )
   })
 
   const handleSort = ({ sortBy, sortDir }: { sortBy: string; sortDir: SortDir }) => {
@@ -128,7 +135,8 @@ export const sortHelper = <T extends object>(
   items: T[],
   fields: SortField[],
   sortBy: string,
-  sortDir: SortDir
+  sortDir: SortDir,
+  foldersFirst = true
 ) => {
   const field = fields.find((f) => {
     return f.name === sortBy
@@ -139,7 +147,7 @@ export const sortHelper = <T extends object>(
   const { sortable } = field
   const collator = new Intl.Collator(navigator.language, { sensitivity: 'accent', numeric: true })
 
-  if (sortBy === 'name') {
+  if (sortBy === 'name' && foldersFirst) {
     const isFolder = (item: T) => {
       const { isFolder, type } = item as SortableItem
       return isFolder || type === 'folder' || type === 'directory'

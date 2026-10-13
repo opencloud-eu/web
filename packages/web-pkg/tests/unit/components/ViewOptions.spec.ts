@@ -28,6 +28,7 @@ const selectors = {
   pageSizeSelect: '.oc-page-size',
   hiddenFilesSwitch: '[data-testid="files-switch-hidden-files"]',
   fileExtensionsSwitch: '[data-testid="files-switch-files-extensions-files"]',
+  foldersFirstSwitch: '[data-testid="files-switch-folders-first"]',
   viewModeSwitch: 'view-mode-switch-stub',
   tileSizeSlider: '[data-testid="files-tiles-size-slider"]'
 }
@@ -96,6 +97,21 @@ describe('ViewOptions component', () => {
 
       const { setAreFileExtensionsShown } = useResourcesStore()
       expect(setAreFileExtensionsShown).toHaveBeenCalled()
+    })
+  })
+  describe('folders first toggle', () => {
+    it('does not show when disabled', () => {
+      const { wrapper } = getWrapper({ props: { hasFoldersFirst: false } })
+      expect(wrapper.find(selectors.foldersFirstSwitch).exists()).toBeFalsy()
+    })
+    it('toggles the setting to sort folders first', () => {
+      const { wrapper } = getWrapper()
+      wrapper
+        .findComponent<typeof OcSwitch>(selectors.foldersFirstSwitch)
+        .vm.$emit('update:checked', false)
+
+      const { setAreFoldersSortedFirst } = useResourcesStore()
+      expect(setAreFoldersSortedFirst).toHaveBeenCalled()
     })
   })
   describe('view mode switcher', () => {
