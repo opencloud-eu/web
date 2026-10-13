@@ -122,11 +122,40 @@ describe('Tag Select', () => {
     expect(option.error).toBeDefined()
     expect(option.selectable).toBeFalsy()
   })
+
+  it.each([
+    { input: '   ', expected: [] },
+    { input: 'new tag', expected: ['new tag'] }
+  ])('pressing enter with input "$input" assigns $expected', async ({ input, expected }) => {
+    const clientService = mockDeep<ClientService>()
+    const assignTagsStub =
+      clientService.graphAuthenticated.tags.assignTags.mockResolvedValue(undefined)
+    const { wrapper } = createWrapper(mock<Resource>({ tags: [] }), clientService, [
+      'Project Alpha'
+    ])
+    await flushPromises()
+
+    const searchInput = wrapper.find('input')
+    await searchInput.trigger('focus')
+    await searchInput.setValue(input)
+    await searchInput.trigger('keydown', { keyCode: 13 })
+    await flushPromises()
+
+    if (expected.length) {
+      expect(assignTagsStub).toHaveBeenCalledWith(expect.objectContaining({ tags: expected }))
+    } else {
+      expect(assignTagsStub).not.toHaveBeenCalled()
+    }
+  })
 })
 
-function createWrapper(resource: Resource, clientService = mockDeep<ClientService>()) {
+function createWrapper(
+  resource: Resource,
+  clientService = mockDeep<ClientService>(),
+  availableTags: string[] = []
+) {
   const mocks = { ...defaultComponentMocks(), $clientService: clientService }
-  mocks.$clientService.graphAuthenticated.tags.listTags.mockResolvedValue([])
+  mocks.$clientService.graphAuthenticated.tags.listTags.mockResolvedValue(availableTags)
   return {
     wrapper: mount(TagsSelect, {
       global: {

@@ -233,6 +233,16 @@ const keydownMethods = (map: Record<string, (e: Event) => void>) => {
   const objectMapping = {
     ...map
   }
+  for (const keyCode of [KeyCode.Enter, KeyCode[',']]) {
+    objectMapping[keyCode] = (e: Event) => {
+      const value = (e.target as HTMLInputElement).value
+      if (value.length && !value.trim().length) {
+        e.preventDefault()
+        return
+      }
+      map[keyCode](e)
+    }
+  }
   objectMapping[KeyCode.Backspace] = async (e: Event) => {
     if ((e.target as HTMLInputElement).value || selectedTags.value.length === 0) {
       return
