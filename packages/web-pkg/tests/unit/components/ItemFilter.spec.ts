@@ -199,6 +199,13 @@ describe('ItemFilter', () => {
       expect((wrapper.vm as any).selectedItems).toEqual([])
       expect(wrapper.emitted('selectionChange')).toEqual([[[]]])
     })
+    it('still exposes the deprecated setSelectedItemsBasedOnQuery', () => {
+      const { wrapper } = getWrapper({ initialQuery: '1' })
+      const { setSelectedItemsBasedOnQuery } = (wrapper.vm.$ as any).exposed
+      ;(wrapper.vm as any).selectedItems = []
+      setSelectedItemsBasedOnQuery()
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+    })
   })
 
   describe('label prop', () => {
