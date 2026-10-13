@@ -461,8 +461,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.43(typescript@6.0.3))
       zod:
-        specifier: 4.6.5
-        version: 4.6.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -501,8 +501,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.43(typescript@6.0.3))
       zod:
-        specifier: 4.6.5
-        version: 4.6.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -566,8 +566,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.43(typescript@6.0.3))
       zod:
-        specifier: 4.6.5
-        version: 4.6.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -676,8 +676,8 @@ importers:
         specifier: ^4.0.0-beta.1
         version: 4.0.1(vue@3.5.43(typescript@6.0.3))
       zod:
-        specifier: 4.6.5
-        version: 4.6.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -716,8 +716,8 @@ importers:
         specifier: 5.4.0
         version: 5.4.0(@vue/compiler-sfc@3.5.43)(pinia@4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3)))(rolldown@1.2.11)(vite@8.3.3(@types/node@25.9.9)(jiti@2.7.0)(yaml@2.9.0))(vue@3.5.43(typescript@6.0.3))
       zod:
-        specifier: 4.6.5
-        version: 4.6.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -935,7 +935,7 @@ importers:
         version: 5.11.0
       zod:
         specifier: ^4.3.6
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@types/luxon':
         specifier: 3.7.6
@@ -1155,7 +1155,7 @@ importers:
         version: 13.6.33
       zod:
         specifier: ^4.3.6
-        version: 4.6.5
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:^
@@ -1260,8 +1260,8 @@ importers:
         specifier: ^13.6.0
         version: 13.6.33
       zod:
-        specifier: 4.6.5
-        version: 4.6.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@opencloud-eu/web-test-helpers':
         specifier: workspace:*
@@ -5280,8 +5280,8 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
 
-  zod@4.6.5:
-    resolution: {integrity: sha512-v5l/aFXZQeai4awLbOpSoHecE9UiMrnfx75tEXLjNonXVARxQ5mOeipTjROUchszUNCqnE+hqAMujRsRHsut2Q==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -9362,6 +9362,6 @@ snapshots:
 
   yocto-queue@0.1.0: {}
 
-  zod@4.6.5: {}
+  zod@4.6.7: {}
 
   zwitch@2.0.4: {}
