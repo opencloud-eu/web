@@ -178,7 +178,7 @@ export class UploadResourceConflict extends ConflictDialog {
         file.xhrUpload.endpoint = file.xhrUpload.endpoint
           .toString()
           .replace(
-            new RegExp(`/${escapeRegExp(encodeURIComponent(fileName))}`),
+            new RegExp(`/${escapeRegExp(encodeURIComponent(fileName))}$`),
             () => `/${encodeURIComponent(file.name)}`
           )
       }

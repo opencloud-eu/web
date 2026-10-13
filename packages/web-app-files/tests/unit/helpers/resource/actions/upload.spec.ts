@@ -148,7 +148,31 @@ describe('upload helper', () => {
         `https://example.com/dav/${encodedNewFolderName}/folderInside`
       )
     })
-    it.each(['report (final)', 'x+y', 'cost$$', 'a$&b', 'x$1'])(
+    it('should only rename the file name segment of the xhr endpoint when keeping both', async () => {
+      const fileName = 'Doc'
+      const currentFiles = [mockDeep<Resource>({ name: fileName })]
+      const file = {
+        id: 'file',
+        name: fileName,
+        meta: { relativeFolder: '', relativePath: '' },
+        xhrUpload: { endpoint: `https://example.com/dav/Documents/${fileName}` }
+      } as unknown as OcUppyFile
+
+      const instance = getResourceConflictInstance({ currentFiles })
+      instance.resolveFileExists = vi.fn(() =>
+        Promise.resolve({ strategy: ResolveStrategy.KEEP_BOTH, doForAllConflicts: false })
+      )
+
+      const result = await instance.displayOverwriteDialog(
+        [file],
+        [{ name: fileName, type: 'file' }]
+      )
+
+      expect(result.files[0].xhrUpload.endpoint).toBe(
+        `https://example.com/dav/Documents/${encodeURIComponent('Doc (1)')}`
+      )
+    })
+    it.each(['report (final)', 'x+y', 'cost$$', 'a$&b', 'x$1', "a$'b", 'a$`b'])(
       'should rename folder "%s" with special characters when keeping both',
       async (folderName) => {
         const currentFiles = [mockDeep<Resource>({ name: folderName })]
