@@ -8,6 +8,12 @@
 
 ### 🐛 Bug Fixes
 
+- fix: don't add already selected rows again on shift arrow in admin settings [[#3691](https://github.com/opencloud-eu/web/pull/3691)]
+- fix: stop the search preview from hanging when a provider search fails [[#3690](https://github.com/opencloud-eu/web/pull/3690)]
+- fix(web-runtime): handle wrong passwords on the public link page [[#3592](https://github.com/opencloud-eu/web/pull/3592)]
+- fix: select shares from notifications and show the highest share role [[#3598](https://github.com/opencloud-eu/web/pull/3598)]
+- fix: make upload actions reactive [[#3651](https://github.com/opencloud-eu/web/pull/3651)]
+- fix(editor): keep task list content and indented code fences in markdown [[#3616](https://github.com/opencloud-eu/web/pull/3616)]
 - fix: keep public link uploads on the server origin after entering the password [[#3688](https://github.com/opencloud-eu/web/pull/3688)]
 - fix: keep skipped files out of uploads [[#3689](https://github.com/opencloud-eu/web/pull/3689)]
 - fix: ignore space key in admin settings lists without a selected row [[#3685](https://github.com/opencloud-eu/web/pull/3685)]
@@ -77,6 +83,10 @@
 
 ### 📦️ Dependencies
 
+- chore(deps): update hocuspocus monorepo to v4.7.1 [[#3746](https://github.com/opencloud-eu/web/pull/3746)]
+- chore(deps): update dependency dompurify to v3.4.17 [[#3745](https://github.com/opencloud-eu/web/pull/3745)]
+- chore(deps): update collabora/code docker tag to v26.04.5.1.1 [[#3634](https://github.com/opencloud-eu/web/pull/3634)]
+- fix(deps): update dependency vue-router to v5.4.0 [[#3611](https://github.com/opencloud-eu/web/pull/3611)]
 - chore(deps): update dependency cropperjs to v2.3.0 [[#3608](https://github.com/opencloud-eu/web/pull/3608)]
 - chore(deps): update traefik docker tag to v3.7.14 [[#3576](https://github.com/opencloud-eu/web/pull/3576)]
 - chore(deps): update uppy monorepo [[#3515](https://github.com/opencloud-eu/web/pull/3515)]
