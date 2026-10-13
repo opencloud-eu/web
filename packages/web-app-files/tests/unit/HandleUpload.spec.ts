@@ -110,6 +110,25 @@ describe('HandleUpload', () => {
       expect(processedFiles[0].meta.name).toEqual(fileToUpload.name)
       expect(processedFiles[0].meta.mtime).toEqual(lastModified / 1000)
     })
+    it('sets a separate endpoint per file for public file drop uploads without tus', () => {
+      const { instance, mocks } = getWrapper()
+      mocks.uppy.getPlugin.mockReturnValue(undefined)
+      mocks.opts.resourcesStore.currentFolder = null
+      unref(mocks.opts.route).params.token = 'public-token'
+      mocks.opts.clientService.webdav.getPublicFileUrl.mockReturnValue('https://public/')
+
+      const filesToUpload = ['a.txt', 'b.txt', 'c.txt'].map((name) =>
+        mock<OcUppyFile>({ id: name, name, type: 'text/plain', data: {} as File })
+      )
+      const uploadFolder = mock<Resource>({ id: '1', path: '/' })
+      const processedFiles = instance.prepareFiles(filesToUpload, uploadFolder)
+
+      expect(processedFiles.map(({ xhrUpload }) => xhrUpload.endpoint)).toEqual([
+        'https://public/a.txt',
+        'https://public/b.txt',
+        'https://public/c.txt'
+      ])
+    })
   })
   describe('method createDirectoryTree', () => {
     it('creates a directory for a single file with a relative folder given', async () => {
