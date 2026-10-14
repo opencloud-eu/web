@@ -13,14 +13,17 @@ export class HttpError extends Error {
 
 export class DavHttpError extends HttpError {
   public errorCode: DavErrorCode
+  public errorType: string | undefined
 
   constructor(
     message: string,
     errorCode: DavErrorCode,
     response: Response,
-    statusCode: number = null
+    statusCode: number = null,
+    errorType?: string
   ) {
     super(message, response, statusCode)
     this.errorCode = errorCode
+    this.errorType = errorType
   }
 }
