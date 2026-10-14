@@ -106,7 +106,6 @@ describe('useCreateSpace', () => {
           // the space exists, so the steps that don't depend on the vault run
           const { drives, permissions } = $clientService.graphAuthenticated
           expect(drives.updateDrive).toHaveBeenCalledWith('1', {
-            name: 'space',
             quota: { total: 1000 }
           })
           expect(permissions.createInvite).toHaveBeenCalled()
@@ -170,7 +169,6 @@ describe('useCreateSpace', () => {
 
           const { drives, permissions } = $clientService.graphAuthenticated
           expect(drives.updateDrive).toHaveBeenCalledWith('1', {
-            name: 'space',
             quota: { total: 1000 }
           })
           expect($clientService.webdav.putFileContents).toHaveBeenCalledWith(

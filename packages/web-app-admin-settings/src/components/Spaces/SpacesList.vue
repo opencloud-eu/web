@@ -263,16 +263,6 @@ onBeforeUnmount(() => {
   eventBus.unsubscribe('app.files.spaces.uploaded-image', uploadedImageToken)
 })
 
-// e.g. after deleting all spaces of the last page: show the new last page instead of an empty one
-watch(totalPages, async (pageCount) => {
-  if (pageCount > 0 && unref(currentPage) > pageCount) {
-    await router.push({
-      ...unref(route),
-      query: { ...unref(route).query, page: String(pageCount) }
-    })
-  }
-})
-
 // the selection is kept across pages, so only the spaces of the current page count
 const allSpacesSelected = computed(
   () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isSpaceSelected)

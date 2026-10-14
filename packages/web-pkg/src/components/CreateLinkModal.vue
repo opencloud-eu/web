@@ -259,7 +259,7 @@ const createLinkHandler = async () => {
 
   if (userFacingErrors.length) {
     password.error = $gettext(userFacingErrors[0].message)
-    return Promise.reject()
+    return Promise.reject(new Error(userFacingErrors[0].message))
   }
 
   return result

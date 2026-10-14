@@ -127,23 +127,16 @@ describe('SpacesList', () => {
 
   describe('pagination', () => {
     it('shows the new last page if the current page gets empty, e.g. after deleting spaces', async () => {
-      const { mocks } = getWrapper({
-        mountType: shallowMount,
-        stubActions: false,
-        page: '2',
-        perPage: '1'
-      })
+      const { wrapper } = getWrapper({ stubActions: false, page: '2', perPage: '1' })
       const spacesStore = useSpacesStore()
       spacesStore.setAllProjectSpaces(spaceMocks.map((space) => ({ ...space })) as SpaceResource[])
       await flushPromises()
-      expect(mocks.$router.push).not.toHaveBeenCalled()
+      expect(getColumn(wrapper, 'name')).toEqual(['2 Another space'])
 
       spacesStore.removeSpace(spaceMocks[1])
       await flushPromises()
 
-      expect(mocks.$router.push).toHaveBeenCalledWith(
-        expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
-      )
+      expect(getColumn(wrapper, 'name')).toEqual(['1 Some space'])
     })
   })
 
