@@ -168,10 +168,23 @@ export class UploadResourceConflict extends ConflictDialog {
       .filter((e) => e.strategy === ResolveStrategy.KEEP_BOTH)
       .map((e) => e.name)
 
+    if (!filesToKeepBoth.length && !foldersToKeepBoth.length) {
+      return { files, mergedFolders }
+    }
+
+    // Reserve all top-level batch names before assigning replacements.
+    const occupiedResources = [
+      ...this.resourcesStore.resources,
+      ...files.map((file) => ({
+        name: file.meta.relativeFolder?.split('/').filter(Boolean)[0] || file.name
+      }))
+    ]
+
     for (const fileName of filesToKeepBoth) {
       const file = files.find((e) => e.name === fileName && !e.meta.relativeFolder)
       const extension = extractExtensionFromFile({ name: fileName } as Resource)
-      file.name = resolveFileNameDuplicate(fileName, extension, this.resourcesStore.resources)
+      file.name = resolveFileNameDuplicate(fileName, extension, occupiedResources)
+      occupiedResources.push({ name: file.name })
       file.meta.name = file.name
       if (file.xhrUpload?.endpoint) {
         file.xhrUpload.endpoint = file.xhrUpload.endpoint
@@ -184,8 +197,9 @@ export class UploadResourceConflict extends ConflictDialog {
     }
     for (const folder of foldersToKeepBoth) {
       const filesInFolder = files.filter((e) => e.meta.relativeFolder.split('/')[1] === folder)
+      const newFolderName = resolveFileNameDuplicate(folder, '', occupiedResources)
+      occupiedResources.push({ name: newFolderName })
       for (const file of filesInFolder) {
-        const newFolderName = resolveFileNameDuplicate(folder, '', this.resourcesStore.resources)
         file.meta.relativeFolder = file.meta.relativeFolder.replace(
           new RegExp(`/${folder}`),
           `/${newFolderName}`
