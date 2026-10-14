@@ -28,31 +28,30 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
   {
     path: '/',
     component: General,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       if ($ability.can('read-all', 'Setting')) {
-        next({ name: 'admin-settings-general' })
+        return { name: 'admin-settings-general' }
       }
       if ($ability.can('read-all', 'Account')) {
-        next({ name: 'admin-settings-users' })
+        return { name: 'admin-settings-users' }
       }
       if ($ability.can('read-all', 'Group')) {
-        next({ name: 'admin-settings-groups' })
+        return { name: 'admin-settings-groups' }
       }
       if ($ability.can('read-all', 'Drive')) {
-        next({ name: 'admin-settings-spaces' })
+        return { name: 'admin-settings-spaces' }
       }
-      next({ path: '/' })
+      return { path: '/' }
     }
   },
   {
     path: '/general',
     name: 'admin-settings-general',
     component: General,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       if (!$ability.can('read-all', 'Setting')) {
-        next({ path: '/' })
+        return { path: '/' }
       }
-      next()
     },
     meta: {
       authContext: 'user',
@@ -63,11 +62,10 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
     path: '/users',
     name: 'admin-settings-users',
     component: Users,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       if (!$ability.can('read-all', 'Account')) {
-        next({ path: '/' })
+        return { path: '/' }
       }
-      next()
     },
     meta: {
       authContext: 'user',
@@ -78,11 +76,10 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
     path: '/groups',
     name: 'admin-settings-groups',
     component: Groups,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       if (!$ability.can('read-all', 'Group')) {
-        next({ path: '/' })
+        return { path: '/' }
       }
-      next()
     },
     meta: {
       authContext: 'user',
@@ -93,11 +90,10 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
     path: '/spaces',
     name: 'admin-settings-spaces',
     component: Spaces,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       if (!$ability.can('read-all', 'Drive')) {
-        next({ path: '/' })
+        return { path: '/' }
       }
-      next()
     },
     meta: {
       authContext: 'user',
@@ -108,11 +104,10 @@ export const routes: ClassicApplicationScript['routes'] = ({ $ability, $gettext 
     path: '/apps',
     name: 'admin-settings-extensions',
     component: Extensions,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       if (!$ability.can('read-all', 'Setting')) {
-        next({ path: '/' })
+        return { path: '/' }
       }
-      next()
     },
     meta: {
       authContext: 'user',

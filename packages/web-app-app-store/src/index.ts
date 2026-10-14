@@ -52,11 +52,10 @@ export default defineWebApplication({
         name: 'root',
         component: () => import('./LayoutContainer.vue'),
         redirect: urlJoin(appInfo.id, 'list'),
-        beforeEnter: (to, from, next) => {
+        beforeEnter: () => {
           if (!unref(hasPermission)) {
-            return next({ path: '/' })
+            return { path: '/' }
           }
-          next()
         },
         meta: {
           authContext: 'user'
