@@ -505,6 +505,127 @@ describe('upload helper', () => {
         true
       )
     })
+
+    describe.each([
+      { type: 'file', strategy: ResolveStrategy.REPLACE },
+      { type: 'folder', strategy: ResolveStrategy.MERGE }
+    ])('apply to all for $type conflicts', ({ type, strategy }) => {
+      it.each(
+        [ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH].flatMap((mismatchStrategy) =>
+          [false, true].map((mismatchFirst) => ({ mismatchStrategy, mismatchFirst }))
+        )
+      )(
+        'keeps separate strategies when a type mismatch uses $mismatchStrategy for all (mismatch first: $mismatchFirst)',
+        async ({ mismatchStrategy, mismatchFirst }) => {
+          const isFolder = type === 'folder'
+          const names = mismatchFirst
+            ? ['mismatch-1', 'regular-1', 'mismatch-2', 'regular-2']
+            : ['regular-1', 'mismatch-1', 'regular-2', 'mismatch-2']
+          const currentFiles = names.map((name) =>
+            mockDeep<Resource>({
+              name,
+              isFolder: name.startsWith('mismatch') ? !isFolder : isFolder
+            })
+          )
+          const files = names.map((name) =>
+            mockDeep<OcUppyFile>({
+              id: name,
+              name: isFolder ? 'content.txt' : name,
+              meta: {
+                relativeFolder: isFolder ? `/${name}` : '',
+                relativePath: isFolder ? `/${name}/content.txt` : '',
+                tusEndpoint: `https://example.com/dav/${name}`
+              }
+            })
+          )
+          const conflicts = names.map((name) => ({
+            name,
+            type,
+            typeMismatch: name.startsWith('mismatch')
+          }))
+          const instance = getResourceConflictInstance({ currentFiles })
+          instance.resolveFileExists = vi
+            .fn()
+            .mockResolvedValueOnce({
+              strategy: mismatchFirst ? mismatchStrategy : strategy,
+              doForAllConflicts: true
+            })
+            .mockResolvedValueOnce({
+              strategy: mismatchFirst ? strategy : mismatchStrategy,
+              doForAllConflicts: true
+            })
+
+          const result = await instance.displayOverwriteDialog(files, conflicts)
+
+          expect(instance.resolveFileExists).toHaveBeenCalledTimes(2)
+          expect(instance.resolveFileExists).toHaveBeenLastCalledWith(
+            { name: mismatchFirst ? 'regular-1' : 'mismatch-1', isFolder },
+            2,
+            isFolder,
+            true,
+            !mismatchFirst
+          )
+          expect(result.files.map(({ id }) => id)).toEqual(
+            mismatchStrategy === ResolveStrategy.SKIP ? ['regular-1', 'regular-2'] : names
+          )
+          expect(result.mergedFolders).toEqual(isFolder ? ['regular-1', 'regular-2'] : [])
+          if (mismatchStrategy === ResolveStrategy.KEEP_BOTH) {
+            const renamed = result.files.filter(({ id }) => id.startsWith('mismatch'))
+            expect(
+              renamed.map((file) => (isFolder ? file.meta.relativeFolder : file.name))
+            ).toEqual(
+              isFolder
+                ? ['/mismatch-1 (1)', '/mismatch-2 (1)']
+                : ['mismatch-1 (1)', 'mismatch-2 (1)']
+            )
+          }
+        }
+      )
+
+      it.each([ResolveStrategy.SKIP, ResolveStrategy.KEEP_BOTH])(
+        'still applies the compatible regular strategy %s to type mismatches',
+        async (strategy) => {
+          const isFolder = type === 'folder'
+          const names = ['regular', 'mismatch']
+          const currentFiles = names.map((name, index) =>
+            mockDeep<Resource>({ name, isFolder: index === 0 ? isFolder : !isFolder })
+          )
+          const files = names.map((name) =>
+            mockDeep<OcUppyFile>({
+              id: name,
+              name: isFolder ? 'content.txt' : name,
+              meta: {
+                relativeFolder: isFolder ? `/${name}` : '',
+                relativePath: isFolder ? `/${name}/content.txt` : '',
+                tusEndpoint: `https://example.com/dav/${name}`
+              }
+            })
+          )
+          const instance = getResourceConflictInstance({ currentFiles })
+          instance.resolveFileExists = vi
+            .fn()
+            .mockResolvedValue({ strategy, doForAllConflicts: true })
+
+          const result = await instance.displayOverwriteDialog(
+            files,
+            names.map((name, index) => ({ name, type, typeMismatch: index === 1 }))
+          )
+
+          expect(instance.resolveFileExists).toHaveBeenCalledTimes(1)
+          expect(result.files.map(({ id }) => id)).toEqual(
+            strategy === ResolveStrategy.SKIP ? [] : names
+          )
+          if (strategy === ResolveStrategy.KEEP_BOTH) {
+            expect(
+              result.files.map((file) => (isFolder ? file.meta.relativeFolder : file.name))
+            ).toEqual(
+              isFolder ? ['/regular (1)', '/mismatch (1)'] : ['regular (1)', 'mismatch (1)']
+            )
+          }
+        }
+      )
+    })
+
     it('should show dialog twice if do for all conflicts is ticked and folders and files are uploaded', async () => {
       const OcUppyFileOne = mockDeep<OcUppyFile>({ name: 'test' })
       const OcUppyFileTwo = mockDeep<OcUppyFile>({ name: 'folder' })
