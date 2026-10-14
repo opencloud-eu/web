@@ -111,12 +111,34 @@ describe('OcModal', () => {
       expect(wrapper.emitted('cancel')).toBeTruthy()
     })
 
+    it('emits cancel when pressing escape after focus left the dialog', async () => {
+      const wrapper = mountModal()
+      await wrapper.find('.oc-modal-background').trigger('click')
+      pressEscapeFromBody()
+
+      expect(wrapper.emitted('cancel')).toBeTruthy()
+    })
+
+    it('does not emit cancel from the document while inactive', () => {
+      const wrapper = mountModal({ active: false })
+      pressEscapeFromBody()
+
+      expect(wrapper.emitted('cancel')).toBeFalsy()
+    })
+
     // the cancel button is disabled while loading, so escape has to be blocked as
     // well. Otherwise an in-flight handler gets discarded without its result ever
     // reaching the user.
     it('does not emit cancel while loading', async () => {
       const wrapper = mountModal({ isLoading: true })
       await wrapper.find('[role="dialog"]').trigger('keydown.esc')
+      expect(wrapper.emitted('cancel')).toBeFalsy()
+    })
+
+    it('does not emit cancel from the document while loading', () => {
+      const wrapper = mountModal({ isLoading: true })
+      pressEscapeFromBody()
+
       expect(wrapper.emitted('cancel')).toBeFalsy()
     })
   })
@@ -164,3 +186,7 @@ describe('OcModal', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 })
+
+const pressEscapeFromBody = () => {
+  document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+}
