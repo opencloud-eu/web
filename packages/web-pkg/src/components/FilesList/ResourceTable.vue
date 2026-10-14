@@ -20,7 +20,6 @@
     :drag-drop="dragDrop"
     :hover="hover"
     :item-dom-selector="resourceDomSelector"
-    :item-key="resourceKey"
     :sort-by="sortBy"
     :sort-dir="sortDir"
     :lazy="lazy"
@@ -34,6 +33,7 @@
     @item-dragged="dragStart($event[0], $event[1])"
     @drop-row-styling="setDropStyling"
     @sort="$emit('sort', $event)"
+    @item-visible="$emit('itemVisible', $event)"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <template v-if="!isLocationPicker && !isFilePicker" #selectHeader>
@@ -305,6 +305,7 @@ import {
   useFolderLink,
   useGetMatchingSpace,
   useIsTopBarSticky,
+  useResourceEtagChange,
   useResourcesStore,
   useResourceViewHelpers,
   useRouter,
@@ -377,6 +378,7 @@ const emit = defineEmits<{
   (e: 'fileDropped', id: string): void
   (e: 'update:selectedIds', selectedIds: string[]): void
   (e: 'update:modelValue', value: Resource[]): void
+  (e: 'itemVisible', resource: Resource): void
 }>()
 
 defineSlots<{
@@ -394,10 +396,11 @@ defineSlots<{
   footer?: () => unknown
 }>()
 
-// re-render a row when its resource changed, so its preview gets loaded again
-function resourceKey(resource: Resource) {
-  return `${resourceDomSelector(resource)}-${resource.etag}`
-}
+// load the preview of a changed resource again
+useResourceEtagChange(
+  () => resources,
+  (resource) => emit('itemVisible', resource)
+)
 
 const router = useRouter()
 const { getExtensionActions } = useFileActions()
