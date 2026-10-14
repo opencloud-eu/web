@@ -14,6 +14,7 @@ export default class List implements SearchList {
   }
 
   public search(term: string): Promise<SearchResult> {
-    return this.searchFunction(term, searchLimit)
+    // hidden results are kept, the resources store filters them reactively based on the settings
+    return this.searchFunction(term, searchLimit, { includeHidden: true })
   }
 }
