@@ -12,6 +12,7 @@ import {
   queryItemAsString,
   ResourceTable,
   ResourceTiles,
+  SearchResult,
   SortField,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
@@ -154,6 +155,25 @@ describe('List component', () => {
     expect(resourceIds()).toEqual(['visible'])
 
     expect(wrapper.emitted('search').length).toBe(searchCount)
+  })
+  it('counts only the shown results in the search limit hint', async () => {
+    const resources = [
+      mock<Resource>({ id: 'file', name: 'file', type: 'file' }),
+      mock<Resource>({ id: 'folder', name: 'folder', type: 'folder' }),
+      mock<Resource>({ id: 'hidden-file', name: '.hidden-file', type: 'file' }),
+      mock<Resource>({ id: 'hidden-folder', name: '.hidden-folder', type: 'folder' })
+    ]
+    const { wrapper } = getWrapper({
+      searchResult: { totalResults: 500, values: [] },
+      resourcesStore: { resources, areHiddenFilesShown: false }
+    })
+    await flushPromises()
+    const limitText = () => (wrapper.vm as any).searchResultExceedsLimitText
+    expect(limitText()).toBe('Found 500, showing the 2 best matching results')
+
+    useResourcesStore().areHiddenFilesShown = true
+    await flushPromises()
+    expect(limitText()).toBe('Found 500, showing the 4 best matching results')
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
@@ -299,7 +319,8 @@ function getWrapper({
   mocks = {},
   sortFields = [],
   folderViewComponent = undefined,
-  stubs = {}
+  stubs = {},
+  searchResult = undefined
 }: {
   availableTags?: string[]
   resources?: Resource[]
@@ -316,6 +337,7 @@ function getWrapper({
   sortFields?: SortField[]
   folderViewComponent?: Component
   stubs?: Record<string, boolean | Component>
+  searchResult?: SearchResult
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
@@ -354,6 +376,7 @@ function getWrapper({
   return {
     mocks: localMocks,
     wrapper: shallowMount(List, {
+      props: { searchResult },
       global: {
         mocks: localMocks,
         provide: localMocks,

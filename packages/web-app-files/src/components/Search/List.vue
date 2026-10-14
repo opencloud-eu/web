@@ -231,7 +231,7 @@ const { buildSearchTerm } = useSearch()
 
 const resourcesStore = useResourcesStore()
 const { initResourceList, clearResourceList, setAncestorMetaData } = resourcesStore
-const { totalResourcesCount } = storeToRefs(resourcesStore)
+const { totalResourcesCount, areHiddenFilesShown } = storeToRefs(resourcesStore)
 
 const searchTermQuery = useRouteQuery('term')
 const scopeQuery = useRouteQuery('scope')
@@ -347,7 +347,11 @@ const breadcrumbs = computed(() => {
 })
 
 const itemCount = computed(() => {
-  return unref(totalResourcesCount).files + unref(totalResourcesCount).folders
+  const { files, folders, hiddenFiles, hiddenFolders } = unref(totalResourcesCount)
+  if (unref(areHiddenFilesShown)) {
+    return files + folders
+  }
+  return files + folders - hiddenFiles - hiddenFolders
 })
 const rangeSupported = computed(() => {
   return searchResult.totalResults
