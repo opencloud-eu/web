@@ -35,12 +35,15 @@ describe('useSort', () => {
 
   describe('folders first', () => {
     const resources = [
-      { id: '1', name: 'b.txt', type: 'file' },
-      { id: '2', name: 'c', type: 'folder' },
-      { id: '3', name: 'a.txt', type: 'file' },
-      { id: '4', name: 'd', type: 'folder' }
-    ] as (SortableItem & { id: string; name: string })[]
-    const fields = [{ name: 'name', sortable: true }]
+      { id: '1', name: 'b.txt', type: 'file', size: 4 },
+      { id: '2', name: 'c', type: 'folder', size: 1 },
+      { id: '3', name: 'a.txt', type: 'file', size: 3 },
+      { id: '4', name: 'd', type: 'folder', size: 2 }
+    ] as (SortableItem & { id: string; name: string; size: number })[]
+    const fields = [
+      { name: 'name', sortable: true },
+      { name: 'size', sortable: true }
+    ]
 
     it.each([
       { foldersFirst: undefined, expected: ['c', 'd', 'a.txt', 'b.txt'] },
@@ -53,6 +56,23 @@ describe('useSort', () => {
           fields,
           sortBy: ref('name'),
           sortDir: ref(SortDir.Asc),
+          foldersFirst
+        })
+
+        expect(unref(items).map(({ name }) => name)).toEqual(expected)
+      })
+    })
+
+    it.each([
+      { foldersFirst: true, expected: ['d', 'c', 'b.txt', 'a.txt'] },
+      { foldersFirst: false, expected: ['b.txt', 'a.txt', 'd', 'c'] }
+    ])('sorts by size with foldersFirst $foldersFirst', ({ foldersFirst, expected }) => {
+      getComposableWrapper(() => {
+        const { items } = useSort({
+          items: resources,
+          fields,
+          sortBy: ref('size'),
+          sortDir: ref(SortDir.Desc),
           foldersFirst
         })
 

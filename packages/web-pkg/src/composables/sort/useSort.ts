@@ -147,22 +147,19 @@ export const sortHelper = <T extends object>(
   const { sortable } = field
   const collator = new Intl.Collator(navigator.language, { sensitivity: 'accent', numeric: true })
 
-  if (sortBy === 'name' && foldersFirst) {
+  const compareItems = (a: T, b: T) =>
+    compare(a, b, collator, field.prop || field.name, sortDir, sortable)
+
+  if (foldersFirst) {
     const isFolder = (item: T) => {
       const { isFolder, type } = item as SortableItem
       return isFolder || type === 'folder' || type === 'directory'
     }
-    const folders = [...items.filter((i) => isFolder(i))].sort((a, b) =>
-      compare(a, b, collator, sortBy, sortDir, sortable)
-    )
-    const files = [...items.filter((i) => !isFolder(i))].sort((a, b) =>
-      compare(a, b, collator, sortBy, sortDir, sortable)
-    )
+    const folders = items.filter((i) => isFolder(i)).sort(compareItems)
+    const files = items.filter((i) => !isFolder(i)).sort(compareItems)
     return folders.concat(files)
   }
-  return [...items].sort((a, b) =>
-    compare(a, b, collator, field.prop || field.name, sortDir, sortable)
-  )
+  return [...items].sort(compareItems)
 }
 
 const pureLeadingZeroPrefixRegex = /^(0+)(?!\d)(.*)$/
