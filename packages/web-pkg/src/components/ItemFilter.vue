@@ -142,7 +142,7 @@ const getId = (item: Item) => {
 const setRouteQuery = () => {
   return router.push({
     query: {
-      ...omit(unref(currentRoute).query, [queryParam]),
+      ...omit(unref(currentRoute).query, [queryParam, 'page']),
       ...(!!unref(selectedItems).length && {
         [queryParam]: unref(selectedItems)
           .reduce<string>((acc, item) => {
