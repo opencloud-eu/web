@@ -10,11 +10,13 @@ import {
   AppBar,
   ItemFilter,
   queryItemAsString,
+  ResourceTable,
   ResourceTiles,
+  SearchResult,
   SortField,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
-import { Component, computed, defineComponent, h, ref, unref } from 'vue'
+import { Component, computed, defineComponent, h, Ref, ref, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
@@ -127,6 +129,51 @@ describe('List component', () => {
     await $router.replace({ name: 'files-common-search', query: {} })
     await flushPromises()
     expect((tagFilter.vm as any).selectedItems).toEqual([])
+  })
+  it('shows and hides hidden results when toggling hidden files without searching again', async () => {
+    const visible = mock<Resource>({ id: 'visible', name: 'visible' })
+    const hidden = mock<Resource>({ id: 'hidden', name: '.hidden' })
+    const { wrapper } = getWrapper({
+      paginatedResources: computed(() => useResourcesStore().activeResources),
+      resourcesStore: { resources: [visible, hidden], areHiddenFilesShown: false }
+    })
+    await flushPromises()
+    const searchCount = wrapper.emitted('search').length
+    const resourceIds = () => {
+      const table = wrapper.findComponent<typeof ResourceTable>(selectors.resourceTableStub)
+      return table.props('resources').map(({ id }) => id)
+    }
+    expect(resourceIds()).toEqual(['visible'])
+
+    const resourcesStore = useResourcesStore()
+    resourcesStore.areHiddenFilesShown = true
+    await flushPromises()
+    expect(resourceIds()).toEqual(['visible', 'hidden'])
+
+    resourcesStore.areHiddenFilesShown = false
+    await flushPromises()
+    expect(resourceIds()).toEqual(['visible'])
+
+    expect(wrapper.emitted('search').length).toBe(searchCount)
+  })
+  it('counts only the shown results in the search limit hint', async () => {
+    const resources = [
+      mock<Resource>({ id: 'file', name: 'file', type: 'file' }),
+      mock<Resource>({ id: 'folder', name: 'folder', type: 'folder' }),
+      mock<Resource>({ id: 'hidden-file', name: '.hidden-file', type: 'file' }),
+      mock<Resource>({ id: 'hidden-folder', name: '.hidden-folder', type: 'folder' })
+    ]
+    const { wrapper } = getWrapper({
+      searchResult: { totalResults: 500, values: [] },
+      resourcesStore: { resources, areHiddenFilesShown: false }
+    })
+    await flushPromises()
+    const limitText = () => (wrapper.vm as any).searchResultExceedsLimitText
+    expect(limitText()).toBe('Found 500, showing the 2 best matching results')
+
+    useResourcesStore().areHiddenFilesShown = true
+    await flushPromises()
+    expect(limitText()).toBe('Found 500, showing the 4 best matching results')
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
@@ -260,6 +307,8 @@ describe('List component', () => {
 function getWrapper({
   availableTags = [],
   resources = [],
+  paginatedResources = undefined,
+  resourcesStore = {},
   searchTerm = '',
   tagFilterQuery = null,
   titleOnlyFilterQuery = null,
@@ -270,10 +319,13 @@ function getWrapper({
   mocks = {},
   sortFields = [],
   folderViewComponent = undefined,
-  stubs = {}
+  stubs = {},
+  searchResult = undefined
 }: {
   availableTags?: string[]
   resources?: Resource[]
+  paginatedResources?: Ref<Resource[]>
+  resourcesStore?: { resources?: Resource[]; areHiddenFilesShown?: boolean }
   searchTerm?: string
   tagFilterQuery?: string
   titleOnlyFilterQuery?: string
@@ -285,6 +337,7 @@ function getWrapper({
   sortFields?: SortField[]
   folderViewComponent?: Component
   stubs?: Record<string, boolean | Component>
+  searchResult?: SearchResult
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => searchTerm)
   vi.mocked(queryItemAsString).mockImplementationOnce(() => titleOnlyFilterQuery)
@@ -292,7 +345,7 @@ function getWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => lastModifiedFilterQuery)
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
-    paginatedResources: ref(resources),
+    paginatedResources: paginatedResources || ref(resources),
     sortFields: ref(sortFields)
   })
   if (folderViewComponent) {
@@ -323,6 +376,7 @@ function getWrapper({
   return {
     mocks: localMocks,
     wrapper: shallowMount(List, {
+      props: { searchResult },
       global: {
         mocks: localMocks,
         provide: localMocks,
@@ -331,7 +385,9 @@ function getWrapper({
           AppBar: AppBarStub,
           ...stubs
         },
-        plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
+        plugins: [
+          ...defaultPlugins({ piniaOptions: { capabilityState: { capabilities }, resourcesStore } })
+        ]
       }
     })
   }
