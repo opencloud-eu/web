@@ -33,17 +33,46 @@ export class GuestShareNotFoundError extends Error {
   }
 }
 
+// endpoints the proxy authenticates with the guest session cookie, keep in sync with
+// `guestLinkPathPrefixes` in opencloud services/proxy/pkg/middleware/guest_link_auth.go
+const guestPathSegments = [
+  '/graph/v1beta1/me/drive/sharedWithMe',
+  '/dav/',
+  '/remote.php/dav/',
+  '/webdav/',
+  '/remote.php/webdav/',
+  '/ocs/v2.php/apps/notifications/api/v1/notifications/sse'
+]
+
+function isGuestPath(url: string | undefined): boolean {
+  if (!url) {
+    return false
+  }
+  try {
+    const { pathname } = new URL(url, window.location.origin)
+    return guestPathSegments.some((segment) => pathname.includes(segment))
+  } catch {
+    return false
+  }
+}
+
+function getUnauthorizedRequestUrl(error: unknown): string | undefined {
+  if (error instanceof DavHttpError && error.statusCode === 401) {
+    return error.response?.url
+  }
+  if (isAxiosError(error) && error.response?.status === 401) {
+    const { url, baseURL } = error.config || {}
+    return baseURL && url && !/^https?:\/\//.test(url) ? `${baseURL}${url}` : url
+  }
+  return undefined
+}
+
+/**
+ * Whether `error` means that the guest session cookie is expired or invalid. A 401 only counts
+ * if it comes from an endpoint the guest session authenticates.
+ */
 export function isGuestSessionInvalidError(error: unknown): boolean {
-  if (error instanceof GuestShareNotFoundError || isGuestSessionExpiredError(error)) {
-    return true
-  }
-  if (error instanceof DavHttpError) {
-    return error.statusCode === 401
-  }
-  if (isAxiosError(error)) {
-    return error.response?.status === 401
-  }
-  return false
+  return isGuestSessionExpiredError(error) || isGuestPath(getUnauthorizedRequestUrl(error))
 }
 
 function getAlreadyRedeemedPermissionId(error: unknown): string | undefined {
@@ -68,7 +97,9 @@ export class GuestSessionManager {
   private authStore: AuthStore
   private spacesStore: SpacesStore
 
-  private restorePromise: Promise<void> | null = null
+  private restorePromises = new Map<string, Promise<void>>()
+  // only the most recently requested restore may change the guest context
+  private latestRestorePermissionId: string | undefined
 
   constructor(options: GuestSessionManagerOptions) {
     this.clientService = options.clientService
@@ -77,7 +108,8 @@ export class GuestSessionManager {
   }
 
   public async redeem(token: string): Promise<GuestSession> {
-    this.clear()
+    // a failed verify leaves the server cookie untouched, so keep the persisted id until it succeeds
+    this.deactivate()
     let permissionId: string
     try {
       // `withCredentials` lets the browser store and send the guest session cookie when web is
@@ -91,6 +123,7 @@ export class GuestSessionManager {
     } catch (error) {
       return this.reuseRedeemedSession(error)
     }
+    localStorage.removeItem(storageKey)
     return this.establish(permissionId)
   }
 
@@ -101,8 +134,9 @@ export class GuestSessionManager {
     }
     try {
       return await this.establish(permissionId)
-    } catch {
-      throw redeemError
+    } catch (error) {
+      // only report the token as used if there is no session to reuse, otherwise keep it retryable
+      throw isGuestSessionInvalidError(error) ? redeemError : error
     }
   }
 
@@ -115,24 +149,47 @@ export class GuestSessionManager {
       return Promise.resolve()
     }
     if (this.authStore.guestContextReady && this.authStore.guestPermissionId === permissionId) {
+      this.latestRestorePermissionId = permissionId
       return Promise.resolve()
     }
-    if (!this.restorePromise) {
-      this.restorePromise = this.establish(permissionId)
-        .then((): void => undefined)
-        .catch((error) => {
-          console.error('guest session could not be restored', error)
-          if (isGuestSessionInvalidError(error)) {
-            this.clear()
-            return
+
+    this.latestRestorePermissionId = permissionId
+    if (!this.restorePromises.has(permissionId)) {
+      const restorePromise = this.findSession(permissionId)
+        .then((session) => {
+          if (this.latestRestorePermissionId === permissionId) {
+            this.activate(session)
           }
-          this.authStore.setGuestContextUnavailable(true)
+        })
+        .catch((error) => {
+          if (this.latestRestorePermissionId === permissionId) {
+            this.handleRestoreError(permissionId, error)
+          }
         })
         .finally(() => {
-          this.restorePromise = null
+          this.restorePromises.delete(permissionId)
         })
+      this.restorePromises.set(permissionId, restorePromise)
     }
-    return this.restorePromise
+    return this.restorePromises.get(permissionId)
+  }
+
+  private handleRestoreError(permissionId: string, error: unknown): void {
+    console.error('guest session could not be restored', error)
+    if (isGuestSessionInvalidError(error)) {
+      this.clear()
+      return
+    }
+    if (error instanceof GuestShareNotFoundError) {
+      // keep the persisted session if the share of another (e.g. stale or foreign) id is unknown
+      if (localStorage.getItem(storageKey) === permissionId) {
+        this.clear()
+        return
+      }
+      this.deactivate()
+      return
+    }
+    this.authStore.setGuestContextUnavailable(true)
   }
 
   public clear(): void {
@@ -141,6 +198,7 @@ export class GuestSessionManager {
   }
 
   public deactivate(): void {
+    this.latestRestorePermissionId = undefined
     const wasGuestContextReady = this.authStore.guestContextReady
     this.authStore.clearGuestContext()
     if (wasGuestContextReady) {
@@ -149,6 +207,17 @@ export class GuestSessionManager {
   }
 
   private async establish(permissionId: string): Promise<GuestSession> {
+    const session = await this.findSession(permissionId)
+    this.activate(session)
+    return session
+  }
+
+  private activate({ permissionId, space }: GuestSession): void {
+    localStorage.setItem(storageKey, permissionId)
+    this.authStore.setGuestContext(permissionId, space.id)
+  }
+
+  private async findSession(permissionId: string): Promise<GuestSession> {
     const driveItems = await this.clientService.graphAuthenticated.driveItems.listSharedWithMe(
       {},
       { withCredentials: true }
@@ -168,8 +237,6 @@ export class GuestSessionManager {
         shareName: driveItem.name
       })
 
-    localStorage.setItem(storageKey, permissionId)
-    this.authStore.setGuestContext(permissionId, space.id)
     return { permissionId, space }
   }
 }

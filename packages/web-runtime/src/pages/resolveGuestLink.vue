@@ -36,6 +36,7 @@ import {
 } from '@opencloud-eu/web-client/graph/generated'
 import { createLocationGuest, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
+import { GuestShareNotFoundError } from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
 
 const router = useRouter()
@@ -54,15 +55,21 @@ const resolveGuestLinkTask = useTask(function* () {
 })
 
 function getErrorType(error: unknown): GuestLinkErrorErrorTypeEnum | 'unknown' {
+  if (error instanceof GuestShareNotFoundError) {
+    return GuestLinkErrorErrorTypeEnum.ShareNotFound
+  }
   if (!isAxiosError<GuestLinkError>(error)) {
     return 'unknown'
   }
   return error.response?.data?.errorType || 'unknown'
 }
 
-const isRetryable = computed(() =>
-  ['unknown', GuestLinkErrorErrorTypeEnum.InternalError].includes(unref(errorType))
-)
+const retryableErrorTypes: (GuestLinkErrorErrorTypeEnum | 'unknown')[] = [
+  'unknown',
+  GuestLinkErrorErrorTypeEnum.InternalError,
+  GuestLinkErrorErrorTypeEnum.ServiceUnavailable
+]
+const isRetryable = computed(() => retryableErrorTypes.includes(unref(errorType)))
 
 const errorMessage = computed(() => {
   switch (unref(errorType)) {
@@ -81,7 +88,10 @@ const errorMessage = computed(() => {
     case GuestLinkErrorErrorTypeEnum.InvalidRequest:
       return $gettext('This invitation link is invalid.')
     default:
-      return $gettext('The invitation could not be opened. Please try again later.')
+      if (unref(isRetryable)) {
+        return $gettext('The invitation could not be opened. Please try again later.')
+      }
+      return $gettext('The invitation could not be opened.')
   }
 })
 

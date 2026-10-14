@@ -7,6 +7,7 @@ import { ShareSpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, defaultPlugins, shallowMount } from '@opencloud-eu/web-test-helpers'
 import ResolveGuestLink from '../../../src/pages/resolveGuestLink.vue'
 import { authService } from '../../../src/services/auth'
+import { GuestShareNotFoundError } from '../../../src/services/auth/guestSessionManager'
 
 vi.mock('../../../src/services/auth')
 
@@ -65,8 +66,19 @@ describe('resolveGuestLink', () => {
     expect(mocks.$router.replace).not.toHaveBeenCalled()
   })
 
+  it('shows the share as unavailable when it is missing after verification', async () => {
+    const { wrapper } = getWrapper({ redeemError: new GuestShareNotFoundError() })
+    await flushPromises()
+
+    expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+      'The shared item is no longer available.'
+    )
+    expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+  })
+
   it.each([
     ['an internal server error', guestLinkError('internalError')],
+    ['an unavailable service', guestLinkError('serviceUnavailable')],
     ['an unexpected error', new Error('network')]
   ])('asks to try again later on %s', async (_, redeemError) => {
     const { wrapper } = getWrapper({ redeemError })
@@ -78,6 +90,20 @@ describe('resolveGuestLink', () => {
     expect(wrapper.text()).not.toContain('Ask the person who invited you')
     expect(wrapper.find(selectors.retryButton).exists()).toBeTruthy()
   })
+
+  it.each(['sessionInvalid', 'pinInvalid', 'pinExpired'])(
+    'does not offer a retry for %s',
+    async (errorType) => {
+      const { wrapper } = getWrapper({ redeemError: guestLinkError(errorType) })
+      await flushPromises()
+
+      expect(wrapper.find(selectors.errorMessage).text()).toEqual(
+        'The invitation could not be opened.'
+      )
+      expect(wrapper.text()).toContain('Ask the person who invited you for a new invitation.')
+      expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+    }
+  )
 
   it('redeems the token again on retry', async () => {
     const { wrapper, mocks } = getWrapper({ redeemError: guestLinkError('internalError') })

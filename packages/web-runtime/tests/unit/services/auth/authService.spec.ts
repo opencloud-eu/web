@@ -413,6 +413,20 @@ describe('AuthService', () => {
       expect(removeUser).toHaveBeenCalledWith('authError')
     })
 
+    const guestLinkRoute = {
+      name: 'files-guest-link',
+      meta: { authContext: 'anonymous' },
+      params: {},
+      query: {}
+    } as unknown as RouteLocation
+    const guestEndpointUnauthorizedError = () =>
+      new DavHttpError(
+        '',
+        undefined,
+        { url: 'https://cloud.test/dav/spaces/share-id' } as Response,
+        401
+      )
+
     it('clears an expired guest context instead of logging out', async () => {
       const authService = new AuthService()
       const removeUser = vi.fn()
@@ -426,7 +440,7 @@ describe('AuthService', () => {
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
 
       await authService.handleAuthError(
-        userContextRoute,
+        guestLinkRoute,
         new DavHttpError('', undefined, undefined, 401, 'session_expired')
       )
 
@@ -435,7 +449,7 @@ describe('AuthService', () => {
       expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
     })
 
-    it('clears the guest context on any 401', async () => {
+    it('clears the guest context on a 401 from an endpoint the guest session authenticates', async () => {
       const authService = new AuthService()
       const removeUser = vi.fn()
 
@@ -447,14 +461,55 @@ describe('AuthService', () => {
       authStore.setGuestContext('permission-id', 'share-id')
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
 
-      await authService.handleAuthError(
-        userContextRoute,
-        new DavHttpError('', undefined, undefined, 401)
-      )
+      await authService.handleAuthError(guestLinkRoute, guestEndpointUnauthorizedError())
 
       expect(removeUser).not.toHaveBeenCalled()
       expect(authStore.guestContextReady).toBeFalsy()
       expect(localStorage.getItem('oc.guestPermissionId')).toBeNull()
+    })
+
+    it('keeps the guest context on a 401 from an endpoint the guest session does not cover', async () => {
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const { authStore } = initAuthService({ authService, router: createRouter() })
+      authStore.setGuestContext('permission-id', 'share-id')
+      localStorage.setItem('oc.guestPermissionId', 'permission-id')
+
+      await authService.handleAuthError(
+        guestLinkRoute,
+        new DavHttpError(
+          '',
+          undefined,
+          { url: 'https://cloud.test/graph/v1.0/me' } as Response,
+          401
+        )
+      )
+
+      expect(authStore.guestContextReady).toBeTruthy()
+      expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
+      expect(authService.hasAuthErrorOccurred).toBeFalsy()
+    })
+
+    it('does not flag an auth error for failures that follow an already cleared guest session', async () => {
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const { authStore } = initAuthService({ authService, router: createRouter() })
+      authStore.setGuestContext('permission-id', 'share-id')
+      localStorage.setItem('oc.guestPermissionId', 'permission-id')
+
+      await Promise.all([
+        authService.handleAuthError(guestLinkRoute, guestEndpointUnauthorizedError()),
+        authService.handleAuthError(guestLinkRoute, guestEndpointUnauthorizedError())
+      ])
+
+      expect(authStore.guestContextReady).toBeFalsy()
+      expect(authService.hasAuthErrorOccurred).toBeFalsy()
     })
 
     it('keeps the guest context on errors that are not a 401', async () => {
@@ -467,7 +522,7 @@ describe('AuthService', () => {
       authStore.setGuestContext('permission-id', 'share-id')
       localStorage.setItem('oc.guestPermissionId', 'permission-id')
 
-      await authService.handleAuthError(userContextRoute, new Error('network'))
+      await authService.handleAuthError(guestLinkRoute, new Error('network'))
 
       expect(authStore.guestContextReady).toBeTruthy()
       expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
@@ -738,9 +793,74 @@ describe('AuthService', () => {
       })
 
       initAuthService({ authService, clientService, router: createRouter() })
-      await authService.initializeContext(mock<RouteLocation>({ name: 'resolveGuestLink' }))
+      await authService.initializeContext({
+        name: 'resolveGuestLink',
+        meta: { authContext: 'anonymous' },
+        params: { token: 'token' },
+        query: {}
+      } as unknown as RouteLocation)
 
       expect(listSharedWithMe).not.toHaveBeenCalled()
+      expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
+    })
+
+    it('does not restore on anonymous routes outside of a guest link', async () => {
+      localStorage.setItem('oc.guestPermissionId', 'permission-id')
+      const { clientService, listSharedWithMe } = getClientService([
+        {
+          name: 'Invited folder',
+          remoteItem: { id: 'share-id', permissions: [{ id: 'permission-id' }] }
+        }
+      ])
+
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const { authStore } = initAuthService({ authService, clientService, router: createRouter() })
+      await authService.initializeContext({
+        name: 'login',
+        meta: { authContext: 'anonymous' },
+        params: {},
+        query: {}
+      } as unknown as RouteLocation)
+
+      expect(listSharedWithMe).not.toHaveBeenCalled()
+      expect(authStore.guestContextReady).toBeFalsy()
+      expect(localStorage.getItem('oc.guestPermissionId')).toEqual('permission-id')
+    })
+
+    it('restores on a hybrid route opened from a guest link', async () => {
+      localStorage.setItem('oc.guestPermissionId', 'permission-id')
+      const { clientService } = getClientService([
+        {
+          name: 'Invited folder',
+          remoteItem: { id: 'share-id', permissions: [{ id: 'permission-id' }] }
+        }
+      ])
+
+      const authService = new AuthService()
+      Object.defineProperty(authService, 'userManager', {
+        value: mock<UserManager>({ getUser: vi.fn().mockResolvedValue(null) })
+      })
+
+      const router = createRouter()
+      router.addRoute({
+        name: 'files-guest-link',
+        path: '/guest/:shareName?',
+        component: {},
+        meta: { authContext: 'anonymous' }
+      })
+      const { authStore } = initAuthService({ authService, clientService, router })
+      await authService.initializeContext({
+        name: 'preview-media',
+        meta: { authContext: 'hybrid' },
+        params: {},
+        query: { contextRouteName: 'files-guest-link' }
+      } as unknown as RouteLocation)
+
+      expect(authStore.guestContextReady).toBeTruthy()
     })
   })
 })

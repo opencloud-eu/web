@@ -20,6 +20,7 @@ import { RouteLocation, Router } from 'vue-router'
 import {
   extractPublicLinkToken,
   isAnonymousContext,
+  isGuestLinkContextRequired,
   isIdpContextRequired,
   isPublicLinkContextRequired,
   isUserContextRequired
@@ -150,10 +151,10 @@ export class AuthService implements AuthServiceInterface {
 
     if (await this.isGuestContextExcluded(to)) {
       this.guestSessionManager.clear()
-    } else if (isPublicLinkContextRequired(this.router, to)) {
-      this.guestSessionManager.deactivate()
-    } else if (to.name !== 'resolveGuestLink') {
+    } else if (isGuestLinkContextRequired(this.router, to)) {
       await this.guestSessionManager.restoreContext(queryItemAsString(to.query.permissionId))
+    } else if (to.name !== 'resolveGuestLink') {
+      this.guestSessionManager.deactivate()
     }
 
     if (isPublicLinkContextRequired(this.router, to)) {
@@ -335,9 +336,9 @@ export class AuthService implements AuthServiceInterface {
 
   public async handleAuthError(route: RouteLocation, error?: unknown) {
     if (
-      this.authStore.guestContextReady &&
       !this.authStore.userContextReady &&
-      !isPublicLinkContextRequired(this.router, route)
+      !isPublicLinkContextRequired(this.router, route) &&
+      (isGuestLinkContextRequired(this.router, route) || isGuestSessionInvalidError(error))
     ) {
       if (isGuestSessionInvalidError(error)) {
         this.guestSessionManager.clear()

@@ -7,7 +7,8 @@ import { DavHttpError } from '@opencloud-eu/web-client'
 import {
   GuestSessionManager,
   GuestShareNotFoundError,
-  isGuestSessionExpiredError
+  isGuestSessionExpiredError,
+  isGuestSessionInvalidError
 } from '../../../../src/services/auth/guestSessionManager'
 
 vi.mock('@opencloud-eu/web-client/sse', async (importOriginal) => ({
@@ -43,6 +44,20 @@ describe('isGuestSessionExpiredError', () => {
     ['nothing', undefined, false]
   ])('detects %s: %s', (_, error, expected) => {
     expect(isGuestSessionExpiredError(error)).toBe(expected)
+  })
+})
+
+describe('isGuestSessionInvalidError', () => {
+  it.each([
+    ['a session_expired response', sessionExpiredError(), true],
+    ['a graph 401 from sharedWithMe', graphUnauthorizedError(sharedWithMeUrl), true],
+    ['a dav 401', davUnauthorizedError('https://cloud.test/dav/spaces/share-id'), true],
+    ['a graph 401 from a non-guest endpoint', graphUnauthorizedError('/graph/v1.0/me'), false],
+    ['a dav 401 without url', new DavHttpError('', undefined, undefined, 401), false],
+    ['a missing share', new GuestShareNotFoundError(), false],
+    ['nothing', undefined, false]
+  ])('detects %s: %s', (_, error, expected) => {
+    expect(isGuestSessionInvalidError(error)).toBe(expected)
   })
 })
 
@@ -101,12 +116,25 @@ describe('GuestSessionManager', () => {
 
     it('rejects with the redeem error when there is no valid session cookie to reuse', async () => {
       const redeemError = guestLinkError(409, 'tokenAlreadyRedeemed', 'permission-id')
-      const { manager } = getManager({ redeemError, listError: new Error('401') })
+      const { manager } = getManager({
+        redeemError,
+        listError: graphUnauthorizedError(sharedWithMeUrl)
+      })
 
       await expect(manager.redeem('magic-token')).rejects.toBe(redeemError)
 
       expect(useAuthStore().guestContextReady).toBeFalsy()
       expect(localStorage.getItem(storageKey)).toBeNull()
+    })
+
+    it('rejects with the reuse error when reusing the session cookie fails transiently', async () => {
+      const listError = new Error('network')
+      const { manager } = getManager({
+        redeemError: guestLinkError(409, 'tokenAlreadyRedeemed', 'permission-id'),
+        listError
+      })
+
+      await expect(manager.redeem('magic-token')).rejects.toBe(listError)
     })
 
     it.each(['tokenExpired', 'tokenInvalid', 'shareExpired'])(
@@ -131,7 +159,7 @@ describe('GuestSessionManager', () => {
       expect(localStorage.getItem(storageKey)).toBeNull()
     })
 
-    it('drops a previous guest session before redeeming', async () => {
+    it('keeps the persisted guest session when the redemption fails', async () => {
       localStorage.setItem(storageKey, 'old-permission-id')
       useAuthStore().setGuestContext('old-permission-id', 'share-id')
       const { manager } = getManager({ redeemError: new Error('401') })
@@ -139,6 +167,15 @@ describe('GuestSessionManager', () => {
       await expect(manager.redeem('magic-token')).rejects.toThrow()
 
       expect(useAuthStore().guestContextReady).toBeFalsy()
+      expect(localStorage.getItem(storageKey)).toEqual('old-permission-id')
+    })
+
+    it('drops the persisted guest session once the token is verified', async () => {
+      localStorage.setItem(storageKey, 'old-permission-id')
+      const { manager } = getManager({ driveItems: [] })
+
+      await expect(manager.redeem('magic-token')).rejects.toThrow()
+
       expect(localStorage.getItem(storageKey)).toBeNull()
     })
   })
@@ -236,14 +273,7 @@ describe('GuestSessionManager', () => {
     })
 
     it.each([
-      [
-        'a graph 401',
-        new AxiosError('401', '401', undefined, undefined, {
-          status: 401,
-          data: {}
-        } as AxiosResponse)
-      ],
-      ['a dav 401', new DavHttpError('', undefined, undefined, 401)],
+      ['a graph 401', graphUnauthorizedError(sharedWithMeUrl)],
       ['a missing share', null]
     ])('clears the guest session on %s', async (_, listError) => {
       localStorage.setItem(storageKey, 'permission-id')
@@ -275,6 +305,48 @@ describe('GuestSessionManager', () => {
       expect(useAuthStore().guestContextUnavailable).toBeTruthy()
     })
 
+    it('keeps the persisted session when the share of another permission id is unknown', async () => {
+      localStorage.setItem(storageKey, 'permission-id')
+      useAuthStore().setGuestContext('permission-id', 'share-id')
+      const { manager } = getManager()
+
+      await manager.restoreContext('foreign-permission-id')
+
+      expect(useAuthStore().guestContextReady).toBeFalsy()
+      expect(localStorage.getItem(storageKey)).toEqual('permission-id')
+    })
+
+    it('applies only the most recently requested permission id', async () => {
+      const otherDriveItem = {
+        name: 'Other folder',
+        remoteItem: { id: 'other-share-id', permissions: [{ id: 'other-permission-id' }] }
+      }
+      const { manager, listSharedWithMe } = getManager({
+        driveItems: [sharedDriveItem, otherDriveItem]
+      })
+
+      await Promise.all([
+        manager.restoreContext('permission-id'),
+        manager.restoreContext('other-permission-id')
+      ])
+
+      expect(listSharedWithMe).toHaveBeenCalledTimes(2)
+      expect(useAuthStore().guestPermissionId).toEqual('other-permission-id')
+      expect(localStorage.getItem(storageKey)).toEqual('other-permission-id')
+    })
+
+    it('discards a restore that is still running when the guest context gets cleared', async () => {
+      localStorage.setItem(storageKey, 'permission-id')
+      const { manager } = getManager()
+
+      const restorePromise = manager.restoreContext()
+      manager.clear()
+      await restorePromise
+
+      expect(useAuthStore().guestContextReady).toBeFalsy()
+      expect(localStorage.getItem(storageKey)).toBeNull()
+    })
+
     it('resets the unavailable flag once the guest context is restored', async () => {
       localStorage.setItem(storageKey, 'permission-id')
       useAuthStore().setGuestContextUnavailable(true)
@@ -304,6 +376,19 @@ function sessionExpiredError() {
     status: 401,
     data: { error_type: 'session_expired', message: 'Your session has expired.' }
   } as AxiosResponse)
+}
+
+const sharedWithMeUrl = 'https://cloud.test/graph/v1beta1/me/drive/sharedWithMe'
+
+function graphUnauthorizedError(url: string) {
+  return new AxiosError('401', '401', { url } as any, undefined, {
+    status: 401,
+    data: {}
+  } as AxiosResponse)
+}
+
+function davUnauthorizedError(url: string) {
+  return new DavHttpError('', undefined, { url } as Response, 401)
 }
 
 function guestLinkError(status: number, errorType: string, permissionId: string) {
