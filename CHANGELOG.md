@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show app not found for app store links with a percent sign [[#3787](https://github.com/opencloud-eu/web/pull/3787)]
 - fix: show an error when the app store apps can't be loaded [[#3789](https://github.com/opencloud-eu/web/pull/3789)]
 - fix: show and hide hidden search results without searching again [[#3716](https://github.com/opencloud-eu/web/pull/3716)]
 - fix: keep shift-click ranges contiguous in admin settings lists [[#3744](https://github.com/opencloud-eu/web/pull/3744)]
