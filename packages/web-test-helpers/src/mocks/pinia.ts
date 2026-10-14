@@ -65,6 +65,7 @@ export type PiniaMockOptions = {
     areFileExtensionsShown?: boolean
     areHiddenFilesShown?: boolean
     areDisabledSpacesShown?: boolean
+    areFoldersSortedFirst?: boolean
     deleteQueue?: string[]
   }
   avatarsStore?: {
