@@ -84,6 +84,21 @@ describe('share helper functions', () => {
       expect(result.length).toBe(1)
       expect(result[0].id).toEqual('1')
     })
+    it.each([[['viewer', 'editor']], [['editor', 'viewer']]])(
+      'sorts the roles by weight, highest first (permission order %s)',
+      (roleIds) => {
+        const driveItem = mockDeep<DriveItem>()
+        driveItem.remoteItem.permissions = roleIds.map((id) => ({ roles: [id] }))
+        const graphRoles = {
+          viewer: { id: 'viewer', '@libre.graph.weight': 10 } as ShareRole,
+          editor: { id: 'editor', '@libre.graph.weight': 60 } as ShareRole
+        }
+
+        const result = getShareResourceRoles({ driveItem, graphRoles })
+
+        expect(result.map(({ id }) => id)).toEqual(['editor', 'viewer'])
+      }
+    )
   })
 
   describe('getShareResourcePermissions', () => {

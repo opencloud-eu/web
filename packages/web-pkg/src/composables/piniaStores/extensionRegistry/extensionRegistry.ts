@@ -1,20 +1,42 @@
 import { defineStore } from 'pinia'
-import { ref, Ref, unref } from 'vue'
+import { ref, Ref, toRaw, unref } from 'vue'
 import { useConfigStore } from '../config'
 import { Extension, ExtensionPoint, ExtensionType } from './types'
+
+// untouched groups stay as they are so registered computeds stay reactive. partially
+// matched groups become static snapshots: they lose reactivity and can't be removed
+// via the function returned by registerExtensions anymore
+function removeIds<T extends { id: string }>(groups: Ref<Ref<T[]>[]>, ids: string[]) {
+  if (!unref(groups).some((group) => unref(group).some(({ id }) => ids.includes(id)))) {
+    return
+  }
+  groups.value = unref(groups).flatMap((group) => {
+    const remaining = unref(group).filter(({ id }) => !ids.includes(id))
+    if (remaining.length === unref(group).length) {
+      return [group]
+    }
+    return remaining.length ? [ref(remaining) as Ref<T[]>] : []
+  })
+}
 
 export const useExtensionRegistry = defineStore('extensionRegistry', () => {
   const configStore = useConfigStore()
 
   const extensions = ref<Ref<Extension[]>[]>([])
 
+  // returns a function to unregister the group, even if it's currently empty
   const registerExtensions = (e: Ref<Extension[]>) => {
     extensions.value.push(e)
+    return () => {
+      const remaining = unref(extensions).filter((group) => toRaw(group) !== toRaw(e))
+      if (remaining.length === unref(extensions).length) {
+        return
+      }
+      extensions.value = remaining
+    }
   }
   const unregisterExtensions = (ids: string[]) => {
-    extensions.value = unref(extensions)
-      .map((e) => ref(unref(e).filter(({ id }) => !ids.includes(id))))
-      .filter((e) => unref(e).length)
+    removeIds(extensions, ids)
   }
   const requestExtensions = <T extends Extension>(extensionPoint: ExtensionPoint<T>) => {
     if (!extensionPoint.id || !extensionPoint.extensionType) {
@@ -42,9 +64,7 @@ export const useExtensionRegistry = defineStore('extensionRegistry', () => {
     extensionPoints.value.push(e)
   }
   const unregisterExtensionPoints = (ids: string[]) => {
-    extensionPoints.value = unref(extensionPoints)
-      .map((e) => ref(unref(e).filter(({ id }) => !ids.includes(id))))
-      .filter((e) => unref(e).length)
+    removeIds(extensionPoints, ids)
   }
   const getExtensionPoints = <T extends ExtensionPoint<Extension>>(
     options: {

@@ -7,5 +7,5 @@ export function getAppListRoute(tag?: string): RouteLocationRaw {
 }
 
 export function getAppDetailsRoute(app: App): RouteLocationRaw {
-  return { name: `${APPID}-details`, params: { appId: encodeURIComponent(app.id) } }
+  return { name: `${APPID}-details`, params: { appId: app.id } }
 }

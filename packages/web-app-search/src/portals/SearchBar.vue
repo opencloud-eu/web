@@ -160,6 +160,7 @@ import { RouteLocationNormalizedLoaded } from 'vue-router'
 import { OcDrop } from '@opencloud-eu/design-system/components'
 import { useIsMobile } from '@opencloud-eu/design-system/composables'
 import { useGettext } from 'vue3-gettext'
+import omit from 'lodash-es/omit'
 
 const router = useRouter()
 const { buildSearchTerm } = useSearch()
@@ -189,6 +190,7 @@ const searchResults = ref<
   }[]
 >([])
 const loading = ref(false)
+let latestSearchId = 0
 const currentFolderAvailable = ref(false)
 
 const listProviderAvailable = computed(() => unref(availableProviders).some((p) => !!p.listSearch))
@@ -269,8 +271,10 @@ const useScope = computed(() => {
 })
 
 async function search() {
+  const searchId = ++latestSearchId
   searchResults.value = []
-  if (!unref(term)) {
+  if (!unref(term)?.trim()) {
+    loading.value = false
     return
   }
 
@@ -283,12 +287,20 @@ async function search() {
   loading.value = true
 
   for (const availableProvider of unref(availableProviders)) {
-    if (availableProvider.previewSearch?.available) {
-      searchResults.value.push({
-        providerId: availableProvider.id,
-        result: await availableProvider.previewSearch.search(query)
-      })
+    if (!availableProvider.previewSearch?.available) {
+      continue
     }
+    let result: SearchResult = { values: [], totalResults: null }
+    try {
+      result = await availableProvider.previewSearch.search(query)
+    } catch (e) {
+      console.error(e)
+    }
+    if (searchId !== latestSearchId) {
+      // a newer search has started, its results must not be mixed with this one
+      return
+    }
+    searchResults.value.push({ providerId: availableProvider.id, result })
   }
   loading.value = false
 }
@@ -329,7 +341,7 @@ function getSearchResultLocation(providerId: string) {
 
   return createLocationCommon('files-common-search', {
     query: {
-      ...(currentQuery && { ...currentQuery }),
+      ...(currentQuery && omit(currentQuery, 'page')),
       term: unref(term),
       ...(unref(scope) && { scope: unref(scope) }),
       useScope: unref(useScope).toString(),

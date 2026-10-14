@@ -72,6 +72,20 @@ describe('resolvePublicLink', () => {
 
         expect(resolvePublicLinkSpy).toHaveBeenCalled()
       })
+      it('should handle a wrong password without an unhandled rejection', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined)
+        const { wrapper, mocks } = getWrapper({ passwordRequired: true })
+        await flushPromises()
+        mocks.$clientService.webdav.getFileInfo.mockReset()
+        mocks.$clientService.webdav.getFileInfo.mockRejectedValue(
+          new DavHttpError('', 'ERR_MISSING_BASIC_AUTH', undefined, 401)
+        )
+        ;(wrapper.vm as any).password = 'wrong'
+        await wrapper.vm.$nextTick()
+
+        await expect((wrapper.vm as any).submitPassword()).resolves.toBeUndefined()
+        expect(mocks.$router.push).not.toHaveBeenCalled()
+      })
     })
   })
   describe('link target', () => {

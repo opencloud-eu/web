@@ -1,4 +1,4 @@
-import { PasswordPolicyService } from '../../../src/services'
+import { PasswordPolicyRuleId, PasswordPolicyService } from '../../../src/services'
 import { createTestingPinia } from '@opencloud-eu/web-test-helpers'
 import { Language } from 'vue3-gettext'
 import { PasswordPolicyCapability } from '@opencloud-eu/web-client/ocs'
@@ -80,6 +80,20 @@ describe('PasswordPolicyService', () => {
         const { passwordPolicyService, store } = getWrapper(capability)
         passwordPolicyService.initialize(store)
         expect(Object.keys(passwordPolicyService.getPolicy().rules)).toEqual(expected)
+      })
+    })
+    describe('excludeRules', () => {
+      it('leaves out the excluded rules', () => {
+        const { passwordPolicyService, store } = getWrapper({
+          min_characters: 2,
+          max_characters: 8
+        } as PasswordPolicyCapability)
+        passwordPolicyService.initialize(store)
+        const policy = passwordPolicyService.getPolicy({
+          excludeRules: [PasswordPolicyRuleId.atMostCharacters]
+        })
+        expect(Object.keys(policy.rules)).toEqual([PasswordPolicyRuleId.atLeastCharacters])
+        expect(policy.check('a'.repeat(20))).toBeTruthy()
       })
     })
     describe('method "check"', () => {

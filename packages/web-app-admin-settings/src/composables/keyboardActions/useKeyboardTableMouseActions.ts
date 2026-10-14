@@ -24,13 +24,7 @@ export function useKeyboardTableMouseActions(
     lastSelectedRowId.value = String(resource.id)
   }
 
-  function handleShiftClickAction({
-    resource,
-    skipTargetSelection
-  }: {
-    resource: Item
-    skipTargetSelection: boolean
-  }) {
+  function handleShiftClickAction({ resource }: { resource: Item }) {
     const targetNode = document.querySelector(`[data-item-id='${resource.id}']`)
     const parent = targetNode?.closest('tr') || targetNode?.parentElement
 
@@ -49,9 +43,6 @@ export function useKeyboardTableMouseActions(
 
     for (let i = minIndex; i <= maxIndex; i++) {
       const nodeId = resourceNodes[i].getAttribute('data-item-id')
-      if (skipTargetSelection && nodeId === resource.id) {
-        continue
-      }
       const selectedRowIndex = findIndex(unref(selectedRows), { id: nodeId })
       if (selectedRowIndex === -1) {
         const selectedRow = find(unref(paginatedResources), { id: nodeId })
@@ -60,7 +51,7 @@ export function useKeyboardTableMouseActions(
     }
 
     lastSelectedRowId.value = String(resource.id)
-    keyActions.resetSelectionCursor()
+    keyActions.selectionCursor.value = clickedNodeIndex - latestNodeIndex
   }
 
   onMounted(() => {

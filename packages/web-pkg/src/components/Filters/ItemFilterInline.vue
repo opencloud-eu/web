@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, unref } from 'vue'
+import { onMounted, ref, unref, watch } from 'vue'
 import omit from 'lodash-es/omit'
 import { useRoute, useRouteQuery, useRouter, queryItemAsString } from '../../composables'
 import { InlineFilterOption } from './types'
@@ -59,15 +59,27 @@ const toggleFilter = async (option: InlineFilterOption) => {
   emit('toggleFilter', option)
 }
 
-onMounted(() => {
+const getOptionFromQuery = () => {
   const queryStr = queryItemAsString(unref(currentRouteQuery))
-  if (queryStr) {
-    const selected = filterOptions.find(({ name }) => name === queryStr)
-    if (selected) {
-      activeOption.value = queryStr
-      emit('toggleFilter', selected)
-    }
+  return filterOptions.find(({ name }) => name === queryStr)
+}
+
+onMounted(() => {
+  const selected = getOptionFromQuery()
+  if (selected) {
+    activeOption.value = selected.name
+    emit('toggleFilter', selected)
   }
+})
+
+// the query can change without the filter being involved, e.g. via browser back
+watch(currentRouteQuery, () => {
+  const selected = getOptionFromQuery() || filterOptions[0]
+  if (selected.name === unref(activeOption)) {
+    return
+  }
+  activeOption.value = selected.name
+  emit('toggleFilter', selected)
 })
 </script>
 <style>

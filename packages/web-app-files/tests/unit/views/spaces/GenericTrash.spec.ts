@@ -82,6 +82,7 @@ function getMountedWrapper({
   const plugins = [...defaultPlugins()]
   vi.mocked(useResourcesViewDefaults).mockImplementation(() =>
     useResourcesViewDefaultsMock({
+      storeItems: ref(files),
       paginatedResources: ref(files),
       areResourcesLoading: ref(loading)
     })

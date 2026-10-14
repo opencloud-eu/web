@@ -7,6 +7,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString } from '../../../src/composables/appDefaults'
 import { OcCheckbox } from '@opencloud-eu/design-system/components'
+import { nextTick, reactive } from 'vue'
 
 vi.mock('../../../src/composables/appDefaults')
 
@@ -179,6 +180,14 @@ describe('ItemFilter', () => {
         })
       )
     })
+    it('resets the page when the selection changes', async () => {
+      const { wrapper, mocks } = getWrapper()
+      mocks.$route.query = { page: '2', term: 'foo' }
+      await wrapper.findAll(selectors.filterListItem).at(0).trigger('click')
+      const { query } = mocks.$router.push.mock.calls[0][0] as { query: Record<string, string> }
+      expect(query).not.toHaveProperty('page')
+      expect(query).toHaveProperty('term', 'foo')
+    })
     it('sets the selected items initially when given via query param', () => {
       const { wrapper } = getWrapper({ initialQuery: '1' })
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
@@ -187,6 +196,22 @@ describe('ItemFilter', () => {
       const { wrapper } = getWrapper({ initialQuery: '1', props: { items: [] } })
       expect((wrapper.vm as any).selectedItems).toEqual([])
       await wrapper.setProps({ items: filterItems })
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+    })
+    it('clears the selected items when the query param is removed from the route', async () => {
+      const currentRoute = reactive({ query: { q_users: '1' } as Record<string, string> })
+      const { wrapper } = getWrapper({ currentRoute })
+      expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
+      delete currentRoute.query.q_users
+      await nextTick()
+      expect((wrapper.vm as any).selectedItems).toEqual([])
+      expect(wrapper.emitted('selectionChange')).toEqual([[[]]])
+    })
+    it('still exposes the deprecated setSelectedItemsBasedOnQuery', () => {
+      const { wrapper } = getWrapper({ initialQuery: '1' })
+      const { setSelectedItemsBasedOnQuery } = (wrapper.vm.$ as any).exposed
+      ;(wrapper.vm as any).selectedItems = []
+      setSelectedItemsBasedOnQuery()
       expect((wrapper.vm as any).selectedItems).toEqual([filterItems[0]])
     })
   })
@@ -220,10 +245,17 @@ describe('ItemFilter', () => {
 
 function getWrapper({
   props = {},
-  initialQuery = ''
-}: { props?: PartialComponentProps<typeof ItemFilter>; initialQuery?: string } = {}) {
-  vi.mocked(queryItemAsString).mockImplementation(() => initialQuery)
-  const mocks = defaultComponentMocks()
+  initialQuery = '',
+  currentRoute = undefined
+}: {
+  props?: PartialComponentProps<typeof ItemFilter>
+  initialQuery?: string
+  currentRoute?: { query: Record<string, string> }
+} = {}) {
+  vi.mocked(queryItemAsString).mockImplementation((value) =>
+    currentRoute ? (value as string) : initialQuery
+  )
+  const mocks = defaultComponentMocks({ currentRoute: currentRoute as any })
   return {
     mocks,
     wrapper: mount(ItemFilter, {

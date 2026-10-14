@@ -1,4 +1,5 @@
 import { SDKSearch } from '../../../src/search'
+import { searchLimit } from '../../../src/search/sdk/list'
 import { mock } from 'vitest-mock-extended'
 import { createTestingPinia, writable } from '@opencloud-eu/web-test-helpers'
 import { ConfigStore, useCapabilityStore } from '@opencloud-eu/web-pkg'
@@ -32,6 +33,17 @@ describe('SDKProvider', () => {
 
         expect(search.previewSearch.available).toBe(v.available)
       })
+    })
+  })
+
+  describe('SDKProvider listSearch', () => {
+    it('requests hidden results so that the resources store can filter them reactively', async () => {
+      const searchFunction = vi.fn()
+      const search = new SDKSearch(getStore(['search-files']), searchFunction, mock<ConfigStore>())
+
+      await search.listSearch.search('foo')
+
+      expect(searchFunction).toHaveBeenCalledWith('foo', searchLimit, { includeHidden: true })
     })
   })
 })

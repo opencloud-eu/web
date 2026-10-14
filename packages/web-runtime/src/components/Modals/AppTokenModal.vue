@@ -88,7 +88,7 @@ import { AppToken } from '../../helpers/appTokens'
 import { storeToRefs } from 'pinia'
 
 const { modal } = defineProps<{ modal: Modal }>()
-defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel', 'created'])
 
 const { $gettext, current: currentLanguage } = useGettext()
 const { httpAuthenticated: client } = useClientService()
@@ -99,9 +99,10 @@ const themeStore = useThemeStore()
 const { currentTheme } = storeToRefs(themeStore)
 
 const tokenLabel = ref<string>('')
+const trimmedTokenLabel = computed(() => unref(tokenLabel).trim())
 const tokenLabelErrorMessage = ref<string>('')
-watch(tokenLabel, (newValue) => {
-  tokenLabelErrorMessage.value = newValue.length ? '' : $gettext('The note is required')
+watch(tokenLabel, () => {
+  tokenLabelErrorMessage.value = unref(trimmedTokenLabel) ? '' : $gettext('The note is required')
 })
 
 const expiryDate = ref<DateTime>()
@@ -111,7 +112,7 @@ const onDateChanged = ({ date, error }: { date: DateTime; error: boolean }) => {
 }
 
 const isConfirmDisabled = computed<boolean>(() => {
-  return !unref(tokenLabel) || !unref(expiryDate) || unref(isCreating)
+  return !unref(trimmedTokenLabel) || !unref(expiryDate) || unref(isCreating)
 })
 const createdToken = ref('')
 // Guards against requesting a second token while a request is still in flight.
@@ -127,12 +128,13 @@ const createAppToken = async () => {
   // showing the resulting token.
   updateModal(modal.id, 'isLoading', true)
   try {
-    const label = unref(tokenLabel)
+    const label = unref(trimmedTokenLabel)
     const expiry = `${unref(expiryDate).diff(DateTime.now(), 'hours').hours}h`
     const { data } = await client.post<AppToken>('/auth-app/tokens', null, {
       params: { label, expiry }
     })
     createdToken.value = data.token
+    emit('created')
   } catch (error) {
     console.error(error)
     showErrorMessage({
