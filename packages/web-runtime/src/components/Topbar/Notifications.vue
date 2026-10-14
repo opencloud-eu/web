@@ -2,6 +2,7 @@
   <div id="oc-notifications" class="flex">
     <notification-bell :notification-count="notifications.length" />
     <oc-drop
+      ref="notificationsDrop"
       :title="$gettext('Notifications')"
       drop-id="oc-notifications-drop"
       toggle="#oc-notifications-bell"
@@ -45,6 +46,7 @@
               :is="el.computedLink ? 'router-link' : 'div'"
               class="flex items-center gap-2"
               :to="el.computedLink"
+              @click="onNotificationClick(el)"
             >
               <user-avatar
                 :user-id="el.messageRichParameters?.user?.id || el.user"
@@ -80,7 +82,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, Ref, ref, unref } from 'vue'
+import { computed, onMounted, onUnmounted, Ref, ref, unref, useTemplateRef } from 'vue'
 import isEmpty from 'lodash-es/isEmpty'
 import escape from 'lodash-es/escape'
 import {
@@ -92,6 +94,7 @@ import {
   useClientService,
   UserAvatar
 } from '@opencloud-eu/web-pkg'
+import { OcDrop } from '@opencloud-eu/design-system/components'
 import NotificationBell from './NotificationBell.vue'
 import { Notification } from '../../helpers/notifications'
 import { useGettext } from 'vue3-gettext'
@@ -107,6 +110,7 @@ const capabilityStore = useCapabilityStore()
 const clientService = useClientService()
 const language = useGettext()
 
+const notificationsDrop = useTemplateRef<InstanceType<typeof OcDrop>>('notificationsDrop')
 const notifications: Ref<Notification[]> = ref([])
 const notificationsInterval = ref<ReturnType<typeof setInterval>>()
 
@@ -180,6 +184,13 @@ const getLink = ({ messageRichParameters, object_type }: Notification) => {
     }
   }
   return null
+}
+
+function onNotificationClick({ computedLink }: Notification) {
+  if (!computedLink) {
+    return
+  }
+  unref(notificationsDrop)?.hide()
 }
 
 const fetchNotificationsTask = useTask(function* (signal) {
