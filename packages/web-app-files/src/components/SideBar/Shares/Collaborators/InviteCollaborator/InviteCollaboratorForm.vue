@@ -30,7 +30,7 @@
         :filter="filterRecipients"
         :dropdown-should-open="
           ({ open, search }: DropDownShouldOpenOptions) =>
-            open && search.length >= minSearchLength && !searchInProgress
+            open && search.trim().length >= minSearchLength && !searchInProgress
         "
         label=""
         :label-hidden="true"
@@ -197,7 +197,7 @@ import {
   useOpenXchangeContacts
 } from '../../../../../composables/openXchange'
 
-type DropDownShouldOpenOptions = { open: boolean; search: string[] }
+type DropDownShouldOpenOptions = { open: boolean; search: string }
 
 export type ShareRoleType = { id: string; label: string; longLabel: string }
 
@@ -323,7 +323,7 @@ const {
   })
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
+  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
 
   const emailBelongsToAccount = (query: string) => {
     const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)

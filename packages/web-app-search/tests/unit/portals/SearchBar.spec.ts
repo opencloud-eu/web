@@ -105,6 +105,22 @@ describe('Search Bar portal component', () => {
     wrapper.find(selectors.searchInput).setValue('alice')
     expect((wrapper.vm as any).term).toBe('alice')
   })
+  test('ignores spaces around the term in the preview search but keeps them in the input', async () => {
+    const { wrapper } = getMountedWrapper()
+    wrapper.find(selectors.searchInput).setValue(' albert ')
+    await flushPromises()
+    expect((wrapper.vm as any).term).toBe(' albert ')
+    expect(providerFiles.previewSearch.search).toHaveBeenLastCalledWith(
+      expect.stringContaining('name:"*albert*"')
+    )
+  })
+  test('does not search if the term consists of spaces only', async () => {
+    const { wrapper } = getMountedWrapper()
+    providerFiles.previewSearch.search.mockClear()
+    wrapper.find(selectors.searchInput).setValue('   ')
+    await flushPromises()
+    expect(providerFiles.previewSearch.search).not.toHaveBeenCalled()
+  })
   test('shows message if no results are available', async () => {
     const { wrapper } = getMountedWrapper()
     providerFiles.previewSearch.search.mockReturnValueOnce({ values: [] })
