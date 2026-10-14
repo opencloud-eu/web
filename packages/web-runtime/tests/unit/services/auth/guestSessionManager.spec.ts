@@ -55,12 +55,12 @@ describe('GuestSessionManager', () => {
 
   describe('redeem', () => {
     it('redeems the token with credentials and returns the matching shared drive', async () => {
-      const { manager, redeemGuestLink, listSharedWithMe } = getManager()
+      const { manager, verifyGuestLinkToken, listSharedWithMe } = getManager()
 
       const { permissionId, space } = await manager.redeem('magic-token')
 
       expect(permissionId).toEqual('permission-id')
-      expect(redeemGuestLink).toHaveBeenCalledWith('magic-token', { withCredentials: true })
+      expect(verifyGuestLinkToken).toHaveBeenCalledWith('magic-token', { withCredentials: true })
       expect(listSharedWithMe).toHaveBeenCalledWith({}, { withCredentials: true })
       expect(space.id).toEqual('share-id')
       expect(space.driveAlias).toEqual('share/Invited folder')
@@ -318,7 +318,7 @@ function getManager({
   redeemError = null,
   listError = null
 }: { driveItems?: unknown[]; redeemError?: Error; listError?: Error } = {}) {
-  const redeemGuestLink = redeemError
+  const verifyGuestLinkToken = redeemError
     ? vi.fn().mockRejectedValue(redeemError)
     : vi.fn().mockResolvedValue('permission-id')
   const listSharedWithMe = listError
@@ -327,7 +327,7 @@ function getManager({
 
   const clientService = mock<ClientService>({
     graphAuthenticated: {
-      guestLinks: { redeemGuestLink },
+      guestLinks: { verifyGuestLinkToken },
       driveItems: { listSharedWithMe }
     }
   } as any)
@@ -338,5 +338,5 @@ function getManager({
     spacesStore: useSpacesStore()
   })
 
-  return { manager, redeemGuestLink, listSharedWithMe }
+  return { manager, verifyGuestLinkToken, listSharedWithMe }
 }

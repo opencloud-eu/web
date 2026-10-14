@@ -71,8 +71,10 @@ docs/Group.md
 docs/GroupApi.md
 docs/GroupsApi.md
 docs/GuestLinkError.md
-docs/GuestLinkRedeemRequest.md
-docs/GuestLinkRedeemResponse.md
+docs/GuestLinkRenewRequest.md
+docs/GuestLinkSessionResponse.md
+docs/GuestLinkVerifyPinRequest.md
+docs/GuestLinkVerifyTokenRequest.md
 docs/GuestLinksApi.md
 docs/Hashes.md
 docs/Identity.md

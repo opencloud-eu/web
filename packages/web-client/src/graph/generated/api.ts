@@ -913,7 +913,7 @@ export interface Group {
     'members@odata.bind'?: Set<string>;
 }
 /**
- * Error returned by the guest link redeem endpoint.
+ * Error returned by a guest link endpoint.
  */
 export interface GuestLinkError {
     /**
@@ -935,8 +935,12 @@ export const GuestLinkErrorErrorTypeEnum = {
     TokenNotFound: 'tokenNotFound',
     TokenExpired: 'tokenExpired',
     TokenAlreadyRedeemed: 'tokenAlreadyRedeemed',
+    SessionInvalid: 'sessionInvalid',
     ShareNotFound: 'shareNotFound',
     ShareExpired: 'shareExpired',
+    PinInvalid: 'pinInvalid',
+    PinExpired: 'pinExpired',
+    ServiceUnavailable: 'serviceUnavailable',
     InvalidRequest: 'invalidRequest',
     InternalError: 'internalError',
 } as const;
@@ -944,22 +948,48 @@ export const GuestLinkErrorErrorTypeEnum = {
 export type GuestLinkErrorErrorTypeEnum = typeof GuestLinkErrorErrorTypeEnum[keyof typeof GuestLinkErrorErrorTypeEnum];
 
 /**
- * Request body for redeeming a guest link token.
+ * Request body for renewing a guest link. Besides the share (permission) id, the previous guest link token or a (possibly expired) guest session cookie is required to authorize the renewal.
  */
-export interface GuestLinkRedeemRequest {
-    /**
-     * One-time guest link token received from the guest link.
-     */
-    'token': string;
-}
-/**
- * Response body for a successful guest link redemption.
- */
-export interface GuestLinkRedeemResponse {
+export interface GuestLinkRenewRequest {
     /**
      * Identifier of the share (permission) the guest was invited to.
      */
     'permissionId': string;
+    /**
+     * Previous guest link token. Optional when the guest session cookie is sent instead.
+     */
+    'token'?: string;
+}
+/**
+ * Response body for a successful guest link authentication: the share (permission) id the guest was invited to. A session cookie is set via the Set-Cookie header.
+ */
+export interface GuestLinkSessionResponse {
+    /**
+     * Identifier of the share (permission) the guest was invited to.
+     */
+    'permissionId': string;
+}
+/**
+ * Request body for verifying a guest link PIN.
+ */
+export interface GuestLinkVerifyPinRequest {
+    /**
+     * One-time PIN received from the renewed guest link.
+     */
+    'pin': string;
+    /**
+     * Identifier of the share (permission) the guest was invited to.
+     */
+    'permissionId': string;
+}
+/**
+ * Request body for verifying a guest link token.
+ */
+export interface GuestLinkVerifyTokenRequest {
+    /**
+     * One-time guest link token received from the guest link.
+     */
+    'token': string;
 }
 /**
  * Hashes of the file\'s binary content, if available. Read-only.
@@ -8039,16 +8069,16 @@ export type ListGroupsExpandEnum = typeof ListGroupsExpandEnum[keyof typeof List
 export const GuestLinksApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         * Redeem a guest link token to obtain a guest session.
-         * @summary Redeem a guest link token
-         * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+         * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+         * @summary Renew a guest link
+         * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        redeemGuestLink: async (guestLinkRedeemRequest: GuestLinkRedeemRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'guestLinkRedeemRequest' is not null or undefined
-            assertParamExists('redeemGuestLink', 'guestLinkRedeemRequest', guestLinkRedeemRequest)
-            const localVarPath = `/v1beta1/extensions/org.libregraph/guestLinks/redeem`;
+        renewGuestLink: async (guestLinkRenewRequest: GuestLinkRenewRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'guestLinkRenewRequest' is not null or undefined
+            assertParamExists('renewGuestLink', 'guestLinkRenewRequest', guestLinkRenewRequest)
+            const localVarPath = `/v1beta1/extensions/org.libregraph/guestLinks/renew`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -8072,7 +8102,89 @@ export const GuestLinksApiAxiosParamCreator = function (configuration?: Configur
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(guestLinkRedeemRequest, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(guestLinkRenewRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Exchange a PIN and a share id for a guest session.
+         * @summary Verify a guest link PIN
+         * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyGuestLinkPin: async (guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'guestLinkVerifyPinRequest' is not null or undefined
+            assertParamExists('verifyGuestLinkPin', 'guestLinkVerifyPinRequest', guestLinkVerifyPinRequest)
+            const localVarPath = `/v1beta1/extensions/org.libregraph/guestLinks/verify/pin`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication openId required
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(guestLinkVerifyPinRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Verify a guest link token to obtain a guest session.
+         * @summary Verify a guest link token
+         * @param {GuestLinkVerifyTokenRequest} guestLinkVerifyTokenRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyGuestLinkToken: async (guestLinkVerifyTokenRequest: GuestLinkVerifyTokenRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'guestLinkVerifyTokenRequest' is not null or undefined
+            assertParamExists('verifyGuestLinkToken', 'guestLinkVerifyTokenRequest', guestLinkVerifyTokenRequest)
+            const localVarPath = `/v1beta1/extensions/org.libregraph/guestLinks/verify/token`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication openId required
+
+            // authentication basicAuth required
+            // http basic authentication required
+            setBasicAuthToObject(localVarRequestOptions, configuration)
+
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(guestLinkVerifyTokenRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -8089,16 +8201,42 @@ export const GuestLinksApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = GuestLinksApiAxiosParamCreator(configuration)
     return {
         /**
-         * Redeem a guest link token to obtain a guest session.
-         * @summary Redeem a guest link token
-         * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+         * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+         * @summary Renew a guest link
+         * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async redeemGuestLink(guestLinkRedeemRequest: GuestLinkRedeemRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuestLinkRedeemResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.redeemGuestLink(guestLinkRedeemRequest, options);
+        async renewGuestLink(guestLinkRenewRequest: GuestLinkRenewRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.renewGuestLink(guestLinkRenewRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['GuestLinksApi.redeemGuestLink']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['GuestLinksApi.renewGuestLink']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Exchange a PIN and a share id for a guest session.
+         * @summary Verify a guest link PIN
+         * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async verifyGuestLinkPin(guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuestLinkSessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyGuestLinkPin(guestLinkVerifyPinRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GuestLinksApi.verifyGuestLinkPin']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Verify a guest link token to obtain a guest session.
+         * @summary Verify a guest link token
+         * @param {GuestLinkVerifyTokenRequest} guestLinkVerifyTokenRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async verifyGuestLinkToken(guestLinkVerifyTokenRequest: GuestLinkVerifyTokenRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuestLinkSessionResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.verifyGuestLinkToken(guestLinkVerifyTokenRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GuestLinksApi.verifyGuestLinkToken']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -8111,14 +8249,34 @@ export const GuestLinksApiFactory = function (configuration?: Configuration, bas
     const localVarFp = GuestLinksApiFp(configuration)
     return {
         /**
-         * Redeem a guest link token to obtain a guest session.
-         * @summary Redeem a guest link token
-         * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+         * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+         * @summary Renew a guest link
+         * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        redeemGuestLink(guestLinkRedeemRequest: GuestLinkRedeemRequest, options?: RawAxiosRequestConfig): AxiosPromise<GuestLinkRedeemResponse> {
-            return localVarFp.redeemGuestLink(guestLinkRedeemRequest, options).then((request) => request(axios, basePath));
+        renewGuestLink(guestLinkRenewRequest: GuestLinkRenewRequest, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.renewGuestLink(guestLinkRenewRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Exchange a PIN and a share id for a guest session.
+         * @summary Verify a guest link PIN
+         * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyGuestLinkPin(guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig): AxiosPromise<GuestLinkSessionResponse> {
+            return localVarFp.verifyGuestLinkPin(guestLinkVerifyPinRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Verify a guest link token to obtain a guest session.
+         * @summary Verify a guest link token
+         * @param {GuestLinkVerifyTokenRequest} guestLinkVerifyTokenRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        verifyGuestLinkToken(guestLinkVerifyTokenRequest: GuestLinkVerifyTokenRequest, options?: RawAxiosRequestConfig): AxiosPromise<GuestLinkSessionResponse> {
+            return localVarFp.verifyGuestLinkToken(guestLinkVerifyTokenRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -8128,14 +8286,36 @@ export const GuestLinksApiFactory = function (configuration?: Configuration, bas
  */
 export class GuestLinksApi extends BaseAPI {
     /**
-     * Redeem a guest link token to obtain a guest session.
-     * @summary Redeem a guest link token
-     * @param {GuestLinkRedeemRequest} guestLinkRedeemRequest 
+     * Generate a new guest link token and PIN for an existing guest link and publish the renewal event so the guest can be notified.
+     * @summary Renew a guest link
+     * @param {GuestLinkRenewRequest} guestLinkRenewRequest 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public redeemGuestLink(guestLinkRedeemRequest: GuestLinkRedeemRequest, options?: RawAxiosRequestConfig) {
-        return GuestLinksApiFp(this.configuration).redeemGuestLink(guestLinkRedeemRequest, options).then((request) => request(this.axios, this.basePath));
+    public renewGuestLink(guestLinkRenewRequest: GuestLinkRenewRequest, options?: RawAxiosRequestConfig) {
+        return GuestLinksApiFp(this.configuration).renewGuestLink(guestLinkRenewRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Exchange a PIN and a share id for a guest session.
+     * @summary Verify a guest link PIN
+     * @param {GuestLinkVerifyPinRequest} guestLinkVerifyPinRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public verifyGuestLinkPin(guestLinkVerifyPinRequest: GuestLinkVerifyPinRequest, options?: RawAxiosRequestConfig) {
+        return GuestLinksApiFp(this.configuration).verifyGuestLinkPin(guestLinkVerifyPinRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Verify a guest link token to obtain a guest session.
+     * @summary Verify a guest link token
+     * @param {GuestLinkVerifyTokenRequest} guestLinkVerifyTokenRequest 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public verifyGuestLinkToken(guestLinkVerifyTokenRequest: GuestLinkVerifyTokenRequest, options?: RawAxiosRequestConfig) {
+        return GuestLinksApiFp(this.configuration).verifyGuestLinkToken(guestLinkVerifyTokenRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

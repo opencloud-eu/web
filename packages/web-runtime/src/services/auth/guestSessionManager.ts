@@ -82,9 +82,12 @@ export class GuestSessionManager {
     try {
       // `withCredentials` lets the browser store and send the guest session cookie when web is
       // served from a different origin than the server. It's a no-op same-origin.
-      permissionId = await this.clientService.graphAuthenticated.guestLinks.redeemGuestLink(token, {
-        withCredentials: true
-      })
+      permissionId = await this.clientService.graphAuthenticated.guestLinks.verifyGuestLinkToken(
+        token,
+        {
+          withCredentials: true
+        }
+      )
     } catch (error) {
       return this.reuseRedeemedSession(error)
     }
