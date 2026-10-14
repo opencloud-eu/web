@@ -8,6 +8,8 @@
 
 ### 🐛 Bug Fixes
 
+- fix: keep shift-click ranges contiguous in admin settings lists [[#3744](https://github.com/opencloud-eu/web/pull/3744)]
+- fix: ignore spaces around search terms [[#3730](https://github.com/opencloud-eu/web/pull/3730)]
 - fix: start on the first page after a new search or filter change [[#3708](https://github.com/opencloud-eu/web/pull/3708)]
 - fix: no unhandled error when the server rejects a link password [[#3712](https://github.com/opencloud-eu/web/pull/3712)]
 - fix: reject whitespace-only public link names [[#3731](https://github.com/opencloud-eu/web/pull/3731)]
