@@ -6,5 +6,5 @@
     "outDir": "./dist",
     "rootDir": "."
   },
-  "exclude": ["vite.config.ts", "README.md"]
+  "exclude": ["vite.config.ts", "README.md", "**/tests", "**/*.spec.ts"]
 }
