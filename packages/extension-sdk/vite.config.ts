@@ -6,8 +6,11 @@ import pkg from './package.json'
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
-      fileName: 'extension-sdk',
+      entry: {
+        'extension-sdk': resolve(__dirname, 'src/index.ts'),
+        'vitest.setup': resolve(__dirname, 'src/vitest.setup.ts')
+      },
+      fileName: (_format, entryName) => `${entryName}.js`,
       formats: ['es']
     },
     rolldownOptions: {
@@ -15,6 +18,7 @@ export default defineConfig({
         ...Object.keys(pkg.dependencies),
         ...Object.keys(pkg.peerDependencies),
         'path',
+        'url',
         'process',
         'fs',
         'http',
