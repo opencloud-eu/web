@@ -28,21 +28,22 @@
 import { computed, onMounted, ref, unref } from 'vue'
 import { useTask } from 'vue-concurrency'
 import { useGettext } from 'vue3-gettext'
-import { isAxiosError } from 'axios'
 import { call } from '@opencloud-eu/web-client'
-import {
-  GuestLinkError,
-  GuestLinkErrorErrorTypeEnum
-} from '@opencloud-eu/web-client/graph/generated'
+import { GuestLinkErrorErrorTypeEnum } from '@opencloud-eu/web-client/graph/generated'
 import { createLocationGuest, useRouteParam, useRouter } from '@opencloud-eu/web-pkg'
 import { authService } from '../services/auth'
-import { GuestShareNotFoundError } from '../services/auth/guestSessionManager'
+import {
+  getGuestLinkErrorType,
+  getRenewablePermissionId,
+  GuestLinkErrorType,
+  isRetryableGuestLinkErrorType
+} from '../services/auth/guestSessionManager'
 import PlainCard from '../components/PlainCard.vue'
 
 const router = useRouter()
 const { $gettext } = useGettext()
 const token = useRouteParam('token')
-const errorType = ref<GuestLinkErrorErrorTypeEnum | 'unknown'>()
+const errorType = ref<GuestLinkErrorType>()
 
 const resolveGuestLinkTask = useTask(function* () {
   const { permissionId, space } = yield* call(authService.redeemGuestLink(unref(token)))
@@ -54,22 +55,17 @@ const resolveGuestLinkTask = useTask(function* () {
   )
 })
 
-function getErrorType(error: unknown): GuestLinkErrorErrorTypeEnum | 'unknown' {
-  if (error instanceof GuestShareNotFoundError) {
-    return GuestLinkErrorErrorTypeEnum.ShareNotFound
+// an expired or used link can still authorize sending a new link and PIN
+function renewLink(error: unknown) {
+  const permissionId = getRenewablePermissionId(error)
+  if (!permissionId) {
+    return false
   }
-  if (!isAxiosError<GuestLinkError>(error)) {
-    return 'unknown'
-  }
-  return error.response?.data?.errorType || 'unknown'
+  router.replace({ name: 'renewGuestLink', params: { permissionId } })
+  return true
 }
 
-const retryableErrorTypes: (GuestLinkErrorErrorTypeEnum | 'unknown')[] = [
-  'unknown',
-  GuestLinkErrorErrorTypeEnum.InternalError,
-  GuestLinkErrorErrorTypeEnum.ServiceUnavailable
-]
-const isRetryable = computed(() => retryableErrorTypes.includes(unref(errorType)))
+const isRetryable = computed(() => isRetryableGuestLinkErrorType(unref(errorType)))
 const hasError = computed(() => unref(errorType) !== undefined)
 
 const errorMessage = computed(() => {
@@ -113,7 +109,10 @@ async function resolveGuestLink() {
   try {
     await resolveGuestLinkTask.perform()
   } catch (error) {
-    errorType.value = getErrorType(error)
+    if (renewLink(error)) {
+      return
+    }
+    errorType.value = getGuestLinkErrorType(error)
     console.error('guest link could not be resolved:', unref(errorType))
   }
 }
