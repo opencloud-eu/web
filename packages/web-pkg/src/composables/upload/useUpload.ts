@@ -53,6 +53,10 @@ export function useUpload(options: UploadOptions) {
           req.setHeader('Accept-Language', headers['Accept-Language'])
           req.setHeader('Initiator-ID', headers['Initiator-ID'])
           req.setHeader('X-Requested-With', headers['X-Requested-With'])
+          if (authStore.guestContextReady) {
+            const xhr: XMLHttpRequest = req.getUnderlyingObject()
+            xhr.withCredentials = true
+          }
           if (file?.isRemote) {
             req.setHeader('x-oc-mtime', ((file?.data as File)?.lastModified / 1000).toFixed(0))
           }
@@ -80,6 +84,7 @@ export function useUpload(options: UploadOptions) {
     return {
       timeout: 60000,
       endpoint: '',
+      withCredentials: authStore.guestContextReady,
       headers: (file) => ({
         'x-oc-mtime': ((file?.data as File)?.lastModified / 1000).toFixed(0),
         ...getHeaders()

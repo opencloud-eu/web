@@ -27,7 +27,7 @@ x-opencloud-server: &opencloud-service
     FRONTEND_GROUPWARE_ENABLED: 'true'
     #FRONTEND_APP_HANDLER_SECURE_VIEW_APP_ADDR: eu.opencloud.api.collaboration
     GRAPH_INCLUDE_OCM_SHAREES: 'true'
-    GRAPH_ENABLE_GUEST_INVITES: 'true'
+    OC_ENABLE_GUEST_LINKS: 'true'
     FRONTEND_OPENXCHANGE_ENABLED: 'true'
     FRONTEND_OPENXCHANGE_API_URL: 'bogus'
 
@@ -273,8 +273,10 @@ services:
       traefik.http.middlewares.https_config.headers.stsIncludeSubdomains: true
       traefik.http.middlewares.cors.headers.accesscontrolallowmethods: '*'
       traefik.http.middlewares.cors.headers.accesscontrolallowheaders: '*, Authorization'
-      traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist: '*'
-      traefik.http.middlewares.cors.headers.accesscontrolexposeheaders: '*'
+      traefik.http.middlewares.cors.headers.accesscontrolalloworiginlistregex: '^https://(host\.docker\.internal|oc\.opencloud\.test|localhost)(:[0-9]+)?$$'
+      traefik.http.middlewares.cors.headers.accesscontrolallowcredentials: true
+      # explicit list, traefik drops `*` when credentials are allowed (guest links)
+      traefik.http.middlewares.cors.headers.accesscontrolexposeheaders: 'ETag, OC-ETag, OC-FileId, Content-Disposition, Content-Range, Location, DAV, Tus-Version, Tus-Extension, Tus-Resumable, Tus-Max-Size, Upload-Offset, Upload-Length, Upload-Expires'
       traefik.http.middlewares.cors.headers.accesscontrolmaxage: 100
       traefik.http.middlewares.cors.headers.addvaryheader: true
 

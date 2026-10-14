@@ -135,7 +135,7 @@ export class FolderLoaderSpace implements FolderLoader {
         console.error(error)
 
         if (error.statusCode === 401) {
-          return authService.handleAuthError(unref(router.currentRoute))
+          return authService.handleAuthError(unref(router.currentRoute), error)
         }
       }
     }).restartable()
