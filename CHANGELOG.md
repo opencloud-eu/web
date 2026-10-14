@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: show and hide hidden search results without searching again [[#3716](https://github.com/opencloud-eu/web/pull/3716)]
 - fix: keep shift-click ranges contiguous in admin settings lists [[#3744](https://github.com/opencloud-eu/web/pull/3744)]
 - fix: ignore spaces around search terms [[#3730](https://github.com/opencloud-eu/web/pull/3730)]
 - fix: start on the first page after a new search or filter change [[#3708](https://github.com/opencloud-eu/web/pull/3708)]
