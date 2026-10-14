@@ -1,6 +1,6 @@
 <template>
   <quota-select
-    :total-quota="selectedOption"
+    :total-quota="selectedQuota"
     :max-quota="spacesMaxQuota"
     :position-fixed="true"
     @selected-option-change="changeSelectedQuotaOption"
@@ -16,7 +16,8 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, unref, watch } from 'vue'
+import { computed, ref, unref } from 'vue'
+import { watchImmediate } from '@vueuse/core'
 import { useGettext } from 'vue3-gettext'
 import QuotaSelect from '../QuotaSelect.vue'
 import { SpaceResource } from '@opencloud-eu/web-client'
@@ -44,10 +45,12 @@ const {
   spaces: SpaceResource[]
   warningMessage?: string
   warningMessageContextualHelperData?: ContextualHelperData
-  resourceType?: 'space' | 'user' | string
+  resourceType?: string
 }>()
 
-const emit = defineEmits(['update:confirmDisabled'])
+const emit = defineEmits<{
+  (e: 'update:confirmDisabled', value: boolean): void
+}>()
 
 const { showMessage, showErrorMessage } = useMessages()
 const { $gettext, $ngettext } = useGettext()
@@ -58,9 +61,9 @@ const capabilityStore = useCapabilityStore()
 const { spacesMaxQuota } = storeToRefs(capabilityStore)
 const { updateResourceField } = useResourcesStore()
 
-const selectedOption = ref(spaces[0]?.spaceQuota?.total || 0)
+const selectedQuota = ref(spaces[0]?.spaceQuota?.total || 0)
 
-const getSuccessMessage = (count: number) => {
+function getSuccessMessage(count: number) {
   if (resourceType === 'space') {
     return $ngettext(
       'Space quota was changed successfully',
@@ -80,7 +83,7 @@ const getSuccessMessage = (count: number) => {
   return $gettext('Quota was changed successfully')
 }
 
-const getErrorMessage = (count: number) => {
+function getErrorMessage(count: number) {
   if (resourceType === 'space') {
     return $ngettext(
       'Failed to change space quota',
@@ -101,52 +104,52 @@ const getErrorMessage = (count: number) => {
 }
 
 const confirmButtonDisabled = computed(() => {
-  return !spaces.some((space) => space.spaceQuota.total !== unref(selectedOption))
+  return !spaces.some((space) => space.spaceQuota.total !== unref(selectedQuota))
 })
 
-watch(
-  confirmButtonDisabled,
-  () => {
-    emit('update:confirmDisabled', unref(confirmButtonDisabled))
-  },
-  { immediate: true }
-)
+watchImmediate(confirmButtonDisabled, (disabled) => {
+  emit('update:confirmDisabled', disabled)
+})
 
-const changeSelectedQuotaOption = (option: { value: number }) => {
-  selectedOption.value = option.value
+function changeSelectedQuotaOption(option: { value: number | null }) {
+  // The backend cannot reset an existing drive to its default quota yet.
+  if (option.value === null) {
+    return
+  }
+  selectedQuota.value = option.value
 }
 
-const onConfirm = async () => {
-  const client = clientService.graphAuthenticated
-  const requests = spaces.map(async (space): Promise<void> => {
-    const updatedSpace = await client.drives.updateDrive(space.id, {
-      quota: { total: unref(selectedOption) }
-    })
-    if (unref(router.currentRoute).name === 'admin-settings-users') {
-      eventBus.publish('app.admin-settings.users.user.quota.updated', {
-        spaceId: space.id,
-        quota: updatedSpace.spaceQuota
-      })
-    }
-    spacesStore.updateSpaceField({
-      id: space.id,
-      field: 'spaceQuota',
-      value: updatedSpace.spaceQuota
-    })
-    updateResourceField<SpaceResource>({
-      id: space.id,
-      field: 'spaceQuota',
-      value: updatedSpace.spaceQuota
-    })
+async function updateQuota(space: SpaceResource, total: number) {
+  const updatedSpace = await clientService.graphAuthenticated.drives.updateDrive(space.id, {
+    quota: { total }
   })
-  const results = await Promise.allSettled<Array<unknown>>(requests)
+  if (unref(router.currentRoute).name === 'admin-settings-users') {
+    eventBus.publish('app.admin-settings.users.user.quota.updated', {
+      spaceId: space.id,
+      quota: updatedSpace.spaceQuota
+    })
+  }
+  spacesStore.updateSpaceField({
+    id: space.id,
+    field: 'spaceQuota',
+    value: updatedSpace.spaceQuota
+  })
+  updateResourceField<SpaceResource>({
+    id: space.id,
+    field: 'spaceQuota',
+    value: updatedSpace.spaceQuota
+  })
+}
+
+async function onConfirm() {
+  const quota = unref(selectedQuota)
+  const results = await Promise.allSettled(spaces.map((space) => updateQuota(space, quota)))
   const succeeded = results.filter(isPromiseFulfilled)
   if (succeeded.length) {
     showMessage({ title: getSuccessMessage(succeeded.length) })
   }
   const errors = results.filter(isPromiseRejected)
   if (errors.length) {
-    console.error(errors)
     errors.forEach(console.error)
     showErrorMessage({
       title: getErrorMessage(errors.length),

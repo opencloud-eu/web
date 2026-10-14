@@ -311,7 +311,10 @@ const isQuotaInputDisabled = computed(() => {
   return typeof unref(showQuota) === 'undefined'
 })
 
-function changeSelectedQuotaOption(option: { value: number; displayValue: string }) {
+function changeSelectedQuotaOption(option: { value: number | null; displayValue: string }) {
+  if (option.value === null) {
+    return
+  }
   editUser.value.drive.quota.total = option.value
 }
 

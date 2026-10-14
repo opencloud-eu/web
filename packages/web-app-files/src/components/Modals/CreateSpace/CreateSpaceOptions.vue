@@ -44,6 +44,7 @@
         class="create-space-quota"
         :total-quota="quota"
         :max-quota="spacesMaxQuota"
+        allow-default
         :position-fixed="true"
         @selected-option-change="quota = $event.value"
       />
@@ -79,7 +80,7 @@ const { encrypted = false, editorTeleportTarget = undefined } = defineProps<{
   editorTeleportTarget?: string
 }>()
 
-const quota = defineModel<number>('quota', { default: 0 })
+const quota = defineModel<number | null>('quota', { default: null })
 const subtitle = defineModel<string>('subtitle', { default: '' })
 const description = defineModel<string>('description', { default: '' })
 const image = defineModel<ArrayBuffer>('image', { default: null })

@@ -48,7 +48,7 @@ export const useCreateSpace = () => {
    * `vaultContentType` turns the new space into an end-to-end encrypted one: it
    * lands in the drive's `@libre.graph.contentType`. Such a space must not get the
    * default template, or the server would create a `.space` folder.
-   * Without a `quota` the server applies its default one; 0 means unlimited.
+   * Omitting the quota uses the server default; 0 means unlimited.
    */
   const createSpace = (
     name: string,
@@ -63,7 +63,7 @@ export const useCreateSpace = () => {
       {
         name,
         ...(subtitle && { description: subtitle }),
-        ...(typeof quota === 'number' && { quota: { total: quota } }),
+        ...(quota !== undefined && { quota: { total: quota } }),
         ...(vaultContentType && { '@libre.graph.contentType': vaultContentType })
       },
       { params: { template: vaultContentType ? 'none' : 'default' } }

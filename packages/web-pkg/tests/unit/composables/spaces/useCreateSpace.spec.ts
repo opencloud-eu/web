@@ -20,6 +20,19 @@ const vaultCreation = {
 
 describe('useCreateSpace', () => {
   describe('createSpace', () => {
+    it.each([0, 2e9])('sends an explicit quota of %i in the create request', (quota) => {
+      return getWrapper({
+        setup: async ({ createSpace }, { $clientService }) => {
+          await createSpace('Team', { quota })
+
+          expect($clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith(
+            { name: 'Team', quota: { total: quota } },
+            { params: { template: 'default' } }
+          )
+        }
+      })
+    })
+
     it('uses the default template for a regular space', () => {
       return getWrapper({
         setup: async ({ createSpace }, { $clientService }) => {
@@ -48,6 +61,24 @@ describe('useCreateSpace', () => {
   })
 
   describe('addNewSpace', () => {
+    it.each([undefined, 0, 2e9])(
+      'creates with quota %s without a separate quota update',
+      (quota) => {
+        return getWrapper({
+          setup: async ({ addNewSpace }, { $clientService }) => {
+            await addNewSpace('Team', { quota })
+
+            const { drives } = $clientService.graphAuthenticated
+            expect(drives.createDrive).toHaveBeenCalledWith(
+              { name: 'Team', ...(quota !== undefined && { quota: { total: quota } }) },
+              { params: { template: 'default' } }
+            )
+            expect(drives.updateDrive).not.toHaveBeenCalled()
+          }
+        })
+      }
+    )
+
     it('creates a regular space and reports success', () => {
       return getWrapper({
         setup: async ({ addNewSpace }, { $clientService }) => {
@@ -92,6 +123,7 @@ describe('useCreateSpace', () => {
           await addNewSpace('Secrets', {
             encrypt: true,
             finalizeVault,
+            quota: 1000,
             members: [
               {
                 id: 'user-1',
@@ -103,7 +135,12 @@ describe('useCreateSpace', () => {
           })
 
           // the space exists, so the steps that don't depend on the vault run
-          const { permissions } = $clientService.graphAuthenticated
+          const { drives, permissions } = $clientService.graphAuthenticated
+          expect(drives.createDrive).toHaveBeenCalledWith(
+            expect.objectContaining({ quota: { total: 1000 } }),
+            { params: { template: 'none' } }
+          )
+          expect(drives.updateDrive).not.toHaveBeenCalled()
           expect(permissions.createInvite).toHaveBeenCalled()
 
           expect(useMessages().showMessage).toHaveBeenCalledWith(
@@ -190,19 +227,6 @@ describe('useCreateSpace', () => {
           expect(useMessages().showMessage).toHaveBeenCalledWith({
             title: 'Space was created successfully'
           })
-        }
-      })
-    })
-
-    it('creates an unlimited space with a quota of 0', () => {
-      return getWrapper({
-        setup: async ({ addNewSpace }, { $clientService }) => {
-          await addNewSpace('Team', { quota: 0 })
-
-          expect($clientService.graphAuthenticated.drives.createDrive).toHaveBeenCalledWith(
-            { name: 'Team', quota: { total: 0 } },
-            { params: { template: 'default' } }
-          )
         }
       })
     })
