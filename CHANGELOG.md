@@ -8,6 +8,7 @@
 
 ### 📈 Enhancement
 
+- feat: Guest auth [[#3338](https://github.com/opencloud-eu/web/pull/3338)]
 - feat: folder first sorting [[#3792](https://github.com/opencloud-eu/web/pull/3792)]
 - feat: custom font size and type [[#3649](https://github.com/opencloud-eu/web/pull/3649)]
 - [full-ci] feat: support Apple Live Photos [[#3548](https://github.com/opencloud-eu/web/pull/3548)]
