@@ -42,6 +42,13 @@ describe('AddToGroupsModal', () => {
       const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
       expect(input.props('groupOptions').length).toBe(1)
     })
+    it('lists all groups if the memberships of the user are not loaded', () => {
+      const users = [{ id: '1' } as User]
+      const groups = [mock<Group>(), mock<Group>()]
+      const { wrapper } = getWrapper({ users, groups })
+      const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
+      expect(input.props('groupOptions').length).toBe(groups.length)
+    })
     it('lists all available groups if more than one user given', () => {
       const assignedGroup = mock<Group>({ id: '1' })
       const users = [mock<User>({ memberOf: [assignedGroup] }), mock<User>({ memberOf: [] })]

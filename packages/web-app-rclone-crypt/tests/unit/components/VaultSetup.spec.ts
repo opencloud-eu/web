@@ -7,7 +7,10 @@ describe('VaultSetup', () => {
   it('uses the password policy and the password generator for the password input', () => {
     const { wrapper, mocks, passwordPolicy } = getWrapper()
     const input = wrapper.findComponent<any>({ name: 'OcTextInput' })
-    expect(mocks.$passwordPolicyService.getPolicy).toHaveBeenCalledWith({ enforcePassword: true })
+    expect(mocks.$passwordPolicyService.getPolicy).toHaveBeenCalledWith({
+      enforcePassword: true,
+      excludeRules: ['atMostCharacters']
+    })
     expect(input.props('passwordPolicy')).toBe(passwordPolicy)
 
     mocks.$passwordPolicyService.generatePassword.mockReturnValue('generated-password')

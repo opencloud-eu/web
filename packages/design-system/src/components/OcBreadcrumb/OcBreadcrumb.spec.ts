@@ -81,6 +81,20 @@ describe('OcBreadcrumb', () => {
       expect(current.props('current')).toBe(true)
     })
   })
+  describe('drop', () => {
+    const dropItems = [
+      { id: '1', text: 'First folder', to: { path: '/folder' } },
+      { id: '2', text: 'Current folder', to: { path: '/folder/current' } }
+    ]
+    it.each([
+      { types: ['text/plain'], emits: true },
+      { types: ['Files'], emits: false }
+    ])('emits the drop target only for drops without files ($types)', async ({ types, emits }) => {
+      const { wrapper } = getWrapper({ items: dropItems })
+      await wrapper.find('.oc-breadcrumb-list-item').trigger('drop', { dataTransfer: { types } })
+      expect(!!wrapper.emitted('itemDroppedBreadcrumb')).toBe(emits)
+    })
+  })
   describe('mobile breakpoint', () => {
     it.each<{ breakpoint: 'sm' | 'md' | 'lg'; listClass: string }>([
       { breakpoint: 'sm', listClass: 'sm:flex' },

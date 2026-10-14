@@ -8,7 +8,7 @@ import {
 } from '../../../../../src'
 import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { createPinia, setActivePinia } from 'pinia'
-import { computed, unref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { mock } from 'vitest-mock-extended'
 
 describe('useExtensionRegistry', () => {
@@ -159,6 +159,82 @@ describe('useExtensionRegistry', () => {
 
           const result2 = instance.requestExtensions(extensionPoint)
           expect(result2.length).toBe(0)
+        }
+      })
+    })
+
+    it('keeps other extensions reactive after unregistering', () => {
+      const extensionPoint: ExtensionPoint<CustomComponentExtension> = mock<
+        ExtensionPoint<CustomComponentExtension>
+      >({
+        id: 'extension-point-id',
+        extensionType: 'customComponent'
+      })
+      const createExtension = (id: string) =>
+        mock<Extension>({ id, type: 'customComponent', extensionPointIds: [extensionPoint.id] })
+
+      const ids = ref<string[]>([])
+      const reactiveExtensions = computed(() => unref(ids).map(createExtension))
+      const mixedExtensions = computed(() => [createExtension('bar-1'), createExtension('bar-2')])
+      const otherExtensions = computed(() => [createExtension('baz-1')])
+
+      getWrapper({
+        setup: (instance) => {
+          instance.registerExtensions(reactiveExtensions)
+          instance.registerExtensions(mixedExtensions)
+          instance.registerExtensions(otherExtensions)
+
+          instance.unregisterExtensions(['bar-1', 'baz-1'])
+          ids.value = ['foo-1', 'foo-2']
+
+          const result = instance.requestExtensions(extensionPoint)
+          expect(result.map(({ id }) => id)).toEqual(['foo-1', 'foo-2', 'bar-2'])
+        }
+      })
+    })
+
+    it('unregisters a group via the returned function even if it is currently empty', () => {
+      const extensionPoint: ExtensionPoint<CustomComponentExtension> = mock<
+        ExtensionPoint<CustomComponentExtension>
+      >({
+        id: 'extension-point-id',
+        extensionType: 'customComponent'
+      })
+      const extension = mock<Extension>({
+        id: 'foo-1',
+        type: 'customComponent',
+        extensionPointIds: [extensionPoint.id]
+      })
+
+      const loading = ref(true)
+      const extensions = computed(() => (unref(loading) ? [] : [extension]))
+
+      getWrapper({
+        setup: (instance) => {
+          const unregister = instance.registerExtensions(extensions)
+
+          unregister()
+          loading.value = false
+
+          expect(instance.requestExtensions(extensionPoint).length).toBe(0)
+          expect(unref(instance.extensions).length).toBe(0)
+        }
+      })
+    })
+
+    it('does not replace the registered extensions if nothing gets unregistered', () => {
+      const extension = mock<Extension>({ id: 'foo-1', type: 'customComponent' })
+
+      getWrapper({
+        setup: (instance) => {
+          const unregister = instance.registerExtensions(computed(() => [extension]))
+          unregister()
+          const extensions = instance.extensions
+
+          unregister()
+          instance.unregisterExtensions(['foo-1'])
+
+          expect(instance.extensions).toBe(extensions)
         }
       })
     })

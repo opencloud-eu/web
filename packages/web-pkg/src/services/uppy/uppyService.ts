@@ -207,11 +207,17 @@ export class UppyService {
     this.uppy.use(Tus, tusPluginOptions)
   }
 
-  useXhr({ headers, timeout, endpoint }: XHRUploadOptions<OcUppyMeta, OcUppyBody>) {
+  useXhr({
+    headers,
+    timeout,
+    endpoint,
+    withCredentials
+  }: XHRUploadOptions<OcUppyMeta, OcUppyBody>) {
     const xhrPluginOptions: XHRUploadOptions<OcUppyMeta, OcUppyBody> = {
       endpoint,
       method: 'put',
       headers,
+      withCredentials,
       formData: false,
       timeout,
       getResponseData() {

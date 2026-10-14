@@ -268,6 +268,10 @@ const update = async ({
       })
     ]
   })
+  // the drop might have been hidden while its position was being computed
+  if (!unref(drop)) {
+    return
+  }
   Object.assign(unref(drop).style, { left: `${x}px`, top: `${y}px` })
 }
 

@@ -45,7 +45,7 @@ function changeSelectedGroupOption(options: Group[]) {
 
 const availableGroups = computed(() => {
   return groups.filter((group) =>
-    users.some((user) => user.memberOf.some(({ id }) => id === group.id))
+    users.some((user) => user.memberOf?.some(({ id }) => id === group.id))
   )
 })
 
@@ -63,7 +63,7 @@ async function onConfirm() {
   const promises: Promise<unknown>[] = []
   for (const group of unref(selectedOptions)) {
     for (const user of users) {
-      if (user.memberOf.find((userGroup) => userGroup.id === group.id)) {
+      if (user.memberOf?.find((userGroup) => userGroup.id === group.id)) {
         promises.push(client.groups.deleteMember(group.id, user.id))
         if (!usersToFetch.includes(user.id)) {
           usersToFetch.push(user.id)

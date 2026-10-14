@@ -72,21 +72,20 @@ export const useCopyLink = () => {
     // see https://wolfgangrittner.dev/how-to-use-clipboard-api-in-safari/ and https://developer.apple.com/forums/thread/691873
     if (typeof ClipboardItem && navigator.clipboard.write) {
       await new Promise<void>((resolve, reject) => {
-        const text = new ClipboardItem({
-          'text/plain': createLinkHandler()
-            .then((result) => {
-              const textToCopy = getTextToCopy({ result, password })
-              const blob = new Blob([textToCopy], { type: 'text/plain' })
-              resolve()
-              return blob
-            })
-            .catch((error) => {
-              reject()
-              throw error
-            })
+        const blobPromise = createLinkHandler().then((result) => {
+          const textToCopy = getTextToCopy({ result, password })
+          const blob = new Blob([textToCopy], { type: 'text/plain' })
+          resolve()
+          return blob
         })
+        // handle the rejection here, so it doesn't go unhandled if the clipboard write already failed
+        blobPromise.catch(reject)
 
-        navigator.clipboard.write([text])
+        const text = new ClipboardItem({ 'text/plain': blobPromise })
+
+        navigator.clipboard.write([text]).catch((e) => {
+          console.warn('Unable to copy link to clipboard', e)
+        })
       })
     } else {
       // edge case for browsers that don't support ClipboardItem (e.g. Firefox)

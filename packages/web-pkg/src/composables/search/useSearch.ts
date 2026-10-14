@@ -36,7 +36,12 @@ export const useSearch = () => {
     return unref(projectSpaces).find((s) => s.id === id)
   }
 
-  const searchTask = useTask(function* (signal, term: string, searchLimit: number = null) {
+  const searchTask = useTask(function* (
+    signal,
+    term: string,
+    searchLimit: number = null,
+    includeHidden = false
+  ) {
     if (!term) {
       return {
         totalResults: null,
@@ -80,14 +85,19 @@ export const useSearch = () => {
           return { id: data.id, data }
         })
         .filter(({ data }) => {
-          // filter results if hidden files shouldn't be shown due to settings
-          return !data.name.startsWith('.') || unref(areHiddenFilesShown)
+          // filter results if hidden files shouldn't be shown due to settings, unless the
+          // caller keeps them (e.g. because it filters them reactively via the resources store)
+          return includeHidden || !data.name.startsWith('.') || unref(areHiddenFilesShown)
         })
     }
   }).restartable()
 
-  const search = async (term: string, searchLimit: number = null): Promise<SearchResult> => {
-    return await searchTask.perform(term, searchLimit)
+  const search = async (
+    term: string,
+    searchLimit: number = null,
+    { includeHidden = false }: { includeHidden?: boolean } = {}
+  ): Promise<SearchResult> => {
+    return await searchTask.perform(term, searchLimit, includeHidden)
   }
 
   const buildSearchTerm = ({
@@ -109,6 +119,7 @@ export const useSearch = () => {
   }) => {
     const query: string[] = []
 
+    term = term?.trim()
     if (term) {
       // the term matches names, and unless only titles are searched also contents and tags
       const conditions = [`name:"*${term}*"`]

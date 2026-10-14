@@ -89,7 +89,8 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
     userStore,
     authStore,
     capabilityStore,
-    webWorkersStore
+    webWorkersStore,
+    spacesStore
   })
 
   const appProviderService = announceAppProviderService({
@@ -155,7 +156,10 @@ export const bootstrapApp = async (configurationPath: string, appsReadyCallback:
 
   watch(
     () =>
-      authStore.userContextReady || authStore.idpContextReady || authStore.publicLinkContextReady,
+      authStore.userContextReady ||
+      authStore.idpContextReady ||
+      authStore.publicLinkContextReady ||
+      authStore.guestContextReady,
     async (newValue, oldValue) => {
       if (!newValue || newValue === oldValue) {
         return

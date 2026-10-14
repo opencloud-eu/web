@@ -11,7 +11,9 @@ import {
 import { mock } from 'vitest-mock-extended'
 import {
   AncestorMetaDataValue,
+  Modal,
   useGetMatchingSpace,
+  useModals,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
@@ -77,6 +79,39 @@ describe('EditDropdown component', () => {
         expect(
           (wrapper.vm as any).editOptions.some((option: EditOption) => option.id === 'rename')
         ).toBeTruthy()
+      })
+      describe('modal', () => {
+        function openRenameModal() {
+          const { wrapper } = getWrapper({ canRename: true })
+          const renameOption = (wrapper.vm as any).editOptions.find(
+            (option: EditOption) => option.id === 'rename'
+          )
+          renameOption.method()
+          const { dispatchModal } = useModals()
+          const modal = vi.mocked(dispatchModal).mock.calls[0][0] as Modal
+          return { wrapper, modal }
+        }
+
+        it.each(['', '   '])('shows an error for an empty name "%s"', (name) => {
+          const { modal } = openRenameModal()
+          const setError = vi.fn()
+          modal.onInput(name, setError)
+          expect(setError).toHaveBeenCalledWith('Link name cannot be empty')
+        })
+        it('ignores surrounding whitespace for the max length check', () => {
+          const { modal } = openRenameModal()
+          const setError = vi.fn()
+          modal.onInput(` ${'a'.repeat(255)} `, setError)
+          expect(setError).toHaveBeenCalledWith(null)
+        })
+        it('emits the trimmed name on confirm', async () => {
+          const { wrapper, modal } = openRenameModal()
+          await modal.onConfirm('  New name  ')
+          expect(wrapper.emitted('updateLink')[0][0]).toEqual({
+            linkShare: exampleLink,
+            options: { displayName: 'New name' }
+          })
+        })
       })
     })
   })

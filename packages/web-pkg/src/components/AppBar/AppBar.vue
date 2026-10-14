@@ -37,6 +37,7 @@
             :view-modes="viewModes"
             :has-hidden-files="hasHiddenFiles"
             :has-file-extensions="hasFileExtensions"
+            :has-folders-first="hasFoldersFirst"
             :has-pagination="hasPagination"
             per-page-storage-prefix="files"
             :view-mode-default="viewModeDefault"
@@ -125,6 +126,7 @@ const {
   hasViewOptions = true,
   hasHiddenFiles = true,
   hasFileExtensions = true,
+  hasFoldersFirst = true,
   hasPagination = true,
   showActionsBar = true,
   batchActionsLoading = false,
@@ -138,6 +140,7 @@ const {
   hasViewOptions?: boolean
   hasHiddenFiles?: boolean
   hasFileExtensions?: boolean
+  hasFoldersFirst?: boolean
   hasPagination?: boolean
   showActionsBar?: boolean
   showActionsOnSelection?: boolean

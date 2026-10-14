@@ -30,6 +30,7 @@
                     v-if="showViewOptions"
                     :has-hidden-files="false"
                     :has-file-extensions="false"
+                    :has-folders-first="false"
                     :has-pagination="true"
                     :pagination-options="paginationOptions"
                     :per-page-default="perPageDefault"

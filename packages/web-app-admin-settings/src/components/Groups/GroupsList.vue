@@ -43,7 +43,6 @@
         :option="rowData.item"
         :label="getSelectGroupLabel(rowData.item)"
         :label-hidden="true"
-        @update:model-value="selectGroup(rowData.item)"
         @click.stop="rowClicked([rowData.item, $event])"
       />
     </template>
@@ -267,11 +266,16 @@ function showEditPanel(group: Group) {
 }
 
 function rowClicked([group, event]: [Group, MouseEvent | KeyboardEvent]) {
-  const target = event?.target as HTMLElement
+  const target = event?.target as HTMLInputElement
   const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
   const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
   if (contextActionClicked) {
     return
+  }
+
+  if (isCheckboxClicked && (event?.metaKey || event?.shiftKey)) {
+    // revert the native toggle, the modifier click handles the selection
+    target.checked = isGroupSelected(group)
   }
 
   if (event?.metaKey) {
@@ -279,12 +283,11 @@ function rowClicked([group, event]: [Group, MouseEvent | KeyboardEvent]) {
   }
   if (event?.shiftKey) {
     return eventBus.publish('app.admin-settings.list.clicked.shift', {
-      resource: group,
-      skipTargetSelection: isCheckboxClicked
+      resource: group
     })
   }
   if (isCheckboxClicked) {
-    return
+    return selectGroup(group)
   }
 
   unselectAllGroups()

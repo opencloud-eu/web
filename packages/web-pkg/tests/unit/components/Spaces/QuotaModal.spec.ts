@@ -27,6 +27,10 @@ describe('QuotaModal', () => {
       )
       await wrapper.vm.onConfirm()
 
+      expect(mocks.$clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith(
+        '1fe58d8b-aa69-4c22-baf7-97dd57479f22',
+        { quota: { total: expect.any(Number) } }
+      )
       const spacesStore = useSpacesStore()
       expect(spacesStore.updateSpaceField).toHaveBeenCalledTimes(1)
       const { showMessage } = useMessages()
@@ -57,6 +61,7 @@ function getWrapper() {
         spaces: [
           {
             id: '1fe58d8b-aa69-4c22-baf7-97dd57479f22',
+            name: 'Dr. John Smith',
             spaceQuota: {
               remaining: 9999999836,
               state: 'normal',

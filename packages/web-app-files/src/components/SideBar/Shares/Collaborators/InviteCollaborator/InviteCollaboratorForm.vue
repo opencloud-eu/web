@@ -30,7 +30,7 @@
         :filter="filterRecipients"
         :dropdown-should-open="
           ({ open, search }: DropDownShouldOpenOptions) =>
-            open && search.length >= minSearchLength && !searchInProgress
+            open && search.trim().length >= minSearchLength && !searchInProgress
         "
         label=""
         :label-hidden="true"
@@ -155,7 +155,6 @@
 
 <script setup lang="ts">
 import PQueue from 'p-queue'
-import * as EmailValidator from 'email-validator'
 import { storeToRefs } from 'pinia'
 import AutocompleteItem from './AutocompleteItem.vue'
 import RoleDropdown from '../RoleDropdown.vue'
@@ -169,7 +168,6 @@ import {
   isSpaceResource
 } from '@opencloud-eu/web-client'
 import {
-  useAbility,
   useClientService,
   useMessages,
   useSpacesStore,
@@ -197,7 +195,7 @@ import {
   useOpenXchangeContacts
 } from '../../../../../composables/openXchange'
 
-type DropDownShouldOpenOptions = { open: boolean; search: string[] }
+type DropDownShouldOpenOptions = { open: boolean; search: string }
 
 export type ShareRoleType = { id: string; label: string; longLabel: string }
 
@@ -220,13 +218,12 @@ const spacesStore = useSpacesStore()
 const { upsertSpace } = spacesStore
 const configStore = useConfigStore()
 const userStore = useUserStore()
-const { can } = useAbility()
 
 const sharesStore = useSharesStore()
 const { addShare } = sharesStore
 const { collaboratorShares } = storeToRefs(sharesStore)
 
-const { searchCollaborators } = useCollaboratorSearch()
+const { searchCollaborators, getGuestCandidates } = useCollaboratorSearch()
 const { searchContacts: searchOpenXchangeContacts } = useOpenXchangeContacts()
 const { inviteContact } = useInviteContactViaEmail()
 
@@ -323,27 +320,9 @@ const {
   })
 
   const isSpace = !unref(resource) || isSpaceResource(unref(resource))
-  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query, signal)
+  const contacts = isSpace ? [] : await searchOpenXchangeContacts(query.trim(), signal)
 
-  const emailBelongsToAccount = (query: string) => {
-    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
-    if (users.length === 1 && !users[0].mail) {
-      return true
-    }
-    return collaborators.some((c) =>
-      [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
-        query.toLowerCase()
-      )
-    )
-  }
-  const trimmedQuery = (query || '').trim()
-  const guests: CollaboratorAutoCompleteItem[] =
-    !unref(isExternalShareRoleType) &&
-    can('create-all', 'GuestInvite') &&
-    !emailBelongsToAccount(trimmedQuery) &&
-    EmailValidator.validate(trimmedQuery)
-      ? [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.guest.value }]
-      : []
+  const guests = unref(isExternalShareRoleType) ? [] : getGuestCandidates(query, collaborators)
 
   return [...collaborators, ...contacts, ...guests].filter(
     (collaborator: CollaboratorAutoCompleteItem) => {

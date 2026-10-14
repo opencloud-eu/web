@@ -186,7 +186,6 @@ let appOnDeleteResourceCallback: (() => void) | null = null
 let appOnSaveCallback: ((content: unknown) => void | Promise<void>) | null = null
 
 const extensionRegistry = useExtensionRegistry()
-const { registerExtensions, unregisterExtensions } = extensionRegistry
 const topBarExtensionId = 'app.app-wrapper.app-top-bar'
 const appBarExtension = computed<CustomComponentExtension[]>(() => {
   if (unref(loading) || unref(loadingError) || !unref(resource)) {
@@ -214,7 +213,7 @@ const appBarExtension = computed<CustomComponentExtension[]>(() => {
   ]
 })
 
-registerExtensions(appBarExtension)
+const unregisterAppBarExtension = extensionRegistry.registerExtensions(appBarExtension)
 
 const isEditor = computed(() => {
   // A collaborative app drives its content through the Yjs session instead
@@ -730,7 +729,7 @@ onMounted(() => {
 })
 onBeforeUnmount(() => {
   eventBus.unsubscribe('runtime.resource.deleted', deleteResourceEventToken)
-  unregisterExtensions([topBarExtensionId])
+  unregisterAppBarExtension()
 
   if (!loadingService.isLoading) {
     window.removeEventListener('beforeunload', preventUnload)
@@ -875,7 +874,7 @@ const dropDownMenuSections = computed(() => {
 onBeforeRouteLeave(async () => {
   await flushPendingContent()
   if (!unref(isDirty)) {
-    unregisterExtensions([topBarExtensionId])
+    unregisterAppBarExtension()
     return true
   }
 
@@ -889,7 +888,7 @@ onBeforeRouteLeave(async () => {
       customComponentAttrs: () => {
         return {
           closeCallback: () => {
-            unregisterExtensions([topBarExtensionId])
+            unregisterAppBarExtension()
             resolve(true)
           }
         }
@@ -899,7 +898,7 @@ onBeforeRouteLeave(async () => {
           resolve(false)
           return
         }
-        unregisterExtensions([topBarExtensionId])
+        unregisterAppBarExtension()
         resolve(true)
       },
       onCancel() {

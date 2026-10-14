@@ -8,7 +8,6 @@ import type { marked as markedDefault } from 'marked'
 import Image from '@tiptap/extension-image'
 import FindAndReplace from '@tiptap/extension-find-and-replace'
 import { Table, TableRow, TableCell, TableHeader } from '@tiptap/extension-table'
-import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
 import { useGettext } from 'vue3-gettext'
 import { EditorAction, EditorActionGroup, useEditorActions } from '../useEditorActions'
@@ -20,7 +19,12 @@ import {
   createMarkdownClipboardExtension,
   Frontmatter,
   imageFileHandlerExtension,
-  registerFrontmatterTokenizer
+  MarkdownListItem,
+  MarkdownOrderedList,
+  MarkdownParagraph,
+  MarkdownTaskList,
+  registerFrontmatterTokenizer,
+  registerMarkdownListTokenizer
 } from '../../extensions'
 import { ContentTypeStrategy, ExtensionsOptions } from './types'
 
@@ -32,11 +36,13 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
   // process wide singleton which grows with every editor opened and keeps each
   // manager it ever saw alive. Holding our own instance bounds both to the
   // lifetime of this strategy.
+  const instance = new Marked()
+  registerFrontmatterTokenizer(instance)
+  registerMarkdownListTokenizer(instance)
   // Cast because tiptap types the option as the default export, which carries a
   // `getDefaults` helper a plain instance lacks. The manager never calls it: it
   // only touches `use`, `setOptions`, `Lexer`, `lexer` and `defaults`.
-  const marked = new Marked() as unknown as typeof markedDefault
-  registerFrontmatterTokenizer(marked)
+  const marked = instance as unknown as typeof markedDefault
 
   const editorContentType = () => {
     return 'markdown'
@@ -95,8 +101,14 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
         link: false,
         codeBlock: false,
         document: false,
+        paragraph: false,
+        listItem: false,
+        orderedList: false,
         undoRedo: options?.yjs ? false : undefined
       }),
+      MarkdownParagraph,
+      MarkdownListItem,
+      MarkdownOrderedList,
       // Frontmatter is metadata about the document, it only ever belongs at the
       // top. Spelled as an alternation rather than `frontmatter? block+` so that
       // a document holding nothing but metadata is valid too. `block+` has to
@@ -112,7 +124,7 @@ export const useStrategyMarkdown = (editorState: TextEditorState): ContentTypeSt
       TableRow,
       TableCell,
       TableHeader,
-      TaskList,
+      MarkdownTaskList,
       TaskItem.configure({ nested: true }),
       markdownImage,
       imageFileHandlerExtension(),

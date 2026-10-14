@@ -14,6 +14,23 @@ import { CapabilityStore } from '../../composables'
 // @ts-ignore
 import { PasswordPolicy } from 'password-sheriff'
 
+export const PasswordPolicyRuleId = {
+  atLeastCharacters: 'atLeastCharacters',
+  atMostCharacters: 'atMostCharacters',
+  mustNotBeEmpty: 'mustNotBeEmpty',
+  atLeastUppercaseCharacters: 'atLeastUppercaseCharacters',
+  atLeastLowercaseCharacters: 'atLeastLowercaseCharacters',
+  atLeastDigits: 'atLeastDigits',
+  mustContain: 'mustContain'
+} as const
+
+export type PasswordPolicyRuleId = (typeof PasswordPolicyRuleId)[keyof typeof PasswordPolicyRuleId]
+
+export interface PasswordPolicyOptions {
+  enforcePassword?: boolean
+  excludeRules?: PasswordPolicyRuleId[]
+}
+
 interface GeneratePasswordRules {
   length: number
   minLowercaseCharacters: number
@@ -82,8 +99,11 @@ export class PasswordPolicyService {
     }
   }
 
-  private buildPolicy({ enforcePassword = false } = {}): void {
-    const ruleset = {
+  private buildPolicy({
+    enforcePassword = false,
+    excludeRules = []
+  }: PasswordPolicyOptions = {}): void {
+    const ruleset: Record<PasswordPolicyRuleId, unknown> = {
       atLeastCharacters: new AtLeastCharactersRule({ ...this.language }),
       atMostCharacters: new AtMostCharactersRule({ ...this.language }),
       mustNotBeEmpty: new MustNotBeEmptyRule({ ...this.language }),
@@ -92,7 +112,7 @@ export class PasswordPolicyService {
       atLeastDigits: new AtLeastDigitsRule({ ...this.language }),
       mustContain: new MustContainRule({ ...this.language })
     }
-    const rules = {} as Record<string, unknown>
+    const rules = {} as Partial<Record<PasswordPolicyRuleId, unknown>>
 
     if (enforcePassword && !this.hasRules()) {
       rules.mustNotBeEmpty = {}
@@ -129,11 +149,15 @@ export class PasswordPolicyService {
       }
     }
 
+    for (const ruleId of excludeRules) {
+      delete rules[ruleId]
+    }
+
     this.policy = new PasswordPolicy(rules, ruleset)
   }
 
-  public getPolicy({ enforcePassword = false } = {}): PasswordPolicy {
-    this.buildPolicy({ enforcePassword })
+  public getPolicy(options: PasswordPolicyOptions = {}): PasswordPolicy {
+    this.buildPolicy(options)
     return this.policy
   }
 

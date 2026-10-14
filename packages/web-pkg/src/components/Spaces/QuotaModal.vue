@@ -120,7 +120,6 @@ const onConfirm = async () => {
   const client = clientService.graphAuthenticated
   const requests = spaces.map(async (space): Promise<void> => {
     const updatedSpace = await client.drives.updateDrive(space.id, {
-      name: space.name,
       quota: { total: unref(selectedOption) }
     })
     if (unref(router.currentRoute).name === 'admin-settings-users') {

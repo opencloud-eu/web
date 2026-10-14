@@ -41,6 +41,7 @@ import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import {
   ResourceIcon,
   useClientService,
+  PasswordPolicyRuleId,
   usePasswordPolicyService,
   useResourcesStore,
   withoutExtension,
@@ -72,7 +73,10 @@ const resourcesStore = useResourcesStore()
 const passwordPolicyService = usePasswordPolicyService()
 
 // the passphrase never reaches the server, so only the client side rules of the policy apply
-const passwordPolicy = passwordPolicyService.getPolicy({ enforcePassword: true })
+const passwordPolicy = passwordPolicyService.getPolicy({
+  enforcePassword: true,
+  excludeRules: [PasswordPolicyRuleId.atMostCharacters]
+})
 
 function generatePassword() {
   return passwordPolicyService.generatePassword()

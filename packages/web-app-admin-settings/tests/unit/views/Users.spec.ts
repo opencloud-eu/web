@@ -215,19 +215,44 @@ describe('Users view', () => {
       await flushPromises()
       expect(wrapper.find('batch-actions-stub').exists()).toBeTruthy()
     })
+    it('show a spinner while the data of the selected user is loading', async () => {
+      const clientService = getClientService()
+      const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
+      await flushPromises()
+      const userSettingsStore = useUserSettingsStore()
+      const user = { ...getDefaultUser(), id: '2' }
+      let resolveUser: (user: User) => void
+      clientService.graphAuthenticated.users.getUser.mockReturnValue(
+        new Promise<User>((resolve) => {
+          resolveUser = resolve
+        }) as ReturnType<typeof clientService.graphAuthenticated.users.getUser>
+      )
+
+      userSettingsStore.selectedUsers.push(user)
+      await nextTick()
+      expect(wrapper.findComponent(AppTemplate).props('batchActionsLoading')).toBeTruthy()
+
+      resolveUser(mock<User>(user))
+      await flushPromises()
+      expect(wrapper.findComponent(AppTemplate).props('batchActionsLoading')).toBe(false)
+    })
   })
 
   describe('filter', () => {
     describe('groups', () => {
       it('does filter users by groups when the "selectionChange"-event is triggered', async () => {
         const clientService = getClientService()
-        const { wrapper } = getMountedWrapper({ mountType: mount, clientService })
+        const { wrapper, mocks } = getMountedWrapper({ mountType: mount, clientService })
         await flushPromises()
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(1)
         wrapper
           .findComponent<typeof ItemFilter>(selectors.itemFilterGroupsStub)
           .vm.$emit('selectionChange', [{ id: '1' }])
         await flushPromises()
+        expect(mocks.$router.replace).toHaveBeenCalledWith(
+          expect.objectContaining({ query: expect.objectContaining({ page: '1' }) })
+        )
+        expect(mocks.$router.push).not.toHaveBeenCalled()
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenCalledTimes(2)
         expect(clientService.graphAuthenticated.users.listUsers).toHaveBeenNthCalledWith(
           2,

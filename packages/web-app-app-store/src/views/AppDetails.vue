@@ -52,8 +52,7 @@ import AppDetailsGallery from '../components/AppDetailsGallery.vue'
 import AppDetailsInfo from '../components/AppDetailsInfo.vue'
 import AppVersions from '../components/AppVersions.vue'
 
-const appIdRouteParam = useRouteParam('appId')
-const appId = computed(() => decodeURIComponent(unref(appIdRouteParam)))
+const appId = useRouteParam('appId')
 const appsStore = useAppsStore()
 const router = useRouter()
 

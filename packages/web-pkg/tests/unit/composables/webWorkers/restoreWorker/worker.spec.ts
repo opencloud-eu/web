@@ -24,6 +24,7 @@ const dataMock = {
 describe('delete worker', () => {
   let worker: ReturnType<typeof useWebWorker>
   let webDavMock: ReturnType<typeof mock<WebDAV>>
+  let webdavFactory: ReturnType<typeof vi.fn>
 
   let resolveTest: (value: boolean) => unknown
   let workerPromise: Promise<unknown>
@@ -36,9 +37,10 @@ describe('delete worker', () => {
       resolveTest = resolve
     })
 
+    webdavFactory = vi.fn(() => webDavMock)
     vi.doMock('@opencloud-eu/web-client', async (importOriginal) => ({
       ...(await importOriginal<any>()),
-      webdav: () => webDavMock
+      webdav: webdavFactory
     }))
   })
 
@@ -111,4 +113,22 @@ describe('delete worker', () => {
 
     await workerPromise
   })
+
+  it.each([true, false])(
+    'passes withCredentials %s to the webdav client',
+    async (withCredentials) => {
+      webDavMock.restoreFile.mockResolvedValue({ status: 200, result: undefined, body: undefined })
+
+      unref(worker.worker).onmessage = () => {
+        resolveTest(true)
+      }
+
+      worker.post(JSON.stringify({ topic: 'startProcess', data: { ...dataMock, withCredentials } }))
+
+      await workerPromise
+
+      const [, , getWithCredentials] = webdavFactory.mock.calls[0]
+      expect(getWithCredentials()).toBe(withCredentials)
+    }
+  )
 })

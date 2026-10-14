@@ -30,6 +30,10 @@ export const useAuthStore = defineStore('auth', () => {
   const publicLinkPassword = ref<string>()
   const publicLinkType = ref<PublicLinkType>()
   const publicLinkContextReady = ref(false)
+  const guestContextReady = ref(false)
+  const guestPermissionId = ref<string>()
+  const guestSpaceId = ref<string>()
+  const guestContextUnavailable = ref(false)
   const webfingerDiscoveryData = ref<WebfingerDiscoveryData>()
 
   const setAccessToken = (value: string) => {
@@ -54,6 +58,24 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkPassword.value = context.publicLinkPassword
     publicLinkType.value = context.publicLinkType
     publicLinkContextReady.value = context.publicLinkContextReady
+  }
+
+  const setGuestContext = (permissionId: string, spaceId: string) => {
+    guestPermissionId.value = permissionId
+    guestSpaceId.value = spaceId
+    guestContextUnavailable.value = false
+    guestContextReady.value = true
+  }
+
+  const setGuestContextUnavailable = (value: boolean) => {
+    guestContextUnavailable.value = value
+  }
+
+  const clearGuestContext = () => {
+    guestContextReady.value = false
+    guestContextUnavailable.value = false
+    guestPermissionId.value = null
+    guestSpaceId.value = null
   }
 
   const clearUserContext = () => {
@@ -105,6 +127,10 @@ export const useAuthStore = defineStore('auth', () => {
     publicLinkPassword,
     publicLinkType,
     publicLinkContextReady,
+    guestContextReady,
+    guestPermissionId,
+    guestSpaceId,
+    guestContextUnavailable,
     webfingerDiscoveryData,
 
     setAccessToken,
@@ -112,6 +138,9 @@ export const useAuthStore = defineStore('auth', () => {
     setIdpContextReady,
     setUserContextReady,
     setPublicLinkContext,
+    setGuestContext,
+    setGuestContextUnavailable,
+    clearGuestContext,
     clearUserContext,
     clearPublicLinkContext,
     loadWebfingerDiscoveryData

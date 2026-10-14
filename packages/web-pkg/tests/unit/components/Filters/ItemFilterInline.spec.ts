@@ -8,6 +8,7 @@ import {
 } from '@opencloud-eu/web-test-helpers'
 import { queryItemAsString } from '../../../../src/composables/appDefaults'
 import { mock } from 'vitest-mock-extended'
+import { nextTick, reactive } from 'vue'
 
 vi.mock('../../../../src/composables/appDefaults', () => ({
   appDefaults: vi.fn(),
@@ -54,18 +55,34 @@ describe('ItemFilterInline', () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.find(selectors.selectedOptionLabel).text()).toEqual(initialQuery)
     })
+    it('resets the active option when the query param is removed from the route', async () => {
+      const currentRoute = reactive({
+        query: { q_InlineFilter: filterOptions[1].name } as Record<string, string>
+      })
+      const { wrapper } = getWrapper({ currentRoute, props: { filterOptions } })
+      await nextTick()
+      expect(wrapper.find(selectors.selectedOptionLabel).text()).toEqual(filterOptions[1].label)
+      delete currentRoute.query.q_InlineFilter
+      await nextTick()
+      expect(wrapper.find(selectors.selectedOptionLabel).text()).toEqual(filterOptions[0].label)
+      expect(wrapper.emitted('toggleFilter')).toEqual([[filterOptions[1]], [filterOptions[0]]])
+    })
   })
 })
 
 function getWrapper({
   props = {},
-  initialQuery = ''
+  initialQuery = '',
+  currentRoute = undefined
 }: {
   props?: PartialComponentProps<typeof ItemFilterInline>
   initialQuery?: string
+  currentRoute?: { query: Record<string, string> }
 } = {}) {
-  vi.mocked(queryItemAsString).mockImplementation(() => initialQuery)
-  const mocks = defaultComponentMocks()
+  vi.mocked(queryItemAsString).mockImplementation((value) =>
+    currentRoute ? (value as string) : initialQuery
+  )
+  const mocks = defaultComponentMocks({ currentRoute: currentRoute as any })
   return {
     mocks,
     wrapper: mount(ItemFilterInline, {

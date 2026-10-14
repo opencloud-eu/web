@@ -3,6 +3,7 @@
   <oc-bottom-drawer
     v-if="drawerActive"
     id="example-bottom-drawer"
+    aria-label="Example bottom drawer"
     :is-focus-trap-active="false"
     @clicked="drawerActive = false"
   >

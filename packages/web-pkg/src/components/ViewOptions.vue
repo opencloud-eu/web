@@ -43,6 +43,14 @@
             @update:checked="updateFileExtensionsShownModel"
           />
         </li>
+        <li v-if="hasFoldersFirst" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
+          <oc-switch
+            v-model:checked="foldersSortedFirstModel"
+            data-testid="files-switch-folders-first"
+            :label="$gettext('Folders first')"
+            @update:checked="updateFoldersSortedFirstModel"
+          />
+        </li>
         <li v-if="hasPagination" class="mt-2 mb-4 last:mb-0 [&>*]:flex [&>*]:justify-between">
           <oc-page-size
             v-if="!queryParamsLoading"
@@ -117,6 +125,7 @@ const {
   perPageStoragePrefix,
   hasHiddenFiles = true,
   hasFileExtensions = true,
+  hasFoldersFirst = true,
   hasPagination = true,
   paginationOptions = PaginationConstants.options,
   perPageQueryName = PaginationConstants.perPageQueryName,
@@ -127,6 +136,7 @@ const {
   perPageStoragePrefix: string
   hasHiddenFiles?: boolean
   hasFileExtensions?: boolean
+  hasFoldersFirst?: boolean
   hasPagination?: boolean
   paginationOptions?: string[]
   perPageQueryName?: string
@@ -144,13 +154,15 @@ const {
   setAreHiddenFilesShown,
   setAreFileExtensionsShown,
   setAreDisabledSpacesShown,
-  setAreEmptyTrashesShown
+  setAreEmptyTrashesShown,
+  setAreFoldersSortedFirst
 } = resourcesStore
 const {
   areHiddenFilesShown,
   areFileExtensionsShown,
   areDisabledSpacesShown,
-  areEmptyTrashesShown
+  areEmptyTrashesShown,
+  areFoldersSortedFirst
 } = storeToRefs(resourcesStore)
 
 const queryParamsLoading = ref(false)
@@ -258,6 +270,14 @@ const emptyTrashesShownModel = computed({
     setAreEmptyTrashesShown(value)
   }
 })
+const foldersSortedFirstModel = computed({
+  get() {
+    return unref(areFoldersSortedFirst)
+  },
+  set(value: boolean) {
+    setAreFoldersSortedFirst(value)
+  }
+})
 
 const updateHiddenFilesShownModel = (event: boolean) => {
   hiddenFilesShownModel.value = event
@@ -270,5 +290,8 @@ const updateDisabledSpacesShownModel = (event: boolean) => {
 }
 const updateEmptyTrashesShownModel = (event: boolean) => {
   emptyTrashesShownModel.value = event
+}
+const updateFoldersSortedFirstModel = (event: boolean) => {
+  foldersSortedFirstModel.value = event
 }
 </script>

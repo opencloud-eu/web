@@ -11,7 +11,7 @@
     <form
       v-else-if="isPasswordRequired"
       class="flex flex-col gap-4"
-      @submit.prevent="resolvePublicLinkTask.perform(true)"
+      @submit.prevent="submitPassword"
     >
       <oc-text-input
         ref="passwordInput"
@@ -215,6 +215,14 @@ const resolvePublicLinkTask = useTask(function* (signal, passwordRequired: boole
     })
   )
 })
+
+async function submitPassword() {
+  try {
+    await resolvePublicLinkTask.perform(true)
+  } catch {
+    // the error is shown via the task state
+  }
+}
 
 /**
  * A public link to a single file has no file id of its own, while a link to a folder does.

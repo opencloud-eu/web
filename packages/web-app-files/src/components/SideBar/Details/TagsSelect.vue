@@ -87,6 +87,7 @@ import {
 import { useGettext } from 'vue3-gettext'
 import { useTask } from 'vue-concurrency'
 import diff from 'lodash-es/difference'
+import uniq from 'lodash-es/uniq'
 import { call, Resource } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 
@@ -164,7 +165,12 @@ const isOptionSelectable = (option: TagOption) => {
 
 const save = async (e: TagOption[] | string[]) => {
   try {
-    selectedTags.value = e.map((x) => (typeof x === 'object' ? x : { label: x }))
+    // the server stores tags comma-separated, so a pasted "a,b" has to become two tags
+    const labels = e
+      .flatMap((x) => (typeof x === 'object' ? x.label : x).split(','))
+      .map((label) => label.trim())
+      .filter(Boolean)
+    selectedTags.value = uniq(labels).map((label) => ({ label }))
     const allAvailableTags = new Set([...allTags, ...unref(availableTags).map((t) => t.label)])
 
     availableTags.value = diff(

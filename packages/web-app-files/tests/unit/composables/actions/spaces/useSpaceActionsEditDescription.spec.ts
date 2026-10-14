@@ -47,6 +47,20 @@ describe('editDescription', () => {
         }
       })
     })
+    it('should only send the description, not the cached space name', () => {
+      getWrapper({
+        setup: async ({ editDescriptionSpace }, { clientService }) => {
+          clientService.graphAuthenticated.drives.updateDrive.mockResolvedValue(
+            mock<SpaceResource>()
+          )
+          await editDescriptionSpace(mock<SpaceResource>({ id: '1', name: 'old' }), 'new')
+
+          expect(clientService.graphAuthenticated.drives.updateDrive).toHaveBeenCalledWith('1', {
+            description: 'new'
+          })
+        }
+      })
+    })
 
     it('should show message on error', () => {
       vi.spyOn(console, 'error').mockImplementation(() => undefined)

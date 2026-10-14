@@ -47,6 +47,13 @@ describe('RemoveFromGroupsModal', () => {
       const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
       expect(input.props('groupOptions').length).toBe(2)
     })
+    it('lists no groups if the memberships of the user are not loaded', () => {
+      const users = [{ id: '1' } as User]
+      const groups = [mock<Group>(), mock<Group>()]
+      const { wrapper } = getWrapper({ users, groups })
+      const input = wrapper.findComponent<typeof GroupSelect>('group-select-stub')
+      expect(input.props('groupOptions').length).toBe(0)
+    })
   })
 
   describe('onConfirm', () => {

@@ -10,7 +10,8 @@ describe('usePagination', () => {
     it.each([
       { currentPage: 1, itemsPerPage: 100, expected: [1, 2, 3, 4, 5, 6] },
       { currentPage: 1, itemsPerPage: 2, expected: [1, 2] },
-      { currentPage: 2, itemsPerPage: 2, expected: [3, 4] }
+      { currentPage: 2, itemsPerPage: 2, expected: [3, 4] },
+      { currentPage: 9, itemsPerPage: 4, expected: [5, 6] }
     ])('returns proper paginated items', ({ currentPage, itemsPerPage, expected }) => {
       getWrapper({
         setup: ({ items }) => {
@@ -19,6 +20,21 @@ describe('usePagination', () => {
         items,
         currentPage,
         itemsPerPage
+      })
+    })
+  })
+  describe('computed page', () => {
+    it.each([
+      { currentPage: 2, expected: 2 },
+      { currentPage: 9, expected: 2 }
+    ])('clamps page $currentPage to $expected', ({ currentPage, expected }) => {
+      getWrapper({
+        setup: ({ page }) => {
+          expect(unref(page)).toBe(expected)
+        },
+        items: [1, 2, 3, 4, 5, 6],
+        currentPage,
+        itemsPerPage: 4
       })
     })
   })

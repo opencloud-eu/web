@@ -127,18 +127,16 @@ export const useFileActionsRename = () => {
     }
 
     const areFileExtensionsShown = resourcesStore.areFileExtensionsShown
+    const isExtensionHidden =
+      !areFileExtensionsShown && !resources[0].isFolder && !!resources[0].extension
+    function withExtension(name: string) {
+      return isExtensionHidden ? `${name}.${resources[0].extension}` : name
+    }
     const onConfirm = async (newName: string) => {
-      if (!areFileExtensionsShown) {
-        newName = `${newName}.${resources[0].extension}`
-      }
-
-      await renameResource(space, resources[0], newName)
+      await renameResource(space, resources[0], withExtension(newName))
     }
     const checkName = (newName: string, setError: (error: string) => void) => {
-      if (!areFileExtensionsShown) {
-        newName = `${newName}.${resources[0].extension}`
-      }
-
+      newName = withExtension(newName)
       const { isValid, error } = isFileNameValid(resources[0], newName, parentResources)
       setError(isValid ? null : error)
     }

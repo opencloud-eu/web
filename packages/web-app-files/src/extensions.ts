@@ -51,11 +51,12 @@ export const extensions = (appInfo: ApplicationInformation) => {
   const folderViewExtensions = useFolderViews()
   const sideBarPanelExtensions = useSideBarPanels()
   const vaultIndicator = useVaultIndicator()
+  const searchProvider = new SDKSearch(capabilityStore, searchFunction, configStore)
 
   return computed<Extension[]>(() => [
     ...fileActionExtensions,
     ...spaceActionExtensions,
-    ...uploadActionExtensions,
+    ...unref(uploadActionExtensions),
     ...folderViewExtensions,
     ...sideBarPanelExtensions,
     vaultIndicator,
@@ -63,7 +64,7 @@ export const extensions = (appInfo: ApplicationInformation) => {
       id: 'com.github.opencloud-eu.web.files.search',
       extensionPointIds: ['app.search.provider'],
       type: 'search',
-      searchProvider: new SDKSearch(capabilityStore, searchFunction, configStore)
+      searchProvider
     },
     {
       id: `com.github.opencloud-eu.web.${APPID}.floating-action-button`,

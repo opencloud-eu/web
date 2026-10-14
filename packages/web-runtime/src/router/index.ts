@@ -5,6 +5,7 @@ import NotFoundPage from '../pages/notFound.vue'
 import OidcCallbackPage from '../pages/oidcCallback.vue'
 import ResolvePublicLinkPage from '../pages/resolvePublicLink.vue'
 import ResolvePrivateLinkPage from '../pages/resolvePrivateLink.vue'
+import ResolveGuestLinkPage from '../pages/resolveGuestLink.vue'
 import { setupRouterHooks } from './setupRouter'
 import { setupAuthGuard } from './setupAuthGuard'
 import { patchRouter } from './patchCleanPath'
@@ -13,9 +14,9 @@ import {
   createRouter,
   createWebHashHistory,
   createWebHistory,
-  LocationQuery,
   RouteLocationNamedRaw,
-  RouteRecordRaw
+  RouteRecordRaw,
+  RouterOptions
 } from 'vue-router'
 import qs from 'qs'
 import AccountCalendar from '../pages/account/accountCalendar.vue'
@@ -97,6 +98,12 @@ const routes: readonly RouteRecordRaw[] = [
     meta: { title: $gettext('OCM link'), authContext: 'anonymous' }
   },
   {
+    path: '/g/:token',
+    name: routeNames.resolveGuestLink,
+    component: ResolveGuestLinkPage,
+    meta: { title: $gettext('Guest invitation'), authContext: 'anonymous' }
+  },
+  {
     path: '/access-denied',
     name: routeNames.accessDenied,
     component: AccessDeniedPage,
@@ -158,7 +165,7 @@ export const router = patchRouter(
     parseQuery(query) {
       return qs.parse(query, {
         allowDots: true
-      }) as LocationQuery
+      }) as ReturnType<RouterOptions['parseQuery']>
     },
     stringifyQuery(obj) {
       return qs.stringify(obj, {

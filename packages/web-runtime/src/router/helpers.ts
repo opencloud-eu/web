@@ -3,6 +3,7 @@ import {
   AuthContext,
   authContextValues,
   contextQueryToFileContextProps,
+  locationGuestLink,
   queryItemAsString,
   WebRouteMeta
 } from '@opencloud-eu/web-pkg'
@@ -77,6 +78,23 @@ export const isPublicLinkContextRequired = (router: Router, to: RouteLocation): 
     contextRoute &&
     getRouteMeta({ meta: contextRoute.meta } as RouteLocation).authContext === 'publicLink'
   )
+}
+
+/**
+ * Checks if the `to` route or the route it was reached from (i.e. the `contextRoute`) is a guest link route.
+ *
+ * @param router {Router}
+ * @param to {Route}
+ * @returns {boolean}
+ */
+export const isGuestLinkContextRequired = (router: Router, to: RouteLocation): boolean => {
+  if (to.name === locationGuestLink.name) {
+    return true
+  }
+  if (getRouteMeta(to).authContext !== 'hybrid') {
+    return false
+  }
+  return getContextRoute(router, to)?.name === locationGuestLink.name
 }
 
 /**

@@ -2,7 +2,7 @@ import ListItem from '../../../../../../src/components/SideBar/Shares/Links/List
 import { LinkShare, ShareRole, Resource } from '@opencloud-eu/web-client'
 import { defaultPlugins, shallowMount, defaultComponentMocks } from '@opencloud-eu/web-test-helpers'
 import { mock } from 'vitest-mock-extended'
-import { useLinkTypes, LinkRoleDropdown } from '@opencloud-eu/web-pkg'
+import { useLinkTypes, LinkRoleDropdown, useModals } from '@opencloud-eu/web-pkg'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
 
 vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
@@ -32,6 +32,19 @@ describe('ListItem component', () => {
 
       expect(wrapper.find('.link-current-role').exists()).toBeTruthy()
     })
+    it('keeps the current type when the password dialog for a new type gets cancelled', async () => {
+      const linkShare = mock<LinkShare>({ type: SharingLinkType.View, hasPassword: false })
+      const { wrapper } = getWrapper({ linkShare, isPasswordEnforced: true })
+      const drop = wrapper.findComponent<typeof LinkRoleDropdown>('link-role-dropdown-stub')
+
+      drop.vm.$emit('update:modelValue', SharingLinkType.Edit)
+      await wrapper.vm.$nextTick()
+
+      const { dispatchModal } = useModals()
+      expect(dispatchModal).toHaveBeenCalled()
+      expect(wrapper.emitted('updateLink')).toBeUndefined()
+      expect(drop.props('modelValue')).toEqual(SharingLinkType.View)
+    })
   })
   describe('additional information icons', () => {
     it('renders an icon if the link has a password', () => {
@@ -56,16 +69,19 @@ describe('ListItem component', () => {
 function getWrapper({
   linkShare = exampleLink,
   isModifiable = true,
-  availableLinkTypes = [SharingLinkType.View]
+  availableLinkTypes = [SharingLinkType.View],
+  isPasswordEnforced = false
 }: {
   linkShare?: LinkShare
   isModifiable?: boolean
   availableLinkTypes?: SharingLinkType[]
+  isPasswordEnforced?: boolean
 } = {}) {
   vi.mocked(useLinkTypes).mockReturnValue(
     mock<ReturnType<typeof useLinkTypes>>({
       getAvailableLinkTypes: () => availableLinkTypes,
-      getLinkRoleByType: () => mock<ShareRole>({ displayName: '', description: '' })
+      getLinkRoleByType: () => mock<ShareRole>({ displayName: '', description: '' }),
+      isPasswordEnforcedForLinkType: () => isPasswordEnforced
     })
   )
 

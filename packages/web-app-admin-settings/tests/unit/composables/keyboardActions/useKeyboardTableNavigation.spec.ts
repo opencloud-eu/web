@@ -1,0 +1,73 @@
+import { ref } from 'vue'
+import { mock } from 'vitest-mock-extended'
+import { Key, KeyboardActions, Modifier } from '@opencloud-eu/web-pkg'
+import { Item } from '@opencloud-eu/web-client'
+import { getComposableWrapper } from '@opencloud-eu/web-test-helpers'
+import { useKeyboardTableNavigation } from '../../../../src/composables/keyboardActions'
+
+vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
+  ...(await importOriginal<any>()),
+  useScrollTo: vi.fn(() => ({ scrollToResource: vi.fn() })),
+  focusCheckbox: vi.fn()
+}))
+
+const items: Item[] = [{ id: '1' }, { id: '2' }, { id: '3' }] as Item[]
+
+describe('useKeyboardTableNavigation', () => {
+  describe('space', () => {
+    it('does not change the selection without a last selected row', () => {
+      const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: null })
+      triggerKey(Key.Space)
+      expect(selectedRows.value).toEqual([])
+    })
+    it('toggles the last selected row', () => {
+      const { selectedRows, triggerKey } = getWrapper({ lastSelectedRowId: '2' })
+      triggerKey(Key.Space)
+      expect(selectedRows.value.map(({ id }) => id)).toEqual(['2'])
+    })
+  })
+  describe('shift + arrow', () => {
+    it('does not add already selected rows again', () => {
+      const { selectedRows, triggerKey } = getWrapper({
+        selectedRows: [...items],
+        lastSelectedRowId: '3'
+      })
+      triggerKey(Key.ArrowUp, Modifier.Shift)
+      expect(selectedRows.value.map(({ id }) => id)).toEqual(['1', '2', '3'])
+    })
+    it('adds the next row to the selection', () => {
+      const { selectedRows, triggerKey } = getWrapper({
+        selectedRows: [items[0]],
+        lastSelectedRowId: '1'
+      })
+      triggerKey(Key.ArrowDown, Modifier.Shift)
+      expect(selectedRows.value.map(({ id }) => id)).toEqual(['1', '2'])
+    })
+  })
+})
+
+function getWrapper({
+  selectedRows = [],
+  lastSelectedRowId
+}: {
+  selectedRows?: Item[]
+  lastSelectedRowId: string | null
+}) {
+  const selectedRowsRef = ref<Item[]>(selectedRows)
+  const callbacks: Record<string, (event?: KeyboardEvent) => void> = {}
+  const keyActions = mock<KeyboardActions>({
+    selectionCursor: ref(0),
+    bindKeyAction: (keys, callback) => {
+      callbacks[`${keys.modifier || ''}${keys.primary}`] = callback
+      return ''
+    }
+  })
+  const wrapper = getComposableWrapper(() => {
+    useKeyboardTableNavigation(keyActions, ref(items), selectedRowsRef, ref(lastSelectedRowId))
+  })
+  return {
+    wrapper,
+    selectedRows: selectedRowsRef,
+    triggerKey: (primary: Key, modifier?: Modifier) => callbacks[`${modifier || ''}${primary}`]()
+  }
+}

@@ -10,7 +10,7 @@
         <template #actions>
           <oc-button
             v-if="emptyTrashBinAction.isVisible({ resources: [space] })"
-            :disabled="paginatedResources.length === 0"
+            :disabled="isEmpty"
             :action-options="{ resources: [space] }"
             :class="emptyTrashBinAction.class"
             size="medium"
@@ -143,7 +143,7 @@ const keyActions = useKeyboardActions()
 useKeyboardFileNavigation(keyActions, paginatedResources, viewMode)
 useKeyboardFileMouseActions(keyActions, viewMode)
 
-const isEmpty = computed(() => unref(resourcesViewDefaults.paginatedResources).length < 1)
+const isEmpty = computed(() => unref(resourcesViewDefaults.storeItems).length < 1)
 
 const { actions: emptyTrashBinActions } = useFileActionsEmptyTrashBin()
 const emptyTrashBinAction = computed(() => unref(emptyTrashBinActions)[0])

@@ -454,9 +454,12 @@ export const openFileViaContextMenu = async ({
   fileViewer: string
 }): Promise<void> => {
   await page.locator(util.format(resourceNameSelector, resource)).click({ button: 'right' })
-  await page.locator(openWithButton).hover()
+
+  const openWith = page.locator(openWithButton)
+  await openWith.hover()
+
   const editorItem = page.locator(util.format(openWithAction, fileViewer))
-  await expect(editorItem).toBeVisible()
+  await editorItem.hover()
   await editorItem.click()
 }
 

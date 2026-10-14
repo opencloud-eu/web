@@ -65,6 +65,7 @@
     "@tiptap/extension-hard-break": "catalog:tiptap",
     "@tiptap/extension-image": "catalog:tiptap",
     "@tiptap/extension-link": "catalog:tiptap",
+    "@tiptap/extension-list": "catalog:tiptap",
     "@tiptap/extension-node-range": "catalog:tiptap",
     "@tiptap/extension-paragraph": "catalog:tiptap",
     "@tiptap/extension-placeholder": "catalog:tiptap",

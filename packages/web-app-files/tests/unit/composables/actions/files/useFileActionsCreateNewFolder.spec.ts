@@ -1,5 +1,5 @@
 import { mock } from 'vitest-mock-extended'
-import { nextTick, ref, unref } from 'vue'
+import { nextTick, unref } from 'vue'
 import {
   FolderResource,
   Resource,
@@ -42,7 +42,7 @@ describe('useFileActionsCreateNewFolder', () => {
       getWrapper({
         space,
         setup: async ({ addNewFolder }) => {
-          await addNewFolder('myfolder')
+          await addNewFolder(space, 'myfolder')
           await nextTick()
 
           const { upsertResource } = useResourcesStore()
@@ -61,7 +61,7 @@ describe('useFileActionsCreateNewFolder', () => {
         resolveCreateFolder: false,
         space,
         setup: async ({ addNewFolder }) => {
-          await addNewFolder('myfolder')
+          await addNewFolder(space, 'myfolder')
           await nextTick()
           const { showErrorMessage } = useMessages()
           expect(showErrorMessage).toHaveBeenCalledWith(
@@ -79,7 +79,7 @@ describe('useFileActionsCreateNewFolder', () => {
       getWrapper({
         space,
         setup: async ({ addNewFolder }) => {
-          await addNewFolder('myfolder')
+          await addNewFolder(space, 'myfolder')
 
           const { upsertResource } = useResourcesStore()
           expect(upsertResource).toHaveBeenCalledWith(
@@ -95,7 +95,7 @@ describe('useFileActionsCreateNewFolder', () => {
       getWrapper({
         space,
         setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder('myfolder', { encrypt: true, finalizeVault })
+          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault })
           await nextTick()
 
           expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
@@ -126,7 +126,7 @@ describe('useFileActionsCreateNewFolder', () => {
           }
         },
         setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder('myfolder', { encrypt: true, finalizeVault: vi.fn() })
+          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault: vi.fn() })
           await nextTick()
 
           expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
@@ -142,7 +142,7 @@ describe('useFileActionsCreateNewFolder', () => {
         space,
         areFileExtensionsShown: false,
         setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder('myfolder', { encrypt: true, finalizeVault: vi.fn() })
+          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault: vi.fn() })
           await nextTick()
 
           expect(mocks.$clientService.webdav.createFolder).toHaveBeenCalledWith(space, {
@@ -163,7 +163,7 @@ describe('useFileActionsCreateNewFolder', () => {
       getWrapper({
         space,
         setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder('myfolder', { encrypt: true, finalizeVault })
+          await addNewFolder(space, 'myfolder', { encrypt: true, finalizeVault })
           await nextTick()
 
           // the folder exists, so it must not be reported as a failed creation
@@ -185,7 +185,7 @@ describe('useFileActionsCreateNewFolder', () => {
       getWrapper({
         space,
         setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder('myfolder')
+          await addNewFolder(space, 'myfolder')
           await nextTick()
 
           expect(mocks.$router.push).not.toHaveBeenCalled()
@@ -200,7 +200,7 @@ describe('useFileActionsCreateNewFolder', () => {
         vaultCreator: null,
         space,
         setup: async ({ addNewFolder }, mocks) => {
-          await addNewFolder('myfolder', { encrypt: true })
+          await addNewFolder(space, 'myfolder', { encrypt: true })
 
           expect(mocks.$clientService.webdav.createFolder).not.toHaveBeenCalled()
           const { showErrorMessage } = useMessages()
@@ -220,7 +220,7 @@ describe('useFileActionsCreateNewFolder', () => {
         space,
         setup: ({ actions }) => {
           const { dispatchModal } = useModals()
-          unref(actions)[0].handler()
+          unref(actions)[0].handler({ space })
 
           expect(dispatchModal).toHaveBeenCalledWith(
             expect.objectContaining({ customComponent: expect.anything() })
@@ -235,7 +235,7 @@ describe('useFileActionsCreateNewFolder', () => {
         space,
         setup: ({ actions }) => {
           const { dispatchModal } = useModals()
-          unref(actions)[0].handler()
+          unref(actions)[0].handler({ space })
 
           const { customComponentAttrs } = vi.mocked(dispatchModal).mock.calls[0][0]
           expect(customComponentAttrs().vaultCreation).toBe(vaultCreation)
@@ -250,7 +250,7 @@ describe('useFileActionsCreateNewFolder', () => {
         currentFolder: mock<Resource>({ id: '1', path: '/my.vault', isInVault: true }),
         setup: ({ actions }) => {
           const { dispatchModal } = useModals()
-          unref(actions)[0].handler()
+          unref(actions)[0].handler({ space })
 
           const { customComponentAttrs } = vi.mocked(dispatchModal).mock.calls[0][0]
           expect(customComponentAttrs().vaultCreation).toBeUndefined()
@@ -305,7 +305,7 @@ function getWrapper({
   return {
     wrapper: getComposableWrapper(
       () => {
-        const instance = useFileActionsCreateNewFolder({ space: ref(space) })
+        const instance = useFileActionsCreateNewFolder()
         setup(instance, mocks)
       },
       {

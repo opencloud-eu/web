@@ -11,4 +11,5 @@ export interface GraphRequestOptions {
   params?: Record<string, string>
   signal?: AbortSignal
   responseType?: ResponseType
+  withCredentials?: boolean
 }

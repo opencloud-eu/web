@@ -48,9 +48,7 @@ const actionOptions = computed(() => ({
   space: unref(space),
   resources: [currentFolder.value]
 }))
-const { actions: createNewFolderAction } = useFileActionsCreateNewFolder({
-  space: computed(() => space)
-})
+const { actions: createNewFolderAction } = useFileActionsCreateNewFolder()
 const { actions: showDetailsAction } = useFileActionsShowDetails()
 const { actions: pasteAction } = useFileActionsPaste()
 

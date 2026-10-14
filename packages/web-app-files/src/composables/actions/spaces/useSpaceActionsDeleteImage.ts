@@ -26,7 +26,6 @@ export const useSpaceActionsDeleteImage = () => {
       })
 
       await graphAuthenticated.drives.updateDrive(space.id, {
-        name: space.name,
         special: [{ specialFolder: { name: 'image' }, id: null }]
       })
 

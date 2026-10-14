@@ -62,9 +62,21 @@ describe('Details SideBar Panel', () => {
     })
     expect(wrapper.find(selectors.spaceMembers).exists()).toBeFalsy()
   })
+  it('renders the size if the space is the current folder', () => {
+    const { wrapper } = createWrapper()
+    expect(wrapper.findAll('dt').map((dt) => dt.text())).toContain('Size')
+  })
+  it('does not render the size if the space is not the current folder', () => {
+    const { wrapper } = createWrapper({ currentFolder: null })
+    expect(wrapper.findAll('dt').map((dt) => dt.text())).not.toContain('Size')
+  })
 })
 
-function createWrapper({ spaceResource = spaceMock, props = {} } = {}) {
+function createWrapper({
+  spaceResource = spaceMock,
+  props = {},
+  currentFolder = spaceResource as Resource
+} = {}) {
   const mocks = {
     ...defaultComponentMocks({
       currentRoute: mock<RouteLocation>({ name: 'files-spaces-generic' })
@@ -81,7 +93,10 @@ function createWrapper({ spaceResource = spaceMock, props = {} } = {}) {
               stubActions: false,
               userState: { user: { id: '1', onPremisesSamAccountName: 'marie' } as User },
               sharesState: { collaboratorShares: [spaceShare] },
-              resourcesStore: { resources: [mock<Resource>({ name: 'file1', type: 'file' })] }
+              resourcesStore: {
+                currentFolder,
+                resources: [mock<Resource>({ name: 'file1', type: 'file' })]
+              }
             }
           })
         ],

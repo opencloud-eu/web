@@ -11,6 +11,8 @@ import { Group } from '@opencloud-eu/web-client/graph/generated'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { OcCheckbox, OcTable } from '@opencloud-eu/design-system/components'
 import { RouteLocationNormalizedLoaded } from 'vue-router'
+import { nextTick } from 'vue'
+import { enableAutoUnmount } from '@vue/test-utils'
 
 const getGroupMocks = () =>
   [
@@ -22,6 +24,9 @@ vi.mock('@opencloud-eu/web-pkg', async (importOriginal) => ({
   ...(await importOriginal<any>()),
   queryItemAsString: vi.fn()
 }))
+
+// unmount after each test, otherwise stale lists react to the global click events and key presses
+enableAutoUnmount(afterEach)
 
 describe('GroupsList', () => {
   describe('sorting', () => {
@@ -72,6 +77,27 @@ describe('GroupsList', () => {
     })
   })
 
+  describe('pagination', () => {
+    it('shows the last page when the current page runs out of filtered groups', async () => {
+      const { wrapper } = getWrapper({
+        groups: [
+          { id: '1', displayName: 'admins' },
+          { id: '2', displayName: 'admins2' },
+          { id: '3', displayName: 'users' }
+        ] as Group[],
+        filterTerm: 'admins',
+        query: { page: '2', 'items-per-page': '1' }
+      })
+      expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['admins2'])
+
+      const groupSettingsStore = useGroupSettingsStore()
+      groupSettingsStore.groups = groupSettingsStore.groups.filter((g) => g.id !== '2')
+      await nextTick()
+
+      expect(getTableData(wrapper).map((g) => g.displayName)).toEqual(['admins'])
+    })
+  })
+
   it('should show the group details on details button click', async () => {
     const groups = getGroupMocks()
     const { wrapper } = getWrapper({ mountType: mount, groups })
@@ -108,7 +134,7 @@ describe('GroupsList', () => {
     it('selects a group via its checkbox', () => {
       const groups = getGroupMocks()
       const { wrapper } = getWrapper({ mountType: mount, groups: [groups[0]] })
-      getCheckboxes(wrapper).at(1).vm.$emit('update:modelValue', true)
+      getCheckboxes(wrapper).at(1).vm.$emit('click', checkboxClickEvent())
       const { addSelectedGroup } = useGroupSettingsStore()
       expect(addSelectedGroup).toHaveBeenCalledWith(groups[0])
     })
@@ -119,12 +145,52 @@ describe('GroupsList', () => {
         groups: [groups[0]],
         selectedGroups: [groups[0]]
       })
-      getCheckboxes(wrapper).at(1).vm.$emit('update:modelValue', false)
+      getCheckboxes(wrapper).at(1).vm.$emit('click', checkboxClickEvent())
       const { setSelectedGroups } = useGroupSettingsStore()
       expect(setSelectedGroups).toHaveBeenCalledWith([])
     })
   })
+
+  describe('row checkbox click', () => {
+    const groups = [{ id: '1' }, { id: '2' }, { id: '3' }] as Group[]
+
+    it('toggles the group on a plain click', async () => {
+      const { wrapper } = getWrapper({ groups, selectedGroups: [groups[1]], realCheckboxes: true })
+      await getCheckboxInput(wrapper, groups[0]).trigger('click')
+      await getCheckboxInput(wrapper, groups[1]).trigger('click')
+      expect(getSelectedIds()).toEqual(['1'])
+      expect(getCheckboxInput(wrapper, groups[0]).element.checked).toBe(true)
+      expect(getCheckboxInput(wrapper, groups[1]).element.checked).toBe(false)
+    })
+    it('selects a range on shift click and keeps it contiguous on shift + arrow', async () => {
+      const { wrapper } = getWrapper({ groups, selectedGroups: [groups[0]], realCheckboxes: true })
+      await getCheckboxInput(wrapper, groups[2]).trigger('click', { shiftKey: true })
+      expect(getSelectedIds()).toEqual(['1', '2', '3'])
+      expect(getCheckboxInput(wrapper, groups[2]).element.checked).toBe(true)
+
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', shiftKey: true }))
+      expect(getSelectedIds()).toEqual(['1', '2'])
+    })
+  })
 })
+
+function getSelectedIds() {
+  return useGroupSettingsStore()
+    .selectedGroups.map(({ id }) => id)
+    .sort()
+}
+
+function getCheckboxInput(wrapper: ReturnType<typeof getWrapper>['wrapper'], group: Group) {
+  return wrapper.find<HTMLInputElement>(`[data-item-id="${group.id}"] input[type="checkbox"]`)
+}
+
+function checkboxClickEvent() {
+  const checkbox = document.createElement('input')
+  checkbox.type = 'checkbox'
+  const event = new MouseEvent('click')
+  checkbox.dispatchEvent(event)
+  return event
+}
 
 function getTableData(wrapper: ReturnType<typeof getWrapper>['wrapper']) {
   return wrapper.findComponent(OcTable).props('data') as Group[]
@@ -139,13 +205,15 @@ function getWrapper({
   groups = [],
   selectedGroups = [],
   query = {},
-  filterTerm = ''
+  filterTerm = '',
+  realCheckboxes = false
 }: {
   mountType?: typeof mount
   groups?: Group[]
   selectedGroups?: Group[]
   query?: Record<string, string>
   filterTerm?: string
+  realCheckboxes?: boolean
 } = {}) {
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '1')
   vi.mocked(queryItemAsString).mockImplementationOnce(() => '100')
@@ -155,12 +223,14 @@ function getWrapper({
 
   return {
     mocks,
-    wrapper: mountType(GroupsList, {
+    wrapper: (realCheckboxes ? mount : mountType)(GroupsList, {
       props: { filterTerm },
+      ...(realCheckboxes && { attachTo: document.body }),
       global: {
         plugins: [
           ...defaultPlugins({
             piniaOptions: {
+              stubActions: !realCheckboxes,
               groupSettingsStore: { groups, selectedGroups }
             }
           })
@@ -168,7 +238,7 @@ function getWrapper({
         mocks,
         provide: mocks,
         stubs: {
-          OcCheckbox: true
+          OcCheckbox: !realCheckboxes
         }
       }
     })

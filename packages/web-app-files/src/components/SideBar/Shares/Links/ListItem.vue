@@ -61,7 +61,7 @@ import {
   useModals
 } from '@opencloud-eu/web-pkg'
 import { LinkShare, Resource, SpaceResource } from '@opencloud-eu/web-client'
-import { computed, inject, markRaw, Ref, ref, unref } from 'vue'
+import { computed, inject, markRaw, Ref, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import SetLinkPasswordModal from '../../../Modals/SetLinkPasswordModal.vue'
 import { SharingLinkType } from '@opencloud-eu/web-client/graph/generated'
@@ -102,14 +102,13 @@ const { getAvailableLinkTypes, getLinkRoleByType, isPasswordEnforcedForLinkType 
 const space = inject<Ref<SpaceResource>>('space')
 const resource = inject<Ref<Resource>>('resource')
 
-const currentLinkType = ref<SharingLinkType>(linkShare.type)
+const currentLinkType = computed(() => linkShare.type)
 
 const canDeleteReadOnlyPublicLinkPassword = computed(() =>
   can('delete-all', 'ReadOnlyPublicLinkPassword')
 )
 
 const updateSelectedType = (type: SharingLinkType) => {
-  currentLinkType.value = type
   const needsNoPw = unref(canDeleteReadOnlyPublicLinkPassword) && type === SharingLinkType.View
 
   if (!linkShare.hasPassword && !needsNoPw && isPasswordEnforcedForLinkType(type)) {

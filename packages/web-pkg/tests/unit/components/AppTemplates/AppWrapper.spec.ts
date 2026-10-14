@@ -16,7 +16,11 @@ import {
 import AppWrapper from '../../../../src/components/AppTemplates/AppWrapper.vue'
 import type { YjsSession, YjsStatus } from '../../../../src/composables/yjs'
 import type { FileContext } from '../../../../src/composables/appDefaults'
-import { useMessages, useModals } from '../../../../src/composables/piniaStores'
+import {
+  useExtensionRegistry,
+  useMessages,
+  useModals
+} from '../../../../src/composables/piniaStores'
 
 const { useAppDefaultsSpy, useYjsSessionSpy } = vi.hoisted(() => ({
   useAppDefaultsSpy: vi.fn(),
@@ -177,6 +181,18 @@ function setup({
     sseListeners.set(topic, listener)
   }) as any)
 
+  const piniaPlugins = defaultPlugins({
+    piniaOptions: {
+      appsState: {
+        apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
+      },
+      authState: { accessToken: sse ? 'token' : undefined },
+      capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
+    }
+  })
+  const unregisterAppBarExtension = vi.fn()
+  vi.mocked(useExtensionRegistry().registerExtensions).mockReturnValue(unregisterAppBarExtension)
+
   let slotProps: any
   const wrapper = mount(AppWrapper, {
     slots: {
@@ -192,15 +208,7 @@ function setup({
     },
     global: {
       plugins: [
-        ...defaultPlugins({
-          piniaOptions: {
-            appsState: {
-              apps: { 'test-app': { id: 'test-app', name: 'Test App', meta: { fileSizeLimit } } }
-            },
-            authState: { accessToken: sse ? 'token' : undefined },
-            capabilityState: { capabilities: { core: { 'support-sse': sse } as any } }
-          }
-        }),
+        ...piniaPlugins,
         createRouter({
           history: createMemoryHistory(),
           routes: [{ path: '/:all(.*)', component: wrappedComponent }]
@@ -222,6 +230,7 @@ function setup({
     putFileContents,
     closeApp,
     getFileContents,
+    unregisterAppBarExtension,
     wasWrittenByRoom,
     beginSave,
     serializeMerged,
@@ -295,6 +304,18 @@ describe('AppWrapper — ESC close behavior', () => {
     } finally {
       document.removeEventListener('keydown', documentKeydownSpy)
     }
+  })
+})
+
+describe('AppWrapper — top bar extension', () => {
+  it('unregisters the top bar extension on unmount', async () => {
+    const s = setup({ yjsEnabled: false })
+    await nextTick()
+    await s.resolveResource(FILE_A)
+
+    s.wrapper.unmount()
+
+    expect(s.unregisterAppBarExtension).toHaveBeenCalledTimes(1)
   })
 })
 
@@ -398,6 +419,7 @@ describe('AppWrapper — changes still pending in the session', () => {
     await s.resolveResource(FILE_A)
     await s.resolveContent('content of a')
     expect(await leaveRoute()).toBe(true)
+    expect(s.unregisterAppBarExtension).toHaveBeenCalled()
   })
 })
 

@@ -1,11 +1,13 @@
 import { computed, ref, unref } from 'vue'
 import { debounce } from 'lodash-es'
+import * as EmailValidator from 'email-validator'
 import { useTask } from 'vue-concurrency'
 import { call, CollaboratorAutoCompleteItem, ShareTypes } from '@opencloud-eu/web-client'
-import { useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
+import { useAbility, useCapabilityStore, useClientService } from '@opencloud-eu/web-pkg'
 
 export const useCollaboratorSearch = () => {
   const clientService = useClientService()
+  const { can } = useAbility()
 
   /**
    * Users and groups matching `query`, each tagged with the share type it would
@@ -17,7 +19,7 @@ export const useCollaboratorSearch = () => {
     { signal, external = false }: { signal?: AbortSignal; external?: boolean } = {}
   ): Promise<CollaboratorAutoCompleteItem[]> {
     const client = clientService.graphAuthenticated
-    const search = `"${query}"`
+    const search = `"${query.trim()}"`
 
     const userData = await client.users.listUsers(
       {
@@ -40,7 +42,38 @@ export const useCollaboratorSearch = () => {
     ] as CollaboratorAutoCompleteItem[]
   }
 
-  return { searchCollaborators }
+  /**
+   * A guest invite for `query` if it is a mail address that doesn't belong to
+   * one of the `collaborators` found for it.
+   */
+  function getGuestCandidates(
+    query: string,
+    collaborators: CollaboratorAutoCompleteItem[]
+  ): CollaboratorAutoCompleteItem[] {
+    const trimmedQuery = (query || '').trim()
+    if (
+      !can('create-all', 'GuestInvite') ||
+      !EmailValidator.validate(trimmedQuery) ||
+      emailBelongsToAccount(trimmedQuery, collaborators)
+    ) {
+      return []
+    }
+    return [{ id: trimmedQuery, displayName: trimmedQuery, shareType: ShareTypes.guest.value }]
+  }
+
+  function emailBelongsToAccount(email: string, collaborators: CollaboratorAutoCompleteItem[]) {
+    const users = collaborators.filter(({ shareType }) => shareType === ShareTypes.user.value)
+    if (users.length === 1 && !users[0].mail) {
+      return true
+    }
+    return collaborators.some((c) =>
+      [c.mail?.toLowerCase(), c.onPremisesSamAccountName?.toLowerCase()].includes(
+        email.toLowerCase()
+      )
+    )
+  }
+
+  return { searchCollaborators, getGuestCandidates }
 }
 
 /**
@@ -58,7 +91,11 @@ export const useCollaboratorAutocomplete = (
   const minSearchLength = computed(() => capabilityStore.sharingSearchMinLength)
 
   const fetchRecipientsTask = useTask(function* (signal, query: string) {
-    autocompleteResults.value = yield* call(fetchResults(query, signal))
+    try {
+      autocompleteResults.value = yield* call(fetchResults(query, signal))
+    } catch (e) {
+      console.error(e)
+    }
     searchInProgress.value = false
   }).restartable()
 
@@ -70,7 +107,7 @@ export const useCollaboratorAutocomplete = (
     autocompleteResults.value = []
     searchQuery.value = query
 
-    if (query.length < unref(minSearchLength)) {
+    if (query.trim().length < unref(minSearchLength)) {
       searchInProgress.value = false
       return
     }
@@ -85,12 +122,13 @@ export const useCollaboratorAutocomplete = (
    * not by the text typed here.
    */
   function filterRecipients(recipients: CollaboratorAutoCompleteItem[], query: string) {
-    if (!(query || '').trim()) {
+    query = (query || '').trim()
+    if (!query) {
       return recipients
     }
 
     // Allow advanced queries
-    query = query.split(':')[1] || query
+    query = query.split(':')[1]?.trim() || query
 
     return recipients.filter(
       (recipient) =>

@@ -44,7 +44,6 @@
         :option="item"
         :label="getSelectSpaceLabel(item)"
         :label-hidden="true"
-        @update:model-value="selectSpace(item)"
         @click.stop="fileClicked([item, $event])"
       />
     </template>
@@ -263,16 +262,6 @@ onBeforeUnmount(() => {
   eventBus.unsubscribe('app.files.spaces.uploaded-image', uploadedImageToken)
 })
 
-// e.g. after deleting all spaces of the last page: show the new last page instead of an empty one
-watch(totalPages, async (pageCount) => {
-  if (pageCount > 0 && unref(currentPage) > pageCount) {
-    await router.push({
-      ...unref(route),
-      query: { ...unref(route).query, page: String(pageCount) }
-    })
-  }
-})
-
 // the selection is kept across pages, so only the spaces of the current page count
 const allSpacesSelected = computed(
   () => unref(paginatedItems).length > 0 && unref(paginatedItems).every(isSpaceSelected)
@@ -412,23 +401,27 @@ watch(
 )
 
 function fileClicked([resource, eventData]: [SpaceResource, MouseEvent | KeyboardEvent]) {
-  const target = eventData?.target as HTMLElement
+  const target = eventData?.target as HTMLInputElement
   const isCheckboxClicked = target?.getAttribute('type') === 'checkbox'
   const contextActionClicked = target?.closest('div')?.id === 'oc-files-context-menu'
   if (contextActionClicked) {
     return
   }
+  if (isCheckboxClicked && (eventData?.metaKey || eventData?.shiftKey)) {
+    // revert the native toggle, the modifier click handles the selection
+    target.checked = isSpaceSelected(resource)
+  }
+
   if (eventData?.metaKey) {
     return eventBus.publish('app.admin-settings.list.clicked.meta', resource)
   }
   if (eventData?.shiftKey) {
     return eventBus.publish('app.admin-settings.list.clicked.shift', {
-      resource,
-      skipTargetSelection: isCheckboxClicked
+      resource
     })
   }
   if (isCheckboxClicked) {
-    return
+    return selectSpace(resource)
   }
 
   unselectAllSpaces()

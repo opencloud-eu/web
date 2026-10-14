@@ -105,6 +105,7 @@ export const ListFilesFactory = (
               id: space.id,
               driveAlias: space.driveAlias,
               webDavPath: space.webDavPath,
+              serverUrl: options.baseUrl,
               publicLinkType: publicLinkType
             }),
             children: children.map((c) => buildResource(c, extraPropNames))

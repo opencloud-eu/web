@@ -79,7 +79,6 @@ export const useCreateSpace = () => {
 
   async function applyQuota(space: SpaceResource, quota: number) {
     const updatedSpace = await clientService.graphAuthenticated.drives.updateDrive(space.id, {
-      name: space.name,
       quota: { total: quota }
     })
     spacesStore.updateSpaceField({
@@ -103,7 +102,6 @@ export const useCreateSpace = () => {
       overwrite: true
     })
     const updatedSpace = await clientService.graphAuthenticated.drives.updateDrive(space.id, {
-      name: space.name,
       special: [{ specialFolder: { name: 'readme' }, id: readme.id }]
     })
     spacesStore.updateSpaceField({
@@ -133,7 +131,6 @@ export const useCreateSpace = () => {
         overwrite: true
       })
       const updatedSpace = await clientService.graphAuthenticated.drives.updateDrive(space.id, {
-        name: space.name,
         special: [{ specialFolder: { name: 'image' }, id: fileId }]
       })
 
@@ -175,11 +172,13 @@ export const useCreateSpace = () => {
             {
               roles: [roleId],
               recipients: [
-                {
-                  objectId: id,
-                  '@libre.graph.recipient.type':
-                    shareType === ShareTypes.group.value ? 'group' : 'user'
-                }
+                shareType === ShareTypes.guest.value
+                  ? { email: id }
+                  : {
+                      objectId: id,
+                      '@libre.graph.recipient.type':
+                        shareType === ShareTypes.group.value ? 'group' : 'user'
+                    }
               ]
             },
             sharesStore.graphRoles

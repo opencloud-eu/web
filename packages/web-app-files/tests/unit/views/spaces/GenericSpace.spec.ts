@@ -164,6 +164,24 @@ describe('GenericSpace view', () => {
       await flushPromises()
       expect(mocks.refreshFileListHeaderPosition).toHaveBeenCalledTimes(2)
     })
+    it.each([
+      { query: { scrollTo: '' }, preventScroll: false },
+      { query: { scrollTo: 'fileId' }, preventScroll: true }
+    ])(
+      'focuses the breadcrumb on item change, preventing scroll: $preventScroll',
+      async ({ query, preventScroll }) => {
+        document.body.innerHTML =
+          '<nav id="files-breadcrumb"><ol><li><button></button></li></ol></nav>'
+        const focusSpy = vi.spyOn(document.querySelector('button'), 'focus')
+        const { wrapper } = getMountedWrapper({
+          currentRoute: { name: 'files-spaces-generic', path: '/', query }
+        })
+        await flushPromises()
+        await wrapper.setProps({ item: 'newItem' })
+        await flushPromises()
+        expect(focusSpy).toHaveBeenCalledWith({ preventScroll })
+      }
+    )
     it('re-loads the resources on space change', async () => {
       const { wrapper, mocks } = getMountedWrapper()
       await flushPromises()
@@ -262,7 +280,7 @@ function getMountedWrapper({
   props?: PartialComponentProps<typeof GenericSpace>
   files?: Resource[]
   loading?: boolean
-  currentRoute?: { name?: string; path?: string }
+  currentRoute?: { name?: string; path?: string; query?: Record<string, string> }
   currentFolder?: Resource
   space?: SpaceResource
   breadcrumbsFromPath?: BreadcrumbItem[]

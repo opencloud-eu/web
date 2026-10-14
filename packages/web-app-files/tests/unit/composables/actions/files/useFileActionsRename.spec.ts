@@ -1,6 +1,6 @@
 import { useFileActionsRename } from '../../../../../src/composables/actions/files'
 import { useMessages, useModals, useResourcesStore } from '@opencloud-eu/web-pkg'
-import { mockDeep } from 'vitest-mock-extended'
+import { mock, mockDeep } from 'vitest-mock-extended'
 import { Resource, SpaceResource } from '@opencloud-eu/web-client'
 import { defaultComponentMocks, getComposableWrapper } from '@opencloud-eu/web-test-helpers'
 import { unref } from 'vue'
@@ -46,6 +46,44 @@ describe('rename', () => {
         }
       })
     })
+
+    it.each([
+      { name: 'folder', extension: '', isFolder: true, input: 'folder2', expected: '/folder2' },
+      {
+        name: 'dotted.folder',
+        extension: 'folder',
+        isFolder: true,
+        input: 'dotted2.folder',
+        expected: '/dotted2.folder'
+      },
+      { name: 'README', extension: '', isFolder: false, input: 'README2', expected: '/README2' },
+      {
+        name: 'file.txt',
+        extension: 'txt',
+        isFolder: false,
+        input: 'file2',
+        expected: '/file2.txt'
+      }
+    ])(
+      'renames "$name" to "$expected" with hidden file extensions',
+      async ({ name, extension, isFolder, input, expected }) => {
+        let instance: ReturnType<typeof useFileActionsRename>
+        const { mocks } = getWrapper({ setup: (i) => (instance = i) })
+        const { space, $clientService: clientService } = mocks
+        useResourcesStore().areFileExtensionsShown = false
+        const resource = mock<Resource>({ name, extension, isFolder, path: `/${name}` })
+        await unref(instance.actions)[0].handler({ space, resources: [resource] })
+
+        const { dispatchModal } = useModals()
+        const { inputValue, onConfirm } = vi.mocked(dispatchModal).mock.calls[0][0]
+        expect(inputValue).toBe(isFolder ? name : name.replace(`.${extension}`, ''))
+        await onConfirm(input)
+
+        expect(clientService.webdav.moveFiles).toHaveBeenCalledWith(space, resource, space, {
+          path: expected
+        })
+      }
+    )
   })
 
   describe('method "renameResource"', () => {

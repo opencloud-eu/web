@@ -106,14 +106,16 @@ describe('ResourceTiles component', () => {
     expect(wrapper.html()).toMatchSnapshot()
   })
 
-  it('re-renders a tile when its resource changed, so its preview gets loaded again', async () => {
+  it('loads the preview again but keeps the tile when its resource changed', async () => {
     const resource = { ...spacesResources[0], etag: 'old' }
     const { wrapper } = getWrapper({ props: { resources: [resource] } })
+    const tile = wrapper.find('.oc-tiles-item').element
     expect(wrapper.emitted('itemVisible')).toHaveLength(1)
 
     await wrapper.setProps({ resources: [{ ...resource, etag: 'new' }] })
 
     expect(wrapper.emitted('itemVisible')).toHaveLength(2)
+    expect(wrapper.find('.oc-tiles-item').element).toBe(tile)
   })
 
   it('renders a footer slot', () => {

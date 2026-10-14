@@ -28,6 +28,7 @@ describe('Tag Select', () => {
 
   test.each<[string[], { label: string }[], string[]]>([
     [['a', 'b'], [{ label: 'c' }], ['c']],
+    [['a'], [{ label: 'a' }, { label: 'b, c' }], ['b', 'c']],
     [['a', 'b'], [{ label: 'a' }, { label: 'b' }, { label: 'c' }], ['c']],
     [
       ['a', 'b'],

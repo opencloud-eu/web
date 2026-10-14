@@ -356,7 +356,8 @@ const focusAndAnnounceBreadcrumb = (sameRoute: boolean) => {
 
   activeBreadcrumb.append(invisibleHint)
   if (sameRoute) {
-    activeBreadcrumbItem.focus()
+    // don't scroll back up to the breadcrumb when the list scrolls to a resource from the route
+    activeBreadcrumbItem.focus({ preventScroll: !!unref(route).query?.scrollTo })
   }
 }
 
@@ -409,7 +410,8 @@ const performLoaderTask = async (sameRoute: boolean, path?: string, fileId?: str
     console.error(e)
   }
 
-  if (!unref(displayResourceAsSingleResource)) {
+  // no current folder means nothing was loaded (e.g. an error or a redirect to the parent folder)
+  if (unref(currentFolder) && !unref(displayResourceAsSingleResource)) {
     // when a single resource is shown (e.g. a public link to a file), the file list table
     // - and therefore the row to scroll to - is not rendered, so there is nothing to scroll to
     scrollToResourceFromRoute([unref(currentFolder), ...unref(paginatedResources)], 'files-app-bar')

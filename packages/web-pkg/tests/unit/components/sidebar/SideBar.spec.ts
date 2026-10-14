@@ -23,6 +23,10 @@ describe('SideBar', () => {
       expect(wrapper.find('teleport-stub').attributes('disabled')).toBe('false')
       expect(wrapper.find('oc-bottom-drawer-stub').exists()).toBeTruthy()
     })
+    it('gives the bottom drawer an accessible name', () => {
+      const { wrapper } = createWrapper({ isMobile: true })
+      expect(wrapper.find('oc-bottom-drawer-stub').attributes('arialabel')).toBe('Sidebar')
+    })
     it('closes the sidebar on unmount', () => {
       const { wrapper } = createWrapper({ isMobile: true })
       expect(wrapper.emitted('close')).toBeUndefined()

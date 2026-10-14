@@ -94,7 +94,6 @@ import {
   useLoadPreview,
   useResourceContents,
   useResourcesStore,
-  useRouter,
   useSharesStore,
   useSideBar,
   useSpacesStore,
@@ -106,7 +105,6 @@ import WebDavDetails from '../../WebDavDetails.vue'
 import { formatDateFromISO, formatFileSize } from '../../../../helpers'
 import { ImageDimension } from '../../../../constants'
 import { ProcessorType } from '../../../../services'
-import { isLocationSpacesActive } from '../../../../router'
 import { useGettext } from 'vue3-gettext'
 import CustomComponentTarget from '../../../CustomComponentTarget.vue'
 import { fileSideBarSpaceDetailsTableExtensionPoint } from '../../../../extensionPoints'
@@ -118,7 +116,6 @@ const { showShareIndicators = true } = defineProps<{
 const userStore = useUserStore()
 const resourcesStore = useResourcesStore()
 const { resourceContentsText } = useResourceContents({ showSizeInformation: false })
-const router = useRouter()
 const { $gettext, $ngettext, current: currentLanguage } = useGettext()
 const { loadPreview } = useLoadPreview()
 const { openSideBarPanel } = useSideBar()
@@ -138,8 +135,9 @@ const spaceMembers = computed(() => {
 
 const linkShareCount = computed(() => sharesStore.linkShares.length)
 const showWebDavDetails = computed(() => resourcesStore.areWebDavDetailsShown)
+// the contents text counts the current list, which only describes the space inside the space itself
 const showSize = computed(() => {
-  return !isLocationSpacesActive(router, 'files-spaces-projects')
+  return resourcesStore.currentFolder?.id === unref(resource).id
 })
 const size = computed(() => {
   return `${formatFileSize(unref(resource).size, currentLanguage)}, ${unref(resourceContentsText)}`

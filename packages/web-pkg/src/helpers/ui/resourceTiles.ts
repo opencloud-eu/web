@@ -4,6 +4,11 @@ import { Language } from 'vue3-gettext'
 import { SortDir } from '@opencloud-eu/design-system/helpers'
 import { $gettext } from '../../utils/dummyGettext'
 
+// a total quota of 0 means unrestricted, which needs to be sorted as the largest value
+function sortableTotalQuota(total: number) {
+  return total === 0 ? Infinity : total
+}
+
 export const resourceTilesSortFields: SortField[] = [
   {
     label: $gettext('A-Z'),
@@ -74,14 +79,14 @@ export const spaceTilesSortFields: SortField[] = [
     label: $gettext('Most total quota'),
     name: 'totalQuota',
     prop: 'spaceQuota.total',
-    sortable: true,
+    sortable: sortableTotalQuota,
     sortDir: SortDir.Desc
   },
   {
     label: $gettext('Least total quota'),
     name: 'totalQuota',
     prop: 'spaceQuota.total',
-    sortable: true,
+    sortable: sortableTotalQuota,
     sortDir: SortDir.Asc
   },
   {

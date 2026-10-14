@@ -54,6 +54,28 @@ describe('AppTokenModal component', () => {
       const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       expect(btn.props('disabled')).toBeFalsy()
     })
+    it('should be disabled and show an error when the note only contains whitespace', async () => {
+      const { wrapper } = getWrapper()
+      emitNoteInput(wrapper, '   ')
+      emitDateInput(wrapper, DateTime.now())
+      await wrapper.vm.$nextTick()
+      expect(findConfirmButton(wrapper).props('disabled')).toBeTruthy()
+      expect(
+        wrapper.findComponent<typeof OcTextInput>('oc-text-input-stub').props('errorMessage')
+      ).toBe('The note is required')
+    })
+    it('should send the trimmed note', async () => {
+      const { wrapper, mocks } = getWrapper()
+      emitNoteInput(wrapper, '  someNote  ')
+      emitDateInput(wrapper, DateTime.now())
+      await wrapper.vm.$nextTick()
+      await findConfirmButton(wrapper).trigger('click')
+      expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalledWith(
+        '/auth-app/tokens',
+        null,
+        { params: expect.objectContaining({ label: 'someNote' }) }
+      )
+    })
     it('should create a token on submit', async () => {
       const { wrapper, mocks } = getWrapper()
       emitNoteInput(wrapper, 'someNote')
@@ -61,7 +83,9 @@ describe('AppTokenModal component', () => {
       const btn = wrapper.findComponent<typeof OcButton>('.oc-modal-body-actions-confirm')
       await wrapper.vm.$nextTick()
       await btn.trigger('click')
+      await flushPromises()
       expect(mocks.$clientService.httpAuthenticated.post).toHaveBeenCalled()
+      expect(wrapper.emitted('created')).toBeTruthy()
     })
     it('should not create a second token when confirm is clicked twice in a row', async () => {
       const { wrapper, mocks } = getWrapper({ pendingPost: true })

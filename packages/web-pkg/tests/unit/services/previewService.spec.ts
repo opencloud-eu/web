@@ -84,6 +84,25 @@ describe('PreviewService', () => {
       })
       expect(preview).toEqual(undefined)
     })
+    it('does not load preview if no user is set', async () => {
+      const supportedMimeTypes = ['image/png']
+      const { previewService } = getWrapper({
+        supportedMimeTypes,
+        version: '1',
+        user: null
+      })
+      const preview = await previewService.loadPreview({
+        space: mock<SpaceResource>({ driveType: 'share' }),
+        resource: mock<Resource>({
+          mimeType: supportedMimeTypes[0],
+          webDavPath: '/',
+          etag: '',
+          canDownload: () => true,
+          hasPreview: () => true
+        })
+      })
+      expect(preview).toBeUndefined()
+    })
     it.each([425, 429])('retries when the server returns a %s status code', async (status) => {
       const supportedMimeTypes = ['image/png']
       const { previewService, clientService } = getWrapper({
@@ -257,7 +276,8 @@ describe('PreviewService', () => {
 const getWrapper = ({
   supportedMimeTypes = [],
   version = undefined,
-  accessToken = 'token'
+  accessToken = 'token',
+  user = mock<User>()
 } = {}) => {
   const clientService = mockDeep<ClientService>()
   clientService.httpAuthenticated.get.mockResolvedValue({ data: {}, status: 200 } as AxiosResponse)
@@ -266,7 +286,7 @@ const getWrapper = ({
     status: 200
   } as AxiosResponse)
 
-  createTestingPinia({ initialState: { user: { user: mock<User>() }, auth: { accessToken } } })
+  createTestingPinia({ initialState: { user: { user }, auth: { accessToken } } })
   const userStore = useUserStore()
   const authStore = useAuthStore()
   const capabilityStore = useCapabilityStore()

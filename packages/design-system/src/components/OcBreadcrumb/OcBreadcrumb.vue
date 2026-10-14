@@ -27,7 +27,7 @@
         @dragenter.prevent="dropItemStyling(item as BreadcrumbItem, index, false, $event)"
         @dragleave.prevent="dropItemStyling(item as BreadcrumbItem, index, true, $event)"
         @mouseleave="dropItemStyling(item as BreadcrumbItem, index, true, $event as DragEvent)"
-        @drop="dropItemEvent(item as BreadcrumbItem, index)"
+        @drop="dropItemEvent(item as BreadcrumbItem, index, $event)"
       >
         <template v-if="item.isTruncationPlaceholder">
           <oc-button
@@ -246,8 +246,11 @@ const isDropAllowed = (item: BreadcrumbItem, index: number): boolean => {
     item.isStaticNav
   )
 }
-const dropItemEvent = (item: BreadcrumbItem, index: number) => {
-  if (!isDropAllowed(item, index)) {
+const hasFilePayload = (event: DragEvent) => {
+  return (event.dataTransfer?.types || []).some((e) => e === 'Files')
+}
+const dropItemEvent = (item: BreadcrumbItem, index: number, event: DragEvent) => {
+  if (!isDropAllowed(item, index) || hasFilePayload(event)) {
     return
   }
 
@@ -331,8 +334,7 @@ const dropItemStyling = (
   if (!isDropAllowed(item, index)) {
     return
   }
-  const hasFilePayload = (event.dataTransfer?.types || []).some((e) => e === 'Files')
-  if (hasFilePayload) return
+  if (hasFilePayload(event)) return
   if ((event.currentTarget as HTMLElement)?.contains(event.relatedTarget as HTMLElement)) {
     return
   }

@@ -37,6 +37,10 @@ export type PiniaMockOptions = {
     idpContextReady?: boolean
     userContextReady?: boolean
     publicLinkContextReady?: boolean
+    guestContextReady?: boolean
+    guestPermissionId?: string
+    guestSpaceId?: string
+    guestContextUnavailable?: boolean
   }
   themeState?: { availableThemes?: WebThemeType[]; currentTheme?: WebThemeType }
   clipboardState?: { action?: ClipboardActions; resources?: Resource[] }
@@ -65,6 +69,7 @@ export type PiniaMockOptions = {
     areFileExtensionsShown?: boolean
     areHiddenFilesShown?: boolean
     areDisabledSpacesShown?: boolean
+    areFoldersSortedFirst?: boolean
     deleteQueue?: string[]
   }
   avatarsStore?: {

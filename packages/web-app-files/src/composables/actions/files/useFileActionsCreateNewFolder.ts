@@ -1,10 +1,11 @@
 import { isShareSpaceResource, SpaceResource } from '@opencloud-eu/web-client'
 import { storeToRefs } from 'pinia'
 import { join } from 'path'
-import { computed, markRaw, nextTick, Ref, unref } from 'vue'
+import { computed, markRaw, nextTick, unref } from 'vue'
 import { useGettext } from 'vue3-gettext'
 import {
   FileAction,
+  FileActionOptions,
   VaultFinalize,
   getVaultCreator,
   markVaultStatus,
@@ -19,7 +20,7 @@ import {
 } from '@opencloud-eu/web-pkg'
 import CreateFolderModal from '../../../components/Modals/CreateFolderModal.vue'
 
-export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceResource> } = {}) => {
+export const useFileActionsCreateNewFolder = () => {
   const { showMessage, showErrorMessage } = useMessages()
   const { dispatchModal } = useModals()
   const { $gettext } = useGettext()
@@ -42,6 +43,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
   })
 
   const addNewFolder = async (
+    space: SpaceResource,
     folderName: string,
     { encrypt = false, finalizeVault }: { encrypt?: boolean; finalizeVault?: VaultFinalize } = {}
   ) => {
@@ -61,19 +63,19 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
           ? withoutExtension(serverName, creation.vaultExtension)
           : serverName
       const path = join(unref(currentFolder).path, serverName)
-      const resource = await clientService.webdav.createFolder(unref(space), { path })
+      const resource = await clientService.webdav.createFolder(space, { path })
 
       // FIXME: move to buildResource as soon as it has space context
-      if (isShareSpaceResource(unref(space))) {
-        resource.remoteItemId = unref(space).id
+      if (isShareSpaceResource(space)) {
+        resource.remoteItemId = space.id
       }
 
-      markVaultStatus(extensionRegistry, unref(space), [resource])
+      markVaultStatus(extensionRegistry, space, [resource])
       resourcesStore.upsertResource(resource)
 
       if (encrypt && finalizeVault) {
         try {
-          await finalizeVault(unref(space), resource.path)
+          await finalizeVault(space, resource.path)
         } catch (error) {
           // The folder exists and is a vault, only its secret didn't get
           // committed - saying "failed to create" would be a lie.
@@ -103,7 +105,7 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
     }
   }
 
-  const handler = () => {
+  const handler = ({ space }: FileActionOptions) => {
     dispatchModal({
       title: $gettext('Create a new folder'),
       focusTrapInitial: '#create-folder-input',
@@ -111,7 +113,10 @@ export const useFileActionsCreateNewFolder = ({ space }: { space?: Ref<SpaceReso
       hideConfirmButton: true,
       customComponentAttrs: () => ({
         vaultCreation: unref(vaultCreator)?.creation,
-        callbackFn: addNewFolder
+        callbackFn: (
+          folderName: string,
+          options: { encrypt?: boolean; finalizeVault?: VaultFinalize }
+        ) => addNewFolder(space, folderName, options)
       })
     })
   }

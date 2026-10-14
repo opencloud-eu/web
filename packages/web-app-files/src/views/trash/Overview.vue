@@ -6,6 +6,7 @@
         :has-view-options="true"
         :has-hidden-files="false"
         :has-file-extensions="false"
+        :has-folders-first="false"
         :has-pagination="true"
         :show-actions-bar="false"
         :view-modes="viewModes"

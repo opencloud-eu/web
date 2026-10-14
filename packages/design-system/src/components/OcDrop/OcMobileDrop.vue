@@ -2,6 +2,7 @@
   <teleport v-if="isActive" to="#app-runtime-bottom-drawer">
     <oc-bottom-drawer
       :id="drawerId"
+      :aria-label="title || $gettext('Menu')"
       :is-drawer-active="isCurrentlyOnTop"
       :is-focus-trap-active="isCurrentlyOnTop"
       class="oc-mobile-drop z-[calc(var(--z-index-modal)+2)]"

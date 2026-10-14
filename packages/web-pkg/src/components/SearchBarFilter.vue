@@ -99,6 +99,7 @@ watch(
     }
     emit('update:modelValue', { value: selection })
   },
+  // Synchronize the search scope before handling an explicit selection.
   { flush: 'sync' }
 )
 
