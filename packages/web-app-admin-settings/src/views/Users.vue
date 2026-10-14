@@ -145,7 +145,9 @@ import {
   SideBarPanelContext,
   useCapabilityStore,
   useConfigStore,
-  QueryValue
+  useMessages,
+  QueryValue,
+  UserActionOptions
 } from '@opencloud-eu/web-pkg'
 import { computed, ref, onBeforeUnmount, onMounted, unref, watch } from 'vue'
 import { useTask } from 'vue-concurrency'
@@ -159,9 +161,11 @@ import { OcFilterHighlight } from '@opencloud-eu/design-system/components'
 const { $gettext } = useGettext()
 const router = useRouter()
 const route = useRoute()
-const { graphUsersEditLoginAllowedDisabled } = storeToRefs(useCapabilityStore())
+const { graphUsersEditLoginAllowedDisabled, graphUsersReadOnlyAttributes } =
+  storeToRefs(useCapabilityStore())
 const clientService = useClientService()
 const configStore = useConfigStore()
+const { showErrorMessage } = useMessages()
 
 const userSettingsStore = useUserSettingsStore()
 const { users, selectedUsers } = storeToRefs(userSettingsStore)
@@ -279,6 +283,10 @@ const loadAdditionalUserDataTask = useTask(function* (signal, user: User) {
   Object.assign(user, data)
 })
 
+const selectedUsersDataLoaded = computed(() =>
+  unref(selectedUsers).every(({ id }) => unref(additionalUserDataLoadedForUserIds).includes(id))
+)
+
 function reloadFilteredUsers() {
   loadUsersTask.perform()
   if (unref(selectedUsers).length) {
@@ -311,11 +319,30 @@ async function searchUsers() {
   return reloadFilteredUsers()
 }
 
+// the group actions need the group memberships, which are missing if loading the details failed
+const groupActions = computed(() =>
+  [...unref(addToGroupsActions), ...unref(removeFromGroupsActions)].map((action) => ({
+    ...action,
+    isVisible: (options: UserActionOptions) => {
+      if (unref(selectedUsersDataLoaded)) {
+        return action.isVisible(options)
+      }
+
+      // the memberships are unknown, so show the action disabled instead of hiding it
+      return (
+        !unref(graphUsersReadOnlyAttributes).includes('user.memberOf') &&
+        options.resources.length > 0
+      )
+    },
+    isDisabled: () => !unref(selectedUsersDataLoaded),
+    disabledTooltip: () => $gettext('The user details could not be loaded')
+  }))
+)
+
 const batchActions = computed(() =>
   [
     ...unref(editQuotaActions),
-    ...unref(addToGroupsActions),
-    ...unref(removeFromGroupsActions),
+    ...unref(groupActions),
     ...(unref(graphUsersEditLoginAllowedDisabled) ? [] : unref(editLoginActions)),
     ...unref(deleteActions)
   ].filter((item) => item.isVisible({ resources: unref(selectedUsers) }))
@@ -359,7 +386,9 @@ const sideBarAvailablePanels = [
     icon: { name: 'pencil', fillType: 'line' },
     title: () => $gettext('Edit user'),
     component: EditPanel,
-    isVisible: ({ items }) => items.length === 1,
+    // the form needs the full user data, e.g. the group memberships
+    isVisible: ({ items }) =>
+      items.length === 1 && unref(additionalUserDataLoadedForUserIds).includes(items[0].id),
     componentAttrs: ({ items }) => ({
       user: items.length === 1 ? items[0] : null,
       roles: unref(roles),
@@ -390,6 +419,7 @@ watch(
       )
     } catch (e) {
       console.error(e)
+      showErrorMessage({ title: $gettext('Failed to load user details'), errors: [e] })
     } finally {
       sideBarLoading.value = false
     }
