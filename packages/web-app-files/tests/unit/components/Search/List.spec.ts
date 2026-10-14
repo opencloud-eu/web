@@ -10,11 +10,12 @@ import {
   AppBar,
   ItemFilter,
   queryItemAsString,
+  ResourceTable,
   ResourceTiles,
   SortField,
   useResourcesStore
 } from '@opencloud-eu/web-pkg'
-import { Component, computed, defineComponent, h, ref, unref } from 'vue'
+import { Component, computed, defineComponent, h, Ref, ref, unref } from 'vue'
 import { Resource } from '@opencloud-eu/web-client'
 import { mock } from 'vitest-mock-extended'
 import { Capabilities } from '@opencloud-eu/web-client/ocs'
@@ -128,16 +129,31 @@ describe('List component', () => {
     await flushPromises()
     expect((tagFilter.vm as any).selectedItems).toEqual([])
   })
-  it('should emit search when the hidden files setting changes', async () => {
-    const { wrapper } = getWrapper()
+  it('shows and hides hidden results when toggling hidden files without searching again', async () => {
+    const visible = mock<Resource>({ id: 'visible', name: 'visible' })
+    const hidden = mock<Resource>({ id: 'hidden', name: '.hidden' })
+    const { wrapper } = getWrapper({
+      paginatedResources: computed(() => useResourcesStore().activeResources),
+      resourcesStore: { resources: [visible, hidden], areHiddenFilesShown: false }
+    })
     await flushPromises()
     const searchCount = wrapper.emitted('search').length
+    const resourceIds = () => {
+      const table = wrapper.findComponent<typeof ResourceTable>(selectors.resourceTableStub)
+      return table.props('resources').map(({ id }) => id)
+    }
+    expect(resourceIds()).toEqual(['visible'])
 
     const resourcesStore = useResourcesStore()
-    resourcesStore.areHiddenFilesShown = !resourcesStore.areHiddenFilesShown
+    resourcesStore.areHiddenFilesShown = true
     await flushPromises()
+    expect(resourceIds()).toEqual(['visible', 'hidden'])
 
-    expect(wrapper.emitted('search').length).toBe(searchCount + 1)
+    resourcesStore.areHiddenFilesShown = false
+    await flushPromises()
+    expect(resourceIds()).toEqual(['visible'])
+
+    expect(wrapper.emitted('search').length).toBe(searchCount)
   })
   describe('breadcrumbs', () => {
     it('show "Search" when no search term given', () => {
@@ -271,6 +287,8 @@ describe('List component', () => {
 function getWrapper({
   availableTags = [],
   resources = [],
+  paginatedResources = undefined,
+  resourcesStore = {},
   searchTerm = '',
   tagFilterQuery = null,
   titleOnlyFilterQuery = null,
@@ -285,6 +303,8 @@ function getWrapper({
 }: {
   availableTags?: string[]
   resources?: Resource[]
+  paginatedResources?: Ref<Resource[]>
+  resourcesStore?: { resources?: Resource[]; areHiddenFilesShown?: boolean }
   searchTerm?: string
   tagFilterQuery?: string
   titleOnlyFilterQuery?: string
@@ -303,7 +323,7 @@ function getWrapper({
   vi.mocked(queryItemAsString).mockImplementationOnce(() => lastModifiedFilterQuery)
 
   const resourcesViewDetailsMock = useResourcesViewDefaultsMock({
-    paginatedResources: ref(resources),
+    paginatedResources: paginatedResources || ref(resources),
     sortFields: ref(sortFields)
   })
   if (folderViewComponent) {
@@ -342,7 +362,9 @@ function getWrapper({
           AppBar: AppBarStub,
           ...stubs
         },
-        plugins: [...defaultPlugins({ piniaOptions: { capabilityState: { capabilities } } })]
+        plugins: [
+          ...defaultPlugins({ piniaOptions: { capabilityState: { capabilities }, resourcesStore } })
+        ]
       }
     })
   }

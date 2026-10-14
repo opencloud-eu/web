@@ -27,6 +27,23 @@ describe('useSearch', () => {
       const withTerm = await wrapper.vm.search('foo')
       expect(withTerm.values.map((r) => r.data)[0].id).toEqual('2')
     })
+    describe('hidden files', () => {
+      const files = [
+        { id: 'foo', name: 'foo' },
+        { id: 'hidden', name: '.hidden' }
+      ] as SearchResource[]
+
+      it('filters hidden results by default if hidden files are not shown', async () => {
+        const wrapper = createWrapper({ resources: files, areHiddenFilesShown: false })
+        const result = await wrapper.vm.search('foo')
+        expect(result.values.map((r) => r.id)).toEqual(['foo'])
+      })
+      it('keeps hidden results if requested even if hidden files are not shown', async () => {
+        const wrapper = createWrapper({ resources: files, areHiddenFilesShown: false })
+        const result = await wrapper.vm.search('foo', null, { includeHidden: true })
+        expect(result.values.map((r) => r.id)).toEqual(['foo', 'hidden'])
+      })
+    })
   })
   describe('method "buildSearchTerm"', () => {
     it('matches the term against names, contents and tags', () => {
@@ -50,10 +67,12 @@ describe('useSearch', () => {
 
 const createWrapper = ({
   resources = [],
-  searchProperties = { content: false, tag: false }
+  searchProperties = { content: false, tag: false },
+  areHiddenFilesShown = true
 }: {
   resources?: SearchResource[]
   searchProperties?: { content: boolean; tag: boolean }
+  areHiddenFilesShown?: boolean
 } = {}) => {
   const spaces = [
     {
@@ -99,7 +118,11 @@ const createWrapper = ({
       mocks,
       provide: mocks,
       pluginOptions: {
-        piniaOptions: { spacesState: { spaces }, capabilityState: { capabilities } }
+        piniaOptions: {
+          spacesState: { spaces },
+          capabilityState: { capabilities },
+          resourcesStore: { areHiddenFilesShown }
+        }
       }
     }
   )
