@@ -8,6 +8,7 @@
 
 ### 🐛 Bug Fixes
 
+- fix: start on the first page after a new search or filter change [[#3708](https://github.com/opencloud-eu/web/pull/3708)]
 - fix: no unhandled error when the server rejects a link password [[#3712](https://github.com/opencloud-eu/web/pull/3712)]
 - fix: reject whitespace-only public link names [[#3731](https://github.com/opencloud-eu/web/pull/3731)]
 - fix: show a space's size in the details only inside the space [[#3715](https://github.com/opencloud-eu/web/pull/3715)]
