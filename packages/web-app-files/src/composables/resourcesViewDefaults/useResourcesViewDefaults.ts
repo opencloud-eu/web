@@ -108,7 +108,8 @@ export const useResourcesViewDefaults = <T extends Resource, TT, TU extends any[
 
   const { sortBy, sortDir, items, handleSort } = useSort<T>({
     items: storeItems,
-    fields: sortFields
+    fields: sortFields,
+    foldersFirst: computed(() => resourcesStore.areFoldersSortedFirst)
   })
   const {
     items: paginatedResources,

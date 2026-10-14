@@ -1147,6 +1147,13 @@ export const setViewOptions = ({ resourcesStore }: { resourcesStore: ResourcesSt
   if (areEmptyTrashesShownBoolean !== resourcesStore.areEmptyTrashesShown) {
     resourcesStore.setAreEmptyTrashesShown(areEmptyTrashesShownBoolean)
   }
+
+  const areFoldersSortedFirst = window.localStorage.getItem('oc_foldersSortedFirst') || 'true'
+  const areFoldersSortedFirstBoolean = areFoldersSortedFirst === 'true'
+
+  if (areFoldersSortedFirstBoolean !== resourcesStore.areFoldersSortedFirst) {
+    resourcesStore.setAreFoldersSortedFirst(areFoldersSortedFirstBoolean)
+  }
 }
 
 export const announceCapabilities = async ({

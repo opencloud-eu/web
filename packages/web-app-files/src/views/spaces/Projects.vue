@@ -7,6 +7,7 @@
         :has-bulk-actions="true"
         :has-hidden-files="false"
         :has-file-extensions="false"
+        :has-folders-first="false"
         :has-pagination="true"
         :batch-actions-loading="batchActionsLoading"
         :view-modes="viewModes"
