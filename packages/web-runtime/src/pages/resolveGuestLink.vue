@@ -5,8 +5,8 @@
     :description="cardDescription"
     :icon="cardIcon"
   >
-    <template v-if="errorMessage">
-      <p data-testid="error-message" class="my-0">
+    <template v-if="hasError">
+      <p v-if="errorMessage" data-testid="error-message" class="my-0">
         {{ errorMessage }}
       </p>
       <oc-button
@@ -70,10 +70,14 @@ const retryableErrorTypes: (GuestLinkErrorErrorTypeEnum | 'unknown')[] = [
   GuestLinkErrorErrorTypeEnum.ServiceUnavailable
 ]
 const isRetryable = computed(() => retryableErrorTypes.includes(unref(errorType)))
+const hasError = computed(() => unref(errorType) !== undefined)
 
 const errorMessage = computed(() => {
   switch (unref(errorType)) {
     case undefined:
+    case GuestLinkErrorErrorTypeEnum.TokenInvalid:
+    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
+    case GuestLinkErrorErrorTypeEnum.InvalidRequest:
       return null
     case GuestLinkErrorErrorTypeEnum.TokenExpired:
       return $gettext('This invitation link has expired.')
@@ -83,10 +87,6 @@ const errorMessage = computed(() => {
       return $gettext('Your access to the shared item has expired.')
     case GuestLinkErrorErrorTypeEnum.ShareNotFound:
       return $gettext('The shared item is no longer available.')
-    case GuestLinkErrorErrorTypeEnum.TokenInvalid:
-    case GuestLinkErrorErrorTypeEnum.TokenNotFound:
-    case GuestLinkErrorErrorTypeEnum.InvalidRequest:
-      return $gettext('This invitation link is invalid.')
     default:
       if (unref(isRetryable)) {
         return $gettext('The invitation could not be opened. Please try again later.')
@@ -96,17 +96,17 @@ const errorMessage = computed(() => {
 })
 
 const cardTitle = computed(() =>
-  unref(errorMessage)
+  unref(hasError)
     ? $gettext('An error occurred while opening the invitation')
     : $gettext('Opening invitation…')
 )
 const cardDescription = computed(() => {
-  if (!unref(errorMessage) || unref(isRetryable)) {
+  if (!unref(hasError) || unref(isRetryable)) {
     return undefined
   }
   return $gettext('Ask the person who invited you for a new invitation.')
 })
-const cardIcon = computed(() => (unref(errorMessage) ? 'error-warning' : undefined))
+const cardIcon = computed(() => (unref(hasError) ? 'error-warning' : undefined))
 
 async function resolveGuestLink() {
   errorType.value = undefined

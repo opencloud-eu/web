@@ -53,9 +53,7 @@ describe('resolveGuestLink', () => {
     ['tokenExpired', 'This invitation link has expired.'],
     ['tokenAlreadyRedeemed', 'This invitation link has already been used.'],
     ['shareExpired', 'Your access to the shared item has expired.'],
-    ['shareNotFound', 'The shared item is no longer available.'],
-    ['tokenInvalid', 'This invitation link is invalid.'],
-    ['tokenNotFound', 'This invitation link is invalid.']
+    ['shareNotFound', 'The shared item is no longer available.']
   ])('shows a specific error for %s', async (errorType, message) => {
     const { wrapper, mocks } = getWrapper({ redeemError: guestLinkError(errorType) })
     await flushPromises()
@@ -65,6 +63,19 @@ describe('resolveGuestLink', () => {
     expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
     expect(mocks.$router.replace).not.toHaveBeenCalled()
   })
+
+  it.each(['tokenInvalid', 'tokenNotFound', 'invalidRequest'])(
+    'shows only the generic error for %s',
+    async (errorType) => {
+      const { wrapper } = getWrapper({ redeemError: guestLinkError(errorType) })
+      await flushPromises()
+
+      expect(wrapper.find(selectors.errorMessage).exists()).toBeFalsy()
+      expect(wrapper.find(selectors.spinner).exists()).toBeFalsy()
+      expect(wrapper.text()).toContain('Ask the person who invited you for a new invitation.')
+      expect(wrapper.find(selectors.retryButton).exists()).toBeFalsy()
+    }
+  )
 
   it('shows the share as unavailable when it is missing after verification', async () => {
     const { wrapper } = getWrapper({ redeemError: new GuestShareNotFoundError() })
